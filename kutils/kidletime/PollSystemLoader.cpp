@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,32 +21,91 @@
 
 #include "WidgetBasedPoller.h"
 #include "XSyncBasedPoller.h"
-#include "TimerBasedPoller.h"
 
-class Private {
+#include <kglobal.h>
+
+class KIdleTimeHelper
+{
+public:
+    KIdleTimeHelper() : q(0) {}
+    ~KIdleTimeHelper() {
+        delete q;
+    }
+    KIdleTime *q;
+};
+
+K_GLOBAL_STATIC(KIdleTimeHelper, s_globalKIdleTime)
+
+KIdleTime *KIdleTime::instance()
+{
+    if (!s_globalKIdleTime->q) {
+        new KIdleTime;
+    }
+
+    return s_globalKIdleTime->q;
+}
+
+class KIdleTimePrivate {
   public:
-    Private() {};
+    KIdleTimePrivate() : catchResume(false) {};
+    
+    Q_DECLARE_PUBLIC(KIdleTime)
+    KIdleTime *q_ptr;
     
     void loadSystem();
     void unloadCurrentSystem();
+    void _k_resumingFromIdle();
     
-    QPointer<AbstractSystemPoller> poller;  
+    QPointer<AbstractSystemPoller> poller;
+    bool catchResume;
 };
 
 KIdleTime::KIdleTime()
-        : d(new Private())
+        : d(new KIdleTimePrivate())
 {
-    d->loadSystem();
+    Q_ASSERT(!s_globalKIdleTime->q);
+    s_globalKIdleTime->q = this;
+    
+    d_ptr->q_ptr = this;
+    d_ptr->loadSystem();
+    
+    connect(d_ptr->poller, SIGNAL(resumingFromIdle()), this, SLOT(_k_resumingFromIdle()));
+    connect(d_ptr->poller, SIGNAL(pollRequest(int)), this, SIGNAL(pollRequest(int)));
 }
 
 KIdleTime::~KIdleTime()
 {
+    Q_D(KIdleTime);
     d->unloadCurrentSystem();
 }
 
-void KIdleTime::Private::loadSystem()
+void KIdleTime::catchNextResumeEvent()
 {
-    if (m_poller) {
+    Q_D(KIdleTime);
+    
+    if (!d->catchResume) {
+        d->catchResume = true;
+        d->poller->catchIdleEvent();
+    }
+}
+
+void KIdleTime::catchIdleTimeout(int msec)
+{
+    Q_D(KIdleTime);
+    
+    d->poller->setNextTimeout(msec);
+}
+
+void KIdleTime::stopCatchingIdleTimeout()
+{
+    Q_D(KIdleTime);
+    
+    d->poller->stopCatchingTimeouts();
+}
+
+void KIdleTimePrivate::loadSystem()
+{
+    if (poller) {
         unloadCurrentSystem();
     }
 
@@ -56,18 +115,12 @@ void KIdleTime::Private::loadSystem()
         XSyncBasedPoller::instance()->setUpPoller();
 	poller = XSyncBasedPoller::instance();
     } else {
-        poller = new WidgetBasedPoller();
-	
-	if (!poller->isAvailable()) {
-	    poller->deleteLater();
-	    poller = new TimerBasedPoller();
-	}
-	
+        poller = new WidgetBasedPoller();	
 	poller->setUpPoller();
     }
 }
 
-bool KIdleTime::Private::unloadCurrentSystem()
+bool KIdleTimePrivate::unloadCurrentSystem()
 {
     if (poller) {
         poller->unloadPoller();
@@ -78,6 +131,22 @@ bool KIdleTime::Private::unloadCurrentSystem()
     }
 
     return true;
+}
+
+void KIdleTimePrivate::_k_resumingFromIdle()
+{
+    if (catchResume) {
+	emit q->resumingFromIdle();
+	catchResume = false;
+    }
+}
+
+void KIdleTime::simulateUserActivity()
+{
+    Q_D(KIdleTime);
+    
+    d->poller->simulateUserActivity();
+    d->poller->stopCatchingIdleEvents();
 }
 
 #include "KIdleTime.moc"

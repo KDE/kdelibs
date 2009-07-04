@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -51,13 +51,13 @@ protected:
 
 public slots:
     void setNextTimeout(int nextTimeout);
-    void forcePollRequest();
+    int forcePollRequest();
     void stopCatchingTimeouts();
     void catchIdleEvent();
     void stopCatchingIdleEvents();
 
 private slots:
-    void poll();
+    int poll();
     void detectedActivity();
     void waitForActivity();
     void releaseInputLock();
@@ -65,7 +65,6 @@ private slots:
 
 signals:
     void resumingFromIdle();
-    void pollRequest(int idleTime);
 
 private:
     QTimer * m_pollTimer;

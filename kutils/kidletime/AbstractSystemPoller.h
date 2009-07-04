@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -31,15 +31,13 @@ public:
     enum PollingType {
         Abstract = -1,
         WidgetBased = 1,
-        XSyncBased = 2,
-        TimerBased = 3
+        XSyncBased = 2
     };
 
     AbstractSystemPoller(QObject *parent = 0);
     virtual ~AbstractSystemPoller();
 
     virtual PollingType getPollingType() = 0;
-    virtual QString name() = 0;
 
     virtual bool isAvailable() = 0;
     virtual bool setUpPoller() = 0;
@@ -55,7 +53,7 @@ public slots:
 
 signals:
     void resumingFromIdle();
-    void pollRequest(int idleTime);
+    void timeoutReached(int msec);
 
 };
 

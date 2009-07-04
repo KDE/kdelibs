@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -35,11 +35,6 @@ WidgetBasedPoller::~WidgetBasedPoller()
 {
 }
 
-QString WidgetBasedPoller::name()
-{
-    return i18n("Grabber Widget Based");
-}
-
 bool WidgetBasedPoller::isAvailable()
 {
 #ifdef HAVE_XSCREENSAVER
@@ -61,7 +56,7 @@ bool WidgetBasedPoller::setUpPoller()
     m_grabber->move(-1000, -1000);
     m_grabber->setMouseTracking(true);
     m_grabber->installEventFilter(this);
-    m_grabber->setObjectName("PowerDevilGrabberWidget");
+    m_grabber->setObjectName("KIdleGrabberWidget");
 
     m_screenSaverIface = new OrgFreedesktopScreenSaverInterface("org.freedesktop.ScreenSaver", "/ScreenSaver",
             QDBusConnection::sessionBus(), this);
@@ -134,7 +129,7 @@ void WidgetBasedPoller::releaseInputLock()
 #include <X11/extensions/scrnsaver.h>
 #endif
 
-void WidgetBasedPoller::poll()
+int WidgetBasedPoller::poll()
 {
     /* Hack! Since KRunner still doesn't behave properly, the
      * correct way to go doesn't work (yet), and it's this one:
@@ -155,12 +150,12 @@ void WidgetBasedPoller::poll()
     //----------------------------------------------------------
 #endif
 
-    emit pollRequest(idle);
+    return idle;
 }
 
-void WidgetBasedPoller::forcePollRequest()
+int WidgetBasedPoller::forcePollRequest()
 {
-    poll();
+    return idle;
 }
 
 void WidgetBasedPoller::stopCatchingTimeouts()

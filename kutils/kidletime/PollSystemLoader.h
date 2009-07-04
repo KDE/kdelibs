@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,30 +17,42 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#ifndef POLLSYSTEMLOADER_H
-#define POLLSYSTEMLOADER_H
+#ifndef KIDLETIME_H
+#define KIDLETIME_H
 
 #include <QObject>
 
+class KIdleTimePrivate;
 class KIdleTime : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(KIdleTime)
+    Q_DISABLE_COPY(KIdleTime)
 
 public:
+    static *KIdleTime instance();
+  
     KIdleTime();
     virtual ~KIdleTime();
     
-public slots:
-    void setNextTimeout(int nextTimeout);
-    void forcePollRequest();
-    void stopCatchingTimeouts();
-    void catchIdleEvent();
-    void stopCatchingIdleEvents();
+    int getIdleTime();
     void simulateUserActivity();
+    
+public slots:
+    void catchIdleTimeout(int msec);
+    void stopCatchingIdleTimeout();
+    void catchNextResumeEvent();
+    
+signals:
+    void resumingFromIdle();
+    void timeoutReached(int msec);
 
 private:
     class Private;
-    Private *d;
+    Private * const d;
+    
+    Q_PRIVATE_SLOT(d_func(), _k_resumingFromIdle())
+    
 };
 
-#endif /* POLLSYSTEMLOADER_H */
+#endif /* KIDLETIME_H */

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -107,11 +107,6 @@ XSyncBasedPoller::~XSyncBasedPoller()
 {
 }
 
-QString XSyncBasedPoller::name()
-{
-    return i18n("XSync Based (recommended)");
-}
-
 bool XSyncBasedPoller::isAvailable()
 {
     return m_available;
@@ -180,20 +175,21 @@ void XSyncBasedPoller::setNextTimeout(int nextTimeout)
 #endif
 }
 
-void XSyncBasedPoller::forcePollRequest()
+int XSyncBasedPoller::forcePollRequest()
 {
-    poll();
+    return poll();
 }
 
-void XSyncBasedPoller::poll()
+int XSyncBasedPoller::poll()
 {
 #ifdef HAVE_XSYNC
     XSyncValue idleTime;
 
     XSyncQueryCounter(m_display, m_idleCounter, &idleTime);
 
-    emit pollRequest(XSyncValueLow32(idleTime) / 1000);
+    return XSyncValueLow32(idleTime);
 #endif
+    return -1;
 }
 
 void XSyncBasedPoller::stopCatchingTimeouts()
@@ -248,7 +244,7 @@ bool XSyncBasedPoller::x11Event(XEvent *event)
 
     if (alarmEvent->alarm == m_timeoutAlarm) {
         /* Bling! Caught! */
-        emit pollRequest(XSyncValueLow32(alarmEvent->counter_value) / 1000);
+        emit timeoutReached(XSyncValueLow32(alarmEvent->counter_value));
         return false;
     } else if (alarmEvent->alarm == m_resetAlarm) {
         /* Resuming from idle here! */

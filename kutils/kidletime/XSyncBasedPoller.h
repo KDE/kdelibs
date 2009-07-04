@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Dario Freddi <drf@kdemod.ath.cx>                *
+ *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,7 +22,7 @@
 
 #include "AbstractSystemPoller.h"
 
-#include <config-X11.h>
+#define HAVE_XSYNC 1 // Hack until the library will be moved away. Too lazy to implement something temporary
 
 #include <KApplication>
 #include <KDebug>
@@ -39,16 +39,13 @@ class XSyncBasedPoller : public AbstractSystemPoller
     Q_OBJECT
 
 public:
-
     static XSyncBasedPoller *instance();
-
-    XSyncBasedPoller(QObject *parent = 0);
+    
     virtual ~XSyncBasedPoller();
 
     AbstractSystemPoller::PollingType getPollingType() {
         return AbstractSystemPoller::XSyncBased;
     };
-    QString name();
 
     bool isAvailable();
     bool setUpPoller();
@@ -56,10 +53,11 @@ public:
 
 protected:
     bool x11Event(XEvent *event);
+    XSyncBasedPoller(QObject *parent = 0);
 
 public slots:
     void setNextTimeout(int nextTimeout);
-    void forcePollRequest();
+    int forcePollRequest();
     void stopCatchingTimeouts();
     void catchIdleEvent();
     void stopCatchingIdleEvents();
@@ -69,7 +67,7 @@ private slots:
 
 signals:
     void resumingFromIdle();
-    void pollRequest(int idleTime);
+    void timeoutReached(int msec);
 
 #ifdef HAVE_XSYNC
 private:
