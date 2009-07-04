@@ -155,7 +155,7 @@ int WidgetBasedPoller::poll()
 
 int WidgetBasedPoller::forcePollRequest()
 {
-    return idle;
+    return poll();
 }
 
 void WidgetBasedPoller::stopCatchingTimeouts()

@@ -63,7 +63,7 @@ public slots:
     void stopCatchingIdleEvents();
 
 private slots:
-    void poll();
+    int poll();
 
 signals:
     void resumingFromIdle();
