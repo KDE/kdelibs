@@ -1624,7 +1624,19 @@ int main( int argc, char **argv )
       h << " " << getDefaultFunction(n) << "(";
       if ( !(*itEntry)->param().isEmpty() )
           h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
-      h << ")" << Const << ";" << endl;
+      h << ")" << Const << endl;
+      h << "    {" << endl;
+      h << "        return ";
+      if (useEnumTypes && t == "Enum")
+        h << "static_cast<" << enumType(*itEntry) << ">(";
+      h << getDefaultFunction(n) << "_helper(";
+      if ( !(*itEntry)->param().isEmpty() )
+          h << " i ";
+      h << ")";
+      if (useEnumTypes && t == "Enum")
+        h << ")";
+      h << ";" << endl;
+      h << "    }" << endl;
     }
 
     // Item accessor
@@ -1732,6 +1744,14 @@ int main( int argc, char **argv )
         h << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
       }
       h << ";" << endl;
+
+      h << "    ";
+      if (staticAccessors)
+        h << "static ";
+      h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
+      if ( !(*itEntry)->param().isEmpty() )
+          h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+      h << ")" << Const << ";" << endl;
     }
 
     h << endl << "  private:" << endl;
@@ -1750,6 +1770,15 @@ int main( int argc, char **argv )
   {
     // use a private class for both member variables and items
     h << "  private:" << endl;
+    for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
+      h << "    ";
+      if (staticAccessors)
+        h << "static ";
+      h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
+      if ( !(*itEntry)->param().isEmpty() )
+          h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+      h << ")" << Const << ";" << endl;
+    }
     h << "    " + className + "Private *d;" << endl;
   }
 
@@ -2116,13 +2145,9 @@ int main( int argc, char **argv )
     QString n = (*itEntry)->name();
     QString t = (*itEntry)->type();
 
-    // Default value Accessor
+    // Default value Accessor, as "helper" function
     if (!(*itEntry)->defaultValue().isEmpty()) {
-      if (useEnumTypes && t == "Enum")
-        cpp << className << "::" << enumType(*itEntry);
-      else
-        cpp << cppType(t);
-      cpp << " " << getDefaultFunction(n, className) << "(";
+      cpp << cppType(t) << " " << getDefaultFunction(n, className) << "_helper(";
       if ( !(*itEntry)->param().isEmpty() )
         cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
       cpp << ")" << Const << endl;

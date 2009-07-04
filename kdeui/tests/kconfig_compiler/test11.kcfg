@@ -3,6 +3,9 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 
                           http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+
+  <include>"test11_types.h"</include>
+
   <kcfgfile name="korganizerrc"/>
 
   <group name="General">
@@ -85,6 +88,16 @@
       </choices>
       <default>kmail</default>
     </entry>
+
+    <entry name="DefaultReminderUnits" key="RemindUnits" type="Enum">
+      <label context="@label">Reminder units</label>
+      <whatsthis context="@info:whatsthis">Default reminder time units in the alarm edit dialog.</whatsthis>
+       <choices name="TimePeriod::Units">
+        <choice name="Minutes"></choice>
+        <choice name="HoursMinutes"><label context="@option">Hours/Minutes</label></choice>
+      </choices>
+      <default>HoursMinutes</default>
+   </entry>
   </group>
 
 </kcfg>
