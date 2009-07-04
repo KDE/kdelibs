@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#include "WidgetBasedPoller.h"
+#include "widgetbasedpoller.h"
 
 #include <QWidget>
 #include <QTimer>
@@ -173,4 +173,4 @@ void WidgetBasedPoller::stopCatchingIdleEvents()
     releaseInputLock();
 }
 
-#include "WidgetBasedPoller.moc"
+#include "widgetbasedpoller.moc"

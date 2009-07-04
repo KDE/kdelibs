@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#include "XSyncBasedPoller.h"
+#include "xsyncbasedpoller.h"
 
 #include <QX11Info>
 
@@ -283,6 +283,6 @@ void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter co
 }
 #endif
 
-#include "XSyncBasedPoller.moc"
+#include "xsyncbasedpoller.moc"
 
 

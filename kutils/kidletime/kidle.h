@@ -17,37 +17,41 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#include "AbstractSystemPoller.h"
+#ifndef KIDLETIME_H
+#define KIDLETIME_H
 
-#include <config-X11.h>
+#include <QObject>
 
-#ifdef HAVE_XTEST
-#include <QX11Info>
-
-#include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
-#include <fixx11h.h>
-#endif // HAVE_XTEST
-
-AbstractSystemPoller::AbstractSystemPoller(QObject *parent)
-        : QWidget(0)
+class KIdleTimePrivate;
+class KIdleTime : public QObject
 {
-    Q_UNUSED(parent)
-}
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(KIdleTime)
+    Q_DISABLE_COPY(KIdleTime)
 
-AbstractSystemPoller::~AbstractSystemPoller()
-{
-}
+public:
+    static KIdleTime *instance();
+  
+    KIdleTime();
+    virtual ~KIdleTime();
+    
+    int getIdleTime();
+    void simulateUserActivity();
+    
+public slots:
+    void catchIdleTimeout(int msec);
+    void stopCatchingIdleTimeout();
+    void catchNextResumeEvent();
+    
+signals:
+    void resumingFromIdle();
+    void timeoutReached(int msec);
 
-void AbstractSystemPoller::simulateUserActivity()
-{
-#ifdef HAVE_XTEST
-    int XTestKeyCode = 0;
-    Display* display = QX11Info::display();
-    XTestFakeKeyEvent(display, XTestKeyCode, true, CurrentTime);
-    XTestFakeKeyEvent(display, XTestKeyCode, false, CurrentTime);
-    XSync(display, false);
-#endif // HAVE_XTEST
-}
+private:    
+    KIdleTimePrivate * const d_ptr;
 
-#include "AbstractSystemPoller.moc"
+    Q_PRIVATE_SLOT(d_func(), void _k_resumingFromIdle())
+    
+};
+
+#endif /* KIDLETIME_H */

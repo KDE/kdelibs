@@ -20,7 +20,7 @@
 #ifndef XSYNCBASEDPOLLER_H
 #define XSYNCBASEDPOLLER_H
 
-#include "AbstractSystemPoller.h"
+#include "abstractsystempoller.h"
 
 #define HAVE_XSYNC 1 // Hack until the library will be moved away. Too lazy to implement something temporary
 

@@ -17,10 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#include "KIdleTime.h"
+#include "kidle.h"
 
-#include "WidgetBasedPoller.h"
-#include "XSyncBasedPoller.h"
+#include "widgetbasedpoller.h"
+#include "xsyncbasedpoller.h"
 
 #include <kglobal.h>
 
@@ -61,7 +61,7 @@ class KIdleTimePrivate {
 };
 
 KIdleTime::KIdleTime()
-        : d(new KIdleTimePrivate())
+        : d_ptr(new KIdleTimePrivate())
 {
     Q_ASSERT(!s_globalKIdleTime->q);
     s_globalKIdleTime->q = this;
@@ -120,7 +120,7 @@ void KIdleTimePrivate::loadSystem()
     }
 }
 
-bool KIdleTimePrivate::unloadCurrentSystem()
+void KIdleTimePrivate::unloadCurrentSystem()
 {
     if (poller) {
         poller->unloadPoller();
@@ -129,12 +129,12 @@ bool KIdleTimePrivate::unloadCurrentSystem()
             poller->deleteLater();
         }
     }
-
-    return true;
 }
 
 void KIdleTimePrivate::_k_resumingFromIdle()
 {
+    Q_Q(KIdleTime);
+
     if (catchResume) {
 	emit q->resumingFromIdle();
 	catchResume = false;
@@ -149,4 +149,4 @@ void KIdleTime::simulateUserActivity()
     d->poller->stopCatchingIdleEvents();
 }
 
-#include "KIdleTime.moc"
+#include "kidle.moc"

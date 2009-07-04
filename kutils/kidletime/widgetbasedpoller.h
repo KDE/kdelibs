@@ -17,44 +17,60 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#ifndef ABSTRACTSYSTEMPOLLER_H
-#define ABSTRACTSYSTEMPOLLER_H
+#ifndef WIDGETBASEDPOLLER_H
+#define WIDGETBASEDPOLLER_H
 
-#include <QWidget>
+#include "abstractsystempoller.h"
 
-class AbstractSystemPoller : public QWidget
+//#include <config-powerdevil.h>
+
+#include "screensaver_interface.h"
+
+class QTimer;
+class QEvent;
+
+class WidgetBasedPoller : public AbstractSystemPoller
 {
     Q_OBJECT
 
 public:
+    WidgetBasedPoller(QObject *parent = 0);
+    virtual ~WidgetBasedPoller();
 
-    enum PollingType {
-        Abstract = -1,
-        WidgetBased = 1,
-        XSyncBased = 2
+    AbstractSystemPoller::PollingType getPollingType() {
+        return AbstractSystemPoller::WidgetBased;
     };
+    QString name();
 
-    AbstractSystemPoller(QObject *parent = 0);
-    virtual ~AbstractSystemPoller();
+    bool isAvailable();
+    bool setUpPoller();
+    void unloadPoller();
 
-    virtual PollingType getPollingType() = 0;
-
-    virtual bool isAvailable() = 0;
-    virtual bool setUpPoller() = 0;
-    virtual void unloadPoller() = 0;
+protected:
+    bool eventFilter(QObject * object, QEvent * event);
 
 public slots:
-    virtual void setNextTimeout(int nextTimeout) = 0;
-    virtual void forcePollRequest() = 0;
-    virtual void stopCatchingTimeouts() = 0;
-    virtual void catchIdleEvent() = 0;
-    virtual void stopCatchingIdleEvents() = 0;
-    virtual void simulateUserActivity();
+    void setNextTimeout(int nextTimeout);
+    int forcePollRequest();
+    void stopCatchingTimeouts();
+    void catchIdleEvent();
+    void stopCatchingIdleEvents();
+
+private slots:
+    int poll();
+    void detectedActivity();
+    void waitForActivity();
+    void releaseInputLock();
+    void screensaverActivated(bool activated);
 
 signals:
     void resumingFromIdle();
-    void timeoutReached(int msec);
 
+private:
+    QTimer * m_pollTimer;
+    QWidget * m_grabber;
+
+    OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
 };
 
-#endif /* ABSTRACTSYSTEMPOLLER_H */
+#endif /* WIDGETBASEDPOLLER_H */
