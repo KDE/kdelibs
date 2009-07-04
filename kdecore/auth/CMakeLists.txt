@@ -4,8 +4,11 @@ project( libkauth )
 find_package( Qt4 REQUIRED )
 set(QT_USE_QTDBUS true)
 include(${QT_USE_FILE})
-include(FindPolkitQt.cmake)
-include(DBusMacros.cmake)
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
+find_package(PolkitQt)
+include(DBusMacros)
 
 include_directories(lib interfaces ${CMAKE_BINARY_DIR} ${QT_INCLUDES} )
 
