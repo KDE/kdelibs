@@ -19,6 +19,15 @@
 
 #include "ActionReply.h"
 
+
+ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
+ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
+ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
+ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
+ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
+
+
+
 ActionReply::ActionReply() : m_errorCode(0), m_type(Success) {}
 ActionReply::ActionReply(ActionReply::Type type) : m_errorCode(0), m_type(type) {}
 ActionReply::ActionReply(int error) : m_errorCode(error), m_type(KAuthError) {}

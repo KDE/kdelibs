@@ -37,13 +37,17 @@ public:
         Success
     };
     
-    /*
-    * FIXME: Is this needed? What should we return as an error code?
-    */
+    
+    static ActionReply NoResponderReply;
+    static ActionReply NoSuchActionReply;
+    static ActionReply AuthorizationDeniedReply;
+    static ActionReply DBusErrorReply;
+    static ActionReply WrongReplyDataReply;
+
     enum Error
     {
         NoError = 0,
-        NoResponderError,
+        NoResponder,
         NoSuchAction,
         AuthorizationDenied,
         DBusError,

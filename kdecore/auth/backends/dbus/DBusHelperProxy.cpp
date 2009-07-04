@@ -50,14 +50,14 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     
     if(reply.type() == QDBusMessage::ErrorMessage)
     {
-        ActionReply r = ActionReply(ActionReply::DBusError);
+        ActionReply r = ActionReply::DBusErrorReply;
         r.setErrorDescription(reply.errorMessage());
         
         return r;
     }
     
     if(reply.arguments().size() != 1)
-        return ActionReply(ActionReply::WrongReplyData);
+        return ActionReply::WrongReplyDataReply;
     
     return ActionReply(reply.arguments().first().toByteArray());
 }
@@ -90,7 +90,7 @@ void DBusHelperProxy::performActionAsync(const QString &action, QByteArray calle
 QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray callerID, QByteArray arguments)
 {
     if(!responder)
-        return ActionReply(ActionReply::NoResponderError).serialized();
+        return ActionReply::NoResponderReply.serialized();
     
     ArgumentsMap args;
     QDataStream s(&arguments, QIODevice::ReadOnly);
@@ -98,7 +98,6 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
     
     if(BackendsManager::authBackend()->isCallerAuthorized(action, callerID))
     {
-        // TODO: Check if the action's slot exists and is valid, call it and return the reply
         QString slotname = action;
         if(slotname.startsWith(m_name + "."))
             slotname = slotname.right(slotname.length() - m_name.length() - 1);
@@ -111,10 +110,10 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         if(success)
             return retVal.serialized();
         else
-            return ActionReply(ActionReply::NoSuchAction).serialized();
+            return ActionReply::NoSuchActionReply.serialized();
         
     }else
-        return ActionReply(ActionReply::AuthorizationDenied).serialized();
+        return ActionReply::AuthorizationDeniedReply.serialized();
 }
 
 Q_EXPORT_PLUGIN2(helper_proxy, DBusHelperProxy);
