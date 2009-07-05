@@ -17,14 +17,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#include <QCoreApplication>
-#include <QTimer>
 #include <QtDebug>
-#include <syslog.h>
-
-#include "HelperProxy.h"
-#include "BackendsManager.h"
-#include "helper_debug.h"
 
 #include "helper.h"
 
@@ -45,28 +38,4 @@ ActionReply MyHelper::read(QVariantMap args)
     return reply;
 }
 
-int main(int argc, char **argv)
-{
-    init_debug_handler();
-    
-    qDebug() << "Helper started";
-    MyHelper object;
-    
-    if(!BackendsManager::helperProxy()->initHelper("org.kde.auth.example"))
-    {
-        qFatal("initHelper() failed");
-        return -1;
-    }
-    
-    enable_remote_debug();
-    
-    BackendsManager::helperProxy()->setHelperResponder(&object);
-    
-    QCoreApplication app(argc, argv);
-    QTimer::singleShot(10000, &app, SLOT(quit()));
-    app.exec();
-    
-    end_debug();
-    
-    return 0;
-}
+KDE4_AUTH_HELPER("org.kde.auth.example", MyHelper)

@@ -20,15 +20,23 @@ set( kauth_sources
      lib/Action.cpp
      lib/ActionReply.cpp 
      lib/BackendsManager.cpp 
-     lib/helper_debug.cpp )
+     lib/helper_support.cpp )
+
+set( kauth_headers
+     lib/Action.h
+     lib/ActionReply.h
+     lib/BackendsManager.h
+     lib/helper_support.h
+     lib/kauth.h)
 
 # Define here ${kauth_mocs} if needed in the future
-qt4_wrap_cpp(kauth_mocs interfaces/HelperProxy.h)
+qt4_wrap_cpp(kauth_mocs lib/HelperProxy.h)
 
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${QT_QTCORE_LIBRARIES} ${POLKITQT_CORE_LIBRARY}) # The last two variables should be set by the backends code, if needed
 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth)
 
 set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-ggdb")
 

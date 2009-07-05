@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include "ActionReply.h"
+#include "kauth.h"
 
 class MyHelper : public QObject
 {

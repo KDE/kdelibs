@@ -17,56 +17,15 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#include <cstdlib>
-#include <syslog.h>
+#ifndef __HELPER_SUPPORT_H
+#define __HELPER_SUPPORT_H
 
-#include "BackendsManager.h"
-#include "helper_debug.h"
+#include <QtGlobal>
 
-static bool remote = false;
+int init_helper(int argc, char **argv, const char *id, QObject *responder);
+void helper_debug_handler(QtMsgType type, const char *msg);
 
-void init_debug_handler()
-{
-    openlog("kauth_helper", 0, LOG_USER);
-    qInstallMsgHandler(&helper_debug_handler);
-}
+#define KDE4_AUTH_HELPER(ID, HelperClass) \
+int main(int argc, char **argv) { return init_helper(argc, argv, ID, new HelperClass()); }
 
-void enable_remote_debug()
-{
-    remote = true;
-}
-
-void helper_debug_handler(QtMsgType type, const char *msg)
-{
-    if(!remote)
-    {
-        int level;
-        switch(type)
-        {
-            case QtDebugMsg:
-                level = LOG_DEBUG;
-                break;
-            case QtWarningMsg:
-                level = LOG_WARNING;
-                break;
-            case QtCriticalMsg:
-            case QtFatalMsg:
-                level = LOG_ERR;
-                break;
-        }
-        syslog(level, "%s", msg);
-    }else
-    {
-        //syslog(LOG_USER, "Sono in helper_debug_handler: %s", msg);
-        BackendsManager::helperProxy()->sendDebugMessage(type, msg);
-    }
-    
-    // Anyway I should follow the rule:
-    if(type == QtFatalMsg)
-        exit(-1);
-}
-
-void end_debug()
-{
-    closelog();
-}
+#endif
