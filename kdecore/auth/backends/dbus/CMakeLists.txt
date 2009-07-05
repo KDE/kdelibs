@@ -2,16 +2,18 @@ cmake_minimum_required(VERSION 2.6)
 
 project( dbus_helper_proxy )
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+
 # HelperProxy static library
 set( helper_proxy_sources
-     DBusHelperProxy.cpp
-     DBusHelperProxyAdaptor.cpp )
+     DBusHelperProxy.cpp )
 set( helper_proxy_headers
-     DBusHelperProxy.h
-     DBusHelperProxyAdaptor.h )
+     DBusHelperProxy.h )
 
-qt4_wrap_cpp(helper_proxy_mocs ${helper_proxy_headers})
+qt4_add_dbus_adaptor(adaptor_srcs org.kde.auth.xml DBusHelperProxy.h DBusHelperProxy)
 
-add_library(helper_proxy STATIC ${helper_proxy_sources} ${helper_proxy_mocs})
+qt4_wrap_cpp(helper_proxy_mocs ${helper_proxy_headers} )
+
+add_library(helper_proxy STATIC ${helper_proxy_sources} ${helper_proxy_mocs} ${adaptor_srcs})
 
 set_target_properties(helper_proxy PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -ggdb")

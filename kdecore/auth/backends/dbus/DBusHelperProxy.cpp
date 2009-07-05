@@ -26,7 +26,7 @@
 
 #include "BackendsManager.h"
 #include "DBusHelperProxy.h"
-#include "DBusHelperProxyAdaptor.h"
+#include "authadaptor.h"
 
 ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments)
 {
@@ -65,7 +65,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
 bool DBusHelperProxy::initHelper(const QString &name)
 {
-    new DBusHelperProxyAdaptor(this);
+    new AuthAdaptor(this);
     
     if (!QDBusConnection::systemBus().registerService(name))
         return false;
