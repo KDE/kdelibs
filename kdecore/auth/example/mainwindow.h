@@ -22,6 +22,8 @@
 
 #include <QtGui/QMainWindow>
 
+#include "ActionReply.h"
+
 namespace Ui
 {
     class MainWindowClass;
@@ -40,6 +42,8 @@ private:
 
 private slots:
     void on_actionOpen_triggered();
+    void on_actionOpenAsync_triggered();
+    void actionExecuted(ActionReply reply);
 };
 
 #endif // MAINWINDOW_H

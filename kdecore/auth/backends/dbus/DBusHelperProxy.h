@@ -25,7 +25,7 @@
 #include "HelperProxy.h"
 #include "ActionReply.h"
 
-class DBusHelperProxy : public QObject, public HelperProxy
+class DBusHelperProxy : public HelperProxy
 {
     Q_OBJECT
     Q_INTERFACES(HelperProxy)
@@ -36,15 +36,10 @@ class DBusHelperProxy : public QObject, public HelperProxy
     public:
         DBusHelperProxy() : responder(NULL) {}
         
-        QString name() { return m_name; }
-        void setName(QString name) { m_name = name; }
-        
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
+        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, HelperProxy::ExecMode mode = HelperProxy::Synchronous);
         
         virtual bool initHelper(const QString &name);
-        
         virtual void setHelperResponder(QObject *o);
-        
         virtual void sendDebugMessage(QtMsgType t, const char *msg);
         
     public slots:
@@ -52,11 +47,12 @@ class DBusHelperProxy : public QObject, public HelperProxy
         QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments); // this is private
         
     signals:
-        void actionPerformed(QByteArray reply);
+        void actionPerformed(QByteArray reply); // This is VERY different from the actionExecuted() signal inherited from HelperProxy
         void debugMessage(int t, const QString &message);
         
     private slots:
         void debugMessageReceived(int t, QString message);
+        void actionPerformedReceived(QByteArray reply);
 };
 
 #endif

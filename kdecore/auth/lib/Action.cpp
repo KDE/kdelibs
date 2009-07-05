@@ -29,8 +29,8 @@ static QString s_helperID;
 void Action::init()
 {
     backend = BackendsManager::authBackend();
-    
     backend->setupAction(m_name);
+
 }
 
 bool Action::authorize()
@@ -48,10 +48,34 @@ ActionReply Action::execute()
     return execute(helperID());
 }
 
+bool Action::executeAsync(QObject *target, const char *slot)
+{
+    return executeAsync(helperID(), target, slot);
+}
+
 // TODO: Check for helper id's syntax
 ActionReply Action::execute(const QString &helperID)
 {
-    return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args);
+    return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args, HelperProxy::Synchronous);
+}
+
+bool Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
+{
+    if(target && slot)
+        QObject::connect(BackendsManager::helperProxy(), SIGNAL(actionExecuted(ActionReply)), target, slot);
+    
+    ActionReply r = BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args, HelperProxy::Asynchronous);
+    if(r.failed())
+    {
+        qCritical("%s", r.errorDescription().toAscii().data());
+        
+        if(target && slot)
+            QObject::disconnect(BackendsManager::helperProxy(), SIGNAL(actionExecuted(ActionReply)), target, slot);
+        
+        return false;
+    }
+    
+    return true;
 }
 
 QString Action::helperID()

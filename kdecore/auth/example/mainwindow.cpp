@@ -62,10 +62,6 @@ void MainWindow::on_actionOpen_triggered()
                 qDebug() << "Argument key:" << i.key() << "- value:" << i.value().toString();
                 ++i;
             }
-            
-            // Asynchronous alternative:
-            // readAction.execute(SLOT(readActionFinished(ActionReply)));
-            // return;
         }
 
         if(reply.failed())
@@ -79,4 +75,43 @@ void MainWindow::on_actionOpen_triggered()
     ui->plainTextEdit->setPlainText(stream.readAll());
 
     file.close();
+}
+
+void MainWindow::on_actionOpenAsync_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("All (*.*)"));
+    
+    QFile file(filename);
+    QTextStream stream(&file);
+    
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        Action::setHelperID("org.kde.auth.example");
+        
+        Action readAction = "org.kde.auth.example.read";
+        if(readAction.authorize())
+        {
+            readAction.arguments()["path"] = filename;
+            
+            if(!readAction.executeAsync(this, SLOT(actionExecuted(ActionReply))))
+                qDebug() << "error in executeAsync()";
+            
+            return;
+        }
+    }
+    
+    ui->plainTextEdit->setPlainText(stream.readAll());
+    
+    file.close();
+}
+
+void MainWindow::actionExecuted(ActionReply reply)
+{
+    QMap<QString, QVariant>::const_iterator i = reply.data().constBegin();
+    while (i != reply.data().constEnd()) {
+        qDebug() << "Argument key:" << i.key() << "- value:" << i.value().toString();
+        ++i;
+    }
+    
+    qDebug() << "Action executed asynchronously";
 }

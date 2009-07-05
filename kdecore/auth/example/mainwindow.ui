@@ -34,12 +34,18 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpenAsync"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionOpenAsync">
+   <property name="text">
+    <string>Open Asynchrounously</string>
    </property>
   </action>
  </widget>

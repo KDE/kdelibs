@@ -23,6 +23,7 @@ set( kauth_sources
      lib/helper_debug.cpp )
 
 # Define here ${kauth_mocs} if needed in the future
+qt4_wrap_cpp(kauth_mocs interfaces/HelperProxy.h)
 
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${QT_QTCORE_LIBRARIES} ${POLKITQT_CORE_LIBRARY}) # The last two variables should be set by the backends code, if needed

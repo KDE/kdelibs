@@ -28,7 +28,7 @@
 #include "DBusHelperProxy.h"
 #include "authadaptor.h"
 
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
+ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, HelperProxy::ExecMode mode)
 {
     QByteArray argsBytes;
     QDataStream stream(&argsBytes, QIODevice::WriteOnly);
@@ -38,11 +38,17 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "debugMessage", this, SLOT(debugMessageReceived(int, QString))))
         return ActionReply::DBusErrorReply;
     
+    if(mode == HelperProxy::Asynchronous)
+    {
+        if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "actionPerformed", this, SLOT(actionPerformedReceived(QByteArray))))
+            return ActionReply::DBusErrorReply;
+    }
+    
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
+    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", mode == HelperProxy::Synchronous ? "performAction" : "performActionAsync");
                                               
     QList<QVariant> argumentList;
-    argumentList << qVariantFromValue(action) << BackendsManager::authBackend()->callerID() << qVariantFromValue(argsBytes);
+    argumentList << action << BackendsManager::authBackend()->callerID() << argsBytes;
     message.setArguments(argumentList);
     
     QDBusMessage reply;
@@ -56,10 +62,18 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
         return r;
     }
     
+    if(mode == HelperProxy::Asynchronous)
+        return ActionReply();
+    
     if(reply.arguments().size() != 1)
         return ActionReply::WrongReplyDataReply;
     
     return ActionReply(reply.arguments().first().toByteArray());
+}
+
+void DBusHelperProxy::actionPerformedReceived(QByteArray reply)
+{
+    emit actionExecuted(ActionReply(reply));
 }
 
 bool DBusHelperProxy::initHelper(const QString &name)

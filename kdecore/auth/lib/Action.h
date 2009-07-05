@@ -27,9 +27,9 @@
 #include "ActionReply.h"
 
 class Action
-{    
+{        
     QString m_name;
-    QMap<QString, QVariant> m_args;
+    QVariantMap m_args;
     
     public:
         enum AuthStatus
@@ -45,12 +45,14 @@ class Action
         QString name() { return m_name; }
         void setName(QString name) { m_name = name; }
         
-        QMap<QString, QVariant> &arguments() { return m_args; }
+        QVariantMap &arguments() { return m_args; }
         
         bool authorize();
         AuthStatus status();
         ActionReply execute();
         ActionReply execute(const QString &helperID);
+        bool executeAsync(QObject *target = NULL, const char *slot = NULL);
+        bool executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
         
         static QString helperID();
         static void setHelperID(const QString &id);
