@@ -17,29 +17,14 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef HELPER_BACKEND
-#define HELPER_BACKEND
+#ifndef __HELPER_DEBUG_H
+#define __HELPER_DEBUG_H
 
-#include <QtPlugin>
+#include <QtGlobal>
 
-#include "ActionReply.h"
-
-template<class Key, class T> class QMap;
-class QString;
-class QVariant;
-
-class HelperProxy
-{
-    public:
-        typedef QMap<QString, QVariant> ArgumentsMap;
-        
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments) = 0;
-        virtual bool initHelper(const QString &name) = 0;
-        virtual void setHelperResponder(QObject *o) = 0;
-        
-        virtual void sendDebugMessage(QtMsgType t, const char *msg) = 0;
-};
-
-Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");
+void init_debug_handler();
+void enable_remote_debug();
+void helper_debug_handler(QtMsgType type, const char *msg);
+void end_debug();
 
 #endif

@@ -20,6 +20,7 @@
 #ifndef DBUS_HELPER_BACKEND_H
 #define DBUS_HELPER_BACKEND_H
 
+#include <QObject>
 #include "HelperProxy.h"
 #include "ActionReply.h"
 
@@ -43,15 +44,18 @@ class DBusHelperProxy : public QObject, public HelperProxy
         
         virtual void setHelperResponder(QObject *o);
         
+        virtual void sendDebugMessage(QtMsgType t, const char *msg);
+        
     public slots:
         void performActionAsync(const QString &action, QByteArray callerID, QByteArray arguments);
         QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments); // this is private
         
     signals:
         void actionPerformed(QByteArray reply);
+        void debugMessage(int t, const QString &message);
         
     private:
-        void returnReply(ActionReply reply);
+        void debugMessageReceived(int t, QString message);
 };
 
 #endif

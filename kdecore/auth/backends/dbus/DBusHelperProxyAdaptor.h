@@ -14,6 +14,7 @@
 
 #include <QObject>
 #include <QtDBus>
+#include <QString>
 
 class QByteArray;
 class QString;
@@ -47,6 +48,7 @@ public slots:
     
 signals:
     void actionPerformed(QByteArray reply);
+    void debugMessage(int t, const QString &message);
 };
 
 #endif

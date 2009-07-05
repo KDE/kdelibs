@@ -19,14 +19,13 @@ add_subdirectory(backends)
 set( kauth_sources 
      lib/Action.cpp
      lib/ActionReply.cpp 
-     lib/BackendsManager.cpp )
+     lib/BackendsManager.cpp 
+     lib/helper_debug.cpp )
 
 # Define here ${kauth_mocs} if needed in the future
 
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${QT_QTCORE_LIBRARIES} ${POLKITQT_CORE_LIBRARY}) # The last two variables should be set by the backends code, if needed
-
-message(STATUS ${kauth_backend_ldflags})
 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

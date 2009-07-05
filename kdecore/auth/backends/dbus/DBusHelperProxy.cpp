@@ -34,19 +34,20 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     QDataStream stream(&argsBytes, QIODevice::WriteOnly);
     
     stream << arguments;
-        
+    
+    if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "debugMessage", this, SLOT(debugMessageReceived(int, QString))))
+        qDebug() << "Indovina...";
+    
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, // We use the helper ID as the service name
-                                              "/",
-                                              "org.kde.auth",
-                                              QLatin1String("performAction"));
+    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
                                               
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(action) << BackendsManager::authBackend()->callerID() << qVariantFromValue(argsBytes);
     message.setArguments(argumentList);
     
     // TODO: Check for dbus errors
-    QDBusMessage reply = QDBusConnection::systemBus().call(message);
+    QDBusMessage reply;
+    reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui);
     
     if(reply.type() == QDBusMessage::ErrorMessage)
     {
@@ -80,6 +81,32 @@ bool DBusHelperProxy::initHelper(const QString &name)
 void DBusHelperProxy::setHelperResponder(QObject *o)
 {
     responder = o;
+}
+
+void DBusHelperProxy::debugMessageReceived(int t, QString message)
+{
+    QtMsgType type = (QtMsgType)t;
+    switch(type)
+    {
+        case QtDebugMsg:
+            qDebug("%s", message.toAscii().data());
+            break;
+        case QtWarningMsg:
+            qWarning("%s", message.toAscii().data());
+            break;
+        case QtCriticalMsg:
+            qCritical("%s", message.toAscii().data());
+            break;
+        case QtFatalMsg:
+            qFatal("%s", message.toAscii().data());
+            break;
+    }
+}
+
+void DBusHelperProxy::sendDebugMessage(QtMsgType t, const char *msg)
+{
+    syslog(LOG_DEBUG, "Sono qua...");
+    emit debugMessage((int)t, msg);
 }
 
 void DBusHelperProxy::performActionAsync(const QString &action, QByteArray callerID, QByteArray arguments)

@@ -17,29 +17,56 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef HELPER_BACKEND
-#define HELPER_BACKEND
+#include <cstdlib>
+#include <syslog.h>
 
-#include <QtPlugin>
+#include "BackendsManager.h"
+#include "helper_debug.h"
 
-#include "ActionReply.h"
+static bool remote = false;
 
-template<class Key, class T> class QMap;
-class QString;
-class QVariant;
-
-class HelperProxy
+void init_debug_handler()
 {
-    public:
-        typedef QMap<QString, QVariant> ArgumentsMap;
-        
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments) = 0;
-        virtual bool initHelper(const QString &name) = 0;
-        virtual void setHelperResponder(QObject *o) = 0;
-        
-        virtual void sendDebugMessage(QtMsgType t, const char *msg) = 0;
-};
+    openlog("kauth_helper", 0, LOG_USER);
+    qInstallMsgHandler(&helper_debug_handler);
+}
 
-Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");
+void enable_remote_debug()
+{
+    remote = true;
+}
 
-#endif
+void helper_debug_handler(QtMsgType type, const char *msg)
+{
+    if(!remote)
+    {
+        int level;
+        switch(type)
+        {
+            case QtDebugMsg:
+                level = LOG_DEBUG;
+                break;
+            case QtWarningMsg:
+                level = LOG_WARNING;
+                break;
+            case QtCriticalMsg:
+            case QtFatalMsg:
+                level = LOG_ERR;
+                break;
+        }
+        syslog(level, "%s", msg);
+    }else
+    {
+        //syslog(LOG_USER, "Sono in helper_debug_handler: %s", msg);
+        BackendsManager::helperProxy()->sendDebugMessage(type, msg);
+    }
+    
+    // Anyway I should follow the rule:
+    if(type == QtFatalMsg)
+        exit(-1);
+}
+
+void end_debug()
+{
+    closelog();
+}
