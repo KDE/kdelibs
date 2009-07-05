@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     BackendsManager::helperProxy()->setHelperResponder(&object);
     
     QCoreApplication app(argc, argv);
-    //QTimer::singleShot(10000, &app, SLOT(quit()));
+    QTimer::singleShot(10000, &app, SLOT(quit()));
     app.exec();
     
     end_debug();

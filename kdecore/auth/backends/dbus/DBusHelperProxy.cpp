@@ -36,7 +36,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     stream << arguments;
     
     if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "debugMessage", this, SLOT(debugMessageReceived(int, QString))))
-        qDebug() << "Indovina...";
+        return ActionReply::DBusErrorReply;
     
     QDBusMessage message;
     message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
