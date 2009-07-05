@@ -71,7 +71,7 @@ KIdleTime::KIdleTime()
     d_ptr->loadSystem();
 
     connect(d_ptr->poller, SIGNAL(resumingFromIdle()), this, SLOT(_k_resumingFromIdle()));
-    connect(d_ptr->poller, SIGNAL(pollRequest(int)), this, SIGNAL(pollRequest(int)));
+    connect(d_ptr->poller, SIGNAL(timeoutReached(int)), this, SIGNAL(timeoutReached(int)));
 }
 
 KIdleTime::~KIdleTime()
