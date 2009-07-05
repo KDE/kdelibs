@@ -54,7 +54,7 @@ class DBusHelperProxy : public QObject, public HelperProxy
         void actionPerformed(QByteArray reply);
         void debugMessage(int t, const QString &message);
         
-    private:
+    private slots:
         void debugMessageReceived(int t, QString message);
 };
 

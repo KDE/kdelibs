@@ -89,16 +89,16 @@ void DBusHelperProxy::debugMessageReceived(int t, QString message)
     switch(type)
     {
         case QtDebugMsg:
-            qDebug("%s", message.toAscii().data());
+            qDebug("Message from helper: %s", message.toAscii().data());
             break;
         case QtWarningMsg:
-            qWarning("%s", message.toAscii().data());
+            qWarning("Message from helper: %s", message.toAscii().data());
             break;
         case QtCriticalMsg:
-            qCritical("%s", message.toAscii().data());
+            qCritical("Message from helper: %s", message.toAscii().data());
             break;
         case QtFatalMsg:
-            qFatal("%s", message.toAscii().data());
+            qFatal("Message from helper: %s", message.toAscii().data());
             break;
     }
 }
