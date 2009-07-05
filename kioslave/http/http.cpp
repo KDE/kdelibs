@@ -4160,8 +4160,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     m_iContentLeft = NO_SIZE;
 
     // Jippie! It's already in the cache :-)
-    //int zliberrnum;
-    while (!gzeof(m_request.cacheTag.gzs)/* && !gzerror(m_request.cacheTag.gzs,&zliberrnum)*/)
+    while (!gzeof(m_request.cacheTag.gzs))
     {
       int nbytes = gzread( m_request.cacheTag.gzs, buffer, MAX_IPC_SIZE);
 
@@ -4170,6 +4169,19 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
         slotData( QByteArray::fromRawData( buffer, nbytes ) );
         sz += nbytes;
       }
+      else if (!gzeof( m_request.cacheTag.gzs ) || nbytes < 0)
+      {
+        // Error reading compressed data
+        int errnum;
+        const char *errString = gzerror( m_request.cacheTag.gzs, &errnum );
+        kError(7113) << "zlib error decompressing cached data:" << errString;
+
+        // Not super-accurate error code, but it is what's used below for
+        // the same error.
+        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
+        return false;
+      }
+      // Only way neither branch handled is nbytes == 0 but no error, so loop
     }
 
     m_receiveBuf.resize( 0 );
