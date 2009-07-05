@@ -105,7 +105,6 @@ void DBusHelperProxy::debugMessageReceived(int t, QString message)
 
 void DBusHelperProxy::sendDebugMessage(QtMsgType t, const char *msg)
 {
-    syslog(LOG_DEBUG, "Sono qua...");
     emit debugMessage((int)t, msg);
 }
 

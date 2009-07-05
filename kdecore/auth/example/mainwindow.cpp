@@ -69,7 +69,7 @@ void MainWindow::on_actionOpen_triggered()
         }
 
         if(reply.failed())
-            QMessageBox::information(this, "Errore", QString("KAuth returned an error code: ") + reply.errorCode());
+            QMessageBox::information(this, "Errore", QString("KAuth returned an error code: %1").arg(reply.errorCode()));
         else
             ui->plainTextEdit->setPlainText(reply.data().value("text").toString());
 

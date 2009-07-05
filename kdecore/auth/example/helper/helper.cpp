@@ -30,7 +30,6 @@
 
 ActionReply MyHelper::read(ArgumentsMap args)
 {
-    syslog(LOG_DEBUG, "Sono qua ma non debuggo...");
     qDebug() << QString("Action executed by the helper. PID: %1, UID: %2").arg(getpid()).arg(getuid());
     
     ArgumentsMap::const_iterator i = args.constBegin();
