@@ -68,25 +68,31 @@ public:
 
 public Q_SLOTS:
     /**
-     * Sets a new timeout to catch. When calling this function, after the system will be idle for
+     * Adds a new timeout to catch. When calling this function, after the system will be idle for
      * msec milliseconds, the signal timeoutReached will be triggered. Please note that until you will
-     * call stopCatchingIdleTimeout, or you supply a different timeout, the signal will be triggered every
+     * call removeIdleTimeout or removeAllIdleTimeouts, the signal will be triggered every
      * time the system will be idle for msec milliseconds
      *
      * @param msec the time, in milliseconds, after which the signal will be triggered
      *
-     * @see stopCatchingIdleTimeout
+     * @see removeIdleTimeout
+     * @see removeAllIdleTimeouts
      * @see timeoutReached
      *
      */
     void addIdleTimeout(int msec);
+    /**
+     * Stops catching the idle timeout at the chosen time, if it was registered with addIdleTimeout
+     *
+     * @param msec the time, in milliseconds, of the timeout you want to stop listening to
+     */
     void removeIdleTimeout(int msec);
     /**
-     * Stops catching the previous set timeout (if any). This means that after calling this function, the signal
-     * timeoutReached won't be called again until catchIdleTimeout is called again.
+     * Stops catching every set timeout (if any). This means that after calling this function, the signal
+     * timeoutReached won't be called again until you will add another timeout
      *
      * @see timeoutReached
-     * @see catchIdleTimeout
+     * @see addIdleTimeout
      */
     void removeAllIdleTimeouts();
     /**
