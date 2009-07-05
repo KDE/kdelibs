@@ -40,7 +40,7 @@ class XSyncBasedPoller : public AbstractSystemPoller
 
 public:
     static XSyncBasedPoller *instance();
-    
+
     virtual ~XSyncBasedPoller();
 
     AbstractSystemPoller::PollingType getPollingType() {

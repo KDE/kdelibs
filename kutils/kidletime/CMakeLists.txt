@@ -33,6 +33,6 @@ set_target_properties(kidle PROPERTIES
 
 install(FILES
         kidle.h
-        DESTINATION ${INCLUDE_INSTALL_DIR}/kidle
+        DESTINATION ${INCLUDE_INSTALL_DIR}
         )
 install(TARGETS kidle ${INSTALL_TARGETS_DEFAULT_ARGS})

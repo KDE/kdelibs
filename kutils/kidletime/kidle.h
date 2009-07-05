@@ -21,6 +21,7 @@
 #define KIDLETIME_H
 
 #include <QObject>
+#include <kdemacros.h>
 
 class KIdleTimePrivate;
 
@@ -31,7 +32,7 @@ class KIdleTimePrivate;
  *
  * @author Dario Freddi
  */
-class KIdleTime : public QObject
+class KDE_EXPORT KIdleTime : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KIdleTime)
@@ -43,19 +44,19 @@ public:
      *
      */
     static KIdleTime *instance();
-  
+
     /**
      * The destructor
      */
     virtual ~KIdleTime();
-    
+
     /**
      * Gets the idle time of the system, in milliseconds
      *
      * @returns the idle time of the system
      */
-    int getIdleTime();
-    
+    int idleTime();
+
     /**
      * Attempts to simulate user activity. This implies that after calling this
      * function, the idle time of the system will become 0 and eventually resumingFromIdle
@@ -64,7 +65,7 @@ public:
      * @see resumingFromIdle
      */
     void simulateUserActivity();
-    
+
 public Q_SLOTS:
     /**
      * Sets a new timeout to catch. When calling this function, after the system will be idle for
@@ -98,7 +99,7 @@ public Q_SLOTS:
      *
      */
     void catchNextResumeEvent();
-    
+
 Q_SIGNALS:
     /**
      * Triggered if KIdle is catching resume events and when the system resumes from an idle state
@@ -115,11 +116,11 @@ Q_SIGNALS:
 
 private:
     KIdleTime();
-  
+
     KIdleTimePrivate * const d_ptr;
 
     Q_PRIVATE_SLOT(d_func(), void _k_resumingFromIdle())
-    
+
 };
 
 #endif /* KIDLETIME_H */

@@ -45,17 +45,18 @@ KIdleTime *KIdleTime::instance()
     return s_globalKIdleTime->q;
 }
 
-class KIdleTimePrivate {
-  public:
+class KIdleTimePrivate
+{
+public:
     KIdleTimePrivate() : catchResume(false) {};
-    
+
     Q_DECLARE_PUBLIC(KIdleTime)
     KIdleTime *q_ptr;
-    
+
     void loadSystem();
     void unloadCurrentSystem();
     void _k_resumingFromIdle();
-    
+
     QPointer<AbstractSystemPoller> poller;
     bool catchResume;
 };
@@ -65,10 +66,10 @@ KIdleTime::KIdleTime()
 {
     Q_ASSERT(!s_globalKIdleTime->q);
     s_globalKIdleTime->q = this;
-    
+
     d_ptr->q_ptr = this;
     d_ptr->loadSystem();
-    
+
     connect(d_ptr->poller, SIGNAL(resumingFromIdle()), this, SLOT(_k_resumingFromIdle()));
     connect(d_ptr->poller, SIGNAL(pollRequest(int)), this, SIGNAL(pollRequest(int)));
 }
@@ -82,7 +83,7 @@ KIdleTime::~KIdleTime()
 void KIdleTime::catchNextResumeEvent()
 {
     Q_D(KIdleTime);
-    
+
     if (!d->catchResume) {
         d->catchResume = true;
         d->poller->catchIdleEvent();
@@ -92,14 +93,14 @@ void KIdleTime::catchNextResumeEvent()
 void KIdleTime::catchIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
-    
+
     d->poller->setNextTimeout(msec);
 }
 
 void KIdleTime::stopCatchingIdleTimeout()
 {
     Q_D(KIdleTime);
-    
+
     d->poller->stopCatchingTimeouts();
 }
 
@@ -110,13 +111,13 @@ void KIdleTimePrivate::loadSystem()
     }
 
     // Priority order
-    
+
     if (XSyncBasedPoller::instance()->isAvailable()) {
         XSyncBasedPoller::instance()->setUpPoller();
-	poller = XSyncBasedPoller::instance();
+        poller = XSyncBasedPoller::instance();
     } else {
-        poller = new WidgetBasedPoller();	
-	poller->setUpPoller();
+        poller = new WidgetBasedPoller();
+        poller->setUpPoller();
     }
 }
 
@@ -136,17 +137,24 @@ void KIdleTimePrivate::_k_resumingFromIdle()
     Q_Q(KIdleTime);
 
     if (catchResume) {
-	emit q->resumingFromIdle();
-	catchResume = false;
+        emit q->resumingFromIdle();
+        catchResume = false;
     }
 }
 
 void KIdleTime::simulateUserActivity()
 {
     Q_D(KIdleTime);
-    
+
     d->poller->simulateUserActivity();
     d->poller->stopCatchingIdleEvents();
+}
+
+int KIdleTime::idleTime()
+{
+    Q_D(KIdleTime);
+
+    return d->poller->forcePollRequest();
 }
 
 #include "kidle.moc"
