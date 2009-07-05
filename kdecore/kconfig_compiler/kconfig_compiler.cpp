@@ -1170,7 +1170,7 @@ QString memberGetDefaultBody( CfgEntry *e )
       }
     }
     out << "  default:" << endl;
-    out << "    return " << e->defaultValue().replace("[$("+e->param()+")]", "[i]") << ";" << endl;
+    out << "    return " << e->defaultValue().replace("$("+e->param()+")", "i") << ";" << endl;
     out << "  }" << endl;
   } else {
     out << "  return " << e->defaultValue() << ";";
