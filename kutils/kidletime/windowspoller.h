@@ -17,45 +17,55 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  **************************************************************************/
 
-#ifndef ABSTRACTSYSTEMPOLLER_H
-#define ABSTRACTSYSTEMPOLLER_H
+#ifndef WINDOWSPOLLER_H_
+#define WINDOWSPOLLER_H_
 
-#include <QWidget>
+#include "abstractsystempoller.h"
 
-class AbstractSystemPoller : public QWidget
+class QTimer;
+class QEvent;
+
+class WindowsPoller : public AbstractSystemPoller
 {
     Q_OBJECT
 
 public:
+    WindowsPoller(QObject *parent = 0);
+    virtual ~WindowsBasedPoller();
 
-    enum PollingType {
-        Abstract = -1,
-        WidgetBased = 1,
-        XSyncBased = 2
+    AbstractSystemPoller::PollingType getPollingType() {
+        return AbstractSystemPoller::WidgetBased;
     };
 
-    AbstractSystemPoller(QObject *parent = 0);
-    virtual ~AbstractSystemPoller();
+    bool isAvailable();
+    bool setUpPoller();
+    void unloadPoller();
 
-    virtual PollingType getPollingType() = 0;
-
-    virtual bool isAvailable() = 0;
-    virtual bool setUpPoller() = 0;
-    virtual void unloadPoller() = 0;
+protected:
+    bool eventFilter(QObject * object, QEvent * event);
 
 public slots:
-    virtual void addTimeout(int nextTimeout) = 0;
-    virtual void removeTimeout(int nextTimeout) = 0;
-    virtual QList<int> timeouts() const = 0;
-    virtual int forcePollRequest() = 0;
-    virtual void catchIdleEvent() = 0;
-    virtual void stopCatchingIdleEvents() = 0;
-    virtual void simulateUserActivity();
+    void addTimeout(int nextTimeout);
+    void removeTimeout(int nextTimeout);
+    QList<int> timeouts() const;
+    int forcePollRequest();
+    void catchIdleEvent();
+    void stopCatchingIdleEvents();
+
+private slots:
+    int poll();
+    void detectedActivity();
+    void waitForActivity();
+    void releaseInputLock();
 
 signals:
     void resumingFromIdle();
     void timeoutReached(int msec);
 
+private:
+    QTimer * m_pollTimer;
+    QWidget * m_grabber;
+    QList<int> m_timeouts;
 };
 
-#endif /* ABSTRACTSYSTEMPOLLER_H */
+#endif /* WINDOWSPOLLER_H_ */
