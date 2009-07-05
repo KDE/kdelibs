@@ -1160,6 +1160,7 @@ QString memberGetDefaultBody( CfgEntry *e )
 {
   QString result = e->code();
   QTextStream out(&result, QIODevice::WriteOnly);
+  out << endl;
 
   if (!e->param().isEmpty()) {
     out << "  switch (i) {" << endl;
