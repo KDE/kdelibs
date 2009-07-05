@@ -122,14 +122,27 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    d->tmpName = QFile::decodeName(realNameStr)+'/';
    kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
 	        << endl;
+
    mode_t umsk = KGlobal::umask();
-   chmod(nme, mode&(~umsk));
+   if(chmod(nme, mode&(~umsk)) < 0) {
+       kWarning(180) << "KTempDir: Unable to change permissions on" << d->tmpName
+                     << ":" << ::strerror(errno);
+       d->error = errno;
+       d->tmpName.clear();
+       (void) ::rmdir(realName); // Cleanup created directory
+       return false;
+   }
 
    // Success!
    d->exists = true;
 
    // Set uid/gid (necessary for SUID programs)
-   chown(nme, getuid(), getgid());
+   if(chown(nme, getuid(), getgid()) < 0) {
+       // Just warn, but don't failover yet
+       kWarning(180) << "KTempDir: Unable to change owner on" << d->tmpName
+                     << ":" << ::strerror(errno);
+   }
+
 #endif
    return true;
 }
