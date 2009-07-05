@@ -50,9 +50,10 @@ protected:
     bool eventFilter(QObject * object, QEvent * event);
 
 public slots:
-    void setNextTimeout(int nextTimeout);
+    void addTimeout(int nextTimeout);
+    void removeTimeout(int nextTimeout);
+    QList<int> timeouts() const;
     int forcePollRequest();
-    void stopCatchingTimeouts();
     void catchIdleEvent();
     void stopCatchingIdleEvents();
 
@@ -65,10 +66,12 @@ private slots:
 
 signals:
     void resumingFromIdle();
+    void timeoutReached(int msec);
 
 private:
     QTimer * m_pollTimer;
     QWidget * m_grabber;
+    QList<int> m_timeouts;
 
     OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
 };

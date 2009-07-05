@@ -50,7 +50,6 @@ XSyncBasedPoller::XSyncBasedPoller(QObject *parent)
 #ifdef HAVE_XSYNC
         , m_display(QX11Info::display())
         , m_idleCounter(None)
-        , m_timeoutAlarm(None)
         , m_resetAlarm(None)
 #endif
         , m_available(true)
@@ -153,7 +152,7 @@ void XSyncBasedPoller::unloadPoller()
     //XSyncFreeSystemCounterList( m_counters );
 }
 
-void XSyncBasedPoller::setNextTimeout(int nextTimeout)
+void XSyncBasedPoller::addTimeout(int nextTimeout)
 {
     /* We need to set the counter to the idle time + the value
      * requested for next timeout
@@ -162,6 +161,7 @@ void XSyncBasedPoller::setNextTimeout(int nextTimeout)
     XSyncValue timeout;
     XSyncValue idleTime;
     XSyncValue result;
+    XSyncAlarm newalarm;
     int overflow;
 
     XSyncQueryCounter(m_display, m_idleCounter, &idleTime);
@@ -170,8 +170,10 @@ void XSyncBasedPoller::setNextTimeout(int nextTimeout)
 
     XSyncValueAdd(&result, idleTime, timeout, &overflow);
 
-    setAlarm(m_display, &m_timeoutAlarm, m_idleCounter,
+    setAlarm(m_display, &newalarm, m_idleCounter,
              XSyncPositiveComparison, result);
+
+    m_timeoutAlarm[nextTimeout] = newalarm;
 #endif
 }
 
@@ -192,12 +194,19 @@ int XSyncBasedPoller::poll()
     return -1;
 }
 
-void XSyncBasedPoller::stopCatchingTimeouts()
+void XSyncBasedPoller::removeTimeout(int timeout)
 {
 #ifdef HAVE_XSYNC
-    XSyncDestroyAlarm(m_display, m_timeoutAlarm);
-    m_timeoutAlarm = None;
+    if (m_timeoutAlarm.contains(timeout)) {
+        XSyncDestroyAlarm(m_display, m_timeoutAlarm[timeout]);
+        m_timeoutAlarm.remove(timeout);
+    }
 #endif
+}
+
+QList<int> XSyncBasedPoller::timeouts() const
+{
+    return m_timeoutAlarm.keys();
 }
 
 void XSyncBasedPoller::stopCatchingIdleEvents()
@@ -242,11 +251,15 @@ bool XSyncBasedPoller::x11Event(XEvent *event)
 
     alarmEvent = (XSyncAlarmNotifyEvent *)event;
 
-    if (alarmEvent->alarm == m_timeoutAlarm) {
-        /* Bling! Caught! */
-        emit timeoutReached(XSyncValueLow32(alarmEvent->counter_value));
-        return false;
-    } else if (alarmEvent->alarm == m_resetAlarm) {
+    foreach(int timeout, m_timeoutAlarm) {
+        if (alarmEvent->alarm == m_timeoutAlarm[timeout]) {
+            /* Bling! Caught! */
+            emit timeoutReached(timeout);
+            return false;
+        }
+    }
+
+    if (alarmEvent->alarm == m_resetAlarm) {
         /* Resuming from idle here! */
         emit resumingFromIdle();
     }

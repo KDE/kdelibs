@@ -72,9 +72,15 @@ void WidgetBasedPoller::unloadPoller()
     m_grabber->deleteLater();
 }
 
-void WidgetBasedPoller::setNextTimeout(int nextTimeout)
+QList<int> WidgetBasedPoller::timeouts() const
 {
-    m_pollTimer->start(nextTimeout);
+    return m_timeouts;
+}
+
+void WidgetBasedPoller::addTimeout(int nextTimeout)
+{
+    m_timeouts.append(nextTimeout);
+    poll();
 }
 
 void WidgetBasedPoller::screensaverActivated(bool activated)
@@ -146,9 +152,32 @@ int WidgetBasedPoller::poll()
     XScreenSaverInfo * mitInfo = 0;
     mitInfo = XScreenSaverAllocInfo();
     XScreenSaverQueryInfo(QX11Info::display(), DefaultRootWindow(QX11Info::display()), mitInfo);
-    idle = mitInfo->idle / 1000;
+    idle = mitInfo->idle;
     //----------------------------------------------------------
 #endif
+
+    // Check if we reached a timeout..
+    foreach(int i, m_timeouts) {
+        if (i - idle < 1000 || idle - i < 1000) {
+            // Bingo!
+            emit timeoutReached(i);
+        }
+    }
+
+    // Let's check the timer now!
+    int mintime = 0;
+
+    foreach(int i, m_timeouts) {
+        if (i > idle && (i < mintime || mintime == 0)) {
+            mintime = i;
+        }
+    }
+
+    if (mintime != 0) {
+        m_pollTimer->start(mintime - idle);
+    } else {
+        m_pollTimer->stop();
+    }
 
     return idle;
 }
@@ -158,9 +187,10 @@ int WidgetBasedPoller::forcePollRequest()
     return poll();
 }
 
-void WidgetBasedPoller::stopCatchingTimeouts()
+void WidgetBasedPoller::removeTimeout(int timeout)
 {
-    m_pollTimer->stop();
+    m_timeouts.removeOne(timeout);
+    poll();
 }
 
 void WidgetBasedPoller::catchIdleEvent()

@@ -90,18 +90,27 @@ void KIdleTime::catchNextResumeEvent()
     }
 }
 
-void KIdleTime::catchIdleTimeout(int msec)
+void KIdleTime::addIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
 
-    d->poller->setNextTimeout(msec);
+    d->poller->addTimeout(msec);
 }
 
-void KIdleTime::stopCatchingIdleTimeout()
+void KIdleTime::removeIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
 
-    d->poller->stopCatchingTimeouts();
+    d->poller->removeTimeout(msec);
+}
+
+void KIdleTime::removeAllIdleTimeouts()
+{
+    Q_D(KIdleTime);
+
+    foreach(int i, d->poller->timeouts()) {
+        removeIdleTimeout(i);
+    }
 }
 
 void KIdleTimePrivate::loadSystem()

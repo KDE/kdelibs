@@ -56,9 +56,10 @@ protected:
     XSyncBasedPoller(QObject *parent = 0);
 
 public slots:
-    void setNextTimeout(int nextTimeout);
+    void addTimeout(int nextTimeout);
+    void removeTimeout(int nextTimeout);
+    QList<int> timeouts() const;
     int forcePollRequest();
-    void stopCatchingTimeouts();
     void catchIdleEvent();
     void stopCatchingIdleEvents();
 
@@ -81,7 +82,7 @@ private:
     int                 m_sync_event, m_sync_error;
     XSyncSystemCounter  *m_counters;
     XSyncCounter        m_idleCounter;
-    XSyncAlarm          m_timeoutAlarm;
+    QHash<int, XSyncAlarm>   m_timeoutAlarm;
     XSyncAlarm          m_resetAlarm;
 #endif
     QWidget * m_filterWidget;

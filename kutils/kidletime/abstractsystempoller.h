@@ -44,9 +44,10 @@ public:
     virtual void unloadPoller() = 0;
 
 public slots:
-    virtual void setNextTimeout(int nextTimeout) = 0;
+    virtual void addTimeout(int nextTimeout) = 0;
+    virtual void removeTimeout(int nextTimeout) = 0;
+    virtual QList<int> timeouts() const = 0;
     virtual int forcePollRequest() = 0;
-    virtual void stopCatchingTimeouts() = 0;
     virtual void catchIdleEvent() = 0;
     virtual void stopCatchingIdleEvents() = 0;
     virtual void simulateUserActivity();

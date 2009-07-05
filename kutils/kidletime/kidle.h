@@ -79,7 +79,8 @@ public Q_SLOTS:
      * @see timeoutReached
      *
      */
-    void catchIdleTimeout(int msec);
+    void addIdleTimeout(int msec);
+    void removeIdleTimeout(int msec);
     /**
      * Stops catching the previous set timeout (if any). This means that after calling this function, the signal
      * timeoutReached won't be called again until catchIdleTimeout is called again.
@@ -87,7 +88,7 @@ public Q_SLOTS:
      * @see timeoutReached
      * @see catchIdleTimeout
      */
-    void stopCatchingIdleTimeout();
+    void removeAllIdleTimeouts();
     /**
      * Catches the next resume from idle event. This means that whenever user activity will be registered, or
      * simulateUserActivity is called, the signal resumingFromIdle will be triggered. Please note that this function
