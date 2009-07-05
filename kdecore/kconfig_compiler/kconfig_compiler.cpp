@@ -1162,7 +1162,15 @@ QString memberGetDefaultBody( CfgEntry *e )
   QTextStream out(&result, QIODevice::WriteOnly);
 
   if (!e->param().isEmpty()) {
-    out << "  return " << e->defaultValue().replace("[$("+e->param()+")]", "[i]") << ";";
+    out << "  switch (i) {" << endl;
+    for (int i = 0; i <= e->paramMax(); ++i) {
+      if (!e->paramDefaultValue(i).isEmpty()) {
+        out << "  case " << i << ": return " << e->paramDefaultValue(i) << ";" << endl;
+      }
+    }
+    out << "  default:" << endl;
+    out << "    return " << e->defaultValue().replace("[$("+e->param()+")]", "[i]") << ";" << endl;
+    out << "  }" << endl;
   } else {
     out << "  return " << e->defaultValue() << ";";
   }

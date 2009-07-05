@@ -100,4 +100,36 @@
    </entry>
   </group>
 
+  <group name="QueueRates">
+    <entry name="queueRate$(QueueIndex)" type="IntList" key="EmptyingRate $(QueueIndex)">
+        <!-- kconfig_compiler really should do this for me... -->
+        <code>  QList&lt; QList&lt;int&gt; &gt; defaultRate;
+  QList&lt; int &gt; defaultRateInit;
+
+  defaultRateInit.append( 15 );
+  defaultRateInit.append( 60 );
+  defaultRateInit.append( 0 );
+  defaultRate.append( defaultRateInit );
+
+  defaultRateInit.clear();
+  defaultRateInit.append( 40 );
+  defaultRateInit.append( 60 );
+  defaultRateInit.append( 0 );
+  defaultRate.append( defaultRateInit );
+
+  defaultRateInit.clear();
+  defaultRateInit.append( 1 );
+  defaultRateInit.append( 1 );
+  defaultRateInit.append( 0 );
+  defaultRate.append( defaultRateInit );
+        </code>
+        <parameter name="QueueIndex" type="Int" max="2"/>
+        <default param="0" code="true">defaultRate[0]</default>
+        <default param="2" code="true">defaultRate[2]</default>
+    </entry>
+    <entry key="ShowQueueTuner" type="Bool">
+        <default>false</default>
+    </entry>
+  </group>
+
 </kcfg>
