@@ -23,6 +23,16 @@
 #include <QObject>
 
 class KIdleTimePrivate;
+
+/**
+ * KIdleTime is a singleton reporting information on idle time. It is useful not
+ * only for finding out about the current idle time of the PC, but also for getting
+ * notified upon idle time events, such as custom timeouts, or user activity.
+ *
+ * It also includes a number of 
+ *
+ * @author Dario Freddi
+ */
 class KIdleTime : public QObject
 {
     Q_OBJECT
@@ -32,7 +42,6 @@ class KIdleTime : public QObject
 public:
     static KIdleTime *instance();
   
-    KIdleTime();
     virtual ~KIdleTime();
     
     int getIdleTime();
@@ -47,7 +56,9 @@ signals:
     void resumingFromIdle();
     void timeoutReached(int msec);
 
-private:    
+private:
+    KIdleTime();
+  
     KIdleTimePrivate * const d_ptr;
 
     Q_PRIVATE_SLOT(d_func(), void _k_resumingFromIdle())
