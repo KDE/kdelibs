@@ -3,12 +3,20 @@
  "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
 <policyconfig>
-    <action id="org.kde.auth.example.read">
-    <description>Read</description>
-    <message>Authorization for reading files</message>
-    <defaults>
-      <allow_inactive>no</allow_inactive>
-      <allow_active>auth_self</allow_active>
-    </defaults>
-  </action>
+    <action id="org.kde.auth.example.action1">
+        <description>Action 1</description>
+        <message>Authorization for reading files</message>
+        <defaults>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>auth_self</allow_active>
+        </defaults>
+    </action>
+    <action id="org.kde.auth.example.action2">
+        <description>Action 2</description>
+        <message>Authorization for reading files</message>
+        <defaults>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>auth_self</allow_active>
+        </defaults>
+    </action>
 </policyconfig>

@@ -24,6 +24,7 @@
 #include <QObject>
 
 #include "ActionReply.h"
+#include "ActionWatcher.h"
 
 template<class Key, class T> class QMap;
 class QString;
@@ -33,23 +34,19 @@ class HelperProxy : public QObject
 {
     Q_OBJECT
     
-    public:
-        enum ExecMode
-        {
-            Synchronous,
-            Asynchronous
-        };
-        
+    public:      
         // Application-side methods
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, ExecMode mode = Synchronous) = 0;
+        virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID) = 0;
+        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments) = 0;
         
         // Helper-side methods
         virtual bool initHelper(const QString &name) = 0;
         virtual void setHelperResponder(QObject *o) = 0;
-        virtual void sendDebugMessage(QtMsgType t, const char *msg) = 0;
-        
-    signals:
-        virtual void actionExecuted(ActionReply reply);
+        virtual void sendDebugMessage(int level, const char *msg) = 0;
+        virtual void sendProgressStep(int step) = 0;
+        virtual void sendProgressStep(QVariantMap step) = 0;
+    
+        static void registerWatcher(ActionWatcher *watcher);
 };
 
 Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");

@@ -24,19 +24,22 @@
 #include <QTimer>
 
 #include "BackendsManager.h"
-#include "helper_support.h"
+#include "HelperSupport.h"
 
 static bool remote_dbg = false;
 
-int init_helper(int argc, char **argv, const char *id, QObject *responder)
+HelperSupport::HelperSupport() {}
+
+
+int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *responder)
 {
     openlog(id, 0, LOG_USER);
-    qInstallMsgHandler(&helper_debug_handler);
+    qInstallMsgHandler(&HelperSupport::helperDebugHandler);
     
     if(!BackendsManager::helperProxy()->initHelper(id))
         return -1;
     
-    closelog();
+    //closelog();
     remote_dbg = true;
     
     BackendsManager::helperProxy()->setHelperResponder(responder);
@@ -48,7 +51,7 @@ int init_helper(int argc, char **argv, const char *id, QObject *responder)
     return 0;
 }
 
-void helper_debug_handler(QtMsgType type, const char *msg)
+void HelperSupport::helperDebugHandler(QtMsgType type, const char *msg)
 {
     if(!remote_dbg)
     {
@@ -77,7 +80,12 @@ void helper_debug_handler(QtMsgType type, const char *msg)
         exit(-1);
 }
 
-void end_debug()
+void HelperSupport::progressStep(int step)
 {
-    closelog();
+    BackendsManager::helperProxy()->sendProgressStep(step);
+}
+
+void HelperSupport::progressStep(QVariantMap data)
+{
+    BackendsManager::helperProxy()->sendProgressStep(data);
 }

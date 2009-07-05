@@ -17,56 +17,37 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef ACTION_H
-#define ACTION_H
+#ifndef __ACTION_WATCHER_H_
+#define __ACTION_WATCHER_H_
 
+#include <QObject>
 #include <QString>
-#include <QVariant>
-#include <QHash>
 
 #include "ActionReply.h"
-#include "ActionWatcher.h"
 
-class Action
-{        
-    QString m_name;
-    QVariantMap m_args;
+class ActionWatcher : public QObject
+{
+    Q_OBJECT
     
-    public:
-        enum AuthStatus
-        {
-            Denied = 0,
-            Authorized = 1,
-            AuthRequired = 2
-        };
+    QString m_action;
+    
+    ActionWatcher(const QString &action);
+    
+    public:        
+        static ActionWatcher *watcher(const QString &action);
         
-        Action(const char *name) : m_name(name) { init(); }
-        Action(const QString &name) : m_name(name) { init(); }
+        QString action();
         
-        QString name() { return m_name; }
-        void setName(QString name) { m_name = name; }
+        void emitActionPerformed(ActionReply reply);
+        void emitProgressStep(int progress);
+        void emitProgressStep(QVariantMap data);
         
-        ActionWatcher *watcher();
+    signals:
+        void actionPerformed(ActionReply reply);
+        void progressStep(int progress);
+        void progressStep(QVariantMap data);
         
-        QVariantMap &arguments() { return m_args; }
-        
-        bool authorize();
-        AuthStatus status();
-        
-        ActionReply execute();
-        ActionReply execute(const QString &helperID);
-        
-        bool executeAsync(QObject *target, const char *slot);
-        bool executeAsync(QObject *target, const char *slot, const QString &helperID);
-                
-        static bool executeActions(const QList<Action> &actions, const QString &helperID);
-        static bool executeActions(const QList<Action> &actions);
-        
-        static QString helperID();
-        static void setHelperID(const QString &id);
-        
-    private:
-        void init();
+    friend class Action;
 };
 
 #endif

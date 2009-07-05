@@ -17,15 +17,40 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef __HELPER_SUPPORT_H
-#define __HELPER_SUPPORT_H
+#include "ActionWatcher.h"
+#include "BackendsManager.h"
 
-#include <QtGlobal>
+#include <QHash>
 
-int init_helper(int argc, char **argv, const char *id, QObject *responder);
-void helper_debug_handler(QtMsgType type, const char *msg);
+static QHash<QString, ActionWatcher *> watchers;
 
-#define KDE4_AUTH_HELPER(ID, HelperClass) \
-int main(int argc, char **argv) { return init_helper(argc, argv, ID, new HelperClass()); }
+ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL), m_action(action) {}
 
-#endif
+ActionWatcher *ActionWatcher::watcher(const QString &action)
+{
+    if(!watchers.contains(action))
+        watchers[action] = new ActionWatcher(action);
+    
+    return watchers[action];
+}
+
+QString ActionWatcher::action()
+{
+    return m_action;
+}
+
+void ActionWatcher::emitActionPerformed(ActionReply reply)
+{
+    emit actionPerformed(reply);
+}
+
+void ActionWatcher::emitProgressStep(int progress)
+{
+    emit progressStep(progress);
+}
+
+void ActionWatcher::emitProgressStep(QVariantMap data)
+{
+    emit progressStep(data);
+}
+

@@ -19,6 +19,7 @@
 
 #include <QtDebug>
 #include <auth.h>
+#include <syslog.h>
 #include "Backend.h"
 
 namespace PolicyKit

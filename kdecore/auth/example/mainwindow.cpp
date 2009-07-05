@@ -50,18 +50,11 @@ void MainWindow::on_actionOpen_triggered()
     {
         Action::setHelperID("org.kde.auth.example");
         
-        Action readAction = "org.kde.auth.example.read";
+        Action readAction = "org.kde.auth.example.action1";
         ActionReply reply;
         if(readAction.authorize())
         {
-            readAction.arguments()["path"] = filename;
             reply = readAction.execute();
-            
-            QMap<QString, QVariant>::const_iterator i = reply.data().constBegin();
-            while (i != reply.data().constEnd()) {
-                qDebug() << "Argument key:" << i.key() << "- value:" << i.value().toString();
-                ++i;
-            }
         }
 
         if(reply.failed())
@@ -88,15 +81,16 @@ void MainWindow::on_actionOpenAsync_triggered()
     {
         Action::setHelperID("org.kde.auth.example");
         
-        Action readAction = "org.kde.auth.example.read";
-        if(readAction.authorize())
-        {
-            readAction.arguments()["path"] = filename;
-            
-            if(!readAction.executeAsync(this, SLOT(actionExecuted(ActionReply))))
-                qDebug() << "error in executeAsync()";
-            
-            return;
+        Action action1 = "org.kde.auth.example.action1";
+        Action action2 = "org.kde.auth.example.action2";
+        
+        connect(action1.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(action1Executed(ActionReply)));
+        connect(action2.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(action2Executed(ActionReply)));
+        
+        if(action1.authorize() && action2.authorize())
+        {            
+           if(!Action::executeActions(QList<Action>() << action1 << action2))
+               qDebug() << "executeActions returns false";
         }
     }
     
@@ -105,13 +99,12 @@ void MainWindow::on_actionOpenAsync_triggered()
     file.close();
 }
 
-void MainWindow::actionExecuted(ActionReply reply)
+void MainWindow::action1Executed(ActionReply reply)
 {
-    QMap<QString, QVariant>::const_iterator i = reply.data().constBegin();
-    while (i != reply.data().constEnd()) {
-        qDebug() << "Argument key:" << i.key() << "- value:" << i.value().toString();
-        ++i;
-    }
-    
-    qDebug() << "Action executed asynchronously";
+    qDebug() << "Action1 executed asynchronously";
+}
+
+void MainWindow::action2Executed(ActionReply reply)
+{
+    qDebug() << "Action2 executed asynchronously";
 }

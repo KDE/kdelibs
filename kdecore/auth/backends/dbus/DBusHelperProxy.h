@@ -32,27 +32,37 @@ class DBusHelperProxy : public HelperProxy
     
     QObject *responder;
     QString m_name;
+    QString m_currentAction;
+    
+    enum SignalType
+    {
+        ActionPerformed, // The blob argument contains the ActionReply
+        DebugMessage, // The blob argument contains the debug level and the message (in this order)
+        ProgressStepIndicator, // The blob argument contains the step indicator
+        ProgressStepData    // The blob argument contains the QVariantMap
+    };
     
     public:
         DBusHelperProxy() : responder(NULL) {}
         
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, HelperProxy::ExecMode mode = HelperProxy::Synchronous);
+        virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
+        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
         
         virtual bool initHelper(const QString &name);
         virtual void setHelperResponder(QObject *o);
-        virtual void sendDebugMessage(QtMsgType t, const char *msg);
+        virtual void sendDebugMessage(int level, const char *msg);
+        virtual void sendProgressStep(int step);
+        virtual void sendProgressStep(QVariantMap data);
         
     public slots:
-        void performActionAsync(const QString &action, QByteArray callerID, QByteArray arguments);
-        QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments); // this is private
+        void performActions(QByteArray blob, QByteArray callerID);
+        QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments);
         
     signals:
-        void actionPerformed(QByteArray reply); // This is VERY different from the actionExecuted() signal inherited from HelperProxy
-        void debugMessage(int t, const QString &message);
+        void remoteSignal(int type, const QString &action, const QByteArray &blob); // This signal is sent from the helper to the app
         
     private slots:
-        void debugMessageReceived(int t, QString message);
-        void actionPerformedReceived(QByteArray reply);
+        void remoteSignalReceived(int type, const QString &action, QByteArray blob);
 };
 
 #endif

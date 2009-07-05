@@ -21,21 +21,18 @@
 
 #include "helper.h"
 
-ActionReply MyHelper::read(QVariantMap args)
+ActionReply MyHelper::action1(QVariantMap args)
 {
-    qDebug() << QString("Action executed by the helper. PID: %1, UID: %2").arg(getpid()).arg(getuid());
+    qDebug() << "Action 1 executed";
     
-    QVariantMap::const_iterator i = args.constBegin();
-    while (i != args.constEnd()) {
-        qDebug() << "Argument key:" << i.key() << "- value:" << i.value();
-        ++i;
-    }
+    return ActionReply();
+}
+
+ActionReply MyHelper::action2(QVariantMap args)
+{
+    qDebug() << "Action 2 executed";
     
-    ActionReply reply;
-    
-    reply.data()["result"] = "OK";
-    
-    return reply;
+    return ActionReply();
 }
 
 KDE4_AUTH_HELPER("org.kde.auth.example", MyHelper)

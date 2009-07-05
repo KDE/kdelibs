@@ -20,17 +20,18 @@ set( kauth_sources
      lib/Action.cpp
      lib/ActionReply.cpp 
      lib/BackendsManager.cpp 
-     lib/helper_support.cpp )
+     lib/HelperSupport.cpp 
+     lib/ActionWatcher.cpp )
 
 set( kauth_headers
      lib/Action.h
      lib/ActionReply.h
      lib/BackendsManager.h
-     lib/helper_support.h
+     lib/HelperSupport.h
      lib/kauth.h)
 
 # Define here ${kauth_mocs} if needed in the future
-qt4_wrap_cpp(kauth_mocs lib/HelperProxy.h)
+qt4_wrap_cpp(kauth_mocs lib/HelperProxy.h lib/ActionWatcher.h)
 
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${QT_QTCORE_LIBRARIES} ${POLKITQT_CORE_LIBRARY}) # The last two variables should be set by the backends code, if needed

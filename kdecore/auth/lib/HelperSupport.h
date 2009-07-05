@@ -17,34 +17,26 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef __HELPER_SUPPORT_H
+#define __HELPER_SUPPORT_H
 
-#include <QtGui/QMainWindow>
+#include <QtGlobal>
 
-#include "ActionReply.h"
+#define KDE4_AUTH_HELPER(ID, HelperClass) \
+int main(int argc, char **argv) { return HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
 
-namespace Ui
+class HelperSupport
 {
-    class MainWindowClass;
-}
-
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
-
-public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-
-private:
-    Ui::MainWindowClass *ui;
-
-private slots:
-    void on_actionOpen_triggered();
-    void on_actionOpenAsync_triggered();
-    void action1Executed(ActionReply reply);
-    void action2Executed(ActionReply reply);
+    HelperSupport();
+    
+    static int helperMain(int argc, char **argv, const char *id, QObject *responder);
+    static void helperDebugHandler(QtMsgType type, const char *msg);
+    
+    public:
+        void progressStep(int step);
+        void progressStep(QVariantMap data);
+    
+    friend int main(int, char **);
 };
 
-#endif // MAINWINDOW_H
+#endif

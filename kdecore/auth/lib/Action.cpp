@@ -43,39 +43,47 @@ Action::AuthStatus Action::status()
     return backend->actionStatus(m_name);
 }
 
+bool Action::executeActions(const QList<Action> &actions)
+{
+    return executeActions(actions, helperID());
+}
+
+bool Action::executeActions(const QList<Action> &actions, const QString &helperID)
+{
+    QList<QPair<QString, QVariantMap> > list;
+    
+    foreach(Action a, actions)
+        list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
+    
+    return BackendsManager::helperProxy()->executeActions(list, helperID);
+}
+
+bool Action::executeAsync(QObject *target, const char *slot)
+{
+    return executeAsync(target, slot, helperID());
+}
+
+bool Action::executeAsync(QObject *target, const char *slot, const QString &helperID)
+{
+    if(target && slot)
+        QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
+    
+    return executeActions(QList<Action>() << *this, helperID);
+}
+
 ActionReply Action::execute()
 {
     return execute(helperID());
 }
 
-bool Action::executeAsync(QObject *target, const char *slot)
-{
-    return executeAsync(helperID(), target, slot);
-}
-
-// TODO: Check for helper id's syntax
 ActionReply Action::execute(const QString &helperID)
 {
-    return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args, HelperProxy::Synchronous);
+    return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args);
 }
 
-bool Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
+ActionWatcher *Action::watcher()
 {
-    if(target && slot)
-        QObject::connect(BackendsManager::helperProxy(), SIGNAL(actionExecuted(ActionReply)), target, slot);
-    
-    ActionReply r = BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args, HelperProxy::Asynchronous);
-    if(r.failed())
-    {
-        qCritical("%s", r.errorDescription().toAscii().data());
-        
-        if(target && slot)
-            QObject::disconnect(BackendsManager::helperProxy(), SIGNAL(actionExecuted(ActionReply)), target, slot);
-        
-        return false;
-    }
-    
-    return true;
+    return ActionWatcher::watcher(m_name);
 }
 
 QString Action::helperID()

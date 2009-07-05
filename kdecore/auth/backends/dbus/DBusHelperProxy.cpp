@@ -28,32 +28,50 @@
 #include "DBusHelperProxy.h"
 #include "authadaptor.h"
 
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, HelperProxy::ExecMode mode)
+static void debugMessageReceived(int t, QString message);
+
+bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID)
 {
-    QByteArray argsBytes;
-    QDataStream stream(&argsBytes, QIODevice::WriteOnly);
+    QByteArray blob;
+    QDataStream stream(&blob, QIODevice::WriteOnly);
+    
+    stream << list;
+    
+    if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray))))
+        return false;
+    
+    QDBusMessage message;
+    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performActions");
+    
+    QList<QVariant> args;
+    args << blob << BackendsManager::authBackend()->callerID();
+    message.setArguments(args);
+    
+    QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui); // This is a NO_REPLY method
+    if(reply.type() == QDBusMessage::ErrorMessage)
+        return false;
+    
+    return true;
+}
+
+ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
+{
+    QByteArray blob;
+    QDataStream stream(&blob, QIODevice::WriteOnly);
     
     stream << arguments;
     
-    if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "debugMessage", this, SLOT(debugMessageReceived(int, QString))))
-        return ActionReply::DBusErrorReply;
-    
-    if(mode == HelperProxy::Asynchronous)
-    {
-        if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "actionPerformed", this, SLOT(actionPerformedReceived(QByteArray))))
-            return ActionReply::DBusErrorReply;
-    }
+    if(!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray))))
+        return false;
     
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", mode == HelperProxy::Synchronous ? "performAction" : "performActionAsync");
-                                              
-    QList<QVariant> argumentList;
-    argumentList << action << BackendsManager::authBackend()->callerID() << argsBytes;
-    message.setArguments(argumentList);
+    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
     
-    QDBusMessage reply;
-    reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui);
+    QList<QVariant> args;
+    args << action << BackendsManager::authBackend()->callerID() << blob;
+    message.setArguments(args);
     
+    QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui); 
     if(reply.type() == QDBusMessage::ErrorMessage)
     {
         ActionReply r = ActionReply::DBusErrorReply;
@@ -62,18 +80,11 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
         return r;
     }
     
-    if(mode == HelperProxy::Asynchronous)
-        return ActionReply();
-    
     if(reply.arguments().size() != 1)
         return ActionReply::WrongReplyDataReply;
+                
     
     return ActionReply(reply.arguments().first().toByteArray());
-}
-
-void DBusHelperProxy::actionPerformedReceived(QByteArray reply)
-{
-    emit actionExecuted(ActionReply(reply));
 }
 
 bool DBusHelperProxy::initHelper(const QString &name)
@@ -96,34 +107,59 @@ void DBusHelperProxy::setHelperResponder(QObject *o)
     responder = o;
 }
 
-void DBusHelperProxy::debugMessageReceived(int t, QString message)
+void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteArray blob)
 {
-    QtMsgType type = (QtMsgType)t;
-    switch(type)
+    SignalType type = (SignalType)t;
+    QDataStream stream(&blob, QIODevice::ReadOnly);
+    
+    if(type == ActionPerformed)
     {
-        case QtDebugMsg:
-            qDebug("Message from helper: %s", message.toAscii().data());
-            break;
-        case QtWarningMsg:
-            qWarning("Message from helper: %s", message.toAscii().data());
-            break;
-        case QtCriticalMsg:
-            qCritical("Message from helper: %s", message.toAscii().data());
-            break;
-        case QtFatalMsg:
-            qFatal("Message from helper: %s", message.toAscii().data());
-            break;
+        ActionReply reply;
+        stream >> reply;
+        
+        ActionWatcher::watcher(action)->emitActionPerformed(reply);
+    }else if(type == DebugMessage)
+    {
+        int level;
+        QString message;
+        
+        stream >> level >> message;
+        
+        debugMessageReceived(level, message);
+    }else if(type == ProgressStepIndicator)
+    {
+        int step;
+        stream >> step;
+        
+        ActionWatcher::watcher(action)->emitProgressStep(step);
+    }else if(type == ProgressStepData)
+    {
+        QVariantMap data;
+        stream >> data;
+        
+        ActionWatcher::watcher(action)->emitProgressStep(data);
     }
 }
 
-void DBusHelperProxy::sendDebugMessage(QtMsgType t, const char *msg)
+void DBusHelperProxy::performActions(QByteArray blob, QByteArray callerID)
 {
-    emit debugMessage((int)t, msg);
-}
-
-void DBusHelperProxy::performActionAsync(const QString &action, QByteArray callerID, QByteArray arguments)
-{
-    emit actionPerformed(performAction(action, callerID, arguments));
+    QDataStream stream(&blob, QIODevice::ReadOnly);
+    QList<QPair<QString, QVariantMap> > actions;
+    
+    stream >> actions;
+    
+    QList<QPair<QString, QVariantMap> >::const_iterator i = actions.constBegin();
+    while (i != actions.constEnd())
+    {
+        QByteArray blob;
+        QDataStream stream(&blob, QIODevice::WriteOnly);
+        
+        stream << i->second;
+        
+        emit remoteSignal(ActionPerformed, i->first, performAction(i->first, callerID, blob));
+        
+        i++;
+    }
 }
 
 QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray callerID, QByteArray arguments)
@@ -143,8 +179,11 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         
         slotname.replace(".", "_");
         
+        m_currentAction = action;
         ActionReply retVal;
         bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
+        
+        m_currentAction = "";
         
         if(success)
             return retVal.serialized();
@@ -153,6 +192,56 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         
     }else
         return ActionReply::AuthorizationDeniedReply.serialized();
+}
+
+void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
+{
+    QByteArray blob;
+    QDataStream stream(&blob, QIODevice::WriteOnly);
+    
+    stream << level << QString(msg);
+    
+    emit remoteSignal(DebugMessage, m_currentAction, blob);
+}
+
+void DBusHelperProxy::sendProgressStep(int step)
+{
+    QByteArray blob;
+    QDataStream stream(&blob, QIODevice::WriteOnly);
+    
+    stream << step;
+    
+    emit remoteSignal(ProgressStepIndicator, m_currentAction, blob);
+}
+
+void DBusHelperProxy::sendProgressStep(QVariantMap data)
+{
+    QByteArray blob;
+    QDataStream stream(&blob, QIODevice::WriteOnly);
+    
+    stream << data;
+    
+    emit remoteSignal(ProgressStepIndicator, m_currentAction, blob);
+}
+
+void debugMessageReceived(int t, QString message)
+{
+    QtMsgType type = (QtMsgType)t;
+    switch(type)
+    {
+        case QtDebugMsg:
+            qDebug("Message from helper: %s", message.toAscii().data());
+            break;
+        case QtWarningMsg:
+            qWarning("Message from helper: %s", message.toAscii().data());
+            break;
+        case QtCriticalMsg:
+            qCritical("Message from helper: %s", message.toAscii().data());
+            break;
+        case QtFatalMsg:
+            qFatal("Message from helper: %s", message.toAscii().data());
+            break;
+    }
 }
 
 Q_EXPORT_PLUGIN2(helper_proxy, DBusHelperProxy);
