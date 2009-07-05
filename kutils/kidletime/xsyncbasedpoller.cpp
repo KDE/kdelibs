@@ -236,6 +236,7 @@ void XSyncBasedPoller::catchIdleEvent()
     XSyncValueAdd(&plusone, idleTime, add, &overflow);
     setAlarm(m_display, &m_resetAlarm, m_idleCounter,
              XSyncNegativeComparison, plusone);
+    qDebug() << "catching";
 #endif
 
 }
@@ -249,9 +250,11 @@ bool XSyncBasedPoller::x11Event(XEvent *event)
         return false;
     }
 
+    qDebug() << "Event";
+
     alarmEvent = (XSyncAlarmNotifyEvent *)event;
 
-    foreach(int timeout, m_timeoutAlarm) {
+    foreach(int timeout, m_timeoutAlarm.keys()) {
         if (alarmEvent->alarm == m_timeoutAlarm[timeout]) {
             /* Bling! Caught! */
             emit timeoutReached(timeout);
@@ -261,6 +264,7 @@ bool XSyncBasedPoller::x11Event(XEvent *event)
 
     if (alarmEvent->alarm == m_resetAlarm) {
         /* Resuming from idle here! */
+        qDebug() << "Back";
         emit resumingFromIdle();
     }
 

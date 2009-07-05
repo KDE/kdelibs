@@ -36,3 +36,5 @@ install(FILES
         DESTINATION ${INCLUDE_INSTALL_DIR}
         )
 install(TARGETS kidle ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+add_subdirectory(example)
