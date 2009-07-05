@@ -28,7 +28,7 @@
 #include "DBusHelperProxy.h"
 #include "authadaptor.h"
 
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments)
+ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
 {
     QByteArray argsBytes;
     QDataStream stream(&argsBytes, QIODevice::WriteOnly);
@@ -45,7 +45,6 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     argumentList << qVariantFromValue(action) << BackendsManager::authBackend()->callerID() << qVariantFromValue(argsBytes);
     message.setArguments(argumentList);
     
-    // TODO: Check for dbus errors
     QDBusMessage reply;
     reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui);
     
@@ -118,7 +117,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
     if(!responder)
         return ActionReply::NoResponderReply.serialized();
     
-    ArgumentsMap args;
+    QVariantMap args;
     QDataStream s(&arguments, QIODevice::ReadOnly);
     s >> args;
     
@@ -131,7 +130,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         slotname.replace(".", "_");
         
         ActionReply retVal;
-        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(ArgumentsMap, args));
+        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
         
         if(success)
             return retVal.serialized();

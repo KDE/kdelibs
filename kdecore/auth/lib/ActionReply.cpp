@@ -39,12 +39,12 @@ ActionReply::ActionReply(QByteArray data)
     s >> *this;
 }
 
-ArgumentsMap &ActionReply::data()
+QVariantMap &ActionReply::data()
 {
     return m_data;
 }
 
-ArgumentsMap ActionReply::data() const
+QVariantMap ActionReply::data() const
 {
     return m_data;
 }

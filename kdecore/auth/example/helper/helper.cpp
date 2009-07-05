@@ -28,11 +28,11 @@
 
 #include "helper.h"
 
-ActionReply MyHelper::read(ArgumentsMap args)
+ActionReply MyHelper::read(QVariantMap args)
 {
     qDebug() << QString("Action executed by the helper. PID: %1, UID: %2").arg(getpid()).arg(getuid());
     
-    ArgumentsMap::const_iterator i = args.constBegin();
+    QVariantMap::const_iterator i = args.constBegin();
     while (i != args.constEnd()) {
         qDebug() << "Argument key:" << i.key() << "- value:" << i.value();
         ++i;

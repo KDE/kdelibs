@@ -21,6 +21,7 @@
 #define DBUS_HELPER_BACKEND_H
 
 #include <QObject>
+#include <QVariant>
 #include "HelperProxy.h"
 #include "ActionReply.h"
 
@@ -38,7 +39,7 @@ class DBusHelperProxy : public QObject, public HelperProxy
         QString name() { return m_name; }
         void setName(QString name) { m_name = name; }
         
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments);
+        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
         
         virtual bool initHelper(const QString &name);
         

@@ -25,8 +25,6 @@
 #include <QMap>
 #include <QDataStream>
 
-typedef QMap<QString, QVariant> ArgumentsMap;
-
 class ActionReply
 {
 public:
@@ -59,8 +57,8 @@ public:
     ActionReply(int errorCode);
     ActionReply(QByteArray data);
     
-    ArgumentsMap &data();
-    ArgumentsMap data() const;
+    QVariantMap &data();
+    QVariantMap data() const;
     Type type() const;
     
     bool succeded();
@@ -77,7 +75,7 @@ public:
     friend QDataStream &operator>>(QDataStream &, ActionReply &);
     
 private:
-    ArgumentsMap m_data; // User-defined data for success and helper error replies, empty for kauth errors
+    QVariantMap m_data; // User-defined data for success and helper error replies, empty for kauth errors
     int m_errorCode;
     QString m_errorDescription;
     Type m_type;

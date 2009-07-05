@@ -31,9 +31,8 @@ class QVariant;
 class HelperProxy
 {
     public:
-        typedef QMap<QString, QVariant> ArgumentsMap;
         
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments) = 0;
+        virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments) = 0;
         virtual bool initHelper(const QString &name) = 0;
         virtual void setHelperResponder(QObject *o) = 0;
         

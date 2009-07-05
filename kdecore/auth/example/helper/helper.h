@@ -29,7 +29,7 @@ class MyHelper : public QObject
     Q_OBJECT
     
     public slots:
-        ActionReply read(ArgumentsMap args);
+        ActionReply read(QVariantMap args);
 };
 
 #endif
