@@ -25,8 +25,6 @@
 #define HAVE_XTEST 1 // the usual hack
 
 #ifdef HAVE_XTEST
-#include <QX11Info>
-
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
 #include <fixx11h.h>

@@ -25,38 +25,38 @@
 
 class MacPoller: public AbstractSystemPoller
 {
-    public:
-        MacPoller();
-        virtual ~MacPoller();
+public:
+    MacPoller();
+    virtual ~MacPoller();
 
-        bool isAvailable();
-        bool setUpPoller();
-        void unloadPoller();
+    bool isAvailable();
+    bool setUpPoller();
+    void unloadPoller();
 
-        static pascal void IdleTimerAction( EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData );
+    static pascal void IdleTimerAction(EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData);
 
-    public slots:
-        void addTimeout(int nextTimeout);
-        void removeTimeout(int nextTimeout);
-        QList<int> timeouts() const;
-        int forcePollRequest();
-        void catchIdleEvent();
-        void stopCatchingIdleEvents();
-        void simulateUserActivity();
-        void triggerResume();
+public slots:
+    void addTimeout(int nextTimeout);
+    void removeTimeout(int nextTimeout);
+    QList<int> timeouts() const;
+    int forcePollRequest();
+    void catchIdleEvent();
+    void stopCatchingIdleEvents();
+    void simulateUserActivity();
+    void triggerResume();
 
-    private slots:
-        void poll();
+private slots:
+    void poll();
 
-    signals:
-        void resumingFromIdle();
-        void timeoutReached(int msec);
+signals:
+    void resumingFromIdle();
+    void timeoutReached(int msec);
 
-    private:
-        QList<int> m_timeouts;
-        EventLoopTimerRef m_timerRef;
-        int m_secondsIdle;
-        bool m_catch;
+private:
+    QList<int> m_timeouts;
+    EventLoopTimerRef m_timerRef;
+    int m_secondsIdle;
+    bool m_catch;
 };
 
 #endif /* MACPOLLER_H */

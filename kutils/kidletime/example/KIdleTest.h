@@ -26,13 +26,13 @@ class KIdleTest : public QObject
 {
     Q_OBJECT
 
-    public:
-        KIdleTest();
-        virtual ~KIdleTest();
+public:
+    KIdleTest();
+    virtual ~KIdleTest();
 
-    public slots:
-        void timeoutReached(int timeout);
-        void resumeEvent();
+public slots:
+    void timeoutReached(int timeout);
+    void resumeEvent();
 };
 
 #endif /* KIDLETEST_H */

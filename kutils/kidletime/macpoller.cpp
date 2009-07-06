@@ -22,69 +22,63 @@
 #include "macpoller.h"
 
 // Why does Apple have to make this so complicated?
-static OSStatus LoadFrameworkBundle( CFStringRef framework, CFBundleRef *bundlePtr )
+static OSStatus LoadFrameworkBundle(CFStringRef framework, CFBundleRef *bundlePtr)
 {
     OSStatus  err;
     FSRef   frameworksFolderRef;
     CFURLRef baseURL;
     CFURLRef bundleURL;
 
-    if ( bundlePtr == nil )
-        return( -1 );
+    if (bundlePtr == nil)
+        return(-1);
 
     *bundlePtr = nil;
 
     baseURL = nil;
     bundleURL = nil;
 
-    err = FSFindFolder( kOnAppropriateDisk, kFrameworksFolderType, true, &frameworksFolderRef );
-    if ( err == noErr )
-    {
-        baseURL = CFURLCreateFromFSRef( kCFAllocatorSystemDefault, &frameworksFolderRef );
-        if ( baseURL == nil )
+    err = FSFindFolder(kOnAppropriateDisk, kFrameworksFolderType, true, &frameworksFolderRef);
+    if (err == noErr) {
+        baseURL = CFURLCreateFromFSRef(kCFAllocatorSystemDefault, &frameworksFolderRef);
+        if (baseURL == nil)
             err = coreFoundationUnknownErr;
     }
 
-    if ( err == noErr )
-    {
-        bundleURL = CFURLCreateCopyAppendingPathComponent( kCFAllocatorSystemDefault, baseURL, framework, false );
-        if ( bundleURL == nil )
+    if (err == noErr) {
+        bundleURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorSystemDefault, baseURL, framework, false);
+        if (bundleURL == nil)
             err = coreFoundationUnknownErr;
     }
 
-    if ( err == noErr )
-    {
-        *bundlePtr = CFBundleCreate( kCFAllocatorSystemDefault, bundleURL );
-        if ( *bundlePtr == nil )
+    if (err == noErr) {
+        *bundlePtr = CFBundleCreate(kCFAllocatorSystemDefault, bundleURL);
+        if (*bundlePtr == nil)
             err = coreFoundationUnknownErr;
     }
 
-    if ( err == noErr )
-    {
-        if ( !CFBundleLoadExecutable( *bundlePtr ) )
+    if (err == noErr) {
+        if (!CFBundleLoadExecutable(*bundlePtr))
             err = coreFoundationUnknownErr;
     }
 
-        // Clean up.
-    if ( err != noErr && *bundlePtr != nil )
-    {
-        CFRelease( *bundlePtr );
+    // Clean up.
+    if (err != noErr && *bundlePtr != nil) {
+        CFRelease(*bundlePtr);
         *bundlePtr = nil;
     }
 
-    if ( bundleURL != nil )
-        CFRelease( bundleURL );
+    if (bundleURL != nil)
+        CFRelease(bundleURL);
 
-    if ( baseURL != nil )
-        CFRelease( baseURL );
+    if (baseURL != nil)
+        CFRelease(baseURL);
 
     return err;
 }
 
-pascal void MacPoller::IdleTimerAction( EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData )
+pascal void MacPoller::IdleTimerAction(EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData)
 {
-    switch (inState)
-    {
+    switch (inState) {
     case kEventLoopIdleTimerStarted:
     case kEventLoopIdleTimerStopped:
         // Get invoked with this constant at the start of the idle period,
@@ -101,12 +95,12 @@ pascal void MacPoller::IdleTimerAction( EventLoopTimerRef, EventLoopIdleTimerMes
 }
 
 // Typedef for the function we're getting back from CFBundleGetFunctionPointerForName.
-typedef OSStatus (*InstallEventLoopIdleTimerPtr)(EventLoopRef inEventLoop,
-                                                 EventTimerInterval   inFireDelay,
-                                                 EventTimerInterval   inInterval,
-                                                 EventLoopIdleTimerUPP    inTimerProc,
-                                                 void *               inTimerData,
-                                                 EventLoopTimerRef *  outTimer);
+typedef OSStatus(*InstallEventLoopIdleTimerPtr)(EventLoopRef inEventLoop,
+        EventTimerInterval   inFireDelay,
+        EventTimerInterval   inInterval,
+        EventLoopIdleTimerUPP    inTimerProc,
+        void *               inTimerData,
+        EventLoopTimerRef *  outTimer);
 
 MacPoller::MacPoller(QObject *parent)
         : AbstractSystemPoller(parent)
@@ -150,13 +144,13 @@ bool MacPoller::setUpPoller()
 
     // Load the Mach-O function pointers for the routine we will be using.
     InstallEventLoopIdleTimerPtr myInstallEventLoopIdleTimer =
-            (InstallEventLoopIdleTimerPtr)CFBundleGetFunctionPointerForName(carbonBundle, CFSTR("InstallEventLoopIdleTimer"));
+        (InstallEventLoopIdleTimerPtr)CFBundleGetFunctionPointerForName(carbonBundle, CFSTR("InstallEventLoopIdleTimer"));
 
     if (myInstallEventLoopIdleTimer == 0) {
         return false;
     }
 
-    EventLoopIdleTimerUPP timerUPP = NewEventLoopIdleTimerUPP( Private::IdleTimerAction );
+    EventLoopIdleTimerUPP timerUPP = NewEventLoopIdleTimerUPP(Private::IdleTimerAction);
     if ((*myInstallEventLoopIdleTimer)(GetMainEventLoop(), kEventDurationSecond, kEventDurationSecond, timerUPP, 0, &d->mTimerRef)) {
         return true;
     }

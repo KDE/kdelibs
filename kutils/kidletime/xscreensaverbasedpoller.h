@@ -27,22 +27,22 @@ class XScreensaverBasedPoller: public WidgetBasedPoller
 {
     Q_OBJECT
 
-    public:
-        XScreensaverBasedPoller(QObject *parent = 0);
-        virtual ~XScreensaverBasedPoller();
+public:
+    XScreensaverBasedPoller(QObject *parent = 0);
+    virtual ~XScreensaverBasedPoller();
 
-    public slots:
-        void simulateUserActivity();
+public slots:
+    void simulateUserActivity();
 
-    private:
-        bool additionalSetUp();
+private:
+    bool additionalSetUp();
 
-    private slots:
-        void screensaverActivated(bool activated);
-        int getIdleTime();
+private slots:
+    void screensaverActivated(bool activated);
+    int getIdleTime();
 
-    private:
-        OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
+private:
+    OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
 };
 
 #endif /* XSCREENSAVERBASEDPOLLER_H_ */
