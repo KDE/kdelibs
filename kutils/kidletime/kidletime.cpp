@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kidle.h"
+#include "kidletime.h"
 
 #ifdef Q_WS_X11
 #include "xscreensaverbasedpoller.h"
@@ -193,4 +193,4 @@ QList<int> KIdleTime::idleTimeouts() const
     return d->poller->timeouts();
 }
 
-#include "kidle.moc"
+#include "kidletime.moc"

@@ -21,7 +21,7 @@
 #include <QDebug>
 #include <QTimer>
 
-#include "../kidle.h"
+#include "../kidletime.h"
 
 KIdleTest::KIdleTest()
 {
