@@ -1,26 +1,33 @@
-/***************************************************************************
- *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- **************************************************************************/
+/* This file is part of the KDE libraries
+   Copyright (C) 2009 Dario Freddi <drf at kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
 
 #include "kidle.h"
 
+#ifdef Q_WS_X11
 #include "widgetbasedpoller.h"
 #include "xsyncbasedpoller.h"
+#else
+#ifdef Q_WS_MAC
+
+#else
+#include "windowspoller.h"
+#endif
+#endif
 
 #include <kglobal.h>
 
@@ -121,6 +128,7 @@ void KIdleTimePrivate::loadSystem()
 
     // Priority order
 
+#ifdef Q_WS_X11
     if (XSyncBasedPoller::instance()->isAvailable()) {
         XSyncBasedPoller::instance()->setUpPoller();
         poller = XSyncBasedPoller::instance();
@@ -128,6 +136,14 @@ void KIdleTimePrivate::loadSystem()
         poller = new WidgetBasedPoller();
         poller->setUpPoller();
     }
+#else
+#ifdef Q_WS_MAC
+
+#else
+    poller = new WindowsPoller();
+    poller->setUpPoller();
+#endif
+#endif
 }
 
 void KIdleTimePrivate::unloadCurrentSystem()
@@ -156,7 +172,6 @@ void KIdleTime::simulateUserActivity()
     Q_D(KIdleTime);
 
     d->poller->simulateUserActivity();
-    d->poller->stopCatchingIdleEvents();
 }
 
 int KIdleTime::idleTime()
@@ -164,6 +179,13 @@ int KIdleTime::idleTime()
     Q_D(KIdleTime);
 
     return d->poller->forcePollRequest();
+}
+
+QList<int> KIdleTime::idleTimeouts() const
+{
+    Q_D(const KIdleTime);
+
+    return d->poller->timeouts();
 }
 
 #include "kidle.moc"

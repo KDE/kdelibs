@@ -1,21 +1,20 @@
-/***************************************************************************
- *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- **************************************************************************/
+/* This file is part of the KDE libraries
+   Copyright (C) 2009 Dario Freddi <drf at kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
 
 #include "xsyncbasedpoller.h"
 
@@ -159,19 +158,19 @@ void XSyncBasedPoller::addTimeout(int nextTimeout)
      */
 #ifdef HAVE_XSYNC
     XSyncValue timeout;
-    XSyncValue idleTime;
+    XSyncAlarm newalarm = None;
+    /*XSyncValue idleTime;
     XSyncValue result;
-    XSyncAlarm newalarm;
-    int overflow;
+    int overflow;*/
 
-    XSyncQueryCounter(m_display, m_idleCounter, &idleTime);
+//    XSyncQueryCounter(m_display, m_idleCounter, &idleTime);
 
     XSyncIntToValue(&timeout, nextTimeout);
 
-    XSyncValueAdd(&result, idleTime, timeout, &overflow);
+//    XSyncValueAdd(&result, idleTime, timeout, &overflow);
 
     setAlarm(m_display, &newalarm, m_idleCounter,
-             XSyncPositiveComparison, result);
+             XSyncPositiveComparison, timeout);
 
     m_timeoutAlarm[nextTimeout] = newalarm;
 #endif
@@ -198,8 +197,9 @@ void XSyncBasedPoller::removeTimeout(int timeout)
 {
 #ifdef HAVE_XSYNC
     if (m_timeoutAlarm.contains(timeout)) {
-        XSyncDestroyAlarm(m_display, m_timeoutAlarm[timeout]);
+        XSyncAlarm a = m_timeoutAlarm[timeout];
         m_timeoutAlarm.remove(timeout);
+        XSyncDestroyAlarm(m_display, a);
     }
 #endif
 }
@@ -236,9 +236,20 @@ void XSyncBasedPoller::catchIdleEvent()
     XSyncValueAdd(&plusone, idleTime, add, &overflow);
     setAlarm(m_display, &m_resetAlarm, m_idleCounter,
              XSyncNegativeComparison, plusone);
-    qDebug() << "catching";
 #endif
 
+}
+
+void XSyncBasedPoller::reloadAlarms()
+{
+    XSyncValue timeout;
+
+    foreach (int nextTimeout, m_timeoutAlarm.keys()) {
+        XSyncIntToValue(&timeout, nextTimeout);
+
+        setAlarm(m_display, &(m_timeoutAlarm[nextTimeout]), m_idleCounter,
+                 XSyncPositiveComparison, timeout);
+    }
 }
 
 bool XSyncBasedPoller::x11Event(XEvent *event)
@@ -250,21 +261,26 @@ bool XSyncBasedPoller::x11Event(XEvent *event)
         return false;
     }
 
-    qDebug() << "Event";
-
     alarmEvent = (XSyncAlarmNotifyEvent *)event;
+
+    if (alarmEvent->state == XSyncAlarmDestroyed) {
+        return false;
+    }
 
     foreach(int timeout, m_timeoutAlarm.keys()) {
         if (alarmEvent->alarm == m_timeoutAlarm[timeout]) {
             /* Bling! Caught! */
             emit timeoutReached(timeout);
+            // Update back the alarm to fire back if the system gets inactive for the same time
+            catchIdleEvent();
             return false;
         }
     }
 
     if (alarmEvent->alarm == m_resetAlarm) {
         /* Resuming from idle here! */
-        qDebug() << "Back";
+        stopCatchingIdleEvents();
+        reloadAlarms();
         emit resumingFromIdle();
     }
 

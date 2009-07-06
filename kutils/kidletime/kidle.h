@@ -1,26 +1,25 @@
-/***************************************************************************
- *   Copyright (C) 2009 by Dario Freddi <drf@kde.org>                *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- **************************************************************************/
+/* This file is part of the KDE libraries
+   Copyright (C) 2009 Dario Freddi <drf at kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
 
 #ifndef KIDLETIME_H
 #define KIDLETIME_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kdemacros.h>
 
 class KIdleTimePrivate;
@@ -56,6 +55,15 @@ public:
      * @returns the idle time of the system
      */
     int idleTime();
+
+    /**
+     * Returns the list of timeouts, in milliseconds, the library is currently listening to.
+     *
+     * @see addIdleTimeout
+     * @see removeIdleTimeout
+     * @see timeoutReached
+     */
+    QList<int> idleTimeouts() const;
 
     /**
      * Attempts to simulate user activity. This implies that after calling this
@@ -115,7 +123,7 @@ Q_SIGNALS:
      */
     void resumingFromIdle();
     /**
-     * Triggered if a timeout is being catched and when the system is idle for the chosen amount of milliseconds
+     * Triggered if a timeout is being caught and when the system is idle for the chosen amount of milliseconds
      *
      * @param msec the time, in milliseconds, the system has been idle for
      */
