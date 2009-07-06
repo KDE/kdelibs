@@ -10,7 +10,7 @@
 
 #include <kicon.h>
 #include <kicondialog.h>
-#include <KNumInput>
+#include <knuminput.h>
 
 
 RatingPainterTestWidget::RatingPainterTestWidget()
