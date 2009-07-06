@@ -23,8 +23,6 @@
 
 //#include <config-powerdevil.h>
 
-#include "screensaver_interface.h"
-
 class QTimer;
 class QEvent;
 
@@ -58,10 +56,13 @@ public slots:
 
 private slots:
     int poll();
+    virtual int getIdleTime() = 0;
     void detectedActivity();
     void waitForActivity();
     void releaseInputLock();
-    void screensaverActivated(bool activated);
+
+private:
+    virtual bool additionalSetUp() = 0;
 
 signals:
     void resumingFromIdle();
@@ -71,8 +72,6 @@ private:
     QTimer * m_pollTimer;
     QWidget * m_grabber;
     QList<int> m_timeouts;
-
-    OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
 };
 
 #endif /* WIDGETBASEDPOLLER_H */

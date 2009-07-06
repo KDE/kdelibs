@@ -13,11 +13,12 @@ include_directories(
 set(kidle_SRCS
         kidle.cpp
         abstractsystempoller.cpp
+	widgetbasedpoller.cpp
         )
 
 if (Q_WS_X11)
     set(kidle_SRCS ${kidle_SRCS} 
-        widgetbasedpoller.cpp
+        xscreensaverbasedpoller.cpp
         xsyncbasedpoller.cpp )
 
     qt4_add_dbus_interface(kidle_SRCS org.freedesktop.ScreenSaver.xml screensaver_interface )

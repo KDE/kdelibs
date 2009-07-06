@@ -20,10 +20,7 @@
 
 #include <QWidget>
 #include <QTimer>
-#include <QX11Info>
 #include <QEvent>
-
-#include <klocalizedstring.h>
 
 WidgetBasedPoller::WidgetBasedPoller(QObject *parent)
         : AbstractSystemPoller(parent)
@@ -36,11 +33,7 @@ WidgetBasedPoller::~WidgetBasedPoller()
 
 bool WidgetBasedPoller::isAvailable()
 {
-#ifdef HAVE_XSCREENSAVER
     return true;
-#else
-    return false;
-#endif
 }
 
 bool WidgetBasedPoller::setUpPoller()
@@ -57,12 +50,7 @@ bool WidgetBasedPoller::setUpPoller()
     m_grabber->installEventFilter(this);
     m_grabber->setObjectName("KIdleGrabberWidget");
 
-    m_screenSaverIface = new OrgFreedesktopScreenSaverInterface("org.freedesktop.ScreenSaver", "/ScreenSaver",
-            QDBusConnection::sessionBus(), this);
-
-    connect(m_screenSaverIface, SIGNAL(ActiveChanged(bool)), SLOT(screensaverActivated(bool)));
-
-    return true;
+    return additionalSetUp();
 }
 
 void WidgetBasedPoller::unloadPoller()
@@ -80,16 +68,6 @@ void WidgetBasedPoller::addTimeout(int nextTimeout)
 {
     m_timeouts.append(nextTimeout);
     poll();
-}
-
-void WidgetBasedPoller::screensaverActivated(bool activated)
-{
-    // We care only if it has been disactivated
-
-    if (!activated) {
-        m_screenSaverIface->SimulateUserActivity();
-        emit resumingFromIdle();
-    }
 }
 
 bool WidgetBasedPoller::eventFilter(QObject * object, QEvent * event)
@@ -130,30 +108,9 @@ void WidgetBasedPoller::releaseInputLock()
     m_grabber->hide();
 }
 
-#ifdef HAVE_XSCREENSAVER
-#include <X11/extensions/scrnsaver.h>
-#endif
-
 int WidgetBasedPoller::poll()
 {
-    /* Hack! Since KRunner still doesn't behave properly, the
-     * correct way to go doesn't work (yet), and it's this one:
-        ------------------------------------------------------------
-        int idle = m_screenSaverIface->GetSessionIdleTime();
-        ------------------------------------------------------------
-     */
-    /// In the meanwhile, this X11 hackish way gets its job done.
-    //----------------------------------------------------------
-
-    int idle = 0;
-
-#ifdef HAVE_XSCREENSAVER
-    XScreenSaverInfo * mitInfo = 0;
-    mitInfo = XScreenSaverAllocInfo();
-    XScreenSaverQueryInfo(QX11Info::display(), DefaultRootWindow(QX11Info::display()), mitInfo);
-    idle = mitInfo->idle;
-    //----------------------------------------------------------
-#endif
+    int idle = getIdleTime();
 
     // Check if we reached a timeout..
     foreach(int i, m_timeouts) {

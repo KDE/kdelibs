@@ -19,7 +19,7 @@
 #include "kidle.h"
 
 #ifdef Q_WS_X11
-#include "widgetbasedpoller.h"
+#include "xscreensaverbasedpoller.h"
 #include "xsyncbasedpoller.h"
 #else
 #ifdef Q_WS_MAC
@@ -133,7 +133,7 @@ void KIdleTimePrivate::loadSystem()
         XSyncBasedPoller::instance()->setUpPoller();
         poller = XSyncBasedPoller::instance();
     } else {
-        poller = new WidgetBasedPoller();
+        poller = new XScreensaverBasedPoller();
         poller->setUpPoller();
     }
 #else
