@@ -16,7 +16,7 @@ set(nepomuk_rcgen_SRCS
   ontologyparser.cpp)
 
 qt4_add_resources(nepomuk_rcgen_SRCS templates.qrc)
-kde4_add_executable(nepomuk-rcgen ${nepomuk_rcgen_SRCS})
+kde4_add_executable(nepomuk-rcgen NOGUI ${nepomuk_rcgen_SRCS})
 target_link_libraries(nepomuk-rcgen
   ${SOPRANO_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
