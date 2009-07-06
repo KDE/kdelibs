@@ -40,7 +40,7 @@ public:
 	if(!_ref)
 	    delete static_cast<type *>(this);
     }
-    bool hasOneRef() { //kDebug(300) << "ref=" << _ref;
+    bool hasOneRef() { //kDebug(6000) << "ref=" << _ref;
     	return _ref==1; }
 
     int refCount() const { return _ref; }
@@ -73,7 +73,7 @@ public:
         _ref--;
     }
     
-    bool hasOneRef() { //kDebug(300) << "ref=" << _ref;
+    bool hasOneRef() { //kDebug(6000) << "ref=" << _ref;
     	return _ref==1; }
 
     int refCount() const { return _ref; }
