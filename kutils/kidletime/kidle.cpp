@@ -30,6 +30,7 @@
 #endif
 
 #include <kglobal.h>
+#include <QPointer>
 
 class KIdleTimeHelper
 {
@@ -151,10 +152,13 @@ void KIdleTimePrivate::unloadCurrentSystem()
 {
     if (poller) {
         poller->unloadPoller();
-
+#ifdef Q_WS_X11
         if (qobject_cast<XSyncBasedPoller*>(poller) == 0) {
+#endif
             poller->deleteLater();
+#ifdef Q_WS_X11
         }
+#endif
     }
 }
 

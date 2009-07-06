@@ -46,8 +46,8 @@ public slots:
     void removeTimeout(int nextTimeout);
     QList<int> timeouts() const;
     int forcePollRequest();
-    void catchIdleEvent();
-    void stopCatchingIdleEvents();
+    virtual void catchIdleEvent();
+    virtual void stopCatchingIdleEvents();
 
 private slots:
     int poll();

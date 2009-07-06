@@ -30,9 +30,8 @@ KIdleTest::KIdleTest()
 
     KIdleTime::instance()->catchNextResumeEvent();
 
-    qDebug() << "Your idle time is " << KIdleTime::instance()->idleTime();
-    qDebug() << "Welcome!! Move your mouse or do something to start...";
-
+    printf("Your idle time is %d\n", KIdleTime::instance()->idleTime());
+    printf("Welcome!! Move your mouse or do something to start...\n");
 }
 
 KIdleTest::~KIdleTest()
@@ -43,8 +42,8 @@ void KIdleTest::resumeEvent()
 {
     KIdleTime::instance()->removeAllIdleTimeouts();
 
-    qDebug() << "Great! Now stay idle for 5 seconds to get a nice message. From 10 seconds on, you can move your mouse to get back here.";
-    qDebug() << "If you will stay idle for too long, I will simulate your activity after 25 seconds, and make everything start back";
+    printf("Great! Now stay idle for 5 seconds to get a nice message. From 10 seconds on, you can move your mouse to get back here.\n");
+    printf("If you will stay idle for too long, I will simulate your activity after 25 seconds, and make everything start back\n");
 
     KIdleTime::instance()->addIdleTimeout(5000);
     KIdleTime::instance()->addIdleTimeout(10000);
@@ -54,12 +53,12 @@ void KIdleTest::resumeEvent()
 void KIdleTest::timeoutReached(int timeout)
 {
     if (timeout == 5000) {
-        qDebug() << "5 seconds passed, stay still some more...";
+        printf("5 seconds passed, stay still some more...\n");
     } else if (timeout == 10000) {
         KIdleTime::instance()->catchNextResumeEvent();
-        qDebug() << "Cool. You can move your mouse to start over";
+        printf("Cool. You can move your mouse to start over\n");
     } else if (timeout == 25000) {
-        qDebug() << "Uff, you're annoying me. Let's start again. I'm simulating your activity now";
+        printf("Uff, you're annoying me. Let's start again. I'm simulating your activity now\n");
         KIdleTime::instance()->simulateUserActivity();
     } else {
         qDebug() << "OUCH";

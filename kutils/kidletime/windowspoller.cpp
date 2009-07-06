@@ -21,6 +21,8 @@
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
 
+#include <QTimer>
+
 WindowsPoller::WindowsPoller(QObject *parent)
         : WidgetBasedPoller(parent)
 {
@@ -39,9 +41,9 @@ int WindowsPoller::getIdleTime()
 
     lii.cbSize = sizeof(lii);
 
-    BOOL ok = GetLastInputInfo(&li);
+    BOOL ok = GetLastInputInfo(&lii);
     if (ok) {
-        idle = GetTickCount() - li.dwTime;
+        idle = GetTickCount() - lii.dwTime;
     }
 
     return idle;
@@ -49,6 +51,8 @@ int WindowsPoller::getIdleTime()
 
 bool WindowsPoller::additionalSetUp()
 {
+    m_idleTimer = new QTimer(this);
+    connect(m_idleTimer, SIGNAL(timeout()), this, SLOT(checkForIdle()));
     return true;
 }
 
@@ -57,10 +61,28 @@ void WindowsPoller::simulateUserActivity()
     int width = GetSystemMetrics(SM_CXSCREEN);
     int height = GetSystemMetrics(SM_CYSCREEN);
 
-    int x = (int)100*65536/width;
-    int y = (int)100*65536/height;
+    int x = (int)100 * 65536 / width;
+    int y = (int)100 * 65536 / height;
 
     mouse_event(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, x, y, NULL, NULL);
+}
+
+void WindowsPoller::catchIdleEvent()
+{
+    m_idleTimer->start(800);
+}
+
+void WindowsPoller::stopCatchingIdleEvents()
+{
+    m_idleTimer->stop();
+}
+
+void WindowsPoller::checkForIdle()
+{
+    if (getIdleTime() < 1000) {
+        stopCatchingIdleEvents();
+        emit resumingFromIdle();
+    }
 }
 
 #include "windowspoller.moc"

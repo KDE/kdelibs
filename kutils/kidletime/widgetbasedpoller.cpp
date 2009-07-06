@@ -99,6 +99,7 @@ void WidgetBasedPoller::waitForActivity()
 
 void WidgetBasedPoller::detectedActivity()
 {
+    stopCatchingIdleEvents();
     emit resumingFromIdle();
 }
 

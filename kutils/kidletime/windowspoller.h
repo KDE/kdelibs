@@ -21,22 +21,30 @@
 
 #include "widgetbasedpoller.h"
 
+class QTimer;
+
 class WindowsPoller : public WidgetBasedPoller
 {
     Q_OBJECT
 
 public:
     WindowsPoller(QObject *parent = 0);
-    virtual ~WindowsBasedPoller();
+    virtual ~WindowsPoller();
 
 public slots:
     void simulateUserActivity();
+    void catchIdleEvent();
+    void stopCatchingIdleEvents();
 
 private:
     bool additionalSetUp();
 
 private slots:
     int getIdleTime();
+    void checkForIdle();
+
+private:
+    QTimer * m_idleTimer;
 };
 
 #endif /* WINDOWSPOLLER_H */
