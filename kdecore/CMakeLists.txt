@@ -99,6 +99,7 @@ endif (UNIX)
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
+add_subdirectory( network/kssld )
 
 ########### next target ###############
 
@@ -204,6 +205,7 @@ set(kdecore_LIB_SRCS
    network/k3socketbuffer.cpp
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
+   network/ksslcertificatemanager.cpp
    network/ktcpsocket.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp

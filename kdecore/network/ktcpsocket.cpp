@@ -18,11 +18,14 @@
 */
 
 #include "ktcpsocket.h"
+#include "ktcpsocket_p.h"
 
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
+#include <ksslcertificatemanager.h>
 #include <kstandarddirs.h>
+#include <klocale.h>
 
 #include <QtCore/QMutex>
 #include <QtCore/QStringList>
@@ -30,31 +33,6 @@
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QNetworkProxy>
 
-K_GLOBAL_STATIC(QMutex, ksslsocketInitMutex)
-static QList<QSslCertificate> *kdeCaCertificateList;
-
-static void initKSslSocket()
-{
-    static bool initialized = false;
-    QMutexLocker locker(ksslsocketInitMutex);
-    if (!initialized) {
-        if (!kdeCaCertificateList) {
-            kdeCaCertificateList = new QList<QSslCertificate>;
-            QSslSocket::setDefaultCaCertificates(*kdeCaCertificateList); // set Qt's set to empty
-        }
-
-        if (!KGlobal::hasMainComponent())
-            return;                 // we need KGlobal::dirs() available
-        initialized = true;
-
-        // set default CAs from KDE's own bundle
-        QStringList bundles = KGlobal::dirs()->findAllResources("data", "kssl/ca-bundle.crt");
-        foreach (const QString &bundle, bundles) {
-            *kdeCaCertificateList += QSslCertificate::fromPath(bundle);
-        }
-        //kDebug(7029) << "Loading" << kdeCaCertificateList->count() << "CA certificates from" << bundles;
-    }
-}
 
 static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
 {
@@ -168,41 +146,41 @@ public:
         }
     }
 
-    static QString errorString(KSslError::Error e)                      
-    {                                                                   
-        switch (e) {                                                    
-        case KSslError::NoError:                                        
-            return "No error";                                          
-        case KSslError::InvalidCertificateAuthorityCertificate:         
-            return "The certificate authority's certificate is invalid";
-        case KSslError::ExpiredCertificate:                             
-            return "The certificate has expired";                       
-        case KSslError::InvalidCertificate:                             
-            return "The certificate is invalid";                        
-        case KSslError::SelfSignedCertificate:                          
-            return "The certificate is not signed by any trusted certificate authority";
-        case KSslError::RevokedCertificate:                                             
-            return "The certificate has been revoked";                                  
-        case KSslError::InvalidCertificatePurpose:                                      
-            return "The certificate is unsuitable for this purpose";                    
-        case KSslError::UntrustedCertificate:                                           
-            return "The root certificate authority's certificate is not trusted for this purpose";
-        case KSslError::RejectedCertificate:                                                      
-            return "The certificate authority's certificate is marked to reject this certificate's purpose";
-        case KSslError::NoPeerCertificate:                                                                  
-            return "The peer did not present any certificate";                                              
-        case KSslError::HostNameMismatch:                                                                   
-            return "The certificate does not apply to the given host";                                      
-        case KSslError::CertificateSignatureFailed:                                                         
-            return "The certificate cannot be verified for internal reasons";                               
-        case KSslError::PathLengthExceeded:                                                                 
-            return "The certificate chain is too long";                                                     
-        case KSslError::UnknownError:                                                                       
-        default:                                                                                            
-            return "Unknown error";                                                                         
-        }                                                                                                   
-    }                                                                                                       
-             
+    static QString errorString(KSslError::Error e)
+    {
+        switch (e) {
+        case KSslError::NoError:
+            return i18nc("SSL error","No error");
+        case KSslError::InvalidCertificateAuthorityCertificate:
+            return i18nc("SSL error","The certificate authority's certificate is invalid");
+        case KSslError::ExpiredCertificate:
+            return i18nc("SSL error","The certificate has expired");
+        case KSslError::InvalidCertificate:
+            return i18nc("SSL error","The certificate is invalid");
+        case KSslError::SelfSignedCertificate:
+            return i18nc("SSL error","The certificate is not signed by any trusted certificate authority");
+        case KSslError::RevokedCertificate:
+            return i18nc("SSL error","The certificate has been revoked");
+        case KSslError::InvalidCertificatePurpose:
+            return i18nc("SSL error","The certificate is unsuitable for this purpose");
+        case KSslError::UntrustedCertificate:
+            return i18nc("SSL error","The root certificate authority's certificate is not trusted for this purpose");
+        case KSslError::RejectedCertificate:
+            return i18nc("SSL error","The certificate authority's certificate is marked to reject this certificate's purpose");
+        case KSslError::NoPeerCertificate:
+            return i18nc("SSL error","The peer did not present any certificate");
+        case KSslError::HostNameMismatch:
+            return i18nc("SSL error","The certificate does not apply to the given host");
+        case KSslError::CertificateSignatureFailed:
+            return i18nc("SSL error","The certificate cannot be verified for internal reasons");
+        case KSslError::PathLengthExceeded:
+            return i18nc("SSL error","The certificate chain is too long");
+        case KSslError::UnknownError:
+        default:
+            return i18nc("SSL error","Unknown error");
+        }
+    }
+
     KSslError::Error error;
     QSslCertificate certificate;
 };
@@ -219,7 +197,7 @@ KSslError::KSslError(Error errorCode, const QSslCertificate &certificate)
 KSslError::KSslError(const QSslError &other)
  : d(new KSslErrorPrivate())
 {
-    d->error = KSslErrorPrivate::errorFromQSslError(other.error());  
+    d->error = KSslErrorPrivate::errorFromQSslError(other.error());
     d->certificate = other.certificate();
 }
 
@@ -252,7 +230,7 @@ KSslError::Error KSslError::error() const
 
 QString KSslError::errorString() const
 {
-    return KSslErrorPrivate::errorString(d->error); 
+    return KSslErrorPrivate::errorString(d->error);
 }
 
 
@@ -267,12 +245,11 @@ class KTcpSocketPrivate
 public:
     KTcpSocketPrivate(KTcpSocket *qq)
      : q(qq),
+       certificatesLoaded(false),
        emittedReadyRead(false)
     {
-        initKSslSocket();
-
-        Q_ASSERT(kdeCaCertificateList);
-        sock.setCaCertificates(*kdeCaCertificateList);
+        // create the instance, which sets Qt's static internal cert set to empty.
+        KSslCertificateManager::self();
     }
 
     KTcpSocket::State state(QAbstractSocket::SocketState s)
@@ -378,7 +355,16 @@ public:
         }
     }
 
+    void maybeLoadCertificates()
+    {
+        if (!certificatesLoaded) {
+            sock.setCaCertificates(KSslCertificateManager::self()->rootCertificates());
+            certificatesLoaded = true;
+        }
+    }
+
     KTcpSocket *const q;
+    bool certificatesLoaded;
     bool emittedReadyRead;
     QSslSocket sock;
     QList<KSslCipher> ciphers;
@@ -397,6 +383,7 @@ KTcpSocket::KTcpSocket(QObject *parent)
     connect(&d->sock, SIGNAL(bytesWritten(qint64)), this, SIGNAL(bytesWritten(qint64)));
     connect(&d->sock, SIGNAL(readyRead()), this, SLOT(reemitReadyRead()));
     connect(&d->sock, SIGNAL(connected()), this, SIGNAL(connected()));
+    connect(&d->sock, SIGNAL(encrypted()), this, SIGNAL(encrypted()));
     connect(&d->sock, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
     connect(&d->sock, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
             this, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)));
@@ -662,6 +649,7 @@ void KTcpSocket::addCaCertificates(const QList<QSslCertificate> &certificates)
 
 QList<QSslCertificate> KTcpSocket::caCertificates() const
 {
+    d->maybeLoadCertificates();
     return d->sock.caCertificates();
 }
 
@@ -674,6 +662,7 @@ QList<KSslCipher> KTcpSocket::ciphers() const
 
 void KTcpSocket::connectToHostEncrypted(const QString &hostName, quint16 port, OpenMode openMode)
 {
+    d->maybeLoadCertificates();
     d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.connectToHostEncrypted(hostName, port, openMode);
     setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
@@ -707,6 +696,7 @@ KSslCipher KTcpSocket::sessionCipher() const
 void KTcpSocket::setCaCertificates(const QList<QSslCertificate> &certificates)
 {
     d->sock.setCaCertificates(certificates);
+    d->certificatesLoaded = true;
 }
 
 
@@ -767,6 +757,7 @@ void KTcpSocket::ignoreSslErrors()
 //slot
 void KTcpSocket::startClientEncryption()
 {
+    d->maybeLoadCertificates();
     d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.startClientEncryption();
 }
@@ -1013,7 +1004,7 @@ int KSslCipher::usedBits() const
 }
 
 
-//static 
+//static
 QList<KSslCipher> KSslCipher::supportedCiphers()
 {
     QList<KSslCipher> ret;
@@ -1022,6 +1013,40 @@ QList<KSslCipher> KSslCipher::supportedCiphers()
         ret.append(KSslCipher(c));
     }
     return ret;
+}
+
+
+KSslErrorUiData::KSslErrorUiData()
+ : d(new Private())
+{
+    d->usedBits = 0;
+    d->bits = 0;
+}
+
+
+KSslErrorUiData::KSslErrorUiData(const KTcpSocket *socket)
+ : d(new Private())
+{
+    d->certificateChain = socket->peerCertificateChain();
+    d->sslErrors = socket->sslErrors();
+    d->ip = socket->peerAddress().toString();
+    d->host = socket->peerName();
+    d->sslProtocol = socket->negotiatedSslVersionName();
+    d->cipher = socket->sessionCipher().name();
+    d->usedBits = socket->sessionCipher().usedBits();
+    d->bits = socket->sessionCipher().supportedBits();
+}
+
+
+KSslErrorUiData::KSslErrorUiData(const KSslErrorUiData &other)
+ : d(new Private(*other.d))
+{}
+
+
+KSslErrorUiData &KSslErrorUiData::operator=(const KSslErrorUiData &other)
+{
+    *d = *other.d;
+    return *this;
 }
 
 

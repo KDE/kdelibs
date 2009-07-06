@@ -323,7 +323,7 @@ Q_SIGNALS:
     void stateChanged(State);
 
     //from QSslSocket
-    // void encrypted();
+    void encrypted();
     void encryptionModeChanged(EncryptionMode);
     void sslErrors(const QList<KSslError> &errors);
 
@@ -343,6 +343,33 @@ private:
 
     friend class KTcpSocketPrivate;
     KTcpSocketPrivate *const d;
+};
+
+
+/**
+ * This class can hold all the necessary data from a KTcpSocket to ask the user
+ * to continue connecting in the face of SSL errors.
+ * It can be used to carry the data for the UI over time or over thread boundaries.
+ *
+ * @see: KSslCertificateManager::askIgnoreSslErrors()
+ */
+class KDECORE_EXPORT KSslErrorUiData
+{
+public:
+    /**
+     * Default construct an instance with no useful data.
+     */
+    KSslErrorUiData();
+    /**
+     * Create an instance and initialize it with SSL error data from @p socket.
+     */
+    KSslErrorUiData(const KTcpSocket *socket);
+    KSslErrorUiData(const KSslErrorUiData &other);
+    KSslErrorUiData &operator=(const KSslErrorUiData &);
+    class Private;
+private:
+    friend class Private;
+    Private *const d;
 };
 
 
