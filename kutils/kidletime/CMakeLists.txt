@@ -39,9 +39,9 @@ target_link_libraries(kidle ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTCORE_
 if (Q_WS_X11)
     target_link_libraries(kidle Xtst Xss Xext X11)
 elseif (Q_WS_MAC)
-    target_link_libraries(kidle maclib)
+#    target_link_libraries(kidle maclib)
 elseif (Q_WS_WIN)
-    target_link_libraries(kidle winlib)
+#    target_link_libraries(kidle winlib)
 endif (Q_WS_X11)
 
 
