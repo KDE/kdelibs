@@ -34,11 +34,6 @@ public:
     WidgetBasedPoller(QObject *parent = 0);
     virtual ~WidgetBasedPoller();
 
-    AbstractSystemPoller::PollingType getPollingType() {
-        return AbstractSystemPoller::WidgetBased;
-    };
-    QString name();
-
     bool isAvailable();
     bool setUpPoller();
     void unloadPoller();

@@ -42,10 +42,6 @@ public:
 
     virtual ~XSyncBasedPoller();
 
-    AbstractSystemPoller::PollingType getPollingType() {
-        return AbstractSystemPoller::XSyncBased;
-    };
-
     bool isAvailable();
     bool setUpPoller();
     void unloadPoller();

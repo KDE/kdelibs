@@ -23,7 +23,7 @@
 #include "xsyncbasedpoller.h"
 #else
 #ifdef Q_WS_MAC
-
+#include "macpoller.h"
 #else
 #include "windowspoller.h"
 #endif
@@ -138,7 +138,8 @@ void KIdleTimePrivate::loadSystem()
     }
 #else
 #ifdef Q_WS_MAC
-
+    poller = new MacPoller();
+    poller->setUpPoller();
 #else
     poller = new WindowsPoller();
     poller->setUpPoller();
@@ -151,7 +152,7 @@ void KIdleTimePrivate::unloadCurrentSystem()
     if (poller) {
         poller->unloadPoller();
 
-        if (poller->getPollingType() != AbstractSystemPoller::XSyncBased) {
+        if (qobject_cast<XSyncBasedPoller*>(poller) == 0) {
             poller->deleteLater();
         }
     }

@@ -27,16 +27,8 @@ class AbstractSystemPoller : public QWidget
 
 public:
 
-    enum PollingType {
-        Abstract = -1,
-        WidgetBased = 1,
-        XSyncBased = 2
-    };
-
     AbstractSystemPoller(QObject *parent = 0);
     virtual ~AbstractSystemPoller();
-
-    virtual PollingType getPollingType() = 0;
 
     virtual bool isAvailable() = 0;
     virtual bool setUpPoller() = 0;
