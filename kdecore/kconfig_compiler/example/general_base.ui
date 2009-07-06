@@ -27,7 +27,7 @@
                 <string>OneOption</string>
             </property>
         </widget>
-        <widget class="QSpinBox" row="1" column="1">
+        <widget class="KIntSpinBox" row="1" column="1">
             <property name="name">
                 <cstring>kcfg_AnotherOption2</cstring>
             </property>
@@ -42,4 +42,11 @@
         </widget>
     </grid>
 </widget>
+<customwidgets>
+    <customwidget>
+        <class>KComboBox</class>
+        <extends>QComboBox</extends>
+        <header>kcombobox.h</header>
+    </customwidget>
+</customwidgets>
 </UI>

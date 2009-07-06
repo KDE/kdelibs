@@ -6,7 +6,7 @@
 class QComboBox;
 class QCheckBox;
 class KRatingWidget;
-class QSpinBox;
+class KIntSpinBox;
 class QPushButton;
 
 class RatingPainterTestWidget : public QWidget
@@ -22,9 +22,9 @@ private Q_SLOTS:
     void slotAlignmentChanged();
 
 private:
-    QSpinBox* m_spinMaxRating;
-    QSpinBox* m_spinRating;
-    QSpinBox* m_spinSpacing;
+    KIntSpinBox* m_spinMaxRating;
+    KIntSpinBox* m_spinRating;
+    KIntSpinBox* m_spinSpacing;
 
     QComboBox* m_comboAlignmentH;
     QComboBox* m_comboAlignmentV;

@@ -6,11 +6,11 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
-#include <QtGui/QSpinBox>
 #include <QtGui/QPushButton>
 
 #include <kicon.h>
 #include <kicondialog.h>
+#include <KNumInput>
 
 
 RatingPainterTestWidget::RatingPainterTestWidget()
@@ -21,9 +21,9 @@ RatingPainterTestWidget::RatingPainterTestWidget()
     m_ratingWidget->setFrameStyle( QFrame::StyledPanel|QFrame::Sunken );
     m_checkHalfSteps = new QCheckBox( "Enable half steps", this );
     m_checkEnalbed = new QCheckBox( "Rating disabled", this );
-    m_spinMaxRating = new QSpinBox( this );
-    m_spinRating = new QSpinBox( this );
-    m_spinSpacing = new QSpinBox( this );
+    m_spinMaxRating = new KIntSpinBox( this );
+    m_spinRating = new KIntSpinBox( this );
+    m_spinSpacing = new KIntSpinBox( this );
 
     m_comboAlignmentH = new QComboBox( this );
     m_comboAlignmentV = new QComboBox( this );
