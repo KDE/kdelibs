@@ -96,6 +96,7 @@
 #include <sys/mnttab.h>
 #endif
 
+#include <kdirnotify.h>
 #include <kio/ioslave_defaults.h>
 #include <kde_file.h>
 #include <kglobal.h>
@@ -721,6 +722,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
             error(KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig);
             return;
         }
+        org::kde::KDirNotify::emitFileRenamed(dest, dest_orig);
     }
 
     // set final permissions
@@ -1114,7 +1116,7 @@ void FileProtocol::unmount( const QString& _point )
 		if( WEXITSTATUS( system( buffer.constData() )) == 4 ) {
 			/*
 			 *  this is not an error, so skip "testLogFile()"
-			 *  to avoid wrong/confusing error popup. The 
+			 *  to avoid wrong/confusing error popup. The
 			 *  temporary file is removed by KTemporaryFile's
 			 *  destructor, so don't do that manually.
 			 */
