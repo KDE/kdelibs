@@ -914,8 +914,8 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
   QString name = QLatin1String( "index.html" );
   if ( !suggestedFilename.isEmpty() )
     name = suggestedFilename;
-  else if ( !url.fileName().isEmpty() )
-    name = url.fileName();
+  else if ( !url.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
+    name = url.fileName(KUrl::ObeyTrailingSlash);
 
   KUrl destURL;
   int query;
@@ -1009,11 +1009,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
 
           if ( downloadViaKIO )
           {
-              KIO::Job *job = KIO::file_copy( url, destURL, -1, KIO::Overwrite );
-              job->setMetaData(metadata);
-              job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
-              job->addMetaData("cache", "cache"); // Use entry from cache if available.
-              job->uiDelegate()->setAutoErrorHandlingEnabled( true );
+              KParts::BrowserRun::saveUrlUsingKIO(url, destURL, parent, metadata);
           }
         } //end if(!saved)
     }

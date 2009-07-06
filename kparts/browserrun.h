@@ -102,8 +102,21 @@ namespace KParts {
 
         // static so that it can be called from other classes
         static void simpleSave( const KUrl & url, const QString & suggestedFileName,
-                                QWidget* window =0 );
+                                QWidget* window =0 ); // KDE5: remove
+        /**
+         * If kget integration is enabled, passes the url to kget.
+         * Otherwise, asks the user for a destination url, and calls saveUrlUsingKIO.
+         * @since 4.4
+         */
+        static void saveUrl(const KUrl & url, const QString & suggestedFileName,
+                            QWidget* window, const KParts::OpenUrlArguments& args);
 
+        /**
+         * Starts the KIO file copy job to download @p srcUrl into @p destUrl.
+         * @since 4.4
+         */
+        static void saveUrlUsingKIO(const KUrl & srcUrl, const KUrl& destUrl,
+                                    QWidget* window, const QMap<QString, QString> &metaData);
 
         static bool allowExecution( const QString &mimeType, const KUrl &url );
 

@@ -31,6 +31,7 @@
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kstandarddirs.h>
+#include "browserrun_p.h"
 #include <assert.h>
 
 using namespace KParts;
@@ -392,12 +393,18 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
 // Default implementation, overridden in KHTMLRun
 void BrowserRun::save( const KUrl & url, const QString & suggestedFileName )
 {
-    simpleSave( url, suggestedFileName, d->m_window );
+    saveUrl(url, suggestedFileName, d->m_window, KParts::OpenUrlArguments());
 }
 
 // static
 void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName,
                              QWidget* window )
+{
+    saveUrl(url, suggestedFileName, window, KParts::OpenUrlArguments());
+}
+
+void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFileName,
+                                 QWidget* window, const KParts::OpenUrlArguments& args)
 {
     // DownloadManager <-> konqueror integration
     // find if the integration is enabled
@@ -444,19 +451,36 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
                                         window);
     dlg->setOperationMode( KFileDialog::Saving );
     dlg->setCaption(i18n("Save As"));
+    dlg->setConfirmOverwrite(true);
 
-    dlg->setSelection( suggestedFileName.isEmpty() ? url.fileName() : suggestedFileName );
+    QString name;
+    if ( !suggestedFileName.isEmpty() )
+        name = suggestedFileName;
+    else
+        name = url.fileName(KUrl::ObeyTrailingSlash); // can be empty, e.g. in case http://www.kde.org/
+
+    dlg->setSelection(name);
     if ( dlg->exec() )
     {
         KUrl destURL( dlg->selectedUrl() );
         if ( destURL.isValid() )
         {
-            KIO::Job *job = KIO::copy( url, destURL );
-            job->ui()->setWindow (window);
-            job->ui()->setAutoErrorHandlingEnabled( true );
+            saveUrlUsingKIO(url, destURL, window, args.metaData());
         }
     }
     delete dlg;
+}
+
+void BrowserRun::saveUrlUsingKIO(const KUrl & srcUrl, const KUrl& destUrl,
+                                 QWidget* window, const QMap<QString, QString> &metaData)
+{
+    KIO::FileCopyJob *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
+    job->setMetaData(metaData);
+    job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
+    job->addMetaData("cache", "cache"); // Use entry from cache if available.
+    job->ui()->setWindow(window);
+    job->ui()->setAutoErrorHandlingEnabled( true );
+    new DownloadJobWatcher(job, metaData);
 }
 
 void BrowserRun::slotStatResult( KJob *job )
@@ -561,3 +585,4 @@ KParts::BrowserArguments& KParts::BrowserRun::browserArguments()
 }
 
 #include "browserrun.moc"
+#include "browserrun_p.moc"
