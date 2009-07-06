@@ -29,8 +29,9 @@ class MyHelper : public QObject
     Q_OBJECT
     
     public slots:
-        ActionReply action1(QVariantMap args);
-        ActionReply action2(QVariantMap args);
+        ActionReply read(QVariantMap args);
+        ActionReply write(QVariantMap args);
+        ActionReply longaction(QVariantMap args);
 };
 
 #endif

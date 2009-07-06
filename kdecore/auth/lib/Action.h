@@ -56,11 +56,11 @@ class Action
         ActionReply execute();
         ActionReply execute(const QString &helperID);
         
-        bool executeAsync(QObject *target, const char *slot);
-        bool executeAsync(QObject *target, const char *slot, const QString &helperID);
+        bool executeAsync(QObject *target = NULL, const char *slot = NULL);
+        bool executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
                 
-        static bool executeActions(const QList<Action> &actions, const QString &helperID);
-        static bool executeActions(const QList<Action> &actions);
+        static bool executeActions(const QList<Action> &actions, const QString &helperID, QList<Action> *deniedActions = NULL);
+        static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions = NULL);
         
         static QString helperID();
         static void setHelperID(const QString &id);

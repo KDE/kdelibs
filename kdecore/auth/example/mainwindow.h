@@ -20,7 +20,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
+#include <QProgressBar>
 
 #include "ActionReply.h"
 
@@ -32,6 +33,8 @@ namespace Ui
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    
+    QProgressBar *progressBar;
 
 public:
     MainWindow(QWidget *parent = 0);
@@ -42,9 +45,9 @@ private:
 
 private slots:
     void on_actionOpen_triggered();
-    void on_actionOpenAsync_triggered();
-    void action1Executed(ActionReply reply);
-    void action2Executed(ActionReply reply);
+    void on_actionSave_triggered();
+    void on_longAction_triggered();
+    void longActionPerformed(ActionReply reply);
 };
 
 #endif // MAINWINDOW_H

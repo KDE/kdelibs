@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>763</width>
-    <height>552</height>
+    <width>759</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>763</width>
+     <width>759</width>
      <height>24</height>
     </rect>
    </property>
@@ -34,18 +34,25 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
-    <addaction name="actionOpenAsync"/>
+    <addaction name="actionSave"/>
+    <addaction name="longAction"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
    </property>
   </action>
-  <action name="actionOpenAsync">
+  <action name="actionSave">
    <property name="text">
-    <string>Open Asynchrounously</string>
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="longAction">
+   <property name="text">
+    <string>Long Action</string>
    </property>
   </action>
  </widget>

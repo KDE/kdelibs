@@ -20,12 +20,13 @@
 #include "ActionReply.h"
 
 
+ActionReply ActionReply::SuccessReply = ActionReply();
+ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
 ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
 ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
 ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
 ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
 ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
-
 
 
 ActionReply::ActionReply() : m_errorCode(0), m_type(Success) {}
@@ -66,24 +67,14 @@ bool ActionReply::failed()
 
 int ActionReply::errorCode() const
 {
-    switch(m_type)
-    {
-        case KAuthError:
-            return m_errorCode;
-        case HelperError:
-            if(m_data.contains("errorCode"))
-                return m_data.value("errorCode").toInt();
-            else
-                return 0;
-        case Success:
-            return 0;
-    }
+    return m_errorCode;
 }
 
 void ActionReply::setErrorCode(int errorCode)
 {
     m_errorCode = errorCode;
-    m_type = KAuthError;
+    if(m_type != HelperError)
+        m_type = KAuthError;
 }
 
 QString ActionReply::errorDescription()

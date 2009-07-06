@@ -35,7 +35,8 @@ public:
         Success
     };
     
-    
+    static ActionReply SuccessReply;
+    static ActionReply HelperErrorReply;
     static ActionReply NoResponderReply;
     static ActionReply NoSuchActionReply;
     static ActionReply AuthorizationDeniedReply;
@@ -60,6 +61,7 @@ public:
     QVariantMap &data();
     QVariantMap data() const;
     Type type() const;
+    void setType(Type type);
     
     bool succeded();
     bool failed();

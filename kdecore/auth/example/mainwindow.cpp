@@ -32,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindowClass)
 {
     ui->setupUi(this);
+    Action::setHelperID("org.kde.auth.example");
+    progressBar = new QProgressBar();
+    progressBar->setRange(0, 100);
+    this->statusBar()->addPermanentWidget(progressBar);
+    progressBar->hide();
 }
 
 MainWindow::~MainWindow()
@@ -45,66 +50,76 @@ void MainWindow::on_actionOpen_triggered()
 
     QFile file(filename);
     QTextStream stream(&file);
+    QString contents;
 
     if(!file.open(QIODevice::ReadOnly))
     {
-        Action::setHelperID("org.kde.auth.example");
-        
-        Action readAction = "org.kde.auth.example.action1";
-        ActionReply reply;
-        if(readAction.authorize())
+        if(file.error() & QFile::PermissionsError)
         {
-            reply = readAction.execute();
-        }
+            Action readAction = "org.kde.auth.example.read";
+            readAction.arguments()["filename"] = filename;
+        
+            ActionReply reply = readAction.execute();
+            if(reply.failed())
+                QMessageBox::information(this, "Error", QString("KAuth returned an error code: %1").arg(reply.errorCode()));
+            else
+                contents = reply.data()["contents"].toString();
+        }else
+            QMessageBox::information(this, "Error", QString("Unable to open file: %1").arg(file.error()));
+    }else
+        contents = stream.readAll();
 
-        if(reply.failed())
-            QMessageBox::information(this, "Errore", QString("KAuth returned an error code: %1").arg(reply.errorCode()));
-        else
-            ui->plainTextEdit->setPlainText(reply.data().value("text").toString());
-
-        return;
-    }
-
-    ui->plainTextEdit->setPlainText(stream.readAll());
+    ui->plainTextEdit->setPlainText(contents);
 
     file.close();
 }
 
-void MainWindow::on_actionOpenAsync_triggered()
+void MainWindow::on_actionSave_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("All (*.*)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "/home", tr("All (*.*)"));
     
     QFile file(filename);
     QTextStream stream(&file);
     
-    if(!file.open(QIODevice::ReadOnly))
+    if(!file.open(QIODevice::WriteOnly))
     {
-        Action::setHelperID("org.kde.auth.example");
-        
-        Action action1 = "org.kde.auth.example.action1";
-        Action action2 = "org.kde.auth.example.action2";
-        
-        connect(action1.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(action1Executed(ActionReply)));
-        connect(action2.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(action2Executed(ActionReply)));
-        
-        if(action1.authorize() && action2.authorize())
-        {            
-           if(!Action::executeActions(QList<Action>() << action1 << action2))
-               qDebug() << "executeActions returns false";
-        }
-    }
-    
-    ui->plainTextEdit->setPlainText(stream.readAll());
+        if(file.error() & QFile::PermissionsError)
+        {
+            Action writeAction = "org.kde.auth.example.write";
+            writeAction.arguments()["filename"] = filename;
+            writeAction.arguments()["contents"] = ui->plainTextEdit->toPlainText();
+            
+            ActionReply reply = writeAction.execute();
+            if(reply.failed())
+                QMessageBox::information(this, "Error", QString("KAuth returned an error code: %1").arg(reply.errorCode()));
+        }else
+            QMessageBox::information(this, "Error", QString("Unable to open file: %1").arg(file.error()));
+    }else
+        stream << ui->plainTextEdit->toPlainText();
     
     file.close();
 }
 
-void MainWindow::action1Executed(ActionReply reply)
+void MainWindow::on_longAction_triggered()
 {
-    qDebug() << "Action1 executed asynchronously";
+    Action longAction = "org.kde.auth.example.longaction";
+    connect(longAction.watcher(), SIGNAL(progressStep(int)), progressBar, SLOT(setValue(int)));
+    connect(longAction.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(longActionPerformed(ActionReply)));
+    
+    
+    if(!longAction.executeAsync())
+        this->statusBar()->showMessage("Could not execute the long action");
+    else
+        progressBar->show();
 }
 
-void MainWindow::action2Executed(ActionReply reply)
+void MainWindow::longActionPerformed(ActionReply reply)
 {
-    qDebug() << "Action2 executed asynchronously";
+    progressBar->hide();
+    progressBar->setValue(0);
+    
+    if(reply.succeded())
+        this->statusBar()->showMessage("Action succeded", 10000);
+    else
+        this->statusBar()->showMessage(QString("Could not execute the long action: %1").arg(reply.errorCode()), 10000);
 }

@@ -47,7 +47,7 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
     args << blob << BackendsManager::authBackend()->callerID();
     message.setArguments(args);
     
-    QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui); // This is a NO_REPLY method
+    QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::NoBlock); // This is a NO_REPLY method
     if(reply.type() == QDBusMessage::ErrorMessage)
         return false;
     
@@ -82,9 +82,8 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     
     if(reply.arguments().size() != 1)
         return ActionReply::WrongReplyDataReply;
-                
     
-    return ActionReply(reply.arguments().first().toByteArray());
+    return reply.arguments().first().toByteArray();
 }
 
 bool DBusHelperProxy::initHelper(const QString &name)

@@ -32,9 +32,9 @@ class HelperSupport
     static int helperMain(int argc, char **argv, const char *id, QObject *responder);
     static void helperDebugHandler(QtMsgType type, const char *msg);
     
-    public:
-        void progressStep(int step);
-        void progressStep(QVariantMap data);
+public:
+    static void progressStep(int step);
+    static void progressStep(QVariantMap data);
     
     friend int main(int, char **);
 };

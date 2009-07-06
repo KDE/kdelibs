@@ -30,11 +30,13 @@ void Action::init()
 {
     backend = BackendsManager::authBackend();
     backend->setupAction(m_name);
-
 }
 
 bool Action::authorize()
 {
+    if(status() == Authorized)
+        return true;
+    
     return backend->authorizeAction(m_name);
 }
 
@@ -43,28 +45,40 @@ Action::AuthStatus Action::status()
     return backend->actionStatus(m_name);
 }
 
-bool Action::executeActions(const QList<Action> &actions)
+bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions)
 {
-    return executeActions(actions, helperID());
+    return executeActions(actions, helperID(), deniedActions);
 }
 
-bool Action::executeActions(const QList<Action> &actions, const QString &helperID)
+bool Action::executeActions(const QList<Action> &actions, const QString &helperID, QList<Action> *deniedActions)
 {
     QList<QPair<QString, QVariantMap> > list;
     
     foreach(Action a, actions)
-        list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
+    {
+        if(a.authorize())
+            list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
+        else if(deniedActions)
+            *deniedActions << a;
+    }
+    
+    if(list.isEmpty())
+        return false;
     
     return BackendsManager::helperProxy()->executeActions(list, helperID);
 }
 
 bool Action::executeAsync(QObject *target, const char *slot)
 {
-    return executeAsync(target, slot, helperID());
+    return executeAsync(helperID(), target, slot);
 }
 
-bool Action::executeAsync(QObject *target, const char *slot, const QString &helperID)
+// TODO: Deve restituire false se non è autorizzata?
+bool Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
 {
+    if(!authorize())
+        return false;
+    
     if(target && slot)
         QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
     
@@ -78,6 +92,8 @@ ActionReply Action::execute()
 
 ActionReply Action::execute(const QString &helperID)
 {
+    if(!authorize())
+        return ActionReply::AuthorizationDeniedReply;
     return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args);
 }
 

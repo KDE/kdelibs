@@ -18,21 +18,60 @@
 */
 
 #include <QtDebug>
+#include <QFile>
+#include <QTextStream>
+#include <unistd.h>
 
 #include "helper.h"
 
-ActionReply MyHelper::action1(QVariantMap args)
+ActionReply MyHelper::read(QVariantMap args)
 {
-    qDebug() << "Action 1 executed";
+    ActionReply reply;
+    QString filename = args["filename"].toString();
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        reply = ActionReply::HelperErrorReply;
+        reply.setErrorCode(file.error());
+        
+        return reply;
+    }
     
-    return ActionReply();
+    QTextStream stream(&file);
+    QString contents;
+    stream >> contents;
+    reply.data()["contents"] = contents;
+    
+    return reply;
 }
 
-ActionReply MyHelper::action2(QVariantMap args)
+ActionReply MyHelper::write(QVariantMap args)
 {
-    qDebug() << "Action 2 executed";
+    QString filename = args["filename"].toString();
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        ActionReply reply = ActionReply::HelperErrorReply;
+        reply.setErrorCode(file.error());
+        
+        return reply;
+    }
     
-    return ActionReply();
+    QTextStream stream(&file);
+    stream << args["contents"].toString();
+    
+    return ActionReply::SuccessReply;
+}
+
+ActionReply MyHelper::longaction(QVariantMap args)
+{
+    for(int i = 1; i <= 100; i++)
+    {
+        HelperSupport::progressStep(i);
+        usleep(250000);
+    }
+    
+    return ActionReply::SuccessReply;
 }
 
 KDE4_AUTH_HELPER("org.kde.auth.example", MyHelper)
