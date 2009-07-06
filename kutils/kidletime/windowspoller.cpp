@@ -54,7 +54,13 @@ bool WindowsPoller::additionalSetUp()
 
 void WindowsPoller::simulateUserActivity()
 {
+    int width = GetSystemMetrics(SM_CXSCREEN);
+    int height = GetSystemMetrics(SM_CYSCREEN);
 
+    int x = (int)100*65536/width;
+    int y = (int)100*65536/height;
+
+    mouse_event(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, x, y, NULL, NULL);
 }
 
 #include "windowspoller.moc"
