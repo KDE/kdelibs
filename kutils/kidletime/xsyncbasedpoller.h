@@ -61,6 +61,7 @@ public slots:
     int forcePollRequest();
     void catchIdleEvent();
     void stopCatchingIdleEvents();
+    void simulateUserActivity();
 
 private slots:
     int poll();

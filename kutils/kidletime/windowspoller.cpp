@@ -52,4 +52,9 @@ bool WindowsPoller::additionalSetUp()
     return true;
 }
 
+void WindowsPoller::simulateUserActivity()
+{
+
+}
+
 #include "windowspoller.moc"

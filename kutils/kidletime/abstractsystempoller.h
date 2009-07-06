@@ -49,7 +49,7 @@ public slots:
     virtual int forcePollRequest() = 0;
     virtual void catchIdleEvent() = 0;
     virtual void stopCatchingIdleEvents() = 0;
-    virtual void simulateUserActivity();
+    virtual void simulateUserActivity() = 0;
 
 signals:
     void resumingFromIdle();

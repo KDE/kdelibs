@@ -18,18 +18,6 @@
 
 #include "abstractsystempoller.h"
 
-//#include <config-X11.h>
-
-#define HAVE_XTEST 1 // the usual hack
-
-#ifdef HAVE_XTEST
-#include <QX11Info>
-
-#include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
-#include <fixx11h.h>
-#endif // HAVE_XTEST
-
 AbstractSystemPoller::AbstractSystemPoller(QObject *parent)
         : QWidget(0)
 {
@@ -38,15 +26,6 @@ AbstractSystemPoller::AbstractSystemPoller(QObject *parent)
 
 AbstractSystemPoller::~AbstractSystemPoller()
 {
-}
-
-void AbstractSystemPoller::simulateUserActivity()
-{
-#ifdef HAVE_XTEST
-    Display* display = QX11Info::display();
-    XTestFakeMotionEvent(display, 0, 1, 2, 0);
-    XSync(display, false);
-#endif // HAVE_XTEST
 }
 
 #include "abstractsystempoller.moc"

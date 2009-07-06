@@ -21,6 +21,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QEvent>
+#include <QDebug>
 
 WidgetBasedPoller::WidgetBasedPoller(QObject *parent)
         : AbstractSystemPoller(parent)
@@ -114,7 +115,7 @@ int WidgetBasedPoller::poll()
 
     // Check if we reached a timeout..
     foreach(int i, m_timeouts) {
-        if (i - idle < 1000 || idle - i < 1000) {
+        if ((i - idle < 300 && i > idle) || (idle - i < 300 && idle > i)) {
             // Bingo!
             emit timeoutReached(i);
         }
@@ -128,6 +129,8 @@ int WidgetBasedPoller::poll()
             mintime = i;
         }
     }
+
+    //qDebug() << "mintime " << mintime << "idle " << idle;
 
     if (mintime != 0) {
         m_pollTimer->start(mintime - idle);

@@ -31,6 +31,9 @@ class XScreensaverBasedPoller: public WidgetBasedPoller
         XScreensaverBasedPoller(QObject *parent = 0);
         virtual ~XScreensaverBasedPoller();
 
+    public slots:
+        void simulateUserActivity();
+
     private:
         bool additionalSetUp();
 

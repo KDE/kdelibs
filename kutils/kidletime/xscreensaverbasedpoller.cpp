@@ -22,6 +22,16 @@
 
 #include <X11/extensions/scrnsaver.h>
 
+#define HAVE_XTEST 1 // the usual hack
+
+#ifdef HAVE_XTEST
+#include <QX11Info>
+
+#include <X11/keysym.h>
+#include <X11/extensions/XTest.h>
+#include <fixx11h.h>
+#endif // HAVE_XTEST
+
 XScreensaverBasedPoller::XScreensaverBasedPoller(QObject *parent)
         : WidgetBasedPoller(parent)
 {
@@ -58,6 +68,17 @@ int XScreensaverBasedPoller::getIdleTime()
     mitInfo = XScreenSaverAllocInfo();
     XScreenSaverQueryInfo(QX11Info::display(), DefaultRootWindow(QX11Info::display()), mitInfo);
     return mitInfo->idle;
+}
+
+void XScreensaverBasedPoller::simulateUserActivity()
+{
+    stopCatchingIdleEvents();
+#ifdef HAVE_XTEST
+    Display* display = QX11Info::display();
+    XTestFakeMotionEvent(display, 0, 1, 2, 0);
+    XSync(display, false);
+#endif // HAVE_XTEST
+    emit resumingFromIdle();
 }
 
 #include "xscreensaverbasedpoller.moc"

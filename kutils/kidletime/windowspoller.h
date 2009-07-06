@@ -29,6 +29,9 @@ public:
     WindowsPoller(QObject *parent = 0);
     virtual ~WindowsBasedPoller();
 
+public slots:
+    void simulateUserActivity();
+
 private:
     bool additionalSetUp();
 
