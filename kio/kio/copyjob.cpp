@@ -173,7 +173,9 @@ public:
     int m_conflictError;
 
     QTimer *m_reportTimer;
-    //these both are used for progress dialog reporting
+
+    // The current src url being stat'ed or copied
+    // During the stat phase, this is initially equal to *m_currentStatSrc but it can be resolved to a local file equivalent (#188903).
     KUrl m_currentSrcURL;
     KUrl m_currentDestURL;
 
@@ -599,8 +601,8 @@ void CopyJobPrivate::skipSrc()
 {
     m_dest = m_globalDest;
     destinationState = m_globalDestinationState;
+    skip( *m_currentStatSrc );
     ++m_currentStatSrc;
-    skip( m_currentSrcURL );
     statCurrentSrc();
 }
 
@@ -1672,12 +1674,10 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     {
         // This code is similar to CopyJobPrivate::slotResultConflictCopyingFiles
         // but here it's about the base src url being moved/renamed
-        // (*m_currentStatSrc) and its dest (m_dest), not about a single file.
+        // (m_currentSrcURL) and its dest (m_dest), not about a single file.
         // It also means we already stated the dest, here.
         // On the other hand we haven't stated the src yet (we skipped doing it
         // to save time, since it's not necessary to rename directly!)...
-
-        Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
 
         // Existing dest?
         if ( err == ERR_DIR_ALREADY_EXIST ||
