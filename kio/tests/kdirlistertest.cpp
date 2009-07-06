@@ -67,6 +67,11 @@ void KDirListerTest::initTestCase()
     qRegisterMetaType<KFileItemList>();
 }
 
+void KDirListerTest::cleanup()
+{
+    disconnect(&m_dirLister, 0, this, 0);
+}
+
 void KDirListerTest::testOpenUrl()
 {
     m_items.clear();
@@ -270,6 +275,9 @@ void KDirListerTest::testNewItemByCopy()
     QVERIFY(!itemForUrl.isNull());
     QCOMPARE(itemForUrl.url().url(), itemUrl.url());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
+
+    // Cleanup for further tests
+    QFile::remove(path + fileName);
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
