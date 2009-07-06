@@ -214,6 +214,11 @@ namespace KIO
             /// @since 4.1
             UDS_TARGET_URL = 23 | UDS_STRING,
 
+            /// User-readable type of file (if not specified,
+            /// the mimetype's description is used)
+            /// @since 4.4
+            UDS_DISPLAY_TYPE = 24 | UDS_STRING,
+
             /// Extra data (used only if you specified Columns/ColumnsTypes)
             /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
             /// until UDS_EXTRA_END.

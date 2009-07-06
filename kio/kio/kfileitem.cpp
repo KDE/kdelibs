@@ -709,12 +709,18 @@ bool KFileItem::isMimeTypeKnown() const
 
 QString KFileItem::mimeComment() const
 {
+    const QString displayType = d->m_entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_TYPE );
+    if (!displayType.isEmpty())
+        return displayType;
+
     KMimeType::Ptr mType = determineMimeType();
 
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
     KMimeType::Ptr mime = mimeTypePtr();
+    // This cannot move to kio_file (with UDS_DISPLAY_TYPE) because it needs
+    // the mimetype to be determined, which is done here, and possibly delayed...
     if (isLocalUrl && mime->is("application/x-desktop")) {
         KDesktopFile cfg( url.toLocalFile() );
         QString comment = cfg.desktopGroup().readEntry( "Comment" );

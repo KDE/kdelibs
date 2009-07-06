@@ -357,9 +357,9 @@ public:
     bool isMimeTypeKnown() const;
 
     /**
-     * Returns the descriptive comment for this mime type, or
-     * the mime type itself if none is present.
-     * @return the mime type description, or the mime type itself
+     * Returns the user-readable string representing the type of this file,
+     * like "OpenDocument Text File".
+     * @return the type of this KFileItem
      */
     QString mimeComment() const;
 
@@ -447,12 +447,12 @@ public:
     void unmark();
 
     /**
-     * Return true if this item is a regular file, 
+     * Return true if this item is a regular file,
      * false otherwise (directory, link, character/block device, fifo, socket)
      * @since 4.3
      */
     bool isRegularFile() const;
-    
+
     /**
      * Somewhat like a comparison operator, but more explicit,
      * and it can detect that two kfileitems are equal even when they do
