@@ -6,6 +6,7 @@
                   1999,2000,2001,2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
                   2003 Clarence Dang <dang@kde.org>
                   2008 Jarosław Staniek <staniek@kde.org>
+                  2009 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -622,6 +623,15 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
+    //TODO KDE5: replace this method by the method below (with default parameter values in declaration)
+    // Set no confirm-overwrite mode for backwards compatibility
+    return getSaveFileName(dir, filter, parent, caption, Options(0));
+}
+
+QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
+                                     QWidget *parent,
+                                     const QString& caption, Options options)
+{
     if (KFileDialogPrivate::isNative()) {
         bool defaultDir = dir.isEmpty();
         bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
@@ -636,12 +646,14 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
           startDir = dir;
         }
 
+        QFileDialog::Options opts = (options & ConfirmOverwrite) ? QFileDialog::Options(0) : QFileDialog::DontConfirmOverwrite;
         const QString result = QFileDialog::getSaveFileName(
             parent,
             caption.isEmpty() ? i18n("Save As") : caption,
             KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
-            qtFilter(filter) );
-// TODO use extra args?     QString * selectedFilter = 0, Options options = 0
+            qtFilter(filter),
+// TODO use extra args?     QString * selectedFilter = 0, Options opts = 0
+            0, opts );
         if (!result.isEmpty()) {
             if (!recentDirClass.isEmpty())
                 KRecentDirs::add(recentDirClass, KUrl::fromPath(result).url());
@@ -654,6 +666,8 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
 
     dlg.setOperationMode( KFileDialog::Saving );
     dlg.setMode( KFile::File | KFile::LocalOnly );
+    dlg.setConfirmOverwrite(options & ConfirmOverwrite);
+    dlg.setInlinePreviewShown(options & ShowInlinePreview);
     dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -669,8 +683,17 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
                                      WId parent_id,
                                      const QString& caption)
 {
+    //TODO KDE5: replace this method by the method below (with default parameter values in declaration)
+    // Set no confirm-overwrite mode for backwards compatibility
+    return getSaveFileNameWId(dir, filter, parent_id, caption, Options(0));
+}
+
+QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
+                                     WId parent_id,
+                                     const QString& caption, Options options)
+{
     if (KFileDialogPrivate::isNative()) {
-        return KFileDialog::getSaveFileName(dir, filter, 0, caption); // everything we can do...
+        return KFileDialog::getSaveFileName(dir, filter, 0, caption, options); // everything we can do...
     }
 
     QWidget* parent = QWidget::find( parent_id );
@@ -680,6 +703,8 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
 
     dlg.setOperationMode( KFileDialog::Saving );
     dlg.setMode( KFile::File | KFile::LocalOnly );
+    dlg.setConfirmOverwrite(options & ConfirmOverwrite);
+    dlg.setInlinePreviewShown(options & ShowInlinePreview);
     dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -694,9 +719,17 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
 KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
+    //TODO KDE5: replace this method by the method below (with default parameter values in declaration)
+    // Set no confirm-overwrite mode for backwards compatibility
+    return getSaveUrl(dir, filter, parent, caption, Options(0));
+}
+
+KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
+                             QWidget *parent, const QString& caption, Options options)
+{
     if (KFileDialogPrivate::isNative() && (!dir.isValid() || dir.isLocalFile())) {
         const QString fileName( KFileDialog::getSaveFileName(
-            dir, filter, parent, caption) );
+            dir, filter, parent, caption, options) );
         return fileName.isEmpty() ? KUrl() : KUrl::fromPath(fileName);
     }
 
@@ -706,6 +739,8 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
 
     dlg.setOperationMode( KFileDialog::Saving );
     dlg.setMode( KFile::File );
+    dlg.setConfirmOverwrite(options & ConfirmOverwrite);
+    dlg.setInlinePreviewShown(options & ShowInlinePreview);
     dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
