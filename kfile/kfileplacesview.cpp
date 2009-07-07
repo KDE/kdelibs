@@ -597,7 +597,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
         }
 
-        hide = menu.addAction(i18n("&Hide '%1'", label));
+        hide = menu.addAction(i18n("&Hide Entry '%1'", label));
         hide->setCheckable(true);
         hide->setChecked(placesModel->isHidden(index));
     } else {
