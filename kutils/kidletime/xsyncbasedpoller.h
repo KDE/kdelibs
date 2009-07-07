@@ -23,10 +23,9 @@
 
 #define HAVE_XSYNC 1 // Hack until the library will be moved away. Too lazy to implement something temporary
 
-#include <KApplication>
 #include <KDebug>
-#include <QDataStream>
 #include <QWidget>
+#include <KApplication>
 
 #ifdef HAVE_XSYNC
 #include <X11/Xlib.h>

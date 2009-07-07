@@ -19,7 +19,6 @@
 
 #include "KIdleTest.h"
 #include <QDebug>
-#include <QTimer>
 
 #include "../kidletime.h"
 
