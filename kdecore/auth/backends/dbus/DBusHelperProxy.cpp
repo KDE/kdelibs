@@ -169,7 +169,7 @@ bool DBusHelperProxy::hasToStopAction()
 }
 
 void DBusHelperProxy::performActions(QByteArray blob, QByteArray callerID)
-{
+{    
     QDataStream stream(&blob, QIODevice::ReadOnly);
     QList<QPair<QString, QVariantMap> > actions;
     
@@ -194,6 +194,9 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
     if(!responder)
         return ActionReply::NoResponderReply.serialized();
     
+    if(!m_currentAction.isEmpty())
+        return ActionReply::HelperBusyReply.serialized();
+    
     QVariantMap args;
     QDataStream s(&arguments, QIODevice::ReadOnly);
     s >> args;
@@ -212,7 +215,6 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         emit remoteSignal(ActionStarted, action, QByteArray());
         bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
         m_currentAction = "";
-        
         
         if(success)
             return retVal.serialized();

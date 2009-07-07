@@ -25,6 +25,7 @@ ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError
 ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
 ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
 ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
+ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
 ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
 ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
 

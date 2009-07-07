@@ -40,6 +40,7 @@ public:
     static ActionReply NoResponderReply;
     static ActionReply NoSuchActionReply;
     static ActionReply AuthorizationDeniedReply;
+    static ActionReply HelperBusyReply;
     static ActionReply DBusErrorReply;
     static ActionReply WrongReplyDataReply;
 
@@ -49,6 +50,7 @@ public:
         NoResponder,
         NoSuchAction,
         AuthorizationDenied,
+        HelperBusy,
         DBusError,
         WrongReplyData
     };
