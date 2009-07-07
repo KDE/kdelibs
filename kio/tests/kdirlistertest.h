@@ -37,6 +37,7 @@ class KDirListerTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void initTestCase();
+    void cleanup();
     void testOpenUrl();
     void testOpenUrlFromCache();
     void testNewItems();
