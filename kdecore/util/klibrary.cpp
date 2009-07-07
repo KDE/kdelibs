@@ -28,8 +28,12 @@
 #include <kdebug.h>
 
 extern QString makeLibName( const QString &libname );
-
 extern QString findLibraryInternal(const QString &name, const KComponentData &cData);
+
+int kLibraryDebugArea() {
+    static int s_area = KDebug::registerArea("kdecore (KLibrary)");
+    return s_area;
+}
 
 //static
 QString findLibrary(const QString &name, const KComponentData &cData)
@@ -120,7 +124,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
         if (!factoryname.startsWith("lib"))
             return kde3Factory(lib, QByteArray("lib")+symname.mid(5 /*"init_"*/));
 #endif
-        kDebug(150) << "The library" << lib->fileName() << "does not offer an"
+        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer an"
                     << symname << "function.";
         return 0;
     }
@@ -129,7 +133,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
 
     if( !factory )
     {
-        kDebug(150) << "The library" << lib->fileName() << "does not offer a KDE compatible factory.";
+        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a KDE compatible factory.";
         return 0;
     }
     s_createdKde3Factories->insert(hashKey, factory);
@@ -145,7 +149,7 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
     t_func func = reinterpret_cast<t_func>(lib->resolveFunction(symname));
     if ( !func )
     {
-        kDebug(150) << "The library" << lib->fileName() << "does not offer a qt_plugin_instance function.";
+        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a qt_plugin_instance function.";
         return 0;
     }
 
@@ -154,7 +158,7 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
 
     if( !factory )
     {
-        kDebug(150) << "The library" << lib->fileName() << "does not offer a KDE 4 compatible factory.";
+        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a KDE 4 compatible factory.";
         return 0;
     }
     return factory;
@@ -162,6 +166,7 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
 
 KPluginFactory* KLibrary::factory(const char* factoryname)
 {
+    Q_ASSERT(!fileName().isEmpty());
     KPluginFactory *factory = kde4Factory(this);
     if (!factory)
         factory = kde3Factory(this, factoryname);

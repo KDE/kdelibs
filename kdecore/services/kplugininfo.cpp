@@ -69,6 +69,11 @@ class KPluginInfoPrivate : public QSharedData
         KConfigGroup config;
         KService::Ptr service;
         mutable QList<KService::Ptr> kcmservices;
+
+    static int debugArea() {
+        static int s_area = KDebug::registerArea("kdecore (KPluginInfo)");
+        return s_area;
+    }
 };
 
 KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
@@ -229,21 +234,21 @@ bool KPluginInfo::isHidden() const
 void KPluginInfo::setPluginEnabled( bool enabled )
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( 703 ) ;
+    //kDebug( d->debugArea() ) ;
     d->pluginenabled = enabled;
 }
 
 bool KPluginInfo::isPluginEnabled() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( 703 ) ;
+    //kDebug( d->debugArea() ) ;
     return d->pluginenabled;
 }
 
 bool KPluginInfo::isPluginEnabledByDefault() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( 703 ) ;
+    //kDebug( d->debugArea() ) ;
     return d->enabledbydefault;
 }
 
@@ -338,7 +343,7 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     {
         d->kcmservices = KServiceTypeTrader::self()->query( "KCModule", '\'' + d->pluginName +
             "' in [X-KDE-ParentComponents]" );
-        kDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
+        kDebug( d->debugArea() ) << "found " << d->kcmservices.count() << " offers for " <<
             d->pluginName << endl;
 
         d->kcmservicesCached = true;
@@ -371,12 +376,12 @@ QVariant KPluginInfo::property( const QString & key ) const
 void KPluginInfo::save(KConfigGroup config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( 703 ) ;
+    //kDebug( d->debugArea() ) ;
     if (config.isValid()) {
         config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
-            kWarning( 703 ) << "no KConfigGroup, cannot save";
+            kWarning( d->debugArea() ) << "no KConfigGroup, cannot save";
             return;
         }
         d->config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
@@ -386,12 +391,12 @@ void KPluginInfo::save(KConfigGroup config)
 void KPluginInfo::load(const KConfigGroup &config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( 703 ) ;
+    //kDebug( d->debugArea() ) ;
     if (config.isValid()) {
         setPluginEnabled(config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
-            kWarning( 703 ) << "no KConfigGroup, cannot load";
+            kWarning( d->debugArea() ) << "no KConfigGroup, cannot load";
             return;
         }
         setPluginEnabled(d->config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
@@ -400,7 +405,7 @@ void KPluginInfo::load(const KConfigGroup &config)
 
 void KPluginInfo::defaults()
 {
-    //kDebug( 703 ) ;
+    //kDebug( d->debugArea() ) ;
     setPluginEnabled( isPluginEnabledByDefault() );
 }
 

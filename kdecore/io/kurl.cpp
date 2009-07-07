@@ -44,6 +44,10 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QTextCodec>
 
+#ifdef DEBUG_KURL
+static int kurlDebugArea() { static int s_area = KDebug::registerArea("kdecore (KUrl)"); return s_area; }
+#endif
+
 static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool decodeDots )
 {
   if (_path.isEmpty())
@@ -381,8 +385,8 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
 #ifdef DEBUG_KURL
-    kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
-#endif    
+    kDebug(kurlDebugArea()) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+#endif
     QString pathToSet;
     // when it starts with file:// it's a url and must be valid. we don't care if the
     // path exist/ is valid or not
@@ -426,7 +430,7 @@ KUrl::KUrl( const char * str )
     ( IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(str[0]), str[0], str[1], ':', '/') )
 
 #if defined(DEBUG_KURL)
-  kDebug(126) << "KUrl::KUrl " << " " << str;
+  kDebug(kurlDebugArea()) << "KUrl::KUrl " << " " << str;
 #endif
   if ( str && str[0] && str[1] && str[2] ) {
     if ( IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 )
@@ -449,7 +453,7 @@ KUrl::KUrl( const QByteArray& str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
 #ifdef DEBUG_KURL
-    kDebug(126) << "KUrl::KUrl " << " " << str.data();
+    kDebug(kurlDebugArea()) << "KUrl::KUrl " << " " << str.data();
 #endif
     if ( IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 )
       setPath( QString::fromUtf8( str.mid( 1 ) ) );
@@ -468,7 +472,7 @@ KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
+    kDebug(kurlDebugArea()) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 }
 
@@ -476,7 +480,7 @@ KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
+    kDebug(kurlDebugArea()) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
 #endif
 }
 
@@ -484,7 +488,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
+    kDebug(kurlDebugArea()) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 #if 0
   if (_u.hasSubUrl()) // Operate on the last suburl, not the first
@@ -555,16 +559,16 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
           strPath = QLatin1Char('/');
     }
     setPath( strPath );
-    //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl;
+    //kDebug(kurlDebugArea()) << "url()=" << url() << " rUrl=" << rUrl;
     KUrl tmp( url() + rUrl);
-    //kDebug(126) << "assigning tmp=" << tmp.url();
+    //kDebug(kurlDebugArea()) << "assigning tmp=" << tmp.url();
     *this = tmp;
     cleanPath(KeepDirSeparators);
   }
   else
   {
     KUrl tmp( rUrl );
-    //kDebug(126) << "not relative; assigning tmp=" << tmp.url();
+    //kDebug(kurlDebugArea()) << "not relative; assigning tmp=" << tmp.url();
     *this = tmp;
     // Preserve userinfo if applicable.
     if (!_u.userInfo().isEmpty() && userInfo().isEmpty()
@@ -1306,7 +1310,7 @@ void KUrl::addPath( const QString& _txt )
   }
 
   setPath( strPath + _txt.mid( i ) );
-  //kDebug(126)<<"addPath: resultpath="<<path();
+  //kDebug(kurlDebugArea())<<"addPath: resultpath="<<path();
 }
 
 QString KUrl::directory( const DirectoryOptions& options ) const
@@ -1707,7 +1711,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data();
+    kDebug(kurlDebugArea()) << "KUrl::setPath " << " " << _path.toAscii().data();
 #endif
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );

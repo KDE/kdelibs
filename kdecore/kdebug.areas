@@ -1,43 +1,27 @@
-#Debug areas for kdebug()
-# If you plan to add some areas, look at http://lists.kde.org/?l=kde-devel&m=106607933724723&w=2 first.
-# Applications of the playground module (or similar) should not define any own area but use area 0.
-# If you need a KDebug area and you don't have svn access, email kde-devel@kde.org with the appropriate descriptions.
+# Old-style hardcoded debug areas for kdebug().
+# Please consider using KDebug::registerArea("areaname") instead.
+#
+# Previous instructions: If you plan to add some areas, look at http://lists.kde.org/?l=kde-devel&m=106607933724723&w=2 first.
 #
 #Format : number<tab>description
 
 125        kdeui (KGlobalAccel)
-126        kdecore (KUrl)
-127        kio (KProtocolInfo)
 129        kdeui (KAction)
-130        kio (KPasswdServer)
-131        kdecore (KAcceleratorManager)
-150        kdecore (KLibLoader)
-151        kdecore (KLockFile)
-152        kdecore (KPluginFactory)
-160        kdecore (KNotifyClient)
 161        kdecore (K*TimeZone*)
 170        kdecore (KNetwork socket)
-171        kdecore (KSocks)
 172        kdecore (KStartupInfo)
 173        kdecore (KLocale)
-174        kdecore (K3ProcIO)
-175        kdecore (KProcess/K3Process)
-176        kdecore (KWin)
-177        kdecore (KConfigSkeleton)
-178        kdecore (KConfigDialogManager)
+174        kde3support (K3ProcIO)
+175        kdecore (KPty/K3Process)
+176        kdeui (KWindowInfo)
 179        kdecore (KNetwork resolver)
 180        kdecore (kdelibs)
-181        kdecore (kglobalaccel)
 200        kdeui (KMainWindow)
-220        kdeui (KToolBar)
-230        kdeui (KCommand)
 240        kdeui (kdelibs)
 250        kfile (kdelibs)
 260        kdeui (KXmlGui)
 264        kdeui (KIconLoader)
 265        kdeui (KIconEffect)
-270        kdeui (KRootPixmap)
-280        kdeui (KSharedPixmap)
 281        kdeui (KCModule)
 282        kde3support (K3DockWidget)
 283        kdeui (K*Gesture*)
@@ -45,13 +29,8 @@
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
 293        kdeui (KLineEdit)
-294        kdeui (KEdit)
-295        kdeui (KMenuBar)
-296        kdeui (KMenu)
 297        kdeui (KNotificationRestrictions)
-298        kdeui (KDatePicker)
 299        kdeui (KNotification)
-300        knotify
 399        kimgio
 410        kross (kdelibs)
 500        kdeprint
@@ -62,25 +41,17 @@
 700        kutils (KSettings::Dialog)
 701        kutils (KSettings::Dispatcher)
 702        kutils (KPluginSelector)
-703        kdecore (KPluginInfo)
 704        kutils (KSettings::ComponentsDialog)
 710        kutils (KCMultiDialog)
 711        kutils (KCModuleProxy)
 712        kutils (KCModuleInfo)
 713        kutils (KCModuleContainer)
-750        kspell (kdelibs)
-760        kmdi
-780        kcmshell
-790        kimproxy (kdelibs)
-800        kabapi (kdelibs)
-900        kdesu (kdelibs)
+750        kde3support (kspell)
 912        ksmartcard (kdelibs)
 920        Solid (kdelibs)
 921        Solid Networking
 
 1000        kparts
-1001        kparts (mainwindow)
-1002        kparts (factory)
 
 1100        kdeedu
 
@@ -97,7 +68,6 @@
 1211        konsole
 1212        kwin
 1213        kappfinder
-1214        kdesktop (icons)
 1215        ksysguard
 1216        kwin (client errors)
 1217        khotkeys

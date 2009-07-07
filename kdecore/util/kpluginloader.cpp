@@ -30,6 +30,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
+extern int kLibraryDebugArea();
 
 class KPluginLoaderPrivate
 {
@@ -86,7 +87,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     bool kdeinit = fileinfo.fileName().startsWith("libkdeinit4_");
 
     if (hasPrefix && !kdeinit)
-        kDebug(150) << "plugins should not have a 'lib' prefix:" << libname;
+        kDebug(kLibraryDebugArea()) << "plugins should not have a 'lib' prefix:" << libname;
 
     QString libfile;
     if (QDir::isRelativePath(libname)) {
@@ -100,7 +101,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
 #endif
             libfile = cData.dirs()->findResource("lib", libname);
             if (!libfile.isEmpty() && !kdeinit)
-                kDebug(150) << "library" << libname << "not found under 'module' but under 'lib'";
+                kDebug(kLibraryDebugArea()) << "library" << libname << "not found under 'module' but under 'lib'";
         }
     }
     else {
@@ -195,7 +196,7 @@ bool KPluginLoader::load()
             return false;
         }
     } else {
-        kDebug(150) << "The plugin" << d->name << "doesn't contain a kde_plugin_verification_data structure";
+        kDebug(kLibraryDebugArea()) << "The plugin" << d->name << "doesn't contain a kde_plugin_verification_data structure";
     }
 
     quint32 *version = (quint32 *) lib.resolve("kde_plugin_version");
