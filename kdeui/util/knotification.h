@@ -127,6 +127,7 @@ class QDBusError;
  *  the KNotify daemon as plugins, by deriving from KNotifyPlugin.
  *  At the time of writing, the following actions are available: Taskbar,
  *  Sound, Popup, Logfile, KTTS, Execute.
+ *  Actions can be combined by seperating them with '|'.
  *
  *  Contexts is a comma separated list of possible context for this event.
  *
