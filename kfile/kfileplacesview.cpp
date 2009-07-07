@@ -831,8 +831,12 @@ void KFilePlacesView::setModel(QAbstractItemModel *model)
 {
     QListView::setModel(model);
     d->updateHiddenRows();
+    // Uses Qt::QueuedConnection to delay the time when the slot will be
+    // called. In case of an item move the remove+add will be done before
+    // we adapt the item size (otherwise we'd get it wrong as we'd execute
+    // it after the remove only).
     connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-            this, SLOT(adaptItemSize()));
+            this, SLOT(adaptItemSize()), Qt::QueuedConnection);
     connect(selectionModel(), SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
             d->watcher, SLOT(currentIndexChanged(const QModelIndex&)));
 }
