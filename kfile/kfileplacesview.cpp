@@ -575,7 +575,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             }
             add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
             mainSeparator = menu.addSeparator();
-            edit = menu.addAction(KIcon("document-properties"), i18n("&Edit '%1'...", label));
+            edit = menu.addAction(KIcon("document-properties"), i18n("&Edit Entry '%1'...", label));
         } else {
             eject = placesModel->ejectActionForIndex(index);
             if (eject!=0) {
@@ -617,7 +617,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     QAction* remove = 0;
     if (index.isValid() && !placesModel->isDevice(index)) {
-        remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
+        remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove Entry '%1'", label));
     }
 
     if (menu.isEmpty()) {
