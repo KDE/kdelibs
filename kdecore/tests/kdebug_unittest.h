@@ -29,9 +29,14 @@ class KDebugTest : public QObject
 
 private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
+
     void testDebugToFile();
     void testDisableArea();
-    void cleanupTestCase();
+    void testDynamicArea();
+
+private:
+    void compareLines(const QList<QByteArray>& expectedLines);
 };
 
 #endif

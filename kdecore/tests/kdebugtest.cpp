@@ -205,9 +205,9 @@ namespace
 void testKDebug()
 {
     QString test = "%20C this is a string";
-    kDebug(150) << test;
+    kDebug(180) << test;
     QByteArray cstr = test.toLatin1();
-    kDebug(150) << test;
+    kDebug(180) << test;
     QChar ch = 'a';
     kDebug() << "QChar a: " << ch;
     ch = '\r';

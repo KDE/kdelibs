@@ -240,6 +240,28 @@ public:
         { return kDebugStream(level, area, file, line, funcinfo); }
     inline QDebug operator()(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
         { if (cond) return operator()(area); return kDebugDevNull(); }
+
+    /**
+     * @since 4.4
+     * Register a debug area dynamically.
+     * @param areaName the name of the area
+     * @return the area code that was allocated for this area
+     *
+     * Typical usage:
+     * If all uses of the debug area are restricted to a single class, add a method like this
+     * (e.g. into the Private class, if there's one)
+     * <code>
+     *  static int debugArea() { static int s_area = KDebug::registerArea("areaName"); return s_area; }
+     * </code>
+     *
+     * If all uses of the debug area are restricted to a single .cpp file, do the same
+     * but outside any class, and then use a more specific name for the function.
+     *
+     * If however multiple classes and files need the debug area, then
+     * declare it in one file without static, and use "extern int debugArea();"
+     * in other files (with a better name for the function of course).
+     */
+    static KDECORE_EXPORT int registerArea(const QByteArray& areaName);
 };
 
 #if !defined(KDE_NO_DEBUG_OUTPUT)

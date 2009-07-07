@@ -31,6 +31,7 @@
 #endif
 
 #include "kdebug.h"
+#include <QThreadStorage>
 
 #ifdef Q_WS_WIN
 #include <fcntl.h>
@@ -110,14 +111,15 @@ public:
     qint64 writeData(const char *data, qint64 len)
         {
             if (len) {
-                int nPriority = *data++;
                 // not using fromRawData because we need a terminating NUL
-                QByteArray buf(data, len);
-
-                syslog(nPriority, "%s", buf.constData());
+                const QByteArray buf(data, len);
+                syslog(m_priority, "%s", buf.constData());
             }
             return len;
         }
+    void setPriority(int priority) { m_priority = priority; }
+private:
+    int m_priority;
 };
 
 class KFileDebugStream: public KNoDebugStream
@@ -127,18 +129,18 @@ public:
     qint64 writeData(const char *data, qint64 len)
         {
             if (len) {
-                QByteArray buf = QByteArray::fromRawData(data, len);
-                int pos = buf.indexOf('\0');
-                Q_ASSERT(pos != -1);
-
-                QFile aOutputFile(QFile::decodeName(data));
+                QFile aOutputFile(m_fileName);
                 aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered);
-                aOutputFile.write(data + pos + 1, len - pos - 1);
+                QByteArray buf = QByteArray::fromRawData(data, len);
+                aOutputFile.write(buf.trimmed());
                 aOutputFile.putChar('\n');
                 aOutputFile.close();
             }
             return len;
         }
+    void setFileName(const QString& fn) { m_fileName = fn; }
+private:
+    QString m_fileName;
 };
 
 class KMessageBoxDebugStream: public KNoDebugStream
@@ -149,16 +151,14 @@ public:
         {
             if (len) {
                 // Since we are in kdecore here, we cannot use KMsgBox
-                QString caption = QString::fromAscii(data, len);
-                int pos = caption.indexOf(QLatin1Char('\0'));
-                Q_ASSERT(pos != -1);
-
-                QString msg = caption.mid(pos + 1);
-                caption.truncate(pos);
-                KMessage::message(KMessage::Information, msg, caption);
+                QString msg = QString::fromAscii(data, len);
+                KMessage::message(KMessage::Information, msg, m_caption);
             }
             return len;
         }
+    void setCaption(const QString& h) { m_caption = h; }
+private:
+    QString m_caption;
 };
 
 class KLineEndStrippingDebugStream: public KNoDebugStream
@@ -206,7 +206,7 @@ struct KDebugPrivate
     typedef QHash<unsigned int, Area> Cache;
 
     KDebugPrivate()
-        : config(0), kDebugDBusIface(0)
+        : config(0), kDebugDBusIface(0), m_disableAll(false)
     {
         Q_ASSERT(int(QtDebugMsg) == 0);
         Q_ASSERT(int(QtFatalMsg) == 3);
@@ -294,6 +294,15 @@ struct KDebugPrivate
     inline int level(QtMsgType type)
     { return int(type) - int(QtDebugMsg); }
 
+    QString groupNameForArea(unsigned int area) const
+    {
+        QString groupName = QString::number(area);
+        if (!config->hasGroup(groupName)) {
+            groupName = QString::fromLocal8Bit(cache.value(area).name);
+        }
+        return groupName;
+    }
+
     OutputMode areaOutputMode(QtMsgType type, unsigned int area)
     {
         if (!config)
@@ -303,6 +312,8 @@ struct KDebugPrivate
         switch (type) {
         case QtDebugMsg:
             key = QLatin1String( "InfoOutput" );
+            if (m_disableAll)
+                return NoOutput;
             break;
         case QtWarningMsg:
             key = QLatin1String( "WarnOutput" );
@@ -317,8 +328,8 @@ struct KDebugPrivate
             break;
         }
 
-        KConfigGroup cg(config, QString::number(area));
-        int mode = cg.readEntry(key, int(DefaultOutput));
+        const KConfigGroup cg(config, groupNameForArea(area));
+        const int mode = cg.readEntry(key, int(DefaultOutput));
         return OutputMode(mode);
     }
 
@@ -345,50 +356,66 @@ struct KDebugPrivate
             break;
         }
 
-        KConfigGroup cg(config, QString::number(area));
+        KConfigGroup cg(config, groupNameForArea(area));
         return cg.readPathEntry(aKey, QLatin1String("kdebug.dbg"));
+    }
+
+    KConfig* configObject()
+    {
+        if (!config) {
+            if (!KGlobal::hasMainComponent()) {
+                return NULL;
+            }
+
+            config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
+            m_disableAll = config->group(QString()).readEntry("DisableAll", false);
+        }
+        return config;
     }
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num)
     {
-        if (!config) {
-            if (!KGlobal::hasMainComponent()) {
-                // we don't have a config and we can't create one...
-                Area &area = cache[0]; // create a dummy entry
-                Q_UNUSED(area);
-                return cache.find(0);
-            }
-
-            config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
-            loadAreaNames();
+        if (!configObject()) {
+            // we don't have a config and we can't create one...
+            Area &area = cache[0]; // create a dummy entry
+            Q_UNUSED(area);
+            return cache.find(0);
         }
 
-        if (!cache.contains(num)) {
+        if (cache.count() <= 1) { // empty or containing only entry "0"
+            loadAreaNames(); // fills 'cache'
+        }
+
+        Cache::Iterator it = cache.find(num);
+        if (it == cache.end()) {
             // unknown area
             return cache.find(0);
         }
 
-        int l = level(type);
-        Cache::Iterator it = cache.find(num);
-        //qDebug() << "in cache for" << num << ":" << it->mode[l];
-        if (it->mode[l] == Unknown)
-            it->mode[l] = areaOutputMode(type, num);
-        if (it->mode[l] == FileOutput && it->logFileName[l].isEmpty())
-            it->logFileName[l] = logFileName(type, num);
+        const int lev = level(type);
+        //qDebug() << "in cache for" << num << ":" << it->mode[lev];
+        if (it->mode[lev] == Unknown)
+            it->mode[lev] = areaOutputMode(type, num);
+        if (it->mode[lev] == FileOutput && it->logFileName[lev].isEmpty())
+            it->logFileName[lev] = logFileName(type, num);
 
         return it;
     }
 
     QDebug setupFileWriter(const QString &fileName)
     {
-        QDebug result(&filewriter);
-        result.nospace() << qPrintable(fileName) << '\0';
+        if (!filewriter.hasLocalData())
+            filewriter.setLocalData(new KFileDebugStream);
+        filewriter.localData()->setFileName(fileName);
+        QDebug result(filewriter.localData());
         return result;
     }
 
     QDebug setupMessageBoxWriter(QtMsgType type, const QByteArray &areaName)
     {
-        QDebug result(&messageboxwriter);
+        if (!messageboxwriter.hasLocalData())
+            messageboxwriter.setLocalData(new KMessageBoxDebugStream);
+        QDebug result(messageboxwriter.localData());
         QByteArray header;
 
         switch (type) {
@@ -409,13 +436,15 @@ struct KDebugPrivate
 
         header += areaName;
         header += ')';
-        result.nospace() << header.constData() << '\0';
+        messageboxwriter.localData()->setCaption(QString::fromAscii(header));
         return result;
     }
 
     QDebug setupSyslogWriter(QtMsgType type)
     {
-        QDebug result(&syslogwriter);
+        if (!syslogwriter.hasLocalData())
+            syslogwriter.setLocalData(new KSyslogDebugStream);
+        QDebug result(syslogwriter.localData());
         int level = 0;
 
         switch (type) {
@@ -433,7 +462,7 @@ struct KDebugPrivate
             level = LOG_ERR;
             break;
         }
-        result.nospace() << char(level);
+        syslogwriter.localData()->setPriority(level);
         return result;
     }
 
@@ -576,11 +605,12 @@ struct KDebugPrivate
     KConfig *config;
     KDebugDBusIface *kDebugDBusIface;
     Cache cache;
+    bool m_disableAll;
 
     KNoDebugStream devnull;
-    KSyslogDebugStream syslogwriter;
-    KFileDebugStream filewriter;
-    KMessageBoxDebugStream messageboxwriter;
+    QThreadStorage<KSyslogDebugStream*> syslogwriter;
+    QThreadStorage<KFileDebugStream*> filewriter;
+    QThreadStorage<KMessageBoxDebugStream*> messageboxwriter;
     KLineEndStrippingDebugStream lineendstrippingwriter;
 };
 
@@ -655,12 +685,37 @@ QDebug operator<<(QDebug s, const KUrl &url)
 void kClearDebugConfig()
 {
     if (!kDebug_data) return;
-    QMutexLocker locker(&kDebug_data->mutex);
-    delete kDebug_data->config;
-    kDebug_data->config = 0;
+    KDebugPrivate* d = kDebug_data;
+    QMutexLocker locker(&d->mutex);
+    delete d->config;
+    d->config = 0;
 
-    KDebugPrivate::Cache::Iterator it = kDebug_data->cache.begin(),
-                                  end = kDebug_data->cache.end();
+    KDebugPrivate::Cache::Iterator it = d->cache.begin(),
+                                  end = d->cache.end();
     for ( ; it != end; ++it)
         it->clear();
+}
+
+int KDebug::registerArea(const QByteArray& areaName)
+{
+    // TODO for optimization: static int s_lastAreaNumber = 1;
+    KDebugPrivate* d = kDebug_data;
+    QMutexLocker locker(&d->mutex);
+    int areaNumber = 1;
+    while (d->cache.contains(areaNumber)) {
+        ++areaNumber;
+    }
+    KDebugPrivate::Area areaData;
+    areaData.name = areaName;
+    d->cache.insert(areaNumber, areaData);
+
+    // Ensure that this area name appears in kdebugrc, so that users (via kdebugdialog)
+    // can turn it off.
+    KConfigGroup cg(d->configObject(), QString::fromUtf8(areaName));
+    const QString key = QString::fromLatin1("InfoOutput");
+    if (!cg.hasKey(key)) {
+        cg.writeEntry(key, int(KDebugPrivate::QtOutput));
+    }
+
+    return areaNumber;
 }
