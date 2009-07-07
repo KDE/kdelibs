@@ -123,7 +123,10 @@ class QDBusError;
 		   Action=None
  *  </pre>
  *  These are the default settings for each notifiable event.
- *  Action is a bitmask of KNotification::NotifyPresentation
+ *  Action is the string representing the action. Actions can be added to
+ *  the KNotify daemon as plugins, by deriving from KNotifyPlugin.
+ *  At the time of writing, the following actions are available: Taskbar,
+ *  Sound, Popup, Logfile, KTTS, Execute.
  *
  *  Contexts is a comma separated list of possible context for this event.
  *
