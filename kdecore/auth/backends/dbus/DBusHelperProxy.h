@@ -34,6 +34,7 @@ class DBusHelperProxy : public HelperProxy
     QString m_name;
     QString m_currentAction;
     bool m_stopRequest;
+    QList<QString> m_actionsInProgress;
     
     enum SignalType
     {

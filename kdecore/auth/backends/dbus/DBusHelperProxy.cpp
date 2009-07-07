@@ -68,6 +68,9 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
 ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
 {
+    if(!m_actionsInProgress.isEmpty())
+        return ActionReply::HelperBusyReply;
+    
     QByteArray blob;
     QDataStream stream(&blob, QIODevice::WriteOnly);
     
@@ -82,6 +85,8 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     QList<QVariant> args;
     args << action << BackendsManager::authBackend()->callerID() << blob;
     message.setArguments(args);
+    
+    m_actionsInProgress.push_back(action);
     
     QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui); 
     if(reply.type() == QDBusMessage::ErrorMessage)
@@ -131,6 +136,7 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
         ActionReply reply;
         stream >> reply;
         
+        m_actionsInProgress.removeOne(action);
         ActionWatcher::watcher(action)->emitActionPerformed(reply);
     }else if(type == DebugMessage)
     {
