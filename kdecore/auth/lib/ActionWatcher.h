@@ -38,11 +38,13 @@ class ActionWatcher : public QObject
         
         QString action();
         
+        void emitActionStarted();
         void emitActionPerformed(ActionReply reply);
         void emitProgressStep(int progress);
         void emitProgressStep(QVariantMap data);
         
     signals:
+        void actionStarted();
         void actionPerformed(ActionReply reply);
         void progressStep(int progress);
         void progressStep(QVariantMap data);

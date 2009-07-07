@@ -30,6 +30,18 @@
 
 static void debugMessageReceived(int t, QString message);
 
+void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
+{
+    QDBusMessage message;
+    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "stopAction");
+    
+    QList<QVariant> args;
+    args << action;
+    message.setArguments(args);
+    
+    QDBusConnection::systemBus().call(message, QDBus::NoBlock);
+}
+
 bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID)
 {
     QByteArray blob;
@@ -111,7 +123,10 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     SignalType type = (SignalType)t;
     QDataStream stream(&blob, QIODevice::ReadOnly);
     
-    if(type == ActionPerformed)
+    if(type == ActionStarted)
+    {
+        ActionWatcher::watcher(action)->emitActionStarted();
+    }else if(type == ActionPerformed)
     {
         ActionReply reply;
         stream >> reply;
@@ -138,6 +153,19 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
         
         ActionWatcher::watcher(action)->emitProgressStep(data);
     }
+}
+
+void DBusHelperProxy::stopAction(QString action)
+{
+    m_stopRequest = true;
+}
+
+bool DBusHelperProxy::hasToStopAction()
+{
+    QEventLoop loop;
+    loop.processEvents(QEventLoop::AllEvents);
+    
+    return m_stopRequest;
 }
 
 void DBusHelperProxy::performActions(QByteArray blob, QByteArray callerID)
@@ -178,11 +206,13 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         
         slotname.replace(".", "_");
         
-        m_currentAction = action;
         ActionReply retVal;
-        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
         
+        m_currentAction = action;
+        emit remoteSignal(ActionStarted, action, QByteArray());
+        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
         m_currentAction = "";
+        
         
         if(success)
             return retVal.serialized();

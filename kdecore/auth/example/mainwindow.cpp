@@ -34,8 +34,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     Action::setHelperID("org.kde.auth.example");
     progressBar = new QProgressBar();
+    pushButton = new QPushButton();
+    pushButton->setText("Stop");
+    connect(pushButton, SIGNAL(clicked()), this, SLOT(stopLongAction()));
     progressBar->setRange(0, 100);
     this->statusBar()->addPermanentWidget(progressBar);
+    this->statusBar()->addPermanentWidget(pushButton);
+    pushButton->hide();
     progressBar->hide();
 }
 
@@ -110,12 +115,21 @@ void MainWindow::on_longAction_triggered()
     if(!longAction.executeAsync())
         this->statusBar()->showMessage("Could not execute the long action");
     else
+    {
+        pushButton->show();
         progressBar->show();
+    }
+}
+
+void MainWindow::stopLongAction()
+{
+    Action("org.kde.auth.example.longaction").stop();
 }
 
 void MainWindow::longActionPerformed(ActionReply reply)
 {
     progressBar->hide();
+    pushButton->hide();
     progressBar->setValue(0);
     
     if(reply.succeded())

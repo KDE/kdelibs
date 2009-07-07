@@ -21,6 +21,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <unistd.h>
+#include <QEventLoop>
 
 #include "helper.h"
 
@@ -67,6 +68,8 @@ ActionReply MyHelper::longaction(QVariantMap args)
 {
     for(int i = 1; i <= 100; i++)
     {
+        if(HelperSupport::isStopped())
+            break;
         HelperSupport::progressStep(i);
         usleep(250000);
     }

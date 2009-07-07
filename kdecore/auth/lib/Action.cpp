@@ -97,6 +97,16 @@ ActionReply Action::execute(const QString &helperID)
     return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args);
 }
 
+void Action::stop()
+{
+    stop(helperID());
+}
+
+void Action::stop(const QString &helperID)
+{
+    BackendsManager::helperProxy()->stopAction(m_name, helperID);
+}
+
 ActionWatcher *Action::watcher()
 {
     return ActionWatcher::watcher(m_name);

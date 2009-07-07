@@ -30,7 +30,6 @@ static bool remote_dbg = false;
 
 HelperSupport::HelperSupport() {}
 
-
 int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *responder)
 {
     openlog(id, 0, LOG_USER);
@@ -88,4 +87,9 @@ void HelperSupport::progressStep(int step)
 void HelperSupport::progressStep(QVariantMap data)
 {
     BackendsManager::helperProxy()->sendProgressStep(data);
+}
+
+bool HelperSupport::isStopped()
+{
+    return BackendsManager::helperProxy()->hasToStopAction();
 }

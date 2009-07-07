@@ -12,6 +12,10 @@
             <arg name="callerID" type="ay" direction="in" />
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
+        <method name="stopAction" >
+            <arg name="action" type="s" direction="in" />
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
         <signal name="remoteSignal" >
             <arg name="type" type="i" />
             <arg name="action" type="s" />

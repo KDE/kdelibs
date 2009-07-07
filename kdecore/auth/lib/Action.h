@@ -58,6 +58,9 @@ class Action
         
         bool executeAsync(QObject *target = NULL, const char *slot = NULL);
         bool executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
+        
+        void stop();
+        void stop(const QString &helperID);
                 
         static bool executeActions(const QList<Action> &actions, const QString &helperID, QList<Action> *deniedActions = NULL);
         static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions = NULL);

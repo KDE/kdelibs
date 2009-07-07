@@ -36,6 +36,8 @@ public:
     static void progressStep(int step);
     static void progressStep(QVariantMap data);
     
+    static bool isStopped();
+    
     friend int main(int, char **);
 };
 

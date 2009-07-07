@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 #include <QProgressBar>
+#include <QPushButton>
 
 #include "ActionReply.h"
 
@@ -35,6 +36,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
     QProgressBar *progressBar;
+    QPushButton *pushButton;
 
 public:
     MainWindow(QWidget *parent = 0);
@@ -47,6 +49,7 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
     void on_longAction_triggered();
+    void stopLongAction();
     void longActionPerformed(ActionReply reply);
 };
 

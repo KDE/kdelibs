@@ -39,6 +39,11 @@ QString ActionWatcher::action()
     return m_action;
 }
 
+void ActionWatcher::emitActionStarted()
+{
+    emit actionStarted();
+}
+
 void ActionWatcher::emitActionPerformed(ActionReply reply)
 {
     emit actionPerformed(reply);

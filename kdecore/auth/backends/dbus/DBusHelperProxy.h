@@ -33,9 +33,11 @@ class DBusHelperProxy : public HelperProxy
     QObject *responder;
     QString m_name;
     QString m_currentAction;
+    bool m_stopRequest;
     
     enum SignalType
     {
+        ActionStarted, // The blob argument is empty
         ActionPerformed, // The blob argument contains the ActionReply
         DebugMessage, // The blob argument contains the debug level and the message (in this order)
         ProgressStepIndicator, // The blob argument contains the step indicator
@@ -43,18 +45,21 @@ class DBusHelperProxy : public HelperProxy
     };
     
     public:
-        DBusHelperProxy() : responder(NULL) {}
+        DBusHelperProxy() : m_stopRequest(false), responder(NULL) {}
         
         virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
         virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
+        virtual void stopAction(const QString &action, const QString &helperID);
         
         virtual bool initHelper(const QString &name);
         virtual void setHelperResponder(QObject *o);
+        virtual bool hasToStopAction();
         virtual void sendDebugMessage(int level, const char *msg);
         virtual void sendProgressStep(int step);
         virtual void sendProgressStep(QVariantMap data);
         
     public slots:
+        void stopAction(QString action);
         void performActions(QByteArray blob, QByteArray callerID);
         QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments);
         
