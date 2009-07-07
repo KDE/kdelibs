@@ -26,7 +26,7 @@
 class MacPoller: public AbstractSystemPoller
 {
 public:
-    MacPoller();
+    MacPoller(QWidget *parent = 0);
     virtual ~MacPoller();
 
     bool isAvailable();

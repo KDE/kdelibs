@@ -31,7 +31,7 @@ class WidgetBasedPoller : public AbstractSystemPoller
     Q_OBJECT
 
 public:
-    WidgetBasedPoller(QObject *parent = 0);
+    WidgetBasedPoller(QWidget *parent = 0);
     virtual ~WidgetBasedPoller();
 
     bool isAvailable();

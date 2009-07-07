@@ -52,7 +52,7 @@ XSyncBasedPoller *XSyncBasedPoller::instance()
     return s_globalXSyncBasedPoller->q;
 }
 
-XSyncBasedPoller::XSyncBasedPoller(QObject *parent)
+XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
 #ifdef HAVE_XSYNC
         , m_display(QX11Info::display())

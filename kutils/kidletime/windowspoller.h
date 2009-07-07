@@ -28,7 +28,7 @@ class WindowsPoller : public WidgetBasedPoller
     Q_OBJECT
 
 public:
-    WindowsPoller(QObject *parent = 0);
+    WindowsPoller(QWidget *parent = 0);
     virtual ~WindowsPoller();
 
 public slots:

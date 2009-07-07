@@ -23,7 +23,7 @@
 #include <QEvent>
 #include <QDebug>
 
-WidgetBasedPoller::WidgetBasedPoller(QObject *parent)
+WidgetBasedPoller::WidgetBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
 {
 }

@@ -70,7 +70,8 @@ public:
 };
 
 KIdleTime::KIdleTime()
-        : d_ptr(new KIdleTimePrivate())
+        : QObject(0)
+        , d_ptr(new KIdleTimePrivate())
 {
     Q_ASSERT(!s_globalKIdleTime->q);
     s_globalKIdleTime->q = this;
@@ -179,9 +180,9 @@ void KIdleTime::simulateUserActivity()
     d->poller->simulateUserActivity();
 }
 
-int KIdleTime::idleTime()
+int KIdleTime::idleTime() const
 {
-    Q_D(KIdleTime);
+    Q_D(const KIdleTime);
 
     return d->poller->forcePollRequest();
 }

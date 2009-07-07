@@ -102,7 +102,7 @@ typedef OSStatus(*InstallEventLoopIdleTimerPtr)(EventLoopRef inEventLoop,
         void *               inTimerData,
         EventLoopTimerRef *  outTimer);
 
-MacPoller::MacPoller(QObject *parent)
+MacPoller::MacPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
         , m_timerRef(0)
         , m_secondsIdle(0)

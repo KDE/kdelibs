@@ -47,7 +47,7 @@ public:
 
 protected:
     bool x11Event(XEvent *event);
-    XSyncBasedPoller(QObject *parent = 0);
+    XSyncBasedPoller(QWidget *parent = 0);
 
 public slots:
     void addTimeout(int nextTimeout);

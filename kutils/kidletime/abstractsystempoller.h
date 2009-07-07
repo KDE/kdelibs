@@ -27,7 +27,7 @@ class AbstractSystemPoller : public QWidget
 
 public:
 
-    AbstractSystemPoller(QObject *parent = 0);
+    AbstractSystemPoller(QWidget *parent = 0);
     virtual ~AbstractSystemPoller();
 
     virtual bool isAvailable() = 0;

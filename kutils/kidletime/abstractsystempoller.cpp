@@ -18,10 +18,9 @@
 
 #include "abstractsystempoller.h"
 
-AbstractSystemPoller::AbstractSystemPoller(QObject *parent)
-        : QWidget(0)
+AbstractSystemPoller::AbstractSystemPoller(QWidget *parent)
+        : QWidget(parent)
 {
-    Q_UNUSED(parent)
 }
 
 AbstractSystemPoller::~AbstractSystemPoller()

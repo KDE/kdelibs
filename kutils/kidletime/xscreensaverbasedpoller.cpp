@@ -30,7 +30,7 @@
 #include <fixx11h.h>
 #endif // HAVE_XTEST
 
-XScreensaverBasedPoller::XScreensaverBasedPoller(QObject *parent)
+XScreensaverBasedPoller::XScreensaverBasedPoller(QWidget *parent)
         : WidgetBasedPoller(parent)
 {
 
