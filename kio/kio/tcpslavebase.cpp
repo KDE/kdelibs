@@ -282,7 +282,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
         if (!d->socket.bytesAvailable())
             d->socket.waitForReadyRead(-1);
         ssize_t readStep = d->socket.readLine(&data[readTotal], len-readTotal);
-        if (readStep == -1) {
+        if (readStep == -1 || (readStep == 0 && d->socket.state() != KTcpSocket::ConnectedState)) {
             return -1;
         }
         readTotal += readStep;
