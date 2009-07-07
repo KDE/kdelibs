@@ -82,11 +82,13 @@ class KLocalizedStringPrivate
                         const QString &ctxt) const;
     QString substituteTranscript (const QString &trans,
                                   const QString &lang,
+                                  const QString &ctry,
                                   const QString &lscr,
                                   const QString &final,
                                   bool &fallback) const;
     int resolveInterpolation (const QString &trans, int pos,
                               const QString &lang,
+                              const QString &ctry,
                               const QString &lscr,
                               const QString &final,
                               QString &result,
@@ -94,6 +96,7 @@ class KLocalizedStringPrivate
     QVariant segmentToValue (const QString &arg) const;
     QString postTranscript (const QString &pcall,
                             const QString &lang,
+                            const QString &ctry,
                             const QString &lscr,
                             const QString &final) const;
 
@@ -232,7 +235,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
                               .arg(shortenMessage(QString::fromUtf8(msg)));
 
     // Get raw translation.
-    QString lang, rawtrans, lscr;
+    QString lang, rawtrans, lscr, ctry;
     if (locale != NULL)
     {
         if (!ctxt.isEmpty() && !plural.isEmpty())
@@ -244,12 +247,15 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         else
             locale->translateRaw(msg, &lang, &rawtrans);
 
+        ctry = locale->country();
+
         // Find any higher priority writing script for the current language.
         lscr = KTranslit::higherPriorityScript(lang, locale);
     }
     else
     {
         lang = KLocale::defaultLanguage();
+        ctry = "C";
         rawtrans = selectForEnglish();
     }
 
@@ -299,7 +305,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     if (!strans.isEmpty()) {
         // Evaluate scripted translation.
         bool fallback;
-        QString sfinal = substituteTranscript(strans, lang, lscr, final, fallback);
+        QString sfinal = substituteTranscript(strans, lang, ctry, lscr, final, fallback);
 
         // If any translation produced and no fallback requested.
         if (!sfinal.isEmpty() && !fallback) {
@@ -313,7 +319,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     {
         QStringList pcalls = s->ktrs->postCalls(lang);
         foreach(const QString &pcall, pcalls)
-            postTranscript(pcall, lang, lscr, final);
+            postTranscript(pcall, lang, ctry, lscr, final);
     }
 
     return final;
@@ -487,6 +493,7 @@ QString KLocalizedStringPrivate::postFormat (const QString &text,
 
 QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &lang,
+                                                       const QString &ctry,
                                                        const QString &lscr,
                                                        const QString &final,
                                                        bool &fallback) const
@@ -513,7 +520,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         // Resolve interpolation.
         QString result;
         bool fallbackLocal;
-        tpos = resolveInterpolation(strans, tpos, lang, lscr, final,
+        tpos = resolveInterpolation(strans, tpos, lang, ctry, lscr, final,
                                     result, fallbackLocal);
 
         // If there was a problem in parsing the interpolation, cannot proceed
@@ -544,6 +551,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
 int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
                                                    int pos,
                                                    const QString &lang,
+                                                   const QString &ctry,
                                                    const QString &lscr,
                                                    const QString &final,
                                                    QString &result,
@@ -618,7 +626,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
             else if (strans.mid(tpos, islen) == s->startInterp) { // sub-interpolation
                 QString resultLocal;
                 bool fallbackLocal;
-                tpos = resolveInterpolation(strans, tpos, lang, lscr, final,
+                tpos = resolveInterpolation(strans, tpos, lang, ctry, lscr, final,
                                             resultLocal, fallbackLocal);
                 if (tpos < 0) { // unrecoverable problem in sub-interpolation
                     // Error reported in the subcall.
@@ -683,10 +691,9 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     // Evaluate interpolation.
     QString msgctxt = QString::fromUtf8(ctxt);
     QString msgid = QString::fromUtf8(msg);
-    QString ctry = KGlobal::locale()->country();
     QString scriptError;
     bool fallbackLocal;
-    result = s->ktrs->eval(iargs, lang, lscr, ctry,
+    result = s->ktrs->eval(iargs, lang, ctry, lscr,
                            msgctxt, dynctxt, msgid,
                            args, vals, final, s->scriptModulesToLoad,
                            scriptError, fallbackLocal);
@@ -739,6 +746,7 @@ QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 
 QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
                                                  const QString &lang,
+                                                 const QString &ctry,
                                                  const QString &lscr,
                                                  const QString &final) const
 {
@@ -755,10 +763,9 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     iargs.append(pcall);
     QString msgctxt = QString::fromUtf8(ctxt);
     QString msgid = QString::fromUtf8(msg);
-    QString ctry = KGlobal::locale()->country();
     QString scriptError;
     bool fallback;
-    QString dummy = s->ktrs->eval(iargs, lang, lscr, ctry,
+    QString dummy = s->ktrs->eval(iargs, lang, ctry, lscr,
                                   msgctxt, dynctxt, msgid,
                                   args, vals, final, s->scriptModulesToLoad,
                                   scriptError, fallback);
