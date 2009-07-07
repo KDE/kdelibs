@@ -6,35 +6,36 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!ENTITY Alt    "<keycap>Alt</keycap>">
-<!ENTITY artsbuilder "construtor arts">
-<!ENTITY Backspace "<keycap>Esc</keycap>">
-<!ENTITY cdrom  "<hardware>CD-ROM</hardware>">
-<!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
-<!ENTITY dpi	'<acronym>DPI</acronym>'>
-<!ENTITY eg     "<abbrev>por exemplo</abbrev>">
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY cdrom	'<hardware>leitor de CD-ROMs</hardware>'>
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY dpi	'<acronym>ppp</acronym>'>
+<!ENTITY pex 	"por exemplo"> <!-- English: &eg; -->
+<!ENTITY eg 	"isto é">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
-<!ENTITY Esc   "<keycap>Esc</keycap>">
-<!ENTITY etc     "<abbrev>etc</abbrev>">
-<!ENTITY ex     "<abbrev>por exemplo</abbrev>">
-<!ENTITY FAQ     "Perguntas mais freqüentes (do inglês <acronym>FAQ</acronym>)">
-<!ENTITY HTML	'<acronym>HTML</acronym>'>
-<!ENTITY ie     "isto é">
-<!ENTITY infocenter	"<application>Centro de Informações</application>">
-<!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
-<!ENTITY kicon	"ícone <guiicon>
+<!ENTITY Tab	"<keycap>Tab</keycap>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY ie 	"isto é"> 
+<!ENTITY kcontrolcenter	"<application>Centro de Controlo &kde;</application>">
+<!ENTITY systemsettings	"<application>Configuração do Sistema</application>">
+<!ENTITY BER 	"botão <mousebutton>esquerdo</mousebutton> do rato">  <!-- English: &LMB; -->
+<!ENTITY LMB 	"botão <mousebutton>esquerdo</mousebutton> do rato">
+<!ENTITY BMR 	"botão <mousebutton>do meio</mousebutton> do rato">   <!-- English: &MMB; -->
+<!ENTITY MMB 	"botão <mousebutton>do meio</mousebutton> do rato">
+<!ENTITY BDR 	"botão <mousebutton>direito</mousebutton> do rato">   <!-- English: &RMB; -->
+<!ENTITY RMB 	"botão <mousebutton>direito</mousebutton> do rato">
+<!ENTITY OS	"sistema operativo">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
+<!ENTITY kicon  '<guiicon>
 <inlinemediaobject>
  <objectinfo><title>O ícone K do &kde;</title></objectinfo>
- <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <imageobject><imagedata fileref="common/kmenu.png" format="PNG"/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon>"><!-- if image is localised, then entityref should be used 
-                      instead of fileref -->
-<!ENTITY kmenu    "Menu <guimenu>K</guimenu>">
-<!ENTITY LMB    "botão <mousebutton>esquerdo</mousebutton> do mouse">
-<!ENTITY MMB    "botão do <mousebutton>meio</mousebutton> do mouse">
-<!ENTITY OS "<acronym>Sistema Operacional</acronym>">
-<!ENTITY RMB    "botão <mousebutton>direito</mousebutton> do mouse">
-<!ENTITY Shift   "<keycap>Shift</keycap>">
-<!ENTITY systemtray "<application>bandeja do sistema</application>">
-<!ENTITY Tab	"<keycap>Tab</keycap>">
+   </guiicon> icon'>
+<!ENTITY kmenu  "menu <guimenu>K</guimenu>">
+<!ENTITY kinfocenter "<application>Centro de Informação do KDE</application>" >

@@ -2,6 +2,7 @@
 extern "C" int xmlLoadExtDtdDefaultValue;
 #endif
 
+#include <QCoreApplication>
 #include <config-kdoctools.h>
 #include <config.h>
 #include <string.h>
@@ -96,9 +97,9 @@ int main(int argc, char **argv) {
     KCmdLineArgs::init(argc, argv, &aboutData, KCmdLineArgs::CmdLineArgKDE);
     KCmdLineArgs::addCmdLineOptions( options );
 
+    QCoreApplication app( argc, argv );
     KComponentData ins("kio_help4");
     KGlobal::locale();
-
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if ( args->count() != 1 ) {
@@ -183,10 +184,10 @@ int main(int argc, char **argv) {
     xmlLoadExtDtdDefaultValue = 1;
 
     QVector<const char *> params;
-#ifndef Q_WS_WIN 
-    // libxslt parses the path given to outputFile as XPath expression which fails 
+#ifndef Q_WS_WIN
+    // libxslt parses the path given to outputFile as XPath expression which fails
     // see libxslt/xsltEvalUserParams
-    // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl 
+    // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl
     // and is not supported on windows yet
     if (args->isSet( "output" ) ) {
         params.append( qstrdup( "outputFile" ) );

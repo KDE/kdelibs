@@ -27,9 +27,10 @@
 <!ENTITY ko SYSTEM "ko.xml">
 <!ENTITY la SYSTEM "la.xml">
 <!ENTITY lit SYSTEM "lt.xml">
+<!ENTITY nb SYSTEM "nb.xml">
+<!ENTITY nds SYSTEM "nds.xml">
 <!ENTITY nl SYSTEM "nl.xml">
 <!ENTITY nn SYSTEM "nn.xml">
-<!ENTITY no SYSTEM "no.xml">
 <!ENTITY pl SYSTEM "pl.xml">
 <!ENTITY pt SYSTEM "pt.xml">
 <!ENTITY pt_br SYSTEM "pt_br.xml">
@@ -75,9 +76,10 @@
 &ko;
 &la;
 &lit;
+&nb;
+&nds;
 &nl;
 &nn;
-&no;
 &pl;
 &pt;
 &pt_br;
