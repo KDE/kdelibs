@@ -254,6 +254,7 @@ public:
 	 * default events you can use in the event function
 	 */
 	enum StandardEvent { Notification , Warning , Error , Catastrophe };
+
 	/**
 	 * Create a new notification.
 	 * 
@@ -270,6 +271,23 @@ public:
 	 * @param flags is a bitmask of NotificationFlag
 	 */
 	explicit KNotification(const QString & eventId , QWidget *widget=0L, const NotificationFlags &flags=CloseOnTimeout);
+
+	/**
+	 * Create a new notification.
+	 *
+	 * You have to use sendEvent to show the notification.
+	 *
+	 * The pointer is automatically deleted when the event is closed.
+	 *
+	 * Make sure you use one of the NotificationFlags CloseOnTimeOut or
+	 * CloseWhenWidgetActivated, if not,
+	 * you have to close the notification yourself.
+	 *
+	 * @param eventId is the name of the event
+	 * @param widget is a widget where the notification reports to
+	 * @param flags is a bitmask of NotificationFlag
+	 */
+	explicit KNotification(const QString & eventId , const NotificationFlags &flags=CloseOnTimeout, QObject *parent = NULL );
 
 	~KNotification();
 

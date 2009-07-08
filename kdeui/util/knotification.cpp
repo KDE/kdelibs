@@ -89,6 +89,21 @@ KNotification::KNotification(const QString& eventId, QWidget *parent, const Noti
 	d->updateTimer.setInterval(100);
 }
 
+KNotification::KNotification(
+		const QString& eventId,
+		const NotificationFlags& flags,
+		QObject *parent)
+	:	QObject(parent),
+		d(new Private)
+{
+	d->eventId=eventId;
+	d->flags=flags;
+	connect(&d->updateTimer,SIGNAL(timeout()), this, SLOT(update()));
+	d->updateTimer.setSingleShot(true);
+	d->updateTimer.setInterval(100);
+}
+
+
 KNotification::~KNotification()
 {
 	kDebug( 299 ) << d->id;
