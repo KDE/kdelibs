@@ -3,6 +3,7 @@ project(nepomuk_rcgen)
 include_directories(
   ${nepomuk_rcgen_SOURCE_DIR}
   ${KDE4_INCLUDES}
+  ${KDE4_KDEUI_INCLUDES}
   ${QT_INCLUDES}
   ${SOPRANO_INCLUDE_DIR} )
 
