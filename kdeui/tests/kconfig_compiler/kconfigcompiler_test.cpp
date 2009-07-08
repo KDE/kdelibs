@@ -36,6 +36,8 @@ static CompilerTestSet testCases =
 	"test8a.cpp", "test8a.h",
 	"test8b.cpp", "test8b.h",
 	"test9.h", "test9.cpp",
+	"test10.h", "test10.cpp",
+	"test11.h", "test11.cpp",
 	"test_dpointer.cpp", "test_dpointer.h",
 	"test_signal.cpp", "test_signal.h",
 	NULL
@@ -48,30 +50,26 @@ static CompilerTestSet willFailCases =
 	NULL
 };
 
-
-void KConfigCompiler_Test::testExpectedOutput()
+void KConfigCompiler_Test::testBaselineComparison_data()
 {
-	uint i = 0;
-	// Known to pass test cases
-	while (testCases[ i ])
-	{
-		performCompare(QString::fromLatin1(testCases[ i ]));
-		++i;
-	}
+    QTest::addColumn<QString>("testName");
 
-	// broken test cases
-	i= 0;
-	while (willFailCases[ i ])
-	{
-		performCompare(QString::fromLatin1(willFailCases[ i ]), true);
-		++i;
-	}
+    for (const char **it = testCases; *it; ++it) {
+        QTest::newRow(*it) << QString::fromLatin1(*it);
+    }
+}
+
+void KConfigCompiler_Test::testBaselineComparison()
+{
+    QFETCH(QString, testName);
+
+    performCompare(testName);
 }
 
 void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 {
 	QFile file(fileName);
-	QFile fileRef(QString::fromLatin1(SRCDIR) + QString::fromLatin1("/") + fileName + QString::fromLatin1(".ref"));
+	QFile fileRef(QString::fromLatin1(KDESRCDIR) + fileName + QString::fromLatin1(".ref"));
 
 	if ( file.open(QIODevice::ReadOnly) && fileRef.open(QIODevice::ReadOnly) )
 	{
@@ -79,7 +77,9 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 		QString contentRef = fileRef.readAll();
 
 		if (!fail)
-			QCOMPARE( content, contentRef );
+			// use QVERIFY instead of QCOMPARE to avoid having
+			// the whole output shown inline
+			QVERIFY( content == contentRef );
 		else
                     QFAIL( "not implemented" ); // missing in qttestlib?
                 // wrong? QEXPECT_FAIL( "", content, contentRef );

@@ -183,9 +183,9 @@ set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
 
 
 
-#kde4_add_executable(kconfigcompiler_test TEST ${kconfigcompiler_test_SRCS})
+kde4_add_unit_test(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 
-#target_link_libraries(kconfigcompiler_test  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY}_debug )
+target_link_libraries(kconfigcompiler_test ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### install files ###############
 
