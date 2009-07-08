@@ -1003,7 +1003,6 @@ void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
     // is generated first, as this improves the feeled performance a lot.
     const bool hasProxy = (m_proxyModel != 0);
     const int itemCount = items.count();
-    const int rowCount = hasProxy ? m_proxyModel->rowCount() : m_dirModel->rowCount();
     const QRect visibleArea = m_viewAdapter->visibleArea();
 
     QModelIndex dirIndex;
