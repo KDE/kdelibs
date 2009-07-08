@@ -27,4 +27,5 @@ int main( int, char** )
   KComponentData i("test");
   Test6 *t = new Test6(QString());
   delete t;
+  return 0;
 }

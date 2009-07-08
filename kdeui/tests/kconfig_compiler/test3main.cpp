@@ -26,4 +26,5 @@ int main( int, char** )
   KComponentData i("test");
   TestNameSpace::Test3 *t = new TestNameSpace::Test3();
   delete t;
+  return 0;
 }

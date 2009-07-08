@@ -27,4 +27,5 @@ int main( int, char** )
   KComponentData i("test");
   TestSignal *t = TestSignal::self();
   delete t;
+  return 0;
 }

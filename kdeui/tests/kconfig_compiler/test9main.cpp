@@ -40,4 +40,5 @@ int main( int, char** )
   kWarning() << t->myPathsList2();
 
   delete t;
+  return 0;
 }

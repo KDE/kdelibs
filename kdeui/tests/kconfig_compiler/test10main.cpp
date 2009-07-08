@@ -27,4 +27,5 @@ int main( int, char** )
   KComponentData i("test");
   Test10 *t = Test10::self();
   delete t;
+  return 0;
 }

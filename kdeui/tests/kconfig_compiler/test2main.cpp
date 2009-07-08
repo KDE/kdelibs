@@ -26,4 +26,5 @@ int main( int, char** )
   KComponentData i("test");
   Test2 *t = new Test2();
   delete t;
+  return 0;
 }

@@ -27,4 +27,5 @@ int main( int, char** )
   KComponentData i("test");
   TestDPointer *t = TestDPointer::self();
   delete t;
+  return 0;
 }

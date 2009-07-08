@@ -31,4 +31,5 @@ int main( int, char** )
   Test8b::self();
   delete config1;
   delete config2;
+  return 0;
 }
