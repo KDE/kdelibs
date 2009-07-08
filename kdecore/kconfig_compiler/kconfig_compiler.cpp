@@ -1113,7 +1113,7 @@ QString memberMutatorBody( CfgEntry *e )
     out << "}" << endl << endl;
   }
 
-  out << "if (!" << This << "isImmutable( QString::fromLatin1 ( \"";
+  out << "if (!" << This << "isImmutable( QString::fromLatin1( \"";
   if (!e->param().isEmpty())
   {
     out << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
