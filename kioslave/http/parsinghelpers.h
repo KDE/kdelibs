@@ -72,7 +72,7 @@ public:
     // after tokenize() has been called use the QHash part of this class to
     // ask for a list of begin-end indexes in buffer for header values.
 
-    TokenIterator iterator(const char *key);
+    TokenIterator iterator(const char *key) const;
 private:
     char *m_buffer;
     struct HeaderFieldTemplate {

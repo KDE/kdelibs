@@ -24,6 +24,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+// TODO delete / do not save very big files; "very big" to be defined
+
 #include "http.h"
 
 #include <config.h>
@@ -170,6 +172,51 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
   return sanitizedHeaders;
 }
 
+// for a given response code, conclude if the response is going to/likely to have a response body
+static bool canHaveResponseBody(int rCode, KIO::HTTP_METHOD method)
+{
+/* RFC 2616 says... 
+    1xx: false
+    200: method HEAD: false, otherwise:true
+    201: true
+    202: true
+    203: see 200
+    204: false
+    205: false
+    206: true
+    300: see 200
+    301: see 200
+    302: see 200
+    303: see 200
+    304: false
+    305: probably like 300, RFC seems to expect disconnection afterwards...
+    306: (reserved), for simplicity do it just like 200
+    307: see 200
+    4xx: see 200
+    5xx :see 200
+*/
+    if (rCode >= 100 && rCode < 200) {
+        return false;
+    }
+    switch (rCode) {
+    case 201:
+    case 202:
+    case 206:
+        // RFC 2616 does not mention HEAD in the description of the above. if the assert turns out
+        // to be a problem the response code should probably be treated just like 200 and friends.
+        Q_ASSERT(method != HTTP_HEAD);
+        return true;
+    case 204:
+    case 205:
+    case 304:
+        return false;
+    default:
+        break;
+    }
+    // safe (and for most remaining response codes exactly correct) default
+    return method != HTTP_HEAD;
+}
+
 static bool isEncryptedHttpVariety(const QString &p)
 {
     return p == "https" || p == "webdavs";
@@ -228,6 +275,15 @@ static QString methodString(HTTP_METHOD m)
     }
 }
 
+static QString formatHttpDate(qint64 date)
+{
+    KDateTime dt;
+    dt.setTime_t(date);
+    QString ret = dt.toString(KDateTime::RFCDateDay);
+    ret.chop(5);    // remove "+0000"
+    ret.append(QString::fromLatin1("GMT"));
+    return ret;
+}
 
 #define NO_SIZE ((KIO::filesize_t) -1)
 
@@ -246,7 +302,6 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     : TCPSlaveBase(protocol, pool, app, isEncryptedHttpVariety(protocol))
     , m_iSize(NO_SIZE)
     , m_isBusy(false)
-    , m_isFirstRequest(false)
     , m_maxCacheAge(DEFAULT_MAX_CACHE_AGE)
     , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE/2)
     , m_protocol(protocol)
@@ -427,12 +482,11 @@ void HTTPProtocol::resetSessionSettings()
      m_request.userAgent.clear();
   }
 
-  // Deal with cache cleaning.
-  // TODO: Find a smarter way to deal with cleaning the
-  // cache ?
-  if (m_request.cacheTag.useCache) {
-     cleanCache();
-  }
+  m_request.cacheTag.etag.clear();
+  // -1 is also the value returned by KDateTime::toTime_t() from an invalid instance.
+  m_request.cacheTag.servedDate = -1;
+  m_request.cacheTag.lastModifiedDate = -1;
+  m_request.cacheTag.expireDate = -1;
 
   m_request.responseCode = 0;
   m_request.prevResponseCode = 0;
@@ -453,16 +507,6 @@ void HTTPProtocol::resetSessionSettings()
   // the persistent link has been terminated by the remote end.
   m_request.isKeepAlive = true;
   m_request.keepAliveTimeout = 0;
-
-  // A single request can require multiple exchanges with the remote
-  // server due to authentication challenges or SSL tunneling.
-  // m_isFirstRequest is a flag that indicates whether we are
-  // still processing the first request. This is important because we
-  // should not force a close of a keep-alive connection in the middle
-  // of the first request.
-  // m_isFirstRequest is set to "true" whenever a new connection is
-  // made in httpOpenConnection()
-  m_isFirstRequest = false;
 }
 
 void HTTPProtocol::setHost( const QString& host, quint16 port,
@@ -557,13 +601,6 @@ bool HTTPProtocol::proceedUntilResponseHeader()
       }
       if (readResponseHeader()) {
           // Success, finish the request.
-
-          // Update our server connection state. Note that satisfying a request from cache
-          // does not even touch the server connection, hence we should only update the server
-          // connection state if not reading from cache.
-          if (!m_request.cacheTag.readFromCache) {
-              m_server.initFrom(m_request);
-          }
           break;
       } else if (m_isError || m_isLoadingErrorPage) {
           // Unrecoverable error, abort everything.
@@ -575,13 +612,6 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
       if (!m_request.isKeepAlive) {
           httpCloseConnection();
-      }
-
-      // update for the next go-around to have current information
-      Q_ASSERT_X(!m_request.cacheTag.readFromCache, "proceedUntilResponseHeader()",
-                 "retrying a request even though the result is cached?!");
-      if (!m_request.cacheTag.readFromCache) {
-          m_server.initFrom(m_request);
       }
   }
 
@@ -1809,7 +1839,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
             // save the request state so we can pick it up again in the collection phase
             it.setValue(m_request);
             kDebug(7113) << "check one: isKeepAlive =" << m_request.isKeepAlive;
-            if (!m_request.cacheTag.readFromCache) {
+            if (m_request.cacheTag.ioMode != ReadFromCache) {
                 m_server.initFrom(m_request);
             }
         }
@@ -1951,12 +1981,22 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
     return false;
 }
 
+static bool isCompatibleNextUrl(const KUrl &previous, const KUrl &now)
+{
+    if (previous.host() != now.host() || previous.port() != now.port()) {
+        return false;
+    }
+    if (previous.user().isEmpty() && previous.pass().isEmpty()) {
+        return true;
+    }
+    return previous.user() == now.user() && previous.pass() == now.pass();
+}
 
 bool HTTPProtocol::httpShouldCloseConnection()
 {
-  kDebug(7113) << "Keep Alive:" << m_request.isKeepAlive << "First:" << m_isFirstRequest;
+  kDebug(7113) << "Keep Alive:" << m_request.isKeepAlive;
 
-  if (m_isFirstRequest || !isConnected()) {
+  if (!isConnected()) {
       return false;
   }
 
@@ -1964,28 +2004,13 @@ bool HTTPProtocol::httpShouldCloseConnection()
       return true;
   }
 
-  if (m_request.proxyUrl != m_server.proxyUrl) {
-      return true;
-  }
-
   // TODO compare current proxy state against proxy needs of next request,
   // *when* we actually have variable proxy settings!
 
   if (isValidProxy(m_request.proxyUrl))  {
-      if (m_request.proxyUrl != m_server.proxyUrl ||
-          m_request.proxyUrl.user() != m_server.proxyUrl.user() ||
-          m_request.proxyUrl.pass() != m_server.proxyUrl.pass()) {
-          return true;
-      }
-  } else {
-      if (m_request.url.host() != m_server.url.host() ||
-          m_request.url.port() != m_server.url.port() ||
-          m_request.url.user() != m_server.url.user() ||
-          m_request.url.pass() != m_server.url.pass()) {
-          return true;
-      }
+      return !isCompatibleNextUrl(m_server.proxyUrl, m_request.proxyUrl);
   }
-  return false;
+  return !isCompatibleNextUrl(m_server.url, m_request.url);
 }
 
 bool HTTPProtocol::httpOpenConnection()
@@ -2016,66 +2041,50 @@ bool HTTPProtocol::httpOpenConnection()
   socket().setNoDelay(true);
 #endif
 
-  m_isFirstRequest = true;
   m_server.initFrom(m_request);
   connected();
   return true;
 }
 
-bool HTTPProtocol::satisfyRequestFromCache(bool *success)
+bool HTTPProtocol::satisfyRequestFromCache(bool *cacheHasPage)
 {
-    m_request.cacheTag.gzs = 0;
-    m_request.cacheTag.readFromCache = false;
-    m_request.cacheTag.writeToCache = false;
-    m_request.cacheTag.isExpired = false;
-    m_request.cacheTag.expireDate = 0;
-    m_request.cacheTag.creationDate = 0;
+    kDebug(7113);
 
     if (m_request.cacheTag.useCache) {
+        const bool offline = isOffline(isValidProxy(m_request.proxyUrl) ?
+                                       m_request.proxyUrl : m_request.url);
 
-        m_request.cacheTag.gzs = checkCacheEntry();
-        bool bCacheOnly = (m_request.cacheTag.policy == KIO::CC_CacheOnly);
-        bool bOffline = isOffline(isValidProxy(m_request.proxyUrl) ? m_request.proxyUrl : m_request.url);
-
-        if (bOffline && m_request.cacheTag.policy != KIO::CC_Reload) {
+        if (offline && m_request.cacheTag.policy != KIO::CC_Reload) {
             m_request.cacheTag.policy= KIO::CC_CacheOnly;
         }
 
-        if (m_request.cacheTag.policy == CC_Reload && m_request.cacheTag.gzs) {
-            gzclose(m_request.cacheTag.gzs);
-            m_request.cacheTag.gzs = 0;
-        }
-        if (m_request.cacheTag.policy == KIO::CC_CacheOnly ||
-            m_request.cacheTag.policy == KIO::CC_Cache) {
-            m_request.cacheTag.isExpired = false;
+        const bool isCacheOnly = m_request.cacheTag.policy == KIO::CC_CacheOnly;
+        const CacheTag::CachePlan plan = m_request.cacheTag.plan(m_maxCacheAge);
+
+        bool openForReading = false;
+        if (plan == CacheTag::UseCached || plan == CacheTag::ValidateCached) {
+            openForReading = cacheFileOpenRead();
+
+            if (!openForReading && (isCacheOnly || offline)) {
+                // cache-only or offline -> we give a definite answer and it is "no"
+                *cacheHasPage = false;
+                if (isCacheOnly) {
+                    error(ERR_DOES_NOT_EXIST, m_request.url.url());
+                } else if (offline) {
+                    error(ERR_COULD_NOT_CONNECT, m_request.url.url());
+                }
+                return true;
+            }
         }
 
-        m_request.cacheTag.writeToCache = true;
-
-        if (m_request.cacheTag.gzs && !m_request.cacheTag.isExpired) {
-            // Cache entry is OK. Cache hit.
-            m_request.cacheTag.readFromCache = true;
-            *success = true;
-            return true;
-        } else if (!m_request.cacheTag.gzs) {
-            // Cache miss.
-            m_request.cacheTag.isExpired = false;
-        } else {
-            // Conditional cache hit. (Validate)
-        }
-
-        if (bCacheOnly) {
-            error(ERR_DOES_NOT_EXIST, m_request.url.url());
-            *success = false;
-            return true;
-        }
-        if (bOffline) {
-            error(ERR_COULD_NOT_CONNECT, m_request.url.url());
-            *success = false;
-            return true;
+        if (openForReading) {
+            m_request.cacheTag.ioMode = ReadFromCache;
+            *cacheHasPage = true;
+            // return false if validation is required, so a network request will be sent
+            return m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached;
         }
     }
-    *success = true;   //whatever
+    *cacheHasPage = false;
     return false;
 }
 
@@ -2131,10 +2140,10 @@ bool HTTPProtocol::sendQuery()
     return false;
   }
 
-  bool cacheHasPage = false;
-  if (satisfyRequestFromCache(&cacheHasPage)) {
-    return cacheHasPage;
-  }
+  m_request.cacheTag.ioMode = NoCache;
+  m_request.cacheTag.servedDate = -1;
+  m_request.cacheTag.lastModifiedDate = -1;
+  m_request.cacheTag.expireDate = -1;
 
   QString header;
 
@@ -2148,17 +2157,25 @@ bool HTTPProtocol::sendQuery()
     // Fill in some values depending on the HTTP method to guide further processing
     switch (m_request.method)
     {
-    case HTTP_GET:
+    case HTTP_GET: {
+        bool cacheHasPage = false;
+        if (satisfyRequestFromCache(&cacheHasPage)) {
+            kDebug(7113) << "cacheHasPage =" << cacheHasPage;
+            return cacheHasPage;
+        }
+        if (!cacheHasPage) {
+            // start a new cache file later if appropriate
+            m_request.cacheTag.ioMode = WriteToCache;
+        }
+    }
     case HTTP_HEAD:
         break;
     case HTTP_PUT:
     case HTTP_POST:
         hasBodyData = true;
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case HTTP_DELETE:
     case HTTP_OPTIONS:
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_PROPFIND:
         hasDavData = true;
@@ -2176,14 +2193,11 @@ bool HTTPProtocol::sendQuery()
             davHeader += QString("%1").arg( m_request.davData.depth );
         }
         davHeader += "\r\n";
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_PROPPATCH:
         hasDavData = true;
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_MKCOL:
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_COPY:
     case DAV_MOVE:
@@ -2193,7 +2207,6 @@ bool HTTPProtocol::sendQuery()
         davHeader += "\r\nDepth: infinity\r\nOverwrite: ";
         davHeader += m_request.davData.overwrite ? "T" : "F";
         davHeader += "\r\n";
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_LOCK:
         davHeader = "Timeout: ";
@@ -2207,12 +2220,10 @@ bool HTTPProtocol::sendQuery()
             davHeader += QString("Seconds-%1").arg(timeout);
         }
         davHeader += "\r\n";
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         hasDavData = true;
         break;
     case DAV_UNLOCK:
         davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
-        m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_SEARCH:
         hasDavData = true;
@@ -2220,7 +2231,6 @@ bool HTTPProtocol::sendQuery()
     case DAV_SUBSCRIBE:
     case DAV_UNSUBSCRIBE:
     case DAV_POLL:
-        m_request.cacheTag.writeToCache = false;
         break;
     default:
         error (ERR_UNSUPPORTED_ACTION, QString());
@@ -2286,13 +2296,18 @@ bool HTTPProtocol::sendQuery()
       header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
     }
 
-    if (m_request.cacheTag.isExpired)
+    if (m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::ValidateCached)
     {
+      kDebug(7113) << "needs validation, performing conditional get.";
       /* conditional get */
       if (!m_request.cacheTag.etag.isEmpty())
         header += "If-None-Match: "+m_request.cacheTag.etag+"\r\n";
-      if (!m_request.cacheTag.lastModified.isEmpty())
-        header += "If-Modified-Since: "+m_request.cacheTag.lastModified+"\r\n";
+
+      if (m_request.cacheTag.lastModifiedDate != -1) {
+        QString httpDate = formatHttpDate(m_request.cacheTag.lastModifiedDate);
+        header += "If-Modified-Since: " + httpDate + "\r\n";
+        setMetaData("modified", httpDate);
+      }
     }
 
     header += "Accept: ";
@@ -2452,44 +2467,14 @@ void HTTPProtocol::forwardHttpResponseHeader()
   }
 }
 
-bool HTTPProtocol::readHeaderFromCache() {
-    m_responseHeaders.clear();
+void HTTPProtocol::parseHeaderFromCache()
+{
+    kDebug(7113);
+    // ### we're not checking the return value, but we actually should
+    cacheFileReadTextHeader2();
 
-    // Read header from cache...
-    static const int bufSize = 8192;
-    char buffer[bufSize + 1];
-    if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
-        // Error, delete cache entry
-        kDebug(7113) << "Could not access cache to obtain mimetype!";
-        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
-        return false;
-    }
-
-    m_mimeType = QString::fromLatin1(buffer).trimmed();
-
-    kDebug(7113) << "cached data mimetype: " << m_mimeType;
-
-    // read http-headers, first the response code
-    if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
-        // Error, delete cache entry
-        kDebug(7113) << "Could not access cached data! ";
-        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
-        return false;
-    }
-    m_responseHeaders << buffer;
-    // then the headers
-    while(true) {
-        if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
-            // Error, delete cache entry
-            kDebug(7113) << "Could not access cached data!";
-            error( ERR_CONNECTION_BROKEN, m_request.url.host() );
-            return false;
-        }
-        m_responseHeaders << buffer;
-        QString header = QString::fromLatin1(buffer).trimmed().toLower();
-        if (header.isEmpty()) {
-            break;
-        }
+    foreach (const QString &str, m_responseHeaders) {
+        QString header = str.trimmed().toLower();
         if (header.startsWith("content-type: ")) {
             int pos = header.indexOf("charset=");
             if (pos != -1) {
@@ -2504,16 +2489,15 @@ bool HTTPProtocol::readHeaderFromCache() {
             parseContentDisposition(header.mid(20));
         }
     }
-    forwardHttpResponseHeader();
 
-    if (!m_request.cacheTag.lastModified.isEmpty())
-        setMetaData("modified", m_request.cacheTag.lastModified);
+    if (m_request.cacheTag.lastModifiedDate != -1) {
+        setMetaData("modified", formatHttpDate(m_request.cacheTag.lastModifiedDate));
+    }
 
-    setMetaData("expire-date", QString::number(m_request.cacheTag.expireDate));
-    setMetaData("cache-creation-date", QString::number(m_request.cacheTag.creationDate));
-
+    // this header comes from the cache, so the response must have been cacheable :)
+    setCacheabilityMetadata(true);
     mimeType(m_mimeType);
-    return true;
+    forwardHttpResponseHeader();
 }
 
 void HTTPProtocol::fixupResponseMimetype()
@@ -2560,6 +2544,51 @@ void HTTPProtocol::fixupResponseMimetype()
 }
 
 
+void HTTPProtocol::fixupResponseContentEncoding()
+{
+    // WABA: Correct for tgz files with a gzip-encoding.
+    // They really shouldn't put gzip in the Content-Encoding field!
+    // Web-servers really shouldn't do this: They let Content-Size refer
+    // to the size of the tgz file, not to the size of the tar file,
+    // while the Content-Type refers to "tar" instead of "tgz".
+    if (!m_contentEncodings.isEmpty() && m_contentEncodings.last() == "gzip") {
+        if (m_mimeType == "application/x-tar") {
+            m_contentEncodings.removeLast();
+            m_mimeType = QString::fromLatin1("application/x-compressed-tar");
+        } else if (m_mimeType == "application/postscript") {
+            // LEONB: Adding another exception for psgz files.
+            // Could we use the mimelnk files instead of hardcoding all this?
+            m_contentEncodings.removeLast();
+            m_mimeType = QString::fromLatin1("application/x-gzpostscript");
+        } else if ((m_request.allowTransferCompression &&
+                   m_mimeType == "text/html")
+                   ||
+                   (m_request.allowTransferCompression &&
+                   m_mimeType != "application/x-compressed-tar" &&
+                   m_mimeType != "application/x-tgz" && // deprecated name
+                   m_mimeType != "application/x-targz" && // deprecated name
+                   m_mimeType != "application/x-gzip" &&
+                   !m_request.url.path().endsWith(QLatin1String(".gz")))) {
+            // Unzip!
+        } else {
+            m_contentEncodings.removeLast();
+            m_mimeType = QString::fromLatin1("application/x-gzip");
+        }
+    }
+
+    // We can't handle "bzip2" encoding (yet). So if we get something with
+    // bzip2 encoding, we change the mimetype to "application/x-bzip".
+    // Note for future changes: some web-servers send both "bzip2" as
+    //   encoding and "application/x-bzip[2]" as mimetype. That is wrong.
+    //   currently that doesn't bother us, because we remove the encoding
+    //   and set the mimetype to x-bzip anyway.
+    if (!m_contentEncodings.isEmpty() && m_contentEncodings.last() == "bzip2") {
+        m_contentEncodings.removeLast();
+        m_mimeType = QString::fromLatin1("application/x-bzip");
+    }
+}
+
+
 /**
  * This function will read in the return header from the server.  It will
  * not read in the body of the return message.  It will also not transmit
@@ -2568,47 +2597,29 @@ void HTTPProtocol::fixupResponseMimetype()
  */
 bool HTTPProtocol::readResponseHeader()
 {
+    if (m_request.cacheTag.ioMode == ReadFromCache &&
+        m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached) {
+        parseHeaderFromCache();
+        return true;
+    }
+
     resetResponseParsing();
 try_again:
     kDebug(7113);
-
-    if (m_request.cacheTag.readFromCache) {
-        return readHeaderFromCache();
-    }
-
-    // QStrings to force deep copy from "volatile" QByteArray that TokenIterator supplies.
-    // One generally has to be very careful with those!
-    QString locationStr; // In case we get a redirect.
-    QByteArray cookieStr; // In case we get a cookie.
-
-    QString mediaValue;
-    QString mediaAttribute;
-
-    QStringList upgradeOffers;
 
     bool upgradeRequired = false;   // Server demands that we upgrade to something
                                     // This is also true if we ask to upgrade and
                                     // the server accepts, since we are now
                                     // committed to doing so
-    bool canUpgrade = false;        // The server offered an upgrade
+    bool canUpgrade = false;        // The server offered an upgrade //### currently not queried
 
-
-    m_request.cacheTag.etag.clear();
-    m_request.cacheTag.lastModified.clear();
     m_request.cacheTag.charset.clear();
     m_responseHeaders.clear();
 
-    time_t dateHeader = 0;
-    time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
-    int currentAge = 0;
-    int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
     static const int maxHeaderSize = 128 * 1024;
 
     char buffer[maxHeaderSize];
     bool cont = false;
-    bool cacheValidated = false; // Revalidation was successful
-    bool mayCache = true;
-    bool hasCacheDirective = false;
     bool bCanResume = false;
 
     if (!isConnected()) {
@@ -2713,6 +2724,10 @@ try_again:
 
     // immediately act on most response codes...
 
+    if (m_request.responseCode != 200 && m_request.responseCode != 304) {
+        m_request.cacheTag.ioMode = NoCache;
+    }
+
     if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
         // Server side errors
 
@@ -2726,12 +2741,8 @@ try_again:
                 return false;
             }
         }
-        m_request.cacheTag.writeToCache = false; // Don't put in cache
-        mayCache = false;
     } else if (m_request.responseCode == 401 || m_request.responseCode == 407) {
         // Unauthorized access
-        m_request.cacheTag.writeToCache = false; // Don't put in cache
-        mayCache = false;
     } else if (m_request.responseCode == 416) {
         // Range not supported
         m_request.offset = 0;
@@ -2748,17 +2759,11 @@ try_again:
             error(ERR_DOES_NOT_EXIST, m_request.url.url());
             return false;
         }
-        m_request.cacheTag.writeToCache = false; // Don't put in cache
-        mayCache = false;
     } else if (m_request.responseCode == 307) {
         // 307 Temporary Redirect
-        m_request.cacheTag.writeToCache = false; // Don't put in cache
-        mayCache = false;
     } else if (m_request.responseCode == 304) {
         // 304 Not Modified
-        // The value in our cache is still valid.
-        cacheValidated = true;
-
+        // The value in our cache is still valid. See below for actual processing.
     } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
         // 301 Moved permanently
         if (m_request.responseCode == 301) {
@@ -2785,8 +2790,6 @@ try_again:
             // 2616 sections 10.3.[2/3/4/8]
             m_request.method = HTTP_GET; // Force a GET
         }
-        m_request.cacheTag.writeToCache = false; // Don't put in cache
-        mayCache = false;
     } else if ( m_request.responseCode == 207 ) {
         // Multi-status (for WebDav)
 
@@ -2838,6 +2841,8 @@ try_again:
                 auth->fillKioAuthInfo(&authi);
                 cacheAuthentication(authi);
             }
+            // Update our server connection state which includes www and proxy username and password.
+            m_server.updateCredentials(m_request);
         }
     }
 
@@ -2872,23 +2877,6 @@ try_again:
         }
     }
 
-    tIt = tokenizer.iterator("cache-control");
-    while (tIt.hasNext()) {
-        QByteArray cacheStr = tIt.next().toLower();
-        if (cacheStr.startsWith("no-cache") || cacheStr.startsWith("no-store")) {
-            // Don't put in cache
-            m_request.cacheTag.writeToCache = false;
-            mayCache = false;
-            hasCacheDirective = true;
-        } else if (cacheStr.startsWith("max-age=")) {
-            QByteArray age = cacheStr.mid(strlen("max-age=")).trimmed();
-            if (!age.isEmpty()) {
-                maxAge = STRTOLL(age.constData(), 0, 10);
-                hasCacheDirective = true;
-            }
-        }
-    }
-
     // get the size of our data
     tIt = tokenizer.iterator("content-length");
     if (tIt.hasNext()) {
@@ -2901,6 +2889,8 @@ try_again:
     }
 
     // which type of data do we have?
+    QString mediaValue;
+    QString mediaAttribute;
     tIt = tokenizer.iterator("content-type");
     if (tIt.hasNext()) {
         QList<QByteArray> l = tIt.next().split(';');
@@ -2935,78 +2925,6 @@ try_again:
                 setMetaData("media-" + mediaAttribute, mediaValue);
             }
         }
-    }
-
-    // Date
-    tIt = tokenizer.iterator("date");
-    if (tIt.hasNext()) {
-        dateHeader = KDateTime::fromString(tIt.next(), KDateTime::RFCDate).toTime_t();
-    }
-
-    // Cache management
-    tIt = tokenizer.iterator("etag");
-    if (tIt.hasNext()) {
-        //note QByteArray -> QString conversion will make a deep copy; we want one.
-        m_request.cacheTag.etag = QString(tIt.next());
-    }
-
-    tIt = tokenizer.iterator("expires");
-    if (tIt.hasNext()) {
-        expireDate = KDateTime::fromString(tIt.next(), KDateTime::RFCDate).toTime_t();
-        if (!expireDate) {
-            expireDate = 1; // Already expired
-        }
-    }
-
-    tIt = tokenizer.iterator("last-modified");
-    if (tIt.hasNext()) {
-        m_request.cacheTag.lastModified = QString(tIt.next());
-    }
-
-    // whoops.. we received a warning
-    tIt = tokenizer.iterator("warning");
-    if (tIt.hasNext()) {
-        //Don't use warning() here, no need to bother the user.
-        //Those warnings are mostly about caches.
-        infoMessage(tIt.next());
-    }
-
-    // Cache management (HTTP 1.0)
-    tIt = tokenizer.iterator("pragma");
-    while (tIt.hasNext()) {
-        if (tIt.next().toLower().startsWith("no-cache")) {
-            m_request.cacheTag.writeToCache = false; // Don't put in cache
-            mayCache = false;
-            hasCacheDirective = true;
-        }
-    }
-
-    // The deprecated Refresh Response
-    tIt = tokenizer.iterator("refresh");
-    if (tIt.hasNext()) {
-        mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-        setMetaData("http-refresh", QString::fromLatin1(tIt.next().trimmed()));
-    }
-
-    // In fact we should do redirection only if we have a redirection response code (300 range)
-    tIt = tokenizer.iterator("location");
-    if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
-        locationStr = tIt.next().trimmed();
-    }
-
-    // Harvest cookies (mmm, cookie fields!)
-    tIt = tokenizer.iterator("set-cookie");
-    while (tIt.hasNext()) {
-        cookieStr += "Set-Cookie: ";
-        cookieStr += tIt.next();
-        cookieStr += '\n';
-    }
-
-    tIt = tokenizer.iterator("upgrade");
-    if (tIt.hasNext()) {
-        // Now we have to check to see what is offered for the upgrade
-        QString offered = QString::fromLatin1(tIt.next());
-        upgradeOffers = offered.split(QRegExp("[ \n,\r\t]"), QString::SkipEmptyParts);
     }
 
     // content?
@@ -3146,6 +3064,13 @@ try_again:
 
 
     // Now process the HTTP/1.1 upgrade
+    QStringList upgradeOffers;
+    tIt = tokenizer.iterator("upgrade");
+    if (tIt.hasNext()) {
+        // Now we have to check to see what is offered for the upgrade
+        QString offered = QString::fromLatin1(tIt.next());
+        upgradeOffers = offered.split(QRegExp("[ \n,\r\t]"), QString::SkipEmptyParts);
+    }
     foreach (const QString &opt, upgradeOffers) {
         if (opt == "TLS/1.0") {
             if (!startSsl() && upgradeRequired) {
@@ -3161,107 +3086,41 @@ try_again:
         }
     }
 
-  // Fixup expire date for clock drift.
-  if (expireDate && (expireDate <= dateHeader))
-    expireDate = 1; // Already expired.
-
-  // Convert max-age into expireDate (overriding previous set expireDate)
-  if (maxAge == 0)
-    expireDate = 1; // Already expired.
-  else if (maxAge > 0)
-  {
-    if (currentAge)
-      maxAge -= currentAge;
-    if (maxAge <=0)
-      maxAge = 0;
-    expireDate = time(0) + maxAge;
-  }
-
-  if (!expireDate)
-  {
-    time_t lastModifiedDate = 0;
-    if (!m_request.cacheTag.lastModified.isEmpty())
-       lastModifiedDate = KDateTime::fromString(m_request.cacheTag.lastModified, KDateTime::RFCDate).toTime_t();
-
-    if (lastModifiedDate)
-    {
-       long diff = static_cast<long>(difftime(dateHeader, lastModifiedDate));
-       if (diff < 0)
-          expireDate = time(0) + 1;
-       else
-          expireDate = time(0) + (diff / 10);
+    // Harvest cookies (mmm, cookie fields!)
+    QByteArray cookieStr; // In case we get a cookie.
+    tIt = tokenizer.iterator("set-cookie");
+    while (tIt.hasNext()) {
+        cookieStr += "Set-Cookie: ";
+        cookieStr += tIt.next();
+        cookieStr += '\n';
     }
-    else
-    {
-       expireDate = time(0) + DEFAULT_CACHE_EXPIRE;
+    if (!cookieStr.isEmpty()) {
+        if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.useCookieJar) {
+            // Give cookies to the cookiejar.
+            QString domain = config()->readEntry("cross-domain");
+            if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain)) {
+                cookieStr = "Cross-Domain\n" + cookieStr;
+            }
+            addCookies( m_request.url.url(), cookieStr );
+        } else if (m_request.cookieMode == HTTPRequest::CookiesManual) {
+            // Pass cookie to application
+            setMetaData("setcookies", cookieStr);
+        }
     }
-  }
-
-  // DONE receiving the header!
-  if (!cookieStr.isEmpty())
-  {
-    if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.useCookieJar)
-    {
-      // Give cookies to the cookiejar.
-      QString domain = config()->readEntry("cross-domain");
-      if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain))
-         cookieStr = "Cross-Domain\n" + cookieStr;
-      addCookies( m_request.url.url(), cookieStr );
-    }
-    else if (m_request.cookieMode == HTTPRequest::CookiesManual)
-    {
-      // Pass cookie to application
-      setMetaData("setcookies", cookieStr);
-    }
-  }
-
-  if (m_request.cacheTag.isExpired)
-  {
-    m_request.cacheTag.isExpired = false; // Reset just in case.
-    if (cacheValidated)
-    {
-      // Yippie, we can use the cached version.
-      // Update the cache with new "Expire" headers.
-      gzclose(m_request.cacheTag.gzs);
-      m_request.cacheTag.gzs = 0;
-      updateExpireDate( expireDate, true );
-      m_request.cacheTag.gzs = checkCacheEntry( ); // Re-read cache entry
-
-      if (m_request.cacheTag.gzs)
-      {
-          m_request.cacheTag.readFromCache = true;
-          goto try_again; // Read header again, but now from cache.
-       }
-       else
-       {
-          // Where did our cache entry go???
-       }
-     }
-     else
-     {
-       // Validation failed. Close cache.
-       gzclose(m_request.cacheTag.gzs);
-       m_request.cacheTag.gzs = 0;
-     }
-  }
 
   // We need to reread the header if we got a '100 Continue' or '102 Processing'
+  // This may be a non keepalive connection so we handle this kind of loop internally
   if ( cont )
   {
     kDebug(7113) << "cont; returning to mark try_again";
     goto try_again;
   }
 
-  // Do not do a keep-alive connection if the size of the
-  // response is not known and the response is not Chunked.
-  if (!m_isChunked && (m_iSize == NO_SIZE)) {
-    m_request.isKeepAlive = false;
-  }
-
-  if ( m_request.responseCode == 204 )
-  {
-    return true;
-  }
+    if (!m_isChunked && (m_iSize == NO_SIZE) && m_request.isKeepAlive &&
+        canHaveResponseBody(m_request.responseCode, m_request.method)) {
+        kDebug(7113) << "Ignoring keep-alive: otherwise unable to determine response body length.";
+        m_request.isKeepAlive = false;
+    }
 
     // TODO cache the proxy auth data (not doing this means a small performance regression for now)
 
@@ -3332,11 +3191,11 @@ try_again:
                     obtained = openPasswordDialog(authi, msg);
                     if (!obtained) {
                         kDebug(7103) << "looks like the user canceled"
-                                    << (m_request.responseCode == 401 ? "WWW" : "proxy")
-                                    << "authentication.";
+                                     << (m_request.responseCode == 401 ? "WWW" : "proxy")
+                                     << "authentication.";
                         kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
-                                    << "authInfo username =" << authi.username
-                                    << "authInfo realm =" << authi.realmValue;
+                                     << "authInfo username =" << authi.username
+                                     << "authInfo realm =" << authi.realmValue;
                         error(ERR_USER_CANCELED, resource.host());
                         return false;
                     }
@@ -3350,10 +3209,10 @@ try_again:
             (*auth)->generateResponse(username, password);
 
             kDebug(7113) << "auth state: isError" << (*auth)->isError()
-                        << "needCredentials" << (*auth)->needCredentials()
-                        << "forceKeepAlive" << (*auth)->forceKeepAlive()
-                        << "forceDisconnect" << (*auth)->forceDisconnect()
-                        << "headerFragment" << (*auth)->headerFragment();
+                         << "needCredentials" << (*auth)->needCredentials()
+                         << "forceKeepAlive" << (*auth)->forceKeepAlive()
+                         << "forceDisconnect" << (*auth)->forceDisconnect()
+                         << "headerFragment" << (*auth)->headerFragment();
 
             if ((*auth)->isError()) {
                 if (m_request.preferErrorPage) {
@@ -3379,6 +3238,12 @@ try_again:
         }
     }
 
+  QString locationStr;
+  // In fact we should do redirection only if we have a redirection response code (300 range)
+  tIt = tokenizer.iterator("location");
+  if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
+      locationStr = tIt.next().trimmed();
+  }
   // We need to do a redirect
   if (!locationStr.isEmpty())
   {
@@ -3420,158 +3285,75 @@ try_again:
                  << "to" << u.url();
 
     redirection(u);
-    m_request.cacheTag.writeToCache = false; // Turn off caching on re-direction (DA)
-    mayCache = false;
+
+    // It would be hard to cache the redirection response correctly. The possible benefit
+    // is small (if at all, assuming fast disk and slow network), so don't do it.
+    cacheFileClose();
+    setCacheabilityMetadata(false);
   }
 
-  // Inform the job that we can indeed resume...
-  if ( bCanResume && m_request.offset )
-    canResume();
-  else
-    m_request.offset = 0;
-
-  // We don't cache certain text objects
-  if (m_mimeType.startsWith("text/") &&
-      (m_mimeType != "text/css") &&
-      (m_mimeType != "text/x-javascript") &&
-      !hasCacheDirective)
-  {
-     // Do not cache secure pages or pages
-     // originating from password protected sites
-     // unless the webserver explicitly allows it.
-     if (isUsingSsl() || m_wwwAuth)
-     {
-        m_request.cacheTag.writeToCache = false;
-        mayCache = false;
-     }
-  }
-
-  // WABA: Correct for tgz files with a gzip-encoding.
-  // They really shouldn't put gzip in the Content-Encoding field!
-  // Web-servers really shouldn't do this: They let Content-Size refer
-  // to the size of the tgz file, not to the size of the tar file,
-  // while the Content-Type refers to "tar" instead of "tgz".
-  if (!m_contentEncodings.isEmpty() && m_contentEncodings.last() == "gzip")
-  {
-     if (m_mimeType == "application/x-tar")
-     {
-        m_contentEncodings.removeLast();
-        m_mimeType = QString::fromLatin1("application/x-compressed-tar");
-     }
-     else if (m_mimeType == "application/postscript")
-     {
-        // LEONB: Adding another exception for psgz files.
-        // Could we use the mimelnk files instead of hardcoding all this?
-        m_contentEncodings.removeLast();
-        m_mimeType = QString::fromLatin1("application/x-gzpostscript");
-     }
-     else if ( (m_request.allowTransferCompression &&
-                m_mimeType == "text/html")
-                ||
-               (m_request.allowTransferCompression &&
-                m_mimeType != "application/x-compressed-tar" &&
-                m_mimeType != "application/x-tgz" && // deprecated name
-                m_mimeType != "application/x-targz" && // deprecated name
-                m_mimeType != "application/x-gzip" &&
-                !m_request.url.path().endsWith(QLatin1String(".gz")))
-                )
-     {
-        // Unzip!
-     }
-     else
-     {
-        m_contentEncodings.removeLast();
-        m_mimeType = QString::fromLatin1("application/x-gzip");
-     }
-  }
-
-  // We can't handle "bzip2" encoding (yet). So if we get something with
-  // bzip2 encoding, we change the mimetype to "application/x-bzip".
-  // Note for future changes: some web-servers send both "bzip2" as
-  //   encoding and "application/x-bzip[2]" as mimetype. That is wrong.
-  //   currently that doesn't bother us, because we remove the encoding
-  //   and set the mimetype to x-bzip anyway.
-  if (!m_contentEncodings.isEmpty() && m_contentEncodings.last() == "bzip2")
-  {
-     m_contentEncodings.removeLast();
-     m_mimeType = QString::fromLatin1("application/x-bzip");
-  }
-
-  // Correct some common incorrect pseudo-mimetypes
-  fixupResponseMimetype();
-
-  if (!m_request.cacheTag.lastModified.isEmpty())
-    setMetaData("modified", m_request.cacheTag.lastModified);
-
-  if (!mayCache)
-  {
-    setMetaData("no-cache", "true");
-    setMetaData("expire-date", "1"); // Expired
-  }
-  else
-  {
-    QString tmp;
-    tmp.setNum(expireDate);
-    setMetaData("expire-date", tmp);
-    tmp.setNum(time(0)); // Cache entry will be created shortly.
-    setMetaData("cache-creation-date", tmp);
-  }
-
-  // Let the app know about the mime-type iff this is not
-  // a redirection and the mime-type string is not empty.
-  if (locationStr.isEmpty() && (!m_mimeType.isEmpty() ||
-      m_request.method == HTTP_HEAD))
-  {
-    kDebug(7113) << "Emitting mimetype " << m_mimeType;
-    mimeType( m_mimeType );
-  }
-
-  if (config()->readEntry("PropagateHttpHeader", false) ||
-      (m_request.cacheTag.useCache && m_request.cacheTag.writeToCache)) {
-      // store header lines if they will be used; note that the tokenizer removing
-      // line continuation special cases is probably more good than bad.
-      int nextLinePos = 0;
-      int prevLinePos = 0;
-      bool haveMore = true;
-      while (haveMore) {
-          haveMore = nextLine(buffer, &nextLinePos, bufPos);
-          int prevLineEnd = nextLinePos;
-          while (buffer[prevLineEnd - 1] == '\r' || buffer[prevLineEnd - 1] == '\n') {
-              prevLineEnd--;
-          }
-
-          m_responseHeaders.append(QString::fromLatin1(&buffer[prevLinePos],
-                                                       prevLineEnd - prevLinePos));
-          prevLinePos = nextLinePos;
-      }
-  }
-
-  // Do not move send response header before any redirection as it seems
-  // to screw up some sites. See BR# 150904.
-  forwardHttpResponseHeader();
-
-  if (m_request.method == HTTP_HEAD)
-     return true;
-
-  // Do we want to cache this request?
-  if (m_request.cacheTag.useCache)
-  {
-    QFile::remove(m_request.cacheTag.file);
-    if ( m_request.cacheTag.writeToCache && !m_mimeType.isEmpty() )
-    {
-      kDebug(7113) << "Cache, adding" << m_request.url.url();
-      createCacheEntry(m_mimeType, expireDate); // Create a cache entry
-      if (!m_request.cacheTag.gzs)
-      {
-        m_request.cacheTag.writeToCache = false; // Error creating cache entry.
-        kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
-      }
-      m_request.cacheTag.expireDate = expireDate;
-      m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
+    // Inform the job that we can indeed resume...
+    if (bCanResume && m_request.offset) {
+        //TODO turn off caching???
+        canResume();
+    } else {
+        m_request.offset = 0;
     }
-  }
 
-  return !authRequiresAnotherRoundtrip; // return true if no more credentials need to be sent
+    // Correct a few common wrong content encodings
+    fixupResponseContentEncoding();
+
+    // Correct some common incorrect pseudo-mimetypes
+    fixupResponseMimetype();
+
+    // Let the app know about the mime-type iff this is not
+    // a redirection and the mime-type string is not empty.
+    if (!m_isRedirection && (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD)) {
+        kDebug(7113) << "Emitting mimetype " << m_mimeType;
+        mimeType( m_mimeType );
+    }
+
+    // parse everything related to expire and other dates, and cache directives; also switch
+    // between cache reading and writing depending on cache validation result.
+    cacheParseResponseHeader(tokenizer);
+
+    if (m_request.cacheTag.ioMode == ReadFromCache) {
+        if (m_request.cacheTag.policy == CC_Verify) {
+            Q_ASSERT(m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached);
+        }
+        parseHeaderFromCache();
+        return true;
+    }
+
+    if (config()->readEntry("PropagateHttpHeader", false) ||
+        m_request.cacheTag.ioMode == WriteToCache) {
+        // store header lines if they will be used; note that the tokenizer removing
+        // line continuation special cases is probably more good than bad.
+        int nextLinePos = 0;
+        int prevLinePos = 0;
+        bool haveMore = true;
+        while (haveMore) {
+            haveMore = nextLine(buffer, &nextLinePos, bufPos);
+            int prevLineEnd = nextLinePos;
+            while (buffer[prevLineEnd - 1] == '\r' || buffer[prevLineEnd - 1] == '\n') {
+                prevLineEnd--;
+            }
+
+            m_responseHeaders.append(QString::fromLatin1(&buffer[prevLinePos],
+                                                         prevLineEnd - prevLinePos));
+            prevLinePos = nextLinePos;
+        }
+    }
+
+    // Do not move send response header before any redirection as it seems
+    // to screw up some sites. See BR# 150904.
+    forwardHttpResponseHeader();
+
+    if (m_request.method == HTTP_HEAD) {
+        return true;
+    }
+
+    return !authRequiresAnotherRoundtrip; // return true if no more credentials need to be sent
 }
 
 static void skipLWS(const QString &str, int &pos)
@@ -3700,6 +3482,205 @@ void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)
   }
 }
 
+void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
+{
+    // might have to add more response codes
+    if (m_request.responseCode != 200 && m_request.responseCode != 304) {
+        return;
+    }
+
+    // -1 is also the value returned by KDateTime::toTime_t() from an invalid instance.
+    m_request.cacheTag.servedDate = -1;
+    m_request.cacheTag.lastModifiedDate = -1;
+    m_request.cacheTag.expireDate = -1;
+
+    const qint64 currentDate = time(0);
+
+    bool mayCache = m_request.cacheTag.ioMode != NoCache;
+
+    m_request.cacheTag.lastModifiedDate = -1;
+    TokenIterator tIt = tokenizer.iterator("last-modified");
+    if (tIt.hasNext()) {
+        m_request.cacheTag.lastModifiedDate =
+              KDateTime::fromString(tIt.next(), KDateTime::RFCDate).toTime_t();
+
+        //### might be good to canonicalize the date by using KDateTime::toString()
+        if (m_request.cacheTag.lastModifiedDate != -1) {
+            setMetaData("modified", tIt.current());
+        }
+    }
+
+    // determine from available information when the response was served by the origin server
+    {
+        qint64 dateHeader = -1;
+        tIt = tokenizer.iterator("date");
+        if (tIt.hasNext()) {
+            dateHeader = KDateTime::fromString(tIt.next(), KDateTime::RFCDate).toTime_t();
+            // -1 on error
+        }
+
+        qint64 ageHeader = 0;
+        tIt = tokenizer.iterator("age");
+        if (tIt.hasNext()) {
+            ageHeader = tIt.next().toLongLong();
+            // 0 on error
+        }
+
+        if (dateHeader != -1) {
+            m_request.cacheTag.servedDate = dateHeader;
+        } else if (ageHeader) {
+            m_request.cacheTag.servedDate = currentDate - ageHeader;
+        } else {
+            m_request.cacheTag.servedDate = currentDate;
+        }
+    }
+
+    bool hasCacheDirective = false;
+    // determine when the response "expires", i.e. becomes stale and needs revalidation
+    {
+        // (we also parse other cache directives here)
+        qint64 maxAgeHeader = 0;
+        tIt = tokenizer.iterator("cache-control");
+        while (tIt.hasNext()) {
+            QByteArray cacheStr = tIt.next().toLower();
+            if (cacheStr.startsWith("no-cache") || cacheStr.startsWith("no-store")) {
+                // Don't put in cache
+                mayCache = false;
+                hasCacheDirective = true;
+            } else if (cacheStr.startsWith("max-age=")) {
+                QByteArray ba = cacheStr.mid(strlen("max-age=")).trimmed();
+                bool ok = false;
+                maxAgeHeader = ba.toLongLong(&ok);
+                if (ok) {
+                    hasCacheDirective = true;
+                }
+            }
+        }
+
+        qint64 expiresHeader = -1;
+        tIt = tokenizer.iterator("expires");
+        if (tIt.hasNext()) {
+            expiresHeader = KDateTime::fromString(tIt.next(), KDateTime::RFCDate).toTime_t();
+            kDebug(7113) << "parsed expire date from 'expires' header:" << tIt.current();
+        }
+
+        if (maxAgeHeader) {
+            m_request.cacheTag.expireDate = m_request.cacheTag.servedDate + maxAgeHeader;
+        } else if (expiresHeader != -1) {
+            m_request.cacheTag.expireDate = expiresHeader;
+        } else {
+            // heuristic expiration date
+            if (m_request.cacheTag.lastModifiedDate != -1) {
+                // expAge is following the RFC 2616 suggestion for heuristic expiration
+                qint64 expAge = (m_request.cacheTag.servedDate -
+                                 m_request.cacheTag.lastModifiedDate) / 10;
+                // not in the RFC: make sure not to have a huge heuristic cache lifetime
+                expAge = qMin(expAge, qint64(3600 * 24));
+                m_request.cacheTag.expireDate = m_request.cacheTag.servedDate + expAge;
+            } else {
+                m_request.cacheTag.expireDate = m_request.cacheTag.servedDate +
+                                                DEFAULT_CACHE_EXPIRE;
+            }
+        }
+        // make sure that no future clock monkey business causes the cache entry to un-expire
+        if (m_request.cacheTag.expireDate < currentDate) {
+            m_request.cacheTag.expireDate = 0;  // January 1, 1970 :)
+        }
+    }
+
+    tIt = tokenizer.iterator("etag");
+    if (tIt.hasNext()) {
+        QString prevEtag = m_request.cacheTag.etag;
+        m_request.cacheTag.etag = QString(tIt.next());
+        if (m_request.cacheTag.etag != prevEtag && m_request.responseCode == 304) {
+            kDebug(7103) << "304 Not Modified but new entity tag - I don't think this is legal HTTP.";
+        }
+    }
+
+    // whoops.. we received a warning
+    tIt = tokenizer.iterator("warning");
+    if (tIt.hasNext()) {
+        //Don't use warning() here, no need to bother the user.
+        //Those warnings are mostly about caches.
+        infoMessage(tIt.next());
+    }
+
+    // Cache management (HTTP 1.0)
+    tIt = tokenizer.iterator("pragma");
+    while (tIt.hasNext()) {
+        if (tIt.next().toLower().startsWith("no-cache")) {
+            mayCache = false;
+            hasCacheDirective = true;
+        }
+    }
+
+    // The deprecated Refresh Response
+    tIt = tokenizer.iterator("refresh");
+    if (tIt.hasNext()) {
+        mayCache = false;
+        setMetaData("http-refresh", QString::fromLatin1(tIt.next().trimmed()));
+    }
+
+    // We don't cache certain text objects
+    if (m_mimeType.startsWith("text/") && (m_mimeType != "text/css") &&
+        (m_mimeType != "text/x-javascript") && !hasCacheDirective) {
+        // Do not cache secure pages or pages
+        // originating from password protected sites
+        // unless the webserver explicitly allows it.
+        if (isUsingSsl() || m_wwwAuth) {
+            mayCache = false;
+        }
+    }
+
+    // note that we've updated cacheTag, so the plan() is with current data
+    if (m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::ValidateCached) {
+        kDebug(7113) << "Cache needs validation";
+        if (m_request.responseCode == 304) {
+            kDebug(7113) << "...was revalidated by response code but not by updated expire times. "
+                            "We're going to set the expire date to ten seconds in the future...";
+            m_request.cacheTag.expireDate = currentDate + 10;
+            if (m_request.cacheTag.policy == CC_Verify) {
+                Q_ASSERT(m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached);
+            }
+        }
+    }
+
+    // validation handling
+    if (mayCache && m_request.responseCode == 200 && !m_mimeType.isEmpty()) {
+        kDebug(7113) << "Cache, adding" << m_request.url.url();
+        // ioMode can still be ReadFromCache here if we're performing a conditional get
+        // aka validation
+        m_request.cacheTag.ioMode = WriteToCache;
+        if (!cacheFileOpenWrite()) {
+            kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
+        }
+        m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
+    } else if (mayCache && m_request.responseCode == 304 && m_request.cacheTag.file) {
+        // the cache file should still be open for reading, see satisfyRequestFromCache().
+        Q_ASSERT(m_request.cacheTag.file->openMode() == QIODevice::ReadOnly);
+        Q_ASSERT(m_request.cacheTag.ioMode == ReadFromCache);
+    } else {
+        cacheFileClose();
+    }
+
+    setCacheabilityMetadata(mayCache);
+}
+
+void HTTPProtocol::setCacheabilityMetadata(bool cachingAllowed)
+{
+    if (!cachingAllowed) {
+        setMetaData("no-cache", "true");
+        setMetaData("expire-date", "1"); // Expired
+    } else {
+        QString tmp;
+        tmp.setNum(m_request.cacheTag.expireDate);
+        setMetaData("expire-date", tmp);
+        // slightly changed semantics from old creationDate, probably more correct now
+        tmp.setNum(m_request.cacheTag.servedDate);
+        setMetaData("cache-creation-date", tmp);
+    }
+}
+
 bool HTTPProtocol::sendBody()
 {
   infoMessage( i18n( "Requesting data to send" ) );
@@ -3767,22 +3748,13 @@ void HTTPProtocol::httpClose( bool keepAlive )
 {
   kDebug(7113) << "keepAlive =" << keepAlive;
 
-  if (m_request.cacheTag.gzs)
-  {
-     gzclose(m_request.cacheTag.gzs);
-     m_request.cacheTag.gzs = 0;
-     if (m_request.cacheTag.writeToCache)
-     {
-        QString filename = m_request.cacheTag.file + ".new";
-        QFile::remove( filename );
-     }
-  }
-
   // Only allow persistent connections for GET requests.
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
   if (keepAlive) {
+    cacheFileClose();
+
     if (!m_request.keepAliveTimeout)
        m_request.keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
     else if (m_request.keepAliveTimeout > 2*DEFAULT_KEEP_ALIVE_TIMEOUT)
@@ -3809,6 +3781,7 @@ void HTTPProtocol::closeConnection()
 void HTTPProtocol::httpCloseConnection()
 {
   kDebug(7113);
+  cacheFileClose();
   m_request.isKeepAlive = false;
   m_server.clear();
   disconnectFromHost();
@@ -3862,12 +3835,29 @@ void HTTPProtocol::special( const QByteArray &data )
     }
     case 2: // cache_update
     {
-      KUrl url;
-      bool no_cache;
-      qlonglong expireDate;
-      stream >> url >> no_cache >> expireDate;
-      cacheUpdate( url, no_cache, time_t(expireDate) );
-      break;
+        KUrl url;
+        bool no_cache;
+        qint64 expireDate;
+        stream >> url >> no_cache >> expireDate;
+        if (no_cache) {
+            QString filename = cacheFilePathFromUrl(url);
+            // there is a tiny risk of deleting the wrong file due to hash collisions here.
+            // this is an unimportant performance issue.
+            // FIXME on Windows we may be unable to delete the file if open
+            QFile::remove(filename);
+            break;
+        }
+        // let's be paranoid and inefficient here...
+        HTTPRequest savedRequest = m_request;
+
+        m_request.url = url;
+        if (cacheFileOpenRead()) {
+            m_request.cacheTag.expireDate = expireDate;
+            cacheFileClose(); // this sends an update command to the cache cleaner process
+        }
+
+        m_request = savedRequest;
+        break;
     }
     case 5: // WebDAV lock
     {
@@ -4070,27 +4060,22 @@ void HTTPProtocol::slotData(const QByteArray &_d)
           kDebug(7113) << "Using default mimetype: " <<  m_mimeType;
         }
 
-        if ( m_request.cacheTag.writeToCache )
-        {
-          createCacheEntry( m_mimeType, m_request.cacheTag.expireDate );
-          if (!m_request.cacheTag.gzs)
-            m_request.cacheTag.writeToCache = false;
-        }
+        //### we could also open the cache file here
 
         if ( m_cpMimeBuffer )
         {
           d.resize(0);
           d.resize(m_mimeTypeBuffer.size());
-          memcpy( d.data(), m_mimeTypeBuffer.data(),
-                  d.size() );
+          memcpy(d.data(), m_mimeTypeBuffer.data(), d.size());
         }
         mimeType(m_mimeType);
         m_mimeTypeBuffer.resize(0);
       }
 
       data( d );
-      if (m_request.cacheTag.writeToCache && m_request.cacheTag.gzs)
-         writeCacheEntry(d.data(), d.size());
+      if (m_request.cacheTag.ioMode == WriteToCache) {
+        cacheFileWritePayload(d);
+      }
    }
    else
    {
@@ -4111,8 +4096,12 @@ void HTTPProtocol::slotData(const QByteArray &_d)
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
-  if (m_request.responseCode == 204)
-     return true;
+  // special case for reading cached body since we also do it in this function. oh well.
+  if (!canHaveResponseBody(m_request.responseCode, m_request.method) &&
+      !(m_request.cacheTag.ioMode == ReadFromCache && m_request.responseCode == 304 &&
+        m_request.method != HTTP_HEAD)) {
+      return true;
+  }
 
   m_isEOD = false;
   // Note that when dataInternal is true, we are going to:
@@ -4150,46 +4139,29 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     infoMessage( i18n( "Retrieving from %1..." ,  m_request.url.host() ) );
   }
 
-  if (m_request.cacheTag.readFromCache)
+  if (m_request.cacheTag.ioMode == ReadFromCache)
   {
     kDebug(7113) << "read data from cache!";
-    m_request.cacheTag.writeToCache = false;
-
-    char buffer[ MAX_IPC_SIZE ];
 
     m_iContentLeft = NO_SIZE;
 
-    // Jippie! It's already in the cache :-)
-    while (!gzeof(m_request.cacheTag.gzs))
-    {
-      int nbytes = gzread( m_request.cacheTag.gzs, buffer, MAX_IPC_SIZE);
-
-      if (nbytes > 0)
-      {
-        slotData( QByteArray::fromRawData( buffer, nbytes ) );
-        sz += nbytes;
-      }
-      else if (!gzeof( m_request.cacheTag.gzs ) || nbytes < 0)
-      {
-        // Error reading compressed data
-        int errnum;
-        const char *errString = gzerror( m_request.cacheTag.gzs, &errnum );
-        kError(7113) << "zlib error decompressing cached data:" << errString;
-
-        // Not super-accurate error code, but it is what's used below for
-        // the same error.
-        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
-        return false;
-      }
-      // Only way neither branch handled is nbytes == 0 but no error, so loop
+    QByteArray d;
+    while (true) {
+        d = cacheFileReadPayload(4096);
+        if (d.isEmpty()) {
+            break;
+        }
+        slotData(d);
+        sz += d.size();
+        if (!dataInternal) {
+            processedSize(sz);
+        }
     }
 
-    m_receiveBuf.resize( 0 );
+    m_receiveBuf.resize(0);
 
-    if ( !dataInternal )
-    {
-      processedSize( sz );
-      data( QByteArray() );
+    if (!dataInternal) {
+        data(QByteArray());
     }
 
     return true;
@@ -4336,10 +4308,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   }
 
   // Close cache entry
-  if (m_iBytesLeft == 0)
-  {
-     if (m_request.cacheTag.writeToCache && m_request.cacheTag.gzs)
-        closeCacheEntry();
+  if (m_iBytesLeft == 0) {
+      cacheFileClose(); // no-op if not necessary
   }
 
   if (sz <= 1)
@@ -4405,400 +4375,461 @@ QString HTTPProtocol::findCookies( const QString &url)
 
 /******************************* CACHING CODE ****************************/
 
-
-void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDate)
+HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAge) const
 {
-  if (!maybeSetRequestUrl(url))
-      return;
-
-  // Make sure we read in the cache info.
-  resetSessionSettings();
-
-  m_request.cacheTag.policy= CC_Reload;
-
-  if (no_cache)
-  {
-     m_request.cacheTag.gzs = checkCacheEntry( );
-     if (m_request.cacheTag.gzs)
-     {
-       gzclose(m_request.cacheTag.gzs);
-       m_request.cacheTag.gzs = 0;
-       QFile::remove( m_request.cacheTag.file );
-     }
-  }
-  else
-  {
-     updateExpireDate( expireDate );
-  }
-  finished();
+    //notable omission: we're not checking cache file presence or integrity
+    if (policy == KIO::CC_CacheOnly || policy == KIO::CC_Cache) {
+        return UseCached;
+    } else if (policy == KIO::CC_Refresh) {
+        return ValidateCached;
+    } else if (policy == KIO::CC_Reload) {
+        return IgnoreCached;
+    }
+    Q_ASSERT(policy == CC_Verify);
+    time_t currentDate = time(0);
+    if ((servedDate != -1 && currentDate > servedDate + maxCacheAge) ||
+        (expireDate != -1 && currentDate > expireDate)) {
+        return ValidateCached;
+    }
+    return UseCached;
 }
 
 // !START SYNC!
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 
-gzFile HTTPProtocol::checkCacheEntry( bool readWrite)
+// we use QDataStream; this is just an illustration
+struct BinaryCacheFileHeader
 {
-   const QChar separator = '_';
+    quint8 version[2];
+    quint8 compression; // for now fixed to 0
+    quint8 reserved;    // for now; also alignment
+    qint32 useCount;
+    qint64 servedDate;
+    qint64 lastModifiedDate;
+    qint64 expireDate;
+    qint32 bytesCached;
+    // packed size should be 36 bytes; we explicitly set it here to make sure that no compiler
+    // padding ruins it. We write the fields to disk without any padding.
+    static const int size = 36;
+};
 
-   QString CEF = m_request.url.path();
+enum CacheCleanerCommandCode {
+    InvalidCommand = 0,
+    CreateFileNotificationCommand,
+    UpdateFileCommand
+};
 
-   int p = CEF.indexOf('/');
+// illustration for cache cleaner update "commands"
+struct CacheCleanerCommand
+{
+    BinaryCacheFileHeader header;
+    quint32 commandCode;
+    // filename in ASCII, binary isn't worth the coding and decoding
+    quint8 filename[40];
+};
 
-   while(p != -1)
-   {
-      CEF[p] = separator;
-      p = CEF.indexOf('/', p);
-   }
+QByteArray HTTPProtocol::CacheTag::serialize() const
+{
+    QByteArray ret;
+    QDataStream stream(&ret, QIODevice::WriteOnly);
+    stream << quint8('A');
+    stream << quint8('\n');
+    stream << quint8(0);
+    stream << quint8(0);
 
-   QString host = m_request.url.host().toLower();
-   CEF = host + CEF + '_';
+    stream << fileUseCount;
 
-   QString dir = m_strCacheDir;
-   if (dir[dir.length()-1] != '/')
-      dir += '/';
+    // time_t overflow will only be checked when reading; we have no way to tell here.
+    stream << qint64(servedDate);
+    stream << qint64(lastModifiedDate);
+    stream << qint64(expireDate);
 
-   int l = host.length();
-   for(int i = 0; i < l; i++)
-   {
-      if (host[i].isLetter() && (host[i] != 'w'))
-      {
-         dir += host[i];
-         break;
-      }
-   }
-   if (dir[dir.length()-1] == '/')
-      dir += '0';
-
-   unsigned long hash = 0x00000000;
-   QByteArray u = m_request.url.url().toLatin1();
-   for(int i = u.length(); i--;)
-   {
-      hash = (hash * 12211 + u.at(i)) % 2147483563;
-   }
-
-   QString hashString;
-   hashString.sprintf("%08lx", hash);
-
-   CEF = CEF + hashString;
-
-   CEF = dir + '/' + CEF;
-
-   m_request.cacheTag.file = CEF;
-
-   const char *mode = (readWrite ? "r+b" : "rb");
-
-   gzFile fs = gzopen( QFile::encodeName(CEF), mode); // Open for reading and writing
-   if (!fs)
-      return 0;
-
-   char buffer[401];
-   bool ok = true;
-
-  // CacheRevision
-  if (ok && (!gzgets(fs, buffer, 400)))
-      ok = false;
-   if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
-      ok = false;
-
-   time_t date;
-   time_t currentDate = time(0);
-
-   // URL
-   if (ok && (!gzgets(fs, buffer, 400)))
-      ok = false;
-   if (ok)
-   {
-      int l = strlen(buffer);
-      if (l>0)
-         buffer[l-1] = 0; // Strip newline
-      if (m_request.url.url() != buffer)
-      {
-         ok = false; // Hash collision
-      }
-   }
-
-   // Creation Date
-   if (ok && (!gzgets(fs, buffer, 400)))
-      ok = false;
-   if (ok)
-   {
-      date = (time_t) strtoul(buffer, 0, 10);
-      m_request.cacheTag.creationDate = date;
-      if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
-      {
-         m_request.cacheTag.isExpired = true;
-         m_request.cacheTag.expireDate = currentDate;
-      }
-   }
-
-   // Expiration Date
-   m_request.cacheTag.expireDateOffset = gztell(fs);
-   if (ok && (!gzgets(fs, buffer, 400)))
-      ok = false;
-   if (ok)
-   {
-      if (m_request.cacheTag.policy== CC_Verify)
-      {
-         date = (time_t) strtoul(buffer, 0, 10);
-         // After the expire date we need to revalidate.
-         if (!date || difftime(currentDate, date) >= 0)
-            m_request.cacheTag.isExpired = true;
-         m_request.cacheTag.expireDate = date;
-      }
-      else if (m_request.cacheTag.policy== CC_Refresh)
-      {
-         m_request.cacheTag.isExpired = true;
-         m_request.cacheTag.expireDate = currentDate;
-      }
-   }
-
-   // ETag
-   if (ok && (!gzgets(fs, buffer, 400)))
-      ok = false;
-   if (ok)
-   {
-      m_request.cacheTag.etag = QString(buffer).trimmed();
-   }
-
-   // Last-Modified
-   if (ok && (!gzgets(fs, buffer, 400)))
-      ok = false;
-   if (ok)
-   {
-      m_request.cacheTag.bytesCached=0;
-      m_request.cacheTag.lastModified = QString(buffer).trimmed();
-//    }
-
-//    if (ok)
-//    {
-
-      //write hit frequency data
-      int freq=0;
-      FILE* hitdata = fopen( QFile::encodeName(CEF+"_freq"), "r+");
-         if (hitdata)
-         {
-             freq=fgetc(hitdata);
-             if (freq!=EOF)
-                freq+=fgetc(hitdata)<<8;
-             else
-                freq=0;
-            KDE_fseek(hitdata,0,SEEK_SET);
-         }
-         if (hitdata||(hitdata=fopen(QFile::encodeName(CEF+"_freq"), "w")))
-         {
-             fputc(++freq,hitdata);
-             fputc(freq>>8,hitdata);
-             fclose(hitdata);
-         }
-
-      return fs;
-   }
-
-   gzclose(fs);
-   QFile::remove( CEF );
-   return 0;
+    stream << bytesCached;
+    Q_ASSERT(ret.size() == BinaryCacheFileHeader::size);
+    return ret;
 }
 
-void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
+
+static bool compareByte(QDataStream *stream, quint8 value)
 {
+    quint8 byte;
+    *stream >> byte;
+    return byte == value;
+}
+
+static bool readTime(QDataStream *stream, time_t *time)
+{
+    qint64 intTime = 0;
+    *stream >> intTime;
+    *time = static_cast<time_t>(intTime);
+
+    qint64 check = static_cast<qint64>(*time);
+    return check == intTime;
+}
+
+// If starting a new file cacheFileWriteVariableSizeHeader() must have been called *before*
+// calling this! This is to fill in the headerEnd field.
+// If the file is not new headerEnd has already been read from the file and in fact the variable
+// size header *may* not be rewritten because a size change would mess up the file layout.
+bool HTTPProtocol::CacheTag::deserialize(const QByteArray &d)
+{
+    if (d.size() != BinaryCacheFileHeader::size) {
+        return false;
+    }
+    QDataStream stream(d);
+    stream.setVersion(QDataStream::Qt_4_5);
+
     bool ok = true;
+    ok = ok && compareByte(&stream, 'A');
+    ok = ok && compareByte(&stream, '\n');
+    ok = ok && compareByte(&stream, 0);
+    ok = ok && compareByte(&stream, 0);
+    if (!ok) {
+        return false;
+    }
 
-    gzFile fs = checkCacheEntry(true);
-    if (fs)
-    {
-        QString date;
-        char buffer[401];
-        time_t creationDate;
+    stream >> fileUseCount;
 
-        gzseek(fs, 0, SEEK_SET);
-        if (ok && !gzgets(fs, buffer, 400))
-            ok = false;
-        if (ok && !gzgets(fs, buffer, 400))
-            ok = false;
-        long cacheCreationDateOffset = gztell(fs);
-        if (ok && !gzgets(fs, buffer, 400))
-            ok = false;
-        creationDate = strtoul(buffer, 0, 10);
-        if (!creationDate)
-            ok = false;
+    // read and check for time_t overflow
+    ok = ok && readTime(&stream, &servedDate);
+    ok = ok && readTime(&stream, &lastModifiedDate);
+    ok = ok && readTime(&stream, &expireDate);
+    if (!ok) {
+        return false;
+    }
 
-        if (updateCreationDate)
-        {
-           if (!ok || gzseek(fs, cacheCreationDateOffset, SEEK_SET))
-              return;
-           QString date;
-           date.setNum( time(0) );
-           date = date.leftJustified(16);
-           gzputs(fs, date.toLatin1());      // Creation date
-           gzputc(fs, '\n');
+    stream >> bytesCached;
+
+    return true;
+}
+
+/* Text part of the header, directly following the binary first part:
+URL\n
+etag\n
+mimetype\n
+header line\n
+header line\n
+...
+\n
+*/
+
+static KUrl storableUrl(const KUrl &url)
+{
+    KUrl ret(url);
+    ret.setPassword(QString());
+    ret.setFragment(QString());
+    return ret;
+}
+
+static void writeLine(QIODevice *dev, const QByteArray &line)
+{
+    static const char linefeed = '\n';
+    dev->write(line);
+    dev->write(&linefeed, 1);
+}
+
+void HTTPProtocol::cacheFileWriteTextHeader()
+{
+    QFile *&file = m_request.cacheTag.file;
+    Q_ASSERT(file);
+    Q_ASSERT(file->openMode() & QIODevice::WriteOnly);
+
+    file->seek(BinaryCacheFileHeader::size);
+    writeLine(file, storableUrl(m_request.url).toEncoded());
+    writeLine(file, m_request.cacheTag.etag.toLatin1());
+    writeLine(file, m_mimeType.toLatin1());
+    writeLine(file, m_responseHeaders.join("\n").toLatin1());
+    // join("\n") adds no \n to the end, but writeLine() does.
+    // Add another newline to mark the end of text.
+    writeLine(file, QByteArray());
+}
+
+static bool readLineChecked(QIODevice *dev, QByteArray *line)
+{
+    *line = dev->readLine(8192);
+    // if nothing read or the line didn't fit into 8192 bytes(!)
+    if (line->isEmpty() || !line->endsWith('\n')) {
+        return false;
+    }
+    // we don't actually want the newline!
+    line->chop(1);
+    return true;
+}
+
+bool HTTPProtocol::cacheFileReadTextHeader1(const KUrl &desiredUrl)
+{
+    QFile *&file = m_request.cacheTag.file;
+    Q_ASSERT(file);
+    Q_ASSERT(file->openMode() == QIODevice::ReadOnly);
+
+    QByteArray readBuf;
+    bool ok = readLineChecked(file, &readBuf);
+    if (storableUrl(desiredUrl).toEncoded() != readBuf) {
+        kDebug(7103) << "You have witnessed a very improbable hash collision!";
+        return false;
+    }
+
+    ok = ok && readLineChecked(file, &readBuf);
+    m_request.cacheTag.etag = QString::fromLatin1(readBuf);
+
+    return ok;
+}
+
+bool HTTPProtocol::cacheFileReadTextHeader2()
+{
+    QFile *&file = m_request.cacheTag.file;
+    Q_ASSERT(file);
+    Q_ASSERT(file->openMode() == QIODevice::ReadOnly);
+
+    bool ok = true;
+    QByteArray readBuf;
+#ifndef NDEBUG
+    // we assume that the URL and etag have already been read
+    qint64 oldPos = file->pos();
+    file->seek(BinaryCacheFileHeader::size);
+    ok = ok && readLineChecked(file, &readBuf);
+    ok = ok && readLineChecked(file, &readBuf);
+    Q_ASSERT(file->pos() == oldPos);
+#endif
+    ok = ok && readLineChecked(file, &readBuf);
+    m_mimeType = QString::fromLatin1(readBuf);
+
+    m_responseHeaders.clear();
+    // read as long as no error and no empty line found
+    while (true) {
+        ok = ok && readLineChecked(file, &readBuf);
+        if (ok && !readBuf.isEmpty()) {
+            m_responseHeaders.append(QString::fromLatin1(readBuf));
+        } else {
+            break;
         }
+    }
+    return ok; // it may still be false ;)
+}
 
-        if (expireDate > (30 * 365 * 24 * 60 * 60))
-        {
-            // expire date is a really a big number, it can't be
-            // a relative date.
-            date.setNum( expireDate );
+static QString filenameFromUrl(const KUrl &url)
+{
+    QCryptographicHash hash(QCryptographicHash::Sha1);
+    hash.addData(storableUrl(url).toEncoded());
+    return QString::fromLatin1(hash.result().toHex());
+}
+
+QString HTTPProtocol::cacheFilePathFromUrl(const KUrl &url) const
+{
+    QString filePath = m_strCacheDir;
+    if (!filePath.endsWith('/')) {
+        filePath.append('/');
+    }
+    filePath.append(filenameFromUrl(url));
+    return filePath;
+}
+
+bool HTTPProtocol::cacheFileOpenRead()
+{
+    kDebug(7113);
+    QString filename = cacheFilePathFromUrl(m_request.url);
+
+    QFile *&file = m_request.cacheTag.file;
+    if (file) {
+        kDebug(7113) << "File unexpectedly open; old file is" << file->fileName()
+                     << "new name is" << filename;
+        Q_ASSERT(file->fileName() == filename);
+    }
+    Q_ASSERT(!file);
+    file = new QFile(filename);
+    if (file->open(QIODevice::ReadOnly)) {
+        QByteArray header = file->read(BinaryCacheFileHeader::size);
+        if (!m_request.cacheTag.deserialize(header)) {
+            kDebug(7103) << "Cache file header is invalid.";
+
+            file->close();
         }
-        else
-        {
-            // expireDate before 2000. those values must be
-            // interpreted as relative expiration dates from
-            // <META http-equiv="Expires"> tags.
-            // so we have to scan the creation time and add
-            // it to the expiryDate
-            date.setNum( creationDate + expireDate );
+    }
+
+    if (file->isOpen() && !cacheFileReadTextHeader1(m_request.url)) {
+        file->close();
+    }
+
+    if (!file->isOpen()) {
+        cacheFileClose();
+        return false;
+    }
+    return true;
+}
+
+
+bool HTTPProtocol::cacheFileOpenWrite()
+{
+    kDebug(7113);
+    QString filename = cacheFilePathFromUrl(m_request.url);
+
+    // if we open a cache file for writing while we have a file open for reading we must have
+    // found out that the old cached content is obsolete, so delete the file.
+    QFile *&file = m_request.cacheTag.file;
+    if (file) {
+        // ensure that the file is in a known state - either open for reading or null
+        Q_ASSERT(!qobject_cast<QTemporaryFile *>(file));
+        Q_ASSERT((file->openMode() & QIODevice::WriteOnly) == 0);
+        Q_ASSERT(file->fileName() == filename);
+        kDebug(7113) << "deleting expired cache entry and recreating.";
+        file->remove();
+        delete file;
+        file = 0;
+    }
+
+    // note that QTemporaryFile will automatically append random chars to filename
+    file = new QTemporaryFile(filename);
+    file->open(QIODevice::WriteOnly);
+
+    // if we have started a new file we have not initialized some variables from disk data.
+    m_request.cacheTag.fileUseCount = 0;  // the file has not been *read* yet
+    m_request.cacheTag.bytesCached = 0;
+
+    if ((file->openMode() & QIODevice::WriteOnly) == 0) {
+        kDebug(7113) << "Could not open file for writing:" << file->fileName()
+                     << "due to error" << file->error();
+        cacheFileClose();
+        return false;
+    }
+    return true;
+}
+
+static QByteArray makeCacheCleanerCommand(const HTTPProtocol::CacheTag &cacheTag,
+                                          CacheCleanerCommandCode cmd)
+{
+    QByteArray ret = cacheTag.serialize();
+    QDataStream stream(&ret, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_4_5);
+
+    stream.skipRawData(BinaryCacheFileHeader::size);
+    // append the command code
+    stream << quint32(cmd);
+    // append the filename
+    QString fileName = cacheTag.file->fileName();
+    int basenameStart = fileName.lastIndexOf('/') + 1;
+    QByteArray baseName = fileName.mid(basenameStart, 40).toLatin1();
+    stream.writeRawData(baseName.constData(), baseName.size());
+
+    Q_ASSERT(ret.size() == BinaryCacheFileHeader::size + sizeof(quint32) + 40);
+    return ret;
+}
+
+//### not yet 100% sure when and when not to call this
+void HTTPProtocol::cacheFileClose()
+{
+    m_request.cacheTag.ioMode = NoCache;
+    QFile *&file = m_request.cacheTag.file;
+    if (!file) {
+        return;
+    }
+
+    QByteArray ccCommand;
+
+    if (file->openMode() & QIODevice::WriteOnly) {
+        QTemporaryFile *tFile = qobject_cast<QTemporaryFile *>(file);
+        Q_ASSERT(tFile);
+
+        if (m_request.cacheTag.bytesCached && !m_isError) {
+            QByteArray header = m_request.cacheTag.serialize();
+            tFile->seek(0);
+            tFile->write(header);
+
+            ccCommand = makeCacheCleanerCommand(m_request.cacheTag, CreateFileNotificationCommand);
+
+            QString oldName = tFile->fileName();
+            QString newName = oldName;
+            int basenameStart = newName.lastIndexOf('/') + 1;
+            // remove the randomized name part added by QTemporaryFile
+            newName.chop(newName.length() - basenameStart - 40);
+            kDebug(7113) << "Renaming temporary file" << oldName << "to" << newName;
+
+            // on windows open files can't be renamed
+            tFile->setAutoRemove(false);
+            delete tFile;
+            file = 0;
+
+            if (!QFile::rename(oldName, newName)) {
+                // ### currently this hides a minor bug when force-reloading a resource. We
+                //     should not even open a new file for writing in that case.
+                QFile::remove(oldName);
+            }
+        } else {
+            // oh, we've never written payload data to the cache file.
+            // the temporary file is closed and removed and no proper cache entry is created.
         }
-        date = date.leftJustified(16);
-        if (!ok || gzseek(fs, m_request.cacheTag.expireDateOffset, SEEK_SET))
-            return;
-        gzputs(fs, date.toLatin1());      // Expire date
-        gzseek(fs, 0, SEEK_END);
-        gzclose(fs);
+    } else if (file->openMode() == QIODevice::ReadOnly) {
+        ccCommand = makeCacheCleanerCommand(m_request.cacheTag, UpdateFileCommand);
+    }
+    delete file;
+    file = 0;
+
+    if (!ccCommand.isEmpty()) {
+        sendCacheCleanerCommand(ccCommand);
     }
 }
 
-void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
+void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
 {
-   QString dir = m_request.cacheTag.file;
-   int p = dir.lastIndexOf('/');
-   if (p == -1) return; // Error.
-   dir.truncate(p);
+    Q_ASSERT(command.size() == BinaryCacheFileHeader::size + 40 + sizeof(quint32));
+    int attempts = 0;
+    while (m_cacheCleanerConnection.state() != QLocalSocket::ConnectedState && attempts < 6) {
+        if (attempts == 2) {
+            KToolInvocation::startServiceByDesktopPath("http_cache_cleaner.desktop");
+        }
+        // TODO clean up m_strCacheDir usage!
+        m_cacheCleanerConnection.connectToServer(m_strCacheDir + '/' + ".cleaner_socket",
+                                                 QIODevice::WriteOnly);
+        m_cacheCleanerConnection.waitForConnected(1500);
+        attempts++;
+    }
 
-   // Create file
-   KDE::mkdir( dir, 0700 );
-
-   QString filename = m_request.cacheTag.file + ".new";  // Create a new cache entryexpireDate
-
-//   kDebug( 7103 ) <<  "creating new cache entry: " << filename;
-
-   m_request.cacheTag.gzs = gzopen( QFile::encodeName(filename), "wb");
-   if (!m_request.cacheTag.gzs)
-   {
-      kWarning(7113) << "opening" << filename << "failed.";
-      return; // Error.
-   }
-
-   gzputs(m_request.cacheTag.gzs, CACHE_REVISION);    // Revision
-
-   gzputs(m_request.cacheTag.gzs, m_request.url.url().toLatin1());  // Url
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   QString date;
-   m_request.cacheTag.creationDate = time(0);
-   date.setNum( m_request.cacheTag.creationDate );
-   date = date.leftJustified(16);
-   gzputs(m_request.cacheTag.gzs, date.toLatin1());      // Creation date
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   date.setNum( expireDate );
-   date = date.leftJustified(16);
-   gzputs(m_request.cacheTag.gzs, date.toLatin1());      // Expire date
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   if (!m_request.cacheTag.etag.isEmpty())
-      gzputs(m_request.cacheTag.gzs, m_request.cacheTag.etag.toLatin1());    //ETag
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   if (!m_request.cacheTag.lastModified.isEmpty())
-      gzputs(m_request.cacheTag.gzs, m_request.cacheTag.lastModified.toLatin1());    // Last modified
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   gzputs(m_request.cacheTag.gzs, mimetype.toLatin1());  // Mimetype
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   gzputs(m_request.cacheTag.gzs, m_responseHeaders.join("\n").toLatin1());
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   gzputc(m_request.cacheTag.gzs, '\n');
-
-   return;
+    if (m_cacheCleanerConnection.state() == QLocalSocket::ConnectedState) {
+        m_cacheCleanerConnection.write(command);
+        m_cacheCleanerConnection.flush();
+    } else {
+        // updating the stats is not vital, so we just give up.
+        kDebug(7113) << "Could not connect to cache cleaner, not updating stats of this cache file.";
+    }
 }
+
+QByteArray HTTPProtocol::cacheFileReadPayload(int maxLength)
+{
+    Q_ASSERT(m_request.cacheTag.file);
+    Q_ASSERT(m_request.cacheTag.ioMode == ReadFromCache);
+    Q_ASSERT(m_request.cacheTag.file->openMode() == QIODevice::ReadOnly);
+    QByteArray ret = m_request.cacheTag.file->read(maxLength);
+    if (ret.isEmpty()) {
+        cacheFileClose();
+    }
+    return ret;
+}
+
+
+void HTTPProtocol::cacheFileWritePayload(const QByteArray &d)
+{
+    if (!m_request.cacheTag.file) {
+        return;
+    }
+    Q_ASSERT(m_request.cacheTag.ioMode == WriteToCache);
+    Q_ASSERT(m_request.cacheTag.file->openMode() & QIODevice::WriteOnly);
+    if (d.isEmpty()) {
+        cacheFileClose();
+    }
+
+    //### abort if file grows too big! (early abort if we know the size, implement!)
+
+    // write the variable length text header as soon as we start writing to the file
+    if (!m_request.cacheTag.bytesCached) {
+        cacheFileWriteTextHeader();
+    }
+    m_request.cacheTag.bytesCached += d.size();
+    m_request.cacheTag.file->write(d);
+}
+
 // The above code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 // !END SYNC!
-
-void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
-{
-   // gzwrite's second argument has type void *const in 1.1.4 and
-   // const void * in 1.2.3, so we futz buffer to a plain void * and
-   // let the compiler figure it out from there.
-   if (gzwrite(m_request.cacheTag.gzs, const_cast<void *>(static_cast<const void *>(buffer)), nbytes) == 0)
-   {
-      kWarning(7113) << "writeCacheEntry: writing " << nbytes << " bytes failed.";
-      gzclose(m_request.cacheTag.gzs);
-      m_request.cacheTag.gzs = 0;
-      QString filename = m_request.cacheTag.file + ".new";
-      QFile::remove( filename );
-      return;
-   }
-   m_request.cacheTag.bytesCached+=nbytes;
-   if ( m_request.cacheTag.bytesCached>>10 > m_maxCacheSize )
-   {
-      kDebug(7113) << "writeCacheEntry: File size reaches " << (m_request.cacheTag.bytesCached>>10)
-                    << "Kb, exceeds cache limits. (" << m_maxCacheSize << "Kb)";
-      gzclose(m_request.cacheTag.gzs);
-      m_request.cacheTag.gzs = 0;
-      QString filename = m_request.cacheTag.file + ".new";
-      QFile::remove( filename );
-      return;
-   }
-}
-
-void HTTPProtocol::closeCacheEntry()
-{
-   QString filename = m_request.cacheTag.file + ".new";
-   int result = gzclose( m_request.cacheTag.gzs);
-   m_request.cacheTag.gzs = 0;
-   if (result == 0)
-   {
-      if (KDE::rename( filename, m_request.cacheTag.file) == 0)
-         return; // Success
-      kWarning(7113) << "closeCacheEntry: error renaming "
-                      << "cache entry. (" << filename << " -> " << m_request.cacheTag.file
-                      << ")";
-   }
-
-   kWarning(7113) << "closeCacheEntry: error closing cache "
-                   << "entry. (" << filename<< ")";
-}
-
-void HTTPProtocol::cleanCache()
-{
-   const time_t maxAge = DEFAULT_CLEAN_CACHE_INTERVAL; // 30 Minutes.
-   bool doClean = false;
-   QString cleanFile = m_strCacheDir;
-   if (cleanFile[cleanFile.length()-1] != '/')
-      cleanFile += '/';
-   cleanFile += "cleaned";
-
-   KDE_struct_stat stat_buf;
-
-   int result = KDE::stat(cleanFile, &stat_buf);
-   if (result == -1)
-   {
-      int fd = KDE::open( cleanFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
-      if (fd != -1)
-      {
-         doClean = true;
-         ::close(fd);
-      }
-   }
-   else
-   {
-      time_t age = (time_t) difftime( time(0), stat_buf.st_mtime );
-      if (age > maxAge) //
-        doClean = true;
-   }
-   if (doClean)
-   {
-      // Touch file.
-      KDE::utime(cleanFile, 0);
-      KToolInvocation::startServiceByDesktopPath("http_cache_cleaner.desktop");
-   }
-}
-
-
 
 //**************************  AUTHENTICATION CODE ********************/
 

@@ -31,12 +31,11 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdio.h>
-#include <zlib.h>
 #include <time.h>
 
-#include <QtCore/QByteRef>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
+#include <QtNetwork/QLocalSocket>
 
 #include <kurl.h>
 #include "kio/tcpslavebase.h"
@@ -48,6 +47,7 @@
 #include "httpauthentication.h"
 
 class QDomNodeList;
+class QFile;
 
 namespace KIO {
     class AuthInfo;
@@ -81,35 +81,44 @@ public:
     int depth;
   };
 
+  enum CacheIOMode {
+      NoCache = 0,
+      ReadFromCache = 1,
+      WriteToCache = 2
+  };
+
   struct CacheTag
   {
     CacheTag()
     {
       useCache = false;
-      readFromCache = false;
-      writeToCache = false;
-      isExpired = false;
+      ioMode = NoCache;
       bytesCached = 0;
-      gzs = 0;
-      expireDateOffset = 0;
+      file = 0;
       expireDate = 0;
-      creationDate = 0;
+      servedDate = 0;
     }
 
+    enum CachePlan {
+      UseCached = 0,
+      ValidateCached,
+      IgnoreCached
+    };
+    CachePlan plan(time_t maxCacheAge) const;
+
+    QByteArray serialize() const;
+    bool deserialize(const QByteArray &);
+
     KIO::CacheControl policy;    // ### initialize in the constructor?
-    bool useCache; // Whether the cache is active
-    bool readFromCache; // Whether the request is to be read from file.
-    bool writeToCache; // Whether the request is to be written to file.
-    bool isExpired;
-    long bytesCached;
+    bool useCache; // Whether the cache should be used
+    enum CacheIOMode ioMode; // Write to cache file, read from it, or don't use it.
+    quint32 fileUseCount;
+    quint32 bytesCached;
     QString etag; // entity tag header as described in the HTTP standard.
-    QString file; // cache entry file belonging to this URL.
-    gzFile gzs; // gzip stream of the cache entry
-    QString lastModified; // Last modified.
-    long expireDateOffset; // Position in the cache entry where the
-                           // 16 byte expire date is stored.
+    QFile *file; // file on disk - either a QTemporaryFile (write) or QFile (read)
+    time_t servedDate; // Date when the resource was served by the origin server
+    time_t lastModifiedDate; // Last modified.
     time_t expireDate; // Date when the cache entry will expire
-    time_t creationDate; // Date when the cache entry was created
     QString charset;
   };
 
@@ -181,6 +190,19 @@ public:
       isKeepAlive = request.isKeepAlive;
       proxyUrl = request.proxyUrl;
       isPersistentProxyConnection = request.isPersistentProxyConnection;
+    }
+
+    void updateCredentials(const HTTPRequest &request)
+    {
+        if (url.host() == request.url.host() && url.port() == request.url.port()) {
+            url.setUserName(request.url.userName());
+            url.setPassword(request.url.password());
+        }
+        if (proxyUrl.host() == request.proxyUrl.host() &&
+            proxyUrl.port() == request.proxyUrl.port()) {
+            proxyUrl.setUserName(request.proxyUrl.userName());
+            proxyUrl.setPassword(request.proxyUrl.password());
+        }
     }
 
     void clear()
@@ -256,7 +278,6 @@ public:
   void post( const KUrl& url );
   void multiGet(const QByteArray &data);
   bool maybeSetRequestUrl(const KUrl &);
-  void cacheUpdate( const KUrl &url, bool nocache, time_t expireDate);
 
   void httpError(); // Generate error message based on response code
   void setLoadingErrorPage(); // Call SlaveBase::errorPage() and remember that we've called it
@@ -294,7 +315,7 @@ protected:
 
   // Return true if the request is already "done", false otherwise.
   // *sucesss will be set to true if the page was found, false otherwise.
-  bool satisfyRequestFromCache(bool *success);
+  bool satisfyRequestFromCache(bool *cacheHasPage);
   QString formatRequestUri() const;
   // create HTTP authentications response(s), if any
   QString authenticationHeader();
@@ -307,10 +328,12 @@ protected:
 
   void forwardHttpResponseHeader();
 
-  // Helper for readResponseHeader - fix common mimetype errors by webservers.
+  // Helpers for readResponseHeader - fix common mimetype/content-encoding errors by webservers.
   void fixupResponseMimetype();
+  void fixupResponseContentEncoding();
+
   bool readResponseHeader();
-  bool readHeaderFromCache();
+  void parseHeaderFromCache();
   void parseContentDisposition(const QString &disposition);
 
   bool sendBody();
@@ -354,47 +377,22 @@ protected:
    */
   QString findCookies( const QString &url);
 
-  /**
-   * Do a cache lookup for the current url. (m_server.url)
-   *
-   * @param readWrite If true, file is opened read/write.
-   *                  If false, file is opened read-only.
-   *
-   * @return a file stream open for reading and at the start of
-   *         the header section when the Cache entry exists and is valid.
-   *         0 if no cache entry could be found, or if the entry is not
-   *         valid (any more).
-   */
-  gzFile checkCacheEntry(bool readWrite = false);
+  void cacheParseResponseHeader(const HeaderTokenizer &tokenizer);
 
-  /**
-   * Create a cache entry for the current url. (m_server.url)
-   *
-   * Set the contents type of the cache entry to 'mimetype'.
-   */
-  void createCacheEntry(const QString &mimetype, time_t expireDate);
+  QString cacheFilePathFromUrl(const KUrl &url) const;
+  bool cacheFileOpenRead();
+  bool cacheFileOpenWrite();
+  void cacheFileClose();
+  void sendCacheCleanerCommand(const QByteArray &command);
 
-  /**
-   * Write data to cache.
-   *
-   * Write 'nbytes' from 'buffer' to the Cache Entry File
-   */
-  void writeCacheEntry( const char *buffer, int nbytes);
-
-  /**
-   * Close cache entry
-   */
-  void closeCacheEntry();
-
-  /**
-   * Update expire time of current cache entry.
-   */
-  void updateExpireDate(time_t expireDate, bool updateCreationDate=false);
-
-  /**
-   * Quick check whether the cache needs cleaning.
-   */
-  void cleanCache();
+  QByteArray cacheFileReadPayload(int maxLength);
+  void cacheFileWritePayload(const QByteArray &d);
+  void cacheFileWriteTextHeader();
+  // check URL to guard against hash collisions, and load the etag for validation
+  bool cacheFileReadTextHeader1(const KUrl &desiredUrl);
+  // load the rest of the text fields
+  bool cacheFileReadTextHeader2();
+  void setCacheabilityMetadata(bool cachingAllowed);
 
   /**
    * Do everything proceedUntilResponseHeader does, and also get the response body.
@@ -460,9 +458,6 @@ protected:
   bool m_isEOF;
   bool m_isEOD;
 
-  // First request on a connection
-  bool m_isFirstRequest;
-
 //--- Settings related to a single response only
   bool m_isRedirection; // Indicates current request is a redirection
   QStringList m_responseHeaders; // All headers
@@ -472,7 +467,7 @@ protected:
   QStringList m_transferEncodings;
   QStringList m_contentEncodings;
   QString m_contentMD5;
-  QString m_mimeType;
+  QString m_mimeType; // TODO QByteArray?
 
 
 //--- WebDAV
@@ -498,6 +493,7 @@ protected:
   int m_maxCacheAge; // Maximum age of a cache entry.
   long m_maxCacheSize; // Maximum cache size in Kb.
   QString m_strCacheDir; // Location of the cache.
+  QLocalSocket m_cacheCleanerConnection; // Connection to the cache cleaner process
 
   // Operation mode
   QByteArray m_protocol;

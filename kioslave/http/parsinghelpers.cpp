@@ -29,18 +29,6 @@ static void skipSpace(const char input[], int *pos, int end)
     return;
 }
 
-// Advance *pos beyond anything not space/tab/CR/LF
-static void skipNonSpace(const char input[], int *pos, int end)
-{
-    int idx = *pos;
-    while (idx < end && input[idx] != ' ' && input[idx] != '\t' &&
-                        input[idx] != '\r' && input[idx] != '\n') {
-        idx++;
-    }
-    *pos = idx;
-    return;
-}
-
 // Advance *pos to start of next line while being forgiving about line endings.
 // Return false if the end of the header has been reached, true otherwise.
 static bool nextLine(const char input[], int *pos, int end)
@@ -120,12 +108,13 @@ HeaderTokenizer::HeaderTokenizer(char *buffer)
 {
     // add information about available headers and whether they have one or multiple,
     // comma-separated values.
-    
+
     //The following response header fields are from RFC 2616 unless otherwise specified.
     //Hint: search the web for e.g. 'http "accept-ranges header"' to find information about
     //a header field.
     static const HeaderFieldTemplate headerFieldTemplates[] = {
         {"accept-ranges", false},
+        {"age", false},
         {"cache-control", true},
         {"connection", true},
         {"content-disposition", false}, //is multi-valued in a way, but with ";" separator!
@@ -173,7 +162,7 @@ int HeaderTokenizer::tokenize(int begin, int end)
     bool multiValuedEndedWithComma = false; //did the last multi-valued line end with a comma?
     QByteArray headerKey;
     do {
-        
+
         if (buf[idx] == ' ' || buf [idx] == '\t') {
             // line continuation; preserve startIdx except (see below)
             if (headerKey.isEmpty()) {
@@ -231,7 +220,7 @@ int HeaderTokenizer::tokenize(int begin, int end)
 
         // we have the name/key of the field, now parse the value
         if (!operator[](headerKey).isMultiValued) {
-        
+
             // scan to end of line
             while (idx < end && buf[idx] != '\r' && buf[idx] != '\n') {
                 idx++;
@@ -244,9 +233,9 @@ int HeaderTokenizer::tokenize(int begin, int end)
                 }
             }
             operator[](headerKey).beginEnd.append(QPair<int, int>(startIdx, idx));
-            
+
         } else {
-        
+
             // comma-separated list
             while (true) {
                 //skip one value
@@ -254,7 +243,7 @@ int HeaderTokenizer::tokenize(int begin, int end)
                     idx++;
                 }
                 if (idx != startIdx) {
-                    operator[](headerKey).beginEnd.append(QPair<int, int>(startIdx, idx));                    
+                    operator[](headerKey).beginEnd.append(QPair<int, int>(startIdx, idx));
                 }
                 multiValuedEndedWithComma = buf[idx] == ',';
                 //skip comma(s) and leading whitespace, if any respectively
@@ -275,7 +264,7 @@ int HeaderTokenizer::tokenize(int begin, int end)
 }
 
 
-TokenIterator HeaderTokenizer::iterator(const char *key)
+TokenIterator HeaderTokenizer::iterator(const char *key) const
 {
     QByteArray keyBa = QByteArray::fromRawData(key, strlen(key));
     if (contains(keyBa)) {
