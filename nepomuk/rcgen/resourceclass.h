@@ -17,6 +17,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QList>
+#include <QtCore/QUrl>
 
 #include "property.h"
 
@@ -30,18 +31,18 @@ class ResourceClass
 {
     public:
         ResourceClass();
-        ResourceClass( const QString& uri );
+        ResourceClass( const QUrl& uri );
         ~ResourceClass();
 
         /**
          * Sets the uri of the resource.
          */
-        void setUri( const QString &uri );
+        void setUri( const QUrl &uri );
 
         /**
          * Returns the uri of the resource.
          */
-        QString uri() const;
+        QUrl uri() const;
 
         /**
          * Sets the comment of the resource.
@@ -61,7 +62,7 @@ class ResourceClass
         /**
          * Returns the parent resource of the resource.
          */
-        ResourceClass* parentResource() const;
+        ResourceClass* parentClass( bool considerGenerateClass = true ) const;
 
         /**
          * Adds a parent resource to the resource.
@@ -141,11 +142,11 @@ class ResourceClass
          * Returns the name of the source file for this resource.
          */
         QString sourceName() const;
-
+        
     private:
-        QString m_uri;
+        QUrl m_uri;
         QString m_comment;
-        ResourceClass* m_parentResource;
+        ResourceClass* m_parentClass;
         QList<ResourceClass*> m_allParentResources;
         Property::ConstPtrList m_properties;
         Property::ConstPtrList m_reverseProperties;

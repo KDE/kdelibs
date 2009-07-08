@@ -22,39 +22,50 @@
 extern bool quiet;
 
 Property::Property()
-    : m_isList( true ),
-      m_domain( 0 ),
-      m_inverseProperty( 0 )
-{
-}
-
-Property::Property( const QString& uri, const QString& type )
-    : m_uri( uri ),
-      m_type( type ),
+    : m_range( 0 ),
       m_isList( true ),
       m_domain( 0 ),
       m_inverseProperty( 0 )
 {
 }
 
-void Property::setUri( const QString &uri )
+// Property::Property( const QUrl& uri, const QString& type )
+//     : m_uri( uri ),
+//       m_type( type ),
+//       m_isList( true ),
+//       m_domain( 0 ),
+//       m_inverseProperty( 0 )
+// {
+// }
+
+void Property::setUri( const QUrl &uri )
 {
     m_uri = uri;
 }
 
-QString Property::uri() const
+QUrl Property::uri() const
 {
     return m_uri;
 }
 
-void Property::setType( const QString &type )
+void Property::setRange( ResourceClass* type )
 {
-    m_type = type;
+    m_range = type;
 }
 
-QString Property::type() const
+void Property::setLiteralRange( const QString& range )
 {
-    return m_type;
+    m_literalRange = range;
+}
+
+ResourceClass* Property::range() const
+{
+    return m_range;
+}
+
+QString Property::literalRange() const
+{
+    return m_literalRange;
 }
 
 void Property::setComment( const QString &comment )
@@ -103,7 +114,7 @@ QString Property::name() const
     // many predicates are named "hasSomething"
     // we remove the "has" becasue setHasSomething sounds weird
     //
-    const QString name = m_uri.section( QRegExp( "[#/:]" ), -1 );
+    const QString name = m_uri.toString().section( QRegExp( "[#/:]" ), -1 );
     if( name.toLower().startsWith( "has" ) )
         return name.mid( 3 );
     else
@@ -113,41 +124,19 @@ QString Property::name() const
 QString Property::typeString( bool simple, const QString &nameSpace ) const
 {
     QString t;
-    if( m_type.contains( "XMLSchema" ) ) {
-        // XML Schema types
-        // FIXME: move this map somewhere else
-        QHash<QString, QString> xmlSchemaTypes;
-        xmlSchemaTypes.insert( "integer", "qint64" );
-        xmlSchemaTypes.insert( "nonNegativeInteger", "quint64" );
-        xmlSchemaTypes.insert( "nonPositiveInteger", "qint64" );
-        xmlSchemaTypes.insert( "negativeInteger", "qint64" );
-        xmlSchemaTypes.insert( "positiveInteger", "quint64" );
-        xmlSchemaTypes.insert( "long", "qint64" );
-        xmlSchemaTypes.insert( "unsignedLong", "quint64" );
-        xmlSchemaTypes.insert( "int", "qint32" );
-        xmlSchemaTypes.insert( "unsignedInt", "quint32" );
-        xmlSchemaTypes.insert( "short", "qint16" );
-        xmlSchemaTypes.insert( "unsignedShort", "quint16" );
-        xmlSchemaTypes.insert( "byte", "char" );
-        xmlSchemaTypes.insert( "unsignedByte", "unsigned char" );
-        xmlSchemaTypes.insert( "float", "double" );
-        xmlSchemaTypes.insert( "double", "double" );
-        xmlSchemaTypes.insert( "boolean", "bool" );
-        xmlSchemaTypes.insert( "date", "QDate" );
-        xmlSchemaTypes.insert( "time", "QTime" );
-        xmlSchemaTypes.insert( "dateTime", "QDateTime" );
-        xmlSchemaTypes.insert( "duration", "QDateTime" ); // FIXME
-        xmlSchemaTypes.insert( "string", "QString" );
-        t = xmlSchemaTypes[m_type.mid(m_type.lastIndexOf( "#" ) + 1 )];
-    }
-    else if( m_type.endsWith( "#Literal" ) ) {
-        t = "QString";
+    if( !m_literalRange.isEmpty() ) {
+        t = m_literalRange;
     }
     else {
-        t = m_type.section( QRegExp( "[#/:]" ), -1 );
+        if( m_range->generateClass() )
+            t = m_range->name();
+        else
+            t = m_range->parentClass( true )->name();
         if ( !nameSpace.isEmpty() )
             t.prepend( nameSpace + QLatin1String( "::" ) );
     }
+
+    Q_ASSERT( !t.isEmpty() );
 
     if( !simple && m_isList ) {
         if( t == "QString" )
@@ -156,17 +145,15 @@ QString Property::typeString( bool simple, const QString &nameSpace ) const
             return "QList<" + t + '>';
     }
 
-    Q_ASSERT( !t.isEmpty() );
-
     return t;
 }
 
 bool Property::hasSimpleType() const
 {
-    return ( m_type.contains( "XMLSchema" ) || m_type.endsWith( "#Literal" ) );
+    return ( m_range == 0 );
 }
 
-QString Property::typeConversionMethod() const
+QString Property::literalTypeConversionMethod() const
 {
     // for properties with cardinality == 1 we use a little hack since there will always be duplication of
     // data.

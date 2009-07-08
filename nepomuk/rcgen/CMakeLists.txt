@@ -2,7 +2,7 @@ project(nepomuk_rcgen)
 
 include_directories(
   ${nepomuk_rcgen_SOURCE_DIR}
-  ${KDE4_KDECORE_INCLUDES}
+  ${KDE4_INCLUDES}
   ${QT_INCLUDES}
   ${SOPRANO_INCLUDE_DIR} )
 
@@ -21,6 +21,8 @@ target_link_libraries(nepomuk-rcgen
   ${SOPRANO_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
+  kdecore
+  kdeui
 )
 
 install(TARGETS nepomuk-rcgen ${INSTALL_TARGETS_DEFAULT_ARGS} )

@@ -36,39 +36,52 @@ class OntologyParser::Private
 public:
     Private() {
         // default parent class
-        resources.insert( "http://www.w3.org/2000/01/rdf-schema#Resource",
-                          ResourceClass( "http://www.w3.org/2000/01/rdf-schema#Resource" ) );
+        resources.insert( Soprano::Vocabulary::RDFS::Resource(),
+                          ResourceClass( Soprano::Vocabulary::RDFS::Resource() ) );
+
+        // build xsd -> Qt type map
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::integer(), "qint64" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::negativeInteger(), "qint64" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::nonNegativeInteger(), "quint64" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::xsdLong(), "qint64" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::unsignedLong(), "quint64" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::xsdInt(), "qint32" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::unsignedInt(), "quint32" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::xsdShort(), "qint16" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::unsignedShort(), "quint16" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::xsdFloat(), "double" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::xsdDouble(), "double" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::boolean(), "bool" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::date(), "QDate" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::time(), "QTime" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::dateTime(), "QDateTime" );
+        xmlSchemaTypes.insert( Soprano::Vocabulary::XMLSchema::string(), "QString" );
     }
 
-    QMap<QString, ResourceClass> resources;
-    QMap<QString, Property> properties;
-    QMap<QString, QString> comments;
+    // the classes to be generated as set on the command line
+    // if empty, all classes are generated
+    QStringList classesToGenerate;
+
+    QMap<QUrl, ResourceClass> resources;
+    QMap<QUrl, Property> properties;
+    QMap<QUrl, QString> comments;
     const Soprano::Parser* rdfParser;
 
-    QHash<QString, QString> namespaceAbbr;
+    QHash<QUrl, QString> xmlSchemaTypes;
 
-    QString ensureNS( const QString& uri ) {
-        // check if we have a NS abbrev
-        QString ns = uri.left( uri.indexOf( ":" ) );
-        if( namespaceAbbr.contains( ns ) )
-            return namespaceAbbr[ns] + uri.mid( ns.length()+1 );
-        else
-            return uri;
-    }
-
-    ResourceClass& getResource( const QString& uri ) {
-        ResourceClass& r = resources[ensureNS(uri)];
-        r.setUri( ensureNS(uri) );
-        if ( !r.parentResource() ) {
-            r.setParentResource( &resources["http://www.w3.org/2000/01/rdf-schema#Resource"] );
+    ResourceClass* getClass( const QUrl& uri ) {
+        ResourceClass& r = resources[uri];
+        r.setUri( uri );
+        if ( !r.parentClass(false) ) {
+            r.setParentResource( &resources[Soprano::Vocabulary::RDFS::Resource()] );
         }
-        return r;
+        return &r;
     }
 
-    Property& getProperty( const QString& uri ) {
-        Property& p = properties[ensureNS(uri)];
-        p.setUri( ensureNS(uri) );
-        return p;
+    Property* getProperty( const QUrl& uri ) {
+        Property& p = properties[uri];
+        p.setUri( uri );
+        return &p;
     }
 };
 
@@ -91,7 +104,7 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
     // FIXME: do an actual class name mapping by parsing the class
     foreach( const QString &tf, templates ) {
         QString filename = QFileInfo( tf ).fileName();
-        for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
+        for( QMap<QUrl, ResourceClass>::iterator it = d->resources.begin();
              it != d->resources.end(); ++it ) {
             // we use startsWith() for a hackish handling of such suffixes as ".in"
             if( filename.startsWith( it.value().headerName() ) ) {
@@ -111,98 +124,104 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
 }
 
 
-bool OntologyParser::parse( const QString& filename )
+void OntologyParser::setClassesToGenerate( const QStringList& classes )
 {
-    Soprano::RdfSerialization serialization;
-    if ( filename.endsWith( "trig" ) ) {
+    d->classesToGenerate = classes;
+}
+
+
+bool OntologyParser::parse( const QString& filename, const QString& serializationMimeType )
+{
+    Soprano::RdfSerialization serialization = Soprano::SerializationUnknown;
+    if( !serializationMimeType.isEmpty() ) {
+        serialization = Soprano::mimeTypeToSerialization( serializationMimeType );
+    }
+    else if ( filename.endsWith( "trig" ) ) {
         serialization = Soprano::SerializationTrig;
     }
     else {
         serialization = Soprano::SerializationRdfXml;
     }
 
-    if ( !( d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( serialization ) ) ) {
+    if ( !( d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( serialization, serializationMimeType ) ) ) {
         return false;
     }
 
     if ( !quiet )
         qDebug() << "(OntologyParser) Parsing " << filename << endl;
 
-    // get the namespaces the hacky way
-    QFile f( filename );
-    if( f.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-        QString s = QTextStream( &f ).readAll();
-        QRegExp nsr( "xmlns:(\\S*)=\"(\\S*\\#)\"" );
-        int pos = 0;
-        while( ( pos = s.indexOf( nsr, pos+1 ) ) > 0 ) {
-            if ( !quiet )
-                qDebug() << "Found namespace abbreviation: " << nsr.cap(1) << "->" << nsr.cap(2) << endl;
-            d->namespaceAbbr.insert( nsr.cap(1), nsr.cap(2) );
-        }
-    }
-
-    // FIXME: the serialization should be somehow specified
     Soprano::StatementIterator it = d->rdfParser->parseFile( filename,
                                                              QUrl("http://org.kde.nepomuk/dummybaseuri"),
-                                                             serialization );
+                                                             serialization,
+                                                             serializationMimeType );
     bool success = true;
 
     while( it.next() ) {
         const Soprano::Statement& s = *it;
 
-        if( s.predicate().uri().toString().endsWith( "#subClassOf" ) ) {
-            ResourceClass& rc = d->getResource( s.subject().uri().toString() );
-            rc.setParentResource( &d->getResource( s.object().uri().toString() ) );
-            rc.addParentResource( &d->getResource( s.object().uri().toString() ) );
-            rc.setGenerateClass( true );
+        if( s.predicate().uri() == Soprano::Vocabulary::RDFS::subClassOf() ) {
+            ResourceClass* rc = d->getClass( s.subject().uri().toString() );
+            rc->setParentResource( d->getClass( s.object().uri().toString() ) );
+            rc->addParentResource( d->getClass( s.object().uri().toString() ) );
+            rc->setGenerateClass( true );
         }
-        else if( s.predicate().uri().toString().endsWith( "#type" ) ) {
+        else if( s.predicate().uri() == Soprano::Vocabulary::RDF::type() ) {
             if( s.object().uri().toString().endsWith( "#Class" ) )
-                d->getResource( s.subject().uri().toString() ).setGenerateClass( true );
+                d->getClass( s.subject().uri().toString() )->setGenerateClass( true );
         }
-        else if( s.predicate().uri().toString().endsWith( "#domain" ) ) {
-            ResourceClass& rc = d->getResource( s.object().uri().toString() );
-            Property& p = d->getProperty( s.subject().uri().toString() );
-            p.setDomain( &rc );
-            if ( !rc.allProperties().contains( &p ) )
-                rc.addProperty( &p );
-            rc.setGenerateClass( true );
+        else if( s.predicate().uri() == Soprano::Vocabulary::RDFS::domain() ) {
+            ResourceClass* rc = d->getClass( s.object().uri().toString() );
+            Property* p = d->getProperty( s.subject().uri().toString() );
+            p->setDomain( rc );
+            if ( !rc->allProperties().contains( p ) )
+                rc->addProperty( p );
+            rc->setGenerateClass( true );
         }
-        else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
-            d->getProperty(s.subject().uri().toString()).setType( d->ensureNS(s.object().uri().toString()) );
+        else if( s.predicate().uri() == Soprano::Vocabulary::RDFS::range() ) {
+            Property* prop = d->getProperty(s.subject().uri().toString());
+            QUrl type = s.object().uri();
+            if( type.toString().contains( "XMLSchema" ) ) {
+                prop->setLiteralRange( d->xmlSchemaTypes[type] );
+            }
+            else if( type == Soprano::Vocabulary::RDFS::Literal() ) {
+                prop->setLiteralRange( "QString" );
+            }
+            else {
+                prop->setRange( d->getClass(s.object().uri()) );
+            }
         }
-        else if( s.predicate().uri().toString().endsWith( "#maxCardinality" ) ||
-                 s.predicate().uri().toString().endsWith( "#cardinality" ) ) {
-            d->getProperty(s.subject().uri().toString()).setIsList( s.object().literal().toInt() > 1 );
+        else if( s.predicate().uri() == Soprano::Vocabulary::NRL::maxCardinality() ||
+                 s.predicate().uri() == Soprano::Vocabulary::NRL::cardinality() ) {
+            d->getProperty(s.subject().uri())->setIsList( s.object().literal().toInt() > 1 );
         }
-        else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
-            d->comments[d->ensureNS(s.subject().uri().toString())] = s.object().literal().toString();
+        else if( s.predicate().uri() == Soprano::Vocabulary::RDFS::comment() ) {
+            d->comments[s.subject().uri()] = s.object().literal().toString();
         }
-        else if ( s.predicate().uri().toString().endsWith("inverseProperty") ) {
-            d->getProperty(s.subject().uri().toString()).setInverseProperty( &d->getProperty(s.object().uri().toString()) );
-            d->getProperty(s.object().uri().toString()).setInverseProperty( &d->getProperty(s.subject().uri().toString()) );
+        else if ( s.predicate().uri() == Soprano::Vocabulary::NRL::inverseProperty() ) {
+            d->getProperty(s.subject().uri())->setInverseProperty( d->getProperty(s.object().uri()) );
+            d->getProperty(s.object().uri())->setInverseProperty( d->getProperty(s.subject().uri()) );
         }
     }
 
     // determine the reverse properties
-    for( QMap<QString, Property>::iterator propIt = d->properties.begin();
+    for( QMap<QUrl, Property>::iterator propIt = d->properties.begin();
          propIt != d->properties.end(); ++propIt ) {
         Property& p = propIt.value();
-        if( d->resources.contains( p.type() ) ) {
+        if( p.range() ) {
             if ( !quiet )
-                qDebug() << "Setting reverse property " << p.uri() << " on type " << p.type() << endl;
-            if ( !d->resources[p.type()].allReverseProperties().contains( &p ) )
-                d->resources[p.type()].addReverseProperty( &p );
+                qDebug() << "Setting reverse property " << p.uri() << " on type " << p.range()->uri() << endl;
+            if ( !p.range()->allReverseProperties().contains( &p ) )
+                p.range()->addReverseProperty( &p );
         }
         if ( !p.domain() ) {
-            p.setDomain( &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"] );
+            p.setDomain( d->getClass(Soprano::Vocabulary::RDFS::Resource()) );
         }
 
         Q_ASSERT( d->properties.count( propIt.key() ) == 1 );
     }
 
     // now assign the comments to resources and properties
-    QMapIterator<QString, QString> commentsIt( d->comments );
+    QMapIterator<QUrl, QString> commentsIt( d->comments );
     while( commentsIt.hasNext() ) {
         commentsIt.next();
         if( d->resources.contains( commentsIt.key() ) )
@@ -212,15 +231,15 @@ bool OntologyParser::parse( const QString& filename )
     }
 
     // testing stuff
-    for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
+    for( QMap<QUrl, ResourceClass>::iterator it = d->resources.begin();
          it != d->resources.end(); ++it ) {
-        if( !it->parentResource() ) {
-            it->setParentResource( &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"] );
+        if( !it->parentClass(false) ) {
+            it->setParentResource( d->getClass(Soprano::Vocabulary::RDFS::Resource()) );
         }
         if ( !quiet )
             qDebug() << "Resource: " << (*it).name()
                      << "[" << (*it).uri() << "]"
-                     << " (->" << (*it).parentResource()->name() << ")"
+                     << " (->" << (*it).parentClass(false)->name() << ")"
                      << ( (*it).generateClass() ? " (will be generated)" : " (will not be generated)" )
                      << endl;
 
@@ -230,7 +249,16 @@ bool OntologyParser::parse( const QString& filename )
         while( propIt.hasNext() ) {
             const Property* p = propIt.next();
             if ( !quiet )
-                qDebug() << "          " << p->uri() << " (->" << p->type() << ")" << ( p->isList() ? QString("+") : QString("1") ) << endl;
+                qDebug() << "          " << p->uri() << " (->" << p->typeString() << ")" << ( p->isList() ? QString("+") : QString("1") ) << endl;
+        }
+    }
+
+    // if classes to be generated have been specified on the command line, reset all ResourceClass
+    // instances in terms of generation
+    if( !d->classesToGenerate.isEmpty() ) {
+        for( QMap<QUrl, ResourceClass>::iterator it = d->resources.begin();
+             it != d->resources.end(); ++it ) {
+            it->setGenerateClass( d->classesToGenerate.contains( it->name() ) );
         }
     }
 
@@ -238,13 +266,13 @@ bool OntologyParser::parse( const QString& filename )
 }
 
 
-bool OntologyParser::writeSources( const QString& dir, bool externalRefs, bool fastMode )
+bool OntologyParser::writeSources( const QString& dir, bool fastMode )
 {
     CodeGenerator generator( fastMode ? CodeGenerator::FastMode : CodeGenerator::SafeMode );
 
     bool success = true;
 
-    for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+    for( QMap<QUrl, ResourceClass>::const_iterator it = d->resources.constBegin();
          it != d->resources.constEnd(); ++it ) {
         if( (*it).generateClass() )
             success &= generator.write( &(*it), dir + QDir::separator() );
@@ -259,7 +287,7 @@ bool OntologyParser::writeSources( const QString& dir, bool externalRefs, bool f
 QStringList OntologyParser::listHeader()
 {
     QStringList l;
-    for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+    for( QMap<QUrl, ResourceClass>::const_iterator it = d->resources.constBegin();
          it != d->resources.constEnd(); ++it )
         if( (*it).generateClass() )
             l.append( (*it).headerName() );
@@ -270,7 +298,7 @@ QStringList OntologyParser::listHeader()
 QStringList OntologyParser::listSources()
 {
     QStringList l;
-    for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+    for( QMap<QUrl, ResourceClass>::const_iterator it = d->resources.constBegin();
          it != d->resources.constEnd(); ++it )
         if( (*it).generateClass() )
             l.append( (*it).sourceName() );

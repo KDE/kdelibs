@@ -88,7 +88,7 @@ QString SafeCode::propertySetterDefinition( const Property* property, const Reso
         s += QString("{\n"
                      "    setProperty( QUrl::fromEncoded(\"%1\"), Variant( value ) );\n"
                      "}\n" )
-             .arg( property->uri() );
+             .arg( property->uri().toString() );
     }
     else if( property->isList() ) {
         s += QString("{\n"
@@ -102,7 +102,7 @@ QString SafeCode::propertySetterDefinition( const Property* property, const Reso
                      "}\n" )
              .arg( s_typeComment )
              .arg( property->typeString() )
-             .arg( property->uri() );
+             .arg( property->uri().toString() );
     }
     else {
         s += QString("{\n"
@@ -110,7 +110,7 @@ QString SafeCode::propertySetterDefinition( const Property* property, const Reso
                      "    setProperty( QUrl::fromEncoded(\"%2\"), Variant( Resource( value ) ) );\n"
                      "}\n" )
              .arg( s_typeComment )
-             .arg( property->uri() );
+             .arg( property->uri().toString() );
     }
 
     return s;
@@ -124,8 +124,8 @@ QString SafeCode::propertyGetterDefinition( const Property* property, const Reso
         s += QString( "{\n"
                       "    return ( property( QUrl::fromEncoded(\"%1\") ).%2;\n"
                       "}\n" )
-             .arg( property->uri() )
-             .arg( property->typeConversionMethod() );
+             .arg( property->uri().toString() )
+             .arg( property->literalTypeConversionMethod() );
     }
     else if( property->isList() ) {
         s += QString("{\n"
@@ -133,7 +133,7 @@ QString SafeCode::propertyGetterDefinition( const Property* property, const Reso
                      "    return convertResourceList<%3>( property( QUrl::fromEncoded(\"%2\") ).toResourceList() );\n"
                      "}\n" )
              .arg( s_typeComment )
-             .arg( property->uri() )
+             .arg( property->uri().toString() )
              .arg( property->typeString( true ) );
     }
     else {
@@ -143,7 +143,7 @@ QString SafeCode::propertyGetterDefinition( const Property* property, const Reso
                      "}\n" )
              .arg( s_typeComment )
              .arg( property->typeString( true ) )
-             .arg( property->uri() );
+             .arg( property->uri().toString() );
     }
 
     return s;
@@ -159,7 +159,7 @@ QString SafeCode::propertyAdderDefinition( const Property* property, const Resou
                       "    v.append( value );\n"
                       "    setProperty( QUrl::fromEncoded(\"%1\"), v );\n"
                       "}\n" )
-             .arg( property->uri() );
+             .arg( property->uri().toString() );
     }
     else {
         s += QString( "{\n"
@@ -169,7 +169,7 @@ QString SafeCode::propertyAdderDefinition( const Property* property, const Resou
                       "    setProperty( QUrl::fromEncoded(\"%2\"), v );\n"
                       "}\n" )
              .arg( s_typeComment )
-             .arg( property->uri() );
+             .arg( property->uri().toString() );
     }
 
     return s;
@@ -182,7 +182,7 @@ QString SafeCode::propertyReversePropertyGetterDefinition( const Property* prope
     s += QString( "{\n"
                   "    return convertResourceList<%2>( manager()->allResourcesWithProperty( QUrl::fromEncoded(\"%1\"), *this ) );\n"
                   "}\n" )
-         .arg( property->uri() )
+         .arg( property->uri().toString() )
          .arg( property->domain()->name() );
 
     return s;
@@ -195,7 +195,7 @@ QString SafeCode::resourceAllResourcesDefinition( const ResourceClass* rc ) cons
                     "    return Nepomuk::convertResourceList<%3>( ResourceManager::instance()->allResourcesOfType( QUrl::fromEncoded(\"%2\") ) );\n"
                     "}\n" )
         .arg( resourceAllResourcesDeclaration( rc, "Nepomuk" ) )
-        .arg( rc->uri() )
+        .arg( rc->uri().toString() )
         .arg( rc->name() );
 }
 

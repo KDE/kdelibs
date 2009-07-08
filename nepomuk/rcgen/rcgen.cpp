@@ -13,9 +13,12 @@
  */
 
 #include <QtCore/QTextStream>
-#include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
+
+#include <KApplication>
+#include <KAboutData>
+#include <KCmdLineArgs>
 
 #include "resourceclass.h"
 #include "ontologyparser.h"
@@ -23,101 +26,69 @@
 
 bool quiet = true;
 
-static int usage()
+namespace {
+QStringList extractSpaceSeparatedLists( const QStringList& args )
 {
-    QTextStream( stderr, QIODevice::WriteOnly )
-        << "Usage:" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall [--fast] [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] [--no-external-refs] --target <sourcefolder> --ontologies <ontologyfile(s)>" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --listincludes [--fast] --ontologies <ontologyfile(s)>" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --listheaders [--fast] [--prefix <listprefix>] --ontologies <ontologyfile(s)>" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --listsources [--fast] [--prefix <listprefix>] --ontologies <ontologyfile(s)>" << endl;
-    return 1;
+    QStringList results;
+    foreach( const QString& a, args ) {
+        results << a.split( ' ' );
+    }
+    return results;
 }
-
+}
 
 int main( int argc, char** argv )
 {
-    // we probably need a QCoreApplication instance for some
-    // stuff. If not, who cares, we don't do anything time relevant here
-    QCoreApplication app( argc, argv );
+    KAboutData aboutData( "nepomuk-rcgen",
+                          "nepomuk-rcgen",
+                          ki18n("Nepomuk Resource Class Generator"),
+                          "0.3",
+                          ki18n("Nepomuk Resource Class Generator"),
+                          KAboutData::License_GPL,
+                          ki18n("(c) 2006-2009, Sebastian Trüg"),
+                          KLocalizedString(),
+                          "http://nepomuk.kde.org" );
+    aboutData.addAuthor(ki18n("Sebastian Trüg"), ki18n("Maintainer"), "trueg@kde.org");
+    aboutData.addAuthor(ki18n("Tobias Koenig"), ki18n("Major cleanup - Personal hero of maintainer"), "tokoe@kde.org");
+    aboutData.setProgramIconName( "nepomuk" );
 
-    bool writeAll = false, listHeader = false, listSource = false, listIncludes = false, externalRefs = true, fastMode = false;
-    QStringList ontoFiles;
-    QString targetDir, prefix;
-    QStringList templates;
+    KCmdLineArgs::init( argc, argv, &aboutData );
 
-    QStringList args = app.arguments();
-    if( args.count() < 2 )
-        return usage();
+    KCmdLineOptions options;
+    options.add("verbose", ki18n("Verbose output debugging mode."));
+    options.add("fast", ki18n("Generate simple and fast wrapper classes not based on Nepomuk::Resource which do not provide any data integrity checking"));
+    options.add("writeall", ki18n("Actually generate the code."));
+    options.add("listincludes", ki18n("List all includes (deprecated)."));
+    options.add("listheaders", ki18n("List all header files that will be generated via the --writeall command."));
+    options.add("listsources", ki18n("List all source files that will be generated via the --writeall command."));
+    options.add("ontologies <files>", ki18n("The ontology files containing the ontologies to be generated, a space separated list (deprecated: use arguments instead."));
+    options.add("prefix <prefix>", ki18n("Include path prefix (deprecated)"));
+    options.add("target <target-folder>", ki18n("Specify the target folder to store generated files into."));
+    options.add("templates <templates>", ki18n("Templates to be used (deprecated)."));
+    options.add("class <classname>", ki18n("Optionally specify the classes to be generated. Use option multiple times (defaults to all classes)"));
+    options.add("serialization <rdf-serialization>", ki18n("Serialization used in the ontology files. Will default to primitive file extension detection."));
+    options.add("+[ontologies]", ki18n("The ontology files containing the ontologies to be generated."));
 
-    QStringList::const_iterator argIt = args.constBegin();
-    ++argIt; // skip the app name
-    while (argIt != args.constEnd()) {
-        const QString& arg = *argIt;
+    KCmdLineArgs::addCmdLineOptions( options );
+    KApplication app( false /* no gui */ );
+    KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-        // new parameter
-        if ( arg.startsWith("--") ) {
-            // gather parameter arg
-            QStringList paramArgs;
-            ++argIt;
-            while ( argIt != args.constEnd() &&
-                    !(*argIt).startsWith("--") ) {
-                paramArgs += *argIt;
-                ++argIt;
-            }
+    bool writeAll = args->isSet("writeall");
+    bool listHeader = args->isSet("listheaders");
+    bool listSource = args->isSet("listsources");
+    bool listIncludes = args->isSet("listincludes");
+    bool fastMode = args->isSet("fast");
+    quiet = !args->isSet("verbose");
 
-            // now lets see what we have
-            if ( arg == "--writeall" ) {
-                writeAll = true;
-            }
-            else if ( arg == "--fast" ) {
-                fastMode = true;
-            }
-            else if ( arg == "--listincludes" ) {
-                listIncludes = true;
-            }
-            else if ( arg == "--listheaders" ) {
-                listHeader = true;
-            }
-            else if ( arg == "--listsources" ) {
-                listSource = true;
-            }
-            else if ( arg == "--no-external-refs" ) {
-                externalRefs = false;
-            }
-            else if ( arg == "--templates" ) {
-                templates = paramArgs;
-            }
-            else if ( arg == "--ontologies" ) {
-                if ( paramArgs.isEmpty() ) {
-                    return usage();
-                }
-                ontoFiles = paramArgs;
-            }
-            else if ( arg == "--prefix" ) {
-                if ( paramArgs.count() != 1 ) {
-                    return usage();
-                }
-                prefix = paramArgs.first();
-            }
-            else if ( arg == "--target" ) {
-                if ( paramArgs.count() != 1 ) {
-                    return usage();
-                }
-                targetDir = paramArgs.first();
-            }
-            else if ( arg == "--verbose" ) {
-                quiet = false;
-            }
-            else {
-                return usage();
-            }
-        }
-        else
-            return usage();
-    }
+    QStringList ontoFiles = extractSpaceSeparatedLists( args->getOptionList("ontologies") ); // backwards comp
+    for(int i = 0; i < args->count(); ++i )
+        ontoFiles << args->arg(i);
+    QString targetDir = args->getOption("target");
+    QString prefix = args->getOption("prefix");
+    QStringList templates = args->getOptionList("templates");
+    QStringList classes = args->getOptionList( "class" );
 
-    foreach( const QString &ontoFile, ontoFiles ) {
+    foreach( const QString& ontoFile, ontoFiles ) {
         if( !QFile::exists( ontoFile ) ) {
             qDebug() << "Ontology file " << ontoFile << " does not exist." << endl;
             return -1;
@@ -132,8 +103,11 @@ int main( int argc, char** argv )
     }
 
     OntologyParser prsr;
-    foreach( const QString &ontoFile, ontoFiles ) {
-        if( !prsr.parse( ontoFile ) ) {
+    if( !classes.isEmpty() )
+        prsr.setClassesToGenerate( classes );
+
+    foreach( const QString& ontoFile, ontoFiles ) {
+        if( !prsr.parse( ontoFile, args->getOption("serialization") ) ) {
             qDebug() << "Parsing ontology file " << ontoFile << " failed." << endl;
             return -1;
         }
@@ -144,7 +118,7 @@ int main( int argc, char** argv )
             return -1;
         }
 
-        if( !prsr.writeSources( targetDir, externalRefs, fastMode ) ) {
+        if( !prsr.writeSources( targetDir, fastMode ) ) {
             qDebug() << "Writing sources to " << targetDir << " failed." << endl;
             return -1;
         }

@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -168,22 +168,23 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
         }
         s = QTextStream( &f ).readAll();
     }
+    ResourceClass* parent = resourceClass->parentClass( true );
     s.replace( "NEPOMUK_RESOURCECOMMENT", writeComment( resourceClass->comment(), 0 ) );
     s.replace( "NEPOMUK_RESOURCENAMEUPPER", resourceClass->name().toUpper() );
     s.replace( "NEPOMUK_RESOURCENAME", resourceClass->name() );
-    if ( m_mode == FastMode && resourceClass->parentResource()->name() == "Resource" )
+    if ( m_mode == FastMode && parent->name() == "Resource" )
         s.replace( "NEPOMUK_PARENTRESOURCE", "NepomukFast::Resource" );
     else
-        s.replace( "NEPOMUK_PARENTRESOURCE", resourceClass->parentResource()->name() );
+        s.replace( "NEPOMUK_PARENTRESOURCE", parent->name() );
 
     // A resource that is not part of the currently generated stuff is supposed
     // to be installed in include/nepomuk
-    if ( resourceClass->parentResource()->generateClass() ) {
-        s.replace( "NEPOMUK_PARENT_INCLUDE", QString("\"%1.h\"").arg( resourceClass->parentResource()->name().toLower() ) );
+    if ( parent->generateClass() ) {
+        s.replace( "NEPOMUK_PARENT_INCLUDE", QString("\"%1.h\"").arg( parent->name().toLower() ) );
     }
     else {
         if ( m_mode == SafeMode )
-            s.replace( "NEPOMUK_PARENT_INCLUDE", QString("<nepomuk/%1.h>").arg( resourceClass->parentResource()->name().toLower() ) );
+            s.replace( "NEPOMUK_PARENT_INCLUDE", QString("<nepomuk/%1.h>").arg( parent->name().toLower() ) );
         else
             s.replace( "NEPOMUK_PARENT_INCLUDE", QString("\"resource.h\"") );
     }
@@ -196,7 +197,8 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
     while( it.hasNext() ) {
         const Property* p = it.next();
 
-        if( p->type().isEmpty() ) {
+        if( p->literalRange().isEmpty() &&
+            !p->range() ) {
             if ( !quiet )
                 qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
             continue;
@@ -231,7 +233,8 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
     while( it.hasNext() ) {
         const Property* p = it.next();
 
-        if( p->type().isEmpty() ) {
+        if( p->literalRange().isEmpty() &&
+            !p->range() ) {
             if ( !quiet )
                 qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
             continue;
@@ -261,7 +264,7 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
     if( resourceClass->allParentResources().count() > 1 ) {
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
-            if( rc != resourceClass->parentResource() ) {
+            if( rc != resourceClass->parentClass(false) ) {
                 const QString decl = m_code->resourcePseudoInheritanceDeclaration( resourceClass, rc, false );
                 if ( decl.isEmpty() )
                     continue;
@@ -311,11 +314,11 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     }
     s.replace( "NEPOMUK_RESOURCENAMELOWER", resourceClass->name().toLower() );
     s.replace( "NEPOMUK_RESOURCENAME", resourceClass->name() );
-    s.replace( "NEPOMUK_RESOURCETYPEURI", resourceClass->uri() );
-    if ( m_mode == FastMode && resourceClass->parentResource()->name() == "Resource" )
+    s.replace( "NEPOMUK_RESOURCETYPEURI", resourceClass->uri().toString() );
+    if ( m_mode == FastMode && resourceClass->parentClass()->name() == "Resource" )
         s.replace( "NEPOMUK_PARENTRESOURCE", "NepomukFast::Resource" );
     else
-        s.replace( "NEPOMUK_PARENTRESOURCE", resourceClass->parentResource()->name() );
+        s.replace( "NEPOMUK_PARENTRESOURCE", resourceClass->parentClass()->name() );
 
     QString methods;
     QStringList includes;
@@ -325,7 +328,8 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     while( it.hasNext() ) {
         const Property* p = it.next();
 
-        if( p->type().isEmpty() ) {
+        if( p->literalRange().isEmpty() &&
+            !p->range() ) {
             if ( !quiet )
                 qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
             continue;
@@ -345,7 +349,7 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
         // write the static method that returns the property's Uri
         ms << "QUrl " << resourceClass->name( m_nameSpace ) << "::" << p->name()[0].toLower() << p->name().mid(1) << "Uri()" << endl
            << "{" << endl
-           << "    return QUrl::fromEncoded(\"" << p->uri() << "\");" << endl
+           << "    return QUrl::fromEncoded(\"" << p->uri().toString() << "\");" << endl
            << "}" << endl << endl;
     }
 
@@ -353,7 +357,8 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     while( it.hasNext() ) {
         const Property* p = it.next();
 
-        if( p->type().isEmpty() ) {
+        if( p->literalRange().isEmpty() &&
+            !p->range() ) {
             if ( !quiet )
                 qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
             continue;
@@ -377,7 +382,7 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     if( resourceClass->allParentResources().count() > 1 ) {
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
-            if( rc != resourceClass->parentResource() ) {
+            if( rc != resourceClass->parentClass() ) {
                 ms << m_code->resourcePseudoInheritanceDefinition( resourceClass, rc ) << endl;
                 includes.append( QString("#include \"%1.h\"").arg( rc->name().toLower() ) );
             }

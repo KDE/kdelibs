@@ -24,9 +24,11 @@ class OntologyParser
     OntologyParser();
     ~OntologyParser();
 
-    bool parse( const QString& filename );
+    bool parse( const QString& filename, const QString& serialization = QString() );
     bool assignTemplates( const QStringList& templates );
-    bool writeSources( const QString& dir, bool externalRefs, bool fastMode );
+    bool writeSources( const QString& dir, bool fastMode );
+
+    void setClassesToGenerate( const QStringList& classes );
 
     QStringList listHeader();
     QStringList listSources();

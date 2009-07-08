@@ -41,6 +41,8 @@ class CodeGenerator
         bool writeHeader( const ResourceClass* resourceClass, QTextStream& ) const;
         bool writeSource( const ResourceClass* resourceClass, QTextStream& ) const;
 
+        ResourceClass* findParentClass( ResourceClass* resourceClass ) const;
+
         const Mode m_mode;
         const AbstractCode* m_code;
         QString m_nameSpace;

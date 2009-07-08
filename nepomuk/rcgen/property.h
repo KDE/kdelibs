@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -16,7 +16,7 @@
 #define _NEPOMUK_PROPERTY_H_
 
 #include <QtCore/QList>
-#include <QtCore/QString>
+#include <QtCore/QUrl>
 
 class ResourceClass;
 
@@ -28,109 +28,125 @@ class ResourceClass;
  */
 class Property
 {
-    public:
-        typedef QList<const Property*> ConstPtrList;
+public:
+    typedef QList<const Property*> ConstPtrList;
 
-        /**
-         * Creates a new property.
-         */
-        Property();
+    /**
+     * Creates a new property.
+     */
+    Property();
 
-        /**
-         * Creates a new property of a given type and with a given uri.
-         *
-         * @param uri The uri that defines the property.
-         * @param type The type the property is of.
-         */
-        Property( const QString& uri, const QString& type );
+    /**
+     * Creates a new property of a given type and with a given uri.
+     *
+     * @param uri The uri that defines the property.
+     * @param type The type the property is of.
+     */
+    //Property( const QUrl& uri, const QString& type );
 
-        /**
-         * Sets the uri of the property.
-         */
-        void setUri( const QString &uri );
+    /**
+     * Sets the uri of the property.
+     */
+    void setUri( const QUrl &uri );
 
-        /**
-         * Returns the uri of the property.
-         */
-        QString uri() const;
+    /**
+     * Returns the uri of the property.
+     */
+    QUrl uri() const;
 
-        /**
-         * Sets the type of the property.
-         */
-        void setType( const QString &type );
+    /**
+     * Sets the type of the property.
+     */
+    void setRange( ResourceClass* type );
 
-        /**
-         * Returns the scope of the property.
-         */
-        QString type() const;
+    /**
+     * Set the literal range of the property.
+     * Cannot be used with setRange at the same time.
+     *
+     * \param Name of the Qt type to use
+     */
+    void setLiteralRange( const QString& range );
 
-        /**
-         * Sets the comment of the property.
-         */
-        void setComment( const QString &comment );
+    /**
+     * Returns the scope of the property.
+     */
+    ResourceClass* range() const;
 
-        /**
-         * Returns the comment of the property.
-         */
-        QString comment() const;
+    /**
+     * Returns the literal range of the property
+     * (the name of the Qt type to be used.)
+     */
+    QString literalRange() const;
 
-        /**
-         * Sets whether the property is a list of values.
-         */
-        void setIsList( bool isList );
+    /**
+     * Sets the comment of the property.
+     */
+    void setComment( const QString &comment );
 
-        /**
-         * Returns whether the property is a list of values.
-         */
-        bool isList() const;
+    /**
+     * Returns the comment of the property.
+     */
+    QString comment() const;
 
-        /**
-         * Sets the domain the property belongs to.
-         */
-        void setDomain( ResourceClass *domain );
+    /**
+     * Sets whether the property is a list of values.
+     */
+    void setIsList( bool isList );
 
-        /**
-         * Returns the domain resource the property belongs to.
-         */
-        ResourceClass* domain() const;
+    /**
+     * Returns whether the property is a list of values.
+     */
+    bool isList() const;
 
-        /**
-         * Sets the inverse property of this property.
-         */
-        void setInverseProperty( Property *property );
+    /**
+     * Sets the domain the property belongs to.
+     */
+    void setDomain( ResourceClass *domain );
 
-        /**
-         * Returns the inverse property of this property.
-         */
-        Property* inverseProperty() const;
+    /**
+     * Returns the domain resource the property belongs to.
+     */
+    ResourceClass* domain() const;
 
-        /**
-         * Returns the name of the property.
-         */
-        QString name() const;
+    /**
+     * Sets the inverse property of this property.
+     */
+    void setInverseProperty( Property *property );
 
-        /**
-         * Returns the conversion method of the property.
-         */
-        QString typeConversionMethod() const;
+    /**
+     * Returns the inverse property of this property.
+     */
+    Property* inverseProperty() const;
 
-        /**
-         * Returns the type string of the property.
-         */
-        QString typeString( bool simple = false, const QString &nameSpace = QString() ) const;
+    /**
+     * Returns the name of the property.
+     */
+    QString name() const;
 
-        /**
-         * Returns whether the property is of simple type.
-         */
-        bool hasSimpleType() const;
+    /**
+     * Returns the conversion method of the property.
+     */
+    QString literalTypeConversionMethod() const;
 
-    private:
-        QString m_uri;
-        QString m_type;
-        QString m_comment;
-        bool m_isList;
-        ResourceClass* m_domain;
-        Property* m_inverseProperty;
+    /**
+     * Retrieve a string representation of the range. Handles both literal ranges and class
+     * ranges. Also ResourceClass::generateClass is taken into account.
+     */
+    QString typeString( bool simple = false, const QString &nameSpace = QString() ) const;
+
+    /**
+     * Returns whether the property is of simple type.
+     */
+    bool hasSimpleType() const;
+
+private:
+    QUrl m_uri;
+    ResourceClass* m_range;
+    QString m_literalRange;
+    QString m_comment;
+    bool m_isList;
+    ResourceClass* m_domain;
+    Property* m_inverseProperty;
 };
 
 #endif

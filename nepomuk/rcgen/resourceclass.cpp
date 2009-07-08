@@ -16,15 +16,17 @@
 
 #include <QtCore/QRegExp>
 
+#include <Soprano/Vocabulary/RDFS>
+
 ResourceClass::ResourceClass()
-    : m_parentResource( 0 ),
+    : m_parentClass( 0 ),
       m_generateClass( false )
 {
 }
 
-ResourceClass::ResourceClass( const QString& uri )
+ResourceClass::ResourceClass( const QUrl& uri )
     : m_uri( uri ),
-      m_parentResource( 0 ),
+      m_parentClass( 0 ),
       m_generateClass( false )
 {
 }
@@ -33,12 +35,12 @@ ResourceClass::~ResourceClass()
 {
 }
 
-void ResourceClass::setUri( const QString &uri )
+void ResourceClass::setUri( const QUrl &uri )
 {
     m_uri = uri;
 }
 
-QString ResourceClass::uri() const
+QUrl ResourceClass::uri() const
 {
     return m_uri;
 }
@@ -55,12 +57,18 @@ QString ResourceClass::comment() const
 
 void ResourceClass::setParentResource( ResourceClass* parent )
 {
-    m_parentResource = parent;
+    m_parentClass = parent;
 }
 
-ResourceClass* ResourceClass::parentResource() const
+ResourceClass* ResourceClass::parentClass( bool considerGenerateClass ) const
 {
-    return m_parentResource;
+    ResourceClass* parent = m_parentClass;
+    if( considerGenerateClass ) {
+        while( !parent->generateClass() &&
+               parent->uri() != Soprano::Vocabulary::RDFS::Resource() )
+            parent = parent->parentClass();
+    }
+    return parent;
 }
 
 void ResourceClass::addParentResource( ResourceClass* parent )
@@ -125,7 +133,7 @@ QString ResourceClass::sourceTemplateFilePath() const
 
 QString ResourceClass::name( const QString &nameSpace ) const
 {
-    QString s = m_uri.section( QRegExp( "[#/:]" ), -1 );
+    QString s = m_uri.toString().section( QRegExp( "[#/:]" ), -1 );
     if( !nameSpace.isEmpty() )
         s.prepend( nameSpace + "::" );
     return s;
