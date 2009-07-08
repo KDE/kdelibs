@@ -283,11 +283,19 @@ public:
 	 * CloseWhenWidgetActivated, if not,
 	 * you have to close the notification yourself.
 	 *
+	 * @since 4.4
+	 *
 	 * @param eventId is the name of the event
-	 * @param widget is a widget where the notification reports to
 	 * @param flags is a bitmask of NotificationFlag
+	 * @param parent parent object
 	 */
-	explicit KNotification(const QString & eventId , const NotificationFlags &flags=CloseOnTimeout, QObject *parent = NULL );
+	// KDE5: Clean up this mess
+	// Only this constructor should stay with saner argument order and
+	// defaults. Because of binary and source compatibility issues it has to
+	// stay this way for now. The second argument CANNOT have a default
+	// argument. if someone needs a widget associated with the notification he
+	// should use setWidget after creating the object (or some xyz_cast magic)
+	explicit KNotification(const QString & eventId , const NotificationFlags &flags, QObject *parent = NULL );
 
 	~KNotification();
 
