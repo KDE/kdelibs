@@ -16,9 +16,9 @@
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 
-#include <KApplication>
-#include <KAboutData>
-#include <KCmdLineArgs>
+#include <kapplication.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 
 #include "resourceclass.h"
 #include "ontologyparser.h"
