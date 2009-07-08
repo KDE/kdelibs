@@ -400,7 +400,7 @@ void K3UndoRedoAction::slotAboutToShow()
 void K3UndoRedoAction::slotActionTriggered( QAction *action )
 {
     const int pos = action->data().toInt();
-    kDebug(230) << "K3UndoRedoAction::slotActionTriggered " << pos;
+    //kDebug(230) << pos;
     if ( d->type == Undo ) {
         for ( int i = 0 ; i < pos+1; ++i ) {
             d->commandHistory->undo();
