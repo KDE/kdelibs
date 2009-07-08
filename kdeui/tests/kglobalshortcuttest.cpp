@@ -50,8 +50,6 @@ QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
 
 void KGlobalShortcutTest::setupTest(QString id)
 {
-    kDebug();
-
     if (m_actionA) {
         m_actionA->forgetGlobalShortcut();
         delete m_actionA;
@@ -250,8 +248,7 @@ void KGlobalShortcutTest::testComponentAssignment()
 
     // Action with action collection get the component of the collection
     {
-        KAction *action = coll.addAction("Text For Action A");
-        action->setObjectName("Action C");
+        KAction *action = coll.addAction("Action C");
 
         QVERIFY(action->d->componentData == otherComponent);
         action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
@@ -303,9 +300,8 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     // Action with action collection
     action->forgetGlobalShortcut();
     delete action;
-    action = coll.addAction("Text For Action A");
+    action = coll.addAction("Action A");
     QVERIFY(action->d->componentData == otherComponent);
-    action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
     QVERIFY(action->d->componentData == otherComponent);
 
@@ -330,9 +326,10 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     // a global shortcut is set when overrideMainComponentData is active
     action->forgetGlobalShortcut();
     delete action;
-    action = coll.addAction("Text For Action A");
+    QVERIFY(coll.isEmpty());
+
+    action = coll.addAction("Action A");
     QVERIFY(action->d->componentData == otherComponent);
-    action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
     QVERIFY(action->d->componentData == globalComponent);
 
