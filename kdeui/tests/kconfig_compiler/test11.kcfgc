@@ -10,3 +10,4 @@ GlobalEnums=false
 ItemAccessors=true
 SetUserTexts=true
 UseEnumTypes=true
+DefaultValueGetters=true
