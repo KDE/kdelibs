@@ -38,6 +38,7 @@ private Q_SLOTS:
     void testListActions();
     void testComponentAssignment();
     void testConfigurationActions();
+    void testNotification();
     // This has to be the last before forgetGlobalShortcut
     void testOverrideMainComponentData();
     void testForgetGlobalShortcut();

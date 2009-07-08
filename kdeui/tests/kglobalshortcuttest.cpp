@@ -339,6 +339,25 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     // collections as parent. Ensure action is not deleted.
 }
 
+void KGlobalShortcutTest::testNotification()
+{
+    setupTest("testNotification");
+
+    // Action without action collection
+    KAction *action = new KAction("Text For Action A", this);
+    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+    action->setObjectName("Action A");
+    KShortcut cutB;
+    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+
+    // kglobalacceld collects registrations and shows the together. Give it
+    // time to kick in.
+    sleep(2);
+
+    action->forgetGlobalShortcut();
+}
+
 void KGlobalShortcutTest::testForgetGlobalShortcut()
 {
     setupTest("testForgetGlobalShortcut");
