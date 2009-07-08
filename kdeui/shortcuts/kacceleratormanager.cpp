@@ -169,7 +169,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
     if (!widget)
     {
-        kDebug(131) << "null pointer given to manage";
+        kDebug(240) << "null pointer given to manage";
         return;
     }
 
@@ -411,7 +411,7 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
   {
     QMainWindow* mainWindow = qobject_cast<QMainWindow*>(parentWidget);
     // TODO: find better hints that this is a QTabBar for QDockWidgets
-    if( mainWindow ) // && (mainWindow->layout()->indexOf(bar) != -1)) QMainWindowLayout lacks proper support 
+    if( mainWindow ) // && (mainWindow->layout()->indexOf(bar) != -1)) QMainWindowLayout lacks proper support
       return;
   }
 
@@ -616,7 +616,7 @@ void KAccelString::calculateWeights(int initialWeight)
     // try to preserve the wanted accelarators
     if ((int)pos == accel()) {
         weight += KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT;
-        // kDebug(131) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
+        // kDebug(240) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
         if (KAcceleratorManagerPrivate::standardName(m_origText))  {
             weight += KAccelManagerAlgorithm::STANDARD_ACCEL;
         }
@@ -895,7 +895,7 @@ void QWidgetStackAccelManager::currentChanged(int child)
 {
     if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kDebug(131) << "invalid index provided";
+        kDebug(240) << "invalid index provided";
         return;
     }
 

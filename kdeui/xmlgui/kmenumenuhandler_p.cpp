@@ -145,7 +145,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
         collection = findParentCollection(factory, action);
     }
     if(!collection) {
-         kWarning(296) << "Cannot find the action collection for action " << actionName;
+         kWarning(240) << "Cannot find the action collection for action " << actionName;
          return;
     }
 
@@ -171,7 +171,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
         {
             if(elem.attribute( attrNoEdit ) == "true")
             {
-                kWarning(296) << "The toolbar is not editable";
+                kWarning(240) << "The toolbar is not editable";
                 return;
             }
             toolbarElem = elem;
