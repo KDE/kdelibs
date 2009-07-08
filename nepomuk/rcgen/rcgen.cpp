@@ -64,6 +64,9 @@ int main( int argc, char** argv )
     options.add("ontologies <files>", ki18n("The ontology files containing the ontologies to be generated, a space separated list (deprecated: use arguments instead."));
     options.add("prefix <prefix>", ki18n("Include path prefix (deprecated)"));
     options.add("target <target-folder>", ki18n("Specify the target folder to store generated files into."));
+    // (romain_kdab) : watch out for a regression with --templates :
+    // KCmdLineOptions doesn't allow empty option arguments, so e.g. "--templates --foo" will treat --foo as the argument to --templates
+    // Since the option is deprecated it's probably not worth changing the KCmdLineOptions behaviour only for this ?
     options.add("templates <templates>", ki18n("Templates to be used (deprecated)."));
     options.add("class <classname>", ki18n("Optionally specify the classes to be generated. Use option multiple times (defaults to all classes)"));
     options.add("serialization <rdf-serialization>", ki18n("Serialization used in the ontology files. Will default to primitive file extension detection."));
