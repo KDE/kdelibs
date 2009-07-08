@@ -48,8 +48,6 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  fixx11h_test
-  fixx11h_test2
   kaccelgentest
   kactionselectortest
   kanimatedbuttontest
@@ -118,6 +116,8 @@ KDEUI_EXECUTABLE_TESTS(
 
 if (Q_WS_X11)
 KDEUI_EXECUTABLE_TESTS(
+ fixx11h_test
+ fixx11h_test2
  kxerrorhandlertest
 )
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
