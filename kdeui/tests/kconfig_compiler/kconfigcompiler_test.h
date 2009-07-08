@@ -26,6 +26,8 @@ class KConfigCompiler_Test : public QObject
 private Q_SLOTS:
     void testBaselineComparison_data();
     void testBaselineComparison();
+    void testRunning_data();
+    void testRunning();
 private:
 	void performCompare(const QString &fileName, bool fail=false);
 };

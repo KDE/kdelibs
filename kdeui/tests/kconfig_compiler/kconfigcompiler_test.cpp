@@ -13,7 +13,9 @@
     *************************************************************************
 */
 
+#include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtCore/QProcess>
 #include <QtCore/QString>
 #include <kdebug.h>
 #include <qtest_kde.h>
@@ -43,6 +45,24 @@ static CompilerTestSet testCases =
 	NULL
 };
 
+static CompilerTestSet testCasesToRun =
+{
+    "test1",
+    "test2",
+    "test3",
+    "test4",
+    "test5",
+    "test6",
+    "test7",
+    "test8",
+    "test9",
+    "test10",
+    "test11",
+    "test_dpointer",
+    "test_signal",
+    0
+};
+
 static CompilerTestSet willFailCases =
 {
 	// where is that QDir coming from?
@@ -64,6 +84,28 @@ void KConfigCompiler_Test::testBaselineComparison()
     QFETCH(QString, testName);
 
     performCompare(testName);
+}
+
+void KConfigCompiler_Test::testRunning_data()
+{
+    QTest::addColumn<QString>("testName");
+
+    for (const char **it = testCasesToRun; *it; ++it) {
+        QTest::newRow(*it) << QString::fromLatin1(*it);
+    }
+}
+
+void KConfigCompiler_Test::testRunning()
+{
+    QFETCH(QString, testName);
+
+    QProcess process;
+    process.start(QDir::currentPath() + QLatin1String("/") + testName, QIODevice::ReadOnly);
+    if (process.waitForStarted()) {
+        QVERIFY(process.waitForFinished());
+    }
+    QCOMPARE((int)process.error(), (int)QProcess::UnknownError);
+    QCOMPARE(process.exitCode(), 0);
 }
 
 void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
