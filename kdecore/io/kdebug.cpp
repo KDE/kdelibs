@@ -711,10 +711,13 @@ int KDebug::registerArea(const QByteArray& areaName)
 
     // Ensure that this area name appears in kdebugrc, so that users (via kdebugdialog)
     // can turn it off.
-    KConfigGroup cg(d->configObject(), QString::fromUtf8(areaName));
-    const QString key = QString::fromLatin1("InfoOutput");
-    if (!cg.hasKey(key)) {
-        cg.writeEntry(key, int(KDebugPrivate::QtOutput));
+    KConfig* cfgObj = d->configObject();
+    if (cfgObj) {
+        KConfigGroup cg(cfgObj, QString::fromUtf8(areaName));
+        const QString key = QString::fromLatin1("InfoOutput");
+        if (!cg.hasKey(key)) {
+            cg.writeEntry(key, int(KDebugPrivate::QtOutput));
+        }
     }
 
     return areaNumber;
