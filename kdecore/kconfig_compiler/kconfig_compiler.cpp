@@ -2111,7 +2111,7 @@ int main( int argc, char **argv )
           cpp << enumType(*itEntry);
         else
           cpp << param( t );
-        cpp << " v )";
+        cpp << " v )" << endl;
         // function body inline only if not using dpointer
         // for BC mode
         cpp << "{" << endl;
