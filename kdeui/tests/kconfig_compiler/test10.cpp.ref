@@ -3,25 +3,32 @@
 
 #include "test10.h"
 
-#include <kstaticdeleter.h>
+#include <kglobal.h>
+#include <QtCore/QFile>
 
-Test10 *Test10::mSelf = 0;
-static KStaticDeleter<Test10> staticTest10Deleter;
-
+class Test10Helper
+{
+  public:
+    Test10Helper() : q(0) {}
+    ~Test10Helper() { delete q; }
+    Test10 *q;
+};
+K_GLOBAL_STATIC(Test10Helper, s_globalTest10)
 Test10 *Test10::self()
 {
-  if ( !mSelf ) {
-    staticTest10Deleter.setObject( mSelf, new Test10() );
-    mSelf->readConfig();
+  if (!s_globalTest10->q) {
+    new Test10;
+    s_globalTest10->q->readConfig();
   }
 
-  return mSelf;
+  return s_globalTest10->q;
 }
 
 Test10::Test10(  )
   : KConfigSkeleton( QLatin1String( "test10rc" ) )
 {
-  mSelf = this;
+  Q_ASSERT(!s_globalTest10->q);
+  s_globalTest10->q = this;
   setCurrentGroup( QLatin1String( "Foo" ) );
 
   KConfigSkeleton::ItemUrl  *itemFooBar;
@@ -34,7 +41,8 @@ Test10::Test10(  )
 
 Test10::~Test10()
 {
-  if ( mSelf == this )
-    staticTest10Deleter.setObject( mSelf, 0, false );
+  if (!s_globalTest10.isDestroyed()) {
+    s_globalTest10->q = 0;
+  }
 }
 

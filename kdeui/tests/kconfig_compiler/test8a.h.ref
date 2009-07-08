@@ -11,7 +11,7 @@ class Test8a : public KConfigSkeleton
 {
   public:
 
-    Test8a(KSharedConfig::Ptr config = KGlobal::config());
+    Test8a( KSharedConfig::Ptr config = KGlobal::config() );
     ~Test8a();
 
     /**

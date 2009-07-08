@@ -33,14 +33,9 @@ class Test10 : public KConfigSkeleton
       return self()->mBarFoo;
     }
 
-    static
-    void writeConfig()
-    {
-      static_cast<KConfigSkeleton*>(self())->writeConfig();
-    }
   protected:
     Test10();
-    static Test10 *mSelf;
+    friend class Test10Helper;
 
 
     // Foo

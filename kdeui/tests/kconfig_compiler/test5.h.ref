@@ -41,7 +41,7 @@ class Test5 : public KConfigSkeleton
     static
     void setMouseAction( int i, int v )
     {
-      if (!self()->isImmutable( QString::fromLatin1( "MouseAction%1" ).arg( QString::fromLatin1( EnumButtonToString[i] ) ) ))
+      if (!self()->isImmutable( QString::fromLatin1( "MouseAction%1" ).arg( QLatin1String( EnumButtonToString[i] ) ) ))
         self()->mMouseAction[i] = v;
     }
 
@@ -104,14 +104,9 @@ class Test5 : public KConfigSkeleton
       return self()->mAge;
     }
 
-    static
-    void writeConfig()
-    {
-      static_cast<KConfigSkeleton*>(self())->writeConfig();
-    }
   protected:
     Test5();
-    static Test5 *mSelf;
+    friend class Test5Helper;
 
 
     // Foo

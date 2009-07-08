@@ -72,14 +72,9 @@ class Test8b : public Test8a
       return self()->mPort;
     }
 
-    static
-    void writeConfig()
-    {
-      static_cast<KConfigSkeleton*>(self())->writeConfig();
-    }
   protected:
     Test8b();
-    static Test8b *mSelf;
+    friend class Test8bHelper;
 
 
     // Group8b1

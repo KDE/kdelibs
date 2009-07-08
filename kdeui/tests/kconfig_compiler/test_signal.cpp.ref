@@ -3,52 +3,63 @@
 
 #include "test_signal.h"
 
-#include <kstaticdeleter.h>
+#include <kglobal.h>
+#include <QtCore/QFile>
 
-TestSignal *TestSignal::mSelf = 0;
-static KStaticDeleter<TestSignal> staticTestSignalDeleter;
-
+class TestSignalHelper
+{
+  public:
+    TestSignalHelper() : q(0) {}
+    ~TestSignalHelper() { delete q; }
+    TestSignal *q;
+};
+K_GLOBAL_STATIC(TestSignalHelper, s_globalTestSignal)
 TestSignal *TestSignal::self()
 {
-  if ( !mSelf ) {
-    staticTestSignalDeleter.setObject( mSelf, new TestSignal() );
-    mSelf->readConfig();
+  if (!s_globalTestSignal->q) {
+    new TestSignal;
+    s_globalTestSignal->q->readConfig();
   }
 
-  return mSelf;
+  return s_globalTestSignal->q;
 }
 
 TestSignal::TestSignal(  )
-  : KConfigSkeleton( QString::fromLatin1( "kconfig_compiler_test_rc" ) )
+  : KConfigSkeleton( QLatin1String( "kconfig_compiler_test_rc" ) )
+  , mSettingsChanged(0)
 {
-  mSelf = this;
-  setCurrentGroup( QString::fromLatin1( "Appearance" ) );
+  Q_ASSERT(!s_globalTestSignal->q);
+  s_globalTestSignal->q = this;
+  setCurrentGroup( QLatin1String( "Appearance" ) );
 
   KConfigSkeleton::ItemString  *itemEmoticonTheme;
-  itemEmoticonTheme = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "emoticonTheme" ), mEmoticonTheme, QString::fromLatin1( "Default" ) );
-  addItem( itemEmoticonTheme, QString::fromLatin1( "emoticonTheme" ) );
+  itemEmoticonTheme = new KConfigSkeleton::ItemString( currentGroup(), QLatin1String( "emoticonTheme" ), mEmoticonTheme, QLatin1String( "Default" ) );
+  addItem( itemEmoticonTheme, QLatin1String( "emoticonTheme" ) );
   KConfigSkeleton::ItemBool  *itemUseEmoticon;
-  itemUseEmoticon = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "useEmoticon" ), mUseEmoticon, true );
-  addItem( itemUseEmoticon, QString::fromLatin1( "useEmoticon" ) );
+  itemUseEmoticon = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "useEmoticon" ), mUseEmoticon, true );
+  addItem( itemUseEmoticon, QLatin1String( "useEmoticon" ) );
   KConfigSkeleton::ItemBool  *itemEmoticonRequireSpace;
-  itemEmoticonRequireSpace = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "emoticonRequireSpace" ), mEmoticonRequireSpace, true );
-  addItem( itemEmoticonRequireSpace, QString::fromLatin1( "emoticonRequireSpace" ) );
+  itemEmoticonRequireSpace = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "emoticonRequireSpace" ), mEmoticonRequireSpace, true );
+  addItem( itemEmoticonRequireSpace, QLatin1String( "emoticonRequireSpace" ) );
   KConfigSkeleton::ItemString  *itemStylePath;
-  itemStylePath = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "stylePath" ), mStylePath );
-  addItem( itemStylePath, QString::fromLatin1( "stylePath" ) );
+  itemStylePath = new KConfigSkeleton::ItemString( currentGroup(), QLatin1String( "stylePath" ), mStylePath );
+  addItem( itemStylePath, QLatin1String( "stylePath" ) );
   KConfigSkeleton::ItemString  *itemStyleCSSVariant;
-  itemStyleCSSVariant = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "styleVariant" ), mStyleCSSVariant );
-  addItem( itemStyleCSSVariant, QString::fromLatin1( "StyleCSSVariant" ) );
+  itemStyleCSSVariant = new KConfigSkeleton::ItemString( currentGroup(), QLatin1String( "styleVariant" ), mStyleCSSVariant );
+  addItem( itemStyleCSSVariant, QLatin1String( "StyleCSSVariant" ) );
 }
 
 TestSignal::~TestSignal()
 {
-  if ( mSelf == this )
-    staticTestSignalDeleter.setObject( mSelf, 0, false );
+  if (!s_globalTestSignal.isDestroyed()) {
+    s_globalTestSignal->q = 0;
+  }
 }
 
 void TestSignal::usrWriteConfig()
 {
+  KConfigSkeleton::usrWriteConfig();
+
   if ( mSettingsChanged & signalEmoticonSettingsChanged ) 
     emit emoticonSettingsChanged();
 

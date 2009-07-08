@@ -3,6 +3,7 @@
 #ifndef TESTNAMESPACE_TEST3_H
 #define TESTNAMESPACE_TEST3_H
 
+#include <kglobal.h>
 #include <kconfigskeleton.h>
 #include <kdebug.h>
 

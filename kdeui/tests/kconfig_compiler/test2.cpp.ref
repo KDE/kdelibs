@@ -6,90 +6,90 @@
 #include <klocale.h>
 
 Test2::Test2(  )
-  : MyPrefs( QString::fromLatin1( "korganizerrc" ) )
+  : MyPrefs( QLatin1String( "korganizerrc" ) )
 {
-  setCurrentGroup( QString::fromLatin1( "General" ) );
+  setCurrentGroup( QLatin1String( "General" ) );
 
-  mAutoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "Auto Save" ), mAutoSave, false );
+  mAutoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "Auto Save" ), mAutoSave, false );
   mAutoSaveItem->setLabel( i18n("Enable automatic saving of calendar") );
   mAutoSaveItem->setWhatsThis( i18n("WhatsThis text for AutoSave option") );
-  addItem( mAutoSaveItem, QString::fromLatin1( "AutoSave" ) );
-  mAutoSaveIntervalItem = new KConfigSkeleton::ItemInt( currentGroup(), QString::fromLatin1( "Auto Save Interval" ), mAutoSaveInterval, 10 );
+  addItem( mAutoSaveItem, QLatin1String( "AutoSave" ) );
+  mAutoSaveIntervalItem = new KConfigSkeleton::ItemInt( currentGroup(), QLatin1String( "Auto Save Interval" ), mAutoSaveInterval, 10 );
   mAutoSaveIntervalItem->setLabel( i18n("Auto Save Interval") );
-  addItem( mAutoSaveIntervalItem, QString::fromLatin1( "AutoSaveInterval" ) );
-  mConfirmItem = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "Confirm Deletes" ), mConfirm, true );
+  addItem( mAutoSaveIntervalItem, QLatin1String( "AutoSaveInterval" ) );
+  mConfirmItem = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "Confirm Deletes" ), mConfirm, true );
   mConfirmItem->setLabel( i18n("Confirm deletes") );
-  addItem( mConfirmItem, QString::fromLatin1( "Confirm" ) );
-  mArchiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "Archive File" ), mArchiveFile );
+  addItem( mConfirmItem, QLatin1String( "Confirm" ) );
+  mArchiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), QLatin1String( "Archive File" ), mArchiveFile );
   mArchiveFileItem->setLabel( i18n("Archive File") );
-  addItem( mArchiveFileItem, QString::fromLatin1( "ArchiveFile" ) );
-  QList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
+  addItem( mArchiveFileItem, QLatin1String( "ArchiveFile" ) );
+  QList<KConfigSkeleton::ItemEnum::Choice2> valuesDestination;
   {
-    KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = QString::fromLatin1( "standardDestination" );
+    KConfigSkeleton::ItemEnum::Choice2 choice;
+    choice.name = QLatin1String("standardDestination");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = QString::fromLatin1( "askDestination" );
+    KConfigSkeleton::ItemEnum::Choice2 choice;
+    choice.name = QLatin1String("askDestination");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = QString::fromLatin1( "argl1" );
+    KConfigSkeleton::ItemEnum::Choice2 choice;
+    choice.name = QLatin1String("argl1");
     choice.label = i18n("Argl1 Label");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = QString::fromLatin1( "argl2" );
+    KConfigSkeleton::ItemEnum::Choice2 choice;
+    choice.name = QLatin1String("argl2");
     choice.whatsThis = i18n("Argl2 Whatsthis");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = QString::fromLatin1( "argl3" );
+    KConfigSkeleton::ItemEnum::Choice2 choice;
+    choice.name = QLatin1String("argl3");
     choice.label = i18n("Argl3 Label");
     choice.whatsThis = i18n("Argl3 Whatsthis");
     valuesDestination.append( choice );
   }
-  mDestinationItem = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "Destination" ), mDestination, valuesDestination, standardDestination );
+  mDestinationItem = new KConfigSkeleton::ItemEnum( currentGroup(), QLatin1String( "Destination" ), mDestination, valuesDestination, standardDestination );
   mDestinationItem->setLabel( i18n("New Events/Todos Should") );
-  addItem( mDestinationItem, QString::fromLatin1( "Destination" ) );
+  addItem( mDestinationItem, QLatin1String( "Destination" ) );
 
-  setCurrentGroup( QString::fromLatin1( "Views" ) );
+  setCurrentGroup( QLatin1String( "Views" ) );
 
-  mHourSizeItem = new KConfigSkeleton::ItemInt( currentGroup(), QString::fromLatin1( "Hour Size" ), mHourSize, 10 );
+  mHourSizeItem = new KConfigSkeleton::ItemInt( currentGroup(), QLatin1String( "Hour Size" ), mHourSize, 10 );
   mHourSizeItem->setLabel( i18n("Hour Size") );
-  addItem( mHourSizeItem, QString::fromLatin1( "HourSize" ) );
-  mSelectionStartsEditorItem = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "SelectionStartsEditor" ), mSelectionStartsEditor, false );
+  addItem( mHourSizeItem, QLatin1String( "HourSize" ) );
+  mSelectionStartsEditorItem = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "SelectionStartsEditor" ), mSelectionStartsEditor, false );
   mSelectionStartsEditorItem->setLabel( i18n("Time range selection in agenda view starts event editor") );
-  addItem( mSelectionStartsEditorItem, QString::fromLatin1( "SelectionStartsEditor" ) );
+  addItem( mSelectionStartsEditorItem, QLatin1String( "SelectionStartsEditor" ) );
 
-  setCurrentGroup( QString::fromLatin1( "KOrganizer Plugins" ) );
+  setCurrentGroup( QLatin1String( "KOrganizer Plugins" ) );
 
   QStringList defaultSelectedPlugins;
   defaultSelectedPlugins.append( QString::fromUtf8( "holidays" ) );
   defaultSelectedPlugins.append( QString::fromUtf8( "webexport" ) );
 
-  mSelectedPluginsItem = new KConfigSkeleton::ItemStringList( currentGroup(), QString::fromLatin1( "SelectedPlugins" ), mSelectedPlugins, defaultSelectedPlugins );
+  mSelectedPluginsItem = new KConfigSkeleton::ItemStringList( currentGroup(), QLatin1String( "SelectedPlugins" ), mSelectedPlugins, defaultSelectedPlugins );
   mSelectedPluginsItem->setLabel( i18n("SelectedPlugins") );
-  addItem( mSelectedPluginsItem, QString::fromLatin1( "SelectedPlugins" ) );
+  addItem( mSelectedPluginsItem, QLatin1String( "SelectedPlugins" ) );
 
-  setCurrentGroup( QString::fromLatin1( "Colors" ) );
+  setCurrentGroup( QLatin1String( "Colors" ) );
 
-  mHighlightColorItem = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "Highlight Color" ), mHighlightColor, QColor( 100, 100, 255 ) );
+  mHighlightColorItem = new KConfigSkeleton::ItemColor( currentGroup(), QLatin1String( "Highlight Color" ), mHighlightColor, QColor( 100, 100, 255 ) );
   mHighlightColorItem->setLabel( i18n("Highlight color") );
-  addItem( mHighlightColorItem, QString::fromLatin1( "HighlightColor" ) );
-  mAgendaBgColorItem = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "Agenda Background Color" ), mAgendaBgColor, QColor( 255, 255, 255 ) );
+  addItem( mHighlightColorItem, QLatin1String( "HighlightColor" ) );
+  mAgendaBgColorItem = new KConfigSkeleton::ItemColor( currentGroup(), QLatin1String( "Agenda Background Color" ), mAgendaBgColor, QColor( 255, 255, 255 ) );
   mAgendaBgColorItem->setLabel( i18n("Agenda view background color") );
-  addItem( mAgendaBgColorItem, QString::fromLatin1( "AgendaBgColor" ) );
+  addItem( mAgendaBgColorItem, QLatin1String( "AgendaBgColor" ) );
 
-  setCurrentGroup( QString::fromLatin1( "Fonts" ) );
+  setCurrentGroup( QLatin1String( "Fonts" ) );
 
-  mTimeBarFontItem = new KConfigSkeleton::ItemFont( currentGroup(), QString::fromLatin1( "TimeBar Font" ), mTimeBarFont );
+  mTimeBarFontItem = new KConfigSkeleton::ItemFont( currentGroup(), QLatin1String( "TimeBar Font" ), mTimeBarFont );
   mTimeBarFontItem->setLabel( i18n("Time bar") );
-  addItem( mTimeBarFontItem, QString::fromLatin1( "TimeBarFont" ) );
+  addItem( mTimeBarFontItem, QLatin1String( "TimeBarFont" ) );
 }
 
 Test2::~Test2()

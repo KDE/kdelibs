@@ -207,14 +207,9 @@ class TestDPointer : public KConfigSkeleton
     */
     ItemFont *timeBarFontItem();
 
-    static
-    void writeConfig()
-    {
-      static_cast<KConfigSkeleton*>(self())->writeConfig();
-    }
   protected:
     TestDPointer();
-    static TestDPointer *mSelf;
+    friend class TestDPointerHelper;
 
   private:
     TestDPointerPrivate *d;

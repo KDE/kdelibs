@@ -3,44 +3,52 @@
 
 #include "test8b.h"
 
-#include <kstaticdeleter.h>
+#include <kglobal.h>
+#include <QtCore/QFile>
 
-Test8b *Test8b::mSelf = 0;
-static KStaticDeleter<Test8b> staticTest8bDeleter;
-
+class Test8bHelper
+{
+  public:
+    Test8bHelper() : q(0) {}
+    ~Test8bHelper() { delete q; }
+    Test8b *q;
+};
+K_GLOBAL_STATIC(Test8bHelper, s_globalTest8b)
 Test8b *Test8b::self()
 {
-  if ( !mSelf ) {
-    staticTest8bDeleter.setObject( mSelf, new Test8b() );
-    mSelf->readConfig();
+  if (!s_globalTest8b->q) {
+    new Test8b;
+    s_globalTest8b->q->readConfig();
   }
 
-  return mSelf;
+  return s_globalTest8b->q;
 }
 
 Test8b::Test8b(  )
   : Test8a()
 {
-  mSelf = this;
-  setCurrentGroup( QString::fromLatin1( "Group8b1" ) );
+  Q_ASSERT(!s_globalTest8b->q);
+  s_globalTest8b->q = this;
+  setCurrentGroup( QLatin1String( "Group8b1" ) );
 
   KConfigSkeleton::ItemUInt  *itemSomething;
-  itemSomething = new KConfigSkeleton::ItemUInt( currentGroup(), QString::fromLatin1( "Something" ), mSomething, 60 );
-  addItem( itemSomething, QString::fromLatin1( "Something" ) );
+  itemSomething = new KConfigSkeleton::ItemUInt( currentGroup(), QLatin1String( "Something" ), mSomething, 60 );
+  addItem( itemSomething, QLatin1String( "Something" ) );
 
-  setCurrentGroup( QString::fromLatin1( "Group8b2" ) );
+  setCurrentGroup( QLatin1String( "Group8b2" ) );
 
   KConfigSkeleton::ItemBool  *itemFooBoo;
-  itemFooBoo = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "FooBoo" ), mFooBoo, false );
-  addItem( itemFooBoo, QString::fromLatin1( "FooBoo" ) );
+  itemFooBoo = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "FooBoo" ), mFooBoo, false );
+  addItem( itemFooBoo, QLatin1String( "FooBoo" ) );
   KConfigSkeleton::ItemUInt  *itemPort;
-  itemPort = new KConfigSkeleton::ItemUInt( currentGroup(), QString::fromLatin1( "Port" ), mPort, 1000 );
-  addItem( itemPort, QString::fromLatin1( "Port" ) );
+  itemPort = new KConfigSkeleton::ItemUInt( currentGroup(), QLatin1String( "Port" ), mPort, 1000 );
+  addItem( itemPort, QLatin1String( "Port" ) );
 }
 
 Test8b::~Test8b()
 {
-  if ( mSelf == this )
-    staticTest8bDeleter.setObject( mSelf, 0, false );
+  if (!s_globalTest8b.isDestroyed()) {
+    s_globalTest8b->q = 0;
+  }
 }
 

@@ -10,7 +10,11 @@ class TestSignal : public KConfigSkeleton
 {
   Q_OBJECT
   public:
-    enum { signalEmoticonSettingsChanged, signalStyleChanged };
+
+    enum {
+      signalEmoticonSettingsChanged = 0x1,
+      signalStyleChanged = 0x2
+ };
 
     static TestSignal *self();
     ~TestSignal();
@@ -118,11 +122,6 @@ class TestSignal : public KConfigSkeleton
       return self()->mStyleCSSVariant;
     }
 
-    static
-    void writeConfig()
-    {
-      static_cast<KConfigSkeleton*>(self())->writeConfig();
-    }
 
   Q_SIGNALS:
     void emoticonSettingsChanged();
@@ -130,11 +129,11 @@ class TestSignal : public KConfigSkeleton
     /**
       Tell when a complete style change.
     */
-    void styleChanged(const QString &stylePath, const QString &StyleCSSVariant);
+    void styleChanged(const QString & stylePath, const QString & StyleCSSVariant);
 
   protected:
     TestSignal();
-    static TestSignal *mSelf;
+    friend class TestSignalHelper;
 
     virtual void usrWriteConfig();
 

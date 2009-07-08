@@ -6,14 +6,14 @@
 Test8a::Test8a(  KSharedConfig::Ptr config  )
   : KConfigSkeleton( config )
 {
-  setCurrentGroup( QString::fromLatin1( "Group" ) );
+  setCurrentGroup( QLatin1String( "Group" ) );
 
   KConfigSkeleton::ItemFont  *itemFont;
-  itemFont = new KConfigSkeleton::ItemFont( currentGroup(), QString::fromLatin1( "Font" ), mFont, QFont() );
-  addItem( itemFont, QString::fromLatin1( "Font" ) );
+  itemFont = new KConfigSkeleton::ItemFont( currentGroup(), QLatin1String( "Font" ), mFont, QFont() );
+  addItem( itemFont, QLatin1String( "Font" ) );
   KConfigSkeleton::ItemFont  *itemTitleFont;
-  itemTitleFont = new KConfigSkeleton::ItemFont( currentGroup(), QString::fromLatin1( "TitleFont" ), mTitleFont, QFont() );
-  addItem( itemTitleFont, QString::fromLatin1( "TitleFont" ) );
+  itemTitleFont = new KConfigSkeleton::ItemFont( currentGroup(), QLatin1String( "TitleFont" ), mTitleFont, QFont() );
+  addItem( itemTitleFont, QLatin1String( "TitleFont" ) );
 }
 
 Test8a::~Test8a()

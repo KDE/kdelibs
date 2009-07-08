@@ -49,7 +49,7 @@ class Test4 : public KConfigSkeleton
     static
     void setMouseAction( int i, int v )
     {
-      if (!self()->isImmutable( QString::fromLatin1( "MouseAction%1" ).arg( QString::fromLatin1( EnumButton::enumToString[i] ) ) ))
+      if (!self()->isImmutable( QString::fromLatin1( "MouseAction%1" ).arg( QLatin1String( EnumButton::enumToString[i] ) ) ))
         self()->mMouseAction[i] = v;
     }
 
@@ -60,6 +60,44 @@ class Test4 : public KConfigSkeleton
     int mouseAction( int i )
     {
       return self()->mMouseAction[i];
+    }
+
+    /**
+      Set Gray colors.
+    */
+    static
+    void setGrayColor( int i, const QColor & v )
+    {
+      if (!self()->isImmutable( QString::fromLatin1( "GrayColor%1" ).arg( i ) ))
+        self()->mGrayColor[i] = v;
+    }
+
+    /**
+      Get Gray colors.
+    */
+    static
+    QColor grayColor( int i )
+    {
+      return self()->mGrayColor[i];
+    }
+
+    /**
+      Set Gray colors as string.
+    */
+    static
+    void setColorString( int i, const QString & v )
+    {
+      if (!self()->isImmutable( QString::fromLatin1( "ColorString%1" ).arg( i ) ))
+        self()->mColorString[i] = v;
+    }
+
+    /**
+      Get Gray colors as string.
+    */
+    static
+    QString colorString( int i )
+    {
+      return self()->mColorString[i];
     }
 
     /**
@@ -112,19 +150,16 @@ class Test4 : public KConfigSkeleton
       return self()->mAge;
     }
 
-    static
-    void writeConfig()
-    {
-      static_cast<KConfigSkeleton*>(self())->writeConfig();
-    }
   protected:
     Test4();
-    static Test4 *mSelf;
+    friend class Test4Helper;
 
 
     // Foo
     QColor mColor[4];
     int mMouseAction[3];
+    QColor mGrayColor[11];
+    QString mColorString[11];
     QString mFooBar;
     int mAge;
 
