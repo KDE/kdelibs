@@ -1096,7 +1096,7 @@ QString memberMutatorBody( CfgEntry *e )
       out << "{" << endl;
       out << "  kDebug() << \"" << setFunction(n);
       out << ": value \" << v << \" is less than the minimum value of ";
-      out << e->minValue()<< "\" << endl;" << endl;
+      out << e->minValue()<< "\";" << endl;
       out << "  v = " << e->minValue() << ";" << endl;
       out << "}" << endl;
     }
@@ -1108,7 +1108,7 @@ QString memberMutatorBody( CfgEntry *e )
     out << "{" << endl;
     out << "  kDebug() << \"" << setFunction(n);
     out << ": value \" << v << \" is greater than the maximum value of ";
-    out << e->maxValue()<< "\" << endl;" << endl;
+    out << e->maxValue()<< "\";" << endl;
     out << "  v = " << e->maxValue() << ";" << endl;
     out << "}" << endl << endl;
   }
