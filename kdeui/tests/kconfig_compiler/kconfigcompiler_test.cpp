@@ -2,6 +2,7 @@
     Tests for KConfig Compiler
 
     Copyright (c) 2005      by Duncan Mac-Vicar       <duncan@kde.org>
+    Copyright (c) 2009      by Pino Toscano           <pino@kde.org>
 
     *************************************************************************
     *                                                                       *
