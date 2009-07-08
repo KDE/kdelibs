@@ -45,7 +45,8 @@
 <!-- A tool bar
   - Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
   -             fullWidth: if true (default), the toolbar extends to the full width of the window
-  -             position: the position of the toolbar in the window
+  -             position: the position of the toolbar in the window (only effective if the user
+                          has never used the application before)
   -             iconText: whether to show icon or text or both
   -             iconSize: the size of the icons (0 for default, or usually 22 or 32)
   -             index: the index in the toolbar dock (see QMainWindow::moveToolBar; starts at 0)
