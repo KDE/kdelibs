@@ -47,6 +47,7 @@
 #include <kstandarddirs.h>
 #include <kde_file.h>
 
+extern int kdesuDebugArea();
 
 namespace KDESu {
 
@@ -105,7 +106,7 @@ int PtyProcess::checkPidExited(pid_t pid)
 
 	if (ret < 0)
 	{
-		kError(900) << k_lineinfo << "waitpid(): " << perror << "\n";
+		kError(kdesuDebugArea()) << k_lineinfo << "waitpid(): " << perror << "\n";
 		return Error;
 	}
 	if (ret == pid)
@@ -147,7 +148,7 @@ int PtyProcess::init()
     d->m_pPTY = new KPty();
     if (!d->m_pPTY->open())
     {
-        kError(900) << k_lineinfo << "Failed to open PTY.\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "Failed to open PTY.\n";
         return -1;
     }
     d->m_Inbuf.resize(0);
@@ -198,7 +199,7 @@ QByteArray PtyProcess::readAll(bool block)
     int flags = fcntl(fd(), F_GETFL);
     if (flags < 0)
     {
-        kError(900) << k_lineinfo << "fcntl(F_GETFL): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "fcntl(F_GETFL): " << perror << "\n";
         return ret;
     }
     int oflags = flags;
@@ -291,7 +292,7 @@ void PtyProcess::setExitString(const QByteArray &exit)
 
 int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 {
-    kDebug(900) << k_lineinfo << "Running `" << command << "'\n";
+    kDebug(kdesuDebugArea()) << k_lineinfo << "Running `" << command << "'\n";
     int i;
 
     if (init() < 0)
@@ -299,7 +300,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
     if ((m_Pid = fork()) == -1)
     {
-        kError(900) << k_lineinfo << "fork(): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "fork(): " << perror << "\n";
         return -1;
     }
 
@@ -343,7 +344,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         QString file = KStandardDirs::findExe(command);
         if (file.isEmpty())
         {
-            kError(900) << k_lineinfo << command << " not found\n";
+            kError(kdesuDebugArea()) << k_lineinfo << command << " not found\n";
             _exit(1);
         }
         path = QFile::encodeName(file);
@@ -359,7 +360,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     argp[i] = NULL;
 
     execv(path, const_cast<char **>(argp));
-    kError(900) << k_lineinfo << "execv(\"" << path << "\"): " << perror << "\n";
+    kError(kdesuDebugArea()) << k_lineinfo << "execv(\"" << path << "\"): " << perror << "\n";
     _exit(1);
     return -1; // Shut up compiler. Never reached.
 }
@@ -377,7 +378,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
 int PtyProcess::WaitSlave()
 {
-    kDebug(900) << k_lineinfo << "Child pid " << m_Pid;
+    kDebug(kdesuDebugArea()) << k_lineinfo << "Child pid " << m_Pid;
 
     struct termios tio;
     while (1)
@@ -388,12 +389,12 @@ int PtyProcess::WaitSlave()
         }
         if (!d->m_pPTY->tcGetAttr(&tio))
         {
-            kError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "tcgetattr(): " << perror << "\n";
             return -1;
         }
         if (tio.c_lflag & ECHO)
         {
-            kDebug(900) << k_lineinfo << "Echo mode still on.\n";
+            kDebug(kdesuDebugArea()) << k_lineinfo << "Echo mode still on.\n";
             usleep(10000);
             continue;
         }
@@ -448,7 +449,7 @@ int PtyProcess::waitForChild()
         {
             if (errno != EINTR)
             {
-                kError(900) << k_lineinfo << "select(): " << perror << "\n";
+                kError(kdesuDebugArea()) << k_lineinfo << "select(): " << perror << "\n";
                 return -1;
             }
             ret = 0;
@@ -533,13 +534,13 @@ int PtyProcess::setupTTY()
     struct ::termios tio;
     if (tcgetattr(0, &tio) < 0)
     {
-        kError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "tcgetattr(): " << perror << "\n";
         return -1;
     }
     tio.c_oflag &= ~OPOST;
     if (tcsetattr(0, TCSANOW, &tio) < 0)
     {
-        kError(900) << k_lineinfo << "tcsetattr(): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "tcsetattr(): " << perror << "\n";
         return -1;
     }
 

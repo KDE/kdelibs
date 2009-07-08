@@ -40,6 +40,11 @@
 #include <kstandarddirs.h>
 #include <kuser.h>
 
+int kdesuDebugArea()
+{
+    static int s_area = KDebug::registerArea("kdesu (kdelibs)");
+    return s_area;
+}
 
 #ifndef __PATH_SU
 #define __PATH_SU "false"
@@ -148,7 +153,7 @@ int SuProcess::exec(const char *password, int check)
     } else {
         command = __PATH_SU;
     }
- 
+
     if (::access(command, X_OK) != 0)
     {
         command = QFile::encodeName( KGlobal::dirs()->findExe(d->m_superUserCommand.toLatin1()) );
@@ -156,20 +161,20 @@ int SuProcess::exec(const char *password, int check)
             return check ? SuNotFound : -1;
     }
 
-    // kDebug(900) << k_lineinfo << "Call StubProcess::exec()";
+    // kDebug(kdesuDebugArea()) << k_lineinfo << "Call StubProcess::exec()";
     if (StubProcess::exec(command, args) < 0)
     {
         return check ? SuNotFound : -1;
     }
-    // kDebug(900) << k_lineinfo << "Done StubProcess::exec()";
+    // kDebug(kdesuDebugArea()) << k_lineinfo << "Done StubProcess::exec()";
 
     SuErrors ret = (SuErrors) ConverseSU(password);
-    // kDebug(900) << k_lineinfo << "Conversation returned " << ret;
+    // kDebug(kdesuDebugArea()) << k_lineinfo << "Conversation returned " << ret;
 
     if (ret == error)
     {
         if (!check)
-            kError(900) << k_lineinfo << "Conversation with su failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with su failed\n";
         return ret;
     }
     if (check == NeedPassword)
@@ -213,7 +218,7 @@ int SuProcess::exec(const char *password, int check)
     if (iret < 0)
     {
         if (!check)
-            kError(900) << k_lineinfo << "Conversation with kdesu_stub failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed\n";
         return iret;
     }
     else if (iret == 1)
@@ -243,7 +248,7 @@ int SuProcess::ConverseSU(const char *password)
     enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
     int colon;
     unsigned i, j;
-    // kDebug(900) << k_lineinfo << "ConverseSU starting.";
+    // kDebug(kdesuDebugArea()) << k_lineinfo << "ConverseSU starting.";
 
     QByteArray line;
     while (true)
@@ -251,7 +256,7 @@ int SuProcess::ConverseSU(const char *password)
         line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
-        kDebug(900) << k_lineinfo << "Read line <" << line << ">";
+        kDebug(kdesuDebugArea()) << k_lineinfo << "Read line <" << line << ">";
 
         switch (state)
         {
@@ -269,14 +274,14 @@ int SuProcess::ConverseSU(const char *password)
                 {
                     // There is more output available, so the previous line
                     // couldn't have been a password prompt (the definition
-                    // of prompt being that  there's a line of output followed 
+                    // of prompt being that  there's a line of output followed
                     // by a colon, and then the process waits).
                     QByteArray more = readLine();
                     if (more.isEmpty())
                         break;
 
                     line = more;
-                    kDebug(900) << k_lineinfo << "Read line <" << more << ">";
+                    kDebug(kdesuDebugArea()) << k_lineinfo << "Read line <" << more << ">";
                 }
 
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.
@@ -297,7 +302,7 @@ int SuProcess::ConverseSU(const char *password)
                         return killme;
                     if (!checkPid(m_Pid))
                     {
-                        kError(900) << "su has exited while waiting for pwd." << endl;
+                        kError(kdesuDebugArea()) << "su has exited while waiting for pwd." << endl;
                         return error;
                     }
                     if ((WaitSlave() == 0) && checkPid(m_Pid))

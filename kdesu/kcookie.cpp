@@ -21,6 +21,8 @@
 
 #include <kdebug.h>
 
+extern int kdesuDebugArea();
+
 namespace KDESu {
 namespace KDESuPrivate {
 
@@ -69,7 +71,7 @@ void KCookie::getXCookie()
 #endif
     if (d->m_Display.isEmpty())
     {
-	kError(900) << k_lineinfo << "$DISPLAY is not set.\n";
+	kError(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.\n";
 	return;
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
@@ -81,20 +83,20 @@ void KCookie::getXCookie()
     proc.start("xauth", QStringList() << "list" << disp);
     if (!proc.waitForStarted())
     {
-	kError(900) << k_lineinfo << "Could not run xauth.\n";
+	kError(kdesuDebugArea()) << k_lineinfo << "Could not run xauth.\n";
 	return;
     }
     proc.waitForReadyRead(100);
     QByteArray output = proc.readLine().simplified();
     if (output.isEmpty())
     {
-       kWarning(900) << "No X authentication info set for display " <<
+       kWarning(kdesuDebugArea()) << "No X authentication info set for display " <<
        d->m_Display << endl; return;
     }
     QList<QByteArray> lst = output.split(' ');
     if (lst.count() != 3)
     {
-	kError(900) << k_lineinfo << "parse error.\n";
+	kError(kdesuDebugArea()) << k_lineinfo << "parse error.\n";
 	return;
     }
     d->m_DisplayAuth = (lst[1] + ' ' + lst[2]);

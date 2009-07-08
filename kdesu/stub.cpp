@@ -19,11 +19,12 @@
 
 #include <QtCore/QBool>
 
-#include <kapplication.h>
 #include <kdebug.h>
 
-namespace KDESu { 
-    
+extern int kdesuDebugArea();
+
+namespace KDESu {
+
 using namespace KDESuPrivate;
 
 StubProcess::StubProcess()
@@ -88,7 +89,7 @@ QByteArray StubProcess::commaSeparatedList(const QList<QByteArray> &lst)
     return str;
 }
 
-/* 
+/*
  * Map pid_t to a signed integer type that makes sense for QByteArray;
  * only the most common sizes 16 bit and 32 bit are special-cased.
  */
@@ -176,7 +177,7 @@ int StubProcess::ConverseStub(int check)
 	    return 0;
 	} else
 	{
-	    kWarning(900) << k_lineinfo << "Unknown request: -->" << line 
+	    kWarning(kdesuDebugArea()) << k_lineinfo << "Unknown request: -->" << line
 		           << "<--\n";
 	    return 1;
 	}

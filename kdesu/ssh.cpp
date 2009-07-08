@@ -34,8 +34,10 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
+extern int kdesuDebugArea();
+
 namespace KDESu {
-    
+
 using namespace KDESuPrivate;
 
 class SshProcess::SshProcessPrivate
@@ -109,7 +111,7 @@ int SshProcess::exec(const char *password, int check)
     if (ret < 0)
     {
         if (!check)
-            kError(900) << k_lineinfo << "Conversation with ssh failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with ssh failed\n";
         return ret;
     }
     if (check == 2)
@@ -129,7 +131,7 @@ int SshProcess::exec(const char *password, int check)
     if (ret < 0)
     {
         if (!check)
-            kError(900) << k_lineinfo << "Conversation with kdesu_stub failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed\n";
         return ret;
     }
     else if (ret == 1)
