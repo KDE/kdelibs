@@ -24,7 +24,7 @@
 
 namespace NepomukFast {
 
-    class NEPOMUK_EXPORT Resource
+    class NEPOMUK_RESOURCE_EXPORT Resource
     {
     public:
         QUrl uri() const;

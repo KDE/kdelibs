@@ -33,4 +33,19 @@
 # endif
 #endif
 
+#ifndef NEPOMUK_RESOURCE_EXPORT
+# if defined(NEPOMUK_RESOURCE_STATIC)
+   /* the resources are built in a static library, so no export/import macros*/
+#  define NEPOMUK_RESOURCE_EXPORT
+# else
+#  if defined(MAKE_NEPOMUK_RESOURCE_LIB)
+    /* We are building this library */
+#   define NEPOMUK_RESOURCE_EXPORT KDE_EXPORT
+#  else
+    /* We are using this library */
+#   define NEPOMUK_RESOURCE_EXPORT KDE_IMPORT
+#  endif
+# endif
+#endif
+
 #endif
