@@ -111,26 +111,6 @@ bool ResourceClass::generateClass() const
     return m_generateClass;
 }
 
-void ResourceClass::setHeaderTemplateFilePath( const QString &path )
-{
-    m_headerTemplateFilePath = path;
-}
-
-QString ResourceClass::headerTemplateFilePath() const
-{
-    return m_headerTemplateFilePath;
-}
-
-void ResourceClass::setSourceTemplateFilePath( const QString &path )
-{
-    m_sourceTemplateFilePath = path;
-}
-
-QString ResourceClass::sourceTemplateFilePath() const
-{
-    return m_sourceTemplateFilePath;
-}
-
 QString ResourceClass::name( const QString &nameSpace ) const
 {
     QString s = m_uri.toString().section( QRegExp( "[#/:]" ), -1 );

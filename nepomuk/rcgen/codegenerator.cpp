@@ -26,6 +26,8 @@
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
 #include <QtCore/QStringList>
+#include <QtCore/QDir>
+
 
 extern bool quiet;
 
@@ -94,8 +96,9 @@ static QString writeComment( const QString& comment, int indent )
     return s;
 }
 
-CodeGenerator::CodeGenerator( Mode mode )
-    : m_mode( mode )
+CodeGenerator::CodeGenerator( Mode mode, const QList<ResourceClass*>& classes )
+    : m_mode( mode ),
+      m_classes( classes )
 {
     if ( m_mode == SafeMode ) {
         m_code = new SafeCode;
@@ -160,16 +163,10 @@ bool CodeGenerator::writeDummyClasses( const QString &folder ) const
 bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream& stream ) const
 {
     QString s = headerTemplate( m_mode );
-    if( QFile::exists( resourceClass->headerTemplateFilePath() ) ) {
-        QFile f( resourceClass->headerTemplateFilePath() );
-        if( !f.open( QIODevice::ReadOnly ) ) {
-            qDebug() << "Failed to open " << resourceClass->headerTemplateFilePath();
-            return false;
-        }
-        s = QTextStream( &f ).readAll();
-    }
     ResourceClass* parent = resourceClass->parentClass( true );
-    s.replace( "NEPOMUK_RESOURCECOMMENT", writeComment( resourceClass->comment(), 0 ) );
+    s.replace( "NEPOMUK_VISIBILITY_HEADER_INCLUDE", visibilityHeader() );
+    s.replace( "NEPOMUK_VISIBILITY", visibilityExportMacro() );
+    s.replace( "NEPOMUK_RESOURCECOMMENT", writeComment( resourceClass->comment(), 4 ) );
     s.replace( "NEPOMUK_RESOURCENAMEUPPER", resourceClass->name().toUpper() );
     s.replace( "NEPOMUK_RESOURCENAME", resourceClass->name() );
     if ( m_mode == FastMode && parent->name() == "Resource" )
@@ -205,23 +202,23 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
         }
 
         if ( m_mode == SafeMode ) {
-            ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment(), 3*4 ) << endl;
-            ms << "            " << m_code->propertyGetterDeclaration( p, resourceClass ) << ";" << endl;
+            ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
+            ms << "        " << m_code->propertyGetterDeclaration( p, resourceClass ) << ";" << endl;
             ms << endl;
         }
 
-        ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment(), 3*4 ) << endl;
-        ms << "            " << m_code->propertySetterDeclaration( p, resourceClass ) << ";" << endl;
+        ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
+        ms << "        " << m_code->propertySetterDeclaration( p, resourceClass ) << ";" << endl;
         ms << endl;
 
         if( p->isList() ) {
-            ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment(), 3*4 ) << endl;
-            ms << "            " << m_code->propertyAdderDeclaration( p, resourceClass ) << ";" << endl;
+            ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
+            ms << "        " << m_code->propertyAdderDeclaration( p, resourceClass ) << ";" << endl;
             ms << endl;
         }
 
-        ms << writeComment( QString( "\\return The URI of the property '%1'." ).arg( p->name() ), 3*4 ) << endl;
-        ms << "            " << "static QUrl " << p->name()[0].toLower() << p->name().mid(1) << "Uri();" << endl;
+        ms << writeComment( QString( "\\return The URI of the property '%1'." ).arg( p->name() ), 2*4 ) << endl;
+        ms << "        " << "static QUrl " << p->name()[0].toLower() << p->name().mid(1) << "Uri();" << endl;
         ms << endl;
 
         if( !p->hasSimpleType() )
@@ -247,8 +244,8 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
 
         if ( m_mode == SafeMode ) {
             ms << writeComment( QString("Get all resources that have this resource set as property '%1'. ")
-                            .arg(p->name()) + p->comment() + QString(" \\sa ResourceManager::allResourcesWithProperty"), 3*4 ) << endl;
-            ms << "            " << m_code->propertyReversePropertyGetterDeclaration( p, resourceClass ) << ";" << endl;
+                            .arg(p->name()) + p->comment() + QString(" \\sa ResourceManager::allResourcesWithProperty"), 2*4 ) << endl;
+            ms << "        " << m_code->propertyReversePropertyGetterDeclaration( p, resourceClass ) << ";" << endl;
             ms << endl;
         }
 
@@ -270,8 +267,8 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
                     continue;
                 ms << writeComment( QString("Nepomuk does not support multiple inheritance. Thus, to access "
                                             "properties from all parent classes helper methods like this are "
-                                            "introduced. The object returned represents the exact same resource."), 3*4 ) << endl
-                   << "            " << decl << ";" << endl << endl;
+                                            "introduced. The object returned represents the exact same resource."), 2*4 ) << endl
+                   << "        " << decl << ";" << endl << endl;
 
                 includes.insert( rc->name() );
             }
@@ -283,14 +280,14 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
                                     "This list consists of all resource of type %1 that are stored "
                                     "in the local Nepomuk meta data storage and any changes made locally. "
                                     "Be aware that in some cases this list can get very big. Then it might "
-                                    "be better to use libKNep directly.").arg( resourceClass->name() ), 3*4 ) << endl;
-        ms << "            static " << m_code->resourceAllResourcesDeclaration( resourceClass, false ) << ";" << endl;
+                                    "be better to use libKNep directly.").arg( resourceClass->name() ), 2*4 ) << endl;
+        ms << "        static " << m_code->resourceAllResourcesDeclaration( resourceClass, false ) << ";" << endl;
     }
 
     QString includeString;
     QSetIterator<QString> includeIt( includes );
     while( includeIt.hasNext() ) {
-        includeString += "        class " + includeIt.next() + ";\n";
+        includeString += "    class " + includeIt.next() + ";\n";
     }
 
     s.replace( "NEPOMUK_OTHERCLASSES", includeString );
@@ -304,14 +301,6 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
 bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream& stream ) const
 {
     QString s = sourceTemplate( m_mode );
-    if( QFile::exists( resourceClass->sourceTemplateFilePath() ) ) {
-        QFile f( resourceClass->sourceTemplateFilePath() );
-        if( !f.open( QIODevice::ReadOnly ) ) {
-            qDebug() << "Failed to open " << resourceClass->sourceTemplateFilePath();
-            return false;
-        }
-        s = QTextStream( &f ).readAll();
-    }
     s.replace( "NEPOMUK_RESOURCENAMELOWER", resourceClass->name().toLower() );
     s.replace( "NEPOMUK_RESOURCENAME", resourceClass->name() );
     s.replace( "NEPOMUK_RESOURCETYPEURI", resourceClass->uri().toString() );
@@ -402,4 +391,59 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     stream << s;
 
     return true;
+}
+
+
+bool CodeGenerator::writeSources( const QString& dir )
+{
+    bool success = true;
+
+    foreach( ResourceClass* rc, classes() ) {
+        if( rc->generateClass() )
+            success &= write( rc, dir + QDir::separator() );
+    }
+
+    writeDummyClasses( dir + QDir::separator() );
+
+    return success;
+}
+
+
+QStringList CodeGenerator::listHeader()
+{
+    QStringList l;
+    foreach( ResourceClass* rc, classes() ) {
+        if( rc->generateClass() )
+            l.append( rc->headerName() );
+    }
+    return l;
+}
+
+
+QStringList CodeGenerator::listSources()
+{
+    QStringList l;
+    foreach( ResourceClass* rc, classes() ) {
+        if( rc->generateClass() )
+            l.append( rc->sourceName() );
+    }
+    return l;
+}
+
+
+QString CodeGenerator::visibilityHeader() const
+{
+    if( m_visibility.isEmpty() )
+        return QString();
+    else
+        return "#include \"" + m_visibility.toLower() + "_export.h\"";
+}
+
+
+QString CodeGenerator::visibilityExportMacro() const
+{
+    if( m_visibility.isEmpty() )
+        return QString();
+    else
+        return m_visibility.toUpper() + "_EXPORT";
 }

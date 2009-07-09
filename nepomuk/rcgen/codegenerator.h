@@ -16,6 +16,7 @@
 #define _NEPOMUK_CODE_GENERATOR_H_
 
 #include <QtCore/QString>
+#include <QtCore/QList>
 
 class AbstractCode;
 class ResourceClass;
@@ -24,28 +25,40 @@ class QTextStream;
 
 class CodeGenerator
 {
-    public:
-        enum Mode {
-            SafeMode,
-            FastMode
-        };
+public:
+    enum Mode {
+        SafeMode,
+        FastMode
+    };
 
-        CodeGenerator( Mode mode );
-        ~CodeGenerator();
+    CodeGenerator( Mode mode, const QList<ResourceClass*>& classes );
+    ~CodeGenerator();
 
-        bool write( const ResourceClass* resourceClass, const QString& folder ) const;
+    void setVisibility( const QString& v ) { m_visibility = v; }
 
-        bool writeDummyClasses( const QString &folder ) const;
+    QList<ResourceClass*> classes() const { return m_classes; }
 
-    private:
-        bool writeHeader( const ResourceClass* resourceClass, QTextStream& ) const;
-        bool writeSource( const ResourceClass* resourceClass, QTextStream& ) const;
+    QStringList listHeader();
+    QStringList listSources();
+    bool writeSources( const QString& dir );
 
-        ResourceClass* findParentClass( ResourceClass* resourceClass ) const;
+private:
+    bool write( const ResourceClass* resourceClass, const QString& folder ) const;
+    bool writeHeader( const ResourceClass* resourceClass, QTextStream& ) const;
+    bool writeSource( const ResourceClass* resourceClass, QTextStream& ) const;
+    bool writeDummyClasses( const QString &folder ) const;
 
-        const Mode m_mode;
-        const AbstractCode* m_code;
-        QString m_nameSpace;
+    QString visibilityHeader() const;
+    QString visibilityExportMacro() const;
+
+    ResourceClass* findParentClass( ResourceClass* resourceClass ) const;
+
+    const Mode m_mode;
+    const AbstractCode* m_code;
+    QString m_nameSpace;
+
+    QList<ResourceClass*> m_classes;
+    QString m_visibility;
 };
 
 #endif

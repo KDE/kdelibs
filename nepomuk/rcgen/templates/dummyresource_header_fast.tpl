@@ -17,14 +17,13 @@
 #ifndef _NEPOMUK_FAST_RESOURCE_H_
 #define _NEPOMUK_FAST_RESOURCE_H_
 
-#include <nepomuk/nepomuk_export.h>
 #include <soprano/node.h>
 
 #include <QtCore/QUrl>
 
 namespace NepomukFast {
 
-    class NEPOMUK_RESOURCE_EXPORT Resource
+    class Resource
     {
     public:
         QUrl uri() const;

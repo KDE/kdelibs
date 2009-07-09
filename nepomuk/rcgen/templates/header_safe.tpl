@@ -11,12 +11,12 @@ NEPOMUK_OTHERCLASSES
 }
 
 #include NEPOMUK_PARENT_INCLUDE
-#include <nepomuk/nepomuk_export.h>
+NEPOMUK_VISIBILITY_HEADER_INCLUDE
 
 namespace Nepomuk {
 
 NEPOMUK_RESOURCECOMMENT
-    class NEPOMUK_RESOURCE_EXPORT NEPOMUK_RESOURCENAME : public NEPOMUK_PARENTRESOURCE
+    class NEPOMUK_VISIBILITY NEPOMUK_RESOURCENAME : public NEPOMUK_PARENTRESOURCE
     {
     public:
         /**
@@ -48,7 +48,7 @@ NEPOMUK_RESOURCECOMMENT
 
         NEPOMUK_RESOURCENAME& operator=( const NEPOMUK_RESOURCENAME& );
 
-        NEPOMUK_METHODS
+NEPOMUK_METHODS
 
         /**
          * \return The URI of the resource type that is used in NEPOMUK_RESOURCENAME instances.

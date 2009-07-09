@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -107,26 +107,6 @@ class ResourceClass
         bool generateClass() const;
 
         /**
-         * Sets the path of the header template file.
-         */
-        void setHeaderTemplateFilePath( const QString &path );
-
-        /**
-         * Returns the path of the header template file.
-         */
-        QString headerTemplateFilePath() const;
-
-        /**
-         * Sets the path of the source template file.
-         */
-        void setSourceTemplateFilePath( const QString &path );
-
-        /**
-         * Returns the path of the source template file.
-         */
-        QString sourceTemplateFilePath() const;
-
-        /**
          * Returns the name of the resource.
          *
          * @param nameSpace The namespace that shall be included.
@@ -142,7 +122,7 @@ class ResourceClass
          * Returns the name of the source file for this resource.
          */
         QString sourceName() const;
-        
+
     private:
         QUrl m_uri;
         QString m_comment;
@@ -151,8 +131,6 @@ class ResourceClass
         Property::ConstPtrList m_properties;
         Property::ConstPtrList m_reverseProperties;
         bool m_generateClass;
-        QString m_headerTemplateFilePath;
-        QString m_sourceTemplateFilePath;
 };
 
 #endif

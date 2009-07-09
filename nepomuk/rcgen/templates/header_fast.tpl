@@ -11,12 +11,11 @@ NEPOMUK_OTHERCLASSES
 }
 
 #include NEPOMUK_PARENT_INCLUDE
-#include <nepomuk/nepomuk_export.h>
 
 namespace NepomukFast {
 
 NEPOMUK_RESOURCECOMMENT
-    class NEPOMUK_RESOURCE_EXPORT NEPOMUK_RESOURCENAME : public NEPOMUK_PARENTRESOURCE
+    class NEPOMUK_RESOURCENAME : public NEPOMUK_PARENTRESOURCE
     {
     public:
         /**
@@ -24,7 +23,7 @@ NEPOMUK_RESOURCECOMMENT
          */
         NEPOMUK_RESOURCENAME( const QUrl &uri = QUrl(), const QUrl &graphUri = QUrl() );
 
-        NEPOMUK_METHODS
+NEPOMUK_METHODS
 
     protected:
         NEPOMUK_RESOURCENAME( const QUrl& uri, const QUrl& graphUri, const QUrl& type );

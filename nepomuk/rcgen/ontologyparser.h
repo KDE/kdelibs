@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -16,7 +16,9 @@
 #define _ONTOLOGY_PARSER_H_
 
 #include <QtCore/QStringList>
+#include <QtCore/QList>
 
+class ResourceClass;
 
 class OntologyParser
 {
@@ -25,13 +27,7 @@ class OntologyParser
     ~OntologyParser();
 
     bool parse( const QString& filename, const QString& serialization = QString() );
-    bool assignTemplates( const QStringList& templates );
-    bool writeSources( const QString& dir, bool fastMode );
-
-    void setClassesToGenerate( const QStringList& classes );
-
-    QStringList listHeader();
-    QStringList listSources();
+    QList<ResourceClass*> parsedClasses() const;
 
  private:
     class Private;

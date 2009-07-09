@@ -14,7 +14,6 @@
 
 #include "ontologyparser.h"
 
-#include "codegenerator.h"
 #include "property.h"
 #include "resourceclass.h"
 
@@ -62,6 +61,10 @@ public:
     // if empty, all classes are generated
     QStringList classesToGenerate;
 
+    // the optional visibility string. If not-empty generated classes will be exported via
+    // <visibility>_EXPORT by including the header <visibility>_export.h.
+    QString visibility;
+
     QMap<QUrl, ResourceClass> resources;
     QMap<QUrl, Property> properties;
     QMap<QUrl, QString> comments;
@@ -96,37 +99,6 @@ OntologyParser::OntologyParser()
 OntologyParser::~OntologyParser()
 {
     delete d;
-}
-
-
-bool OntologyParser::assignTemplates( const QStringList& templates )
-{
-    // FIXME: do an actual class name mapping by parsing the class
-    foreach( const QString &tf, templates ) {
-        QString filename = QFileInfo( tf ).fileName();
-        for( QMap<QUrl, ResourceClass>::iterator it = d->resources.begin();
-             it != d->resources.end(); ++it ) {
-            // we use startsWith() for a hackish handling of such suffixes as ".in"
-            if( filename.startsWith( it.value().headerName() ) ) {
-                if ( !quiet )
-                    qDebug() << "Using header template file " << tf << " for class " << it.value().name();
-                it.value().setHeaderTemplateFilePath( tf );
-            }
-            else if( filename.startsWith( it.value().sourceName() ) ) {
-                if ( !quiet )
-                    qDebug() << "Using source template file " << tf << " for class " << it.value().name();
-                it.value().setSourceTemplateFilePath( tf );
-            }
-        }
-    }
-
-    return true;
-}
-
-
-void OntologyParser::setClassesToGenerate( const QStringList& classes )
-{
-    d->classesToGenerate = classes;
 }
 
 
@@ -253,54 +225,15 @@ bool OntologyParser::parse( const QString& filename, const QString& serializatio
         }
     }
 
-    // if classes to be generated have been specified on the command line, reset all ResourceClass
-    // instances in terms of generation
-    if( !d->classesToGenerate.isEmpty() ) {
-        for( QMap<QUrl, ResourceClass>::iterator it = d->resources.begin();
-             it != d->resources.end(); ++it ) {
-            it->setGenerateClass( d->classesToGenerate.contains( it->name() ) );
-        }
-    }
-
     return success;
 }
 
 
-bool OntologyParser::writeSources( const QString& dir, bool fastMode )
+QList<ResourceClass*> OntologyParser::parsedClasses() const
 {
-    CodeGenerator generator( fastMode ? CodeGenerator::FastMode : CodeGenerator::SafeMode );
-
-    bool success = true;
-
-    for( QMap<QUrl, ResourceClass>::const_iterator it = d->resources.constBegin();
-         it != d->resources.constEnd(); ++it ) {
-        if( (*it).generateClass() )
-            success &= generator.write( &(*it), dir + QDir::separator() );
-    }
-
-    generator.writeDummyClasses( dir + QDir::separator() );
-
-    return success;
-}
-
-
-QStringList OntologyParser::listHeader()
-{
-    QStringList l;
-    for( QMap<QUrl, ResourceClass>::const_iterator it = d->resources.constBegin();
-         it != d->resources.constEnd(); ++it )
-        if( (*it).generateClass() )
-            l.append( (*it).headerName() );
-    return l;
-}
-
-
-QStringList OntologyParser::listSources()
-{
-    QStringList l;
-    for( QMap<QUrl, ResourceClass>::const_iterator it = d->resources.constBegin();
-         it != d->resources.constEnd(); ++it )
-        if( (*it).generateClass() )
-            l.append( (*it).sourceName() );
-    return l;
+    QList<ResourceClass*> rl;
+    for( QMap<QUrl, ResourceClass>::iterator it = d->resources.begin();
+         it != d->resources.end(); ++it )
+        rl << &(*it);
+    return rl;
 }
