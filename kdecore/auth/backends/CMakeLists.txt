@@ -1,6 +1,9 @@
 
-# here I should chose the backend
-add_subdirectory(policykit)
+if(APPLE)
+	add_subdirectory(mac)
+elseif(UNIX)
+	add_subdirectory(policykit)
+endif()
 
 add_subdirectory(dbus)
 

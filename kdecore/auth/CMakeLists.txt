@@ -7,7 +7,15 @@ include(${QT_USE_FILE})
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-find_package(PolkitQt)
+if(APPLE)
+	find_library(CORE_FOUNDATION_LIBRARY CoreFoundation)
+	find_library(SECURITY_LIBRARY Security)
+	set(LIBRARIES ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY} ${QT_QTCORE_LIBRARIES})
+elseif(UNIX)
+	find_package(PolkitQt)
+	set(LIBRARIES ${POLKITQT_CORE_LIBRARY} ${QT_QTCORE_LIBRARIES})
+endif()
+
 include(DBusMacros)
 
 include_directories(lib interfaces ${CMAKE_BINARY_DIR} ${QT_INCLUDES} )
@@ -34,7 +42,7 @@ set( kauth_headers
 qt4_wrap_cpp(kauth_mocs lib/HelperProxy.h lib/ActionWatcher.h)
 
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
-target_link_libraries(kauth kauth_backend helper_proxy ${QT_QTCORE_LIBRARIES} ${POLKITQT_CORE_LIBRARY}) # The last two variables should be set by the backends code, if needed
+target_link_libraries(kauth kauth_backend helper_proxy ${LIBRARIES}) # The last two variables should be set by the backends code, if needed
 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth)

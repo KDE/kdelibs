@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project( dbus_helper_proxy )
+project( example )
 
 include_directories(${CMAKE_BINARY_DIR}/example)
 
@@ -17,7 +17,7 @@ qt4_wrap_cpp(kauth_example_mocs ${kauth_example_headers})
 qt4_wrap_ui(kauth_example_uis mainwindow.ui)
 
 add_executable(kauth_example ${kauth_example_sources} ${kauth_example_mocs} ${kauth_example_uis})
-target_link_libraries(kauth_example kauth ${QT_LIBRARIES} ${POLKITQT_CORE_LIBRARY})
+target_link_libraries(kauth_example kauth ${LIBRARIES} ${QT_QTGUI_LIBRARIES})
 
 set_target_properties(kauth_example PROPERTIES COMPILE_FLAGS "-ggdb")
 
@@ -27,7 +27,7 @@ install(TARGETS kauth_example DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 qt4_wrap_cpp(kauth_helper_mocs helper/helper.h)
 add_executable(kauth_helper helper/helper.cpp ${kauth_helper_mocs})
-target_link_libraries(kauth_helper kauth ${QT_QTCORE_LIBRARIES} ${POLKITQT_CORE_LIBRARY})
+target_link_libraries(kauth_helper kauth ${LIBRARIES})
 
 set_target_properties(kauth_helper PROPERTIES COMPILE_FLAGS "-ggdb")
 
@@ -37,4 +37,7 @@ install(TARGETS kauth_helper DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 dbus_add_activation_system_service(org.kde.auth.example.service.in)
 install(FILES org.kde.auth.example.conf DESTINATION /etc/dbus-1/system.d)
-install(FILES org.kde.auth.example.policy DESTINATION ${POLICY_FILES_INSTALL_DIR})
+
+if(NOT APPLE)
+	install(FILES org.kde.auth.example.policy DESTINATION ${POLICY_FILES_INSTALL_DIR})
+endif()
