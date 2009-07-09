@@ -447,7 +447,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (m_multipart)
-        enc_string = ("--" + m_boundary + "--\r\n").toAscii().constData();
+        enc_string = QString("--" + m_boundary + "--\r\n").toAscii().constData();
 
     const int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );
@@ -1644,12 +1644,12 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             if(m_clicked)
             {
                 m_clicked = false;
-                QString astr(nme.isEmpty() ? QLatin1String("x") : nme + ".x");
+                QString astr(nme.isEmpty() ? QLatin1String("x") : QString(nme + ".x"));
 
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(qMax( clickX(), 0 ));
                 encoding += fixUpfromUnicode(codec, astr);
-                astr = nme.isEmpty() ? QLatin1String("y") : nme + ".y";
+                astr = nme.isEmpty() ? QLatin1String("y") : QString(nme + ".y");
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(qMax( clickY(), 0 ) );
                 encoding += fixUpfromUnicode(codec, astr);

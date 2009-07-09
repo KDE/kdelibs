@@ -446,15 +446,15 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         DOMString string;
         Length length(style->backgroundXPosition());
         if (length.isPercent())
-            string = QString::number(length.percent()) + "%";
+            string = QString(QString::number(length.percent()) + "%");
         else
-            string = QString::number(length.minWidth(renderer->contentWidth())) + "px";
+            string = QString(QString::number(length.minWidth(renderer->contentWidth())) + "px");
         string += " ";
         length = style->backgroundYPosition();
         if (length.isPercent())
-            string += QString::number(length.percent()) + "%";
+            string += QString(QString::number(length.percent()) + "%");
         else
-            string += QString::number(length.minWidth(renderer->contentWidth())) + "px";
+            string += QString(QString::number(length.minWidth(renderer->contentWidth())) + "px");
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_BACKGROUND_POSITION_X:

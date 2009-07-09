@@ -258,7 +258,7 @@ const KConfigGroup KDesktopFile::actionGroup(const QString& group) const
 
 bool KDesktopFile::hasActionGroup(const QString &group) const
 {
-  return hasGroup((QLatin1String("Desktop Action ") + group).toUtf8().constData());
+  return hasGroup(QString(QLatin1String("Desktop Action ") + group).toUtf8().constData());
 }
 
 bool KDesktopFile::hasLinkType() const

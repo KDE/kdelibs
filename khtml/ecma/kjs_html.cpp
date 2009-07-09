@@ -1866,7 +1866,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch(token) {
       case AreaHref:
         return jsString(url.url());
-      case AreaHash:            return jsString(url.isEmpty() ? "" : '#'+url.ref());
+      case AreaHash:            return jsString(url.isEmpty() ? "" : QString('#'+url.ref()));
       case AreaHost:            return jsString(url.host());
       case AreaHostName: {
         if (url.port()<=0)
@@ -1878,7 +1878,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         return jsString(url.path());
       }
       case AreaPort:            return jsString(QString::number(url.port()));
-      case AreaProtocol:        return jsString(url.isEmpty() ? "" : url.protocol()+":");
+      case AreaProtocol:        return jsString(url.isEmpty() ? "" : QString(url.protocol()+":"));
       case AreaSearch:          return jsString(url.query());
     }
   }

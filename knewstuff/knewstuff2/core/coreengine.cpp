@@ -282,7 +282,7 @@ void CoreEngine::downloadPreview(Entry *entry)
         return;
     }
 
-    KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
+    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
     //kDebug() << "Downloading preview '" << source << "' to '" << destination << "'";
 
     // FIXME: check for validity
@@ -322,7 +322,7 @@ void CoreEngine::downloadPayload(Entry *entry)
         return;
     }
 
-    KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
+    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
     kDebug() << "Downloading payload '" << source << "' to '" << destination << "'";
 
     // FIXME: check for validity
@@ -522,7 +522,7 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
     // when we upload, the entry should probably be cached!
 
     // FIXME: adhere to meta naming rules as discussed
-    KUrl sourcemeta = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta";
+    KUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
     KUrl destfolder = m_uploadprovider->uploadUrl();
 
     EntryHandler eh(*m_uploadedentry);

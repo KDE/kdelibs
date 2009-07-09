@@ -103,7 +103,7 @@ static DOMString quoteString(const DOMString &string)
     QString s = string.string();
     s.replace('\\', "\\\\");
     s.replace('\'', "\\'");
-    return '\'' + s + '\'';
+    return QString('\'' + s + '\'');
 }
 
 // Quotes the string if it needs quoting.
@@ -1235,14 +1235,14 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 		if (m_value.rgbcolor == khtml::transparentColor)
 		    text = "transparent";
 		else
-		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ", "
+                    text = QString("rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ", "
 				   + QString::number(qGreen(m_value.rgbcolor)) + ", "
 				   + QString::number(qBlue (m_value.rgbcolor)) + ", "
-				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";
+                                   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")");
 	    } else {
-                text = "rgb(" + QString::number(qRed  (m_value.rgbcolor)) + ", "
+                text = QString("rgb(" + QString::number(qRed  (m_value.rgbcolor)) + ", "
                               + QString::number(qGreen(m_value.rgbcolor)) + ", "
-                              + QString::number(qBlue (m_value.rgbcolor)) + ")";
+                              + QString::number(qBlue (m_value.rgbcolor)) + ")");
 	    }
 	    break;
         case CSSPrimitiveValue::CSS_PAIR:
@@ -1467,7 +1467,7 @@ QuotesValueImpl::QuotesValueImpl()
 
 DOMString QuotesValueImpl::cssText() const
 {
-    return "\"" + data.join("\" \"") + "\"";
+    return QString("\"" + data.join("\" \"") + "\"");
 }
 
 void QuotesValueImpl::addLevel(const QString& open, const QString& close)

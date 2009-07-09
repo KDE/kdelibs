@@ -111,11 +111,11 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
     if (m_utf8)
     {
        if ( forSaving )
-           return KFileDialog::getSaveFileName( QDir::homePath() + "/.mozilla",
+           return KFileDialog::getSaveFileName( QString(QDir::homePath() + "/.mozilla"),
                                                 i18n("*.html|HTML Files (*.html)"),
                                                 QApplication::activeWindow() );
        else
-           return KFileDialog::getOpenFileName( QDir::homePath() + "/.mozilla",
+           return KFileDialog::getOpenFileName( QString(QDir::homePath() + "/.mozilla"),
                                                 i18n("*.html|HTML Files (*.html)"),
                                                 QApplication::activeWindow() );
     }

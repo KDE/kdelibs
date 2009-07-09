@@ -174,12 +174,12 @@ void StorageAccess::slotDBusError(const QDBusError &error)
     if (m_setupInProgress) {
         m_setupInProgress = false;
         emit setupDone(Solid::UnauthorizedOperation,
-                       error.name()+": "+error.message(),
+                       QString(error.name()+": "+error.message()),
                        m_device->udi());
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
         emit teardownDone(Solid::UnauthorizedOperation,
-                          error.name()+": "+error.message(),
+                          QString(error.name()+": "+error.message()),
                           m_device->udi());
     }
 }

@@ -861,7 +861,7 @@ void KGlobalSettings::Private::applyGUIStyle()
         if (styleStr.isEmpty() ||
                 // check whether we already use the correct style to return then
                 // (workaround for Qt misbehavior to avoid double style initialization)
-                0 == (styleStr + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive) ||
+                0 == (QString(styleStr + QLatin1String("Style"))).compare(currentStyleName, Qt::CaseInsensitive) ||
                 0 == styleStr.compare(currentStyleName, Qt::CaseInsensitive)) {
             return;
         }
@@ -879,7 +879,7 @@ void KGlobalSettings::Private::applyGUIStyle()
             sp = QStyleFactory::create( QStyleFactory::keys().first() );
         qApp->setStyle(sp);
     } else if (0 != kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) &&
-            0 != (kde_overrideStyle + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive)) {
+            0 != (QString(kde_overrideStyle + QLatin1String("Style"))).compare(currentStyleName, Qt::CaseInsensitive)) {
         qApp->setStyle(kde_overrideStyle);
     }
     emit q->kdisplayStyleChanged();

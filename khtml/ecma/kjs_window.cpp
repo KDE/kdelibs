@@ -2671,7 +2671,7 @@ UString Location::toString(ExecState *exec) const
       if (url.isEmpty())
         return "about:blank";
       else if (!url.hasPath())
-        return url.prettyUrl()+'/';
+        return QString(url.prettyUrl()+'/');
       else
         return url.prettyUrl();
     }

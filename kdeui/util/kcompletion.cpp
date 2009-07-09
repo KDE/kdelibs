@@ -662,7 +662,7 @@ void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
 
     child1 = node->find( ch1 ); // the correct match
     if ( child1 )
-        extractStringsFromNodeCI( child1, beginning + *child1, newRest,
+        extractStringsFromNodeCI( child1, beginning + QChar(*child1), newRest,
                                   matches );
 
     // append the case insensitive matches, if available
@@ -674,7 +674,7 @@ void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
         if ( ch1 != ch2 ) {
             child2 = node->find( ch2 );
             if ( child2 )
-                extractStringsFromNodeCI( child2, beginning + *child2, newRest,
+                extractStringsFromNodeCI( child2, beginning + QChar(*child2), newRest,
                                           matches );
         }
     }

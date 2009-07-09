@@ -195,10 +195,10 @@ void DependencyPolicy::dumpJobDependencies()
     {
         debug( 0, "  : %p (%s%s) <-- %p (%s%s)\n",
                (void*)it.key(),
-               it.key()->objectName().isEmpty() ? "" : qPrintable ( it.key()->objectName() + QObject::tr ( " of type " ) ),
+               it.key()->objectName().isEmpty() ? "" : qPrintable ( QString(it.key()->objectName() + QObject::tr ( " of type " )) ),
                it.key()->metaObject()->className(),
                (void*)it.value(),
-               it.value()->objectName().isEmpty() ? "" : qPrintable ( it.value()->objectName() + QObject::tr ( " of type " ) ),
+               it.value()->objectName().isEmpty() ? "" : qPrintable ( QString(it.value()->objectName() + QObject::tr ( " of type " )) ),
                it.value()->metaObject()->className() );
     }
     debug ( 0, "-----------------\n" );

@@ -177,7 +177,7 @@ void Cdrom::slotDBusError(const QDBusError &error)
 
     // TODO: Better error reporting here
     emit ejectDone(Solid::UnauthorizedOperation,
-                   error.name()+": "+error.message(),
+                   QString(error.name()+": "+error.message()),
                    m_device->udi());
 }
 
