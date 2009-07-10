@@ -795,13 +795,12 @@ static QString wrapReal (const QString &numstr)
 KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && !d->numberSet)
-    {
-        d->number = static_cast<pluraln>(abs(a));
-        d->numberSet = true;
-        d->numberOrd = d->args.size();
-    }
     KLocalizedString kls(*this);
+    if (!kls.d->plural.isEmpty() && !kls.d->numberSet) {
+        kls.d->number = static_cast<pluraln>(abs(a));
+        kls.d->numberSet = true;
+        kls.d->numberOrd = d->args.size();
+    }
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
@@ -810,13 +809,12 @@ KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
 KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && !d->numberSet)
-    {
-        d->number = static_cast<pluraln>(a);
-        d->numberSet = true;
-        d->numberOrd = d->args.size();
-    }
     KLocalizedString kls(*this);
+    if (!kls.d->plural.isEmpty() && !kls.d->numberSet) {
+        kls.d->number = static_cast<pluraln>(a);
+        kls.d->numberSet = true;
+        kls.d->numberOrd = d->args.size();
+    }
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
@@ -825,13 +823,12 @@ KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
 KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && !d->numberSet)
-    {
-        d->number = static_cast<pluraln>(abs(a));
-        d->numberSet = true;
-        d->numberOrd = d->args.size();
-    }
     KLocalizedString kls(*this);
+    if (!kls.d->plural.isEmpty() && !kls.d->numberSet) {
+        kls.d->number = static_cast<pluraln>(abs(a));
+        kls.d->numberSet = true;
+        kls.d->numberOrd = d->args.size();
+    }
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
@@ -840,13 +837,12 @@ KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
 KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && !d->numberSet)
-    {
-        d->number = static_cast<pluraln>(a);
-        d->numberSet = true;
-        d->numberOrd = d->args.size();
-    }
     KLocalizedString kls(*this);
+    if (!kls.d->plural.isEmpty() && !kls.d->numberSet) {
+        kls.d->number = static_cast<pluraln>(a);
+        kls.d->numberSet = true;
+        kls.d->numberOrd = d->args.size();
+    }
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
@@ -855,13 +851,12 @@ KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
 KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && !d->numberSet)
-    {
-        d->number = static_cast<pluraln>(qAbs(a));
-        d->numberSet = true;
-        d->numberOrd = d->args.size();
-    }
     KLocalizedString kls(*this);
+    if (!kls.d->plural.isEmpty() && !kls.d->numberSet) {
+        kls.d->number = static_cast<pluraln>(qAbs(a));
+        kls.d->numberSet = true;
+        kls.d->numberOrd = d->args.size();
+    }
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
@@ -870,13 +865,12 @@ KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
 KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && !d->numberSet)
-    {
-        d->number = static_cast<pluraln>(a);
-        d->numberSet = true;
-        d->numberOrd = d->args.size();
-    }
     KLocalizedString kls(*this);
+    if (!kls.d->plural.isEmpty() && !kls.d->numberSet) {
+        kls.d->number = static_cast<pluraln>(a);
+        kls.d->numberSet = true;
+        kls.d->numberOrd = d->args.size();
+    }
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
