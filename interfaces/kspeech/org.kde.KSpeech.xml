@@ -207,7 +207,11 @@
         </method>
         
         <signal name="kttsdStarted"/>
-        
+        <signal name="newJobFiltered">
+            <arg type="s" name="prefilterText" />
+            <arg type="s" name="postfilterText" />
+        </signal>
+
         <signal name="kttsdExiting"/>
         
         <signal name="jobStateChanged">
