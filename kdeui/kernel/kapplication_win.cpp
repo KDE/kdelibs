@@ -20,6 +20,7 @@
 #include <QtGui/QApplication>
 #include <kstandarddirs.h>
 #include <klocale.h>
+#include <kwindowsystem.h>
 
 #include <QTranslator>
 #include <QLocale>
@@ -43,7 +44,7 @@ void KApplication_init_windows()
 	QString qt_transl_file = QString("qt_") + QLocale::system().name();
 	qt_transl_file.truncate(5);
 	QTranslator *qt_transl = new QTranslator();
-	if (qt_transl->load( qt_transl_file, 
+	if (qt_transl->load( qt_transl_file,
 		QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
 		qApp->installTranslator( qt_transl );
 	else
@@ -83,7 +84,7 @@ static PPERF_COUNTER_DEFINITION FirstCounter( PPERF_OBJECT_TYPE PerfObj )
 
 static PPERF_INSTANCE_DEFINITION NextInstance( PPERF_INSTANCE_DEFINITION PerfInst )
 {
-  PPERF_COUNTER_BLOCK PerfCntrBlk 
+  PPERF_COUNTER_BLOCK PerfCntrBlk
     = (PPERF_COUNTER_BLOCK)((PBYTE)PerfInst + PerfInst->ByteLength);
   return (PPERF_INSTANCE_DEFINITION)((PBYTE)PerfCntrBlk + PerfCntrBlk->ByteLength);
 }
@@ -150,7 +151,7 @@ void KApplication_getProcessesIdForName( const QString& processName, QList<int>&
     qDebug() << "INSTANCES: " << perfObject->NumInstances;
     for( int instance = 0; instance < perfObject->NumInstances; instance++ ) {
       curCounter = perfCounter;
-      const QString foundProcessName( 
+      const QString foundProcessName(
         fromWChar( (wchar_t *)( (PBYTE)perfInstance + perfInstance->NameOffset ) ) );
       qDebug() << "foundProcessName: " << foundProcessName;
       if ( foundProcessName == processName ) {
@@ -246,7 +247,7 @@ void KApplication_activateWindowForProcess( const QString& executableName )
   EnumWindows( EnumWindowsProc, (LPARAM)&winStruct );
   if ( winStruct.windowId == NULL )
     return;
-  SetForegroundWindow( winStruct.windowId );
+  KWindowSystem::forceActiveWindow( winStruct.windowId, 0 );
 }
 
 // </copy>
