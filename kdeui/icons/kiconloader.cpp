@@ -992,7 +992,7 @@ QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, KIconLoader::Gro
 
 static bool kil_log_icon_use = false;
 typedef QMap<QString,QSet<int> > KilIconLog;
-Q_GLOBAL_STATIC( KilIconLog, kil_icon_log );
+Q_GLOBAL_STATIC( KilIconLog, kil_icon_log )
 
 static QSet<int> kil_default_sizes() {
     QSet<int> result;
