@@ -154,6 +154,8 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
 
     if( !factory )
     {
+        if (instance)
+            kDebug(150) << "Expected a KPluginFactory, got a" << instance->metaObject()->className();
         kDebug(150) << "The library" << lib->fileName() << "does not offer a KDE 4 compatible factory.";
         return 0;
     }
