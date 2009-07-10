@@ -66,7 +66,7 @@ class QSystemTrayIcon;
  *    KPassivePopup *pop = new KPassivePopup( parent );
  *
  *    KVBox *vb = new KVBox( pop );
- *    (void) new QLabel( vb, "<b>Isn't this great?</b>" );
+ *    (void) new QLabel( "<b>Isn't this great?</b>", vb);
  *
  *    KHBox *box = new KHBox( vb );
  *    (void) new QPushButton( "Yes", box );
