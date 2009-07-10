@@ -34,7 +34,7 @@ class KPluginLoaderPrivate;
 
 /**
  * \class KPluginLoader kpluginloader.h <KPluginLoader>
- * 
+ *
  * This class can be used to dynamically load a plugin library at runtime.
  *
  * This class makes sure that the Qt and KDE versions used to compile this library aren't newer then
@@ -85,6 +85,8 @@ public:
     /**
      * Used this constructor to load a plugin with a given library name. Plugin libraries shouldn't have a 'lib' prefix.
      *
+     * errorString() will be set if problems are encountered.
+     *
      * \param plugin The name of the plugin library.
      * \param componentdata The KStandardDirs object from componentdata is used to search the library.
      * \param parent A parent object.
@@ -93,6 +95,8 @@ public:
 
     /**
      * Used this constructor to load a plugin from a service. The service must contain a library.
+     *
+     * errorString() will be set if problems are encountered.
      *
      * \param service The service for which the library should be loaded.
      * \param componentdata The KStandardDirs object from componentdata is used to search the library.
