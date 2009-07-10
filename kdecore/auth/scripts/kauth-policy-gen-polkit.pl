@@ -1,13 +1,10 @@
 #!/usr/bin/perl -w
 
-use Config::IniFiles;
+use Config::IniFiles 2.52;
 
-defined $ARGV[0] or die 'Too few arguments';
+defined $ARGV[0] or die('Too few parameters');
 
-my %ini;
-tie %ini, 'Config::IniFiles', ( -file => $ARGV[0] );
-
-check(\%ini);
+my $ini = new Config::IniFiles -file => $ARGV[0], -nocase => 1;
 
 $header = <<END;
 <?xml version="1.0" encoding="utf-8"?>
@@ -19,74 +16,38 @@ END
 
 print $header;
 
-print_tags(\%ini);
-
-print "</policyconfig>\n";
-
-sub print_tags
+for my $action ($ini->Sections)
 {
-    for my $action (keys %ini)
+    # Check the action name syntax
+    $action =~ /^[a-z]+(\.[a-z]+)*$/ or die("Wrong action syntax: $action");
+    
+    # Check mandatory options
+    $ini->exists($action, 'description') or die("Description option missing in action: $action");
+    $ini->exists($action, 'message') or die("Message option missing in action: $action");
+    $ini->exists($action, 'policy') or die("Policy option missing in action: $action");
+    
+    my $description = $ini->val($action, 'description');
+    my $message = $ini->val($action, 'message');
+    my $policy = $ini->val($action, 'policy');
+    
+    if($ini->exists($action, 'persistence'))
     {
-        my ($desc_k) = grep { lc $_ eq "description" } keys %{$ini{$action}};
-        my ($msg_k) = grep { lc $_ eq "message" } keys %{$ini{$action}};
-        my ($policy_k) = grep { lc $_ eq "policy" } keys %{$ini{$action}};
-        my ($persistence_k) = grep { lc $_ eq "persistence" } keys %{$ini{$action}};
-        
-        my $desc = $ini{$action}{$desc_k};
-        my $msg = $ini{$action}{$msg_k};
-        my $policy = $ini{$action}{$policy_k};
-        
-        if(defined($persistence_k))
-        {
-            $policy = $policy.'_keep_'.$ini{$action}{$persistence_k}
-        }
-        
-        $tag = <<TAG;
+        $ini->val($action, 'persistence') =~ /^(always|session)$/ or die "Invalid persistence value in action: $action";
+        $policy = $policy.'_keep_'.$ini->val($action, 'persistence');
+    }
+    
+    $tag = <<TAG;
     <action id="$action">
-        <description>$desc</description>
-        <message>$msg</message>
+        <description>$description</description>
+        <message>$message</message>
         <defaults>
             <allow_inactive>no</allow_inactive>
             <allow_active>$policy</allow_active>
         </defaults>
     </action>
 TAG
-        
-        print $tag;
-    }
-}
-
-sub check
-{
-    my $ini = shift;
     
-    for my $action ( keys %{$ini})
-    {
-        my $msg = 0;
-        my $desc = 0;
-        my $policy = 0;
-        my $persistence = 0;
-        
-        $action =~ /^[a-z]+(\.[a-z]+)*$/ or die('Non va');
-        for my $entry ( keys %{$ini{$action}})
-        {
-            lc($entry) =~ /^(message|description|policy|persistence)$/ or die "Unrecognized entry: $entry";
-            
-            $msg = 1 if lc($entry) eq 'message';
-            $desc = 1 if lc($entry) eq 'description';
-            if(lc($entry) eq 'policy')
-            {
-                $policy = 1;
-                lc($ini{$action}{$entry}) =~ /^(yes|no|auth_self|auth_admin)$/ or die "Unrecognized policy: $ini{$action}{$entry}";
-            }
-            
-            if(lc($entry) eq 'persistence')
-            {
-                lc($ini{$action}{$entry}) =~ /^(session|always)$/ or die "Unrecognized persistence option: $ini{$action}{$entry}"
-            }
-        }
-        
-        ($msg and $desc and $policy) or die "Entry missing";
-    }
+    print $tag;
 }
 
+print "</policyconfig>\n";
