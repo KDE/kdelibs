@@ -418,7 +418,16 @@ void KWindowSystem::activateWindow( WId win, long )
 void KWindowSystem::forceActiveWindow( WId win, long time )
 {
     KWindowSystem::init(INFO_WINDOWS);
-    BringWindowToTop( win );
+    // FIXME restoring a hidden window doesn't work: the window contents just appear white.
+    // But the mouse cursor still acts as if the widgets were there (e.g. button clicking works),
+    // which indicates the issue is at the window/backingstore level.
+    // This is probably a side effect of bypassing Qt's internal window state handling.
+    if ( IsIconic( win ) /*|| !IsWindowVisible( win ) */) {
+        // Do not activate the window as we restore it,
+        // otherwise the window appears see-through (contents not updated).
+        ShowWindow( win, SW_SHOWNOACTIVATE );
+    }
+    // Puts the window in front and activates it.
     SetForegroundWindow( win );
 }
 
