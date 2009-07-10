@@ -215,7 +215,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
     }
   }
 
-  QString xml = KXMLGUIFactory::readConfigFile( file );
+  QString xml = KXMLGUIFactory::readConfigFile( file, componentData() );
   setXML( xml, merge );
 }
 
