@@ -40,6 +40,7 @@ target_link_libraries(kauth kauth_backend helper_proxy ${KAUTH_DEPENDENCIES}) # 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth)
 install(FILES dbus_policy.stub dbus_service.stub DESTINATION ${CMAKE_INSTALL_PREFIX}/share/kauth)
+install(PROGRAMS scripts/kauth-policy-gen-polkit.pl DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)
 
 set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-ggdb")
 

@@ -31,16 +31,5 @@ target_link_libraries(kauth_helper kauth )
 
 set_target_properties(kauth_helper PROPERTIES COMPILE_FLAGS "-ggdb")
 
-#install(TARGETS kauth_helper DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-# Auxiliary files
-
 kde4_auth_register_helper(org.kde.auth.example kauth_helper root)
-#kde4_auth_register_actions(actions.def)
-
-#dbus_add_activation_system_service(org.kde.auth.example.service.in)
-#install(FILES org.kde.auth.example.conf DESTINATION /etc/dbus-1/system.d)
-
-if(NOT APPLE)
-	install(FILES org.kde.auth.example.policy DESTINATION ${POLICY_FILES_INSTALL_DIR})
-endif()
+kde4_auth_register_actions(org.kde.auth.example actions.ini)
