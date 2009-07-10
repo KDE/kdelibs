@@ -166,7 +166,6 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
 
 KPluginFactory* KLibrary::factory(const char* factoryname)
 {
-    Q_ASSERT(!fileName().isEmpty());
     KPluginFactory *factory = kde4Factory(this);
     if (!factory)
         factory = kde3Factory(this, factoryname);
