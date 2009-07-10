@@ -872,10 +872,7 @@ void KToolBar::loadState(const QDomElement &element)
     if (pos != Qt::NoToolBarArea)
         mw->addToolBar(pos, this);
 
-    if (hidden)
-        hide();
-    else
-        show();
+    setVisible(!hidden);
 
     d->applyCurrentSettings();
 }
