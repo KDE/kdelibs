@@ -220,6 +220,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         m_currentAction = action;
         emit remoteSignal(ActionStarted, action, QByteArray());
         bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
+        emit remoteSignal(ActionPerformed, action, retVal.serialized());
         m_currentAction = "";
         
         if(success)
