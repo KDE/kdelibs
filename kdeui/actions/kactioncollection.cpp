@@ -557,7 +557,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
     }
 
     // Write back to XML file
-    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->xmlFile(), q->componentData());
+    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->localXMLFile(), q->componentData());
     return true;
 }
 
