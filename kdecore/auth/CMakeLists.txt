@@ -7,14 +7,7 @@ include(${QT_USE_FILE})
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-if(APPLE)
-	find_library(CORE_FOUNDATION_LIBRARY CoreFoundation)
-	find_library(SECURITY_LIBRARY Security)
-	set(LIBRARIES ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY} ${QT_QTCORE_LIBRARIES})
-elseif(UNIX)
-	find_package(PolkitQt)
-	set(LIBRARIES ${POLKITQT_CORE_LIBRARY} ${QT_QTCORE_LIBRARIES})
-endif()
+include(KAuth)
 
 include(DBusMacros)
 
@@ -42,10 +35,11 @@ set( kauth_headers
 qt4_wrap_cpp(kauth_mocs lib/HelperProxy.h lib/ActionWatcher.h)
 
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
-target_link_libraries(kauth kauth_backend helper_proxy ${LIBRARIES}) # The last two variables should be set by the backends code, if needed
+target_link_libraries(kauth kauth_backend helper_proxy ${KAUTH_DEPENDENCIES}) # The last two variables should be set by the backends code, if needed
 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth)
+install(FILES dbus_policy.stub dbus_service.stub DESTINATION ${CMAKE_INSTALL_PREFIX}/share/kauth)
 
 set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-ggdb")
 

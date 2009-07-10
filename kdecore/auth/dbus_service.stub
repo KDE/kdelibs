@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=@HELPER_ID@
+Exec=@CMAKE_INSTALL_PREFIX@/libexec/@HELPER_TARGET@
+User=@HELPER_USER@
