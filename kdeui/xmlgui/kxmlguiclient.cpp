@@ -206,17 +206,16 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
           kWarning() << "cannot find .rc file" << _file << "in" << filter;
 
       setXML( QString(), true );
-      return;
     }
     else if ( !doc.isEmpty() )
     {
       setXML( doc, merge );
-      return;
     }
+  } else {
+      // Absolute path
+      QString xml = KXMLGUIFactory::readConfigFile(file);
+      setXML( xml, merge );
   }
-
-  QString xml = KXMLGUIFactory::readConfigFile( file, componentData() );
-  setXML( xml, merge );
 }
 
 void KXMLGUIClient::setLocalXMLFile( const QString &file )

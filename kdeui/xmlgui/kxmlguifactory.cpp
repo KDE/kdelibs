@@ -116,13 +116,13 @@ public:
 
 QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponentData &_componentData )
 {
-    KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
     QString xml_file;
 
     if (!QDir::isRelativePath(filename))
         xml_file = filename;
     else
     {
+        KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
         xml_file = KStandardDirs::locate("data", componentData.componentName() + '/' + filename);
         if ( !QFile::exists( xml_file ) )
           xml_file = KStandardDirs::locate( "data", filename );
