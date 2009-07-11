@@ -85,7 +85,8 @@ public:
         NAMESPACE_ERR = 14,
         INVALID_ACCESS_ERR = 15,
         VALIDATION_ERR = 16,
-        TYPE_MISMATCH_ERR = 17
+        TYPE_MISMATCH_ERR = 17,
+        SECURITY_ERR = 18
     };
     unsigned short code;
 };
