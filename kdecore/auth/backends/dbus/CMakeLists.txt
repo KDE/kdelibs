@@ -17,4 +17,4 @@ qt4_wrap_cpp(helper_proxy_mocs ${helper_proxy_headers} )
 add_library(helper_proxy STATIC ${helper_proxy_sources} ${helper_proxy_mocs} ${adaptor_srcs})
 install(FILES org.kde.auth.conf DESTINATION /etc/dbus-1/system.d)
 
-set_target_properties(helper_proxy PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -ggdb")
+set_target_properties(helper_proxy PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -Wall -ggdb")

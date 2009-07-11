@@ -73,7 +73,6 @@ ActionReply::ActionReply(int error)
 
 ActionReply::~ActionReply()
 {
-    qDebug() << (quint64)d;
     delete d;
 }
 
@@ -151,6 +150,8 @@ ActionReply &ActionReply::operator=(const ActionReply &reply)
     d->errorCode = reply.d->errorCode;
     d->errorDescription = reply.d->errorDescription;
     d->type = reply.d->type;
+    
+    return *this;
 }
 
 QDataStream &operator<<(QDataStream &d, const ActionReply &reply)

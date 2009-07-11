@@ -42,6 +42,6 @@ install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth
 install(FILES dbus_policy.stub dbus_service.stub DESTINATION ${CMAKE_INSTALL_PREFIX}/share/kauth)
 install(PROGRAMS scripts/kauth-policy-gen-polkit.pl DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)
 
-set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-ggdb")
+set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-Wall -ggdb")
 
 add_subdirectory(example)

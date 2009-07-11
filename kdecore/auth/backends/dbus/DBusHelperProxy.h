@@ -46,7 +46,7 @@ class DBusHelperProxy : public HelperProxy
     };
     
     public:
-        DBusHelperProxy() : m_stopRequest(false), responder(NULL) {}
+        DBusHelperProxy() : responder(NULL), m_stopRequest(false) {}
         
         virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
         virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);

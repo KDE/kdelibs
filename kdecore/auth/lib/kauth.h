@@ -3,7 +3,6 @@
 
 #include "Action.h"
 #include "ActionReply.h"
-#include "BackendsManager.h"
 #include "HelperSupport.h"
 
 #endif

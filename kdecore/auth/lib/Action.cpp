@@ -58,6 +58,15 @@ Action::~Action()
     delete d;
 }
 
+// Operators
+Action &Action::operator=(const Action &action)
+{
+    d->name = action.d->name;
+    d->args = action.d->args;
+    
+    return *this;
+}
+
 // Accessors
 QString Action::name()
 {

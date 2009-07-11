@@ -46,6 +46,8 @@ class Action
         Action(const QString &name);
         virtual ~Action();
         
+        Action &operator=(const Action &action);
+        
         QString name();
         void setName(QString name);
         
