@@ -6,7 +6,10 @@
 #  KAUTH_LIBRARY - Link these to use all KAuth libs
 
 include(FindPkgConfig)
+
+if (UNIX AND NOT APPLE)
 find_package(PolkitQt REQUIRED)
+endif (UNIX AND NOT APPLE)
 
 find_path( KAUTH_INCLUDE_DIR kauth/kauth.h )
 find_file( KAUTH_DBUS_POLICY_STUB share/kauth/dbus_policy.stub)
