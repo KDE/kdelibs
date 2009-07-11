@@ -47,8 +47,6 @@ class HelperProxy : public QObject
         virtual void sendDebugMessage(int level, const char *msg) = 0;
         virtual void sendProgressStep(int step) = 0;
         virtual void sendProgressStep(QVariantMap step) = 0;
-    
-        static void registerWatcher(ActionWatcher *watcher);
 };
 
 Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");

@@ -36,7 +36,7 @@ for my $action ($ini->Sections)
         $policy = $policy.'_keep_'.$ini->val($action, 'persistence');
     }
     
-    $tag = <<TAG;
+    my $tag = <<TAG;
     <action id="$action">
         <description>$description</description>
         <message>$message</message>

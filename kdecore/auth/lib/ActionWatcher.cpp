@@ -22,21 +22,36 @@
 
 #include <QHash>
 
-static QHash<QString, ActionWatcher *> watchers;
+class ActionWatcherPrivate
+{
+    public:
+        QString action;
+};
 
-ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL), m_action(action) {}
+static QHash<QString, ActionWatcher *> s_watchers;
+
+ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
+{
+    d = new ActionWatcherPrivate;
+    d->action = action;
+}
+
+ActionWatcher::~ActionWatcher()
+{
+    delete d;
+}
 
 ActionWatcher *ActionWatcher::watcher(const QString &action)
 {
-    if(!watchers.contains(action))
-        watchers[action] = new ActionWatcher(action);
+    if(!s_watchers.contains(action))
+        s_watchers[action] = new ActionWatcher(action);
     
-    return watchers[action];
+    return s_watchers[action];
 }
 
-QString ActionWatcher::action()
+QString ActionWatcher::action() const
 {
-    return m_action;
+    return d->action;
 }
 
 void ActionWatcher::emitActionStarted()

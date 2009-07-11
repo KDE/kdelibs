@@ -25,18 +25,21 @@
 
 #include "ActionReply.h"
 
+class ActionWatcherPrivate;
+
 class ActionWatcher : public QObject
 {
     Q_OBJECT
     
-    QString m_action;
+    ActionWatcherPrivate *d;
     
     ActionWatcher(const QString &action);
     
-    public:        
+    public:
         static ActionWatcher *watcher(const QString &action);
+        virtual ~ActionWatcher();
         
-        QString action();
+        QString action() const;
         
         void emitActionStarted();
         void emitActionPerformed(ActionReply reply);

@@ -25,8 +25,12 @@
 #include <QMap>
 #include <QDataStream>
 
+class ActionReplyPrivate;
+
 class ActionReply
 {
+    ActionReplyPrivate *d;
+    
 public:
     enum Type
     {
@@ -58,31 +62,31 @@ public:
     ActionReply();
     ActionReply(Type type);
     ActionReply(int errorCode);
-    ActionReply(QByteArray data);
+    ActionReply(const ActionReply &reply);
+    
+    virtual ~ActionReply();
     
     QVariantMap &data();
     QVariantMap data() const;
     Type type() const;
     void setType(Type type);
     
-    bool succeded();
-    bool failed();
+    bool succeded() const;
+    bool failed() const;
     
     int errorCode() const;
     void setErrorCode(int errorCode);
-    QString errorDescription();
+    QString errorDescription() const;
     void setErrorDescription(const QString &error);
     
-    QByteArray serialized();
+    QByteArray serialized() const;
+    static ActionReply deserialize(QByteArray data);
+    
+    ActionReply &operator=(const ActionReply &reply);
     
     friend QDataStream &operator<<(QDataStream &, const ActionReply &);
     friend QDataStream &operator>>(QDataStream &, ActionReply &);
     
-private:
-    QVariantMap m_data; // User-defined data for success and helper error replies, empty for kauth errors
-    int m_errorCode;
-    QString m_errorDescription;
-    Type m_type;
 };
 
 #endif

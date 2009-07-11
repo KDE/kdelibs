@@ -27,10 +27,11 @@
 #include "ActionReply.h"
 #include "ActionWatcher.h"
 
+class ActionPrivate;
+
 class Action
 {        
-    QString m_name;
-    QVariantMap m_args;
+    ActionPrivate *d;
     
     public:
         enum AuthStatus
@@ -40,15 +41,17 @@ class Action
             AuthRequired = 2
         };
         
-        Action(const char *name) : m_name(name) { init(); }
-        Action(const QString &name) : m_name(name) { init(); }
+        Action(const Action &action);
+        Action(const char *name);
+        Action(const QString &name);
+        virtual ~Action();
         
-        QString name() { return m_name; }
-        void setName(QString name) { m_name = name; }
+        QString name();
+        void setName(QString name);
         
         ActionWatcher *watcher();
         
-        QVariantMap &arguments() { return m_args; }
+        QVariantMap &arguments();
         
         bool authorize();
         AuthStatus status();
@@ -67,9 +70,6 @@ class Action
         
         static QString helperID();
         static void setHelperID(const QString &id);
-        
-    private:
-        void init();
 };
 
 #endif

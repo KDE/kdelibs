@@ -103,3 +103,5 @@ bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray c
 			return Action::Denied;
 	}
 }
+
+Q_EXPORT_PLUGIN2(auth_backend, AuthServicesBackend);

@@ -23,28 +23,89 @@
 #include "Action.h"
 #include "BackendsManager.h"
 
-static AuthBackend *backend = NULL;
+class ActionPrivate
+{
+    public:
+        ActionPrivate(QString name) : name(name) {}
+        
+        QString name;
+        QVariantMap args;
+};
+
 static QString s_helperID;
 
-void Action::init()
+// Constructors
+Action::Action(const Action &action)
 {
-    backend = BackendsManager::authBackend();
-    backend->setupAction(m_name);
+    d = new ActionPrivate(action.d->name);
+    d->args = action.d->args;
 }
 
+Action::Action(const char *name)
+{
+    d = new ActionPrivate(name);
+    BackendsManager::authBackend()->setupAction(d->name);
+}
+
+Action::Action(const QString &name)
+{
+    d = new ActionPrivate(name);
+    BackendsManager::authBackend()->setupAction(d->name);
+}
+
+Action::~Action()
+{
+    delete d;
+}
+
+// Accessors
+QString Action::name()
+{
+    return d->name;
+}
+
+void Action::setName(QString name)
+{
+    d->name = name;
+}
+
+QVariantMap &Action::arguments()
+{
+    return d->args;
+}
+
+ActionWatcher *Action::watcher()
+{
+    return ActionWatcher::watcher(d->name);
+}
+
+QString Action::helperID()
+{    
+    return s_helperID;
+}
+
+// TODO: Check for helper id's syntax
+void Action::setHelperID(const QString &id)
+{
+    s_helperID = id;
+}
+
+// Authorizaton methods
 bool Action::authorize()
 {
     if(status() == Authorized)
         return true;
     
-    return backend->authorizeAction(m_name);
+    return BackendsManager::authBackend()->authorizeAction(d->name);
 }
 
 Action::AuthStatus Action::status()
 {
-    return backend->actionStatus(m_name);
+    return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
+
+// Execution methods
 bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions)
 {
     return executeActions(actions, helperID(), deniedActions);
@@ -94,7 +155,7 @@ ActionReply Action::execute(const QString &helperID)
 {
     if(!authorize())
         return ActionReply::AuthorizationDeniedReply;
-    return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args);
+    return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
 }
 
 void Action::stop()
@@ -104,22 +165,6 @@ void Action::stop()
 
 void Action::stop(const QString &helperID)
 {
-    BackendsManager::helperProxy()->stopAction(m_name, helperID);
-}
-
-ActionWatcher *Action::watcher()
-{
-    return ActionWatcher::watcher(m_name);
-}
-
-QString Action::helperID()
-{    
-    return s_helperID;
-}
-
-// TODO: Check for helper id's syntax
-void Action::setHelperID(const QString &id)
-{
-    s_helperID = id;
+    BackendsManager::helperProxy()->stopAction(d->name, helperID);
 }
 

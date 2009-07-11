@@ -19,7 +19,18 @@
 
 #include "ActionReply.h"
 
+#include <QDebug>
 
+class ActionReplyPrivate
+{
+    public:
+        QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
+        int errorCode;
+        QString errorDescription;
+        ActionReply::Type type;
+};
+
+// Predefined replies
 ActionReply ActionReply::SuccessReply = ActionReply();
 ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
 ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
@@ -29,66 +40,91 @@ ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
 ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
 ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
 
-
-ActionReply::ActionReply() : m_errorCode(0), m_type(Success) {}
-ActionReply::ActionReply(ActionReply::Type type) : m_errorCode(0), m_type(type) {}
-ActionReply::ActionReply(int error) : m_errorCode(error), m_type(KAuthError) {}
-
-ActionReply::ActionReply(QByteArray data)
+// Constructors
+ActionReply::ActionReply(const ActionReply &reply)
 {
-    QDataStream s(&data, QIODevice::ReadOnly);
-    
-    s >> *this;
+    d = new ActionReplyPrivate;
+    d->data = reply.d->data;
+    d->errorCode = reply.d->errorCode;
+    d->errorDescription = reply.d->errorDescription;
+    d->type = reply.d->type;
+}
+
+ActionReply::ActionReply()
+{
+    d = new ActionReplyPrivate;
+    d->errorCode = 0;
+    d->type = Success;
+}
+
+ActionReply::ActionReply(ActionReply::Type type)
+{
+    d = new ActionReplyPrivate;
+    d->errorCode = 0;
+    d->type = type;
+}
+
+ActionReply::ActionReply(int error)
+{
+    d = new ActionReplyPrivate;
+    d->errorCode = error;
+    d->type = KAuthError;
+}
+
+ActionReply::~ActionReply()
+{
+    qDebug() << (quint64)d;
+    delete d;
 }
 
 QVariantMap &ActionReply::data()
 {
-    return m_data;
+    return d->data;
 }
 
 QVariantMap ActionReply::data() const
 {
-    return m_data;
+    return d->data;
 }
 
 ActionReply::Type ActionReply::type() const
 {
-    return m_type;
+    return d->type;
 }
 
-bool ActionReply::succeded()
+bool ActionReply::succeded() const
 {
-    return m_type == Success;
+    return d->type == Success;
 }
 
-bool ActionReply::failed()
+bool ActionReply::failed() const
 {
-    return m_type != Success;
+    return d->type != Success;
 }
 
 int ActionReply::errorCode() const
 {
-    return m_errorCode;
+    return d->errorCode;
 }
 
 void ActionReply::setErrorCode(int errorCode)
 {
-    m_errorCode = errorCode;
-    if(m_type != HelperError)
-        m_type = KAuthError;
+    d->errorCode = errorCode;
+    if(d->type != HelperError)
+        d->type = KAuthError;
 }
 
-QString ActionReply::errorDescription()
+QString ActionReply::errorDescription() const
 {
-    return m_errorDescription;
+    return d->errorDescription;
 }
 
 void ActionReply::setErrorDescription(const QString &error)
 {
-    m_errorDescription = error;
+    d->errorDescription = error;
 }
 
-QByteArray ActionReply::serialized()
+QByteArray ActionReply::serialized() const
 {
     QByteArray data;
     QDataStream s(&data, QIODevice::WriteOnly);
@@ -98,16 +134,35 @@ QByteArray ActionReply::serialized()
     return data;
 }
 
-QDataStream &operator<<(QDataStream &d, const ActionReply &reply)
+ActionReply ActionReply::deserialize(QByteArray data)
 {
-    return d << reply.m_data << reply.m_errorCode << (quint32)reply.m_type;
+    ActionReply reply;
+    QDataStream s(&data, QIODevice::ReadOnly);
+    
+    s >> reply;
+    
+    return reply;
 }
 
-QDataStream &operator>>(QDataStream &d, ActionReply &reply)
+// Operators
+ActionReply &ActionReply::operator=(const ActionReply &reply)
+{
+    d->data = reply.d->data;
+    d->errorCode = reply.d->errorCode;
+    d->errorDescription = reply.d->errorDescription;
+    d->type = reply.d->type;
+}
+
+QDataStream &operator<<(QDataStream &d, const ActionReply &reply)
+{
+    return d << reply.d->data << reply.d->errorCode << (quint32)reply.d->type;
+}
+
+QDataStream &operator>>(QDataStream &stream, ActionReply &reply)
 {
     quint32 i;
-    d >> reply.m_data >> reply.m_errorCode >> i;
-    reply.m_type = (ActionReply::Type) i;
+    stream >> reply.d->data >> reply.d->errorCode >> i;
+    reply.d->type = (ActionReply::Type) i;
     
-    return d;
+    return stream;
 }

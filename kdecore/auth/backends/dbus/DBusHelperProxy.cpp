@@ -100,7 +100,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     if(reply.arguments().size() != 1)
         return ActionReply::WrongReplyDataReply;
     
-    return reply.arguments().first().toByteArray();
+    return ActionReply::deserialize(reply.arguments().first().toByteArray());
 }
 
 bool DBusHelperProxy::initHelper(const QString &name)
