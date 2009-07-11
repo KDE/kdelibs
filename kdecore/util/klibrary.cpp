@@ -169,7 +169,6 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
 KPluginFactory* KLibrary::factory(const char* factoryname)
 {
     if (fileName().isEmpty()) {
-        kWarning() << "Can't determine factory for postfix" << factoryname << "because fileName is empty!";
         return NULL;
     }
 
