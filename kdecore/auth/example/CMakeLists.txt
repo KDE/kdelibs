@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 
-project( example )
+project( kauth_example )
 
-include_directories(${CMAKE_BINARY_DIR}/example)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
+find_package( Qt4 REQUIRED )
+find_package( KAuth REQUIRED )
+set(QT_USE_QTDBUS true)
+include(${QT_USE_FILE})
+
+include_directories(${KAUTH_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
 
 # Auth example application
 
@@ -17,7 +24,7 @@ qt4_wrap_cpp(kauth_example_mocs ${kauth_example_headers})
 qt4_wrap_ui(kauth_example_uis mainwindow.ui)
 
 add_executable(kauth_example ${kauth_example_sources} ${kauth_example_mocs} ${kauth_example_uis})
-target_link_libraries(kauth_example kauth ${QT_QTGUI_LIBRARIES})
+target_link_libraries(kauth_example ${KAUTH_LIBRARY} ${QT_LIBRARIES} )
 
 set_target_properties(kauth_example PROPERTIES COMPILE_FLAGS "-Wall -ggdb")
 
@@ -27,9 +34,9 @@ install(TARGETS kauth_example DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 qt4_wrap_cpp(kauth_helper_mocs helper/helper.h)
 add_executable(kauth_helper helper/helper.cpp ${kauth_helper_mocs})
-target_link_libraries(kauth_helper kauth )
+target_link_libraries(kauth_helper ${KAUTH_LIBRARY} ${QT_QTCORE_LIBRARIES})
 
 set_target_properties(kauth_helper PROPERTIES COMPILE_FLAGS "-Wall -ggdb")
 
-kde4_auth_register_helper(org.kde.auth.example kauth_helper root)
-kde4_auth_register_actions(org.kde.auth.example actions.ini)
+kde4_auth_register_helper(kauth_helper org.kde.auth.example root)
+kde4_auth_register_actions(kauth_helper org.kde.auth.example actions.ini)

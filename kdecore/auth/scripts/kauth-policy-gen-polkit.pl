@@ -2,9 +2,11 @@
 
 use Config::IniFiles 2.52;
 
-defined $ARGV[0] or die('Too few parameters');
+(defined $ARGV[0] and defined $ARGV[1]) or die('Too few parameters');
 
-my $ini = new Config::IniFiles -file => $ARGV[0], -nocase => 1;
+my $ini = new Config::IniFiles -file => $ARGV[0], -nocase => 1 or die "Unable to open input file: $ARGV[0]";
+
+open OUT, "> $ARGV[1]" or die "Unable to open output file: $ARGV[1]";
 
 $header = <<END;
 <?xml version="1.0" encoding="utf-8"?>
@@ -14,7 +16,7 @@ $header = <<END;
 <policyconfig>
 END
 
-print $header;
+print OUT $header;
 
 for my $action ($ini->Sections)
 {
@@ -47,7 +49,7 @@ for my $action ($ini->Sections)
     </action>
 TAG
     
-    print $tag;
+    print OUT $tag;
 }
 
-print "</policyconfig>\n";
+print OUT "</policyconfig>\n";
