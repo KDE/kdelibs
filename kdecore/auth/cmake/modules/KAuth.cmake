@@ -8,6 +8,8 @@ elseif(UNIX)
 endif()
 
 macro(kde4_auth_register_helper _HELPER_ID _HELPER_TARGET _HELPER_USER )
+    
+    pkg_search_module( DBUS dbus-1 )
 
     set(HELPER_ID ${_HELPER_ID})
     set(HELPER_TARGET ${_HELPER_TARGET})
@@ -17,7 +19,7 @@ macro(kde4_auth_register_helper _HELPER_ID _HELPER_TARGET _HELPER_USER )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.conf DESTINATION /etc/dbus-1/system.d/)
 
     configure_file(${CMAKE_INSTALL_PREFIX}/share/kauth/dbus_service.stub ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service)
-    dbus_add_activation_system_service(${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service DESTINATION ${DBUS_PREFIX}/share/dbus-1/system-services )
     install(TARGETS ${HELPER_TARGET} DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)
 
 endmacro(kde4_auth_register_helper)
