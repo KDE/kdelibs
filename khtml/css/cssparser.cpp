@@ -2902,8 +2902,10 @@ typedef unsigned int YY_CHAR;
 #define YY_START ((yy_start - 1) / 2)
 #define yyterminate()\
     do { \
-        if (yy_act == YY_END_OF_BUFFER) \
+        if (yy_act == YY_END_OF_BUFFER) { \
             yy_c_buf_p = postEofBuf; \
+            yy_hold_char = 0; /* first char of the postEndOf to 'restore' */ \
+        } \
         yyTok = END; return yyTok; \
      } while (0)
 #define YY_FATAL_ERROR(a) qFatal(a)
