@@ -40,10 +40,12 @@ public:
     { }
     void setItems(const KFileItemList& items);
 
+    void determineMimeTypeAndGroup() const;
+
     KFileItemList m_items;
     KUrl::List m_urlList;
-    QString m_mimeType;
-    QString m_mimeGroup;
+    mutable QString m_mimeType;
+    mutable QString m_mimeGroup;
     bool m_isDirectory : 1;
     bool m_supportsReading : 1;
     bool m_supportsDeleting : 1;
@@ -80,10 +82,8 @@ void KFileItemListPropertiesPrivate::setItems(const KFileItemList& items)
     m_supportsMoving = initialValue;
     m_isDirectory = initialValue;
     m_isLocal = true;
-    if (!items.isEmpty()) {
-        m_mimeType = items.first().mimetype();
-        m_mimeGroup = m_mimeType.left(m_mimeType.indexOf('/'));
-    }
+    m_mimeType.clear();
+    m_mimeGroup.clear();
 
     QFileInfo parentDirInfo;
     foreach (const KFileItem &item, items) {
@@ -103,14 +103,6 @@ void KFileItemListPropertiesPrivate::setItems(const KFileItemList& items)
             if (!parentDirInfo.isWritable()) {
                 m_supportsDeleting = false;
                 m_supportsMoving = false;
-            }
-        }
-        const QString itemMimeType = item.mimetype();
-        // Determine if common mimetype among all items
-        if (m_mimeType != itemMimeType) {
-            m_mimeType.clear();
-            if (m_mimeGroup != itemMimeType.left(itemMimeType.indexOf('/'))) {
-                m_mimeGroup.clear(); // mimetype groups are different as well!
             }
         }
         if (m_isDirectory && !item.isDir()) {
@@ -176,10 +168,32 @@ bool KFileItemListProperties::isDirectory() const
 
 QString KFileItemListProperties::mimeType() const
 {
+    if (d->m_mimeType.isEmpty())
+        d->determineMimeTypeAndGroup();
     return d->m_mimeType;
 }
 
 QString KFileItemListProperties::mimeGroup() const
 {
+    if (d->m_mimeType.isEmpty())
+        d->determineMimeTypeAndGroup();
     return d->m_mimeGroup;
+}
+
+void KFileItemListPropertiesPrivate::determineMimeTypeAndGroup() const
+{
+    if (!m_items.isEmpty()) {
+        m_mimeType = m_items.first().mimetype();
+        m_mimeGroup = m_mimeType.left(m_mimeType.indexOf('/'));
+    }
+    foreach (const KFileItem &item, m_items) {
+        const QString itemMimeType = item.mimetype();
+        // Determine if common mimetype among all items
+        if (m_mimeType != itemMimeType) {
+            m_mimeType.clear();
+            if (m_mimeGroup != itemMimeType.left(itemMimeType.indexOf('/'))) {
+                m_mimeGroup.clear(); // mimetype groups are different as well!
+            }
+        }
+    }
 }
