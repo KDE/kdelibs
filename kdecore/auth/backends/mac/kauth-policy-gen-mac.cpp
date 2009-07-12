@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QString>
 #include <QStringList>
+#include <QRegExp>
 #include <iostream>
 #include <Security/Security.h>
 
@@ -38,6 +39,13 @@ void do_actions(QSettings &ini)
 
     foreach(QString action, ini.childGroups())
     {
+        QRegExp exp("[a-z]+(\\.[a-z]+)*");
+        if(!exp.exactMatch(action))
+        {
+             cerr << "Wrong action syntax: " << action.toAscii().data() << endl;
+             exit(1);
+        }
+
         QString message, policy;
         if( !ini.contains(action + "/message") ||
             !ini.contains(action + "/policy"))
