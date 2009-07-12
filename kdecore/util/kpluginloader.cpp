@@ -135,7 +135,6 @@ KPluginLoader::KPluginLoader(const QString &plugin, const KComponentData &compon
 
     // No lib, no fun.
     if (fileName().isEmpty()) {
-        kWarning(kLibraryDebugArea()) << "Could not find plugin" << plugin;
         d->errorString = i18n(
                 "Could not find plugin '%1' for application '%2'",
                 plugin,
@@ -157,22 +156,18 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
     // above.
     if (!service.isValid()) {
         d->errorString = i18n("The provided service is not valid", service.entryPath());
-        kWarning(kLibraryDebugArea()) << "Invalid service provided for KPluginLoader::KPluginLoader()";
         return;
     }
 
     // service.library() is used to find the lib. So first check if it is empty.
     if (service.library().isEmpty()) {
         d->errorString = i18n("The service '%1' provides no library or the Library key is missing in ", service.entryPath());
-        kWarning(kLibraryDebugArea()) << "The service" << service.entryPath() <<"provided no library or the Library key is missing";
         return;
     }
 
     // No lib, no fun. service.library() was set but we were still unable to
     // find the lib.
     if (fileName().isEmpty()) {
-        kWarning(kLibraryDebugArea()) << "Could not find plugin/library for" << service.entryPath()
-                      << "library name:" << service.library();
         d->errorString = i18n(
                 "Could not find plugin '%1' for application '%2'",
                 service.name(),
