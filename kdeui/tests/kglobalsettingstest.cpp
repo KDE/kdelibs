@@ -55,7 +55,7 @@ void KGlobalSettingsTest::initTestCase()
     QSignalSpy settings_spy( settings, SIGNAL(settingsChanged(int)) ); \
     QSignalSpy appearance_spy( settings, SIGNAL(appearanceChanged()) )
 
-static void callClient( const QString& opt ) {
+static void callClient( const QString& opt, const char* signalToWaitFor ) {
     KProcess proc;
 #ifdef Q_OS_WIN
     proc << "kglobalsettingsclient.exe";
@@ -72,13 +72,13 @@ static void callClient( const QString& opt ) {
     int ok = proc.execute();
     QVERIFY(ok == 0);
 
-    QEventLoop().processEvents( QEventLoop::AllEvents, 20 ); // need to process DBUS signal
+    QVERIFY(QTest::kWaitForSignal(KGlobalSettings::self(), signalToWaitFor, 5000));
 }
 
 void KGlobalSettingsTest::testPaletteChange()
 {
     CREATE_ALL_SPYS;
-    callClient("-p");
+    callClient("-p", SIGNAL(kdisplayPaletteChanged()));
     QCOMPARE(palette_spy.size(), 1);
     QCOMPARE(font_spy.size(), 0);
     QCOMPARE(style_spy.size(), 0);
@@ -89,7 +89,7 @@ void KGlobalSettingsTest::testPaletteChange()
 void KGlobalSettingsTest::testFontChange()
 {
     CREATE_ALL_SPYS;
-    callClient("-f");
+    callClient("-f", SIGNAL(kdisplayFontChanged()));
     QCOMPARE(palette_spy.size(), 0);
     QCOMPARE(font_spy.size(), 1);
     QCOMPARE(style_spy.size(), 0);
@@ -100,7 +100,7 @@ void KGlobalSettingsTest::testFontChange()
 void KGlobalSettingsTest::testSettingsChange()
 {
     CREATE_ALL_SPYS;
-    callClient("--ps");
+    callClient("--ps", SIGNAL(settingsChanged(int)));
     QCOMPARE(palette_spy.size(), 0);
     QCOMPARE(font_spy.size(), 0);
     QCOMPARE(style_spy.size(), 0);
