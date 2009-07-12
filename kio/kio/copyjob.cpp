@@ -179,6 +179,8 @@ public:
     KUrl m_currentSrcURL;
     KUrl m_currentDestURL;
 
+    QSet<QString> m_parentDirs;
+
     void statCurrentSrc();
     void statNextSrc();
 
@@ -387,6 +389,11 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
     {
         //kDebug(7007) << "Source is a directory";
 
+        if (srcurl.isLocalFile()) {
+            const QString parentDir = srcurl.toLocalFile(KUrl::RemoveTrailingSlash);
+            m_parentDirs.insert(parentDir);
+        }
+
         m_bCurrentSrcIsDir = true; // used by slotEntries
         if ( destinationState == DEST_IS_DIR ) // (case 1)
         {
@@ -417,6 +424,12 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
     else
     {
         //kDebug(7007) << "Source is a file (or a symlink), or we are linking -> no recursive listing";
+
+        if (srcurl.isLocalFile()) {
+            const QString parentDir = srcurl.directory(KUrl::ObeyTrailingSlash);
+            m_parentDirs.insert(parentDir);
+        }
+
         statNextSrc();
     }
 }
@@ -742,6 +755,16 @@ void CopyJobPrivate::statCurrentSrc()
 void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
 {
     Q_Q(CopyJob);
+
+    // Silence KDirWatch notifications, otherwise performance is horrible
+    if (m_currentSrcURL.isLocalFile()) {
+        const QString parentDir = m_currentSrcURL.directory(KUrl::ObeyTrailingSlash);
+        if (!m_parentDirs.contains(parentDir)) {
+            KDirWatch::self()->stopDirScan(parentDir);
+            m_parentDirs.insert(parentDir);
+        }
+    }
+
     KUrl dest = m_dest;
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
@@ -1043,6 +1066,15 @@ void CopyJobPrivate::createNextDir()
     else // we have finished creating dirs
     {
         q->setProcessedAmount( KJob::Directories, m_processedDirs ); // make sure final number appears
+
+        if (m_mode == CopyJob::Move) {
+            // Now we know which dirs hold the files we're going to delete.
+            // To speed things up and prevent double-notification, we disable KDirWatch
+            // on those dirs temporarily (using KDirWatch::self, that's the instanced
+            // used by e.g. kdirlister).
+            for ( QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it )
+                KDirWatch::self()->stopDirScan( *it );
+        }
 
         state = STATE_COPYING_FILES;
         m_processedFiles++; // Ralf wants it to start at 1, not 0
@@ -1546,6 +1578,12 @@ void CopyJob::emitResult()
         if (d->m_mode == CopyJob::Move && !d->m_successSrcList.isEmpty()) {
             kDebug(7007) << "KDirNotify'ing FilesRemoved" << d->m_successSrcList.toStringList();
             org::kde::KDirNotify::emitFilesRemoved(d->m_successSrcList.toStringList());
+        }
+
+        // Re-enable watching on the dirs that held the deleted files
+        if (d->m_mode == CopyJob::Move) {
+            for (QSet<QString>::const_iterator it = d->m_parentDirs.constBegin() ; it != d->m_parentDirs.constEnd() ; ++it)
+                KDirWatch::self()->restartDirScan( *it );
         }
     }
     Job::emitResult();
