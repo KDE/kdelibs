@@ -350,12 +350,14 @@ KLocaleTest::formatByteSize()
     QCOMPARE(locale.formatByteSize(5000000), QString("4.8 MiB"));
     QCOMPARE(locale.formatByteSize(50000000), QString("47.7 MiB"));
     QCOMPARE(locale.formatByteSize(500000000), QString("476.8 MiB"));
+#if LONG_IS_64_BITS
     QCOMPARE(locale.formatByteSize(5000000000), QString("4.7 GiB"));
     QCOMPARE(locale.formatByteSize(50000000000), QString("46.6 GiB"));
     QCOMPARE(locale.formatByteSize(500000000000), QString("465.7 GiB"));
     QCOMPARE(locale.formatByteSize(5000000000000), QString("4.5 TiB"));
     QCOMPARE(locale.formatByteSize(50000000000000), QString("45.5 TiB"));
     QCOMPARE(locale.formatByteSize(500000000000000), QString("454.7 TiB"));
+#endif
 }
 
 void
