@@ -154,7 +154,7 @@ KDirWatchPrivate::KDirWatchPrivate()
 
   availableMethods << "Stat";
 
-  // used for FAM
+  // used for FAM and inotify
   rescan_timer.setObjectName( "KDirWatchPrivate::rescan_timer" );
   rescan_timer.setSingleShot( true );
   connect(&rescan_timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
@@ -1242,7 +1242,7 @@ void KDirWatchPrivate::slotRemoveDelayed()
 }
 
 /* Scan all entries to be watched for changes. This is done regularly
- * when polling. This is NOT used by FAM.
+ * when polling. FAM and inotify use a single-shot timer to call this slot delayed.
  */
 void KDirWatchPrivate::slotRescan()
 {
