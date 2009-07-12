@@ -35,6 +35,7 @@ private Q_SLOTS:
 	void formatDateTime();
 	void readTime();
 	void prettyFormatDuration();
+	void formatByteSize();
 	void bug95511();
 	void weekDays();
 	void removeAcceleratorMarker();

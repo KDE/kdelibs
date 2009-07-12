@@ -337,6 +337,28 @@ KLocaleTest::prettyFormatDuration()
 }
 
 void
+KLocaleTest::formatByteSize()
+{
+    KLocale locale(*KGlobal::locale());
+
+    QCOMPARE(locale.formatByteSize(0), QString("0 B"));
+    QCOMPARE(locale.formatByteSize(50), QString("50 B"));
+    QCOMPARE(locale.formatByteSize(500), QString("500 B"));
+    QCOMPARE(locale.formatByteSize(5000), QString("4.9 KiB"));
+    QCOMPARE(locale.formatByteSize(50000), QString("48.8 KiB"));
+    QCOMPARE(locale.formatByteSize(500000), QString("488.3 KiB"));
+    QCOMPARE(locale.formatByteSize(5000000), QString("4.8 MiB"));
+    QCOMPARE(locale.formatByteSize(50000000), QString("47.7 MiB"));
+    QCOMPARE(locale.formatByteSize(500000000), QString("476.8 MiB"));
+    QCOMPARE(locale.formatByteSize(5000000000), QString("4.7 GiB"));
+    QCOMPARE(locale.formatByteSize(50000000000), QString("46.6 GiB"));
+    QCOMPARE(locale.formatByteSize(500000000000), QString("465.7 GiB"));
+    QCOMPARE(locale.formatByteSize(5000000000000), QString("4.5 TiB"));
+    QCOMPARE(locale.formatByteSize(50000000000000), QString("45.5 TiB"));
+    QCOMPARE(locale.formatByteSize(500000000000000), QString("454.7 TiB"));
+}
+
+void
 KLocaleTest::bug95511()
 {
 	KLocale locale(*KGlobal::locale());
