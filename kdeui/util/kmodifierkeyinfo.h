@@ -183,7 +183,7 @@ Q_SIGNALS:
 
 private:
     Q_DISABLE_COPY(KModifierKeyInfo)
-    KModifierKeyInfoProvider *p;
+    KModifierKeyInfoProvider * const p; // krazy:exclude=dpointer
 };
 
 #endif
