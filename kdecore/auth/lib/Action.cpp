@@ -113,15 +113,11 @@ Action::AuthStatus Action::status()
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
-
 // Execution methods
-bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions)
+bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperID)
 {
-    return executeActions(actions, helperID(), deniedActions);
-}
-
-bool Action::executeActions(const QList<Action> &actions, const QString &helperID, QList<Action> *deniedActions)
-{
+    QString _helperID = helperID == "" ? helperID() : helperID;
+    
     QList<QPair<QString, QVariantMap> > list;
     
     foreach(Action a, actions)
@@ -135,7 +131,7 @@ bool Action::executeActions(const QList<Action> &actions, const QString &helperI
     if(list.isEmpty())
         return false;
     
-    return BackendsManager::helperProxy()->executeActions(list, helperID);
+    return BackendsManager::helperProxy()->executeActions(list, _helperID);
 }
 
 bool Action::executeAsync(QObject *target, const char *slot)
