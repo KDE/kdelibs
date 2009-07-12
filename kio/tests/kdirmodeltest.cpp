@@ -111,6 +111,7 @@ void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
 {
     if (!m_dirModel)
         m_dirModel = new KDirModel;
+    m_dirModel->dirLister()->setAutoErrorHandlingEnabled(false, 0);
     const QString path = m_tempDir->name();
     KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
@@ -580,7 +581,16 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     ok = job->exec();
     QVERIFY(ok);
 
+    // KDirNotify emits FileRenamed for each rename() above, which in turn
+    // re-lists the directory. We need to wait for both signals to be emitted
+    // otherwise the dirlister will not be in the state we expect.
+    QTest::qWait(200);
+
     fillModel(true);
+
+    QVERIFY(m_dirIndex.isValid());
+    KFileItem rootItem = m_dirModel->dirLister()->findByUrl(path);
+    QVERIFY(!rootItem.isNull());
 }
 
 void KDirModelTest::testChmodDirectory() // #53397
@@ -607,6 +617,7 @@ void KDirModelTest::testChmodDirectory() // #53397
     // If we come here, then dataChanged() was emitted - all good.
     QCOMPARE(spyDataChanged.count(), 1);
     QModelIndex receivedIndex = spyDataChanged[0][0].value<QModelIndex>();
+    kDebug() << receivedIndex;
     QVERIFY(!receivedIndex.isValid());
 
     QCOMPARE(m_dirModel->itemForIndex(QModelIndex()).permissions(), newPerm);
@@ -921,7 +932,13 @@ void KDirModelTest::testSmb()
     KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(smbUrl, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    connect(dirLister, SIGNAL(canceled()), this, SLOT(slotListingCompleted()));
+    QSignalSpy spyCanceled(dirLister, SIGNAL(canceled()));
     enterLoop(); // wait for completed signal
+
+    if (spyCanceled.count() > 0) {
+        QSKIP("smb:/ returns an error, probably no network available", SkipAll);
+    }
 
     QModelIndex index = m_dirModel->index(0, 0);
     if (index.isValid()) {
