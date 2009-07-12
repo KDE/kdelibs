@@ -34,6 +34,7 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
+#include <kwindowsystem.h>
 
 #include "kwallet_interface.h"
 
@@ -179,6 +180,10 @@ QStringList Wallet::walletList() {
 void Wallet::changePassword(const QString& name, WId w) {
     if( w == 0 )
         kDebug(285) << "Pass a valid window to KWallet::Wallet::changePassword().";
+
+    // Make sure the password prompt window will be visible and activated
+    KWindowSystem::allowExternalProcessWindowActivation();
+
     walletLauncher->getInterface().changePassword(name, (qlonglong)w, appid());
 }
 
@@ -216,13 +221,16 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     // signals we need
     connect(&walletLauncher->getInterface(), SIGNAL(walletAsyncOpened(int, int)),
             wallet, SLOT(walletAsyncOpened(int, int)));
-                                             
+
     // Use an eventloop for synchronous calls
     QEventLoop loop;
     if (ot == Synchronous || ot == Path) {
         connect(wallet, SIGNAL(walletOpened(bool)), &loop, SLOT(quit()));
     }
-    
+
+    // Make sure the password prompt window will be visible and activated
+    KWindowSystem::allowExternalProcessWindowActivation();
+
     // do the call
     QDBusReply<int> r;
     if (ot == Synchronous || ot == Asynchronous) {
@@ -239,7 +247,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         return 0;
     }
     wallet->d->transactionId = r.value();
-    
+
     if (ot == Synchronous || ot == Path) {
         // check for an immediate error
         if (wallet->d->transactionId < 0) {
@@ -318,6 +326,9 @@ void Wallet::requestChangePassword(WId w) {
     if (d->handle == -1) {
         return;
     }
+
+    // Make sure the password prompt window will be visible and activated
+    KWindowSystem::allowExternalProcessWindowActivation();
 
     walletLauncher->getInterface().changePassword(d->name, (qlonglong)w, appid());
 }
@@ -680,7 +691,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 void Wallet::slotServiceOwnerChanged(const QString& name,const QString& oldOwner,const QString& newOwner) {
     Q_UNUSED(oldOwner);
     if (newOwner.isEmpty() && name == "org.kde.kwalletd") {
-        // if openWallet() waits for the DBUS reply, prevent it from waiting forever: 
+        // if openWallet() waits for the DBUS reply, prevent it from waiting forever:
         if ( d->loop )
             d->loop->quit();
         if( d->handle >= 0 )
@@ -716,10 +727,10 @@ void Wallet::walletAsyncOpened(int tId, int handle) {
     if (d->transactionId != tId || d->handle != -1) {
         return;
     }
-    
+
     // disconnect the async signal
     disconnect(this, SLOT(walletAsyncOpened(int, int)));
-    
+
     d->handle = handle;
     emit walletOpened(handle > 0);
 }
@@ -770,7 +781,7 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
             {
                 kError(285) << "Couldn't start kwalletd: " << error << endl;
             }
-            
+
             if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kwalletd")) {
                 kDebug(285) << "The kwalletd service is still not registered";
             } else {
@@ -780,7 +791,7 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
             kError(285) << "The kwalletd service has been disabled";
         }
     }
-    
+
     return m_wallet;
 }
 
