@@ -40,6 +40,7 @@
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
+#include <kwindowsystem.h>
 
 #if defined Q_WS_X11
 #include <kstartupinfo.h>
@@ -418,13 +419,17 @@ int KUniqueApplication::newInstance()
             KMainWindow* mainWindow = allWindows.first();
             if (mainWindow) {
                 mainWindow->show();
-#if defined Q_WS_X11
+#ifdef Q_WS_X11
                 // This is the line that handles window activation if necessary,
                 // and what's important, it does it properly. If you reimplement newInstance(),
                 // and don't call the inherited one, use this (but NOT when newInstance()
                 // is called for the first time, like here).
                 KStartupInfo::setNewStartupId(mainWindow, startupId());
 #endif
+#ifdef Q_WS_WIN
+                KWindowSystem::forceActiveWindow( mainWindow->winId() );
+#endif
+
             }
         }
     }
