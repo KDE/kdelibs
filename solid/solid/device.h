@@ -185,6 +185,12 @@ namespace Solid
          */
         QString icon() const;
 
+        /**
+         * Retrieves the description of device.
+         *
+         * @return the description
+         */
+        QString description() const;
 
         /**
          * Tests if a device interface is available from the device.

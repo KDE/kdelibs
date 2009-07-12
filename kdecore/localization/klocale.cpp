@@ -329,6 +329,7 @@ void KLocalePrivate::initMainCatalogs()
     catalogNames.append(KCatalogName("kio4"));
     catalogNames.append(KCatalogName("kdelibs4"));
     catalogNames.append(KCatalogName("kdeqt"));
+    catalogNames.append(KCatalogName("solid_qt"));
 
     updateCatalogs(); // evaluate this for all languages
   }

@@ -95,6 +95,12 @@ namespace Ifaces
          */
         virtual QString icon() const = 0;
 
+       /**
+         * Retrieves the description of device.
+         *
+         * @return the description
+         */
+        virtual QString description() const = 0;
 
         /**
          * Tests if a property exist.

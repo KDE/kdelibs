@@ -52,6 +52,7 @@ public:
     virtual QString vendor() const;
     virtual QString product() const;
     virtual QString icon() const;
+    virtual QString description() const;
 
     virtual QVariant property(const QString &key) const;
 
@@ -71,6 +72,9 @@ private Q_SLOTS:
     void slotCondition(const QString &condition, const QString &reason);
 
 private:
+    QString storageDescription() const;
+    QString volumeDescription() const;
+
     HalDevicePrivate *d;
 };
 }

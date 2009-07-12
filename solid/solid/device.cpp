@@ -133,6 +133,11 @@ QString Solid::Device::icon() const
     return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), icon());
 }
 
+QString Solid::Device::description() const
+{
+    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), description());
+}
+
 bool Solid::Device::isDeviceInterface(const DeviceInterface::Type &type) const
 {
     return_SOLID_CALL(Ifaces::Device *, d->backendObject(), false, queryDeviceInterface(type));

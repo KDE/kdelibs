@@ -124,6 +124,11 @@ QString FakeDevice::icon() const
     }
 }
 
+QString FakeDevice::description() const
+{
+    return product();
+}
+
 QVariant FakeDevice::property(const QString &key) const
 {
     return d->propertyMap[key];

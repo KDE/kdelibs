@@ -52,6 +52,7 @@ public:
     virtual QString vendor() const;
     virtual QString product() const;
     virtual QString icon() const;
+    virtual QString description() const;
 
     virtual bool isValid() const;
     

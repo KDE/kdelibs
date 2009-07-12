@@ -421,6 +421,11 @@ QString WmiDevice::icon() const
     return QString();
 }
 
+QString WmiDevice::description() const
+{
+    return product(); // TODO
+}
+
 QVariant WmiDevice::property(const QString &key) const
 {    
     WmiQuery::ItemList list = d->sendQuery();

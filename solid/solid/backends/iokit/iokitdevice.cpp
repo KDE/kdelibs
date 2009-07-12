@@ -177,6 +177,11 @@ QString IOKitDevice::icon() const
     return QString(); // TODO
 }
 
+QString IOKitDevice::description() const
+{
+    return product(); // TODO
+}
+
 QVariant IOKitDevice::property(const QString &key) const
 {
     return d->properties.value(key);
