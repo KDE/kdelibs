@@ -566,15 +566,6 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
         return;
     }
 
-    const QSize size = m_viewAdapter->iconSize();
-    if ((pixmap.width() < size.width()) && (pixmap.height() < size.height())) {
-        // If the width and the height are smaller than the available size, an old
-        // preview has been received, where the available size was smaller. Note that
-        // no check for a larger icon size is done, as a downscaling will be done
-        // anyhow.
-        return;
-    }
-
     // check whether the item is part of the directory lister (it is possible
     // that a preview from an old directory lister is received)
     const KUrl url = item.url();
