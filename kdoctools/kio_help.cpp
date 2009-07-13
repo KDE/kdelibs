@@ -204,8 +204,8 @@ void HelpProtocol::get( const KUrl& url )
 
     kDebug( 7119 ) << "target " << target.url();
 
-    QString file = target.path();
-
+    QString file = target.scheme() == "file" ? target.toLocalFile() : target.path();
+    
     if ( mGhelp ) {
       if ( !file.endsWith( QLatin1String( ".xml" ) ) ) {
          get_file( target );
