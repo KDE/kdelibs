@@ -69,12 +69,12 @@ Action &Action::operator=(const Action & action)
 }
 
 // Accessors
-QString Action::name()
+QString Action::name() const
 {
     return d->name;
 }
 
-void Action::setName(QString name)
+void Action::setName(const QString &name)
 {
     d->name = name;
 }
@@ -101,7 +101,7 @@ void Action::setHelperID(const QString &id)
 }
 
 // Authorizaton methods
-bool Action::authorize()
+bool Action::authorize() const
 {
     if (status() == Authorized)
         return true;
@@ -109,7 +109,7 @@ bool Action::authorize()
     return BackendsManager::authBackend()->authorizeAction(d->name);
 }
 
-Action::AuthStatus Action::status()
+Action::AuthStatus Action::status() const
 {
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
@@ -144,21 +144,23 @@ bool Action::executeAsync(QObject *target, const char *slot)
 // TODO: Deve restituire false se non è autorizzata?
 bool Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
 {
-    if (!authorize())
+    if (!authorize()) {
         return false;
+    }
 
-    if (target && slot)
+    if (target && slot) {
         QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
+    }
 
     return executeActions(QList<Action>() << *this, NULL, helperID);
 }
 
-ActionReply Action::execute()
+ActionReply Action::execute() const
 {
     return execute(helperID());
 }
 
-ActionReply Action::execute(const QString &helperID)
+ActionReply Action::execute(const QString &helperID) const
 {
     if (!authorize())
         return ActionReply::AuthorizationDeniedReply;

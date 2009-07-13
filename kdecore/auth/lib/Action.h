@@ -103,7 +103,7 @@ public:
      *
      * @return The action name
      */
-    QString name();
+    QString name() const;
 
     /**
      * @brief Sets the action's name.
@@ -113,7 +113,7 @@ public:
      * with the constructor (and you have to, because
      * there's no default constructor)
      */
-    void setName(QString name);
+    void setName(const QString &name);
 
     /**
      * @brief Gets the default helper ID used for actions execution
@@ -184,7 +184,7 @@ public:
      * @return @c true if the action is authorized,
      *         @c false otherwise
      */
-    bool authorize();
+    bool authorize() const;
 
     /**
      * @brief Gets information about the authorization status of an action
@@ -200,7 +200,7 @@ public:
      *         @c Action::Authorized if the action can be executed
      *         @c Action::AuthRequired if the user could acquire the authorization after authentication
      */
-    AuthStatus status();
+    AuthStatus status() const;
 
     /**
      * @brief Synchronously executes the action
@@ -231,7 +231,7 @@ public:
      *
      * @return The reply from the helper, or an error reply if something's wrong.
      */
-    ActionReply execute();
+    ActionReply execute() const;
 
     /**
      * @brief Synchronously executes the action with a specific helperID
@@ -242,7 +242,7 @@ public:
      * @param helperID The helper ID to use for the execution of this action
      * @return The reply from the helper, or an error if something's wrong.
      */
-    ActionReply execute(const QString &helperID);
+    ActionReply execute(const QString &helperID) const;
 
     /**
      * @brief Asynchronously executes the action
