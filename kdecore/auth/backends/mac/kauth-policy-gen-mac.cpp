@@ -14,15 +14,13 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv); // FIXME: Is this needed?
 
-    if(argc < 2)
-    {
+    if (argc < 2) {
         cerr << "Too few arguments";
         return 1;
     }
 
     QSettings ini(argv[1], QSettings::IniFormat);
-    if(ini.status())
-    {
+    if (ini.status()) {
         cerr << "Error loading file: " << argv[1];
         return 1;
     }
@@ -37,19 +35,16 @@ void do_actions(QSettings &ini)
 
     OSStatus err;
 
-    foreach(const QString &action, ini.childGroups())
-    {
+    foreach(const QString &action, ini.childGroups()) {
         QRegExp exp("[a-z]+(\\.[a-z]+)*");
-        if(!exp.exactMatch(action))
-        {
-             cerr << "Wrong action syntax: " << action.toAscii().data() << endl;
-             exit(1);
+        if (!exp.exactMatch(action)) {
+            cerr << "Wrong action syntax: " << action.toAscii().data() << endl;
+            exit(1);
         }
 
         QString message, policy;
-        if( !ini.contains(action + "/message") ||
-            !ini.contains(action + "/policy"))
-        {
+        if (!ini.contains(action + "/message") ||
+                !ini.contains(action + "/policy")) {
             cerr << "Missing parameter in action: " << action.toAscii().data() << endl;
             exit(1);
         }
@@ -61,23 +56,21 @@ void do_actions(QSettings &ini)
 
         QString rule;
 
-        if(policy == "yes")
+        if (policy == "yes")
             rule = kAuthorizationRuleClassAllow;
-        else if(policy == "no")
+        else if (policy == "no")
             rule = kAuthorizationRuleClassDeny;
-        else if(policy == "auth_self")
+        else if (policy == "auth_self")
             rule = kAuthorizationRuleAuthenticateAsSessionUser;
-        else if(policy == "auth_admin")
+        else if (policy == "auth_admin")
             rule = kAuthorizationRuleAuthenticateAsAdmin;
 
         CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
         CFStringRef cfPrompt = CFStringCreateWithCString(NULL, message.toAscii(), kCFStringEncodingASCII);
 
-        if(err == errAuthorizationDenied)
-        {
+        if (err == errAuthorizationDenied) {
             err = AuthorizationRightSet(auth, action.toAscii(), cfRule, cfPrompt, NULL, NULL);
-            if(err != noErr)
-            {
+            if (err != noErr) {
                 cerr << "You don't have the right to edit the security database (try to run cmake with sudo): " << err << endl;
                 exit(1);
             }

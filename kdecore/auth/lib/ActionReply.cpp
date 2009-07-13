@@ -1,20 +1,20 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*                                                               
+*
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or   
-*   (at your option) any later version.                                 
-*                                                                       
-*   This program is distributed in the hope that it will be useful,     
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of      
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
-*   GNU General Public License for more details.                        
-*                                                                       
-*   You should have received a copy of the GNU General Public License   
-*   along with this program; if not, write to the                       
-*   Free Software Foundation, Inc.,                                     
-*   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
+*   the Free Software Foundation; either version 2 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the
+*   Free Software Foundation, Inc.,
+*   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
 #include "ActionReply.h"
@@ -23,11 +23,11 @@
 
 class ActionReplyPrivate
 {
-    public:
-        QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
-        int errorCode;
-        QString errorDescription;
-        ActionReply::Type type;
+public:
+    QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
+    int errorCode;
+    QString errorDescription;
+    ActionReply::Type type;
 };
 
 // Predefined replies
@@ -108,7 +108,7 @@ int ActionReply::errorCode() const
 void ActionReply::setErrorCode(int errorCode)
 {
     d->errorCode = errorCode;
-    if(d->type != HelperError)
+    if (d->type != HelperError)
         d->type = KAuthError;
 }
 
@@ -126,9 +126,9 @@ QByteArray ActionReply::serialized() const
 {
     QByteArray data;
     QDataStream s(&data, QIODevice::WriteOnly);
-    
+
     s << *this;
-    
+
     return data;
 }
 
@@ -136,20 +136,20 @@ ActionReply ActionReply::deserialize(QByteArray data)
 {
     ActionReply reply;
     QDataStream s(&data, QIODevice::ReadOnly);
-    
+
     s >> reply;
-    
+
     return reply;
 }
 
 // Operators
-ActionReply &ActionReply::operator=(const ActionReply &reply)
+ActionReply &ActionReply::operator=(const ActionReply & reply)
 {
     d->data = reply.d->data;
     d->errorCode = reply.d->errorCode;
     d->errorDescription = reply.d->errorDescription;
     d->type = reply.d->type;
-    
+
     return *this;
 }
 
@@ -173,6 +173,6 @@ QDataStream &operator>>(QDataStream &stream, ActionReply &reply)
     quint32 i;
     stream >> reply.d->data >> reply.d->errorCode >> i;
     reply.d->type = (ActionReply::Type) i;
-    
+
     return stream;
 }

@@ -1,20 +1,20 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*                                                               
+*
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or   
-*   (at your option) any later version.                                 
-*                                                                       
-*   This program is distributed in the hope that it will be useful,     
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of      
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
-*   GNU General Public License for more details.                        
-*                                                                       
-*   You should have received a copy of the GNU General Public License   
-*   along with this program; if not, write to the                       
-*   Free Software Foundation, Inc.,                                     
-*   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
+*   the Free Software Foundation; either version 2 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the
+*   Free Software Foundation, Inc.,
+*   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
 #include "Action.h"
@@ -26,11 +26,11 @@
 
 class ActionPrivate
 {
-    public:
-        ActionPrivate(QString name) : name(name) {}
-        
-        QString name;
-        QVariantMap args;
+public:
+    ActionPrivate(QString name) : name(name) {}
+
+    QString name;
+    QVariantMap args;
 };
 
 static QString s_helperID;
@@ -60,11 +60,11 @@ Action::~Action()
 }
 
 // Operators
-Action &Action::operator=(const Action &action)
+Action &Action::operator=(const Action & action)
 {
     d->name = action.d->name;
     d->args = action.d->args;
-    
+
     return *this;
 }
 
@@ -90,7 +90,7 @@ ActionWatcher *Action::watcher()
 }
 
 QString Action::helperID()
-{    
+{
     return s_helperID;
 }
 
@@ -103,9 +103,9 @@ void Action::setHelperID(const QString &id)
 // Authorizaton methods
 bool Action::authorize()
 {
-    if(status() == Authorized)
+    if (status() == Authorized)
         return true;
-    
+
     return BackendsManager::authBackend()->authorizeAction(d->name);
 }
 
@@ -118,22 +118,21 @@ Action::AuthStatus Action::status()
 bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperID)
 {
     QString _helperID = (helperID == "" ? Action::helperID() : helperID);
-    
+
     QList<QPair<QString, QVariantMap> > list;
-    
-    foreach(Action a, actions)
-    {
-        if(a.authorize()) {
+
+    foreach(Action a, actions) {
+        if (a.authorize()) {
             list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-	} else if(deniedActions) {
+        } else if (deniedActions) {
             *deniedActions << a;
-	}
+        }
     }
-    
-    if(list.isEmpty()) {
+
+    if (list.isEmpty()) {
         return false;
     }
-    
+
     return BackendsManager::helperProxy()->executeActions(list, _helperID);
 }
 
@@ -145,12 +144,12 @@ bool Action::executeAsync(QObject *target, const char *slot)
 // TODO: Deve restituire false se non è autorizzata?
 bool Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
 {
-    if(!authorize())
+    if (!authorize())
         return false;
-    
-    if(target && slot)
+
+    if (target && slot)
         QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
-    
+
     return executeActions(QList<Action>() << *this, NULL, helperID);
 }
 
@@ -161,7 +160,7 @@ ActionReply Action::execute()
 
 ActionReply Action::execute(const QString &helperID)
 {
-    if(!authorize())
+    if (!authorize())
         return ActionReply::AuthorizationDeniedReply;
     return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
 }

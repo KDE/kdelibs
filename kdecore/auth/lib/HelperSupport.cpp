@@ -1,20 +1,20 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*                                                               
+*
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or   
-*   (at your option) any later version.                                 
-*                                                                       
-*   This program is distributed in the hope that it will be useful,     
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of      
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
-*   GNU General Public License for more details.                        
-*                                                                       
-*   You should have received a copy of the GNU General Public License   
-*   along with this program; if not, write to the                       
-*   Free Software Foundation, Inc.,                                     
-*   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
+*   the Free Software Foundation; either version 2 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the
+*   Free Software Foundation, Inc.,
+*   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
 #include "HelperSupport.h"
@@ -35,48 +35,45 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
 {
     openlog(id, 0, LOG_USER);
     qInstallMsgHandler(&HelperSupport::helperDebugHandler);
-    
-    if(!BackendsManager::helperProxy()->initHelper(id))
+
+    if (!BackendsManager::helperProxy()->initHelper(id))
         return -1;
-    
+
     //closelog();
     remote_dbg = true;
-    
+
     BackendsManager::helperProxy()->setHelperResponder(responder);
-    
+
     QCoreApplication app(argc, argv);
     QTimer::singleShot(10000, &app, SLOT(quit()));
     app.exec();
-    
+
     return 0;
 }
 
 void HelperSupport::helperDebugHandler(QtMsgType type, const char *msg)
 {
-    if(!remote_dbg)
-    {
+    if (!remote_dbg) {
         int level;
-        switch(type)
-        {
-            case QtDebugMsg:
-                level = LOG_DEBUG;
-                break;
-            case QtWarningMsg:
-                level = LOG_WARNING;
-                break;
-            case QtCriticalMsg:
-            case QtFatalMsg:
-                level = LOG_ERR;
-                break;
+        switch (type) {
+        case QtDebugMsg:
+            level = LOG_DEBUG;
+            break;
+        case QtWarningMsg:
+            level = LOG_WARNING;
+            break;
+        case QtCriticalMsg:
+        case QtFatalMsg:
+            level = LOG_ERR;
+            break;
         }
         syslog(level, "%s", msg);
-    }else
-    {
+    } else {
         BackendsManager::helperProxy()->sendDebugMessage(type, msg);
     }
-    
+
     // Anyway I should follow the rule:
-    if(type == QtFatalMsg)
+    if (type == QtFatalMsg)
         exit(-1);
 }
 
