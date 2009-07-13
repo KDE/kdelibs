@@ -31,14 +31,14 @@ class ActionReplyPrivate
 };
 
 // Predefined replies
-ActionReply ActionReply::SuccessReply = ActionReply();
-ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
-ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
-ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
-ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
-ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
-ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
-ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
+const ActionReply ActionReply::SuccessReply = ActionReply();
+const ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
+const ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
+const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
+const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
+const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
+const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
+const ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
 
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)

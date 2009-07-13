@@ -314,7 +314,7 @@ class Action
          * Calling this method will make the HelperSupport::isStopped() method to return true the next time it's called.
          *
          * It's the helper's responsibility to regularly call it and exit if requested
-         * The actionPerformed() signal is emitted regularly because, actually, the helper exists regularly. The return data
+         * The actionPerformed() signal is emitted normally because, actually, the helper exists regularly. The return data
          * in this case is application-dependent.
          */
         void stop();
@@ -325,8 +325,7 @@ class Action
          * This method works exactly as the stop() method, but it let's you specify an helper ID different from the
          * default one.
          *
-         * It's important to understand that because the helper ID uniquely identifies an helper, to sto an action you
-         * need to send the stop request to the helper that is executing that action. This of course means you have to
+         * To stop an action you need to send the stop request to the helper that is executing that action. This of course means you have to
          * use the same helperID used for the execution call (either passed as a parameter or set as default with setHelperID() )
          */
         void stop(const QString &helperID);

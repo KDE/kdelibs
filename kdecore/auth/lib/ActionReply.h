@@ -39,14 +39,14 @@ public:
         Success
     };
     
-    static ActionReply SuccessReply;
-    static ActionReply HelperErrorReply;
-    static ActionReply NoResponderReply;
-    static ActionReply NoSuchActionReply;
-    static ActionReply AuthorizationDeniedReply;
-    static ActionReply HelperBusyReply;
-    static ActionReply DBusErrorReply;
-    static ActionReply WrongReplyDataReply;
+    static const ActionReply SuccessReply;
+    static const ActionReply HelperErrorReply;
+    static const ActionReply NoResponderReply;
+    static const ActionReply NoSuchActionReply;
+    static const ActionReply AuthorizationDeniedReply;
+    static const ActionReply HelperBusyReply;
+    static const ActionReply DBusErrorReply;
+    static const ActionReply WrongReplyDataReply;
 
     enum Error
     {

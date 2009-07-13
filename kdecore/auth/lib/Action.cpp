@@ -116,7 +116,7 @@ Action::AuthStatus Action::status()
 // Execution methods
 bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperID)
 {
-    QString _helperID = helperID == "" ? helperID() : helperID;
+    QString _helperID = (helperID == "" ? Action::helperID() : helperID);
     
     QList<QPair<QString, QVariantMap> > list;
     
@@ -148,7 +148,7 @@ bool Action::executeAsync(const QString &helperID, QObject *target, const char *
     if(target && slot)
         QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
     
-    return executeActions(QList<Action>() << *this, helperID);
+    return executeActions(QList<Action>() << *this, NULL, helperID);
 }
 
 ActionReply Action::execute()
