@@ -41,11 +41,6 @@ public:
 
     QString action() const;
 
-    void emitActionStarted();
-    void emitActionPerformed(ActionReply reply);
-    void emitProgressStep(int progress);
-    void emitProgressStep(QVariantMap data);
-
 signals:
     void actionStarted();
     void actionPerformed(ActionReply reply);

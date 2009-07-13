@@ -34,6 +34,13 @@ ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
 {
     d = new ActionWatcherPrivate;
     d->action = action;
+    
+    HelperProxy *helper = BackendsManager::helperProxy();
+    
+    connect(helper, SIGNAL(actionStarted()), this, SIGNAL(actionStarted()));
+    connect(helper, SIGNAL(actionPerformed(ActionReply)), this, SIGNAL(actionPerformed(ActionReply)));
+    connect(helper, SIGNAL(progressStep(int)), this, SIGNAL(progressStep(int)));
+    connect(helper, SIGNAL(progressStep(QVariantMap)), this, SIGNAL(progressStep(QVariantMap)));
 }
 
 ActionWatcher::~ActionWatcher()
@@ -52,25 +59,5 @@ ActionWatcher *ActionWatcher::watcher(const QString &action)
 QString ActionWatcher::action() const
 {
     return d->action;
-}
-
-void ActionWatcher::emitActionStarted()
-{
-    emit actionStarted();
-}
-
-void ActionWatcher::emitActionPerformed(ActionReply reply)
-{
-    emit actionPerformed(reply);
-}
-
-void ActionWatcher::emitProgressStep(int progress)
-{
-    emit progressStep(progress);
-}
-
-void ActionWatcher::emitProgressStep(QVariantMap data)
-{
-    emit progressStep(data);
 }
 

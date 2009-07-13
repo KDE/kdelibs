@@ -129,13 +129,13 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     QDataStream stream(&blob, QIODevice::ReadOnly);
 
     if (type == ActionStarted) {
-        ActionWatcher::watcher(action)->emitActionStarted();
+        emit actionStarted();
     } else if (type == ActionPerformed) {
         ActionReply reply;
         stream >> reply;
 
         m_actionsInProgress.removeOne(action);
-        ActionWatcher::watcher(action)->emitActionPerformed(reply);
+        emit actionPerformed(reply);
     } else if (type == DebugMessage) {
         int level;
         QString message;
@@ -147,12 +147,12 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
         int step;
         stream >> step;
 
-        ActionWatcher::watcher(action)->emitProgressStep(step);
+        emit progressStep(step);
     } else if (type == ProgressStepData) {
         QVariantMap data;
         stream >> data;
 
-        ActionWatcher::watcher(action)->emitProgressStep(data);
+        emit progressStep(data);
     }
 }
 
