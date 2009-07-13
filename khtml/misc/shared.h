@@ -65,6 +65,14 @@ public:
 	    removedLastRef();
 	}
     }
+
+    // This method decreases the reference count, but never deletes the object.
+    // It should be used when a method may be passed something with the initial
+    // reference count of 0, but still needs to guard it.
+    void derefOnly() {
+        _ref--;
+    }
+    
     bool hasOneRef() { //kDebug(300) << "ref=" << _ref;
     	return _ref==1; }
 

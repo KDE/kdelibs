@@ -672,11 +672,13 @@ void NodeImpl::dispatchSubtreeModifiedEvent()
     if (!document()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
         return;
     int exceptioncode = 0;
+    ref();
     MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,true,
                                                          false,0,DOMString(),DOMString(),DOMString(),0);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
     evt->deref();
+    derefOnly();
 }
 
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
@@ -1989,10 +1991,14 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
 void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode )
 {
     if (document()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
+        // We need to weak-guard ourselves since 'this' may be a fresh node, so
+        // we don't want the mutation event to delete it.
+        ref();
         MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
         evt->ref();
         child->dispatchEvent(evt,exceptioncode,true);
         evt->deref();
+        derefOnly();
         if (exceptioncode)
             return;
     }
@@ -2007,10 +2013,12 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
             c->insertedIntoDocument();
 
             if (hasInsertedListeners) {
+                ref();
                 MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,false,false,0,DOMString(),DOMString(),DOMString(),0);
                 evt->ref();
                 c->dispatchEvent(evt,exceptioncode,true);
                 evt->deref();
+                derefOnly();
                 if (exceptioncode)
                     return;
             }
@@ -2023,10 +2031,12 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
     // Dispatch pre-removal mutation events
     document()->notifyBeforeNodeRemoval(child); // ### use events instead
     if (document()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
+        ref();
         MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
         evt->ref();
         child->dispatchEvent(evt,exceptioncode,true);
         evt->deref();
+        derefOnly();
         if (exceptioncode)
             return;
     }
@@ -2040,10 +2050,12 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
     if (p->nodeType() == Node::DOCUMENT_NODE) {
         for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
             if (hasRemovalListeners) {
+                ref();
                 MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,false,false,0,DOMString(),DOMString(),DOMString(),0);
                 evt->ref();
                 c->dispatchEvent(evt,exceptioncode,true);
                 evt->deref();
+                derefOnly();
                 if (exceptioncode)
                     return;
             }
