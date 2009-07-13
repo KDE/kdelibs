@@ -3818,7 +3818,8 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent* e)
     delete m_imPreedit;
     m_imPreedit = 0L;
 
-    renderer()->setDrawCaret(false);
+    if ( KApplication::cursorFlashTime() > 0 )
+      renderer()->setDrawCaret(false);
     renderer()->setCaretOverrideColor(QColor());
 
     return;
