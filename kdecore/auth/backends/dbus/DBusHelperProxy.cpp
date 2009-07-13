@@ -98,7 +98,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     }
     
     if(reply.arguments().size() != 1)
-        return ActionReply::WrongReplyDataReply;
+        return ActionReply::DBusErrorReply;
     
     return ActionReply::deserialize(reply.arguments().first().toByteArray());
 }

@@ -38,7 +38,6 @@ const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSu
 const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
 const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
 const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
-const ActionReply ActionReply::WrongReplyDataReply = ActionReply(ActionReply::WrongReplyData);
 
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)
@@ -152,6 +151,16 @@ ActionReply &ActionReply::operator=(const ActionReply &reply)
     d->type = reply.d->type;
     
     return *this;
+}
+
+bool ActionReply::operator==(const ActionReply &reply)
+{
+    return (d->type == reply.d->type && d->errorCode == reply.d->errorCode);
+}
+
+bool ActionReply::operator!=(const ActionReply &reply)
+{
+    return (d->type != reply.d->type || d->errorCode != reply.d->errorCode);
 }
 
 QDataStream &operator<<(QDataStream &d, const ActionReply &reply)
