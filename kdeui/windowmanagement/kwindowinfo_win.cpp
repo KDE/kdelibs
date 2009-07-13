@@ -246,49 +246,49 @@ bool KWindowInfo::actionSupported( NET::Action action ) const
 WId KWindowInfo::transientFor() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2TransientFor ) == 0, 176 )
-        << "Pass NET::WM2TransientFor to KWindowInfo" << endl;
+        << "Pass NET::WM2TransientFor to KWindowInfo";
     return d->info->transientFor();
 }
 
 WId KWindowInfo::groupLeader() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2GroupLeader ) == 0, 176 )
-        << "Pass NET::WM2GroupLeader to KWindowInfo" << endl;
+        << "Pass NET::WM2GroupLeader to KWindowInfo";
     return d->info->groupLeader();
 }
 
 QByteArray KWindowInfo::windowClassClass() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
+        << "Pass NET::WM2WindowClass to KWindowInfo";
     return d->info->windowClassClass();
 }
 
 QByteArray KWindowInfo::windowClassName() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
+        << "Pass NET::WM2WindowClass to KWindowInfo";
     return d->info->windowClassName();
 }
 
 QByteArray KWindowInfo::windowRole() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
-        << "Pass NET::WM2WindowRole to KWindowInfo" << endl;
+        << "Pass NET::WM2WindowRole to KWindowInfo";
     return d->info->windowRole();
 }
 
 QByteArray KWindowInfo::clientMachine() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )
-        << "Pass NET::WM2ClientMachine to KWindowInfo" << endl;
+        << "Pass NET::WM2ClientMachine to KWindowInfo";
     return d->info->clientMachine();
 }
 
 bool KWindowInfo::actionSupported( NET::Action action ) const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2AllowedActions ) == 0, 176 )
-        << "Pass NET::WM2AllowedActions to KWindowInfo" << endl;
+        << "Pass NET::WM2AllowedActions to KWindowInfo";
     if( KWindowSystem::allowedActionsSupported())
         return d->info->allowedActions() & action;
     else
