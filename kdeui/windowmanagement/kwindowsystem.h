@@ -477,6 +477,25 @@ public:
      */
     static void doNotManage( const QString& title );
 
+    /**
+     * Allows a window from another process to raise and activate itself.
+     * Depending on the window manager, the grant may only be temporary,
+     * or for a single activation, and it may require the current process
+     * to be the "foreground" one" (ie. the process with the input focus).
+     *
+     * You should call this function before executing actions that may trigger
+     * the showing of a window or dialog in another process, e.g. a dbus signal
+     * or function call, or any other inter-process notification mechanism.
+     *
+     * This is mostly used on Windows, where windows are not allowed to be raised
+     * and activated if their process is not the foreground one, but it may also
+     * apply to other window managers.
+     *
+     * @param pid if specified, the grant only applies to windows belonging to the
+     *            specific process. By default, a value of -1 means all processes.
+     */
+    static void allowExternalProcessWindowActivation( int pid = -1 );
+
 #ifdef Q_WS_X11
     /**
      * @internal

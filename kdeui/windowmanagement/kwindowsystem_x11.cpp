@@ -966,6 +966,12 @@ void KWindowSystem::doNotManage( const QString& title )
         .call("doNotManage", title);
 }
 
+void KWindowSystem::allowExternalProcessWindowActivation( int pid )
+{
+    // Normally supported by X11, but may depend on some window managers ?
+}
+
+
 bool KWindowSystem::mapViewport()
 {
     KWindowSystemPrivate* const s_d = s_d_func();

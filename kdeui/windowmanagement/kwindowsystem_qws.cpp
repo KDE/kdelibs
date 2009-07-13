@@ -160,7 +160,7 @@ bool KWindowSystem::compositingActive()
 
 QRect KWindowSystem::workArea( int desktop )
 {
-    //TODO 
+    //TODO
     kDebug() << "QRect KWindowSystem::workArea( int desktop ) isn't yet implemented!";
     return QRect();
 }
@@ -257,6 +257,12 @@ void KWindowSystem::setMainWindow( QWidget* subwindow, WId id )
 {
  //TODO
  kDebug(240) << "KWindowSystem::setMainWindow( QWidget*, WId ) isn't yet implemented!";
+}
+
+void KWindowSystem::allowExternalProcessWindowActivation( int pid )
+{
+    // TODO
+    kDebug() << "KWindowSystem::allowExternalProcessWindowActivation( int pid ) isn't yet implemented!";
 }
 
 #include "kwindowsystem.moc"
