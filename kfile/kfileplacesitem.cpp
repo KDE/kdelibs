@@ -168,7 +168,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
         switch (role)
         {
         case Qt::DisplayRole:
-            return d.product();
+            return d.description();
         case Qt::DecorationRole:
             if (m_access && m_access->isAccessible()) {
                 overlays << "emblem-mounted";
