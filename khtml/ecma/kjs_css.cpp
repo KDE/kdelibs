@@ -299,6 +299,8 @@ const ClassInfo DOMStyleSheet::info = { "StyleSheet", 0, &DOMStyleSheetTable, 0 
   media		DOMStyleSheet::Media		DontDelete|ReadOnly
 @end
 */
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("StyleSheet", DOMStyleSheetProto, ObjectPrototype)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(DOMStyleSheetPseudoCtor, "StyleSheet", DOMStyleSheetProto)
 
 DOMStyleSheet::DOMStyleSheet(ExecState* exec, DOM::StyleSheetImpl* ss)
   : m_impl(ss)
@@ -593,7 +595,7 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
 */
 KJS_DEFINE_PROTOTYPE(DOMCSSStyleSheetProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCSSStyleSheetProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc, ObjectPrototype) // warning, give a parent if DOMStyleSheet gets a proto
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc, DOMStyleSheetProto) 
 
 DOMCSSStyleSheet::DOMCSSStyleSheet(ExecState *exec, DOM::CSSStyleSheetImpl* ss): DOMStyleSheet(exec, ss)
 {

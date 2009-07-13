@@ -127,7 +127,7 @@ namespace KJS {
     }
     Location *location() const;
     JSEventListener *getJSEventListener(JSValue* val, bool html = false);
-    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo, 
+    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo,
                                                 const QString &name, DOM::NodeImpl* node, bool svg = false);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
@@ -148,7 +148,7 @@ namespace KJS {
            Audio, Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
            XMLHttpRequest, XMLSerializer, DOMParser,
            Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
-           Print, AddEventListener, RemoveEventListener, SideBar,
+           Print, AddEventListener, RemoveEventListener, SideBar, GetSelection,
            ValueOf, ToString,
            Onabort, Onblur,
            Onchange, Onclick, Ondblclick, Ondragdrop, Onerror, Onfocus,
@@ -171,7 +171,7 @@ namespace KJS {
            HTMLTableElementCtor, HTMLTableCaptionElementCtor, HTMLTableColElementCtor,
            HTMLTableSectionElementCtor, HTMLTableRowElementCtor, HTMLTableCellElementCtor,
            HTMLFrameSetElementCtor, HTMLLayerElementCtor, HTMLFrameElementCtor, HTMLIFrameElementCtor,
-           HTMLCollectionCtor,
+           HTMLCollectionCtor, StyleSheetCtor, 
            CSSStyleDeclarationCtor, HTMLCanvasElementCtor, Context2DCtor};
     WindowQObject *winq;
 
@@ -230,9 +230,9 @@ namespace KJS {
     DateTimeMS addMSecs(int s) const;
     bool operator >(const DateTimeMS &other) const;
     bool operator >=(const DateTimeMS &other) const;
-    
+
     int msecsTo(const DateTimeMS &other) const;
-    
+
     static DateTimeMS now();
   };
 
