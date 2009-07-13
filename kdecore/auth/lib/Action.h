@@ -249,6 +249,9 @@ public:
      *
      * This method executes the action an returns immediatly. The return value is false if
      * a communication error occurred or if the authorization has been denied.
+     * Note that if you try to execute a non-existent action, you won't get false here.
+     * Instead, you'll get a NoSuchAction error reply as the parameter of the watcher's
+     * actionPerformed() signal.
      *
      * To know when the action has been completed, and to get the reply data,
      * you can connect to the actionPerformed() signal of the action watcher object.
