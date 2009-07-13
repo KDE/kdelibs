@@ -113,7 +113,7 @@ namespace KJS {
 
     void processSyncLoadResults(const QByteArray &data, const KUrl &finalURL, const QString &headers);
 
-    void open(const QString& _method, const KUrl& _url, bool _async);
+    void open(const QString& _method, const KUrl& _url, bool _async, int& ec);
     void send(const QString& _body, int& ec);
     void abort();
     void setRequestHeader(const QString& name, const QString& value, int& ec);

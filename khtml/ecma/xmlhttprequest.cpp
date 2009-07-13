@@ -379,7 +379,7 @@ bool XMLHttpRequest::urlMatchesDocumentDomain(const KUrl& _url) const
   return false;
 }
 
-void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
+void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async, int& ec)
 {
   abort();
   aborted = false;
@@ -392,6 +392,7 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
   responseXML = 0;
 
   if (!urlMatchesDocumentDomain(_url)) {
+    ec = DOMException::SECURITY_ERR;
     return;
   }
 
@@ -559,7 +560,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
   // the webDAV headers such as PROPFIND etc...
   if (name == "get"  || name == "post") {
     KUrl reqURL (doc->URL(), value.trimmed());
-    open(name, reqURL, async);
+    open(name, reqURL, async, ec);
     return;
   }
 
@@ -840,8 +841,8 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
 	url.setPass(args[4]->toString(exec).qstring());
       }
 
-      request->open(method, url, async);
-
+      request->open(method, url, async, ec);
+      setDOMException(exec, ec);
       return jsUndefined();
     }
   case XMLHttpRequest::Send:
