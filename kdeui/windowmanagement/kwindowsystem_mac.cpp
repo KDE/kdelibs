@@ -141,6 +141,7 @@ KWindowSystemPrivate::KWindowSystemPrivate()
 
     m_noEmit = false;
 
+#ifdef Q_OS_MAC32
     // register callbacks for application launches/quits
     m_eventTarget = GetApplicationEventTarget();
     m_eventHandler = NewEventHandlerUPP(applicationEventHandler);
@@ -151,9 +152,13 @@ KWindowSystemPrivate::KWindowSystemPrivate()
     if (InstallEventHandler(m_eventTarget, m_eventHandler, 2, m_eventType, this, &m_curHandler) != noErr) {
         kDebug(240) << "Installing event handler failed!\n";
     }
+#else
+#warning port me to Mac64
+#endif
 }
 
 void KWindowSystemPrivate::applicationLaunched(const ProcessSerialNumber& psn) {
+#ifdef Q_OS_MAC32
     kDebug(240) << "new app: " << psn.lowLongOfPSN << ":" << psn.highLongOfPSN;
     ProcessInfoRec pinfo;
     FSSpec appSpec;
@@ -208,6 +213,9 @@ void KWindowSystemPrivate::applicationLaunched(const ProcessSerialNumber& psn) {
         AXUIElementRef win = (AXUIElementRef) CFArrayGetValueAtIndex(array, j);
         newWindow(win, winfo.d);
     }
+#endif
+#else
+#warning Port me to Mac64
 #endif
 }
 
@@ -417,7 +425,13 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
         }
         IconRef icon;
         SInt16 label;
-        if (GetIconRefFromFile(&info.d->iconSpec, &icon, &label)) {
+#ifdef Q_OS_MAC32
+        OSErr err = GetIconRefFromFile(&info.d->iconSpec, &icon, &label);
+#else
+        OSStatus err = GetIconRefFromFileInfo(&info.d->iconSpec, 0, 0,
+                kIconServicesCatalogInfoMask, 0, kIconServicesNormalUsageFlag, &icon, &label);
+#endif
+        if (err != noErr) {
             kDebug(240) << "Error getting icon from application";
             return QPixmap();
         } else {
@@ -459,6 +473,7 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 
 void KWindowSystem::setType( WId winid, NET::WindowType windowType )
 {
+#ifdef Q_OS_MAC32
     // not supported for 'global' windows; only for windows in the current process
     if (hasWId(winid)) return;
 
@@ -484,6 +499,9 @@ void KWindowSystem::setType( WId winid, NET::WindowType windowType )
         SetWindowGroup(win, dockGroup);
         ChangeWindowAttributes(win, kWindowNoTitleBarAttribute, kWindowNoAttributes);
     }
+#else
+#warning port me to Mac64
+#endif
 }
 
 void KWindowSystem::setState( WId win, unsigned long state )
