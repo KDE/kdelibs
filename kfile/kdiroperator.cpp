@@ -438,8 +438,8 @@ bool KDirOperator::isRoot() const
 #ifdef Q_WS_WIN
     if (url().isLocalFile()) {
         const QString path = url().toLocalFile();
-        if (path.length() >= 2)
-            return (path[0].isLetter() && path[1] == ':');
+        if (path.length() == 3)
+            return (path[0].isLetter() && path[1] == ':' && path[2] == '/');
         return false;
     } else
 #endif
