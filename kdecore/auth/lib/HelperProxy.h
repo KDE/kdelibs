@@ -17,8 +17,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef HELPER_BACKEND
-#define HELPER_BACKEND
+#ifndef HELPER_PROXY_H
+#define HELPER_PROXY_H
 
 #include <QtPlugin>
 #include <QObject>

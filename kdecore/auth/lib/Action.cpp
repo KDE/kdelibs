@@ -17,10 +17,11 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
+#include "Action.h"
+
 #include <QDebug>
 #include <QPluginLoader>
 
-#include "Action.h"
 #include "BackendsManager.h"
 
 class ActionPrivate
@@ -122,14 +123,16 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
     
     foreach(Action a, actions)
     {
-        if(a.authorize())
+        if(a.authorize()) {
             list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-        else if(deniedActions)
+	} else if(deniedActions) {
             *deniedActions << a;
+	}
     }
     
-    if(list.isEmpty())
+    if(list.isEmpty()) {
         return false;
+    }
     
     return BackendsManager::helperProxy()->executeActions(list, _helperID);
 }

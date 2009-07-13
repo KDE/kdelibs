@@ -17,8 +17,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef __ACTION_WATCHER_H_
-#define __ACTION_WATCHER_H_
+#ifndef ACTION_WATCHER_H
+#define ACTION_WATCHER_H
 
 #include <QObject>
 #include <QString>

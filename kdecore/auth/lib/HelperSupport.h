@@ -17,10 +17,11 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef __HELPER_SUPPORT_H
-#define __HELPER_SUPPORT_H
+#ifndef HELPER_SUPPORT_H
+#define HELPER_SUPPORT_H
 
-#include <QtGlobal>
+#include <QObject>
+#include <QVariant>
 
 #define KDE4_AUTH_HELPER(ID, HelperClass) \
 int main(int argc, char **argv) { return HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }

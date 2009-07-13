@@ -17,8 +17,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef DBUS_HELPER_BACKEND_H
-#define DBUS_HELPER_BACKEND_H
+#ifndef DBUS_HELPER_PROXY_H
+#define DBUS_HELPER_PROXY_H
 
 #include <QObject>
 #include <QVariant>

@@ -17,9 +17,9 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#include <QPluginLoader>
-
 #include "BackendsManager.h"
+
+#include <QPluginLoader>
 
 AuthBackend *BackendsManager::auth = NULL;
 HelperProxy *BackendsManager::helper = NULL;

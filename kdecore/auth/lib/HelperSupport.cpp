@@ -17,6 +17,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
+#include "HelperSupport.h"
+
 #include <cstdlib>
 #include <syslog.h>
 
@@ -24,7 +26,6 @@
 #include <QTimer>
 
 #include "BackendsManager.h"
-#include "HelperSupport.h"
 
 static bool remote_dbg = false;
 

@@ -37,7 +37,7 @@ void do_actions(QSettings &ini)
 
     OSStatus err;
 
-    foreach(QString action, ini.childGroups())
+    foreach(const QString &action, ini.childGroups())
     {
         QRegExp exp("[a-z]+(\\.[a-z]+)*");
         if(!exp.exactMatch(action))

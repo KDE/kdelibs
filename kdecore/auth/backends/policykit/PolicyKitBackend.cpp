@@ -17,10 +17,11 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#include <QtDebug>
+#include "PolicyKitBackend.h"
+
+#include <QDebug>
 #include <auth.h>
 #include <syslog.h>
-#include "PolicyKitBackend.h"
 
 PolicyKitBackend::PolicyKitBackend()
 {

@@ -17,6 +17,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
+#include "DBusHelperProxy.h"
+
 #include <QObject>
 #include <QMap>
 #include <QtDBus>
@@ -25,7 +27,6 @@
 #include <syslog.h>
 
 #include "BackendsManager.h"
-#include "DBusHelperProxy.h"
 #include "authadaptor.h"
 
 static void debugMessageReceived(int t, QString message);
@@ -210,10 +211,10 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
     if(BackendsManager::authBackend()->isCallerAuthorized(action, callerID))
     {
         QString slotname = action;
-        if(slotname.startsWith(m_name + "."))
+        if(slotname.startsWith(m_name + '.'))
             slotname = slotname.right(slotname.length() - m_name.length() - 1);
         
-        slotname.replace(".", "_");
+        slotname.replace('.', '_');
         
         ActionReply retVal;
         

@@ -1,5 +1,5 @@
-#ifndef __KAUTH_H_
-#define __KAUTH_H_
+#ifndef KAUTH_H
+#define KAUTH_H
 
 #include "Action.h"
 #include "ActionReply.h"
