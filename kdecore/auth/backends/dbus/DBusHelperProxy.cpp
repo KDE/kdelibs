@@ -267,7 +267,7 @@ void DBusHelperProxy::sendProgressStep(const QVariantMap &data)
     emit remoteSignal(ProgressStepIndicator, m_currentAction, blob);
 }
 
-void debugMessageReceived(int t, QString message)
+void debugMessageReceived(int t, const QString &message)
 {
     QtMsgType type = (QtMsgType)t;
     switch (type) {
