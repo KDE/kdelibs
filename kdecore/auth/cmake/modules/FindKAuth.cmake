@@ -64,7 +64,14 @@ if(APPLE)
     install(CODE "execute_process(COMMAND ${KAUTH_POLICY_GEN} ${ACTIONS_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
 elseif(UNIX)
     set(_output ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.policy)
-    add_custom_command(TARGET ${HELPER_TARGET} POST_BUILD COMMAND ${KAUTH_POLICY_GEN} ${ACTIONS_FILE} ${_output} DEPENDS ${ACTIONS_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    
+    add_custom_command(TARGET ${HELPER_TARGET} 
+                       POST_BUILD 
+                       COMMAND ${KAUTH_POLICY_GEN} ${ACTIONS_FILE} ${_output} 
+                       DEPENDS ${ACTIONS_FILE} 
+                       MAIN_DEPENDENCY ${ACTIONS_FILE}
+                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
     install(FILES ${_output} DESTINATION ${POLICY_FILES_INSTALL_DIR})
 endif()
 
