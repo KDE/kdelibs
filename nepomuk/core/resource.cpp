@@ -26,6 +26,7 @@
 #include "tag.h"
 #include "pimo.h"
 #include "thing.h"
+#include "nfo.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -354,20 +355,24 @@ QString Nepomuk::Resource::genericLabel() const
                 label = property( Soprano::Vocabulary::Xesam::name() ).toString();
 
                 if ( label.isEmpty() ) {
-                    label = property( Soprano::Vocabulary::Xesam::url() ).toString().section( '/', -1 );
+                    label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
 
                     if ( label.isEmpty() ) {
-                        QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
-                        if( !go.isEmpty() ) {
-                            label = go.first().genericLabel();
-                            if( label == go.first().resourceUri().toString() ) {
-                                label.clear();
-                            }
-                        }
+                        label = property( Soprano::Vocabulary::Xesam::url() ).toString().section( '/', -1 );
 
                         if ( label.isEmpty() ) {
-                            // ugly fallback
-                            label = resourceUri().toString();
+                            QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
+                            if( !go.isEmpty() ) {
+                                label = go.first().genericLabel();
+                                if( label == go.first().resourceUri().toString() ) {
+                                    label.clear();
+                                }
+                            }
+
+                            if ( label.isEmpty() ) {
+                                // ugly fallback
+                                label = resourceUri().toString();
+                            }
                         }
                     }
                 }
