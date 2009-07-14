@@ -354,7 +354,7 @@ bool KShortcutsEditorPrivate::addAction(QAction *action, QTreeWidgetItem *hier[]
 void KShortcutsEditorPrivate::allDefault()
 {
     for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
-        if (!(*it)->parent())
+        if (!(*it)->parent() || (*it)->type() != ActionItem)
             continue;
 
         KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
