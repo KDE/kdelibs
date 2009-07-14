@@ -1,4 +1,4 @@
-/*
+*/
    Copyright (C) 2000-2003 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000-2002 George Staikos <staikos@kde.org>
    Copyright (C) 2000-2002 Dawit Alemayehu <adawit@kde.org>
@@ -3373,10 +3373,12 @@ try_again:
             }
         }
 
+        // read and trash body data until the next response header starts.
         if (m_request.isKeepAlive) {
-            // Important: trash data until the next response header starts.
             readBody(true);
         }
+        //### for now this is necessary, but we could really just close the connection right here.
+        m_dataInternal = true;
     }
 
   // We need to do a redirect
@@ -3518,9 +3520,9 @@ try_again:
   }
 
   // Let the app know about the mime-type iff this is not
-  // a redirection and the mime-type string is not empty.
+  // a redirection (or a 401/407 auth required) and the mime-type string is not empty.
   if (locationStr.isEmpty() && (!m_mimeType.isEmpty() ||
-      m_request.method == HTTP_HEAD))
+      m_request.method == HTTP_HEAD) && !m_dataInternal)
   {
     kDebug(7113) << "Emitting mimetype " << m_mimeType;
     mimeType( m_mimeType );
@@ -4069,7 +4071,10 @@ void HTTPProtocol::slotData(const QByteArray &_d)
           m_mimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
           kDebug(7113) << "Using default mimetype: " <<  m_mimeType;
         }
+      }
 
+      if (!m_mimeTypeSent && !m_mimeType.isEmpty())
+      {
         if ( m_request.cacheTag.writeToCache )
         {
           createCacheEntry( m_mimeType, m_request.cacheTag.expireDate );
@@ -4086,6 +4091,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         }
         mimeType(m_mimeType);
         m_mimeTypeBuffer.resize(0);
+        m_mimeTypeSent = true;
       }
 
       data( d );
@@ -4210,6 +4216,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   // Main incoming loop...  Gather everything while we can...
   m_cpMimeBuffer = false;
+  m_mimeTypeSent = false;
   m_mimeTypeBuffer.resize(0);
   struct timeval last_tv;
   gettimeofday( &last_tv, 0L );
