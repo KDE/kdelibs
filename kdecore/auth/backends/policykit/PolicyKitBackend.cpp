@@ -52,7 +52,7 @@ Action::AuthStatus PolicyKitBackend::actionStatus(const QString &action)
     }
 }
 
-QByteArray PolicyKitBackend::callerID()
+QByteArray PolicyKitBackend::callerID() const
 {
     QByteArray a;
     QDataStream s(&a, QIODevice::WriteOnly);

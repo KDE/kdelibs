@@ -32,11 +32,13 @@ void BackendsManager::init()
     QObjectList l = QPluginLoader::staticInstances();
     foreach(QObject *o, l) {
         AuthBackend *a = qobject_cast<AuthBackend *>(o);
-        if (a)
+        if (a) {
             auth = a;
+        }
         HelperProxy *h = qobject_cast<HelperProxy *>(o);
-        if (h)
+        if (h) {
             helper = h;
+        }
     }
 
     Q_ASSERT_X(auth, __FUNCTION__, "No AuthBackend found.");
@@ -45,16 +47,18 @@ void BackendsManager::init()
 
 AuthBackend *BackendsManager::authBackend()
 {
-    if (!auth)
+    if (!auth) {
         init();
+    }
 
     return auth;
 }
 
 HelperProxy *BackendsManager::helperProxy()
 {
-    if (!helper)
+    if (!helper) {
         init();
+    }
 
     return helper;
 }

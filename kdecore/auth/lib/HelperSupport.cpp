@@ -36,8 +36,9 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
     openlog(id, 0, LOG_USER);
     qInstallMsgHandler(&HelperSupport::helperDebugHandler);
 
-    if (!BackendsManager::helperProxy()->initHelper(id))
+    if (!BackendsManager::helperProxy()->initHelper(id)) {
         return -1;
+    }
 
     //closelog();
     remote_dbg = true;
@@ -73,8 +74,9 @@ void HelperSupport::helperDebugHandler(QtMsgType type, const char *msg)
     }
 
     // Anyway I should follow the rule:
-    if (type == QtFatalMsg)
+    if (type == QtFatalMsg) {
         exit(-1);
+    }
 }
 
 void HelperSupport::progressStep(int step)

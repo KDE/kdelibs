@@ -16,8 +16,9 @@ AuthorizationRef authRef();
 
 AuthorizationRef authRef()
 {
-    if (!s_authRef)
+    if (!s_authRef) {
         AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &s_authRef);
+    }
 
     return s_authRef;
 }
@@ -64,7 +65,7 @@ Action::AuthStatus AuthServicesBackend::actionStatus(const QString &action)
     }
 }
 
-QByteArray AuthServicesBackend::callerID()
+QByteArray AuthServicesBackend::callerID() const
 {
     AuthorizationExternalForm ext;
     AuthorizationMakeExternalForm(authRef(), &ext);

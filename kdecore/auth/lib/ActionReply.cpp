@@ -108,8 +108,9 @@ int ActionReply::errorCode() const
 void ActionReply::setErrorCode(int errorCode)
 {
     d->errorCode = errorCode;
-    if (d->type != HelperError)
+    if (d->type != HelperError) {
         d->type = KAuthError;
+    }
 }
 
 QString ActionReply::errorDescription() const

@@ -34,9 +34,9 @@ ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
 {
     d = new ActionWatcherPrivate;
     d->action = action;
-    
+
     HelperProxy *helper = BackendsManager::helperProxy();
-    
+
     connect(helper, SIGNAL(actionStarted()), this, SIGNAL(actionStarted()));
     connect(helper, SIGNAL(actionPerformed(ActionReply)), this, SIGNAL(actionPerformed(ActionReply)));
     connect(helper, SIGNAL(progressStep(int)), this, SIGNAL(progressStep(int)));
@@ -50,8 +50,9 @@ ActionWatcher::~ActionWatcher()
 
 ActionWatcher *ActionWatcher::watcher(const QString &action)
 {
-    if (!s_watchers.contains(action))
+    if (!s_watchers.contains(action)) {
         s_watchers[action] = new ActionWatcher(action);
+    }
 
     return s_watchers[action];
 }

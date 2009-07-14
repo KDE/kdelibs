@@ -29,7 +29,7 @@
 #include "BackendsManager.h"
 #include "authadaptor.h"
 
-static void debugMessageReceived(int t, QString message);
+static void debugMessageReceived(int t, const QString &message);
 
 void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
 {
@@ -50,8 +50,9 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
     stream << list;
 
-    if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray))))
+    if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
         return false;
+    }
 
     QDBusMessage message;
     message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performActions");
@@ -61,24 +62,27 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
     message.setArguments(args);
 
     QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::NoBlock); // This is a NO_REPLY method
-    if (reply.type() == QDBusMessage::ErrorMessage)
+    if (reply.type() == QDBusMessage::ErrorMessage) {
         return false;
+    }
 
     return true;
 }
 
 ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
 {
-    if (!m_actionsInProgress.isEmpty())
+    if (!m_actionsInProgress.isEmpty()) {
         return ActionReply::HelperBusyReply;
+    }
 
     QByteArray blob;
     QDataStream stream(&blob, QIODevice::WriteOnly);
 
     stream << arguments;
 
-    if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray))))
+    if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
         return false;
+    }
 
     QDBusMessage message;
     message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
@@ -97,8 +101,9 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
         return r;
     }
 
-    if (reply.arguments().size() != 1)
+    if (reply.arguments().size() != 1) {
         return ActionReply::DBusErrorReply;
+    }
 
     return ActionReply::deserialize(reply.arguments().first().toByteArray());
 }
@@ -107,11 +112,13 @@ bool DBusHelperProxy::initHelper(const QString &name)
 {
     new AuthAdaptor(this);
 
-    if (!QDBusConnection::systemBus().registerService(name))
+    if (!QDBusConnection::systemBus().registerService(name)) {
         return false;
+    }
 
-    if (!QDBusConnection::systemBus().registerObject("/", this))
+    if (!QDBusConnection::systemBus().registerObject("/", this)) {
         return false;
+    }
 
     m_name = name;
 
@@ -156,7 +163,7 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     }
 }
 
-void DBusHelperProxy::stopAction(QString action)
+void DBusHelperProxy::stopAction(const QString &action)
 {
     m_stopRequest = true;
 }
@@ -169,7 +176,7 @@ bool DBusHelperProxy::hasToStopAction()
     return m_stopRequest;
 }
 
-void DBusHelperProxy::performActions(QByteArray blob, QByteArray callerID)
+void DBusHelperProxy::performActions(QByteArray blob, const QByteArray &callerID)
 {
     QDataStream stream(&blob, QIODevice::ReadOnly);
     QList<QPair<QString, QVariantMap> > actions;
@@ -189,13 +196,15 @@ void DBusHelperProxy::performActions(QByteArray blob, QByteArray callerID)
     }
 }
 
-QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray callerID, QByteArray arguments)
+QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArray &callerID, QByteArray arguments)
 {
-    if (!responder)
+    if (!responder) {
         return ActionReply::NoResponderReply.serialized();
+    }
 
-    if (!m_currentAction.isEmpty())
+    if (!m_currentAction.isEmpty()) {
         return ActionReply::HelperBusyReply.serialized();
+    }
 
     QVariantMap args;
     QDataStream s(&arguments, QIODevice::ReadOnly);
@@ -203,8 +212,9 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
 
     if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
         QString slotname = action;
-        if (slotname.startsWith(m_name + '.'))
+        if (slotname.startsWith(m_name + '.')) {
             slotname = slotname.right(slotname.length() - m_name.length() - 1);
+        }
 
         slotname.replace('.', '_');
 
@@ -216,13 +226,15 @@ QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray call
         emit remoteSignal(ActionPerformed, action, retVal.serialized());
         m_currentAction = "";
 
-        if (success)
+        if (success) {
             return retVal.serialized();
-        else
+        } else {
             return ActionReply::NoSuchActionReply.serialized();
+        }
 
-    } else
+    } else {
         return ActionReply::AuthorizationDeniedReply.serialized();
+    }
 }
 
 void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
@@ -245,7 +257,7 @@ void DBusHelperProxy::sendProgressStep(int step)
     emit remoteSignal(ProgressStepIndicator, m_currentAction, blob);
 }
 
-void DBusHelperProxy::sendProgressStep(QVariantMap data)
+void DBusHelperProxy::sendProgressStep(const QVariantMap &data)
 {
     QByteArray blob;
     QDataStream stream(&blob, QIODevice::WriteOnly);

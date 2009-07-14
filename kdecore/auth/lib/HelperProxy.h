@@ -46,13 +46,13 @@ public:
     virtual bool hasToStopAction() = 0;
     virtual void sendDebugMessage(int level, const char *msg) = 0;
     virtual void sendProgressStep(int step) = 0;
-    virtual void sendProgressStep(QVariantMap step) = 0;
-    
+    virtual void sendProgressStep(const QVariantMap &step) = 0;
+
 signals:
     void actionStarted();
     void actionPerformed(ActionReply reply);
     void progressStep(int progress);
-    void progressStep(QVariantMap data);
+    void progressStep(const QVariantMap &data);
 };
 
 Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");

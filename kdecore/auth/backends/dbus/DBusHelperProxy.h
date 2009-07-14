@@ -56,12 +56,12 @@ public:
     virtual bool hasToStopAction();
     virtual void sendDebugMessage(int level, const char *msg);
     virtual void sendProgressStep(int step);
-    virtual void sendProgressStep(QVariantMap data);
+    virtual void sendProgressStep(const QVariantMap &data);
 
 public slots:
-    void stopAction(QString action);
-    void performActions(QByteArray blob, QByteArray callerID);
-    QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments);
+    void stopAction(const QString &action);
+    void performActions(QByteArray blob, const QByteArray &callerID);
+    QByteArray performAction(const QString &action, const QByteArray &callerID, QByteArray arguments);
 
 signals:
     void remoteSignal(int type, const QString &action, const QByteArray &blob); // This signal is sent from the helper to the app

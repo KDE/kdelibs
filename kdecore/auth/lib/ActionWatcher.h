@@ -57,7 +57,7 @@ public:
      * action watcher from the action string identifier.
      * It's more common to obtain a watcher using Action::watcher(),
      * which actually calls this method.
-     * 
+     *
      * Every signal of this class
      * is emitted whichever method you used to execute the action.
      * This means you could connect to the signal actionPerformed()
@@ -66,9 +66,9 @@ public:
      *
      * @param action The action string identifier for the creation of the watcher
      * @return The action watcher associated with the given action
-     */ 
+     */
     static ActionWatcher *watcher(const QString &action);
-    
+
     /// Virtual destructor
     virtual ~ActionWatcher();
 
@@ -90,23 +90,23 @@ signals:
      * to handle helper crashes, if you feel the need.
      */
     void actionStarted();
-    
+
     /**
      * @brief Signal emitted when an action completed the execution
      *
      * This signal provides the only way to obtain the reply from the helper
      * in case of asynchronous calls. The reply object is the same returned
-     * by the helper, or an error reply from the library if something went 
+     * by the helper, or an error reply from the library if something went
      * wrong.
      *
      * @param reply The reply coming from the helper
      */
-    void actionPerformed(ActionReply reply);
-    
+    void actionPerformed(const ActionReply &reply);
+
     /**
      * @brief Signal emitted by the helper to notify the action's progress
      *
-     * This signal is emitted every time the helper's code calls the 
+     * This signal is emitted every time the helper's code calls the
      * HelperSupport::progressStep(int) method. This is useful to let the
      * helper notify the execution status of a long action.
      * The meaning of the integer passed here is totally application-dependent.
@@ -116,11 +116,11 @@ signals:
      * @param progress The progress indicator from the helper
      */
     void progressStep(int progress);
-    
+
     /**
     * @brief Signal emitted by the helper to notify the action's progress
     *
-    * This signal is emitted every time the helper's code calls the 
+    * This signal is emitted every time the helper's code calls the
     * HelperSupport::progressStep(QVariantMap) method. This is useful to let the
     * helper notify the execution status of a long action, also providing
     * some data, for example if you want to achive some sort of progressive loading.
@@ -130,7 +130,7 @@ signals:
     *
     * @param data The progress data from the helper
     */
-    void progressStep(QVariantMap data);
+    void progressStep(const QVariantMap &data);
 };
 
 #endif

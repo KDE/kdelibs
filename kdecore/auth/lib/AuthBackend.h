@@ -30,7 +30,7 @@ public:
     virtual void setupAction(const QString &action) = 0;
     virtual bool authorizeAction(const QString &action) = 0;
     virtual Action::AuthStatus actionStatus(const QString &action) = 0;
-    virtual QByteArray callerID() = 0;
+    virtual QByteArray callerID() const = 0;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID) = 0;
 };
 
