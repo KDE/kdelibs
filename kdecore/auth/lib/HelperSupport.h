@@ -26,6 +26,15 @@
 #define KDE4_AUTH_HELPER(ID, HelperClass) \
     int main(int argc, char **argv) { return HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
 
+/**
+ * @brief Support class with some static methods useful to the helper's code
+ *
+ * This class provides the API to write the helper tool that executes your actions.
+ * You don't create instances of HelperSupport. Instead, you use its static methods.
+ *
+ * This them you can notify the application of progress in your action's execution
+ * and you can check if the application asked you to terminate it.
+ */
 class HelperSupport
 {
     HelperSupport();
@@ -34,11 +43,47 @@ class HelperSupport
     static void helperDebugHandler(QtMsgType type, const char *msg);
 
 public:
+    /**
+     * @brief Send a progressStep signal to the caller application
+     *
+     * You can use this method to notify progress informations about the
+     * action execution. When you call this method, the ActionWatcher
+     * object associated with the current action will emit the progressStep(int)
+     * signal. The meaning of the integer passed here is totally application dependent,
+     * but you'll want to use it as a sort of percentage.
+     * If you need to be more expressive, use the other overload which takes a QVariantMap
+     *
+     * @param step The progress indicator
+     */
     static void progressStep(int step);
+    
+    /**
+    * @brief Send a progressStep signal to the caller application
+    *
+    * You can use this method to notify progress informations about the
+    * action execution. When you call this method, the ActionWatcher
+    * object associated with the current action will emit the progressStep(QVariantMap)
+    * signal. The meaning of the data passed here is totally application dependent.
+    * If you only need a simple percentage value, use the other overload which takes an int.
+    *
+    * @param data The progress data
+    */
     static void progressStep(QVariantMap data);
 
+    /**
+     * @brief Check if the caller asked the helper to stop the execution
+     *
+     * This method will return true if the helper has been asked to stop the
+     * execution of the current action. If this happens, your helper should
+     * return (NOT exit). The meaning of the data you return in this case is
+     * application-dependent.
+     * It's good practice to check it regularly if you have a long-running action
+     *
+     * @return true if the helper has been asked to stop, false otherwise
+     */
     static bool isStopped();
 
+private:
     friend int main(int, char **);
 };
 

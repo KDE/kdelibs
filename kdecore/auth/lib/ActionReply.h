@@ -261,8 +261,7 @@ public:
      *
      * The suggested use it to compare a reply agains one of the predefined error replies:
      * @code
-     * if(reply == ActionReply::HelperBusyReply)
-     * {
+     * if(reply == ActionReply::HelperBusyReply) {
      *    // Do something...
      * }
      * @endcode

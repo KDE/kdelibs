@@ -175,16 +175,19 @@ public:
      *
      * The result of this method is strictly related to the result of status().
      * If it returns Action::Denied or Action::Authorized, this method
-     * will always return false or true, respectively. Instead, if the status()
+     * will always return the same. Instead, if the status()
      * result was Action::AuthRequired, the method would ask the user to authenticate.
+     * The Action::UserCancelled value is intended to be returned when the authentication
+     * fails because the user purposely cancelled it. Unfortunately, this isn't currently
+     * supported by policykit, so instead you'll get a Denied result in this case.
+     * The Mac OS X backend will return UserCancelled when appropriate.
      *
      * It's not so common to use this method directly, because it's already
      * called by any of the execute methods. Use it only if you need to acquire the
      * authorization long time before the execution, for example if you want to
      * enable some GUI elements after user authentication.
      *
-     * @return @c true if the action is authorized,
-     *         @c false otherwise
+     * @return The result of the authorization process
      */
     AuthStatus authorize() const;
 
@@ -198,9 +201,10 @@ public:
      * It should not be needed to call this method directly, because the execution methods
      * already take care of all the authorization stuff.
      *
-     * @return @c Action::Denied if the user doesn't have the authorization to execute the action
-     *         @c Action::Authorized if the action can be executed
-     *         @c Action::AuthRequired if the user could acquire the authorization after authentication
+     * @return @c Action::Denied if the user doesn't have the authorization to execute the action,
+     *         @c Action::Authorized if the action can be executed,
+     *         @c Action::AuthRequired if the user could acquire the authorization after authentication,
+     *         @c Action::UserCancelled if the user cancels the authentication dialog. Not currently supported by the Polkit backend
      */
     AuthStatus status() const;
 
@@ -224,8 +228,9 @@ public:
      * useful with the asynchronous calls)
      *
      * The method checks for authorization before to execute the action. If the user is not authorized, the
-     * return value will be ActionReply::AuthorizationDenied. Due to policykit limitations, this currently
-     * happens also if the user press Cancel in the authentication dialog.
+     * return value will be ActionReply::AuthorizationDeniedReply.
+     * If the user cancels the authentication, the return value should be ActionReply::UserCancelledReply. 
+     * Due to policykit limitations, this currently only with the Mac OS X backend.
      *
      * If the helper is busy executing another action (or action group) the reply will be ActionReply::HelperBusyReply
      *
@@ -262,7 +267,9 @@ public:
      *
      * @param target The object to connect to the actionPerformed() signal
      * @param slot The slot to connect to the actionPerformed() signal
-     * @return true if the execution is started successfully, false otherwise
+     * @return Action::Authorized if the execution is started successfully,
+     *         Action::Denied if the user doesn't have the authorization, 
+     *         Action::Error if some other error occurred 
      */
     AuthStatus executeAsync(QObject *target = NULL, const char *slot = NULL);
 
@@ -275,7 +282,9 @@ public:
      * @param helperID The helper ID to use for this invocation
      * @param target The object to connect to the actionPerformed() signal
      * @param slot The slot to connect to the actionPerformed() signal
-     * @return true if the execution is started successfully, false otherwise
+     * @return Action::Authorized if the execution is started successfully,
+     *         Action::Denied if the user doesn't have the authorization, 
+     *         Action::Error if some other error occurred 
      */
     AuthStatus executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
 
