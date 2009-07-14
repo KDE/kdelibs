@@ -764,7 +764,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 
         // We now have a valid key press.
         if (keyQt) {
-            if (d->isShiftAsModifierAllowed(keyQt)) {
+            if ((keyQt == Qt::Key_Backtab) && (d->modifierKeys & Qt::SHIFT)) {
+                keyQt = Qt::Key_Tab | d->modifierKeys;
+            }
+            else if (d->isShiftAsModifierAllowed(keyQt)) {
                 keyQt |= d->modifierKeys;
             }
             else
