@@ -25,6 +25,7 @@
 #include "resource.h"
 #include "tools.h"
 #include "nie.h"
+#include "nfo.h"
 #include "pimo.h"
 #include "nepomukmainmodel.h"
 
@@ -287,9 +288,10 @@ bool Nepomuk::ResourceData::store()
         // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
         // Dolphin and co.
         if ( ( m_uri.scheme() == "file" ||
-               constHasType( Soprano::Vocabulary::Xesam::File() ) ) &&
-             QFile::exists( m_uri.toLocalFile()) ) {
-            statements.append( Statement( m_uri, Soprano::Vocabulary::Xesam::url(), m_uri ) );
+               constHasType( Soprano::Vocabulary::Xesam::File() ) ||
+               constHasType( Nepomuk::Vocabulary::NFO::FileDataObject() ) ) &&
+               QFile::exists( m_uri.toLocalFile()) ) {
+            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NFO::fileUrl(), m_uri ) );
         }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method

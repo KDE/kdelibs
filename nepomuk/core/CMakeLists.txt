@@ -49,6 +49,7 @@ set(nepomuk_LIB_SRCS
   ontology/global.cpp
   ontology/entitymanager.cpp
   nie.cpp
+  nfo.cpp
   pimo.cpp
   nepomukservice.cpp
   graphwrapper.cpp
