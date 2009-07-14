@@ -77,30 +77,33 @@ QByteArray AuthServicesBackend::callerID() const
 
 bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray callerID)
 {
-    AuthorizationItem item;
+    AuthorizationExternalForm ext;
+	memcpy(&ext, callerID.data(), sizeof(ext));
+	
+	AuthorizationRef auth;
+	
+	if(AuthorizationCreateFromExternalForm(&ext, &auth) != noErr)
+		return false;
+	
+	AuthorizationItem item;
     item.name = action.toUtf8();
     item.valueLength = 0;
     item.value = NULL;
     item.flags = 0;
-
+	
     AuthorizationRights rights;
     rights.count = 1;
     rights.items = &item;
-
-    OSStatus result = AuthorizationCopyRights(authRef(),
-                      &rights,
-                      kAuthorizationEmptyEnvironment,
-                      kAuthorizationFlagExtendRights | kAuthorizationFlagInteractionAllowed,
-                      NULL);
-
-    switch (result) {
-    case errAuthorizationSuccess:
-        return Action::Authorized;
-    case errAuthorizationInteractionNotAllowed:
-        return Action::AuthRequired;
-    default:
-        return Action::Denied;
-    }
+	
+    OSStatus result = AuthorizationCopyRights(auth,
+											  &rights,
+											  kAuthorizationEmptyEnvironment,
+											  kAuthorizationFlagExtendRights | kAuthorizationFlagInteractionAllowed,
+											  NULL);
+	
+	AuthorizationFree(auth, kAuthorizationFlagDefaults);
+	
+    return result == errAuthorizationSuccess;
 }
 
 Q_EXPORT_PLUGIN2(auth_backend, AuthServicesBackend);
