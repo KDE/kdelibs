@@ -101,11 +101,8 @@ void Action::setHelperID(const QString &id)
 }
 
 // Authorizaton methods
-bool Action::authorize() const
+Action::AuthStatus Action::authorize() const
 {
-    if (status() == Authorized)
-        return true;
-
     return BackendsManager::authBackend()->authorizeAction(d->name);
 }
 
@@ -122,9 +119,10 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
     QList<QPair<QString, QVariantMap> > list;
 
     foreach(Action a, actions) {
-        if (a.authorize()) {
+        AuthStatus s = a.authorize();
+        if (s == Authorized) {
             list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-        } else if (deniedActions) {
+        } else if (s == Denied && deniedActions) {
             *deniedActions << a;
         }
     }
@@ -136,23 +134,23 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
     return BackendsManager::helperProxy()->executeActions(list, _helperID);
 }
 
-bool Action::executeAsync(QObject *target, const char *slot)
+Action::AuthStatus Action::executeAsync(QObject *target, const char *slot)
 {
     return executeAsync(helperID(), target, slot);
 }
 
-// TODO: Deve restituire false se non è autorizzata?
-bool Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
+Action::AuthStatus Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
 {
-    if (!authorize()) {
-        return false;
+    AuthStatus s = authorize();
+    if (s == Denied || s == UserCancelled) {
+        return s;
     }
 
     if (target && slot) {
         QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
     }
 
-    return executeActions(QList<Action>() << *this, NULL, helperID);
+    return executeActions(QList<Action>() << *this, NULL, helperID) ? Action::Authorized : Action::Error;
 }
 
 ActionReply Action::execute() const
@@ -162,8 +160,13 @@ ActionReply Action::execute() const
 
 ActionReply Action::execute(const QString &helperID) const
 {
-    if (!authorize())
+    AuthStatus s = authorize();
+    if (s == Denied) {
         return ActionReply::AuthorizationDeniedReply;
+    } else if(s == UserCancelled) {
+        return ActionReply::UserCancelledReply;
+    }
+    
     return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
 }
 

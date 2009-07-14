@@ -68,9 +68,11 @@ public:
      * The three values returned by authorization methods
      */
     enum AuthStatus {
-        Denied = 0, ///< The authorization has been denied by the authorization backend
-        Authorized = 1, ///< The authorization has been granted by the authorization backend
-        AuthRequired = 2 ///< The user could obtain the authorization after authentication
+        Denied, ///< The authorization has been denied by the authorization backend
+        Error, ///< An error occurred
+        Authorized, ///< The authorization has been granted by the authorization backend
+        AuthRequired, ///< The user could obtain the authorization after authentication
+        UserCancelled ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
     };
 
     /** Copy constructor */
@@ -184,7 +186,7 @@ public:
      * @return @c true if the action is authorized,
      *         @c false otherwise
      */
-    bool authorize() const;
+    AuthStatus authorize() const;
 
     /**
      * @brief Gets information about the authorization status of an action
@@ -262,7 +264,7 @@ public:
      * @param slot The slot to connect to the actionPerformed() signal
      * @return true if the execution is started successfully, false otherwise
      */
-    bool executeAsync(QObject *target = NULL, const char *slot = NULL);
+    AuthStatus executeAsync(QObject *target = NULL, const char *slot = NULL);
 
     /**
      * @brief Asynchronously executes the action with a specific helperID
@@ -275,7 +277,7 @@ public:
      * @param slot The slot to connect to the actionPerformed() signal
      * @return true if the execution is started successfully, false otherwise
      */
-    bool executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
+    AuthStatus executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
 
     /**
      * @brief Asynchronously executes a group of actions with a single request
