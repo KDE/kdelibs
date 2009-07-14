@@ -582,6 +582,9 @@ endif (Q_WS_MAC)
 install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors 
          DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
+if(WIN32)
+install( FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
+endif(WIN32)
 install( FILES
   jobs/org.kde.JobViewServer.xml
   jobs/org.kde.JobView.xml
