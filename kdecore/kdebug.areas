@@ -676,6 +676,7 @@
 67000   kscd
 67100   kmix
 67200   kmid
+67300   dragonplayer
 
 # kdebindings
 80001	kjsembed
