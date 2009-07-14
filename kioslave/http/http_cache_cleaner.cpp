@@ -106,17 +106,18 @@ QString dateString(qint64 date)
 
 void printInfo(const CacheFileInfo &fi)
 {
-    qDebug() << "File" << fi.baseName << "version" << fi.version[0] << fi.version[1];
-    qDebug() << " cached bytes    " << fi.bytesCached << "useCount" << fi.useCount;
-    qDebug() << " servedDate      " << dateString(fi.servedDate);
-    qDebug() << " lastModifiedDate" << dateString(fi.lastModifiedDate);
-    qDebug() << " expireDate      " << dateString(fi.expireDate);
-    qDebug() << " entity tag      " << fi.etag;
-    qDebug() << " encoded URL     " << fi.url;
-    qDebug() << " mimetype        " << fi.mimeType;
-    qDebug() << "Response headers follow...";
+    QTextStream out(stdout, QIODevice::WriteOnly);
+    out << "File " << fi.baseName << " version " << fi.version[0] << fi.version[1];
+    out << "\n cached bytes     " << fi.bytesCached << " useCount " << fi.useCount;
+    out << "\n servedDate       " << dateString(fi.servedDate);
+    out << "\n lastModifiedDate " << dateString(fi.lastModifiedDate);
+    out << "\n expireDate       " << dateString(fi.expireDate);
+    out << "\n entity tag       " << fi.etag;
+    out << "\n encoded URL      " << fi.url;
+    out << "\n mimetype         " << fi.mimeType;
+    out << "\nResponse headers follow...\n";
     foreach (const QString &h, fi.responseHeaders) {
-        qDebug() << h;
+        out << h << '\n';
     }
 }
 
@@ -130,7 +131,7 @@ static bool timeSizeFits(qint64 intTime)
 bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
 {
     if (d.size() < CacheFileInfo::size) {
-        qDebug() << "readBinaryHeader(): file too small?";
+        kDebug(7113) << "readBinaryHeader(): file too small?";
         return false;
     }
     QDataStream stream(d);
@@ -139,7 +140,7 @@ bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
     stream >> fi->version[0];
     stream >> fi->version[1];
     if (fi->version[0] != version[0] || fi->version[1] != version[1]) {
-        qDebug() << "readBinaryHeader(): wrong magic bytes";
+        kDebug(7113) << "readBinaryHeader(): wrong magic bytes";
         return false;
     }
     stream >> fi->compression;
@@ -239,7 +240,7 @@ bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mod
     QByteArray header = file.read(CacheFileInfo::size);
     // do *not* modify/delete the file if we're in file info mode.
     if (!readBinaryHeader(header, fi) && mode != FileInfo) {
-        qDebug() << "readBinaryHeader() returned false, deleting file" << baseName;
+        kDebug(7113) << "readBinaryHeader() returned false, deleting file" << baseName;
         file.remove();
         return false;
     }
@@ -280,11 +281,11 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
         // NOTE: for now we're not keeping cache stats / a list of cache files in memory, so
         //       this command does little. When we do a complete scan of the directory we will
         //       find any new files anyway.
-        qDebug() << "CreateNotificationCommand for" << fi->baseName;
+        kDebug(7113) << "CreateNotificationCommand for" << fi->baseName;
         g_cacheHasChanged = true;
         break;
     case UpdateFileCommand: {
-        qDebug() << "UpdateFileCommand for" << fi->baseName;
+        kDebug(7113) << "UpdateFileCommand for" << fi->baseName;
         QFile file(fileName);
         file.open(QIODevice::ReadWrite);
 
@@ -309,7 +310,7 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
         break;
     }
     default:
-        qDebug() << "received invalid command";
+        kDebug(7113) << "received invalid command";
         break;
     }
 }
@@ -337,7 +338,7 @@ static void removeOldFiles()
 
 static void cleanCache(const QDir &cacheDir)
 {
-    qDebug() << "cleanCache() running.";
+    kDebug(7113) << "cleanCache() running.";
     QList<CacheFileInfo *> fiList;
     qint64 totalSizeOnDisk = 0;
     foreach (const QString &baseName, cacheDir.entryList()) {
@@ -371,7 +372,7 @@ static void cleanCache(const QDir &cacheDir)
         }
     }
 
-    qDebug() << "total size of cache files is" << totalSizeOnDisk;
+    kDebug(7113) << "total size of cache files is" << totalSizeOnDisk;
 
     // operator< implements the usefulness estimate, hence we sort by usefulness
     qSort(fiList.begin(), fiList.end());
@@ -385,7 +386,7 @@ static void cleanCache(const QDir &cacheDir)
         }
     }
 
-    qDebug() << "total size of cache files after cleaning is" << totalSizeOnDisk;
+    kDebug(7113) << "total size of cache files after cleaning is" << totalSizeOnDisk;
     qDeleteAll(fiList);
     g_cacheHasChanged = false;
 }
@@ -474,15 +475,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         lServer.waitForNewConnection(1);
 
         while (QLocalSocket *sock = lServer.nextPendingConnection()) {
-            qDebug() << "got new connection, openMode() is" << sock->openMode();
             sock->waitForConnected();
             sockets.append(sock);
         }
 
-        qDebug() << sockets.size() << "sockets in waiting list.";
         for (int i = 0; i < sockets.size(); i++) {
             QLocalSocket *sock = sockets[i];
-            // qDebug() << "  this socket's state is:" << sock->state();
             if (sock->state() != QLocalSocket::ConnectedState) {
                 sock->waitForDisconnected();
                 delete sock;
@@ -497,15 +495,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                     break;
                 }
                 Q_ASSERT(recv.size() == 80);
-                qDebug() << " received number of bytes:" << recv.size();
-                //### not keeping the information...
+                //### not keeping the information, for now...
                 CacheFileInfo fi;
                 dispatchCommand(recv, &fi);
                 updateCounter++;
             }
-        }
-        if ((updateCounter % 10) == 0) {
-            qDebug() << "updateCounter =" << updateCounter;
         }
         // TODO it makes more sense to keep track of cache size, which we can actually do
         if (updateCounter > 50) {
