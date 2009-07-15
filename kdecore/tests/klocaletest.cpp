@@ -481,7 +481,7 @@ KLocaleTest::removeAcceleratorMarker()
 }
 
 void
-KLocaleTest::formatByteSize()
+KLocaleTest::formatByteSize2()
 {
     KLocale locale(*KGlobal::locale());
 
