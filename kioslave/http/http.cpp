@@ -1,4 +1,4 @@
-*/
+/*
    Copyright (C) 2000-2003 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000-2002 George Staikos <staikos@kde.org>
    Copyright (C) 2000-2002 Dawit Alemayehu <adawit@kde.org>
