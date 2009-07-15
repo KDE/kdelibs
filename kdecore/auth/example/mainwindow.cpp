@@ -108,7 +108,7 @@ void MainWindow::on_longAction_triggered()
     connect(longAction.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(longActionPerformed(ActionReply)));
 
 
-    if (!longAction.executeAsync())
+    if (longAction.executeAsync() != Action::Authorized)
         this->statusBar()->showMessage("Could not execute the long action");
     else {
         pushButton->show();
