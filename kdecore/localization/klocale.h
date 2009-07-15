@@ -467,16 +467,132 @@ public:
   QString formatLong(long num) const;
 
   /**
+   * These binary units are used in KDE by the formatByteSize()
+   * functions.
+   *
+   * NOTE: There are several different units standards:
+   * 1) SI  (i.e. metric), powers-of-10.
+   * 2) IEC, powers-of-2, with specific units KiB, MiB, etc.
+   * 3) JEDEC, powers-of-2, used for solid state memory sizing which
+   *    is why you see flash cards labels as e.g. 4GB.  These (ab)use
+   *    the metric units.  Although JEDEC only defines KB, MB, GB, if
+   *    JEDEC is selected all units will be powers-of-2 with metric
+   *    prefixes for clarity in the event of sizes larger than 1024 GB.
+   *
+   * Although 3 different dialects are possible this enum only uses
+   * metric names since adding all 3 different names of essentially the same
+   * unit would be pointless.  Use BinaryUnitDialect to control the exact
+   * units returned.
+   *
+   * @since 4.4
+   * @see binaryUnitDialect
+   */
+  enum BinarySizeUnits {
+      /// Auto-choose a unit such that the result is in the range [0, 1000 or 1024)
+      DefaultBinaryUnits = -1,
+
+      // The first real unit must be 0 for the current implementation!
+      UnitByte,      ///<  B         1 byte
+      UnitKiloByte,  ///<  KiB/KB/kB 1024/1000 bytes.
+      UnitMegaByte,  ///<  MiB/MB/MB 2^20/10^06 bytes.
+      UnitGigaByte,  ///<  GiB/GB/GB 2^30/10^09 bytes.
+      UnitTeraByte,  ///<  TiB/TB/TB 2^40/10^12 bytes.
+      UnitPetaByte,  ///<  PiB/PB/PB 2^50/10^15 bytes.
+      UnitExaByte,   ///<  EiB/EB/EB 2^60/10^18 bytes.
+      UnitZettaByte, ///<  ZiB/ZB/ZB 2^70/10^21 bytes.
+      UnitYottaByte, ///<  YiB/YB/YB 2^80/10^24 bytes.
+      UnitLastUnit = UnitYottaByte,
+  };
+
+  /**
+   * This enum chooses what dialect is used for binary units.
+   *
+   * Note: Although JEDEC abuses the metric prefixes and can therefore be
+   * confusing, it has been used to describe *memory* sizes for quite some time
+   * and programs should therefore use either Default, JEDEC, or IEC 60027-2
+   * for memory sizes.
+   *
+   * On the other hand network transmission rates are typically in metric so
+   * Default, Metric, or IEC (which is unambiguous) should be chosen.
+   *
+   * Normally choosing DefaultBinaryUnits is the best option as that uses
+   * the user's selection for units.
+   *
+   * @since 4.4
+   * @see binaryUnitDialect
+   * @see setBinaryUnitDialect
+   */
+  enum BinaryUnitDialect {
+      DefaultBinaryDialect = -1, ///< Used if no specific preference
+      IECBinaryDialect,          ///< KDE Default, KiB, MiB, etc. 2^(10*n)
+      JEDECBinaryDialect,        ///< KDE 3.5 default, KB, MB, etc. 2^(10*n)
+      MetricBinaryDialect,       ///< SI Units, kB, MB, etc. 10^(3*n)
+      LastBinaryDialect = MetricBinaryDialect,
+  };
+
+  /**
    * Converts @p size from bytes to the string representation using the
-   * IEC 60027-2 standard
+   * user's default binary unit dialect.  The default unit dialect is
+   * IEC 60027-2.
    *
    * Example:
-   * formatByteSize(1024) returns "1.0 KiB"
+   * formatByteSize(1024) returns "1.0 KiB" by default.
    *
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
+   * @see BinaryUnitDialect
+   * @todo KDE 5: Remove in favor of overload added in KDE 4.4.
    */
   QString formatByteSize( double size ) const;
+
+  /**
+   * Converts @p size from bytes to the appropriate string representation
+   * using the binary unit dialect @p dialect and the specific units @units.
+   *
+   * Example:
+   * formatByteSize(1000, unit, KLocale::BinaryUnitKilo) returns:
+   *   for KLocale::MetricBinaryUnits, "1.0 kB",
+   *   for KLocale::IECBinaryUnits,    "0.9 KiB",
+   *   for KLocale::JEDECBinaryUnits,  "0.9 KB".
+   *
+   * @param size size in bytes
+   * @param precision number of places after the decimal point to use.  KDE uses
+   *        1 by default so when in doubt use 1.
+   * @param dialect binary unit standard to use.  Use DefaultBinaryUnits to
+   *        use the localized user selection unless you need to use a specific
+   *        unit type (such as displaying a flash memory size in JEDEC).
+   * @param specificUnit specific unit size to use in result.  Use
+   *        DefaultBinarySize to automatically select a unit that will return
+   *        a sanely-sized number.
+   * @return converted size as a translated string including the units.
+   *        E.g. "1.23 KiB", "2 GB" (JEDEC), "4.2 kB" (Metric).
+   * @since 4.4
+   */
+  QString formatByteSize(
+              double size,
+              int precision,
+              BinaryUnitDialect dialect = KLocale::DefaultBinaryDialect,
+              BinarySizeUnits specificUnit = KLocale::DefaultBinaryUnits
+          ) const;
+
+  /**
+   * Returns the user's default binary unit dialect.
+   *
+   * @since 4.4
+   * @return User's default binary unit dialect
+   * @see BinaryUnitDialect
+   */
+  BinaryUnitDialect binaryUnitDialect() const;
+
+  /**
+   * Sets @p newDialect to be the default dialect for this locale (and only
+   * this locale).  Newly created KLocale objects will continue to default
+   * to the user's choice.
+   *
+   * @param newDialect the new dialect to set as default for this locale object.
+   * @since 4.4
+   */
+  void setBinaryUnitDialect(BinaryUnitDialect newDialect);
 
   /**
    * Given a number of milliseconds, converts that to a string containing

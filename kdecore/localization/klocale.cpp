@@ -25,6 +25,8 @@
 
 #include <config.h>
 
+#include <math.h>
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -196,6 +198,12 @@ public:
    */
   static QString fancyDate(const KLocale *locale, const QDate &date, int daysToNow);
 
+  /**
+   * @internal
+   * @return list of translated binary unit for @p dialect.
+   */
+  QList<QString> dialectUnitsList(KLocale::BinaryUnitDialect dialect);
+
   enum DurationType {
       DaysDurationType = 0,
       HoursDurationType,
@@ -222,6 +230,7 @@ public:
   bool positivePrefixCurrencySymbol : 1;
   bool negativePrefixCurrencySymbol : 1;
   KLocale::DigitSet monetaryDigitSet;
+  KLocale::BinaryUnitDialect binaryUnitDialect;
 
   // Date and time
   QString timeFormat;
@@ -266,10 +275,7 @@ public:
   char win32SystemEncoding[3+7]; //"cp " + lang ID
 #endif
 
-  // Performance stuff.
-  enum ByteSizeFmt {
-    TiB, GiB, MiB, KiB, B
-  };
+  // Performance stuff for binary units.
   QList<QString> byteSizeFmt;
 };
 
@@ -479,6 +485,8 @@ void KLocalePrivate::initFormat(KConfig *config)
 
   readConfigNumEntry("MonetaryDigitSet", KLocale::ArabicDigits,
                      monetaryDigitSet, KLocale::DigitSet);
+  readConfigNumEntry("BinaryUnitDialect", KLocale::IECBinaryDialect,
+                     binaryUnitDialect, KLocale::BinaryUnitDialect);
 
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", timeFormat);
@@ -1345,59 +1353,167 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   return mantString + expString;
 }
 
-// If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
-// a hidden kconfig option and getting the code from #57240 into the same
-// method, so that all KDE apps use the same unit, instead of letting each app decide.
+// Returns a list of already translated units to use later in formatByteSize
+// and friends.  Account for every unit in KLocale::BinarySizeUnits
+QList<QString> KLocalePrivate::dialectUnitsList(KLocale::BinaryUnitDialect dialect)
+{
+    QList<QString> binaryUnits;
+    QString s; // Used in CACHE_BYTE_FMT macro defined shortly
+
+    // Adds a given translation to the binaryUnits list.
+    #define CACHE_BYTE_FMT(ctxt, x) \
+        translate_priv(ctxt, x, 0, 0, 0, &s); \
+        binaryUnits.append(s);
+
+    // Do not remove i18n: comments below, they are used by the
+    // translators.
+
+    // This prefix is shared by all current dialects.
+    // i18n: Dumb message, avoid any markup or scripting.
+    CACHE_BYTE_FMT("size in bytes", I18N_NOOP2("size in bytes", "%1 B"));
+
+    switch(dialect) {
+        case KLocale::MetricBinaryDialect:
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 1000 bytes", I18N_NOOP2("size in 1000 bytes", "%1 kB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^6 bytes", I18N_NOOP2("size in 10^6 bytes", "%1 MB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^9 bytes", I18N_NOOP2("size in 10^9 bytes", "%1 GB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^12 bytes", I18N_NOOP2("size in 10^12 bytes", "%1 TB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^15 bytes", I18N_NOOP2("size in 10^15 bytes", "%1 PB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^18 bytes", I18N_NOOP2("size in 10^18 bytes", "%1 EB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^21 bytes", I18N_NOOP2("size in 10^21 bytes", "%1 ZB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 10^24 bytes", I18N_NOOP2("size in 10^24 bytes", "%1 YB"));
+        break;
+
+        case KLocale::JEDECBinaryDialect:
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 1024 bytes", I18N_NOOP2("memory size in 1024 bytes", "%1 KB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^20 bytes", I18N_NOOP2("memory size in 2^20 bytes", "%1 MB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^30 bytes", I18N_NOOP2("memory size in 2^30 bytes", "%1 GB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^40 bytes", I18N_NOOP2("memory size in 2^40 bytes", "%1 TB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^40 bytes", I18N_NOOP2("memory size in 2^40 bytes", "%1 PB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^50 bytes", I18N_NOOP2("memory size in 2^50 bytes", "%1 EB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^60 bytes", I18N_NOOP2("memory size in 2^60 bytes", "%1 ZB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("memory size in 2^70 bytes", I18N_NOOP2("memory size in 2^70 bytes", "%1 YB"));
+        break;
+
+        case KLocale::IECBinaryDialect:
+        default:
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 1024 bytes", I18N_NOOP2("size in 1024 bytes", "%1 KiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^20 bytes", I18N_NOOP2("size in 2^20 bytes", "%1 MiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^30 bytes", I18N_NOOP2("size in 2^30 bytes", "%1 GiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^40 bytes", I18N_NOOP2("size in 2^40 bytes", "%1 TiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^40 bytes", I18N_NOOP2("size in 2^40 bytes", "%1 PiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^50 bytes", I18N_NOOP2("size in 2^50 bytes", "%1 EiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^60 bytes", I18N_NOOP2("size in 2^60 bytes", "%1 ZiB"));
+            // i18n: Dumb message, avoid any markup or scripting.
+            CACHE_BYTE_FMT("size in 2^70 bytes", I18N_NOOP2("size in 2^70 bytes", "%1 YiB"));
+        break;
+    }
+
+    return binaryUnits;
+}
+
+QString KLocale::formatByteSize( double size,
+                                 int precision,
+                                 BinaryUnitDialect dialect,
+                                 BinarySizeUnits specificUnit ) const
+{
+    // Error checking
+    if (dialect <= DefaultBinaryDialect || dialect > LastBinaryDialect ) {
+        dialect = d->binaryUnitDialect;
+    }
+
+    if (specificUnit < DefaultBinaryUnits || specificUnit > UnitLastUnit) {
+        specificUnit = DefaultBinaryUnits;
+    }
+
+    // Choose appropriate units.
+    QList<QString> dialectUnits;
+    if (dialect == d->binaryUnitDialect) {
+        // Cache default units for speed
+        if (d->byteSizeFmt.size() == 0) {
+            QMutexLocker lock(&staticData->mutex);
+
+            // We only cache the user's default dialect.
+            d->byteSizeFmt = d->dialectUnitsList(d->binaryUnitDialect);
+        }
+
+        dialectUnits = d->byteSizeFmt;
+    }
+    else {
+        dialectUnits = d->dialectUnitsList(dialect);
+    }
+
+    int unit = 0; // Selects what unit to use from cached list
+    double multiplier = 1024.0;
+
+    if (dialect == MetricBinaryDialect) {
+        multiplier = 1000.0;
+    }
+
+    // If a specific unit conversion is given, use it directly.  Otherwise
+    // search until the result is in [0, multiplier) (or out of our range).
+    if (specificUnit == DefaultBinaryUnits)
+    {
+        while(size >= multiplier && unit < (int) UnitYottaByte) {
+            size /= multiplier;
+            unit++;
+        }
+    }
+    else {
+        // A specific unit is in use
+        unit = static_cast<int>(specificUnit);
+        if (unit > 0) {
+            size /= pow(multiplier, unit);
+        }
+    }
+
+    if (unit == 0) {
+        // Bytes, no rounding
+        return dialectUnits[unit].arg(formatNumber(size, 0));
+    }
+
+    return dialectUnits[unit].arg(formatNumber(size, precision));
+}
 
 QString KLocale::formatByteSize( double size ) const
 {
-    // Per IEC 60027-2
+    return formatByteSize( size, 1 );
+}
 
-    // Binary prefixes
-    //Tebi-byte             TiB             2^40    1,099,511,627,776 bytes
-    //Gibi-byte             GiB             2^30    1,073,741,824 bytes
-    //Mebi-byte             MiB             2^20    1,048,576 bytes
-    //Kibi-byte             KiB             2^10    1,024 bytes
+KLocale::BinaryUnitDialect KLocale::binaryUnitDialect() const
+{
+    return d->binaryUnitDialect;
+}
 
-    if (d->byteSizeFmt.size() == 0) {
-        QMutexLocker lock(&staticData->mutex);
-        // Pretranslated format strings for byte sizes.
-        #define CACHEBYTEFMT(x) { \
-            QString s; \
-            translateRaw(x, 0, &s); \
-            d->byteSizeFmt.append(s); \
-        } while(0)
-        // i18n: Dumb message, avoid any markup or scripting.
-        CACHEBYTEFMT(I18N_NOOP("%1 TiB"));
-        // i18n: Dumb message, avoid any markup or scripting.
-        CACHEBYTEFMT(I18N_NOOP("%1 GiB"));
-        // i18n: Dumb message, avoid any markup or scripting.
-        CACHEBYTEFMT(I18N_NOOP("%1 MiB"));
-        // i18n: Dumb message, avoid any markup or scripting.
-        CACHEBYTEFMT(I18N_NOOP("%1 KiB"));
-        // i18n: Dumb message, avoid any markup or scripting.
-        CACHEBYTEFMT(I18N_NOOP("%1 B"));
-    }
+void KLocale::setBinaryUnitDialect(BinaryUnitDialect newDialect)
+{
+    QMutexLocker lock(&staticData->mutex);
 
-    #define BYTEFMT(unit, n) (d->byteSizeFmt[KLocalePrivate::unit].arg(n))
-    QString s;
-    if (size >= 1073741824.0) {
-        size /= 1073741824.0;
-        if (size > 1024.0) {
-            s = BYTEFMT(TiB, formatNumber(size / 1024.0, 1));
-        } else {
-            s = BYTEFMT(GiB, formatNumber(size, 1));
-        }
-    } else if (size >= 1048576.0) {
-        size /= 1048576.0;
-        s = BYTEFMT(MiB, formatNumber(size, 1));
-    } else if (size >= 1024.0) {
-        size /= 1024.0;
-        s = BYTEFMT(KiB, formatNumber(size, 1));
-    } else {
-        s = BYTEFMT(B, formatNumber(size, 0));
-    }
-    return s;
+    d->binaryUnitDialect = newDialect;
+    d->byteSizeFmt.clear(); // Reset cached translations.
 }
 
 QString KLocale::formatDuration(unsigned long mSec) const

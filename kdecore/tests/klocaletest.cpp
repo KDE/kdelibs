@@ -480,4 +480,53 @@ KLocaleTest::removeAcceleratorMarker()
 	         QString("Foo & Bar"));
 }
 
+void
+KLocaleTest::formatByteSize()
+{
+    KLocale locale(*KGlobal::locale());
+
+    // IEC is also default
+    locale.setBinaryUnitDialect(KLocale::IECBinaryDialect);
+    QCOMPARE(locale.binaryUnitDialect(), KLocale::IECBinaryDialect);
+
+    QCOMPARE(locale.formatByteSize(1024.0), QString("1.0 KiB"));
+    QCOMPARE(locale.formatByteSize(1023.0), QString("1,023 B"));
+    QCOMPARE(locale.formatByteSize(1163000.0), QString("1.1 MiB")); // 1.2 metric
+
+    locale.setBinaryUnitDialect(KLocale::JEDECBinaryDialect);
+    QCOMPARE(locale.binaryUnitDialect(), KLocale::JEDECBinaryDialect);
+
+    QCOMPARE(locale.formatByteSize(1024.0), QString("1.0 KB"));
+    QCOMPARE(locale.formatByteSize(1023.0), QString("1,023 B"));
+    QCOMPARE(locale.formatByteSize(1163000.0), QString("1.1 MB"));
+
+    locale.setBinaryUnitDialect(KLocale::MetricBinaryDialect);
+    QCOMPARE(locale.binaryUnitDialect(), KLocale::MetricBinaryDialect);
+
+    QCOMPARE(locale.formatByteSize(1024.0), QString("1.0 kB"));
+    QCOMPARE(locale.formatByteSize(1023.0), QString("1.0 kB"));
+    QCOMPARE(locale.formatByteSize(1163000.0), QString("1.2 MB"));
+
+    // Ensure specific dialects work, still on metric by default
+    QCOMPARE(locale.formatByteSize(1024.0, 1, KLocale::JEDECBinaryDialect), QString("1.0 KB"));
+    QCOMPARE(locale.formatByteSize(2097152.0, 1, KLocale::IECBinaryDialect), QString("2.0 MiB"));
+
+    locale.setBinaryUnitDialect(KLocale::JEDECBinaryDialect);
+    QCOMPARE(locale.binaryUnitDialect(), KLocale::JEDECBinaryDialect);
+    QCOMPARE(locale.formatByteSize(2097152.0, 1, KLocale::MetricBinaryDialect), QString("2.1 MB"));
+
+    // Ensure all units are represented (still in JEDEC mode)
+    QCOMPARE(locale.formatByteSize(2.0e9, 1, KLocale::MetricBinaryDialect), QString("2.0 GB"));
+    QCOMPARE(locale.formatByteSize(3.2e12, 1, KLocale::MetricBinaryDialect), QString("3.2 TB"));
+    QCOMPARE(locale.formatByteSize(4.1e15, 1, KLocale::MetricBinaryDialect), QString("4.1 PB"));
+    QCOMPARE(locale.formatByteSize(6.7e18, 2, KLocale::MetricBinaryDialect), QString("6.70 EB"));
+    QCOMPARE(locale.formatByteSize(5.6e20, 2, KLocale::MetricBinaryDialect), QString("560.00 EB"));
+    QCOMPARE(locale.formatByteSize(2.3e22, 2, KLocale::MetricBinaryDialect), QString("23.00 ZB"));
+    QCOMPARE(locale.formatByteSize(1.0e27, 1, KLocale::MetricBinaryDialect), QString("1,000.0 YB"));
+
+    // Spattering of specific units
+    QCOMPARE(locale.formatByteSize(823000, 3, KLocale::IECBinaryDialect, KLocale::UnitMegaByte), QString("0.785 MiB"));
+    QCOMPARE(locale.formatByteSize(1234034.0, 4, KLocale::JEDECBinaryDialect, KLocale::UnitByte), QString("1,234,034 B"));
+}
+
 QTEST_KDEMAIN_CORE(KLocaleTest)
