@@ -501,7 +501,7 @@ public:
       UnitExaByte,   ///<  EiB/EB/EB 2^60/10^18 bytes.
       UnitZettaByte, ///<  ZiB/ZB/ZB 2^70/10^21 bytes.
       UnitYottaByte, ///<  YiB/YB/YB 2^80/10^24 bytes.
-      UnitLastUnit = UnitYottaByte,
+      UnitLastUnit = UnitYottaByte
   };
 
   /**
@@ -527,7 +527,7 @@ public:
       IECBinaryDialect,          ///< KDE Default, KiB, MiB, etc. 2^(10*n)
       JEDECBinaryDialect,        ///< KDE 3.5 default, KB, MB, etc. 2^(10*n)
       MetricBinaryDialect,       ///< SI Units, kB, MB, etc. 10^(3*n)
-      LastBinaryDialect = MetricBinaryDialect,
+      LastBinaryDialect = MetricBinaryDialect
   };
 
   /**
