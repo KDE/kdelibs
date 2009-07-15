@@ -20,8 +20,7 @@
 #define KIDLETIME_H
 
 #include <QtCore/QObject>
-#include <kdemacros.h>
-
+#include "kidletime_export.h"
 class KIdleTimePrivate;
 
 /**
@@ -34,7 +33,7 @@ class KIdleTimePrivate;
  *
  * @author Dario Freddi
  */
-class KDE_EXPORT KIdleTime : public QObject
+class KIDLETIME_EXPORT KIdleTime : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KIdleTime)
