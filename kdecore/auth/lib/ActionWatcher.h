@@ -49,6 +49,12 @@ class ActionWatcher : public QObject
 
     ActionWatcher(const QString &action);
 
+private slots:
+    void actionStartedSlot(const QString &action);
+    void actionPerformedSlot(const QString &action, ActionReply reply);
+    void progressStepSlot(const QString &action, int i);
+    void progressStepSlot(const QString &action, QVariantMap data);
+    
 public:
     /**
      * @brief Factory method to get watchers

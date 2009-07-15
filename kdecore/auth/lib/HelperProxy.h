@@ -49,10 +49,10 @@ public:
     virtual void sendProgressStep(const QVariantMap &step) = 0;
 
 signals:
-    void actionStarted();
-    void actionPerformed(ActionReply reply);
-    void progressStep(int progress);
-    void progressStep(const QVariantMap &data);
+    void actionStarted(const QString &action);
+    void actionPerformed(const QString &action, ActionReply reply);
+    void progressStep(const QString &action, int progress);
+    void progressStep(const QString &action, const QVariantMap &data);
 };
 
 Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");

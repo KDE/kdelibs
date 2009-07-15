@@ -136,13 +136,13 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     QDataStream stream(&blob, QIODevice::ReadOnly);
 
     if (type == ActionStarted) {
-        emit actionStarted();
+        emit actionStarted(action);
     } else if (type == ActionPerformed) {
         ActionReply reply;
         stream >> reply;
 
         m_actionsInProgress.removeOne(action);
-        emit actionPerformed(reply);
+        emit actionPerformed(action, reply);
     } else if (type == DebugMessage) {
         int level;
         QString message;
@@ -154,12 +154,12 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
         int step;
         stream >> step;
 
-        emit progressStep(step);
+        emit progressStep(action, step);
     } else if (type == ProgressStepData) {
         QVariantMap data;
         stream >> data;
 
-        emit progressStep(data);
+        emit progressStep(action, data);
     }
 }
 
@@ -272,16 +272,16 @@ void debugMessageReceived(int t, const QString &message)
     QtMsgType type = (QtMsgType)t;
     switch (type) {
     case QtDebugMsg:
-        qDebug("Message from helper: %s", message.toAscii().data());
+        qDebug("Debug message from helper: %s", message.toAscii().data());
         break;
     case QtWarningMsg:
-        qWarning("Message from helper: %s", message.toAscii().data());
+        qWarning("Warning from helper: %s", message.toAscii().data());
         break;
     case QtCriticalMsg:
-        qCritical("Message from helper: %s", message.toAscii().data());
+        qCritical("Critical warning from helper: %s", message.toAscii().data());
         break;
     case QtFatalMsg:
-        qFatal("Message from helper: %s", message.toAscii().data());
+        qFatal("Fatal error from helper: %s", message.toAscii().data());
         break;
     }
 }

@@ -37,10 +37,10 @@ ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
 
     HelperProxy *helper = BackendsManager::helperProxy();
 
-    connect(helper, SIGNAL(actionStarted()), this, SIGNAL(actionStarted()));
-    connect(helper, SIGNAL(actionPerformed(ActionReply)), this, SIGNAL(actionPerformed(ActionReply)));
-    connect(helper, SIGNAL(progressStep(int)), this, SIGNAL(progressStep(int)));
-    connect(helper, SIGNAL(progressStep(QVariantMap)), this, SIGNAL(progressStep(QVariantMap)));
+    connect(helper, SIGNAL(actionStarted(QString)), this, SLOT(actionStartedSlot(QString)));
+    connect(helper, SIGNAL(actionPerformed(QString, ActionReply)), this, SLOT(actionPerformedSlot(QString, ActionReply)));
+    connect(helper, SIGNAL(progressStep(QString, int)), this, SLOT(progressStepSlot(QString, int)));
+    connect(helper, SIGNAL(progressStep(QString, QVariantMap)), this, SLOT(progressStepSlot(QString, QVariantMap)));
 }
 
 ActionWatcher::~ActionWatcher()
@@ -62,3 +62,26 @@ QString ActionWatcher::action() const
     return d->action;
 }
 
+void ActionWatcher::actionStartedSlot(const QString &action)
+{
+    if(d->action == action)
+        emit actionStarted();
+}
+
+void ActionWatcher::actionPerformedSlot(const QString &action, ActionReply reply)
+{
+    if(d->action == action)
+        emit actionPerformed(reply);
+}
+
+void ActionWatcher::progressStepSlot(const QString &action, int i)
+{
+    if(d->action == action)
+        emit progressStep(i);
+}
+
+void ActionWatcher::progressStepSlot(const QString &action, QVariantMap data)
+{
+    if(d->action == action)
+        emit progressStep(data);
+}
