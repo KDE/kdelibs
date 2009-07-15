@@ -221,6 +221,11 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
     if ( d->mReorderStartTab == -1 ) {
       int tab = selectTab( event->pos() );
       if ( tab != -1 ) {
+        event->accept();
+        if (QTabBar::isMovable()) {
+          QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+          QCoreApplication::sendEvent(this, &fakedMouseEvent);
+        }
         emit mouseMiddleClick( tab );
         return;
       }
