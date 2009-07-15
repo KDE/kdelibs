@@ -79,6 +79,9 @@
     <signal name="NewAttentionIcon">
     </signal>
 
+    <signal name="NewOverlayIcon">
+    </signal>
+
     <signal name="NewToolTip">
     </signal>
 
