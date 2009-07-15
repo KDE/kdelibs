@@ -667,10 +667,11 @@ void KShortcutsEditorPrivate::printShortcuts() const
         cell.firstCursorPosition().insertText(i18n("Description"));
         currow++;
 
-        for (int j = 0; j < item->childCount(); j++) {
-            QTreeWidgetItem* actionitem = item->child(j);
-            KShortcutsEditorItem* editoritem =
-                    dynamic_cast<KShortcutsEditorItem*>(actionitem);
+        for (QTreeWidgetItemIterator it(item); *it; ++it) {
+            if ((*it)->type() != ActionItem)
+                continue;
+
+            KShortcutsEditorItem* editoritem = static_cast<KShortcutsEditorItem*>(*it);
             table->insertRows(table->rows(),1);
             QVariant data = editoritem->data(Name,Qt::DisplayRole);
             table->cellAt(currow, 0).firstCursorPosition().insertText(data.toString());
