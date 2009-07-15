@@ -1270,9 +1270,12 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             }
             else if (hasCustomBackground && !hasSolidBackground)
             {
+                const QPointF oldBrushOrigin = painter->brushOrigin();
+                painter->setBrushOrigin(opt->rect.topLeft());
                 painter->setBrush(opt->backgroundBrush);
                 painter->setPen(Qt::NoPen);
                 painter->drawRect(opt->rect);
+                painter->setBrushOrigin(oldBrushOrigin);
                 return;
             }
 
