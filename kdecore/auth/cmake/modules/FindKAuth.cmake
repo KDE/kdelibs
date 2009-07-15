@@ -41,36 +41,41 @@ else (KAUTH_FOUND)
     endif (KAUTH_FIND_REQUIRED)
 endif (KAUTH_FOUND)
 
-macro(kde4_auth_register_helper _HELPER_TARGET _HELPER_ID _HELPER_USER )
+macro(kde4_auth_add_helper _HELPER_TARGET _HELPER_ID _HELPER_USER)
     
     pkg_search_module( DBUS dbus-1 )
 
     set(HELPER_ID ${_HELPER_ID})
     set(HELPER_TARGET ${_HELPER_TARGET})
     set(HELPER_USER ${_HELPER_USER})
-
+    
+    add_executable(${HELPER_TARGET} ${ARGN})
+    target_link_libraries(${HELPER_TARGET} ${KAUTH_LIBRARY} ${QT_QTCORE_LIBRARIES})
+    install(TARGETS ${HELPER_TARGET} DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)
+    
     configure_file(${KAUTH_DBUS_POLICY_STUB} ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.conf)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.conf DESTINATION /etc/dbus-1/system.d/)
 
     configure_file(${KAUTH_DBUS_SERVICE_STUB} ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service DESTINATION ${DBUS_PREFIX}/share/dbus-1/system-services )
-    install(TARGETS ${HELPER_TARGET} DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)
+    
 
-endmacro(kde4_auth_register_helper)
+endmacro(kde4_auth_add_helper)
 
-macro(kde4_auth_register_actions HELPER_TARGET HELPER_ID ACTIONS_FILE)
+macro(kde4_auth_register_actions HELPER_ID ACTIONS_FILE)
 
 if(APPLE)
     install(CODE "execute_process(COMMAND ${KAUTH_POLICY_GEN} ${ACTIONS_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
 elseif(UNIX)
     set(_output ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.policy)
+    get_filename_component(_input ${ACTIONS_FILE} ABSOLUTE)
     
-    add_custom_command(TARGET ${HELPER_TARGET} 
-                       POST_BUILD 
-                       COMMAND ${KAUTH_POLICY_GEN} ${ACTIONS_FILE} ${_output} 
-                       DEPENDS ${ACTIONS_FILE} 
+    add_custom_command(OUTPUT ${_output} 
+                       COMMAND ${KAUTH_POLICY_GEN} ${_input} ${_output} 
                        MAIN_DEPENDENCY ${ACTIONS_FILE}
-                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                       COMMENT "Generating ${HELPER_ID}.policy")
+    add_custom_target("actions for ${HELPER_ID}" ALL DEPENDS ${_output})
 
     install(FILES ${_output} DESTINATION ${POLICY_FILES_INSTALL_DIR})
 endif()

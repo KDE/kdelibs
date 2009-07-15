@@ -126,12 +126,13 @@
  
  The first argument is the cmake target name for the helper executable, that will be create using the add_executable with the source files you provide as last argument. The second argument is the
  helper id. Please be sure to don't misspell it, and to not quote it. The user parameter is the user that the helper has to be run as. It usually is root, but some actions could require less strict
- permissions, so you should use the right user where possible (for example the user apache if you have to mess with apache settings).
+ permissions, so you should use the right user where possible (for example the user apache if you have to mess with apache settings). Note that the target created by this macro already links to
+ libkauth and QtCore
  
  @section kauth_actions Action registration
  To be able to authorize the actions, they have to be added to the policy database. To do this in a cross-platform way, we provide a cmake macro. It looks like:
  @code
- kde4_auth_register_actions(<helper_target> <helper_id> <actions definition file>)
+ kde4_auth_register_actions(<helper_id> <actions definition file>)
  @endcode
  
  The action definition file describes which actions are implemented by your code and which default security options they should have. It is a common text file in .ini format, which one section for
