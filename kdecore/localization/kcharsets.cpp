@@ -724,7 +724,7 @@ QTextCodec* KCharsets::codecForName(const QString &n) const
     if ( codec )
         return codec;
     else
-        return QTextCodec::codecForName( "iso8859-1" );
+        return QTextCodec::codecForName( "iso-8859-1" );
 }
 
 QTextCodec* KCharsets::codecForName(const QString &n, bool &ok) const
@@ -739,7 +739,7 @@ QTextCodec* KCharsets::codecForName(const QString &n, bool &ok) const
     else
     {
         ok = false;
-        return QTextCodec::codecForName( "iso8859-1" );
+        return QTextCodec::codecForName( "iso-8859-1" );
     }
 }
 
