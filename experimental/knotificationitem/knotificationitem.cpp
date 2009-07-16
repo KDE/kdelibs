@@ -630,14 +630,12 @@ void KNotificationItemPrivate::registerToDaemon()
 
     if (notificationItemWatcher->isValid() &&
         notificationItemWatcher->ProtocolVersion() == s_protocolVersion) {
-        QObject::disconnect(notificationItemWatcher, SIGNAL(NotificationHostRegistered()), q, SLOT(registerToDaemon()));
 
         if (notificationItemWatcher->IsNotificationHostRegistered()) {
             kDebug() << "service is" << notificationItemDbus->service();
             notificationItemWatcher->RegisterService(notificationItemDbus->service());
             setLegacySystemTrayEnabled(false);
-        } else {
-            QObject::connect(notificationItemWatcher, SIGNAL(NotificationHostRegistered()), q, SLOT(registerToDaemon()));
+            QObject::disconnect(notificationItemWatcher, SIGNAL(NotificationHostRegistered()), q, SLOT(registerToDaemon()));
         }
     } else {
         kDebug()<<"System tray daemon not reachable or no registered system trays";
