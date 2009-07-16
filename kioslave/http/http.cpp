@@ -3845,6 +3845,7 @@ void HTTPProtocol::special( const QByteArray &data )
             // this is an unimportant performance issue.
             // FIXME on Windows we may be unable to delete the file if open
             QFile::remove(filename);
+            finished();
             break;
         }
         // let's be paranoid and inefficient here...
@@ -3857,6 +3858,7 @@ void HTTPProtocol::special( const QByteArray &data )
         }
 
         m_request = savedRequest;
+        finished();
         break;
     }
     case 5: // WebDAV lock
