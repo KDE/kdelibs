@@ -353,10 +353,6 @@ void KNotification::sendEvent()
 			appname = KGlobal::mainComponent().componentName();
 		}
 
-		if(!(d->flags & Persistent))
-		{
-			QTimer::singleShot(6*1000, this, SLOT(close()));
-		}
 		if (KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname ))
 			d->id = -1;
 	}
