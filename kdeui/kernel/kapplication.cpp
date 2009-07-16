@@ -375,7 +375,7 @@ KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
-    d->init();
+    d->init(GUIenabled);
 }
 
 #ifdef Q_WS_X11
