@@ -52,6 +52,7 @@ class KTabWidget::Private
     Private( KTabWidget *parent )
       : m_parent( parent ),
         m_automaticResizeTabs( false ),
+        m_tabBarHidden( false ),
         m_resizeSuspend(ResizeEnabled)
     {
 
@@ -64,6 +65,7 @@ class KTabWidget::Private
 
     KTabWidget *m_parent;
     bool m_automaticResizeTabs;
+    bool m_tabBarHidden;
     int m_maxLength;
     int m_minLength;
     int m_currentTabLength;
@@ -287,10 +289,13 @@ void KTabWidget::insertTab( QWidget *child, QTab *tab, int index )
 
 void KTabWidget::setTabBarHidden( bool hide )
 {
-  if (hide == isTabBarHidden()) return;
+  if (hide == isTabBarHidden())
+    return;
+
   QWidget *rightcorner = cornerWidget( Qt::TopRightCorner );
   QWidget *leftcorner = cornerWidget( Qt::TopLeftCorner );
 
+  d->m_tabBarHidden = hide;
   if ( hide ) {
     if ( leftcorner ) leftcorner->hide();
     if ( rightcorner ) rightcorner->hide();
@@ -304,7 +309,7 @@ void KTabWidget::setTabBarHidden( bool hide )
 
 bool KTabWidget::isTabBarHidden() const
 {
-  return !( tabBar()->isVisible() );
+  return d->m_tabBarHidden;
 }
 
 void KTabWidget::setTabTextColor( int index, const QColor& color )

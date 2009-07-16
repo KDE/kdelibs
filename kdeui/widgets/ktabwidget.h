@@ -130,7 +130,9 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
     void setTabBarHidden( bool hide );
 
     /**
-     * Returns true if the tabbar is hidden.
+     * Returns true if the tabbar was hidden by a call to setTabBarHidden( true ).
+     * Returns false if the widget itself is hidden, but no call to setTabBarHidden( true )
+     * has been made.
      */
     bool isTabBarHidden() const;
 

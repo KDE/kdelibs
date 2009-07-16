@@ -94,6 +94,17 @@ private Q_SLOTS:
         }
      }
 
+     void testSetHidden()
+     {
+         KTabWidget w;
+         w.insertTab(0, new QWidget, "a tab");
+         QVERIFY(!w.isTabBarHidden());
+         w.show();
+         QVERIFY(!w.isTabBarHidden());
+         w.setTabBarHidden(true);
+         QVERIFY(w.isTabBarHidden());
+     }
+
 private Q_SLOTS:
     void slotCurrentChanged(int index)
     {
