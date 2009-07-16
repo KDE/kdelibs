@@ -142,7 +142,7 @@ void SocketConnectionBackend::setSuspended(bool enable)
         socket->setReadBufferSize(1);
     } else {
         //kDebug() << this << " resuming";
-        socket->setReadBufferSize(0);
+        socket->setReadBufferSize(StandardBufferSize);
         if (socket->bytesAvailable() >= HeaderSize) {
             // there are bytes available
             QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
@@ -367,6 +367,9 @@ void SocketConnectionBackend::socketReadyRead()
 
             signalEmitted = true;
             emit commandReceived(task);
+        } else if (len > StandardBufferSize) {
+            kDebug(7017) << this << "Jumbo packet of" << len << "bytes";
+            socket->setReadBufferSize(len + 1);
         }
 
         // If we're dead, better don't try anything.

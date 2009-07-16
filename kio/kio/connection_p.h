@@ -62,7 +62,7 @@ namespace KIO {
         enum Mode { LocalSocketMode, TcpSocketMode };
 
     private:
-        enum { HeaderSize = 10 };
+        enum { HeaderSize = 10, StandardBufferSize = 32*1024 };
 
         QTcpSocket *socket;
         union {
