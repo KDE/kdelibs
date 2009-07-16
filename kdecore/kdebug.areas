@@ -100,10 +100,10 @@
 1800        okteta
 1801        liboktetacore
 1802        liboktetagui
-1803        libkakaocore
-1804        libkakaogui
-1805        libkakaocontrollers
-1806        oktetakakao
+1803        libkastencore
+1804        libkastengui
+1805        libkastencontrollers
+1806        oktetakasten
 1901        kfind
 1902        kfind (KfindWindow::updateResults)
 1903        kfind (KfindTabDialog::createQuery)
