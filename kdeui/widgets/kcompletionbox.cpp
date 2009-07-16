@@ -250,7 +250,11 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             }
         } else if ( type == QEvent::FocusOut ) {
             QFocusEvent* event = static_cast<QFocusEvent*>( e );
-            if (event->reason() != Qt::PopupFocusReason)
+            if (event->reason() != Qt::PopupFocusReason
+#ifdef Q_WS_WIN
+                && (event->reason() != Qt::ActiveWindowFocusReason || QApplication::activeWindow() != this)
+#endif
+                )
                 hide();
         }
     }
