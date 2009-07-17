@@ -325,6 +325,18 @@ struct KIEImgEdit
     }
 };
 
+static bool painterSupportsAntialiasing()
+{
+#ifdef Q_WS_WIN
+   // apparently QApplication::desktop()->paintEngine() is null on windows
+   // but we can assume the paint engine supports antialiasing there, right?
+   return true;
+#else
+   QPaintEngine* const pe = QApplication::desktop()->paintEngine();
+   return pe && pe->hasFeature(QPaintEngine::Antialiasing);
+#endif
+}
+
 // Taken from KImageEffect. We don't want to link kdecore to kdeui! As long
 // as this code is not too big, it doesn't seem much of a problem to me.
 
@@ -505,10 +517,7 @@ void KIconEffect::semiTransparent(QImage &img)
         int width  = img.width();
 	int height = img.height();
 
-#ifndef Q_WS_WIN
-        QPaintEngine* pe = QApplication::desktop()->paintEngine();
-        if(pe && pe->hasFeature(QPaintEngine::Antialiasing)){
-#endif
+        if(painterSupportsAntialiasing()){
             unsigned char *line;
             for(y=0; y<height; y++){
                 if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
@@ -520,7 +529,6 @@ void KIconEffect::semiTransparent(QImage &img)
                     line += 4;
                 }
             }
-#ifndef Q_WS_WIN
         }
         else{
             for(y=0; y<height; y++){
@@ -529,15 +537,10 @@ void KIconEffect::semiTransparent(QImage &img)
                     line[x] &= 0x00ffffff;
             }
         }
-#endif
     }
     else{
         if (img.depth() == 8) {
-#ifndef Q_WS_WIN
-            QPaintEngine *pe = QApplication::desktop()->paintEngine();
-            if (pe && pe->hasFeature(QPaintEngine::Antialiasing))
-#endif
-            {
+            if (painterSupportsAntialiasing()) {
                 // not running on 8 bit, we can safely install a new colorTable
                 QVector<QRgb> colorTable = img.colorTable();
                 for (int i = 0; i < colorTable.size(); ++i) {
@@ -602,10 +605,7 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-#ifndef Q_WS_WIN
-    if (QApplication::desktop()->paintEngine() && QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
-#endif
-    {
+    if (painterSupportsAntialiasing()) {
         QImage img=pix.toImage();
         semiTransparent(img);
         pix = QPixmap::fromImage(img);
