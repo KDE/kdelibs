@@ -505,8 +505,10 @@ void KIconEffect::semiTransparent(QImage &img)
         int width  = img.width();
 	int height = img.height();
 
+#ifndef Q_WS_WIN
         QPaintEngine* pe = QApplication::desktop()->paintEngine();
         if(pe && pe->hasFeature(QPaintEngine::Antialiasing)){
+#endif
             unsigned char *line;
             for(y=0; y<height; y++){
                 if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
@@ -518,6 +520,7 @@ void KIconEffect::semiTransparent(QImage &img)
                     line += 4;
                 }
             }
+#ifndef Q_WS_WIN
         }
         else{
             for(y=0; y<height; y++){
@@ -526,11 +529,15 @@ void KIconEffect::semiTransparent(QImage &img)
                     line[x] &= 0x00ffffff;
             }
         }
+#endif
     }
     else{
         if (img.depth() == 8) {
+#ifndef Q_WS_WIN
             QPaintEngine *pe = QApplication::desktop()->paintEngine();
-            if (pe && pe->hasFeature(QPaintEngine::Antialiasing)) {
+            if (pe && pe->hasFeature(QPaintEngine::Antialiasing))
+#endif
+            {
                 // not running on 8 bit, we can safely install a new colorTable
                 QVector<QRgb> colorTable = img.colorTable();
                 for (int i = 0; i < colorTable.size(); ++i) {
@@ -595,7 +602,9 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
+#ifndef Q_WS_WIN
     if (QApplication::desktop()->paintEngine() && QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
+#endif
     {
         QImage img=pix.toImage();
         semiTransparent(img);
