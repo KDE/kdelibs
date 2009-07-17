@@ -84,6 +84,11 @@ QVariantMap &Action::arguments()
     return d->args;
 }
 
+QVariantMap Action::arguments() const
+{
+    return d->args;
+}
+
 ActionWatcher *Action::watcher()
 {
     return ActionWatcher::watcher(d->name);
@@ -118,7 +123,7 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
 
     QList<QPair<QString, QVariantMap> > list;
 
-    foreach(Action a, actions) {
+    foreach(const Action &a, actions) {
         AuthStatus s = a.authorize();
         if (s == Authorized) {
             list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));

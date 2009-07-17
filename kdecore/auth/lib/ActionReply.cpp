@@ -91,7 +91,7 @@ ActionReply::Type ActionReply::type() const
     return d->type;
 }
 
-bool ActionReply::succeded() const
+bool ActionReply::succeeded() const
 {
     return d->type == Success;
 }

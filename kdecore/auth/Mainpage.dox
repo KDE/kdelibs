@@ -37,7 +37,7 @@
  - The system asks the user to authenticate, if needed, and reply the application.
  - The application uses some system-provided mechanism to execute the helper's code as the root user. Previously, you had to set the setuid bit to do this, but we have something cool called
    "dbus activation" that doesn't require the setuid bit and is much more flexible.
- - The helper code, immediatly after starting, checks if the caller is authorized to do what it asks. If not the helper immediatly exits!
+ - The helper code, immediately after starting, checks if the caller is authorized to do what it asks. If not the helper immediately exits!
  - If the caller is authorized, the helper executes the task and exits.
  - The application receives data back from the helper.
  
@@ -163,7 +163,7 @@
  be created. Every Action object refers to an action by its action id. Two objects with the same action id will act on the same action.
  With an Action object, you can authorize and execute the action. To execute an action you have a couple of choices:
  - A synchronous call, using the Action::execute() method, will start the helper, execute the action and return the reply.
- - An asynchronous call, using Action::executeAsync(), will start the helper and return immediatly.
+ - An asynchronous call, using Action::executeAsync(), will start the helper and return immediately.
  
  The asynchronous call is the most flexible alternative, but you need a way to obtain the reply. This is done by connecting to a signal, but the Action class is not a QObject subclass. Instead, you connect
  to signals exposed by the ActionWatcher class. For every action id you use, there is one ActionWatcher object. You can retrieve it using the Action::watcher() method. If you execute an action using
@@ -264,7 +264,7 @@
  To allow to easily execute several actions in sequence, you can execute them in group. This means using the Action::executeActions() static method, which takes a list of actions and asks the helper
  to execute them with a single request. The helper will execute the actions in the specified order. All the signals will be emitted from the watchers associated with each action.
  
- Sometimes the application needs to know when a particular action has started to execute. For this purpose, you can connect to the actionStarted() signal. It is emitted immediatly before the helper's
+ Sometimes the application needs to know when a particular action has started to execute. For this purpose, you can connect to the actionStarted() signal. It is emitted immediately before the helper's
  slot is called. This isn't very useful if you call execute() or executeAsync(), but if you use executeActions() it lets you know when individual actions in the group are started.
  
  It doesn't happen very frequently to code something that doesn't require some debugging, and you'll need some tool, even a basic one, to debug your helper code as well. For this reason, the

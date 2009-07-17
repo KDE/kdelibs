@@ -42,7 +42,7 @@ class ActionPrivate;
  * blocking for the reply, using the execute() method.
  *
  * For asynchronous calls, use the executeAsync() method. It sends the request
- * to the helper and returns immediatly. You can optionally provide an object
+ * to the helper and returns immediately. You can optionally provide an object
  * and a slot. This will be connected to the actionPerformed() signal of the
  * action's ActionWatcher object.
  * By calling the watcher() method, you obtain an object that emits some useful
@@ -166,6 +166,16 @@ public:
      * @return A reference to the arguments map that will be passed to the helper.
      */
     QVariantMap &arguments();
+    
+    /**
+    * @brief The map object used to pass arguments to the helper.
+    *
+    * This is the same as the other arguments(), but the return type is not a reference
+    * and the method is const, if you have to call it on a const Action &.
+    *
+    * @return A reference to the arguments map that will be passed to the helper.
+    */
+    QVariantMap arguments() const;
 
     /**
      * @brief Acquires authorization for an action without excuting it.
@@ -254,7 +264,7 @@ public:
     /**
      * @brief Asynchronously executes the action
      *
-     * This method executes the action an returns immediatly. The return value is false if
+     * This method executes the action an returns immediately. The return value is false if
      * a communication error occurred or if the authorization has been denied.
      * Note that if you try to execute a non-existent action, you won't get false here.
      * Instead, you'll get a NoSuchAction error reply as the parameter of the watcher's

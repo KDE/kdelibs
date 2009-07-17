@@ -87,7 +87,7 @@ signals:
      *
      * This signal is emitted whe In case of
      * execute() and executeAsync(), the signal is emitted about
-     * immediatly, because the request is very fast.
+     * immediately, because the request is very fast.
      *
      * If you execute a group of actions using Action::executeActions(),
      * this signal is emitted when the single action is actually about
@@ -129,7 +129,7 @@ signals:
     * This signal is emitted every time the helper's code calls the
     * HelperSupport::progressStep(QVariantMap) method. This is useful to let the
     * helper notify the execution status of a long action, also providing
-    * some data, for example if you want to achive some sort of progressive loading.
+    * some data, for example if you want to achieve some sort of progressive loading.
     * The meaning of the data passed here is totally application-dependent.
     * If you only need to pass some percentage, you can use the other signal that
     * pass an int.

@@ -46,7 +46,7 @@ public:
     /**
      * @brief Send a progressStep signal to the caller application
      *
-     * You can use this method to notify progress informations about the
+     * You can use this method to notify progress information about the
      * action execution. When you call this method, the ActionWatcher
      * object associated with the current action will emit the progressStep(int)
      * signal. The meaning of the integer passed here is totally application dependent,
@@ -60,7 +60,7 @@ public:
     /**
     * @brief Send a progressStep signal to the caller application
     *
-    * You can use this method to notify progress informations about the
+    * You can use this method to notify progress information about the
     * action execution. When you call this method, the ActionWatcher
     * object associated with the current action will emit the progressStep(QVariantMap)
     * signal. The meaning of the data passed here is totally application dependent.

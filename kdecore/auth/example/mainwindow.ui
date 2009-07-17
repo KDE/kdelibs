@@ -42,7 +42,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string comment="The open file menu entry">Open</string>
    </property>
   </action>
   <action name="actionSave">

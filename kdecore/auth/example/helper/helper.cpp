@@ -17,13 +17,14 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
+#include "helper.h"
+
 #include <QtDebug>
 #include <QFile>
 #include <QTextStream>
 #include <unistd.h>
 #include <QEventLoop>
 
-#include "helper.h"
 
 ActionReply MyHelper::read(QVariantMap args)
 {

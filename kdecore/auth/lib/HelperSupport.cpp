@@ -47,7 +47,7 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
 
     QCoreApplication app(argc, argv);
     QTimer::singleShot(10000, &app, SLOT(quit()));
-    app.exec();
+    app.exec(); //krazy:exclude=crashy
 
     return 0;
 }

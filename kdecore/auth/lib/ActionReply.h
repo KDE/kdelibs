@@ -58,7 +58,7 @@ class ActionReplyPrivate;
 * KAuthError type are intended to be returned by the library only. However, you can use them for
 * comparisons.
 *
-* To quickly check for success or failure of an action, you can use succeded() or failed().
+* To quickly check for success or failure of an action, you can use succeeded() or failed().
 */
 class ActionReply
 {
@@ -131,7 +131,7 @@ public:
     virtual ~ActionReply();
 
     /**
-     * @brief Return the custom data coming from the helper.
+     * @brief Returns the custom data coming from the helper.
      *
      * This method is used to get the data coming from the helper.
      * The meaning of this data is totally application-dependent.
@@ -148,7 +148,7 @@ public:
     QVariantMap &data();
 
     /**
-     * @brief Return the custom data coming from the helper.
+     * @brief Returns the custom data coming from the helper.
      *
      * This is the same as the other data(), but the return type is not a reference
      * and the method is const, if you have to call it on a const ActionReply &.
@@ -178,7 +178,7 @@ public:
     void setType(Type type);
 
     /// Returns true if type() == Success
-    bool succeded() const;
+    bool succeeded() const;
 
     /// Returns true if type() != Success
     bool failed() const;

@@ -17,15 +17,18 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
+//krazy:excludeall=qclasses
+
+#include "mainwindow.h"
+
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
 #include <QDebug>
 
-#include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "Action.h"
+#include <Action.h>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -127,8 +130,8 @@ void MainWindow::longActionPerformed(ActionReply reply)
     pushButton->hide();
     progressBar->setValue(0);
 
-    if (reply.succeded())
-        this->statusBar()->showMessage("Action succeded", 10000);
+    if (reply.succeeded())
+        this->statusBar()->showMessage("Action succeeded", 10000);
     else
         this->statusBar()->showMessage(QString("Could not execute the long action: %1").arg(reply.errorCode()), 10000);
 }
