@@ -187,7 +187,15 @@ bool ProcessList::terminateProcess(const QString &name)
     ProcessListEntry *p = hasProcessInList(name);
     if (!p)
         return false;
-    return TerminateProcess(p->handle,0) ? true : false;
+
+    bool ret = TerminateProcess(p->handle,0);
+    if (ret) {
+        CloseHandle(p->handle);
+        delete p;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // internal launch function
