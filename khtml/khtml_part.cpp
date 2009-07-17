@@ -5382,7 +5382,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 //   kDebug( 6050 ) << "m_url " << url().url() << " <-> " << u.url();
 //   kDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount;
 
-  if (d->m_cacheId == old_cacheId)
+  if (d->m_cacheId == old_cacheId && signed(frameCount) == d->m_frames.count())
   {
     // Partial restore
     d->m_redirectionTimer.stop();
