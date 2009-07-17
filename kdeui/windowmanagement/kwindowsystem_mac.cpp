@@ -620,4 +620,9 @@ void KWindowSystem::connectNotify( const char* signal )
     //TODO
 }
 
+void KWindowSystem::allowExternalProcessWindowActivation( int pid )
+{
+    // Needed on mac ?
+}
+
 #include "moc_kwindowsystem.cpp"

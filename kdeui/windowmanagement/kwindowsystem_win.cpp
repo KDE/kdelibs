@@ -378,53 +378,45 @@ int KWindowSystem::numberOfDesktops()
 
 void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     SetForegroundWindow(subwindow->winId());
 }
 
 void KWindowSystem::setCurrentDesktop( int desktop )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     kDebug() << "KWindowSystem::setCurrentDesktop( int desktop ) isn't yet implemented!";
     //TODO
 }
 
 void KWindowSystem::setOnAllDesktops( WId win, bool b )
 {
-    KWindowSystem::init(INFO_WINDOWS);
      kDebug() << "KWindowSystem::setOnAllDesktops( WId win, bool b ) isn't yet implemented!";
      //TODO
 }
 
 void KWindowSystem::setOnDesktop( WId win, int desktop )
 {
-    KWindowSystem::init(INFO_WINDOWS);
      //TODO
      kDebug() << "KWindowSystem::setOnDesktop( WId win, int desktop ) isn't yet implemented!";
 }
 
 WId KWindowSystem::activeWindow()
 {
-    KWindowSystem::init(INFO_WINDOWS);
     return GetActiveWindow();
 }
 
 void KWindowSystem::activateWindow( WId win, long )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     SetActiveWindow( win );
 }
 
 void KWindowSystem::forceActiveWindow( WId win, long time )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     BringWindowToTop( win );
     SetForegroundWindow( win );
 }
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     FLASHWINFO fi;
     fi.cbSize = sizeof( FLASHWINFO );
     fi.hwnd = win;
@@ -486,7 +478,6 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 
 void KWindowSystem::setState( WId win, unsigned long state )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     bool got = false;
     if (state & NET::SkipTaskbar) {
         got = true;
@@ -511,7 +502,6 @@ void KWindowSystem::setState( WId win, unsigned long state )
 
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     bool got = false;
 
     if (state & NET::SkipTaskbar) {
@@ -535,37 +525,32 @@ void KWindowSystem::clearState( WId win, unsigned long state )
 void KWindowSystem::minimizeWindow( WId win, bool animation)
 {
     Q_UNUSED( animation );
-    KWindowSystem::init(INFO_WINDOWS);
     ShowWindow( win, SW_MINIMIZE );
 }
 
 void KWindowSystem::unminimizeWindow( WId win, bool animation )
 {
     Q_UNUSED( animation );
-    KWindowSystem::init(INFO_WINDOWS);
     ShowWindow( win, SW_RESTORE );
 }
 
 void KWindowSystem::raiseWindow( WId win )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     SetWindowPos( win, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE ); // mhhh?
 }
 
 void KWindowSystem::lowerWindow( WId win )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     SetWindowPos( win, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE ); // mhhh?
 }
 
 bool KWindowSystem::compositingActive()
 {
-    return false;
+    return true;
 }
 
 QRect KWindowSystem::workArea( int desktop )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     return s_deskWidget->availableGeometry( desktop );
 }
 
@@ -573,7 +558,6 @@ QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
 {
     //TODO
     kDebug() << "QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop ) isn't yet implemented!";
-    KWindowSystem::init(INFO_WINDOWS);
     return QRect();
 }
 
@@ -664,7 +648,6 @@ const QList<WId>& KWindowSystem::windows()
 void KWindowSystem::setType( WId win, NET::WindowType windowType )
 {
  //TODO
- KWindowSystem::init(INFO_WINDOWS);
  kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!";
 }
 
@@ -678,6 +661,11 @@ bool KWindowSystem::hasWId(WId w)
 {
     KWindowSystem::init(INFO_WINDOWS);
     return KWindowSystem::s_d_func()->winInfos.contains(w);
+}
+
+void KWindowSystem::allowExternalProcessWindowActivation( int pid )
+{
+    AllowSetForegroundWindow( pid == -1 ? ASFW_ANY : pid );
 }
 
 #include "kwindowsystem.moc"
