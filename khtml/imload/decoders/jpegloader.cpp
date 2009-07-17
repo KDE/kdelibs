@@ -324,7 +324,7 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
                 scaleDown *= 2;
             }
             
-            cinfo.scale_denom = scaleDown;
+            cinfo.scale_denom *= scaleDown;
             
             if (scaleDown > 8) {
                 // Still didn't fit... Abort.
