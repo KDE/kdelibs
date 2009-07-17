@@ -259,13 +259,19 @@ ExperimentalKDbusToolTipStruct KNotificationItemDBus::ToolTip() const
 
 void KNotificationItemDBus::ContextMenu(int x, int y)
 {
+    if (!m_notificationItem->d->menu) {
+        return;
+    }
+
     //TODO: nicer placement, possible?
-    if (m_notificationItem->d->menu) {
+    if (!m_notificationItem->d->menu->isVisible()) {
         m_notificationItem->d->menu->setWindowFlags(Qt::Window|Qt::FramelessWindowHint);
         m_notificationItem->d->menu->popup(QPoint(x,y));
         KWindowSystem::setState(m_notificationItem->d->menu->winId(), NET::SkipTaskbar|NET::SkipPager|NET::KeepAbove);
         KWindowSystem::setType(m_notificationItem->d->menu->winId(), NET::PopupMenu);
         KWindowSystem::forceActiveWindow(m_notificationItem->d->menu->winId());
+    } else {
+        m_notificationItem->d->menu->hide();
     }
 }
 
