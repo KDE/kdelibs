@@ -271,7 +271,11 @@ void KNotificationItemDBus::ContextMenu(int x, int y)
 
 void KNotificationItemDBus::Activate(int x, int y)
 {
-    m_notificationItem->activate(QPoint(x,y));
+    if (m_notificationItem->d->associatedWidget == m_notificationItem->d->menu) {
+        ContextMenu(x, y);
+    } else {
+        m_notificationItem->activate(QPoint(x,y));
+    }
 }
 
 void KNotificationItemDBus::SecondaryActivate(int x, int y)
