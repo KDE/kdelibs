@@ -68,10 +68,7 @@ InfoOutput=4
 [1217]
 InfoOutput=4
 
-# KMail - normal and storage internals
-[5006]
-InfoOutput=2
-
+# KMail - storage internals
 [5120]
 InfoOutput=4
 
