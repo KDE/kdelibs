@@ -286,4 +286,4 @@ void debugMessageReceived(int t, const QString &message)
     }
 }
 
-Q_EXPORT_PLUGIN2(helper_proxy, DBusHelperProxy);
+Q_EXPORT_PLUGIN2(helper_proxy, DBusHelperProxy)

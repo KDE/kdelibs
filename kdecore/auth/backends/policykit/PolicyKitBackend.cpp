@@ -71,4 +71,4 @@ bool PolicyKitBackend::isCallerAuthorized(const QString &action, QByteArray call
     return (PolkitQt::Auth::isCallerAuthorized(action, pid, true) == PolkitQt::Auth::Yes);
 }
 
-Q_EXPORT_PLUGIN2(auth_backend, PolicyKitBackend);
+Q_EXPORT_PLUGIN2(auth_backend, PolicyKitBackend)

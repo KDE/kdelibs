@@ -55,6 +55,6 @@ signals:
     void progressStep(const QString &action, const QVariantMap &data);
 };
 
-Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1");
+Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1")
 
 #endif

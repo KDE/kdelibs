@@ -34,6 +34,6 @@ public:
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID) = 0;
 };
 
-Q_DECLARE_INTERFACE(AuthBackend, "org.kde.auth.AuthBackend/0.1");
+Q_DECLARE_INTERFACE(AuthBackend, "org.kde.auth.AuthBackend/0.1")
 
 #endif

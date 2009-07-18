@@ -24,8 +24,8 @@
 AuthBackend *BackendsManager::auth = NULL;
 HelperProxy *BackendsManager::helper = NULL;
 
-Q_IMPORT_PLUGIN(auth_backend);
-Q_IMPORT_PLUGIN(helper_proxy);
+Q_IMPORT_PLUGIN(auth_backend)
+Q_IMPORT_PLUGIN(helper_proxy)
 
 void BackendsManager::init()
 {
