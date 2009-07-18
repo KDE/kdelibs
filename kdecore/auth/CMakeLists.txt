@@ -17,6 +17,8 @@ elseif(UNIX)
     set(KAUTH_DEPENDENCIES ${POLKITQT_CORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY})
 endif()
 
+set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
+
 include_directories(lib interfaces ${CMAKE_BINARY_DIR} ${QT_INCLUDES} )
 
 add_subdirectory(backends)
@@ -43,7 +45,7 @@ qt4_wrap_cpp(kauth_mocs lib/HelperProxy.h lib/ActionWatcher.h)
 add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${KAUTH_DEPENDENCIES}) 
 
-install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth)
 
 set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-Wall -ggdb")
