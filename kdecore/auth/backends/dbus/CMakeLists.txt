@@ -18,5 +18,5 @@ add_library(helper_proxy STATIC ${helper_proxy_sources} ${helper_proxy_mocs} ${a
 
 set_target_properties(helper_proxy PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -Wall -ggdb")
 
-install(FILES org.kde.auth.conf DESTINATION /etc/dbus-1/system.d)
+install(FILES org.kde.auth.conf DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/dbus-1/system.d)
 install(FILES dbus_policy.stub dbus_service.stub DESTINATION ${CMAKE_INSTALL_PREFIX}/share/kauth)
