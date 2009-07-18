@@ -50,7 +50,7 @@ endif(UNIX AND Q_WS_X11)
 #required features:
 # Perl is used e.g. in khtml, kjs, kjsembed and others
 find_package(Perl)
-macro_log_feature(PERL_FOUND "Perl" "Practical Extraction and Report Language" "http://www.perl.org" TRUE "" "Required by the KDE buildsystem.")
+macro_log_feature(PERL_FOUND "Perl" "Perl Programming Language" "http://www.perl.org" TRUE "" "Required by the KDE buildsystem.")
 
 find_package(ZLIB)
 macro_log_feature(ZLIB_FOUND "ZLib" "The Zlib compression library" "http://www.zlib.net" TRUE "" "Required by the core KDE libraries and some critical kioslaves.")
