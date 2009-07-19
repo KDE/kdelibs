@@ -22,20 +22,16 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <kio/global.h>
+#include <kio/slavebase.h>
+
+#include <QtCore/QString>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
-
 #include <stdio.h>
 #include <unistd.h>
-
-
-#include <QtCore/QString>
-
-
-#include <kio/global.h>
-#include <kio/slavebase.h>
 
 class HelpProtocol : public KIO::SlaveBase
 {
