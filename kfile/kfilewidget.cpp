@@ -342,28 +342,13 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->url = getStartUrl( startDir, d->fileClass, filename );
     startDir = d->url;
 
-    // getStartUrl() above will have resolved the startDir parameter into
-    // a directory and file name in the two cases: (a) where it is a	
-    // special "kfiledialog:" URL, or (b) where it is a plain file name
-    // only without directory or protocol.  For any other startDir
-    // specified, it is not possible to resolve whether there is a file name
-    // present just by looking at the URL; the only way to be sure is
-    // to stat it.  Do that here, so that the urlNavigator below
-    // receives the correct value.
-    bool statRes = false;
-    if ( filename.isEmpty() )
-    {
-        KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
-        statRes = KIO::NetAccess::synchronousRun(statJob, 0);
-        kDebug(kfile_area) << "stat of" << startDir << "-> statRes" << statRes << "isDir" << statJob->statResult().isDir();
-        if (!statRes || !statJob->statResult().isDir()) {
-            filename = startDir.fileName();
-            startDir.setPath(startDir.directory());
-            kDebug(kfile_area) << "statJob -> startDir" << startDir << "filename" << filename;
-        }
-    }
-
-    d->urlNavigator = new KUrlNavigator(d->model, startDir, d->opsWidget); //d->toolbar);
+    // Don't pass startDir to the KUrlNavigator at this stage: as well as
+    // the above, it may also contain a file name which should not get
+    // inserted in that form into the old-style navigation bar history.
+    // Wait until the KIO::stat has been done later.
+    //
+    // The stat cannot be done before this point, bug 172678.
+    d->urlNavigator = new KUrlNavigator(d->model, KUrl(), d->opsWidget); //d->toolbar);
     d->urlNavigator->setPlacesSelectorVisible(false);
     opsWidgetLayout->addWidget(d->urlNavigator);
 
@@ -603,6 +588,26 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     KFilePreviewGenerator *pg = d->ops->previewGenerator();
     if (pg) {
         coll->action("inline preview")->setChecked(pg->isPreviewShown());
+    }
+
+    // getStartUrl() above will have resolved the startDir parameter into
+    // a directory and file name in the two cases: (a) where it is a	
+    // special "kfiledialog:" URL, or (b) where it is a plain file name
+    // only without directory or protocol.  For any other startDir
+    // specified, it is not possible to resolve whether there is a file name
+    // present just by looking at the URL; the only way to be sure is
+    // to stat it.
+    bool statRes = false;
+    if ( filename.isEmpty() )
+    {
+        KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
+        statRes = KIO::NetAccess::synchronousRun(statJob, 0);
+        kDebug(kfile_area) << "stat of" << startDir << "-> statRes" << statRes << "isDir" << statJob->statResult().isDir();
+        if (!statRes || !statJob->statResult().isDir()) {
+            filename = startDir.fileName();
+            startDir.setPath(startDir.directory());
+            kDebug(kfile_area) << "statJob -> startDir" << startDir << "filename" << filename;
+        }
     }
 
     d->ops->setUrl(startDir, true);
