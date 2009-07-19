@@ -249,7 +249,6 @@ public:
 KIntSpinBox::KIntSpinBox(QWidget *parent)
     : QSpinBox(parent), d(new KIntSpinBoxPrivate(this))
 {
-    lineEdit()->setAlignment(Qt::AlignRight);
     setValue(0);
 }
 
@@ -263,7 +262,6 @@ KIntSpinBox::KIntSpinBox(int lower, int upper, int singleStep, int value, QWidge
 {
     setRange(lower, upper);
     setSingleStep(singleStep);
-    lineEdit()->setAlignment(Qt::AlignRight);
     setValue(value);
 }
 
@@ -723,7 +721,6 @@ void KDoubleNumInput::init(double value, double lower, double upper,
     d->spin->setSingleStep(singleStep);
     d->spin->setValue(value);
     d->spin->setDecimals(precision);
-    d->spin->setAlignment(Qt::AlignRight);
 
     d->spin->setObjectName("KDoubleNumInput::QDoubleSpinBox");
     setFocusProxy(d->spin);
