@@ -1,13 +1,25 @@
-#ifndef _WIN32
-extern "C" int xmlLoadExtDtdDefaultValue;
-#endif
 
-#include <QCoreApplication>
 #include <config-kdoctools.h>
 #include <config.h>
-#include <string.h>
-#include <sys/time.h>
-#include <unistd.h>
+#include "xslt.h"
+
+#include <QCoreApplication>
+#include <QtCore/QString>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtCore/QTextCodec>
+#include <QtCore/QFileInfo>
+#include <QtCore/QList>
+
+#include <kaboutdata.h>
+#include <kcomponentdata.h>
+#include <kcmdlineargs.h>
+#include <kdebug.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
+#include <kshell.h>
+#include <kurl.h>
+
 #include <libxml/xmlversion.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/debugXML.h>
@@ -18,22 +30,15 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-#include <QtCore/QString>
-#include <kstandarddirs.h>
-#include <kcomponentdata.h>
-#include "xslt.h"
-#include <QtCore/QFile>
-#include <QtCore/QDir>
-#include <kcmdlineargs.h>
-#include <klocale.h>
-#include <kaboutdata.h>
+
 #include <stdlib.h>
-#include <kdebug.h>
-#include <QtCore/QTextCodec>
-#include <QtCore/QFileInfo>
-#include <kshell.h>
-#include <kurl.h>
-#include <QtCore/QList>
+#include <string.h>
+#include <sys/time.h>
+#include <unistd.h>
+
+#ifndef _WIN32
+extern "C" int xmlLoadExtDtdDefaultValue;
+#endif
 
 class MyPair {
 public:
