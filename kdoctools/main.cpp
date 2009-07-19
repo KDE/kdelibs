@@ -4,26 +4,31 @@
 extern "C" int xmlLoadExtDtdDefaultValue;
 #endif
 
+#include "kio_help.h"
+#include "xslt.h"
+
+#include <kstandarddirs.h>
+#include <kcomponentdata.h>
+#include <kdebug.h>
+
+#include <QtCore/QString>
+
+#include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 #include <libxml/xmlversion.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/debugXML.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
+
 #include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-#include <QtCore/QString>
-#include <kstandarddirs.h>
-#include <kcomponentdata.h>
-#include <kdebug.h>
-#include <stdlib.h>
-#include "kio_help.h"
-#include "xslt.h"
 
 extern "C"
 {
