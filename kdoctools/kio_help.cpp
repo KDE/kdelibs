@@ -321,8 +321,8 @@ void HelpProtocol::get( const KUrl& url )
                         filename = filename.left( filename.indexOf( '\"' ) );
                         QString path = target.path();
                         path = path.left( path.lastIndexOf( '/' ) + 1) + filename;
-                        kDebug( 7119 ) << "anchor found in " << path;
                         target.setPath( path );
+                        kDebug( 7119 ) << "anchor found in " << target.url();
                         break;
                     }
                     index++;
