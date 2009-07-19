@@ -22,7 +22,10 @@
 
 #include <QHash>
 
-class ActionWatcherPrivate
+namespace Auth
+{
+
+class ActionWatcher::Private
 {
 public:
     QString action;
@@ -32,7 +35,7 @@ static QHash<QString, ActionWatcher *> s_watchers;
 
 ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
 {
-    d = new ActionWatcherPrivate;
+    d = new Private;
     d->action = action;
 
     HelperProxy *helper = BackendsManager::helperProxy();
@@ -85,3 +88,5 @@ void ActionWatcher::progressStepSlot(const QString &action, QVariantMap data)
     if(d->action == action)
         emit progressStep(data);
 }
+
+} // namespace Auth

@@ -21,12 +21,15 @@
 
 #include <QPluginLoader>
 
-AuthBackend *BackendsManager::auth = NULL;
-HelperProxy *BackendsManager::helper = NULL;
-
 Q_IMPORT_PLUGIN(auth_backend)
 Q_IMPORT_PLUGIN(helper_proxy)
 
+namespace Auth
+{
+
+AuthBackend *BackendsManager::auth = NULL;
+HelperProxy *BackendsManager::helper = NULL;
+    
 void BackendsManager::init()
 {
     QObjectList l = QPluginLoader::staticInstances();
@@ -62,3 +65,5 @@ HelperProxy *BackendsManager::helperProxy()
 
     return helper;
 }
+
+} // namespace Auth

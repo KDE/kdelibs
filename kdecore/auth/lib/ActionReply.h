@@ -25,7 +25,8 @@
 #include <QMap>
 #include <QDataStream>
 
-class ActionReplyPrivate;
+namespace Auth
+{
 
 /**
 * @brief Class that encapsulates a reply coming from the helper after executing an action
@@ -62,7 +63,8 @@ class ActionReplyPrivate;
 */
 class ActionReply
 {
-    ActionReplyPrivate *d;
+    class Private;
+    Private *d;
 
 public:
     /**
@@ -284,5 +286,7 @@ public:
     friend QDataStream &operator>>(QDataStream &, ActionReply &);
 
 };
+
+} // namespace Auth
 
 #endif

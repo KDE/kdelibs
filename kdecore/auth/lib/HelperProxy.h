@@ -30,6 +30,9 @@ template<class Key, class T> class QMap;
 class QString;
 class QVariant;
 
+namespace Auth
+{
+
 class HelperProxy : public QObject
 {
     Q_OBJECT
@@ -55,6 +58,8 @@ signals:
     void progressStep(const QString &action, const QVariantMap &data);
 };
 
-Q_DECLARE_INTERFACE(HelperProxy, "org.kde.auth.HelperProxy/0.1")
+} // namespace Auth
+
+Q_DECLARE_INTERFACE(Auth::HelperProxy, "org.kde.auth.HelperProxy/0.1")
 
 #endif

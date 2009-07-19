@@ -25,10 +25,13 @@
 #include "HelperProxy.h"
 #include "ActionReply.h"
 
+namespace Auth
+{
+
 class DBusHelperProxy : public HelperProxy
 {
     Q_OBJECT
-    Q_INTERFACES(HelperProxy)
+    Q_INTERFACES(Auth::HelperProxy)
 
     QObject *responder;
     QString m_name;
@@ -69,5 +72,7 @@ signals:
 private slots:
     void remoteSignalReceived(int type, const QString &action, QByteArray blob);
 };
+
+} // namespace Auth
 
 #endif

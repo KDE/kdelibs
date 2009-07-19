@@ -25,7 +25,8 @@
 
 #include "ActionReply.h"
 
-class ActionWatcherPrivate;
+namespace Auth
+{
 
 /**
  * @brief Class used to receive notifications about the status of an action execution.
@@ -45,7 +46,8 @@ class ActionWatcher : public QObject
 {
     Q_OBJECT
 
-    ActionWatcherPrivate *d;
+    class Private;
+    Private *d;
 
     ActionWatcher(const QString &action);
 
@@ -138,5 +140,7 @@ signals:
     */
     void progressStep(const QVariantMap &data);
 };
+
+} // namespace Auth
 
 #endif

@@ -27,6 +27,9 @@
 
 #include "BackendsManager.h"
 
+namespace Auth
+{
+
 static bool remote_dbg = false;
 
 HelperSupport::HelperSupport() {}
@@ -93,3 +96,5 @@ bool HelperSupport::isStopped()
 {
     return BackendsManager::helperProxy()->hasToStopAction();
 }
+
+} // namespace Auth

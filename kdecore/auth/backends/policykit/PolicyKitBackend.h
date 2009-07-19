@@ -24,10 +24,13 @@
 
 class QByteArray;
 
+namespace Auth
+{
+
 class PolicyKitBackend : public QObject, public AuthBackend
 {
     Q_OBJECT
-    Q_INTERFACES(AuthBackend)
+    Q_INTERFACES(Auth::AuthBackend)
 
 public:
     PolicyKitBackend();
@@ -37,5 +40,7 @@ public:
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
 };
+
+} // namespace Auth
 
 #endif

@@ -29,6 +29,9 @@
 #include "BackendsManager.h"
 #include "authadaptor.h"
 
+namespace Auth
+{
+
 static void debugMessageReceived(int t, const QString &message);
 
 void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
@@ -286,4 +289,6 @@ void debugMessageReceived(int t, const QString &message)
     }
 }
 
-Q_EXPORT_PLUGIN2(helper_proxy, DBusHelperProxy)
+} // namespace Auth
+
+Q_EXPORT_PLUGIN2(helper_proxy, Auth::DBusHelperProxy)

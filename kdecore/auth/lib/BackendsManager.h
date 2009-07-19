@@ -23,6 +23,9 @@
 #include "AuthBackend.h"
 #include "HelperProxy.h"
 
+namespace Auth
+{
+
 class BackendsManager
 {
     static AuthBackend *auth;
@@ -36,5 +39,7 @@ public:
 private:
     static void init();
 };
+
+} // namespace Auth
 
 #endif

@@ -21,7 +21,10 @@
 
 #include <QDebug>
 
-class ActionReplyPrivate
+namespace Auth
+{
+
+class ActionReply::Private
 {
 public:
     QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
@@ -43,7 +46,7 @@ const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusErr
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)
 {
-    d = new ActionReplyPrivate;
+    d = new Private;
     d->data = reply.d->data;
     d->errorCode = reply.d->errorCode;
     d->errorDescription = reply.d->errorDescription;
@@ -52,21 +55,21 @@ ActionReply::ActionReply(const ActionReply &reply)
 
 ActionReply::ActionReply()
 {
-    d = new ActionReplyPrivate;
+    d = new Private;
     d->errorCode = 0;
     d->type = Success;
 }
 
 ActionReply::ActionReply(ActionReply::Type type)
 {
-    d = new ActionReplyPrivate;
+    d = new Private;
     d->errorCode = 0;
     d->type = type;
 }
 
 ActionReply::ActionReply(int error)
 {
-    d = new ActionReplyPrivate;
+    d = new Private;
     d->errorCode = error;
     d->type = KAuthError;
 }
@@ -178,3 +181,5 @@ QDataStream &operator>>(QDataStream &stream, ActionReply &reply)
 
     return stream;
 }
+
+} // namespace Auth

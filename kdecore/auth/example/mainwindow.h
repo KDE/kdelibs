@@ -26,6 +26,8 @@
 
 #include <ActionReply.h>
 
+using namespace Auth;
+
 namespace Ui
 {
 class MainWindowClass;

@@ -24,10 +24,13 @@
 
 #include "BackendsManager.h"
 
-class ActionPrivate
+namespace Auth
+{
+
+class Action::Private
 {
 public:
-    ActionPrivate(QString name) : name(name) {}
+    Private(QString name) : name(name) {}
 
     QString name;
     QVariantMap args;
@@ -38,19 +41,19 @@ static QString s_helperID;
 // Constructors
 Action::Action(const Action &action)
 {
-    d = new ActionPrivate(action.d->name);
+    d = new Private(action.d->name);
     d->args = action.d->args;
 }
 
 Action::Action(const char *name)
 {
-    d = new ActionPrivate(name);
+    d = new Private(name);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
 Action::Action(const QString &name)
 {
-    d = new ActionPrivate(name);
+    d = new Private(name);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
@@ -185,3 +188,4 @@ void Action::stop(const QString &helperID)
     BackendsManager::helperProxy()->stopAction(d->name, helperID);
 }
 
+} // namespace Auth

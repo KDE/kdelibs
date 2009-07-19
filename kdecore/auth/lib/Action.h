@@ -27,7 +27,8 @@
 #include "ActionReply.h"
 #include "ActionWatcher.h"
 
-class ActionPrivate;
+namespace Auth
+{
 
 /**
  * @brief Class to access, authorize and execute actions.
@@ -61,7 +62,8 @@ class ActionPrivate;
  */
 class Action
 {
-    ActionPrivate *d;
+    class Private;
+    Private *d;
 
 public:
     /**
@@ -353,5 +355,7 @@ public:
      */
     void stop(const QString &helperID);
 };
+
+} // namespace Auth
 
 #endif

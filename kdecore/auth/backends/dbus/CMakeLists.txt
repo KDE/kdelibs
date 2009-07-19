@@ -10,7 +10,7 @@ set( helper_proxy_sources
 set( helper_proxy_headers
      DBusHelperProxy.h )
 
-qt4_add_dbus_adaptor(adaptor_srcs org.kde.auth.xml DBusHelperProxy.h DBusHelperProxy)
+qt4_add_dbus_adaptor(adaptor_srcs org.kde.auth.xml DBusHelperProxy.h Auth::DBusHelperProxy)
 
 qt4_wrap_cpp(helper_proxy_mocs ${helper_proxy_headers} )
 
