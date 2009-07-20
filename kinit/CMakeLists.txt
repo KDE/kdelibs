@@ -17,8 +17,6 @@ check_include_files(sys/types.h HAVE_SYS_TYPES_H)
 check_include_files(unistd.h HAVE_UNISTD_H)
 check_function_exists(pstat HAVE_PSTAT)
 check_function_exists(setproctitle HAVE_SETPROCTITLE)
-configure_file(config-kdeinit.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h )
 
 
 # used by 4 executables in this file
@@ -149,7 +147,31 @@ install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 target_link_libraries( klauncher kdeinit_klauncher )
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
+########### start_kdeinit ###############
+set(start_kdeinit_SRCS start_kdeinit.c)
+kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
+if(KDE4_ENABLE_FPIE)
+    macro_add_compile_flags(start_kdeinit ${KDE4_CXX_FPIE_FLAGS})
+    macro_add_link_flags(start_kdeinit ${KDE4_PIE_LDFLAGS})
+endif(KDE4_ENABLE_FPIE)
+
+set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
+kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
+
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+    MESSAGE(STATUS "Using setuid root kdeinit wrapper in order to protect it from bad Linux OOM-killer")
+    install(TARGETS start_kdeinit PERMISSIONS SETUID OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ DESTINATION ${LIBEXEC_INSTALL_DIR})
+    set(KDEINIT_OOM_PROTECT 1)
+else (CMAKE_SYSTEM_NAME MATCHES Linux)
+    install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
+endif (CMAKE_SYSTEM_NAME MATCHES Linux)
+
+install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})
+
 ########### install files ###############
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
 
+########### config-kdeinit.h ############
+configure_file(config-kdeinit.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h )
