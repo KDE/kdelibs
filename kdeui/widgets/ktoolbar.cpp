@@ -830,8 +830,14 @@ void KToolBar::loadState(const QDomElement &element)
     if (element.hasAttribute("tempXml")) {
         // this isn't the first time, so the app-xml defaults have been saved into the (in-memory) XML
         loadingAppDefaults = false;
-        d->iconSizeSettings[Level_AppXML] = element.attribute("iconSizeDefault").toInt();
-        d->toolButtonStyleSettings[Level_AppXML] = d->toolButtonStyleFromString(element.attribute("toolButtonStyleDefault"));
+        const QString iconSizeDefault = element.attribute("iconSizeDefault");
+        if (!iconSizeDefault.isEmpty()) {
+            d->iconSizeSettings[Level_AppXML] = iconSizeDefault.toInt();
+        }
+        const QString toolButtonStyleDefault = element.attribute("toolButtonStyleDefault");
+        if (!toolButtonStyleDefault.isEmpty()) {
+            d->toolButtonStyleSettings[Level_AppXML] = d->toolButtonStyleFromString(toolButtonStyleDefault);
+        }
     } else {
         // loading app defaults
         bool newLine = false;
