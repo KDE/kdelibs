@@ -30,6 +30,7 @@ namespace Auth
 class AuthBackend
 {
 public:
+    virtual ~AuthBackend() { }
     virtual void setupAction(const QString &action) = 0;
     virtual Action::AuthStatus authorizeAction(const QString &action) = 0;
     virtual Action::AuthStatus actionStatus(const QString &action) = 0;
