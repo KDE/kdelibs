@@ -112,7 +112,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { WhatsThis,     KStandardShortcut::WhatsThis, "help_whats_this", I18N_NOOP("What's &This?"), 0, "help-contextual" },
   { TipofDay,      KStandardShortcut::TipofDay, "help_show_tip", I18N_NOOP("Tip of the &Day"), 0, "help-hint" },
   { ReportBug,     KStandardShortcut::ReportBug, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, "tools-report-bug" },
-  { SwitchApplicationLanguage, KStandardShortcut::SwitchApplicationLanguage, "switch_application_language", I18N_NOOP("Switch Application &Language..."), 0, 0 },
+  { SwitchApplicationLanguage, KStandardShortcut::SwitchApplicationLanguage, "switch_application_language", I18N_NOOP("Switch Application &Language..."), 0, "preferences-desktop-locale" },
   { AboutApp,      KStandardShortcut::AccelNone, "help_about_app", I18N_NOOP("&About %1"), 0, 0 },
   { AboutKDE,      KStandardShortcut::AccelNone, "help_about_kde", I18N_NOOP("About &KDE"), 0, "kde" },
   { ActionNone,    KStandardShortcut::AccelNone, 0, 0, 0, 0 }
