@@ -34,7 +34,7 @@ endif(COMMAND cmake_policy)
 
 kde4_add_library(kidletime SHARED ${kidletime_SRCS})
 
-target_link_libraries(kidletime ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kidletime ${KDE4_KDEUI_LIBS} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 if (Q_WS_X11)
     target_link_libraries(kidletime Xtst Xss Xext X11)
