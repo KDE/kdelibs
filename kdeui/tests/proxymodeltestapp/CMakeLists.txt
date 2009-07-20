@@ -1,11 +1,9 @@
-project(proxymodeltestapp)
-
 include_directories( ${KDE4_INCLUDES}
-  ${PROJECT_BINARY_DIR}
-  ${PROJECT_BINARY_DIR}/..
-  ${PROJECT_SOURCE_DIR}/..
-  ${PROJECT_BINARY_DIR}/../tests
-  ${PROJECT_SOURCE_DIR}/../tests
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_BINARY_DIR}/../tests
+  ${CMAKE_CURRENT_SOURCE_DIR}/../tests
 )
 
 set(proxymodeltestapp_SRCS
