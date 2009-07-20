@@ -52,7 +52,7 @@ set_target_properties(kidletime PROPERTIES
 
 install(FILES
         kidletime.h kidletime_export.h
-        DESTINATION ${INCLUDE_INSTALL_DIR}
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
         )
 
 install(TARGETS kidletime ${INSTALL_TARGETS_DEFAULT_ARGS})
