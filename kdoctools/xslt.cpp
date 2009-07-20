@@ -351,7 +351,18 @@ QByteArray fromUnicode( const QString &data )
 
 void replaceCharsetHeader( QString &output )
 {
-    QString name = QTextCodec::codecForLocale()->name();
+    QString name;
+#ifdef Q_WS_WIN
+    name = "iso-8859-1"; 
+	// fix encoding for khelpcenter toc
+    if (output.contains("<table-of-contents>"))
+        name = "utf-8"; 
+        output.replace( QString( "<?xml version=\"1.0\"?>" ),
+                        QString( "<?xml version=\"1.0\" encoding=\"%1\"?>").arg( name ) );
+    kDebug() << "fix other encodings";
+#else                    
+    name = QTextCodec::codecForLocale()->name();
+#endif    
     name.replace( QString( "ISO " ), "iso-" );
     output.replace( QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
                     QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
