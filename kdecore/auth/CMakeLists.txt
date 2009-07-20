@@ -46,6 +46,8 @@ add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${KAUTH_DEPENDENCIES}) 
 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
-install(FILES ${kauth_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/kauth)
+install(FILES ${kauth_headers} DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/kauth COMPONENT Devel
+)
 
 set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-Wall -ggdb")
