@@ -11,7 +11,7 @@ include_directories( ${KDE4_INCLUDES}
 set(proxymodeltestapp_SRCS
     main.cpp
     mainwindow.cpp
-    ../tests/dynamictreemodel.cpp
+    ../dynamictreemodel.cpp
     selectionpmwidget.cpp
     descendantpmwidget.cpp
 )
@@ -19,7 +19,7 @@ set(proxymodeltestapp_SRCS
 kde4_add_executable(proxymodeltestapp ${proxymodeltestapp_SRCS} )
 
 target_link_libraries(proxymodeltestapp
-                      kdeui_next
+   ${KDE4_KDEUI_LIBS}
 )
 
 

@@ -103,6 +103,7 @@ set(kdeui_LIB_SRCS
  icons/kiconloader.cpp
  icons/kicontheme.cpp
  icons/kiconcache.cpp
+ itemviews/kdescendantentitiesproxymodel.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -113,6 +114,7 @@ set(kdeui_LIB_SRCS
  itemviews/kcategorydrawer.cpp
  itemviews/kwidgetitemdelegate.cpp
  itemviews/kwidgetitemdelegatepool.cpp
+ itemviews/kselectionproxymodel.cpp
  itemviews/ksortfilterproxymodel.cpp
  jobs/kdialogjobuidelegate.cpp
  jobs/kabstractwidgetjobtracker.cpp
@@ -444,6 +446,7 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconcache.h
+ itemviews/kdescendantentitiesproxymodel.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
@@ -453,6 +456,7 @@ install( FILES
  itemviews/kcategorizedview.h
  itemviews/kcategorydrawer.h
  itemviews/kwidgetitemdelegate.h
+ itemviews/kselectionproxymodel.h
  itemviews/ksortfilterproxymodel.h
  jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h
