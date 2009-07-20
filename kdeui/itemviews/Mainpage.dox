@@ -1,0 +1,78 @@
+/** @mainpage kdeui_next
+
+<h2> Models and Views</h2>
+
+A KDescendantEntitiesProxyModel may be used to alter how the items in the tree are presented.
+
+Given a model which is represented as a tree:
+
+\image html entitytreemodel.png "A plain EntityTreeModel in a view"
+
+The KDescendantEntitiesProxyModel restructures the sourceModel to represent it as a flat list.
+
+@code
+// ... Create an entityTreeModel
+KDescendantEntitiesProxyModel *descProxy = new KDescendantEntitiesProxyModel(this);
+descProxy->setSourceModel(entityTree);
+view->setModel(descProxy);
+@endcode
+
+\image html descendantentitiesproxymodel.png "A KDescendantEntitiesProxyModel."
+
+KDescendantEntitiesProxyModel can also display the ancestors of the index in the source model as part of its display.
+
+@code
+// ... Create an entityTreeModel
+KDescendantEntitiesProxyModel *descProxy = new KDescendantEntitiesProxyModel(this);
+descProxy->setSourceModel(entityTree);
+
+// #### This is new
+descProxy->setDisplayAncestorData(true, QString(" / "));
+
+view->setModel(descProxy);
+
+@endcode
+
+\image html descendantentitiesproxymodel-withansecnames.png "A KDescendantEntitiesProxyModel with ancestor names."
+
+A KSelectionProxyModel can be used to simplify managing selection in one view through multiple proxy models to a representation in another view. The selectionModel of the initial view is used to create a proxied model which includes only the selected indexes and their children.
+
+@code
+  collectionTree = new EntityFilterProxyModel(this);
+  collectionTree->setSourceModel(entityTree);
+
+  // Include only collections in this proxy model.
+  collectionTree->addMimeTypeInclusionFilter( Collection::mimeType() );
+
+  treeview->setModel(collectionTree);
+
+  // KSelectionProxyModel can handle complex selections:
+  treeview->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+  KSelectionProxyModel *selProxy = new KSelectionProxyModel(treeview->selectionModel(), this);
+  selProxy->setSourceModel(etm);
+
+  EntityTreeView *selView = new EntityTreeView(splitter);
+  selView->setModel(selProxy);
+@endcode
+
+\image html selectionproxymodelsimpleselection.png "A Selection in one view creating a model for use with another view."
+
+The KSelectionProxyModel can handle complex selections.
+
+\image html selectionproxymodelmultipleselection.png "Non-contiguous selection creating a new simple model in a second view."
+
+If an index and one or more of its descendants are selected, only the top-most selected index (including all of its descendants) are included in the proxy model. (Though this is configurable. See below)
+
+\image html selectionproxymodelmultipleselection-withdescendant.png "Selecting an item and its descendant."
+
+KSelectionProxyModel allows configuration using the methods setStartWithChildTrees, setOmitDescendants, setIncludeAllSelected. See testapp/proxymodeltestapp to try out the 5 valid configurations.
+
+Obviously, the KSelectionProxyModel may be used in a view, or further processed with other proxy models. See the example_contacts application in playground/pim/akonadi or KContactManager in kdepim for examples which use a further KDescendantEntitiesProxyModel and EntityFilterProxyModel on top of a KSelectionProxyModel.
+
+The KSelectionProxyModel orders its items in the same top-to-bottom order as they appear in the source model. Note that this order may be different to the order in the selection model if there is a QSortFilterProxyModel between the selection and the source model.
+
+\image html selectionproxymodel-ordered.png "Ordered items in the SelectionProxyModel"
+
+*/
+
