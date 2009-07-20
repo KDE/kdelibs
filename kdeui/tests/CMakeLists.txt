@@ -148,5 +148,5 @@ set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
 kde4_add_executable(kplottest TEST ${kplottest_SRCS})
 target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})
 
-add_subdirectory(testapp)
+add_subdirectory(proxymodeltestapp)
 
