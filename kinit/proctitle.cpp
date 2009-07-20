@@ -80,6 +80,7 @@ static char **Argv = NULL;
 
 #if PF_ARGV_TYPE == PF_ARGV_WRITEABLE   /* Only this mode uses LastArgv */
 static char *LastArgv = NULL;
+static char *cleanUpTo = NULL;
 #endif
 
 /**
@@ -114,6 +115,7 @@ void proctitle_init(int argc, char *argv[], char *envp[]) {
             LastArgv = argv[i] + strlen(argv[i]);
         }
     }
+    cleanUpTo = LastArgv;
 
     for (i = 0; envp[i] != NULL; i++) {
         /* must not overwrite XDG_SESSION_COOKIE */
@@ -201,16 +203,14 @@ void proctitle_set(const char *fmt, ...) {
     /* We can overwrite individual argv[] arguments.  Semi-nice. */
     snprintf(Argv[0], maxlen, "%s", statbuf);
     p = &Argv[0][i];
-
-    /* null terminate it, but don't clear the rest of the
-       memory that is usually used for environment variables. Some
+    /* Clear the rest used by arguments, but don't clear the memory
+       that is usually used for environment variables. Some
        tools, like ConsoleKit must have access to the process'es initial
        environment (more exact, the XDG_SESSION_COOKIE variable stored there).
        If this code causes another side effect, we have to specifically
        always append those variables to our environment. */
-
-    if (p < LastArgv)
-        *p = '\0';
+    while (p < cleanUpTo)
+        *p++ = '\0';
 
     Argv[1] = NULL;
 # endif /* PF_ARGV_WRITEABLE */
