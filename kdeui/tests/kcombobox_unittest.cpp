@@ -24,6 +24,13 @@
 #include <khistorycombobox.h>
 #include <klineedit.h>
 
+class KTestComboBox : public KComboBox
+{
+public:
+        KTestComboBox( bool rw, QWidget *parent=0 ) : KComboBox( rw, parent ) {}
+        KCompletionBase *delegate() const { return KCompletionBase::delegate(); }
+};
+
 class KComboBox_UnitTest : public QObject
 {
     Q_OBJECT
@@ -86,6 +93,16 @@ private Q_SLOTS:
         KHistoryComboBox combo;
         // uic generates code like this, let's make sure it compiles
         combo.insertItems(0, QStringList() << "foo");
+    }
+
+    void testDeleteLineEdit()
+    {
+        // Test for KCombo's KLineEdit destruction
+        KTestComboBox *testCombo = new KTestComboBox( true, 0 ); // rw, with KLineEdit
+        testCombo->setEditable(false); // destroys our KLineEdit, with deleteLater
+        qApp->sendPostedEvents(NULL, QEvent::DeferredDelete);
+        assert( testCombo->KTestComboBox::delegate() == 0L );
+        delete testCombo; // not needed anymore
     }
 };
 

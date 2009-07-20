@@ -22,23 +22,11 @@
 
 #include <kcombobox.h>
 #include <khistorycombobox.h>
-class KTestComboBox : public KComboBox
-{
-public:
-	KTestComboBox( bool rw, QWidget *parent=0 ) : KComboBox( rw, parent ) {}
-	KCompletionBase *delegate() const { return KCompletionBase::delegate(); }
-};
 
 KComboBoxTest::KComboBoxTest(QWidget* widget)
               :QWidget(widget)
 {
   QVBoxLayout *vbox = new QVBoxLayout (this);
-
-  // Test for KCombo's KLineEdit destruction
-  KTestComboBox *testCombo = new KTestComboBox( true, this ); // rw, with KLineEdit
-  testCombo->setEditable( false ); // destroys our KLineEdit
-  assert( testCombo->KTestComboBox::delegate() == 0L );
-  delete testCombo; // not needed anymore
 
   // Qt combobox
   KHBox* hbox = new KHBox(this);
