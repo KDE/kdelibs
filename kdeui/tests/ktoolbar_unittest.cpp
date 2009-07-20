@@ -506,13 +506,16 @@ void tst_KToolBar::testXmlGuiSwitching()
     KToolBar* mainToolBar = firstClient.toolBarByName("mainToolBar");
     KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
     KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
+    KToolBar* cleanToolBar = firstClient.toolBarByName("cleanToolBar");
     KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
     KToolBar* secondHiddenToolBar = firstClient.toolBarByName("secondHiddenToolBar");
     QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextBesideIcon);
     QCOMPARE(mainToolBar->isHidden(), false);
     QCOMPARE(kmw.toolBarArea(mainToolBar), Qt::RightToolBarArea);
+    QCOMPARE(mainToolBar->iconSize().width(), KIconLoader::global()->currentSize(KIconLoader::MainToolbar));
     QCOMPARE(otherToolBar->iconSize().width(), 35);
     QCOMPARE(bigToolBar->iconSize().width(), 35);
+    QCOMPARE(cleanToolBar->iconSize().width(), KIconLoader::global()->currentSize(KIconLoader::Toolbar));
     QCOMPARE(bigToolBar->isHidden(), true);
     QCOMPARE(hiddenToolBar->isHidden(), false);
     QCOMPARE(secondHiddenToolBar->isHidden(), true);
