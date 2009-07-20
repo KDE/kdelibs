@@ -16,7 +16,7 @@ set(proxymodeltestapp_SRCS
     descendantpmwidget.cpp
 )
 
-kde4_add_executable(proxymodeltestapp ${proxymodeltestapp_SRCS} )
+kde4_add_executable(proxymodeltestapp ${proxymodeltestapp_SRCS})
 
 target_link_libraries(proxymodeltestapp
    ${KDE4_KDEUI_LIBS}
