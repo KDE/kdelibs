@@ -23,7 +23,7 @@
 
 #include <QAbstractProxyModel>
 
-#include "kdeui_next_export.h"
+#include <kdeui_export.h>
 
 class KDescendantEntitiesProxyModelPrivate;
 
@@ -64,7 +64,7 @@ view->setModel(descProxy);
 @since 4.4
 @author Stephen Kelly <steveire@gmail.com>
 */
-class KDEUI_NEXT_EXPORT KDescendantEntitiesProxyModel : public QAbstractProxyModel
+class KDEUI_EXPORT KDescendantEntitiesProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
 

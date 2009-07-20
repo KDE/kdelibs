@@ -22,7 +22,7 @@
 
 #include <QAbstractProxyModel>
 
-#include "kdeui_next_export.h"
+#include <kdeui_export.h>
 
 class QItemSelectionModel;
 
@@ -56,7 +56,7 @@ this is how KMails Favourite folder View works, and how the AmazingCompleter wor
 @author Stephen Kelly <steveire@gmail.com>
 
 */
-class KDEUI_NEXT_EXPORT KSelectionProxyModel : public QAbstractProxyModel
+class KDEUI_EXPORT KSelectionProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
 public:

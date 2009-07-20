@@ -21,8 +21,6 @@
 
 #include <QItemSelectionRange>
 
-#include <KDebug>
-
 class KSelectionProxyModelPrivate
 {
 public:
