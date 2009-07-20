@@ -18,28 +18,28 @@
 */
 
 
-#include "kdescendantentitiesproxymodel.h"
+#include "kdescendantsproxymodel.h"
 
 #include "kdebug.h"
 
 /**
   @internal
 
-  Private implementation of DescendantEntitiesProxyModel.
+  Private implementation of DescendantsProxyModel.
 */
-class KDescendantEntitiesProxyModelPrivate
+class KDescendantsProxyModelPrivate
 {
   public:
 
-  KDescendantEntitiesProxyModelPrivate(KDescendantEntitiesProxyModel *model)
+  KDescendantsProxyModelPrivate(KDescendantsProxyModel *model)
     : q_ptr(model),
       m_displayAncestorData( false ),
       m_ancestorSeparator( QLatin1String( " / " ) )
     {
     }
 
-  Q_DECLARE_PUBLIC( KDescendantEntitiesProxyModel )
-  KDescendantEntitiesProxyModel *q_ptr;
+  Q_DECLARE_PUBLIC( KDescendantsProxyModel )
+  KDescendantsProxyModel *q_ptr;
   /**
   @internal
 
@@ -165,18 +165,18 @@ class KDescendantEntitiesProxyModelPrivate
 
 };
 
-KDescendantEntitiesProxyModel::KDescendantEntitiesProxyModel( QObject *parent )
+KDescendantsProxyModel::KDescendantsProxyModel( QObject *parent )
       : QAbstractProxyModel( parent ),
-        d_ptr( new KDescendantEntitiesProxyModelPrivate(this) )
+        d_ptr( new KDescendantsProxyModelPrivate(this) )
 {
-  Q_D(KDescendantEntitiesProxyModel);
+  Q_D(KDescendantsProxyModel);
 
   d->m_rootDescendIndex = QModelIndex();
 }
 
-void KDescendantEntitiesProxyModel::setRootIndex(const QModelIndex &index)
+void KDescendantsProxyModel::setRootIndex(const QModelIndex &index)
 {
-  Q_D(KDescendantEntitiesProxyModel);
+  Q_D(KDescendantsProxyModel);
 
   if (index.isValid())
     Q_ASSERT(index.model() == sourceModel());
@@ -186,15 +186,15 @@ void KDescendantEntitiesProxyModel::setRootIndex(const QModelIndex &index)
   reset();
 }
 
-KDescendantEntitiesProxyModel::~KDescendantEntitiesProxyModel()
+KDescendantsProxyModel::~KDescendantsProxyModel()
 {
-  Q_D(KDescendantEntitiesProxyModel);
+  Q_D(KDescendantsProxyModel);
   d->m_descendantsCount.clear();
 }
 
-QModelIndex KDescendantEntitiesProxyModelPrivate::findSourceIndexForRow( int row, QModelIndex idx ) const
+QModelIndex KDescendantsProxyModelPrivate::findSourceIndexForRow( int row, QModelIndex idx ) const
 {
-    Q_Q( const KDescendantEntitiesProxyModel );
+    Q_Q( const KDescendantsProxyModel );
     int childCount = q->sourceModel()->rowCount(idx);
     for (int childRow = 0; childRow < childCount; childRow++)
     {
@@ -219,9 +219,9 @@ QModelIndex KDescendantEntitiesProxyModelPrivate::findSourceIndexForRow( int row
     return QModelIndex();
 }
 
-void KDescendantEntitiesProxyModel::setSourceModel(QAbstractItemModel * sourceModel)
+void KDescendantsProxyModel::setSourceModel(QAbstractItemModel * sourceModel)
 {
-  Q_D(KDescendantEntitiesProxyModel);
+  Q_D(KDescendantsProxyModel);
   QAbstractProxyModel::setSourceModel( sourceModel );
   connect( sourceModel, SIGNAL(modelReset()), SLOT( sourceModelReset() ) );
   connect( sourceModel, SIGNAL(modelAboutToBeReset()), SLOT(sourceModelAboutToBeReset() ) );
@@ -249,9 +249,9 @@ void KDescendantEntitiesProxyModel::setSourceModel(QAbstractItemModel * sourceMo
   reset();
 }
 
-bool KDescendantEntitiesProxyModelPrivate::isDescended(const QModelIndex &sourceIndex) const
+bool KDescendantsProxyModelPrivate::isDescended(const QModelIndex &sourceIndex) const
 {
-  Q_Q(const KDescendantEntitiesProxyModel);
+  Q_Q(const KDescendantsProxyModel);
 
   if (sourceIndex == m_rootDescendIndex)
   {
@@ -280,9 +280,9 @@ bool KDescendantEntitiesProxyModelPrivate::isDescended(const QModelIndex &source
   return found;
 }
 
-int KDescendantEntitiesProxyModelPrivate::descendedRow(const QModelIndex &sourceIndex) const
+int KDescendantsProxyModelPrivate::descendedRow(const QModelIndex &sourceIndex) const
 {
-  Q_Q(const KDescendantEntitiesProxyModel);
+  Q_Q(const KDescendantsProxyModel);
   QModelIndex parentIndex = sourceIndex.parent();
   int row = sourceIndex.row();
 
@@ -314,9 +314,9 @@ int KDescendantEntitiesProxyModelPrivate::descendedRow(const QModelIndex &source
   }
 }
 
-QModelIndex KDescendantEntitiesProxyModel::mapFromSource(const QModelIndex & sourceIndex) const
+QModelIndex KDescendantsProxyModel::mapFromSource(const QModelIndex & sourceIndex) const
 {
-  Q_D(const KDescendantEntitiesProxyModel);
+  Q_D(const KDescendantsProxyModel);
 
   if (sourceIndex == d->m_rootDescendIndex)
   {
@@ -334,15 +334,15 @@ QModelIndex KDescendantEntitiesProxyModel::mapFromSource(const QModelIndex & sou
   }
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex &sourceParentIndex, int start, int end)
+void KDescendantsProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex &sourceParentIndex, int start, int end)
 {
   insertOrRemoveRows(sourceParentIndex, start, end, InsertOperation);
 }
 
-void KDescendantEntitiesProxyModelPrivate::insertOrRemoveRows(const QModelIndex &sourceParentIndex, int start, int end, int operationType)
+void KDescendantsProxyModelPrivate::insertOrRemoveRows(const QModelIndex &sourceParentIndex, int start, int end, int operationType)
 {
 
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   int c = descendedRow(sourceParentIndex);
 
@@ -402,9 +402,9 @@ void KDescendantEntitiesProxyModelPrivate::insertOrRemoveRows(const QModelIndex 
   }
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceRowsInserted(const QModelIndex &sourceParentIndex, int start, int end)
+void KDescendantsProxyModelPrivate::sourceRowsInserted(const QModelIndex &sourceParentIndex, int start, int end)
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   m_descendantsCount.clear();
 
@@ -422,9 +422,9 @@ void KDescendantEntitiesProxyModelPrivate::sourceRowsInserted(const QModelIndex 
   descendNewIndexes();
 }
 
-void KDescendantEntitiesProxyModelPrivate::descendNewIndexes()
+void KDescendantsProxyModelPrivate::descendNewIndexes()
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   QMutableListIterator<QPersistentModelIndex> i(m_terminalIndexes);
   while (i.hasNext())
@@ -458,18 +458,18 @@ void KDescendantEntitiesProxyModelPrivate::descendNewIndexes()
 }
 
 
-void KDescendantEntitiesProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int destRow)
+void KDescendantsProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int destRow)
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
   int c = descendedRow(parent);
   int d = descendedRow(destParent);
   // TODO: Uncomment for Qt 4.6
 //   q->beginMoveRows(QModelIndex(), c+1+start, c+1+end, QModelIndex(), d+1+destRow);
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceRowsMoved(const QModelIndex &sourceParentIndex, int start, int end, const QModelIndex &destParentIndex, int destRow)
+void KDescendantsProxyModelPrivate::sourceRowsMoved(const QModelIndex &sourceParentIndex, int start, int end, const QModelIndex &destParentIndex, int destRow)
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
   Q_UNUSED(sourceParentIndex);
   Q_UNUSED(start);
   Q_UNUSED(end);
@@ -483,14 +483,14 @@ void KDescendantEntitiesProxyModelPrivate::sourceRowsMoved(const QModelIndex &so
 }
 
 
-void KDescendantEntitiesProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
+void KDescendantsProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
   insertOrRemoveRows(parent, start, end, RemoveOperation);
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceRowsRemoved(const QModelIndex &sourceParentIndex, int start, int end)
+void KDescendantsProxyModelPrivate::sourceRowsRemoved(const QModelIndex &sourceParentIndex, int start, int end)
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
   Q_UNUSED(sourceParentIndex);
   Q_UNUSED(start);
   Q_UNUSED(end);
@@ -499,41 +499,41 @@ void KDescendantEntitiesProxyModelPrivate::sourceRowsRemoved(const QModelIndex &
   q->endRemoveRows();
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceModelAboutToBeReset()
+void KDescendantsProxyModelPrivate::sourceModelAboutToBeReset()
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   // TODO: Uncomment for Qt 4.6
 //   q->beginResetModel();
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceModelReset()
+void KDescendantsProxyModelPrivate::sourceModelReset()
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   m_descendantsCount.clear();
   // TODO: Uncomment for Qt 4.6
 //   q->endResetModel();
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceLayoutAboutToBeChanged()
+void KDescendantsProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   q->layoutAboutToBeChanged();
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceLayoutChanged()
+void KDescendantsProxyModelPrivate::sourceLayoutChanged()
 {
-  Q_Q(KDescendantEntitiesProxyModel);
+  Q_Q(KDescendantsProxyModel);
 
   m_descendantsCount.clear();
   q->layoutChanged();
 }
 
-QModelIndex KDescendantEntitiesProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+QModelIndex KDescendantsProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
-  Q_D(const KDescendantEntitiesProxyModel);
+  Q_D(const KDescendantsProxyModel);
 
   if (!proxyIndex.isValid())
     return d->m_rootDescendIndex;
@@ -550,9 +550,9 @@ QModelIndex KDescendantEntitiesProxyModel::mapToSource(const QModelIndex &proxyI
   return idx;
 }
 
-QVariant KDescendantEntitiesProxyModel::data(const QModelIndex & index, int role) const
+QVariant KDescendantsProxyModel::data(const QModelIndex & index, int role) const
 {
-  Q_D(const KDescendantEntitiesProxyModel );
+  Q_D(const KDescendantsProxyModel );
 
   if (!index.isValid())
     return QVariant();
@@ -580,14 +580,14 @@ QVariant KDescendantEntitiesProxyModel::data(const QModelIndex & index, int role
 
 }
 
-bool KDescendantEntitiesProxyModel::hasChildren ( const QModelIndex & parent ) const
+bool KDescendantsProxyModel::hasChildren ( const QModelIndex & parent ) const
 {
   return rowCount(parent) > 0;
 }
 
-int KDescendantEntitiesProxyModel::rowCount(const QModelIndex & proxyIndex) const
+int KDescendantsProxyModel::rowCount(const QModelIndex & proxyIndex) const
 {
-  Q_D(const KDescendantEntitiesProxyModel );
+  Q_D(const KDescendantsProxyModel );
 
   if (proxyIndex.column() > 0)
     return 0;
@@ -602,9 +602,9 @@ int KDescendantEntitiesProxyModel::rowCount(const QModelIndex & proxyIndex) cons
   return 0;
 }
 
-void KDescendantEntitiesProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+void KDescendantsProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
-  Q_Q( KDescendantEntitiesProxyModel );
+  Q_Q( KDescendantsProxyModel );
   int topRow = topLeft.row();
   int bottomRow = bottomRight.row();
 
@@ -620,7 +620,7 @@ void KDescendantEntitiesProxyModelPrivate::sourceDataChanged(const QModelIndex &
   }
 }
 
-int KDescendantEntitiesProxyModelPrivate::descendantCount(const QModelIndex &sourceIndex, int ignoreTerminals) const
+int KDescendantsProxyModelPrivate::descendantCount(const QModelIndex &sourceIndex, int ignoreTerminals) const
 {
   if (sourceIndex.column() > 0)
     return 0;
@@ -633,7 +633,7 @@ int KDescendantEntitiesProxyModelPrivate::descendantCount(const QModelIndex &sou
     }
   }
 
-  Q_Q( const KDescendantEntitiesProxyModel );
+  Q_Q( const KDescendantsProxyModel );
   if (m_descendantsCount.contains(sourceIndex.internalId()))
   {
     return m_descendantsCount.value(sourceIndex.internalId());
@@ -659,9 +659,9 @@ int KDescendantEntitiesProxyModelPrivate::descendantCount(const QModelIndex &sou
   return c;
 }
 
-QModelIndex KDescendantEntitiesProxyModel::index(int r, int c, const QModelIndex& parent) const
+QModelIndex KDescendantsProxyModel::index(int r, int c, const QModelIndex& parent) const
 {
-  Q_D(const KDescendantEntitiesProxyModel );
+  Q_D(const KDescendantsProxyModel );
 
   if ( (r < 0) || (c < 0) || (c >= sourceModel()->columnCount() ) )
     return QModelIndex();
@@ -676,43 +676,43 @@ QModelIndex KDescendantEntitiesProxyModel::index(int r, int c, const QModelIndex
   return createIndex(r, c);
 }
 
-QModelIndex KDescendantEntitiesProxyModel::parent(const QModelIndex& proxyIndex) const
+QModelIndex KDescendantsProxyModel::parent(const QModelIndex& proxyIndex) const
 {
   Q_UNUSED(proxyIndex);
 
   return QModelIndex();
 }
 
-int KDescendantEntitiesProxyModel::columnCount(const QModelIndex &index) const
+int KDescendantsProxyModel::columnCount(const QModelIndex &index) const
 {
   return sourceModel()->columnCount();
 }
 
-void KDescendantEntitiesProxyModel::setDisplayAncestorData( bool display )
+void KDescendantsProxyModel::setDisplayAncestorData( bool display )
 {
-  Q_D(KDescendantEntitiesProxyModel);
+  Q_D(KDescendantsProxyModel);
   d->m_displayAncestorData = display;
 }
 
-bool KDescendantEntitiesProxyModel::displayAncestorData() const
+bool KDescendantsProxyModel::displayAncestorData() const
 {
-  Q_D(const KDescendantEntitiesProxyModel );
+  Q_D(const KDescendantsProxyModel );
   return d->m_displayAncestorData;
 }
 
-void KDescendantEntitiesProxyModel::setAncestorSeparator( const QString &separator )
+void KDescendantsProxyModel::setAncestorSeparator( const QString &separator )
 {
-  Q_D(KDescendantEntitiesProxyModel);
+  Q_D(KDescendantsProxyModel);
   d->m_ancestorSeparator = separator;
 }
 
-QString KDescendantEntitiesProxyModel::ancestorSeparator() const
+QString KDescendantsProxyModel::ancestorSeparator() const
 {
-  Q_D(const KDescendantEntitiesProxyModel );
+  Q_D(const KDescendantsProxyModel );
   return d->m_ancestorSeparator;
 }
 
-Qt::ItemFlags KDescendantEntitiesProxyModel::flags( const QModelIndex &index ) const
+Qt::ItemFlags KDescendantsProxyModel::flags( const QModelIndex &index ) const
 {
   // if index is invalid, it might be mapped to a valid source index with more flags.
   // Can't allow that...
@@ -721,9 +721,9 @@ Qt::ItemFlags KDescendantEntitiesProxyModel::flags( const QModelIndex &index ) c
   return QAbstractProxyModel::flags(index);
 }
 
-QModelIndexList KDescendantEntitiesProxyModelPrivate::matchDescendants(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags, int until, const bool matchAll) const
+QModelIndexList KDescendantsProxyModelPrivate::matchDescendants(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags, int until, const bool matchAll) const
 {
-  Q_Q(const KDescendantEntitiesProxyModel);
+  Q_Q(const KDescendantsProxyModel);
   QModelIndexList matches;
 
   const int column = start.column();
@@ -754,9 +754,9 @@ QModelIndexList KDescendantEntitiesProxyModelPrivate::matchDescendants(const QMo
   return matches;
 }
 
-QModelIndexList KDescendantEntitiesProxyModel::match(const QModelIndex& start, int role, const QVariant& value, int hits, Qt::MatchFlags flags) const
+QModelIndexList KDescendantsProxyModel::match(const QModelIndex& start, int role, const QVariant& value, int hits, Qt::MatchFlags flags) const
 {
-  Q_D(const KDescendantEntitiesProxyModel );
+  Q_D(const KDescendantsProxyModel );
 
   // We only really need to do all this for the AmazingCompletionRole, but there's no clean way to
   // determine what that is.
@@ -837,4 +837,4 @@ QModelIndexList KDescendantEntitiesProxyModel::match(const QModelIndex& start, i
   return proxyList.mid(0, hits);
 }
 
-#include "moc_kdescendantentitiesproxymodel.cpp"
+#include "moc_kdescendantsproxymodel.cpp"

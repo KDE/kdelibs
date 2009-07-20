@@ -23,18 +23,18 @@
 #include <qtestevent.h>
 
 #include "dynamictreemodel.h"
-#include "../kdescendantentitiesproxymodel.h"
+#include "kdescendantsproxymodel.h"
 #include "proxymodeltest.h"
 
 #include <QTreeView>
 
 #include <kdebug.h>
 
-class DescendantEntitiesProxyModelTest : public ProxyModelTest
+class DescendantsProxyModelTest : public ProxyModelTest
 {
   Q_OBJECT
 public:
-  DescendantEntitiesProxyModelTest( QObject *parent = 0 )
+  DescendantsProxyModelTest( QObject *parent = 0 )
       : ProxyModelTest( parent )
   {
   }
@@ -86,15 +86,15 @@ private slots:
   void initTestCase();
 
 private:
-  KDescendantEntitiesProxyModel *m_proxyModel;
+  KDescendantsProxyModel *m_proxyModel;
   IndexFinder m_rootIdxFinder;
   int m_rowCount;
 };
 
 
-void DescendantEntitiesProxyModelTest::initTestCase()
+void DescendantsProxyModelTest::initTestCase()
 {
-  m_proxyModel = new KDescendantEntitiesProxyModel(this);
+  m_proxyModel = new KDescendantsProxyModel(this);
   setProxyModel(m_proxyModel);
 
   QList<QVariantList> signalList;
@@ -253,5 +253,5 @@ void DescendantEntitiesProxyModelTest::initTestCase()
 
 }
 
-QTEST_KDEMAIN(DescendantEntitiesProxyModelTest, GUI)
+QTEST_KDEMAIN(DescendantsProxyModelTest, GUI)
 #include "kdescendantentitiesproxymodeltest.moc"

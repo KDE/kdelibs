@@ -25,7 +25,7 @@
 
 #include <kdeui_export.h>
 
-class KDescendantEntitiesProxyModelPrivate;
+class KDescendantsProxyModelPrivate;
 
 /**
 @brief Proxy Model for restructuring a Tree into a list.
@@ -34,22 +34,22 @@ Given a model which is represented as a tree:
 
 \image html entitytreemodel.png "A plain EntityTreeModel in a view"
 
-The KDescendantEntitiesProxyModel restructures the sourceModel to represent it as a flat list.
+The KDescendantsProxyModel restructures the sourceModel to represent it as a flat list.
 
 @code
 // ... Create an entityTreeModel
-KDescendantEntitiesProxyModel *descProxy = new KDescendantEntitiesProxyModel(this);
+KDescendantsProxyModel *descProxy = new KDescendantsProxyModel(this);
 descProxy->setSourceModel(entityTree);
 view->setModel(descProxy);
 @endcode
 
-\image html descendantentitiesproxymodel.png "A KDescendantEntitiesProxyModel."
+\image html descendantentitiesproxymodel.png "A KDescendantsProxyModel."
 
 KDescendantEntitiesProxyModel can also display the ancestors of the index in the source model as part of its display.
 
 @code
 // ... Create an entityTreeModel
-KDescendantEntitiesProxyModel *descProxy = new KDescendantEntitiesProxyModel(this);
+KDescendantsProxyModel *descProxy = new KDescendantesProxyModel(this);
 descProxy->setSourceModel(entityTree);
 
 // #### This is new
@@ -59,12 +59,12 @@ view->setModel(descProxy);
 
 @endcode
 
-\image html descendantentitiesproxymodel-withansecnames.png "A KDescendantEntitiesProxyModel with ancestor names."
+\image html descendantentitiesproxymodel-withansecnames.png "A KDescendantsProxyModel with ancestor names."
 
 @since 4.4
 @author Stephen Kelly <steveire@gmail.com>
 */
-class KDEUI_EXPORT KDescendantEntitiesProxyModel : public QAbstractProxyModel
+class KDEUI_EXPORT KDescendantsProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
 
@@ -75,12 +75,12 @@ class KDEUI_EXPORT KDescendantEntitiesProxyModel : public QAbstractProxyModel
      *
      * @param parent The parent object.
      */
-    KDescendantEntitiesProxyModel( QObject *parent = 0 );
+    KDescendantsProxyModel( QObject *parent = 0 );
 
     /**
      * Destroys the descendant entities proxy model.
      */
-    virtual ~KDescendantEntitiesProxyModel();
+    virtual ~KDescendantsProxyModel();
 
     /**
      * Sets the source @p model of the proxy.
@@ -177,9 +177,9 @@ class KDEUI_EXPORT KDescendantEntitiesProxyModel : public QAbstractProxyModel
 
 
 private:
-  Q_DECLARE_PRIVATE( KDescendantEntitiesProxyModel )
+  Q_DECLARE_PRIVATE( KDescendantsProxyModel )
   //@cond PRIVATE
-  KDescendantEntitiesProxyModelPrivate *d_ptr;
+  KDescendantsProxyModelPrivate *d_ptr;
 
   Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeInserted(const QModelIndex &, int, int))
   Q_PRIVATE_SLOT(d_func(), void sourceRowsInserted(const QModelIndex &, int, int))

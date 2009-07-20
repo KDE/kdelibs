@@ -2,28 +2,28 @@
 
 <h2> Models and Views</h2>
 
-A KDescendantEntitiesProxyModel may be used to alter how the items in the tree are presented.
+A KDescendantsProxyModel may be used to alter how the items in the tree are presented.
 
 Given a model which is represented as a tree:
 
 \image html entitytreemodel.png "A plain EntityTreeModel in a view"
 
-The KDescendantEntitiesProxyModel restructures the sourceModel to represent it as a flat list.
+The KDescendantsProxyModel restructures the sourceModel to represent it as a flat list.
 
 @code
 // ... Create an entityTreeModel
-KDescendantEntitiesProxyModel *descProxy = new KDescendantEntitiesProxyModel(this);
+KDescendantsProxyModel *descProxy = new KDescendantsProxyModel(this);
 descProxy->setSourceModel(entityTree);
 view->setModel(descProxy);
 @endcode
 
-\image html descendantentitiesproxymodel.png "A KDescendantEntitiesProxyModel."
+\image html descendantentitiesproxymodel.png "A KDescendantsProxyModel."
 
-KDescendantEntitiesProxyModel can also display the ancestors of the index in the source model as part of its display.
+KDescendantsProxyModel can also display the ancestors of the index in the source model as part of its display.
 
 @code
 // ... Create an entityTreeModel
-KDescendantEntitiesProxyModel *descProxy = new KDescendantEntitiesProxyModel(this);
+KDescendantsProxyModel *descProxy = new KDescendantsProxyModel(this);
 descProxy->setSourceModel(entityTree);
 
 // #### This is new
@@ -33,7 +33,7 @@ view->setModel(descProxy);
 
 @endcode
 
-\image html descendantentitiesproxymodel-withansecnames.png "A KDescendantEntitiesProxyModel with ancestor names."
+\image html descendantentitiesproxymodel-withansecnames.png "A KDescendantsProxyModel with ancestor names."
 
 A KSelectionProxyModel can be used to simplify managing selection in one view through multiple proxy models to a representation in another view. The selectionModel of the initial view is used to create a proxied model which includes only the selected indexes and their children.
 
@@ -68,7 +68,7 @@ If an index and one or more of its descendants are selected, only the top-most s
 
 KSelectionProxyModel allows configuration using the methods setStartWithChildTrees, setOmitDescendants, setIncludeAllSelected. See testapp/proxymodeltestapp to try out the 5 valid configurations.
 
-Obviously, the KSelectionProxyModel may be used in a view, or further processed with other proxy models. See the example_contacts application in playground/pim/akonadi or KContactManager in kdepim for examples which use a further KDescendantEntitiesProxyModel and EntityFilterProxyModel on top of a KSelectionProxyModel.
+Obviously, the KSelectionProxyModel may be used in a view, or further processed with other proxy models. See the example_contacts application in playground/pim/akonadi or KContactManager in kdepim for examples which use a further KDescendantsProxyModel and EntityFilterProxyModel on top of a KSelectionProxyModel.
 
 The KSelectionProxyModel orders its items in the same top-to-bottom order as they appear in the source model. Note that this order may be different to the order in the selection model if there is a QSortFilterProxyModel between the selection and the source model.
 

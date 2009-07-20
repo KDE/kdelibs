@@ -25,7 +25,7 @@
 #include <QSplitter>
 
 #include "dynamictreemodel.h"
-#include "kdescendantentitiesproxymodel.h"
+#include "kdescendantsproxymodel.h"
 #include <QHBoxLayout>
 #include "kselectionproxymodel.h"
 #include <QLineEdit>
@@ -41,10 +41,10 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
 
   const int numCols = 2;
 
-  m_descProxyModel = new KDescendantEntitiesProxyModel(this);
+  m_descProxyModel = new KDescendantsProxyModel(this);
   m_descProxyModel->setSourceModel(m_rootModel);
 
-  KDescendantEntitiesProxyModel *descProxyModel2 = new KDescendantEntitiesProxyModel(this);
+  KDescendantsProxyModel *descProxyModel2 = new KDescendantsProxyModel(this);
   descProxyModel2->setSourceModel(m_rootModel);
   descProxyModel2->setDisplayAncestorData(true);
 
