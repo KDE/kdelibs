@@ -912,7 +912,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         }
         else
         {
-            kWarning(7019) << "Got cmd " << cmd << " while waiting for an answer!";
+            kFatal(7019) << "Got cmd " << cmd << " while waiting for an answer!";
         }
     }
 }
