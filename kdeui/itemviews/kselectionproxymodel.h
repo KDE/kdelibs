@@ -88,7 +88,7 @@ public:
     OnlySelected,
     OnlySelectedChildren
   };
-  Q_ENUMS(FilterBehavior);
+  Q_ENUMS(FilterBehavior)
 
   /**
     Set the filter behaviors of this model.

@@ -21,7 +21,7 @@
 
 #include <QTimer>
 
-#include "../kselectionproxymodel.h"
+#include "../itemviews/kselectionproxymodel.h"
 
 class ModelWatcher : public QObject
 {
