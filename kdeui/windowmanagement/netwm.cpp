@@ -2108,6 +2108,9 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
     }
 
     if (dirty & ClientList) {
+        QList<Window> clientsToRemove;
+        QList<Window> clientsToAdd;
+
         bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, net_client_list,
 			       0l, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
@@ -2126,16 +2129,16 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 
 			while (old_index < old_count || new_index < new_count) {
 			    if (old_index == old_count) {
-				addClient(wins[new_index++]);
+				clientsToAdd.append(wins[new_index++]);
 			    } else if (new_index == new_count) {
-				removeClient(p->clients[old_index++]);
+				clientsToRemove.append(p->clients[old_index++]);
 			    } else {
 				if (p->clients[old_index] <
 				    wins[new_index]) {
-				    removeClient(p->clients[old_index++]);
+				    clientsToRemove.append(p->clients[old_index++]);
 				} else if (wins[new_index] <
 					   p->clients[old_index]) {
-				    addClient(wins[new_index++]);
+				    clientsToAdd.append(wins[new_index++]);
 				} else {
 				    new_index++;
 				    old_index++;
@@ -2152,7 +2155,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 
 		    unsigned long n;
 		    for (n = 0; n < nitems_ret; n++) {
-			addClient(wins[n]);
+			clientsToAdd.append(wins[n]);
 		    }
 		}
 
@@ -2166,7 +2169,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 	}
         if( !read_ok ) {
             for( unsigned int i = 0; i < p->clients_count; ++ i )
-	        removeClient(p->clients[i]);
+	        clientsToRemove.append(p->clients[i]);
             p->clients_count = 0;
             delete[] p->clients;
             p->clients = NULL;
@@ -2176,6 +2179,12 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 	fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
 		p->clients_count);
 #endif
+        for (int i = 0; i < clientsToRemove.size(); ++i) {
+            removeClient(clientsToRemove.at(i));
+        }
+        for (int i = 0; i < clientsToAdd.size(); ++i) {
+            addClient(clientsToAdd.at(i));
+        }
     }
 
     if (dirty & ClientListStacking) {
