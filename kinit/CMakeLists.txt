@@ -148,6 +148,7 @@ target_link_libraries( klauncher kdeinit_klauncher )
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### start_kdeinit ###############
+
 set(start_kdeinit_SRCS start_kdeinit.c)
 kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
 if(KDE4_ENABLE_FPIE)
@@ -158,15 +159,17 @@ endif(KDE4_ENABLE_FPIE)
 set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
 kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
 
+install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
+install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})
+
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
     MESSAGE(STATUS "Using setuid root kdeinit wrapper in order to protect it from bad Linux OOM-killer")
-    install(TARGETS start_kdeinit PERMISSIONS SETUID OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ DESTINATION ${LIBEXEC_INSTALL_DIR})
     set(KDEINIT_OOM_PROTECT 1)
-else (CMAKE_SYSTEM_NAME MATCHES Linux)
-    install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
+    install(CODE "
+        set(START_KDEINIT_PATH \"\$ENV{DESTDIR}${LIBEXEC_INSTALL_DIR}/start_kdeinit\")
+        EXECUTE_PROCESS(COMMAND sh -c \"chown root '\${START_KDEINIT_PATH}' && chmod +s '\${START_KDEINIT_PATH}'\")
+    ")
 endif (CMAKE_SYSTEM_NAME MATCHES Linux)
-
-install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})
 
 ########### install files ###############
 
