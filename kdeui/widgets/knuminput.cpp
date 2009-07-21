@@ -534,7 +534,7 @@ QSize KIntNumInput::minimumSizeHint() const
     int w;
     int h;
 
-    h = 2 + qMax(d->intSpinBoxSize.height(), priv->sliderSize.height());
+    h = qMax(d->intSpinBoxSize.height(), priv->sliderSize.height());
 
     // if in extra row, then count it here
     if (priv->label && (priv->labelAlignment & (Qt::AlignBottom | Qt::AlignTop))) {
@@ -794,7 +794,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
     int w;
     int h;
 
-    h = 2 + qMax(d->editSize.height(), priv->sliderSize.height());
+    h = qMax(d->editSize.height(), priv->sliderSize.height());
 
     // if in extra row, then count it here
     if (priv->label && (priv->labelAlignment & (Qt::AlignBottom | Qt::AlignTop))) {
