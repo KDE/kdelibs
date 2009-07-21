@@ -174,7 +174,7 @@ void KWindowSystemPrivate::activate ( )
 
     bool shellHookRegistered = false;
     if(pRegisterShellHook) {
-        kDebug()<<"use RegisterShellHook";
+//         kDebug()<<"use RegisterShellHook";
         shellHookRegistered = pRegisterShellHook(winId(),RSH_REGISTER);
         if(!shellHookRegistered)
             shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
@@ -364,6 +364,11 @@ void KWindowSystem::init(int what)
         g_kwmInstanceContainer->d->activate();
     }
 
+}
+
+bool KWindowSystem::allowedActionsSupported()
+{
+    return false;
 }
 
 int KWindowSystem::currentDesktop()
