@@ -48,18 +48,6 @@ namespace Nepomuk {
             QUrl FileDataObject();
 
             /**
-             * http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileUrl
-             *
-             * URL of the file. It points at the location of the file. In cases
-             * where creating a simple file:// or http:// URL for a file is difficult
-             * (e.g. for files inside compressed archives) the applications
-             * are encouraged to use conventions defined by Apache Commons
-             * VFS Project at http://jakarta.apache.org/ commons/ vfs/
-             * filesystems.html.
-             */
-            QUrl fileUrl();
-
-            /**
              * http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName
              *
              * Name of the file, together with the extension

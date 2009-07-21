@@ -24,88 +24,16 @@ class NiePrivate
 {
 public:
     NiePrivate()
-        : nie_namespace( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#" ),
-          nie_DataObject( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject" ),
-          nie_DataSource( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource" ),
-          nie_InformationElement( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement" ),
-          nie_byteSize( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#byteSize" ),
-          nie_characterSet( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#characterSet" ),
-          nie_comment( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#comment" ),
-          nie_contentCreated( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentCreated" ),
-          nie_contentLastModified( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentLastModified" ),
-          nie_contentSize( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentSize" ),
-          nie_copyright( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#copyright" ),
-          nie_created( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#created" ),
-          nie_dataSource( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#dataSource" ),
-          nie_depends( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#depends" ),
-          nie_description( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#description" ),
-          nie_disclaimer( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#disclaimer" ),
-          nie_generator( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#generator" ),
-          nie_generatorOption( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#generatorOption" ),
-          nie_hasLogicalPart( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasLogicalPart" ),
-          nie_hasPart( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasPart" ),
-          nie_identifier( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#identifier" ),
-          nie_informationElementDate( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#informationElementDate" ),
-          nie_interpretedAs( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#interpretedAs" ),
-          nie_isLogicalPartOf( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isLogicalPartOf" ),
-          nie_isPartOf( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isPartOf" ),
-          nie_isStoredAs( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isStoredAs" ),
-          nie_keyword( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#keyword" ),
-          nie_language( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#language" ),
-          nie_lastRefreshed( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#lastRefreshed" ),
-          nie_legal( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#legal" ),
-          nie_license( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#license" ),
-          nie_licenseType( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#licenseType" ),
-          nie_links( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#links" ),
-          nie_mimeType( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#mimeType" ),
-          nie_plainTextContent( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#plainTextContent" ),
-          nie_relatedTo( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#relatedTo" ),
-          nie_rootElementOf( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#rootElementOf" ),
-          nie_subject( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#subject" ),
-          nie_title( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#title" ),
-          nie_version( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#version" ) {
+        : nie_namespace( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#", QUrl::StrictMode ) ),
+          nie_DataObject( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject", QUrl::StrictMode ) ),
+          nie_InformationElement( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement", QUrl::StrictMode ) ),
+          nie_url( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#url", QUrl::StrictMode ) ) {
     }
 
     QUrl nie_namespace;
     QUrl nie_DataObject;
-    QUrl nie_DataSource;
     QUrl nie_InformationElement;
-    QUrl nie_byteSize;
-    QUrl nie_characterSet;
-    QUrl nie_comment;
-    QUrl nie_contentCreated;
-    QUrl nie_contentLastModified;
-    QUrl nie_contentSize;
-    QUrl nie_copyright;
-    QUrl nie_created;
-    QUrl nie_dataSource;
-    QUrl nie_depends;
-    QUrl nie_description;
-    QUrl nie_disclaimer;
-    QUrl nie_generator;
-    QUrl nie_generatorOption;
-    QUrl nie_hasLogicalPart;
-    QUrl nie_hasPart;
-    QUrl nie_identifier;
-    QUrl nie_informationElementDate;
-    QUrl nie_interpretedAs;
-    QUrl nie_isLogicalPartOf;
-    QUrl nie_isPartOf;
-    QUrl nie_isStoredAs;
-    QUrl nie_keyword;
-    QUrl nie_language;
-    QUrl nie_lastRefreshed;
-    QUrl nie_legal;
-    QUrl nie_license;
-    QUrl nie_licenseType;
-    QUrl nie_links;
-    QUrl nie_mimeType;
-    QUrl nie_plainTextContent;
-    QUrl nie_relatedTo;
-    QUrl nie_rootElementOf;
-    QUrl nie_subject;
-    QUrl nie_title;
-    QUrl nie_version;
+    QUrl nie_url;
 };
 
 Q_GLOBAL_STATIC( NiePrivate, s_nie )
@@ -120,192 +48,12 @@ QUrl Nepomuk::Vocabulary::NIE::DataObject()
     return s_nie()->nie_DataObject;
 }
 
-QUrl Nepomuk::Vocabulary::NIE::DataSource()
-{
-    return s_nie()->nie_DataSource;
-}
-
 QUrl Nepomuk::Vocabulary::NIE::InformationElement()
 {
     return s_nie()->nie_InformationElement;
 }
 
-QUrl Nepomuk::Vocabulary::NIE::byteSize()
+QUrl Nepomuk::Vocabulary::NIE::url()
 {
-    return s_nie()->nie_byteSize;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::characterSet()
-{
-    return s_nie()->nie_characterSet;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::comment()
-{
-    return s_nie()->nie_comment;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::contentCreated()
-{
-    return s_nie()->nie_contentCreated;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::contentLastModified()
-{
-    return s_nie()->nie_contentLastModified;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::contentSize()
-{
-    return s_nie()->nie_contentSize;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::copyright()
-{
-    return s_nie()->nie_copyright;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::created()
-{
-    return s_nie()->nie_created;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::dataSource()
-{
-    return s_nie()->nie_dataSource;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::depends()
-{
-    return s_nie()->nie_depends;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::description()
-{
-    return s_nie()->nie_description;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::disclaimer()
-{
-    return s_nie()->nie_disclaimer;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::generator()
-{
-    return s_nie()->nie_generator;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::generatorOption()
-{
-    return s_nie()->nie_generatorOption;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::hasLogicalPart()
-{
-    return s_nie()->nie_hasLogicalPart;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::hasPart()
-{
-    return s_nie()->nie_hasPart;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::identifier()
-{
-    return s_nie()->nie_identifier;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::informationElementDate()
-{
-    return s_nie()->nie_informationElementDate;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::interpretedAs()
-{
-    return s_nie()->nie_interpretedAs;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::isLogicalPartOf()
-{
-    return s_nie()->nie_isLogicalPartOf;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::isPartOf()
-{
-    return s_nie()->nie_isPartOf;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::isStoredAs()
-{
-    return s_nie()->nie_isStoredAs;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::keyword()
-{
-    return s_nie()->nie_keyword;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::language()
-{
-    return s_nie()->nie_language;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::lastRefreshed()
-{
-    return s_nie()->nie_lastRefreshed;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::legal()
-{
-    return s_nie()->nie_legal;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::license()
-{
-    return s_nie()->nie_license;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::licenseType()
-{
-    return s_nie()->nie_licenseType;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::links()
-{
-    return s_nie()->nie_links;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::mimeType()
-{
-    return s_nie()->nie_mimeType;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::plainTextContent()
-{
-    return s_nie()->nie_plainTextContent;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::relatedTo()
-{
-    return s_nie()->nie_relatedTo;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::rootElementOf()
-{
-    return s_nie()->nie_rootElementOf;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::subject()
-{
-    return s_nie()->nie_subject;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::title()
-{
-    return s_nie()->nie_title;
-}
-
-QUrl Nepomuk::Vocabulary::NIE::version()
-{
-    return s_nie()->nie_version;
+    return s_nie()->nie_url;
 }
