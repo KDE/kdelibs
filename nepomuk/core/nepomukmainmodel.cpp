@@ -41,6 +41,8 @@
 #include <kdebug.h>
 
 #include <QtCore/QTimer>
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
 
 
 // FIXME: connect to some NepomukServer signal which emit enabled/disabled information
@@ -80,6 +82,8 @@ public:
     Soprano::Util::DummyModel* dummyModel;
 
     void init() {
+        QMutexLocker lock( &m_initMutex );
+
         if ( !dbusModel ) {
             dbusModel = dbusClient.createModel( "main" );
         }
@@ -109,6 +113,8 @@ public:
     Soprano::Model* model() {
         init();
 
+        QMutexLocker lock( &m_initMutex );
+
         // we always prefer the faster local socket client
         if ( localSocketModel ) {
             if ( mutexModel->parentModel() != localSocketModel ) {
@@ -132,6 +138,7 @@ public:
 
 private:
     bool m_socketConnectFailed;
+    QMutex m_initMutex;
 };
 }
 
