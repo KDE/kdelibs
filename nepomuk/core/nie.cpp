@@ -27,7 +27,7 @@ public:
         : nie_namespace( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#", QUrl::StrictMode ) ),
           nie_DataObject( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject", QUrl::StrictMode ) ),
           nie_InformationElement( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement", QUrl::StrictMode ) ),
-          nie_url( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#url", QUrl::StrictMode ) ) {
+          nie_url( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url", QUrl::StrictMode ) ) {
     }
 
     QUrl nie_namespace;
