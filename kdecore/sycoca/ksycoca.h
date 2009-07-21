@@ -185,6 +185,10 @@ Q_SIGNALS:
      * files as icons refresh icons to take into account the new mimetypes.
      * Another example: after creating a .desktop file in KOpenWithDialog,
      * it must wait until kbuildsycoca4 finishes until the KService::Ptr is available.
+     *
+     * @param changedResources List of resources where changes were detected.
+     * This can include the following resources (as defined in KStandardDirs) :
+     * apps, xdgdata-apps, services, servicetypes, xdgdata-mime.
      */
     void databaseChanged(const QStringList& changedResources);
 
