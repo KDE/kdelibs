@@ -844,7 +844,10 @@ QDateTime Nepomuk::Variant::toDateTime() const
 
 QUrl Nepomuk::Variant::toUrl() const
 {
-    return d->value.toUrl();
+    if( isResource() )
+        return toResource().resourceUri();
+    else
+        return d->value.toUrl();
 }
 
 
