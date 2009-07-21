@@ -285,13 +285,13 @@ bool Nepomuk::ResourceData::store()
             statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::identifier(), LiteralValue(m_kickoffIdentifier) ) );
         }
 
-        // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
+        // HACK: make sure that files have proper url properties so long as we do not have a File class for
         // Dolphin and co.
         if ( ( m_uri.scheme() == "file" ||
                constHasType( Soprano::Vocabulary::Xesam::File() ) ||
                constHasType( Nepomuk::Vocabulary::NFO::FileDataObject() ) ) &&
                QFile::exists( m_uri.toLocalFile()) ) {
-            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NFO::fileUrl(), m_uri ) );
+            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_uri ) );
         }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method

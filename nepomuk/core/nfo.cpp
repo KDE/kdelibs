@@ -26,13 +26,11 @@ public:
     NfoPrivate()
         : nfo_namespace( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#", QUrl::StrictMode ) ),
           nfo_FileDataObject( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#FileDataObject", QUrl::StrictMode ) ),
-          nfo_fileUrl( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileUrl", QUrl::StrictMode ) ),
           nfo_fileName( QUrl::fromEncoded( "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName", QUrl::StrictMode ) ) {
     }
 
     QUrl nfo_namespace;
     QUrl nfo_FileDataObject;
-    QUrl nfo_fileUrl;
     QUrl nfo_fileName;
 };
 
@@ -46,11 +44,6 @@ QUrl Nepomuk::Vocabulary::NFO::nfoNamespace()
 QUrl Nepomuk::Vocabulary::NFO::FileDataObject()
 {
     return s_nfo()->nfo_FileDataObject;
-}
-
-QUrl Nepomuk::Vocabulary::NFO::fileUrl()
-{
-    return s_nfo()->nfo_fileUrl;
 }
 
 QUrl Nepomuk::Vocabulary::NFO::fileName()
