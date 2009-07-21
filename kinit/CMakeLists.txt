@@ -167,7 +167,7 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
     set(KDEINIT_OOM_PROTECT 1)
     install(CODE "
         set(START_KDEINIT_PATH \"\$ENV{DESTDIR}${LIBEXEC_INSTALL_DIR}/start_kdeinit\")
-        EXECUTE_PROCESS(COMMAND sh -c \"chown root '\${START_KDEINIT_PATH}' && chmod +s '\${START_KDEINIT_PATH}'\")
+        EXECUTE_PROCESS(COMMAND sh -c \"chown root '\${START_KDEINIT_PATH}' && chmod u+s '\${START_KDEINIT_PATH}'\")
     ")
 endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 
