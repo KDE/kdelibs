@@ -17,8 +17,8 @@
     02110-1301, USA.
 */
 
-#ifndef SELECTIONPROXYMODEL_H
-#define SELECTIONPROXYMODEL_H
+#ifndef KSELECTIONPROXYMODEL_H
+#define KSELECTIONPROXYMODEL_H
 
 #include <QAbstractProxyModel>
 
