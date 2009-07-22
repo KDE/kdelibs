@@ -1002,7 +1002,7 @@ public:
     {
         QString               filter;
         QTextStream           str(&filter, QIODevice::WriteOnly);
-        QStringList           list(f.split(";;"));
+        QStringList           list(f.split(";;").replaceInStrings("/", "\\/"));
         QStringList::const_iterator it(list.begin()),
                               end(list.end());
         bool                  first=true;
