@@ -578,8 +578,10 @@ bool KCookieJar::parseUrl(const QString &_url,
 void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains) const
 {
-    if (_fqdn.isEmpty()) // localhost...
+    if (_fqdn.isEmpty()) {
+        _domains.append( L1("localhost") );
         return;
+    }
 
     // Return numeric IPv6 addresses as is...
     if (_fqdn[0] == '[')
