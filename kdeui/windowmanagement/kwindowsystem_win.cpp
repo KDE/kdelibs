@@ -77,11 +77,11 @@ class KWindowSystemPrivate : public QWidget
     friend class KWindowSystem;
     public:
         KWindowSystemPrivate ( int what );
-        ~KWindowSystemPrivate();  
-        
+        ~KWindowSystemPrivate();
+
         static bool CALLBACK EnumWindProc (WId hwnd, LPARAM lparam);
         static void readWindowInfo  (WId wid  , InternalWindowInfo *winfo);
-        
+
         void windowAdded        (WId wid);
         void windowRemoved      (WId wid);
         void windowActivated    (WId wid);
@@ -90,11 +90,11 @@ class KWindowSystemPrivate : public QWidget
         void windowStateChanged (WId wid);
         void reloadStackList    ( );
         void activate           ( );
-        
-        
+
+
     protected:
         bool winEvent ( MSG * message, long * result );
-        
+
     private:
         int what;
         WId fakeHwnd;
@@ -142,7 +142,7 @@ static HICON QPixmap2HIcon(const QPixmap &pix)
 static QPixmap HIcon2QPixmap( HICON hIcon )
 {
     ICONINFO ii;
-    if( GetIconInfo( hIcon, &ii ) == NULL )
+    if( GetIconInfo( hIcon, &ii ) == 0 )
         return QPixmap();
 
     QPixmap pix  = QPixmap::fromWinHBITMAP( ii.hbmColor );
@@ -168,30 +168,33 @@ void KWindowSystemPrivate::activate ( )
     if(!pRegisterShellHookWindow) pRegisterShellHookWindow = (PtrRegisterShellHookWindow)QLibrary::resolve("user32","RegisterShellHookWindow");
     if(!pDeregisterShellHookWindow) pDeregisterShellHookWindow = (PtrDeregisterShellHookWindow)QLibrary::resolve("user32","DeregisterShellHookWindow");
     if(!pRegisterShellHook) pRegisterShellHook = (PtrRegisterShellHook)QLibrary::resolve("shell32",(LPCSTR)0xb5);
-    
+
     //get the id for the shellhook message
-    if(WM_SHELLHOOK==-1) WM_SHELLHOOK  = RegisterWindowMessage(TEXT("SHELLHOOK"));
-    
+    if(WM_SHELLHOOK==-1) {
+        WM_SHELLHOOK = RegisterWindowMessage(TEXT("SHELLHOOK"));
+//         kDebug() << "WM_SHELLHOOK:" << WM_SHELLHOOK << winId();
+    }
+
     bool shellHookRegistered = false;
     if(pRegisterShellHook) {
-//         kDebug()<<"use RegisterShellHook";
-        shellHookRegistered = pRegisterShellHook(winId(),RSH_REGISTER);
-        if(!shellHookRegistered)
+        shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
+        if(!shellHookRegistered) {
             shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
-    } else {     
-        kDebug()<<"use RegisterShellHookWindow";
+            kDebug() << "second try using RegisterShellHook gave:" << shellHookRegistered;
+        }
+    } else {
         //i'm not sure if i have to do this, and what happens if some other process uses KWindowSystem
         //if(pSetTaskmanWindow)
         //    pSetTaskmanWindow(winId());
-        
+
         if(pRegisterShellHookWindow)
             shellHookRegistered = pRegisterShellHookWindow(winId());
     }
-    
+
     if(!shellHookRegistered)
         //use a timer and poll the windows ?
-         kDebug()<<"Could not create shellhook to receive WindowManager Events";
-            
+          kDebug() << "Could not create shellhook to receive WindowManager Events";
+
     //fetch window infos
     reloadStackList();
 }
@@ -209,13 +212,36 @@ KWindowSystemPrivate::~KWindowSystemPrivate()
 /**
  *the callback procedure for the invisible ShellHook window
  */
-bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )  
+bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
 {
+    if(message->wParam == 15) return QWidget::winEvent(message,result);
+
+    /*
+        check winuser.h for the following codes
+        HSHELL_WINDOWCREATED        1
+        HSHELL_WINDOWDESTROYED      2
+        HSHELL_ACTIVATESHELLWINDOW  3
+        HSHELL_WINDOWACTIVATED      4
+        HSHELL_GETMINRECT           5
+        HSHELL_RUDEAPPACTIVATED     32768 + 4 = 32772
+        HSHELL_REDRAW               6
+        HSHELL_FLASH                32768 + 6 = 32774
+        HSHELL_TASKMAN              7
+        HSHELL_LANGUAGE             8
+        HSHELL_SYSMENU              9
+        HSHELL_ENDTASK              10
+        HSHELL_ACCESSIBILITYSTATE   11
+        HSHELL_APPCOMMAND           12
+        HSHELL_WINDOWREPLACED       13
+        HSHELL_WINDOWREPLACING      14
+       */
     if (message->message == WM_SHELLHOOK) {
+//         kDebug() << "what has happened?:" << message->wParam << message->message;
+
         switch(message->wParam) {
           case HSHELL_WINDOWCREATED:
             KWindowSystem::s_d_func()->windowAdded(reinterpret_cast<WId>(message->lParam));
-            break;          
+            break;
           case HSHELL_WINDOWDESTROYED:
             KWindowSystem::s_d_func()->windowRemoved(reinterpret_cast<WId>(message->lParam));
             break;
@@ -223,14 +249,14 @@ bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
           case HSHELL_RUDEAPPACTIVATED:
             KWindowSystem::s_d_func()->windowActivated(reinterpret_cast<WId>(message->lParam));
             break;
-          case HSHELL_REDRAW: //the caption has changed 
+          case HSHELL_GETMINRECT:
+            KWindowSystem::s_d_func()->windowStateChanged(reinterpret_cast<WId>(message->lParam));
+            break;
+          case HSHELL_REDRAW: //the caption has changed
             KWindowSystem::s_d_func()->windowRedraw(reinterpret_cast<WId>(message->lParam));
             break;
           case HSHELL_FLASH:
             KWindowSystem::s_d_func()->windowFlash(reinterpret_cast<WId>(message->lParam));
-            break;
-          case HSHELL_GETMINRECT:
-            KWindowSystem::s_d_func()->windowStateChanged(reinterpret_cast<WId>(message->lParam));
             break;
         }
     }
@@ -243,20 +269,20 @@ bool CALLBACK KWindowSystemPrivate::EnumWindProc(WId hWnd, LPARAM lparam)
     GetWindowTextA(hWnd, windowText.data(), windowText.size());
 	DWORD ex_style = GetWindowExStyle(hWnd);
     KWindowSystemPrivate *p = KWindowSystem::s_d_func();
-    
+
     QString add;
-    if( !QString(windowText).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW) 
+    if( !QString(windowText).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW)
        && !GetParent(hWnd) && !GetWindow(hWnd,GW_OWNER) && !p->winInfos.contains(hWnd) ) {
-       
-        kDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
-        
+
+//        kDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
+
         InternalWindowInfo winfo;
         KWindowSystemPrivate::readWindowInfo(hWnd,&winfo);
-        
+
         p->stackingOrder.append(hWnd);
-        p->winInfos.insert(hWnd,winfo);  
+        p->winInfos.insert(hWnd,winfo);
     }
-    return true; 
+    return true;
 }
 
 void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo)
@@ -272,7 +298,7 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     if(!hSmallIcon) hSmallIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
     if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
     if(hSmallIcon)  smallIcon  = HIcon2QPixmap(hSmallIcon);
-    
+
     QPixmap bigIcon;
     HICON hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
     //if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
@@ -281,29 +307,33 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     if(!hBigIcon) hBigIcon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
     if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
     if(hBigIcon)  bigIcon  = HIcon2QPixmap(hBigIcon);
-       
+
     winfo->bigIcon    = bigIcon;
     winfo->smallIcon  = smallIcon;
-    winfo->windowName = QString(windowText).trimmed();   
+    winfo->windowName = QString(windowText).trimmed();
 }
 
 
 void KWindowSystemPrivate::windowAdded     (WId wid)
 {
+//     kDebug() << "window added!";
     KWindowSystem::s_d_func()->reloadStackList();
     emit KWindowSystem::self()->windowAdded(wid);
+    emit KWindowSystem::self()->activeWindowChanged(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
 }
 
 void KWindowSystemPrivate::windowRemoved   (WId wid)
 {
-    KWindowSystem::s_d_func()->reloadStackList();
+//     kDebug() << "window removed!";
     emit KWindowSystem::self()->windowRemoved(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
+    KWindowSystem::s_d_func()->reloadStackList();
 }
 
 void KWindowSystemPrivate::windowActivated (WId wid)
 {
+//     kDebug() << "window activated!";
     KWindowSystem::s_d_func()->reloadStackList();
     emit KWindowSystem::self()->activeWindowChanged(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
@@ -445,7 +475,7 @@ void KWindowSystem::demandAttention( WId win, bool set )
 QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
 {
     KWindowSystem::init(INFO_WINDOWS);
-    
+
     QPixmap pm;
     if(KWindowSystem::s_d_func()->winInfos.contains(win)){
         if( width < 24 || height < 24 )
@@ -460,7 +490,7 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
             size = ICON_SMALL;
         HICON hIcon = (HICON)SendMessage( win, WM_GETICON, size, 0);
         pm = HIcon2QPixmap( hIcon );
-    } 
+    }
     if( scale )
         pm = pm.scaled( width, height );
     return pm;
@@ -475,19 +505,19 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 {
     KWindowSystem::init(INFO_WINDOWS);
     KWindowSystemPrivate* s_d = s_d_func();
-    
+
     if(s_d->winInfos.contains(win)){
         // is this safe enough or do i have to refresh() the window infos
         s_d->winInfos[win].smallIcon = miniIcon;
         s_d->winInfos[win].bigIcon   = icon;
     }
-    
+
     HICON hIconBig = QPixmap2HIcon(icon);
     HICON hIconSmall = QPixmap2HIcon(miniIcon);
 
     hIconBig = (HICON)SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)hIconBig );
     hIconSmall = (HICON)SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall );
-    
+
 }
 
 void KWindowSystem::setState( WId win, unsigned long state )
@@ -517,7 +547,7 @@ void KWindowSystem::setState( WId win, unsigned long state )
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
     bool got = false;
-    
+
     if (state & NET::SkipTaskbar) {
         got = true;
         LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
@@ -532,7 +562,7 @@ void KWindowSystem::clearState( WId win, unsigned long state )
         got = true;
         ShowWindow( win, SW_RESTORE );
     }
-    if (!got)    
+    if (!got)
         kDebug() << "KWindowSystem::clearState( WId win, unsigned long state ) isn't yet implemented!";
 }
 
@@ -582,7 +612,7 @@ QString KWindowSystem::desktopName( int desktop )
 
 void KWindowSystem::setDesktopName( int desktop, const QString& name )
 {
-     kDebug() << "KWindowSystem::setDesktopName( int desktop, const QString& name ) isn't yet implemented!";  
+     kDebug() << "KWindowSystem::setDesktopName( int desktop, const QString& name ) isn't yet implemented!";
     //TODO
 }
 
@@ -649,13 +679,13 @@ void KWindowSystem::doNotManage( const QString& title )
 
 QList<WId> KWindowSystem::stackingOrder()
 {
-  KWindowSystem::init(INFO_WINDOWS);  
+  KWindowSystem::init(INFO_WINDOWS);
   return KWindowSystem::s_d_func()->stackingOrder;
 }
 
 const QList<WId>& KWindowSystem::windows()
 {
-  KWindowSystem::init(INFO_WINDOWS);  
+  KWindowSystem::init(INFO_WINDOWS);
   return KWindowSystem::s_d_func()->stackingOrder;
 }
 
