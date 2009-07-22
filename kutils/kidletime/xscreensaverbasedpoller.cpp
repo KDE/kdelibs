@@ -18,11 +18,11 @@
 
 #include "xscreensaverbasedpoller.h"
 
+#include <config.h>
+
 #include <QX11Info>
 
 #include <X11/extensions/scrnsaver.h>
-
-#define HAVE_XTEST 1 // the usual hack
 
 #ifdef HAVE_XTEST
 #include <X11/keysym.h>

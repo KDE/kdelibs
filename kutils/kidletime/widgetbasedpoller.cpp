@@ -71,7 +71,7 @@ void WidgetBasedPoller::addTimeout(int nextTimeout)
     poll();
 }
 
-bool WidgetBasedPoller::eventFilter(QObject * object, QEvent * event)
+bool WidgetBasedPoller::eventFilter(QObject *object, QEvent *event)
 {
     if (object == m_grabber
             && (event->type() == QEvent::MouseMove || event->type() == QEvent::KeyPress)) {

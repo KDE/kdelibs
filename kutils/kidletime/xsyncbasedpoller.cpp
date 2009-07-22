@@ -23,8 +23,6 @@
 #include <klocalizedstring.h>
 #include <kglobal.h>
 
-#define HAVE_XTEST 1 // the usual hack
-
 #ifdef HAVE_XTEST
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>

@@ -18,6 +18,8 @@
 
 #include "kidletime.h"
 
+#include <config.h>
+
 #ifdef Q_WS_X11
 #include "xscreensaverbasedpoller.h"
 #include "xsyncbasedpoller.h"
@@ -131,6 +133,8 @@ void KIdleTimePrivate::loadSystem()
     // Priority order
 
 #ifdef Q_WS_X11
+#ifdef HAVE_XSYNC
+#ifdef HAVE_XSCREENSAVER
     if (XSyncBasedPoller::instance()->isAvailable()) {
         XSyncBasedPoller::instance()->setUpPoller();
         poller = XSyncBasedPoller::instance();
@@ -138,6 +142,16 @@ void KIdleTimePrivate::loadSystem()
         poller = new XScreensaverBasedPoller();
         poller->setUpPoller();
     }
+#else
+    XSyncBasedPoller::instance()->setUpPoller();
+    poller = XSyncBasedPoller::instance();
+#endif
+#else
+#ifdef HAVE_XSCREENSAVER
+    poller = new XScreensaverBasedPoller();
+    poller->setUpPoller();
+#endif
+#endif
 #else
 #ifdef Q_WS_MAC
     poller = new MacPoller();

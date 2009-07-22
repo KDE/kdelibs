@@ -21,8 +21,6 @@
 
 #include "abstractsystempoller.h"
 
-//#include <config-powerdevil.h>
-
 class QTimer;
 class QEvent;
 
@@ -39,7 +37,7 @@ public:
     void unloadPoller();
 
 protected:
-    bool eventFilter(QObject * object, QEvent * event);
+    bool eventFilter(QObject *object, QEvent *event);
 
 public slots:
     void addTimeout(int nextTimeout);

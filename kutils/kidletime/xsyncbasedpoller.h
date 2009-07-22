@@ -21,11 +21,10 @@
 
 #include "abstractsystempoller.h"
 
-#define HAVE_XSYNC 1 // Hack until the library will be moved away. Too lazy to implement something temporary
+#include <kdebug.h>
+#include <kapplication.h>
 
-#include <KDebug>
-#include <QWidget>
-#include <KApplication>
+#include <config.h>
 
 #ifdef HAVE_XSYNC
 #include <X11/Xlib.h>
