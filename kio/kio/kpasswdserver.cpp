@@ -152,8 +152,6 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
 
     if (loop.authInfo().isModified()) {
         info = loop.authInfo();
-    } else {
-        return -1;
     }
 
     kDebug(7019) << "username=" << info.username << "password=[hidden]";
