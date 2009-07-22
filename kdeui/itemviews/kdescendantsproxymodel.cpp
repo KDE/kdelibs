@@ -726,6 +726,9 @@ QModelIndexList KDescendantsProxyModelPrivate::matchDescendants(const QModelInde
   Q_Q(const KDescendantsProxyModel);
   QModelIndexList matches;
 
+  if (!start.isValid())
+    return matches;
+
   const int column = start.column();
   const int firstRow = 0;
   QModelIndex idx = start;
