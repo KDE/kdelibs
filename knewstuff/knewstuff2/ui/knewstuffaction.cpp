@@ -37,8 +37,7 @@ KAction *KNS::standardAction(const QString &what,
                              const char *slot, KActionCollection *parent,
                              const QString &name)
 {
-    QString data = i18nc("Apps can fill in an individual string here (like 'Wallpapers' or 'Themes'), but 'Data' is the default. This is in an action that gets displayed in the menu or toolbar for example.", "Get New %1...", what.isEmpty() ? i18n("Data") : what);
-    KAction *action = new KAction(data, parent);
+    KAction *action = new KAction(what, parent);
     parent->addAction(name, action);
     action->setIcon(KIcon("get-hot-new-stuff"));
     QObject::connect(action, SIGNAL(triggered(bool)), receiver, slot);

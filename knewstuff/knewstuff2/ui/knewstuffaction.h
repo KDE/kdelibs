@@ -37,8 +37,9 @@ KNEWSTUFF_EXPORT_DEPRECATED KAction *standardAction(const QString &what,
  *
  * This action can be used to add KNewStuff support to menus and toolbars.
  *
- * @param what text describing what is being downloaded. will be
- *        shown as "Get New <what>..."
+ * @param what text describing what is being downloaded. For consistency,
+ *             set it to "Get New Foobar...".
+ *             Examples: "Get New Wallpapers...", "Get New Emoticons..."
  * @param receiver the QObject to connect the triggered(bool) signal to.
  * @param slot the slot to connect the triggered(bool) signal to.
  * @param parent the action's parent collection.
