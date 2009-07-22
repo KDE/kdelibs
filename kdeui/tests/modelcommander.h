@@ -38,9 +38,9 @@ public:
   void executeUntil(const QString &stopBefore = QString());
   bool hasNextCommand();
   void executeNextCommand();
+  QPair<QString, ModelChangeCommandList> nextCommand();
 
 protected:
-  QPair<QString, ModelChangeCommandList> nextCommand();
 
   void setCommand(const QString &name, ModelChangeCommandList list);
 
