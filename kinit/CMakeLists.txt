@@ -148,19 +148,20 @@ target_link_libraries( klauncher kdeinit_klauncher )
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### start_kdeinit ###############
+if (NOT WIN32)
+  set(start_kdeinit_SRCS start_kdeinit.c)
+  kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
+  if(KDE4_ENABLE_FPIE)
+      macro_add_compile_flags(start_kdeinit ${KDE4_CXX_FPIE_FLAGS})
+      macro_add_link_flags(start_kdeinit ${KDE4_PIE_LDFLAGS})
+  endif(KDE4_ENABLE_FPIE)
 
-set(start_kdeinit_SRCS start_kdeinit.c)
-kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
-if(KDE4_ENABLE_FPIE)
-    macro_add_compile_flags(start_kdeinit ${KDE4_CXX_FPIE_FLAGS})
-    macro_add_link_flags(start_kdeinit ${KDE4_PIE_LDFLAGS})
-endif(KDE4_ENABLE_FPIE)
+  set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
+  kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
 
-set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
-kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
-
-install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
-install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})
+  install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
+  install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})
+endif (NOT WIN32)
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
     MESSAGE(STATUS "Using setuid root kdeinit wrapper in order to protect it from bad Linux OOM-killer")
