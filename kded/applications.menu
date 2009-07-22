@@ -15,28 +15,17 @@
 		<Menuname>More</Menuname>
 	</DefaultLayout>
 	<Layout>
-		<Menuname>Internet</Menuname>
-		<Menuname>Office</Menuname>
-		<Menuname>Graphics</Menuname>
-		<Menuname>Multimedia</Menuname>
-		<Menuname>Games</Menuname>
-		<Menuname>Education</Menuname>
-		<Menuname>Development</Menuname>
-		<Menuname>System</Menuname>
-		<Menuname>Settingsmenu</Menuname>
 		<Merge type="menus"/>
-		<Menuname>LostFound</Menuname>
+		<Menuname>Applications</Menuname>
 		<Merge type="files"/>
 	</Layout>
 
 	<Menu>
-		<Name>LostFound</Name>
+		<Name>Applications</Name>
 		<Directory>kde-unknown.directory</Directory>
 		<OnlyUnallocated/>
 		<Include>
 			<Not>
-				<!-- Those categories are taken completely -->
-				<Category>Network</Category>
 				<!-- Don't list non-KDE core applications -->
 				<And>
 					<Category>Core</Category>
@@ -300,83 +289,29 @@
 			</Include>
 		</Menu>
 	</Menu>
-	<Menu> <!--Internet-->
+	<Menu>
 		<Name>Internet</Name>
 		<Directory>kde-internet.directory</Directory>
-		<OnlyUnallocated/>
-		<Layout>
-			<Menuname>Web</Menuname>
-			<Menuname>Communication</Menuname>
-			<Menuname>Download</Menuname>
-			<Menuname>Connectivity</Menuname>
-			<Merge type="menus"/>
-			<Merge type="files"/>
-		</Layout>
-		<Menu>
-			<Name>Web</Name>
-			<Directory>kde-internet-web.directory</Directory>
-			<NotOnlyUnallocated/>
-			<Include>
-				<And>
-					<Category>Network</Category>
-					<Or>
-						<Category>WebBrowser</Category>
-						<Category>News</Category>
-					</Or>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>Communication</Name>
-			<Directory>kde-internet-communication.directory</Directory>
-			<NotOnlyUnallocated/>
-			<Include>
-				<And>
-					<Category>Network</Category>
-					<Or>
-						<Category>Email</Category>
-						<Category>InstantMessaging</Category>
-						<Category>Chat</Category>
-						<Category>IRCClient</Category>
-						<Category>Telephony</Category>
-						<Category>VideoConference</Category>
-					</Or>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>Download</Name>
-			<Directory>kde-internet-download.directory</Directory>
-			<NotOnlyUnallocated/>
-			<Include>
-				<And>
-					<Category>Network</Category>
-					<Or>
-						<Category>FileTransfer</Category>
-						<Category>P2P</Category>
-					</Or>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>Connectivity</Name>
-			<Directory>kde-internet-connectivity.directory</Directory>
-			<NotOnlyUnallocated/>
-			<Include>
-				<And>
-					<Category>Network</Category>
-					<Or>
-						<Category>Dialup</Category>
-						<Category>RemoteAccess</Category>
-						<Category>TelephonyTools</Category>
-						<Category>Security</Category>
-					</Or>
-				</And>
-			</Include>
-		</Menu>
-		<Include> <!-- all others, if there's any -->
-			<Category>Network</Category>
+		<Include>
+			<And>
+				<Category>Network</Category>
+				<Not><Category>X-KDE-More</Category></Not>
+			</And>
 		</Include>
+		<Menu>
+			<Name>Terminal</Name>
+			<Directory>kde-internet-terminal.directory</Directory>
+		</Menu>
+		<Menu>
+			<Name>More</Name>
+			<Directory>kde-more.directory</Directory>
+			<Include>
+				<And>
+					<Category>Network</Category>
+					<Category>X-KDE-More</Category>
+				</And>
+			</Include>
+		</Menu>
 	</Menu>
 	<Menu>
 		<Name>Multimedia</Name>
@@ -504,5 +439,3 @@
 	<DefaultMergeDirs/>
 	<MergeFile>applications-kmenuedit.menu</MergeFile>
 </Menu>
-
-<!-- kate: replace-tabs 0; indent-width 4; tab-width 4; -->
