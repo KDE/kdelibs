@@ -18,6 +18,7 @@
 
 #include "vfolder_menu.h"
 #include "kbuildservicefactory.h"
+#include "kbuildsycocainterface.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -299,9 +300,10 @@ VFolderMenu::insertService(SubMenu *parentMenu, const QString &name, KService::P
 }
 
 
-VFolderMenu::VFolderMenu(KBuildServiceFactory* serviceFactory) :
-    m_track(false),
-    m_serviceFactory(serviceFactory)
+VFolderMenu::VFolderMenu(KBuildServiceFactory* serviceFactory, KBuildSycocaInterface* kbuildsycocaInterface)
+    : m_track(false),
+      m_serviceFactory(serviceFactory),
+      m_kbuildsycocaInterface(kbuildsycocaInterface)
 {
    m_usedAppsDict.reserve(797);
    m_rootMenu = 0;
@@ -991,8 +993,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       if (fi.isFile()) {
          if (!fn.endsWith(QLatin1String(".desktop")))
             continue;
-         KService::Ptr service;
-         emit newService(fi.absoluteFilePath(), &service); // calls KBuildSycoca::slotCreateEntry
+         KService::Ptr service = m_kbuildsycocaInterface->createService(fi.absoluteFilePath());
          if (service)
             addApplication(prefix + fn, service);
       }
@@ -1035,8 +1036,7 @@ VFolderMenu::processKDELegacyDirs()
       if ((*it).endsWith(QLatin1String(".desktop")))
       {
          QString name = *it;
-         KService::Ptr service;
-         emit newService(name, &service);
+         KService::Ptr service = m_kbuildsycocaInterface->createService(name);
 
          if (service && !m_forcedLegacyLoad)
          {
@@ -1090,8 +1090,7 @@ VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const Q
       if (fi.isFile() /*&& !fi.isSymLink() ?? */) {
          if (!fn.endsWith(QLatin1String(".desktop")))
             continue;
-         KService::Ptr service;
-         emit newService(fi.absoluteFilePath(), &service);
+         KService::Ptr service = m_kbuildsycocaInterface->createService(fi.absoluteFilePath());
          if (service)
          {
             const QString id = prefix + fn;

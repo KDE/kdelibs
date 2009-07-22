@@ -172,11 +172,10 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    return KSycocaEntry::Ptr();
 }
 
-// Callback for VFolderMenu
-void KBuildSycoca::slotCreateEntry(const QString &file, KService::Ptr *service)
+KService::Ptr KBuildSycoca::createService(const QString &path)
 {
-   KSycocaEntry::Ptr entry = createEntry(file, false);
-   *service = KService::Ptr::staticCast( entry );
+   KSycocaEntry::Ptr entry = createEntry(path, false);
+   return KService::Ptr::staticCast(entry);
 }
 
 // returns false if the database is up to date
@@ -299,12 +298,9 @@ bool KBuildSycoca::build()
      g_entryDict = serviceEntryDict;
      g_changed = false;
 
-     g_vfolder = new VFolderMenu(g_bsf);
+     g_vfolder = new VFolderMenu(g_bsf, this);
      if (!m_trackId.isEmpty())
         g_vfolder->setTrackId(m_trackId);
-
-     connect(g_vfolder, SIGNAL(newService(const QString &, KService::Ptr *)),
-             this, SLOT(slotCreateEntry(const QString &, KService::Ptr *)));
 
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 

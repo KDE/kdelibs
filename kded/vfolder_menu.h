@@ -29,6 +29,7 @@
 
 #include <kservice.h>
 
+class KBuildSycocaInterface;
 class KBuildServiceFactory;
 
 class VFolderMenu : public QObject
@@ -54,7 +55,7 @@ public:
      AppsInfo *apps_info;
   };
 
-  VFolderMenu(KBuildServiceFactory* serviceFactory);
+  VFolderMenu(KBuildServiceFactory* serviceFactory, KBuildSycocaInterface* kbuildsycocaInterface);
   ~VFolderMenu();
 
   /**
@@ -82,16 +83,6 @@ public:
    * menu item id
    */
   void setTrackId(const QString &id);
-
-Q_SIGNALS:
-  /**
-     Emitted when a KService for an application needs to be created.
-
-     \sa parseMenu
-
-     This is a callback for KBuildSycoca.
-  */
-  void newService(const QString &path, KService::Ptr *entry);
 
 public:
   struct MenuItem
@@ -282,6 +273,7 @@ private:
 
 private:
     KBuildServiceFactory* m_serviceFactory;
+    KBuildSycocaInterface* m_kbuildsycocaInterface;
 };
 
 #endif

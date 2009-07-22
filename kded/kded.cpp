@@ -117,7 +117,7 @@ static void runDontChangeHostname(const QByteArray &oldName, const QByteArray &n
 }
 
 Kded::Kded()
-  : m_needDelayedCheck(false)
+    : m_needDelayedCheck(false)
 {
   _self = this;
 

@@ -18,6 +18,8 @@
 #ifndef KDED_KBUILDSYCOCA_H
 #define KDED_KBUILDSYCOCA_H
 
+#include "kbuildsycocainterface.h"
+
 #include <sys/stat.h>
 
 #include <QtCore/QObject>
@@ -34,7 +36,7 @@
 class QDataStream;
 
 // No need for this in libkio - apps only get readonly access
-class KBuildSycoca : public KSycoca
+class KBuildSycoca : public KSycoca, public KBuildSycocaInterface
 {
    Q_OBJECT
 public:
@@ -55,21 +57,18 @@ public:
     // Use our friendly-access-to-KSycoca to make this public
     static void clearCaches() { KSycoca::clearCaches(); }
 
-protected Q_SLOTS:
-   void slotCreateEntry(const QString &file, KService::Ptr *entry);
-
-protected:
-
-   /**
-    * Look up gnome mimetypes.
-    */
-   void processGnomeVfs();
-
+private:
    /**
     * Add single entry to the sycoca database.
     * Either from a previous database or regenerated from file.
     */
    KSycocaEntry::Ptr createEntry(const QString &file, bool addToFactory);
+
+    /**
+     * Implementation of KBuildSycocaInterface
+     * Create service and add it to the servicefactory.
+     */
+    /*! \reimp */ KService::Ptr createService(const QString& path);
 
    /**
     * Convert a VFolderMenu::SubMenu to KServiceGroups.

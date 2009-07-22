@@ -89,24 +89,25 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
         name = name.mid(pos+1);
     }
     // Is it a .desktop file?
-    if (!name.endsWith(".desktop"))
-        return 0;
+    if (name.endsWith(".desktop")) {
+        KDesktopFile desktopFile(resource, file);
 
-    KDesktopFile desktopFile(resource, file);
+        KService * serv = new KService(&desktopFile);
+        //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
+        // Note that the menuId will be set by the vfolder_menu.cpp code just after
+        // createEntry returns.
 
-    KService * serv = new KService(&desktopFile);
-    //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
-    // Note that the menuId will be set by the vfolder_menu.cpp code just after
-    // createEntry returns.
-
-    if ( serv->isValid() && !serv->isDeleted() ) {
-        return serv;
-    } else {
-        if (!serv->isDeleted())
-            kWarning(7012) << "Invalid Service : " << file;
-        delete serv;
-        return 0;
-    }
+        if ( serv->isValid() && !serv->isDeleted() ) {
+            return serv;
+        } else {
+            if (!serv->isDeleted()) {
+                kWarning(7012) << "Invalid Service : " << file;
+            }
+            delete serv;
+            return 0;
+        }
+    } // TODO else if a Windows application,  new KService(name, exec, icon)
+    return 0;
 }
 
 void KBuildServiceFactory::saveHeader(QDataStream &str)
@@ -221,7 +222,7 @@ void KBuildServiceFactory::postProcessServices()
         m_nameMemoryHash.insert(name, service);
 
         const QString relName = service->entryPath();
-        //kDebug(7021) << "adding service" << service.data() << service->menuId() << "name=" << name << "relName=" << relName;
+        //kDebug(7021) << "adding service" << service.data() << service->type() << "menuId=" << service->menuId() << "name=" << name << "relName=" << relName;
         m_relNameDict->add(relName, entry);
         m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
 
