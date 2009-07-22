@@ -201,17 +201,14 @@ kglobalaccel_win.cpp            Ellis Whitehead <ellis@kde.org> (copyright)
 kglobalaccel_x11.cpp            Ellis Whitehead <ellis@kde.org>
 kglobalaccel.cpp                Ellis Whitehead <ellis@kde.org>
 kinstance.cpp                   Stephan Kulow <coolo@kde.org>
-kmanagerselection.cpp           Lubos Lunak <l.lunak@kde.org> (copyright)
 kmountpoint.cpp                 David Faure <faure@kde.org>
 kmultipledrag.cpp               David Faure <faure@kde.org>
 kpixmapprovider.cpp             Carsten Pfeiffer <pfeiffer@kde.org>
 kprotocolinfo_kdecore.cpp       David Faure <faure@kde.org>
-krootprop.cpp                   Lubos Lunak <l.lunak@kde.org>
 kshortcut.cpp                   Ellis Whitehead <ellis@kde.org>
 kshortcutmenu.cpp               Ellis Whitehead <ellis@kde.org> (copyright)
 ksock.cpp                       Thiago Macieira <thiago@kde.org>
 ksockaddr.cpp                   Thiago Macieira <thiago@kde.org>
-kstartupinfo.cpp                Lubos Lunak <l.lunak@kde.org>
 kstaticdeleter.cpp              Stephan Kulow <coolo@kde.org>
 kstdaccel.cpp                   Ellis Whitehead <ellis@kde.org>
 ksycoca.cpp                     David Faure <faure@kde.org>
@@ -219,9 +216,4 @@ ksycocadict.cpp                 David Faure <faure@kde.org>
 ksycocafactory.cpp              David Faure <faure@kde.org>
 kurldrag.cpp                    David Faure <faure@kde.org>
 kuser.cpp                       Tim Jansen <tim@tjansen.de> (copyright)
-kwin.cpp                        Lubos Lunak <l.lunak@kde.org>
-kwinmodule.cpp                  Lubos Lunak <l.lunak@kde.org>
-kxerrorhandler.cpp              Lubos Lunak <l.lunak@kde.org>
-kxmessages.cpp                  Lubos Lunak <l.lunak@kde.org>
 libintl.cpp                     Hans Petter Bieker <bieker@kde.org>
-netwm.cpp                       Lubos Lunak <l.lunak@kde.org>
