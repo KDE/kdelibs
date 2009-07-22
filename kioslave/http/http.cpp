@@ -3526,6 +3526,7 @@ try_again:
   {
     kDebug(7113) << "Emitting mimetype " << m_mimeType;
     mimeType( m_mimeType );
+    m_mimeTypeSent = true;
   }
 
   if (config()->readEntry("PropagateHttpHeader", false) ||
@@ -4073,7 +4074,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         }
       }
 
-      if (!m_mimeTypeSent && !m_mimeType.isEmpty())
+      if (!m_mimeTypeSent && !m_mimeType.isEmpty() && !m_isRedirection)
       {
         if ( m_request.cacheTag.writeToCache )
         {
