@@ -77,11 +77,6 @@
 
 #cmakedefine HAVE_XTEST 1
 
-#cmakedefine HAVE_XSCREENSAVER 1
-
-/* Define if you have the XSync extension */
-#cmakedefine HAVE_XSYNC 1
-
 /* Define to 1 if you have the Xcursor library */
 #cmakedefine HAVE_XCURSOR 1
 
