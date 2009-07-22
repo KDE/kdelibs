@@ -839,14 +839,13 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
                 const QSize actualSize = icon.actualSize(m_viewAdapter->iconSize());
                 QPixmap pixmap = icon.pixmap(actualSize);
                 
-                QHash< KUrl, QPixmap >::iterator cacheIt = m_cutItemsCache.find(item.url());
-                if(cacheIt != m_cutItemsCache.end() && cacheIt->cacheKey() == pixmap.cacheKey())
-                  continue; //Effect already applied to this pixmap
-                
-                pixmap = iconEffect.apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
-                m_dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
-                
-                m_cutItemsCache.insert(item.url(), pixmap);
+                const QHash<KUrl, QPixmap>::const_iterator cacheIt = m_cutItemsCache.find(item.url());
+                if ((cacheIt == m_cutItemsCache.end()) || (cacheIt->cacheKey() != pixmap.cacheKey())) {
+                    pixmap = iconEffect.apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
+                    m_dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
+                    
+                    m_cutItemsCache.insert(item.url(), pixmap);
+                }
             }
         }
     }
