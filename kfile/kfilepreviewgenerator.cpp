@@ -355,7 +355,14 @@ public:
     KDirModel* m_dirModel;
     QAbstractProxyModel* m_proxyModel;
 
-    QList<KUrl> m_cutItemsCache;
+    /**
+      * Set of all items that already have the 'cut' effect applied, together with the pixmap it was applied to
+      * This is used to make sure that the 'cut' effect is applied max. once for each pixmap
+      *
+      * Referencing the pixmaps here imposes no overhead, as they were also given to KDirModel::setData(),
+      * and thus are held anyway.
+      */
+    QHash<KUrl, QPixmap> m_cutItemsCache;
     QList<ItemInfo> m_previews;
     QMap<KUrl, int> m_sequenceIndices;
 
@@ -644,7 +651,7 @@ void KFilePreviewGenerator::Private::clearCutItemsCache()
     KFileItemList previews;
     // Reset the icons of all items that are stored in the cache
     // to use their default MIME type icon.
-    foreach (const KUrl& url, m_cutItemsCache) {
+    foreach (const KUrl& url, m_cutItemsCache.keys()) {
         const QModelIndex index = m_dirModel->indexForUrl(url);
         if (index.isValid()) {
             m_dirModel->setData(index, QIcon(), Qt::DecorationRole);
@@ -828,13 +835,18 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
             const QModelIndex index = m_dirModel->indexForItem(item);
             const QVariant value = m_dirModel->data(index, Qt::DecorationRole);
             if (value.type() == QVariant::Icon) {
-                m_cutItemsCache.append(item.url());
-
                 const QIcon icon(qvariant_cast<QIcon>(value));
                 const QSize actualSize = icon.actualSize(m_viewAdapter->iconSize());
                 QPixmap pixmap = icon.pixmap(actualSize);
+                
+                QHash< KUrl, QPixmap >::iterator cacheIt = m_cutItemsCache.find(item.url());
+                if(cacheIt != m_cutItemsCache.end() && cacheIt->cacheKey() == pixmap.cacheKey())
+                  continue; //Effect already applied to this pixmap
+                
                 pixmap = iconEffect.apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
                 m_dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
+                
+                m_cutItemsCache.insert(item.url(), pixmap);
             }
         }
     }
