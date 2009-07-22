@@ -21,7 +21,7 @@
 #ifndef DESCENDANTENTITIESPROXYMODEL_H
 #define DESCENDANTENTITIESPROXYMODEL_H
 
-#include <QAbstractProxyModel>
+#include <QtGui/QAbstractProxyModel>
 
 #include <kdeui_export.h>
 
