@@ -796,11 +796,10 @@ QModelIndex KSelectionProxyModelPrivate::selectionIndexToSourceIndex(const QMode
 {
   QModelIndex seekIndex = index;
   QListIterator<QAbstractProxyModel*> i(m_proxyChain);
-  i.toBack();
   QAbstractProxyModel *proxy;
-  while (i.hasPrevious())
+  while (i.hasNext())
   {
-    proxy = i.previous();
+    proxy = i.next();
     seekIndex = proxy->mapToSource(seekIndex);
   }
   return seekIndex;
