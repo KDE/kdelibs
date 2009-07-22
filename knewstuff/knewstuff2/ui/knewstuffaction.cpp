@@ -29,7 +29,7 @@ KAction *KNS::standardAction(const QString &what,
                              const char *slot, KActionCollection *parent,
                              const char *name)
 {
-    return standardAction( what, receiver, slot, parent, QString( name ) );
+    return standardAction(what, receiver, slot, parent, QString(name));
 }
 
 KAction *KNS::standardAction(const QString &what,
