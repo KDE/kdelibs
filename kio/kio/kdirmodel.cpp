@@ -480,8 +480,8 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
             node = nodeForUrl(url);
             if (!node) {
                 kWarning(7008) << "No node found for item that was just removed:" << url;
+                continue;
             }
-            Q_ASSERT(node);
         }
         rowNumbers.setBit(node->rowNumber(), 1); // O(n)
         removeFromNodeHash(node, url);
