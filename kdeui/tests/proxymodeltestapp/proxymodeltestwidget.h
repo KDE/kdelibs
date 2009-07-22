@@ -19,34 +19,32 @@
  * 02110-1301  USA
  */
 
-#include "mainwindow.h"
 
-#include <QSplitter>
-#include <QTabWidget>
+#ifndef PROXYMODELTESTWIDGET_H
+#define PROXYMODELTESTWIDGET_H
 
-#include "../tests/dynamictreemodel.h"
+#include <QWidget>
 
-#include "descendantpmwidget.h"
-#include "selectionpmwidget.h"
-#include "proxymodeltestwidget.h"
+class DynamicTreeModel;
+class ModelCommander;
+class QPushButton;
 
-MainWindow::MainWindow() : KXmlGuiWindow()
+class ProxyModelTestWidget : public QWidget
 {
+  Q_OBJECT
+public:
+  explicit ProxyModelTestWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-  QTabWidget *tabWidget = new QTabWidget( this );
-  DescendantProxyModelWidget *descPMWidget = new DescendantProxyModelWidget();
-  SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
-  ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
-  tabWidget->addTab(descPMWidget, "descendant PM");
-  tabWidget->addTab(selProxyWidget, "selection PM");
-  tabWidget->addTab(proxyModelTestWidget, "Proxy Model Test");
+protected slots:
+  void slotReset();
+  void slotNextCommand();
+  
+private:
+  DynamicTreeModel *m_rootModel;
+  ModelCommander *m_commander;
+  QPushButton *m_nextCommandButton;
 
-  setCentralWidget( tabWidget );
-}
+};
 
-
-MainWindow::~MainWindow()
-{
-}
-
+#endif
 

@@ -14,6 +14,8 @@ set(proxymodeltestapp_SRCS
     ../dynamictreemodel.cpp
     selectionpmwidget.cpp
     descendantpmwidget.cpp
+    proxymodeltestwidget.cpp
+    ../modelcommander.cpp
 )
 
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
