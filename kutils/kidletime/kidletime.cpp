@@ -18,7 +18,7 @@
 
 #include "kidletime.h"
 
-#include <config.h>
+#include <config-kidletime.h>
 
 #ifdef Q_WS_X11
 #include "xscreensaverbasedpoller.h"

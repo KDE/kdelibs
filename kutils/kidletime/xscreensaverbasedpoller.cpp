@@ -18,7 +18,7 @@
 
 #include "xscreensaverbasedpoller.h"
 
-#include <config.h>
+#include <config-kidletime.h>
 
 #include <QX11Info>
 
