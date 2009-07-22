@@ -446,6 +446,8 @@ QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection 
 
       QModelIndex sourceNewIndex = selectionIndexToSourceIndex(newIndex);
 
+      Q_ASSERT(sourceNewIndex.isValid());
+
       int startRow = m_rootIndexList.indexOf(sourceNewIndex);
       if ( startRow > 0 )
       {
@@ -579,6 +581,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
   // TODO: Use QSet<QModelIndex> instead to simplify this stuff.
   foreach(const QModelIndex &idx, getNewIndexes(additionalRanges))
   {
+    Q_ASSERT(idx.isValid());
     if (!newIndexes.contains(idx))
       newIndexes << idx;
   }
@@ -721,6 +724,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
       if ( rowCount > 0 )
       {
         q->beginInsertRows(QModelIndex(), row, row + rowCount - 1);
+        Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(row, newIndex);
         q->endInsertRows();
       }
@@ -728,6 +732,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
       QModelIndexList list = toNonPersistent(m_rootIndexList);
       int row = getTargetRow(list, newIndex);
       q->beginInsertRows(QModelIndex(), row, row);
+      Q_ASSERT(newIndex.isValid());
       m_rootIndexList.insert(row, newIndex);
       q->endInsertRows();
     }
