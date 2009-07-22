@@ -170,16 +170,19 @@ void KWindowSystemPrivate::activate ( )
     if(!pRegisterShellHook) pRegisterShellHook = (PtrRegisterShellHook)QLibrary::resolve("shell32",(LPCSTR)0xb5);
 
     //get the id for the shellhook message
-    if(WM_SHELLHOOK==-1) WM_SHELLHOOK  = RegisterWindowMessage(TEXT("SHELLHOOK"));
+    if(WM_SHELLHOOK==-1) {
+        WM_SHELLHOOK = RegisterWindowMessage(TEXT("SHELLHOOK"));
+//         kDebug() << "WM_SHELLHOOK:" << WM_SHELLHOOK << winId();
+    }
 
     bool shellHookRegistered = false;
     if(pRegisterShellHook) {
-//         kDebug()<<"use RegisterShellHook";
-        shellHookRegistered = pRegisterShellHook(winId(),RSH_REGISTER);
-        if(!shellHookRegistered)
+        shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
+        if(!shellHookRegistered) {
             shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
+            kDebug() << "second try using RegisterShellHook gave:" << shellHookRegistered;
+        }
     } else {
-        kDebug()<<"use RegisterShellHookWindow";
         //i'm not sure if i have to do this, and what happens if some other process uses KWindowSystem
         //if(pSetTaskmanWindow)
         //    pSetTaskmanWindow(winId());
@@ -190,7 +193,7 @@ void KWindowSystemPrivate::activate ( )
 
     if(!shellHookRegistered)
         //use a timer and poll the windows ?
-         kDebug()<<"Could not create shellhook to receive WindowManager Events";
+          kDebug() << "Could not create shellhook to receive WindowManager Events";
 
     //fetch window infos
     reloadStackList();
@@ -211,7 +214,30 @@ KWindowSystemPrivate::~KWindowSystemPrivate()
  */
 bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
 {
+    if(message->wParam == 15) return QWidget::winEvent(message,result);
+
+    /* 
+        check winuser.h for the following codes
+        HSHELL_WINDOWCREATED        1
+        HSHELL_WINDOWDESTROYED      2
+        HSHELL_ACTIVATESHELLWINDOW  3
+        HSHELL_WINDOWACTIVATED      4
+        HSHELL_GETMINRECT           5
+        HSHELL_RUDEAPPACTIVATED     32768 + 4 = 32772
+        HSHELL_REDRAW               6
+        HSHELL_FLASH                32768 + 6 = 32774
+        HSHELL_TASKMAN              7
+        HSHELL_LANGUAGE             8
+        HSHELL_SYSMENU              9
+        HSHELL_ENDTASK              10
+        HSHELL_ACCESSIBILITYSTATE   11
+        HSHELL_APPCOMMAND           12
+        HSHELL_WINDOWREPLACED       13
+        HSHELL_WINDOWREPLACING      14
+       */
     if (message->message == WM_SHELLHOOK) {
+//         kDebug() << "what has happened?:" << message->wParam << message->message;
+
         switch(message->wParam) {
           case HSHELL_WINDOWCREATED:
             KWindowSystem::s_d_func()->windowAdded(reinterpret_cast<WId>(message->lParam));
@@ -223,14 +249,14 @@ bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
           case HSHELL_RUDEAPPACTIVATED:
             KWindowSystem::s_d_func()->windowActivated(reinterpret_cast<WId>(message->lParam));
             break;
+          case HSHELL_GETMINRECT:
+            KWindowSystem::s_d_func()->windowStateChanged(reinterpret_cast<WId>(message->lParam));
+            break;
           case HSHELL_REDRAW: //the caption has changed
             KWindowSystem::s_d_func()->windowRedraw(reinterpret_cast<WId>(message->lParam));
             break;
           case HSHELL_FLASH:
             KWindowSystem::s_d_func()->windowFlash(reinterpret_cast<WId>(message->lParam));
-            break;
-          case HSHELL_GETMINRECT:
-            KWindowSystem::s_d_func()->windowStateChanged(reinterpret_cast<WId>(message->lParam));
             break;
         }
     }
@@ -290,20 +316,24 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
 
 void KWindowSystemPrivate::windowAdded     (WId wid)
 {
+//     kDebug() << "window added!";
     KWindowSystem::s_d_func()->reloadStackList();
     emit KWindowSystem::self()->windowAdded(wid);
+    emit KWindowSystem::self()->activeWindowChanged(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
 }
 
 void KWindowSystemPrivate::windowRemoved   (WId wid)
 {
-    KWindowSystem::s_d_func()->reloadStackList();
+//     kDebug() << "window removed!";
     emit KWindowSystem::self()->windowRemoved(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
+    KWindowSystem::s_d_func()->reloadStackList();
 }
 
 void KWindowSystemPrivate::windowActivated (WId wid)
 {
+//     kDebug() << "window activated!";
     KWindowSystem::s_d_func()->reloadStackList();
     emit KWindowSystem::self()->activeWindowChanged(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
