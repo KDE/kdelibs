@@ -69,6 +69,9 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 
+// CVE-2009-2537 (vendors agreed on max 10000 elements)
+#define MAX_SELECT_LENGTH 10000
+
 using namespace DOM;
 
 namespace KJS {
@@ -2454,8 +2457,12 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
       case SelectValue:           { select.setValue(str.implementation()); return; }
       case SelectLength:          { // read-only according to the NS spec, but webpages need it writeable
                                          JSObject *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
+
                                          if ( coll )
-                                           coll->put(exec,"length",value);
+                                           if (value->toInteger(exec) >= MAX_SELECT_LENGTH)
+                                             setDOMException(exec, DOMException::INDEX_SIZE_ERR);
+                                           else
+                                             coll->put(exec, "length", value);
                                          return;
                                        }
       // read-only: form
