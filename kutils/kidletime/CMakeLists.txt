@@ -51,7 +51,7 @@ set_target_properties(kidletime PROPERTIES
         #DEFINE_SYMBOL MAKE_KGLLIB_LIB)
 
 install(FILES
-        kidletime.h kidletime_export.h
+        kidletime.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
         )
 
