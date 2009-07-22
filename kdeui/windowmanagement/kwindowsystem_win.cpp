@@ -178,10 +178,6 @@ void KWindowSystemPrivate::activate ( )
     bool shellHookRegistered = false;
     if(pRegisterShellHook) {
         shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
-        if(!shellHookRegistered) {
-            shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
-            kDebug() << "second try using RegisterShellHook gave:" << shellHookRegistered;
-        }
     } else {
         //i'm not sure if i have to do this, and what happens if some other process uses KWindowSystem
         //if(pSetTaskmanWindow)
@@ -214,8 +210,6 @@ KWindowSystemPrivate::~KWindowSystemPrivate()
  */
 bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
 {
-    if(message->wParam == 15) return QWidget::winEvent(message,result);
-
     /* 
         check winuser.h for the following codes
         HSHELL_WINDOWCREATED        1
