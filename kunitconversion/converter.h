@@ -20,22 +20,9 @@
 #ifndef CONVERSION_CONVERTER_H
 #define CONVERSION_CONVERTER_H
 
-#include "value.h"
-#include "length.h"
-#include "area.h"
-#include "volume.h"
-#include "temperature.h"
-#include "velocity.h"
-#include "mass.h"
-#include "pressure.h"
-#include "energy.h"
-#include "currency.h"
-#include "power.h"
-#include "timeunit.h"
-#include "fuel_efficiency.h"
-#include "density.h"
+#include <conversion/value.h>
 
-#include "plasmaconversion_export.h"
+#include <conversion/plasmaconversion_export.h>
 #include <QtCore/QVariant>
 
 namespace Conversion

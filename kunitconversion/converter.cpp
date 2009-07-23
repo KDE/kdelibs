@@ -18,10 +18,24 @@
  */
 
 #include "converter.h"
-#include "unit.h"
 
 #include <KGlobal>
 #include <KDebug>
+
+#include "area.h"
+#include "length.h"
+#include "currency.h"
+#include "density.h"
+#include "energy.h"
+#include "fuel_efficiency.h"
+#include "mass.h"
+#include "power.h"
+#include "pressure.h"
+#include "temperature.h"
+#include "timeunit.h"
+#include "unit.h"
+#include "velocity.h"
+#include "volume.h"
 
 namespace Conversion
 {
