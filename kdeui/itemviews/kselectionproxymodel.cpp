@@ -1100,7 +1100,7 @@ QVariant KSelectionProxyModel::data( const QModelIndex & index, int role ) const
     QModelIndex idx = mapToSource(index);
     return idx.data(role);
   }
-  return QVariant();
+  return sourceModel()->data(index, role);
 }
 
 QVariant KSelectionProxyModel::headerData( int section, Qt::Orientation orientation, int role  ) const

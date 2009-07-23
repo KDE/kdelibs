@@ -556,7 +556,7 @@ QVariant KDescendantsProxyModel::data(const QModelIndex & index, int role) const
   Q_D(const KDescendantsProxyModel );
 
   if (!index.isValid())
-    return QVariant();
+    return sourceModel()->data(index, role);
 
   QModelIndex sourceIndex = mapToSource( index );
 
