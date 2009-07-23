@@ -199,24 +199,4 @@ protected:
 };
 
 
-class ModelFakeMoveCommand : public ModelChangeCommand
-{
-  Q_OBJECT
-public:
-  ModelFakeMoveCommand(DynamicTreeModel *model, QObject *parent);
-
-  virtual ~ModelFakeMoveCommand() {}
-
-  virtual void doCommand();
-
-  void setDestAncestors( QList<int> rows ) { m_destRowNumbers = rows; }
-
-  void setDestRow(int row) { m_destRow = row; }
-
-protected:
-  QList<int> m_destRowNumbers;
-  int m_destRow;
-};
-
-
 #endif

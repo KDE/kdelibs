@@ -336,8 +336,11 @@ void ModelMoveCommand::doCommand()
   QModelIndex destParent = findIndex(m_destRowNumbers);
 
   // TODO: Uncomment for Qt 4.6
-//   m_model->beginMoveRows(srcParent, m_startRow, m_endRow, destParent, m_destRow);
-
+//   if (!m_model->beginMoveRows(srcParent, m_startRow, m_endRow, destParent, m_destRow))
+//   {
+//     return;
+//   }
+  
   for (int column = 0; column < m_numCols; ++column)
   {
     QList<qint64> l = m_model->m_childItems.value(srcParent.internalId())[column].mid(m_startRow, m_endRow - m_startRow + 1 );
@@ -362,26 +365,6 @@ void ModelMoveCommand::doCommand()
       m_model->m_childItems[destParent.internalId()][column].insert(d++, id);
     }
   }
-
-  // TODO: Uncomment for Qt 4.6
-//   m_model->endMoveRows();
-}
-
-
-ModelFakeMoveCommand::ModelFakeMoveCommand(DynamicTreeModel *model, QObject *parent)
-: ModelChangeCommand(model, parent)
-{
-
-}
-
-void ModelFakeMoveCommand::doCommand()
-{
-  QModelIndex srcParent = findIndex(m_rowNumbers);
-  QModelIndex destParent = findIndex(m_destRowNumbers);
-
-  // TODO: Uncomment for Qt 4.6
-//   m_model->beginMoveRows(srcParent, m_startRow, m_endRow, destParent, m_destRow);
-
 
   // TODO: Uncomment for Qt 4.6
 //   m_model->endMoveRows();
