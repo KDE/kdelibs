@@ -31,11 +31,12 @@ public:
     : number(n)
     , unit(u)
     {
-    };
+    }
 
     ~Private()
     {
-    };
+        delete unit;
+    }
 
     double number;
     const Unit* unit;
@@ -87,7 +88,7 @@ double Value::number() const
 const Unit* Value::unit() const
 {
     if (!d->unit) {
-        d->unit = new Unit(Conversion::Converter::self());
+        d->unit = new Unit;
     }
     return d->unit;
 }
