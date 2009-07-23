@@ -231,6 +231,7 @@ void KSelectionProxyModelPrivate::sourceModelReset()
   m_rootIndexList.clear();
   // TODO: Uncomment for Qt 4.6
 //   q->endResetModel();
+  q->reset();
 }
 
 QPair<int, int> KSelectionProxyModelPrivate::getRootRange(const QModelIndex &sourceParent, int start, int end) const

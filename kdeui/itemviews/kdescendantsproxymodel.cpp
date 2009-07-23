@@ -514,6 +514,7 @@ void KDescendantsProxyModelPrivate::sourceModelReset()
   m_descendantsCount.clear();
   // TODO: Uncomment for Qt 4.6
 //   q->endResetModel();
+  q->reset();
 }
 
 void KDescendantsProxyModelPrivate::sourceLayoutAboutToBeChanged()
