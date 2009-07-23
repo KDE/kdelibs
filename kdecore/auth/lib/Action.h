@@ -27,7 +27,7 @@
 #include "ActionReply.h"
 #include "ActionWatcher.h"
 
-namespace Auth
+namespace KAuth
 {
 
 /**
@@ -154,31 +154,39 @@ public:
     ActionWatcher *watcher();
 
     /**
-     * @brief The map object used to pass arguments to the helper.
+     * @brief Sets the map object used to pass arguments to the helper.
      *
-     * This method returns a reference to a variant map that the application
+     * This method sets the variant map that the application
      * can use to pass arbitrary data to the helper when executing the action.
      *
-     * The returned reference allows you to directly set the contents easily.
-     * Something like:
-     * @code
-     * action.arguments()["key"] = value;
-     * @endcode
-     *
-     * @return A reference to the arguments map that will be passed to the helper.
+     * @param arguments The new arguments map
      */
-    QVariantMap &arguments();
+    void setArguments(const QVariantMap &arguments);
     
     /**
-    * @brief The map object used to pass arguments to the helper.
-    *
-    * This is the same as the other arguments(), but the return type is not a reference
-    * and the method is const, if you have to call it on a const Action &.
-    *
-    * @return A reference to the arguments map that will be passed to the helper.
-    */
+     * @brief Returns map object used to pass arguments to the helper.
+     *
+     * This method returns the variant map that the application
+     * can use to pass arbitrary data to the helper when executing the action.
+     *
+     * @return The arguments map that will be passed to the helper.
+     */
     QVariantMap arguments() const;
 
+    /**
+    * @brief Convenience method to add an argument.
+    *
+    * This method adds the pair @c key/value to the QVariantMap used to
+    * send custom data to the helper.
+    *
+    * Use this method if you don't want to create a new QVariantMap only to
+    * add a new entry.
+    *
+    * @param key The new entry's key
+    * @param value The value of the new entry
+    */
+    void addArgument(const QString &key, const QVariant &value);
+    
     /**
      * @brief Acquires authorization for an action without excuting it.
      *
@@ -298,7 +306,7 @@ public:
      *         Action::Denied if the user doesn't have the authorization, 
      *         Action::Error if some other error occurred 
      */
-    AuthStatus executeAsync(const QString &helperID, QObject *target = NULL, const char *slot = NULL);
+    AuthStatus executeAsync(const QString &helperID, QObject *target = 0, const char *slot = 0);
 
     /**
      * @brief Asynchronously executes a group of actions with a single request
@@ -329,7 +337,7 @@ public:
      * @param deniedActions A pointer to a list to fill with the denied actions. Pass NULL if you don't need them.
      * @param helperID An optional helper ID, if you don't want to use the default one set with setHelperID(). Pass the empty string "" to use the default.
      */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions = NULL, const QString &helperID = "");
+    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions = NULL, const QString &helper_id = helperID());
 
     /**
      * @brief Ask the helper to stop executing an action

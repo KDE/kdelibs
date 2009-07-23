@@ -25,13 +25,13 @@
 #include "HelperProxy.h"
 #include "ActionReply.h"
 
-namespace Auth
+namespace KAuth
 {
 
 class DBusHelperProxy : public HelperProxy
 {
     Q_OBJECT
-    Q_INTERFACES(Auth::HelperProxy)
+    Q_INTERFACES(KAuth::HelperProxy)
 
     QObject *responder;
     QString m_name;

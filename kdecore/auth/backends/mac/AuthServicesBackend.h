@@ -22,10 +22,13 @@
 
 #include "AuthBackend.h"
 
+namespace KAuth
+{
+
 class AuthServicesBackend : public QObject, public AuthBackend
 {
     Q_OBJECT
-    Q_INTERFACES(AuthBackend)
+    Q_INTERFACES(KAuth::AuthBackend)
 
 public:
     AuthServicesBackend();
@@ -35,6 +38,8 @@ public:
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
 };
+
+} // namespace KAuth
 
 #endif
 

@@ -20,6 +20,9 @@
 #include "AuthServicesBackend.h"
 #include <Security/Security.h>
 
+namespace KAuth
+{
+
 static AuthorizationRef s_authRef = NULL;
 
 AuthorizationRef authRef();
@@ -116,4 +119,6 @@ bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray c
     return result == errAuthorizationSuccess;
 }
 
-Q_EXPORT_PLUGIN2(auth_backend, AuthServicesBackend);
+}; // namespace KAuth
+
+Q_EXPORT_PLUGIN2(auth_backend, KAuth::AuthServicesBackend);

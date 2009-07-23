@@ -26,7 +26,7 @@
 
 #include <ActionReply.h>
 
-using namespace Auth;
+using namespace KAuth;
 
 namespace Ui
 {

@@ -24,9 +24,9 @@
 #include <QVariant>
 
 #define KDE4_AUTH_HELPER(ID, HelperClass) \
-    int main(int argc, char **argv) { return Auth::HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
+    int main(int argc, char **argv) { return KAuth::HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
 
-namespace Auth
+namespace KAuth
 {
 
 /**
@@ -70,7 +70,7 @@ public:
     *
     * @param data The progress data
     */
-    static void progressStep(QVariantMap data);
+    static void progressStep(const QVariantMap &data);
 
     /**
      * @brief Check if the caller asked the helper to stop the execution

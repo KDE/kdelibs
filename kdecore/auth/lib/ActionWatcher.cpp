@@ -22,7 +22,7 @@
 
 #include <QHash>
 
-namespace Auth
+namespace KAuth
 {
 
 class ActionWatcher::Private
@@ -71,7 +71,7 @@ void ActionWatcher::actionStartedSlot(const QString &action)
         emit actionStarted();
 }
 
-void ActionWatcher::actionPerformedSlot(const QString &action, ActionReply reply)
+void ActionWatcher::actionPerformedSlot(const QString &action, const ActionReply &reply)
 {
     if(d->action == action)
         emit actionPerformed(reply);
@@ -83,7 +83,7 @@ void ActionWatcher::progressStepSlot(const QString &action, int i)
         emit progressStep(i);
 }
 
-void ActionWatcher::progressStepSlot(const QString &action, QVariantMap data)
+void ActionWatcher::progressStepSlot(const QString &action, const QVariantMap &data)
 {
     if(d->action == action)
         emit progressStep(data);

@@ -24,7 +24,7 @@
 Q_IMPORT_PLUGIN(auth_backend)
 Q_IMPORT_PLUGIN(helper_proxy)
 
-namespace Auth
+namespace KAuth
 {
 
 AuthBackend *BackendsManager::auth = NULL;

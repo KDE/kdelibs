@@ -24,13 +24,13 @@
 
 class QByteArray;
 
-namespace Auth
+namespace KAuth
 {
 
 class PolicyKitBackend : public QObject, public AuthBackend
 {
     Q_OBJECT
-    Q_INTERFACES(Auth::AuthBackend)
+    Q_INTERFACES(KAuth::AuthBackend)
 
 public:
     PolicyKitBackend();

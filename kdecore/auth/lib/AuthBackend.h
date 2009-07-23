@@ -24,7 +24,7 @@
 
 #include "Action.h"
 
-namespace Auth
+namespace KAuth
 {
 
 class AuthBackend
@@ -40,6 +40,6 @@ public:
 
 } // namespace Auth
 
-Q_DECLARE_INTERFACE(Auth::AuthBackend, "org.kde.auth.AuthBackend/0.1")
+Q_DECLARE_INTERFACE(KAuth::AuthBackend, "org.kde.auth.AuthBackend/0.1")
 
 #endif

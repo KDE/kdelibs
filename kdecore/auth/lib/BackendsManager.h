@@ -23,7 +23,7 @@
 #include "AuthBackend.h"
 #include "HelperProxy.h"
 
-namespace Auth
+namespace KAuth
 {
 
 class BackendsManager

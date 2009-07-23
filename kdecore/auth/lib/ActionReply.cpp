@@ -21,7 +21,7 @@
 
 #include <QDebug>
 
-namespace Auth
+namespace KAuth
 {
 
 class ActionReply::Private
@@ -79,9 +79,14 @@ ActionReply::~ActionReply()
     delete d;
 }
 
-QVariantMap &ActionReply::data()
+void ActionReply::setData(const QVariantMap &data)
 {
-    return d->data;
+    d->data = data;
+}
+
+void ActionReply::addData(const QString &key, const QVariant &value)
+{
+    d->data.insert(key, value);
 }
 
 QVariantMap ActionReply::data() const
@@ -137,10 +142,11 @@ QByteArray ActionReply::serialized() const
     return data;
 }
 
-ActionReply ActionReply::deserialize(QByteArray data)
+ActionReply ActionReply::deserialize(const QByteArray &data)
 {
     ActionReply reply;
-    QDataStream s(&data, QIODevice::ReadOnly);
+    QByteArray a(data);
+    QDataStream s(&a, QIODevice::ReadOnly);
 
     s >> reply;
 

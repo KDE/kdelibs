@@ -22,15 +22,14 @@
 
 #include <QtPlugin>
 #include <QObject>
+#include <QMap>
+#include <QString>
+#include <QVariant>
 
 #include "ActionReply.h"
 #include "ActionWatcher.h"
 
-template<class Key, class T> class QMap;
-class QString;
-class QVariant;
-
-namespace Auth
+namespace KAuth
 {
 
 class HelperProxy : public QObject
@@ -58,8 +57,8 @@ signals:
     void progressStep(const QString &action, const QVariantMap &data);
 };
 
-} // namespace Auth
+} // namespace KAuth
 
-Q_DECLARE_INTERFACE(Auth::HelperProxy, "org.kde.auth.HelperProxy/0.1")
+Q_DECLARE_INTERFACE(KAuth::HelperProxy, "org.kde.auth.HelperProxy/0.1")
 
 #endif

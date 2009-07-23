@@ -24,7 +24,7 @@
 
 #include "BackendsManager.h"
 
-namespace Auth
+namespace KAuth
 {
 
 class Action::Private
@@ -82,9 +82,14 @@ void Action::setName(const QString &name)
     d->name = name;
 }
 
-QVariantMap &Action::arguments()
+void Action::setArguments(const QVariantMap &arguments)
 {
-    return d->args;
+    d->args = arguments;
+}
+
+void Action::addArgument(const QString &key, const QVariant &value)
+{
+    d->args.insert(key, value);
 }
 
 QVariantMap Action::arguments() const
@@ -122,8 +127,6 @@ Action::AuthStatus Action::status() const
 // Execution methods
 bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperID)
 {
-    QString _helperID = (helperID == "" ? Action::helperID() : helperID);
-
     QList<QPair<QString, QVariantMap> > list;
 
     foreach(const Action &a, actions) {
@@ -139,7 +142,7 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
         return false;
     }
 
-    return BackendsManager::helperProxy()->executeActions(list, _helperID);
+    return BackendsManager::helperProxy()->executeActions(list, helperID);
 }
 
 Action::AuthStatus Action::executeAsync(QObject *target, const char *slot)

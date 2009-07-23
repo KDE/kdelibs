@@ -29,7 +29,7 @@
 #include "BackendsManager.h"
 #include "authadaptor.h"
 
-namespace Auth
+namespace KAuth
 {
 
 static void debugMessageReceived(int t, const QString &message);
@@ -291,4 +291,4 @@ void debugMessageReceived(int t, const QString &message)
 
 } // namespace Auth
 
-Q_EXPORT_PLUGIN2(helper_proxy, Auth::DBusHelperProxy)
+Q_EXPORT_PLUGIN2(helper_proxy, KAuth::DBusHelperProxy)

@@ -40,8 +40,8 @@ ActionReply MyHelper::read(QVariantMap args)
 
     QTextStream stream(&file);
     QString contents;
-    stream >> contents;
-    reply.data()["contents"] = contents;
+    contents = stream.readAll();
+    reply.addData("contents", contents);
 
     return reply;
 }

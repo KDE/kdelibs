@@ -25,7 +25,7 @@
 #include <QMap>
 #include <QDataStream>
 
-namespace Auth
+namespace KAuth
 {
 
 /**
@@ -133,32 +133,40 @@ public:
     virtual ~ActionReply();
 
     /**
-     * @brief Returns the custom data coming from the helper.
+     * @brief Sets the custom data to send back to the application
      *
-     * This method is used to get the data coming from the helper.
-     * The meaning of this data is totally application-dependent.
-     * In replies of type KAuthError, this object is always empty.
+     * In the helper's code you can use this function to set an QVariantMap
+     * with custom data that will be sent back to the application.
      *
-     * If you are writing the helper, set the data using the object
-     * obtained by this method. The return value is a reference, so
-     * as with Action::arguments(), it's convenient to do things like:
-     * @code
-     * reply.data()["key"] = value;
-     * @endcode
-     * @return The data coming from (or that will be sent by) the helper
+     * @param data The new QVariantMap object.
      */
-    QVariantMap &data();
+    void setData(const QVariantMap &data);
 
     /**
      * @brief Returns the custom data coming from the helper.
      *
-     * This is the same as the other data(), but the return type is not a reference
-     * and the method is const, if you have to call it on a const ActionReply &.
+     * This method is used to get the object that contains the custom
+     * data coming from the helper. In the helper's code, you can set it
+     * using setData() or the convenience method addData().
      *
      * @return The data coming from (or that will be sent by) the helper
      */
     QVariantMap data() const;
 
+    /**
+     * @brief Convenience method to add some data to the reply.
+     *
+     * This method adds the pair @c key/value to the QVariantMap used to
+     * report back custom data to the application.
+     *
+     * Use this method if you don't want to create a new QVariantMap only to
+     * add a new entry.
+     *
+     * @param key The new entry's key
+     * @param value The value of the new entry
+     */
+    void addData(const QString &key, const QVariant &value);
+    
     /// Returns the reply's type
     Type type() const;
 
@@ -250,7 +258,7 @@ public:
      *
      * @param data A QByteArray obtained with serialized()
      */
-    static ActionReply deserialize(QByteArray data);
+    static ActionReply deserialize(const QByteArray &data);
 
     /// Assignment operator
     ActionReply &operator=(const ActionReply &reply);

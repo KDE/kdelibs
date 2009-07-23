@@ -63,7 +63,7 @@ void MainWindow::on_actionOpen_triggered()
     if (!file.open(QIODevice::ReadOnly)) {
         if (file.error() & QFile::PermissionsError) {
             Action readAction = "org.kde.auth.example.read";
-            readAction.arguments()["filename"] = filename;
+            readAction.addArgument("filename", filename);
 
             ActionReply reply = readAction.execute();
             if (reply.failed())
@@ -90,8 +90,8 @@ void MainWindow::on_actionSave_triggered()
     if (!file.open(QIODevice::WriteOnly)) {
         if (file.error() & QFile::PermissionsError) {
             Action writeAction = "org.kde.auth.example.write";
-            writeAction.arguments()["filename"] = filename;
-            writeAction.arguments()["contents"] = ui->plainTextEdit->toPlainText();
+            writeAction.addArgument("filename", filename);
+            writeAction.addArgument("contents", ui->plainTextEdit->toPlainText());
 
             ActionReply reply = writeAction.execute();
             if (reply.failed())
@@ -131,7 +131,7 @@ void MainWindow::longActionPerformed(ActionReply reply)
     progressBar->setValue(0);
 
     if (reply.succeeded())
-        this->statusBar()->showMessage("Action succeeded", 10000);
+        statusBar()->showMessage("Action succeeded", 10000);
     else
-        this->statusBar()->showMessage(QString("Could not execute the long action: %1").arg(reply.errorCode()), 10000);
+        statusBar()->showMessage(QString("Could not execute the long action: %1").arg(reply.errorCode()), 10000);
 }

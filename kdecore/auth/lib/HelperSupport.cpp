@@ -27,7 +27,7 @@
 
 #include "BackendsManager.h"
 
-namespace Auth
+namespace KAuth
 {
 
 static bool remote_dbg = false;
@@ -87,7 +87,7 @@ void HelperSupport::progressStep(int step)
     BackendsManager::helperProxy()->sendProgressStep(step);
 }
 
-void HelperSupport::progressStep(QVariantMap data)
+void HelperSupport::progressStep(const QVariantMap &data)
 {
     BackendsManager::helperProxy()->sendProgressStep(data);
 }

@@ -24,7 +24,7 @@
 
 #include <kauth.h>
 
-using namespace Auth;
+using namespace KAuth;
 
 class MyHelper : public QObject
 {

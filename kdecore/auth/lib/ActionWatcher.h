@@ -25,7 +25,7 @@
 
 #include "ActionReply.h"
 
-namespace Auth
+namespace KAuth
 {
 
 /**
@@ -53,9 +53,9 @@ class ActionWatcher : public QObject
 
 private slots:
     void actionStartedSlot(const QString &action);
-    void actionPerformedSlot(const QString &action, ActionReply reply);
+    void actionPerformedSlot(const QString &action, const ActionReply &reply);
     void progressStepSlot(const QString &action, int i);
-    void progressStepSlot(const QString &action, QVariantMap data);
+    void progressStepSlot(const QString &action, const QVariantMap &data);
     
 public:
     /**

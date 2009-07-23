@@ -23,7 +23,7 @@
 #include <auth.h>
 #include <syslog.h>
 
-namespace Auth
+namespace KAuth
 {
 
 PolicyKitBackend::PolicyKitBackend()
@@ -76,4 +76,4 @@ bool PolicyKitBackend::isCallerAuthorized(const QString &action, QByteArray call
 
 } // namespace Auth
 
-Q_EXPORT_PLUGIN2(auth_backend, Auth::PolicyKitBackend)
+Q_EXPORT_PLUGIN2(auth_backend, KAuth::PolicyKitBackend)
