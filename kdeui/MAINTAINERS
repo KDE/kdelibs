@@ -21,6 +21,8 @@ kcolorbutton.cpp
 kcolorcombo.cpp
 kcolordialog.cpp	
 kcolordrag.cpp
+kcolorscheme.cpp        Matthew Woehlke <mw_triad@users.sourceforge.net>
+kcolorutils.cpp         Matthew Woehlke <mw_triad@users.sourceforge.net>
 kcombobox.cpp   	Dawit Alemayehu <adawit@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
 kcommand.cpp		David Faure <faure@kde.org>
 kcompletionbox.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
