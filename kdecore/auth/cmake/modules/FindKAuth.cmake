@@ -8,7 +8,15 @@
 include(FindPkgConfig)
 
 if (UNIX AND NOT APPLE)
-find_package(PolkitQt REQUIRED)
+    find_package(PolkitQt REQUIRED)
+    
+    if (NOT KAUTH_FIND_QUIETLY)
+        message(STATUS "Searching for Config::IniFiles perl module")
+    endif (NOT KAUTH_FIND_QUIETLY)
+    execute_process(COMMAND perl -e "use Config::IniFiles 2.52; 0;" OUTPUT_FILE /dev/null ERROR_FILE /dev/null RESULT_VARIABLE _result)
+    if(_result)
+        message(FATAL_ERROR "Could NOT find the perl module Config::IniFiles, version 2.52 or later")
+    endif(_result)
 endif (UNIX AND NOT APPLE)
 
 find_path( KAUTH_INCLUDE_DIR kauth/kauth.h )
