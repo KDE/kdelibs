@@ -1177,6 +1177,7 @@ void KFilePlacesView::Private::_k_triggerDevicePolling()
 void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     QListView::dataChanged(topLeft, bottomRight);
+    d->adaptItemSize();
 }
 
 #include "kfileplacesview.moc"
