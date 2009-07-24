@@ -47,8 +47,8 @@
 <!ENTITY traducteurClementContet      '<othercredit role="translator"> <firstname>Clément</firstname> <surname>Contet</surname> <affiliation><address><email>keelize@yahoo.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurClementContet       '<othercredit role="reviewer"> <firstname>Clément</firstname> <surname>Contet</surname> <affiliation><address><email>keelize@yahoo.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
-<!ENTITY traducteurJoelleCornavin      '<othercredit role="translator"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcornavi@club-internet.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
-<!ENTITY relecteurJoelleCornavin       '<othercredit role="reviewer"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcornavi@club-internet.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+<!ENTITY traducteurJoelleCornavin      '<othercredit role="translator"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>j.cornavin@sfr.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurJoelleCornavin       '<othercredit role="reviewer"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>j.cornavin@sfr.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 <!ENTITY traducteurBenoitCosandier      '<othercredit role="translator"> <firstname>Benoit</firstname> <surname>Cosandier</surname> <affiliation><address><email>cosandier.benoit@bluewin.ch</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurBenoitCosandier       '<othercredit role="reviewer"> <firstname>Benoit</firstname> <surname>Cosandier</surname> <affiliation><address><email>cosandier.benoit@bluewin.ch</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
@@ -252,7 +252,7 @@
 <!ENTITY GillesCaulier     'Gilles Caulier <email>caulier.gilles@free.fr</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
 <!ENTITY ClementContet     'Clément Contet <email>keelize@yahoo.fr</email>'>
-<!ENTITY JoelleCornavin    'Joëlle Cornavin <email>jcornavi@club-internet.fr</email>'>
+<!ENTITY JoelleCornavin    'Joëlle Cornavin <email>j.cornavin@sfr.fr</email>'>
 <!ENTITY BenoitCosandier   'Benoit Cosandier <email>cosandier.benoit@bluewin.ch</email>'>
 <!ENTITY ThibautCousin     'Thibaut Cousin <email>cousin@in2p3.fr</email>'>
 <!ENTITY GerardDelafond    'Gérard Delafond <email>gerard@delafond.org</email>'>
