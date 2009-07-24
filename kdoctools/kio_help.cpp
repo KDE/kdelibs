@@ -145,9 +145,15 @@ QString HelpProtocol::lookupFile(const QString &fname,
 
 void HelpProtocol::unicodeError( const QString &t )
 {
+#ifdef Q_WS_WIN
+   QString encoding = "UTF-8";
+#else
+   QString encoding = QTextCodec::codecForLocale()->name();
+#endif   
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-        "%2</html>" ).arg( QString( QTextCodec::codecForLocale()->name() ), Qt::escape(t) ) ) );
+        "%2</html>" ).arg( encoding, Qt::escape(t) ) ) );
+     
 }
 
 HelpProtocol *slave = 0;

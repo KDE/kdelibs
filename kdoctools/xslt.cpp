@@ -305,6 +305,9 @@ bool compareTimeStamps( const QString &older, const QString &newer )
 
 QByteArray fromUnicode( const QString &data )
 {
+#ifdef Q_WS_WIN
+    return data.toUtf8();
+#else
     QTextCodec *locale = QTextCodec::codecForLocale();
     QByteArray result;
     char buffer[30000];
@@ -347,23 +350,22 @@ QByteArray fromUnicode( const QString &data )
         offset += part_len;
     }
     return result;
+#endif	
 }
 
 void replaceCharsetHeader( QString &output )
 {
     QString name;
 #ifdef Q_WS_WIN
-    name = "iso-8859-1"; 
-	// fix encoding for khelpcenter toc
+    name = "utf-8"; 
     if (output.contains("<table-of-contents>"))
-        name = "utf-8"; 
+        // may be required for all xml output 
         output.replace( QString( "<?xml version=\"1.0\"?>" ),
                         QString( "<?xml version=\"1.0\" encoding=\"%1\"?>").arg( name ) );
-    kDebug() << "fix other encodings";
 #else                    
     name = QTextCodec::codecForLocale()->name();
-#endif    
     name.replace( QString( "ISO " ), "iso-" );
     output.replace( QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
                     QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
+#endif    
 }
