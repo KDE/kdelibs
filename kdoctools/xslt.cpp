@@ -358,8 +358,8 @@ void replaceCharsetHeader( QString &output )
     QString name;
 #ifdef Q_WS_WIN
     name = "utf-8"; 
+    // may be required for all xml output 
     if (output.contains("<table-of-contents>"))
-        // may be required for all xml output 
         output.replace( QString( "<?xml version=\"1.0\"?>" ),
                         QString( "<?xml version=\"1.0\" encoding=\"%1\"?>").arg( name ) );
 #else                    
