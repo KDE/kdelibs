@@ -17,29 +17,11 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#ifndef AUTH_BACKEND_H
-#define AUTH_BACKEND_H
-
-#include <QtPlugin>
-
-#include "Action.h"
+#include "HelperProxy.h"
 
 namespace KAuth
 {
 
-class AuthBackend
-{
-public:
-    virtual ~AuthBackend();
-    virtual void setupAction(const QString &action) = 0;
-    virtual Action::AuthStatus authorizeAction(const QString &action) = 0;
-    virtual Action::AuthStatus actionStatus(const QString &action) = 0;
-    virtual QByteArray callerID() const = 0;
-    virtual bool isCallerAuthorized(const QString &action, QByteArray callerID) = 0;
-};
+HelperProxy::~HelperProxy() {}
 
-} // namespace Auth
-
-Q_DECLARE_INTERFACE(KAuth::AuthBackend, "org.kde.auth.AuthBackend/0.1")
-
-#endif
+} // namespace KAuth

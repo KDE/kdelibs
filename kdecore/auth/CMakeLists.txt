@@ -30,7 +30,9 @@ set( kauth_sources
      lib/ActionReply.cpp 
      lib/BackendsManager.cpp 
      lib/HelperSupport.cpp 
-     lib/ActionWatcher.cpp )
+     lib/ActionWatcher.cpp 
+     lib/AuthBackend.cpp
+     lib/HelperProxy.cpp)
 
 set( kauth_headers
      lib/Action.h

@@ -37,6 +37,8 @@ class HelperProxy : public QObject
     Q_OBJECT
 
 public:
+    virtual ~HelperProxy();
+    
     // Application-side methods
     virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID) = 0;
     virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments) = 0;
