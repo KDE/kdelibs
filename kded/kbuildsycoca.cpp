@@ -311,9 +311,6 @@ bool KBuildSycoca::build()
      (void) existingResourceDirs();
      *g_allResourceDirs += g_vfolder->allDirectories();
 
-     disconnect(g_vfolder, SIGNAL(newService(const QString &, KService::Ptr *)),
-                this, SLOT(slotCreateEntry(const QString &, KService::Ptr *)));
-
      if (g_changed || !g_allEntries)
      {
         uptodate = false;
