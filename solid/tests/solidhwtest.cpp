@@ -347,13 +347,16 @@ void SolidHwTest::testPredicate()
     Solid::Predicate p8 = Solid::Predicate::fromString("AudioInterface.deviceType == 'AudioInput|AudioOutput'");
     Solid::Predicate p9 = Solid::Predicate::fromString("AudioInterface.deviceType == 'AudioInput'");
     Solid::Predicate p10 = Solid::Predicate::fromString("AudioInterface.deviceType  & 'AudioInput'");
+    Solid::Predicate p11 = Solid::Predicate::fromString("AudioInterface.deviceType  & 'foobar'");
     QVERIFY(!p8.matches(dev));
     QVERIFY(!p9.matches(dev));
     QVERIFY(!p10.matches(dev));
+    QVERIFY(!p11.matches(dev));
     dev = Solid::Device("/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0");
     QVERIFY(p8.matches(dev));
     QVERIFY(!p9.matches(dev));
     QVERIFY(p10.matches(dev));
+    QVERIFY(!p11.matches(dev));
 
     QString str_pred = "[[Processor.maxSpeed == 3201 AND Processor.canChangeFrequency == false] OR StorageVolume.mountPoint == '/media/blup']";
     // Since str_pred is canonicalized, fromString().toString() should be invariant
