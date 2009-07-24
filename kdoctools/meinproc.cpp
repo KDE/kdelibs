@@ -288,8 +288,11 @@ int main(int argc, char **argv) {
                 file.open(QIODevice::WriteOnly);
             }
             replaceCharsetHeader( output );
-
+#ifdef Q_WS_WIN
+            QByteArray data = output.toUtf8();
+#else
             QByteArray data = output.toLocal8Bit();
+#endif
             file.write(data.data(), data.length());
             file.close();
         } else {
