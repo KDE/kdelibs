@@ -71,7 +71,7 @@ Solid::Processor::InstructionSets Processor::instructionSets() const
 
 typedef void (*kde_sighandler_t) (int);
 
-#ifdef __i386__
+#if defined( __i386__ ) || defined( __x86_64__ )
 static jmp_buf env;
 
 #ifdef HAVE_X86_SSE
@@ -81,6 +81,26 @@ static void sighandler( int )
     std::longjmp( env, 1 );
 }
 #endif
+#endif
+
+#ifdef __i386__
+  #define ASM_REG(reg)              "%e"reg
+  #define ASM_POP(reg)              "popl   %%e"reg"             \n\t"
+  #define ASM_PUSH(reg)             "pushl  %%e"reg"             \n\t"
+  #define ASM_XOR_REG(reg1, reg2)   "xorl   %%e"reg1", %%e"reg2" \n\t"
+  #define ASM_XOR_VAR(var, reg)     "xorl   "var",     %%e"reg"  \n\t"
+  #define ASM_CMP_REG(reg1, reg2)   "cmpl   %%e"reg1", %%e"reg2" \n\t"
+  #define ASM_MOV_REG(reg1, reg2)   "movl   %%e"reg1", %%e"reg2" \n\t"
+  #define ASM_MOV_VAR(var, reg)     "movl   "var",     %%e"reg"  \n\t"
+#elif __x86_64__
+  #define ASM_REG(reg)              "%r"reg
+  #define ASM_POP(reg)              "popq   %%r"reg"             \n\t"
+  #define ASM_PUSH(reg)             "pushq  %%r"reg"             \n\t"
+  #define ASM_XOR_REG(reg1, reg2)   "xorq   %%r"reg1", %%r"reg2" \n\t"
+  #define ASM_XOR_VAR(var, reg)     "xorq   "var",     %%r"reg"  \n\t"
+  #define ASM_CMP_REG(reg1, reg2)   "cmpq   %%r"reg1", %%r"reg2" \n\t"
+  #define ASM_MOV_REG(reg1, reg2)   "movq   %%r"reg1", %%r"reg2" \n\t"
+  #define ASM_MOV_VAR(var, reg)     "movq   "var",     %%r"reg"  \n\t"
 #endif
 
 #ifdef __PPC__
@@ -103,7 +123,7 @@ static Solid::Processor::InstructionSets cpuFeatures()
     volatile unsigned int features = 0;
 
 #if defined( HAVE_GNU_INLINE_ASM )
-#if defined( __i386__ )
+#if defined( __i386__ ) || defined( __x86_64__ )
     bool haveCPUID = false;
     unsigned int result = 0;
 
@@ -111,45 +131,50 @@ static Solid::Processor::InstructionSets cpuFeatures()
     __asm__ __volatile__(
     // Try to toggle the CPUID bit in the EFLAGS register
     "pushf                      \n\t"   // Push the EFLAGS register onto the stack
-    "popl   %%ecx               \n\t"   // Pop the value into ECX
-    "movl   %%ecx, %%edx        \n\t"   // Copy ECX to EDX
-    "xorl   $0x00200000, %%ecx  \n\t"   // Toggle bit 21 (CPUID) in ECX
-    "pushl  %%ecx               \n\t"   // Push the modified value onto the stack
+    ASM_POP("cx")                       // Pop the value into ECX
+    ASM_MOV_REG("cx", "dx")             // Copy ECX to EDX
+    ASM_XOR_VAR("$0x00200000", "cx")    // Toggle bit 21 (CPUID) in ECX
+    ASM_PUSH("cx")                      // Push the modified value onto the stack
     "popf                       \n\t"   // Pop it back into EFLAGS
 
     // Check if the CPUID bit was successfully toggled
     "pushf                      \n\t"   // Push EFLAGS back onto the stack
-    "popl   %%ecx               \n\t"   // Pop the value into ECX
-    "xorl   %%eax, %%eax        \n\t"   // Zero out the EAX register
-    "cmpl   %%ecx, %%edx        \n\t"   // Compare ECX with EDX
+    ASM_POP("cx")                       // Pop the value into ECX
+    ASM_XOR_REG("ax", "ax")             // Zero out the EAX register
+    ASM_CMP_REG("cx", "dx")             // Compare ECX with EDX
     "je    .Lno_cpuid_support%= \n\t"   // Jump if they're identical
-    "movl      $1, %%eax        \n\t"   // Set EAX to true
+    ASM_MOV_VAR("$1", "ax")             // Set EAX to true
     ".Lno_cpuid_support%=:      \n\t"
-    : "=a"(haveCPUID) : : "%ecx", "%edx" );
+    : "=a"(haveCPUID) : : ASM_REG("cx"), ASM_REG("dx") );
 
     // If we don't have CPUID we won't have the other extensions either
     if (haveCPUID) {
         // Execute CPUID with the feature request bit set
         __asm__ __volatile__(
-            "pushl  %%ebx               \n\t"   // Save EBX
-            "movl      $1, %%eax        \n\t"   // Set EAX to 1 (features request)
+            ASM_PUSH("bx")
+            ASM_MOV_VAR("$1", "ax")
+            ASM_PUSH("bx")                      // Save EBX
+            ASM_MOV_VAR("$1", "ax")             // Set EAX to 1 (features request)
             "cpuid                      \n\t"   // Call CPUID
-            "popl   %%ebx               \n\t"   // Restore EBX
-            : "=d"(result) : : "%eax", "%ecx" );
+            ASM_POP("bx")                       // Restore EBX
+            : "=d"(result) : : ASM_REG("ax"), ASM_REG("cx") );
 
         features = result & 0x06800000; //copy the mmx and sse bits to features
 
         __asm__ __volatile__ (
-             "pushl %%ebx             \n\t"
-             "movl $0x80000000, %%eax \n\t"
+             ASM_PUSH("bx")
+             ASM_PUSH("dx")
+             ASM_MOV_VAR("$0x80000000", "ax")
+             ASM_MOV_VAR("$0x80000000", "dx")
              "cpuid                   \n\t"
-             "cmpl $0x80000000, %%eax \n\t"
+             ASM_CMP_REG("dx", "ax")
              "jbe .Lno_extended%=     \n\t"
-             "movl $0x80000001, %%eax \n\t"
+             ASM_MOV_VAR("$0x80000001", "ax")
              "cpuid                   \n\t"
              ".Lno_extended%=:        \n\t"
-             "popl   %%ebx            \n\t"   // Restore EBX
-             : "=d"(result) : : "%eax", "%ecx");
+             ASM_POP("dx")
+             ASM_POP("bx")                      // Restore EBX
+             : "=d"(result) : : ASM_REG("ax"), ASM_REG("cx"));
 
         if (result & 0x80000000)
             features |= 0x80000000;
@@ -188,7 +213,7 @@ static Solid::Processor::InstructionSets cpuFeatures()
         signal( SIGILL, SIG_DFL );
         features = 0x1;
     }
-#endif // __i386__
+#endif // __i386__ || __x86_64__
 #endif //HAVE_GNU_INLINE_ASM
     Solid::Processor::InstructionSets featureflags;
 
