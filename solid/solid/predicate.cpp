@@ -212,7 +212,12 @@ bool Solid::Predicate::matches(const Device &device) const
 
             if (metaProp.isEnumType() && expected.type()==QVariant::String) {
                 QMetaEnum metaEnum = metaProp.enumerator();
-                expected = QVariant(metaEnum.keysToValue(d->value.toString().toLatin1()));
+                int value = metaEnum.keysToValue(d->value.toString().toLatin1());
+                if (value>=0) { // No value found for these keys, resetting expected to invalid
+                    expected = value;
+                } else {
+                    expected = QVariant();
+                }
             }
 
             if (d->compOperator==Mask) {
