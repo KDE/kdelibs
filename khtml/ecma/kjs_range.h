@@ -63,10 +63,9 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
-    UString toString(ExecState *exec) const;  // Selections stringify...
     enum { AnchorNode, AnchorOffset, FocusNode, FocusOffset, IsCollapsed,
            Collapsed, CollapseToStart, CollapseToEnd, SelectAllChildren,
-           DeleteFromDocument, RangeCount, GetRangeAt, AddRange, RemoveRange, RemoveAllRanges };
+           DeleteFromDocument, RangeCount, GetRangeAt, AddRange, RemoveRange, RemoveAllRanges, ToString };
 
     DOM::Selection currentSelection() const;
     bool           attached() const; // if document & part are still alive..
