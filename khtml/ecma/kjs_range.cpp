@@ -275,6 +275,7 @@ const ClassInfo DOMSelection::info = { "Selection", 0, &DOMSelectionTable, 0 };
  addRange           DOMSelection::AddRange                DontDelete|Function 1
  removeRange        DOMSelection::RemoveRange             DontDelete|Function 1
  removeAllRanges    DOMSelection::RemoveAllRanges         DontDelete|Function 0
+ toString           DOMSelection::ToString                DontDelete|Function 0
 @end
 */
 KJS_DEFINE_PROTOTYPE(DOMSelectionProto)
@@ -318,8 +319,6 @@ JSValue* DOMSelection::getValueProperty(ExecState* exec, int token) const
 
 JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
-    kDebug(6070) << id;
-
     KJS_CHECK_THIS(KJS::DOMSelection, thisObj);
 
     DOMSelection* self = static_cast<DOMSelection*>(thisObj);
@@ -440,17 +439,15 @@ JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisOb
         case DOMSelection::RemoveAllRanges:
             self->m_document->part()->setCaret(DOM::Selection());
             break;
+
+        case DOMSelection::ToString:
+            if (sel.isEmpty() || sel.isCollapsed())
+                return jsString(UString());
+            else
+                return jsString(sel.toRange().toString());
+            break;
     }
     return jsUndefined();
-}
-
-UString DOMSelection::toString(ExecState* /*exec*/) const
-{
-    DOM::Selection sel = currentSelection();
-    if (sel.isEmpty() || sel.isCollapsed())
-        return UString(UString::empty);
-    else
-        return UString(sel.toRange().toString());
 }
 
 DOM::Selection DOMSelection::currentSelection() const
