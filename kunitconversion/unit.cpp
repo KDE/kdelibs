@@ -19,8 +19,6 @@
 
 #include "unit.h"
 #include "unitcategory.h"
-#include <QTimer>
-#include <KLocale>
 #include <KDebug>
 
 namespace Conversion
