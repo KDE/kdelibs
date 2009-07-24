@@ -20,10 +20,26 @@
 */
 
 
-#include "kio_help.h"
-#include <QDir>
-
 #include <config.h>
+
+#include "kio_help.h"
+#include "xslt.h"
+
+#include <kdebug.h>
+#include <kde_file.h>
+#include <kurl.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
+#include <kcomponentdata.h>
+
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QFile>
+#include <QtCore/QRegExp>
+#include <QtCore/QTextCodec>
+#include <QtGui/QTextDocument>
+
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -41,23 +57,8 @@
 # include <stdlib.h>
 #endif
 
-#include <QtCore/QFileInfo>
-#include <QtCore/QFile>
-#include <QtCore/QRegExp>
-#include <QtCore/QTextCodec>
-#include <QtGui/QTextDocument>
-
-#include <kdebug.h>
-#include <kde_file.h>
-#include <kurl.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kstandarddirs.h>
-#include <kcomponentdata.h>
-
 #include <libxslt/xsltutils.h>
 #include <libxslt/transform.h>
-#include "xslt.h"
 
 using namespace KIO;
 
