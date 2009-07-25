@@ -65,7 +65,7 @@ if(X11_FOUND)
   macro_log_feature(X11_Xrender_FOUND "X Rendering extension" "an X Window System extension for image compositing" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED: For compositing, rendering operations, and alpha-blending.")
   macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
   macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
-  macro_log_feature(HAVE_XSCREENSAVER "libxss" "XScreenSaver Library" "http://www.x.org/" FALSE "" "Needed to enable fallback query methods in KIdleTime")
+  macro_log_feature(HAVE_XSCREENSAVER "libxss" "XScreenSaver Library" "http://www.x.org/" TRUE "" "Needed to enable fallback query methods in KIdleTime")
   macro_log_feature(HAVE_XSYNC "libxext" "XSync Extension" "http://www.x.org/" FALSE "" "Needed to enable high efficency query in KIdleTime. Strongly recommended.")
 endif(X11_FOUND)
 
