@@ -88,6 +88,7 @@ Notes:
     <glob pattern="*.odr"/>
   </mime-type>
   <mime-type type="application/x-plasma">
+    <sub-class-of type="application/zip"/>
     <comment>plasmoid</comment>
     <glob pattern="*.plasmoid"/>
   </mime-type>
