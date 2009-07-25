@@ -29,6 +29,7 @@
 
 #include <QSslConfiguration>
 #include <QTimer>
+#include <QPointer>
 
 namespace KDEPrivate {
 
@@ -48,7 +49,7 @@ public:
 
     AccessManagerReply *q;
 
-    KIO::Job *m_kioJob;
+    QPointer<KIO::Job> m_kioJob;
     QByteArray m_data;
     bool m_metaDataRead;
 };
@@ -127,13 +128,19 @@ void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
         if (!headers.isEmpty()) {
             QStringList headerList = headers.split('\n');
             Q_FOREACH(const QString &header, headerList) {
+                if (header.startsWith(QLatin1String("set-cookie"), Qt::CaseInsensitive)) {
+                    //kDebug() << "Ignored header: " << header;
+                    continue;
+                }
                 const QStringList headerPair = header.split(": ");
                 if (headerPair.size() == 2) {
-//                     kDebug() << headerPair.at(0) << headerPair.at(1);
+                    //kDebug() << headerPair.at(0) << headerPair.at(1);
                     setRawHeader(headerPair.at(0).toUtf8(), headerPair.at(1).toUtf8());
                 }
             }
         }
+
+        setAttribute(QNetworkRequest::User, kioJob->metaData().toVariant());
         d->m_metaDataRead = true;
     }
 
