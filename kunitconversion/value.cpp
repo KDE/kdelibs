@@ -19,7 +19,9 @@
 
 #include "value.h"
 #include "converter.h"
+
 #include <KDebug>
+#include <KSharedPtr>
 
 namespace Conversion
 {
@@ -35,11 +37,11 @@ public:
 
     ~Private()
     {
-        delete unit;
+        unit = 0;
     }
 
     double number;
-    const Unit* unit;
+    KSharedPtr<const Unit> unit;
 };
 
 Value::Value()
@@ -69,7 +71,7 @@ Value::~Value()
 
 bool Value::isValid() const
 {
-    return (d->unit != 0 && d->unit->isValid());
+    return (d->unit && d->unit->isValid());
 }
 
 QString Value::toString() const
@@ -90,7 +92,7 @@ const Unit* Value::unit() const
     if (!d->unit) {
         d->unit = new Unit;
     }
-    return d->unit;
+    return d->unit.data();
 }
 
 Value& Value::operator=(const Value& value)
