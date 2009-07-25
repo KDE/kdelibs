@@ -736,7 +736,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
 #ifdef TOKEN_DEBUG
                 kdDebug( 6036 ) << "unknown entity!" << endl;
 #endif
-                checkBuffer(10);
+                checkBuffer(11);
                 // ignore the sequence, add it to the buffer as plaintext
                 *dest++ = '&';
                 for(unsigned int i = 0; i < cBufferPos; i++)
