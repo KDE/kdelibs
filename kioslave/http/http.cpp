@@ -3647,8 +3647,8 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         kDebug(7113) << "Cache needs validation";
         if (m_request.responseCode == 304) {
             kDebug(7113) << "...was revalidated by response code but not by updated expire times. "
-                            "We're going to set the expire date to ten seconds in the future...";
-            m_request.cacheTag.expireDate = currentDate + 10;
+                            "We're going to set the expire date to 60 seconds in the future...";
+            m_request.cacheTag.expireDate = currentDate + 60;
             if (m_request.cacheTag.policy == CC_Verify &&
                 m_request.cacheTag.plan(m_maxCacheAge) != CacheTag::UseCached) {
                 // "apparently" because we /could/ have made an error ourselves, but the errors I
