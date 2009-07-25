@@ -183,6 +183,10 @@ class KTipDialog::Private
       : parent( _parent )
     {
     }
+    ~Private()
+    {
+      delete database;
+    }
 
     void _k_nextTip();
     void _k_prevTip();
