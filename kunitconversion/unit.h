@@ -20,8 +20,10 @@
 #ifndef CONVERSION_UNIT_H
 #define CONVERSION_UNIT_H
 
+#include <QSharedData>
 #include <QString>
 #include <KLocalizedString>
+
 #include "plasmaconversion_export.h"
 
 namespace Conversion
@@ -29,7 +31,7 @@ namespace Conversion
 
 class UnitCategory;
 
-class PLASMACONVERSION_EXPORT Complex
+class PLASMACONVERSION_EXPORT Complex : public QSharedData
 {
 public:
     Complex() {};
@@ -50,6 +52,8 @@ public:
                   const QString& description, const QString& match,
                   const KLocalizedString& real, const KLocalizedString& integer);
     virtual ~Unit();
+    Unit& operator=(const Unit& rhs);
+
     /**
      * @return translated name for unit.
      **/

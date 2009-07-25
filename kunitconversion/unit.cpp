@@ -19,7 +19,9 @@
 
 #include "unit.h"
 #include "unitcategory.h"
+
 #include <KDebug>
+#include <KSharedPtr>
 
 namespace Conversion
 {
@@ -35,7 +37,7 @@ public:
 
     ~Private()
     {
-        delete complex;
+        complex = 0;
     };
 
     QString symbol;
@@ -43,7 +45,7 @@ public:
     double multiplier;
     KLocalizedString real;
     KLocalizedString integer;
-    const Complex* complex;
+    KSharedPtr<const Complex> complex;
 };
 
 Unit::Unit(QObject* parent)
@@ -81,11 +83,29 @@ Unit::Unit(QObject* parent, int id, const Complex* complex, const QString& symbo
         uc->addUnitMapValues(this, match);
         uc->addIdMapValue(this, id);
     }
-    d->complex = complex;
+    d->complex = KSharedPtr<const Complex>(complex);
     d->real = real;
     d->integer = integer;
     d->symbol = symbol;
     d->description = description;
+}
+
+Unit& Unit::operator=(const Unit &rhs)
+{
+    UnitCategory* uc = rhs.category();
+    if (uc) {
+        uc->reassignMapValues(this, const_cast<Unit *>(&rhs));
+    }
+
+    d->complex = rhs.d->complex;
+
+    d->real = rhs.d->real;
+    d->integer = rhs.d->integer;
+    d->symbol = rhs.d->symbol;
+    d->description = rhs.d->description;
+    d->multiplier = rhs.d->multiplier;
+
+    return *this;
 }
 
 Unit::~Unit()
