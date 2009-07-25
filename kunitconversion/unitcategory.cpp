@@ -65,12 +65,12 @@ QStringList UnitCategory::allUnits() const
 
 bool UnitCategory::hasUnit(const QString &unit) const
 {
-    return d->unitMap.keys().contains(unit);
+    return d->unitMap.contains(unit);
 }
 
 Conversion::Value UnitCategory::convert(const Conversion::Value& value, const QString& toUnit)
 {
-    if ((toUnit.isEmpty() || d->unitMap.keys().contains(toUnit)) && value.unit()->isValid()) {
+    if ((toUnit.isEmpty() || d->unitMap.contains(toUnit)) && value.unit()->isValid()) {
         const Unit* to = toUnit.isEmpty() ? defaultUnit() : d->unitMap[toUnit];
         return convert(value, to);
     }
@@ -79,7 +79,7 @@ Conversion::Value UnitCategory::convert(const Conversion::Value& value, const QS
 
 Conversion::Value UnitCategory::convert(const Conversion::Value& value, int toUnit)
 {
-    if (d->idMap.keys().contains(toUnit) && value.unit()->isValid()) {
+    if (d->idMap.contains(toUnit) && value.unit()->isValid()) {
         return convert(value, d->idMap[toUnit]);
     }
     return Value();
@@ -92,6 +92,25 @@ Conversion::Value UnitCategory::convert(const Conversion::Value& value, const Un
         return Conversion::Value(v, toUnit);
     }
     return Value();
+}
+
+void UnitCategory::reassignMapValues(Unit *unit, Unit *otherUnit)
+{
+    QMapIterator<QString, Unit*> unitIt(d->unitMap);
+    while (unitIt.hasNext()) {
+        unitIt.next();
+        if (unitIt.value() == otherUnit) {
+            d->unitMap.insert(unitIt.key(), unit);
+        }
+    }
+
+    QMapIterator<int, Unit*> idIt(d->idMap);
+    while (idIt.hasNext()) {
+        idIt.next();
+        if (idIt.value() == otherUnit) {
+            d->idMap.insert(idIt.key(), unit);
+        }
+    }
 }
 
 void UnitCategory::addUnitMapValues(Unit* unit, const QString& names)
@@ -109,10 +128,7 @@ void UnitCategory::addIdMapValue(Unit* unit, int id)
 
 Unit* UnitCategory::unit(const QString& s) const
 {
-    if (d->unitMap.keys().contains(s)) {
-        return d->unitMap[s];
-    }
-    return 0;
+    return d->unitMap.value(s);
 }
 
 QString UnitCategory::name() const

@@ -111,6 +111,7 @@ protected:
     void addUnitName(const QString& name);
     void addUnitMapValues(Unit* unit, const QString& names);
     void addIdMapValue(Unit* unit, int id);
+    void reassignMapValues(Unit *unit, Unit *otherUnit);
     void setDescription(const QString& desc);
     void setUrl(const KUrl& url);
 
