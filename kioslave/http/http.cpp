@@ -175,7 +175,7 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 // for a given response code, conclude if the response is going to/likely to have a response body
 static bool canHaveResponseBody(int rCode, KIO::HTTP_METHOD method)
 {
-/* RFC 2616 says... 
+/* RFC 2616 says...
     1xx: false
     200: method HEAD: false, otherwise:true
     201: true
@@ -3326,8 +3326,10 @@ try_again:
     cacheParseResponseHeader(tokenizer);
 
     if (m_request.cacheTag.ioMode == ReadFromCache) {
-        if (m_request.cacheTag.policy == CC_Verify) {
-            Q_ASSERT(m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached);
+        if (m_request.cacheTag.policy == CC_Verify &&
+            m_request.cacheTag.plan(m_maxCacheAge) != CacheTag::UseCached) {
+            kDebug(7113) << "Reading resource from cache even though the cache plan is not "
+                            "UseCached; the server is probably sending wrong expiry information.";
         }
         parseHeaderFromCache();
         return true;
@@ -3647,8 +3649,11 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
             kDebug(7113) << "...was revalidated by response code but not by updated expire times. "
                             "We're going to set the expire date to ten seconds in the future...";
             m_request.cacheTag.expireDate = currentDate + 10;
-            if (m_request.cacheTag.policy == CC_Verify) {
-                Q_ASSERT(m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached);
+            if (m_request.cacheTag.policy == CC_Verify &&
+                m_request.cacheTag.plan(m_maxCacheAge) != CacheTag::UseCached) {
+                // "apparently" because we /could/ have made an error ourselves, but the errors I
+                // witnessed were all the server's fault.
+                kDebug(7113) << "this proxy or server apparently sends bogus expiry information.";
             }
         }
     }
