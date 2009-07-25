@@ -97,8 +97,8 @@ const Unit* Value::unit() const
 
 Value& Value::operator=(const Value& value)
 {
-    d->number = value.number();
-    d->unit = value.unit();
+    d->number = value.d->number;
+    d->unit = value.d->unit;
     return *this;
 }
 
