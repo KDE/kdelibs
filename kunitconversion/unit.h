@@ -40,7 +40,7 @@ public:
     virtual double fromDefault(double) const = 0;
 };
 
-class PLASMACONVERSION_EXPORT Unit : public QObject
+class PLASMACONVERSION_EXPORT Unit : public QObject, public QSharedData
 {
     Q_OBJECT
 public:
