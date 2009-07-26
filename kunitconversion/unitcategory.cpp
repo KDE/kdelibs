@@ -18,9 +18,8 @@
  */
 
 #include "unitcategory.h"
-#include <KDebug>
 
-namespace Conversion
+namespace KUnitConversion
 {
 
 class UnitCategory::Private
@@ -50,12 +49,13 @@ UnitCategory::UnitCategory(QObject* parent)
 
 UnitCategory::~UnitCategory()
 {
+    qDeleteAll(d->idMap);
     delete d;
 }
 
 QList<Unit*> UnitCategory::units() const
 {
-    return findChildren<Unit*>();
+    return d->idMap.values();
 }
 
 QStringList UnitCategory::allUnits() const
@@ -68,7 +68,7 @@ bool UnitCategory::hasUnit(const QString &unit) const
     return d->unitMap.contains(unit);
 }
 
-Conversion::Value UnitCategory::convert(const Conversion::Value& value, const QString& toUnit)
+Value UnitCategory::convert(const Value& value, const QString& toUnit)
 {
     if ((toUnit.isEmpty() || d->unitMap.contains(toUnit)) && value.unit()->isValid()) {
         const Unit* to = toUnit.isEmpty() ? defaultUnit() : d->unitMap[toUnit];
@@ -77,7 +77,7 @@ Conversion::Value UnitCategory::convert(const Conversion::Value& value, const QS
     return Value();
 }
 
-Conversion::Value UnitCategory::convert(const Conversion::Value& value, int toUnit)
+Value UnitCategory::convert(const Value& value, int toUnit)
 {
     if (d->idMap.contains(toUnit) && value.unit()->isValid()) {
         return convert(value, d->idMap[toUnit]);
@@ -85,11 +85,11 @@ Conversion::Value UnitCategory::convert(const Conversion::Value& value, int toUn
     return Value();
 }
 
-Conversion::Value UnitCategory::convert(const Conversion::Value& value, const Unit* toUnit)
+Value UnitCategory::convert(const Value& value, const Unit* toUnit)
 {
     if (toUnit) {
         double v = toUnit->fromDefault(value.unit()->toDefault(value.number()));
-        return Conversion::Value(v, toUnit);
+        return Value(v, toUnit);
     }
     return Value();
 }
@@ -129,6 +129,14 @@ void UnitCategory::addIdMapValue(Unit* unit, int id)
 Unit* UnitCategory::unit(const QString& s) const
 {
     return d->unitMap.value(s);
+}
+
+Unit* UnitCategory::unit(int unitId) const
+{
+    if (d->idMap.keys().contains(unitId)) {
+        return d->idMap[unitId];
+    }
+    return 0;
 }
 
 QString UnitCategory::name() const

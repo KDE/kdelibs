@@ -19,9 +19,10 @@
 
 #include "converter.h"
 
-#include <KGlobal>
-#include <KDebug>
+#include <kglobal.h>
+#include <klocale.h>
 
+#include "unitcategory.h"
 #include "area.h"
 #include "length.h"
 #include "currency.h"
@@ -37,8 +38,21 @@
 #include "velocity.h"
 #include "volume.h"
 
-namespace Conversion
+namespace KUnitConversion
 {
+
+class InvalidCategory : public UnitCategory
+{
+public:
+    InvalidCategory(QObject* parent = 0) : UnitCategory(parent)
+    {
+        const QString s;
+        const KLocalizedString ls;
+        setObjectName("invalid");
+        setName(i18n("Invalid"));
+        setDefaultUnit(U(InvalidUnit, 1.0, s, s, s, ls, ls));
+    };
+};
 
 class Converter::Private
 {
@@ -64,6 +78,7 @@ Converter::Converter(QObject* parent)
 : QObject(parent)
 , d(/*new Converter::Private*/0)
 {
+    new InvalidCategory(this);
     new Length(this);
     new Area(this);
     new Volume(this);
@@ -77,6 +92,7 @@ Converter::Converter(QObject* parent)
     new Time(this);
     new FuelEfficiency(this);
     new Density(this);
+    KGlobal::locale()->insertCatalog("libconversion");
 }
 
 Converter::~Converter()
@@ -128,18 +144,31 @@ Unit* Converter::unit(const QString& unit) const
     return 0;
 }
 
+Unit* Converter::unit(int unitId) const
+{
+    foreach (UnitCategory* u, categories()) {
+        Unit* unitClass = u->unit(unitId);
+        if (unitClass) {
+            return unitClass;
+        }
+    }
+    return 0;
+}
+
 UnitCategory* Converter::category(const QString& category) const
 {
-    QList<UnitCategory*> units = findChildren<UnitCategory*>(category);
-    if (!units.isEmpty()) {
-        return units[0];
+    QList<UnitCategory*> categories = findChildren<UnitCategory*>(category);
+    if (!categories.isEmpty()) {
+        return categories[0];
     }
     return 0;
 }
 
 QList<UnitCategory*> Converter::categories() const
 {
-    return findChildren<UnitCategory*>();
+    QList<UnitCategory*> categories = findChildren<UnitCategory*>();
+    categories.removeAll(category("invalid"));
+    return categories;
 }
 
 }

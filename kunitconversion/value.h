@@ -20,12 +20,13 @@
 #ifndef CONVERSION_VALUE_H
 #define CONVERSION_VALUE_H
 
-#include <QString>
-#include <QVariant>
+#include <QtCore/QString>
 #include "unit.h"
 #include "plasmaconversion_export.h"
 
-namespace Conversion
+class QVariant;
+
+namespace KUnitConversion
 {
 
 class PLASMACONVERSION_EXPORT Value

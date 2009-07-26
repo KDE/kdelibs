@@ -22,14 +22,9 @@
 
 #include "unitcategory.h"
 
-class Velocity : public Conversion::UnitCategory
+class Velocity : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        MeterPerSecond = 9000, KilometerPerHour, MilePerHour, FootPerSecond, InchPerSecond, Knot,
-        Mach, SpeedOfLight, Beaufort
-    };
-
     Velocity(QObject* parent = 0);
 };
 

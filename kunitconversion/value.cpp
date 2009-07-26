@@ -20,10 +20,7 @@
 #include "value.h"
 #include "converter.h"
 
-#include <KDebug>
-#include <KSharedPtr>
-
-namespace Conversion
+namespace KUnitConversion
 {
 
 class Value::Private
@@ -37,11 +34,10 @@ public:
 
     ~Private()
     {
-        unit = 0;
     }
 
     double number;
-    KSharedPtr<const Unit> unit;
+    const Unit* unit;
 };
 
 Value::Value()
@@ -55,12 +51,12 @@ Value::Value(double n, const Unit* u)
 }
 
 Value::Value(double n, const QString& u)
-: d(new Value::Private(n, Conversion::Converter::self()->unit(u)))
+: d(new Value::Private(n, Converter::self()->unit(u)))
 {
 }
 
 Value::Value(const QVariant& n, const QString& u)
-: d(new Value::Private(n.toDouble(), Conversion::Converter::self()->unit(u)))
+: d(new Value::Private(n.toDouble(), Converter::self()->unit(u)))
 {
 }
 
@@ -90,9 +86,9 @@ double Value::number() const
 const Unit* Value::unit() const
 {
     if (!d->unit) {
-        d->unit = new Unit;
+       d->unit = Converter::self()->unit(InvalidUnit);
     }
-    return d->unit.data();
+    return d->unit;
 }
 
 Value& Value::operator=(const Value& value)

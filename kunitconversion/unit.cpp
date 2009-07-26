@@ -17,27 +17,34 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <klocalizedstring.h>
+
 #include "unit.h"
 #include "unitcategory.h"
 
-#include <KDebug>
-#include <KSharedPtr>
-
-namespace Conversion
+namespace KUnitConversion
 {
+
+Complex::Complex()
+{
+}
+
+Complex::~Complex()
+{
+}
 
 class Unit::Private
 {
 public:
-    Private()
+    Private(UnitCategory* category, const Complex* complex = 0)
     : multiplier(1.0)
-    , complex(0)
+    , complex(complex)
+    , category(category)
     {
     };
 
     ~Private()
     {
-        complex = 0;
     };
 
     QString symbol;
@@ -45,25 +52,18 @@ public:
     double multiplier;
     KLocalizedString real;
     KLocalizedString integer;
-    KSharedPtr<const Complex> complex;
+    const Complex* complex;
+    UnitCategory* category;
 };
 
-Unit::Unit(QObject* parent)
-: QObject(parent)
-, d(new Unit::Private)
-{
-}
-
-Unit::Unit(QObject* parent, int id, double multiplier, const QString& symbol,
+Unit::Unit(UnitCategory* category, int id, double multiplier, const QString& symbol,
            const QString& description, const QString& match,
            const KLocalizedString& real, const KLocalizedString& integer)
-: QObject(parent)
-, d(new Unit::Private)
+: d(new Unit::Private(category))
 {
-    UnitCategory* uc = category();
-    if (uc) {
-        uc->addUnitMapValues(this, match);
-        uc->addIdMapValue(this, id);
+    if (category) {
+        category->addUnitMapValues(this, match);
+        category->addIdMapValue(this, id);
     }
     d->multiplier = multiplier;
     d->real = real;
@@ -72,40 +72,19 @@ Unit::Unit(QObject* parent, int id, double multiplier, const QString& symbol,
     d->description = description;
 }
 
-Unit::Unit(QObject* parent, int id, const Complex* complex, const QString& symbol,
+Unit::Unit(UnitCategory* category, int id, const Complex* complex, const QString& symbol,
            const QString& description, const QString& match,
            const KLocalizedString& real, const KLocalizedString& integer)
-: QObject(parent)
-, d(new Unit::Private)
+: d(new Unit::Private(category, complex))
 {
-    UnitCategory* uc = category();
-    if (uc) {
-        uc->addUnitMapValues(this, match);
-        uc->addIdMapValue(this, id);
+    if (category) {
+        category->addUnitMapValues(this, match);
+        category->addIdMapValue(this, id);
     }
-    d->complex = KSharedPtr<const Complex>(complex);
     d->real = real;
     d->integer = integer;
     d->symbol = symbol;
     d->description = description;
-}
-
-Unit& Unit::operator=(const Unit &rhs)
-{
-    UnitCategory* uc = rhs.category();
-    if (uc) {
-        uc->reassignMapValues(this, const_cast<Unit *>(&rhs));
-    }
-
-    d->complex = rhs.d->complex;
-
-    d->real = rhs.d->real;
-    d->integer = rhs.d->integer;
-    d->symbol = rhs.d->symbol;
-    d->description = rhs.d->description;
-    d->multiplier = rhs.d->multiplier;
-
-    return *this;
 }
 
 Unit::~Unit()
@@ -115,7 +94,7 @@ Unit::~Unit()
 
 UnitCategory* Unit::category() const
 {
-    return dynamic_cast<UnitCategory*>(parent());
+    return d->category;
 }
 
 QString Unit::description() const
@@ -171,4 +150,3 @@ bool Unit::isValid() const
 
 }
 
-#include "unit.moc"

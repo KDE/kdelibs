@@ -22,16 +22,9 @@
 
 #include "unitcategory.h"
 
-class Time : public Conversion::UnitCategory
+class Time : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        Yottasecond = 11000, Zettasecond, Exasecond, Petasecond, Terasecond, Gigasecond, Megasecond,
-        Kilosecond, Hectosecond, Decasecond, Second, Decisecond, Centisecond, Millisecond,
-        Microsecond, Nanosecond, Picosecond, Femtosecond, Attosecond, Zeptosecond, Yoctosecond,
-        Minute, Hour, Day, Week, JulianYear, LeapYear, Year
-    };
-
     Time(QObject* parent = 0);
 };
 

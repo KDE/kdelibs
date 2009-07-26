@@ -22,12 +22,12 @@
 
 #include "value.h"
 #include "unit.h"
-#include <QString>
-#include <QStringList>
-#include <KUrl>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <kurl.h>
 #include "plasmaconversion_export.h"
 
-namespace Conversion
+namespace KUnitConversion
 {
 
 class PLASMACONVERSION_EXPORT UnitCategory : public QObject
@@ -44,10 +44,6 @@ public:
      * @return Translated name for category.
      **/
     QString name() const;
-
-    /**
-     * Set value description
-     **/
 
     /**
      * @return unit category description
@@ -79,6 +75,13 @@ public:
      * @return Pointer to unit class.
      **/
     Unit* unit(const QString& s) const;
+
+    /**
+    * Return unit for unit enum.
+    *
+    * @return Pointer to unit class.
+    **/
+    Unit* unit(int unitId) const;
 
     /**
      * Return units in this category.

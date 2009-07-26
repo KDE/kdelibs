@@ -22,13 +22,9 @@
 
 #include "unitcategory.h"
 
-class FuelEfficiency : public Conversion::UnitCategory
+class FuelEfficiency : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        LitersPer100Kilometers = 12000, MilePerUsGallon, MilePerImperialGallon, KilometrePerLitre
-    };
-
     FuelEfficiency(QObject* parent = 0);
 };
 

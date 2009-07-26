@@ -21,12 +21,93 @@
 #define CONVERSION_CONVERTER_H
 
 #include <conversion/value.h>
-
 #include <conversion/plasmaconversion_export.h>
 #include <QtCore/QVariant>
 
-namespace Conversion
+namespace KUnitConversion
 {
+enum UnitId {
+    InvalidUnit = 0,
+    // Area
+    SquareYottameter = 1000, SquareZettameter, SquareExameter, SquarePetameter, SquareTerameter,
+    SquareGigameter, SquareMegameter, SquareKilometer, SquareHectometer, SquareDecameter,
+    SquareMeter, SquareDecimeter, SquareCentimeter, SquareMillimeter, SquareMicrometer,
+    SquareNanometer, SquarePicometer, SquareFemtometer, SquareAttometer, SquareZeptometer,
+    SquareYoctometer, Acre, SquareFoot, SquareInch, SquareMile,
+
+    // Length
+    Yottameter = 2000, Zettameter, Exameter, Petameter, Terameter, Gigameter, Megameter,
+    Kilometer, Hectometer, Decameter, Meter, Decimeter, Centimeter, Millimeter, Micrometer,
+    Nanometer, Picometer, Femtometer, Attometer, Zeptometer, Yoctometer, Inch, Foot, Yard,
+    Mile, NauticalMile, LightYear, Parsec, AstronomicalUnit,
+
+    // Volume
+    CubicYottameter = 3000, CubicZettameter, CubicExameter, CubicPetameter, CubicTerameter,
+    CubicGigameter, CubicMegameter, CubicKilometer, CubicHectometer, CubicDecameter, CubicMeter,
+    CubicDecimeter, CubicCentimeter, CubicMillimeter, CubicMicrometer, CubicNanometer,
+    CubicPicometer, CubicFemtometer, CubicAttometer, CubicZeptometer, CubicYoctometer,
+    Yottaliter, Zettaliter, Exaliter, Petaliter, Teraliter, Gigaliter, Megaliter, Kiloliter,
+    Hectoliter, Decaliter, Liter, Deciliter, Centiliter, Milliliter, Microliter, Nanoliter,
+    Picoliter, Femtoliter, Attoliter, Zeptoliter, Yoctoliter, CubicFoot, CubicInch, CubicMile,
+    FluidOunce, Cup, GallonUS, PintImperial,
+
+    // Mass
+    Yottagram = 4000, Zettagram, Exagram, Petagram, Teragram, Gigagram, Megagram, Kilogram,
+    Hectogram, Decagram, Gram, Decigram, Centigram, Milligram, Microgram, Nanogram, Picogram,
+    Femtogram, Attogram, Zeptogram, Yoctogram, Ton, Carat, Pound, Ounce, TroyOunce, MassNewton,
+    Kilonewton,
+
+    // Pressure
+    Yottapascal = 5000, Zettapascal, Exapascal, Petapascal, Terapascal, Gigapascal, Megapascal,
+    Kilopascal, Hectopascal, Decapascal, Pascal, Decipascal, Centipascal, Millipascal,
+    Micropascal, Nanopascal, Picopascal, Femtopascal, Attopascal, Zeptopascal, Yoctopascal,
+    Bar, Millibar, Decibar, Torr, TechnicalAtmosphere, Atmosphere, PoundForcePerSquareInch,
+    InchesOfMercury,
+
+    // Temperature
+    Kelvin = 6000, Celsius, Fahrenheit, Rankine, Delisle, TemperatureNewton, Reaumur, Romer,
+
+    // Energy
+    Yottajoule = 7000, Zettajoule, Exajoule, Petajoule, Terajoule, Gigajoule, Megajoule,
+    Kilojoule, Hectojoule, Decajoule, Joule, Decijoule, Centijoule, Millijoule, Microjoule,
+    Nanojoule, Picojoule, Femtojoule, Attojoule, Zeptojoule, Yoctojoule, GuidelineDailyAmount,
+    Electronvolt, Rydberg, Kilocalorie,
+
+    // Currency
+    Eur = 8000, Ats, Bef, Nlg, Fim, Frf, Dem, Iep, Itl, Luf, Pte, Esp, Grd, Sit, Cyp, Mtl, Skk,
+    Usd, Jpy, Bgn, Czk, Dkk, Eek, Gbp, Huf, Ltl, Lvl, Pln, Ron, Sek, Chf, Nok, Hrk, Rub, Try,
+    Aud, Brl, Cad, Cny, Hkd, Idr, Inr, Krw, Mxn, Myr, Nzd, Php, Sgd, Thb, Zar,
+
+    // Velocity
+    MeterPerSecond = 9000, KilometerPerHour, MilePerHour, FootPerSecond, InchPerSecond, Knot,
+    Mach, SpeedOfLight, Beaufort,
+
+    // Power
+    Yottawatt = 10000, Zettawatt, Exawatt, Petawatt, Terawatt, Gigawatt, Megawatt, Kilowatt,
+    Hectowatt, Decawatt, Watt, Deciwatt, Centiwatt, Milliwatt, Microwatt, Nanowatt, Picowatt,
+    Femtowatt, Attowatt, Zeptowatt, Yoctowatt, Horsepower,
+
+    // Time
+    Yottasecond = 11000, Zettasecond, Exasecond, Petasecond, Terasecond, Gigasecond, Megasecond,
+    Kilosecond, Hectosecond, Decasecond, Second, Decisecond, Centisecond, Millisecond,
+    Microsecond, Nanosecond, Picosecond, Femtosecond, Attosecond, Zeptosecond, Yoctosecond,
+    Minute, Hour, Day, Week, JulianYear, LeapYear, Year,
+
+    // FuelEfficiency
+    LitersPer100Kilometers = 12000, MilePerUsGallon, MilePerImperialGallon, KilometrePerLitre,
+
+    // Density
+    YottakilogramsPerCubicMeter = 13000, ZettakilogramPerCubicMeter, ExakilogramPerCubicMeter,
+    PetakilogramPerCubicMeter, TerakilogramPerCubicMeter, GigakilogramPerCubicMeter,
+    MegakilogramPerCubicMeter, KilokilogramPerCubicMeter, HectokilogramsPerCubicMeter,
+    DecakilogramsPerCubicMeter, KilogramsPerCubicMeter, DecikilogramsPerCubicMeter,
+    CentikilogramsPerCubicMeter, MillikilogramsPerCubicMeter, MicrokilogramsPerCubicMeter,
+    NanokilogramsPerCubicMeter, PicokilogramsPerCubicMeter, FemtokilogramsPerCubicMeter,
+    AttokilogramsPerCubicMeter, ZeptokilogramsPerCubicMeter, YoctokilogramsPerCubicMeter,
+    KilogramPerLiter, GramPerLiter, GramPerMilliliter,
+    OuncePerCubicInch, OuncePerCubicFoot, OuncePerCubicYard,
+    PoundPerCubicInch, PoundPerCubicFoot, PoundPerCubicYard
+};
 
 class UnitCategory;
 
@@ -66,6 +147,14 @@ public:
     Unit* unit(const QString& unit) const;
 
     /**
+    * Find unit for unit enum.
+    *
+    * @param unit unit enum to find unit for.
+    * @return unit for string unit
+    **/
+    Unit* unit(int unitId) const;
+
+    /**
      * Find unit category.
      *
      * @param category name of the category to find (length, area, mass, etc.).
@@ -90,6 +179,6 @@ private:
     Private* const d;
 };
 
-} // Conversion namespace
+} // KUnitConversion namespace
 
 #endif

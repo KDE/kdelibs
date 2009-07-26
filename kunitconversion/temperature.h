@@ -22,13 +22,9 @@
 
 #include "unitcategory.h"
 
-class Temperature : public Conversion::UnitCategory
+class Temperature : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        Kelvin = 6000, Celsius, Fahrenheit, Rankine, Delisle, Newton, Reaumur, Romer
-    };
-
     Temperature(QObject* parent = 0);
 };
 

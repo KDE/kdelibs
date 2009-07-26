@@ -20,39 +20,35 @@
 #ifndef CONVERSION_UNIT_H
 #define CONVERSION_UNIT_H
 
-#include <QSharedData>
-#include <QString>
-#include <KLocalizedString>
-
+#include <QtCore/QString>
 #include "plasmaconversion_export.h"
 
-namespace Conversion
+class KLocalizedString;
+
+namespace KUnitConversion
 {
 
 class UnitCategory;
 
-class PLASMACONVERSION_EXPORT Complex : public QSharedData
+class PLASMACONVERSION_EXPORT Complex
 {
 public:
-    Complex() {};
-    virtual ~Complex() {};
+    Complex();
+    virtual ~Complex();
     virtual double toDefault(double) const = 0;
     virtual double fromDefault(double) const = 0;
 };
 
-class PLASMACONVERSION_EXPORT Unit : public QObject, public QSharedData
+class PLASMACONVERSION_EXPORT Unit
 {
-    Q_OBJECT
 public:
-    Unit(QObject* parent = 0);
-    explicit Unit(QObject* parent, int id, double multiplier, const QString& symbol,
-                  const QString& description, const QString& match,
-                  const KLocalizedString& real, const KLocalizedString& integer);
-    explicit Unit(QObject* parent, int id, const Complex* complex, const QString& symbol,
-                  const QString& description, const QString& match,
-                  const KLocalizedString& real, const KLocalizedString& integer);
+    Unit(UnitCategory* category, int id, double multiplier, const QString& symbol,
+         const QString& description, const QString& match,
+         const KLocalizedString& real, const KLocalizedString& integer);
+    Unit(UnitCategory* category, int id, const Complex* complex, const QString& symbol,
+         const QString& description, const QString& match,
+         const KLocalizedString& real, const KLocalizedString& integer);
     virtual ~Unit();
-    Unit& operator=(const Unit& rhs);
 
     /**
      * @return translated name for unit.
@@ -99,7 +95,7 @@ private:
     Private* const d;
 };
 
-#define U(id, m, s, d, sy, r, i) (new Conversion::Unit(this, id, m, s, d, sy, r, i))
+#define U(id, m, s, d, sy, r, i) (new KUnitConversion::Unit(this, id, m, s, d, sy, r, i))
 
 } // Conversion namespace
 

@@ -23,16 +23,9 @@
 
 #include "unitcategory.h"
 
-class Mass : public Conversion::UnitCategory
+class Mass : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        Yottagram = 4000, Zettagram, Exagram, Petagram, Teragram, Gigagram, Megagram, Kilogram,
-        Hectogram, Decagram, Gram, Decigram, Centigram, Milligram, Microgram, Nanogram, Picogram,
-        Femtogram, Attogram, Zeptogram, Yoctogram, Ton, Carat, Pound, Ounce, TroyOunce, Newton,
-        Kilonewton
-    };
-
     Mass(QObject* parent = 0);
 };
 

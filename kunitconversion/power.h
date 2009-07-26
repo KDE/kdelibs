@@ -22,15 +22,9 @@
 
 #include "unitcategory.h"
 
-class Power : public Conversion::UnitCategory
+class Power : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        Yottawatt = 10000, Zettawatt, Exawatt, Petawatt, Terawatt, Gigawatt, Megawatt, Kilowatt,
-        Hectowatt, Decawatt, Watt, Deciwatt, Centiwatt, Milliwatt, Microwatt, Nanowatt, Picowatt,
-        Femtowatt, Attowatt, Zeptowatt, Yoctowatt, Horsepower
-    };
-
     Power(QObject* parent = 0);
 };
 

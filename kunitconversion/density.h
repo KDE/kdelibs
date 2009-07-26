@@ -23,22 +23,9 @@
 
 #include "unitcategory.h"
 
-class Density : public Conversion::UnitCategory
+class Density : public KUnitConversion::UnitCategory
 {
 public:
-    enum Id {
-        YottakilogramsPerCubicMeter = 13000, ZettakilogramPerCubicMeter, ExakilogramPerCubicMeter,
-        PetakilogramPerCubicMeter, TerakilogramPerCubicMeter, GigakilogramPerCubicMeter,
-        MegakilogramPerCubicMeter, KilokilogramPerCubicMeter, HectokilogramsPerCubicMeter,
-        DecakilogramsPerCubicMeter, KilogramsPerCubicMeter, DecikilogramsPerCubicMeter,
-        CentikilogramsPerCubicMeter, MillikilogramsPerCubicMeter, MicrokilogramsPerCubicMeter,
-        NanokilogramsPerCubicMeter, PicokilogramsPerCubicMeter, FemtokilogramsPerCubicMeter,
-        AttokilogramsPerCubicMeter, ZeptokilogramsPerCubicMeter, YoctokilogramsPerCubicMeter,
-        KilogramPerLiter, GramPerLiter, GramPerMilliliter,
-		OuncePerCubicInch, OuncePerCubicFoot, OuncePerCubicYard,
-        PoundPerCubicInch, PoundPerCubicFoot, PoundPerCubicYard
-    };
-
     Density(QObject* parent = 0);
 };
 

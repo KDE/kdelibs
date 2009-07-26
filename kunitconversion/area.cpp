@@ -18,15 +18,18 @@
  */
 
 #include "area.h"
-#include <KLocale>
+#include "converter.h"
+#include <klocale.h>
+
+using namespace KUnitConversion;
 
 Area::Area(QObject* parent)
-: Conversion::UnitCategory(parent)
+: UnitCategory(parent)
 {
     setObjectName("area");
     setName(i18n("Area"));
 
-    U(Area::SquareYottameter, 1e+48,
+    U(SquareYottameter, 1e+48,
       // i18n: Used when unit symbol is needed.
       i18nc("area unit symbol", "Ym²"),
       // i18n: unit as it will be shown to user wherever units are to
@@ -48,7 +51,7 @@ Area::Area(QObject* parent)
       // such as "1 mile" or "21 miles".
       ki18ncp("amount in units (integer)", "%1 square yottameter", "%1 square yottameters")
     );
-    U(Area::SquareZettameter, 1e+42,
+    U(SquareZettameter, 1e+42,
       i18nc("area unit symbol", "Zm²"),
       i18nc("unit description in lists", "square zettameters"),
       i18nc("unit synonyms for matching user input",
@@ -56,7 +59,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square zettameters"),
       ki18ncp("amount in units (integer)", "%1 square zettameter", "%1 square zettameters")
     );
-    U(Area::SquareExameter, 1e+36,
+    U(SquareExameter, 1e+36,
       i18nc("area unit symbol", "Em²"),
       i18nc("unit description in lists", "square exameters"),
       i18nc("unit synonyms for matching user input",
@@ -64,7 +67,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square exameters"),
       ki18ncp("amount in units (integer)", "%1 square exameter", "%1 square exameters")
     );
-    U(Area::SquarePetameter, 1e+30,
+    U(SquarePetameter, 1e+30,
       i18nc("area unit symbol", "Pm²"),
       i18nc("unit description in lists", "square petameters"),
       i18nc("unit synonyms for matching user input",
@@ -72,7 +75,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square petameters"),
       ki18ncp("amount in units (integer)", "%1 square petameter", "%1 square petameters")
     );
-    U(Area::SquareTerameter, 1e+24,
+    U(SquareTerameter, 1e+24,
       i18nc("area unit symbol", "Tm²"),
       i18nc("unit description in lists", "square terameters"),
       i18nc("unit synonyms for matching user input",
@@ -80,7 +83,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square terameters"),
       ki18ncp("amount in units (integer)", "%1 square terameter", "%1 square terameters")
     );
-    U(Area::SquareGigameter, 1e+18,
+    U(SquareGigameter, 1e+18,
       i18nc("area unit symbol", "Gm²"),
       i18nc("unit description in lists", "square gigameters"),
       i18nc("unit synonyms for matching user input",
@@ -88,7 +91,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square gigameters"),
       ki18ncp("amount in units (integer)", "%1 square gigameter", "%1 square gigameters")
     );
-    U(Area::SquareMegameter, 1e+12,
+    U(SquareMegameter, 1e+12,
       i18nc("area unit symbol", "Mm²"),
       i18nc("unit description in lists", "square megameters"),
       i18nc("unit synonyms for matching user input",
@@ -96,7 +99,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square megameters"),
       ki18ncp("amount in units (integer)", "%1 square megameter", "%1 square megameters")
     );
-    U(Area::SquareKilometer, 1e+06,
+    U(SquareKilometer, 1e+06,
       i18nc("area unit symbol", "km²"),
       i18nc("unit description in lists", "square kilometers"),
       i18nc("unit synonyms for matching user input",
@@ -104,7 +107,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square kilometers"),
       ki18ncp("amount in units (integer)", "%1 square kilometer", "%1 square kilometers")
     );
-    U(Area::SquareHectometer, 10000,
+    U(SquareHectometer, 10000,
       i18nc("area unit symbol", "hm²"),
       i18nc("unit description in lists", "square hectometers"),
       i18nc("unit synonyms for matching user input",
@@ -112,7 +115,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square hectometers"),
       ki18ncp("amount in units (integer)", "%1 square hectometer", "%1 square hectometers")
     );
-    U(Area::SquareDecameter, 100,
+    U(SquareDecameter, 100,
       i18nc("area unit symbol", "dam²"),
       i18nc("unit description in lists", "square decameters"),
       i18nc("unit synonyms for matching user input",
@@ -120,14 +123,14 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square decameters"),
       ki18ncp("amount in units (integer)", "%1 square decameter", "%1 square decameters")
     );
-    setDefaultUnit(U(Area::SquareMeter, 1,
+    setDefaultUnit(U(SquareMeter, 1,
       i18nc("area unit symbol", "m²"),
       i18nc("unit description in lists", "square meters"),
       i18nc("unit synonyms for matching user input", "square meter;square meters;m²;m/-2;m^2;m2"),
       ki18nc("amount in units (real)", "%1 square meters"),
       ki18ncp("amount in units (integer)", "%1 square meter", "%1 square meters")
     ));
-    U(Area::SquareDecimeter, 0.01,
+    U(SquareDecimeter, 0.01,
       i18nc("area unit symbol", "dm²"),
       i18nc("unit description in lists", "square decimeters"),
       i18nc("unit synonyms for matching user input",
@@ -135,7 +138,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square decimeters"),
       ki18ncp("amount in units (integer)", "%1 square decimeter", "%1 square decimeters")
     );
-    U(Area::SquareCentimeter, 0.0001,
+    U(SquareCentimeter, 0.0001,
       i18nc("area unit symbol", "cm²"),
       i18nc("unit description in lists", "square centimeters"),
       i18nc("unit synonyms for matching user input",
@@ -143,7 +146,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square centimeters"),
       ki18ncp("amount in units (integer)", "%1 square centimeter", "%1 square centimeters")
     );
-    U(Area::SquareMillimeter, 1e-06,
+    U(SquareMillimeter, 1e-06,
       i18nc("area unit symbol", "mm²"),
       i18nc("unit description in lists", "square millimeters"),
       i18nc("unit synonyms for matching user input",
@@ -151,7 +154,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square millimeters"),
       ki18ncp("amount in units (integer)", "%1 square millimeter", "%1 square millimeters")
     );
-    U(Area::SquareMicrometer, 1e-12,
+    U(SquareMicrometer, 1e-12,
       i18nc("area unit symbol", "µm²"),
       i18nc("unit description in lists", "square micrometers"),
       i18nc("unit synonyms for matching user input",
@@ -159,7 +162,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square micrometers"),
       ki18ncp("amount in units (integer)", "%1 square micrometer", "%1 square micrometers")
     );
-    U(Area::SquareNanometer, 1e-18,
+    U(SquareNanometer, 1e-18,
       i18nc("area unit symbol", "nm²"),
       i18nc("unit description in lists", "square nanometers"),
       i18nc("unit synonyms for matching user input",
@@ -167,7 +170,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square nanometers"),
       ki18ncp("amount in units (integer)", "%1 square nanometer", "%1 square nanometers")
     );
-    U(Area::SquarePicometer, 1e-24,
+    U(SquarePicometer, 1e-24,
       i18nc("area unit symbol", "pm²"),
       i18nc("unit description in lists", "square picometers"),
       i18nc("unit synonyms for matching user input",
@@ -175,7 +178,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square picometers"),
       ki18ncp("amount in units (integer)", "%1 square picometer", "%1 square picometers")
     );
-    U(Area::SquareFemtometer, 1e-30,
+    U(SquareFemtometer, 1e-30,
       i18nc("area unit symbol", "fm²"),
       i18nc("unit description in lists", "square femtometers"),
       i18nc("unit synonyms for matching user input",
@@ -183,7 +186,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square femtometers"),
       ki18ncp("amount in units (integer)", "%1 square femtometer", "%1 square femtometers")
     );
-    U(Area::SquareAttometer, 1e-36,
+    U(SquareAttometer, 1e-36,
       i18nc("area unit symbol", "am²"),
       i18nc("unit description in lists", "square attometers"),
       i18nc("unit synonyms for matching user input",
@@ -191,7 +194,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square attometers"),
       ki18ncp("amount in units (integer)", "%1 square attometer", "%1 square attometers")
     );
-    U(Area::SquareZeptometer, 1e-42,
+    U(SquareZeptometer, 1e-42,
       i18nc("area unit symbol", "zm²"),
       i18nc("unit description in lists", "square zeptometers"),
       i18nc("unit synonyms for matching user input",
@@ -199,7 +202,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square zeptometers"),
       ki18ncp("amount in units (integer)", "%1 square zeptometer", "%1 square zeptometers")
     );
-    U(Area::SquareYoctometer, 1e-48,
+    U(SquareYoctometer, 1e-48,
       i18nc("area unit symbol", "ym²"),
       i18nc("unit description in lists", "square yoctometers"),
       i18nc("unit synonyms for matching user input",
@@ -207,14 +210,14 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square yoctometers"),
       ki18ncp("amount in units (integer)", "%1 square yoctometer", "%1 square yoctometers")
     );
-    U(Area::Acre, 4046.86,
+    U(Acre, 4046.86,
       i18nc("area unit symbol", "acre"),
       i18nc("unit description in lists", "acres"),
       i18nc("unit synonyms for matching user input", "acre;acres;acre"),
       ki18nc("amount in units (real)", "%1 acres"),
       ki18ncp("amount in units (integer)", "%1 acre", "%1 acres")
     );
-    U(Area::SquareFoot, 0.092903,
+    U(SquareFoot, 0.092903,
       i18nc("area unit symbol", "ft²"),
       i18nc("unit description in lists", "square feet"),
       i18nc("unit synonyms for matching user input",
@@ -222,7 +225,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square feet"),
       ki18ncp("amount in units (integer)", "%1 square foot", "%1 square feet")
     );
-    U(Area::SquareInch, 0.00064516,
+    U(SquareInch, 0.00064516,
       i18nc("area unit symbol", "in²"),
       i18nc("unit description in lists", "square inches"),
       i18nc("unit synonyms for matching user input",
@@ -230,7 +233,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square inches"),
       ki18ncp("amount in units (integer)", "%1 square inch", "%1 square inches")
     );
-    U(Area::SquareMile, 2.58999e+06,
+    U(SquareMile, 2.58999e+06,
       i18nc("area unit symbol", "mi²"),
       i18nc("unit description in lists", "square miles"),
       i18nc("unit synonyms for matching user input",
