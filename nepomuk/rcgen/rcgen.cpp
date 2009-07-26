@@ -15,10 +15,11 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
+#include <QtCore/QCoreApplication>
 
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
+#include "kaboutdata.h"
+#include "kcmdlineargs.h"
+#include "kcomponentdata.h"
 
 #include "resourceclass.h"
 #include "ontologyparser.h"
@@ -52,6 +53,7 @@ int main( int argc, char** argv )
     aboutData.addAuthor(ki18n("Sebastian Trüg"), ki18n("Maintainer"), "trueg@kde.org");
     aboutData.addAuthor(ki18n("Tobias Koenig"), ki18n("Major cleanup - Personal hero of maintainer"), "tokoe@kde.org");
     aboutData.setProgramIconName( "nepomuk" );
+    KComponentData component( aboutData );
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 
@@ -75,7 +77,7 @@ int main( int argc, char** argv )
     options.add("+[ontologies]", ki18n("The ontology files containing the ontologies to be generated."));
 
     KCmdLineArgs::addCmdLineOptions( options );
-    KApplication app( false /* no gui */ );
+    QCoreApplication app( argc,argv );
     KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
 
