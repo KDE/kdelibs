@@ -76,3 +76,6 @@ The KSelectionProxyModel orders its items in the same top-to-bottom order as the
 
 */
 
+// DOXYGEN_REFERENCES = kdecore kdeui
+// DOXYGEN_SET_PROJECT_NAME = Itemviews
+
