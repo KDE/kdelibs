@@ -51,7 +51,7 @@ class KAutoScrollArea : public QWidget
      * Auto scrolling can take place in two directions but only
      * one at a time. The other direction will not be scrollable
      * at all and KAutoScrollArea will adjust the child's size
-     * to it's own.
+     * to its own.
      */
     void setOrientation( Qt::Orientation );
 

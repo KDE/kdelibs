@@ -130,7 +130,7 @@ public:
      *
      * This method should be used whenever a blocking application with a
      * non-blocking GUI during GHNS operations is not suitable.
-     * the slot passed in should have the signature (KNS::Entry::List) as it's parameter
+     * the slot passed in should have the signature (KNS::Entry::List) as its parameter
      *
      * @see downloadDialogModal()
      */

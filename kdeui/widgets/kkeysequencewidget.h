@@ -120,7 +120,7 @@ public:
 		 * 2. Call applyStealShortcut and KKeySequenceWidget will steal the
 		 * shortcut. This will save the actionCollections the shortcut is part
 		 * of so make sure it doesn't inadvertly save some unwanted changes
-		 * too. Read it's documentation for some limitation when handling
+		 * too. Read its documentation for some limitation when handling
 		 * global shortcuts.
 		*
 		 * If you want to do the conflict checking yourself here are some code
@@ -228,7 +228,7 @@ public:
 
 	/**
 	 * If the component using this widget supports shortcuts contexts, it has
-	 * to set the it's component name so we can check conflicts correctly.
+	 * to set its component name so we can check conflicts correctly.
 	 */
 	void setComponentName(const QString &componentName);
 

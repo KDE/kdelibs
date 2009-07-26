@@ -225,7 +225,7 @@ private:
   void insertSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &menuName, VFolderMenu::SubMenu *newMenu, bool reversePriority=false);
 
   /**
-   * Merge menu2 and it's submenus into menu1 and it's submenus
+   * Merge menu2 and its submenus into menu1 and its submenus
    * If reversePriority is false, menu2 has priority over menu1
    * If reversePriority is true, menu1 has priority over menu2
    */

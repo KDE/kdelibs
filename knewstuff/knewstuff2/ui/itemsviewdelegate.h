@@ -43,7 +43,7 @@ public:
     explicit ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
     ~ItemsViewDelegate();
 
-    // paint the item at index with all it's attributes shown
+    // paint the item at index with all its attributes shown
     virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
     // get the list of widgets

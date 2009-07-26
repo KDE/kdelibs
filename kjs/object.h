@@ -221,7 +221,7 @@ namespace KJS {
 
     /**
      * Retrieves the specified property from the object. If neither the object
-     * or any other object in it's prototype chain have the property, this
+     * or any other object in its prototype chain have the property, this
      * function will return Undefined.
      *
      * See ECMA 8.6.2.1
@@ -281,7 +281,7 @@ namespace KJS {
     bool propertyIsEnumerable(ExecState *exec, const Identifier &propertyName) const;
 
     /**
-     * Checks to see whether the object (or any object in it's prototype chain)
+     * Checks to see whether the object (or any object in its prototype chain)
      * has a property with the specified name.
      *
      * See ECMA 8.6.2.4

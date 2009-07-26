@@ -53,7 +53,7 @@ public:
     /**
      * Set the priority of the process. The priority value must be between 0
      * and 100, 0 being the lowest priority. This value is mapped to the
-     * scheduler and system dependant priority range of the OS.
+     * scheduler and system dependent priority range of the OS.
      */
     void setPriority(int prio);
 

@@ -65,7 +65,7 @@ namespace KJS {
   /**
    * @short Unicode character.
    *
-   * UChar represents a 16 bit Unicode character. It's internal data
+   * UChar represents a 16 bit Unicode character. Its internal data
    * representation is compatible to XChar2b and QChar. It's therefore
    * possible to exchange data with X and Qt with shallow copies.
    */

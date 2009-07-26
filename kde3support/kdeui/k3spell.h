@@ -345,7 +345,7 @@ Q_SIGNALS:
    *  If it is emitted by checkList(), @p pos is the index to
    *  the misspelled
    *   word in the QStringList passed to checkList().
-   *  Note, that @p originalword can be only a word part, if it's
+   *  Note, that @p originalword can be only a word part, if it's a
    *  word with hyphens.
    *
    *  These are called _before_ the dialog is opened, so that the

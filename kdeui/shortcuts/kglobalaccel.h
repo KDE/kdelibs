@@ -101,8 +101,8 @@ public:
      * is purged too.
      *
      * If a purged component or shortcut is activated the next time it will
-     * reregister itself. All you probably will loose on wrong usage are the
-     * users set shortcuts.
+     * reregister itself. All you probably will lose on wrong usage are the
+     * user's set shortcuts.
      *
      * If you make sure your component is running and all global shortcuts it
      * has are active this function can be used to clean up the registry.
