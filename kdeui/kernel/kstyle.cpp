@@ -66,6 +66,7 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kicon.h>
+#include <kiconloader.h>
 
 #include "kglobalsettings.h"
 
@@ -2566,6 +2567,17 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 {
     switch (metric)
     {
+        case PM_SmallIconSize:
+        case PM_ButtonIconSize:
+            return KIconLoader::global()->currentSize(KIconLoader::Small);
+        case PM_ToolBarIconSize:
+            return KIconLoader::global()->currentSize(KIconLoader::Toolbar);
+        case PM_LargeIconSize:
+            return KIconLoader::global()->currentSize(KIconLoader::Dialog);
+        case PM_MessageBoxIconSize:
+            // TODO return KIconLoader::global()->currentSize(KIconLoader::MessageBox);
+            return KIconLoader::SizeHuge;
+
         case PM_DefaultFrameWidth:
             if (qstyleoption_cast<const QStyleOptionGroupBox *>(option) )
                 return widgetLayoutProp(WT_GroupBox, GroupBox::FrameWidth, option, widget);
