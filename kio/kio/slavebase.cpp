@@ -580,14 +580,14 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  // kDebug(7019) << "(" << getpid() << ")" << _type;
+  kDebug(7019) << _type;
   int cmd;
   do
   {
     // Send the meta-data each time we send the mime-type.
     if (!mOutgoingMetaData.isEmpty())
     {
-      // kDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data";
+      // kDebug(7019) << "mimeType: emitting meta data";
       KIO_DATA << mOutgoingMetaData;
       send( INF_META_DATA, data );
     }
@@ -601,11 +601,11 @@ void SlaveBase::mimeType( const QString &_type)
            ret = d->appConnection.read( &cmd, data );
        }
        if (ret == -1) {
-           kDebug(7019) << "SlaveBase: mimetype: read error";
+           kDebug(7019) << "read error";
            exit();
            return;
        }
-       // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd;
+       // kDebug(7019) << "got" << cmd;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
        if (!isSubCommand(cmd))
