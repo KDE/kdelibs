@@ -108,7 +108,7 @@ void Action::setName(const QString &name)
     d->valid = exp.exactMatch(name);
 }
 
-bool Action::isValid()
+bool Action::isValid() const
 {
     return d->valid;
 }

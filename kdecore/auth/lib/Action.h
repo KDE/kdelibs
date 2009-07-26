@@ -172,7 +172,7 @@ public:
      * The empty string is not a valid action name, so the default 
      * constructor returns an invalid action.
      */
-    bool isValid();
+    bool isValid() const;
     
     /**
      * @brief Gets the default helper ID used for actions execution

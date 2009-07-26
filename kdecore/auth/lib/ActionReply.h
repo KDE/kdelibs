@@ -81,7 +81,7 @@ public:
 
     static const ActionReply NoResponderReply; ///< errorCode() == NoResponder
     static const ActionReply NoSuchActionReply; ///< errorCode() == NoSuchAction
-    static const ActionReply InvalidAction; ///< errorCode() == InvalidAction
+    static const ActionReply InvalidActionReply; ///< errorCode() == InvalidAction
     static const ActionReply AuthorizationDeniedReply; ///< errorCode() == AuthorizationDenied
     static const ActionReply UserCancelledReply; ///< errorCode() == UserCancelled
     static const ActionReply HelperBusyReply; ///< errorCode() == HelperBusy
