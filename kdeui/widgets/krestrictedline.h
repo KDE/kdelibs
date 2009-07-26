@@ -40,6 +40,8 @@ class KRestrictedLinePrivate;
  * This is almost like setting a QRegExpValidator on a KLineEdit;
  * the difference is that with KRestrictedLine it can all be done in Qt designer.
  *
+ * \image html krestrictedline.png "KDE Restricted Line Edit allowing all characters but 'o'"
+ *
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
  */
 class KDEUI_EXPORT KRestrictedLine : public KLineEdit

@@ -33,6 +33,8 @@ class QChildEvent;
  * Both margin and spacing are initialized to 0. Use QHBoxLayout
  * if you need standard layout margins.
  *
+ * \image html khbox.png "KDE Horizontal Box containing three buttons"
+ *
  * @see KVBox
  */
 class KDEUI_EXPORT KHBox : public QFrame
@@ -62,12 +64,19 @@ class KDEUI_EXPORT KHBox : public QFrame
      */
     void setSpacing( int space );
 
-    /*
+    /**
      * Sets the stretch factor of @p widget to @p stretch.
      */
     void setStretchFactor( QWidget* widget, int stretch );
 
+    /**
+     * Calculate the recommended size for this hbox.
+     */
     virtual QSize sizeHint() const;
+
+    /**
+     * Calculate the recommended minimum size for this hbox.
+     */
     virtual QSize minimumSizeHint() const;
 
   protected:

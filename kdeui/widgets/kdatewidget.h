@@ -29,12 +29,16 @@ class KCalendarSystem;
 class QDate;
 
 /**
-* @short A pushbutton to display or allow user selection of a date.
-*
-* This widget can be used to display or allow user selection of a date.
-*
-* @see KDatePicker
-*/
+ * @short A date selection widget.
+ *
+ * This widget can be used to display or allow user selection of a date.
+ *
+ * \image html kdatewidget.png "KDE Date Widget"
+ *
+ * @see KDatePicker
+ *
+ * @author Waldo Bastian <bastian@kde.org>, John Layt <john@layt.net>
+ */
 class KDEUI_EXPORT KDateWidget : public QWidget
 {
     Q_OBJECT

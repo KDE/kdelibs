@@ -102,6 +102,8 @@ class KHelpMenuPrivate;
  * }
  * \endcode
  *
+ * \image html khelpmenu.png "KDE Help Menu"
+ *
  * @author Espen Sand (espen@kde.org)
  */
 

@@ -52,6 +52,8 @@ class KTimeZones;
  *  ...
  * \endcode
  *
+ * \image html ktimezonewidget.png "KDE Time Zone Widget"
+ *
  * @author S.R.Haque <srhaque@iee.org>
  */
 class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget

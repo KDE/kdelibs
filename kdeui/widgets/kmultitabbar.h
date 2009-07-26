@@ -49,7 +49,10 @@ class KMultiTabBarInternal;
  * It is possible to add normal buttons to the top/left
  * The handling if only one tab at a time or multiple tabs
  * should be raisable is left to the "user".
- *@author Joseph Wenninger
+ *
+ * \image html kmultitabbar.png "KDE Multi Tab Bar Widget"
+ *
+ * @author Joseph Wenninger
  */
 class KDEUI_EXPORT KMultiTabBar: public QWidget
 {

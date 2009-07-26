@@ -72,6 +72,8 @@ class KActionSelectorPrivate;
     users actions if you need to. See addedToSelection(), removedFromSelection(),
     movedUp() and movedDown()
 
+    \image html kactionselector.png "KDE Action Selector"
+
     @author Anders Lund <anders@alweb.dk>
 */
 

@@ -38,6 +38,8 @@ class KActionCollection;
  * @author Stephen Kelly <steveire@gmail.com>
  * @author Thomas McGuire <thomas.mcguire@gmx.net>
  *
+ * \image html krichtextedit.png "KDE Rich Text Widget"
+ *
  * @since 4.1
  */
 class KDEUI_EXPORT KRichTextWidget : public KRichTextEdit

@@ -65,6 +65,8 @@
  * using the public methods is recommended
  * so the widget will be painted only once when entering the main event loop.
  *
+ * \image html kruler.png "KDE Ruler Widget"
+ *
  * @short A ruler widget.
  * @author Jörg Habenicht
  */

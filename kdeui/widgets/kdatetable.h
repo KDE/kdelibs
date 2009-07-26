@@ -129,6 +129,8 @@ private:
  * When a date is selected by the user, it emits a signal:
  * dateSelected(QDate)
  *
+ * \image html kdatetable.png "KDE Date Selection Table"
+ *
  * @internal
  * @author Tim Gilman, Mirko Boehm
  */

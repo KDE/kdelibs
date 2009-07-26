@@ -41,6 +41,8 @@ class KPixmapProvider;
  * duplicates will be disabled when HISTCONTROL is set to "ignoredups" or
  * "ignoreboth". Otherwise, duplicates are enabled by default.
  *
+ * \image html khistorycombobox.png "KDE History Combo Box"
+ *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KDEUI_EXPORT KHistoryComboBox : public KComboBox

@@ -78,6 +78,8 @@ class KTextEditSpellInterface
  *
  * Basic rule: whenever you want to use QTextEdit, use KTextEdit!
  *
+ * \image html ktextedit.png "KDE Text Edit Widget"
+ *
  * @see QTextEdit
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */

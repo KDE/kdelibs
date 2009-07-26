@@ -32,6 +32,8 @@ class KArrowButtonPrivate;
  * border. This class honors the currently configured KStyle when drawing
  * the arrow.
  *
+ * \image html karrowbutton.png "KDE Arrow Buttons"
+ *
  * @author Frerich Raabe
  */
 class KDEUI_EXPORT KArrowButton : public QPushButton

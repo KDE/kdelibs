@@ -36,6 +36,8 @@ class KDialogButtonBoxPrivate;
  * An extension of QDialogButtonBox which allow the use of KGuiItem and
  * conveniance slot connection.
  *
+ * \image html kdialogbuttonbox.png "Various KDE Dialog Button Boxes with different buttons"
+ *
  * @author Mario Weilguni <mweilguni@sime.com>
  * @author Olivier Goffart <ogoffart@kde.org>
  **/

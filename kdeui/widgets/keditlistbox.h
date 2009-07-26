@@ -34,7 +34,7 @@ class KEditListBoxPrivate;
 /**
  * An editable listbox
  *
- * This class provides a editable listbox ;-), this means
+ * This class provides an editable listbox, this means
  * a listbox which is accompanied by a line edit to enter new
  * items into the listbox and pushbuttons to add and remove
  * items from the listbox and two buttons to move items up and down.

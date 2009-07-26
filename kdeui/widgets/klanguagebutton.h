@@ -37,6 +37,11 @@ class KLanguageButtonPrivate;
  * a popup list.
  *
  * Languages are identified by their ISO 639-1 codes, e.g. en, pt_BR.
+ *
+ * \image html klanguagebutton.png "KDE Language Selection Widget"
+ *
+ * @author Hans Petter Bieker <bieker@kde.org>, Martijn Klingens <klingens@kde.org>,
+ *         David Jarvie <software@astrojar.org.uk>
  */
 class KDEUI_EXPORT KLanguageButton : public QWidget
 {

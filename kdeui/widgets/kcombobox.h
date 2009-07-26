@@ -141,6 +141,8 @@ class KUrl;
  * combo->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
  * \endcode
  *
+ * \image html kcombobox.png "KDE Combo Boxes, one non-editable, one editable with KUrlCompletion"
+ *
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase //krazy:exclude=qclasses

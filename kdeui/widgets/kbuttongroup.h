@@ -34,6 +34,8 @@ class QAbstractButton;
  *
  * Use normally as you would with a QGroupBox.
  *
+ * \image html kbuttongroup.png "KDE Button Group containing 3 KPushButtons"
+ *
  * @author Pino Toscano <toscano.pino@tiscali.it>
  */
 class KDEUI_EXPORT KButtonGroup

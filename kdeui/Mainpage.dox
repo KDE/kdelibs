@@ -54,4 +54,5 @@ file.
 // DOXYGEN_REFERENCES = kdecore
 // DOXYGEN_SET_INTERNAL_DOCS = YES
 // DOXYGEN_SET_PROJECT_NAME = KDEUI
+// DOXYGEN_SET_RECURSIVE = YES
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

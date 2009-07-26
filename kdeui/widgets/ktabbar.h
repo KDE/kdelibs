@@ -28,6 +28,8 @@
 
 /**
  * A QTabBar with extended features.
+ *
+ * \image html ktabbar.png "KDE Tab Bar"
  */
 class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
 {

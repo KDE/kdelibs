@@ -38,6 +38,8 @@ class QTab;
  * It is recommended to use KTabWidget instead of QTabWidget unless you have a good reason not to.
  *
  * See also the QTabWidget documentation.
+ *
+ * \image html ktabwidget.png "KDE Tab Widget"
  */
 class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
 {

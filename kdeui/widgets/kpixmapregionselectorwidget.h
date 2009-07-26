@@ -37,6 +37,8 @@ class KMenu;
  * This is because kdepim has to remain backwards compatible.  Any changes
  * to either file should be made to the other.
  *
+ * \image html kpixmapregionselectorwidget.png "KDE Pixmap Region Selector"
+ *
  * @author Antonio Larrosa <larrosa@kde.org>
  */
 class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget

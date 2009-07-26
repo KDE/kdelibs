@@ -442,6 +442,8 @@ class KDoubleLine;
  * interrelationship of precision and values. All of what is said
  * there applies here, too.
  *
+ * \image html kdoublenuminput.png "KDE Double Number Input Spinbox"
+ *
  * @see KIntNumInput, KDoubleSpinBox
  */
 
@@ -705,6 +707,8 @@ private:
  *
  *  The class provides an easy interface to use other
  *  numeric systems than the decimal.
+ *
+ * \image html kintspinbox.png "KDE Integer Input Spinboxes with hexadecimal and binary input"
  */
 class KDEUI_EXPORT KIntSpinBox : public QSpinBox
 {

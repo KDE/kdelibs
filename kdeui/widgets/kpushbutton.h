@@ -35,6 +35,8 @@ class KIcon;
  * You must call #setDragEnabled (true) and override the virtual method
  * dragObject() to specify the QDragObject to be used.
  *
+ * \image html kpushbutton.png "KDE Push Button"
+ *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KDEUI_EXPORT KPushButton : public QPushButton

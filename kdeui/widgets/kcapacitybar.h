@@ -37,6 +37,8 @@ class QPaintEvent;
   *
   * @since 4.2
   *
+  * \image html kcapacitybar.png "KDE Capacity Bar"
+  *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
 class KDEUI_EXPORT KCapacityBar

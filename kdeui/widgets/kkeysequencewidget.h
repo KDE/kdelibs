@@ -43,6 +43,8 @@ class KActionCollection;
  * The widgets provides support for conflict handling. See
  * setCheckForConflictsAgainst() for more information.
  *
+ * \image html kkeysequencewidget.png "KDE Key Sequence Widget"
+ *
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
  */

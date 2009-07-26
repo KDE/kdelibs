@@ -26,6 +26,9 @@
 /**
  * Standard horizontal or vertical separator.
  *
+ * \image html kseparator-horizontal.png "KDE Separator with horizontal orientation"
+ * \image html kseparator-vertical.png "KDE Separator with vertical orientation"
+ *
  * @author Michael Roth <mroth@wirlweb.de>
  */
 class KDEUI_EXPORT KSeparator : public QFrame
