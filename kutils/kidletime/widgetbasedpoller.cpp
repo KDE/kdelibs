@@ -22,7 +22,9 @@
 #include <QTimer>
 #include <QEvent>
 #include <QDebug>
-
+#ifndef WIN32
+#include <fixx11h.h>
+#endif
 WidgetBasedPoller::WidgetBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
 {
