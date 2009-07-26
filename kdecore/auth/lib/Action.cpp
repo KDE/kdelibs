@@ -21,6 +21,7 @@
 
 #include <QDebug>
 #include <QPluginLoader>
+#include <QRegExp>
 
 #include "BackendsManager.h"
 
@@ -30,30 +31,42 @@ namespace KAuth
 class Action::Private
 {
 public:
-    Private(QString name) : name(name) {}
-
+    Private() : valid(false) {}
+    
     QString name;
     QVariantMap args;
+    bool valid;
 };
 
 static QString s_helperID;
 
 // Constructors
+Action::Action()
+{
+    d = new Private();
+}
+
 Action::Action(const Action &action)
 {
-    d = new Private(action.d->name);
+    d = new Private();
+    
+    setName(action.d->name);
     d->args = action.d->args;
 }
 
 Action::Action(const char *name)
 {
-    d = new Private(name);
+    d = new Private();
+    
+    setName(name);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
 Action::Action(const QString &name)
 {
-    d = new Private(name);
+    d = new Private();
+    
+    setName(name);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
@@ -65,10 +78,20 @@ Action::~Action()
 // Operators
 Action &Action::operator=(const Action & action)
 {
-    d->name = action.d->name;
+    setName(action.d->name);
     d->args = action.d->args;
 
     return *this;
+}
+
+bool Action::operator==(const Action &action)
+{
+    return d->name == action.d->name;
+}
+
+bool Action::operator!=(const Action &action)
+{
+    return d->name != action.d->name;
 }
 
 // Accessors
@@ -79,7 +102,15 @@ QString Action::name() const
 
 void Action::setName(const QString &name)
 {
+    QRegExp exp("[a-z]+(\\.[a-z]+)*");
+    
     d->name = name;
+    d->valid = exp.exactMatch(name);
+}
+
+bool Action::isValid()
+{
+    return d->valid;
 }
 
 void Action::setArguments(const QVariantMap &arguments)
@@ -116,11 +147,17 @@ void Action::setHelperID(const QString &id)
 // Authorizaton methods
 Action::AuthStatus Action::authorize() const
 {
+    if(!isValid())
+        return Action::Invalid;
+    
     return BackendsManager::authBackend()->authorizeAction(d->name);
 }
 
 Action::AuthStatus Action::status() const
 {
+    if(!isValid())
+        return Action::Invalid;
+    
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
@@ -133,7 +170,7 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
         AuthStatus s = a.authorize();
         if (s == Authorized) {
             list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-        } else if (s == Denied && deniedActions) {
+        } else if ((s == Denied || s == Invalid) && deniedActions) {
             *deniedActions << a;
         }
     }
@@ -147,13 +184,16 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
 
 Action::AuthStatus Action::executeAsync(QObject *target, const char *slot)
 {
+    if(!isValid())
+        return Action::Invalid;
+    
     return executeAsync(helperID(), target, slot);
 }
 
 Action::AuthStatus Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
 {
     AuthStatus s = authorize();
-    if (s == Denied || s == UserCancelled) {
+    if (s == Denied || s == UserCancelled || s == Invalid) {
         return s;
     }
 
@@ -166,19 +206,26 @@ Action::AuthStatus Action::executeAsync(const QString &helperID, QObject *target
 
 ActionReply Action::execute() const
 {
+    if(!isValid())
+        return ActionReply::InvalidActionReply;
+    
     return execute(helperID());
 }
 
 ActionReply Action::execute(const QString &helperID) const
 {
     AuthStatus s = authorize();
-    if (s == Denied) {
-        return ActionReply::AuthorizationDeniedReply;
-    } else if(s == UserCancelled) {
-        return ActionReply::UserCancelledReply;
-    }
     
-    return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
+    switch(s) {
+    case Denied:
+        return ActionReply::AuthorizationDeniedReply;
+    case Invalid:
+        return ActionReply::InvalidActionReply;
+    case UserCancelled:
+        return ActionReply::UserCancelledReply;
+    default:
+        return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
+    }
 }
 
 void Action::stop()

@@ -38,6 +38,7 @@ const ActionReply ActionReply::SuccessReply = ActionReply();
 const ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
 const ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
 const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
+const ActionReply ActionReply::InvalidActionReply = ActionReply(ActionReply::InvalidAction);
 const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
 const ActionReply ActionReply::UserCancelledReply = ActionReply(ActionReply::UserCancelled);
 const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);

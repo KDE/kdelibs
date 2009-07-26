@@ -81,6 +81,7 @@ public:
 
     static const ActionReply NoResponderReply; ///< errorCode() == NoResponder
     static const ActionReply NoSuchActionReply; ///< errorCode() == NoSuchAction
+    static const ActionReply InvalidAction; ///< errorCode() == InvalidAction
     static const ActionReply AuthorizationDeniedReply; ///< errorCode() == AuthorizationDenied
     static const ActionReply UserCancelledReply; ///< errorCode() == UserCancelled
     static const ActionReply HelperBusyReply; ///< errorCode() == HelperBusy
@@ -93,6 +94,7 @@ public:
         NoError = 0, ///< No error.
         NoResponder, ///< The helper responder object hasn't been set. This shouldn't happen if you use the KDE4_AUTH_HELPER macro in the helper source
         NoSuchAction, ///< The action you tried to execute doesn't exist.
+        InvalidAction, ///< You tried to execute an invalid action object
         AuthorizationDenied, ///< You don't have the authorization to execute the action
         UserCancelled, ///< Action execution has been cancelled by the user
         HelperBusy, ///< The helper is busy executing another action (or group of actions). Try later

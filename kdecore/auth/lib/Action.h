@@ -72,11 +72,21 @@ public:
     enum AuthStatus {
         Denied, ///< The authorization has been denied by the authorization backend
         Error, ///< An error occurred
+        Invalid, ///< An invalid action cannot be authorized
         Authorized, ///< The authorization has been granted by the authorization backend
         AuthRequired, ///< The user could obtain the authorization after authentication
         UserCancelled ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
     };
 
+    /**
+     * @brief Default constructor
+     *
+     * This constructor se the name to the empty string.
+     * A such action is invalid and cannot be authorized nor executed, so
+     * you need to call setName() before you can use the object.
+     */
+    Action();
+    
     /** Copy constructor */
     Action(const Action &action);
 
@@ -97,6 +107,28 @@ public:
 
     /// Assignment operator
     Action &operator=(const Action &action);
+    
+    /**
+     * @brief Comparison operator
+     *
+     * This comparison operator compares the <b>names</b> of two
+     * actions and returns whether they're the same. It doesn't
+     * care about the arguments stored in the actions. However,
+     * if two actions are invalid they'll match as equal, even
+     * if the invalid names are different.
+     *
+     * @returns true if the two actions are the same or both invalid 
+     */
+    bool operator==(const Action &action);
+    
+    /**
+    * @brief Negated comparison operator
+    *
+    * Returns the negation of operator==
+    *
+    * @returns true if the two actions are different and not both invalid
+    */
+    bool operator!=(const Action &action);
 
     /**
      * @brief Gets the action's name.
@@ -119,6 +151,29 @@ public:
      */
     void setName(const QString &name);
 
+    /**
+     * @brief Returns if the object represents a valid action
+     *
+     * Action names have to respect a simple syntax.
+     * They have to be made by all lowercase characters, separated
+     * by dots. Dots can't appear at the beginning and at the end of
+     * the name.
+     *
+     * In other words, the action name has to match this perl-like 
+     * regular expression:
+     * @verbatim
+     * /^[a-z]+(\.[a-z]+)*$/
+     * @endverbatim
+     *
+     * This method returns false if the action name doesn't match the
+     * valid syntax.
+     *
+     * Invalid actions cannot be authorized nor executed.
+     * The empty string is not a valid action name, so the default 
+     * constructor returns an invalid action.
+     */
+    bool isValid();
+    
     /**
      * @brief Gets the default helper ID used for actions execution
      *
@@ -335,7 +390,7 @@ public:
      *
      * @param actions The list of actions to execute
      * @param deniedActions A pointer to a list to fill with the denied actions. Pass NULL if you don't need them.
-     * @param helperID An optional helper ID, if you don't want to use the default one set with setHelperID(). Pass the empty string "" to use the default.
+     * @param helperID An optional helper ID, if you don't want to use the default one set with setHelperID().
      */
     static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions = NULL, const QString &helper_id = helperID());
 
