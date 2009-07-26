@@ -222,39 +222,35 @@ void KPasswordDialog::addCommentLine( const QString& label,
                                       const QString& comment )
 {
     int gridMarginLeft, gridMarginTop, gridMarginRight, gridMarginBottom;
-    d->ui.gridLayout->getContentsMargins(&gridMarginLeft, &gridMarginTop, &gridMarginRight, &gridMarginBottom);
+    d->ui.formLayout->getContentsMargins(&gridMarginLeft, &gridMarginTop, &gridMarginRight, &gridMarginBottom);
+
+    int spacing = d->ui.formLayout->horizontalSpacing();
+    if (spacing < 0) {
+        // same inter-column spacing for all rows, see comment in qformlayout.cpp
+        spacing = style()->combinedLayoutSpacing(QSizePolicy::Label, QSizePolicy::LineEdit, Qt::Horizontal, 0, this);
+    }
     
-    QLabel* l = new QLabel(label, mainWidget());
     QLabel* c = new QLabel(comment, mainWidget());
     c->setWordWrap(true);
 
-    d->ui.gridLayout->addWidget(l, d->commentRow, 0);
-    d->ui.gridLayout->addWidget(c, d->commentRow, 1);
+    d->ui.formLayout->insertRow(d->commentRow, label, c);
     ++d->commentRow;
-    d->ui.gridLayout->addWidget(d->ui.userNameLabel, d->commentRow, 0);
-    d->ui.gridLayout->addWidget(d->ui.userEdit, d->commentRow, 1);
-    d->ui.gridLayout->addWidget(d->ui.anonymousCheckBox, d->commentRow + 1, 1);
-    d->ui.gridLayout->addWidget(d->ui.domainLabel, d->commentRow + 2, 0);
-    d->ui.gridLayout->addWidget(d->ui.domainEdit, d->commentRow + 2, 1);
-    d->ui.gridLayout->addWidget(d->ui.passwordLabel, d->commentRow + 3, 0);
-    d->ui.gridLayout->addWidget(d->ui.passEdit, d->commentRow + 3, 1);
-    d->ui.gridLayout->addWidget(d->ui.keepCheckBox, d->commentRow + 4, 1);
 
     // cycle through column 0 widgets and see the max width so we can set the minimum height of
     // column 2 wordwrapable labels
     int firstColumnWidth = 0;
-    for (int i = 0; i < d->ui.gridLayout->rowCount(); ++i) {
-        QLayoutItem *li = d->ui.gridLayout->itemAtPosition(i, 0);
+    for (int i = 0; i < d->ui.formLayout->rowCount(); ++i) {
+        QLayoutItem *li = d->ui.formLayout->itemAt(i, QFormLayout::LabelRole);
         if (li) {
             QWidget *w = li->widget();
             if (w) firstColumnWidth = qMax(firstColumnWidth, w->sizeHint().width());
         }
     }
-    for (int i = 0; i < d->ui.gridLayout->rowCount(); ++i) {
-        QLayoutItem *li = d->ui.gridLayout->itemAtPosition(i, 1);
+    for (int i = 0; i < d->ui.formLayout->rowCount(); ++i) {
+        QLayoutItem *li = d->ui.formLayout->itemAt(i, QFormLayout::FieldRole);
         if (li) {
             QLabel *l = qobject_cast<QLabel*>(li->widget());
-            if (l && l->wordWrap()) l->setMinimumHeight( l->heightForWidth( width() - firstColumnWidth - ( 2 * marginHint() ) - gridMarginLeft - gridMarginRight - d->ui.gridLayout->spacing() ) );
+            if (l && l->wordWrap()) l->setMinimumHeight( l->heightForWidth( width() - firstColumnWidth - ( 2 * marginHint() ) - gridMarginLeft - gridMarginRight - spacing ) );
         }
     }
 }
@@ -340,6 +336,7 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
 
     Q_ASSERT( !d->ui.userEdit->isReadOnly() );
     if ( !d->userEditCombo ) {
+        d->ui.formLayout->removeWidget(d->ui.userEdit);
         delete d->ui.userEdit;
         d->userEditCombo = new KComboBox( true, mainWidget() );
         d->ui.userEdit = d->userEditCombo->lineEdit();
@@ -347,7 +344,7 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
 //        d->ui.userEditCombo->setFixedHeight( s.height() );
 //        d->ui.userEditCombo->setMinimumWidth( s.width() );
         d->ui.userNameLabel->setBuddy( d->userEditCombo );
-        d->ui.gridLayout->addWidget( d->userEditCombo, d->commentRow, 1 );
+        d->ui.formLayout->setWidget( d->commentRow, QFormLayout::FieldRole, d->userEditCombo );
         connect( d->ui.userEdit, SIGNAL(returnPressed()), d->ui.passEdit, SLOT(setFocus()) );
     }
 
