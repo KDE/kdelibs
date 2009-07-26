@@ -41,6 +41,8 @@
 #include <QtCore/QCharRef>
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOptionViewItem>
 #include <QtGui/QDialog>
 #include <QtGui/QActionEvent>
 #include <QtCore/QHash>
@@ -57,6 +59,7 @@ public:
         popupMenuEnabled = false;
         useCustomColors = false;
         m_calendar = 0;
+        hoveredPos = -1;
     }
 
     ~KDateTablePrivate()
@@ -117,6 +120,8 @@ public:
         BackgroundMode bgMode;
     };
     QHash <int, DatePaintingMode*> customPaintingModes;
+
+    int hoveredPos;
 
     KCalendarSystem *m_calendar;
 
@@ -243,15 +248,15 @@ KDateTable::KDateTable( const QDate& date_, QWidget* parent )
     d->numDayColumns = calendar()->daysInWeek( date_ );
     setFontSize( 10 );
     setFocusPolicy( Qt::StrongFocus );
-    QPalette palette;
-    palette.setColor( backgroundRole(), KColorScheme(QPalette::Active, KColorScheme::View).background().color() );
-    setPalette( palette );
+    setBackgroundRole(QPalette::Base);
+    setAutoFillBackground(true);
 
     if( !setDate( date_ ) ) {
         // this initializes weekDayFirstOfMonth, numDaysThisMonth
         setDate( QDate::currentDate() );
     }
     initAccels();
+    setAttribute(Qt::WA_Hover, true);
 }
 
 KDateTable::KDateTable( QWidget *parent )
@@ -263,12 +268,12 @@ KDateTable::KDateTable( QWidget *parent )
     d->numDayColumns = calendar()->daysInWeek( QDate::currentDate() );
     setFontSize( 10 );
     setFocusPolicy( Qt::StrongFocus );
-    QPalette palette;
-    palette.setColor( backgroundRole(), KColorScheme(QPalette::Active, KColorScheme::View).background().color() );
-    setPalette( palette );
+    setBackgroundRole(QPalette::Base);
+    setAutoFillBackground(true);
     // this initializes weekDayFirstOfMonth, numDaysThisMonth
     setDate( QDate::currentDate() );
     initAccels();
+    setAttribute(Qt::WA_Hover, true);
 }
 
 KDateTable::~KDateTable()
@@ -350,6 +355,7 @@ QDate KDateTable::dateFromPos( int position )
 void KDateTable::paintEvent( QPaintEvent *e )
 {
     QPainter p( this );
+    KColorScheme colorScheme(isEnabled() ? QPalette::Active : QPalette::Disabled, KColorScheme::View);
     const QRect &rectToUpdate = e->rect();
     double cellWidth = width() / ( double ) d->numDayColumns;
     double cellHeight = height() / ( double ) d->numWeekRows;
@@ -362,7 +368,7 @@ void KDateTable::paintEvent( QPaintEvent *e )
     p.translate( leftCol * cellWidth, topRow * cellHeight );
     for ( int i = leftCol; i <= rightCol; ++i ) {
         for ( int j = topRow; j <= bottomRow; ++j ) {
-            paintCell( &p, j, i );
+            paintCell( &p, j, i, colorScheme );
             p.translate( 0, cellHeight );
         }
         p.translate( cellWidth, 0 );
@@ -370,18 +376,16 @@ void KDateTable::paintEvent( QPaintEvent *e )
     }
 }
 
-void KDateTable::paintCell( QPainter *painter, int row, int col )
+void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorScheme &colorScheme )
 {
     double w = ( width() / ( double ) d->numDayColumns ) - 1;
     double h = ( height() / ( double ) d->numWeekRows ) - 1;
     QRectF cell = QRectF( 0, 0, w, h );
     QString cellText;
     QPen pen;
-    QColor cellBorderColor, cellBaseLineColor, cellBackgroundColor, cellTextColor;
+    QColor cellBackgroundColor, cellTextColor;
     QFont cellFont = KGlobalSettings::generalFont();
     bool workingDay = false;
-    bool drawCellBorder = false;
-    bool drawBaseLine = false;
     int cellWeekDay, pos;
     BackgroundMode cellBackgroundMode = RectangleMode;
 
@@ -415,11 +419,11 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         QColor titleColor, textColor;
 
         if ( isEnabled() ) {
-            titleColor = KGlobalSettings::activeTitleColor();
-            textColor = KGlobalSettings::activeTextColor();
+            titleColor = palette().color(QPalette::Highlight);
+            textColor = palette().color(QPalette::HighlightedText);
         } else {
-            titleColor = KGlobalSettings::inactiveTitleColor();
-            textColor = KGlobalSettings::inactiveTextColor();
+            titleColor = palette().color(QPalette::Window);
+            textColor = palette().color(QPalette::WindowText);
         }
 
         //If not a normal working day, then invert title/text colours
@@ -434,10 +438,6 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         //Set the text to the short day name and bold it
         cellFont.setBold( true );
         cellText = calendar()->weekDayName( cellWeekDay, KCalendarSystem::ShortDayName );
-
-        //Draw a baseline under the cell
-        drawBaseLine = true;
-        cellBaseLineColor = palette().color( QPalette::Text );
 
     } else {
 
@@ -460,8 +460,8 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
             // ° painting an invalid day
             // ° painting a day of the previous month or
             // ° painting a day of the following month or
-            cellBackgroundColor = palette().color( QPalette::Background );
-            cellTextColor = palette().color( QPalette::Mid );
+            cellBackgroundColor = palette().color(backgroundRole());
+            cellTextColor = colorScheme.foreground(KColorScheme::InactiveText).color();
         } else {
             //Paint a day of the current month
 
@@ -487,13 +487,13 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
             bool customDay = ( d->useCustomColors && d->customPaintingModes.contains(cellDate.toJulianDay()) );
 
             //Default values for a normal cell
-            cellBackgroundColor = palette().color( QPalette::Background );
-            cellTextColor = palette().color( QPalette::Text );
+            cellBackgroundColor = palette().color( backgroundRole() );
+            cellTextColor = palette().color( foregroundRole() );
 
-            // If we are drawing the current date, then draw a border
+            // If we are drawing the current date, then draw it bold and active
             if ( currentDay ) {
-                drawCellBorder = true;
-                cellBorderColor = palette().color( QPalette::Text );
+                cellFont.setBold( true );
+                cellTextColor = colorScheme.foreground(KColorScheme::ActiveText).color();
             }
 
             // if we are drawing the day cell currently selected in the table
@@ -519,29 +519,35 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
 
             //If the cell day is the day of religious observance, then always color text red unless Custom overrides
             if ( ! customDay && dayOfPray ) {
-                cellTextColor = Qt::red;  //should use some user-configurable palette or scheme colour?
+                KColorScheme colorScheme(isEnabled() ? QPalette::Active : QPalette::Disabled,
+                                         selectedDay ? KColorScheme::Selection : KColorScheme::View);
+                cellTextColor = colorScheme.foreground(KColorScheme::NegativeText).color();
             }
 
         }
     }
 
     //Draw the background
-    painter->setPen( cellBackgroundColor );
-    painter->setBrush( cellBackgroundColor );
-    if ( cellBackgroundMode == CircleMode ) {
-        painter->drawEllipse( cell );
-    } else {
+    if (row == 0) {
+        painter->setPen( cellBackgroundColor );
+        painter->setBrush( cellBackgroundColor );
         painter->drawRect( cell );
-    }
-
-    //Draw the border
-    if ( drawCellBorder ) {
-        painter->setPen( cellBorderColor );
-        if ( cellBackgroundMode == CircleMode ) {
-            painter->drawEllipse( cell );
-        } else {
-            painter->drawRect( cell );
+    } else if (cellBackgroundColor != palette().color(backgroundRole()) || pos == d->hoveredPos) {
+        QStyleOptionViewItemV4 opt;
+        opt.initFrom(this);
+        opt.rect = cell.toRect();
+        if (cellBackgroundColor != palette().color(backgroundRole())) {
+            opt.palette.setBrush(QPalette::Highlight, cellBackgroundColor);
+            opt.state |= QStyle::State_Selected;
         }
+        if (pos == d->hoveredPos && opt.state & QStyle::State_Enabled) {
+            opt.state |= QStyle::State_MouseOver;
+        } else {
+            opt.state &= ~QStyle::State_MouseOver;
+        }
+        opt.showDecorationSelected = true;
+        opt.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
+        style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, this);
     }
 
     //Draw the text
@@ -550,8 +556,8 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
     painter->drawText( cell, Qt::AlignCenter, cellText, &cell );
 
     //Draw the base line
-    if (drawBaseLine) {
-        painter->setPen( cellBaseLineColor );
+    if (row == 0) {
+        painter->setPen( palette().color(foregroundRole()) );
         painter->drawLine( QPointF( 0, h ), QPointF( w, h ) );
     }
 
@@ -676,6 +682,35 @@ void KDateTable::wheelEvent ( QWheelEvent * e )
     e->accept();
 }
 
+bool KDateTable::event(QEvent *ev)
+{
+    switch (ev->type()) {
+        case QEvent::HoverMove:
+        {
+            QHoverEvent *e = static_cast<QHoverEvent *>(ev);
+            const int row = e->pos().y() * d->numWeekRows / height();
+            const int col = e->pos().x() * d->numDayColumns / width();
+
+            const int pos = row < 1 ? -1 : (d->numDayColumns * (row - 1)) + col;
+
+            if (pos != d->hoveredPos) {
+                d->hoveredPos = pos;
+                update();
+            }
+            break;
+        }
+        case QEvent::HoverLeave:
+            if (d->hoveredPos != -1) {
+                d->hoveredPos = -1;
+                update();
+            }
+            break;
+        default:
+            break;
+    }
+    return QWidget::event(ev);
+}
+
 void KDateTable::mousePressEvent( QMouseEvent *e )
 {
     if( e->type() != QEvent::MouseButtonPress ) { // the KDatePicker only reacts on mouse press events:
@@ -690,8 +725,8 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
     int row, col, pos, temp;
 
     QPoint mouseCoord = e->pos();
-    row = mouseCoord.y() / ( height() / d->numWeekRows );
-    col = mouseCoord.x() / ( width() / d->numDayColumns );
+    row = mouseCoord.y() * d->numWeekRows / height();
+    col = mouseCoord.x() * d->numDayColumns / width();
 
     if( row < 1 || col < 0 ) { // the user clicked on the frame of the table
         return;

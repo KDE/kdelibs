@@ -30,6 +30,7 @@
 
 class KMenu;
 class KCalendarSystem;
+class KColorScheme;
 
 /**
  * Frame with popup menu behavior.
@@ -254,6 +255,11 @@ protected:
     virtual void focusInEvent( QFocusEvent *e );
     virtual void focusOutEvent( QFocusEvent *e );
 
+    /**
+     * Cell highlight on mouse hovering
+     */
+    virtual bool event(QEvent *e);
+
 Q_SIGNALS:
     /**
      * The selected date changed.
@@ -294,7 +300,7 @@ private:
     KDateTablePrivate * const d;
 
     void initAccels();
-    void paintCell( QPainter *painter, int row, int col );
+    void paintCell( QPainter *painter, int row, int col, const KColorScheme &colorScheme );
 
     Q_DISABLE_COPY( KDateTable )
 };
