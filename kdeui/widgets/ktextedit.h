@@ -84,6 +84,7 @@ class KTextEditSpellInterface
 class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
 {
     Q_OBJECT
+    Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
   public:
     /**
@@ -233,6 +234,20 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      */
     const QString& spellCheckingLanguage() const;
 
+    /**
+     * This makes the text edit display a grayed-out hinting text as long as
+     * the user didn't enter any text. It is often used as indication about
+     * the purpose of the text edit.
+     * @since 4.4
+     */
+    void setClickMessage(const QString &msg);
+
+    /**
+     * @return the message set with setClickMessage
+     * @since 4.4
+     */
+    QString clickMessage() const;
+
   Q_SIGNALS:
     /**
      * emit signal when we activate or not autospellchecking
@@ -317,6 +332,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * Reimplemented to catch "delete word" shortcut events.
      */
     virtual bool event(QEvent*);
+
+    /**
+     * Reimplemented to paint clickMessage.
+     */
+    virtual void paintEvent(QPaintEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
 
     /**
      * Reimplemented for internal reasons
