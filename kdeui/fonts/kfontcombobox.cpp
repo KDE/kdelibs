@@ -149,7 +149,7 @@ void KFontFamilyDelegate::paint (QPainter *painter,
     // Draw the font family.
     QFont oldPainterFont = painter->font();
     QFont familyFont = baseFont;
-    familyFont.setPointSize(qRound(familyFont.pointSize() * sizeFactFamily));
+    familyFont.setPointSizeF(familyFont.pointSizeF() * sizeFactFamily);
     painter->setFont(familyFont);
     painter->drawText(r, Qt::AlignTop|Qt::AlignLeading|Qt::TextSingleLine, trFontFamily);
 
@@ -174,7 +174,7 @@ void KFontFamilyDelegate::paint (QPainter *painter,
     }
     QFont sampleFont;
     sampleFont.setFamily(fontFamily);
-    sampleFont.setPointSize(qRound(sampleFont.pointSize() * sizeFactSample));
+    sampleFont.setPointSizeF(sampleFont.pointSizeF() * sizeFactSample);
     painter->setFont(sampleFont);
     QPen oldPen = painter->pen();
     painter->setPen(sampleBrush.color());
@@ -197,12 +197,12 @@ QSize KFontFamilyDelegate::sizeHint (const QStyleOptionViewItem &option,
     QString fontFamily = fontFamilyTrMap[trFontFamily];
 
     QFont familyFont = baseFont;
-    familyFont.setPointSize(qRound(familyFont.pointSize() * sizeFactFamily));
+    familyFont.setPointSizeF(familyFont.pointSizeF() * sizeFactFamily);
     QFontMetrics familyMetrics(familyFont);
 
     QFont sampleFont = baseFont;
     sampleFont.setFamily(fontFamily);
-    sampleFont.setPointSize(qRound(sampleFont.pointSize() * sizeFactSample));
+    sampleFont.setPointSizeF(sampleFont.pointSizeF() * sizeFactSample);
     QFontMetrics sampleMetrics(familyFont);
     QString sample = alphabetSample();
 
@@ -365,8 +365,8 @@ bool KFontComboBox::event (QEvent *e)
                 sample = sample.left(57) + "...";
             }
             QFont approxFont = KGlobalSettings::generalFont();
-            approxFont.setPointSize(qRound(  approxFont.pointSize()
-                                           * d->delegate->sizeFactSample));
+            approxFont.setPointSizeF(approxFont.pointSizeF()
+                                           * d->delegate->sizeFactSample);
             int widgetWidth = width();
             int sampleWidth = QFontMetrics(approxFont).width(sample);
             sampleWidth = qRound(sampleWidth * 1.1); // extra for wider fonts

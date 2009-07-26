@@ -257,7 +257,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_style_chosen_slot(const QString&))
     Q_PRIVATE_SLOT(d, void _k_displaySample(const QFont &font))
     Q_PRIVATE_SLOT(d, void _k_showXLFDArea(bool))
-    Q_PRIVATE_SLOT(d, void _k_size_value_slot(int))
+    Q_PRIVATE_SLOT(d, void _k_size_value_slot(double))
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KFontChooser::DisplayFlags )

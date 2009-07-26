@@ -28,6 +28,8 @@
 #include <kfontdialog.h>
 #include <klocale.h>
 
+#include <cmath>
+
 // Determine if the font with given properties is available on the system,
 // otherwise find and return the best fitting combination.
 static QFont nearestExistingFont (const QFont &font)
@@ -37,7 +39,7 @@ static QFont nearestExistingFont (const QFont &font)
     // Initialize font data accoring to given font object.
     QString family = font.family();
     QString style = dbase.styleString(font);
-    int size = font.pointSize();
+    qreal size = font.pointSizeF();
 
     // Check if the family exists.
     const QStringList families = dbase.families();
@@ -71,7 +73,11 @@ static QFont nearestExistingFont (const QFont &font)
     }
 
     // Select the font with confirmed properties.
-    return dbase.font(family, style, size);
+    QFont result = dbase.font(family, style, int(size));
+    if (dbase.isSmoothlyScalable(family, style) && result.pointSize() == floor(size)) {
+        result.setPointSizeF(size);
+    }
+    return result;
 }
 
 class KFontRequester::KFontRequesterPrivate
@@ -191,13 +197,13 @@ void KFontRequester::KFontRequesterPrivate::displaySampleText()
 {
   m_sampleLabel->setFont( m_selFont );
 
-  int size = m_selFont.pointSize();
+  qreal size = m_selFont.pointSizeF();
   if(size == -1)
     size = m_selFont.pixelSize();
 
   if ( m_sampleText.isEmpty() ) {
     QString family = translateFontName(m_selFont.family());
-    m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( size ) );
+    m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( KGlobal::locale()->formatNumber( size, (size == floor(size)) ? 0 : 1 ) ) );
   }
   else {
     m_sampleLabel->setText( m_sampleText );

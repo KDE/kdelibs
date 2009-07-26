@@ -43,6 +43,8 @@ Boston, MA 02110-1301, USA.
 #include <knuminput.h>
 #include <kconfiggroup.h>
 
+#include <cmath>
+
 // When message extraction needs to be avoided.
 #define I18NC_NOX i18nc
 
@@ -72,6 +74,11 @@ static int minimumListHeight( const QListWidget *list, int numVisibleEntry )
     return ( w * numVisibleEntry + 2 * list->frameWidth() );
 }
 
+static QString formatFontSize(qreal size)
+{
+    return KGlobal::locale()->formatNumber(size, (size == floor(size)) ? 0 : 1);
+}
+
 class KFontChooser::Private
 {
 public:
@@ -91,9 +98,9 @@ public:
 
     void setFamilyBoxItems(const QStringList &fonts);
     void fillFamilyListBox(bool onlyFixedFonts = false);
-    int nearestSizeRow(int val, bool customize);
-    int fillSizeList(const QList<int> &sizes = QList<int>());
-    int setupSizeListBox(const QString& family, const QString& style);
+    int nearestSizeRow(qreal val, bool customize);
+    qreal fillSizeList(const QList<qreal> &sizes = QList<qreal>());
+    qreal setupSizeListBox(const QString& family, const QString& style);
 
     void setupDisplay();
 
@@ -103,7 +110,7 @@ public:
     void _k_style_chosen_slot(const QString&);
     void _k_displaySample(const QFont &font);
     void _k_showXLFDArea(bool);
-    void _k_size_value_slot(int);
+    void _k_size_value_slot(double);
 
     KFontChooser *q;
 
@@ -112,7 +119,7 @@ public:
 
     bool usingFixed:1;
 
-    KIntNumInput *sizeOfFont;
+    KDoubleNumInput *sizeOfFont;
 
     SampleEdit   *sampleEdit;
     KLineEdit    *xlfdEdit;
@@ -131,7 +138,7 @@ public:
     QFont        selFont;
 
     QString      selectedStyle;
-    int          selectedSize;
+    qreal        selectedSize;
 
     int          customSizeRow;
     QString      standardSizeAtCustom;
@@ -299,9 +306,11 @@ KFontChooser::KFontChooser( QWidget *parent,
 
 
     d->sizeListBox = new KListWidget( page );
-    d->sizeOfFont = new KIntNumInput(page);
+    d->sizeOfFont = new KDoubleNumInput(page);
     d->sizeOfFont->setMinimum(4);
     d->sizeOfFont->setMaximum(999);
+    d->sizeOfFont->setDecimals(1);
+    d->sizeOfFont->setSingleStep(1);
     d->sizeOfFont->setSliderEnabled(false);
 
     d->sizeListBox->setEnabled( flags ^ ShowDifferences );
@@ -354,8 +363,8 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->sizeListBox->setMinimumHeight(
         minimumListHeight( d->sizeListBox, visibleListSize  ) );
 
-    connect( d->sizeOfFont, SIGNAL( valueChanged(int) ),
-             this, SLOT(_k_size_value_slot(int)));
+    connect( d->sizeOfFont, SIGNAL( valueChanged(double) ),
+             this, SLOT(_k_size_value_slot(double)));
 
     connect( d->sizeListBox, SIGNAL(currentTextChanged(const QString&)),
              this, SLOT(_k_size_chosen_slot(const QString&)) );
@@ -523,9 +532,9 @@ void KFontChooser::enableColumn( int column, bool state )
 void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
 {
     d->selFont = aFont;
-    d->selectedSize=aFont.pointSize();
+    d->selectedSize=aFont.pointSizeF();
     if (d->selectedSize == -1)
-        d->selectedSize = QFontInfo(aFont).pointSize();
+        d->selectedSize = QFontInfo(aFont).pointSizeF();
 
     if( onlyFixed != d->usingFixed)
     {
@@ -649,10 +658,13 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     QString currentStyle = qtStyles[styleListBox->currentItem()->text()];
 
     // Recompute the size listbox for this family/style.
-    int currentSize = setupSizeListBox(currentFamily, currentStyle);
+    qreal currentSize = setupSizeListBox(currentFamily, currentStyle);
     sizeOfFont->setValue(currentSize);
 
-    selFont = dbase.font(currentFamily, currentStyle, currentSize);
+    selFont = dbase.font(currentFamily, currentStyle, int(currentSize));
+    if (dbase.isSmoothlyScalable(currentFamily, currentStyle) && selFont.pointSize() == floor(currentSize)) {
+        selFont.setPointSizeF(currentSize);
+    }
     emit q->fontSelected(selFont);
 
     signalsAllowed = true;
@@ -675,10 +687,13 @@ void KFontChooser::Private::_k_style_chosen_slot(const QString& style)
     }
 
     // Recompute the size listbox for this family/style.
-    int currentSize = setupSizeListBox(currentFamily, currentStyle);
+    qreal currentSize = setupSizeListBox(currentFamily, currentStyle);
     sizeOfFont->setValue(currentSize);
 
-    selFont = dbase.font(currentFamily, currentStyle, currentSize);
+    selFont = dbase.font(currentFamily, currentStyle, int(currentSize));
+    if (dbase.isSmoothlyScalable(currentFamily, currentStyle) && selFont.pointSize() == floor(currentSize)) {
+        selFont.setPointSizeF(currentSize);
+    }
     emit q->fontSelected(selFont);
 
     if (!style.isEmpty()) {
@@ -696,21 +711,21 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size)
 
     signalsAllowed = false;
 
-    int currentSize;
+    qreal currentSize;
     if (size.isEmpty()) {
-        currentSize = sizeListBox->currentItem()->text().toInt();
+        currentSize = KGlobal::locale()->readNumber(sizeListBox->currentItem()->text());
     } else {
-        currentSize = size.toInt();
+        currentSize = KGlobal::locale()->readNumber(size);
     }
 
     // Reset the customized size slot in the list if not needed.
-    if (customSizeRow >= 0 && selFont.pointSize() != currentSize) {
+    if (customSizeRow >= 0 && selFont.pointSizeF() != currentSize) {
         sizeListBox->item(customSizeRow)->setText(standardSizeAtCustom);
         customSizeRow = -1;
     }
 
     sizeOfFont->setValue(currentSize);
-    selFont.setPointSize(currentSize);
+    selFont.setPointSizeF(currentSize);
     emit q->fontSelected(selFont);
 
     if (!size.isEmpty()) {
@@ -720,12 +735,15 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size)
     signalsAllowed = true;
 }
 
-void KFontChooser::Private::_k_size_value_slot(int val)
+void KFontChooser::Private::_k_size_value_slot(double dval)
 {
     if ( !signalsAllowed ) {
         return;
     }
     signalsAllowed = false;
+
+    // We compare with qreal, so convert for platforms where qreal != double.
+    qreal val = qreal(dval);
 
     QFontDatabase dbase;
     QString family = qtFamilies[familyListBox->currentItem()->text()];
@@ -747,20 +765,20 @@ void KFontChooser::Private::_k_size_value_slot(int val)
         int nrows = sizeListBox->count();
         int row = sizeListBox->currentRow();
         int nrow;
-        if (val - selFont.pointSize() > 0) {
+        if (val - selFont.pointSizeF() > 0) {
             for (nrow = row + 1; nrow < nrows; ++nrow)
-                if (sizeListBox->item(nrow)->text().toInt() >= val)
+                if (KGlobal::locale()->readNumber(sizeListBox->item(nrow)->text()) >= val)
                     break;
         }
         else {
             for (nrow = row - 1; nrow >= 0; --nrow)
-                if (sizeListBox->item(nrow)->text().toInt() <= val)
+                if (KGlobal::locale()->readNumber(sizeListBox->item(nrow)->text()) <= val)
                     break;
         }
         // Make sure the new row is not out of bounds.
         nrow = nrow < 0 ? 0 : nrow >= nrows ? nrows - 1 : nrow;
         // Get the size from the new row and set the spinbox to that size.
-        val = sizeListBox->item(nrow)->text().toInt();
+        val = KGlobal::locale()->readNumber(sizeListBox->item(nrow)->text());
         sizeOfFont->setValue(val);
     }
 
@@ -769,7 +787,7 @@ void KFontChooser::Private::_k_size_value_slot(int val)
     sizeListBox->setCurrentRow(row);
 
     selectedSize = val;
-    selFont.setPointSize(val);
+    selFont.setPointSizeF(val);
     emit q->fontSelected( selFont );
 
     signalsAllowed = true;
@@ -788,12 +806,12 @@ void KFontChooser::Private::_k_displaySample( const QFont& font )
     //kDebug() << "      (" << font.toString() << ")\n";
 }
 
-int KFontChooser::Private::nearestSizeRow (int val, bool customize)
+int KFontChooser::Private::nearestSizeRow (qreal val, bool customize)
 {
-    int diff = 1000;
+    qreal diff = 1000;
     int row = 0;
     for (int r = 0; r < sizeListBox->count(); ++r) {
-        int cval = sizeListBox->item(r)->text().toInt();
+        qreal cval = KGlobal::locale()->readNumber(sizeListBox->item(r)->text());
         if (qAbs(cval - val) < diff) {
             diff = qAbs(cval - val);
             row = r;
@@ -803,18 +821,18 @@ int KFontChooser::Private::nearestSizeRow (int val, bool customize)
     if (customize && diff > 0) {
         customSizeRow = row;
         standardSizeAtCustom = sizeListBox->item(row)->text();
-        sizeListBox->item(row)->setText(QString::number(val));
+        sizeListBox->item(row)->setText(formatFontSize(val));
     }
     return row;
 }
 
-int KFontChooser::Private::fillSizeList (const QList<int> &sizes_)
+qreal KFontChooser::Private::fillSizeList (const QList<qreal> &sizes_)
 {
     if ( !sizeListBox ) {
         return 0; //assertion.
     }
 
-    QList<int> sizes = sizes_;
+    QList<qreal> sizes = sizes_;
     bool canCustomize = false;
     if (sizes.count() == 0) {
         static const int c[] = {
@@ -838,8 +856,8 @@ int KFontChooser::Private::fillSizeList (const QList<int> &sizes_)
     // Insert sizes into the listbox.
     sizeListBox->clear();
     qSort(sizes);
-    foreach (int size, sizes) {
-        sizeListBox->addItem(QString::number(size));
+    foreach (qreal size, sizes) {
+        sizeListBox->addItem(formatFontSize(size));
     }
 
     // Return the nearest to selected size.
@@ -849,13 +867,13 @@ int KFontChooser::Private::fillSizeList (const QList<int> &sizes_)
     // thus size slot customization is not allowed.
     customSizeRow = -1;
     int row = nearestSizeRow(selectedSize, canCustomize);
-    return sizeListBox->item(row)->text().toInt();
+    return KGlobal::locale()->readNumber(sizeListBox->item(row)->text());
 }
 
-int KFontChooser::Private::setupSizeListBox (const QString& family, const QString& style)
+qreal KFontChooser::Private::setupSizeListBox (const QString& family, const QString& style)
 {
     QFontDatabase dbase;
-    QList<int> sizes;
+    QList<qreal> sizes;
     if (dbase.isSmoothlyScalable(family, style)) {
         // A vector font.
         //>sampleEdit->setPaletteBackgroundPixmap( VectorPixmap ); // TODO
@@ -863,16 +881,19 @@ int KFontChooser::Private::setupSizeListBox (const QString& family, const QStrin
     else {
         // A bitmap font.
         //sampleEdit->setPaletteBackgroundPixmap( BitmapPixmap ); // TODO
-        sizes = dbase.smoothSizes(family, style);
+        QList<int> smoothSizes = dbase.smoothSizes(family, style);
+        foreach (int size, smoothSizes) {
+            sizes.append(size);
+        }
     }
 
     // Fill the listbox (uses default list of sizes if the given is empty).
     // Collect the best fitting size to selected size, to use if not smooth.
-    int bestFitSize = fillSizeList(sizes);
+    qreal bestFitSize = fillSizeList(sizes);
 
     // Set the best fit size as current in the listbox if available.
     const QList<QListWidgetItem*> selectedSizeList =
-        sizeListBox->findItems( QString::number(bestFitSize),
+        sizeListBox->findItems( formatFontSize(bestFitSize),
                                 Qt::MatchExactly );
     if ( !selectedSizeList.isEmpty() ) {
         sizeListBox->setCurrentItem(selectedSizeList.first());
@@ -887,9 +908,9 @@ void KFontChooser::Private::setupDisplay()
     QFontDatabase dbase;
     QString family = selFont.family().toLower();
     QString style = dbase.styleString(selFont).toLower();
-    int size = selFont.pointSize();
+    qreal size = selFont.pointSizeF();
     if (size == -1)
-        size = QFontInfo( selFont ).pointSize();
+        size = QFontInfo( selFont ).pointSizeF();
 
     int numEntries, i;
 
@@ -971,7 +992,7 @@ void KFontChooser::Private::setupDisplay()
     sizeListBox->setCurrentRow(nearestSizeRow(size, canCustomize));
 
     // Set current size in the spinbox.
-    sizeOfFont->setValue(sizeListBox->currentItem()->text().toInt());
+    sizeOfFont->setValue(KGlobal::locale()->readNumber(sizeListBox->currentItem()->text()));
 }
 
 
