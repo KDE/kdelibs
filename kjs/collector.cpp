@@ -31,6 +31,7 @@
 #include "value.h"
 
 #include <setjmp.h>
+#include <limits.h>
 #include <algorithm>
 
 #if PLATFORM(DARWIN)
@@ -109,6 +110,9 @@ struct BlockList {
 
     void append(CollectorBlock* block) {
         if (m_used == m_capacity) {
+            static const size_t maxNumBlocks = ULONG_MAX / sizeof(CollectorBlock*) / GROWTH_FACTOR;
+            if (m_capacity > maxNumBlocks)
+                CRASH();
             m_capacity = max(MIN_ARRAY_SIZE, m_capacity * GROWTH_FACTOR);
             m_data = static_cast<CollectorBlock **>(fastRealloc(m_data, m_capacity * sizeof(CollectorBlock *)));
         }
