@@ -38,7 +38,7 @@ Currency::Currency(QObject* parent)
 {
     setObjectName("currency");
     setName(i18n("Currency"));
-    setDescription("From ECB");
+    setDescription(i18n("From ECB"));
     setUrl(KUrl("http://www.ecb.int/stats/exchange/eurofxref/html/index.en.html"));
 
     // Static rates
