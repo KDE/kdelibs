@@ -65,7 +65,7 @@ KNotificationItem::KNotificationItem(const QString &id, QObject *parent)
 KNotificationItem::~KNotificationItem()
 {
     delete d->notificationItemWatcher;
-    delete d->visualNotifications;
+    delete d->notificationsClient;
     delete d->systemTrayIcon;
     delete d->menu;
     delete d;
@@ -433,12 +433,13 @@ bool KNotificationItem::standardActionsEnabled() const
 
 void KNotificationItem::showMessage(const QString & title, const QString & message, const QString &icon, int timeout)
 {
-    if (!d->visualNotifications) {
-        d->visualNotifications = new org::kde::VisualNotifications("org.kde.VisualNotifications", "/VisualNotifications",
+    if (!d->notificationsClient) {
+        d->notificationsClient = new org::freedesktop::Notifications("org.freedesktop.Notifications", "/Notifications",
                                                 QDBusConnection::sessionBus());
     }
 
-    d->visualNotifications->Notify(d->title, ++d->notificationId, 0, icon, title, message, QStringList(), QVariantMap(), timeout);
+    uint id;
+    d->notificationsClient->Notify(d->title, id, icon, title, message, QStringList(), QVariantMap(), timeout);
 }
 
 QString KNotificationItem::title() const
@@ -592,8 +593,7 @@ KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
       menu(0),
       titleAction(0),
       notificationItemWatcher(0),
-      visualNotifications(0),
-      notificationId(0),
+      notificationsClient(0),
       systemTrayIcon(0),
       hasQuit(false),
       onAllDesktops(false),

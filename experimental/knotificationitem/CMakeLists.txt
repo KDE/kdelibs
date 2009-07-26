@@ -20,8 +20,8 @@ QT4_ADD_DBUS_ADAPTOR(knotificationitem_SRCS     org.kde.NotificationItem.xml
 set(systemtraydaemon_xml org.kde.NotificationItemWatcher.xml)
 QT4_ADD_DBUS_INTERFACE(knotificationitem_SRCS ${systemtraydaemon_xml} notificationwatcher_interface)
 
-set(visualnotifications_xml org.kde.VisualNotifications.xml)
-QT4_ADD_DBUS_INTERFACE(knotificationitem_SRCS ${visualnotifications_xml} visualnotifications_interface)
+set(notifications_xml org.freedesktop.Notifications.xml)
+QT4_ADD_DBUS_INTERFACE(knotificationitem_SRCS ${notifications_xml} notifications_interface)
 
 kde4_add_library(knotificationitem-1 SHARED ${knotificationitem_SRCS})
 set_target_properties(knotificationitem-1 PROPERTIES VERSION 1.0.0 SOVERSION 1)

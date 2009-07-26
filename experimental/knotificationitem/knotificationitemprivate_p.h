@@ -34,7 +34,7 @@
 #include "knotificationitemdbus_p.h"
 
 #include "notificationwatcher_interface.h"
-#include "visualnotifications_interface.h"
+#include "notifications_interface.h"
 
 class KActionCollection;
 class KSystemTrayIcon;
@@ -130,8 +130,7 @@ public:
     QWidget *associatedWidget;
     QAction* titleAction;
     org::kde::NotificationItemWatcher *notificationItemWatcher;
-    org::kde::VisualNotifications *visualNotifications;
-    int notificationId;
+    org::freedesktop::Notifications *notificationsClient;
 
     KSystemTrayIcon *systemTrayIcon;
     KNotificationItemDBus *notificationItemDbus;
