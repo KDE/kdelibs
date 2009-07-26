@@ -1007,6 +1007,7 @@ install(FILES
   Plasma/Version
   Plasma/Wallpaper
   Plasma/WebView
+  Plasma/WindowEffects
   Plasma/VideoWidget
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
 
