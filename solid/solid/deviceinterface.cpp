@@ -60,6 +60,56 @@ Solid::DeviceInterface::Type Solid::DeviceInterface::stringToType(const QString 
     return (Type)metaEnum.keyToValue(type.toUtf8());
 }
 
+QString Solid::DeviceInterface::typeDescription(Type type)
+{
+    switch (type)
+    {
+    case Unknown:
+        return QObject::tr("Unknown", "Unknown device type");
+    case GenericInterface:
+        return QObject::tr("Generic Interface", "Generic Interface device type");
+    case Processor:
+        return QObject::tr("Processor", "Processor device type");
+    case Block:
+        return QObject::tr("Block", "Block device type");
+    case StorageAccess:
+        return QObject::tr("Storage Access", "Storage Access device type");
+    case StorageDrive:
+        return QObject::tr("Storage Drive", "Storage Drive device type");
+    case OpticalDrive:
+        return QObject::tr("Optical Drive", "Optical Drive device type");
+    case StorageVolume:
+        return QObject::tr("Storage Volume", "Storage Volume device type");
+    case OpticalDisc:
+        return QObject::tr("Optical Disc", "Optical Disc device type");
+    case Camera:
+        return QObject::tr("Camera", "Camera device type");
+    case PortableMediaPlayer:
+        return QObject::tr("Portable Media Player", "Portable Media Player device type");
+    case NetworkInterface:
+        return QObject::tr("Network Interface", "Network Interface device type");
+    case AcAdapter:
+        return QObject::tr("Ac Adapter", "Ac Adapter device type");
+    case Battery:
+        return QObject::tr("Battery", "Battery device type");
+    case Button:
+        return QObject::tr("Button", "Button device type");
+    case AudioInterface:
+        return QObject::tr("Audio Interface", "Audio Interface device type");
+    case DvbInterface:
+        return QObject::tr("Dvb Interface", "Dvb Interface device type");
+    case Video:
+        return QObject::tr("Video", "Video device type");
+    case SerialInterface:
+        return QObject::tr("Serial Interface", "Serial Interface device type");
+    case SmartCardReader:
+        return QObject::tr("Smart Card Reader", "Smart Card Reader device type");
+    case Last:
+        return QString();
+    }
+    return QString();
+}
+
 Solid::DeviceInterfacePrivate::DeviceInterfacePrivate()
 {
 

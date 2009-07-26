@@ -85,15 +85,21 @@ namespace Solid
 
         /**
          *
-         * @return the name of the device interface type
+         * @return the class name of the device interface type
          */
         static QString typeToString(Type type);
 
         /**
          *
-         * @return the device interface type for the given name
+         * @return the device interface type for the given class name
          */
         static Type stringToType(const QString &type);
+
+        /**
+         *
+         * @return a description suitable to display in the UI of the device interface type
+         */
+        static QString typeDescription(Type type);
 
     protected:
         /**
