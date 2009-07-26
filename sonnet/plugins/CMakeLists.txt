@@ -23,3 +23,10 @@ macro_log_feature(ENCHANT_FOUND "Enchant" "Enchant Package" "http://www.abisourc
 if (ENCHANT_FOUND)
    add_subdirectory( enchant )
 endif (ENCHANT_FOUND)
+
+#macro_optional_find_package(HUNSPELL)
+#macro_log_feature(HUNSPELL_FOUND "Hunspell" "Hunspell Package" "http://hunspell.sourceforge.net/" FALSE "" "Provides a way to access many spell checking backends.")
+#if (HUNSPELL_FOUND)
+#   add_subdirectory( hunspell )
+#endif (HUNSPELL_FOUND)
+

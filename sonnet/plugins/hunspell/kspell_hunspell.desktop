@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=Sonnet/SpellClient
+X-KDE-Library=kspell_hunspell
+X-KDE-PluginInfo-Author=Montel Laurent
+X-KDE-PluginInfo-Email=montel@kde.org
+X-KDE-PluginInfo-Name=kspell_hunspell
+X-KDE-PluginInfo-Version=0.0.1
+X-KDE-PluginInfo-Website=http://www.kde.org
+X-KDE-PluginInfo-Category=Clients
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=LGPL
+X-KDE-PluginInfo-EnabledByDefault=true
+Name=Hunspell
+Name[x-test]=xxHunspellxx
