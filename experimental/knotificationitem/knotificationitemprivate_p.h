@@ -93,6 +93,7 @@ public:
 
     ExperimentalKDbusImageStruct imageToStruct(const QImage &image);
     ExperimentalKDbusImageVector iconToVector(const QIcon &icon);
+    bool checkVisibility(QPoint pos, bool perform = true);
 
     static const int s_protocolVersion;
 

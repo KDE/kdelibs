@@ -74,7 +74,7 @@ KNotificationItem::~KNotificationItem()
 
 QString KNotificationItem::id() const
 {
-    kDebug() << "id requested" << d->id;
+    //kDebug() << "id requested" << d->id;
     return d->id;
 }
 
@@ -370,7 +370,7 @@ void KNotificationItem::setAssociatedWidget(QWidget *associatedWidget)
 
         if (!action) {
             action = d->actionCollection->addAction("minimizeRestore");
-            action->setText(i18n("Minimize"));
+            action->setText(i18n("&Minimize"));
             connect(action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestore()));
         }
 
@@ -421,11 +421,6 @@ void KNotificationItem::setStandardActionsEnabled(bool enabled)
             d->menu->removeAction(action);
         }
 
-        // the separator
-        QList<QAction *> remainingActions = d->menu->actions();
-        if (!remainingActions.isEmpty()) {
-            d->menu->removeAction(remainingActions.last());
-        }
 
         d->hasQuit = false;
     }
@@ -471,22 +466,27 @@ void KNotificationItem::activate(const QPoint &pos)
         return;
     }
 
+    d->checkVisibility(pos);
+}
+
+bool KNotificationItemPrivate::checkVisibility(QPoint pos, bool perform)
+{
 #ifdef Q_WS_WIN
 #if 0
     // the problem is that we lose focus when the systray icon is activated
     // and we don't know the former active window
     // therefore we watch for activation event and use our stopwatch :)
-    if(GetTickCount() - d->dwTickCount < 300) {
+    if(GetTickCount() - dwTickCount < 300) {
         // we were active in the last 300ms -> hide it
-        d->minimizeRestore(false);
+        minimizeRestore(false);
         emit activateRequested(false, pos);
     } else {
-        d->minimizeRestore(true);
+        minimizeRestore(true);
         emit activateRequested(true, pos);
     }
 #endif
 #elif defined(Q_WS_X11)
-    KWindowInfo info1 = KWindowSystem::windowInfo(d->associatedWidget->winId(), NET::XAWMState | NET::WMState | NET::WMDesktop);
+    KWindowInfo info1 = KWindowSystem::windowInfo(associatedWidget->winId(), NET::XAWMState | NET::WMState | NET::WMDesktop);
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
 
@@ -496,14 +496,18 @@ void KNotificationItem::activate(const QPoint &pos)
 //        - not obscured -> hide
     //info1.mappingState() != NET::Visible -> window on another desktop?
     if (!mapped) {
-        d->minimizeRestore(true);
-        emit activateRequested(true, pos);
+        if (perform) {
+            minimizeRestore(true);
+            emit q->activateRequested(true, pos);
+        }
+
+        return true;
     } else {
         QListIterator< WId > it (KWindowSystem::stackingOrder());
         it.toBack();
         while (it.hasPrevious()) {
             WId id = it.previous();
-            if (id == d->associatedWidget->winId()) {
+            if (id == associatedWidget->winId()) {
                 break;
             }
 
@@ -514,7 +518,7 @@ void KNotificationItem::activate(const QPoint &pos)
                 continue; // not visible on current desktop -> ignore
             }
 
-            if (!info2.geometry().intersects(d->associatedWidget->geometry())) {
+            if (!info2.geometry().intersects(associatedWidget->geometry())) {
                 continue; // not obscuring the window -> ignore
             }
 
@@ -530,23 +534,35 @@ void KNotificationItem::activate(const QPoint &pos)
                 continue; // obscured by dock or topmenu -> ignore
             }
 
-            KWindowSystem::raiseWindow(d->associatedWidget->winId());
-            KWindowSystem::activateWindow(d->associatedWidget->winId());
-            emit activateRequested(true, pos);
-            return;
+            if (perform) {
+                KWindowSystem::raiseWindow(associatedWidget->winId());
+                KWindowSystem::activateWindow(associatedWidget->winId());
+                emit q->activateRequested(true, pos);
+            }
+
+            return true;
         }
 
         //not on current desktop?
         if (!info1.isOnCurrentDesktop()) {
-            KWindowSystem::activateWindow(d->associatedWidget->winId());
-            emit activateRequested(true, pos);
-            return;
+            if (perform) {
+                KWindowSystem::activateWindow(associatedWidget->winId());
+                emit q->activateRequested(true, pos);
+            }
+
+            return true;
         }
 
-        d->minimizeRestore(false); // hide
-        emit activateRequested(false, pos);
+        if (perform) {
+            minimizeRestore(false); // hide
+            emit q->activateRequested(false, pos);
+        }
+
+        return false;
     }
 #endif
+
+    return true;
 }
 
 bool KNotificationItem::eventFilter(QObject *watched, QEvent *event)
@@ -693,7 +709,7 @@ void KNotificationItemPrivate::legacyWheelEvent(int delta)
 void KNotificationItemPrivate::legacyActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::MiddleClick) {
-        q->emit secondaryActivateRequested(systemTrayIcon->geometry().topLeft());
+        emit q->secondaryActivateRequested(systemTrayIcon->geometry().topLeft());
     }
 }
 
@@ -772,10 +788,10 @@ void KNotificationItemPrivate::contextMenuAboutToShow()
 
     if (associatedWidget) {
         QAction* action = actionCollection->action("minimizeRestore");
-        if (associatedWidget->isVisible())  {
-            action->setText(i18n("&Minimize"));
-        } else {
+        if (checkVisibility(QPoint(0, 0), false)) {
             action->setText(i18n("&Restore"));
+        } else {
+            action->setText(i18n("&Minimize"));
         }
     }
 }
@@ -798,7 +814,7 @@ void KNotificationItemPrivate::maybeQuit()
 
 void KNotificationItemPrivate::minimizeRestore()
 {
-    minimizeRestore(!associatedWidget->isVisible());
+    q->activate(QPoint(0, 0));
 }
 
 void KNotificationItemPrivate::hideMenu()
@@ -809,7 +825,7 @@ void KNotificationItemPrivate::hideMenu()
 void KNotificationItemPrivate::minimizeRestore(bool show)
 {
 #ifdef Q_WS_X11
-    KWindowInfo info = KWindowSystem::windowInfo(associatedWidget->winId(), NET::WMGeometry | NET::WMDesktop);
+    KWindowInfo info = KWindowSystem::windowInfo(associatedWidget->winId(), NET::WMDesktop | NET::WMFrameExtents);
     if (show) {
         if (onAllDesktops) {
             KWindowSystem::setOnAllDesktops(associatedWidget->winId(), true);
@@ -817,7 +833,7 @@ void KNotificationItemPrivate::minimizeRestore(bool show)
             KWindowSystem::setCurrentDesktop(info.desktop());
         }
 
-        associatedWidget->move(info.geometry().topLeft()); // avoid placement policies
+        associatedWidget->move(info.frameGeometry().topLeft()); // avoid placement policies
         associatedWidget->show();
         associatedWidget->raise();
         KWindowSystem::raiseWindow(associatedWidget->winId());
