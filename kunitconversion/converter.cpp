@@ -78,6 +78,7 @@ Converter::Converter(QObject* parent)
 : QObject(parent)
 , d(/*new Converter::Private*/0)
 {
+    KGlobal::locale()->insertCatalog("libconversion");
     new InvalidCategory(this);
     new Length(this);
     new Area(this);
@@ -92,7 +93,6 @@ Converter::Converter(QObject* parent)
     new Time(this);
     new FuelEfficiency(this);
     new Density(this);
-    KGlobal::locale()->insertCatalog("libconversion");
 }
 
 Converter::~Converter()
