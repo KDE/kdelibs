@@ -92,7 +92,7 @@ static void sighandler( int )
   #define ASM_CMP_REG(reg1, reg2)   "cmpl   %%e"reg1", %%e"reg2" \n\t"
   #define ASM_MOV_REG(reg1, reg2)   "movl   %%e"reg1", %%e"reg2" \n\t"
   #define ASM_MOV_VAR(var, reg)     "movl   "var",     %%e"reg"  \n\t"
-#elif __x86_64__
+#elif defined(__x86_64__)
   #define ASM_REG(reg)              "%r"reg
   #define ASM_POP(reg)              "popq   %%r"reg"             \n\t"
   #define ASM_PUSH(reg)             "pushq  %%r"reg"             \n\t"
