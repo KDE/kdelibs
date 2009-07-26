@@ -1513,6 +1513,14 @@ bool CSSParser::parseContent( int propId, bool important )
                 if ( args->size() != 1)
                     return false;
                 Value *a = args->current();
+                if (a->unit != CSSPrimitiveValue::CSS_IDENT) {
+                    isValid=false;
+                    break;
+                }
+                if (qString(a->string)[0] == '-') {
+                    isValid=false;
+                    break;
+                }
                 parsedValue = new CSSPrimitiveValueImpl(domString(a->string), CSSPrimitiveValue::CSS_ATTR);
             }
             else
@@ -1565,7 +1573,8 @@ CSSValueImpl* CSSParser::parseCounterContent(ValueList *args, bool counters)
 
     CounterImpl *counter = new CounterImpl;
     Value *i = args->current();
-//    if (i->unit != CSSPrimitiveValue::CSS_IDENT) goto invalid;
+    if (i->unit != CSSPrimitiveValue::CSS_IDENT) goto invalid;
+    if (qString(i->string)[0] == '-') goto invalid;
     counter->m_identifier = domString(i->string);
     if (counters) {
         i = args->next();
