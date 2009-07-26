@@ -27,6 +27,8 @@
 #include <QLibraryInfo>
 #include <QLibrary>
 
+#include <stdio.h>
+
 /**
  * MS Windows-related actions for KApplication startup.
  *
@@ -34,6 +36,8 @@
  *    and other Qt-only GUIs. The "qt_<language>.qm" file should be stored
  *    in the same place as .po files for a given language.
  *
+ * - Increase the default open file limit with the stdio API from 512 to 2048
+ *   (2048 is the hard limit on Windows)
  * @internal
 */
 void KApplication_init_windows()
@@ -49,6 +53,11 @@ void KApplication_init_windows()
 		qApp->installTranslator( qt_transl );
 	else
 		delete qt_transl;
+
+    // For apps like KMail which have lots of open files, the default is too low
+	// so increase it to the maximum.
+    _setmaxstdio(2048);
+
 }
 
 // <copy of kdepim/libkdepim/utils.cpp, TODO: move to a shared helper library>
