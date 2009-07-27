@@ -51,11 +51,12 @@ void KSeparator::setOrientation(Qt::Orientation orientation)
       setFrameShadow( QFrame::Sunken );
       setMinimumSize(0, 2);
    }
+   updateGeometry();
 }
 
 Qt::Orientation KSeparator::orientation() const
 {
-   return ( frameStyle() & VLine ) ? Qt::Vertical : Qt::Horizontal;
+   return ((frameStyle() & VLine) == VLine) ? Qt::Vertical : Qt::Horizontal;
 }
 
 #include "kseparator.moc"
