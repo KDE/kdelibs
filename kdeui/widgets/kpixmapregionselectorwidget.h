@@ -44,6 +44,8 @@ class KMenu;
 class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
    Q_OBJECT
+    Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap)
+   
 public:
     /**
      * This enum provides a rotation direction.
