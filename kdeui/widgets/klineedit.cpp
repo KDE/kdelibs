@@ -394,9 +394,9 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
 
     if ( t != txt )
     {
-        const int start = marked ? txt.length() : t.length();
         setText(t);
-        setSelection(start, t.length());
+        if ( marked )
+            setSelection(t.length(), txt.length()-t.length());
         setUserSelection(false);
     }
     else
@@ -771,15 +771,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 QLineEdit::keyPressEvent ( e );
                 const int cPosition=cursorPosition();
                 setText(old_txt);
-                setCursorPosition(cPosition);
-                if (e->key() ==Qt::Key_Right && cPosition > start )
-		{
-                    setSelection(cPosition, old_txt.length());
-		    //the user explicitly accepted the autocompletion
-		    d->_k_updateUserText(text());
-		}
-                else
-                    setSelection(start, old_txt.length());
+
+                // keep cursor at cPosition
+                setSelection(old_txt.length(), cPosition - old_txt.length());
+                if (e->key() == Qt::Key_Right && cPosition > start )
+                {
+                    //the user explicitly accepted the autocompletion
+                    d->_k_updateUserText(text());
+                }
 
                 d->disableRestoreSelection = false;
                 return;
