@@ -486,7 +486,6 @@ protected:
 
   // Mimetype determination
   bool m_cpMimeBuffer;
-  bool m_mimeTypeSent;
   QByteArray m_mimeTypeBuffer;
 
 

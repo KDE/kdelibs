@@ -3381,12 +3381,10 @@ try_again:
             }
         }
 
-        // read and trash body data until the next response header starts.
         if (m_request.isKeepAlive) {
+            // Important: trash data until the next response header starts.
             readBody(true);
         }
-        //### for now this is necessary, but we could really just close the connection right here.
-        m_dataInternal = true;
     }
 
   // We need to do a redirect
@@ -3528,13 +3526,12 @@ try_again:
   }
 
   // Let the app know about the mime-type iff this is not
-  // a redirection (or a 401/407 auth required) and the mime-type string is not empty.
+  // a redirection and the mime-type string is not empty.
   if (locationStr.isEmpty() && (!m_mimeType.isEmpty() ||
-      m_request.method == HTTP_HEAD) && !m_dataInternal)
+      m_request.method == HTTP_HEAD))
   {
     kDebug(7113) << "Emitting mimetype " << m_mimeType;
     mimeType( m_mimeType );
-    m_mimeTypeSent = true;
   }
 
   if (config()->readEntry("PropagateHttpHeader", false) ||
@@ -4080,10 +4077,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
           m_mimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
           kDebug(7113) << "Using default mimetype: " <<  m_mimeType;
         }
-      }
 
-      if (!m_mimeTypeSent && !m_mimeType.isEmpty() && !m_isRedirection)
-      {
         if ( m_request.cacheTag.writeToCache )
         {
           createCacheEntry( m_mimeType, m_request.cacheTag.expireDate );
@@ -4100,7 +4094,6 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         }
         mimeType(m_mimeType);
         m_mimeTypeBuffer.resize(0);
-        m_mimeTypeSent = true;
       }
 
       data( d );
@@ -4225,7 +4218,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   // Main incoming loop...  Gather everything while we can...
   m_cpMimeBuffer = false;
-  m_mimeTypeSent = false;
   m_mimeTypeBuffer.resize(0);
   struct timeval last_tv;
   gettimeofday( &last_tv, 0L );
