@@ -101,11 +101,34 @@
             <arg type="i" direction="out"/>
         </method>        
 
+        <method name="stop">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="cancel">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
         <method name="pause">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
 
         <method name="resume">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="setSpeed">
+            <arg name="speed" type="i" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="setPitch">
+            <arg name="pitch" type="i" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="setVolume">
+            <arg name="volume" type="i" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
         

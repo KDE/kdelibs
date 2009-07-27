@@ -1,10 +1,11 @@
 /***************************************************** vim:set ts=4 sw=4 sts=4:
   KSpeech
-
+  
   The KDE Text-to-Speech API.
   ------------------------------
   Copyright:
   (C) 2006 by Gary Cramblitt <garycramblitt@comcast.net>
+  (C) 2009 by Jeremy Whiting <jpwhiting@kde.org>
   -------------------
   Original author: Gary Cramblitt <garycramblitt@comcast.net>
 
@@ -23,16 +24,14 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  ******************************************************************************/
 
-#ifndef _KSPEECH_H_
-#define _KSPEECH_H_
+#ifndef KSPEECH_H
+#define KSPEECH_H
 
 // Qt includes
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtCore/QByteRef>
-
-#include <kspeech_export.h>
+#include <QtCore/QByteArray>
 
 class KSpeechPrivate;
 
@@ -40,7 +39,7 @@ class KSpeechPrivate;
 * KSpeech -- the KDE Text-to-Speech API.
 *
 * Note: Applications do not use this class directly.  Instead,
-* use the @ref OrgKdeKSpeechInterface object as described in
+* use the @ref KSpeechInterface object as described in
 * @ref programming.
 *
 * See also @ref kspeech_intro
@@ -53,16 +52,18 @@ public:
     /**
     * @enum JobPriority
     * Determines the priority of jobs submitted by @ref say.
+    * maps directly to SPDPriority
     */
     enum JobPriority
     {
         jpAll                = 0,    /**< All priorities.  Used for information retrieval only. */
-        jpScreenReaderOutput = 1,    /**< Screen Reader job. */
-        jpWarning            = 2,    /**< Warning job. */
-        jpMessage            = 3,    /**< Message job.*/
-        jpText               = 4     /**< Text job. */
+        jpScreenReaderOutput = 1,    /**< Screen Reader job. SPD_IMPORTANT */
+        jpWarning            = 2,    /**< Warning job. SPD_NOTIFICATION */
+        jpMessage            = 3,    /**< Message job.SPD_MESSAGE */
+        jpText               = 4,    /**< Text job. SPD_TEXT */
+        jpProgress           = 5     /**< Progress report. SPD_PROGRESS added KDE 4.4 */ 
     };
-
+    
     /**
     * @enum JobState
     * Job states returned by method @ref getJobState.
@@ -78,7 +79,7 @@ public:
         jsFinished    = 6,  /**< Job is finished and is deleteable. */
         jsDeleted     = 7   /**< Job is deleted from the queue. */
     };
-
+    
     /**
     * @enum SayOptions
     * Hints about text content when sending via @ref say.
@@ -89,12 +90,11 @@ public:
         soPlainText = 0x0001,   /**< The text contains plain text. */
         soHtml      = 0x0002,   /**< The text contains HTML markup. */
         soSsml      = 0x0004,   /**< The text contains SSML markup. */
-        // FUTURE:
         soChar      = 0x0008,   /**< The text should be spoken as individual characters. */
         soKey       = 0x0010,   /**< The text contains a keyboard symbolic key name. */
         soSoundIcon = 0x0020    /**< The text is the name of a sound icon. */
     };
-
+    
     /**
     * @enum TalkerCapabilities1
     * Flags for synthesizer/talker capabilities.
@@ -133,7 +133,7 @@ public:
         tcCanRetrieveAudio                      = 0x10000000, /**< FALSE */
         tcCanPlayAudio                          = 0x20000000  /**< FALSE */
     };
-
+    
     /**
     * @enum TalkerCapabilities2
     * All items marked FALSE are hard-coded off at this time.
@@ -193,6 +193,7 @@ public Q_SLOTS: // METHODS
     * @return               Version number string.
     */
     QString version() const;
+
     /**
     * Returns the friendly display name for the application.
     * @return               Application display name.
@@ -204,7 +205,7 @@ public Q_SLOTS: // METHODS
     /**
     * Sets a friendly display name for the application.
     * @param applicationName    Friendly name for the application.
-    */
+    */    
     void setApplicationName(const QString &applicationName);
 
     /**
@@ -284,7 +285,7 @@ public Q_SLOTS: // METHODS
     * @see defaultTalker
     */
     bool autoConfigureTalkersOn();
-
+    
     /** Sets whether KTTSD will automatically attempt to configure new
     * talkers to meet required talker attributes.
     * @param autoConfigureTalkersOn True to enable auto configuration.
@@ -296,7 +297,7 @@ public Q_SLOTS: // METHODS
     * @return               True if application is paused.
     */
     bool isApplicationPaused();
-
+    
     /**
     * Returns the full path name to XSLT file used to convert HTML
     * markup to speakable form.
@@ -315,7 +316,7 @@ public Q_SLOTS: // METHODS
     * Returns the full path name to XSLT file used to convert SSML
     * markup to a speakable form.
     * @return                   XSLT filename.
-    */
+    */    
     QString ssmlFilterXsltFile();
 
     /**
@@ -392,6 +393,14 @@ public Q_SLOTS: // METHODS
     */
     void resume();
 
+    
+    void stop();
+    void cancel();
+
+    void setSpeed(int speed);
+    void setPitch(int pitch);
+    void setVolume(int volume);
+    
     /**
     * Removes the specified job.  If the job is speaking, it is stopped.
     * @param jobNum             Job Number.  If 0, the last job submitted by
@@ -579,7 +588,7 @@ public Q_SLOTS: // METHODS
     *
     * Since there is only one ScreenReaderOutput, this method is meaningless
     * for ScreenReaderOutput jobs.
-    */
+    */    
     void moveJobLater(int jobNum);
 
     /**
@@ -597,7 +606,7 @@ public Q_SLOTS: // METHODS
     *
     * Since ScreenReaderOutput jobs are not split into sentences, this method
     * is meaningless for ScreenReaderOutput jobs.
-    */
+    */    
     int moveRelSentence(int jobNum, int n);
 
     /**
@@ -612,22 +621,27 @@ public Q_SLOTS: // METHODS
     void kttsdExit();
 
     /**
+    * post ctor helper method that instantiates the dbus adaptor class, and registers
+    */
+    void init();
+
+    /**
     * Cause KTTSD to re-read its configuration.
     */
     void reinit();
-
+    
     /** Called by DBusAdaptor so that KTTSD knows the application that
     * called it.
     * @param appId              DBUS connection name that called KSpeech.
     */
     void setCallingAppId(const QString& appId);
-
+        
 Q_SIGNALS: // SIGNALS
     /**
     * This signal is emitted when KTTSD starts.
     */
     void kttsdStarted();
-
+    
     /**
     * This signal is emitted just before KTTS exits.
     */
@@ -655,32 +669,31 @@ Q_SIGNALS: // SIGNALS
     */
     void marker(const QString &appId, int jobNum, int markerType, const QString &markerData);
 
-protected:
-
     /**
-    * This signal is emitted by KNotify when a notification event occurs.
-    */
-    void notificationSignal(const QString &event, const QString &fromApp,
-                            const QString &text, const QString &sound, const QString &file,
-                            const int present, const int level, const int winId, const int eventId );
+     * This signal is emitted when a new job coming in is filtered (or not filtered if no filters
+     * are on).
+     * @param prefilterText     The text of the speech job
+     * @param postfilterText    The text of the speech job after any filters have been applied
+     */
+    void newJobFiltered(const QString &prefilterText, const QString &postfilterText);
 
-private Q_SLOTS:
+private slots:
     void slotJobStateChanged(const QString& appId, int jobNum, KSpeech::JobState state);
     void slotMarker(const QString& appId, int jobNum, KSpeech::MarkerType markerType, const QString& markerData);
     void slotFilteringFinished();
-
+    
 private:
     /**
     * The DBUS connection name of the last application that called KTTSD.
     */
     QString callingAppId();
-
+    
     /*
     * Checks if KTTSD is ready to speak and at least one talker is configured.
     * If not, user is prompted to display the configuration dialog.
     */
     bool ready();
-
+    
     /**
     * Create and initialize the Configuration Data object.
     */
@@ -688,6 +701,7 @@ private:
 
     /*
     * Create and initialize the SpeechData object.
+    * Deprecated, remove in KDE 5
     */
     bool initializeSpeechData();
 
@@ -723,4 +737,4 @@ private:
     KSpeechPrivate* d;
 };
 
-#endif // _KSPEECH_H_
+#endif // KSPEECH_H
