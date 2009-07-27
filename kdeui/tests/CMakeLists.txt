@@ -134,7 +134,10 @@ KDEUI_EXECUTABLE_TESTS(
   testqtargs
 )
 
+
 if (Q_WS_X11)
+target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
+
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
