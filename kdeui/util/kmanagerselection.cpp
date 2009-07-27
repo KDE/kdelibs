@@ -431,6 +431,7 @@ void KSelectionWatcher::init()
         // StructureNotifyMask on the root window is needed
         XSelectInput( dpy, RootWindow( dpy, d->screen ), event_mask | StructureNotifyMask );
         }
+    owner(); // trigger reading of current selection status
     }    
 
 Window KSelectionWatcher::owner()
