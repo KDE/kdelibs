@@ -178,7 +178,9 @@ class KDEUI_EXPORT KSelectionWatcher
         explicit KSelectionWatcher( const char* selection, int screen = -1, QObject* parent = NULL );
 	virtual ~KSelectionWatcher();
         /**
-         * Return the current owner of the manager selection, if any.
+         * Return the current owner of the manager selection, if any. Note that if the event
+         * informing about the owner change is still in the input queue, newOwner() might
+         * have been emitted yet.
          */
         Window owner();
         /**

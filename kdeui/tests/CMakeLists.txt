@@ -99,6 +99,7 @@ KDEUI_EXECUTABLE_TESTS(
   klineedittest
   kmainwindowtest
   kmainwindowrestoretest
+  kmanagerselectiontest
   kmessageboxtest
   kmessagetest
   kmodifierkeyinfotest
