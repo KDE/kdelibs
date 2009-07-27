@@ -1003,6 +1003,14 @@ bool KFileItemDelegate::showToolTipWhenElided() const
 }
 
 
+QRect KFileItemDelegate::iconRect(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyleOptionViewItemV4 opt(option);
+    d->initStyleOption(&opt, index);
+    return QRect(d->iconPosition(opt), opt.icon.actualSize(opt.decorationSize));
+}
+
+
 QIcon KFileItemDelegate::Private::decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
 {
     const QVariant value = index.data(Qt::DecorationRole);

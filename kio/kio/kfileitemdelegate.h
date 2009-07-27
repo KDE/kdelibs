@@ -376,6 +376,13 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * @since 4.2
          */
         bool showToolTipWhenElided() const;
+        
+        /**
+         * Returns the rectangle of the icon that is aligned inside the decoration
+         * rectangle.
+         * @since 4.4
+         */
+        QRect iconRect(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
         /**
          * Reimplemented from @ref QAbstractItemDelegate.
