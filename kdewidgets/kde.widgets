@@ -294,3 +294,13 @@ Group=Display (KDE)
 IncludeFile=kpixmapregionselectorwidget.h
 ToolTip=Pixmap Region Selector (KDE)
 Group=Graphics (KDE)
+
+[KRichTextEdit]
+IncludeFile=krichtextedit.h
+ToolTip=Rich Text Editor (KDE)
+Group=Input (KDE)
+
+[KRichTextWidget]
+IncludeFile=krichtextwidget.h
+ToolTip=Rich Text Widget (KDE)
+Group=Input (KDE)
