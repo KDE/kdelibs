@@ -304,3 +304,9 @@ Group=Input (KDE)
 IncludeFile=krichtextwidget.h
 ToolTip=Rich Text Widget (KDE)
 Group=Input (KDE)
+
+[KGradientSelector]
+IncludeFile=kselector.h
+ToolTip=Gradient Color Selector (KDE)
+Group=Input (KDE)
+
