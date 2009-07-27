@@ -35,6 +35,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QByteArray>
 
+#include "kspeech_export.h"
+
 class KSpeechPrivate;
 
 /**
