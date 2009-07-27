@@ -44,6 +44,18 @@ class QPaintEvent;
 class KDEUI_EXPORT KCapacityBar
     : public QWidget
 {
+    Q_OBJECT
+
+    Q_PROPERTY(int value READ value WRITE setValue)
+    Q_PROPERTY(QString text READ text WRITE setText)
+    Q_PROPERTY(DrawTextMode drawTextMode READ drawTextMode WRITE setDrawTextMode)
+    Q_PROPERTY(bool fillFullBlocks READ fillFullBlocks WRITE setFillFullBlocks)
+    Q_PROPERTY(bool continuous READ continuous WRITE setContinuous)
+    Q_PROPERTY(int barHeight READ barHeight WRITE setBarHeight)
+    Q_PROPERTY(Qt::Alignment horizontalTextAlignment READ horizontalTextAlignment
+                                                     WRITE setHorizontalTextAlignment)
+    Q_ENUMS(DrawTextMode)
+    
 public:
     enum DrawTextMode {
         DrawTextInline = 0,     ///< If any text set, draw it into the capacity bar
@@ -175,6 +187,19 @@ public:
       */
     Qt::Alignment horizontalTextAlignment() const;
 
+    /**
+     * Set the way text is drawn if any is set
+     *
+     * @param drawTextMode If any text set, whether to draw it into the capacity bar
+     *                     or not.
+     */
+    void setDrawTextMode(DrawTextMode mode);
+
+    /**
+     * The way text is drawn, inside the capacity bar or outside of it
+     */
+    DrawTextMode drawTextMode() const;
+    
     /**
       * This method allows you to draw the widget, directly, for example on
       * item delegates. You only need the painter object and the rect where

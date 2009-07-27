@@ -283,3 +283,9 @@ IncludeFile=sonnet/dictionarycombobox.h
 ToolTip=Dictionary Combobox
 WhatsThis=A combobox to select a dictionary for spellchecking
 Group=Sonnet (KDE)
+
+[KCapacityBar]
+IncludeFile=kcapacitybar.h
+ToolTip=Capacity Bar (KDE)
+ConstructorArgs=(KCapacityBar::DrawTextOutline, parent)
+Group=Display (KDE)

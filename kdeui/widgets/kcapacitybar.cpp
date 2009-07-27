@@ -59,7 +59,7 @@ public:
     Qt::Alignment horizontalTextAlignment;
     QStyle::ControlElement ce_capacityBar;
 
-    const KCapacityBar::DrawTextMode drawTextMode;
+    KCapacityBar::DrawTextMode drawTextMode;
 };
 
 KCapacityBar::KCapacityBar(KCapacityBar::DrawTextMode drawTextMode, QWidget *parent)
@@ -77,6 +77,7 @@ KCapacityBar::~KCapacityBar()
 void KCapacityBar::setValue(int value)
 {
     d->value = value;
+    update();
 }
 
 int KCapacityBar::value() const
@@ -86,7 +87,12 @@ int KCapacityBar::value() const
 
 void KCapacityBar::setText(const QString &text)
 {
+    bool updateGeom = d->text.isEmpty() || text.isEmpty();
     d->text = text;
+    if (updateGeom) {
+        updateGeometry();
+    }
+    update();
 }
 
 QString KCapacityBar::text() const
@@ -97,6 +103,7 @@ QString KCapacityBar::text() const
 void KCapacityBar::setFillFullBlocks(bool fillFullBlocks)
 {
     d->fillFullBlocks = fillFullBlocks;
+    update();
 }
 
 bool KCapacityBar::fillFullBlocks() const
@@ -107,6 +114,7 @@ bool KCapacityBar::fillFullBlocks() const
 void KCapacityBar::setContinuous(bool continuous)
 {
     d->continuous = continuous;
+    update();
 }
 
 bool KCapacityBar::continuous() const
@@ -119,6 +127,7 @@ void KCapacityBar::setBarHeight(int barHeight)
     // automatically convert odd values to even. This will make the bar look
     // better.
     d->barHeight = (barHeight % 2) ? barHeight + 1 : barHeight;
+    updateGeometry();
 }
 
 int KCapacityBar::barHeight() const
@@ -136,11 +145,23 @@ void KCapacityBar::setHorizontalTextAlignment(Qt::Alignment horizontalTextAlignm
     alignment &= ~Qt::AlignVCenter;
 
     d->horizontalTextAlignment = alignment;
+    update();
 }
 
 Qt::Alignment KCapacityBar::horizontalTextAlignment() const
 {
     return d->horizontalTextAlignment;
+}
+
+void KCapacityBar::setDrawTextMode(DrawTextMode mode)
+{
+    d->drawTextMode = mode;
+    update();
+}
+
+KCapacityBar::DrawTextMode KCapacityBar::drawTextMode() const
+{
+    return d->drawTextMode;
 }
 
 void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
@@ -349,3 +370,5 @@ void KCapacityBar::paintEvent(QPaintEvent *event)
     drawCapacityBar(&p, event->rect());
     p.end();
 }
+
+#include "kcapacitybar.moc"
