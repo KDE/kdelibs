@@ -54,6 +54,9 @@ namespace Sonnet
         void setBackgroundCheckerEnabled(bool);
         bool backgroundCheckerEnabled() const;
 
+        void setCheckerEnabledByDefault(bool);
+        bool checkerEnabledByDefault() const;
+
         void setCurrentIgnoreList(const QStringList &ignores);
         void addWordToIgnore(const QString &word);
         QStringList currentIgnoreList() const;

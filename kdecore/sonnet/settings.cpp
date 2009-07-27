@@ -46,6 +46,7 @@ public:
     bool checkUppercase;
     bool skipRunTogether;
     bool backgroundCheckerEnabled;
+    bool checkerEnabledByDefault;
 
     int disablePercentage;
     int disableWordCount;
@@ -59,6 +60,7 @@ Settings::Settings(Loader *loader)
     d->loader = loader;
 
     d->modified = false;
+    d->checkerEnabledByDefault = false;
 }
 
 Settings::~Settings()
@@ -124,6 +126,19 @@ void Settings::setSkipRunTogether(bool skip)
 bool Settings::skipRunTogether() const
 {
     return d->skipRunTogether;
+}
+
+void Settings::setCheckerEnabledByDefault(bool check)
+{
+    if (d->checkerEnabledByDefault != check) {
+        d->modified = true;
+        d->checkerEnabledByDefault = check;
+    }
+}
+
+bool Settings::checkerEnabledByDefault() const
+{
+    return d->checkerEnabledByDefault;
 }
 
 void Settings::setBackgroundCheckerEnabled(bool enable)
@@ -198,6 +213,7 @@ void Settings::save(KConfig *config)
     conf.writeEntry("checkUppercase", d->checkUppercase);
     conf.writeEntry("skipRunTogether", d->skipRunTogether);
     conf.writeEntry("backgroundCheckerEnabled", d->backgroundCheckerEnabled);
+    conf.writeEntry("checkerEnabledByDefault", d->checkerEnabledByDefault);
     QString defaultLanguage = QString( "ignore_%1" ).arg(d->defaultLanguage);
     if(conf.hasKey(defaultLanguage) && d->ignore.isEmpty())
       conf.deleteEntry(defaultLanguage);
@@ -225,6 +241,9 @@ void Settings::restore(KConfig *config)
 
     d->backgroundCheckerEnabled = conf.readEntry(
         "backgroundCheckerEnabled", true);
+
+    d->checkerEnabledByDefault = conf.readEntry(
+        "checkerEnabledByDefault", false);
 
     d->disablePercentage = conf.readEntry("Sonnet_AsYouTypeDisablePercentage", 42);
     d->disableWordCount = conf.readEntry("Sonnet_AsYouTypeDisableWordCount", 100);

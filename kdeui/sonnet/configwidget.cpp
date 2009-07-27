@@ -72,6 +72,7 @@ void ConfigWidget::init(KConfig *config)
     //d->ui->m_clientCombo->insertStringList( clients );
     d->ui.m_skipUpperCB->setChecked( !d->loader->settings()->checkUppercase() );
     d->ui.m_skipRunTogetherCB->setChecked( d->loader->settings()->skipRunTogether() );
+    d->ui.m_checkerEnabledByDefaultCB->setChecked( d->loader->settings()->checkerEnabledByDefault() );
     QStringList ignoreList = d->loader->settings()->currentIgnoreList();
     ignoreList.sort();
     d->ui.m_ignoreListBox->insertStringList( ignoreList );
@@ -84,6 +85,7 @@ void ConfigWidget::init(KConfig *config)
     connect(d->ui.m_bgSpellCB, SIGNAL(clicked(bool)),this,SIGNAL(configChanged()));
     connect(d->ui.m_skipUpperCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
     connect(d->ui.m_skipRunTogetherCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
+    connect(d->ui.m_checkerEnabledByDefaultCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
     connect(d->ui.m_ignoreListBox, SIGNAL(changed()), this, SIGNAL(configChanged()));
 }
 
@@ -104,6 +106,8 @@ void ConfigWidget::setFromGui()
         d->ui.m_skipRunTogetherCB->isChecked() );
     d->loader->settings()->setBackgroundCheckerEnabled(
         d->ui.m_bgSpellCB->isChecked() );
+    d->loader->settings()->setCheckerEnabledByDefault(
+        d->ui.m_checkerEnabledByDefaultCB->isChecked() );
 }
 
 void ConfigWidget::slotChanged()
@@ -131,6 +135,7 @@ void ConfigWidget::slotDefault()
 {
     d->ui.m_skipUpperCB->setChecked( false );
     d->ui.m_skipRunTogetherCB->setChecked( false );
+    d->ui.m_checkerEnabledByDefaultCB->setChecked( false );
     d->ui.m_bgSpellCB->setChecked( true );
     d->ui.m_ignoreListBox->clear();
 }

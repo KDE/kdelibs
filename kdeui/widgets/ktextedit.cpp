@@ -63,6 +63,11 @@ class KTextEdit::Private
         findReplaceEnabled(true),
         highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0)
     {
+        //Check the default sonnet settings to see if spellchecking should be enabled.
+        sonnetKConfig = new KConfig("sonnetrc");
+        KConfigGroup group(sonnetKConfig, "Spelling");
+        checkSpellingEnabled = group.readEntry("checkerEnabledByDefault", false);
+
         // i18n: Placeholder text in text edit widgets is the text appearing
         // before any user input, briefly explaining to the user what to type
         // (e.g. "Enter message").
@@ -79,6 +84,7 @@ class KTextEdit::Private
       delete find;
       delete replace;
       delete repDlg;
+      delete sonnetKConfig;
     }
 
     /**
@@ -136,6 +142,7 @@ class KTextEdit::Private
     KReplaceDialog *repDlg;
     KReplace *replace;
     int findIndex, repIndex;
+    KConfig *sonnetKConfig;
 };
 
 void KTextEdit::Private::spellCheckerCanceled()
