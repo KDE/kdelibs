@@ -45,6 +45,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * if you want to allow the user to enable/disable the tipdialog in the
  * application's configuration dialog.
  *
+ * \image html ktip.png "KDE Tip-of-the-Day Dialog"
+ *
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  *
  */

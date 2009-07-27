@@ -60,6 +60,8 @@ class KXMLGUIFactory;
  * and connecting to its newToolBarConfig slot, but if you really really want to do it
  * yourself, see the KXmlGuiWindow::configureToolbars() and KXmlGuiWindow::saveNewToolbarConfig() code.
  *
+ * \image html kedittoolbar.png "KDE Toolbar Editor (KWrite)"
+ *
  * @author Kurt Granroth <granroth@kde.org>
  * @maintainer David Faure <faure@kde.org>
  */

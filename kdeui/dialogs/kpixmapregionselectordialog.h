@@ -37,6 +37,8 @@ class QImage;
  * for the user to select a region of an image, and just care about the selected
  * image.
  *
+ * \image html kpixmapregionselectordialog.png "KDE Pixmap Region Selector Dialog"
+ *
  * @author Antonio Larrosa <larrosa@kde.org>
  */
 class KDEUI_EXPORT KPixmapRegionSelectorDialog : public KDialog

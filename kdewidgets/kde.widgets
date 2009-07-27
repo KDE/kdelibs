@@ -310,3 +310,13 @@ IncludeFile=kselector.h
 ToolTip=Gradient Color Selector (KDE)
 Group=Input (KDE)
 
+[KColorValueSelector]
+IncludeFile=kcolorvalueselector.h
+ToolTip=Color Value Selector (KDE)
+Group=Input (KDE)
+
+[KColorCells]
+IncludeFile=kcolordialog.h
+ToolTip=Color Table (KDE)
+Group=Input (KDE)
+ConstructorArgs=(parent, 3, 5)

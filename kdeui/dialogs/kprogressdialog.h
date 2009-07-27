@@ -39,6 +39,8 @@
  * All the functionality of QProgressBar is available through direct access
  * to the progress bar widget via progressBar();
  *
+ * \image html kprogressdialog.png "KDE Progress Dialog"
+ *
  * @author Aaron J. Seigo
  * @author Urs Wolfer uwolfer @ kde.org
  */

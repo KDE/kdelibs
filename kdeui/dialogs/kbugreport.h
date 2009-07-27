@@ -33,6 +33,8 @@ class KBugReportPrivate;
  * Make sure you create an instance of KAboutData and pass it
  * to KCmdLineArgs.
  *
+ * \image html kbugreport.png "KDE Bug Report Dialog"
+ *
  * @author David Faure <faure@kde.org>
  */
 class KDEUI_EXPORT KBugReport : public KDialog

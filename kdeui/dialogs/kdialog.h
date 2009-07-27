@@ -111,6 +111,7 @@ class KDialogPrivate;
  *   dialog->show();
  * \endcode
  *
+ * \image html kdialog.png "KDE Dialog example"
  *
  * This class can be used in many ways. Note that most KDE ui widgets
  * and many of KDE core applications use the KDialog so for more

@@ -39,6 +39,8 @@ class KColorComboPrivate;
  *
  * The combobox provides some preset colors to be selected, and an entry to
  * select a custom color using a color dialog.
+ *
+ * \image html kcolorcombo.png "KDE Color Combo Box"
  */
 class KDEUI_EXPORT KColorCombo : public QComboBox
 {

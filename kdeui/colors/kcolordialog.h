@@ -105,18 +105,35 @@ private:
  * a selected color e.g. in the KColorDialog. It
  * automatically handles drag and drop from and on the widget.
  *
+ * \image html kcolorpatch.png "KDE Color Patch"
  */
 class KDEUI_EXPORT KColorPatch : public QFrame
 {
-  Q_OBJECT
+    Q_OBJECT
+    Q_PROPERTY(QColor color READ color WRITE setColor)
+  
 public:
   KColorPatch( QWidget *parent );
   virtual ~KColorPatch();
 
-  void setColor( const QColor &col );
+    /**
+     * Get the currently displayed color
+     */
+    QColor color() const;
+
+    /**
+     * Set the color to display and update the display
+     *
+     * @param col color to display
+     */
+    void setColor( const QColor &col );
 
 Q_SIGNALS:
-  void colorChanged( const QColor&);
+    /**
+     * This signal is emitted whenever the current color
+     * changes due to a drop event
+     */
+    void colorChanged(const QColor&);
 
 protected:
   virtual void paintEvent    ( QPaintEvent * pe );

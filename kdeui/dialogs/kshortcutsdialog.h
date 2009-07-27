@@ -60,6 +60,8 @@
  * dlg.configure();
  * \endcode
  *
+ * \image html kshortcutsdialog.png "KDE Shortcuts Dialog"
+ *
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  * @author Michael Jansen <kde@michael-jansen.biz>

@@ -35,6 +35,8 @@ class QPixmap;
  *  For documentation on how to use the class, see the documentation
  *  for QSplashScreen.
  *
+ * \image html ksplashscreen.png "KDE Splash Screen"
+ *
  *  @author Chris Howells (howells@kde.org)
  */
 class KDEUI_EXPORT KSplashScreen : public QSplashScreen //krazy:exclude=qclasses

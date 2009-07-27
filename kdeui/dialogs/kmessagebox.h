@@ -55,6 +55,8 @@ class KDialog;
   *        warningYesNoCancelList(), warningYesNoCancelListWId(), messageBox(),
   *        messageBoxWId().
   *
+  * \image html kmessagebox.png "KDE Message Box (using questionYesNo())"
+  *
   * @author Waldo Bastian (bastian@kde.org)
   */
 class KDEUI_EXPORT KMessageBox

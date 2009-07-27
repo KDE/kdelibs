@@ -47,6 +47,8 @@
  * The functions next() and back() are virtual and may be reimplemented to
  * override the default actions of the next and back buttons.
  *
+ * \image html kassistantdialog.png "KDE Assistant Dialog"
+ *
  * @author Olivier Goffart <ogoffart at kde.org>
  */
 class KDEUI_EXPORT KAssistantDialog : public KPageDialog

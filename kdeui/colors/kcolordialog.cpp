@@ -446,6 +446,11 @@ KColorPatch::~KColorPatch()
     delete d;
 }
 
+QColor KColorPatch::color() const
+{
+    return d->color;
+}
+
 void KColorPatch::setColor(const QColor &col)
 {
     d->color.setRgb(col.rgb());

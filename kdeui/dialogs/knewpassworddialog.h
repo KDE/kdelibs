@@ -57,6 +57,8 @@ class QWidget;
  *      setPassword( dlg.password() );
  * \endcode
  *
+ * \image html knewpassworddialog.png "KDE New Password Dialog"
+ *
  * @author Geert Jansen <jansen@kde.org>
  * @author Olivier Goffart <ogoffart@kde.org>
  */
