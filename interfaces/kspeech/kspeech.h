@@ -27,6 +27,8 @@
 #ifndef KSPEECH_H
 #define KSPEECH_H
 
+#include "kspeech_export.h"
+
 // Qt includes
 #include <QtCore/QObject>
 #include <QtCore/QString>
