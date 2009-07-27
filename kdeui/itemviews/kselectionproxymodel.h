@@ -31,12 +31,13 @@ class KSelectionProxyModelPrivate;
 /**
 @brief A Proxy Model which presents a subset of its source model to observers.
 
-The KSelectionProxyModel is most useful as a convenience for displaying the selection in one view in another view.
+The KSelectionProxyModel is most useful as a convenience for displaying the selection in one view in another view. The selectionModel of the initial view is used to create a proxied model which includes only the selected indexes and their children.
 
 For example, when a user clicks a mail folder in one view in an email applcation, the contained emails should be displayed in another view.
 
-@code
+This takes away the need for the developer to handle the selection between the views, including all the mapToSource, mapFromSource and setRootIndex calls.
 
+@code
 MyModel *sourceModel = new MyModel(this);
 QTreeView *leftView = new QTreeView(this);
 leftView->setModel(sourceModel);
@@ -47,7 +48,23 @@ QTreeView *rightView = new QTreeView(this);
 rightView->setModel(selectionProxy);
 @endcode
 
-This takes away the need for the developer to handle the selection between the views, including all the mapToSource, mapFromSource and setRootIndex calls.
+\image html selectionproxymodelsimpleselection.png "A Selection in one view creating a model for use with another view."
+
+The KSelectionProxyModel can handle complex selections.
+
+\image html selectionproxymodelmultipleselection.png "Non-contiguous selection creating a new simple model in a second view."
+
+If an index and one or more of its descendants are selected, only the top-most selected index (including all of its descendants) are included in the proxy model. (Though this is configurable. See below)
+
+\image html selectionproxymodelmultipleselection-withdescendant.png "Selecting an item and its descendant."
+
+KSelectionProxyModel allows configuration using the methods setStartWithChildTrees, setOmitDescendants, setIncludeAllSelected. See testapp/proxymodeltestapp to try out the 5 valid configurations.
+
+Obviously, the KSelectionProxyModel may be used in a view, or further processed with other proxy models. See the example_contacts application in playground/pim/akonadi or KContactManager in kdepim for examples which use a further KDescendantsProxyModel and EntityFilterProxyModel on top of a KSelectionProxyModel.
+
+The KSelectionProxyModel orders its items in the same top-to-bottom order as they appear in the source model. Note that this order may be different to the order in the selection model if there is a QSortFilterProxyModel between the selection and the source model.
+
+\image html selectionproxymodel-ordered.png "Ordered items in the SelectionProxyModel"
 
 Additionally, this class can be used to programmatically choose some items from the source model to display in the view. For example,
 this is how KMails Favourite folder View works, and how the AmazingCompleter works.

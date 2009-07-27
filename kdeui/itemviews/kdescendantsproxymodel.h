@@ -30,6 +30,8 @@ class KDescendantsProxyModelPrivate;
 /**
 @brief Proxy Model for restructuring a Tree into a list.
 
+A KDescendantsProxyModel may be used to alter how the items in the tree are presented.
+
 Given a model which is represented as a tree:
 
 \image html entitytreemodel.png "A plain EntityTreeModel in a view"
