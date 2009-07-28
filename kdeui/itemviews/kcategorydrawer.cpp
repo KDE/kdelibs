@@ -1,6 +1,6 @@
 /**
   * This file is part of the KDE project
-  * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
+  * Copyright (C) 2007, 2009 Rafael Fernández López <ereslibre@kde.org>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
@@ -29,12 +29,33 @@
 
 #define HORIZONTAL_HINT 3
 
-KCategoryDrawer::KCategoryDrawer()
+class KCategoryDrawer::Private
 {
+public:
+    Private()
+        : leftMargin(0)
+        , rightMargin(0)
+    {
+    }
+
+    ~Private()
+    {
+    }
+
+    int leftMargin;
+    int rightMargin;
+};
+
+KCategoryDrawer::KCategoryDrawer()
+    : d(new Private)
+{
+    setLeftMargin(2);
+    setRightMargin(2);
 }
 
 KCategoryDrawer::~KCategoryDrawer()
 {
+    delete d;
 }
 
 void KCategoryDrawer::drawCategory(const QModelIndex &index,
@@ -42,63 +63,156 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
                                    const QStyleOption &option,
                                    QPainter *painter) const
 {
-    const QString category = index.model()->data(index, KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
-
-    QColor color;
-
-    if (option.state & QStyle::State_Selected)
-    {
-        color = option.palette.color(QPalette::HighlightedText);
-    }
-    else
-    {
-        color = option.palette.color(QPalette::Text);
-    }
-
-    painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    QStyleOptionViewItemV4 viewOptions;
-    viewOptions.rect = option.rect;
-    viewOptions.palette = option.palette;
-    viewOptions.direction = option.direction;
-    viewOptions.state = option.state;
-    viewOptions.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
-    QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &viewOptions, painter, 0);
+    const QString category = index.model()->data(index, KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
+    const QRect optRect = option.rect;
+    QFont font(QApplication::font());
+    font.setBold(true);
+    const QFontMetrics fontMetrics = QFontMetrics(font);
+    const int height = categoryHeight(index, option);
 
-    QFont painterFont = painter->font();
-    painterFont.setWeight(QFont::Bold);
-    QFontMetrics metrics(painterFont);
-    painter->setFont(painterFont);
+    QColor outlineColor = option.palette.text().color();
+    outlineColor.setAlphaF(0.35);
 
-    QRect lineRect(option.rect.left(),
-                   option.rect.bottom() - 1,
-                   option.rect.width(),
-                   1);
+    //BEGIN: top left corner
+    {
+        painter->save();
+        painter->setPen(outlineColor);
+        const QPointF topLeft(optRect.topLeft());
+        QRectF arc(topLeft, QSizeF(4, 4));
+        arc.translate(0.5, 0.5);
+        painter->drawArc(arc, 1440, 1440);
+        painter->restore();
+    }
+    //END: top left corner
 
-    QLinearGradient gradient(option.rect.topLeft(),
-                             option.rect.bottomRight());
-    gradient.setColorAt(option.direction == Qt::LeftToRight ? 0
-                                                            : 1, color);
-    gradient.setColorAt(option.direction == Qt::LeftToRight ? 1
-                                                            : 0, Qt::transparent);
+    //BEGIN: left vertical line
+    {
+        QPoint start(optRect.topLeft());
+        start.ry() += 3;
+        QPoint verticalGradBottom(optRect.topLeft());
+        verticalGradBottom.ry() += fontMetrics.height() + 5;
+        QLinearGradient gradient(start, verticalGradBottom);
+        gradient.setColorAt(0, outlineColor);
+        gradient.setColorAt(1, Qt::transparent);
+        painter->fillRect(QRect(start, QSize(1, fontMetrics.height() + 5)), gradient);
+    }
+    //END: left vertical line
 
-    painter->fillRect(lineRect, gradient);
+    //BEGIN: horizontal line
+    {
+        QPoint start(optRect.topLeft());
+        start.rx() += 3;
+        QPoint horizontalGradTop(optRect.topLeft());
+        horizontalGradTop.rx() += optRect.width() - 6;
+        painter->fillRect(QRect(start, QSize(optRect.width() - 6, 1)), outlineColor);
+    }
+    //END: horizontal line
 
-    painter->setPen(color);
+    //BEGIN: top right corner
+    {
+        painter->save();
+        painter->setPen(outlineColor);
+        QPointF topRight(optRect.topRight());
+        topRight.rx() -= 4;
+        QRectF arc(topRight, QSizeF(4, 4));
+        arc.translate(0.5, 0.5);
+        painter->drawArc(arc, 0, 1440);
+        painter->restore();
+    }
+    //END: top right corner
 
-    QRect textRect(option.rect);
-    textRect.setLeft(textRect.left() + HORIZONTAL_HINT);
-    textRect.setRight(textRect.right() - HORIZONTAL_HINT);
-    painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft,
-    metrics.elidedText(category, Qt::ElideRight, option.rect.width()));
+    //BEGIN: right vertical line
+    {
+        QPoint start(optRect.topRight());
+        start.ry() += 3;
+        QPoint verticalGradBottom(optRect.topRight());
+        verticalGradBottom.ry() += fontMetrics.height() + 5;
+        QLinearGradient gradient(start, verticalGradBottom);
+        gradient.setColorAt(0, outlineColor);
+        gradient.setColorAt(1, Qt::transparent);
+        painter->fillRect(QRect(start, QSize(1, fontMetrics.height() + 5)), gradient);
+    }
+    //END: right vertical line
 
-    painter->restore();
+    //BEGIN: text
+    {
+        QRect textRect(option.rect);
+        textRect.setTop(textRect.top() + 7);
+        textRect.setLeft(textRect.left() + 7);
+        textRect.setHeight(fontMetrics.height());
+        textRect.setRight(textRect.right() - 7);
+        textRect.setBottom(textRect.bottom() - 5); // only one pixel separation here (no gradient)
+
+        painter->save();
+        painter->setFont(font);
+        QColor penColor(option.palette.text().color());
+        penColor.setAlphaF(0.6);
+        painter->setPen(penColor);
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, category);
+        painter->restore();
+    }
+    //END: text
 }
 
 int KCategoryDrawer::categoryHeight(const QModelIndex &index, const QStyleOption &option) const
 {
     Q_UNUSED(index);
 
-    return option.fontMetrics.height() + 4 /* 3 separator; 1 gradient */;
+    QFont font(QApplication::font());
+    font.setBold(true);
+    QFontMetrics fontMetrics(font);
+
+    const int height = fontMetrics.height() + 1 /* 1 pixel-width gradient */
+                                            + 11 /* top and bottom separation */;
+    return height;
 }
+
+int KCategoryDrawer::leftMargin() const
+{
+    return d->leftMargin;
+}
+
+void KCategoryDrawer::setLeftMargin(int leftMargin)
+{
+    d->leftMargin = leftMargin;
+}
+
+int KCategoryDrawer::rightMargin() const
+{
+    return d->rightMargin;
+}
+
+void KCategoryDrawer::setRightMargin(int rightMargin)
+{
+    d->rightMargin = rightMargin;
+}
+
+KCategoryDrawerV2::KCategoryDrawerV2(QObject *parent)
+    : QObject(parent)
+    , KCategoryDrawer()
+{
+}
+
+KCategoryDrawerV2::~KCategoryDrawerV2()
+{
+}
+
+void KCategoryDrawerV2::mouseButtonPressed(const QModelIndex &index, QMouseEvent *event)
+{
+}
+
+void KCategoryDrawerV2::mouseButtonReleased(const QModelIndex &index, QMouseEvent *event)
+{
+}
+
+void KCategoryDrawerV2::mouseButtonMoved(const QModelIndex &index, QMouseEvent *event)
+{
+}
+
+void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event)
+{
+}
+
+#include "kcategorydrawer.moc"

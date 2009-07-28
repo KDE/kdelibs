@@ -1,6 +1,6 @@
 /**
   * This file is part of the KDE project
-  * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
+  * Copyright (C) 2007, 2009 Rafael Fernández López <ereslibre@kde.org>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
@@ -23,10 +23,16 @@
 
 #include <kdeui_export.h>
 
+#include <QtCore/QObject>
+#include <QtGui/QMouseEvent>
+
 class QPainter;
 class QModelIndex;
 class QStyleOption;
 
+/**
+  * @warning Please use KCategoryDrawerV2 instead.
+  */
 class KDEUI_EXPORT KCategoryDrawer
 {
 public:
@@ -47,6 +53,61 @@ public:
                               QPainter *painter) const;
 
     virtual int categoryHeight(const QModelIndex &index, const QStyleOption &option) const;
+
+    //TODO KDE5: make virtual as leftMargin
+    /**
+      * @note 0 by default
+      * @since 4.4
+      */
+    int leftMargin() const;
+    /**
+      * @note call to this method on the KCategoryDrawer constructor to set the left margin
+      * @since 4.4
+      */
+    void setLeftMargin(int leftMargin);
+
+    //TODO KDE5: make virtual as rightMargin
+    /**
+      * @note 0 by default
+      * @since 4.4
+      */
+    int rightMargin() const;
+    /**
+      * @note call to this method on the KCategoryDrawer constructor to set the right margin
+      * @since 4.4
+      */
+    void setRightMargin(int rightMargin);
+
+private:
+    class Private;
+    Private *const d;
+};
+
+
+/**
+  * @since 4.4
+  */
+class KDEUI_EXPORT KCategoryDrawerV2
+    : public QObject
+    , public KCategoryDrawer
+{
+    Q_OBJECT
+
+public:
+    KCategoryDrawerV2(QObject *parent = 0);
+    virtual ~KCategoryDrawerV2();
+
+    // TODO
+    virtual void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
+    // TODO
+    virtual void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
+    // TODO
+    virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
+    // TODO
+    virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
+
+Q_SIGNALS:
+    void collapseOrExpandClicked(const QModelIndex &index);
 };
 
 #endif // KCATEGORYDRAWER_H

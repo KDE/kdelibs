@@ -1,6 +1,6 @@
 /**
   * This file is part of the KDE project
-  * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
+  * Copyright (C) 2007, 2009 Rafael Fernández López <ereslibre@kde.org>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
@@ -18,6 +18,17 @@
   * Boston, MA 02110-1301, USA.
   */
 
+/**
+  * IMPLEMENTATION NOTES:
+  *
+  * QListView::setRowHidden() and QListView::isRowHidden() are not taken into
+  * account. This methods should actually not exist. This effect should be handled
+  * by an hypothetical QSortFilterProxyModel which filters out the desired rows.
+  *
+  * In case this needs to be implemented, contact me, but I consider this a faulty
+  * design.
+  */
+
 #include "kcategorizedview.h"
 #include "kcategorizedview_p.h"
 
@@ -33,21 +44,19 @@
 #include "kcategorydrawer.h"
 #include "kcategorizedsortfilterproxymodel.h"
 
-// By defining DOLPHIN_DRAGANDDROP the custom drag and drop implementation of
-// KCategorizedView is bypassed to have a consistent drag and drop look for all
-// views. Hopefully transparent pixmaps for drag objects will be supported in
-// Qt 4.4, so that this workaround can be skipped.
-#define DOLPHIN_DRAGANDDROP
+//BEGIN: Private part
 
-KCategorizedView::Private::Private(KCategorizedView *listView)
-    : listView(listView)
-    , categoryDrawer(0)
-    , biggestItemSize(QSize(0, 0))
-    , mouseButtonPressed(false)
-    , rightMouseButtonPressed(false)
-    , isDragging(false)
-    , dragLeftViewport(false)
+KCategorizedView::Private::Private(KCategorizedView *q)
+    : q(q)
     , proxyModel(0)
+    , categoryDrawer(0)
+    , categoryDrawerV2(0)
+    , categorySpacing(5)
+    , alternatingBlockColors(false)
+    , collapsibleBlocks(false)
+    , hoveredIndex(QModelIndex())
+    , pressedPosition(QPoint())
+    , rubberBandRect(QRect())
 {
 }
 
@@ -55,483 +64,413 @@ KCategorizedView::Private::~Private()
 {
 }
 
-const QModelIndexList &KCategorizedView::Private::intersectionSet(const QRect &rect)
+bool KCategorizedView::Private::isCategorized() const
 {
-    QModelIndex index;
-    QRect indexVisualRect;
+    return proxyModel && categoryDrawer && proxyModel->isCategorizedModel() &&
+           (q->viewMode() == ListMode || q->flow() == LeftToRight);
+}
 
-    intersectedIndexes.clear();
+QPair<QModelIndex, QModelIndex> KCategorizedView::Private::intersectingIndexesWithRect(const QRect &_rect) const
+{
+    const int rowCount = proxyModel->rowCount();
 
-    int itemHeight;
+    const QRect rect = _rect.normalized();
 
-    if (listView->gridSize().isEmpty())
-    {
-        itemHeight = biggestItemSize.height();
-    }
-    else
-    {
-        itemHeight = listView->gridSize().height();
-    }
-
-    // Lets find out where we should start
-    int top = proxyModel->rowCount() - 1;
+    // binary search to find out the top border
     int bottom = 0;
-    int middle = (top + bottom) / 2;
-    while (bottom <= top)
-    {
-        middle = (top + bottom) / 2;
-
-        index = proxyModel->index(middle, 0);
-        indexVisualRect = visualRect(index);
-        // We need the whole height (not only the visualRect). This will help us to update
-        // all needed indexes correctly (ereslibre)
-        indexVisualRect.setHeight(indexVisualRect.height() + (itemHeight - indexVisualRect.height()));
-
-        if (qMax(indexVisualRect.topLeft().y(),
-                 indexVisualRect.bottomRight().y()) < qMin(rect.topLeft().y(),
-                                                           rect.bottomRight().y()))
-        {
+    int top = rowCount - 1;
+    while (bottom <= top) {
+        const int middle = (bottom + top) / 2;
+        const QModelIndex index = proxyModel->index(middle, q->modelColumn(), q->rootIndex());
+        QRect itemRect = q->visualRect(index);
+        const int verticalOff = q->verticalOffset();
+        const int horizontalOff = q->horizontalOffset();
+        itemRect.topLeft().ry() += verticalOff;
+        itemRect.topLeft().rx() += horizontalOff;
+        itemRect.bottomRight().ry() += verticalOff;
+        itemRect.bottomRight().rx() += horizontalOff;
+        if (itemRect.bottomRight().y() <= rect.topLeft().y()) {
             bottom = middle + 1;
-        }
-        else
-        {
+        } else {
             top = middle - 1;
         }
     }
 
-    for (int i = middle; i < proxyModel->rowCount(); i++)
-    {
-        index = proxyModel->index(i, 0);
-        indexVisualRect = visualRect(index);
+    const QModelIndex bottomIndex = proxyModel->index(bottom, q->modelColumn(), q->rootIndex());
 
-        if (rect.intersects(indexVisualRect))
-            intersectedIndexes.append(index);
-
-        // If we passed next item, stop searching for hits
-        if (qMax(rect.bottomRight().y(), rect.topLeft().y()) <
-                                                  qMin(indexVisualRect.topLeft().y(),
-                                                       indexVisualRect.bottomRight().y()))
-            break;
-    }
-
-    return intersectedIndexes;
-}
-
-QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return QRect();
-
-    QString curCategory = elementsInfo[index.row()].category;
-
-    QRect retRect;
-    const bool leftToRightFlow = (listView->flow() == QListView::LeftToRight);
-    
-    if (leftToRightFlow)
-    {
-        if (listView->layoutDirection() == Qt::LeftToRight)
-        {
-            retRect = QRect(listView->spacing(), listView->spacing() * 2 +
-                            categoryDrawer->categoryHeight(index, listView->viewOptions()), 0, 0);
-        }
-        else
-        {
-            retRect = QRect(listView->viewport()->width() - listView->spacing(), listView->spacing() * 2 +
-                            categoryDrawer->categoryHeight(index, listView->viewOptions()), 0, 0);
-        }
-    }
-    else
-    {
-        retRect = QRect(listView->spacing(), listView->spacing() * 2 +
-                        categoryDrawer->categoryHeight(index, listView->viewOptions()), 0, 0);
-    }
-
-    int viewportWidth = listView->viewport()->width() - listView->spacing();
-
-    int itemHeight;
-    int itemWidth;
-
-    if (listView->gridSize().isEmpty() && leftToRightFlow)
-    {
-        itemHeight = biggestItemSize.height();
-        itemWidth = biggestItemSize.width();
-    }
-    else if (leftToRightFlow)
-    {
-        itemHeight = listView->gridSize().height();
-        itemWidth = listView->gridSize().width();
-    }
-    else if (listView->gridSize().isEmpty() && !leftToRightFlow)
-    {
-        itemHeight = biggestItemSize.height();
-        itemWidth = listView->viewport()->width() - listView->spacing() * 2;
-    }
-    else
-    {
-        itemHeight = listView->gridSize().height();
-        itemWidth = listView->gridSize().width() - listView->spacing() * 2;
-    }
-
-    int itemWidthPlusSeparation = listView->spacing() + itemWidth;
-    if (!itemWidthPlusSeparation)
-        itemWidthPlusSeparation++;
-    int elementsPerRow = viewportWidth / itemWidthPlusSeparation;
-    if (!elementsPerRow)
-        elementsPerRow++;
-
-    int column;
-    int row;
-
-    if (leftToRightFlow)
-    {
-        column = elementsInfo[index.row()].relativeOffsetToCategory % elementsPerRow;
-        row = elementsInfo[index.row()].relativeOffsetToCategory / elementsPerRow;
-
-        if (listView->layoutDirection() == Qt::LeftToRight)
-        {
-            retRect.setLeft(retRect.left() + column * listView->spacing() +
-                            column * itemWidth);
-        }
-        else
-        {
-            retRect.setLeft(retRect.right() - column * listView->spacing() -
-                            column * itemWidth - itemWidth);
-
-            retRect.setRight(retRect.right() - column * listView->spacing() -
-                            column * itemWidth);
-        }
-    }
-    else
-    {
-        elementsPerRow = 1;
-        column = elementsInfo[index.row()].relativeOffsetToCategory % elementsPerRow;
-        row = elementsInfo[index.row()].relativeOffsetToCategory / elementsPerRow;
-    }
-
-    foreach (const QString &category, categories)
-    {
-        if (category == curCategory)
-            break;
-
-        float rows = (float) ((float) categoriesIndexes[category].count() /
-                              (float) elementsPerRow);
-
-        int rowsInt = categoriesIndexes[category].count() / elementsPerRow;
-
-        if (rows - trunc(rows)) rowsInt++;
-
-        retRect.setTop(retRect.top() +
-                       (rowsInt * itemHeight) +
-                       categoryDrawer->categoryHeight(index, listView->viewOptions()) +
-                       listView->spacing() * 2);
-
-        if (listView->gridSize().isEmpty())
-        {
-            retRect.setTop(retRect.top() +
-                           (rowsInt * listView->spacing()));
+    // binary search to find out the bottom border
+    bottom = 0;
+    top = rowCount - 1;
+    while (bottom <= top) {
+        const int middle = (bottom + top) / 2;
+        const QModelIndex index = proxyModel->index(middle, q->modelColumn(), q->rootIndex());
+        QRect itemRect = q->visualRect(index);
+        const int verticalOff = q->verticalOffset();
+        const int horizontalOff = q->horizontalOffset();
+        itemRect.topLeft().ry() += verticalOff;
+        itemRect.topLeft().rx() += horizontalOff;
+        itemRect.bottomRight().ry() += verticalOff;
+        itemRect.bottomRight().rx() += horizontalOff;
+        if (itemRect.topLeft().y() <= rect.bottomRight().y()) {
+            bottom = middle + 1;
+        } else {
+            top = middle - 1;
         }
     }
 
-    if (listView->gridSize().isEmpty())
+    const QModelIndex topIndex = proxyModel->index(top, q->modelColumn(), q->rootIndex());
+
+    return qMakePair(bottomIndex, topIndex);
+}
+
+struct KCategorizedView::Private::Item
+{
+    Item()
+        : topLeft(QPoint())
+        , size(QSize())
     {
-        retRect.setTop(retRect.top() + row * listView->spacing() +
-                       (row * itemHeight));
-    }
-    else
-    {
-        retRect.setTop(retRect.top() + (row * itemHeight));
     }
 
-    retRect.setWidth(itemWidth);
+    QPoint topLeft;
+    QSize size;
+};
 
-    QModelIndex heightIndex = proxyModel->index(index.row(), 0);
-    if (listView->gridSize().isEmpty())
+struct KCategorizedView::Private::Block
+{
+    Block()
+        : topLeft(QPoint())
+        , height(-1)
+        , firstIndex(QModelIndex())
+        , quarantineStart(QModelIndex())
+        , items(QList<Item>())
+        , outOfQuarantine(false)
+        , alternate(false)
+        , collapsed(false)
     {
-        retRect.setHeight(listView->sizeHintForIndex(heightIndex).height());
     }
-    else
+
+    static bool lessThan(const Block &left, const Block &right)
     {
-        const QSize sizeHint = listView->sizeHintForIndex(heightIndex);
-        if (sizeHint.width() < itemWidth && leftToRightFlow) {
-            retRect.setWidth(sizeHint.width());
-            retRect.moveLeft(retRect.left() + (itemWidth - sizeHint.width()) / 2);
+        Q_ASSERT(left.firstIndex.isValid());
+        Q_ASSERT(right.firstIndex.isValid());
+        return left.firstIndex.row() < right.firstIndex.row();
+    }
+
+    QPoint topLeft;
+    int height;
+    QPersistentModelIndex firstIndex;
+    // if we have n elements on this block, and we inserted an element at position i. The quarantine
+    // will start at index (i, column, parent). This means that for all elements j where i <= j <= n, the
+    // visual rect position of item j will have to be recomputed (cannot use the cached point). The quarantine
+    // will only affect the current block, since the rest of blocks can be affected only in the way
+    // that the whole block will have different offset, but items will keep the same relative position
+    // in terms of their parent blocks.
+    QPersistentModelIndex quarantineStart;
+    QList<Item> items;
+
+    // this affects the whole block, not items separately. items contain the topLeft point relative
+    // to the block. Because of insertions or removals a whole block can be moved, so the whole block
+    // will enter in quarantine, what is faster than moving all items in absolute terms.
+    bool outOfQuarantine;
+
+    // should we alternate its color ? is just a hint, could not be used
+    bool alternate;
+    bool collapsed;
+};
+
+QPoint KCategorizedView::Private::blockPosition(const QString &category)
+{
+    Block &block = blocks[category];
+
+    if (block.outOfQuarantine && !block.topLeft.isNull()) {
+        return block.topLeft;
+    }
+
+    QPoint res(categorySpacing, 0);
+
+    const QModelIndex index = block.firstIndex;
+
+    for (QHash<QString, Private::Block>::Iterator it = blocks.begin(); it != blocks.end(); ++it) {
+        Block &block = *it;
+        const QModelIndex categoryIndex = block.firstIndex;
+        if (index.row() < categoryIndex.row()) {
+            continue;
         }
-        retRect.setHeight(qMin(sizeHint.height(), listView->gridSize().height()));
+        res.ry() += categoryDrawer->categoryHeight(categoryIndex, q->viewOptions()) + categorySpacing;
+        if (index.row() == categoryIndex.row()) {
+            continue;
+        }
+        res.ry() += blockHeight(it.key());
     }
 
-    return retRect;
+    block.outOfQuarantine = true;
+    block.topLeft = res;
+
+    return res;
 }
 
-QRect KCategorizedView::Private::visualCategoryRectInViewport(const QString &category) const
+int KCategorizedView::Private::blockHeight(const QString &category)
 {
-    QRect retRect(listView->spacing(),
-                  listView->spacing(),
-                  listView->viewport()->width() - listView->spacing() * 2,
-                  0);
+    Block &block = blocks[category];
 
-    if (!proxyModel || !categoryDrawer || !proxyModel->isCategorizedModel() || !proxyModel->rowCount() || !categories.contains(category))
-        return QRect();
-
-    QModelIndex index = proxyModel->index(0, 0, QModelIndex());
-
-    int viewportWidth = listView->viewport()->width() - listView->spacing();
-
-    int itemHeight;
-    int itemWidth;
-
-    if (listView->gridSize().isEmpty())
-    {
-        itemHeight = biggestItemSize.height();
-        itemWidth = biggestItemSize.width();
-    }
-    else
-    {
-        itemHeight = listView->gridSize().height();
-        itemWidth = listView->gridSize().width();
+    if (block.collapsed) {
+        return 0;
     }
 
-    int itemWidthPlusSeparation = listView->spacing() + itemWidth;
-    int elementsPerRow = viewportWidth / itemWidthPlusSeparation;
-
-    if (!elementsPerRow)
-        elementsPerRow++;
-
-    if (listView->flow() == QListView::TopToBottom)
-    {
-        elementsPerRow = 1;
+    if (block.height > -1) {
+        return block.height;
     }
 
-    foreach (const QString &itCategory, categories)
-    {
-        if (itCategory == category)
-            break;
+    const QModelIndex firstIndex = block.firstIndex;
+    const QModelIndex lastIndex = proxyModel->index(firstIndex.row() + block.items.count() - 1, q->modelColumn(), q->rootIndex());
+    const QRect topLeft = q->visualRect(firstIndex);
+    QRect bottomRight = q->visualRect(lastIndex);
 
-        float rows = (float) ((float) categoriesIndexes[itCategory].count() /
-                              (float) elementsPerRow);
-        int rowsInt = categoriesIndexes[itCategory].count() / elementsPerRow;
-
-        if (rows - trunc(rows)) rowsInt++;
-
-        retRect.setTop(retRect.top() +
-                       (rowsInt * itemHeight) +
-                       categoryDrawer->categoryHeight(index, listView->viewOptions()) +
-                       listView->spacing() * 2);
-
-        if (listView->gridSize().isEmpty())
-        {
-            retRect.setTop(retRect.top() +
-                           (rowsInt * listView->spacing()));
+    if (hasGrid()) {
+        bottomRight.setHeight(qMax(bottomRight.height(), q->gridSize().height()));
+    } else {
+        if (!q->uniformItemSizes()) {
+            bottomRight.setHeight(highestElementInLastRow(block) + q->spacing() * 2);
         }
     }
 
-    retRect.setHeight(categoryDrawer->categoryHeight(index, listView->viewOptions()));
+    const int height = bottomRight.bottomRight().y() - topLeft.topLeft().y() + 1;
+    block.height = height;
 
-    return retRect;
+    return height;
 }
 
-// We're sure elementsPosition doesn't contain index
-const QRect &KCategorizedView::Private::cacheIndex(const QModelIndex &index)
+int KCategorizedView::Private::viewportWidth() const
 {
-    QRect rect = visualRectInViewport(index);
-    QHash<int, QRect>::iterator it = elementsPosition.insert(index.row(), rect);
-
-    return *it;
+    return q->viewport()->width() - categorySpacing * 2 - categoryDrawer->leftMargin() - categoryDrawer->rightMargin();
 }
 
-// We're sure categoriesPosition doesn't contain category
-const QRect &KCategorizedView::Private::cacheCategory(const QString &category)
+void KCategorizedView::Private::regenerateAllElements()
 {
-    QRect rect = visualCategoryRectInViewport(category);
-    QHash<QString, QRect>::iterator it = categoriesPosition.insert(category, rect);
-
-    return *it;
-}
-
-const QRect &KCategorizedView::Private::cachedRectIndex(const QModelIndex &index)
-{
-    QHash<int, QRect>::const_iterator it = elementsPosition.constFind(index.row());
-    if (it != elementsPosition.constEnd()) // If we have it cached
-    {                                        // return it
-        return *it;
-    }
-    else                                     // Otherwise, cache it
-    {                                        // and return it
-        return cacheIndex(index);
+    for (QHash<QString, Block>::Iterator it = blocks.begin(); it != blocks.end(); ++it) {
+        Block &block = *it;
+        block.outOfQuarantine = false;
+        block.quarantineStart = block.firstIndex;
+        block.height = -1;
     }
 }
 
-const QRect &KCategorizedView::Private::cachedRectCategory(const QString &category)
+void KCategorizedView::Private::rowsInserted(const QModelIndex &parent, int start, int end)
 {
-    QHash<QString, QRect>::const_iterator it = categoriesPosition.constFind(category);
-    if (it != categoriesPosition.constEnd()) // If we have it cached
-    {                                                // return it
-        return *it;
-    }
-    else                                            // Otherwise, cache it and
-    {                                               // return it
-        return cacheCategory(category);
-    }
-}
-
-QRect KCategorizedView::Private::visualRect(const QModelIndex &index)
-{
-    QRect retRect = cachedRectIndex(index);
-    int dx = -listView->horizontalOffset();
-    int dy = -listView->verticalOffset();
-    retRect.adjust(dx, dy, dx, dy);
-
-    return retRect;
-}
-
-QRect KCategorizedView::Private::categoryVisualRect(const QString &category)
-{
-    QRect retRect = cachedRectCategory(category);
-    int dx = -listView->horizontalOffset();
-    int dy = -listView->verticalOffset();
-    retRect.adjust(dx, dy, dx, dy);
-
-    return retRect;
-}
-
-void KCategorizedView::Private::drawNewCategory(const QModelIndex &index,
-                                                int sortRole,
-                                                const QStyleOption &option,
-                                                QPainter *painter)
-{
-    if (!index.isValid())
-    {
+    if (!isCategorized()) {
         return;
     }
 
-    QStyleOption optionCopy = option;
-    const QString category = proxyModel->data(index, KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
+    for (int i = start; i <= end; ++i) {
+        const QModelIndex index = proxyModel->index(i, q->modelColumn(), parent);
 
-    optionCopy.state &= ~QStyle::State_Selected;
+        Q_ASSERT(index.isValid());
 
-    if ((listView->selectionMode() != SingleSelection) && (listView->selectionMode() != NoSelection)) {
-        if ((category == hoveredCategory) && !mouseButtonPressed)
-        {
-            optionCopy.state |= QStyle::State_MouseOver;
+        const QString category = categoryForIndex(index);
+
+        Block &block = blocks[category];
+
+        //BEGIN: update firstIndex
+        // save as firstIndex in block if
+        //     - it forced the category creation (first element on this category)
+        //     - it is before the first row on that category
+        const QModelIndex firstIndex = block.firstIndex;
+        if (!firstIndex.isValid() || index.row() < firstIndex.row()) {
+            block.firstIndex = index;
         }
-        else if ((category == hoveredCategory) && mouseButtonPressed)
-        {
-            QPoint initialPressPosition = listView->viewport()->mapFromGlobal(QCursor::pos());
-            initialPressPosition.setY(initialPressPosition.y() + listView->verticalOffset());
-            initialPressPosition.setX(initialPressPosition.x() + listView->horizontalOffset());
+        //END: update firstIndex
 
-            if (initialPressPosition == this->initialPressPosition)
-            {
-                optionCopy.state |= QStyle::State_Selected;
+        Q_ASSERT(block.firstIndex.isValid());
+
+        const int firstIndexRow = block.firstIndex.row();
+
+        block.items.insert(index.row() - firstIndexRow, Private::Item());
+        block.height = -1;
+
+        q->visualRect(index);
+        q->viewport()->update();
+    }
+
+    //BEGIN: update the items that are in quarantine in affected categories
+    {
+        const QModelIndex lastIndex = proxyModel->index(end, q->modelColumn(), parent);
+        const QString category = categoryForIndex(lastIndex);
+        Private::Block &block = blocks[category];
+        block.quarantineStart = block.firstIndex;
+    }
+    //END: update the items that are in quarantine in affected categories
+
+    //BEGIN: mark as in quarantine those categories that are under the affected ones
+    {
+        const QModelIndex firstIndex = proxyModel->index(start, q->modelColumn(), parent);
+        const QString category = categoryForIndex(firstIndex);
+        const QModelIndex firstAffectedCategory = blocks[category].firstIndex;
+        //BEGIN: order for marking as alternate those blocks that are alternate
+        QList<Block> blockList = blocks.values();
+        qSort(blockList.begin(), blockList.end(), Block::lessThan);
+        QList<int> firstIndexesRows;
+        foreach (const Block &block, blockList) {
+            firstIndexesRows << block.firstIndex.row();
+        }
+        //END: order for marking as alternate those blocks that are alternate
+        for (QHash<QString, Private::Block>::Iterator it = blocks.begin(); it != blocks.end(); ++it) {
+            Private::Block &block = *it;
+            if (block.firstIndex.row() > firstAffectedCategory.row()) {
+                block.outOfQuarantine = false;
+                block.alternate = firstIndexesRows.indexOf(block.firstIndex.row()) % 2;
+            } else if (block.firstIndex.row() == firstAffectedCategory.row()) {
+                block.alternate = firstIndexesRows.indexOf(block.firstIndex.row()) % 2;
+            }
+        }
+    }
+    //END: mark as in quarantine those categories that are under the affected ones
+}
+
+QRect KCategorizedView::Private::mapToViewport(const QRect &rect) const
+{
+    const int dx = -q->horizontalOffset();
+    const int dy = -q->verticalOffset();
+    return rect.adjusted(dx, dy, dx, dy);
+}
+
+QRect KCategorizedView::Private::mapFromViewport(const QRect &rect) const
+{
+    const int dx = q->horizontalOffset();
+    const int dy = q->verticalOffset();
+    return rect.adjusted(dx, dy, dx, dy);
+}
+
+int KCategorizedView::Private::highestElementInLastRow(const Block &block) const
+{
+    //Find the highest element in the last row
+    const QModelIndex lastIndex = proxyModel->index(block.firstIndex.row() + block.items.count() - 1, q->modelColumn(), q->rootIndex());
+    QModelIndex prevIndex = proxyModel->index(lastIndex.row(), q->modelColumn(), q->rootIndex());
+    QRect prevRect = q->visualRect(prevIndex);
+    int res = prevRect.height();
+    Q_FOREVER {
+        prevIndex = proxyModel->index(prevIndex.row() - 1, q->modelColumn(), q->rootIndex());
+        const QRect tempRect = q->visualRect(prevIndex);
+        if (tempRect.topLeft().y() < prevRect.topLeft().y()) {
+            break;
+        }
+        res = qMax(res, tempRect.height());
+        if (prevIndex == block.firstIndex) {
+            break;
+        }
+    }
+
+    return res;
+}
+
+bool KCategorizedView::Private::hasGrid() const
+{
+    const QSize gridSize = q->gridSize();
+    return gridSize.isValid() && !gridSize.isNull();
+}
+
+QString KCategorizedView::Private::categoryForIndex(const QModelIndex &index) const
+{
+    const QModelIndex categoryIndex = index.model()->index(index.row(), proxyModel->sortColumn(), index.parent());
+    return categoryIndex.data(KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
+}
+
+void KCategorizedView::Private::leftToRightVisualRect(const QModelIndex &index, Item &item,
+                                                      const Block &block, const QPoint &blockPos) const
+{
+    const int firstIndexRow = block.firstIndex.row();
+
+    if (hasGrid()) {
+        const int relativeRow = index.row() - firstIndexRow;
+        const int maxItemsPerRow = qMax(viewportWidth() / q->gridSize().width(), 1);
+        item.topLeft.rx() = (relativeRow % maxItemsPerRow) * q->gridSize().width() + blockPos.x() + categoryDrawer->leftMargin();
+        item.topLeft.ry() = (relativeRow / maxItemsPerRow) * q->gridSize().height();
+    } else {
+        if (q->uniformItemSizes()) {
+            const int relativeRow = index.row() - firstIndexRow;
+            const QSize itemSize = q->sizeHintForIndex(index);
+            const int maxItemsPerRow = qMax((viewportWidth() - q->spacing()) / (itemSize.width() + q->spacing()), 1);
+            item.topLeft.rx() = (relativeRow % maxItemsPerRow) * itemSize.width() + blockPos.x() + categoryDrawer->leftMargin();
+            item.topLeft.ry() = (relativeRow / maxItemsPerRow) * itemSize.height();
+        } else {
+            if (index != block.firstIndex) {
+                const int viewportW = viewportWidth() - q->spacing();
+                QModelIndex prevIndex = proxyModel->index(index.row() - 1, q->modelColumn(), q->rootIndex());
+                QRect prevRect = q->visualRect(prevIndex);
+                prevRect = mapFromViewport(prevRect);
+                const QSize currSize = q->sizeHintForIndex(index);
+                if ((prevRect.bottomRight().x() + 1) + currSize.width() - blockPos.x() + q->spacing()  > viewportW) {
+                    // we have to check the whole previous row, and see which one was the
+                    // highest.
+                    Q_FOREVER {
+                        prevIndex = proxyModel->index(prevIndex.row() - 1, q->modelColumn(), q->rootIndex());
+                        const QRect tempRect = q->visualRect(prevIndex);
+                        if (tempRect.topLeft().y() < prevRect.topLeft().y()) {
+                            break;
+                        }
+                        if (tempRect.bottomRight().y() > prevRect.bottomRight().y()) {
+                            prevRect = tempRect;
+                        }
+                        if (prevIndex == block.firstIndex) {
+                            break;
+                        }
+                    }
+                    item.topLeft.rx() = categoryDrawer->leftMargin() + blockPos.x() + q->spacing();
+                    item.topLeft.ry() = (prevRect.bottomRight().y() + 1) + q->spacing() - blockPos.y();
+                } else {
+                    item.topLeft.rx() = (prevRect.bottomRight().x() + 1) + q->spacing();
+                    item.topLeft.ry() = prevRect.topLeft().y() - blockPos.y();
+                }
+            } else {
+                item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin() + q->spacing();
+                item.topLeft.ry() = q->spacing();
             }
         }
     }
 
-    categoryDrawer->drawCategory(index,
-                                 sortRole,
-                                 optionCopy,
-                                 painter);
+    item.size = q->sizeHintForIndex(index);
 }
 
-
-void KCategorizedView::Private::updateScrollbars()
+void KCategorizedView::Private::topToBottomVisualRect(const QModelIndex &index, Item &item,
+                                                      const Block &block, const QPoint &blockPos) const
 {
-    // find the last index in the last category
-    QModelIndex lastIndex = categoriesIndexes.isEmpty() ? QModelIndex() : categoriesIndexes[categories.last()].last();
+    const int firstIndexRow = block.firstIndex.row();
 
-    int lastItemBottom = cachedRectIndex(lastIndex).top() +
-                         listView->spacing() + (listView->gridSize().isEmpty() ? biggestItemSize.height() : listView->gridSize().height()) - listView->viewport()->height();
-
-    listView->horizontalScrollBar()->setRange(0, 0);
-
-    if (listView->verticalScrollMode() == QAbstractItemView::ScrollPerItem)
-    {
-        listView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    }
-
-    if (listView->horizontalScrollMode() == QAbstractItemView::ScrollPerItem)
-    {
-        listView->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    }
-
-    listView->verticalScrollBar()->setSingleStep(listView->viewport()->height() / 10);
-    listView->verticalScrollBar()->setPageStep(listView->viewport()->height());
-    listView->verticalScrollBar()->setRange(0, lastItemBottom);
-}
-
-void KCategorizedView::Private::drawDraggedItems(QPainter *painter)
-{
-    QStyleOptionViewItemV4 option = listView->viewOptions();
-    option.state &= ~QStyle::State_MouseOver;
-    foreach (const QModelIndex &index, listView->selectionModel()->selectedIndexes())
-    {
-        const int dx = mousePosition.x() - initialPressPosition.x() + listView->horizontalOffset();
-        const int dy = mousePosition.y() - initialPressPosition.y() + listView->verticalOffset();
-
-        option.rect = visualRect(index);
-        option.rect.adjust(dx, dy, dx, dy);
-
-        if (option.rect.intersects(listView->viewport()->rect()))
-        {
-            listView->itemDelegate(index)->paint(painter, option, index);
-        }
-    }
-}
-
-void KCategorizedView::Private::layoutChanged(bool forceItemReload)
-{
-    if (proxyModel && categoryDrawer && proxyModel->isCategorizedModel() &&
-        ((forceItemReload ||
-          (modelSortRole != proxyModel->sortRole()) ||
-          (modelSortColumn != proxyModel->sortColumn()) ||
-          (modelSortOrder != proxyModel->sortOrder()) ||
-          (modelLastRowCount != proxyModel->rowCount()) ||
-          (modelCategorized != proxyModel->isCategorizedModel()))))
-    {
-        // Force the view to update all elements
-        listView->rowsInsertedArtifficial(QModelIndex(), 0, proxyModel->rowCount() - 1);
-
-        if (!forceItemReload)
-        {
-            modelSortRole = proxyModel->sortRole();
-            modelSortColumn = proxyModel->sortColumn();
-            modelSortOrder = proxyModel->sortOrder();
-            modelLastRowCount = proxyModel->rowCount();
-            modelCategorized = proxyModel->isCategorizedModel();
+    if (hasGrid()) {
+        const int relativeRow = index.row() - firstIndexRow;
+        item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin();
+        item.topLeft.ry() = relativeRow * q->gridSize().height();
+    } else {
+        if (q->uniformItemSizes()) {
+            const int relativeRow = index.row() - firstIndexRow;
+            const QSize itemSize = q->sizeHintForIndex(index);
+            item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin();
+            item.topLeft.ry() = relativeRow * itemSize.height();
+        } else {
+            if (index != block.firstIndex) {
+                QModelIndex prevIndex = proxyModel->index(index.row() - 1, q->modelColumn(), q->rootIndex());
+                QRect prevRect = q->visualRect(prevIndex);
+                prevRect = mapFromViewport(prevRect);
+                const QSize currSize = q->sizeHintForIndex(index);
+                item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin() + q->spacing();
+                item.topLeft.ry() = (prevRect.bottomRight().y() + 1) + q->spacing() - blockPos.y();
+            } else {
+                item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin() + q->spacing();
+                item.topLeft.ry() = q->spacing();
+            }
         }
     }
 
-    if (proxyModel && categoryDrawer && proxyModel->isCategorizedModel())
-    {
-        updateScrollbars();
-    }
+    item.size = q->sizeHintForIndex(index);
+    item.size.setWidth(viewportWidth());
 }
 
-void KCategorizedView::Private::drawDraggedItems()
+void KCategorizedView::Private::_k_slotCollapseOrExpandClicked()
 {
-    QRect rectToUpdate;
-    QRect currentRect;
-    foreach (const QModelIndex &index, listView->selectionModel()->selectedIndexes())
-    {
-        int dx = mousePosition.x() - initialPressPosition.x() + listView->horizontalOffset();
-        int dy = mousePosition.y() - initialPressPosition.y() + listView->verticalOffset();
-
-        currentRect = visualRect(index);
-        currentRect.adjust(dx, dy, dx, dy);
-
-        if (currentRect.intersects(listView->viewport()->rect()))
-        {
-            rectToUpdate = rectToUpdate.united(currentRect);
-        }
-    }
-
-    listView->viewport()->update(lastDraggedItemsRect.united(rectToUpdate));
-
-    lastDraggedItemsRect = rectToUpdate;
 }
 
+//END: Private part
 
-//==============================================================================
-
+//BEGIN: Public part
 
 KCategorizedView::KCategorizedView(QWidget *parent)
     : QListView(parent)
@@ -544,83 +483,122 @@ KCategorizedView::~KCategorizedView()
     delete d;
 }
 
-void KCategorizedView::setGridSize(const QSize &size)
-{
-    QListView::setGridSize(size);
-
-    d->layoutChanged(true);
-}
-
 void KCategorizedView::setModel(QAbstractItemModel *model)
 {
-    d->lastSelection = QItemSelection();
-    d->forcedSelectionPosition = 0;
-    d->elementsInfo.clear();
-    d->elementsPosition.clear();
-    d->categoriesIndexes.clear();
-    d->categoriesPosition.clear();
-    d->categories.clear();
-    d->intersectedIndexes.clear();
-    d->modelIndexList.clear();
-    d->hovered = QModelIndex();
-    d->mouseButtonPressed = false;
-    d->rightMouseButtonPressed = false;
+    if (d->proxyModel == model) {
+        return;
+    }
 
-    if (d->proxyModel)
-    {
-        QObject::disconnect(d->proxyModel,
-                            SIGNAL(layoutChanged()),
-                            this, SLOT(slotLayoutChanged()));
+    d->blocks.clear();
 
-        QObject::disconnect(d->proxyModel,
-                            SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                            this, SLOT(rowsRemoved(QModelIndex,int,int)));
+    if (d->proxyModel) {
+        disconnect(d->proxyModel, SIGNAL(layoutChanged()), this, SLOT(slotLayoutChanged()));
+    }
+
+    d->proxyModel = dynamic_cast<KCategorizedSortFilterProxyModel*>(model);
+
+    if (d->proxyModel) {
+        connect(d->proxyModel, SIGNAL(layoutChanged()), this, SLOT(slotLayoutChanged()));
     }
 
     QListView::setModel(model);
 
-    d->proxyModel = dynamic_cast<KCategorizedSortFilterProxyModel*>(model);
-
-    if (d->proxyModel)
-    {
-        d->modelSortRole = d->proxyModel->sortRole();
-        d->modelSortColumn = d->proxyModel->sortColumn();
-        d->modelSortOrder = d->proxyModel->sortOrder();
-        d->modelLastRowCount = d->proxyModel->rowCount();
-        d->modelCategorized = d->proxyModel->isCategorizedModel();
-
-        QObject::connect(d->proxyModel,
-                         SIGNAL(layoutChanged()),
-                         this, SLOT(slotLayoutChanged()));
-
-        QObject::connect(d->proxyModel,
-                         SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                         this, SLOT(rowsRemoved(QModelIndex,int,int)));
-
-        if (d->proxyModel->rowCount())
-        {
-            d->layoutChanged(true);
-        }
+    // if the model already had information inserted, update our data structures to it
+    if (model->rowCount()) {
+        slotLayoutChanged();
     }
-    else
-    {
-        d->modelCategorized = false;
-    }
+}
+
+void KCategorizedView::setGridSize(const QSize &size)
+{
+    setGridSizeOwn(size);
+}
+
+void KCategorizedView::setGridSizeOwn(const QSize &size)
+{
+    d->regenerateAllElements();
+    QListView::setGridSize(size);
 }
 
 QRect KCategorizedView::visualRect(const QModelIndex &index) const
 {
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
+    if (!d->isCategorized()) {
         return QListView::visualRect(index);
     }
 
-    if (!qobject_cast<const QSortFilterProxyModel*>(index.model()))
-    {
-        return d->visualRect(d->proxyModel->mapFromSource(index));
+    if (!index.isValid()) {
+        return QRect();
     }
 
-    return d->visualRect(index);
+    const QString category = d->categoryForIndex(index);
+
+    if (!d->blocks.contains(category)) {
+        return QRect();
+    }
+
+    Private::Block &block = d->blocks[category];
+    const int firstIndexRow = block.firstIndex.row();
+
+    Q_ASSERT(block.firstIndex.isValid());
+
+    if (index.row() - firstIndexRow < 0 || index.row() - firstIndexRow >= block.items.count()) {
+        return QRect();
+    }
+
+    const QPoint blockPos = d->blockPosition(category);
+
+    Private::Item &ritem = block.items[index.row() - firstIndexRow];
+
+    if (ritem.topLeft.isNull() || (block.quarantineStart.isValid() &&
+                                  index.row() >= block.quarantineStart.row())) {
+        if (flow() == LeftToRight) {
+            d->leftToRightVisualRect(index, ritem, block, blockPos);
+        } else {
+            d->topToBottomVisualRect(index, ritem, block, blockPos);
+        }
+
+        //BEGIN: update the quarantine start
+        const bool wasLastIndex = (index.row() == (block.firstIndex.row() + block.items.count() - 1));
+        if (index.row() == block.quarantineStart.row()) {
+            if (wasLastIndex) {
+                block.quarantineStart = QModelIndex();
+            } else {
+                const QModelIndex nextIndex = d->proxyModel->index(index.row() + 1, modelColumn(), rootIndex());
+                block.quarantineStart = nextIndex;
+            }
+        }
+        //END: update the quarantine start
+    }
+
+    // we get now the absolute position through the relative position of the parent block. do not
+    // save this on ritem, since this would override the item relative position in block terms.
+    Private::Item item(ritem);
+    item.topLeft.ry() += blockPos.y();
+
+    const QSize sizeHint = item.size;
+
+    if (d->hasGrid()) {
+        const QSize sizeGrid = gridSize();
+        const QSize resultingSize = sizeHint.boundedTo(sizeGrid);
+        QRect res(item.topLeft.x() + ((sizeGrid.width() - resultingSize.width()) / 2),
+                  item.topLeft.y(), resultingSize.width(), resultingSize.height());
+        if (block.collapsed) {
+            // we can still do binary search, while we "hide" items. We move those items in collapsed
+            // blocks to the left and set a 0 height.
+            res.setLeft(-resultingSize.width());
+            res.setHeight(0);
+        }
+        return d->mapToViewport(res);
+    }
+
+    QRect res(item.topLeft.x(), item.topLeft.y(), sizeHint.width(), sizeHint.height());
+    if (block.collapsed) {
+        // we can still do binary search, while we "hide" items. We move those items in collapsed
+        // blocks to the left and set a 0 height.
+        res.setLeft(-sizeHint.width());
+        res.setHeight(0);
+    }
+    return d->mapToViewport(res);
 }
 
 KCategoryDrawer *KCategorizedView::categoryDrawer() const
@@ -630,851 +608,641 @@ KCategoryDrawer *KCategorizedView::categoryDrawer() const
 
 void KCategorizedView::setCategoryDrawer(KCategoryDrawer *categoryDrawer)
 {
-    d->lastSelection = QItemSelection();
-    d->forcedSelectionPosition = 0;
-    d->elementsInfo.clear();
-    d->elementsPosition.clear();
-    d->categoriesIndexes.clear();
-    d->categoriesPosition.clear();
-    d->categories.clear();
-    d->intersectedIndexes.clear();
-    d->modelIndexList.clear();
-    d->hovered = QModelIndex();
-    d->mouseButtonPressed = false;
-    d->rightMouseButtonPressed = false;
-
-    if (!categoryDrawer && d->proxyModel)
-    {
-        QObject::disconnect(d->proxyModel,
-                            SIGNAL(layoutChanged()),
-                            this, SLOT(slotLayoutChanged()));
-
-        QObject::disconnect(d->proxyModel,
-                            SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                            this, SLOT(rowsRemoved(QModelIndex,int,int)));
-    }
-    else if (categoryDrawer && d->proxyModel)
-    {
-        QObject::connect(d->proxyModel,
-                         SIGNAL(layoutChanged()),
-                         this, SLOT(slotLayoutChanged()));
-
-        QObject::connect(d->proxyModel,
-                         SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                         this, SLOT(rowsRemoved(QModelIndex,int,int)));
+    if (d->categoryDrawerV2) {
+        disconnect(d->categoryDrawerV2, SIGNAL(collapseOrExpandClicked(QModelIndex)),
+                   this, SLOT(_k_slotCollapseOrExpandClicked(QModelIndex)));
     }
 
     d->categoryDrawer = categoryDrawer;
+    d->categoryDrawerV2 = dynamic_cast<KCategoryDrawerV2*>(categoryDrawer);
 
-    if (categoryDrawer)
-    {
-        if (d->proxyModel)
-        {
-            if (d->proxyModel->rowCount())
-            {
-                d->layoutChanged(true);
-            }
-        }
+    if (d->categoryDrawerV2) {
+        connect(d->categoryDrawerV2, SIGNAL(collapseOrExpandClicked(QModelIndex)),
+                this, SLOT(_k_slotCollapseOrExpandClicked(QModelIndex)));
     }
-    else
-    {
-        updateGeometries();
+}
+
+int KCategorizedView::categorySpacing() const
+{
+    return d->categorySpacing;
+}
+
+void KCategorizedView::setCategorySpacing(int categorySpacing)
+{
+    if (d->categorySpacing == categorySpacing) {
+        return;
     }
+
+    d->categorySpacing = categorySpacing;
+
+    for (QHash<QString, Private::Block>::Iterator it = d->blocks.begin(); it != d->blocks.end(); ++it) {
+        Private::Block &block = *it;
+        block.outOfQuarantine = false;
+    }
+}
+
+bool KCategorizedView::alternatingBlockColors() const
+{
+    return d->alternatingBlockColors;
+}
+
+void KCategorizedView::setAlternatingBlockColors(bool enable)
+{
+    d->alternatingBlockColors = enable;
+}
+
+bool KCategorizedView::collapsibleBlocks() const
+{
+    return d->collapsibleBlocks;
+}
+
+void KCategorizedView::setCollapsibleBlocks(bool enable)
+{
+    d->collapsibleBlocks = enable;
 }
 
 QModelIndex KCategorizedView::indexAt(const QPoint &point) const
 {
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
+    if (!d->isCategorized()) {
         return QListView::indexAt(point);
     }
 
-    QModelIndex index;
-
-    const QModelIndexList item = d->intersectionSet(QRect(point, point));
-
-    if (item.count() == 1)
-    {
-        index = item[0];
+    const int rowCount = d->proxyModel->rowCount();
+    if (!rowCount) {
+        return QModelIndex();
     }
 
-    return index;
+    // Binary search that will try to spot if there is an index under point
+    int bottom = 0;
+    int top = rowCount - 1;
+    while (bottom <= top) {
+        const int middle = (bottom + top) / 2;
+        const QModelIndex index = d->proxyModel->index(middle, modelColumn(), rootIndex());
+        QRect rect = visualRect(index);
+        const int verticalOff = verticalOffset();
+        const int horizontalOff = horizontalOffset();
+        rect.topLeft().ry() += verticalOff;
+        rect.topLeft().rx() += horizontalOff;
+        rect.bottomRight().ry() += verticalOff;
+        rect.bottomRight().rx() += horizontalOff;
+        if (rect.contains(point)) {
+            return index;
+        }
+        if (point.y() > rect.bottomRight().y() ||
+            (point.y() > rect.topLeft().y() && point.y() < rect.bottomRight().y() &&
+             point.x() > rect.bottomRight().x())) {
+            bottom = middle + 1;
+        } else {
+            top = middle - 1;
+        }
+    }
+
+    return QModelIndex();
 }
 
 void KCategorizedView::reset()
 {
+    d->blocks.clear();
     QListView::reset();
-
-    d->lastSelection = QItemSelection();
-    d->forcedSelectionPosition = 0;
-    d->elementsInfo.clear();
-    d->elementsPosition.clear();
-    d->categoriesIndexes.clear();
-    d->categoriesPosition.clear();
-    d->categories.clear();
-    d->intersectedIndexes.clear();
-    d->modelIndexList.clear();
-    d->hovered = QModelIndex();
-    d->biggestItemSize = QSize(0, 0);
-    d->mouseButtonPressed = false;
-    d->rightMouseButtonPressed = false;
 }
 
 void KCategorizedView::paintEvent(QPaintEvent *event)
 {
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
+    if (!d->isCategorized()) {
         QListView::paintEvent(event);
         return;
     }
 
-    bool alternatingRows = alternatingRowColors();
+    const QPair<QModelIndex, QModelIndex> intersecting = d->intersectingIndexesWithRect(viewport()->rect().intersected(event->rect()));
 
-    QStyleOptionViewItemV4 option = viewOptions();
-    option.widget = this;
-    if (wordWrap())
-    {
-        option.features |= QStyleOptionViewItemV4::WrapText;
+    QPainter p(viewport());
+    p.save();
+
+    Q_ASSERT(selectionModel()->model() == d->proxyModel);
+
+    //BEGIN: draw categories
+    QHash<QString, Private::Block>::ConstIterator it(d->blocks.constBegin());
+    while (it != d->blocks.constEnd()) {
+        const Private::Block &block = *it;
+        const QModelIndex categoryIndex = d->proxyModel->index(block.firstIndex.row(), d->proxyModel->sortColumn(), rootIndex());
+        QStyleOptionViewItemV4 option(viewOptions());
+        option.features |= d->alternatingBlockColors && block.alternate ? QStyleOptionViewItemV4::Alternate
+                                                                        : QStyleOptionViewItemV4::None;
+        option.state |= !d->collapsibleBlocks || !block.collapsed ? QStyle::State_Open
+                                                                  : QStyle::State_None;
+        const int height = d->categoryDrawer->categoryHeight(categoryIndex, option);
+        QPoint pos = d->blockPosition(it.key());
+        pos.ry() -= height;
+        option.rect.setTopLeft(pos);
+        option.rect.setWidth(d->viewportWidth() + d->categoryDrawer->leftMargin() + d->categoryDrawer->rightMargin());
+        option.rect.setHeight(height + d->blockHeight(it.key()));
+        option.rect = d->mapToViewport(option.rect);
+        if (!option.rect.intersects(viewport()->rect())) {
+            ++it;
+            continue;
+        }
+        d->categoryDrawer->drawCategory(categoryIndex, d->proxyModel->sortRole(), option, &p);
+        ++it;
     }
+    //END: draw categories
 
-    QPainter painter(viewport());
-    QRect area = event->rect();
-    const bool focus = (hasFocus() || viewport()->hasFocus()) &&
-                        currentIndex().isValid();
-    const QStyle::State state = option.state;
-    const bool enabled = (state & QStyle::State_Enabled) != 0;
-
-    painter.save();
-
-    QModelIndexList dirtyIndexes = d->intersectionSet(area);
-    bool alternate = false;
-    if (dirtyIndexes.count())
-    {
-        alternate = dirtyIndexes[0].row() % 2;
-    }
-    foreach (const QModelIndex &index, dirtyIndexes)
-    {
-        if (alternatingRows && alternate)
-        {
-            option.features |= QStyleOptionViewItemV4::Alternate;
-            alternate = false;
-        }
-        else if (alternatingRows)
-        {
-            option.features &= ~QStyleOptionViewItemV4::Alternate;
-            alternate = true;
-        }
-        option.state = state;
-        option.rect = visualRect(index);
-
-        if (selectionModel() && selectionModel()->isSelected(index))
-        {
-            option.state |= QStyle::State_Selected;
-        }
-
-        if (enabled)
-        {
-            QPalette::ColorGroup cg;
-            if ((d->proxyModel->flags(index) & Qt::ItemIsEnabled) == 0)
-            {
-                option.state &= ~QStyle::State_Enabled;
-                cg = QPalette::Disabled;
+    if (intersecting.first.isValid() && intersecting.second.isValid()) {
+        //BEGIN: draw items
+        int i = intersecting.first.row();
+        int indexToCheckIfBlockCollapsed = i;
+        QModelIndex categoryIndex;
+        QString category;
+        Private::Block *block = 0;
+        while (i <= intersecting.second.row()) {
+            //BEGIN: first check if the block is collapsed. if so, we have to skip the item painting
+            if (i == indexToCheckIfBlockCollapsed) {
+                categoryIndex = d->proxyModel->index(i, d->proxyModel->sortColumn(), rootIndex());
+                category = categoryIndex.data(KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
+                block = &d->blocks[category];
+                indexToCheckIfBlockCollapsed = block->firstIndex.row() + block->items.count();
+                if (block->collapsed) {
+                    i = indexToCheckIfBlockCollapsed;
+                    continue;
+                }
             }
-            else
-            {
-                cg = QPalette::Normal;
-            }
-            option.palette.setCurrentColorGroup(cg);
+            //END: first check if the block is collapsed. if so, we have to skip the item painting
+
+            Q_ASSERT(block);
+
+            const bool alternateItem = (i - block->firstIndex.row()) % 2;
+
+            const QModelIndex index = d->proxyModel->index(i, modelColumn(), rootIndex());
+            QStyleOptionViewItemV4 option(viewOptions());
+            option.rect = visualRect(index);
+            option.widget = this;
+            option.features |= wordWrap() ? QStyleOptionViewItemV2::WrapText
+                                          : QStyleOptionViewItemV2::None;
+            option.features |= alternatingRowColors() && alternateItem ? QStyleOptionViewItemV4::Alternate
+                                                                       : QStyleOptionViewItemV4::None;
+            option.state |= (index == d->hoveredIndex) ? QStyle::State_MouseOver
+                                                       : QStyle::State_None;
+            option.state |= selectionModel()->isSelected(index) ? QStyle::State_Selected
+                                                                : QStyle::State_None;
+            option.state |= (index == currentIndex()) ? QStyle::State_HasFocus
+                                                      : QStyle::State_None;
+            itemDelegate(index)->paint(&p, option, index);
+            ++i;
         }
-
-        if (focus && currentIndex() == index)
-        {
-            option.state |= QStyle::State_HasFocus;
-            if (this->state() == EditingState)
-                option.state |= QStyle::State_Editing;
-        }
-
-        if (index == d->hovered)
-            option.state |= QStyle::State_MouseOver;
-        else
-            option.state &= ~QStyle::State_MouseOver;
-
-        itemDelegate(index)->paint(&painter, option, index);
+        //END: draw items
     }
 
-    // Redraw categories
-    QStyleOptionViewItemV4 otherOption;
-    bool intersectedInThePast = false;
-    foreach (const QString &category, d->categories)
-    {
-        otherOption = option;
-        otherOption.rect = d->categoryVisualRect(category);
-        otherOption.state &= ~QStyle::State_MouseOver;
-
-        if (otherOption.rect.intersects(area))
-        {
-            intersectedInThePast = true;
-
-            QModelIndex indexToDraw = d->proxyModel->index(d->categoriesIndexes[category][0].row(), d->proxyModel->sortColumn());
-
-            d->drawNewCategory(indexToDraw,
-                               d->proxyModel->sortRole(), otherOption, &painter);
-        }
-        else if (intersectedInThePast)
-        {
-            break; // the visible area has been finished, we don't need to keep asking, the rest won't intersect
-                // this is doable because we know that categories are correctly ordered on the list
-        }
+    //BEGIN: draw selection rect
+    if (isSelectionRectVisible() && d->rubberBandRect.isValid()) {
+        QStyleOptionRubberBand opt;
+        opt.initFrom(this);
+        opt.shape = QRubberBand::Rectangle;
+        opt.opaque = false;
+        opt.rect = d->mapToViewport(d->rubberBandRect).intersected(viewport()->rect().adjusted(-16, -16, 16, 16));
+        p.save();
+        style()->drawControl(QStyle::CE_RubberBand, &opt, &p);
+        p.restore();
     }
+    //END: draw selection rect
 
-    if ((selectionMode() != SingleSelection) && (selectionMode() != NoSelection))
-    {
-        if (d->mouseButtonPressed && !d->isDragging)
-        {
-            QPoint start, end, initialPressPosition;
-
-            initialPressPosition = d->initialPressPosition;
-
-            initialPressPosition.setY(initialPressPosition.y() - verticalOffset());
-            initialPressPosition.setX(initialPressPosition.x() - horizontalOffset());
-
-            if (d->initialPressPosition.x() > d->mousePosition.x() ||
-                d->initialPressPosition.y() > d->mousePosition.y())
-            {
-                start = d->mousePosition;
-                end = initialPressPosition;
-            }
-            else
-            {
-                start = initialPressPosition;
-                end = d->mousePosition;
-            }
-
-            QStyleOptionRubberBand yetAnotherOption;
-            yetAnotherOption.initFrom(this);
-            yetAnotherOption.shape = QRubberBand::Rectangle;
-            yetAnotherOption.opaque = false;
-            yetAnotherOption.rect = QRect(start, end).intersected(viewport()->rect().adjusted(-16, -16, 16, 16));
-            painter.save();
-            style()->drawControl(QStyle::CE_RubberBand, &yetAnotherOption, &painter);
-            painter.restore();
-        }
-    }
-
-    if (d->isDragging && !d->dragLeftViewport)
-    {
-        painter.setOpacity(0.5);
-        d->drawDraggedItems(&painter);
-    }
-
-    painter.restore();
+    p.restore();
 }
 
 void KCategorizedView::resizeEvent(QResizeEvent *event)
 {
+    d->regenerateAllElements();
     QListView::resizeEvent(event);
-
-    // Clear the items positions cache
-    d->elementsPosition.clear();
-    d->categoriesPosition.clear();
-    d->forcedSelectionPosition = 0;
-
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
-        return;
-    }
-
-    d->updateScrollbars();
 }
 
 void KCategorizedView::setSelection(const QRect &rect,
                                     QItemSelectionModel::SelectionFlags flags)
 {
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
+    if (!d->isCategorized()) {
         QListView::setSelection(rect, flags);
         return;
     }
 
-    if (!flags)
-        return;
-
-    if (flags & QItemSelectionModel::Clear)
-    {
-        selectionModel()->clear();
-        d->lastSelection.clear();
-    }
-
-    QModelIndexList dirtyIndexes = d->intersectionSet(rect);
-
-    // no items affected, just leave
-    if (!dirtyIndexes.count())
-    {
-        selectionModel()->select(d->lastSelection, QItemSelectionModel::SelectCurrent);
-
+    if (rect.topLeft() == rect.bottomRight()) {
+        const QModelIndex index = indexAt(rect.topLeft());
+        selectionModel()->select(index, flags);
         return;
     }
 
-    QModelIndex topLeft;
-    QModelIndex bottomRight;
+    const QPair<QModelIndex, QModelIndex> intersecting = d->intersectingIndexesWithRect(rect);
 
-    if (d->mouseButtonPressed || d->rightMouseButtonPressed) // selection with click + drag
-    {
-        QItemSelection selection;
+    QItemSelection selection;
 
-        QModelIndex prev = dirtyIndexes[0];
-        QModelIndex first = prev;
-        foreach (const QModelIndex &index, dirtyIndexes)
-        {
-            // we have a different interval. non-contiguous items
-            if ((index.row() - prev.row()) > 1) {
-                selection << QItemSelectionRange(first, prev);
-
-                first = index;
+    //TODO: think of a faster implementation
+    QModelIndex firstIndex;
+    QModelIndex lastIndex;
+    for (int i = intersecting.first.row(); i <= intersecting.second.row(); ++i) {
+        const QModelIndex index = d->proxyModel->index(i, modelColumn(), rootIndex());
+        const bool visualRectIntersects = visualRect(index).intersects(rect);
+        if (firstIndex.isValid()) {
+            if (visualRectIntersects) {
+                lastIndex = index;
+            } else {
+                selection << QItemSelectionRange(firstIndex, lastIndex);
+                firstIndex = QModelIndex();
             }
-
-            prev = index;
+        } else if (visualRectIntersects) {
+            firstIndex = index;
+            lastIndex = index;
         }
-
-        selection << QItemSelectionRange(first, prev);
-
-        if (flags & QItemSelectionModel::Current)
-        {
-            if (rect.topLeft() == rect.bottomRight())
-            {
-                selectionModel()->setCurrentIndex(indexAt(rect.topLeft()), QItemSelectionModel::NoUpdate);
-            }
-
-            selection.merge(d->lastSelection, flags);
-        }
-        else
-        {
-            selection.merge(selectionModel()->selection(), flags);
-
-            selectionModel()->select(selection, QItemSelectionModel::SelectCurrent);
-
-            return;
-        }
-
-        selectionModel()->select(selection, flags);
     }
-    else // selection with click + keyboard keys
-    {
-        QModelIndex topLeftIndex = indexAt(QPoint(rect.topLeft().x(),
-                                                  rect.topLeft().y()));
-        QModelIndex bottomRightIndex = indexAt(QPoint(rect.bottomRight().x(),
-                                                      rect.bottomRight().y()));
 
-        // keyboard selection comes "upside down". Let's normalize it
-        if (topLeftIndex.row() > bottomRightIndex.row())
-        {
-            QModelIndex auxIndex = topLeftIndex;
-            topLeftIndex = bottomRightIndex;
-            bottomRightIndex = auxIndex;
-        }
-
-        int viewportWidth = viewport()->width() - spacing();
-        int itemWidth;
-
-        if (gridSize().isEmpty())
-        {
-            itemWidth = d->biggestItemSize.width();
-        }
-        else
-        {
-            itemWidth = gridSize().width();
-        }
-
-        int itemWidthPlusSeparation = spacing() + itemWidth;
-        if (!itemWidthPlusSeparation)
-            itemWidthPlusSeparation++;
-        int elementsPerRow = viewportWidth / itemWidthPlusSeparation;
-        if (!elementsPerRow)
-            elementsPerRow++;
-
-        QModelIndexList theoricDirty(dirtyIndexes);
-        dirtyIndexes.clear();
-        int first = model()->rowCount();
-        int last = 0;
-
-        foreach (const QModelIndex &index, theoricDirty)
-        {
-            if ((index.row() < first) &&
-                ((((topLeftIndex.row() / elementsPerRow) == (index.row() / elementsPerRow)) &&
-                  ((topLeftIndex.row() % elementsPerRow) <= (index.row() % elementsPerRow))) ||
-                 (topLeftIndex.row() / elementsPerRow) != (index.row() / elementsPerRow)))
-            {
-                first = index.row();
-                topLeft = index;
-            }
-
-            if ((index.row() > last) &&
-                ((((bottomRightIndex.row() / elementsPerRow) == (index.row() / elementsPerRow)) &&
-                  ((bottomRightIndex.row() % elementsPerRow) >= (index.row() % elementsPerRow))) ||
-                 (bottomRightIndex.row() / elementsPerRow) != (index.row() / elementsPerRow)))
-            {
-                last = index.row();
-                bottomRight = index;
-            }
-        }
-
-        for (int i = first; i <= last; i++)
-        {
-            dirtyIndexes << model()->index(i, theoricDirty[0].column(), theoricDirty[0].parent());
-        }
-
-        QItemSelection selection(topLeft, bottomRight);
-
-        selectionModel()->select(selection, flags);
+    if (firstIndex.isValid()) {
+        selection << QItemSelectionRange(firstIndex, lastIndex);
     }
+
+    selectionModel()->select(selection, flags);
 }
 
 void KCategorizedView::mouseMoveEvent(QMouseEvent *event)
 {
     QListView::mouseMoveEvent(event);
-
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
-        return;
-    }
-
-    const QModelIndexList item = d->intersectionSet(QRect(event->pos(), event->pos()));
-
-    if (item.count() == 1)
-    {
-        d->hovered = item[0];
-    }
-    else
-    {
-        d->hovered = QModelIndex();
-    }
-
-    const QString previousHoveredCategory = d->hoveredCategory;
-
-    d->mousePosition = event->pos();
-    d->hoveredCategory.clear();
-
-    // Redraw categories
-    foreach (const QString &category, d->categories)
-    {
-        if (d->categoryVisualRect(category).intersects(QRect(event->pos(), event->pos())))
-        {
-            d->hoveredCategory = category;
-            viewport()->update(d->categoryVisualRect(category));
-        }
-        else if ((category == previousHoveredCategory) &&
-                 (!d->categoryVisualRect(previousHoveredCategory).intersects(QRect(event->pos(), event->pos()))))
-        {
-            viewport()->update(d->categoryVisualRect(category));
-        }
-    }
-
-    QRect rect;
-    if (d->mouseButtonPressed && !d->isDragging)
-    {
-        QPoint start, end, initialPressPosition;
-
-        initialPressPosition = d->initialPressPosition;
-
-        initialPressPosition.setY(initialPressPosition.y() - verticalOffset());
-        initialPressPosition.setX(initialPressPosition.x() - horizontalOffset());
-
-        if (d->initialPressPosition.x() > d->mousePosition.x() ||
-            d->initialPressPosition.y() > d->mousePosition.y())
-        {
-            start = d->mousePosition;
-            end = initialPressPosition;
-        }
-        else
-        {
-            start = initialPressPosition;
-            end = d->mousePosition;
-        }
-
-        rect = QRect(start, end).adjusted(-16, -16, 16, 16);
-        rect = rect.united(QRect(start, end).adjusted(16, 16, -16, -16)).intersected(viewport()->rect());
-
-        viewport()->update(rect);
+    d->hoveredIndex = indexAt(event->pos());
+    const SelectionMode itemViewSelectionMode = selectionMode();
+    if (state() == DragSelectingState && isSelectionRectVisible() && itemViewSelectionMode != SingleSelection
+        && itemViewSelectionMode != NoSelection) {
+        QRect rect(d->pressedPosition, event->pos() + QPoint(horizontalOffset(), verticalOffset()));
+        rect = rect.normalized();
+        update(rect.united(d->rubberBandRect));
+        d->rubberBandRect = rect;
     }
 }
 
 void KCategorizedView::mousePressEvent(QMouseEvent *event)
 {
-    d->dragLeftViewport = false;
-
-    if (event->button() == Qt::LeftButton)
-    {
-        d->mouseButtonPressed = true;
-
-        d->initialPressPosition = event->pos();
-        d->initialPressPosition.setY(d->initialPressPosition.y() +
-                                                              verticalOffset());
-        d->initialPressPosition.setX(d->initialPressPosition.x() +
-                                                            horizontalOffset());
-    }
-    else if (event->button() == Qt::RightButton)
-    {
-        d->rightMouseButtonPressed = true;
-    }
-
     QListView::mousePressEvent(event);
-
-    if (selectionModel())
-    {
-        d->lastSelection = selectionModel()->selection();
+    if (event->button() == Qt::LeftButton) {
+        d->pressedPosition = event->pos();
+        d->pressedPosition.rx() += horizontalOffset();
+        d->pressedPosition.ry() += verticalOffset();
     }
-
-    viewport()->update(d->categoryVisualRect(d->hoveredCategory));
 }
 
 void KCategorizedView::mouseReleaseEvent(QMouseEvent *event)
 {
-    d->mouseButtonPressed = false;
-    d->rightMouseButtonPressed = false;
-
     QListView::mouseReleaseEvent(event);
-
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
-        return;
-    }
-
-    QPoint initialPressPosition = viewport()->mapFromGlobal(QCursor::pos());
-    initialPressPosition.setY(initialPressPosition.y() + verticalOffset());
-    initialPressPosition.setX(initialPressPosition.x() + horizontalOffset());
-
-    if ((selectionMode() != SingleSelection) && (selectionMode() != NoSelection) &&
-        (initialPressPosition == d->initialPressPosition))
-    {
-        foreach(const QString &category, d->categories)
-        {
-            if (d->categoryVisualRect(category).contains(event->pos()) &&
-                selectionModel())
-            {
-                QItemSelection selection = selectionModel()->selection();
-                QModelIndexList indexList = d->categoriesIndexes[category];
-
-                foreach (const QModelIndex &index, indexList)
-                {
-                    QModelIndex selectIndex = index.model()->index(index.row(), 0);
-
-                    selection << QItemSelectionRange(selectIndex);
-                }
-
-                selectionModel()->select(selection, QItemSelectionModel::SelectCurrent);
-
-                break;
-            }
-        }
-    }
-
-    QRect rect;
-    if (!d->isDragging)
-    {
-        QPoint start, end, initialPressPosition;
-
-        initialPressPosition = d->initialPressPosition;
-
-        initialPressPosition.setY(initialPressPosition.y() - verticalOffset());
-        initialPressPosition.setX(initialPressPosition.x() - horizontalOffset());
-
-        if (d->initialPressPosition.x() > d->mousePosition.x() ||
-            d->initialPressPosition.y() > d->mousePosition.y())
-        {
-            start = d->mousePosition;
-            end = initialPressPosition;
-        }
-        else
-        {
-            start = initialPressPosition;
-            end = d->mousePosition;
-        }
-
-        rect = QRect(start, end).adjusted(-16, -16, 16, 16);
-        rect = rect.united(QRect(start, end).adjusted(16, 16, -16, -16)).intersected(viewport()->rect());
-
-        viewport()->update(rect);
-    }
-
-    if (d->hovered.isValid())
-        viewport()->update(visualRect(d->hovered));
-    else if (!d->hoveredCategory.isEmpty())
-        viewport()->update(d->categoryVisualRect(d->hoveredCategory));
+    d->pressedPosition = QPoint();
+    d->rubberBandRect = QRect();
 }
 
 void KCategorizedView::leaveEvent(QEvent *event)
 {
-    d->hovered = QModelIndex();
-    d->hoveredCategory.clear();
-
     QListView::leaveEvent(event);
+    if (d->hoveredIndex.isValid()) {
+        viewport()->update(visualRect(d->hoveredIndex));
+        d->hoveredIndex = QModelIndex();
+    }
 }
 
 void KCategorizedView::startDrag(Qt::DropActions supportedActions)
 {
-    // FIXME: QAbstractItemView does far better here since it sets the
-    //        pixmap of selected icons to the dragging cursor, but it sets a non
-    //        ARGB window so it is no transparent. Use QAbstractItemView when
-    //        this is fixed on Qt.
-    // QAbstractItemView::startDrag(supportedActions);
-#if defined(DOLPHIN_DRAGANDDROP)
-    Q_UNUSED(supportedActions);
-#else
     QListView::startDrag(supportedActions);
-#endif
-
-    d->isDragging = false;
-    d->mouseButtonPressed = false;
-    d->rightMouseButtonPressed = false;
-
-    viewport()->update(d->lastDraggedItemsRect);
 }
 
 void KCategorizedView::dragMoveEvent(QDragMoveEvent *event)
 {
-    d->mousePosition = event->pos();
-
-    if (d->mouseButtonPressed)
-    {
-        d->isDragging = true;
-    }
-    else
-    {
-        d->isDragging = false;
-    }
-
-    d->dragLeftViewport = false;
-
-#if defined(DOLPHIN_DRAGANDDROP)
-    QAbstractItemView::dragMoveEvent(event);
-#else
     QListView::dragMoveEvent(event);
-#endif
+}
 
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
-        return;
-    }
-    
-    d->hovered = indexAt(event->pos());
-
-#if !defined(DOLPHIN_DRAGANDDROP)
-    d->drawDraggedItems();
-#endif
+void KCategorizedView::dragEnterEvent(QDragEnterEvent *event)
+{
+    QListView::dragEnterEvent(event);
 }
 
 void KCategorizedView::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    d->dragLeftViewport = true;
-
-#if defined(DOLPHIN_DRAGANDDROP)
-    QAbstractItemView::dragLeaveEvent(event);
-#else
     QListView::dragLeaveEvent(event);
-#endif
 }
 
 void KCategorizedView::dropEvent(QDropEvent *event)
 {
-#if defined(DOLPHIN_DRAGANDDROP)
-    QAbstractItemView::dropEvent(event);
-#else
     QListView::dropEvent(event);
-#endif
 }
 
+//TODO: improve se we take into account collapsed blocks
+//TODO: take into account when there is no grid and no uniformItemSizes
 QModelIndex KCategorizedView::moveCursor(CursorAction cursorAction,
                                          Qt::KeyboardModifiers modifiers)
 {
-    if ((viewMode() != KCategorizedView::IconMode) ||
-        !d->proxyModel ||
-        !d->categoryDrawer ||
-         d->categories.isEmpty() ||
-        !d->proxyModel->isCategorizedModel())
-    {
+    if (!d->isCategorized()) {
         return QListView::moveCursor(cursorAction, modifiers);
     }
 
-    int viewportWidth = viewport()->width() - spacing();
-    int itemWidth;
-
-    if (gridSize().isEmpty())
-    {
-        itemWidth = d->biggestItemSize.width();
-    }
-    else
-    {
-        itemWidth = gridSize().width();
+    const QModelIndex current = currentIndex();
+    const QRect currentRect = visualRect(current);
+    if (!current.isValid()) {
+        const int rowCount = d->proxyModel->rowCount(rootIndex());
+        if (!rowCount) {
+            return QModelIndex();
+        }
+        return d->proxyModel->index(0, modelColumn(), rootIndex());
     }
 
-    int itemWidthPlusSeparation = spacing() + itemWidth;
-    if (!itemWidthPlusSeparation)
-        itemWidthPlusSeparation++;
-    int elementsPerRow = viewportWidth / itemWidthPlusSeparation;
-    if (!elementsPerRow)
-        elementsPerRow++;
-
-    QModelIndex current = selectionModel() ? selectionModel()->currentIndex()
-                                           : QModelIndex();
-
-    if (!current.isValid())
-    {
-        if (cursorAction == MoveEnd)
-        {
-            current = model()->index(model()->rowCount() - 1, 0, QModelIndex());
-            d->forcedSelectionPosition = d->elementsInfo[current.row()].relativeOffsetToCategory % elementsPerRow;
-        }
-        else
-        {
-            current = model()->index(0, 0, QModelIndex());
-            d->forcedSelectionPosition = 0;
-        }
-
-        return current;
-    }
-
-    QString lastCategory = d->categories.first();
-    QString theCategory = d->categories.first();
-    QString afterCategory = d->categories.first();
-
-    bool hasToBreak = false;
-    foreach (const QString &category, d->categories)
-    {
-        if (hasToBreak)
-        {
-            afterCategory = category;
-
-            break;
-        }
-
-        if (category == d->elementsInfo[current.row()].category)
-        {
-            theCategory = category;
-
-            hasToBreak = true;
-        }
-
-        if (!hasToBreak)
-        {
-            lastCategory = category;
-        }
-    }
-
-    switch (cursorAction)
-    {
-        case QAbstractItemView::MoveUp: {
-            if (d->elementsInfo[current.row()].relativeOffsetToCategory >= elementsPerRow)
-            {
-                int indexToMove = current.row();
-                indexToMove -= qMin(((d->elementsInfo[current.row()].relativeOffsetToCategory) + d->forcedSelectionPosition), elementsPerRow - d->forcedSelectionPosition + (d->elementsInfo[current.row()].relativeOffsetToCategory % elementsPerRow));
-
-                return d->proxyModel->index(indexToMove, 0);
-            }
-            else
-            {
-                int lastCategoryLastRow = (d->categoriesIndexes[lastCategory].count() - 1) % elementsPerRow;
-                int indexToMove = current.row() - d->elementsInfo[current.row()].relativeOffsetToCategory;
-
-                if (d->forcedSelectionPosition >= lastCategoryLastRow)
-                {
-                    indexToMove -= 1;
+    switch (cursorAction) {
+        case MoveLeft: {
+                if (!current.row()) {
+                    return QModelIndex();
                 }
-                else
-                {
-                    indexToMove -= qMin((lastCategoryLastRow - d->forcedSelectionPosition + 1), d->forcedSelectionPosition + elementsPerRow + 1);
+                const QModelIndex previous = d->proxyModel->index(current.row() - 1, modelColumn(), rootIndex());
+                const QRect previousRect = visualRect(previous);
+                if (previousRect.top() == currentRect.top()) {
+                    return previous;
                 }
 
-                return d->proxyModel->index(indexToMove, 0);
+                return QModelIndex();
             }
-        }
-
-        case QAbstractItemView::MoveDown: {
-            if (d->elementsInfo[current.row()].relativeOffsetToCategory < (d->categoriesIndexes[theCategory].count() - 1 - ((d->categoriesIndexes[theCategory].count() - 1) % elementsPerRow)))
-            {
-                int indexToMove = current.row();
-                indexToMove += qMin(elementsPerRow, d->categoriesIndexes[theCategory].count() - 1 - d->elementsInfo[current.row()].relativeOffsetToCategory);
-
-                return d->proxyModel->index(indexToMove, 0);
-            }
-            else
-            {
-                int afterCategoryLastRow = qMin(elementsPerRow, d->categoriesIndexes[afterCategory].count());
-                int indexToMove = current.row() + (d->categoriesIndexes[theCategory].count() - d->elementsInfo[current.row()].relativeOffsetToCategory);
-
-                if (d->forcedSelectionPosition >= afterCategoryLastRow)
-                {
-                    indexToMove += afterCategoryLastRow - 1;
+        case MoveRight: {
+                if (current.row() == d->proxyModel->rowCount() - 1) {
+                    return QModelIndex();
                 }
-                else
-                {
-                    indexToMove += qMin(d->forcedSelectionPosition, elementsPerRow);
+                const QModelIndex next = d->proxyModel->index(current.row() + 1, modelColumn(), rootIndex());
+                const QRect nextRect = visualRect(next);
+                if (nextRect.top() == currentRect.top()) {
+                    return next;
                 }
 
-                return d->proxyModel->index(indexToMove, 0);
+                return QModelIndex();
             }
-        }
+        case MoveDown: {
+                if (d->hasGrid() || uniformItemSizes()) {
+                    const QModelIndex current = currentIndex();
+                    const QSize itemSize = d->hasGrid() ? gridSize()
+                                                        : sizeHintForIndex(current);
+                    const Private::Block &block = d->blocks[d->categoryForIndex(current)];
+                    const int maxItemsPerRow = qMax(d->viewportWidth() / itemSize.width(), 1);
+                    const bool canMove = current.row() + maxItemsPerRow < block.firstIndex.row() +
+                                                                          block.items.count();
 
-        case QAbstractItemView::MoveLeft:
-            if (layoutDirection() == Qt::RightToLeft)
-            {
-                if (!(d->elementsInfo[current.row() + 1].relativeOffsetToCategory % elementsPerRow))
-                    return current;
+                    if (canMove) {
+                        return d->proxyModel->index(current.row() + maxItemsPerRow, modelColumn(), rootIndex());
+                    }
 
-                d->forcedSelectionPosition = d->elementsInfo[current.row() + 1].relativeOffsetToCategory % elementsPerRow;
+                    const int currentRelativePos = (current.row() - block.firstIndex.row()) % maxItemsPerRow;
+                    const QModelIndex nextIndex = d->proxyModel->index(block.firstIndex.row() + block.items.count(), modelColumn(), rootIndex());
 
-#if 0 //follow qt view behavior. lateral movements won't change visual row
-                if (d->forcedSelectionPosition < 0)
-                    d->forcedSelectionPosition = (d->categoriesIndexes[theCategory].count() - 1) % elementsPerRow;
-#endif
+                    if (!nextIndex.isValid()) {
+                        return QModelIndex();
+                    }
 
-                return d->proxyModel->index(current.row() + 1, 0);
+                    const Private::Block &nextBlock = d->blocks[d->categoryForIndex(nextIndex)];
+
+                    if (nextBlock.items.count() <= currentRelativePos) {
+                        return QModelIndex();
+                    }
+
+                    if (currentRelativePos < (block.items.count() % maxItemsPerRow)) {
+                        return d->proxyModel->index(nextBlock.firstIndex.row() + currentRelativePos, modelColumn(), rootIndex());
+                    }
+
+                    return QModelIndex();
+                }
             }
+        case MoveUp: {
+                if (d->hasGrid() || uniformItemSizes()) {
+                    const QModelIndex current = currentIndex();
+                    const QSize itemSize = d->hasGrid() ? gridSize()
+                                                        : sizeHintForIndex(current);
+                    const Private::Block &block = d->blocks[d->categoryForIndex(current)];
+                    const int maxItemsPerRow = qMax(d->viewportWidth() / itemSize.width(), 1);
+                    const bool canMove = current.row() - maxItemsPerRow >= block.firstIndex.row();
 
-            if (!(d->elementsInfo[current.row()].relativeOffsetToCategory % elementsPerRow))
-                return current;
+                    if (canMove) {
+                        return d->proxyModel->index(current.row() - maxItemsPerRow, modelColumn(), rootIndex());
+                    }
 
-            d->forcedSelectionPosition = d->elementsInfo[current.row() - 1].relativeOffsetToCategory % elementsPerRow;
+                    const int currentRelativePos = (current.row() - block.firstIndex.row()) % maxItemsPerRow;
+                    const QModelIndex prevIndex = d->proxyModel->index(block.firstIndex.row() - 1, modelColumn(), rootIndex());
 
-#if 0 //follow qt view behavior. lateral movements won't change visual row
-            if (d->forcedSelectionPosition < 0)
-                d->forcedSelectionPosition = (d->categoriesIndexes[theCategory].count() - 1) % elementsPerRow;
-#endif
+                    if (!prevIndex.isValid()) {
+                        return QModelIndex();
+                    }
 
-            return d->proxyModel->index(current.row() - 1, 0);
+                    const Private::Block &prevBlock = d->blocks[d->categoryForIndex(prevIndex)];
 
-        case QAbstractItemView::MoveRight:
-            if (layoutDirection() == Qt::RightToLeft)
-            {
-                if (!(d->elementsInfo[current.row()].relativeOffsetToCategory % elementsPerRow))
-                    return current;
+                    if (prevBlock.items.count() <= currentRelativePos) {
+                        return QModelIndex();
+                    }
 
-                d->forcedSelectionPosition = d->elementsInfo[current.row() - 1].relativeOffsetToCategory % elementsPerRow;
+                    const int remainder = prevBlock.items.count() % maxItemsPerRow;
+                    if (currentRelativePos < remainder) {
+                        return d->proxyModel->index(prevBlock.firstIndex.row() + prevBlock.items.count() - remainder + currentRelativePos, modelColumn(), rootIndex());
+                    }
 
-#if 0 //follow qt view behavior. lateral movements won't change visual row
-                if (d->forcedSelectionPosition < 0)
-                    d->forcedSelectionPosition = (d->categoriesIndexes[theCategory].count() - 1) % elementsPerRow;
-#endif
-
-                return d->proxyModel->index(current.row() - 1, 0);
+                    return QModelIndex();
+                }
             }
-
-            if (!(d->elementsInfo[current.row() + 1].relativeOffsetToCategory % elementsPerRow))
-                return current;
-
-            d->forcedSelectionPosition = d->elementsInfo[current.row() + 1].relativeOffsetToCategory % elementsPerRow;
-
-#if 0 //follow qt view behavior. lateral movements won't change visual row
-            if (d->forcedSelectionPosition < 0)
-                d->forcedSelectionPosition = (d->categoriesIndexes[theCategory].count() - 1) % elementsPerRow;
-#endif
-
-            return d->proxyModel->index(current.row() + 1, 0);
-
         default:
             break;
     }
 
-    return QListView::moveCursor(cursorAction, modifiers);
+    return QModelIndex();
+}
+
+void KCategorizedView::rowsAboutToBeRemoved(const QModelIndex &parent,
+                                            int start,
+                                            int end)
+{
+    if (!d->isCategorized()) {
+        QListView::rowsAboutToBeRemoved(parent, start, end);
+        return;
+    }
+
+    if (end - start + 1 == d->proxyModel->rowCount()) {
+        d->blocks.clear();
+        QListView::rowsAboutToBeRemoved(parent, start, end);
+        return;
+    }
+
+    // Removal feels a bit more complicated than insertion. Basically we can consider there are
+    // 3 different cases when going to remove items. (*) represents an item, Items between ([) and
+    // (]) are the ones which are marked for removal.
+    //
+    // - 1st case:
+    //              ... * * * * * * [ * * * ...
+    //
+    //   The items marked for removal are the last part of this category. No need to mark any item
+    //   of this category as in quarantine, because no special offset will be pushed to items at
+    //   the right because of any changes (since the removed items are those on the right most part
+    //   of the category).
+    //
+    // - 2nd case:
+    //              ... * * * * * * ] * * * ...
+    //
+    //   The items marked for removal are the first part of this category. We have to mark as in
+    //   quarantine all items in this category. Absolutely all. All items will have to be moved to
+    //   the left (or moving up, because rows got a different offset).
+    //
+    // - 3rd case:
+    //              ... * * [ * * * * ] * * ...
+    //
+    //   The items marked for removal are in between of this category. We have to mark as in
+    //   quarantine only those items that are at the right of the end of the removal interval,
+    //   (starting on "]").
+    //
+    // It hasn't been explicitly said, but when we remove, we have to mark all blocks that are
+    // located under the top most affected category as in quarantine (the block itself, as a whole),
+    // because such a change can force it to have a different offset (note that items themselves
+    // contain relative positions to the block, so marking the block as in quarantine is enough).
+    //
+    // Also note that removal implicitly means that we have to update correctly firstIndex of each
+    // block, and in general keep updated the internal information of elements.
+
+    QStringList listOfCategoriesMarkedForRemoval;
+
+    QString lastCategory;
+    int alreadyRemoved = 0;
+    for (int i = start; i <= end; ++i) {
+        const QModelIndex index = d->proxyModel->index(i, modelColumn(), parent);
+
+        Q_ASSERT(index.isValid());
+
+        const QString category = d->categoryForIndex(index);
+
+        if (lastCategory != category) {
+            lastCategory = category;
+            alreadyRemoved = 0;
+        }
+
+        Private::Block &block = d->blocks[category];
+        block.items.removeAt(i - block.firstIndex.row() - alreadyRemoved);
+        ++alreadyRemoved;
+
+        if (!block.items.count()) {
+            listOfCategoriesMarkedForRemoval << category;
+        }
+
+        block.height = -1;
+
+        viewport()->update();
+    }
+
+    //BEGIN: update the items that are in quarantine in affected categories
+    {
+        const QModelIndex lastIndex = d->proxyModel->index(end, modelColumn(), parent);
+        const QString category = d->categoryForIndex(lastIndex);
+        Private::Block &block = d->blocks[category];
+        if (block.items.count() && start <= block.firstIndex.row() && end >= block.firstIndex.row()) {
+            block.firstIndex = d->proxyModel->index(end + 1, modelColumn(), parent);
+        }
+        block.quarantineStart = block.firstIndex;
+    }
+    //END: update the items that are in quarantine in affected categories
+
+    Q_FOREACH (const QString &category, listOfCategoriesMarkedForRemoval) {
+        d->blocks.remove(category);
+    }
+
+    //BEGIN: mark as in quarantine those categories that are under the affected ones
+    {
+        //BEGIN: order for marking as alternate those blocks that are alternate
+        QList<Private::Block> blockList = d->blocks.values();
+        qSort(blockList.begin(), blockList.end(), Private::Block::lessThan);
+        QList<int> firstIndexesRows;
+        foreach (const Private::Block &block, blockList) {
+            firstIndexesRows << block.firstIndex.row();
+        }
+        //END: order for marking as alternate those blocks that are alternate
+        for (QHash<QString, Private::Block>::Iterator it = d->blocks.begin(); it != d->blocks.end(); ++it) {
+            Private::Block &block = *it;
+            if (block.firstIndex.row() > start) {
+                block.outOfQuarantine = false;
+                block.alternate = firstIndexesRows.indexOf(block.firstIndex.row()) % 2;
+            } else if (block.firstIndex.row() == start) {
+                block.alternate = firstIndexesRows.indexOf(block.firstIndex.row()) % 2;
+            }
+        }
+    }
+    //END: mark as in quarantine those categories that are under the affected ones
+
+    QListView::rowsAboutToBeRemoved(parent, start, end);
+}
+
+void KCategorizedView::updateGeometries()
+{
+    const int verticalOff = verticalOffset();
+
+    QListView::updateGeometries();
+
+    if (!d->isCategorized()) {
+        return;
+    }
+
+    const int rowCount = d->proxyModel->rowCount();
+    if (!rowCount) {
+        verticalScrollBar()->setRange(0, 0);
+        return;
+    }
+
+    const QModelIndex lastIndex = d->proxyModel->index(rowCount - 1, modelColumn(), rootIndex());
+    Q_ASSERT(lastIndex.isValid());
+    QRect lastItemRect = visualRect(lastIndex);
+
+    if (d->hasGrid()) {
+        lastItemRect.setSize(lastItemRect.size().expandedTo(gridSize()));
+    } else {
+        if (uniformItemSizes()) {
+            QSize itemSize = sizeHintForIndex(lastIndex);
+            itemSize.setHeight(itemSize.height() + spacing());
+            lastItemRect.setSize(itemSize);
+        } else {
+            QSize itemSize = sizeHintForIndex(lastIndex);
+            const QString category = d->categoryForIndex(lastIndex);
+            itemSize.setHeight(d->highestElementInLastRow(d->blocks[category]) + spacing());
+            lastItemRect.setSize(itemSize);
+        }
+    }
+
+    int bottomRange = 0;
+
+    if (viewMode() == ListMode && verticalScrollMode() == ScrollPerItem) {
+        //TODO: think more about this case
+    } else {
+        bottomRange = lastItemRect.bottomRight().y() + verticalOffset() - viewport()->height();
+    }
+
+    verticalScrollBar()->setRange(0, bottomRange);
+    verticalScrollBar()->setValue(verticalOff);
+
+    //TODO: also consider working with the horizontal scroll bar. since at this level I am not still
+    //      supporting "top to bottom" flow, there is no real problem. If I support that someday
+    //      (think how to draw categories), we would have to take care of the horizontal scroll bar too.
+    //      In theory, as KCategorizedView has been designed, there is no need of horizontal scroll bar.
+    horizontalScrollBar()->setRange(0, 0);
+}
+
+void KCategorizedView::currentChanged(const QModelIndex &current,
+                                      const QModelIndex &previous)
+{
+    QListView::currentChanged(current, previous);
+}
+
+void KCategorizedView::dataChanged(const QModelIndex &topLeft,
+                                   const QModelIndex &bottomRight)
+{
+    QListView::dataChanged(topLeft, bottomRight);
+
+    //BEGIN: since the model changed data, we need to reconsider item sizes
+    int i = topLeft.row();
+    int indexToCheck = i;
+    QModelIndex categoryIndex;
+    QString category;
+    Private::Block *block;
+    while (i <= bottomRight.row()) {
+        const QModelIndex currIndex = d->proxyModel->index(i, modelColumn(), rootIndex());
+        if (i == indexToCheck) {
+            categoryIndex = d->proxyModel->index(i, d->proxyModel->sortColumn(), rootIndex());
+            category = categoryIndex.data(KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
+            block = &d->blocks[category];
+            block->quarantineStart = currIndex;
+            indexToCheck = block->firstIndex.row() + block->items.count();
+        }
+        visualRect(currIndex);
+        ++i;
+    }
+    //END: since the model changed data, we need to reconsider item sizes
 }
 
 void KCategorizedView::rowsInserted(const QModelIndex &parent,
@@ -1482,26 +1250,7 @@ void KCategorizedView::rowsInserted(const QModelIndex &parent,
                                     int end)
 {
     QListView::rowsInserted(parent, start, end);
-
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
-        d->forcedSelectionPosition = 0;
-        d->elementsInfo.clear();
-        d->elementsPosition.clear();
-        d->categoriesIndexes.clear();
-        d->categoriesPosition.clear();
-        d->categories.clear();
-        d->intersectedIndexes.clear();
-        d->modelIndexList.clear();
-        d->hovered = QModelIndex();
-        d->biggestItemSize = QSize(0, 0);
-        d->mouseButtonPressed = false;
-        d->rightMouseButtonPressed = false;
-
-        return;
-    }
-
-    rowsInsertedArtifficial(parent, start, end);
+    d->rowsInserted(parent, start, end);
 }
 
 void KCategorizedView::rowsInsertedArtifficial(const QModelIndex &parent,
@@ -1509,75 +1258,8 @@ void KCategorizedView::rowsInsertedArtifficial(const QModelIndex &parent,
                                                int end)
 {
     Q_UNUSED(parent);
-
-    d->forcedSelectionPosition = 0;
-    d->elementsInfo.clear();
-    d->elementsPosition.clear();
-    d->categoriesIndexes.clear();
-    d->categoriesPosition.clear();
-    d->categories.clear();
-    d->intersectedIndexes.clear();
-    d->modelIndexList.clear();
-    d->hovered = QModelIndex();
-    d->biggestItemSize = QSize(0, 0);
-    d->mouseButtonPressed = false;
-    d->rightMouseButtonPressed = false;
-
-    if (start > end || end < 0 || start < 0 || !d->proxyModel->rowCount())
-    {
-        return;
-    }
-
-    // Add all elements mapped to the source model and explore categories
-    QString prevCategory = d->proxyModel->data(d->proxyModel->index(0, d->proxyModel->sortColumn()), KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
-    QString lastCategory = prevCategory;
-    QModelIndexList modelIndexList;
-    struct Private::ElementInfo elementInfo;
-    int offset = -1;
-    for (int k = 0; k < d->proxyModel->rowCount(); ++k)
-    {
-        QModelIndex index = d->proxyModel->index(k, d->proxyModel->sortColumn());
-        QModelIndex indexSize = d->proxyModel->index(k, 0);
-
-        d->biggestItemSize = QSize(qMax(sizeHintForIndex(indexSize).width(),
-                                        d->biggestItemSize.width()),
-                                   qMax(sizeHintForIndex(indexSize).height(),
-                                        d->biggestItemSize.height()));
-
-        d->modelIndexList << index;
-
-        lastCategory = d->proxyModel->data(index, KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
-
-        elementInfo.category = lastCategory;
-
-        if (prevCategory != lastCategory)
-        {
-            offset = 0;
-            d->categoriesIndexes.insert(prevCategory, modelIndexList);
-            d->categories << prevCategory;
-            modelIndexList.clear();
-        }
-        else
-        {
-            offset++;
-        }
-
-        elementInfo.relativeOffsetToCategory = offset;
-
-        modelIndexList << index;
-        prevCategory = lastCategory;
-
-        d->elementsInfo.insert(index.row(), elementInfo);
-    }
-
-    d->categoriesIndexes.insert(prevCategory, modelIndexList);
-    d->categories << prevCategory;
-
-    d->updateScrollbars();
-
-    // FIXME: We need to safely save the last selection. This is on my TODO
-    // list (ereslibre).
-    selectionModel()->clear();
+    Q_UNUSED(start);
+    Q_UNUSED(end);
 }
 
 void KCategorizedView::rowsRemoved(const QModelIndex &parent,
@@ -1587,91 +1269,16 @@ void KCategorizedView::rowsRemoved(const QModelIndex &parent,
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    if (d->proxyModel && d->categoryDrawer && d->proxyModel->isCategorizedModel())
-    {
-        // Force the view to update all elements
-        rowsInsertedArtifficial(QModelIndex(), 0, d->proxyModel->rowCount() - 1);
-    }
-}
-
-void KCategorizedView::updateGeometries()
-{
-    if (!d->proxyModel || !d->categoryDrawer || !d->proxyModel->isCategorizedModel())
-    {
-        QListView::updateGeometries();
-        return;
-    }
-
-    // Avoid QListView::updateGeometries(), since it will try to set another
-    // range to our scroll bars, what we don't want (ereslibre)
-    QAbstractItemView::updateGeometries();
 }
 
 void KCategorizedView::slotLayoutChanged()
 {
-    d->layoutChanged();
+    d->blocks.clear();
+    if (d->proxyModel->rowCount()) {
+        d->rowsInserted(rootIndex(), 0, d->proxyModel->rowCount() - 1);
+    }
 }
 
-void KCategorizedView::currentChanged(const QModelIndex &current,
-                                      const QModelIndex &previous)
-{
-    // We need to update the forcedSelectionPosition property in order to correctly
-    // navigate after with keyboard using up & down keys
-
-    int viewportWidth = viewport()->width() - spacing();
-
-    int itemHeight;
-    int itemWidth;
-
-    if (gridSize().isEmpty())
-    {
-        itemHeight = d->biggestItemSize.height();
-        itemWidth = d->biggestItemSize.width();
-    }
-    else
-    {
-        itemHeight = gridSize().height();
-        itemWidth = gridSize().width();
-    }
-
-    int itemWidthPlusSeparation = spacing() + itemWidth;
-    if (!itemWidthPlusSeparation)
-        itemWidthPlusSeparation++;
-    int elementsPerRow = viewportWidth / itemWidthPlusSeparation;
-    if (!elementsPerRow)
-        elementsPerRow++;
-
-    if (d->mouseButtonPressed || d->rightMouseButtonPressed)
-        d->forcedSelectionPosition = d->elementsInfo[current.row()].relativeOffsetToCategory % elementsPerRow;
-
-    QListView::currentChanged(current, previous);
-}
-
-void KCategorizedView::dataChanged(const QModelIndex &topLeft,
-                                   const QModelIndex &bottomRight)
-{
-    if (topLeft == bottomRight)
-    {
-        d->cacheIndex(topLeft);
-    }
-    else
-    {
-        const int columnStart = topLeft.column();
-        const int columnEnd = bottomRight.column();
-        const int rowStart = topLeft.row();
-        const int rowEnd = bottomRight.row();
-
-        for (int row = rowStart; row <= rowEnd; ++row)
-        {
-            for (int column = columnStart; column <= columnEnd; ++column)
-            {
-                d->cacheIndex(d->proxyModel->index(row, column));
-            }
-        }
-    }
-
-    QListView::dataChanged(topLeft, bottomRight);
-    slotLayoutChanged();
-}
+//END: Public part
 
 #include "kcategorizedview.moc"

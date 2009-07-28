@@ -120,6 +120,7 @@ class KFileItemDelegate::Private
         qreal shadowBlur;
         QSize maximumSize;
         bool showToolTipWhenElided;
+        QTextOption::WrapMode wrapMode;
 
     private:
         KFileItemDelegate * const q;
@@ -132,7 +133,7 @@ class KFileItemDelegate::Private
 
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
      : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2), maximumSize(0, 0),
-       showToolTipWhenElided(true), q(parent),
+       showToolTipWhenElided(true), wrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere ), q(parent),
        animationHandler(new KIO::DelegateAnimationHandler(parent)), activeMargins(0)
 {
 }
@@ -420,8 +421,7 @@ void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QSt
     QTextOption textoption;
     textoption.setTextDirection(option.direction);
     textoption.setAlignment(QStyle::visualAlignment(option.direction, option.displayAlignment));
-    textoption.setWrapMode((option.features & QStyleOptionViewItemV2::WrapText) ?
-                           QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap);
+    textoption.setWrapMode((option.features & QStyleOptionViewItemV2::WrapText) ? wrapMode : QTextOption::NoWrap);
 
     layout.setFont(option.font);
     layout.setTextOption(textoption);
@@ -1002,6 +1002,15 @@ bool KFileItemDelegate::showToolTipWhenElided() const
     return d->showToolTipWhenElided;
 }
 
+void KFileItemDelegate::setWrapMode(QTextOption::WrapMode wrapMode)
+{
+    d->wrapMode = wrapMode;
+}
+
+QTextOption::WrapMode KFileItemDelegate::wrapMode() const
+{
+    return d->wrapMode;
+}
 
 QRect KFileItemDelegate::iconRect(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -1339,7 +1348,7 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
 {
     KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
-    
+
     //Do not update existing text that the user may already have edited.
     //The models will call setEditorData(..) whenever the icon has changed,
     //and this makes the editing work correctly despite that.
@@ -1347,7 +1356,7 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
         return;
     }
     textedit->setEnabled(true); //Enable the text-edit to mark it as initialized
-    
+
     const QVariant value = index.data(Qt::EditRole);
     const QString text = value.toString();
     textedit->insertPlainText(text);

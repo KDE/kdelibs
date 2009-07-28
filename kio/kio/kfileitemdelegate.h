@@ -23,6 +23,7 @@
 #define KFILEITEMDELEGATE_H
 
 #include <QtGui/QAbstractItemDelegate>
+#include <QtGui/QTextOption>
 #include <kio/global.h>
 
 
@@ -383,6 +384,22 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * @since 4.4
          */
         QRect iconRect(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+        /**
+         * When the contents text needs to be wrapped, @p wrapMode strategy
+         * will be followed.
+         *
+         * @since 4.4
+         */
+        void setWrapMode(QTextOption::WrapMode wrapMode);
+
+        /**
+         * Returns the wrapping strategy followed to show text when it needs
+         * wrapping.
+         *
+         * @since 4.4
+         */
+        QTextOption::WrapMode wrapMode() const;
 
         /**
          * Reimplemented from @ref QAbstractItemDelegate.

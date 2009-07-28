@@ -1,6 +1,6 @@
 /**
   * This file is part of the KDE project
-  * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
+  * Copyright (C) 2007, 2009 Rafael Fernández López <ereslibre@kde.org>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
@@ -26,14 +26,53 @@
 #include <kdeui_export.h>
 
 class KCategoryDrawer;
+class KCategoryDrawerV2;
 
 /**
-  * @short Item view for listing items
+  * @short Item view for listing items in a categorized fashion optionally
   *
-  * KCategorizedView allows you to use it as it were a QListView. 
-  * Subclass KCategorizedSortFilterProxyModel to provide category information for items.
+  * KCategorizedView basically has the same functionality as QListView, only that it also lets you
+  * layout items in a way that they are categorized visually.
   *
-  * @see KCategorizedSortFilterProxyModel
+  * For it to work you will need to set a KCategorizedSortFilterProxyModel and a KCategoryDrawer
+  * with methods setModel() and setCategoryDrawer() respectively. Also, the model will need to be
+  * flagged as categorized with KCategorizedSortFilterProxyModel::setCategorizedModel(true).
+  *
+  * The way it works (if categorization enabled):
+  *
+  *     - When sorting, it does more things than QListView does. It will ask the model for the
+  *       special role CategorySortRole (@see KCategorizedSortFilterProxyModel). This can return
+  *       a QString or an int in order to tell the view the order of categories. In this sense, for
+  *       instance, if we are sorting by name ascending, "A" would be before than "B". If we are
+  *       sorting by size ascending, 512 bytes would be before 1024 bytes. This way categories are
+  *       also sorted.
+  *
+  *     - When the view has to paint, it will ask the model with the role CategoryDisplayRole
+  *       (@see KCategorizedSortFilterProxyModel). It will for instance return "F" for "foo.pdf" if
+  *       we are sorting by name ascending, or "Small" if a certain item has 100 bytes, for example.
+  *
+  * For drawing categories, KCategoryDrawer will be used. You can inherit this class to do your own
+  * drawing.
+  *
+  * @note All examples cited before talk about filesystems and such, but have present that this
+  *       is a completely generic class, and it can be used for whatever your purpose is. For
+  *       instance when talking about animals, you can separate them by "Mammal" and "Oviparous". In
+  *       this very case, for example, the CategorySortRole and the CategoryDisplayRole could be the
+  *       same ("Mammal" and "Oviparous").
+  *
+  * @note There is a really performance boost if CategorySortRole returns an int instead of a QString.
+  *       Have present that this role is asked (n * log n) times when sorting and compared. Comparing
+  *       ints is always faster than comparing strings, whithout mattering how fast the string
+  *       comparison is. Consider thinking of a way of returning ints instead of QStrings if your
+  *       model can contain a high number of items.
+  *
+  * @warning Note that for really drawing items in blocks you will need some things to be done:
+  *             - The model set to this view has to be (or inherit if you want to do special stuff
+  *               in it) KCategorizedSortFilterProxyModel.
+  *             - This model needs to be set setCategorizedModel to true.
+  *             - Set a category drawer by calling setCategoryDrawer.
+  *
+  * @see KCategorizedSortFilterProxyModel, KCategoryDrawer
   *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
@@ -47,74 +86,223 @@ public:
 
     ~KCategorizedView();
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void setModel(QAbstractItemModel *model);
 
     void setGridSize(const QSize &size);
 
+    /**
+      * @warning note that setGridSize is not virtual in the base class (QListView), so if you are
+      *          calling to this method, make sure you have a KCategorizedView pointer around. This
+      *          means that something like:
+      * @code
+      *     QListView *lv = new KCategorizedView();
+      *     lv->setGridSize(mySize);
+      * @endcode
+      *
+      * will not call to the expected setGridSize method. Instead do something like this:
+      *
+      * @code
+      *     QListView *lv;
+      *     ...
+      *     KCategorizedView *cv = qobject_cast<KCategorizedView*>(lv);
+      *     if (cv) {
+      *         cv->setGridSizeOwn(mySize);
+      *     } else {
+      *         lv->setGridSize(mySize);
+      *     }
+      * @endcode
+      *
+      * @note this method will call to QListView::setGridSize among other operations.
+      *
+      * @since 4.4
+      */
+    void setGridSizeOwn(const QSize &size);
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual QRect visualRect(const QModelIndex &index) const;
 
+    /**
+      * Returns the current category drawer.
+      */
     KCategoryDrawer *categoryDrawer() const;
 
+    /**
+      * The category drawer that will be used for drawing categories.
+      */
     void setCategoryDrawer(KCategoryDrawer *categoryDrawer);
 
+    /**
+      * @since 4.4
+      */
+    int categorySpacing() const;
+
+    /**
+      * @since 4.4
+      */
+    void setCategorySpacing(int categorySpacing);
+
+    /**
+      * @since 4.4
+      */
+    bool alternatingBlockColors() const;
+
+    /**
+      * @since 4.4
+      */
+    void setAlternatingBlockColors(bool enable);
+
+    /**
+      * @since 4.4
+      */
+    bool collapsibleBlocks() const;
+
+    /**
+      * @since 4.4
+      */
+    void setCollapsibleBlocks(bool enable);
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual QModelIndex indexAt(const QPoint &point) const;
 
-public Q_SLOTS:
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void reset();
 
 protected:
+    /**
+      * Reimplemented from QWidget.
+      */
     virtual void paintEvent(QPaintEvent *event);
 
+    /**
+      * Reimplemented from QWidget.
+      */
     virtual void resizeEvent(QResizeEvent *event);
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void setSelection(const QRect &rect,
                               QItemSelectionModel::SelectionFlags flags);
 
+    /**
+      * Reimplemented from QWidget.
+      */
     virtual void mouseMoveEvent(QMouseEvent *event);
 
+    /**
+      * Reimplemented from QWidget.
+      */
     virtual void mousePressEvent(QMouseEvent *event);
 
+    /**
+      * Reimplemented from QWidget.
+      */
     virtual void mouseReleaseEvent(QMouseEvent *event);
 
+    /**
+      * Reimplemented from QWidget.
+      */
     virtual void leaveEvent(QEvent *event);
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void startDrag(Qt::DropActions supportedActions);
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void dragMoveEvent(QDragMoveEvent *event);
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void dropEvent(QDropEvent *event);
 
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual QModelIndex moveCursor(CursorAction cursorAction,
                                    Qt::KeyboardModifiers modifiers);
 
-protected Q_SLOTS:
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
+    virtual void rowsAboutToBeRemoved(const QModelIndex &parent,
+                                      int start,
+                                      int end);
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
+    virtual void updateGeometries();
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
+    virtual void currentChanged(const QModelIndex &current,
+                                const QModelIndex &previous);
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
+    virtual void dataChanged(const QModelIndex &topLeft,
+                             const QModelIndex &bottomRight);
+
+    /**
+      * Reimplemented from QAbstractItemView.
+      */
     virtual void rowsInserted(const QModelIndex &parent,
                               int start,
                               int end);
 
-    virtual void rowsInsertedArtifficial(const QModelIndex &parent,
-                                         int start,
-                                         int end);
+protected Q_SLOTS:
+    /**
+      * @internal
+      * @warning Deprecated since 4.4.
+      */
+    virtual KDE_DEPRECATED void rowsInsertedArtifficial(const QModelIndex &parent,
+                                                        int start,
+                                                        int end);
 
-    virtual void rowsRemoved(const QModelIndex &parent,
-                             int start,
-                             int end);
+    /**
+      * @internal
+      * @warning Deprecated since 4.4.
+      */
+    virtual KDE_DEPRECATED void rowsRemoved(const QModelIndex &parent,
+                                            int start,
+                                            int end);
 
-    virtual void updateGeometries();
-
+    /**
+      * @internal
+      * Reposition items as needed.
+      */
     virtual void slotLayoutChanged();
-
-    virtual void currentChanged(const QModelIndex &current,
-                                const QModelIndex &previous);
-
-    virtual void dataChanged(const QModelIndex &topLeft,
-                             const QModelIndex &bottomRight);
 
 private:
     class Private;
     Private *const d;
+
+    Q_PRIVATE_SLOT(d, void _k_slotCollapseOrExpandClicked())
 };
 
 #endif // KCATEGORIZEDVIEW_H
