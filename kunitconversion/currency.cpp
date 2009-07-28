@@ -42,7 +42,7 @@ Currency::Currency(QObject* parent)
     setUrl(KUrl("http://www.ecb.int/stats/exchange/eurofxref/html/index.en.html"));
 
     // Static rates
-    setDefaultUnit(U(Eur, 1,
+    setDefaultUnit(UP(Eur, 1,
       i18nc("currency unit symbol", "EUR"),
       i18nc("unit description in lists", "euros"),
       i18nc("unit synonyms for matching user input", "euro;euros;EUR;eur;€"),
@@ -408,7 +408,7 @@ Currency::Currency(QObject* parent)
     m_update = true;
 }
 
-Value Currency::convert(const Value& value, const Unit* to)
+Value Currency::convert(const Value& value, UnitPtr to)
 {
     static QMutex mutex;
 
@@ -444,7 +444,7 @@ Value Currency::convert(const Value& value, const Unit* to)
                 for (int i = 0; i < list.count(); ++i) {
                     const QDomElement e = list.item(i).toElement();
                     if (e.hasAttribute("currency")) {
-                        Unit* u = unit(e.attribute("currency"));
+                        UnitPtr u = unit(e.attribute("currency"));
                         if (u) {
                             u->setMultiplier(1.0 / e.attribute("rate").toDouble());
                         }

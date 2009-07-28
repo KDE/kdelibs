@@ -21,6 +21,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "unitcategory.h"
 #include "area.h"
@@ -50,15 +51,29 @@ public:
         const KLocalizedString ls;
         setObjectName("invalid");
         setName(i18n("Invalid"));
-        setDefaultUnit(U(InvalidUnit, 1.0, s, s, s, ls, ls));
+        setDefaultUnit(UP(InvalidUnit, 1.0, s, s, s, ls, ls));
     };
 };
 
-class Converter::Private
+class Converter::Private : public QAtomicInt, public QObject
 {
 public:
     Private()
     {
+        new InvalidCategory(this);
+        new Length(this);
+        new Area(this);
+        new Volume(this);
+        new Temperature(this);
+        new Velocity(this);
+        new Mass(this);
+        new Pressure(this);
+        new Energy(this);
+        new Currency(this);
+        new Power(this);
+        new Time(this);
+        new FuelEfficiency(this);
+        new Density(this);
     };
 
     ~Private()
@@ -66,43 +81,24 @@ public:
     };
 };
 
-class ConverterSingleton
-{
-    public:
-        Converter self;
-};
-
-K_GLOBAL_STATIC(ConverterSingleton, s_instance)
+Converter::Private* Converter::d = 0;
 
 Converter::Converter(QObject* parent)
 : QObject(parent)
-, d(/*new Converter::Private*/0)
 {
     KGlobal::locale()->insertCatalog("libconversion");
-    new InvalidCategory(this);
-    new Length(this);
-    new Area(this);
-    new Volume(this);
-    new Temperature(this);
-    new Velocity(this);
-    new Mass(this);
-    new Pressure(this);
-    new Energy(this);
-    new Currency(this);
-    new Power(this);
-    new Time(this);
-    new FuelEfficiency(this);
-    new Density(this);
+    if (!d) {
+        d = new Converter::Private;
+    }
+    d->ref();
 }
 
 Converter::~Converter()
 {
-    //delete d;
-}
-
-Converter* Converter::self()
-{
-    return &s_instance->self;
+    if (!d->deref()) {
+        delete d;
+        d = 0;
+    }
 }
 
 Value Converter::convert(const Value& value, const QString& toUnit) const
@@ -133,31 +129,31 @@ UnitCategory* Converter::categoryForUnit(const QString& unit) const
     return 0;
 }
 
-Unit* Converter::unit(const QString& unit) const
+UnitPtr Converter::unit(const QString& unit) const
 {
     foreach (UnitCategory* u, categories()) {
-        Unit* unitClass = u->unit(unit);
+        UnitPtr unitClass = u->unit(unit);
         if (unitClass) {
             return unitClass;
         }
     }
-    return 0;
+    return UnitPtr();
 }
 
-Unit* Converter::unit(int unitId) const
+UnitPtr Converter::unit(int unitId) const
 {
     foreach (UnitCategory* u, categories()) {
-        Unit* unitClass = u->unit(unitId);
+        UnitPtr unitClass = u->unit(unitId);
         if (unitClass) {
             return unitClass;
         }
     }
-    return 0;
+    return UnitPtr();
 }
 
 UnitCategory* Converter::category(const QString& category) const
 {
-    QList<UnitCategory*> categories = findChildren<UnitCategory*>(category);
+    QList<UnitCategory*> categories = d->findChildren<UnitCategory*>(category);
     if (!categories.isEmpty()) {
         return categories[0];
     }
@@ -166,7 +162,7 @@ UnitCategory* Converter::category(const QString& category) const
 
 QList<UnitCategory*> Converter::categories() const
 {
-    QList<UnitCategory*> categories = findChildren<UnitCategory*>();
+    QList<UnitCategory*> categories = d->findChildren<UnitCategory*>();
     categories.removeAll(category("invalid"));
     return categories;
 }

@@ -36,7 +36,7 @@ Velocity::Velocity(QObject* parent)
     setObjectName("velocity");
     setName(i18n("Velocity"));
 
-    setDefaultUnit(U(MeterPerSecond, 1,
+    setDefaultUnit(UP(MeterPerSecond, 1,
       i18nc("velocity unit symbol", "m/s"),
       i18nc("unit description in lists", "meters per second"),
       i18nc("unit synonyms for matching user input", "meter per second;meters per second;m/s;ms"),

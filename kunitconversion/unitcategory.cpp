@@ -34,9 +34,10 @@ public:
     {
     };
     QString name;
-    Unit* defaultUnit;
-    QMap<QString, Unit*> unitMap;
-    QMap<int, Unit*> idMap;
+    UnitPtr defaultUnit;
+    QMap<QString, UnitPtr> unitMap;
+    QMap<int, UnitPtr> idMap;
+    QList<UnitPtr> units;
     QString description;
     KUrl url;
 };
@@ -49,13 +50,12 @@ UnitCategory::UnitCategory(QObject* parent)
 
 UnitCategory::~UnitCategory()
 {
-    qDeleteAll(d->idMap);
     delete d;
 }
 
-QList<Unit*> UnitCategory::units() const
+QList<UnitPtr> UnitCategory::units() const
 {
-    return d->idMap.values();
+    return d->units;
 }
 
 QStringList UnitCategory::allUnits() const
@@ -71,7 +71,7 @@ bool UnitCategory::hasUnit(const QString &unit) const
 Value UnitCategory::convert(const Value& value, const QString& toUnit)
 {
     if ((toUnit.isEmpty() || d->unitMap.contains(toUnit)) && value.unit()->isValid()) {
-        const Unit* to = toUnit.isEmpty() ? defaultUnit() : d->unitMap[toUnit];
+        UnitPtr to = toUnit.isEmpty() ? defaultUnit() : d->unitMap[toUnit];
         return convert(value, to);
     }
     return Value();
@@ -85,7 +85,7 @@ Value UnitCategory::convert(const Value& value, int toUnit)
     return Value();
 }
 
-Value UnitCategory::convert(const Value& value, const Unit* toUnit)
+Value UnitCategory::convert(const Value& value, UnitPtr toUnit)
 {
     if (toUnit) {
         double v = toUnit->fromDefault(value.unit()->toDefault(value.number()));
@@ -94,26 +94,7 @@ Value UnitCategory::convert(const Value& value, const Unit* toUnit)
     return Value();
 }
 
-void UnitCategory::reassignMapValues(Unit *unit, Unit *otherUnit)
-{
-    QMapIterator<QString, Unit*> unitIt(d->unitMap);
-    while (unitIt.hasNext()) {
-        unitIt.next();
-        if (unitIt.value() == otherUnit) {
-            d->unitMap.insert(unitIt.key(), unit);
-        }
-    }
-
-    QMapIterator<int, Unit*> idIt(d->idMap);
-    while (idIt.hasNext()) {
-        idIt.next();
-        if (idIt.value() == otherUnit) {
-            d->idMap.insert(idIt.key(), unit);
-        }
-    }
-}
-
-void UnitCategory::addUnitMapValues(Unit* unit, const QString& names)
+void UnitCategory::addUnitMapValues(UnitPtr unit, const QString& names)
 {
     QStringList list = names.split(';');
     foreach (const QString& name, list) {
@@ -121,22 +102,23 @@ void UnitCategory::addUnitMapValues(Unit* unit, const QString& names)
     }
 }
 
-void UnitCategory::addIdMapValue(Unit* unit, int id)
+void UnitCategory::addIdMapValue(UnitPtr unit, int id)
 {
     d->idMap[id] = unit;
+    d->units.append(unit);
 }
 
-Unit* UnitCategory::unit(const QString& s) const
+UnitPtr UnitCategory::unit(const QString& s) const
 {
     return d->unitMap.value(s);
 }
 
-Unit* UnitCategory::unit(int unitId) const
+UnitPtr UnitCategory::unit(int unitId) const
 {
     if (d->idMap.contains(unitId)) {
         return d->idMap[unitId];
     }
-    return 0;
+    return UnitPtr();
 }
 
 QString UnitCategory::name() const
@@ -149,12 +131,12 @@ void UnitCategory::setName(const QString& name)
     d->name = name;
 }
 
-void UnitCategory::setDefaultUnit(Unit* defaultUnit)
+void UnitCategory::setDefaultUnit(UnitPtr defaultUnit)
 {
     d->defaultUnit = defaultUnit;
 }
 
-Unit* UnitCategory::defaultUnit() const
+UnitPtr UnitCategory::defaultUnit() const
 {
     return d->defaultUnit;
 }

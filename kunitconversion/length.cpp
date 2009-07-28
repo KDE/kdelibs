@@ -99,7 +99,7 @@ Length::Length(QObject* parent)
       ki18nc("amount in units (real)", "%1 decameters"),
       ki18ncp("amount in units (integer)", "%1 decameter", "%1 decameters")
     );
-    setDefaultUnit(U(Meter, 1,
+    setDefaultUnit(UP(Meter, 1,
       i18nc("length unit symbol", "m"),
       i18nc("unit description in lists", "meters"),
       i18nc("unit synonyms for matching user input", "meter;meters;m"),

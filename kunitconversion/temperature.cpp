@@ -66,7 +66,7 @@ Temperature::Temperature(QObject* parent)
     setObjectName("temperature");
     setName(i18n("Temperature"));
 
-    setDefaultUnit(U(Kelvin, 1,
+    setDefaultUnit(UP(Kelvin, 1,
       i18nc("temperature unit symbol", "K"),
       i18nc("unit description in lists", "kelvins"),
       i18nc("unit synonyms for matching user input", "kelvin;kelvins;K"),

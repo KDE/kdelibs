@@ -99,7 +99,7 @@ Pressure::Pressure(QObject* parent)
       ki18nc("amount in units (real)", "%1 decapascals"),
       ki18ncp("amount in units (integer)", "%1 decapascal", "%1 decapascals")
     );
-    setDefaultUnit(U(Pascal, 1,
+    setDefaultUnit(UP(Pascal, 1,
       i18nc("pressure unit symbol", "Pa"),
       i18nc("unit description in lists", "pascals"),
       i18nc("unit synonyms for matching user input", "pascal;pascals;Pa"),

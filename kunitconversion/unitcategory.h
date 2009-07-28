@@ -60,7 +60,7 @@ public:
      *
      * @return default unit.
      **/
-    Unit* defaultUnit() const;
+    UnitPtr defaultUnit() const;
 
     /**
      * Check if unit category has a unit.
@@ -74,21 +74,21 @@ public:
      *
      * @return Pointer to unit class.
      **/
-    Unit* unit(const QString& s) const;
+    UnitPtr unit(const QString& s) const;
 
     /**
     * Return unit for unit enum.
     *
     * @return Pointer to unit class.
     **/
-    Unit* unit(int unitId) const;
+    UnitPtr unit(int unitId) const;
 
     /**
      * Return units in this category.
      *
      * @return list of units.
      **/
-    QList<Unit*> units() const;
+    QList<UnitPtr> units() const;
 
     /**
      * Return all unit names, short names and unit synonyms in this category.
@@ -106,15 +106,14 @@ public:
      **/
     Value convert(const Value& value, const QString& toUnit = QString());
     Value convert(const Value& value, int toUnit);
-    virtual Value convert(const Value& value, const Unit* toUnit);
+    virtual Value convert(const Value& value, UnitPtr toUnit);
 
 protected:
     void setName(const QString& name);
-    void setDefaultUnit(Unit* defaultUnit);
+    void setDefaultUnit(UnitPtr defaultUnit);
     void addUnitName(const QString& name);
-    void addUnitMapValues(Unit* unit, const QString& names);
-    void addIdMapValue(Unit* unit, int id);
-    void reassignMapValues(Unit *unit, Unit *otherUnit);
+    void addUnitMapValues(UnitPtr unit, const QString& names);
+    void addIdMapValue(UnitPtr unit, int id);
     void setDescription(const QString& desc);
     void setUrl(const KUrl& url);
 

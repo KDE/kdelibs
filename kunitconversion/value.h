@@ -33,8 +33,9 @@ class PLASMACONVERSION_EXPORT Value
 {
 public:
     Value();
-    Value(double n, const Unit* u);
+    Value(double n, UnitPtr u);
     Value(double n, const QString& u);
+    Value(double n, int u);
     Value(const QVariant& n, const QString& u);
     ~Value();
 
@@ -60,7 +61,17 @@ public:
     /**
      * Unit part of the value
      **/
-    const Unit* unit() const;
+    UnitPtr unit() const;
+
+    /**
+    * convert to another unit
+    **/
+    Value convertTo(int unit) const;
+
+    /**
+    * convert to another unit
+    **/
+    Value convertTo(const QString& unit) const;
 
     Value& operator=(const Value&);
 

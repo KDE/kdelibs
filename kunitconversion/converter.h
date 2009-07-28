@@ -115,10 +115,8 @@ class PLASMACONVERSION_EXPORT Converter : public QObject
 {
     Q_OBJECT
 public:
-    /**
-     * Singleton accessor
-     **/
-    static Converter* self();
+    explicit Converter(QObject* parent = 0);
+    ~Converter();
 
     /**
      * Convert value to another unit.
@@ -144,7 +142,7 @@ public:
      * @param unit unit string to find unit for.
      * @return unit for string unit
      **/
-    Unit* unit(const QString& unit) const;
+    UnitPtr unit(const QString& unit) const;
 
     /**
     * Find unit for unit enum.
@@ -152,7 +150,7 @@ public:
     * @param unit unit enum to find unit for.
     * @return unit for string unit
     **/
-    Unit* unit(int unitId) const;
+    UnitPtr unit(int unitId) const;
 
     /**
      * Find unit category.
@@ -170,13 +168,8 @@ public:
     QList<UnitCategory*> categories() const;
 
 private:
-    friend class ConverterSingleton;
-
-    explicit Converter(QObject* parent = 0);
-    ~Converter();
-
     class Private;
-    Private* const d;
+    static Private* d;
 };
 
 } // KUnitConversion namespace

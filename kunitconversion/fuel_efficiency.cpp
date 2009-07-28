@@ -47,7 +47,7 @@ FuelEfficiency::FuelEfficiency(QObject* parent)
     setObjectName("fuelefficiency");
     setName(i18n("Fuel Efficiency"));
 
-    setDefaultUnit(U(LitersPer100Kilometers, 1,
+    setDefaultUnit(UP(LitersPer100Kilometers, 1,
       i18nc("fuelefficiency unit symbol", "l/100 km"),
       i18nc("unit description in lists", "liters per 100 kilometers"),
       i18nc("unit synonyms for matching user input", "liters per 100 kilometers;liters per 100 kilometers;l/100 km;L/100 km"),

@@ -79,7 +79,7 @@ Mass::Mass(QObject* parent)
       ki18nc("amount in units (real)", "%1 megagrams"),
       ki18ncp("amount in units (integer)", "%1 megagram", "%1 megagrams")
     );
-    setDefaultUnit(U(Kilogram, 1000,
+    setDefaultUnit(UP(Kilogram, 1000,
       i18nc("mass unit symbol", "kg"),
       i18nc("unit description in lists", "kilograms"),
       i18nc("unit synonyms for matching user input", "kilogram;kilograms;kg"),

@@ -21,6 +21,7 @@
 #define CONVERSION_UNIT_H
 
 #include <QtCore/QString>
+#include <ksharedptr.h>
 #include "plasmaconversion_export.h"
 
 class KLocalizedString;
@@ -39,7 +40,7 @@ public:
     virtual double fromDefault(double) const = 0;
 };
 
-class PLASMACONVERSION_EXPORT Unit
+class PLASMACONVERSION_EXPORT Unit : public QSharedData
 {
 public:
     Unit(UnitCategory* category, int id, double multiplier, const QString& symbol,
@@ -85,6 +86,11 @@ public:
      **/
     bool isValid() const;
 
+    /**
+     * @return unit id.
+     **/
+    int id() const;
+
 protected:
     double toDefault(double value) const;
     double fromDefault(double value) const;
@@ -95,6 +101,10 @@ private:
     Private* const d;
 };
 
+typedef KSharedPtr<Unit> UnitPtr;
+
+#define UP(id, m, s, d, sy, r, i) \
+    (KUnitConversion::UnitPtr(new KUnitConversion::Unit(this, id, m, s, d, sy, r, i)))
 #define U(id, m, s, d, sy, r, i) (new KUnitConversion::Unit(this, id, m, s, d, sy, r, i))
 
 } // Conversion namespace

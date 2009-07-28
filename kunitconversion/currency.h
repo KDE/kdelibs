@@ -27,7 +27,7 @@ class Currency : public KUnitConversion::UnitCategory
 public:
     Currency(QObject* parent = 0);
     virtual KUnitConversion::Value convert(const KUnitConversion::Value& value,
-                                           const KUnitConversion::Unit* to);
+                                           KUnitConversion::UnitPtr to);
 
 private:
     QString m_cache;

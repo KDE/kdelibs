@@ -99,7 +99,7 @@ Time::Time(QObject* parent)
       ki18nc("amount in units (real)", "%1 decaseconds"),
       ki18ncp("amount in units (integer)", "%1 decasecond", "%1 decaseconds")
     );
-    setDefaultUnit(U(Second, 1,
+    setDefaultUnit(UP(Second, 1,
       i18nc("time unit symbol", "s"),
       i18nc("unit description in lists", "seconds"),
       i18nc("unit synonyms for matching user input", "second;seconds;s"),

@@ -123,7 +123,7 @@ Area::Area(QObject* parent)
       ki18nc("amount in units (real)", "%1 square decameters"),
       ki18ncp("amount in units (integer)", "%1 square decameter", "%1 square decameters")
     );
-    setDefaultUnit(U(SquareMeter, 1,
+    setDefaultUnit(UP(SquareMeter, 1,
       i18nc("area unit symbol", "m²"),
       i18nc("unit description in lists", "square meters"),
       i18nc("unit synonyms for matching user input", "square meter;square meters;m²;m/-2;m^2;m2"),

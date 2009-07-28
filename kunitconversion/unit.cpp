@@ -54,6 +54,7 @@ public:
     KLocalizedString integer;
     const Complex* complex;
     UnitCategory* category;
+    int id;
 };
 
 Unit::Unit(UnitCategory* category, int id, double multiplier, const QString& symbol,
@@ -62,14 +63,15 @@ Unit::Unit(UnitCategory* category, int id, double multiplier, const QString& sym
 : d(new Unit::Private(category))
 {
     if (category) {
-        category->addUnitMapValues(this, match);
-        category->addIdMapValue(this, id);
+        category->addUnitMapValues(UnitPtr(this), match);
+        category->addIdMapValue(UnitPtr(this), id);
     }
     d->multiplier = multiplier;
     d->real = real;
     d->integer = integer;
     d->symbol = symbol;
     d->description = description;
+    d->id = id;
 }
 
 Unit::Unit(UnitCategory* category, int id, const Complex* complex, const QString& symbol,
@@ -78,13 +80,14 @@ Unit::Unit(UnitCategory* category, int id, const Complex* complex, const QString
 : d(new Unit::Private(category, complex))
 {
     if (category) {
-        category->addUnitMapValues(this, match);
-        category->addIdMapValue(this, id);
+        category->addUnitMapValues(UnitPtr(this), match);
+        category->addIdMapValue(UnitPtr(this), id);
     }
     d->real = real;
     d->integer = integer;
     d->symbol = symbol;
     d->description = description;
+    d->id = id;
 }
 
 Unit::~Unit()
@@ -146,6 +149,11 @@ QString Unit::toString(double value) const
 bool Unit::isValid() const
 {
     return !d->symbol.isEmpty();
+}
+
+int Unit::id() const
+{
+    return d->id;
 }
 
 }

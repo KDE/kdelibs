@@ -119,7 +119,7 @@ Density::Density(QObject* parent)
       ki18ncp("amount in units (integer)",
               "%1 decakilogram per cubic meter", "%1 decakilograms per cubic meter")
     );
-    setDefaultUnit(U(KilogramsPerCubicMeter, 1,
+    setDefaultUnit(UP(KilogramsPerCubicMeter, 1,
       i18nc("density unit symbol", "Kg/m³"),
       i18nc("unit description in lists", "kilograms per cubic meter"),
       i18nc("unit synonyms for matching user input",
