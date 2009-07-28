@@ -223,6 +223,17 @@ Transitions transitions( const TIME_ZONE_INFORMATION & tz, int year ) {
     return t;
 }
 
+
+/******************************************************************************/
+
+class KSystemTimeZoneSourceWindowsPrivate
+{
+public:
+    KSystemTimeZoneSourceWindowsPrivate() {}
+    ~KSystemTimeZoneSourceWindowsPrivate() {}
+};
+
+
 class KSystemTimeZoneBackendWindows : public KTimeZoneBackend
 {
 public:
@@ -256,6 +267,10 @@ public:
   const TIME_ZONE_INFORMATION & tzi( int year = 0 ) const { Q_UNUSED( year ); return _tzi; }
 };
 
+KSystemTimeZoneSourceWindows::KSystemTimeZoneSourceWindows()
+:d( new KSystemTimeZoneSourceWindowsPrivate )
+{
+}
 
 KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
 {

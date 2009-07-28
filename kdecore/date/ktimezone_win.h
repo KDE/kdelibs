@@ -30,8 +30,10 @@
 class KDECORE_EXPORT KSystemTimeZoneSourceWindows : public KSystemTimeZoneSource
 {
 public:
-  KSystemTimeZoneSourceWindows() {}
+  KSystemTimeZoneSourceWindows();
   KTimeZoneData* parse(const KTimeZone &zone) const;
+private:
+  KSystemTimeZoneSourceWindowsPrivate * const d
 };
 
 
@@ -42,6 +44,9 @@ public:
     
   ~KSystemTimeZoneWindows() {}
   static QStringList listTimeZones();
+private:
+   // d-pointer is in backend class.
+   // This is a requirement for classes inherited from KTimeZone.
 };
 
 #endif // _KTIMEZONE_WINDOWS_H
