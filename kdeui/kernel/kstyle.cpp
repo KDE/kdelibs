@@ -2325,10 +2325,17 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //First, figure out if we have to deal with icons, and place them if need be.
             if (!tabOpt->icon.isNull())
             {
-                int iconSize = pixelMetric(PM_SmallIconSize);
+                QStyleOptionTabV3 tabV3(*tabOpt);
+                QSize iconSize = tabV3.iconSize;
+                if (!iconSize.isValid()) {
+                    int iconExtent = pixelMetric(PM_SmallIconSize);
+                    iconSize = QSize(iconExtent, iconExtent);
+                }
+
                 IconOption icoOpt;
                 icoOpt.icon   = tabOpt->icon;
                 icoOpt.active = flags & State_Selected;
+                icoOpt.size = iconSize;
 
                 if (tabOpt->text.isNull())
                 {
@@ -2349,19 +2356,20 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     if (tabOpt->direction == Qt::LeftToRight)
                     {
                         //We place icon on the left.
-                        iconRect = QRect(labelRect.x(), labelRect.y(), iconSize, labelRect.height());
+                        iconRect = QRect(labelRect.x(), labelRect.y() + (labelRect.height() - iconSize.height() + 1) / 2,
+                            iconSize.width(), iconSize.height());
 
                         //Adjust the text rect.
-                        labelRect.setLeft(labelRect.x() + iconSize +
+                        labelRect.setLeft(labelRect.x() + iconSize.width() +
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                     else
                     {
                         //We place icon on the right
-                        iconRect = QRect(labelRect.x() + labelRect.width() - iconSize, labelRect.y(),
-                                         iconSize, labelRect.height());
+                        iconRect = QRect(labelRect.x() + labelRect.width() - iconSize.width(),
+                            labelRect.y() + (labelRect.height() - iconSize.height() + 1) / 2, iconSize.width(), iconSize.height());
                         //Adjust the text rect
-                        labelRect.setWidth(labelRect.width() - iconSize -
+                        labelRect.setWidth(labelRect.width() - iconSize.width() -
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                 }
@@ -2375,16 +2383,17 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                     if (aboveIcon)
                     {
-                        iconRect = QRect(labelRect.x(), labelRect.y(),
-                                         labelRect.width(), iconSize);
-                        labelRect.setTop(labelRect.y() + iconSize +
+                        iconRect = QRect(labelRect.x() + (labelRect.width() - iconSize.width() + 1) / 2, labelRect.y(),
+                                         iconSize.width(), iconSize.height());
+                        labelRect.setTop(labelRect.y() + iconSize.height() +
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                     else
                     {
-                        iconRect = QRect(labelRect.x(), labelRect.y() + labelRect.height() - iconSize,
-                                         labelRect.width(), iconSize);
-                        labelRect.setHeight(labelRect.height() - iconSize -
+                        iconRect = QRect(labelRect.x() + (labelRect.width() - iconSize.width() + 1) / 2,
+                            labelRect.y() + labelRect.height() - iconSize.height(),
+                                         iconSize.width(), iconSize.height());
+                        labelRect.setHeight(labelRect.height() - iconSize.height() -
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                 }
