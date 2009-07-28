@@ -26,6 +26,8 @@
 #include <ktimezone.h>
 #include <ksystemtimezone.h>
 #include <windows.h>
+  
+class KSystemTimeZoneSourceWindowsPrivate;
 
 /**
  * A class to read and parse the timezone information from the Windows registry.
@@ -57,7 +59,6 @@ public:
     */
   KTimeZoneData* parse(const KTimeZone &zone) const;
 private:
-  class KSystemTimeZoneSourceWindowsPrivate;
   KSystemTimeZoneSourceWindowsPrivate * const d;
 };
 
