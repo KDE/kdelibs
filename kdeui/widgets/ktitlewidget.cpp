@@ -186,8 +186,8 @@ void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
 
 void KTitleWidget::setText(const QString &text, MessageType type)
 {
-    setText(text);
     setPixmap(type);
+    setText(text);
 }
 
 void KTitleWidget::setComment(const QString &comment, MessageType type)
