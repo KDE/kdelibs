@@ -38,6 +38,8 @@ class QStringList;
  * it is preferable to use the convenience functions in
  * KFontDialog.
  *
+ * \image html kfontchooser.png "KDE Font Chooser Widget"
+ *
  * @see KFontRequester
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>

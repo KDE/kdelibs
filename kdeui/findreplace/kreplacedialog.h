@@ -48,6 +48,8 @@ class KReplaceDialogPrivate;
  *
  * \code
  * \endcode
+ *
+ * \image html kreplacedialog.png "KDE Replace Dialog"
  */
 class KDEUI_EXPORT KReplaceDialog:
     public KFindDialog

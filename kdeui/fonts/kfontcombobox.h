@@ -37,6 +37,8 @@ class KFontComboBoxPrivate;
  * @note The class is similar to QFontComboBox, but more tightly integrated
  * with KDE desktop. Use it instead of QFontComboBox by default in KDE code.
  *
+ * \image html kfontcombobox.png "KDE Font Combo Box"
+ *
  * @author Chusslove Illich \<caslav.ilic@gmx.net\>
  *
  * @see KFontAction

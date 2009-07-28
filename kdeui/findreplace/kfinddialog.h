@@ -61,6 +61,7 @@
  *
  * To use your own extensions: see findExtension().
  *
+ * \image html kfinddialog.png "KDE Find Dialog"
  */
 class KDEUI_EXPORT KFindDialog:
     public KDialog

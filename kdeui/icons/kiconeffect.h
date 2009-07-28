@@ -39,6 +39,9 @@ class KIconEffectPrivate;
  * This class applies effects to icons depending on their state and
  * group. For example, it can be used to make all disabled icons
  * in a toolbar gray.
+ *
+ * \image html kiconeffect-apply.png "Various Effects applied to an image"
+ *
  * @see KIcon
  */
 class KDEUI_EXPORT KIconEffect
