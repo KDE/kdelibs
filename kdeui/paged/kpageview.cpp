@@ -244,10 +244,10 @@ void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)
         header = model->data( index, Qt::DisplayRole ).toString();
     }
 
+    const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
     titleWidget->setPixmap( icon.pixmap( 22, 22 ) );
     titleWidget->setText( header );
 
-    const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
     titleWidget->setVisible(q->showPageHeader());
 }
 
