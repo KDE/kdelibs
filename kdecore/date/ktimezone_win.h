@@ -35,7 +35,7 @@ public:
 };
 
 
-class KDECORE_EXPORT KSystemTimeZoneWindows : public KTimeZone
+class KDECORE_EXPORT KSystemTimeZoneWindows : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
 {
 public:
   KSystemTimeZoneWindows(KTimeZoneSource *source, const QString &name);
