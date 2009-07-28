@@ -133,7 +133,7 @@ Unit* UnitCategory::unit(const QString& s) const
 
 Unit* UnitCategory::unit(int unitId) const
 {
-    if (d->idMap.keys().contains(unitId)) {
+    if (d->idMap.contains(unitId)) {
         return d->idMap[unitId];
     }
     return 0;
