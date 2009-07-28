@@ -239,12 +239,11 @@ bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mod
 
     QByteArray header = file.read(CacheFileInfo::size);
     // do *not* modify/delete the file if we're in file info mode.
-    if (!readBinaryHeader(header, fi) && mode != FileInfo) {
-        kDebug(7113) << "readBinaryHeader() returned false, deleting file" << baseName;
+    if (!(readBinaryHeader(header, fi) && readTextHeader(&file, fi, mode)) && mode != FileInfo) {
+        kDebug(7113) << "read(Text|Binary)Header() returned false, deleting file" << baseName;
         file.remove();
         return false;
     }
-    readTextHeader(&file, fi, mode);
     // get meta-information from the filesystem
     QFileInfo fileInfo(file);
     fi->lastUsedDate = fileInfo.lastModified().toTime_t();
@@ -291,8 +290,9 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
 
         CacheFileInfo fiFromDisk;
         QByteArray header = file.read(CacheFileInfo::size);
-        readBinaryHeader(header, &fiFromDisk);
-        Q_ASSERT(fiFromDisk.bytesCached == fi->bytesCached);
+        if (!readBinaryHeader(header, &fiFromDisk) || fiFromDisk.bytesCached != fi->bytesCached) {
+            return;
+        }
 
         // update the whole header according to the ioslave, except for the use count, to make sure
         // that we actually count up.
