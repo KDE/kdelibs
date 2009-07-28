@@ -901,7 +901,8 @@ void TransferJob::slotData( const QByteArray &_data)
     Q_D(TransferJob);
     if (d->m_command == CMD_GET && !d->m_isMimetypeEmitted) {
         kWarning(7007) << "mimetype() not emitted when sending first data!; job URL ="
-                       << d->m_url.QUrl::toString(QUrl::RemoveUserInfo);
+                       << d->m_url.QUrl::toString(QUrl::RemoveUserInfo) << "data size ="
+                       << _data.size();
     }
     // shut up the warning, HACK: downside is that it changes the meaning of the variable
     d->m_isMimetypeEmitted = true;
