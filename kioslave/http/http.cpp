@@ -602,7 +602,11 @@ bool HTTPProtocol::proceedUntilResponseHeader()
       if (readResponseHeader()) {
           // Success, finish the request.
           break;
-      } else if (m_isError || m_isLoadingErrorPage) {
+      }
+      // no success, close the cache file so the cache state is reset - that way most other code
+      // doesn't have to deal with the cache being in various states.
+      cacheFileClose();
+      if (m_isError || m_isLoadingErrorPage) {
           // Unrecoverable error, abort everything.
           // Also, if we've just loaded an error page there is nothing more to do.
           // In that case we abort to avoid loops; some webservers manage to send 401 and
@@ -1232,6 +1236,7 @@ void HTTPProtocol::get( const KUrl& url )
     m_request.cacheTag.policy = DEFAULT_CACHE_CONTROL;
 
   proceedUntilResponseContent();
+  httpClose(m_request.isKeepAlive);
 }
 
 void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
@@ -3761,13 +3766,13 @@ void HTTPProtocol::httpClose( bool keepAlive )
 {
   kDebug(7113) << "keepAlive =" << keepAlive;
 
+  cacheFileClose();
+
   // Only allow persistent connections for GET requests.
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
   if (keepAlive) {
-    cacheFileClose();
-
     if (!m_request.keepAliveTimeout)
        m_request.keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
     else if (m_request.keepAliveTimeout > 2*DEFAULT_KEEP_ALIVE_TIMEOUT)
@@ -3794,7 +3799,6 @@ void HTTPProtocol::closeConnection()
 void HTTPProtocol::httpCloseConnection()
 {
   kDebug(7113);
-  cacheFileClose();
   m_request.isKeepAlive = false;
   m_server.clear();
   disconnectFromHost();
@@ -4138,50 +4142,50 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if ( sz )
     m_iSize += sz;
 
-  // Update the application with total size except when
-  // it is compressed, or when the data is to be handled
-  // internally (webDAV).  If compressed we have to wait
-  // until we uncompress to find out the actual data size
-  if ( !dataInternal ) {
-    if ( (m_iSize > 0) && (m_iSize != NO_SIZE)) {
-       totalSize(m_iSize);
-       infoMessage(i18n("Retrieving %1 from %2...", KIO::convertSize(m_iSize),
-                   m_request.url.host()));
-    } else {
-       totalSize (0);
-    }
-  } else {
-    infoMessage( i18n( "Retrieving from %1..." ,  m_request.url.host() ) );
-  }
-
-  if (m_request.cacheTag.ioMode == ReadFromCache)
-  {
-    kDebug(7113) << "read data from cache!";
-
-    m_iContentLeft = NO_SIZE;
-
-    QByteArray d;
-    while (true) {
-        d = cacheFileReadPayload(4096);
-        if (d.isEmpty()) {
-            break;
+    if (!m_isRedirection) {
+        // Update the application with total size except when
+        // it is compressed, or when the data is to be handled
+        // internally (webDAV).  If compressed we have to wait
+        // until we uncompress to find out the actual data size
+        if ( !dataInternal ) {
+            if ((m_iSize > 0) && (m_iSize != NO_SIZE)) {
+                totalSize(m_iSize);
+                infoMessage(i18n("Retrieving %1 from %2...", KIO::convertSize(m_iSize),
+                            m_request.url.host()));
+            } else {
+                totalSize (0);
+            }
+        } else {
+            infoMessage( i18n( "Retrieving from %1..." ,  m_request.url.host() ) );
         }
-        slotData(d);
-        sz += d.size();
-        if (!dataInternal) {
-            processedSize(sz);
+
+        if (m_request.cacheTag.ioMode == ReadFromCache) {
+            kDebug(7113) << "read data from cache!";
+
+            m_iContentLeft = NO_SIZE;
+
+            QByteArray d;
+            while (true) {
+                d = cacheFileReadPayload(4096);
+                if (d.isEmpty()) {
+                    break;
+                }
+                slotData(d);
+                sz += d.size();
+                if (!dataInternal) {
+                    processedSize(sz);
+                }
+            }
+
+            m_receiveBuf.resize(0);
+
+            if (!dataInternal) {
+                data(QByteArray());
+            }
+
+            return true;
         }
     }
-
-    m_receiveBuf.resize(0);
-
-    if (!dataInternal) {
-        data(QByteArray());
-    }
-
-    return true;
-  }
-
 
   if (m_iSize != NO_SIZE)
     m_iBytesLeft = m_iSize - sz;
@@ -4203,8 +4207,11 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   HTTPFilterChain chain;
 
-  QObject::connect(&chain, SIGNAL(output(const QByteArray &)),
-          this, SLOT(slotData(const QByteArray &)));
+  // redirection ignores the body
+  if (!m_isRedirection) {
+      QObject::connect(&chain, SIGNAL(output(const QByteArray &)),
+                       this, SLOT(slotData(const QByteArray &)));
+  }
   QObject::connect(&chain, SIGNAL(error(const QString &)),
           this, SLOT(slotFilterError(const QString &)));
 
@@ -4338,7 +4345,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     }
   }
 
-  if (!dataInternal)
+  if (!dataInternal && !m_isRedirection)
     data( QByteArray() );
   return true;
 }
@@ -4733,6 +4740,7 @@ static QByteArray makeCacheCleanerCommand(const HTTPProtocol::CacheTag &cacheTag
 //### not yet 100% sure when and when not to call this
 void HTTPProtocol::cacheFileClose()
 {
+    kDebug(7113);
     m_request.cacheTag.ioMode = NoCache;
     QFile *&file = m_request.cacheTag.file;
     if (!file) {
@@ -4740,19 +4748,19 @@ void HTTPProtocol::cacheFileClose()
     }
 
     QByteArray ccCommand;
+    QTemporaryFile *tempFile = qobject_cast<QTemporaryFile *>(file);
 
     if (file->openMode() & QIODevice::WriteOnly) {
-        QTemporaryFile *tFile = qobject_cast<QTemporaryFile *>(file);
-        Q_ASSERT(tFile);
+        Q_ASSERT(tempFile);
 
         if (m_request.cacheTag.bytesCached && !m_isError) {
             QByteArray header = m_request.cacheTag.serialize();
-            tFile->seek(0);
-            tFile->write(header);
+            tempFile->seek(0);
+            tempFile->write(header);
 
             ccCommand = makeCacheCleanerCommand(m_request.cacheTag, CreateFileNotificationCommand);
 
-            QString oldName = tFile->fileName();
+            QString oldName = tempFile->fileName();
             QString newName = oldName;
             int basenameStart = newName.lastIndexOf('/') + 1;
             // remove the randomized name part added by QTemporaryFile
@@ -4760,20 +4768,23 @@ void HTTPProtocol::cacheFileClose()
             kDebug(7113) << "Renaming temporary file" << oldName << "to" << newName;
 
             // on windows open files can't be renamed
-            tFile->setAutoRemove(false);
-            delete tFile;
+            tempFile->setAutoRemove(false);
+            delete tempFile;
             file = 0;
 
             if (!QFile::rename(oldName, newName)) {
                 // ### currently this hides a minor bug when force-reloading a resource. We
                 //     should not even open a new file for writing in that case.
+                kDebug(7113) << "Renaming temporary file failed, deleting it instead.";
                 QFile::remove(oldName);
+                ccCommand.clear();  // we have nothing of value to tell the cache cleaner
             }
         } else {
             // oh, we've never written payload data to the cache file.
             // the temporary file is closed and removed and no proper cache entry is created.
         }
     } else if (file->openMode() == QIODevice::ReadOnly) {
+        Q_ASSERT(!tempFile);
         ccCommand = makeCacheCleanerCommand(m_request.cacheTag, UpdateFileCommand);
     }
     delete file;
@@ -4786,6 +4797,7 @@ void HTTPProtocol::cacheFileClose()
 
 void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
 {
+    kDebug(7113);
     Q_ASSERT(command.size() == BinaryCacheFileHeader::size + 40 + sizeof(quint32));
     int attempts = 0;
     while (m_cacheCleanerConnection.state() != QLocalSocket::ConnectedState && attempts < 6) {
