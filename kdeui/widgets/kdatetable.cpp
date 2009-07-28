@@ -355,7 +355,7 @@ QDate KDateTable::dateFromPos( int position )
 void KDateTable::paintEvent( QPaintEvent *e )
 {
     QPainter p( this );
-    KColorScheme colorScheme(isEnabled() ? QPalette::Active : QPalette::Disabled, KColorScheme::View);
+    KColorScheme colorScheme(palette().currentColorGroup(), KColorScheme::View);
     const QRect &rectToUpdate = e->rect();
     double cellWidth = width() / ( double ) d->numDayColumns;
     double cellHeight = height() / ( double ) d->numWeekRows;
@@ -416,24 +416,14 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
         //We are drawing a header cell
 
-        QColor titleColor, textColor;
-
-        if ( isEnabled() ) {
-            titleColor = palette().color(QPalette::Highlight);
-            textColor = palette().color(QPalette::HighlightedText);
-        } else {
-            titleColor = palette().color(QPalette::Window);
-            textColor = palette().color(QPalette::WindowText);
-        }
-
-        //If not a normal working day, then invert title/text colours
+        //If not a normal working day, then use "do not work today" color
         if ( workingDay ) {
-            cellBackgroundColor = titleColor;
-            cellTextColor = textColor;
+            cellTextColor = palette().color(QPalette::WindowText);
         } else {
-            cellBackgroundColor = textColor;
-            cellTextColor = titleColor;
+            KColorScheme colorScheme(palette().currentColorGroup(), KColorScheme::Window);
+            cellTextColor = colorScheme.foreground(KColorScheme::NegativeText).color();
         }
+        cellBackgroundColor = palette().color(QPalette::Window);
 
         //Set the text to the short day name and bold it
         cellFont.setBold( true );
@@ -499,11 +489,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
             // if we are drawing the day cell currently selected in the table
             if ( selectedDay ) {
                 // set the background to highlighted
-                if ( isEnabled() ) {
-                    cellBackgroundColor = palette().color( QPalette::Highlight );
-                } else {
-                    cellBackgroundColor = palette().color( QPalette::Text );
-                }
+                cellBackgroundColor = palette().color( QPalette::Highlight );
                 cellTextColor = palette().color( QPalette::HighlightedText );
             }
 
@@ -519,7 +505,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
             //If the cell day is the day of religious observance, then always color text red unless Custom overrides
             if ( ! customDay && dayOfPray ) {
-                KColorScheme colorScheme(isEnabled() ? QPalette::Active : QPalette::Disabled,
+                KColorScheme colorScheme(palette().currentColorGroup(),
                                          selectedDay ? KColorScheme::Selection : KColorScheme::View);
                 cellTextColor = colorScheme.foreground(KColorScheme::NegativeText).color();
             }
