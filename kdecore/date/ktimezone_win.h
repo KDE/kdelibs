@@ -57,6 +57,7 @@ public:
     */
   KTimeZoneData* parse(const KTimeZone &zone) const;
 private:
+  class KSystemTimeZoneSourceWindowsPrivate;
   KSystemTimeZoneSourceWindowsPrivate * const d
 };
 
