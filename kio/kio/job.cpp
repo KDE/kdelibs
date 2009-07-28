@@ -899,6 +899,13 @@ TransferJob::~TransferJob()
 void TransferJob::slotData( const QByteArray &_data)
 {
     Q_D(TransferJob);
+    if (d->m_command == CMD_GET && !d->m_isMimetypeEmitted) {
+        kWarning(7007) << "mimetype() not emitted when sending first data!; job URL ="
+                       << d->m_url.QUrl::toString(QUrl::RemoveUserInfo);
+    }
+    // shut up the warning, HACK: downside is that it changes the meaning of the variable
+    d->m_isMimetypeEmitted = true;
+
     if(d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error())
       emit data( this, _data);
 }
@@ -1090,6 +1097,11 @@ void TransferJob::slotMimetype( const QString& type )
 {
     Q_D(TransferJob);
     d->m_mimetype = type;
+    if (d->m_command == CMD_GET && d->m_isMimetypeEmitted) {
+        kWarning(7007) << "mimetype() emitted again, or after sending first data!; job URL ="
+                       << d->m_url.QUrl::toString(QUrl::RemoveUserInfo);
+    }
+    d->m_isMimetypeEmitted = true;
     emit mimetype( this, type );
 }
 
