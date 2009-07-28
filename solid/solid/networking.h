@@ -61,6 +61,8 @@ namespace Solid
 
         /**
          * Get the current networking status
+         * If the result is Unknown, the backend may be unconfigured or otherwise in a state where
+         * it cannot report useful networking status @ref Solid::Networking::Status.
          */
         SOLID_EXPORT Status status();
 
