@@ -279,6 +279,9 @@ void KPageViewPrivate::init()
     layout = new QGridLayout(q);
     stack = new KPageStackedWidget(q);
     titleWidget = new KTitleWidget(q);
+    QPixmap emptyPixmap(22, 22);
+    emptyPixmap.fill(Qt::transparent);
+    titleWidget->setPixmap(emptyPixmap);
     layout->addWidget(titleWidget, 1, 1);
     layout->addWidget(stack, 2, 1);
 
