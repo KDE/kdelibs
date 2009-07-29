@@ -679,7 +679,7 @@ Q_SIGNALS: // SIGNALS
      */
     void newJobFiltered(const QString &prefilterText, const QString &postfilterText);
 
-private slots:
+private Q_SLOTS:
     void slotJobStateChanged(const QString& appId, int jobNum, KSpeech::JobState state);
     void slotMarker(const QString& appId, int jobNum, KSpeech::MarkerType markerType, const QString& markerData);
     void slotFilteringFinished();
