@@ -554,6 +554,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
           _start += q->sourceModel()->rowCount(m_rootIndexList.at(i));
         }
         int rowCount = q->sourceModel()->rowCount(m_rootIndexList.at(startRow));
+        if (rowCount <= 0)
+          continue;
 
         q->beginRemoveRows(QModelIndex(), _start, _start + rowCount - 1);
         m_rootIndexList.removeAt(startRow);
