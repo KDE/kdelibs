@@ -264,7 +264,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
 {
   Q_Q(KSelectionProxyModel);
 
-  if (isInModel(parent))
+  if (isInModel(parent) && !(m_startWithChildTrees && m_omitDescendants))
   {
     // The easy case.
     q->beginInsertRows(q->mapFromSource(parent), start, end);
@@ -331,7 +331,7 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
   Q_UNUSED(end);
   Q_UNUSED(start);
 
-  if (isInModel(parent))
+  if (isInModel(parent) && !(m_startWithChildTrees && m_omitDescendants))
   {
     q->endInsertRows();
     return;
