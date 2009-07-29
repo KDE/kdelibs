@@ -133,13 +133,7 @@ void Dialog::initGui()
     d->ui.setupUi(d->wdg);
 
     //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
-    d->ui.m_language->clear();
-    Speller speller = d->checker->speller();
-    d->dictsMap = speller.availableDictionaries();
-    QStringList langs = d->dictsMap.keys();
-    d->ui.m_language->insertItems(0, langs);
-    d->ui.m_language->setCurrentIndex(d->dictsMap.values().indexOf(
-                                          speller.language()));
+    updateDictionaryComboBox();
     d->restart = false;
 
     d->suggestionsModel=new ReadOnlyStringListModel(this);
@@ -196,6 +190,16 @@ void Dialog::setBuffer(const QString &buf)
     d->restart = true;
 }
 
+void Dialog::updateDictionaryComboBox()
+{
+    d->ui.m_language->clear();
+    Speller speller = d->checker->speller();
+    d->dictsMap = speller.availableDictionaries();
+    QStringList langs = d->dictsMap.keys();
+    d->ui.m_language->insertItems(0, langs);
+    d->ui.m_language->setCurrentIndex(d->dictsMap.values().indexOf(
+                                          speller.language()));
+}
 
 void Dialog::updateDialog( const QString& word )
 {
@@ -213,6 +217,7 @@ void Dialog::updateDialog( const QString& word )
 void Dialog::show()
 {
     kDebug()<<"Showing dialog";
+    updateDictionaryComboBox();
     if (d->originalBuffer.isEmpty())
         d->checker->start();
     else
@@ -310,6 +315,7 @@ void Dialog::slotDone()
     emit done(d->checker->text());
     if (d->restart)
     {
+        updateDictionaryComboBox();
         d->checker->setText(d->originalBuffer);
         d->restart=false;
     }

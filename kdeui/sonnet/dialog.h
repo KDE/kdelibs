@@ -115,6 +115,7 @@ namespace Sonnet
 
     private:
         void updateDialog( const QString& word );
+        void updateDictionaryComboBox();
         void fillSuggestions( const QStringList& suggs );
         void initConnections();
         void initGui();
