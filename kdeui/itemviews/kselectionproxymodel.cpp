@@ -271,11 +271,54 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
     return;
   }
 
-  QModelIndex sourceStart = q->sourceModel()->index(start, 0, parent);
-  if (m_startWithChildTrees && m_rootIndexList.contains(sourceStart))
+  if (m_startWithChildTrees && m_rootIndexList.contains(parent))
   {
     // Another fairly easy case.
-    const int proxyStartRow = q->mapFromSource(sourceStart).row();
+    // The children of the indexes in m_rootIndexList are in the model, but their parents
+    // are not, so we can't simply mapFromSource(parent) and get the row() to figure out
+    // where the new rows are supposed to go.
+    // Instead, we look at the 'higher' siblings of parent for their child items.
+    // The lowest child item becomes the closest sibling of the new items.
+
+    // sourceModel:
+    // A
+    // -> B
+    // C
+    // -> D
+    // E
+    // F
+
+    // A, C, E and F are selected, then proxyModel is:
+    //
+    // B
+    // D
+
+    // If F gets a new child item, it must be inserted into the proxy model below D.
+    // To fins out what the proxyRow is, we find the proxyRow of D which is already in the model,
+    // and +1 it.
+
+    int proxyStartRow = 0;
+
+    int parentPosition = m_rootIndexList.indexOf(parent);
+
+    QModelIndex parentAbove;
+    while (parentPosition > 0)
+    {
+      parentPosition--;
+
+      parentAbove = m_rootIndexList.at(parentPosition);
+
+      int rows = q->sourceModel()->rowCount(parentAbove);
+      if ( rows > 0 )
+      {
+        QModelIndex proxyChildAbove = q->mapFromSource(q->sourceModel()->index(rows, 0, parentAbove));
+        proxyStartRow = proxyChildAbove.row() + 1;
+        break;
+      }
+    }
+
+    proxyStartRow += q->sourceModel()->rowCount( parent );
+
     q->beginInsertRows(QModelIndex(), proxyStartRow, proxyStartRow + (end - start));
     return;
   }
@@ -286,16 +329,18 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
 {
   Q_Q(KSelectionProxyModel);
   Q_UNUSED(end);
+  Q_UNUSED(start);
 
   if (isInModel(parent))
   {
     q->endInsertRows();
+    return;
   }
 
-  QModelIndex sourceStart = q->sourceModel()->index(start, 0, parent);
-  if (m_startWithChildTrees && m_rootIndexList.contains(sourceStart))
+  if (m_startWithChildTrees && m_rootIndexList.contains(parent))
   {
     q->endInsertRows();
+    return;
   }
 }
 
@@ -322,7 +367,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
       } else {
         proxyEnd++;
       }
-      
+
     } else
     {
       if (proxyStart != -1)
@@ -338,7 +383,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
     q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
     return;
   }
-  
+
   QModelIndex proxyParent = q->mapFromSource(parent);
 
   if (!proxyParent.isValid())
@@ -728,6 +773,10 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
         Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(row, newIndex);
         q->endInsertRows();
+      } else {
+        // Even if the newindex doesn't have any children to put into the model yet,
+        // We still need to make sure it's future children are inserted into the model.
+        m_rootIndexList.insert(row, newIndex);
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
@@ -849,7 +898,7 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
 {
   Q_D(KSelectionProxyModel);
   d->m_filterBehavior = behavior;
-  
+
   switch(behavior)
   {
   case SelectedBranches:
@@ -892,7 +941,7 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
   }
   }
   reset();
-  
+
 }
 
 KSelectionProxyModel::FilterBehavior KSelectionProxyModel::filterBehavior() const
@@ -917,7 +966,7 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
   connect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
           SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
-          
+
   // TODO: Uncomment for Qt4.6
 //   connect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
 //           SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
