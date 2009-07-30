@@ -77,6 +77,12 @@ public:
   void createProxyChain();
 
   /**
+  When items are inserted or removed in the m_startWithChildTrees configuration,
+  this method helps find the startRow for use emitting the signals from the proxy.
+  */
+  int getProxyInitialRow(const QModelIndex &parent) const;
+
+  /**
   Returns a selection in which no descendants of selected indexes are also themselves selected.
   For example,
   @code
@@ -271,6 +277,28 @@ QPair<int, int> KSelectionProxyModelPrivate::getRootRange(const QModelIndex &sou
   return qMakePair(listStart, listEnd);
 }
 
+int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) const
+{
+  Q_Q(const KSelectionProxyModel);
+  int parentPosition = m_rootIndexList.indexOf(parent);
+
+  QModelIndex parentAbove;
+  while (parentPosition > 0)
+  {
+    parentPosition--;
+
+    parentAbove = m_rootIndexList.at(parentPosition);
+
+    int rows = q->sourceModel()->rowCount(parentAbove);
+    if ( rows > 0 )
+    {
+      QModelIndex proxyChildAbove = q->mapFromSource(q->sourceModel()->index(rows, 0, parentAbove));
+      return proxyChildAbove.row() + 1;
+    }
+  }
+  return 0;
+}
+
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
 {
   Q_Q(KSelectionProxyModel);
@@ -308,25 +336,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
     // To find out what the proxyRow is, we find the proxyRow of D which is already in the model,
     // and +1 it.
 
-    int proxyStartRow = 0;
-
-    int parentPosition = m_rootIndexList.indexOf(parent);
-
-    QModelIndex parentAbove;
-    while (parentPosition > 0)
-    {
-      parentPosition--;
-
-      parentAbove = m_rootIndexList.at(parentPosition);
-
-      int rows = q->sourceModel()->rowCount(parentAbove);
-      if ( rows > 0 )
-      {
-        QModelIndex proxyChildAbove = q->mapFromSource(q->sourceModel()->index(rows, 0, parentAbove));
-        proxyStartRow = proxyChildAbove.row() + 1;
-        break;
-      }
-    }
+    int proxyStartRow = getProxyInitialRow(parent);
 
     proxyStartRow += start;
 
