@@ -107,6 +107,7 @@ public:
 private slots:
   void init()
   {
+    ProxyModelTest::doInit();
 
     QList<QVariantList> signalList;
     QVariantList expected;

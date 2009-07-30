@@ -135,6 +135,12 @@ void ProxyModelTest::init()
 
   m_modelSpy->stopSpying();
   m_model->clear();
+  const char *currentTag = QTest::currentDataTag();
+
+  QVERIFY(currentTag != 0);
+
+  // Get the model into the state it is expected to be in.
+  m_modelCommander->executeUntil(currentTag);
   m_modelSpy->startSpying();
 
 }
@@ -409,6 +415,13 @@ QModelIndexList ProxyModelTest::getUnchangedIndexes(const QModelIndex &parent, Q
 }
 
 
+void ProxyModelTest::doInit()
+{
+  // ProxyModelTest::init is a private slot and needs to remain so.
+  // This method allows subclasses to initialize the class properly.
+  ProxyModelTest::init();
+}
+
 void ProxyModelTest::doTest()
 {
 //   QFETCH( CommandList, commandList );
@@ -418,12 +431,6 @@ void ProxyModelTest::doTest()
   QVERIFY(currentTag != 0);
   QVERIFY(m_expectedSignals.contains(currentTag));
   QVERIFY(m_persistentChanges.contains(currentTag));
-
-  m_modelSpy->stopSpying();
-
-  // Get the model into the state it is expected to be in.
-  m_modelCommander->executeUntil(currentTag);
-  m_modelSpy->startSpying();
 
   // The signals we expect to recieve to pass this test.
   QList<QVariantList> signalList = m_expectedSignals.value(currentTag);

@@ -95,6 +95,9 @@ public:
   void setProxyModel(QAbstractProxyModel *proxyModel);
   DynamicTreeModel* sourceModel();
 
+protected:
+  void doInit();
+
 private slots:
   void init();
 
