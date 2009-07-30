@@ -26,8 +26,8 @@
 #ifdef HAVE_XTEST
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
-#include <fixx11h.h>
 #endif // HAVE_XTEST
+#include <fixx11h.h>
 
 class XSyncBasedPollerHelper
 {
