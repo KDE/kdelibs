@@ -543,7 +543,7 @@ void ProxyModelTest::doTest()
 }
 
 
-void ProxyModelTest::testInsertAndRemove_data()
+void ProxyModelTest::testProxyModel_data()
 {
   QTest::addColumn<CommandList>("commandList");
   QTest::newRow("insert01");

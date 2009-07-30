@@ -101,10 +101,8 @@ protected:
 private slots:
   void init();
 
-  void testInsertAndRemove_data();
-  void testInsertAndRemove() { doTest(); }
-
-
+  void testProxyModel_data();
+  void testProxyModel() { doTest(); }
 
 //   void testMove_data();
 //   void testMove() { doTest(); }
