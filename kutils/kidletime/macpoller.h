@@ -25,6 +25,8 @@
 
 class MacPoller: public AbstractSystemPoller
 {
+    Q_OBJECT
+
 public:
     MacPoller(QWidget *parent = 0);
     virtual ~MacPoller();
@@ -46,7 +48,7 @@ public slots:
     void triggerResume();
 
 private slots:
-    void poll();
+    int poll();
 
 signals:
     void resumingFromIdle();

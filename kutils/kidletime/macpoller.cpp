@@ -88,7 +88,7 @@ pascal void MacPoller::IdleTimerAction(EventLoopTimerRef, EventLoopIdleTimerMess
         break;
     case kEventLoopIdleTimerIdling:
         // Called every time the timer fires (i.e. every second).
-        ((MacPoller*)inUserData)->mSecondsIdle++;
+        ((MacPoller*)inUserData)->m_secondsIdle++;
         ((MacPoller*)inUserData)->poll();
         break;
     }
@@ -127,7 +127,7 @@ bool MacPoller::isAvailable()
 bool MacPoller::setUpPoller()
 {
     // May already be init'ed.
-    if (mTimerRef) {
+    if (m_timerRef) {
         return true;
     }
 
@@ -150,8 +150,8 @@ bool MacPoller::setUpPoller()
         return false;
     }
 
-    EventLoopIdleTimerUPP timerUPP = NewEventLoopIdleTimerUPP(Private::IdleTimerAction);
-    if ((*myInstallEventLoopIdleTimer)(GetMainEventLoop(), kEventDurationSecond, kEventDurationSecond, timerUPP, 0, &d->mTimerRef)) {
+    EventLoopIdleTimerUPP timerUPP = NewEventLoopIdleTimerUPP(IdleTimerAction);
+    if ((*myInstallEventLoopIdleTimer)(GetMainEventLoop(), kEventDurationSecond, kEventDurationSecond, timerUPP, 0, &m_timerRef)) {
         return true;
     }
 
