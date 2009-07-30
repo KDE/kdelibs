@@ -156,10 +156,9 @@ QVariantList ProxyModelTest::getSignal(SignalType type, IndexFinder parentFinder
   return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end;
 }
 
-void ProxyModelTest::signalInsertion(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount)
+void ProxyModelTest::signalInsertion(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount, QList<QVariantList> signalList)
 {
   QVERIFY(startRow >= 0 && rowsAffected > 0);
-  QList<QVariantList> signalList;
   signalList << getSignal(RowsAboutToBeInserted, parentFinder, startRow, startRow + rowsAffected - 1 );
   signalList << getSignal(RowsInserted, parentFinder, startRow, startRow + rowsAffected - 1 );
 
@@ -207,9 +206,8 @@ int ProxyModelTest::getChange(bool sameParent, int start, int end, int currentPo
 }
 
 
-void ProxyModelTest::signalMove(const QString &name, IndexFinder srcFinder, int start, int end, IndexFinder destFinder, int destRow)
+void ProxyModelTest::signalMove(const QString &name, IndexFinder srcFinder, int start, int end, IndexFinder destFinder, int destRow, QList<QVariantList> signalList)
 {
-  QList<QVariantList> signalList;
   QVariantList signal;
   signal << RowsAboutToBeMoved << QVariant::fromValue(srcFinder) << start << end << QVariant::fromValue(destFinder) << destRow;
   signalList << signal;
@@ -236,10 +234,9 @@ void ProxyModelTest::signalMove(const QString &name, IndexFinder srcFinder, int 
   setExpected(name, signalList, persistentList);
 }
 
-void ProxyModelTest::signalRemoval(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount)
+void ProxyModelTest::signalRemoval(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount, QList<QVariantList> signalList)
 {
   QVERIFY(startRow >= 0 && rowsAffected > 0);
-  QList<QVariantList> signalList;
   signalList << getSignal(RowsAboutToBeRemoved, parentFinder, startRow, startRow + rowsAffected - 1 );
   signalList << getSignal(RowsRemoved, parentFinder, startRow, startRow + rowsAffected - 1 );
 
@@ -256,9 +253,8 @@ void ProxyModelTest::signalRemoval(const QString &name, IndexFinder parentFinder
   setExpected(name, signalList, persistentList);
 }
 
-void ProxyModelTest::signalDataChange(const QString &name, IndexFinder topLeft, IndexFinder bottomRight)
+void ProxyModelTest::signalDataChange(const QString &name, IndexFinder topLeft, IndexFinder bottomRight, QList<QVariantList> signalList)
 {
-  QList<QVariantList> signalList;
   QVariantList signal;
   signal << DataChanged << QVariant::fromValue(topLeft) << QVariant::fromValue(bottomRight);
   signalList << signal;

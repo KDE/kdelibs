@@ -125,13 +125,17 @@ private slots:
       return;
     }
 
+    QModelIndexList listOfOne = sourceModel()->match(sourceModel()->index(0, 0), Qt::DisplayRole, "1", 1, Qt::MatchExactly);
+
+    QModelIndex idx = listOfOne.at(0);
+
+    m_selectionModel->select(idx, QItemSelectionModel::SelectCurrent);
+    // The selection will cause some signals to be emitted.
+    signalList << getSignal(RowsAboutToBeInserted, indexFinder, startRow, startRow + rowsInserted - 1);
+    signalList << getSignal(RowsInserted, indexFinder, startRow, startRow + rowsInserted - 1);
+
     if ("insert02" == currentTag)
     {
-
-      // The selection will cause some signals to be emitted.
-      signalList << getSignal(RowsAboutToBeInserted, indexFinder, startRow, startRow + rowsInserted - 1);
-      signalList << getSignal(RowsInserted, indexFinder, startRow, startRow + rowsInserted - 1);
-      m_selectionModel->select(sourceModel()->index(0, 0), QItemSelectionModel::SelectCurrent);
 
       indexFinder = IndexFinder( m_proxyModel, QList<int>() << 0);
       rowsInserted = 10;
@@ -163,7 +167,7 @@ private slots:
     rowCount = 10;
     if ("insert05" == currentTag)
     {
-      signalInsertion("insert05", indexFinder, startRow, rowsInserted, rowCount);
+      signalInsertion("insert05", indexFinder, startRow, rowsInserted, rowCount, signalList);
       return;
     }
 
@@ -171,7 +175,7 @@ private slots:
 
     if ("insert06" == currentTag)
     {
-      signalInsertion("insert06", indexFinder, startRow, rowsInserted, rowCount);
+      signalInsertion("insert06", indexFinder, startRow, rowsInserted, rowCount, signalList);
       return;
     }
 
@@ -179,7 +183,7 @@ private slots:
     rowCount = 30;
     if ("insert07" == currentTag)
     {
-      signalInsertion("insert07", indexFinder, startRow, rowsInserted, rowCount);
+      signalInsertion("insert07", indexFinder, startRow, rowsInserted, rowCount, signalList);
       return;
     }
 
@@ -215,7 +219,7 @@ private slots:
     {
       // Although a tree of items is inserted, only ten base items are relevant to the model.
       indexFinder = IndexFinder( m_proxyModel, QList<int>() << 0 << 2);
-      signalInsertion("insert09", indexFinder, startRow, rowsInserted, rowCount);
+      signalInsertion("insert09", indexFinder, startRow, rowsInserted, rowCount, signalList);
       return;
     }
 
@@ -233,7 +237,7 @@ private slots:
       topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 0 );
       bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 0 );
 
-      signalDataChange("change01", topLeftFinder, bottomRightFinder);
+      signalDataChange("change01", topLeftFinder, bottomRightFinder, signalList);
       return;
     }
 
@@ -242,7 +246,7 @@ private slots:
       topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 4 );
       bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 7 );
 
-      signalDataChange("change02", topLeftFinder, bottomRightFinder);
+      signalDataChange("change02", topLeftFinder, bottomRightFinder, signalList);
       return;
     }
 
@@ -253,7 +257,7 @@ private slots:
     {
       startRow = 0;
       rowCount = 40;
-      signalRemoval("remove01", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove01", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
@@ -261,7 +265,7 @@ private slots:
     {
       startRow = 6;
       rowCount = 39;
-      signalRemoval("remove02", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove02", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
@@ -271,7 +275,7 @@ private slots:
     {
       startRow = 0;
       rowCount = 10;
-      signalRemoval("remove03", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove03", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
@@ -279,7 +283,7 @@ private slots:
     {
       startRow = 8;
       rowCount = 9;
-      signalRemoval("remove04", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove04", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
@@ -287,7 +291,7 @@ private slots:
     {
       startRow = 3;
       rowCount = 8;
-      signalRemoval("remove05", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove05", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
@@ -297,7 +301,7 @@ private slots:
       startRow = 0;
       rowCount = 7;
       rowsRemoved = 7;
-      signalRemoval("remove06", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove06", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
@@ -308,7 +312,7 @@ private slots:
       startRow = 4;
       rowCount = 38;
       rowsRemoved = 1;
-      signalRemoval("remove07", indexFinder, startRow, rowsRemoved, rowCount);
+      signalRemoval("remove07", indexFinder, startRow, rowsRemoved, rowCount, signalList);
       return;
     }
 
