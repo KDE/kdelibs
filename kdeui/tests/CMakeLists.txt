@@ -63,7 +63,7 @@ KDEUI_UNIT_TESTS(
 
 KDEUI_PROXYMODEL_TESTS(
   descendantentitiesproxymodeltest
-  selectionproxymodeltest
+  kselectionproxymodeltest-selectedbranches
 )
 
 KDEUI_EXECUTABLE_TESTS(
