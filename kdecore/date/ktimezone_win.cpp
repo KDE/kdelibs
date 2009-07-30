@@ -278,7 +278,7 @@ KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
 
     std::basic_string<TCHAR> path( timeZonesKey );
     path += TEXT( "\\" );
-    path += zone.name().toLocal8Bit().data();
+    path += reinterpret_cast<TCHAR*>( zone.name().toLocal8Bit().data() );
 
     HKEY key;
     if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
@@ -300,7 +300,7 @@ KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
 
     WCHAR display[512];
     get_string_value( key, L"Display", display, sizeof( display ) );
-    data->displayName = QString::fromWCharArray( display );
+    data->displayName = QString::fromUtf16( reinterpret_cast<ushort*>( display ) );
 
 #define COPY( name ) data->_tzi.name = tzi.name
     COPY( Bias );
@@ -397,7 +397,7 @@ static inline QString tchar_to_qstring( TCHAR * ustr ) {
     return QString::fromLocal8Bit( str );
 }
 static inline QString tchar_to_qstring( const wchar_t * str ) {
-    return QString::fromWCharArray( str );
+    return QString::fromUtf16( reinterpret_cast<const ushort*>( str ) );
 }
 
 static QStringList list_key( HKEY key ) {

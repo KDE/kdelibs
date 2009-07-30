@@ -76,6 +76,7 @@ if (WIN32)
       util/kmacroexpander_win.cpp
       util/kshell_win.cpp
       util/kuser_win.cpp
+	  date/ktimezone_win.cpp
    )
    if(NOT MSVC)
       LIST(APPEND kdecore_OPTIONAL_SRCS
