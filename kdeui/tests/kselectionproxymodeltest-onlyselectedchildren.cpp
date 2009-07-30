@@ -293,5 +293,5 @@ private:
 
 
 QTEST_KDEMAIN(SelectionProxyModelTest, GUI)
-#include "kselectionproxymodeltest.moc"
+#include "kselectionproxymodeltest-onlyselectchildren.moc"
 
