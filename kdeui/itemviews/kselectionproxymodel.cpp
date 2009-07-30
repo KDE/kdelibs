@@ -317,7 +317,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
       }
     }
 
-    proxyStartRow += q->sourceModel()->rowCount( parent );
+    proxyStartRow += start;
 
     q->beginInsertRows(QModelIndex(), proxyStartRow, proxyStartRow + (end - start));
     return;
