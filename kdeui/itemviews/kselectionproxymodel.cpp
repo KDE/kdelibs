@@ -100,6 +100,17 @@ public:
   int getRootListRow(const QModelIndexList &list, const QModelIndex &index) const;
 
   /**
+  If m_startWithChildTrees is true, this method returns the row in the proxy model to insert newIndex
+  items.
+
+  This is a special case because the items above rootListRow in the list are not in the model, but
+  their children are. Those children must be counted.
+
+  If m_startWithChildTrees is false, this method returns @p rootListRow.
+  */
+  int getTargetRow(int rootListRow);
+
+  /**
     Regroups @p list into contiguous groups with the same parent.
   */
   QList<QPair<QModelIndex, QModelIndexList> > regroup(const QModelIndexList &list) const;
@@ -639,6 +650,10 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
 
 int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, const QModelIndex &index) const
 {
+
+  if (list.isEmpty())
+    return 0;
+
   // What's going on?
   // Consider a tree like
   //
@@ -678,20 +693,21 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
     rootAncestors << ancestors;
   }
 
-  QModelIndex parent = index;
-  QModelIndex prevParent;
+  QModelIndex commonParent = index;
+  QModelIndex youngestAncestor;
 
   int firstCommonParent = -1;
   int bestParentRow = -1;
-  while (parent.isValid())
+  while (commonParent.isValid())
   {
-    prevParent = parent;
-    parent = parent.parent();
+    youngestAncestor = commonParent;
+    commonParent = commonParent.parent();
+
     for (int i = 0; i < rootAncestors.size(); ++i )
     {
       QModelIndexList ancestorList = rootAncestors.at(i);
 
-      int parentRow = ancestorList.indexOf(parent);
+      int parentRow = ancestorList.indexOf(commonParent);
 
       if (parentRow < 0)
         continue;
@@ -707,36 +723,59 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
       break;
   }
 
-  if (firstCommonParent < 0)
-    return 0;
+  // If @p list is non-empty, the invalid QModelIndex() will at least be found in ancestorList.
+  Q_ASSERT(firstCommonParent >= 0);
 
-  if ( m_includeAllSelected )
-    return firstCommonParent;
+  QModelIndexList firstAnsList = rootAncestors.at(firstCommonParent);
 
-  // commonParent is now the index A in the example above.
-  QModelIndex commonParent = rootAncestors.at(firstCommonParent).at( bestParentRow + 1 );
+  QModelIndex eldestSibling = firstAnsList.value( bestParentRow + 1 );
 
-  if ( prevParent.row() < commonParent.row() )
-    return firstCommonParent;
+  if (eldestSibling.isValid())
+  {
+    // firstCommonParent is a sibling of one of the ancestors of @p index.
+    // It is the first index to share a common parent with one of the ancestors of @p index.
+    if (eldestSibling.row() >= youngestAncestor.row())
+      return firstCommonParent;
+  }
 
   int siblingOffset = 1;
 
-  if (rootAncestors.size() > firstCommonParent + siblingOffset )
+  // The same commonParent might be common to several root indexes.
+  // If this is the last in the list, it's the only match. We instruct the model
+  // to insert the new index after it ( + siblingOffset).
+  if (rootAncestors.size() <= firstCommonParent + siblingOffset )
   {
-    QModelIndex nextParent = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow);
-    while (nextParent == commonParent.parent())
-    {
-      QModelIndex nextSibling = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow + 1);
-      if (prevParent.row() < nextSibling.row())
-      {
-        break;
-      }
-      siblingOffset++;
-      if (rootAncestors.size() <= firstCommonParent + siblingOffset )
-        break;
-      nextParent = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow);
-    }
+    return firstCommonParent + siblingOffset;
   }
+
+  QModelIndex nextParent = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow);
+  while (nextParent == commonParent)
+  {
+    QModelIndexList ansList = rootAncestors.at(firstCommonParent + siblingOffset );
+    if (ansList.size() < bestParentRow + 1)
+      // If the list is longer, it means that at the end of it is a descendant of the new index.
+      // We insert the ancestors items first in that case.
+      break;
+
+    QModelIndex nextSibling = rootAncestors.at(firstCommonParent + siblingOffset ).value(bestParentRow + 1);
+
+    if (!nextSibling.isValid())
+    {
+      continue;
+    }
+
+    if (youngestAncestor.row() <= nextSibling.row())
+    {
+      break;
+    }
+
+    siblingOffset++;
+
+    if (rootAncestors.size() <= firstCommonParent + siblingOffset )
+      break;
+    nextParent = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow);
+  }
+
   return firstCommonParent + siblingOffset;
 }
 
@@ -753,6 +792,34 @@ QList<QPair<QModelIndex, QModelIndexList> > KSelectionProxyModelPrivate::regroup
   return groups;
 }
 
+int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
+{
+  Q_Q(KSelectionProxyModel);
+  if (!m_startWithChildTrees)
+    return rootListRow;
+
+  const int column = 0;
+
+  --rootListRow;
+  while (rootListRow >= 0)
+  {
+    QModelIndex idx = m_rootIndexList.at(rootListRow);
+    Q_ASSERT(idx.isValid());
+    int rowCount = q->sourceModel()->rowCount(idx);
+    if (rowCount > 0)
+    {
+
+      QModelIndex proxyLastChild = q->mapFromSource(q->sourceModel()->index(rowCount - 1, column, idx));
+
+      return proxyLastChild.row() + 1;
+    }
+    --rootListRow;
+  }
+
+  return 0;
+
+}
+
 void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
 {
   Q_Q(KSelectionProxyModel);
@@ -767,18 +834,19 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
     if ( m_startWithChildTrees )
     {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
-      int row = getRootListRow(list, newIndex);
+      int rootListRow = getRootListRow(list, newIndex);
       int rowCount = q->sourceModel()->rowCount(newIndex);
       if ( rowCount > 0 )
       {
-        q->beginInsertRows(QModelIndex(), row, row + rowCount - 1);
+        int startRow = getTargetRow(rootListRow);
+        q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
         Q_ASSERT(newIndex.isValid());
-        m_rootIndexList.insert(row, newIndex);
+        m_rootIndexList.insert(rootListRow, newIndex);
         q->endInsertRows();
       } else {
         // Even if the newindex doesn't have any children to put into the model yet,
         // We still need to make sure it's future children are inserted into the model.
-        m_rootIndexList.insert(row, newIndex);
+        m_rootIndexList.insert(rootListRow, newIndex);
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
