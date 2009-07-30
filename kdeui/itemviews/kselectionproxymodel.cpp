@@ -97,7 +97,7 @@ public:
   /**
     Determines the correct location to insert @p index into @p list.
   */
-  int getTargetRow(const QModelIndexList &list, const QModelIndex &index) const;
+  int getRootListRow(const QModelIndexList &list, const QModelIndex &index) const;
 
   /**
     Regroups @p list into contiguous groups with the same parent.
@@ -637,7 +637,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
     insertionSort(newIndexes);
 }
 
-int KSelectionProxyModelPrivate::getTargetRow(const QModelIndexList &list, const QModelIndex &index) const
+int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, const QModelIndex &index) const
 {
   // What's going on?
   // Consider a tree like
@@ -767,7 +767,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
     if ( m_startWithChildTrees )
     {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
-      int row = getTargetRow(list, newIndex);
+      int row = getRootListRow(list, newIndex);
       int rowCount = q->sourceModel()->rowCount(newIndex);
       if ( rowCount > 0 )
       {
@@ -782,7 +782,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
-      int row = getTargetRow(list, newIndex);
+      int row = getRootListRow(list, newIndex);
       q->beginInsertRows(QModelIndex(), row, row);
       Q_ASSERT(newIndex.isValid());
       m_rootIndexList.insert(row, newIndex);
