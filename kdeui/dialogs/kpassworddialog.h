@@ -49,6 +49,8 @@
  *  use( dlg.username() , dlg.password() );
  * \endcode
  *
+ * \image html kpassworddialog.png "KDE Password Dialog"
+ *
  * @short dialog for requesting login and password from the end user
  */
 class KDEUI_EXPORT KPasswordDialog : public KDialog

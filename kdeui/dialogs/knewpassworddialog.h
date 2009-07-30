@@ -35,8 +35,6 @@ class QWidget;
  *
  * This dialog asks the user to enter a password.
  *
- * \image html kpassworddialog.png "KDE Password Dialog"
- *
  * \section usage Usage Exemple
  * \subsection asynchronous Asynchronous
  *
