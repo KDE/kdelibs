@@ -409,11 +409,23 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
   if (!proxyParent.isValid())
   {
-    // An index we don't care about.
+    if (!m_startWithChildTrees)
+      // An index we don't care about.
+      return;
+
+    if (!m_rootIndexList.contains(parent))
+      // An index we don't care about.
+      return;
+
+    int proxyStartRow = getProxyInitialRow(parent);
+
+    proxyStartRow += start;
+    q->beginRemoveRows(QModelIndex(), proxyStartRow, proxyStartRow + (end - start));
     return;
   }
 
-  q->beginRemoveRows(proxyParent, start, end);
+  if (!m_startWithChildTrees)
+    q->beginRemoveRows(proxyParent, start, end);
 }
 
 void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, int start, int end)
@@ -443,11 +455,17 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 
   if (!proxyParent.isValid())
   {
-    // An index we don't care about.
-    return;
-  }
+    if (!m_startWithChildTrees)
+      // An index we don't care about.
+      return;
 
-  q->endRemoveRows();
+    if (!m_rootIndexList.contains(parent))
+      // An index we don't care about.
+      return;
+    q->endRemoveRows();
+  }
+  if (!m_startWithChildTrees)
+    q->endRemoveRows();
 }
 
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
