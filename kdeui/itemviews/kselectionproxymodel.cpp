@@ -294,7 +294,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
     // D
 
     // If F gets a new child item, it must be inserted into the proxy model below D.
-    // To fins out what the proxyRow is, we find the proxyRow of D which is already in the model,
+    // To find out what the proxyRow is, we find the proxyRow of D which is already in the model,
     // and +1 it.
 
     int proxyStartRow = 0;
