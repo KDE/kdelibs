@@ -191,20 +191,20 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
     const QStringList allFiles = componentData().dirs()->findAllResources("data", filter) +
                                  componentData().dirs()->findAllResources("data", _file);
 
-    if (!allFiles.isEmpty())
+    if ( !allFiles.isEmpty() )
+    {
         file = findMostRecentXMLFile(allFiles, doc);
+    } else if ( !_file.isEmpty() ) {
+      // if a non-empty file gets passed and we can't find it,
+      // inform the developer using some debug output
+      kWarning() << "cannot find .rc file" << _file << "in" << filter;
+    }
 
     if ( file.isEmpty() )
     {
       // this might or might not be an error.  for the time being,
       // let's treat this as if it isn't a problem and the user just
       // wants the global standards file
-
-      // however if a non-empty file gets passed and we can't find it we might
-      // inform the developer using some debug output
-      if ( !_file.isEmpty() )
-          kWarning() << "cannot find .rc file" << _file << "in" << filter;
-
       setXML( QString(), true );
     }
     else if ( !doc.isEmpty() )
