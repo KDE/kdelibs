@@ -54,8 +54,8 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
 #ifdef HAVE_XSYNC
         , m_display(QX11Info::display())
-        , m_idleCounter(X::None)
-        , m_resetAlarm(X::None)
+        , m_idleCounter(None)
+        , m_resetAlarm(None)
 #endif
         , m_available(true)
 {
@@ -164,7 +164,7 @@ void XSyncBasedPoller::addTimeout(int nextTimeout)
      */
 #ifdef HAVE_XSYNC
     XSyncValue timeout;
-    XSyncAlarm newalarm = X::None;
+    XSyncAlarm newalarm = None;
     /*XSyncValue idleTime;
     XSyncValue result;
     int overflow;*/
@@ -219,7 +219,7 @@ void XSyncBasedPoller::stopCatchingIdleEvents()
 {
 #ifdef HAVE_XSYNC
     XSyncDestroyAlarm(m_display, m_resetAlarm);
-    m_resetAlarm = X::None;
+    m_resetAlarm = None;
 #endif
 }
 
