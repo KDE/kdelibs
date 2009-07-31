@@ -300,7 +300,7 @@ void FormProgressDialog::addText(const QString& text)
 void FormProgressDialog::done(int r)
 {
     if( r == Rejected && ! d->gotCanceled ) {
-        if( KMessageBox::messageBox(this, KMessageBox::WarningContinueCancel, i18n("Abort?")) == KMessageBox::Continue ) {
+        if( KMessageBox::messageBox(this, KMessageBox::WarningContinueCancel) == KMessageBox::Continue ) {
             d->gotCanceled = true;
             enableButton(KDialog::Cancel, false);
             emit canceled();
