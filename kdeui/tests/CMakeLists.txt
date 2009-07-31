@@ -100,7 +100,6 @@ KDEUI_EXECUTABLE_TESTS(
   klineedittest
   kmainwindowtest
   kmainwindowrestoretest
-  kmanagerselectiontest
   kmessageboxtest
   kmessagetest
   kmodifierkeyinfotest
@@ -142,6 +141,7 @@ target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
+ kmanagerselectiontest
  kxerrorhandlertest
 )
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
