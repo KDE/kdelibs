@@ -21,8 +21,12 @@
 #include <config-kidletime.h>
 
 #ifdef Q_WS_X11
+#ifdef HAVE_XSCREENSAVER
 #include "xscreensaverbasedpoller.h"
+#endif
+#ifdef HAVE_XSYNC
 #include "xsyncbasedpoller.h"
+#endif
 #else
 #ifdef Q_WS_MAC
 #include "macpoller.h"
