@@ -889,7 +889,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
         const char *autoDetectedEncoding;
         if ((c1 == 0xFE && c2 == 0xFF) || (c1 == 0xFF && c2 == 0xFE))
         {
-            autoDetectedEncoding = "ISO-10646-UCS-2";
+            autoDetectedEncoding = "UTF-16";
         }
         else if (c1 == 0xEF && c2 == 0xBB && c3 == 0xBF)
         {
@@ -908,7 +908,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
             int nul_count_even = (c2 != 0) + (c4 != 0) + (c6 != 0) + (c8 != 0) + (c10 != 0);
             int nul_count_odd = (c1 != 0) + (c3 != 0) + (c5 != 0) + (c7 != 0) + (c9 != 0);
             if ((nul_count_even==0 && nul_count_odd==5) || (nul_count_even==5 && nul_count_odd==0))
-                autoDetectedEncoding = "ISO-10646-UCS-2";
+                autoDetectedEncoding = "UTF-16";
             else
                 autoDetectedEncoding = 0;
         }
