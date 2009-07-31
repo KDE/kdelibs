@@ -136,7 +136,6 @@ KDEUI_EXECUTABLE_TESTS(
 
 
 if (Q_WS_X11)
-target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
@@ -144,6 +143,7 @@ KDEUI_EXECUTABLE_TESTS(
  kmanagerselectiontest
  kxerrorhandlertest
 )
+target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
 endif (Q_WS_X11)
 
