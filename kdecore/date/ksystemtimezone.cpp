@@ -54,7 +54,9 @@
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include "ktzfiletimezone.h"
-
+#ifdef Q_OS_WIN
+#include "ktimezone_win.h"
+#endif
 
 #define KTIMEZONED_DBUS_IFACE "org.kde.KTimeZoned"
 
@@ -116,7 +118,12 @@ public:
     static void setLocalZone();
     static void cleanup();
     static void readConfig(bool init);
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
+    static void updateTimezoneInformation()
+    {
+      instance()->updateTimezoneInformation(true);
+    }
+#else
     static void updateZonetab()  { instance()->readZoneTab(true); }
 #endif
 
@@ -128,7 +135,9 @@ public:
 
 private:
     KSystemTimeZonesPrivate() {}
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
+    void updateTimezoneInformation(bool update);
+#else
     void readZoneTab(bool update);
     static float convertCoordinate(const QString &coordinate);
 #endif
@@ -287,6 +296,7 @@ kDebug(161)<<"instance(): ... initialised";
 #ifdef Q_OS_WIN
         // On Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones
         // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
+        m_instance->updateTimezoneInformation(false);
 #else
         // For Unix, read zone.tab.
         if (!m_zonetab.isEmpty())
@@ -344,7 +354,43 @@ void KSystemTimeZonesPrivate::cleanup()
     delete m_tzfileSource;
 }
 
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
+
+void KSystemTimeZonesPrivate::updateTimezoneInformation(bool update)
+{
+    if (!m_source)
+        m_source = new KSystemTimeZoneSourceWindows;
+    QStringList newZones;
+    Q_FOREACH( const QString & tz, KSystemTimeZoneWindows::listTimeZones() ) {
+       // const std::wstring wstr = tz.toStdWString();
+       // const KTimeZone info = make_time_zone( wstr.c_str() );
+      KSystemTimeZoneWindows stz(m_source, tz);
+      if (update)
+        {
+            // Update the existing collection with the new zone definition
+            newZones += stz.name();
+            KTimeZone oldTz = zone(stz.name());
+            if (oldTz.isValid())
+                oldTz.updateBase(stz);   // the zone previously existed, so update its definition
+            else
+                add(stz);   // the zone didn't previously exist, so add it
+        }
+        else
+            add(stz);
+    }
+    if (update)
+    {
+        // Remove any zones from the collection which no longer exist
+        const ZoneMap oldZones = zones();
+        for (ZoneMap::const_iterator it = oldZones.begin();  it != oldZones.end();  ++it)
+        {
+            if (newZones.indexOf(it.key()) < 0)
+                remove(it.value());
+        }
+    }
+}
+
+#else
 /*
  * Find the location of the zoneinfo files and store in mZoneinfoDir.
  * Parse zone.tab and for each time zone, create a KSystemTimeZone instance.
@@ -800,3 +846,4 @@ QList<int> KSystemTimeZoneData::utcOffsets() const
 {
     return QList<int>();
 }
+
