@@ -391,6 +391,7 @@ public:
 
    /**
     * Creates a meta data map from a QVaraint map.
+    * @since 4.4
     */
     MetaData(const QMap<QString,QVariant> &);
 
@@ -417,6 +418,7 @@ public:
     *
     * @param metaData the map to add
     * @return this map
+    * @since 4.4
     */
    MetaData & operator += ( const QMap<QString,QVariant> &metaData );
 
@@ -424,6 +426,7 @@ public:
     * Sets the given meta data map to this map.
     * @param metaData the map to add
     * @return this map
+    * @since 4.4
     */
    MetaData & operator = ( const QMap<QString,QVariant> &metaData );
 
@@ -431,6 +434,7 @@ public:
     * Returns the contents of the map as a QVariant.
     *
     * @return a QVariant representation of the meta data map.
+    * @since 4.4
     */
    QVariant toVariant() const;
 };
