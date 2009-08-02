@@ -732,7 +732,7 @@ public:
                                     ///< keep the 12/24h format as specified by locale time
                                     ///< format, eg. "07.33.05" instead of "07.33.05 pm" for
                                     ///< time format "%I.%M.%S %p".
-        TimeDuration       = 0x6,   ///< Read/format time string as duration. This will strip
+        TimeDuration       = 0x6   ///< Read/format time string as duration. This will strip
                                     ///< the am/pm suffix and read/format times with an hour
                                     ///< value of 0-23 hours, eg. "19.33.05" instead of
                                     ///< "07.33.05 pm" for time format "%I.%M.%S %p".
