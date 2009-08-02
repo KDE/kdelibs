@@ -310,7 +310,7 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
     {
         const KUrl openUrl = (!m_parent->url().isEmpty() && !m_parent->url().isRelative() )
           ? m_parent->url() : m_startDir;
-      
+
         if (fileDialogMode & KFile::LocalOnly)
             newurl = KFileDialog::getExistingDirectory( openUrl, m_parent);
         else
@@ -333,7 +333,7 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
       } else {
           dlg->setUrl(m_startDir);
       }
-        
+
 
       if ( dlg->exec() != QDialog::Accepted )
       {
@@ -456,8 +456,9 @@ const KEditListBox::CustomEditor &KUrlRequester::customEditor()
         edit = qobject_cast<KLineEdit*>( d->combo->lineEdit() );
 
 #ifndef NDEBUG
-    if ( !edit )
+    if ( !edit ) {
         kWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
+    }
 #endif
 
     d->editor.setRepresentationWidget(this);
