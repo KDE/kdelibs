@@ -2019,200 +2019,313 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 QTime KLocale::readTime(const QString &intstr, bool *ok) const
 {
   QTime _time;
-  _time = readTime(intstr, WithSeconds, ok);
+  _time = readLocaleTime(intstr, ok, TimeDefault, true);
   if (_time.isValid()) return _time;
-  return readTime(intstr, WithoutSeconds, ok);
+  return readLocaleTime(intstr, ok, TimeWithoutSeconds, true);
 }
 
 QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
 {
-    QString str = intstr.simplified().toLower();
-    QString Format = timeFormat().simplified();
-    if (flags & WithoutSeconds)
-        Format.remove(QRegExp(".%S"));
+    return readLocaleTime(intstr, ok,
+                          (flags == WithSeconds) ? TimeDefault : TimeWithoutSeconds, true);
+}
 
-    int hour = -1, minute = -1;
-    int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
+// remove the first occurrence of the 2-character string
+// strip2char from inout and if found, also remove one preceeding
+// punctuation character and arbitrary number of spaces.
+static void stripStringAndPreceedingSeparator(QString &inout, const QLatin1String &strip2char)
+{
+    int remPos = inout.indexOf(strip2char);
+    if (remPos == -1) {
+        return;
+    }
+    int endPos = remPos + 2;
+    int curPos = remPos - 1;
+    while (curPos >= 0 && inout.at(curPos).isSpace()) {
+        curPos--;
+    }
+    // remove the separator sign before the seconds
+    // and assume that works everywhere
+    if (curPos >= 0 && inout.at(curPos).isPunct() && inout.at(curPos) != '%') {
+        curPos--;
+    }
+    while (curPos >= 0 && inout.at(curPos).isSpace()) {
+        curPos--;
+    }
+
+    remPos = qMax(curPos + 1, 0);
+    inout.remove(remPos, endPos - remPos);
+}
+
+// remove the first occurrence of "%p" from the inout.
+static void stripAmPmFormat(QString &inout)
+{
+    // NOTE: this function assumes that %p - if it's present -
+    //       is either the first or the last element of the format
+    //       string. Either a succeeding or a preceeding
+    //       punctuation symbol is stripped.
+    int length = inout.size();
+    int ppos = inout.indexOf(QLatin1String("%p"));
+    if (ppos == -1) {
+        return;
+    } else if (ppos == 0) {
+        // first element, eat succeeding punctuation and spaces
+        ppos = 2;
+        while (ppos < length && (inout.at(ppos).isSpace() || inout.at(ppos).isPunct()) &&
+            inout.at(ppos) != '%') {
+            ppos++;
+        }
+        inout = inout.mid(ppos);
+    } else {
+        stripStringAndPreceedingSeparator(inout, QLatin1String("%p"));
+    }
+}
+
+QTime KLocale::readLocaleTime(const QString &intstr, bool *ok,
+                              TimeFormatOptions options, bool strict) const
+{
+    QString str(intstr.simplified().toLower());
+    QString format(timeFormat().simplified());
+
+    int hour = -1;
+    int minute = -1;
+    int second = -1;
     bool g_12h = false;
     bool pm = false;
     int strpos = 0;
-    int Formatpos = 0;
+    int formatpos = 0;
+    bool error = false;
 
-    while (Format.length() > Formatpos || str.length() > strpos) {
-        if ( !(Format.length() > Formatpos && str.length() > strpos) )
-            goto error;
+    bool excludeSecs = ((options & TimeWithoutSeconds) == TimeWithoutSeconds);
+    bool isDuration = ((options & TimeDuration) == TimeDuration);
+    bool noAmPm = ((options & TimeWithoutAmPm) == TimeWithoutAmPm);
 
-        QChar c = Format.at(Formatpos++);
+    // if seconds aren't needed, strip them from the timeFormat
+    if (excludeSecs) {
+        stripStringAndPreceedingSeparator(format, QLatin1String("%S"));
+        second = 0; // seconds are always 0
+    }
+
+    // if am/pm isn't needed, strip it from the timeFormat
+    if (noAmPm) {
+        stripAmPmFormat(format);
+    }
+
+    while (!error && (format.length() > formatpos || str.length() > strpos)) {
+        if (!(format.length() > formatpos && str.length() > strpos)) {
+            error = true;
+            break;
+        }
+
+        QChar c = format.at(formatpos++);
+        if (c.isSpace()) {
+            if (strict) { // strict processing: space is needed
+                if (!str.at(strpos).isSpace()) {
+                    error = true;
+                    break;
+                }
+                strpos++;
+            } else { // lax processing: space in str not needed
+                // 1 space maximum as str is simplified
+                if (str.at(strpos).isSpace()) {
+                    strpos++;
+                }
+            }
+            continue;
+        }
 
         if (c != '%') {
-            if (c.isSpace())
-                strpos++;
-            else if (c != str.at(strpos++))
-                goto error;
-            continue;
-	}
-
-        // remove space at the beginning
-        if (str.length() > strpos && str.at(strpos).isSpace())
-            strpos++;
-
-        c = Format.at(Formatpos++);
-        switch (c.unicode()) {
-	case 'p':
-        {
-	    QString s = i18n("pm").toLower();
-	    int len = s.length();
-	    if (str.mid(strpos, len) == s) {
-		pm = true;
-		strpos += len;
-            } else {
-		s = i18n("am").toLower();
-		len = s.length();
-		if (str.mid(strpos, len) == s) {
-                    pm = false;
-                    strpos += len;
-		} else
-                    goto error;
+            if (c != str.at(strpos++)) {
+                error = true;
+                break;
             }
+            continue;
         }
-        break;
 
-	case 'k':
-	case 'H':
+        c = format.at(formatpos++);
+        switch (c.unicode()) {
+
+        case 'p':
+            {
+                QString s(i18n("pm").toLower());
+                int len = s.length();
+                if (str.mid(strpos, len) == s) {
+                    pm = true;
+                    strpos += len;
+                } else {
+                    s = i18n("am").toLower();
+                    len = s.length();
+                    if (str.mid(strpos, len) == s) {
+                        pm = false;
+                        strpos += len;
+                    } else {
+                        error = true;
+                    }
+                }
+            }
+            break;
+
+        case 'k':
+        case 'H':
             g_12h = false;
             hour = readInt(str, strpos);
-            if (hour < 0 || hour > 23)
-                goto error;
-
+            if (hour < 0 || hour > 23) {
+                error = true;
+            }
             break;
 
-	case 'l':
-	case 'I':
-            g_12h = true;
-            hour = readInt(str, strpos);
-            if (hour < 1 || hour > 12)
-                goto error;
-
+        case 'l':
+        case 'I':
+            if (isDuration) {
+                g_12h = false;
+                hour = readInt(str, strpos);
+                if (hour < 0 || hour > 23) {
+                    error = true;
+                }
+            } else {
+                g_12h = true;
+                hour = readInt(str, strpos);
+                if (hour < 1 || hour > 12) {
+                    error = true;
+                }
+            }
             break;
 
-	case 'M':
+        case 'M':
             minute = readInt(str, strpos);
-            if (minute < 0 || minute > 59)
-                goto error;
-
+            if (minute < 0 || minute > 59) {
+                error = true;
+            }
             break;
 
-	case 'S':
+        case 'S':
             second = readInt(str, strpos);
-            if (second < 0 || second > 59)
-                goto error;
-
+            if (second < 0 || second > 59) {
+                error = true;
+            }
             break;
-	}
-    }
-    if (g_12h) {
-        hour %= 12;
-        if (pm) hour += 12;
+        }
+
+        // NOTE: if anything is performed inside this loop, be sure to
+        //       check for error!
     }
 
-    if (ok) *ok = true;
-    return QTime(hour, minute, second);
-
-error:
-    if (ok) *ok = false;
-    return QTime(); // return invalid date if it didn't work
+    if (!error) {
+        if (g_12h) {
+            hour %= 12;
+            if (pm) {
+                hour += 12;
+            }
+        }
+        if (ok) {
+            *ok = true;
+        }
+        return QTime(hour, minute, second);
+    } else {
+        if (ok) {
+            *ok = false;
+        }
+        return QTime();
+    }
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuration) const
 {
-  const QString rst = timeFormat();
-
-  // only "pm/am" here can grow, the rest shrinks, but
-  // I'm rather safe than sorry
-  QChar *buffer = new QChar[rst.length() * 3 / 2 + 30];
-
-  int index = 0;
-  bool escape = false;
-  int number = 0;
-
-  for ( int format_index = 0; format_index < rst.length(); format_index++ )
-    {
-      if ( !escape )
-	{
-	  if ( rst.at( format_index ).unicode() == '%' )
-	    escape = true;
-	  else
-	    buffer[index++] = rst.at( format_index );
-	}
-      else
-	{
-	  switch ( rst.at( format_index ).unicode() )
-	    {
-	    case '%':
-	      buffer[index++] = '%';
-	      break;
-	    case 'H':
-	      put_it_in( buffer, index, pTime.hour() );
-	      break;
-	    case 'I':
-	      if ( isDuration )
-	          put_it_in( buffer, index, pTime.hour() );
-	      else
-	          put_it_in( buffer, index, ( pTime.hour() + 11) % 12 + 1 );
-	      break;
-	    case 'M':
-	      put_it_in( buffer, index, pTime.minute() );
-	      break;
-	    case 'S':
-	      if (includeSecs)
-		put_it_in( buffer, index, pTime.second() );
-	      else if (index > 0) {
-                  // remove spaces (#164813)
-                  while(index > 0 && buffer[index-1].isSpace())
-                    --index;
-		  // we remove the separator sign before the seconds and
-		  // assume that works everywhere
-		  --index;
-                  // remove spaces (#164813)
-                  while(index > 0 && buffer[index-1].isSpace())
-                    --index;
-		  break;
-		}
-	      break;
-	    case 'k':
-	      number = pTime.hour();
-	    case 'l':
-	      // to share the code
-	      if ( rst.at( format_index ).unicode() == 'l' )
-		number = isDuration ? pTime.hour() : (pTime.hour() + 11) % 12 + 1;
-	      if ( number / 10 )
-		buffer[index++] = number / 10 + '0';
-	      buffer[index++] = number % 10 + '0';
-	      break;
-	    case 'p':
-	      if ( !isDuration )
-	      {
-		QString s;
-		if ( pTime.hour() >= 12 )
-		  put_it_in( buffer, index, i18n("pm") );
-		else
-		  put_it_in( buffer, index, i18n("am") );
-	      }
-	      break;
-	    default:
-	      buffer[index++] = rst.at( format_index );
-	      break;
-	    }
-	  escape = false;
-	}
+    TimeFormatOptions options = TimeDefault;
+    if (!includeSecs) {
+        options |= TimeWithoutSeconds;
     }
-  QString ret( buffer, index );
-  delete [] buffer;
-  ret = convertDigits(ret, d->dateTimeDigitSet);
-  if ( isDuration ) // eliminate trailing-space due to " %p"
+    if (isDuration) {
+        options |= TimeDuration;
+    }
+    return formatLocaleTime(pTime, options);
+}
+
+QString KLocale::formatLocaleTime(const QTime &pTime, TimeFormatOptions options) const
+{
+    QString rst(timeFormat());
+
+    bool excludeSecs = ((options & TimeWithoutSeconds) == TimeWithoutSeconds);
+    bool isDuration = ((options & TimeDuration) == TimeDuration);
+    bool noAmPm = ((options & TimeWithoutAmPm) == TimeWithoutAmPm);
+    
+    // if seconds aren't needed, strip them from the timeFormat
+    if (excludeSecs) {
+        stripStringAndPreceedingSeparator(rst, QLatin1String("%S"));
+    }
+
+    // if am/pm isn't needed, strip it from the timeFormat
+    if (noAmPm) {
+        stripAmPmFormat(rst);
+    }
+
+    // only "pm/am" here can grow, the rest shrinks, but
+    // I'm rather safe than sorry
+    QChar *buffer = new QChar[rst.length() * 3 / 2 + 30];
+
+    int index = 0;
+    bool escape = false;
+    int number = 0;
+
+    for (int format_index = 0; format_index < rst.length(); format_index++) {
+        if (!escape) {
+            if (rst.at(format_index).unicode() == '%') {
+                escape = true;
+            } else {
+                buffer[index++] = rst.at(format_index);
+            }
+        } else {
+            switch (rst.at(format_index).unicode()) {
+
+            case '%':
+                buffer[index++] = '%';
+                break;
+            case 'H':
+                put_it_in(buffer, index, pTime.hour());
+                break;
+            case 'I':
+                if (isDuration) {
+                    put_it_in(buffer, index, pTime.hour());
+                } else {
+                    put_it_in(buffer, index, (pTime.hour() + 11) % 12 + 1);
+                }
+                break;
+            case 'M':
+                put_it_in(buffer, index, pTime.minute());
+                break;
+            case 'S':
+                put_it_in(buffer, index, pTime.second());
+                break;
+            case 'k':
+                number = pTime.hour();
+            case 'l':
+                // to share the code
+                if (rst.at(format_index).unicode() == 'l') {
+                    number = isDuration ? pTime.hour() : (pTime.hour() + 11) % 12 + 1;
+                }
+                if (number / 10) {
+                    buffer[index++] = number / 10 + '0';
+                }
+                buffer[index++] = number % 10 + '0';
+                break;
+            case 'p':
+                if (pTime.hour() >= 12) {
+                    put_it_in(buffer, index, i18n("pm"));
+                } else {
+                    put_it_in(buffer, index, i18n("am"));
+                }
+                break;
+            default:
+                buffer[index++] = rst.at(format_index);
+                break;
+            }
+            escape = false;
+        }
+    }
+    QString ret(buffer, index);
+    delete [] buffer;
+    ret = convertDigits(ret, d->dateTimeDigitSet);
     return ret.trimmed();
-  else
-    return ret;
 }
 
 bool KLocale::use12Clock() const
@@ -2236,7 +2349,9 @@ QString KLocalePrivate::formatDateTime(const KLocale *locale, const QDateTime &d
                   ? KLocalePrivate::fancyDate(locale, dateTime.date(), daysTo)
                   : locale->formatDate(dateTime.date(), format);
   return i18nc("concatenation of dates and time", "%1 %2",
-               dateStr, locale->formatTime(dateTime.time(), includeSeconds));
+               dateStr, locale->formatLocaleTime(dateTime.time(),
+                                                 includeSeconds ? KLocale::TimeDefault :
+                                                                  KLocale::TimeWithoutSeconds));
 }
 
 QString KLocale::formatDateTime(const QDateTime &dateTime, DateFormat format,

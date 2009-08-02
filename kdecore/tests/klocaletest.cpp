@@ -179,20 +179,21 @@ KLocaleTest::readDate()
 void
 KLocaleTest::formatTime()
 {
-	KLocale locale(*KGlobal::locale());
-	QTime time(0,22,33);
+    KLocale locale(*KGlobal::locale());
+    QTime time(0,22,33);
 
-	locale.setTimeFormat("%H:%M %p");
-	QCOMPARE(locale.formatTime(time, true, false), QString("00:22 am"));
-	QCOMPARE(locale.formatTime(time, true, true), QString("00:22"));
+    locale.setTimeFormat("%H:%M %p");
+    QCOMPARE(locale.formatLocaleTime(time, KLocale::TimeWithoutSeconds), QString("00:22 am"));
+    QCOMPARE(locale.formatLocaleTime(time, KLocale::TimeWithoutSeconds | KLocale::TimeDuration),
+             QString("00:22"));
 
-	locale.setTimeFormat("%H:%M:%S %p");
-	QCOMPARE(locale.formatTime(time, true, false), QString("00:22:33 am"));
-	QCOMPARE(locale.formatTime(time, true, true), QString("00:22:33"));
+    locale.setTimeFormat("%H:%M:%S %p");
+    QCOMPARE(locale.formatLocaleTime(time, KLocale::TimeDefault), QString("00:22:33 am"));
+    QCOMPARE(locale.formatLocaleTime(time, KLocale::TimeDuration), QString("00:22:33"));
 
-	locale.setTimeFormat("%l : %M : %S %p"); // #164813
-	QCOMPARE(locale.formatTime(time, true), QString("12 : 22 : 33 am"));
-	QCOMPARE(locale.formatTime(time, false), QString("12 : 22 am"));
+    locale.setTimeFormat("%l : %M : %S %p"); // #164813
+    QCOMPARE(locale.formatLocaleTime(time, KLocale::TimeDefault), QString("12 : 22 : 33 am"));
+    QCOMPARE(locale.formatLocaleTime(time, KLocale::TimeWithoutSeconds), QString("12 : 22 am"));
 }
 
 void
@@ -297,20 +298,20 @@ KLocaleTest::formatDateTime()
 void
 KLocaleTest::readTime()
 {
-	KLocale locale(*KGlobal::locale());
-	bool ok = false;
+    KLocale locale(*KGlobal::locale());
+    bool ok = false;
 
-	QCOMPARE(locale.readTime("11:22:33", &ok), QTime(11,22,33));
-	QVERIFY(ok);
+    QCOMPARE(locale.readTime("11:22:33", &ok), QTime(11,22,33));
+    QVERIFY(ok);
 
-	QCOMPARE(locale.readTime("11:22", &ok), QTime(11,22,0));
-	QVERIFY(ok);
+    QCOMPARE(locale.readTime("11:22", &ok), QTime(11,22,0));
+    QVERIFY(ok);
 
-	locale.readTime("11:22:33", KLocale::WithoutSeconds, &ok);
-	QVERIFY(!ok);
+    locale.readLocaleTime("11:22:33", &ok, KLocale::TimeWithoutSeconds);
+    QVERIFY(!ok);
 
-	QCOMPARE(locale.readTime("11:22", KLocale::WithoutSeconds, &ok), QTime(11, 22, 0));
-	QVERIFY(ok);
+    QCOMPARE(locale.readLocaleTime("11:22", &ok, KLocale::TimeWithoutSeconds), QTime(11, 22, 0));
+    QVERIFY(ok);
 }
 
 void

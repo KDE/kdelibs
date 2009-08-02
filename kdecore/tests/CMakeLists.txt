@@ -19,6 +19,7 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 
 KDECORE_UNIT_TESTS(
  klocaletest
+ klocaletimeformattest
  klocalizedstringtest
  kstandarddirstest
  kaboutdatatest
