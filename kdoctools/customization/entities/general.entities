@@ -337,7 +337,7 @@
 <!ENTITY kstars	"<application>KStars</application>">
 <!ENTITY kstart	"<application>kstart</application>">
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
-<!ENTITY ksysguard	"<application>KSysguard</application>">
+<!ENTITY ksysguard	"<application>System Monitor</application>">
 <!ENTITY ksysv	"<application>KSysV</application>">
 <!ENTITY ksystemlog  "<application>KSystemLog</application>">
 <!ENTITY ktalk	"<application>KTalk</application>">
