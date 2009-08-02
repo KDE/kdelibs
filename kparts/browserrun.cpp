@@ -216,7 +216,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         d->m_contentDisposition = job->queryMetaData("content-disposition-type");
 
         // Preserve all the SSL related meta data information...
-        kDebug(1000) << "meta data" << job->metaData();
+        // kDebug(1000) << "meta data" << job->metaData();
         const QMap<QString, QString> metaData = job->metaData();
         Q_FOREACH(const QString& key, metaData.keys()) {
            if (key.startsWith(QLatin1String("ssl_"), Qt::CaseInsensitive))
