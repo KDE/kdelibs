@@ -2,14 +2,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "ktraderparse_p.h"
+#include "yacc.h"
 
 #define YYLTYPE_IS_TRIVIAL 0
 #define YYENABLE_NLS 0
+#define YYLEX_PARAM _scanner
+#define YYPARSE_PARAM _scanner
+typedef void* yyscan_t;
 void yyerror(const char *s);
-int yylex();
-int kiotraderlex_destroy();
+int kiotraderlex(YYSTYPE * yylval, yyscan_t scanner);
+int kiotraderlex_init (yyscan_t* scanner);
+int kiotraderlex_destroy(yyscan_t scanner);
 
-void KTraderParse_initFlex( const char *s );
+void KTraderParse_initFlex( const char *s, yyscan_t _scanner );
 
 %}
 
@@ -68,6 +73,8 @@ void KTraderParse_initFlex( const char *s );
 %destructor { KTraderParse_destroy( $$ ); } term
 %destructor { KTraderParse_destroy( $$ ); } factor_non
 %destructor { KTraderParse_destroy( $$ ); } factor
+
+%pure-parser
 
 /* Grammar follows */
 
@@ -147,7 +154,9 @@ void yyerror ( const char *s )  /* Called by yyparse on error */
 
 void KTraderParse_mainParse( const char *_code )
 {
-  KTraderParse_initFlex( _code );
-  yyparse();
-  kiotraderlex_destroy();
+    yyscan_t scanner;
+    kiotraderlex_init(&scanner);
+    KTraderParse_initFlex(_code, scanner);
+    kiotraderparse(scanner);
+    kiotraderlex_destroy(scanner);
 }

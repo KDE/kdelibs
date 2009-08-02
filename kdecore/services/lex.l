@@ -1,5 +1,4 @@
 %{
-#define yylval kiotraderlval
 #define yywrap kiotraderwrap
 
 #include "yacc.h"
@@ -11,14 +10,16 @@ char* KTraderParse_putSymbol( char *_name );
 char *KTraderParse_putSymbolInBrackets( char *_name );
 char* KTraderParse_putString( char *_name );
 int yywrap();
-int kiotraderlex(void);
-void KTraderParse_initFlex( const char *_code );
+int kiotraderlex(YYSTYPE * yylval, yyscan_t scanner);
+void KTraderParse_initFlex( const char *_code, yyscan_t _scanner );
 
 %}
 %option nomain
 %option never-interactive
 %option noalways-interactive
 %option nostack
+%option reentrant
+%option bison-bridge
 
 DIGIT    [0-9]
 
@@ -44,21 +45,21 @@ DIGIT    [0-9]
 "max" { return MAX; }
 "min" { return MIN; }
 
-"~"|"/"|"+"|"-"|"="|"*"|"("|")"|","  { yylval.name = 0L; return (int)(*yytext); }
+"~"|"/"|"+"|"-"|"="|"*"|"("|")"|","  { yylval->name = 0L; return (int)(*yytext); }
 
-"TRUE" { yylval.valb = 1; return VAL_BOOL; }
-"FALSE" { yylval.valb = 0; return VAL_BOOL; }
+"TRUE" { yylval->valb = 1; return VAL_BOOL; }
+"FALSE" { yylval->valb = 0; return VAL_BOOL; }
 
-"'"[^']*"'" { yylval.name = KTraderParse_putString( yytext ); return VAL_STRING; }
+"'"[^']*"'" { yylval->name = KTraderParse_putString( yytext ); return VAL_STRING; }
 
-"-"{DIGIT}+  { yylval.vali = atoi( yytext ); return VAL_NUM; }
-{DIGIT}+  { yylval.vali = atoi( yytext ); return VAL_NUM; }
+"-"{DIGIT}+  { yylval->vali = atoi( yytext ); return VAL_NUM; }
+{DIGIT}+  { yylval->vali = atoi( yytext ); return VAL_NUM; }
 
-{DIGIT}*"\."{DIGIT}+ { yylval.vald = atof( yytext ); return VAL_FLOAT; }
+{DIGIT}*"\."{DIGIT}+ { yylval->vald = atof( yytext ); return VAL_FLOAT; }
 
-\[[a-zA-Z][a-zA-Z0-9\-]*\] { yylval.name = KTraderParse_putSymbolInBrackets( yytext ); return VAL_ID; }
+\[[a-zA-Z][a-zA-Z0-9\-]*\] { yylval->name = KTraderParse_putSymbolInBrackets( yytext ); return VAL_ID; }
 
-[a-zA-Z][a-zA-Z0-9]* { yylval.name = KTraderParse_putSymbol( yytext ); return VAL_ID; }
+[a-zA-Z][a-zA-Z0-9]* { yylval->name = KTraderParse_putSymbol( yytext ); return VAL_ID; }
 
 [ \t\n]+          /* eat up whitespace */
 
@@ -124,13 +125,14 @@ char* KTraderParse_putString( char *_str )
   return p;
 }
 
-void KTraderParse_initFlex( const char *_code )
+void KTraderParse_initFlex( const char *_code, yyscan_t _scanner )
 {
-  yy_switch_to_buffer( yy_scan_string( _code ) );
+  yy_switch_to_buffer( yy_scan_string( _code, _scanner ), _scanner );
 }
 
-int yywrap()
+int yywrap( yyscan_t _scanner )
 {
-  yy_delete_buffer( YY_CURRENT_BUFFER );
+  struct yyguts_t * yyg = (struct yyguts_t*)_scanner;
+  yy_delete_buffer( YY_CURRENT_BUFFER, _scanner );
   return 1;
 }
