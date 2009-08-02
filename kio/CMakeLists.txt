@@ -340,6 +340,7 @@ install(  FILES
   kio/skipdialog.h
   kio/udsentry.h
   kssl/sslui.h
+  kssl/ksslinfodialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 if( NOT WIN32 )

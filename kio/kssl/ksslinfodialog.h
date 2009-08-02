@@ -22,10 +22,9 @@
 #ifndef _KSSLINFODIALOG_H
 #define _KSSLINFODIALOG_H
 
-#include <kssl.h>
 #include <kdialog.h>
-
-#include "ktcpsocket.h"
+#include <ktcpsocket.h>
+#include <kio/kio_export.h>
 
 /**
  * KDE SSL Information Dialog
