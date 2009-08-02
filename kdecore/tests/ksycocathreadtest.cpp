@@ -106,6 +106,10 @@ public slots:
         Q_ASSERT( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
         Q_ASSERT( offerListHasService( offers, "ktexteditor_kdatatool.desktop" ) );
 
+        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'ktexteditor_insertfile'");
+        Q_ASSERT(offers.count() == 1);
+        QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+
         KServiceGroup::Ptr root = KServiceGroup::root();
         Q_ASSERT(root);
     }
