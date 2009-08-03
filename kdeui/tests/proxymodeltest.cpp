@@ -542,6 +542,10 @@ void ProxyModelTest::doTest()
   }
 }
 
+void ProxyModelTest::setCommands(QList<QPair<QString, ModelChangeCommandList> > commands)
+{
+  m_modelCommander->setCommands(commands);
+}
 
 void ProxyModelTest::testProxyModel_data()
 {

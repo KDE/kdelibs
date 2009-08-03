@@ -128,6 +128,8 @@ protected:
   QVariantList getResultSignal();
   int getChange(bool sameParent, int start, int end, int currentPosition, int destinationStart);
 
+  void setCommands(QList<QPair<QString, ModelChangeCommandList> >  commands);
+
 private:
   QHash<QString, QList<QVariantList> > m_expectedSignals;
   QHash<QString, QList<PersistentIndexChange> > m_persistentChanges;
