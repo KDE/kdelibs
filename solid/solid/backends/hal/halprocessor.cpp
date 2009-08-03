@@ -151,8 +151,6 @@ static Solid::Processor::InstructionSets cpuFeatures()
     if (haveCPUID) {
         // Execute CPUID with the feature request bit set
         __asm__ __volatile__(
-            ASM_PUSH("bx")
-            ASM_MOV_VAR("$1", "ax")
             ASM_PUSH("bx")                      // Save EBX
             ASM_MOV_VAR("$1", "ax")             // Set EAX to 1 (features request)
             "cpuid                      \n\t"   // Call CPUID
