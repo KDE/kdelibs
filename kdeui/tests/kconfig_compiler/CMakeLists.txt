@@ -58,6 +58,18 @@ target_link_libraries(test3  ${KDE4_KDEUI_LIBS} )
 
 ########### next target ###############
 
+set(test3a_SRCS test3amain.cpp )
+
+
+gen_kcfg_test_source(test3a test3a_SRCS)
+
+kde4_add_executable(test3a TEST ${test3a_SRCS})
+
+target_link_libraries(test3a  ${KDE4_KDEUI_LIBS} )
+
+
+########### next target ###############
+
 set(test4_SRCS test4main.cpp )
 
 
