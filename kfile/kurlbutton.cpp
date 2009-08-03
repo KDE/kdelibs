@@ -123,7 +123,7 @@ void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
     QAction* activatedAction = popup.exec(QCursor::pos());
     if (activatedAction == copyAction) {
         QMimeData* mimeData = new QMimeData();
-        mimeData->setText(m_urlNavigator->url().prettyUrl());
+        mimeData->setText(m_urlNavigator->url().pathOrUrl());
         clipboard->setMimeData(mimeData);
     } else if (activatedAction == pasteAction) {
         m_urlNavigator->setUrl(KUrl(clipboard->text()));
