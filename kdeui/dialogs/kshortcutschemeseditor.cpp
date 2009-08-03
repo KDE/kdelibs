@@ -42,7 +42,7 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 {
     KConfigGroup group( KGlobal::config(), "Shortcut Schemes" );
 
-    QStringList schemeFiles = KGlobal::dirs()->findAllResources("appdata", "*shortcuts.rc");
+    const QStringList schemeFiles = KGlobal::dirs()->findAllResources("appdata", "*shortcuts.rc");
     QStringList schemes;
     schemes << "Default";
     foreach (QString schemeFile, schemeFiles)
@@ -95,7 +95,7 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 void KShortcutSchemesEditor::newScheme()
 {
     bool ok;
-    QString newName = KInputDialog::getText(i18n("Name for New Scheme"),
+    const QString newName = KInputDialog::getText(i18n("Name for New Scheme"),
         i18n("Name for new scheme:"), i18n("New Scheme"), &ok,this);
     if (!ok )
         return;
@@ -106,7 +106,7 @@ void KShortcutSchemesEditor::newScheme()
         return;
     }
 
-    QString newSchemeFileName = KShortcutSchemesHelper::applicationShortcutSchemeFileName(newName);
+    const QString newSchemeFileName = KShortcutSchemesHelper::applicationShortcutSchemeFileName(newName);
 
     QFile schemeFile(newSchemeFileName);
     if (!schemeFile.open(QFile::WriteOnly | QFile::Truncate))
