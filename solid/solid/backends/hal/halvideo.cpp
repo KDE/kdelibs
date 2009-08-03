@@ -42,15 +42,20 @@ QStringList Video::supportedProtocols() const
 
 QStringList Video::supportedDrivers(QString protocol) const
 {
-    // if there is a difference between v4l and v4l2
     QStringList drivers;
-    drivers << QString( "video4linux" );
+    if ( protocol == "video4linux" ) {
+        if ( m_device->property("video4linux.version") == "2" ) {
+            drivers << QString( "video4linux2" );
+        } else {
+            drivers << QString( "video4linux" );
+        }
+    }
     return drivers;
 }
 
 QVariant Solid::Backends::Hal::Video::driverHandle(const QString &driver) const
 {
-    if (driver=="video4linux") {
+    if ( driver=="video4linux" || driver=="video4linux2" ) {
         return m_device->property("video4linux.device");
     }
     // TODO: Fill in the blank for other drivers
