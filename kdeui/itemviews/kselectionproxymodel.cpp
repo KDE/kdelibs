@@ -592,7 +592,6 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         {
           _start += q->sourceModel()->rowCount(m_rootIndexList.at(i));
         }
-        sourceRemoveIndex.data() << m_rootIndexList.at(startRow);
         int rowCount = q->sourceModel()->rowCount(m_rootIndexList.at(startRow));
         if (rowCount <= 0)
         {
