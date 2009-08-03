@@ -592,9 +592,14 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         {
           _start += q->sourceModel()->rowCount(m_rootIndexList.at(i));
         }
+        sourceRemoveIndex.data() << m_rootIndexList.at(startRow);
         int rowCount = q->sourceModel()->rowCount(m_rootIndexList.at(startRow));
         if (rowCount <= 0)
+        {
+          // It doesn't have any children in the model, but we need to remove it from storage anyway.
+          m_rootIndexList.removeAt(startRow);
           continue;
+        }
 
         q->beginRemoveRows(QModelIndex(), _start, _start + rowCount - 1);
         m_rootIndexList.removeAt(startRow);
@@ -776,16 +781,32 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
     return firstCommonParent + siblingOffset;
   }
 
-  QModelIndex nextParent = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow);
+  // A
+  // - B
+  //   - C
+  //   - D
+  //   - E
+  // F
+  //
+  // F is selected, then C then D. When inserting D into the model, the commonParent is B (the parent of C).
+  // The next existing sibling of B is F (in the proxy model). bestParentRow will then refer to an index on
+  // the level of a child of F (which doesn't exist - Boom!). If it doesn't exist, then we've already found
+  // the place to insert D
+  QModelIndexList ansList = rootAncestors.at(firstCommonParent + siblingOffset );
+  if (ansList.size() <= bestParentRow)
+  {
+    return firstCommonParent + siblingOffset;
+  }
+
+  QModelIndex nextParent = ansList.at(bestParentRow);
   while (nextParent == commonParent)
   {
-    QModelIndexList ansList = rootAncestors.at(firstCommonParent + siblingOffset );
     if (ansList.size() < bestParentRow + 1)
       // If the list is longer, it means that at the end of it is a descendant of the new index.
       // We insert the ancestors items first in that case.
       break;
 
-    QModelIndex nextSibling = rootAncestors.at(firstCommonParent + siblingOffset ).value(bestParentRow + 1);
+    QModelIndex nextSibling = ansList.value(bestParentRow + 1);
 
     if (!nextSibling.isValid())
     {
@@ -801,7 +822,17 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
 
     if (rootAncestors.size() <= firstCommonParent + siblingOffset )
       break;
-    nextParent = rootAncestors.at(firstCommonParent + siblingOffset ).at(bestParentRow);
+
+    ansList = rootAncestors.at(firstCommonParent + siblingOffset );
+
+    // In the scenario above, E is selected after D, causing this loop to be entered,
+    // and requiring a similar result if the next sibling in the proxy model does not have children.
+    if (ansList.size() <= bestParentRow)
+    {
+      break;
+    }
+
+    nextParent = ansList.at(bestParentRow);
   }
 
   return firstCommonParent + siblingOffset;
