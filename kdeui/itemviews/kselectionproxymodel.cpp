@@ -1153,6 +1153,9 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
       }
       targetRow += sourceIndex.row();
     }
+    else if (d->m_startWithChildTrees)
+      return QModelIndex();
+
     d->m_map.insert(sourceIndex.internalPointer(), QPersistentModelIndex(sourceIndex));
     return createIndex( targetRow, sourceIndex.column(), sourceIndex.internalPointer() );
   }
