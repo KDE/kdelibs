@@ -302,6 +302,13 @@ void ProxyModelTest::handleSignal(QVariantList expected)
     QVERIFY( expected.size() == 3 );
     IndexFinder parentFinder = qvariant_cast<IndexFinder>(expected.at(0));
     QModelIndex parent = parentFinder.getIndex();
+
+#if 0 // This is where is usually goes wrong...
+    kDebug() << qvariant_cast<QModelIndex>(result.at(0)) << parent;
+    kDebug() << result.at(1) << expected.at(1);
+    kDebug() << result.at(2) << expected.at(2);
+#endif
+
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(0)), parent );
     QCOMPARE(result.at(1), expected.at(1) );
     QCOMPARE(result.at(2), expected.at(2) );
@@ -449,6 +456,9 @@ void ProxyModelTest::doTest()
 
     QVERIFY(change.startRow >= 0);
     QVERIFY(change.startRow <= change.endRow);
+#if 0
+    kDebug() << parent << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
+#endif
     QVERIFY(change.endRow < m_proxyModel->rowCount(parent));
 
     QModelIndex topLeft = m_proxyModel->index( change.startRow, 0, parent );
