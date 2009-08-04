@@ -55,7 +55,10 @@ public:
     ~KDirSelectDialog();
 
     /**
-     * @return The currently selected URL, or an empty one if no item is selected.
+     * Returns the currently selected URL, or an empty one if no item is selected.
+     *
+     * If the URL entered in the combobox is valid and exists, it is returned.
+     * Otherwise, the URL selected in the treeview is returned instead.
      */
     KUrl url() const;
 
