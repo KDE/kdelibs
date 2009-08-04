@@ -44,10 +44,11 @@ QStringList Video::supportedDrivers(QString protocol) const
 {
     QStringList drivers;
     if ( protocol == "video4linux" ) {
+        drivers << QString( "video4linux" ); //Retrocompatibility with KDE < 4.3
         if ( m_device->property("video4linux.version") == "2" ) {
             drivers << QString( "video4linux2" );
         } else {
-            drivers << QString( "video4linux" );
+            drivers << QString( "video4linux1" );
         }
     }
     return drivers;
@@ -55,7 +56,7 @@ QStringList Video::supportedDrivers(QString protocol) const
 
 QVariant Solid::Backends::Hal::Video::driverHandle(const QString &driver) const
 {
-    if ( driver=="video4linux" || driver=="video4linux2" ) {
+    if ( driver=="video4linux" || driver=="video4linux1" || driver=="video4linux2" ) {
         return m_device->property("video4linux.device");
     }
     // TODO: Fill in the blank for other drivers
