@@ -312,6 +312,16 @@ KLocaleTest::readTime()
 
     QCOMPARE(locale.readLocaleTime("11:22", &ok, KLocale::TimeWithoutSeconds), QTime(11, 22, 0));
     QVERIFY(ok);
+
+    // strict processing of a time string with a missing space
+    locale.setTimeFormat("%I:%M:%S %p");
+    QString timeString = QString("11:13:55%1").arg(i18n("am"));
+    locale.readLocaleTime(timeString, &ok, KLocale::TimeDefault, KLocale::ProcessStrict);
+    QVERIFY(!ok);
+
+    // lax processing of the same time
+    QCOMPARE(locale.readLocaleTime(timeString, &ok, KLocale::TimeDefault), QTime(11, 13, 55));
+    QVERIFY(ok);
 }
 
 void

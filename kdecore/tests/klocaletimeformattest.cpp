@@ -175,11 +175,6 @@ void KLocaleTimeFormatTest::formatAndReadAllCountriesTest()
     for ( ; it != end; ++it) {
         locale.setTimeFormat(it.value());
 
-        if (it.key() == QLatin1String("mo")) {
-            QWARN("Skipping invalid timeformat for locale \"mo\"");
-            continue;
-        }
-
         bool ampm = locale.timeFormat().contains(QLatin1String("%p"));
 
         bool ok;

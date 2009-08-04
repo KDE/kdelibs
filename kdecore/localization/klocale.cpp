@@ -2019,15 +2019,15 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 QTime KLocale::readTime(const QString &intstr, bool *ok) const
 {
   QTime _time;
-  _time = readLocaleTime(intstr, ok, TimeDefault, true);
+  _time = readLocaleTime(intstr, ok, TimeDefault, ProcessStrict);
   if (_time.isValid()) return _time;
-  return readLocaleTime(intstr, ok, TimeWithoutSeconds, true);
+  return readLocaleTime(intstr, ok, TimeWithoutSeconds, ProcessStrict);
 }
 
 QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
 {
     return readLocaleTime(intstr, ok,
-                          (flags == WithSeconds) ? TimeDefault : TimeWithoutSeconds, true);
+                          (flags == WithSeconds) ? TimeDefault : TimeWithoutSeconds, ProcessStrict);
 }
 
 // remove the first occurrence of the 2-character string
@@ -2082,7 +2082,8 @@ static void stripAmPmFormat(QString &inout)
 }
 
 QTime KLocale::readLocaleTime(const QString &intstr, bool *ok,
-                              TimeFormatOptions options, bool strict) const
+                              TimeFormatOptions options,
+                              TimeProcessingOptions processing) const
 {
     QString str(intstr.simplified().toLower());
     QString format(timeFormat().simplified());
@@ -2099,6 +2100,7 @@ QTime KLocale::readLocaleTime(const QString &intstr, bool *ok,
     bool excludeSecs = ((options & TimeWithoutSeconds) == TimeWithoutSeconds);
     bool isDuration = ((options & TimeDuration) == TimeDuration);
     bool noAmPm = ((options & TimeWithoutAmPm) == TimeWithoutAmPm);
+    bool strict = ((processing & ProcessStrict) == ProcessStrict);
 
     // if seconds aren't needed, strip them from the timeFormat
     if (excludeSecs) {

@@ -930,6 +930,22 @@ public:
   QTime readTime(const QString &str, ReadTimeFlags flags, bool *ok = 0) const;
 
     /**
+     * Additional processing options for readLocaleTime().
+     *
+     * @remarks This is currently used as an enum but declared as a flag
+     *          to be extensible
+     */
+    enum TimeProcessingOption {
+        ProcessStrict    = 0x1,    ///< Process time in a strict manner, ie.
+                                   ///< a read time string has to exactly match
+                                   ///< the defined time format.
+        ProcessNonStrict = 0x2     ///< Process time in a lax manner, ie.
+                                   ///< allow spaces in the time-format to be
+                                   ///< left out when entering a time string.
+    };
+    Q_DECLARE_FLAGS(TimeProcessingOptions, TimeProcessingOption)
+  
+    /**
      * @since 4.4
      *
      * Converts a localized time string to a QTime.
@@ -940,15 +956,16 @@ public:
      * @param ok the boolean that is set to false if it's not a valid time.
      *           If @p ok is 0, it will be ignored.
      * @param option format option to apply when formatting the time
-     * @param strict if set to @c false, checking will be lax and extra spaces
-     *               in @c str will be ignored. if set to @c true, checking
-     *               will be strict
+     * @param processing if set to @c ProcessStrict, checking will be strict
+     *               and the read time string has to have the exact time format
+     *               specified. If set to @c ProcessNonStrict processing the time
+     *               is lax and spaces in the time string can be left out.
      *
      * @return The string converted to a QTime
      */
     QTime readLocaleTime(const QString &str, bool *ok = 0,
                          TimeFormatOptions options = KLocale::TimeDefault,
-                         bool strict = false) const;
+                         TimeProcessingOptions processing = ProcessNonStrict) const;
   
   /**
    * Returns the language code used by this object. The domain AND the
@@ -1577,5 +1594,6 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::DateTimeFormatOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::TimeFormatOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::TimeProcessingOptions)
 
 #endif
