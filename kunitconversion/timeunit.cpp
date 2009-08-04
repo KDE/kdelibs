@@ -198,7 +198,7 @@ Time::Time(QObject* parent)
       ki18ncp("amount in units (integer)", "%1 day", "%1 days")
     );
     U(Week, 604800,
-      i18nc("time unit symbol", ""),
+      i18nc("time unit symbol", "w"),
       i18nc("unit description in lists", "weeks"),
       i18nc("unit synonyms for matching user input", "week;weeks;"),
       ki18nc("amount in units (real)", "%1 weeks"),
@@ -212,7 +212,7 @@ Time::Time(QObject* parent)
       ki18ncp("amount in units (integer)", "%1 julian year", "%1 julian years")
     );
     U(LeapYear, 3.16224e+07,
-      i18nc("time unit symbol", ""),
+      i18nc("time unit symbol", "lpy"),
       i18nc("unit description in lists", "leap years"),
       i18nc("unit synonyms for matching user input", "leap year;leap years;"),
       ki18nc("amount in units (real)", "%1 leap years"),
