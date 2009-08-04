@@ -16,6 +16,7 @@ set(proxymodeltestapp_SRCS
     descendantpmwidget.cpp
     proxymodeltestwidget.cpp
     ../modelcommander.cpp
+    modeltest.cpp
 )
 
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})

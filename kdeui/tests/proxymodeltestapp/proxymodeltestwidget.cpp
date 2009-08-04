@@ -32,6 +32,8 @@
 #include "kselectionproxymodel.h"
 #include "kdescendantsproxymodel.h"
 
+#include "modeltest.h"
+
 ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): QWidget(parent, f)
 {
   QVBoxLayout *layout = new QVBoxLayout(this);
@@ -49,9 +51,14 @@ ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): 
 
   QTreeView *rootModelView = new QTreeView(splitter);
   rootModelView->setModel(m_rootModel);
+  rootModelView->setSelectionMode(QTreeView::ExtendedSelection);
 
   KSelectionProxyModel *selProxyModel = new KSelectionProxyModel(rootModelView->selectionModel(), this);
   selProxyModel->setSourceModel(m_rootModel);
+  selProxyModel->setFilterBehavior(KSelectionProxyModel::OnlySelectedChildren);
+
+  new ModelTest(selProxyModel, this);
+
   QTreeView *selProxyModelView = new QTreeView(splitter);
   selProxyModelView->setModel(selProxyModel);
 
