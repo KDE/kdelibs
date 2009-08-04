@@ -252,33 +252,87 @@ private slots:
     signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
     signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
 
+    QModelIndex nextIndex = sourceModel()->index(5, 0, idx);
+
+
+    m_selectionModel->select(nextIndex, QItemSelectionModel::SelectCurrent);
+
+    rowsRemoved = 38;
+    // Changing the selection causes some removes and inserts
+    signalList << getSignal(RowsAboutToBeRemoved, startRow, startRow + rowsRemoved - 1);
+    signalList << getSignal(RowsRemoved, startRow, startRow + rowsRemoved - 1);
+
+    m_rowCount = 0;
+    rowsInserted = 10;
+
     if ("remove03" == currentTag)
     {
-      setExpected("remove03", signalList, persistentList);
+    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
+    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
+
+    rowsRemoved = 1;
+    m_rowCount = 10;
+
+      signalRemoval("remove03", startRow, rowsRemoved, signalList);
       return;
     }
+    m_rowCount = 10;
+    m_rowCount -= 1;
 
+    rowsRemoved = 1;
+    rowsInserted = 9;
     if ("remove04" == currentTag)
     {
-      setExpected("remove04", signalList, persistentList);
+      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
+      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
+
+      startRow = 8;
+      signalRemoval("remove04", startRow, rowsRemoved, signalList);
       return;
     }
+    m_rowCount -= 1;
 
+    rowsInserted = 8;
     if ("remove05" == currentTag)
     {
-      setExpected("remove05", signalList, persistentList);
+      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
+      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
+
+      startRow = 3;
+      signalRemoval("remove05", startRow, rowsRemoved, signalList);
       return;
     }
+    m_rowCount -= 1;
 
+    rowsInserted = 7;
     if ("remove06" == currentTag)
     {
-      setExpected("remove06", signalList, persistentList);
+      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
+      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
+
+      startRow = 0;
+      rowsRemoved = 7;
+      signalRemoval("remove06", startRow, rowsRemoved, signalList);
+
       return;
     }
 
+    // select an index whose descendant will be removed.
+    nextIndex = sourceModel()->index(4, 0, idx);
+    nextIndex = sourceModel()->index(5, 0, nextIndex);
+
+    m_selectionModel->select(nextIndex, QItemSelectionModel::SelectCurrent);
+
+    // Doesn't cause a remove signal to be emitted. The previous parent is now empty.
+
+    startRow = 0;
+    rowsInserted = 10;
     if ("remove07" == currentTag)
     {
-      startRow = 4;
+      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
+      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
+
+      rowsRemoved = 10;
       signalRemoval("remove07", startRow, rowsRemoved, signalList);
       return;
     }
