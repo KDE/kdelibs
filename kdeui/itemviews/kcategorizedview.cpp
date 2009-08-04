@@ -686,7 +686,10 @@ QModelIndex KCategorizedView::indexAt(const QPoint &point) const
         rect.bottomRight().ry() += verticalOff;
         rect.bottomRight().rx() += horizontalOff;
         if (rect.contains(point)) {
-            return index;
+            if (index.model()->flags(index) & Qt::ItemIsEnabled) {
+                return index;
+            }
+            return QModelIndex();
         }
         if (point.y() > rect.bottomRight().y() ||
             (point.y() > rect.topLeft().y() && point.y() < rect.bottomRight().y() &&
@@ -780,16 +783,19 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
                                           : QStyleOptionViewItemV2::None;
             option.features |= alternatingRowColors() && alternateItem ? QStyleOptionViewItemV4::Alternate
                                                                        : QStyleOptionViewItemV4::None;
-            option.state |= (index == d->hoveredIndex) ? QStyle::State_MouseOver
-                                                       : QStyle::State_None;
             if (flags & Qt::ItemIsSelectable) {
                 option.state |= selectionModel()->isSelected(index) ? QStyle::State_Selected
                                                                     : QStyle::State_None;
+            } else {
+                option.state &= ~QStyle::State_Selected;
             }
             option.state |= (index == currentIndex()) ? QStyle::State_HasFocus
                                                       : QStyle::State_None;
             if (!(flags & Qt::ItemIsEnabled)) {
                 option.state &= ~QStyle::State_Enabled;
+            } else {
+                option.state |= (index == d->hoveredIndex) ? QStyle::State_MouseOver
+                                                           : QStyle::State_None;
             }
             itemDelegate(index)->paint(&p, option, index);
             ++i;
