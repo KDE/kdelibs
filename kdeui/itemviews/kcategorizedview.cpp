@@ -772,6 +772,7 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
             const bool alternateItem = (i - block->firstIndex.row()) % 2;
 
             const QModelIndex index = d->proxyModel->index(i, modelColumn(), rootIndex());
+            const Qt::ItemFlags flags = d->proxyModel->flags(index);
             QStyleOptionViewItemV4 option(viewOptions());
             option.rect = visualRect(index);
             option.widget = this;
@@ -781,10 +782,15 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
                                                                        : QStyleOptionViewItemV4::None;
             option.state |= (index == d->hoveredIndex) ? QStyle::State_MouseOver
                                                        : QStyle::State_None;
-            option.state |= selectionModel()->isSelected(index) ? QStyle::State_Selected
-                                                                : QStyle::State_None;
+            if (flags & Qt::ItemIsSelectable) {
+                option.state |= selectionModel()->isSelected(index) ? QStyle::State_Selected
+                                                                    : QStyle::State_None;
+            }
             option.state |= (index == currentIndex()) ? QStyle::State_HasFocus
                                                       : QStyle::State_None;
+            if (!(flags & Qt::ItemIsEnabled)) {
+                option.state &= ~QStyle::State_Enabled;
+            }
             itemDelegate(index)->paint(&p, option, index);
             ++i;
         }
