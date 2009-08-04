@@ -189,6 +189,7 @@ namespace Solid
          * Retrieves the description of device.
          *
          * @return the description
+         * @since 4.4
          */
         QString description() const;
 

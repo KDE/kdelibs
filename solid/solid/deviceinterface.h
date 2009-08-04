@@ -98,6 +98,7 @@ namespace Solid
         /**
          *
          * @return a description suitable to display in the UI of the device interface type
+         * @since 4.4
          */
         static QString typeDescription(Type type);
 
