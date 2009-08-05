@@ -1067,13 +1067,21 @@ QList<QDateTime> Nepomuk::Variant::toDateTimeList() const
 
 QList<QUrl> Nepomuk::Variant::toUrlList() const
 {
-    if( isUrl() ) {
+    if( isUrl() || isResource() ) {
         QList<QUrl> l;
         l.append( toUrl() );
         return l;
     }
-    else
+    else if( isResourceList() ) {
+        QList<QUrl> l;
+        QList<Resource> rl = toResourceList();
+        foreach(const Resource& r, rl)
+            l << r.resourceUri();
+        return l;
+    }
+    else {
         return d->value.value<QList<QUrl> >();
+    }
 }
 
 
