@@ -101,7 +101,6 @@ void tst_KLocalSocketServer::waitForConnection()
         // now try a timed connection
         TimedConnection conn;
         conn.start();
-        QVERIFY(!server.waitForNewConnection(0));
         QVERIFY(server.waitForNewConnection(500));
         QVERIFY(server.hasPendingConnections());
         delete server.nextPendingConnection();
