@@ -750,36 +750,72 @@ bool Nepomuk::Variant::isResourceList() const
 
 int Nepomuk::Variant::toInt() const
 {
+    if(isList()) {
+        QList<int> l = toIntList();
+        if(!l.isEmpty())
+            return l.first();
+    }
+
     return d->value.toInt();
 }
 
 
 qlonglong Nepomuk::Variant::toInt64() const
 {
+    if(isList()) {
+        QList<qlonglong> l = toInt64List();
+        if(!l.isEmpty())
+            return l.first();
+    }
+
     return d->value.toLongLong();
 }
 
 
 uint Nepomuk::Variant::toUnsignedInt() const
 {
+    if(isList()) {
+        QList<uint> l = toUnsignedIntList();
+        if(!l.isEmpty())
+            return l.first();
+    }
+
     return d->value.toUInt();
 }
 
 
 qulonglong Nepomuk::Variant::toUnsignedInt64() const
 {
+    if(isList()) {
+        QList<qulonglong> l = toUnsignedInt64List();
+        if(!l.isEmpty())
+            return l.first();
+    }
+
     return d->value.toULongLong();
 }
 
 
 bool Nepomuk::Variant::toBool() const
 {
+    if(isList()) {
+        QList<bool> l = toBoolList();
+        if(!l.isEmpty())
+            return l.first();
+    }
+
     return d->value.toBool();
 }
 
 
 double Nepomuk::Variant::toDouble() const
 {
+    if(isList()) {
+        QList<double> l = toDoubleList();
+        if(!l.isEmpty())
+            return l.first();
+    }
+
     return d->value.toDouble();
 }
 
@@ -826,33 +862,59 @@ QString Nepomuk::Variant::toString() const
 
 QDate Nepomuk::Variant::toDate() const
 {
+    if(isList()) {
+        QList<QDate> l = toDateList();
+        if(!l.isEmpty())
+            return l.first();
+    }
     return d->value.toDate();
 }
 
 
 QTime Nepomuk::Variant::toTime() const
 {
+    if(isList()) {
+        QList<QTime> l = toTimeList();
+        if(!l.isEmpty())
+            return l.first();
+    }
     return d->value.toTime();
 }
 
 
 QDateTime Nepomuk::Variant::toDateTime() const
 {
+    if(isList()) {
+        QList<QDateTime> l = toDateTimeList();
+        if(!l.isEmpty())
+            return l.first();
+    }
     return d->value.toDateTime();
 }
 
 
 QUrl Nepomuk::Variant::toUrl() const
 {
-    if( isResource() )
+    if(isList()) {
+        QList<QUrl> l = toUrlList();
+        if(!l.isEmpty())
+            return l.first();
+    }
+    else if(isResource()) {
         return toResource().resourceUri();
-    else
-        return d->value.toUrl();
+    }
+
+    return d->value.toUrl();
 }
 
 
 Nepomuk::Resource Nepomuk::Variant::toResource() const
 {
+    if(isResourceList()) {
+        QList<Resource> l = toResourceList();
+        if(!l.isEmpty())
+            return l.first();
+    }
     return d->value.value<Resource>();
 }
 
@@ -1067,13 +1129,21 @@ QList<QDateTime> Nepomuk::Variant::toDateTimeList() const
 
 QList<QUrl> Nepomuk::Variant::toUrlList() const
 {
-    if( isUrl() ) {
+    if( isUrl() || isResource() ) {
         QList<QUrl> l;
         l.append( toUrl() );
         return l;
     }
-    else
+    else if( isResourceList() ) {
+        QList<QUrl> l;
+        QList<Resource> rl = toResourceList();
+        foreach(const Resource& r, rl)
+            l << r.resourceUri();
+        return l;
+    }
+    else {
         return d->value.value<QList<QUrl> >();
+    }
 }
 
 
