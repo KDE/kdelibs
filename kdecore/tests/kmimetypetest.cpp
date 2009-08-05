@@ -38,10 +38,18 @@
 #include <kservicetypetrader.h>
 #include <kmimetypefactory.h>
 #include <ktemporaryfile.h>
+#include <ktempdir.h>
 #include <kdesktopfile.h>
 
 void KMimeTypeTest::initTestCase()
 {
+    // Clean up local xdg dir in case of leftover mimetype definitions
+    const QString xdgDir = QString::fromLocal8Bit(getenv("XDG_DATA_HOME"));
+    if (!xdgDir.isEmpty()) {
+        KTempDir::removeDir(xdgDir);
+        // No need to run update-mime-database here, the dir is entirely gone.
+    }
+
     // Create fake text/plain part with a higher initial preference than katepart.
     const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
     bool mustUpdateKSycoca = false;
@@ -158,6 +166,7 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("case-insensitive search") << "textfile.TxT" << "text/plain";
     QTest::newRow("case-sensitive uppercase match") << "textfile.C" << "text/x-c++src";
     QTest::newRow("case-sensitive lowercase match") << "textfile.c" << "text/x-csrc";
+    // TODO QTest::newRow("case-sensitive long-extension match") << "foo.PS.gz" << "application/x-gzpostscript";
     QTest::newRow("desktop file") << "foo.desktop" << "application/x-desktop";
     QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
     QTest::newRow("double-extension file") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";
@@ -375,13 +384,12 @@ void KMimeTypeTest::testFindByContent_data()
     QTest::addColumn<QString>("expectedMimeType");
     QTest::newRow("simple text") << QByteArray("Hello world") << "text/plain";
     QTest::newRow("html: <html>") << QByteArray("<html>foo</html>") << "text/html";
-#if 0 // currently buggy, xml and html have conflicting magic rules, discussed on xdg list.
-      // Solution: making the magic rules for xml priority 40
+
+    // fixed in smi-0.30, xml magic has prio 40
     QTest::newRow("html: comment+<html>") << QByteArray("<!--foo--><html>foo</html>") << "text/html";
-#endif
-#if 0 // https://bugs.freedesktop.org/show_bug.cgi?id=11259
+    // https://bugs.freedesktop.org/show_bug.cgi?id=11259, fixed in smi-0.22
     QTest::newRow("html: <script>") << QByteArray("<script>foo</script>") << "text/html";
-#endif
+
     QTest::newRow("pdf") << QByteArray("%PDF-") << "application/pdf";
     QTest::newRow("no mimetype known") << QByteArray("\261\032\341\265") << "application/octet-stream";
 
