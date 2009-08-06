@@ -277,7 +277,7 @@ private Q_SLOTS:
     {
         QTest::addColumn<QString>("fqdn");
         QTest::addColumn<QStringList>("expectedDomains");
-        QTest::newRow("empty") << "" << QStringList();
+        QTest::newRow("empty") << "" << (QStringList() << "localhost");
         QTest::newRow("ipv4") << "1.2.3.4" << (QStringList() << "1.2.3.4");
         QTest::newRow("ipv6") << "[fe80::213:d3ff:fef4:8c92]" << (QStringList() << "[fe80::213:d3ff:fef4:8c92]");
         QTest::newRow("bugs.kde.org") << "bugs.kde.org" << (QStringList() << "bugs.kde.org" << ".bugs.kde.org" << "kde.org" << ".kde.org");
