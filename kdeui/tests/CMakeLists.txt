@@ -75,6 +75,7 @@ KDEUI_EXECUTABLE_TESTS(
   kapptest
   kassistantdialogtest
   kbugreporttest
+  kcategorizedviewtest
   kcodecactiontest
   kcolorcollectiontest
   kcolordlgtest
