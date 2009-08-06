@@ -124,6 +124,12 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
 {
     KIO::MetaData metaData;
 
+    // Add the user-specified meta data first...
+    QVariant userMetaData = request.attribute (QNetworkRequest::User);
+    if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
+      metaData += userMetaData.toMap();
+    }
+
     metaData.insert("PropagateHttpHeader", "true");
 
     metaData.insert("UserAgent", request.rawHeader("User-Agent"));
