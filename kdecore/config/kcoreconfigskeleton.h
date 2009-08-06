@@ -1324,15 +1324,29 @@ public:
    */
   KConfigSkeletonItem::List items() const;
 
+  // KDE5 TODO: Remove this non-const version. Kept only for BC.
   /**
    * Return whether a certain item is immutable
    */
   bool isImmutable(const QString & name);
 
   /**
+   * Return whether a certain item is immutable
+   * @since 4.4
+   */
+  bool isImmutable(const QString & name) const;
+
+  // KDE5 TODO: Remove this non-const version. Kept only for BC.
+  /**
    * Lookup item by name
    */
   KConfigSkeletonItem * findItem(const QString & name);
+
+  /**
+   * Lookup item by name
+   * @since 4.4
+   */
+  KConfigSkeletonItem * findItem(const QString & name) const;
 
   /**
    * Specify whether this object should reflect the actual values or the
