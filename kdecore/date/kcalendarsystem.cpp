@@ -1,7 +1,7 @@
 /*
     Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
     Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007 John Layt <john@layt.net>
+    Copyright (c) 2007-2009 John Layt <john@layt.net>
  
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -101,6 +101,8 @@ public:
 
     bool setAnyDate( QDate &date, int year, int month, int day ) const;
 
+    int addYearNumber( int originalYear, int addYears ) const;
+
     QDate invalidDate() const;
 
     int stringToInteger( const QString &sNum, int &iLength );
@@ -115,6 +117,23 @@ bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int d
     q->dateToJulianDay( year, month, day, jd );
     date = QDate::fromJulianDay( jd );
     return true;
+}
+
+// Utility to correctly add year numbers together
+// Julian and Gregorian calendars don't have a year 0
+// In 4.4 will need to check on a Calendar System basis
+// but for 4.3 all current systems do not use year 0
+int KCalendarSystemPrivate::addYearNumber( int originalYear, int addYears ) const
+{
+    int newYear = originalYear + addYears;
+
+    if ( originalYear > 0 && newYear <= 0 ) {
+        newYear = newYear - 1;
+    } else if ( originalYear < 0 && newYear >= 0 ) {
+        newYear = newYear + 1;
+    }
+
+    return newYear;
 }
 
 QDate KCalendarSystemPrivate::invalidDate() const
@@ -171,7 +190,7 @@ bool KCalendarSystem::isValid( int y, int month, int day ) const
 {
     // Default to true Gregorian
 
-    if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
+    if ( y == 0 || y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
         return false;
     }
 
@@ -269,7 +288,8 @@ QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
 
         julianDayToDate( date.toJulianDay(), originalYear, originalMonth, originalDay );
 
-        newYear = originalYear + numYears;
+        newYear = d->addYearNumber( originalYear, numYears );
+
         newMonth = originalMonth;
 
         //Adjust day number if new month has fewer days than old month
@@ -300,15 +320,16 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
 
         monthsInOriginalYear = monthsInYear( date );
 
-        newYear = originalYear + ( ( originalMonth + numMonths ) / monthsInOriginalYear );
+        newYear = d->addYearNumber( originalYear, ( originalMonth + numMonths ) / monthsInOriginalYear );
+
         newMonth = ( originalMonth + numMonths ) % monthsInOriginalYear;
 
         if ( newMonth == 0 ) {
-            newYear = newYear - 1;
+            newYear = d->addYearNumber( newYear, - 1 );
             newMonth = monthsInOriginalYear;
         }
         if ( newMonth < 0 ) {
-            newYear = newYear - 1;
+            newYear = d->addYearNumber( newYear, - 1 );
             newMonth = newMonth + monthsInOriginalYear;
         }
 
@@ -316,7 +337,7 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
         if ( setDate( firstOfNewMonth, newYear, newMonth, 1 ) ) {
             daysInNewMonth = daysInMonth( firstOfNewMonth );
             newDay = ( daysInNewMonth < originalDay ) ? daysInNewMonth : originalDay;
-
+            
             if ( setDate( newDate, newYear, newMonth, newDay ) ) {
                 return newDate;
             }
@@ -348,7 +369,7 @@ int KCalendarSystem::monthsInYear( const QDate &date ) const
 
     if ( isValid( date ) ) {
         QDate firstDayOfNextYear;
-        d->setAnyDate( firstDayOfNextYear, year( date ) + 1, 1, 1 );
+        d->setAnyDate( firstDayOfNextYear, d->addYearNumber( year( date ), 1 ), 1, 1 );
         QDate lastDayOfThisYear = addDays( firstDayOfNextYear, -1 );
         return month( lastDayOfThisYear );
     }
@@ -372,7 +393,7 @@ int KCalendarSystem::weeksInYear( int year ) const
 
     if ( isValid( year, 1, 1 ) ) {
         QDate firstDayOfNextYear;
-        d->setAnyDate( firstDayOfNextYear, year + 1, 1, 1 );
+        d->setAnyDate( firstDayOfNextYear, d->addYearNumber( year, 1 ), 1, 1 );
         QDate lastDayOfThisYear = addDays( firstDayOfNextYear, -1 );
 
         int lastWeekInThisYear = weekNumber( lastDayOfThisYear );
@@ -398,7 +419,7 @@ int KCalendarSystem::daysInYear( const QDate &date ) const
         QDate firstDayOfThisYear, firstDayOfNextYear;
 
         setDate( firstDayOfThisYear, year( date ), 1, 1 );
-        d->setAnyDate( firstDayOfNextYear, year( date ) + 1, 1, 1 );
+        d->setAnyDate( firstDayOfNextYear, d->addYearNumber( year( date ), 1 ), 1, 1 );
 
         return ( firstDayOfNextYear.toJulianDay() - firstDayOfThisYear.toJulianDay() );
     }
@@ -410,20 +431,20 @@ int KCalendarSystem::daysInMonth( const QDate &date ) const
 {
     // Days In Month = jd of first day of next month minus jd of first day of this month
     // Use setAnyDate() to allow correct calculation in last valid year
-
+    
     if ( isValid( date ) ) {
         QDate firstDayOfThisMonth, firstDayOfNextMonth;
 
         int thisYear = year( date );
         int thisMonth = month( date );
-
+        
         setDate( firstDayOfThisMonth, thisYear, thisMonth, 1 );
-
+        
         //check if next month falls in next year
         if ( thisMonth < monthsInYear( date ) ) {
             setDate( firstDayOfNextMonth, thisYear, thisMonth + 1, 1 );
         } else {
-            d->setAnyDate( firstDayOfNextMonth, thisYear + 1, 1, 1 );
+            d->setAnyDate( firstDayOfNextMonth, d->addYearNumber( thisYear, 1 ), 1, 1 );
         }
 
         return ( firstDayOfNextMonth.toJulianDay() - firstDayOfThisMonth.toJulianDay() );
@@ -490,19 +511,19 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
         // our date in prev year's week
         if ( dayOfYear( date ) < dayOfWeek1InYear ) { 
             if ( yearNum ) {
-                *yearNum = y - 1;
+                *yearNum = d->addYearNumber( y, - 1 );
             }
-            return weeksInYear( y - 1 );
+            return weeksInYear( d->addYearNumber( y, - 1 ) );
         }
 
         // let's check if its last week belongs to next year
-        d->setAnyDate( lastDayOfYear, y + 1, 1, 1 );
+        d->setAnyDate( lastDayOfYear, d->addYearNumber( y, 1 ), 1, 1 );
         lastDayOfYear = addDays( lastDayOfYear, -1 );
         // if our date is in last week && 1st week in next year has thursday
         if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )
              && dayOfWeek( lastDayOfYear ) < 4 ) {
             if ( yearNum ) {
-                * yearNum = y + 1;
+                * yearNum = d->addYearNumber( y, 1 );
             }
              week = 1;
         } else {
@@ -525,10 +546,18 @@ bool KCalendarSystem::isLeapYear( int year ) const
 {
     // Default to pure Gregorian
 
-    if ( year % 4 == 0 ) {
-        if ( year % 100 != 0 ) {
+    int y;
+
+    if ( year < 1 ) {
+        y = year + 1;
+    } else {
+        y = year;
+    }
+
+    if ( y % 4 == 0 ) {
+        if ( y % 100 != 0 ) {
             return true;
-        } else if ( year % 400 == 0 ) {
+        } else if ( y % 400 == 0 ) {
             return true;
         }
     }
