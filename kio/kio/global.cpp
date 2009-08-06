@@ -1242,3 +1242,47 @@ KJobTrackerInterface *KIO::getJobTracker()
 {
     return globalJobTracker;
 }
+
+
+/***************************************************************
+ *
+ * KIO::MetaData
+ *
+ ***************************************************************/
+KIO::MetaData::MetaData(const QMap<QString,QVariant>& map)
+{
+  *this = map;
+}
+
+KIO::MetaData & KIO::MetaData::operator += ( const QMap<QString,QVariant> &metaData )
+{
+  QMap<QString,QVariant>::ConstIterator it;
+  
+  for(it = metaData.constBegin(); it !=  metaData.constEnd(); ++it)
+     insert(it.key(), it.value().toString());
+
+  return *this;
+}
+
+KIO::MetaData & KIO::MetaData::operator = ( const QMap<QString,QVariant> &metaData )
+{
+  clear();
+
+  QMap<QString,QVariant>::ConstIterator it;
+  for(it = metaData.constBegin(); it !=  metaData.constEnd(); ++it)
+     insert(it.key(), it.value().toString());
+
+  return *this;
+}
+
+QVariant KIO::MetaData::toVariant() const
+{
+ QMap<QString, QVariant> map;
+ QMap<QString,QString>::ConstIterator it;
+ QMap<QString,QString>::ConstIterator itEnd = constEnd();
+
+ for(it = constBegin(); it != itEnd; ++it)
+   map.insert(it.key(), it.value());
+
+ return QVariant(map);
+}
