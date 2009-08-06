@@ -152,10 +152,18 @@ The following options are read from the kcfgc file:
 <tr>
   <td><b>Mutators</b></td>
   <td>true, false or a comma separated list of options</td>
-  <td>-</td>
+  <td>false</td>
   <td>If true, mutator functions for all configuration options are generated.
       If false, no mutator functions are generated. If a list is provided,
       mutator functions are generated for the options that are listed.</td> 
+</tr>
+<tr>
+  <td><b>DefaultValueGetters</b></td>
+  <td>true, false or a comma separated list of options</td>
+  <td>false</td>
+  <td>If true, functions to return the default value of all configuration options
+      are generated. If false, no default value functions are generated. If a list
+      is provided, default value functions are generated for the options that are listed.</td> 
 </tr>
 <tr>
   <td><b>ItemAccessors</b></td>

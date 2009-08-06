@@ -159,6 +159,7 @@ set(test11_SRCS test11main.cpp )
 
 
 gen_kcfg_test_source(test11 test11_SRCS)
+gen_kcfg_test_source(test11a test11_SRCS)
 
 kde4_add_executable(test11 TEST ${test11_SRCS})
 

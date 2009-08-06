@@ -1283,8 +1283,8 @@ int main( int argc, char **argv )
      allMutators = true;
   itemAccessors = codegenConfig.value("ItemAccessors", false).toBool();
   bool setUserTexts = codegenConfig.value("SetUserTexts", false).toBool();
-  bool defaultValueGetters = codegenConfig.value("DefaultValueGetters", false).toBool();
-
+  QStringList defaultGetters = codegenConfig.value("DefaultValueGetters", QStringList()).toStringList();
+  bool allDefaultGetters = (defaultGetters.count() == 1) && (defaultGetters.at(0).toLower() == "true");
   globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
   useEnumTypes = codegenConfig.value("UseEnumTypes", false).toBool();
 
@@ -1642,7 +1642,7 @@ int main( int argc, char **argv )
     }
 
     // Default value Accessor
-    if (defaultValueGetters && !(*itEntry)->defaultValue().isEmpty()) {
+    if ((allDefaultGetters || defaultGetters.contains(n)) && !(*itEntry)->defaultValue().isEmpty()) {
       h << endl;
       h << "    /**" << endl;
       h << "      Get " << (*itEntry)->label() << " default value" << endl;
@@ -1778,15 +1778,15 @@ int main( int argc, char **argv )
       }
       h << ";" << endl;
 
-      if ( defaultValueGetters )
+      if ( allDefaultGetters || defaultGetters.contains((*itEntry)->name()) )
       {
-      h << "    ";
-      if (staticAccessors)
-        h << "static ";
-      h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
-      if ( !(*itEntry)->param().isEmpty() )
-          h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
-      h << ")" << Const << ";" << endl;
+        h << "    ";
+        if (staticAccessors)
+          h << "static ";
+        h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
+        if ( !(*itEntry)->param().isEmpty() )
+            h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+        h << ")" << Const << ";" << endl;
       }
     }
 
@@ -1806,16 +1806,16 @@ int main( int argc, char **argv )
   {
     // use a private class for both member variables and items
     h << "  private:" << endl;
-    if ( defaultValueGetters ) {
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
-      h << "    ";
-      if (staticAccessors)
-        h << "static ";
-      h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
-      if ( !(*itEntry)->param().isEmpty() )
-          h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
-      h << ")" << Const << ";" << endl;
-    }
+      if ( allDefaultGetters || defaultGetters.contains((*itEntry)->name()) ) {
+        h << "    ";
+        if (staticAccessors)
+          h << "static ";
+        h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
+        if ( !(*itEntry)->param().isEmpty() )
+            h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+        h << ")" << Const << ";" << endl;
+      }
     }
     h << "    " + className + "Private *d;" << endl;
   }
@@ -2174,14 +2174,13 @@ int main( int argc, char **argv )
     }
   }
 
-  if ( defaultValueGetters ) {
   // default value getters always go in Cpp
   for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
     QString n = (*itEntry)->name();
     QString t = (*itEntry)->type();
 
     // Default value Accessor, as "helper" function
-    if (!(*itEntry)->defaultValue().isEmpty()) {
+    if (( allDefaultGetters || defaultGetters.contains(n) ) && !(*itEntry)->defaultValue().isEmpty() ) {
       cpp << cppType(t) << " " << getDefaultFunction(n, className) << "_helper(";
       if ( !(*itEntry)->param().isEmpty() )
         cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
@@ -2190,7 +2189,6 @@ int main( int argc, char **argv )
       cpp << memberGetDefaultBody(*itEntry) << endl;
       cpp << "}" << endl << endl;
     }
-  }
   }
 
   // Destructor
