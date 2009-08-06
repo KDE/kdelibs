@@ -19,6 +19,7 @@
 #include <QtCore/QProcess>
 #include <QtCore/QString>
 #include <kdebug.h>
+#include <kstandarddirs.h>
 #include <qtest_kde.h>
 #include "kconfigcompiler_test.h"
 #include "kconfigcompiler_test.moc"
@@ -73,6 +74,17 @@ static CompilerTestSet willFailCases =
 	NULL
 };
 
+void KConfigCompiler_Test::initTestCase()
+{
+    m_diffExe = KStandardDirs::findExe("diff");
+    if (!m_diffExe.isEmpty()) {
+        m_diff.setFileName(QDir::currentPath() + QLatin1String("/kconfigcompiler_test_differences.diff"));
+        if (m_diff.exists()) {
+            m_diff.remove();
+        }
+    }
+}
+
 void KConfigCompiler_Test::testBaselineComparison_data()
 {
     QTest::addColumn<QString>("testName");
@@ -122,9 +134,15 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 		QString contentRef = fileRef.readAll();
 
 		if (!fail)
+		{
+			if ( content != contentRef )
+			{
+				appendFileDiff( fileRef.fileName(), file.fileName() );
+			}
 			// use QVERIFY instead of QCOMPARE to avoid having
 			// the whole output shown inline
 			QVERIFY( content == contentRef );
+		}
 		else
                     QFAIL( "not implemented" ); // missing in qttestlib?
                 // wrong? QEXPECT_FAIL( "", content, contentRef );
@@ -133,4 +151,30 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 	{
 		QSKIP("Can't open file for comparison", SkipSingle);
 	}
+}
+
+void KConfigCompiler_Test::appendFileDiff(const QString &oldFile, const QString &newFile)
+{
+    if (m_diffExe.isEmpty()) {
+        return;
+    }
+    if (!m_diff.isOpen()) {
+        if (!m_diff.open(QIODevice::WriteOnly)) {
+            return;
+        }
+    }
+
+    QStringList args;
+    args << "-u";
+    args << QFileInfo(oldFile).absoluteFilePath();
+    args << QFileInfo(newFile).absoluteFilePath();
+
+    QProcess process;
+    process.start(m_diffExe, args, QIODevice::ReadOnly);
+    process.waitForStarted();
+    process.waitForFinished();
+    if (process.exitCode() == 1) {
+        QByteArray out = process.readAllStandardOutput();
+        m_diff.write(out);
+    }
 }
