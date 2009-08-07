@@ -40,6 +40,7 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
     qInstallMsgHandler(&HelperSupport::helperDebugHandler);
 
     if (!BackendsManager::helperProxy()->initHelper(id)) {
+        syslog(LOG_DEBUG, "Helper initialization failed");
         return -1;
     }
 
