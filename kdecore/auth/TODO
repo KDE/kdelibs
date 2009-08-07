@@ -1,0 +1,9 @@
+Todo list for libkauth:
+- Add an option (either on build-time or at invocation time) to enable/disable the helper quit timeout.
+  This is useful for debugging.
+- Check with others on k-c-d if it's needed to add strings with error descriptions.
+
+If the library gets included into kdelibs:
+- Improve the example app, using KAuthorizedAction and KAuthorizedButton.
+- Switch to kdelibs-specific things like kDebug(), kde4_add_executable(), etc...
+- Rewrite the build files to fit into kdelibs and integrate FindKAuth.cmake into FindKDE4.
