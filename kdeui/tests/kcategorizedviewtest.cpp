@@ -24,10 +24,13 @@
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <kiconloader.h>
 
 #include <kcategorizedview.h>
 #include <kcategorydrawer.h>
 #include <kcategorizedsortfilterproxymodel.h>
+
+QStringList icons;
 
 class MyModel
     : public QStringListModel
@@ -37,15 +40,13 @@ public:
     {
         switch (role) {
             case KCategorizedSortFilterProxyModel::CategoryDisplayRole: {
-                    const QString num = index.data(Qt::DisplayRole).toString();
-                    return QString::number(num.toInt() / 10);
+                    return QString::number(index.row() / 10);
                 }
-                break;
             case KCategorizedSortFilterProxyModel::CategorySortRole: {
-                    const QString num = index.data(Qt::DisplayRole).toString();
-                    return num.toInt() / 10;
+                    return index.row() / 10;
                 }
-                break;
+            case Qt::DecorationRole:
+                return DesktopIcon(icons[index.row() % 4], KIconLoader::Desktop);
             default:
                 break;
         }
@@ -55,6 +56,11 @@ public:
 
 int main(int argc, char **argv)
 {
+    icons << "konqueror";
+    icons << "okular";
+    icons << "plasma";
+    icons << "system-file-manager";
+
     KAboutData aboutData("KCategorizedViewTest",
                          0,
                          ki18n("KCategorizedViewTest"),
