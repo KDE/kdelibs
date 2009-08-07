@@ -24,6 +24,8 @@
 
 class KArrowButtonPrivate;
 /**
+ * @deprecated Use a QToolButton with the arrowType property set instead
+ *
  * @short Draws a button with an arrow.
  *
  * Draws a button which shows an arrow pointing into a certain direction. The
@@ -36,7 +38,7 @@ class KArrowButtonPrivate;
  *
  * @author Frerich Raabe
  */
-class KDEUI_EXPORT KArrowButton : public QPushButton
+class KDEUI_EXPORT_DEPRECATED KArrowButton : public QPushButton
 {
 	Q_OBJECT
 	/**
