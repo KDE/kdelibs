@@ -1,4 +1,4 @@
-# - Try to find Polkit-qt
+# - Try to find libkauth
 # Once done this will define
 #
 #  KAUTH_FOUND - system has KAuth

@@ -84,7 +84,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     stream << arguments;
 
     if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
-        return false;
+        return ActionReply::DBusErrorReply;
     }
 
     QDBusMessage message;
