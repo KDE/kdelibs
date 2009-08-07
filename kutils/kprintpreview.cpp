@@ -141,6 +141,8 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
     // Set up the printer
     kDebug(500) << "Will print to" << d->filename;
     printer->setOutputFileName(d->filename);
+
+    setInitialSize(QSize(600, 500));
 }
 
 KPrintPreview::~KPrintPreview()
