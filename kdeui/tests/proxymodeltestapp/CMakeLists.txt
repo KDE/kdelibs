@@ -14,6 +14,8 @@ set(proxymodeltestapp_SRCS
     ../dynamictreemodel.cpp
     selectionpmwidget.cpp
     descendantpmwidget.cpp
+#     reparentingpmwidget.cpp
+#     ../../itemviews/kreparentingproxymodel.cpp
     proxymodeltestwidget.cpp
     ../modelcommander.cpp
 )

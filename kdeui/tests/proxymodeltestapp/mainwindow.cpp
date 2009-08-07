@@ -29,6 +29,7 @@
 #include "descendantpmwidget.h"
 #include "selectionpmwidget.h"
 #include "proxymodeltestwidget.h"
+// #include "reparentingpmwidget.h"
 
 MainWindow::MainWindow() : KXmlGuiWindow()
 {
@@ -36,9 +37,11 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   QTabWidget *tabWidget = new QTabWidget( this );
   DescendantProxyModelWidget *descPMWidget = new DescendantProxyModelWidget();
   SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
+//   ReparentingProxyModelWidget *reparentingProxyModelWidget = new ReparentingProxyModelWidget();
   ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
   tabWidget->addTab(descPMWidget, "descendant PM");
   tabWidget->addTab(selProxyWidget, "selection PM");
+//   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");
   tabWidget->addTab(proxyModelTestWidget, "Proxy Model Test");
 
   setCentralWidget( tabWidget );

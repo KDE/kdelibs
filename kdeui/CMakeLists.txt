@@ -114,6 +114,8 @@ set(kdeui_LIB_SRCS
  itemviews/kcategorydrawer.cpp
  itemviews/kwidgetitemdelegate.cpp
  itemviews/kwidgetitemdelegatepool.cpp
+ # This requires patches which are not yet in Qt. Disabled for now.
+#  itemviews/kreparentingproxymodel.cpp
  itemviews/kselectionproxymodel.cpp
  itemviews/ksortfilterproxymodel.cpp
  jobs/kdialogjobuidelegate.cpp
@@ -456,6 +458,7 @@ install( FILES
  itemviews/kcategorizedview.h
  itemviews/kcategorydrawer.h
  itemviews/kwidgetitemdelegate.h
+#  itemviews/kreparentingproxymodel.h
  itemviews/kselectionproxymodel.h
  itemviews/ksortfilterproxymodel.h
  jobs/kdialogjobuidelegate.h
