@@ -591,7 +591,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     }
 
     // getStartUrl() above will have resolved the startDir parameter into
-    // a directory and file name in the two cases: (a) where it is a	
+    // a directory and file name in the two cases: (a) where it is a
     // special "kfiledialog:" URL, or (b) where it is a plain file name
     // only without directory or protocol.  For any other startDir
     // specified, it is not possible to resolve whether there is a file name
@@ -892,7 +892,7 @@ void KFileWidget::slotOk()
                 //Check if the folder exists
                 KIO::StatJob * statJob = KIO::stat(directory, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(statJob, 0);
-                if (res) { 
+                if (res) {
                     if (statJob->statResult().isDir()) {
                         url.adjustPath(KUrl::RemoveTrailingSlash);
                         fileName = url.fileName();
@@ -943,7 +943,7 @@ void KFileWidget::slotOk()
                             i18n("Remote files not accepted"));
             return;
         }
-        
+
         if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
             return;
         }
@@ -1183,7 +1183,9 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
     QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
                         q, SLOT( _k_slotLocationChanged( const QString& ) ) );
 
-    locationEdit->removeItem( 0 );
+    if (locationEdit->count()) {
+        locationEdit->removeItem( 0 );
+    }
     locationEdit->setCurrentIndex( -1 );
     dummyAdded = false;
 
@@ -1206,7 +1208,7 @@ void KFileWidgetPrivate::setLocationText(const KUrl& url)
                 q->setUrl(url.path(), false);
             }
         }
-        setDummyHistoryEntry(url.fileName() , mimeTypeIcon );
+        setDummyHistoryEntry(url.fileName() , mimeTypeIcon);
     } else {
         removeDummyHistoryEntry();
     }
