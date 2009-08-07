@@ -362,6 +362,10 @@ void ModelMoveCommand::doCommand()
 
     foreach(const qint64 id, l)
     {
+      if (m_model->m_childItems[destParent.internalId()].size() <= column)
+      {
+        m_model->m_childItems[destParent.internalId()].append(QList<qint64>());
+      }
       m_model->m_childItems[destParent.internalId()][column].insert(d++, id);
     }
   }
