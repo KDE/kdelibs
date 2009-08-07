@@ -24,7 +24,7 @@
 #include "kconfigcompiler_test.h"
 #include "kconfigcompiler_test.moc"
 
-QTEST_KDEMAIN( KConfigCompiler_Test, NoGUI )
+QTEST_KDEMAIN_CORE(KConfigCompiler_Test)
 
 typedef const char * CompilerTestSet[];
 

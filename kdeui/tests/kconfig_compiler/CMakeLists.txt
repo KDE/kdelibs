@@ -198,7 +198,7 @@ set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
 
 kde4_add_unit_test(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 
-target_link_libraries(kconfigcompiler_test ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kconfigcompiler_test ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### install files ###############
 
