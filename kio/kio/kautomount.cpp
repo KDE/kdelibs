@@ -108,7 +108,7 @@ public:
 };
 
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
-    : d( new KAutoUnmountPrivate(this, _desktopFile, _mountpoint) )
+    : d( new KAutoUnmountPrivate(this, _mountpoint, _desktopFile) )
 {
     KIO::Job * job = KIO::unmount( d->m_mountpoint );
     connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
