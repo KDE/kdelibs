@@ -1146,7 +1146,7 @@ void FileProtocol::unmount( const QString& _point )
         error( KIO::ERR_COULD_NOT_UNMOUNT, i18n("Could not find program \"umount\""));
         return;
     }
-    buffer = umountProg + QFile::encodeName(KShell::quoteArg(_point)) + " 2>" + tmpFileName;
+    buffer = umountProg + ' ' + QFile::encodeName(KShell::quoteArg(_point)) + " 2>" + tmpFileName;
     system( buffer.constData() );
 #endif /* HAVE_VOLMGT */
 
