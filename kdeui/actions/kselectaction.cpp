@@ -36,6 +36,7 @@
 #include <QEvent>
 #include <QToolButton>
 #include <QToolBar>
+#include <QStandardItem>
 #include <kicon.h>
 #include <kdebug.h>
 
@@ -688,6 +689,10 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
       e->action()->icon(),
       ::DropAmpersands (e->action()->text()),
       QVariantFromQAction (e->action ()));
+    if (QStandardItemModel *model = qobject_cast<QStandardItemModel *>(comboBox->model())) {
+        QStandardItem *item = model->item(index);
+        item->setEnabled(e->action()->isEnabled());
+    }
 
     // Inserting an item into a combobox can change the current item so
     // make sure the item corresponding to the checked action is selected.
@@ -710,6 +715,10 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     //          << endl;
     comboBox->setItemIcon (index, e->action ()->icon ());
     comboBox->setItemText (index, ::DropAmpersands (e->action ()->text ()));
+    if (QStandardItemModel *model = qobject_cast<QStandardItemModel *>(comboBox->model())) {
+        QStandardItem *item = model->item(index);
+        item->setEnabled(e->action()->isEnabled());
+    }
 
     // The checked action may have become unchecked so
     // make sure the item corresponding to the checked action is selected.
