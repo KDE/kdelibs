@@ -923,7 +923,6 @@ install(FILES
   Nepomuk/Resource
   Nepomuk/ResourceManager
   Nepomuk/Tag
-  Nepomuk/Tools
   Nepomuk/Variant
   Nepomuk/Thing
   Nepomuk/KRatingWidget
