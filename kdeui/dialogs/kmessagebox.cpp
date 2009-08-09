@@ -170,7 +170,9 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QLabel *iconLabel = new QLabel(mainWidget);
 
     if (!icon.isNull()) {
-       iconLabel->setPixmap(icon.pixmap(KIconLoader::SizeHuge));
+        QStyleOption option;
+        option.initFrom(mainWidget);
+        iconLabel->setPixmap(icon.pixmap(mainWidget->style()->pixelMetric(QStyle::PM_MessageBoxIconSize, &option, mainWidget)));
     }
 
     QVBoxLayout *iconLayout = new QVBoxLayout();
