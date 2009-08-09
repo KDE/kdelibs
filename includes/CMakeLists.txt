@@ -638,7 +638,6 @@ install( FILES
   KIO/CopyJob
   KIO/DavJob
   KIO/DeleteJob
-  KIO/DirectCopyJob
   KIO/FileCopyJob
   KIO/FileJob
   KIO/ForwardingSlaveBase
@@ -648,7 +647,6 @@ install( FILES
   KIO/MetaData
   KIO/MetaInfoJob
   KIO/MimetypeJob
-  KIO/MkdirJob
   KIO/MultiGetJob
   KIO/NetAccess
   KIO/NetRC
@@ -669,7 +667,6 @@ install( FILES
   KIO/TCPSlaveBase
   KIO/Task
   KIO/TransferJob
-  KIO/UDSField
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO COMPONENT Devel)
 
 
@@ -782,7 +779,7 @@ install( FILES
   KParts/HistoryProvider
   KParts/LiveConnectExtension
   KParts/MainWindow
-  KParts/OpenURLEvent
+  KParts/OpenUrlEvent
   KParts/Part
   KParts/PartActivateEvent
   KParts/PartBase
@@ -792,7 +789,6 @@ install( FILES
   KParts/ReadOnlyPart
   KParts/ReadWritePart
   KParts/StatusBarExtension
-  KParts/URLArgs
   KParts/WindowArgs
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts COMPONENT Devel)
 
