@@ -566,6 +566,9 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
       foreach (QAction* action, selectableActionGroup()->actions())
         comboBox->addAction(action);
 
+      if (selectableActionGroup()->actions().isEmpty())
+          comboBox->setEnabled(false);
+
       connect(comboBox, SIGNAL(destroyed(QObject*)), SLOT(_k_comboBoxDeleted(QObject*)));
       connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(_k_comboBoxCurrentIndexChanged(int)));
       d->m_comboBoxes.append(comboBox);
