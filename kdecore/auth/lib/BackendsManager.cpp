@@ -29,7 +29,11 @@ namespace KAuth
 
 AuthBackend *BackendsManager::auth = NULL;
 HelperProxy *BackendsManager::helper = NULL;
-    
+
+BackendsManager::BackendsManager()
+{
+}
+
 void BackendsManager::init()
 {
     QObjectList l = QPluginLoader::staticInstances();

@@ -31,7 +31,7 @@ class BackendsManager
     static AuthBackend *auth;
     static HelperProxy *helper;
 
-    BackendsManager() {}
+    BackendsManager();
 public:
     static AuthBackend *authBackend();
     static HelperProxy *helperProxy();
