@@ -143,7 +143,7 @@ namespace Kross {
              * contains details about e.g. the displayed text, the file to
              * execute or the used interpreter.
              * 
-             * \param searchPath List of directories where to search the script if it's path is relative
+             * \param searchPath List of directories where to search the script if its path is relative
              * First item is given the highest priority.
              */
             void fromDomElement(const QDomElement& element, const QStringList& searchPath/* = QStringList()*/);

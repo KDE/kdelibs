@@ -73,7 +73,7 @@ public:
   /**
    * Executes the given editor command.
    * @param command name of command
-   * @param userInterface whether an user interface should be used to input data. This is command dependant.
+   * @param userInterface whether a user interface should be used to input data. This is command dependent.
    * @param value value for command. Its semantic depends on the command.
    */
   bool execCommand(const DOMString &command, bool userInterface, const DOMString &value);
@@ -91,7 +91,7 @@ public:
   /**
    * Executes the given built-in editor command.
    * @param EditorCommand index of command
-   * @param userInterface whether an user interface should be used to input data. This is command dependant.
+   * @param userInterface whether a user interface should be used to input data. This is command dependent.
    * @param value value for command. Its semantic depends on the command.
    */
   bool execCommand(EditorCommand, bool userInterface, const DOMString &value);

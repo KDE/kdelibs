@@ -182,7 +182,7 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
     /**
      * Set the recommended size of the pixmaps. This is
      * only used for the sizeHint. The actual size is always
-     * dependant on the size of the widget itself.
+     * dependent on the size of the widget itself.
      */
     void setPixmapSize( int size );
 

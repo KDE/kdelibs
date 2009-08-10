@@ -386,7 +386,7 @@ public:
      * Returns a pointer to the current theme. Can be used to query
      * available and default sizes for groups.
      * @note The KIconTheme will change if reconfigure() is called and
-     * therefore it's not recommed to store the pointer somewhere.
+     * therefore it's not recommended to store the pointer anywhere.
      * @return a pointer to the current theme. 0 if no theme set.
      */
     KIconTheme *theme() const;

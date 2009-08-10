@@ -55,7 +55,7 @@ namespace Ifaces
         /**
          * Indicates if the processor can change the CPU frequency.
          *
-         * True if a processor is able to change it's own CPU frequency.
+         * True if a processor is able to change its own CPU frequency.
          *  (generally for power management).
          *
          * @return true if the processor can change CPU frequency, false otherwise

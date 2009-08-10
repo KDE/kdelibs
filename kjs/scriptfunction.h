@@ -65,7 +65,7 @@ namespace KJS {
     /**
      * Returns the scope of this object. This is used when execution declared
      * functions - the execution context for the function is initialized with
-     * extra object in it's scope. An example of this is functions declared
+     * extra object in its scope. An example of this is functions declared
      * inside other functions:
      *
      * \code

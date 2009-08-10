@@ -221,7 +221,7 @@ namespace KJS {
      * Returns the context from which the current context was invoked. For
      * global code this will be a null context (i.e. one for which
      * isNull() returns true). You should check isNull() on the returned
-     * value before calling any of it's methods.
+     * value before calling any of its methods.
      *
      * @return The calling execution context
      */
