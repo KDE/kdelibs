@@ -91,6 +91,11 @@ bool CacheFileInfo::operator<(const CacheFileInfo &other) const
     return thisUseful < otherUseful;
 }
 
+bool CacheFileInfoPtrLessThan(const CacheFileInfo *cf1, const CacheFileInfo *cf2)
+{
+    return *cf1 < *cf2;
+}
+
 enum OperationMode {
     CleanCache = 0,
     DeleteCache,
@@ -374,10 +379,9 @@ static void cleanCache(const QDir &cacheDir)
 
     kDebug(7113) << "total size of cache files is" << totalSizeOnDisk;
 
-    // operator< implements the usefulness estimate, hence we sort by usefulness
-    qSort(fiList.begin(), fiList.end());
+    qSort(fiList.begin(), fiList.end(), CacheFileInfoPtrLessThan);
 
-    // TODO: delete files larger than allowed for a single file, debug output
+    // TODO: delete files larger than allowed for a single file
     for (int i = 0; totalSizeOnDisk > g_maxCacheSize && i < fiList.count(); i++) {
         CacheFileInfo *fi = fiList[i];
         QString filename = filePath(fi->baseName);
