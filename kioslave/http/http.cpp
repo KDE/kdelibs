@@ -4804,9 +4804,8 @@ void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
         if (attempts == 2) {
             KToolInvocation::startServiceByDesktopPath("http_cache_cleaner.desktop");
         }
-        // TODO clean up m_strCacheDir usage!
-        m_cacheCleanerConnection.connectToServer(m_strCacheDir + '/' + ".cleaner_socket",
-                                                 QIODevice::WriteOnly);
+        QString socketFileName = KStandardDirs::locateLocal("socket", "kio_http_cache_cleaner");
+        m_cacheCleanerConnection.connectToServer(socketFileName, QIODevice::WriteOnly);
         m_cacheCleanerConnection.waitForConnected(1500);
         attempts++;
     }

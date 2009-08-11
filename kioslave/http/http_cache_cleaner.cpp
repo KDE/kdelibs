@@ -86,8 +86,8 @@ struct CacheFileInfo {
 
 bool CacheFileInfo::operator<(const CacheFileInfo &other) const
 {
-    const int thisUseful = useCount / (g_currentDate - lastUsedDate);
-    const int otherUseful = other.useCount / (g_currentDate - other.lastUsedDate);
+    const int thisUseful = useCount / qMin(g_currentDate - lastUsedDate, 1);
+    const int otherUseful = other.useCount / qMin(g_currentDate - other.lastUsedDate, 1);
     return thisUseful < otherUseful;
 }
 
@@ -461,7 +461,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     removeOldFiles();
 
     QLocalServer lServer;
-    QString socketFileName = cacheDirName + '/' + ".cleaner_socket";
+    QString socketFileName = KStandardDirs::locateLocal("socket", "kio_http_cache_cleaner");
     // we need to create the file by opening the socket, otherwise it won't work
     QFile::remove(socketFileName);
     lServer.listen(socketFileName);
