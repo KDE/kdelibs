@@ -86,8 +86,8 @@ struct CacheFileInfo {
 
 bool CacheFileInfo::operator<(const CacheFileInfo &other) const
 {
-    const int thisUseful = useCount / qMin(g_currentDate - lastUsedDate, 1);
-    const int otherUseful = other.useCount / qMin(g_currentDate - other.lastUsedDate, 1);
+    const int thisUseful = useCount / qMax(g_currentDate - lastUsedDate, 1);
+    const int otherUseful = other.useCount / qMax(g_currentDate - other.lastUsedDate, 1);
     return thisUseful < otherUseful;
 }
 
