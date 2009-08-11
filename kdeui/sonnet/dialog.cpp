@@ -312,10 +312,14 @@ void Dialog::slotDone()
 {
     kDebug()<<"Dialog done!";
     d->restart=false;
+    QString currentLanguage = d->checker->speller().language();
     emit done(d->checker->text());
     if (d->restart)
     {
-        updateDictionaryComboBox();
+        if (currentLanguage != d->checker->speller().language())
+        {
+          updateDictionaryComboBox();
+        }
         d->checker->setText(d->originalBuffer);
         d->restart=false;
     }
