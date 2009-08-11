@@ -55,9 +55,10 @@ namespace Solid
          * - LidButton : The switch on a laptop that senses whether the lid is open or closed.
          * - PowerButton : The main power button on the computer.
          * - SleepButton : The sleep button on a computer capable of putting the computer into a suspend state.
+	 * - TabletButton : The tablet switch on a laptop that senses if the monitor is rotated or not.
          * - UnknownButtonType : The type of the button is unknow.
          */
-         enum ButtonType{ LidButton, PowerButton, SleepButton, UnknownButtonType };
+         enum ButtonType{ LidButton, PowerButton, SleepButton, UnknownButtonType, TabletButton };
 
 
     private:
