@@ -49,6 +49,10 @@ Solid::Button::ButtonType Button::type() const
     {
         return Solid::Button::SleepButton;
     }
+    else if (buttontype=="tablet_mode")
+    {
+        return Solid::Button::TabletButton;
+    }
     else
     {
         return Solid::Button::UnknownButtonType;
