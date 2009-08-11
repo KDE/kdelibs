@@ -26,12 +26,6 @@ class KActionCollection;
 
 namespace KNS
 {
-KNEWSTUFF_EXPORT_DEPRECATED KAction *standardAction(const QString &what,
-        const QObject *receiver,
-        const char *slot,
-        KActionCollection *parent,
-        const char *name = 0);
-
 /**
  * @brief Standard action for all GHNS workflows.
  *
@@ -44,12 +38,10 @@ KNEWSTUFF_EXPORT_DEPRECATED KAction *standardAction(const QString &what,
  * @param slot the slot to connect the triggered(bool) signal to.
  * @param parent the action's parent collection.
  * @param name The name by which the action will be retrieved again from the collection.
- */
-KNEWSTUFF_EXPORT KAction *standardAction(const QString &what,
+ */KNEWSTUFF_EXPORT KAction *standardAction(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,
-        const QString &name = QString());
-}
+        const char *name = 0);
 
 #endif // KNEWSTUFFACTION_H
