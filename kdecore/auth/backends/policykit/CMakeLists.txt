@@ -12,7 +12,8 @@ set( kauth_backend_headers
 qt4_wrap_cpp(kauth_backend_mocs ${kauth_backend_headers})
 
 add_library(kauth_backend STATIC ${kauth_backend_sources} ${kauth_backend_mocs})
-
 set_target_properties(kauth_backend PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -Wall -ggdb")
 
-install(PROGRAMS kauth-policy-gen-polkit.pl DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)
+add_library(kauth-policy-gen-backend STATIC kauth-policy-gen-polkit.cpp)
+
+#install(PROGRAMS kauth-policy-gen-polkit.pl DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec)

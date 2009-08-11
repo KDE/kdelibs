@@ -23,11 +23,7 @@ find_path( KAUTH_INCLUDE_DIR kauth/kauth.h )
 find_file( KAUTH_DBUS_POLICY_STUB share/kauth/dbus_policy.stub)
 find_file( KAUTH_DBUS_SERVICE_STUB share/kauth/dbus_service.stub)
 
-if(APPLE)
-    find_file(KAUTH_POLICY_GEN libexec/kauth-policy-gen-mac)
-elseif(UNIX)
-    find_file(KAUTH_POLICY_GEN libexec/kauth-policy-gen-polkit.pl)
-endif()
+find_file(KAUTH_POLICY_GEN libexec/kauth-policy-gen)
 
 find_library( KAUTH_LIBRARY NAMES kauth )
 
@@ -79,8 +75,8 @@ elseif(UNIX)
     get_filename_component(_input ${ACTIONS_FILE} ABSOLUTE)
     
     add_custom_command(OUTPUT ${_output} 
-                       COMMAND ${KAUTH_POLICY_GEN} ${_input} ${_output} 
-                       MAIN_DEPENDENCY ${ACTIONS_FILE}
+                       COMMAND ${KAUTH_POLICY_GEN} ${_input} > ${_output} 
+                       MAIN_DEPENDENCY ${_input}
                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                        COMMENT "Generating ${HELPER_ID}.policy")
     add_custom_target("actions for ${HELPER_ID}" ALL DEPENDS ${_output})

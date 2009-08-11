@@ -1,4 +1,6 @@
 Todo list for libkauth:
+- Add localization to actions.ini
+- Add vendor name and icon to actions.ini
 - Add an option (either on build-time or at invocation time) to enable/disable the helper quit timeout.
   This is useful for debugging.
 - Check with others on k-c-d if it's needed to add strings with error descriptions.
