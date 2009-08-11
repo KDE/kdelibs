@@ -33,7 +33,7 @@ class AuthServicesBackend : public QObject, public AuthBackend
 public:
     AuthServicesBackend();
     virtual void setupAction(const QString&);
-    virtual bool authorizeAction(const QString&);
+    virtual Action::AuthStatus authorizeAction(const QString&);
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);

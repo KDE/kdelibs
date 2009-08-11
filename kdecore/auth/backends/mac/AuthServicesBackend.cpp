@@ -45,9 +45,9 @@ void AuthServicesBackend::setupAction(const QString&)
 
 // On OS X, the suggestion is to make the helper grant the actual privilege. The app does instead a
 // "pre-authorization", that's equivalent to look at isCallerAuthorized() in policykit.
-bool AuthServicesBackend::authorizeAction(const QString &action)
+Action::AuthStatus AuthServicesBackend::authorizeAction(const QString &action)
 {
-    return actionStatus(action) == Action::Authorized;
+    return actionStatus(action);
 }
 
 Action::AuthStatus AuthServicesBackend::actionStatus(const QString &action)
