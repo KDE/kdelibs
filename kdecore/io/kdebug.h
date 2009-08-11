@@ -236,11 +236,20 @@ public:
     explicit inline KDebug(QtMsgType type, const char *f = 0, int l = -1, const char *info = 0)
         : file(f), funcinfo(info), line(l), level(type)
         { }
+
     inline QDebug operator()(int area = KDE_DEFAULT_DEBUG_AREA)
         { return kDebugStream(level, area, file, line, funcinfo); }
     inline QDebug operator()(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
         { if (cond) return operator()(area); return kDebugDevNull(); }
 
+    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type, int area = KDE_DEFAULT_DEBUG_AREA);
+    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type, bool condition,
+                                             int area = KDE_DEFAULT_DEBUG_AREA);
+
+    static inline bool hasNullOutputQtDebugMsg(int area = KDE_DEFAULT_DEBUG_AREA)
+        { return hasNullOutput(QtDebugMsg, area); }
+    static inline bool hasNullOutputQtDebugMsg(bool condition, int area = KDE_DEFAULT_DEBUG_AREA)
+        { return hasNullOutput(QtDebugMsg, condition, area); }
     /**
      * @since 4.4
      * Register a debug area dynamically.
@@ -264,18 +273,25 @@ public:
     static KDECORE_EXPORT int registerArea(const QByteArray& areaName);
 };
 
+
 #if !defined(KDE_NO_DEBUG_OUTPUT)
-# define kDebug        if (0); else KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)
+/* __VA_ARGS__ should work with any supported GCC version and MSVC >= 2005 */
+# if defined(Q_CC_GNU) || (defined(Q_CC_MSVC) && _MSC_VER >= 1400)
+#  define kDebug(...) for (bool _k_kDebugDoOutput_ = !KDebug::hasNullOutputQtDebugMsg(__VA_ARGS__); \
+                           KDE_ISUNLIKELY(_k_kDebugDoOutput_); _k_kDebugDoOutput_ = false) \
+                           KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)(__VA_ARGS__)
+# else
+#  define kDebug     KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)
+# endif
 #else
-# define kDebug        if (1); else kDebug
+# define kDebug      while (false) kDebug
 #endif
 #if !defined(KDE_NO_WARNING_OUTPUT)
-# define kWarning      if (0); else KDebug(QtWarningMsg, __FILE__, __LINE__, Q_FUNC_INFO)
+# define kWarning    KDebug(QtWarningMsg, __FILE__, __LINE__, Q_FUNC_INFO)
 #else
-# define kWarning      if (1); else kWarning
+# define kWarning    while (false) kWarning
 #endif
 
 /** @} */
 
 #endif
-

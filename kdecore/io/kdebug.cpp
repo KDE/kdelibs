@@ -245,6 +245,10 @@ struct KDebugPrivate
         //prefixed with anything, unless something with area != 0 is called before
         areaData.name = KGlobal::mainComponent().componentName().toUtf8();
 
+        for (int i = 0; i < 8; i++) {
+            m_nullOutputYesNoCache[i] = -1;
+        }
+        
         QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
         if (filename.isEmpty()) {
             return;
@@ -606,6 +610,7 @@ struct KDebugPrivate
     KDebugDBusIface *kDebugDBusIface;
     Cache cache;
     bool m_disableAll;
+    int m_nullOutputYesNoCache[8];
 
     KNoDebugStream devnull;
     QThreadStorage<KSyslogDebugStream*> syslogwriter;
@@ -694,6 +699,43 @@ void kClearDebugConfig()
                                   end = d->cache.end();
     for ( ; it != end; ++it)
         it->clear();
+}
+
+// static
+bool KDebug::hasNullOutput(QtMsgType type, int area)
+{
+    KDebugPrivate *const debugPriv = kDebug_data;
+    
+    if (type == QtDebugMsg) {
+        int *entries = debugPriv->m_nullOutputYesNoCache;
+        for (int i = 0; i < 8; i += 2) {
+            if (entries[i] == area) {
+                return entries[i + 1];
+            }
+        }
+    }
+
+    KDebugPrivate::Cache::Iterator it = debugPriv->areaData(type, area);
+    const bool ret = it->mode[debugPriv->level(type)] == KDebugPrivate::NoOutput;
+
+    // cache result for next time...
+    if (type == QtDebugMsg) {
+        int *entries = debugPriv->m_nullOutputYesNoCache;
+        int idx = (qrand() % 4) * 2;
+        entries[idx] = area;
+        entries[idx + 1] = ret;
+    }
+    
+    return ret;
+}
+
+// static
+bool KDebug::hasNullOutput(QtMsgType type, bool condition, int area)
+{
+    if (!condition) {
+        return true;
+    }
+    return KDebug::hasNullOutput(type, area);
 }
 
 int KDebug::registerArea(const QByteArray& areaName)
