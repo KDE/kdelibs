@@ -195,21 +195,21 @@ void KTempDir::unlink()
 // Auxiliary recursive function for removeDirs
 static bool rmtree(const QByteArray& name)
 {
-    //kDebug(180) << "Checking directory for remove " << name;
+    //kDebug(180) << "Checking directory for remove" << name;
     KDE_struct_stat st;
     if ( KDE_lstat( name.data(), &st ) == -1 ) // Do not dereference symlink!
         return false;
     if ( S_ISDIR( st.st_mode ) )
     {
         // This is a directory, so process it
-        //kDebug(180) << "File " << name << " is DIRECTORY!";
+        //kDebug(180) << "File" << name << "is DIRECTORY!";
         KDE_struct_dirent* ep;
         DIR* dp = ::opendir( name.data() );
         if ( !dp )
             return false;
         while ( ( ep = KDE_readdir( dp ) ) )
         {
-            //kDebug(180) << "CHECKING " << name << "/" << ep->d_name;
+            //kDebug(180) << "CHECKING" << name << "/" << ep->d_name;
             if ( !qstrcmp( ep->d_name, "." ) || !qstrcmp( ep->d_name, ".." ) )
                 continue;
             QByteArray newName( name );
@@ -223,8 +223,10 @@ static bool rmtree(const QByteArray& name)
              * - unlink and rmdir invalidates a opendir/readdir/closedir
              * - limited number of file descriptors for opendir/readdir/closedir
              */
-            if ( ::closedir( dp ) )
+            if ( ::closedir( dp ) ) {
+                kDebug(180) << "Error closing" << name;
                 return false;
+            }
             // Recurse!
             //kDebug(180) << "RECURSE: " << newName;
             if ( ! rmtree( newName ) )
@@ -234,15 +236,17 @@ static bool rmtree(const QByteArray& name)
             if ( !dp )
                 return false;
         }
-        if ( ::closedir( dp ) )
+        if ( ::closedir( dp ) ) {
+            kDebug(180) << "Error closing" << name;
             return false;
+        }
         //kDebug(180) << "RMDIR dir " << name;
         return ! ::rmdir( name );
     }
     else
     {
         // This is a non-directory file, so remove it
-        kDebug(180) << "KTempDir: unlinking file " << name;
+        //kDebug(180) << "KTempDir: unlinking file" << name;
         return ! ::unlink( name );
     }
 }
@@ -250,7 +254,7 @@ static bool rmtree(const QByteArray& name)
 
 bool KTempDir::removeDir( const QString& path )
 {
-    kDebug(180) << " " << path;
+    kDebug(180) << path;
     if ( !QFile::exists( path ) )
         return true; // The goal is that there is no directory
 
