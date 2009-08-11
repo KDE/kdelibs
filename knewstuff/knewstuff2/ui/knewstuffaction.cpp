@@ -29,10 +29,11 @@ KAction *KNS::standardAction(const QString &what,
                              const char *slot, KActionCollection *parent,
                              const char *name)
 {
-    KAction *action = new KAction)(what, parent);
+    KAction *action = new KAction(what, parent);
     parent->addAction(QString(name), action);
     action->setIcon(KIcon("get-hot-new-stuff"));
     QObject::connect(action, SIGNAL(triggered(bool)), receiver, slot);
 
     return action;
 }
+

@@ -44,4 +44,6 @@ namespace KNS
         KActionCollection *parent,
         const char *name = 0);
 
+}
+
 #endif // KNEWSTUFFACTION_H
