@@ -35,7 +35,7 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
-    m_hasFrench = !KStandardDirs::locateLocal("locale", "fr/LC_MESSAGES/kdelibs4.mo").isEmpty();
+    m_hasFrench = !KStandardDirs::locate("locale", "fr/LC_MESSAGES/kdelibs4.mo").isEmpty();
     if (m_hasFrench) {
         setlocale(LC_ALL, "fr_FR.utf8");
         if (setlocale(LC_ALL, NULL) != QByteArray("fr_FR.utf8")) {
