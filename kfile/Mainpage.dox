@@ -15,6 +15,9 @@ Applications only need to link to libkfile if they need direct access to KFileWi
 or KDirOperator or to the other widgets used by the file dialog, either in order to
 modify the behavior of the file dialog, or to reuse its components into the application itself.
 
+Use ${KDE4_KFILE_LIBS} in the target_link_libraries of your CMakeLists.txt
+to link to kfile.
+
 @authors
 Stephan Kulow<br>
 Carsten Pfeiffer<br>

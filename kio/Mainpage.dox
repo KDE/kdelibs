@@ -16,6 +16,9 @@ KIO::Job class (for more complex asynchronous jobs).
 This library also implements the %KDE file selector widget (see
 @ref filedialog "the page on the file selector widget").
 
+Use ${KDE4_KIO_LIBS} in the target_link_libraries of your CMakeLists.txt
+to link to kio.
+
 @authors
 Various: see copyright headers in individual files
 
