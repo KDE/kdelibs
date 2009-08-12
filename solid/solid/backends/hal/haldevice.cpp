@@ -305,6 +305,26 @@ QString HalDevice::icon() const
     return QString();
 }
 
+QStringList HalDevice::emblems() const
+{
+    QStringList res;
+
+    if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess)) {
+        const Hal::StorageAccess accessIface(const_cast<HalDevice *>(this));
+        if (accessIface.isAccessible()) {
+            res << "emblem-mounted";
+        } else {
+            res << "emblem-unmounted";
+        }
+
+        if (property("volume.fsusage").toString()=="crypto") {
+            res << "security-high";
+        }
+    }
+
+    return res;
+}
+
 QString HalDevice::description() const
 {
     QString category = property("info.category").toString();

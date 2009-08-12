@@ -124,6 +124,21 @@ QString FakeDevice::icon() const
     }
 }
 
+QStringList FakeDevice::emblems() const
+{
+    QStringList res;
+
+    if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess)) {
+        if (property("isMounted").toBool()) {
+            res << "emblem-mounted";
+        } else {
+            res << "emblem-unmounted";
+        }
+    }
+
+    return res;
+}
+
 QString FakeDevice::description() const
 {
     return product();

@@ -95,6 +95,14 @@ namespace Ifaces
          */
         virtual QString icon() const = 0;
 
+        /**
+         * Retrieves the name of the emblems representing the state of this device.
+         * The naming follows the freedesktop.org specification.
+         *
+         * @return the emblem names
+         */
+        virtual QStringList emblems() const = 0;
+
        /**
          * Retrieves the description of device.
          *

@@ -421,6 +421,11 @@ QString WmiDevice::icon() const
     return QString();
 }
 
+QStringList WmiDevice::emblems() const
+{
+    return QStringList(); // TODO
+}
+
 QString WmiDevice::description() const
 {
     return product(); // TODO

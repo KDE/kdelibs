@@ -177,6 +177,11 @@ QString IOKitDevice::icon() const
     return QString(); // TODO
 }
 
+QStringList IOKitDevice::emblems() const
+{
+    return QStringList(); // TODO
+}
+
 QString IOKitDevice::description() const
 {
     return product(); // TODO

@@ -186,6 +186,14 @@ namespace Solid
         QString icon() const;
 
         /**
+         * Retrieves the names of the emblems representing the state of this device.
+         * The naming follows the freedesktop.org specification.
+         *
+         * @return the emblem names
+         */
+        QStringList emblems() const;
+
+        /**
          * Retrieves the description of device.
          *
          * @return the description
