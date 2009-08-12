@@ -248,7 +248,7 @@ struct KDebugPrivate
         for (int i = 0; i < 8; i++) {
             m_nullOutputYesNoCache[i] = -1;
         }
-        
+
         QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
         if (filename.isEmpty()) {
             return;
@@ -704,8 +704,12 @@ void kClearDebugConfig()
 // static
 bool KDebug::hasNullOutput(QtMsgType type, int area)
 {
+    if (kDebug_data.isDestroyed()) {
+         // kDebugStream() will generate a warning anyway, so we don't.
+        return false;
+    }
     KDebugPrivate *const debugPriv = kDebug_data;
-    
+
     if (type == QtDebugMsg) {
         int *entries = debugPriv->m_nullOutputYesNoCache;
         for (int i = 0; i < 8; i += 2) {
@@ -725,7 +729,7 @@ bool KDebug::hasNullOutput(QtMsgType type, int area)
         entries[idx] = area;
         entries[idx + 1] = ret;
     }
-    
+
     return ret;
 }
 
