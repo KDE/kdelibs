@@ -30,34 +30,7 @@
 #include "dynamictreemodel.h"
 #include "indexfinder.h"
 #include "modelcommander.h"
-
-Q_DECLARE_METATYPE( QModelIndex )
-
-
-class ModelSpy : public QObject, public QList<QVariantList>
-{
-  Q_OBJECT
-public:
-  ModelSpy(QObject *parent);
-
-  void setModel(QAbstractItemModel *model);
-
-  void startSpying();
-  void stopSpying();
-
-protected slots:
-  void rowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
-  void rowsInserted(const QModelIndex &parent, int start, int end);
-  void rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end);
-  void rowsRemoved(const QModelIndex &parent, int start, int end);
-  void rowsAboutToBeMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart);
-  void rowsMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart);
-
-  void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
-
-private:
-  QAbstractItemModel *m_model;
-};
+#include "modelspy.h"
 
 struct PersistentIndexChange
 {
@@ -71,18 +44,6 @@ struct PersistentIndexChange
 
   QModelIndexList descendantIndexes;
   QList<QPersistentModelIndex> persistentDescendantIndexes;
-};
-
-enum SignalType
-{
-  NoSignal,
-  RowsAboutToBeInserted,
-  RowsInserted,
-  RowsAboutToBeRemoved,
-  RowsRemoved,
-  RowsAboutToBeMoved,
-  RowsMoved,
-  DataChanged
 };
 
 

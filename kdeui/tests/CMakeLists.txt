@@ -20,6 +20,7 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 SET(proxyModelTestSources
   dynamictreemodel.cpp
   proxymodeltest.cpp
+  modelspy.cpp
   modelcommander.cpp
 )
 
