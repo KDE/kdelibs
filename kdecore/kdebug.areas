@@ -667,6 +667,14 @@
 # KSANE - KDE C++ wrapper for LibSane
 51004   KSANE
 
+# Network Management
+51010   Network Management (internals)
+51011   Network Management (service)
+51012   Network Management (ui)
+51013   Network Management (KCModule)
+51014   knetworkmanager
+51020   Network Management (NetworkManager backend)
+
 # kdemultimedia
 60001   kreatecd
 60002   kaudiocreator
