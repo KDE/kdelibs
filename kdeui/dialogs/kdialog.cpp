@@ -310,15 +310,14 @@ KDialog::ButtonCode KDialog::defaultButton() const
 void KDialog::setMainWidget( QWidget *widget )
 {
     Q_D(KDialog);
-  if ( d->mMainWidget == widget )
-    return;
-  d->mMainWidget = widget;
-  QLayout* layout = d->mMainWidget->layout();
-  if (layout) {
-    // Avoid double-margin problem
-    layout->setMargin(0);
-  }
-  d->setupLayout();
+    if ( d->mMainWidget == widget )
+        return;
+    d->mMainWidget = widget;
+    if (d->mMainWidget && d->mMainWidget->layout()) {
+        // Avoid double-margin problem
+        d->mMainWidget->layout()->setMargin(0);
+    }
+    d->setupLayout();
 }
 
 QWidget *KDialog::mainWidget()

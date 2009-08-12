@@ -21,6 +21,7 @@
 #define KDEUI_KDIALOG_P_H
 
 #include "kdialog.h"
+#include <QtCore/QPointer>
 #include <QtCore/QSignalMapper>
 #include <QtCore/QSize>
 #include <QtCore/QHash>
@@ -61,7 +62,7 @@ class KDialogPrivate
         QString mDetailsButtonText;
 
         QBoxLayout *mTopLayout;
-        QWidget *mMainWidget;
+        QPointer<QWidget> mMainWidget;
         KUrlLabel *mUrlHelp;
         KSeparator *mActionSeparator;
 
