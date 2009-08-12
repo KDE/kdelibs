@@ -163,22 +163,12 @@ QVariant KFilePlacesItem::deviceData(int role) const
     Solid::Device d = device();
 
     if (d.isValid()) {
-        QStringList overlays;
-
         switch (role)
         {
         case Qt::DisplayRole:
             return d.description();
         case Qt::DecorationRole:
-            if (m_access && m_access->isAccessible()) {
-                overlays << "emblem-mounted";
-            } else {
-                overlays << QString(); // We have to guarantee the placement of the next emblem
-            }
-            if (m_volume && m_volume->usage()==Solid::StorageVolume::Encrypted) {
-                overlays << "security-high";
-            }
-            return KIcon(d.icon(), 0, overlays);
+            return KIcon(d.icon(), 0, d.emblems());
         case KFilePlacesModel::UrlRole:
             if (m_access) {
                 return QUrl(KUrl(m_access->filePath()));
