@@ -80,7 +80,6 @@ void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QString &u
     QWidget *plainPage = q->mainWidget();
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
    topLayout->setMargin( 0 );
-    topLayout->setSpacing(KDialog::spacingHint());
 
     QLabel * label = new QLabel( text , plainPage );
     topLayout->addWidget( label );

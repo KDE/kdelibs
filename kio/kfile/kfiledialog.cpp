@@ -29,6 +29,8 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QFileDialog>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
 
 #include <kimageio.h>
 #include <klocale.h>
@@ -362,9 +364,15 @@ void KFileDialog::setInlinePreviewShown(bool show)
     d->w->setInlinePreviewShown(show);
 }
 
+// This is only used for the initial size when no configuration has been saved
 QSize KFileDialog::sizeHint() const
 {
-    return QSize(700, 450);
+    int fontSize = fontMetrics().height();
+    QSize goodSize(48 * fontSize, 30 * fontSize);
+    QSize screenSize = QApplication::desktop()->availableGeometry(this).size();
+    QSize minSize(screenSize / 2);
+    QSize maxSize(screenSize * qreal(0.9));
+    return (goodSize.expandedTo(minSize).boundedTo(maxSize));
 }
 
 // This slot still exists mostly for compat purposes; for subclasses which reimplement slotOk

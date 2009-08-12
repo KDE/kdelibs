@@ -78,7 +78,6 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
 {
     QVBoxLayout *vb = new QVBoxLayout( this );
     vb->setMargin( 0 );
-    vb->setSpacing( KDialog::spacingHint() );
 
     d->imageLabel = new QLabel(this);
     d->imageLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
