@@ -160,6 +160,10 @@ public:
         LinkBackground = 3,
         /**
          * Fifth color; corresponds to visited links.
+         *
+         * This can also be used to indicate "not recent" content, especially
+         * when a color is needed to denote content which is "old" or
+         * "archival".
          */
         VisitedBackground = 4,
         /**
@@ -216,7 +220,9 @@ public:
         /**
          * Fifth color; used for (visited) links. As with LinkText, may be used
          * for clickable items that have been clicked, or otherwise accessed,
-         * already.
+         * already. May also be used to indicate "historical" (i.e. "old")
+         * items/information, especially if InactiveText is being used in the
+         * same context to express something different.
          */
         VisitedText = 4,
         /**
