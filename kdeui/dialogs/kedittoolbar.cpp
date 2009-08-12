@@ -530,7 +530,7 @@ void KEditToolBarPrivate::_k_slotDefault()
     if ( KMessageBox::warningContinueCancel(q, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset Toolbars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
         return;
 
-    delete m_widget;
+    KEditToolBarWidget * oldWidget = m_widget;
     m_widget = 0;
     m_accept = false;
 
@@ -579,8 +579,10 @@ void KEditToolBarPrivate::_k_slotDefault()
         q->setResourceFile( m_file, m_global );
     }
 
+    // Copy the geometry to minimize UI flicker
+    m_widget->setGeometry( oldWidget->geometry() );
     q->setMainWidget(m_widget);
-    m_widget->show();
+    delete oldWidget;
 
     q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_acceptOK(bool)));
     q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
