@@ -38,6 +38,8 @@ TestObject::TestObject(QObject* parent, const QString& name)
 
     QTimer* timer = new QTimer(this);
     timer->setObjectName("TestTimer");
+
+    setProperty("dynamicProperty",QVariantList() << "Some String" << 99);
 }
 
 TestObject::~TestObject()

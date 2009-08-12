@@ -192,7 +192,7 @@ namespace Kross {
             /**
              * \return the \a Kross::Script implementation used by the scripting
              * backend. This returns NULL until the action got triggered or if
-             * there was a error before that.
+             * there was an error before that.
              *
              * Normaly it shouldn't be necessary to deal with the scripting backend
              * depending instance of a \a Kross::Script implementation since this

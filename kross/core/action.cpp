@@ -27,7 +27,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
-#include <kdebug.h>
 #include <klocale.h>
 #include <kicon.h>
 #include <kmimetype.h>

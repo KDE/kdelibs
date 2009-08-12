@@ -23,7 +23,6 @@
 #include "krossconfig.h"
 #include "action.h"
 
-
 #include <QtCore/QObject>
 #include <QtCore/QDir>
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env krosstest
+# -*- coding: utf-8 -*-
 # coding: utf-8
 
 """
@@ -227,6 +228,11 @@ class TestKross(unittest.TestCase):
 
 		self.object1.setProperty("listProperty", [[True,False],"abc",[846,-573.02],[]])
 		self.assert_( self.object1.property("listProperty") == [[True,False],"abc",[846,-573.02],[]] )
+
+	def testDynamicProperties(self):
+		self.assert_( self.object1.property("dynamicProperty") == ["Some String",99] )
+		self.object1.setProperty("newDynamicProperty","New Dynamic Property")
+		self.assert_( self.object1.property("newDynamicProperty") == "New Dynamic Property" )
 
 	def testEnumerationMembers(self):
 		self.assert_( self.object1.TESTENUM1 == 1 )
