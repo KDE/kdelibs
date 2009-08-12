@@ -141,16 +141,16 @@ void KComponentDataPrivate::lazyInit(const KComponentData &component)
 
         if (dirs->addCustomized(sharedConfig.data()))
             sharedConfig->reparseConfiguration();
-
-        // the first KComponentData sets the KDE Qt plugin paths
-        if (kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
-            kdeLibraryPathsAdded = KdeLibraryPathsAddedDone;
-            const QStringList &plugins = dirs->resourceDirs("qtplugins");
-            QStringList::ConstIterator it = plugins.begin();
-            while (it != plugins.end()) {
-                QCoreApplication::addLibraryPath(*it);
-                ++it;
-            }
+    }
+    
+    // the first KComponentData sets the KDE Qt plugin paths
+    if (QCoreApplication::instance() && dirs && kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
+        kdeLibraryPathsAdded = KdeLibraryPathsAddedDone;
+        const QStringList &plugins = dirs->resourceDirs("qtplugins");
+        QStringList::ConstIterator it = plugins.begin();
+        while (it != plugins.end()) {
+            QCoreApplication::addLibraryPath(*it);
+            ++it;
         }
     }
 }
