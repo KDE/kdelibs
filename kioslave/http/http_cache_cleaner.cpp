@@ -275,7 +275,8 @@ CacheCleanerCommand readCommand(const QByteArray &cmd, CacheFileInfo *fi)
     return static_cast<CacheCleanerCommand>(ret);
 }
 
-void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
+// execute the command; return true if a new file was created, false otherwise.
+bool dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
 {
     Q_ASSERT(cmd.size() == 80);
     CacheCleanerCommand ccc = readCommand(cmd, fi);
@@ -286,7 +287,7 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
         //       this command does little. When we do a complete scan of the directory we will
         //       find any new files anyway.
         kDebug(7113) << "CreateNotificationCommand for" << fi->baseName;
-        break;
+        return true;
     case UpdateFileCommand: {
         kDebug(7113) << "UpdateFileCommand for" << fi->baseName;
         QFile file(fileName);
@@ -295,7 +296,7 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
         CacheFileInfo fiFromDisk;
         QByteArray header = file.read(CacheFileInfo::size);
         if (!readBinaryHeader(header, &fiFromDisk) || fiFromDisk.bytesCached != fi->bytesCached) {
-            return;
+            return false;
         }
 
         // update the whole header according to the ioslave, except for the use count, to make sure
@@ -310,12 +311,13 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
 
         file.seek(0);
         file.write(newHeader);
-        break;
+        return false;
     }
     default:
         kDebug(7113) << "received invalid command";
         break;
     }
+    return false;
 }
 
 // Keep the above in sync with the cache code in http.cpp
@@ -502,7 +504,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     QFile::remove(socketFileName);
     lServer.listen(socketFileName);
     QList<QLocalSocket *> sockets;
-    int updateCounter = 1000000;    // HACK in more than one way
+    int newFilesCounter = 1000000;  // force cleaner run on startup
 
     CacheCleaner *cleaner = 0;
     while (true) {
@@ -543,8 +545,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                 Q_ASSERT(recv.size() == 80);
                 //### not keeping the information, for now...
                 CacheFileInfo fi;
-                dispatchCommand(recv, &fi);
-                updateCounter++;
+                if (dispatchCommand(recv, &fi)) {
+                    newFilesCounter++;
+                }
             }
         }
         // TODO it makes more sense to keep track of cache size, which we can actually do
@@ -556,10 +559,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                 delete cleaner;
                 cleaner = 0;
             }
-        } else if (updateCounter > 50) {
+        } else if (newFilesCounter > 30) {
             cacheDir.refresh();
             cleaner = new CacheCleaner(cacheDir);
-            updateCounter = 0;
+            newFilesCounter = 0;
         }
     }
     return 0;
