@@ -705,9 +705,11 @@ static void checkRestartVersion( QSessionManager& sm )
     QString wrapper = KStandardDirs::findExe( "kde" NUM_TO_STRING( KDE_VERSION_MAJOR ) ); // "kde4", etc.
 #undef NUM_TO_STRING
 #undef NUM_TO_STRING2
-    QStringList restartCommand = sm.restartCommand();
-    restartCommand.prepend( wrapper );
-    sm.setRestartCommand( restartCommand );
+    if( !wrapper.isEmpty()) {
+        QStringList restartCommand = sm.restartCommand();
+        restartCommand.prepend( wrapper );
+        sm.setRestartCommand( restartCommand );
+    }
 }
 #endif // Q_WS_X11
 
