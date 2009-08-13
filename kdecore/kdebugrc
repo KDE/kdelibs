@@ -68,10 +68,6 @@ InfoOutput=4
 [1217]
 InfoOutput=4
 
-# KMail - storage internals
-[5120]
-InfoOutput=4
-
 # KitchenSync (Syncing Algorithm)
 [5250]
 InfoOutput=4

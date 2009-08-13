@@ -148,7 +148,6 @@
 5002        kppp
 5003        knode
 5005        knewsticker
-5006        kmail
 5007        kpf
 5009        filesharing
 5010        krdc
@@ -158,8 +157,6 @@
 5051        libkmime (Codecs)
 5052        libkmime (Plugin Loader)
 5100        libkdenetwork
-5120        kmail (storage internals)
-5121        kmail (test)
 
 # kdepim
 5149        kdepim
