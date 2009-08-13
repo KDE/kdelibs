@@ -31,6 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QtCore/QDir>
 #include <QtCore/QString>
+#include <QtCore/QTime>
 #include <QtDBus/QtDBus>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
@@ -49,7 +50,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 time_t g_currentDate;
 int g_maxCacheAge;
 qint64 g_maxCacheSize;
-bool g_cacheHasChanged;
 
 static const char *appFullName = "org.kde.kio_http_cache_cleaner";
 static const char *appName = "kio_http_cache_cleaner";
@@ -286,7 +286,6 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
         //       this command does little. When we do a complete scan of the directory we will
         //       find any new files anyway.
         kDebug(7113) << "CreateNotificationCommand for" << fi->baseName;
-        g_cacheHasChanged = true;
         break;
     case UpdateFileCommand: {
         kDebug(7113) << "UpdateFileCommand for" << fi->baseName;
@@ -311,7 +310,6 @@ void dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
 
         file.seek(0);
         file.write(newHeader);
-        g_cacheHasChanged = true;
         break;
     }
     default:
@@ -341,59 +339,89 @@ static void removeOldFiles()
     QFile::remove(filePath(QLatin1String("cleaned")));
 }
 
-static void cleanCache(const QDir &cacheDir)
+class CacheCleaner
 {
-    kDebug(7113) << "cleanCache() running.";
-    QList<CacheFileInfo *> fiList;
-    qint64 totalSizeOnDisk = 0;
-    foreach (const QString &baseName, cacheDir.entryList()) {
-        // check if the filename is of the 40 letters, 0...f type
-        if (baseName.length() < 40) {
-            continue;
-        }
-        bool nameOk = true;
-        for (int i = 0; i < 40 && nameOk; i++) {
-            QChar c = baseName[i];
-            nameOk = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
-        }
-        if (!nameOk) {
-            continue;
-        }
-        if (baseName.length() > 40) {
-            if (g_currentDate - QFileInfo(filePath(baseName)).lastModified().toTime_t() > 15*60) {
-                // it looks like a temporary file that hasn't been touched in > 15 minutes...
-                QFile::remove(filePath(baseName));
+public:
+    CacheCleaner(const QDir &cacheDir)
+     : m_totalSizeOnDisk(0)
+    {
+        kDebug(7113);
+        m_fileNameList = cacheDir.entryList();
+    }
+
+    // Delete some of the files that need to be deleted. Return true when done, false otherwise.
+    // This makes interleaved cleaning / serving ioslaves possible.
+    bool processSlice()
+    {
+        QTime t;
+        t.start();
+        // phase one: gather information about cache files
+        if (!m_fileNameList.isEmpty()) {
+            while (t.elapsed() < 100 && !m_fileNameList.isEmpty()) {
+                QString baseName = m_fileNameList.takeFirst();
+                // check if the filename is of the 40 letters, 0...f type
+                if (baseName.length() < 40) {
+                    continue;
+                }
+                bool nameOk = true;
+                for (int i = 0; i < 40 && nameOk; i++) {
+                    QChar c = baseName[i];
+                    nameOk = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
+                }
+                if (!nameOk) {
+                    continue;
+                }
+                if (baseName.length() > 40) {
+                    if (g_currentDate - QFileInfo(filePath(baseName)).lastModified().toTime_t() > 15*60) {
+                        // it looks like a temporary file that hasn't been touched in > 15 minutes...
+                        QFile::remove(filePath(baseName));
+                    }
+                    // the temporary file might still be written to, leave it alone
+                    continue;
+                }
+
+                CacheFileInfo *fi = new CacheFileInfo();
+                if (readCacheFile(baseName, fi, CleanCache)) {
+                    m_fiList.append(fi);
+                    m_totalSizeOnDisk += fi->sizeOnDisk;
+                } else {
+                    delete fi;
+                }
             }
-            // the temporary file might still be written to, leave it alone
-            continue;
+            kDebug(7113) << "total size of cache files is" << m_totalSizeOnDisk;
+
+            if (m_fileNameList.isEmpty()) {
+                // final step of phase one
+                qSort(m_fiList.begin(), m_fiList.end(), CacheFileInfoPtrLessThan);
+            }
+            return false;
         }
 
-        CacheFileInfo *fi = new CacheFileInfo();
-        if (readCacheFile(baseName, fi, CleanCache)) {
-            fiList.append(fi);
-            totalSizeOnDisk += fi->sizeOnDisk;
-        } else {
+        // phase two: delete files until cache is under maximum allowed size
+
+        // TODO: delete files larger than allowed for a single file
+        while (t.elapsed() < 100) {
+            if (m_totalSizeOnDisk <= g_maxCacheSize || m_fiList.isEmpty()) {
+                qDeleteAll(m_fiList);
+                kDebug(7113) << "total size of cache files after cleaning is" << m_totalSizeOnDisk;
+                return true;
+            }
+            CacheFileInfo *fi = m_fiList.takeFirst();
+            QString filename = filePath(fi->baseName);
+            if (QFile::remove(filename)) {
+                m_totalSizeOnDisk -= fi->sizeOnDisk;
+            }
             delete fi;
         }
+        return false;
     }
 
-    kDebug(7113) << "total size of cache files is" << totalSizeOnDisk;
+private:
+    QStringList m_fileNameList;
+    QList<CacheFileInfo *> m_fiList;
+    qint64 m_totalSizeOnDisk;
+};
 
-    qSort(fiList.begin(), fiList.end(), CacheFileInfoPtrLessThan);
-
-    // TODO: delete files larger than allowed for a single file
-    for (int i = 0; totalSizeOnDisk > g_maxCacheSize && i < fiList.count(); i++) {
-        CacheFileInfo *fi = fiList[i];
-        QString filename = filePath(fi->baseName);
-        if (QFile::remove(filename)) {
-            totalSizeOnDisk -= fi->sizeOnDisk;
-        }
-    }
-
-    kDebug(7113) << "total size of cache files after cleaning is" << totalSizeOnDisk;
-    qDeleteAll(fiList);
-    g_cacheHasChanged = false;
-}
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
@@ -448,8 +476,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     g_currentDate = time(0);
     g_maxCacheAge = KProtocolManager::maxCacheAge();
     g_maxCacheSize = mode == DeleteCache ? -1 : KProtocolManager::maxCacheSize() * 1024;
-    g_cacheHasChanged = true;
-
 
     QString cacheDirName = KGlobal::dirs()->saveLocation("cache", "http");
     QDir cacheDir(cacheDirName);
@@ -460,6 +486,16 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
     removeOldFiles();
 
+    if (mode == DeleteCache) {
+        QTime t;
+        t.start();
+        cacheDir.refresh();
+        qDebug() << "time to refresh the cacheDir QDir:" << t.elapsed();
+        CacheCleaner cleaner(cacheDir);
+        while (cleaner.processSlice()) { }
+        return 0;
+    }
+
     QLocalServer lServer;
     QString socketFileName = KStandardDirs::locateLocal("socket", "kio_http_cache_cleaner");
     // we need to create the file by opening the socket, otherwise it won't work
@@ -467,12 +503,18 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     lServer.listen(socketFileName);
     QList<QLocalSocket *> sockets;
     int updateCounter = 1000000;    // HACK in more than one way
+
+    CacheCleaner *cleaner = 0;
     while (true) {
         g_currentDate = time(0);
-        // Meh, processEvents() with timeout does not work with WaitForMoreEvents, so we either have to
-        // spin (hard) or poll, or just learn quite late when a http process has disconnected :/
-        // (a disconnection is apparently not an 'event' that wakes up the event loop)
-        QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents);
+        if (cleaner) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        } else {
+            // We will not immediately know when a socket was disconnected. Causes:
+            // - WaitForMoreEvents does not make processEvents() return when a socket disconnects
+            // - WaitForMoreEvents *and* a timeout is not possible.
+            QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents);
+        }
         if (!lServer.isListening()) {
             return 1;
         }
@@ -506,9 +548,17 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
             }
         }
         // TODO it makes more sense to keep track of cache size, which we can actually do
-        if (updateCounter > 50) {
+
+        // interleave cleaning with serving ioslaves to reduce "garbage collection pauses"
+        if (cleaner) {
+            if (cleaner->processSlice()) {
+                // that was the last slice, done
+                delete cleaner;
+                cleaner = 0;
+            }
+        } else if (updateCounter > 50) {
             cacheDir.refresh();
-            cleanCache(cacheDir);
+            cleaner = new CacheCleaner(cacheDir);
             updateCounter = 0;
         }
     }
