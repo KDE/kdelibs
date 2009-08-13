@@ -3137,6 +3137,8 @@ void KHTMLView::print(bool quick)
     const QPointerDeleter settingsDeleter(printSettings); //the printdialog takes ownership of the settings widget, thus this workaround to avoid double deletion
     QPrinter printer;
     QPointer<QPrintDialog> dialog = KdePrint::createPrintDialog(&printer, QList<QWidget*>() << printSettings, this);
+    dialog->setOption( QAbstractPrintDialog::PrintPageRange, false);
+
     const QPointerDeleter dialogDeleter(dialog);
 
     QString docname = m_part->xmlDocImpl()->URL().prettyUrl();
