@@ -50,10 +50,10 @@ class KTabWidget::Private
     } m_resizeSuspend;
 
     Private( KTabWidget *parent )
-      : m_parent( parent ),
+      : m_resizeSuspend(ResizeEnabled),
+        m_parent( parent ),
         m_automaticResizeTabs( false ),
-        m_tabBarHidden( false ),
-        m_resizeSuspend(ResizeEnabled)
+        m_tabBarHidden( false )
     {
 
       KConfigGroup cg(KGlobal::config(), "General");
