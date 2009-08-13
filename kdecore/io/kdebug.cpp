@@ -735,10 +735,11 @@ bool KDebug::hasNullOutput(QtMsgType type, int area)
          // kDebugStream() will generate a warning anyway, so we don't.
         return false;
     }
-    KDebugPrivate *const debugPriv = kDebug_data;
+    KDebugPrivate *const d = kDebug_data;
+    QMutexLocker locker(&d->mutex);
 
     if (type == QtDebugMsg) {
-        int *entries = debugPriv->m_nullOutputYesNoCache;
+        int *entries = d->m_nullOutputYesNoCache;
         for (int i = 0; i < 8; i += 2) {
             if (entries[i] == area) {
                 return entries[i + 1];
@@ -746,12 +747,12 @@ bool KDebug::hasNullOutput(QtMsgType type, int area)
         }
     }
 
-    KDebugPrivate::Cache::Iterator it = debugPriv->areaData(type, area);
-    const bool ret = it->mode[debugPriv->level(type)] == KDebugPrivate::NoOutput;
+    KDebugPrivate::Cache::Iterator it = d->areaData(type, area);
+    const bool ret = it->mode[d->level(type)] == KDebugPrivate::NoOutput;
 
     // cache result for next time...
     if (type == QtDebugMsg) {
-        int *entries = debugPriv->m_nullOutputYesNoCache;
+        int *entries = d->m_nullOutputYesNoCache;
         int idx = (qrand() % 4) * 2;
         entries[idx] = area;
         entries[idx + 1] = ret;
