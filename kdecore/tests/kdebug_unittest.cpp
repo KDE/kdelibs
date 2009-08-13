@@ -141,9 +141,10 @@ void KDebugTest::testDisableArea()
     QVERIFY(!QFile::exists("kdebug.dbg"));
 
     // Re-enable debug, for further tests
-    config.group("180").writeEntry("InfoOutput", 2 /*QtOutput*/);
-    config.group("qttest").writeEntry("InfoOutput", 2 /*QtOutput*/);
+    config.group("180").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.sync();
+    kClearDebugConfig();
 }
 
 void KDebugTest::testDynamicArea()
@@ -174,18 +175,24 @@ public:
 
 void KDebugTest::testMultipleThreads()
 {
-    kDebug();
+    kDebug() << "kDebug works";
+    QVERIFY(QFile::exists("kdebug.dbg"));
+    QFile::remove("kdebug.dbg");
+
     KDebugThreadTester tester;
     QThreadPool::globalInstance()->setMaxThreadCount(10);
     QList<QFuture<void> > futures;
     for (int threadNum = 0; threadNum < 10; ++threadNum)
         futures << QtConcurrent::run(&tester, &KDebugThreadTester::doDebugs);
-    kDebug() << "Joining all threads";
     Q_FOREACH(QFuture<void> f, futures)
         f.waitForFinished();
 
     QVERIFY(QFile::exists("kdebug.dbg"));
     // All we can check is that the lines are whole
-    // TODO
-    qDebug() << readLines();
+    QList<QByteArray> lines = readLines();
+    Q_FOREACH(const QByteArray& line, lines) {
+        //qDebug() << line;
+        QCOMPARE(line.count("doDebugs: A kdebug statement in a thread:"), 1);
+        QCOMPARE(line.count('\n'), 1);
+    }
 }
