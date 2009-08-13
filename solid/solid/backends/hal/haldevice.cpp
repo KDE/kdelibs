@@ -192,6 +192,8 @@ QString HalDevice::icon() const
             return "media-floppy";
         } else if (property("storage.drive_type").toString()=="cdrom") {
             return "drive-optical";
+        } else if (property("storage.drive_type").toString()=="sd_mmc") {
+            return "media-flash-sd-mmc";
         } else if (property("storage.hotpluggable").toBool()) {
             if (property("storage.bus").toString()=="usb") {
                 if (property("storage.no_partitions_hint").toBool()
