@@ -34,12 +34,15 @@ void KDebugTest::initTestCase()
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
     QFile::remove("kdebug.dbg");
+    QFile::remove("myarea.dbg");
 
     // Now set up logging to file
     KConfig config("kdebugrc");
-    config.group("0").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    //config.group("0").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("180").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.group("myarea").writeEntry("InfoFilename", "myarea.dbg");
+    config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.sync();
 
     kClearDebugConfig();
@@ -50,6 +53,8 @@ void KDebugTest::cleanupTestCase()
     QString kdebugrc = KStandardDirs::locateLocal("config", "kdebugrc");
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
+    // TODO QFile::remove("kdebug.dbg");
+    QFile::remove("myarea.dbg");
 }
 
 static QList<QByteArray> readLines(const char* fileName = "kdebug.dbg")
@@ -69,9 +74,9 @@ static QList<QByteArray> readLines(const char* fileName = "kdebug.dbg")
     return lines;
 }
 
-void KDebugTest::compareLines(const QList<QByteArray>& expectedLines)
+void KDebugTest::compareLines(const QList<QByteArray>& expectedLines, const char* fileName)
 {
-    QList<QByteArray> lines = readLines();
+    QList<QByteArray> lines = readLines(fileName);
     //qDebug() << lines;
     QCOMPARE(lines.count(), expectedLines.count());
     QVERIFY(lines[0].endsWith("\n"));
@@ -106,6 +111,9 @@ void KDebugTest::testDebugToFile()
 {
     kDebug(180) << "TEST DEBUG 180";
     kDebug(0) << "TEST DEBUG 0";
+    // The calls to kDebug(0) created a dynamic debug area named after the componentdata name
+    KConfig config("kdebugrc");
+    QVERIFY(config.hasGroup("qttest"));
     kDebug(0) << "TEST DEBUG with newline" << endl << "newline";
     TestClass tc;
     kDebug(0) << "Re-entrance test" << tc << "[ok]";
@@ -125,12 +133,17 @@ void KDebugTest::testDisableArea()
     QFile::remove("kdebug.dbg");
     KConfig config("kdebugrc");
     config.group("180").writeEntry("InfoOutput", 4 /*NoOutput*/);
-    config.group("0").writeEntry("InfoOutput", 4 /*NoOutput*/);
+    config.group("qttest").writeEntry("InfoOutput", 4 /*NoOutput*/);
     config.sync();
     kClearDebugConfig();
     kDebug(180) << "TEST DEBUG 180 - SHOULD NOT APPEAR";
     kDebug(0) << "TEST DEBUG 0 - SHOULD NOT APPEAR";
     QVERIFY(!QFile::exists("kdebug.dbg"));
+
+    // Re-enable debug, for further tests
+    config.group("180").writeEntry("InfoOutput", 2 /*QtOutput*/);
+    config.group("qttest").writeEntry("InfoOutput", 2 /*QtOutput*/);
+    config.sync();
 }
 
 void KDebugTest::testDynamicArea()
@@ -143,5 +156,36 @@ void KDebugTest::testDynamicArea()
     kDebug(myArea) << "TEST DEBUG using myArea" << myArea;
     QList<QByteArray> expected;
     expected << "/myarea KDebugTest::testDynamicArea: TEST DEBUG using myArea 1\n";
-    compareLines(expected);
+    compareLines(expected, "myarea.dbg");
+}
+
+#include <QThreadPool>
+#include <qtconcurrentrun.h>
+
+class KDebugThreadTester
+{
+public:
+    void doDebugs()
+    {
+        for (int i = 0; i < 10; ++i)
+            kDebug() << "A kdebug statement in a thread:" << i;
+    }
+};
+
+void KDebugTest::testMultipleThreads()
+{
+    kDebug();
+    KDebugThreadTester tester;
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
+    QList<QFuture<void> > futures;
+    for (int threadNum = 0; threadNum < 10; ++threadNum)
+        futures << QtConcurrent::run(&tester, &KDebugThreadTester::doDebugs);
+    kDebug() << "Joining all threads";
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
+
+    QVERIFY(QFile::exists("kdebug.dbg"));
+    // All we can check is that the lines are whole
+    // TODO
+    qDebug() << readLines();
 }

@@ -34,9 +34,10 @@ private Q_SLOTS:
     void testDebugToFile();
     void testDisableArea();
     void testDynamicArea();
+    void testMultipleThreads();
 
 private:
-    void compareLines(const QList<QByteArray>& expectedLines);
+    void compareLines(const QList<QByteArray>& expectedLines, const char* fileName = "kdebug.dbg");
 };
 
 #endif

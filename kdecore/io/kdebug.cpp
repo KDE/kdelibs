@@ -301,7 +301,7 @@ struct KDebugPrivate
     QString groupNameForArea(unsigned int area) const
     {
         QString groupName = QString::number(area);
-        if (!config->hasGroup(groupName)) {
+        if (area == 0 || !config->hasGroup(groupName)) {
             groupName = QString::fromLocal8Bit(cache.value(area).name);
         }
         return groupName;
@@ -382,7 +382,8 @@ struct KDebugPrivate
         if (!configObject()) {
             // we don't have a config and we can't create one...
             Area &area = cache[0]; // create a dummy entry
-            Q_UNUSED(area);
+            if (KGlobal::hasMainComponent())
+                area.name = KGlobal::mainComponent().componentName().toUtf8();
             return cache.find(0);
         }
 
@@ -394,6 +395,14 @@ struct KDebugPrivate
         if (it == cache.end()) {
             // unknown area
             return cache.find(0);
+        }
+
+        if (num == 0) { // area 0 is special, it becomes the named area "appname"
+            static bool s_firstDebugFromApplication = true;
+            if (s_firstDebugFromApplication) {
+                s_firstDebugFromApplication = false;
+                writeGroupForNamedArea(it->name);
+            }
         }
 
         const int lev = level(type);
@@ -605,6 +614,20 @@ struct KDebugPrivate
         return printHeader(s, areaName, debugFile, line, funcinfo, type, colored);
     }
 
+    void writeGroupForNamedArea(const QByteArray& areaName)
+    {
+        // Ensure that this area name appears in kdebugrc, so that users (via kdebugdialog)
+        // can turn it off.
+        KConfig* cfgObj = configObject();
+        if (cfgObj) {
+            KConfigGroup cg(cfgObj, QString::fromUtf8(areaName));
+            const QString key = QString::fromLatin1("InfoOutput");
+            if (!cg.hasKey(key)) {
+                cg.writeEntry(key, int(KDebugPrivate::QtOutput));
+            }
+        }
+    }
+
     QMutex mutex;
     KConfig *config;
     KDebugDBusIface *kDebugDBusIface;
@@ -699,6 +722,10 @@ void kClearDebugConfig()
                                   end = d->cache.end();
     for ( ; it != end; ++it)
         it->clear();
+
+    for (int i = 0; i < 8; i++) {
+        d->m_nullOutputYesNoCache[i] = -1;
+    }
 }
 
 // static
@@ -754,17 +781,7 @@ int KDebug::registerArea(const QByteArray& areaName)
     KDebugPrivate::Area areaData;
     areaData.name = areaName;
     d->cache.insert(areaNumber, areaData);
-
-    // Ensure that this area name appears in kdebugrc, so that users (via kdebugdialog)
-    // can turn it off.
-    KConfig* cfgObj = d->configObject();
-    if (cfgObj) {
-        KConfigGroup cg(cfgObj, QString::fromUtf8(areaName));
-        const QString key = QString::fromLatin1("InfoOutput");
-        if (!cg.hasKey(key)) {
-            cg.writeEntry(key, int(KDebugPrivate::QtOutput));
-        }
-    }
-
+    d->writeGroupForNamedArea(areaName);
     return areaNumber;
 }
+
