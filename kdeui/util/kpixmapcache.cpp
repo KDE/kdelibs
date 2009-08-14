@@ -1195,7 +1195,7 @@ bool KPixmapCache::recreateCacheFiles()
         return false;
     }
 
-    KPixmapCacheIndexHeader indexHeader;
+    KPixmapCacheIndexHeader indexHeader = { 0 };
     d->mCacheId = ::time(0);
     d->mTimestamp = ::time(0);
 
@@ -1217,7 +1217,7 @@ bool KPixmapCache::recreateCacheFiles()
         return false;
     }
 
-    KPixmapCacheDataHeader dataHeader;
+    KPixmapCacheDataHeader dataHeader = { 0 };
     memcpy(dataHeader.magic, KPC_MAGIC, sizeof(dataHeader.magic));
     dataHeader.cacheVersion = KPIXMAPCACHE_VERSION;
     dataHeader.size = sizeof dataHeader;
