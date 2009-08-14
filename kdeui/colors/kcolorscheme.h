@@ -203,7 +203,8 @@ public:
         NormalText = 0,
         /**
          * Second color; for example, comments, items which are old, inactive
-         * or disabled. InactiveText is not the same role as NormalText in the
+         * or disabled. Generally used for things that are meant to be "less
+         * important". InactiveText is not the same role as NormalText in the
          * inactive state.
          */
         InactiveText = 1,
@@ -214,19 +215,21 @@ public:
         ActiveText = 2,
         /**
          * Fourth color; use for (unvisited) links. May also be used for other
-         * clickable items.
+         * clickable items or content that indicates relationships, items that
+         * indicate somewhere the user can visit, etc.
          */
         LinkText = 3,
         /**
          * Fifth color; used for (visited) links. As with LinkText, may be used
-         * for clickable items that have been clicked, or otherwise accessed,
-         * already. May also be used to indicate "historical" (i.e. "old")
-         * items/information, especially if InactiveText is being used in the
-         * same context to express something different.
+         * for items that have already been "visited" or accessed. May also be
+         * used to indicate "historical" (i.e. "old") items or information,
+         * especially if InactiveText is being used in the same context to 
+         * express something different.
          */
         VisitedText = 4,
         /**
-         * Sixth color; for example, errors, untrusted content, etc.
+         * Sixth color; for example, errors, untrusted content, deletions,
+         * etc.
          */
         NegativeText = 5,
         /**
@@ -234,7 +237,8 @@ public:
          */
         NeutralText = 6,
         /**
-         * Eigth color; for example, success messages, trusted content.
+         * Eigth color; for example, additions, success messages, trusted
+         * content.
          */
         PositiveText = 7
     };
