@@ -468,6 +468,18 @@ public:
      * For performance reasons no stat is done in the destination before hand,
      * the slave must do it.
      *
+     * By default, rename() is only called when renaming (moving) from
+     * yourproto://host/path to yourproto://host/otherpath.
+     *
+     * If you set renameFromFile=true then rename() will also be called when
+     * moving a file from file:///path to yourproto://host/otherpath.
+     * Otherwise such a move would have to be done the slow way (copy+delete).
+     * See KProtocolManager::canRenameFromFile() for more details.
+     *
+     * If you set renameToFile=true then rename() will also be called when
+     * moving a file from yourproto: to file:.
+     * See KProtocolManager::canRenameToFile() for more details.
+     *
      * @param src where to move the file from
      * @param dest where to move the file to
      * @param flags: We support Overwrite here
@@ -506,6 +518,19 @@ public:
 
     /**
      * Copy @p src into @p dest.
+     *
+     * By default, copy() is only called when copying a file from
+     * yourproto://host/path to yourproto://host/otherpath.
+     *
+     * If you set copyFromFile=true then copy() will also be called when
+     * moving a file from file:///path to yourproto://host/otherpath.
+     * Otherwise such a copy would have to be done the slow way (get+put).
+     * See also KProtocolManager::canCopyFromFile().
+     *
+     * If you set copyToFile=true then copy() will also be called when
+     * moving a file from yourproto: to file:.
+     * See also KProtocolManager::canCopyToFile().
+     *
      * If the slave returns an error ERR_UNSUPPORTED_ACTION, the job will
      * ask for get + put instead.
      * @param src where to copy the file from (decoded)
