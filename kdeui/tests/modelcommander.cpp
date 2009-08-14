@@ -67,6 +67,18 @@ QPair<QString, ModelChangeCommandList> ModelCommander::nextCommand()
   return m_commands.at(m_counter);
 }
 
+QStringList ModelCommander::commandNames() const
+{
+  QStringList list;
+
+  for (int i = 0; i < m_commands.size(); ++i)
+  {
+    list << m_commands.at(i).first;
+  }
+
+  return list;
+}
+
 void ModelCommander::setDefaultCommands()
 {
   m_counter = 0;

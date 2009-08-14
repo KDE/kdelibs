@@ -24,7 +24,7 @@
 
 class QAbstractItemModel;
 
-#include <QObject>
+#include <QStringList>
 
 class ModelCommander : public QObject
 {
@@ -39,6 +39,8 @@ public:
   bool hasNextCommand();
   void executeNextCommand();
   QPair<QString, ModelChangeCommandList> nextCommand();
+
+  QStringList commandNames() const;
 
 protected:
 
