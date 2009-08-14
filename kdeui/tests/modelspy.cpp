@@ -20,7 +20,7 @@
 #include "modelspy.h"
 
 ModelSpy::ModelSpy(QObject *parent)
-    : QObject(parent), QList<QVariantList>()
+    : QObject(parent), QList<QVariantList>(), m_isSpying(false)
 {
   qRegisterMetaType<QModelIndex>("QModelIndex");
 }
@@ -29,11 +29,32 @@ void ModelSpy::setModel(QAbstractItemModel *model)
 {
   Q_ASSERT(model);
   m_model = model;
-  startSpying();
 }
 
 void ModelSpy::startSpying()
 {
+  m_isSpying = true;
+
+  // If a signal is connected to a slot multiple times, the slot gets called multiple times.
+  // As we're doing start and stop spying all the time, we disconnect here first to make sure.
+
+  disconnect(m_model, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
+          this, SLOT(rowsAboutToBeInserted(const QModelIndex &, int, int)));
+  disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+          this, SLOT(rowsInserted(const QModelIndex &, int, int)));
+  disconnect(m_model, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
+          this, SLOT(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
+  disconnect(m_model, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+          this, SLOT(rowsRemoved(const QModelIndex &, int, int)));
+//  disconnect(m_model, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
+//          this, SLOT(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+//  disconnect(m_model, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+//          this, SLOT(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+
+  disconnect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+          this, SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+
+
   connect(m_model, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           SLOT(rowsAboutToBeInserted(const QModelIndex &, int, int)));
   connect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
@@ -56,6 +77,7 @@ void ModelSpy::startSpying()
 
 void ModelSpy::stopSpying()
 {
+  m_isSpying = false;
   disconnect(m_model, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           this, SLOT(rowsAboutToBeInserted(const QModelIndex &, int, int)));
   disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),

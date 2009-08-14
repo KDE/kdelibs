@@ -49,6 +49,7 @@ public:
 
   void startSpying();
   void stopSpying();
+  bool isSpying() { return m_isSpying; }
 
 protected slots:
   void rowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
@@ -62,6 +63,7 @@ protected slots:
 
 private:
   QAbstractItemModel *m_model;
+  bool m_isSpying;
 };
 
 #endif
