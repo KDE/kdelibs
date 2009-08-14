@@ -81,11 +81,14 @@ bool Nepomuk::Types::ClassPrivate::loadAncestors()
         Soprano::QueryResultIterator it
             = ResourceManager::instance()->mainModel()->executeQuery( QString("select distinct ?s where { "
                                                                               "{ ?s a <%1> . } UNION { ?s a <%2> . } "
-                                                                              "OPTIONAL { ?s <%3> ?ss . } . "
+                                                                              "OPTIONAL { graph ?g { ?s <%3> ?ss . } . "
+                                                                              "{ ?g a <%4> . } UNION { ?g a <%5> . } . } . "
                                                                               "FILTER(!BOUND(?ss)) . }")
                                                                       .arg( Soprano::Vocabulary::RDFS::Class().toString() )
                                                                       .arg( Soprano::Vocabulary::OWL::Class().toString() )
-                                                                      .arg( Soprano::Vocabulary::RDFS::subClassOf().toString() ),
+                                                                      .arg( Soprano::Vocabulary::RDFS::subClassOf().toString() )
+                                                                      .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
+                                                                      .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
                                                                       Soprano::Query::QueryLanguageSparql );
         bool success = false;
         while ( it.next() ) {
@@ -137,7 +140,7 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
 {
     // load domains with a hack to get at least a subset of properties that inherit their domain from parents
     Soprano::QueryResultIterator it
-        = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
+        = ResourceManager::instance()->mainModel()->executeQuery( QString("select distinct ?p where { "
                                                                           "{ ?p <%1> <%2> . } "
                                                                           "UNION "
                                                                           "{ ?p <%3> ?p1 . "
