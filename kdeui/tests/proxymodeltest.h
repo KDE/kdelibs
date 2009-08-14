@@ -32,6 +32,14 @@
 #include "modelcommander.h"
 #include "modelspy.h"
 
+typedef QList<ModelChangeCommand*> CommandList;
+
+Q_DECLARE_METATYPE( CommandList )
+
+typedef QList<QVariantList> SignalList;
+
+Q_DECLARE_METATYPE( SignalList )
+
 struct PersistentIndexChange
 {
   IndexFinder parentFinder;
@@ -46,6 +54,10 @@ struct PersistentIndexChange
   QList<QPersistentModelIndex> persistentDescendantIndexes;
 };
 
+typedef QList<PersistentIndexChange> PersistentChangeList;
+
+Q_DECLARE_METATYPE( PersistentChangeList )
+
 
 class ProxyModelTest : public QObject
 {
@@ -56,17 +68,19 @@ public:
   void setProxyModel(QAbstractProxyModel *proxyModel);
   DynamicTreeModel* sourceModel();
 
+  ModelSpy* modelSpy() const { return m_modelSpy; }
+
 protected:
-  void doInit();
+  virtual void doInitTestCase();
+  virtual void doInit();
+  virtual void testData();
+  virtual void doCleanupTestCase();
 
 private slots:
   void init();
 
-  void testProxyModel_data();
+  void testProxyModel_data() { testData(); }
   void testProxyModel() { doTest(); }
-
-//   void testMove_data();
-//   void testMove() { doTest(); }
 
 protected:
   QModelIndexList getUnchangedIndexes(const QModelIndex &parent, QList< QItemSelectionRange > ignoredRanges);
@@ -76,15 +90,8 @@ protected:
 
   PersistentIndexChange getChange(IndexFinder sourceFinder, int start, int end, int difference, bool toInvalid = false);
   QVariantList getSignal(SignalType type, IndexFinder parentFinder, int start, int end);
-  void signalInsertion(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount = -1, QList<QVariantList> signalList = QList<QVariantList>());
-  void signalMove(const QString &name, IndexFinder srcFinder, int start, int end, IndexFinder destFinder, int destRow, QList<QVariantList> signalList = QList<QVariantList>());
-  void signalRemoval(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount = -1, QList<QVariantList> signalList = QList<QVariantList>());
-  void noSignal(const QString &name);
-
-  void signalDataChange(const QString &name, IndexFinder topLeft, IndexFinder bottomRight, QList<QVariantList> signalList = QList<QVariantList>());
 
   void doTest();
-  void setExpected(const QString &name, const QList<QVariantList> &list, const QList<PersistentIndexChange> &persistentChanges = QList<PersistentIndexChange>() );
   void handleSignal(QVariantList expected);
   QVariantList getResultSignal();
   int getChange(bool sameParent, int start, int end, int currentPosition, int destinationStart);
@@ -92,12 +99,11 @@ protected:
   void setCommands(QList<QPair<QString, ModelChangeCommandList> >  commands);
 
 private:
-  QHash<QString, QList<QVariantList> > m_expectedSignals;
-  QHash<QString, QList<PersistentIndexChange> > m_persistentChanges;
   DynamicTreeModel *m_model;
   QAbstractProxyModel *m_proxyModel;
   ModelSpy *m_modelSpy;
   ModelCommander *m_modelCommander;
+  QStringList m_commandNames;
 
 };
 

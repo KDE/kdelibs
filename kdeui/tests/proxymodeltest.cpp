@@ -19,15 +19,9 @@
 
 #include "proxymodeltest.h"
 
-#include <QSignalSpy>
-
 #include "dynamictreemodel.h"
 #include <QItemSelectionModel>
 #include "modelspy.h"
-
-typedef QList<ModelChangeCommand*> CommandList;
-
-Q_DECLARE_METATYPE( CommandList )
 
 ProxyModelTest::ProxyModelTest(QObject *parent)
 : QObject(parent),
@@ -38,10 +32,23 @@ ProxyModelTest::ProxyModelTest(QObject *parent)
 {
 }
 
+void ProxyModelTest::doInitTestCase()
+{
+  m_commandNames = m_modelCommander->commandNames();
+  QVERIFY( !m_commandNames.isEmpty() );
+}
+
+void ProxyModelTest::doCleanupTestCase()
+{
+  QVERIFY( m_commandNames.isEmpty() );
+}
+
 void ProxyModelTest::init()
 {
   m_modelCommander->setDefaultCommands();
 
+  QVERIFY(m_modelSpy->isEmpty());
+  bool spyingState = m_modelSpy->isSpying();
   m_modelSpy->stopSpying();
   m_model->clear();
   const char *currentTag = QTest::currentDataTag();
@@ -50,8 +57,10 @@ void ProxyModelTest::init()
 
   // Get the model into the state it is expected to be in.
   m_modelCommander->executeUntil(currentTag);
-  m_modelSpy->startSpying();
+  if (spyingState)
+    m_modelSpy->startSpying();
 
+  QVERIFY(m_modelSpy->isEmpty());
 }
 
 DynamicTreeModel* ProxyModelTest::sourceModel()
@@ -59,125 +68,9 @@ DynamicTreeModel* ProxyModelTest::sourceModel()
   return m_model;
 }
 
-
 QVariantList ProxyModelTest::getSignal(SignalType type, IndexFinder parentFinder, int start, int end)
 {
   return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end;
-}
-
-void ProxyModelTest::signalInsertion(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount, QList<QVariantList> signalList)
-{
-  QVERIFY(startRow >= 0 && rowsAffected > 0);
-  signalList << getSignal(RowsAboutToBeInserted, parentFinder, startRow, startRow + rowsAffected - 1 );
-  signalList << getSignal(RowsInserted, parentFinder, startRow, startRow + rowsAffected - 1 );
-
-  QList<PersistentIndexChange> persistentList;
-  // The parent must have at least one row if anything is to change.
-  if (rowCount > 0 && startRow < rowCount)
-    // When rows are inserted, the rows from startRow to rowCount() -1 (ie, the last row)
-    // will be moved down.
-    persistentList << getChange(parentFinder, startRow, rowCount - 1, rowsAffected);
-
-  setExpected(name, signalList, persistentList);
-}
-
-int ProxyModelTest::getChange(bool sameParent, int start, int end, int currentPosition, int destinationStart)
-{
-  const int displacementOffset = end - start + 1;
-  int change = displacementOffset;
-
-  if (sameParent)
-  {
-    const bool movingUp = destinationStart < start;
-    const int middlePosition = movingUp ? start : end;
-
-    if (movingUp)
-    {
-      if (currentPosition >= middlePosition)
-        change = destinationStart - start;
-    } else if (currentPosition <= middlePosition)
-    {
-      change = destinationStart - end - 1;
-    } else {
-      change = -1 * (displacementOffset);
-    }
-  } else // if (sameParent)
-  {
-    if (currentPosition > end)
-    {
-      change = start - end - 1;
-    } else {
-      change = destinationStart - start;
-    }
-  }
-
-  return change;
-}
-
-
-void ProxyModelTest::signalMove(const QString &name, IndexFinder srcFinder, int start, int end, IndexFinder destFinder, int destRow, QList<QVariantList> signalList)
-{
-  QVariantList signal;
-  signal << RowsAboutToBeMoved << QVariant::fromValue(srcFinder) << start << end << QVariant::fromValue(destFinder) << destRow;
-  signalList << signal;
-  signal.clear();
-  signal << RowsMoved << QVariant::fromValue(srcFinder) << start << end << QVariant::fromValue(destFinder) << destRow;
-  signalList << signal;
-  signal.clear();
-
-  QList<PersistentIndexChange> persistentList;
-
-  int difference = 5;
-  if (end > destRow)
-  {
-    difference *= -1;
-    persistentList << getChange(srcFinder, start, end, difference );
-    persistentList << getChange(srcFinder, destRow +1, end -1, (start - end) );
-  } else {
-    persistentList << getChange(srcFinder, start, end, difference - 1 );
-    persistentList << getChange(srcFinder, end + 1, destRow -1, -1*(start - end + 1) );
-
-  }
-
-
-  setExpected(name, signalList, persistentList);
-}
-
-void ProxyModelTest::signalRemoval(const QString &name, IndexFinder parentFinder, int startRow, int rowsAffected, int rowCount, QList<QVariantList> signalList)
-{
-  QVERIFY(startRow >= 0 && rowsAffected > 0);
-  signalList << getSignal(RowsAboutToBeRemoved, parentFinder, startRow, startRow + rowsAffected - 1 );
-  signalList << getSignal(RowsRemoved, parentFinder, startRow, startRow + rowsAffected - 1 );
-
-  QList<PersistentIndexChange> persistentList;
-
-  // The removed indexes go invalid.
-  persistentList << getChange(parentFinder, startRow, startRow + rowsAffected - 1, -1, true);
-  // Rows after it will be moved to higher rows.
-  if (rowCount > 0 && (startRow + rowsAffected) < rowCount)
-  {
-    persistentList << getChange(parentFinder, startRow + rowsAffected, rowCount - 1, rowsAffected * -1 );
-  }
-
-  setExpected(name, signalList, persistentList);
-}
-
-void ProxyModelTest::signalDataChange(const QString &name, IndexFinder topLeft, IndexFinder bottomRight, QList<QVariantList> signalList)
-{
-  QVariantList signal;
-  signal << DataChanged << QVariant::fromValue(topLeft) << QVariant::fromValue(bottomRight);
-  signalList << signal;
-  setExpected(name, signalList);
-}
-
-void ProxyModelTest::noSignal(const QString &name)
-{
-  QList<PersistentIndexChange> persistentList;
-  QList<QVariantList> signalList;
-  signalList << (QVariantList() << NoSignal);
-  signalList << (QVariantList() << NoSignal);
-
-  setExpected(name, signalList, persistentList);
 }
 
 PersistentIndexChange ProxyModelTest::getChange(IndexFinder parentFinder, int start, int end, int difference, bool toInvalid)
@@ -194,11 +87,14 @@ PersistentIndexChange ProxyModelTest::getChange(IndexFinder parentFinder, int st
 
 void ProxyModelTest::handleSignal(QVariantList expected)
 {
+  QVERIFY(!expected.isEmpty());
   int signalType = expected.takeAt(0).toInt();
   if (NoSignal == signalType)
     return;
 
+  Q_ASSERT(!m_modelSpy->isEmpty());
   QVariantList result = getResultSignal();
+
   QCOMPARE(result.takeAt(0).toInt(), signalType);
   // Check that the signal we expected to recieve was emitted exactly.
   switch (signalType)
@@ -212,7 +108,8 @@ void ProxyModelTest::handleSignal(QVariantList expected)
     IndexFinder parentFinder = qvariant_cast<IndexFinder>(expected.at(0));
     QModelIndex parent = parentFinder.getIndex();
 
-#if 0 // This is where is usually goes wrong...
+// This is where is usually goes wrong...
+#if 0
     kDebug() << qvariant_cast<QModelIndex>(result.at(0)) << parent;
     kDebug() << result.at(1) << expected.at(1);
     kDebug() << result.at(2) << expected.at(2);
@@ -248,6 +145,11 @@ void ProxyModelTest::handleSignal(QVariantList expected)
 
     QVERIFY(topLeft.isValid() && bottomRight.isValid());
 
+#if 0
+    kDebug() << qvariant_cast<QModelIndex>(result.at(0)) << topLeft;
+    kDebug() << qvariant_cast<QModelIndex>(result.at(1)) << bottomRight;
+#endif
+
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(0)), topLeft );
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(1)), bottomRight );
   }
@@ -265,12 +167,6 @@ void ProxyModelTest::setProxyModel(QAbstractProxyModel *proxyModel)
   m_proxyModel = proxyModel;
   m_proxyModel->setSourceModel(m_model);
   m_modelSpy->setModel(m_proxyModel);
-}
-
-void ProxyModelTest::setExpected(const QString &name, const QList<QVariantList> &list, const QList<PersistentIndexChange> &persistentChanges)
-{
-  m_expectedSignals.insert(name, list);
-  m_persistentChanges.insert(name, persistentChanges);
 }
 
 QModelIndexList ProxyModelTest::getDescendantIndexes(const QModelIndex &parent)
@@ -326,6 +222,10 @@ QModelIndexList ProxyModelTest::getUnchangedIndexes(const QModelIndex &parent, Q
   return list;
 }
 
+void ProxyModelTest::testData()
+{
+
+}
 
 void ProxyModelTest::doInit()
 {
@@ -336,24 +236,17 @@ void ProxyModelTest::doInit()
 
 void ProxyModelTest::doTest()
 {
-//   QFETCH( CommandList, commandList );
+  QFETCH( SignalList, signalList );
+  QFETCH( PersistentChangeList, changeList );
 
-  const char *currentTag = QTest::currentDataTag();
-
-  QVERIFY(currentTag != 0);
-  QVERIFY(m_expectedSignals.contains(currentTag));
-  QVERIFY(m_persistentChanges.contains(currentTag));
-
-  // The signals we expect to recieve to pass this test.
-  QList<QVariantList> signalList = m_expectedSignals.value(currentTag);
-
-  // The persistent indexes that we expect to be changed (and by how much)
-  QList<PersistentIndexChange> changeList = m_persistentChanges.value(currentTag);
-
+  QVERIFY(m_modelSpy->isEmpty());
   QList<QPersistentModelIndex> persistentIndexes;
 
   const int columnCount = m_model->columnCount();
   QMutableListIterator<PersistentIndexChange> it(changeList);
+
+  QString currentTest = QTest::currentDataTag();
+  m_commandNames.removeAll(currentTest);
 
   // The indexes are defined by the test are described with IndexFinder before anything in the model exists.
   // Now that the indexes should exist, resolve them in the change objects.
@@ -366,7 +259,7 @@ void ProxyModelTest::doTest()
     QVERIFY(change.startRow >= 0);
     QVERIFY(change.startRow <= change.endRow);
 #if 0
-    kDebug() << parent << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
+    kDebug() << parent << change.startRow << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
 #endif
     QVERIFY(change.endRow < m_proxyModel->rowCount(parent));
 
@@ -402,7 +295,11 @@ void ProxyModelTest::doTest()
 
   QList<QPersistentModelIndex> unchangedPersistentIndexes = toPersistent(unchangedIndexes);
   // Run the test.
+
+  Q_ASSERT(m_modelSpy->isEmpty());
+  m_modelSpy->startSpying();
   m_modelCommander->executeNextCommand();
+
 
   while (!signalList.isEmpty())
   {
@@ -412,7 +309,6 @@ void ProxyModelTest::doTest()
   }
   // Make sure we didn't get any signals we didn't expect.
   QVERIFY(m_modelSpy->isEmpty());
-
 
   // Persistent indexes should change by the amount described in change objects.
   foreach (PersistentIndexChange change, changeList)
@@ -428,6 +324,10 @@ void ProxyModelTest::doTest()
         QVERIFY(!persistentIndex.isValid());
         continue;
       }
+#if 0
+      kDebug() << idx << idx.data() << change.difference << change.toInvalid << persistentIndex.row();
+#endif
+
       QCOMPARE(idx.row() + change.difference, persistentIndex.row());
       QCOMPARE(idx.column(), persistentIndex.column());
       QCOMPARE(idx.parent(), persistentIndex.parent());
@@ -464,29 +364,4 @@ void ProxyModelTest::doTest()
 void ProxyModelTest::setCommands(QList<QPair<QString, ModelChangeCommandList> > commands)
 {
   m_modelCommander->setCommands(commands);
-}
-
-void ProxyModelTest::testProxyModel_data()
-{
-  QTest::addColumn<CommandList>("commandList");
-  QTest::newRow("insert01");
-
-  QTest::newRow("insert02");
-  QTest::newRow("insert03");
-  QTest::newRow("insert04");
-  QTest::newRow("insert05");
-  QTest::newRow("insert06");
-  QTest::newRow("insert07");
-  QTest::newRow("insert08");
-  QTest::newRow("insert09");
-  QTest::newRow("change01");
-  QTest::newRow("change02");
-  QTest::newRow("remove01");
-  QTest::newRow("remove02");
-  QTest::newRow("remove03");
-  QTest::newRow("remove04");
-  QTest::newRow("remove05");
-  QTest::newRow("remove06");
-  QTest::newRow("remove07");
-
 }

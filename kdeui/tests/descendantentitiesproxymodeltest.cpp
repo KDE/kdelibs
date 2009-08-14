@@ -39,51 +39,17 @@ public:
   {
   }
 
-  protected:
-    QVariantList getSignal(SignalType type, int start, int end)
-    {
-      return ProxyModelTest::getSignal(type, IndexFinder(), start, end);
-    }
-
-    void signalInsertion(const QString &name, int startRow, int rowsAffected)
-    {
-      ProxyModelTest::signalInsertion(name, IndexFinder(), startRow, rowsAffected, m_rowCount);
-      m_rowCount += rowsAffected;
-    }
-
-    void signalMove(const QString &name, int startRow, int endRow, int destRow)
-    {
-      ProxyModelTest::signalMove(name, IndexFinder(), startRow, endRow, IndexFinder(), destRow);
-    }
-
-    void signalRemoval(const QString &name, int startRow, int rowsAffected)
-    {
-      ProxyModelTest::signalRemoval(name, IndexFinder(), startRow, rowsAffected, m_rowCount);
-      m_rowCount -= rowsAffected;
-    }
-
-    void signalDataChange(const QString &name, int startRow, int endRow)
-    {
-      IndexFinder topLeftFinder(m_proxyModel, QList<int>() << startRow );
-      IndexFinder bottomRightFinder(m_proxyModel, QList<int>() << endRow );
-      ProxyModelTest::signalDataChange(name, topLeftFinder, bottomRightFinder);
-    }
-
-    QVariantList getDataChangedSignal(int startRow, int endRow)
-    {
-      IndexFinder topLeftFinder(m_proxyModel, QList<int>() << startRow );
-      IndexFinder bottomRightFinder(m_proxyModel, QList<int>() << endRow );
-
-      return QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder);
-    }
-
-    PersistentIndexChange getChange(int start, int end, int difference, bool toInvalid = false)
-    {
-      return ProxyModelTest::getChange(IndexFinder(), start, end, difference, toInvalid);
-    }
+protected:
+  virtual void testData();
 
 private slots:
+  void init()
+  {
+    ProxyModelTest::doInit();
+  }
+
   void initTestCase();
+  void cleanupTestCase();
 
 private:
   KDescendantsProxyModel *m_proxyModel;
@@ -91,167 +57,242 @@ private:
   int m_rowCount;
 };
 
-
-void DescendantsProxyModelTest::initTestCase()
+void DescendantsProxyModelTest::testData()
 {
-  m_proxyModel = new KDescendantsProxyModel(this);
-  setProxyModel(m_proxyModel);
 
-  QList<QVariantList> signalList;
-  QVariantList expected;
-  QList<PersistentIndexChange> persistentList;
-  m_rowCount = 0;
-  int startRow = 0;
-  int rowsInserted = 1;
+  QTest::addColumn<SignalList>("signalList");
+  QTest::addColumn<PersistentChangeList>("changeList");
 
-  signalInsertion("insert01", startRow, rowsInserted);
+  CommandList commandList;
+  SignalList signalList;
+  PersistentChangeList persistentList;
+  IndexFinder indexFinder;
 
-  startRow = 1;
-  rowsInserted = 10;
-  signalInsertion("insert02", startRow, rowsInserted);
+  // This selection will not cause any signals to be emitted. Only inserting
+  // child indexes into it will.
 
-  startRow = 0;
-  signalInsertion("insert03", startRow, rowsInserted);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 0);
+  signalList << getSignal(RowsInserted, indexFinder, 0, 0);
 
-  startRow = 21;
-  signalInsertion("insert04", startRow, rowsInserted);
+  QTest::newRow("insert01") << signalList << persistentList;
+  signalList.clear();
 
-  startRow = 11;
-  signalInsertion("insert05", startRow, rowsInserted);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 1, 10);
+  signalList << getSignal(RowsInserted, indexFinder, 1, 10);
 
-  startRow = 31;
-  signalInsertion("insert06", startRow, rowsInserted);
+  QTest::newRow("insert02") << signalList << persistentList;
+  signalList.clear();
 
-  startRow = 21;
-  signalInsertion("insert07", startRow, rowsInserted);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
+  signalList << getSignal(RowsInserted, indexFinder, 0, 9);
 
-  int accumulatedChange = 0;
-  startRow = 17;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-  accumulatedChange += 10;
+  persistentList << getChange( indexFinder, 0, 10, 10 );
 
-  startRow = 23;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-  accumulatedChange += 10;
-
-  startRow = 29;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-  accumulatedChange += 10;
-  persistentList << getChange(17, 17, accumulatedChange);
-
-  startRow = 48;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-  accumulatedChange += 10;
-  persistentList << getChange(18, 18, accumulatedChange);
-
-  startRow = 59;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-  accumulatedChange += 10;
-
-  persistentList << getChange(19, m_rowCount - 1, accumulatedChange);
-
-  setExpected("insert08", signalList, persistentList);
+  QTest::newRow("insert03") << signalList << persistentList;
   signalList.clear();
   persistentList.clear();
-  m_rowCount += accumulatedChange;
+
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 21, 30);
+  signalList << getSignal(RowsInserted, indexFinder, 21, 30);
+
+  QTest::newRow("insert04") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 11, 20);
+  signalList << getSignal(RowsInserted, indexFinder, 11, 20);
+
+  persistentList << getChange( indexFinder, 11, 30, 10 );
+
+  QTest::newRow("insert05") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 31, 40);
+  signalList << getSignal(RowsInserted, indexFinder, 31, 40);
+
+  persistentList << getChange( indexFinder, 31, 40, 10 );
+
+  QTest::newRow("insert06") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 21, 30);
+  signalList << getSignal(RowsInserted, indexFinder, 21, 30);
+
+  persistentList << getChange( indexFinder, 21, 50, 10 );
+
+  QTest::newRow("insert07") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
 
   // When this proxy recieves a rowsAboutToBeInserted signal, it can't know
   // how many rows need to be inserted (total descendants).
   // So, it first inserts only the rows signaled by the source model (and not
   // the descendants). When the source model signals rowsInserted, we can
-  // examine the new rows for descendants. These of need to be signalled separately
+  // examine the new rows for descendants. These need to be signalled separately
   // by this proxy
 
-  startRow = 14;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted -1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted -1);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 17, 26);
+  signalList << getSignal(RowsInserted, indexFinder, 17, 26);
 
-  startRow = 17;
-  rowsInserted = 20;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted -1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted -1);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 23, 32);
+  signalList << getSignal(RowsInserted, indexFinder, 23, 32);
 
-  startRow = 40;
-  rowsInserted = 20;
-  signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted -1);
-  signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted -1);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 29, 38);
+  signalList << getSignal(RowsInserted, indexFinder, 29, 38);
 
-  persistentList << getChange(14, m_rowCount - 1, 50);
+  persistentList << getChange( indexFinder, 17, 17, 30 );
 
-  setExpected("insert09", signalList, persistentList);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 48, 57);
+  signalList << getSignal(RowsInserted, indexFinder, 48, 57);
+
+  persistentList << getChange( indexFinder, 18, 18, 40 );
+
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 59, 68);
+  signalList << getSignal(RowsInserted, indexFinder, 59, 68);
+
+  persistentList << getChange( indexFinder, 19, 60, 50 );
+
+  QTest::newRow("insert08") << signalList << persistentList;
   signalList.clear();
   persistentList.clear();
-  m_rowCount += 50;
 
-  startRow = 31;
-  int endRow = 31;
-  int destRow = 36;
-  signalMove("move01", startRow, endRow, destRow);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 14, 23);
+  signalList << getSignal(RowsInserted, indexFinder, 14, 23);
 
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 17, 36);
+  signalList << getSignal(RowsInserted, indexFinder, 17, 36);
 
-  startRow = 36;
-  endRow = 36;
-  destRow = 31;
-  signalMove("move02", startRow, endRow, destRow);
+  signalList << getSignal(RowsAboutToBeInserted, indexFinder, 40, 59);
+  signalList << getSignal(RowsInserted, indexFinder, 40, 59);
 
-  startRow = 11;
-  signalDataChange("change01", startRow, startRow);
+  persistentList << getChange(indexFinder, 14, 110, 50);
+
+  QTest::newRow("insert09") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  IndexFinder topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 11 );
+  IndexFinder bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 11 );
+
+  signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
+
+  QTest::newRow("change01") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
 
   // Although the source model emits only one range is changed, this proxy model puts children indexes
   // in the way, breaking the continuous range.
   // Currently separate signals are emitted for each changed row.
   // This should really emit one signal for each continuous range instead. That's a TODO.
-  startRow = 65;
-  endRow = 65;
-  signalList << getDataChangedSignal(startRow, endRow);
 
-  startRow = 66;
-  endRow = 66;
-  signalList << getDataChangedSignal(startRow, endRow);
+  topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 65 );
+  bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 65 );
+  signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 
-  startRow = 97;
-  endRow = 97;
-  signalList << getDataChangedSignal(startRow, endRow);
+  topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 66 );
+  bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 66 );
+  signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 
-  startRow = 108;
-  endRow = 108;
-  signalList << getDataChangedSignal(startRow, endRow);
+  topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 97 );
+  bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 97 );
+  signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 
-  setExpected("change02", signalList, persistentList);
+  topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 108 );
+  bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 108 );
+  signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
+
+  QTest::newRow("change02") << signalList << persistentList;
   signalList.clear();
+  persistentList.clear();
 
-  startRow = 11;
-  int rowsRemoved = 1;
-  signalRemoval("remove01", startRow, rowsRemoved);
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 11, 11);
+  signalList << getSignal(RowsRemoved, indexFinder, 11, 11);
 
-  startRow = 107;
-  rowsRemoved = 11;
-  signalRemoval("remove02", startRow, rowsRemoved);
+  persistentList << getChange( indexFinder, 11, 11, -1, true );
+  persistentList << getChange( indexFinder, 12, 160, -1);
 
-  startRow = 97;
-  rowsRemoved = 1;
-  signalRemoval("remove03", startRow, rowsRemoved);
+  QTest::newRow("remove01") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
 
-  startRow = 105;
-  signalRemoval("remove04", startRow, rowsRemoved);
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 107, 117);
+  signalList << getSignal(RowsRemoved, indexFinder, 107, 117);
 
-  startRow = 100;
-  signalRemoval("remove05", startRow, rowsRemoved);
+  persistentList << getChange( indexFinder, 107, 117, -1, true );
+  persistentList << getChange( indexFinder, 118, 159, -11);
 
-  startRow = 97;
-  rowsRemoved = 7;
-  signalRemoval("remove06", startRow, rowsRemoved);
+  QTest::newRow("remove02") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
 
-  startRow = 65;
-  rowsRemoved = 31;
-  signalRemoval("remove07", startRow, rowsRemoved);
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 97, 97);
+  signalList << getSignal(RowsRemoved, indexFinder, 97, 97);
 
+  persistentList << getChange( indexFinder, 97, 97, -1, true );
+  persistentList << getChange( indexFinder, 98, 148, -1);
+
+  QTest::newRow("remove03") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 105, 105);
+  signalList << getSignal(RowsRemoved, indexFinder, 105, 105);
+
+  persistentList << getChange( indexFinder, 105, 105, -1, true );
+  persistentList << getChange( indexFinder, 106, 147, -1);
+
+  QTest::newRow("remove04") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 100, 100);
+  signalList << getSignal(RowsRemoved, indexFinder, 100, 100);
+
+  persistentList << getChange( indexFinder, 100, 100, -1, true );
+  persistentList << getChange( indexFinder, 101, 146, -1);
+
+  QTest::newRow("remove05") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 97, 103);
+  signalList << getSignal(RowsRemoved, indexFinder, 97, 103);
+
+  persistentList << getChange( indexFinder, 97, 103, -1, true );
+  persistentList << getChange( indexFinder, 104, 145, -7);
+
+  QTest::newRow("remove06") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 65, 95);
+  signalList << getSignal(RowsRemoved, indexFinder, 65, 95);
+
+  persistentList << getChange( indexFinder, 65, 95, -1, true );
+  persistentList << getChange( indexFinder, 96, 138, -31);
+
+  QTest::newRow("remove07") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
 }
+
+
+void DescendantsProxyModelTest::initTestCase()
+{
+  m_proxyModel = new KDescendantsProxyModel(this);
+  setProxyModel(m_proxyModel);
+  ProxyModelTest::doInitTestCase();
+}
+
+
+void DescendantsProxyModelTest::cleanupTestCase()
+{
+  ProxyModelTest::doCleanupTestCase();
+}
+
 
 QTEST_KDEMAIN(DescendantsProxyModelTest, GUI)
 #include "kdescendantentitiesproxymodeltest.moc"

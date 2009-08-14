@@ -17,335 +17,159 @@
     02110-1301, USA.
 */
 
-#include "proxymodeltest.h"
+#include "selectionproxymodeltest.h"
 
 #include <QTimer>
 
 #include "../itemviews/kselectionproxymodel.h"
 
-class SelectionProxyModelTest : public ProxyModelTest
+class OnlySelectedChildrenTest : public SelectionProxyModelTest
 {
   Q_OBJECT
 public:
-  SelectionProxyModelTest(QObject *parent = 0)
-      : ProxyModelTest( parent ),
-      m_selectionModel(0),
-      m_rowCount(0)
+  OnlySelectedChildrenTest(QObject *parent = 0)
+      : SelectionProxyModelTest( parent )
   {
-    // Make different selections and run all of the tests.
-    m_selectionModel = new QItemSelectionModel(sourceModel());
-    m_proxyModel = new KSelectionProxyModel(m_selectionModel, this);
     m_proxyModel->setFilterBehavior(KSelectionProxyModel::OnlySelectedChildren);
-    setProxyModel(m_proxyModel);
   }
 
 protected:
-    QVariantList getSignal(SignalType type, int start, int end)
-    {
-      return ProxyModelTest::getSignal(type, IndexFinder(), start, end);
-    }
+  virtual void testData()
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
 
-    void signalInsertion(const QString &name, int startRow, int rowsAffected, QList<QVariantList> signalList = QList<QVariantList>())
-    {
-      ProxyModelTest::signalInsertion(name, IndexFinder(), startRow, rowsAffected, m_rowCount, signalList);
-    }
+    CommandList commandList;
+    SignalList signalList;
+    PersistentChangeList persistentList;
+    IndexFinder indexFinder;
 
-    void signalMove(const QString &name, int startRow, int endRow, int destRow, QList<QVariantList> signalList = QList<QVariantList>())
-    {
-      ProxyModelTest::signalMove(name, IndexFinder(), startRow, endRow, IndexFinder(), destRow, signalList);
-    }
+    // This selection will not cause any signals to be emitted. Only inserting
+    // child indexes into it will.
+    QTest::newRow("insert01") << signalList << persistentList;
+    signalList.clear();
 
-    void signalRemoval(const QString &name, int startRow, int rowsAffected, QList<QVariantList> signalList = QList<QVariantList>())
-    {
-      ProxyModelTest::signalRemoval(name, IndexFinder(), startRow, rowsAffected, m_rowCount, signalList);
-    }
+    signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
+    signalList << getSignal(RowsInserted, indexFinder, 0, 9);
 
-    void signalDataChange(const QString &name, int startRow, int endRow, QList<QVariantList> signalList = QList<QVariantList>())
-    {
-      IndexFinder topLeftFinder(m_proxyModel, QList<int>() << startRow );
-      IndexFinder bottomRightFinder(m_proxyModel, QList<int>() << endRow );
-      ProxyModelTest::signalDataChange(name, topLeftFinder, bottomRightFinder, signalList);
-    }
+    QTest::newRow("insert02") << signalList << persistentList;
+    signalList.clear();
+
+    QTest::newRow("insert03") << signalList << persistentList;
+    signalList.clear();
+
+    QTest::newRow("insert04") << signalList << persistentList;
+    signalList.clear();
+
+    signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
+    signalList << getSignal(RowsInserted, indexFinder, 0, 9);
+
+    persistentList << getChange(indexFinder, 0, 9, 10);
+
+    QTest::newRow("insert05") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << getSignal(RowsAboutToBeInserted, indexFinder, 20, 29);
+    signalList << getSignal(RowsInserted, indexFinder, 20, 29);
+
+    QTest::newRow("insert06") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << getSignal(RowsAboutToBeInserted, indexFinder, 10, 19);
+    signalList << getSignal(RowsInserted, indexFinder, 10, 19);
+
+    persistentList << getChange(indexFinder, 10, 29, 10);
+
+    QTest::newRow("insert07") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    QTest::newRow("insert08") << signalList << persistentList;
+    QTest::newRow("insert09") << signalList << persistentList;
+
+    IndexFinder topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
+    IndexFinder bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
+
+    signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
+
+    QTest::newRow("change01") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 4 );
+    bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 7 );
+
+    signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
+
+    QTest::newRow("change02") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 0, 0 );
+    signalList << getSignal(RowsRemoved, indexFinder, 0, 0 );
+
+    // The removed indexes go invalid.
+    persistentList << getChange(indexFinder, 0, 0, -1, true);
+
+    // Rows after it will be moved up.
+    persistentList << getChange(indexFinder, 1, 39, -1 );
+
+    QTest::newRow("remove01") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 6, 6 );
+    signalList << getSignal(RowsRemoved, indexFinder, 6, 6 );
+
+    // The removed indexes go invalid.
+    persistentList << getChange(indexFinder, 6, 6, -1, true);
+
+    // Rows after it will be moved up.
+    persistentList << getChange(indexFinder, 7, 38, -1 );
+
+    QTest::newRow("remove02") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    QTest::newRow("remove03") << signalList << persistentList;
+    QTest::newRow("remove04") << signalList << persistentList;
+    QTest::newRow("remove05") << signalList << persistentList;
+    QTest::newRow("remove06") << signalList << persistentList;
+
+    signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 4, 4 );
+    signalList << getSignal(RowsRemoved, indexFinder, 4, 4 );
+
+    // The removed indexes go invalid.
+    persistentList << getChange(indexFinder, 4, 4, -1, true);
+
+    // Rows after it will be moved up.
+    persistentList << getChange(indexFinder, 5, 37, -1 );
+
+    QTest::newRow("remove07") << signalList << persistentList;
+
+  }
 
 private slots:
   void init()
   {
-    m_rowCount = 0;
-    ProxyModelTest::doInit();
-
-    QList<QVariantList> signalList;
-    QVariantList expected;
-    QList<PersistentIndexChange> persistentList;
-    IndexFinder indexFinder;
-
-    int startRow = 0;
-    int rowsInserted = 10;
-
-    QString currentTag = QTest::currentDataTag();
-    if ("insert01" == currentTag)
-    {
-      noSignal("insert01");
-      return;
-    }
-
-    QModelIndexList listOfOne = sourceModel()->match(sourceModel()->index(0, 0), Qt::DisplayRole, "1", 1, Qt::MatchExactly);
-
-    kDebug() << "listOfOne" << listOfOne;
-    QModelIndex idx = listOfOne.at(0);
-
-    m_selectionModel->select(idx, QItemSelectionModel::SelectCurrent);
-
-    // This selection will not cause any signals to be emitted. Only inserting
-    // child indexes into it will.
-
-    if ("insert02" == currentTag)
-    {
-      rowsInserted = 10;
-
-      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-      setExpected("insert02", signalList, persistentList);
-      return;
-    }
-    // The selected index got some child items.
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-
-    m_rowCount += 10;
-    rowsInserted = 10;
-
-    if ("insert03" == currentTag)
-    {
-      setExpected("insert03", signalList, persistentList);
-      return;
-    }
-
-    if ("insert04" == currentTag)
-    {
-      setExpected("insert04", signalList, persistentList);
-      return;
-    }
-
-    PersistentIndexChange change;
-
-    if ("insert05" == currentTag)
-    {
-      signalInsertion("insert05", startRow, rowsInserted, signalList);
-      return;
-    }
-    m_rowCount += 10;
-
-    // From here there are 20 items below the "1" item when it is selected.
-    signalList.clear();
-    startRow = 0;
-    rowsInserted = 20;
-    // The selected index got some child items.
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-    rowsInserted = 10;
-
-    startRow = 20;
-
-    if ("insert06" == currentTag)
-    {
-      signalInsertion("insert06", startRow, rowsInserted, signalList);
-      return;
-    }
-    m_rowCount += 10;
-
-    // From here there are 30 items below the "1" item when it is selected.
-    signalList.clear();
-    startRow = 0;
-    rowsInserted = 30;
-    // The selected index got some child items.
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-    rowsInserted = 10;
-
-    startRow = 10;
-    if ("insert07" == currentTag)
-    {
-      signalInsertion("insert07", startRow, rowsInserted, signalList);
-      return;
-    }
-    m_rowCount += 10;
-
-    // From here there are 40 items below the "1" item when it is selected.
-    signalList.clear();
-    startRow = 0;
-    rowsInserted = 40;
-    // The selected index got some child items.
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-    startRow = 0;
-    if ("insert08" == currentTag)
-    {
-      setExpected("insert08", signalList, persistentList);
-      return;
-    }
-
-    if ("insert09" == currentTag)
-    {
-      // insert09 inserts cihld items into items which are already in the model.
-      // That has no effect in this configuration.
-      setExpected("insert09", signalList, persistentList);
-      return;
-    }
-
-    IndexFinder topLeftFinder;
-    IndexFinder bottomRightFinder;
-    if ("change01" == currentTag)
-    {
-      topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
-      bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
-
-      signalDataChange("change01", 0, 0, signalList);
-      return;
-    }
-
-    if ("change02" == currentTag)
-    {
-      topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 4 );
-      bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 7 );
-
-      signalDataChange("change02", 4, 7, signalList);
-      return;
-    }
-
-    int rowsRemoved = 1;
-
-    if ("remove01" == currentTag)
-    {
-      startRow = 0;
-      signalRemoval("remove01", startRow, rowsRemoved, signalList);
-      return;
-    }
-    m_rowCount -= 1;
-
-    // From here there are 39 items below the "1" item when it is selected.
-    signalList.clear();
-    startRow = 0;
-    rowsInserted = 39;
-    // The selected index got some child items.
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-
-    if ("remove02" == currentTag)
-    {
-      startRow = 6;
-      signalRemoval("remove02", startRow, rowsRemoved, signalList);
-      return;
-    }
-    m_rowCount -= 1;
-
-    // From here there are 38 items below the "1" item when it is selected.
-    signalList.clear();
-    startRow = 0;
-    rowsInserted = 38;
-    // The selected index got some child items.
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-    QModelIndex nextIndex = sourceModel()->index(5, 0, idx);
-
-
-    m_selectionModel->select(nextIndex, QItemSelectionModel::SelectCurrent);
-
-    rowsRemoved = 38;
-    // Changing the selection causes some removes and inserts
-    signalList << getSignal(RowsAboutToBeRemoved, startRow, startRow + rowsRemoved - 1);
-    signalList << getSignal(RowsRemoved, startRow, startRow + rowsRemoved - 1);
-
-    m_rowCount = 0;
-    rowsInserted = 10;
-
-    if ("remove03" == currentTag)
-    {
-    signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-    signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-    rowsRemoved = 1;
-    m_rowCount = 10;
-
-      signalRemoval("remove03", startRow, rowsRemoved, signalList);
-      return;
-    }
-    m_rowCount = 10;
-    m_rowCount -= 1;
-
-    rowsRemoved = 1;
-    rowsInserted = 9;
-    if ("remove04" == currentTag)
-    {
-      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-      startRow = 8;
-      signalRemoval("remove04", startRow, rowsRemoved, signalList);
-      return;
-    }
-    m_rowCount -= 1;
-
-    rowsInserted = 8;
-    if ("remove05" == currentTag)
-    {
-      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-      startRow = 3;
-      signalRemoval("remove05", startRow, rowsRemoved, signalList);
-      return;
-    }
-    m_rowCount -= 1;
-
-    rowsInserted = 7;
-    if ("remove06" == currentTag)
-    {
-      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-      startRow = 0;
-      rowsRemoved = 7;
-      signalRemoval("remove06", startRow, rowsRemoved, signalList);
-
-      return;
-    }
-
-    // select an index whose descendant will be removed.
-    nextIndex = sourceModel()->index(4, 0, idx);
-    nextIndex = sourceModel()->index(5, 0, nextIndex);
-
-    m_selectionModel->select(nextIndex, QItemSelectionModel::SelectCurrent);
-
-    // Doesn't cause a remove signal to be emitted. The previous parent is now empty.
-
-    startRow = 0;
-    rowsInserted = 10;
-    if ("remove07" == currentTag)
-    {
-      signalList << getSignal(RowsAboutToBeInserted, startRow, startRow + rowsInserted - 1);
-      signalList << getSignal(RowsInserted, startRow, startRow + rowsInserted - 1);
-
-      rowsRemoved = 10;
-      signalRemoval("remove07", startRow, rowsRemoved, signalList);
-      return;
-    }
-
+    SelectionProxyModelTest::doInit();
   }
 
-private:
-  QItemSelectionModel *m_selectionModel;
-  KSelectionProxyModel *m_proxyModel;
-  int m_rowCount;
+  void initTestCase()
+  {
+    SelectionProxyModelTest::doInitTestCase();
+  }
+
+  void cleanupTestCase()
+  {
+    SelectionProxyModelTest::doCleanupTestCase();
+  }
+
 };
 
 
-QTEST_KDEMAIN(SelectionProxyModelTest, GUI)
-#include "kselectionproxymodeltest-onlyselectchildren.moc"
+QTEST_KDEMAIN(OnlySelectedChildrenTest, GUI)
+#include "kselectionproxymodeltest-onlyselectedchildren.moc"
 
