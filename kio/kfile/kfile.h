@@ -31,7 +31,7 @@
 class KIO_EXPORT KFile
 {
     Q_GADGET
-    Q_FLAGS(KFile::Modes)
+    Q_FLAGS(Modes)
 public:
     /**
      * Modes of operation for the dialog.
