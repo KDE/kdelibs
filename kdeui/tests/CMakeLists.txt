@@ -23,6 +23,7 @@ SET(proxyModelTestSources
   modelspy.cpp
   modelcommander.cpp
   modelselector.cpp
+  selectionproxymodeltest.cpp
 )
 
 MACRO(KDEUI_PROXYMODEL_TESTS)
