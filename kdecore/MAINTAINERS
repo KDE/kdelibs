@@ -63,10 +63,10 @@ kernel/
   kglobal.cpp                     Stephan Kulow <coolo@kde.org>
   kkernel_mac.cpp
   kkernel_win.cpp
-  kstandarddirs.cpp
-  kstandarddirs_unix.cpp
+  kstandarddirs.cpp               David Faure <faure@kde.org>
+  kstandarddirs_unix.cpp          David Faure <faure@kde.org>
   kstandarddirs_win.cpp
-  ktoolinvocation.cpp
+  ktoolinvocation.cpp             David Faure <faure@kde.org>
   ktoolinvocation_win.cpp
   ktoolinvocation_x11.cpp
 
@@ -114,7 +114,7 @@ network/                          Thiago Macieira <thiago@kde.org>
 network/kssld/
   kssld.cpp
 
-services/
+services/                         David Faure <faure@kde.org>
   kfoldermimetype.cpp
   kmimemagicrule.cpp
   kmimetype.cpp
@@ -147,12 +147,12 @@ sonnet/
 
 sycoca/
   kmemfile.cpp
-  kprotocolinfo.cpp
+  kprotocolinfo.cpp               David Faure <faure@kde.org>
   kprotocolinfofactory.cpp        David Faure <faure@kde.org>
-  ksycoca.cpp
-  ksycocadict.cpp
-  ksycocaentry.cpp
-  ksycocafactory.cpp
+  ksycoca.cpp                     David Faure <faure@kde.org>
+  ksycocadict.cpp                 David Faure <faure@kde.org>
+  ksycocaentry.cpp                David Faure <faure@kde.org>
+  ksycocafactory.cpp              David Faure <faure@kde.org>
 
 text/
   kascii.cpp
@@ -211,9 +211,5 @@ ksock.cpp                       Thiago Macieira <thiago@kde.org>
 ksockaddr.cpp                   Thiago Macieira <thiago@kde.org>
 kstaticdeleter.cpp              Stephan Kulow <coolo@kde.org>
 kstdaccel.cpp                   Ellis Whitehead <ellis@kde.org>
-ksycoca.cpp                     David Faure <faure@kde.org>
-ksycocadict.cpp                 David Faure <faure@kde.org>
-ksycocafactory.cpp              David Faure <faure@kde.org>
-kurldrag.cpp                    David Faure <faure@kde.org>
 kuser.cpp                       Tim Jansen <tim@tjansen.de> (copyright)
 libintl.cpp                     Hans Petter Bieker <bieker@kde.org>
