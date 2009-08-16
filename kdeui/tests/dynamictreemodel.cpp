@@ -17,6 +17,7 @@
     02110-1301, USA.
 */
 
+
 #include "dynamictreemodel.h"
 
 #include <QHash>
@@ -37,7 +38,6 @@ QModelIndex DynamicTreeModel::index(int row, int column, const QModelIndex &pare
 {
 //   if (column != 0)
 //     return QModelIndex();
-
 
   if ( column < 0 || row < 0 )
     return QModelIndex();
@@ -198,6 +198,101 @@ void ModelInsertCommand::doCommand()
   m_model->endInsertRows();
 }
 
+
+ModelInsertAndRemoveQueuedCommand::ModelInsertAndRemoveQueuedCommand(DynamicTreeModel* model, QObject* parent)
+    : ModelChangeCommand(model, parent)
+{
+  qRegisterMetaType<QModelIndex>("QModelIndex");
+}
+
+void ModelInsertAndRemoveQueuedCommand::queuedBeginInsertRows(const QModelIndex& parent, int start, int end)
+{
+  m_model->beginInsertRows(parent, start, end);
+}
+
+void ModelInsertAndRemoveQueuedCommand::queuedEndInsertRows()
+{
+  m_model->endInsertRows();
+}
+
+void ModelInsertAndRemoveQueuedCommand::queuedBeginRemoveRows(const QModelIndex& parent, int start, int end)
+{
+  m_model->beginRemoveRows(parent, start, end);
+}
+
+void ModelInsertAndRemoveQueuedCommand::queuedEndRemoveRows()
+{
+  m_model->endRemoveRows();
+}
+
+void ModelInsertAndRemoveQueuedCommand::purgeItem(qint64 parent)
+{
+  QList<QList<qint64> > childItemRows = m_model->m_childItems.value(parent);
+
+  if (childItemRows.size() > 0)
+  {
+    for (int col = 0; col < m_numCols; col++)
+    {
+      QList<qint64> childItems = childItemRows[col];
+      foreach(qint64 item, childItems)
+      {
+        purgeItem(item);
+        m_model->m_childItems[parent][col].removeOne(item);
+      }
+    }
+  }
+  m_model->m_items.remove(parent);
+}
+
+void ModelInsertAndRemoveQueuedCommand::doCommand()
+{
+  QModelIndex parent = findIndex(m_rowNumbers);
+
+  connect (this, SIGNAL(beginInsertRows(const QModelIndex &, int, int)), SLOT(queuedBeginInsertRows(const QModelIndex &, int, int)), Qt::QueuedConnection);
+  connect (this, SIGNAL(endInsertRows()), SLOT(queuedEndInsertRows()), Qt::QueuedConnection);
+  connect (this, SIGNAL(beginRemoveRows(const QModelIndex &, int, int)), SLOT(queuedBeginRemoveRows(const QModelIndex &, int, int)), Qt::QueuedConnection);
+  connect (this, SIGNAL(endRemoveRows()), SLOT(queuedEndRemoveRows()), Qt::QueuedConnection);
+
+  emit beginInsertRows(parent, m_startRow, m_endRow);
+//   m_model->beginInsertRows(parent, m_startRow, m_endRow);
+  qint64 parentId = parent.internalId();
+  for (int row = m_startRow; row <= m_endRow; row++)
+  {
+    for(int col = 0; col < m_numCols; col++ )
+    {
+      if (m_model->m_childItems[parentId].size() <= col)
+      {
+        m_model->m_childItems[parentId].append(QList<qint64>());
+      }
+      qint64 id = m_model->newId();
+      QString name = QString::number(id);
+
+      m_model->m_items.insert(id, name);
+      m_model->m_childItems[parentId][col].insert(row, id);
+
+    }
+  }
+
+  emit endInsertRows();
+//   m_model->endInsertRows();
+
+  emit beginRemoveRows(parent, m_startRow, m_endRow);
+//   m_model->beginRemoveRows(parent, m_startRow, m_endRow);
+  for(int col = 0; col < m_numCols; col++ )
+  {
+    QList<qint64> childItems = m_model->m_childItems.value(parentId).value(col);
+    for (int row = m_startRow; row <= m_endRow; row++)
+    {
+      qint64 item = childItems[row];
+      purgeItem(item);
+      m_model->m_childItems[parentId][col].removeOne(item);
+    }
+  }
+  emit endRemoveRows();
+//   m_model->endRemoveRows();
+
+}
+
 ModelInsertWithDescendantsCommand::ModelInsertWithDescendantsCommand(DynamicTreeModel *model, QObject *parent)
     : ModelInsertCommand(model, parent)
 {
@@ -340,7 +435,7 @@ void ModelMoveCommand::doCommand()
 //   {
 //     return;
 //   }
-  
+
   for (int column = 0; column < m_numCols; ++column)
   {
     QList<qint64> l = m_model->m_childItems.value(srcParent.internalId())[column].mid(m_startRow, m_endRow - m_startRow + 1 );

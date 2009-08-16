@@ -78,6 +78,7 @@ private:
   friend class ModelMoveLayoutChangeCommand;
 //   friend class ModelSortIndexCommand;
   friend class ModelSortIndexLayoutChangeCommand;
+  friend class ModelInsertAndRemoveQueuedCommand;
 
 };
 
@@ -124,6 +125,33 @@ public:
   virtual ~ModelInsertCommand() {}
 
   virtual void doCommand();
+};
+
+class ModelInsertAndRemoveQueuedCommand : public ModelChangeCommand
+{
+  Q_OBJECT
+
+public:
+
+  ModelInsertAndRemoveQueuedCommand(DynamicTreeModel *model, QObject *parent = 0 );
+  virtual ~ModelInsertAndRemoveQueuedCommand() {}
+
+  virtual void doCommand();
+
+signals:
+  void beginInsertRows(const QModelIndex &parent, int start, int end);
+  void endInsertRows();
+  void beginRemoveRows(const QModelIndex &parent, int start, int end);
+  void endRemoveRows();
+
+protected slots:
+  void queuedBeginInsertRows(const QModelIndex &parent, int start, int end);
+  void queuedEndInsertRows();
+  void queuedBeginRemoveRows(const QModelIndex &parent, int start, int end);
+  void queuedEndRemoveRows();
+
+protected:
+  void purgeItem(qint64 parent);
 };
 
 class ModelInsertWithDescendantsCommand : public ModelInsertCommand
