@@ -363,7 +363,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
     int tprop = w->metaObject()->indexOfProperty("text");
     if (tprop != -1)  {
         QMetaProperty p = w->metaObject()->property( tprop );
-        if ( p.isValid() )
+        if ( p.isValid() && p.isWritable() )
             variant = p.read (w);
         else
             tprop = -1;
@@ -373,7 +373,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
         tprop = w->metaObject()->indexOfProperty("title");
         if (tprop != -1)  {
             QMetaProperty p = w->metaObject()->property( tprop );
-            if ( p.isValid() )
+            if ( p.isValid() && p.isWritable() )
                 variant = p.read (w);
         }
     }
