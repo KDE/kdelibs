@@ -186,7 +186,7 @@ public:
             return s_startDir;
         }
         static KUrl s_startDir;
-        static bool s_allowNative;  // as fallback when we can't use natie dialog
+        static bool s_allowNative;  // as fallback when we can't use native dialog
         QString filter;
         QStringList mimeTypes;
         KUrl::List selectedUrls;
