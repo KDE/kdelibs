@@ -27,8 +27,6 @@
 
 #include "dynamictreemodel.h"
 
-#include "proxymodeltestapp/modeltest.h"
-
 class ModelQueuedConnectionsTest : public QObject
 {
   Q_OBJECT
