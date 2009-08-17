@@ -1458,7 +1458,7 @@ static QString parseAttribute( const QDomElement &e)
         else if ( str=="false" )
             option+="NI ";
         else
-            kDebug()<<" Error in parsing inlibe attribute :"<<str;
+            kDebug()<<" Error in parsing inline attribute :"<<str;
     }
     if ( e.hasAttribute( "inline_limit" ) )
     {
