@@ -98,7 +98,7 @@
      - append: this is used to control the placement of the action during the
                merging with ui_standards.rc. This is mapped to MergeLocal tags there.
                Note that this feature is currently only available for the mainwindow, not for parts/plugins.
-     - text, whatsThis, toolTip, shortText, shortcut, icon: all those are mapped
+     - text, whatsThis, toolTip, iconText, shortcut, icon: all those are mapped
        to KAction properties.
  -->
 <!ELEMENT Action EMPTY>
@@ -111,7 +111,7 @@
   text CDATA #IMPLIED
   whatsThis CDATA #IMPLIED
   toolTip CDATA #IMPLIED
-  shortText CDATA #IMPLIED
+  iconText CDATA #IMPLIED
   shortcut CDATA #IMPLIED
   icon CDATA #IMPLIED
 >

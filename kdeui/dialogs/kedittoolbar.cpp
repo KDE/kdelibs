@@ -1077,7 +1077,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
       {
         // we have a match!
         ToolBarItem *act = new ToolBarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
-        act->setText(nameFilter.subs(KGlobal::locale()->removeAcceleratorMarker(action->text())).toString());
+        act->setText(nameFilter.subs(KGlobal::locale()->removeAcceleratorMarker(action->iconText())).toString());
         act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
 
         active_list.insert(action->objectName());

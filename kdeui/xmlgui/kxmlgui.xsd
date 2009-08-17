@@ -147,7 +147,7 @@
                     the merging with ui_standards.rc. This is mapped to MergeLocal tags
                     there.  Note that this feature is currently only available for the
                     mainwindow, not for parts/plugins.  
-                    - text, whatsThis, toolTip, shortText, shortcut, icon: all those are
+                    - text, whatsThis, toolTip, iconText, shortcut, icon: all those are
                     mapped to KAction properties.
                     
                     
@@ -160,7 +160,7 @@
             <xsd:attribute name="text" type="xsd:string" use="optional"/>
             <xsd:attribute name="whatsThis" type="xsd:string" use="optional"/>
             <xsd:attribute name="toolTip" type="xsd:string" use="optional"/>
-            <xsd:attribute name="shortText" type="xsd:string" use="optional"/>
+            <xsd:attribute name="iconText" type="xsd:string" use="optional"/>
             <xsd:attribute name="shortcut" type="xsd:string" use="optional">
                 <!-- TODO: Restrict the possible values with enumeration, or regexp -->
             </xsd:attribute>
