@@ -320,7 +320,7 @@ Q_SIGNALS:
     void hostFound();
     void proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
     // only for raw socket state, SSL is separate
-    void stateChanged(State);
+    void stateChanged(KTcpSocket::State);
 
     //from QSslSocket
     void encrypted();
