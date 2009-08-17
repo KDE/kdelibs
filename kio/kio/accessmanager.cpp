@@ -30,7 +30,7 @@
 
 #include <kdebug.h>
 #include <kio/job.h>
-#include <KDE/KIO/Scheduler>
+#include <kio/scheduler.h>
 
 namespace KIO {
 
