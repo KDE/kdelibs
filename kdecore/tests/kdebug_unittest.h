@@ -34,6 +34,7 @@ private Q_SLOTS:
     void testDebugToFile();
     void testDisableArea();
     void testDynamicArea();
+    void testDisabledDynamicArea();
     void testMultipleThreads();
 
 private:

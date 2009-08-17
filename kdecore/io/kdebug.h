@@ -254,6 +254,8 @@ public:
      * @since 4.4
      * Register a debug area dynamically.
      * @param areaName the name of the area
+     * @param enabled whether debug output should be enabled by default
+     * (users can override this in kdebugdialog or with DisableAll=true in kdebugrc)
      * @return the area code that was allocated for this area
      *
      * Typical usage:
@@ -270,7 +272,7 @@ public:
      * declare it in one file without static, and use "extern int debugArea();"
      * in other files (with a better name for the function of course).
      */
-    static KDECORE_EXPORT int registerArea(const QByteArray& areaName);
+    static KDECORE_EXPORT int registerArea(const QByteArray& areaName, bool enabled = true);
 };
 
 

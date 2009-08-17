@@ -160,6 +160,16 @@ void KDebugTest::testDynamicArea()
     compareLines(expected, "myarea.dbg");
 }
 
+void KDebugTest::testDisabledDynamicArea()
+{
+    const int verboseArea = KDebug::registerArea("verbosearea", false);
+    QVERIFY(verboseArea > 0);
+    kClearDebugConfig(); // force a sync() of KDebug's own kdebugrc so that it gets written out
+    KConfig config("kdebugrc");
+    QVERIFY(config.hasGroup("verbosearea"));
+    kDebug(verboseArea) << "TEST DEBUG using verboseArea" << verboseArea;
+}
+
 #include <QThreadPool>
 #include <qtconcurrentrun.h>
 

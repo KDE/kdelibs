@@ -401,7 +401,7 @@ struct KDebugPrivate
             static bool s_firstDebugFromApplication = true;
             if (s_firstDebugFromApplication) {
                 s_firstDebugFromApplication = false;
-                writeGroupForNamedArea(it->name);
+                writeGroupForNamedArea(it->name, true);
             }
         }
 
@@ -614,7 +614,7 @@ struct KDebugPrivate
         return printHeader(s, areaName, debugFile, line, funcinfo, type, colored);
     }
 
-    void writeGroupForNamedArea(const QByteArray& areaName)
+    void writeGroupForNamedArea(const QByteArray& areaName, bool enabled)
     {
         // Ensure that this area name appears in kdebugrc, so that users (via kdebugdialog)
         // can turn it off.
@@ -623,7 +623,7 @@ struct KDebugPrivate
             KConfigGroup cg(cfgObj, QString::fromUtf8(areaName));
             const QString key = QString::fromLatin1("InfoOutput");
             if (!cg.hasKey(key)) {
-                cg.writeEntry(key, int(KDebugPrivate::QtOutput));
+                cg.writeEntry(key, int(enabled ? KDebugPrivate::QtOutput : KDebugPrivate::NoOutput));
             }
         }
     }
@@ -770,7 +770,7 @@ bool KDebug::hasNullOutput(QtMsgType type, bool condition, int area)
     return KDebug::hasNullOutput(type, area);
 }
 
-int KDebug::registerArea(const QByteArray& areaName)
+int KDebug::registerArea(const QByteArray& areaName, bool enabled)
 {
     // TODO for optimization: static int s_lastAreaNumber = 1;
     KDebugPrivate* d = kDebug_data;
@@ -782,7 +782,7 @@ int KDebug::registerArea(const QByteArray& areaName)
     KDebugPrivate::Area areaData;
     areaData.name = areaName;
     d->cache.insert(areaNumber, areaData);
-    d->writeGroupForNamedArea(areaName);
+    d->writeGroupForNamedArea(areaName, enabled);
     return areaNumber;
 }
 
