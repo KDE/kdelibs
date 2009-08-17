@@ -418,6 +418,12 @@ void KDirModelTest::testRenameFile()
     // check renaming happened
     QCOMPARE( m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), newUrl.url() );
 
+    // check that KDirLister::cachedItemForUrl won't give a bad name if copying that item (#195385)
+    KFileItem cachedItem = KDirLister::cachedItemForUrl(newUrl);
+    Q_ASSERT(!cachedItem.isNull());
+    QCOMPARE(cachedItem.name(), QString("toplevelfile_2_renamed"));
+    QCOMPARE(cachedItem.entry().stringValue(KIO::UDSEntry::UDS_NAME), QString("toplevelfile_2_renamed"));
+
     // Put things back to normal
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
     ok = job->exec();

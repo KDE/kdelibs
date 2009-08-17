@@ -35,6 +35,7 @@ private Q_SLOTS:
     void testHiddenFile();
     void testMimeTypeOnDemand();
     void testCmp();
+    void testRename();
 
     void testDecodeFileName_data();
     void testDecodeFileName();

@@ -241,6 +241,21 @@ void KFileItemTest::testCmp()
     QVERIFY(fileItem.cmp(fileItem2));
 }
 
+void KFileItemTest::testRename()
+{
+    KIO::UDSEntry entry;
+    const QString origName = QString::fromLatin1("foo");
+    entry.insert(KIO::UDSEntry::UDS_NAME, origName);
+    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+    KFileItem fileItem(entry, KUrl("/dir/foo"));
+    QCOMPARE(fileItem.name(), origName);
+    QCOMPARE(fileItem.text(), origName);
+    const QString newName = QString::fromLatin1("FiNeX_rocks");
+    fileItem.setName(newName);
+    QCOMPARE(fileItem.name(), newName);
+    QCOMPARE(fileItem.text(), newName);
+    QCOMPARE(fileItem.entry().stringValue(KIO::UDSEntry::UDS_NAME), newName); // #195385
+}
 
 void KFileItemTest::testDecodeFileName_data()
 {
