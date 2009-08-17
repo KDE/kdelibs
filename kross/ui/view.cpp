@@ -220,8 +220,7 @@ void ActionCollectionEditor::initGui()
         //const QString defaultmime = info ? info->mimeTypes().join(" ").trimmed() : QString();
         d->fileedit->fileDialog()->setMimeFilter(mimetypes /*, defaultmime*/);
         d->fileedit->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
-        //d->fileedit->setUrl( d->action->file() );
-        d->fileedit->setPath( d->action->file() );
+        d->fileedit->setUrl(KUrl(d->action->file()) );
         gridlayout->addWidget(d->fileedit, 5, 1);
     }
     else {
