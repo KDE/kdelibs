@@ -188,11 +188,18 @@ void KDebugTest::testMultipleThreads()
         f.waitForFinished();
 
     QVERIFY(QFile::exists("kdebug.dbg"));
-    // All we can check is that the lines are whole
+
+    // We have no guarantee that the debug lines are issued one after the other.
+    // The \n comes from the destruction of the temp kDebug, and that's not mutexed,
+    // so we can get msg1 + msg2 + \n + \n.
+    // So this test is basically only good for running in helgrind.
+#if 0
+    // Check that the lines are whole
     QList<QByteArray> lines = readLines();
     Q_FOREACH(const QByteArray& line, lines) {
         //qDebug() << line;
         QCOMPARE(line.count("doDebugs: A kdebug statement in a thread:"), 1);
         QCOMPARE(line.count('\n'), 1);
     }
+#endif
 }
