@@ -45,7 +45,9 @@ public:
     bool draggingState() const { return state() == DraggingState; }
 };
 
-
+// Debug output is disabled by default, use kdebugdialog to enable it
+static int animationDebugArea() { static int s_area = KDebug::registerArea("kio (delegateanimationhandler)", false);
+                                  return s_area; }
 
 // ---------------------------------------------------------------------------
 
@@ -181,7 +183,7 @@ void DelegateAnimationHandler::sequenceTimerTimeout()
     KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
     if (dirModel)
     {
-        kDebug(7000) << "requesting" << currentSequenceIndex;
+        kDebug(animationDebugArea()) << "requesting" << currentSequenceIndex;
         dirModel->requestSequenceIcon(index, currentSequenceIndex);
         iconSequenceTimer.start(); // Some upper-bound interval is needed, in case items are not generated
     }
@@ -191,7 +193,7 @@ void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index)
 {
     Q_UNUSED(index);
 
-    kDebug(7000) << currentSequenceIndex;
+    kDebug(animationDebugArea()) << currentSequenceIndex;
     if (sequenceModelIndex.isValid() && currentSequenceIndex)
         iconSequenceTimer.start();
 //   if(index ==sequenceModelIndex) //Leads to problems
@@ -200,7 +202,7 @@ void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index)
 
 void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex)
 {
-    kDebug(7000) << sequenceIndex;
+    kDebug(animationDebugArea()) << sequenceIndex;
 
     if (sequenceIndex > 0)
     {
