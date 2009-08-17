@@ -218,7 +218,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         QMapIterator<QString,QString> it (job->metaData());
         while (it.hasNext()) {
            it.next();
-           if (it.key().toLower().startsWith(QLatin1String("ssl_"), Qt::CaseInsensitive))
+           if (it.key().startsWith(QLatin1String("ssl_"), Qt::CaseInsensitive))
              d->m_args.metaData().insert(it.key(), it.value());
         }
 
