@@ -367,7 +367,7 @@ void KMainWindowPrivate::polish(KMainWindow *q)
     // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
     const int len = pathname.length();
     for ( int i = 0; i < len; ++i ) {
-        if ( !pathname[i].isLetterOrNumber() )
+        if ( !( pathname[i].isLetter() || pathname[i].isDigit() ) )
             pathname[i] = QLatin1Char('_');
     }
     pathname = '/' + qApp->applicationName() + '/' + pathname;
