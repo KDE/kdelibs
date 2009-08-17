@@ -318,6 +318,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                                     "WarnOnLeaveSSLMode");
 
             if (result == KMessageBox::Cancel) {
+                error(ERR_USER_CANCELED, host);
                 return false;
             }
         }
