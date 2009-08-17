@@ -48,6 +48,7 @@
 #include <ktoolbar.h>
 #include <kdeversion.h>
 #include <kcombobox.h>
+#include <kinputdialog.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -313,6 +314,7 @@ public:
     void selectActiveItem(const QString&);
     
     void slotChangeIcon();
+    void slotChangeIconText();
 
     void slotProcessExited();
 
@@ -414,6 +416,7 @@ public:
     KSeparator *m_comboSeparator;
     QLabel * m_helpArea;
     KPushButton* m_changeIcon;
+    KPushButton* m_changeIconText;
     KProcess* m_kdialogProcess;
     bool m_isPart : 1;
     bool m_hasKDialog : 1;
@@ -887,6 +890,14 @@ void KEditToolBarWidgetPrivate::setupLayout()
   QObject::connect( m_changeIcon, SIGNAL( clicked() ),
                     m_widget, SLOT( slotChangeIcon() ) );
 
+  // "change icon text" button
+  m_changeIconText = new KPushButton(i18n( "Change Te&xt..." ), m_widget);
+  m_changeIconText->setIcon(KIcon("edit-rename"));
+  m_changeIconText->setEnabled(m_activeList->currentItem() != 0);
+
+  QObject::connect( m_changeIconText, SIGNAL( clicked() ),
+                    m_widget, SLOT( slotChangeIconText() ) );
+
   // The buttons in the middle
 
   m_upAction     = new QToolButton(m_widget);
@@ -949,9 +960,9 @@ void KEditToolBarWidgetPrivate::setupLayout()
   active_layout->addWidget(m_activeList, 1);
   active_layout->addLayout(changeIcon_layout);
 
-  changeIcon_layout->addStretch( 1 );
   changeIcon_layout->addWidget(m_changeIcon);
   changeIcon_layout->addStretch( 1 );
+  changeIcon_layout->addWidget(m_changeIconText);
 
   list_layout->addLayout(inactive_layout);
   list_layout->addLayout(button_layout);
@@ -1183,6 +1194,9 @@ void KEditToolBarWidgetPrivate::slotActiveSelectionChanged()
   m_changeIcon->setEnabled( toolitem &&
                             m_hasKDialog &&
                             toolitem->internalTag() == "Action" );
+
+  m_changeIconText->setEnabled( toolitem &&
+                                toolitem->internalTag() == "Action" );
 
   if (toolitem)
   {
@@ -1466,6 +1480,38 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
 
   QObject::connect( m_kdialogProcess, SIGNAL( finished( int, QProcess::ExitStatus ) ),
                     m_widget, SLOT( slotProcessExited() ) );
+}
+
+void KEditToolBarWidgetPrivate::slotChangeIconText()
+{
+  m_currentXmlData->dump();
+  ToolBarItem *item = m_activeList->currentItem();
+
+  if(item){
+    QString iconText = item->text();
+
+    bool ok = false;
+    iconText = KInputDialog::getText(i18n("Change Text"), i18n("Icon Te&xt:"), iconText, &ok, m_widget);
+
+    if (!ok || iconText == item->text())
+      return;
+
+    item->setText(iconText);
+
+    Q_ASSERT( m_currentXmlData->type() != XmlData::Merged );
+
+    m_currentXmlData->m_isModified = true;
+
+    // Get hold of ActionProperties tag
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( m_currentXmlData->domDocument() );
+    // Find or create an element for this action
+    QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
+    Q_ASSERT( !act_elem.isNull() );
+    act_elem.setAttribute( "iconText", iconText );
+
+    // we're modified, so let this change
+    emit m_widget->enableOk(true);
+  }
 }
 
 void KEditToolBarWidgetPrivate::slotProcessExited()
