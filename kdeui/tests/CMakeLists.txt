@@ -62,6 +62,7 @@ KDEUI_UNIT_TESTS(
   kiconloader_unittest
   ktabwidget_unittest
   ktoolbar_unittest
+  krichtextedittest
 )
 
 KDEUI_PROXYMODEL_TESTS(
