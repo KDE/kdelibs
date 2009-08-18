@@ -25,7 +25,7 @@
 class Power : public KUnitConversion::UnitCategory
 {
 public:
-    Power(QObject* parent = 0);
+    explicit Power(QObject* parent = 0);
 };
 
 #endif

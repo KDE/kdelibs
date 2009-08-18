@@ -25,7 +25,7 @@
 class Area : public KUnitConversion::UnitCategory
 {
 public:
-    Area(QObject* parent = 0);
+    explicit Area(QObject* parent = 0);
 };
 
 #endif

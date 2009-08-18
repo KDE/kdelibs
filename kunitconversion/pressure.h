@@ -25,7 +25,7 @@
 class Pressure : public KUnitConversion::UnitCategory
 {
 public:
-    Pressure(QObject* parent = 0);
+    explicit Pressure(QObject* parent = 0);
 };
 
 #endif

@@ -26,7 +26,7 @@
 class Density : public KUnitConversion::UnitCategory
 {
 public:
-    Density(QObject* parent = 0);
+    explicit Density(QObject* parent = 0);
 };
 
 #endif

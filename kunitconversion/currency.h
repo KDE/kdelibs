@@ -25,7 +25,7 @@
 class Currency : public KUnitConversion::UnitCategory
 {
 public:
-    Currency(QObject* parent = 0);
+    explicit Currency(QObject* parent = 0);
     virtual KUnitConversion::Value convert(const KUnitConversion::Value& value,
                                            KUnitConversion::UnitPtr to);
 
