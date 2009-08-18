@@ -226,6 +226,11 @@ struct KDebugPrivate
         if (kde_kdebug_enable_dbus_interface) {
             kDebugDBusIface = new KDebugDBusIface;
         }
+
+        for (int i = 0; i < 8; i++) {
+            m_nullOutputYesNoCache[i] = -1;
+        }
+
     }
 
     ~KDebugPrivate()
