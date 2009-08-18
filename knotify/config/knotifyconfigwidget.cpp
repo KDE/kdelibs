@@ -105,6 +105,7 @@ KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QS
 {
 	KDialog *dialog=new KDialog(parent);
 	dialog->setCaption(i18n("Configure Notifications"));
+        dialog->showButtonSeparator(true);
 	KNotifyConfigWidget *w=new KNotifyConfigWidget(dialog);
 	dialog->setMainWidget(w);
 	

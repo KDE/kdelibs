@@ -181,6 +181,12 @@ void KNotifyEventList::updateCurrentItem()
 		it->update();
 }
 
+QSize KNotifyEventList::sizeHint() const
+{
+    int fontSize = fontMetrics().height();
+    return QSize(48 * fontSize, 12 * fontSize);
+}
+
 
 KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString & eventName,
 				const QString & name, const QString & description , KConfig *config)
