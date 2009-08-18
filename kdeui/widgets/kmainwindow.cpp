@@ -306,6 +306,15 @@ static bool endsWithHashNumber( const QString& s )
     return false;
 }
 
+static inline bool isValidDBusObjectPathCharacter(const QChar &c)
+{
+    register ushort u = c.unicode();
+    return (u >= 'a' && u <= 'z')
+            || (u >= 'A' && u <= 'Z')
+            || (u >= '0' && u <= '9')
+            || (u == '_') || (u == '/');
+}
+
 void KMainWindowPrivate::polish(KMainWindow *q)
 {
     // Set a unique object name. Required by session management, window management, and for the dbus interface.
@@ -363,16 +372,14 @@ void KMainWindowPrivate::polish(KMainWindow *q)
     q->winId(); // workaround for setWindowRole() crashing, and set also window role, just in case TT
     q->setWindowRole( s ); // will keep insisting that object name suddenly should not be used for window role
 
-    QString pathname = q->objectName();
+    dbusName = '/' + qApp->applicationName() + '/' + q->objectName();
     // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
-    const int len = pathname.length();
+    const int len = dbusName.length();
     for ( int i = 0; i < len; ++i ) {
-        if ( !( pathname[i].isLetter() || pathname[i].isDigit() ) )
-            pathname[i] = QLatin1Char('_');
+        if ( !isValidDBusObjectPathCharacter( dbusName[i] ) )
+            dbusName[i] = QLatin1Char('_');
     }
-    pathname = '/' + qApp->applicationName() + '/' + pathname;
 
-    dbusName = pathname;
     QDBusConnection::sessionBus().registerObject(dbusName, q, QDBusConnection::ExportScriptableSlots |
                                        QDBusConnection::ExportScriptableProperties |
                                        QDBusConnection::ExportNonScriptableSlots |
