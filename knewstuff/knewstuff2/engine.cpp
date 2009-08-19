@@ -385,6 +385,7 @@ void EnginePrivate::slotProvidersFinished()
     connect(this, SIGNAL(signalEntryFailed()), SLOT(stopLoop()));
 
     uploadEntry(provider, entry);
+    m_uploadedEntry=entry;
 }
 
 void EnginePrivate::slotEntryChanged(KNS::Entry * entry)

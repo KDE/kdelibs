@@ -147,7 +147,7 @@ void UploadDialog::slotOk()
 
     KTranslatable previewurl;
     KUrl purl = mPreviewUrl->url();
-    purl.setFileName(QString());
+    //purl.setFileName(QString());
     // FIXME: what does this do?
     previewurl.addString(language, purl.url());
 

@@ -354,7 +354,7 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
     }
 
     // FIXME: validate files etc.
-
+    m_uploadprovider = provider;
     m_uploadedentry = entry;
 
     KUrl sourcepayload = KUrl(entry->payload().representation());
@@ -490,7 +490,7 @@ void CoreEngine::slotUploadPayloadResult(KJob *job)
         return;
     }
 
-    if (m_uploadedentry->preview().isEmpty()) {
+    if (m_uploadedentry->preview().representation().isEmpty()) {
         // FIXME: we abuse 'job' here for the shortcut if there's no preview
         slotUploadPreviewResult(job);
         return;
@@ -498,6 +498,8 @@ void CoreEngine::slotUploadPayloadResult(KJob *job)
 
     KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
     KUrl destfolder = m_uploadprovider->uploadUrl();
+
+    destfolder.setFileName(sourcepreview.fileName());
 
     KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
     connect(fcjob,
@@ -524,6 +526,8 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
     // FIXME: adhere to meta naming rules as discussed
     KUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
     KUrl destfolder = m_uploadprovider->uploadUrl();
+
+    destfolder.setFileName(sourcemeta.fileName());
 
     EntryHandler eh(*m_uploadedentry);
     QDomElement exml = eh.entryXML();
