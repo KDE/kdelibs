@@ -24,14 +24,15 @@
 
 #include "Parser.h"
 #include <config.h>
-#ifdef KJS_VERBOSE
-#include <stdio.h>
-#endif
 
 #include "lexer.h"
 #include "nodes.h"
 #include <wtf/HashSet.h>
 #include <wtf/Vector.h>
+
+#ifdef KJS_VERBOSE
+#include <stdio.h>
+#endif
 
 extern int kjsyyparse();
 
