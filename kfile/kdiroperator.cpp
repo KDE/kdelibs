@@ -1056,7 +1056,7 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
-        newurl.setPath(newurl.directory());
+        newurl.setPath(newurl.directory(KUrl::ObeyTrailingSlash));
         if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
             return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
