@@ -327,7 +327,7 @@ public:
     // where new data can be appended. after openarchive it points to 0, when in
     // writeonly mode, or it points to the beginning of the central directory.
     // each call to writefile updates this value.
-    unsigned int            m_offset;
+    quint64                 m_offset;
 };
 
 KZip::KZip( const QString& fileName )
@@ -361,7 +361,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
     // Check that it's a valid ZIP file
     // KArchive::open() opened the underlying device already.
 
-    uint offset = 0; // holds offset, where we read
+    quint64 offset = 0; // holds offset, where we read
     int n;
 
     // contains information gathered from the local file headers
