@@ -471,7 +471,39 @@ public:
      *
      * @return The date as a string
      */
-    virtual QString formatDate( const QDate &date, KLocale::DateFormat format = KLocale::LongDate ) const;
+    virtual QString formatDate( const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate ) const;  //KDE5 Remove? Use KLocale?
+
+    /**
+     * Returns a string formatted to the given format
+     *
+     * Only use in situations where you specifically don't want to use the
+     * the current locale's default format
+     *
+     * The format of the date is a string which contains variables that will
+     * be replaced:
+     * @li %Y with the whole year (e.g. "1984" for "1984")
+     * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
+     * @li %n with the month (January="1", December="12")
+     * @li %m with the month with two digits (January="01", December="12")
+     * @li %e with the day of the month (e.g. "1" on the first of march)
+     * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
+     * @li %b with the short form of the month (e.g. "Jan" for January)
+     * @li %B with the long form of the month (e.g. "January")
+     * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
+     * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
+     *
+     * Everything else in the format string will be taken as is.
+     * For example, March 20th 1989 with the format "%y:%m:%d" results
+     * in "89:03:20".
+     *
+     * @see KLocale::formatDate
+     *
+     * @param date the date to be formatted
+     * @param format the date format to use
+     *
+     * @return The date as a string
+     */
+    QString formatDate( const QDate &fromDate, const QString &toFormat ) const;  //KDE5 Make virtual
 
     /**
      * Converts a localized date string to a QDate.
