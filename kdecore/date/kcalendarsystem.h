@@ -474,6 +474,8 @@ public:
     virtual QString formatDate( const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate ) const;  //KDE5 Remove? Use KLocale?
 
     /**
+     * @since 4.4
+     *
      * Returns a string formatted to the given format
      *
      * Only use in situations where you specifically don't want to use the
