@@ -459,8 +459,8 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 }
 
                 // Skip contents + align bytes
-                int rest = size % 0x200;
-                int skip = size + (rest ? 0x200 - rest : 0);
+                qint64 rest = size % 0x200;
+                qint64 skip = size + (rest ? 0x200 - rest : 0);
                 //kDebug(7041) << "pos()=" << dev->pos() << "rest=" << rest << "skipping" << skip;
                 if (! dev->seek( dev->pos() + skip ) )
                     kWarning(7041) << "skipping" << skip << "failed";
