@@ -39,6 +39,7 @@ private Q_SLOTS:
     void testHiddenToolBar();
     void testDeletedContainers();
     void testAutoSaveSettings();
+    void testXMLFileReplacement();
 };
 
 #endif

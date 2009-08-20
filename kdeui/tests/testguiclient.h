@@ -35,6 +35,10 @@ public:
         if (!xml.isNull())
             setXML(QString::fromLatin1(xml));
     }
+    void setXMLFilePublic(const QString& file, bool merge = false, bool setXMLDoc = true)
+    {
+      	setXMLFile(file, merge, setXMLDoc);
+    }
     void createGUI(const QByteArray& xml, bool withUiStandards = false)
     {
         if (withUiStandards) {

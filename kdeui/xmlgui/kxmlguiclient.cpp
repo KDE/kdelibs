@@ -183,44 +183,57 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
     return;
 
   QString file = _file;
-  if ( QDir::isRelativePath(file) )
-  {
-    QString doc;
-
-    const QString filter = componentData().componentName() + '/' + _file;
-    const QStringList allFiles = componentData().dirs()->findAllResources("data", filter) +
-                                 componentData().dirs()->findAllResources("data", _file);
-
-    if ( !allFiles.isEmpty() )
-    {
-        file = findMostRecentXMLFile(allFiles, doc);
-    } else if ( !_file.isEmpty() ) {
-      // if a non-empty file gets passed and we can't find it,
-      // inform the developer using some debug output
-      kWarning() << "cannot find .rc file" << _file << "in" << filter;
-    }
-
-    if ( file.isEmpty() )
-    {
-      // this might or might not be an error.  for the time being,
-      // let's treat this as if it isn't a problem and the user just
-      // wants the global standards file
-      setXML( QString(), true );
-    }
-    else if ( !doc.isEmpty() )
-    {
-      setXML( doc, merge );
-    }
+  QStringList allFiles;
+  if ( !QDir::isRelativePath( file ) ) {
+    allFiles.append( file );
   } else {
-      // Absolute path
-      QString xml = KXMLGUIFactory::readConfigFile(file);
-      setXML( xml, merge );
+    const QString filter = componentData().componentName() + '/' + _file;
+    allFiles = componentData().dirs()->findAllResources("data", filter) +
+                 componentData().dirs()->findAllResources("data", _file);
+  }
+  if ( allFiles.isEmpty() && !_file.isEmpty() ) {
+    // if a non-empty file gets passed and we can't find it,
+    // inform the developer using some debug output
+    kWarning() << "cannot find .rc file" << _file << "for component" << componentData().componentName();
+  }
+
+  // make sure to merge the settings from any file specified by
+  // setLocalXMLFile()
+  if ( !d->m_localXMLFile.isEmpty() ) {
+    if ( !allFiles.contains( d->m_localXMLFile ) )
+      allFiles.prepend( d->m_localXMLFile );
+  }    
+  
+  QString doc;
+  if ( !allFiles.isEmpty() )
+    file = findMostRecentXMLFile(allFiles, doc);
+
+  if ( file.isEmpty() )
+  {
+    // this might or might not be an error.  for the time being,
+    // let's treat this as if it isn't a problem and the user just
+    // wants the global standards file
+    setXML( QString(), true );
+  }
+  else if ( !doc.isEmpty() )
+  {
+    setXML( doc, merge );
   }
 }
 
 void KXMLGUIClient::setLocalXMLFile( const QString &file )
 {
     d->m_localXMLFile = file;
+}
+
+void KXMLGUIClient::replaceXMLFile( const QString& xmlfile, const QString& localxmlfile, bool merge )
+{
+  if ( !QDir::isAbsolutePath ( xmlfile ) ) {
+    kWarning() << "xml file" << xmlfile << "is not an absolute path";
+  }
+ 
+  setLocalXMLFile ( localxmlfile );
+  setXMLFile ( xmlfile, merge );
 }
 
 void KXMLGUIClient::setXML( const QString &document, bool merge )

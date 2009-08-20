@@ -270,6 +270,31 @@ public:
   void endXMLPlug();
   void prepareXMLUnplug( QWidget * );
 
+  /**
+   * Sets a new xmlFile() and localXMLFile(). The purpose of this pulic
+   * method is to allow non-inherited objects to replace the ui definition
+   * of an embedded client with a customized version. It corresponds to the
+   * usual calls to setXMLFile() and setLocalXMLFile().
+   *
+   * @param xmlfile The xml file to use. Contrary to setXMLFile(), this
+   *                must be an absolute file path.
+   * @param localxmfile The local xml file to set. This should be the full path
+   *                    to a writeable file, usually inside
+   *                    KStandardDirs::localkdedir(). You can set this to
+   *                    QString(), but no user changes to shortcuts / toolbars
+   *                    will be possible in this case. @see setLocalXMLFile()
+   * @param merge Whether to merge with the global document
+   *
+   * @note If in any doubt whether you need this or not, use setXMLFile()
+   *       and setLocalXMLFile(), instead of this function.
+   * @note Just like setXMLFile(), this function has to be called before
+   *       the client is added to a KXMLGUIFactory in order to have an
+   *       effect.
+   *
+   * @since 4.4
+  */
+  void replaceXMLFile( const QString& xmlfile, const QString& localxmlfile, bool merge = false );
+
 protected:
   /**
    * Returns true if client was added to super client list.
