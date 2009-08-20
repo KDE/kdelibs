@@ -24,6 +24,8 @@
 #include <QVariant>
 #include <QHash>
 
+#include "kdecore_export.h"
+
 #include "ActionReply.h"
 #include "ActionWatcher.h"
 
@@ -60,7 +62,7 @@ namespace KAuth
  * helper when the action is executed. You can access this map using the arguments()
  * method. You can insert into it any kind of custom data you need to pass to the helper.
  */
-class Action
+class KDECORE_EXPORT Action
 {
     class Private;
     Private *d;

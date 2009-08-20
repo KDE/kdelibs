@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QVariant>
 
+#include "kdecore_export.h"
+
 #define KDE4_AUTH_HELPER(ID, HelperClass) \
     int main(int argc, char **argv) { return KAuth::HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
 
@@ -38,7 +40,7 @@ namespace KAuth
  * This them you can notify the application of progress in your action's execution
  * and you can check if the application asked you to terminate it.
  */
-class HelperSupport
+class KDECORE_EXPORT HelperSupport
 {
     HelperSupport();
 

@@ -59,7 +59,7 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
 void HelperSupport::helperDebugHandler(QtMsgType type, const char *msg)
 {
     if (!remote_dbg) {
-        int level;
+        int level = LOG_DEBUG;
         switch (type) {
         case QtDebugMsg:
             level = LOG_DEBUG;

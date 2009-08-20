@@ -168,6 +168,7 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
 
 void DBusHelperProxy::stopAction(const QString &action)
 {
+#warning FIXME: The stop request should be action-specific rather than global
     m_stopRequest = true;
 }
 

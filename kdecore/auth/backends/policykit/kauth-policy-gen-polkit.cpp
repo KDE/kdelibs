@@ -17,7 +17,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#include "policy-gen.h"
+#include <kauth/policy-gen/policy-gen.h>
 
 #include <cstdio>
 #include <QDebug>

@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QString>
 
+#include "kdecore_export.h"
+
 #include "ActionReply.h"
 
 namespace KAuth
@@ -42,7 +44,7 @@ namespace KAuth
  *
  * See the documentation of single signals for more details about them.
  */
-class ActionWatcher : public QObject
+class KDECORE_EXPORT ActionWatcher : public QObject
 {
     Q_OBJECT
 

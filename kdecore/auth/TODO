@@ -1,11 +1,15 @@
 Todo list for libkauth:
-- Add localization to actions.ini
 - Add vendor name and icon to actions.ini
 - Add an option (either on build-time or at invocation time) to enable/disable the helper quit timeout.
   This is useful for debugging.
 - Check with others on k-c-d if it's needed to add strings with error descriptions.
+- Stop requests must be action-specific instead of global
 
 If the library gets included into kdelibs:
+
+kdelibs inclusion TODO list:
+- Add dummy backend
+- Switch code to kdelibs things like kDebug ecc..
+- Find a place for the example app
 - Improve the example app, using KAuthorizedAction and KAuthorizedButton.
-- Switch to kdelibs-specific things like kDebug(), kde4_add_executable(), etc...
-- Rewrite the build files to fit into kdelibs and integrate FindKAuth.cmake into FindKDE4.
+- Check the correctness of dbus installation paths

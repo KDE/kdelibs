@@ -17,10 +17,10 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
+#include <kauth/policy-gen/policy-gen.h>
+
 #include <iostream>
 #include <Security/Security.h>
-
-#include "policy-gen.h"
 
 using namespace std;
 
