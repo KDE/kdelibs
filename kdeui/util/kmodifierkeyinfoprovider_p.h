@@ -23,11 +23,14 @@
 
 #include <QHash>
 #include <QWidget>
+#include <QSet>
 
 #if defined Q_WS_X11
     #include <X11/Xlib.h>
     #include <X11/XKBlib.h>
     #include <fixx11h.h>
+    #include <QtCore/QAbstractEventDispatcher>
+    bool kmodifierKeyInfoEventFilter(void *message);
 #endif
 
 /**
@@ -118,6 +121,11 @@ Q_SIGNALS:
     
 protected:
 #if defined Q_WS_X11
+    // Interfacing with QAbstractEventDispatcher
+    friend bool kmodifierKeyInfoEventFilter(void *message);
+    static QAbstractEventDispatcher::EventFilter s_nextFilter;
+    static QSet<KModifierKeyInfoProvider*> s_providerList;
+    
     // event handler for incoming X11 events
     virtual bool x11Event(XEvent *event);
     void xkbUpdateModifierMapping();
@@ -140,6 +148,11 @@ private:
     QHash<Qt::Key, unsigned int> m_xkbModifiers;
     // maps a Qt::MouseButton to a button mask
     QHash<Qt::MouseButton, unsigned short> m_xkbButtons;
+
+    // has the eventfilter been installed yet?
+    static bool s_eventFilterInstalled;
+    // is the eventfilter currently enabled?
+    static bool s_eventFilterEnabled;
 #endif
 };
 

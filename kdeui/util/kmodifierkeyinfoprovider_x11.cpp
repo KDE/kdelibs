@@ -19,8 +19,6 @@
 */
 
 #include <QX11Info>
-#include <kapplication.h>
-#include <kdebug.h>
 
 #include "kmodifierkeyinfo.h"
 #include "kmodifierkeyinfoprovider_p.h"
@@ -66,6 +64,42 @@ unsigned int xkbVirtualModifier(XkbDescPtr xkb, const char *name)
     return mask;
 }
 
+/*
+ * Event filter to receive events from QAbstractEventDispatcher. All X11 events
+ * are forwarded to all providers.
+ */
+bool kmodifierKeyInfoEventFilter(void *message)
+{
+    if (KModifierKeyInfoProvider::s_eventFilterEnabled) {
+        XEvent *evt = reinterpret_cast<XEvent*>(message);
+        if (evt) {
+            QSet<KModifierKeyInfoProvider*>::const_iterator it =
+                KModifierKeyInfoProvider::s_providerList.constBegin();
+            QSet<KModifierKeyInfoProvider*>::const_iterator end =
+                KModifierKeyInfoProvider::s_providerList.constEnd();
+            for ( ; it != end; ++it) {
+                if ((*it)->x11Event(evt)) {
+                    // providers usually return don't consume events and return false.
+                    // If under any circumstance an event is consumed, don't forward it to
+                    // other event filters.
+                    return true;
+                }
+            }
+        }
+    }
+    
+    if (KModifierKeyInfoProvider::s_nextFilter) {
+        return KModifierKeyInfoProvider::s_nextFilter(message);
+    }
+    
+    return false;
+}
+
+QSet<KModifierKeyInfoProvider*> KModifierKeyInfoProvider::s_providerList;
+bool KModifierKeyInfoProvider::s_eventFilterInstalled = false;
+bool KModifierKeyInfoProvider::s_eventFilterEnabled = false;
+QAbstractEventDispatcher::EventFilter KModifierKeyInfoProvider::s_nextFilter = 0;
+
 KModifierKeyInfoProvider::KModifierKeyInfoProvider()
     : QWidget(0)
 {
@@ -98,16 +132,23 @@ KModifierKeyInfoProvider::KModifierKeyInfoProvider()
         xkbModifierStateChanged(state.mods, state.latched_mods, state.locked_mods);
         xkbButtonStateChanged(state.ptr_buttons);
     }
-
-    if (KApplication::kApplication()) {
-        KApplication::kApplication()->installX11EventFilter(this);
-    } else {
-        kDebug() << "KModifierKeyInfo can't be used without KApplication";
+    
+    if (!s_eventFilterInstalled) {
+        // This is the first provider constructed. Install the event filter.
+        s_nextFilter = QAbstractEventDispatcher::instance()->setEventFilter(kmodifierKeyInfoEventFilter);
+        s_eventFilterInstalled = true;
     }
+    s_eventFilterEnabled = true;
+    s_providerList.insert(this);
 }
 
 KModifierKeyInfoProvider::~KModifierKeyInfoProvider()
 {
+    s_providerList.remove(this);
+    if (s_providerList.isEmpty()) {
+        // disable filtering events
+        s_eventFilterEnabled = false;
+    }
 }
 
 bool KModifierKeyInfoProvider::setKeyLatched(Qt::Key key, bool latched)
