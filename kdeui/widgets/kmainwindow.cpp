@@ -372,7 +372,7 @@ void KMainWindowPrivate::polish(KMainWindow *q)
     q->winId(); // workaround for setWindowRole() crashing, and set also window role, just in case TT
     q->setWindowRole( s ); // will keep insisting that object name suddenly should not be used for window role
 
-    dbusName = '/' + qApp->applicationName() + '/' + q->objectName();
+    dbusName = '/' + qApp->applicationName() + '/' + q->objectName().replace(QLatin1Char('/'), QLatin1Char('_'));
     // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
     const int len = dbusName.length();
     for ( int i = 0; i < len; ++i ) {
