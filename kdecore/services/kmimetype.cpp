@@ -97,7 +97,7 @@ KMimeType::Ptr KMimeType::defaultMimeTypePtr()
 
 bool KMimeType::isDefault() const
 {
-    return this == defaultMimeTypePtr().data();
+    return name() == defaultMimeType();
 }
 
 /**
@@ -524,7 +524,7 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
     QString i = mimeTypeIcon;
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()
+    if ( i == unknown || i.isEmpty() || mt->name() == defaultMimeType()
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
         || _url.path().length() <= 1 )
     {
