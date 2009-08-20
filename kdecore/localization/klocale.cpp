@@ -192,11 +192,7 @@ public:
    * @internal Formats a date/time according to specified format.
    */
   static QString formatDateTime(const KLocale *locale, const QDateTime &dateTime,
-                                KLocale::DateFormat, bool includeSeconds, int daysToNow);
-  /**
-   * @internal Formats a date as a 'fancy' date.
-   */
-  static QString fancyDate(const KLocale *locale, const QDate &date, int daysToNow);
+                                KLocale::DateFormat, bool includeSeconds, int daysToNow, int secsToNow);
 
   /**
    * @internal
@@ -1581,98 +1577,7 @@ QString KLocale::prettyFormatDuration( unsigned long mSec ) const
 
 QString KLocale::formatDate(const QDate &pDate, DateFormat format) const
 {
-  if (format == FancyShortDate || format == FancyLongDate)
-  {
-    int days = pDate.daysTo(QDate::currentDate());
-    if (days >= 0 && days < 7)
-      return KLocalePrivate::fancyDate(this, pDate, days);
-    format = (format == FancyShortDate) ? ShortDate : LongDate;
-  }
-  const QString rst = (format == ShortDate) ? dateFormatShort() : dateFormat();
-
-  QString buffer;
-
-  if ( ! pDate.isValid() ) return buffer;
-
-  bool escape = false;
-
-  int year = calendar()->year(pDate);
-  int month = calendar()->month(pDate);
-
-  for ( int format_index = 0; format_index < rst.length(); ++format_index )
-    {
-      if ( !escape )
-	{
-	  if ( rst.at( format_index ).unicode() == '%' )
-	    escape = true;
-	  else
-	    buffer.append(rst.at(format_index));
-	}
-      else
-	{
-	  switch ( rst.at( format_index ).unicode() )
-	    {
-	    case '%':
-	      buffer.append(QLatin1Char('%'));
-	      break;
-	    case 'Y':  //Long year numeric
-	      buffer.append(calendar()->yearString(pDate, KCalendarSystem::LongFormat));
-	      break;
-	    case 'y':  //Short year numeric
-	      buffer.append(calendar()->yearString(pDate, KCalendarSystem::ShortFormat));
-	      break;
-	    case 'n':  //Short month numeric
-              buffer.append(calendar()->monthString(pDate, KCalendarSystem::ShortFormat));
-	      break;
-	    case 'e':  //Short day numeric
-              buffer.append(calendar()->dayString(pDate, KCalendarSystem::ShortFormat));
-	      break;
-	    case 'm':  //Long month numeric
-              buffer.append(calendar()->monthString(pDate, KCalendarSystem::LongFormat));
-	      break;
-	    case 'b':  //Short month name
-	      if (d->dateMonthNamePossessive)
-		buffer.append(calendar()->monthName(month, year, KCalendarSystem::ShortNamePossessive));
-	      else
-		buffer.append(calendar()->monthName(month, year, KCalendarSystem::ShortName));
-	      break;
-	    case 'B':  //Long month name
-	      if (d->dateMonthNamePossessive)
-		buffer.append(calendar()->monthName(month, year, KCalendarSystem::LongNamePossessive));
-	      else
-		buffer.append(calendar()->monthName(month, year, KCalendarSystem::LongName));
-	      break;
-	    case 'd':  //Long day numeric
-              buffer.append(calendar()->dayString(pDate, KCalendarSystem::LongFormat));
-	      break;
-	    case 'a':  //Short weekday name
-	      buffer.append(calendar()->weekDayName(pDate, KCalendarSystem::ShortDayName));
-	      break;
-	    case 'A':  //Long weekday name
-	      buffer.append(calendar()->weekDayName(pDate, KCalendarSystem::LongDayName));
-	      break;
-	    default:
-	      buffer.append(rst.at(format_index));
-	      break;
-	    }
-	  escape = false;
-	}
-    }
-  buffer = convertDigits(buffer, d->dateTimeDigitSet);
-  return buffer;
-}
-
-QString KLocalePrivate::fancyDate(const KLocale *locale, const QDate &date, int days)
-{
-  switch (days)
-  {
-    case 0:
-      return i18n("Today");
-    case 1:
-      return i18n("Yesterday");
-    default:
-      return locale->calendar()->weekDayName(date);
-  }
+    return calendar()->formatDate( pDate, format );
 }
 
 void KLocale::setMainCatalog(const char *catalog)
@@ -1866,154 +1771,17 @@ static int readInt(const QString &str, int &pos)
 
 QDate KLocale::readDate(const QString &intstr, bool* ok) const
 {
-  QDate date;
-  date = readDate(intstr, ShortFormat, ok);
-  if (date.isValid()) return date;
-  return readDate(intstr, NormalFormat, ok);
+    return calendar()->readDate( intstr, ok );
 }
 
 QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) const
 {
-  QString fmt = ((flags & ShortFormat) ? dateFormatShort() : dateFormat()).simplified();
-  return readDate( intstr, fmt, ok );
+    return calendar()->readDate( intstr, flags, ok );
 }
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
-    //kDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt;
-    QString str = intstr.simplified().toLower();
-    int day = -1, month = -1;
-    // allow the year to be omitted if not in the format
-    int year = calendar()->year(QDate::currentDate());
-    int strpos = 0;
-    int fmtpos = 0;
-
-    int iLength; // Temporary variable used when reading input
-
-    bool error = false;
-
-    while (fmt.length() > fmtpos && str.length() > strpos && !error) {
-
-        QChar c = fmt.at(fmtpos++);
-        if (c != '%') {
-            if (c.isSpace() && str.at(strpos).isSpace())
-                strpos++;
-            else if (c != str.at(strpos++))
-                error = true;
-        } else {
-            int j;
-            // remove space at the beginning
-            if (str.length() > strpos && str.at(strpos).isSpace())
-                strpos++;
-
-            c = fmt.at(fmtpos++);
-            switch (c.unicode())
-            {
-            case 'a':
-            case 'A':
-                error = true;
-                j = 1;
-                while (error && (j < 8)) {
-                    QString s;
-                    if ( c == 'a') {
-                        s = calendar()->weekDayName(j, KCalendarSystem::ShortDayName).toLower();
-                    } else {
-                        s = calendar()->weekDayName(j, KCalendarSystem::LongDayName).toLower();
-                    }
-                    int len = s.length();
-                    if (str.mid(strpos, len) == s)
-                    {
-                        strpos += len;
-                        error = false;
-                    }
-                    j++;
-                }
-                break;
-            case 'b':
-            case 'B':
-                error = true;
-                if (d->dateMonthNamePossessive) {
-                    j = 1;
-                    while (error && (j < 13)) {
-                        QString s;
-                        if ( c == 'b' ) {
-                            s = calendar()->monthName(j, year, KCalendarSystem::ShortNamePossessive).toLower();
-                        } else {
-                            s = calendar()->monthName(j, year, KCalendarSystem::LongNamePossessive).toLower();
-                        }
-                        int len = s.length();
-                        if (str.mid(strpos, len) == s) {
-                            month = j;
-                            strpos += len;
-                            error = false;
-                        }
-                        j++;
-                    }
-                }
-                j = 1;
-                while (error && (j < 13)) {
-                    QString s;
-                    if ( c == 'b' ) {
-                        s = calendar()->monthName(j, year, KCalendarSystem::ShortName).toLower();
-                    } else {
-                        s = calendar()->monthName(j, year, KCalendarSystem::LongName).toLower();
-                    }
-                    int len = s.length();
-                    if (str.mid(strpos, len) == s) {
-                        month = j;
-                        strpos += len;
-                        error = false;
-                    }
-                    j++;
-                }
-                break;
-            case 'd':
-            case 'e':
-                day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
-                strpos += iLength;
-
-                error = iLength <= 0;
-                break;
-
-            case 'n':
-            case 'm':
-                month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
-                strpos += iLength;
-
-                error = iLength <= 0;
-                break;
-
-            case 'Y':
-            case 'y':
-                year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
-                strpos += iLength;
-                if (c == 'y' && year < 100)
-                    year += 2000; // QDate assumes 19xx by default, but this isn't what users want...
-
-                error = iLength <= 0;
-                break;
-            }
-        }
-    }
-
-    /* for a match, we should reach the end of both strings, not just one of
-       them */
-    if (fmt.length() > fmtpos || str.length() > strpos) {
-        error = true;
-    }
-
-    //kDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year;
-    if (year != -1 && month != -1 && day != -1 && !error) {
-        if (ok) *ok = true;
-
-        QDate result;
-        calendar()->setYMD(result, year, month, day);
-
-        return result;
-    }
-
-    if (ok) *ok = false;
-    return QDate(); // invalid date
+    return calendar()->readDate( intstr, fmt, ok );
 }
 
 QTime KLocale::readTime(const QString &intstr, bool *ok) const
@@ -2345,33 +2113,56 @@ QStringList KLocale::languageList() const
 }
 
 QString KLocalePrivate::formatDateTime(const KLocale *locale, const QDateTime &dateTime,
-                                KLocale::DateFormat format, bool includeSeconds, int daysTo)
+                                       KLocale::DateFormat format, bool includeSeconds,
+                                       int daysTo, int secsTo)
 {
-  QString dateStr = (format == KLocale::FancyShortDate || format == KLocale::FancyLongDate)
-                  ? KLocalePrivate::fancyDate(locale, dateTime.date(), daysTo)
-                  : locale->formatDate(dateTime.date(), format);
-  return i18nc("concatenation of dates and time", "%1 %2",
-               dateStr, locale->formatLocaleTime(dateTime.time(),
-                                                 includeSeconds ? KLocale::TimeDefault :
-                                                                  KLocale::TimeWithoutSeconds));
+    // Have to do Fancy Date formatting here rather than using normal KCalendarSystem::formatDate()
+    // as daysTo is relative to the time spec which formatDate doesn't know about.  Needs to be
+    // kept in sync with Fancy Date code in KCalendarSystem::formatDate().  Fix in KDE5.
+
+    // Only do Fancy if less than an hour into the future or less than a week in the past
+    if ( ( daysTo == 0 && secsTo > 3600 ) ||  daysTo < 0 || daysTo > 6 ) {
+        if ( format == KLocale::FancyShortDate ) {
+            format = KLocale::ShortDate;
+        } else if ( format == KLocale::FancyLongDate ) {
+            format = KLocale::LongDate;
+        }
+    }
+
+    QString dateStr;
+    if ( format == KLocale::FancyShortDate || format == KLocale::FancyLongDate ) {
+        switch ( daysTo ) {
+        case 0:
+            dateStr = i18n("Today");
+            break;
+        case 1:
+            dateStr = i18n("Yesterday");
+            break;
+        default:
+            dateStr = locale->calendar()->weekDayName( dateTime.date() );
+        }
+    } else {
+        dateStr = locale->formatDate( dateTime.date(), format );
+    }
+
+    KLocale::TimeFormatOption timeFormat;
+    if ( includeSeconds ) {
+        timeFormat = KLocale::TimeDefault;
+    } else {
+        timeFormat = KLocale::TimeWithoutSeconds;
+    }
+
+    return i18nc("concatenation of dates and time", "%1 %2", dateStr,
+                 locale->formatLocaleTime( dateTime.time(), timeFormat ) );
 }
 
 QString KLocale::formatDateTime(const QDateTime &dateTime, DateFormat format,
                                 bool includeSeconds) const
 {
-  QString dateStr;
-  int days = -1;
-  if (format == FancyShortDate || format == FancyLongDate)
-  {
     QDateTime now = QDateTime::currentDateTime();
-    days = dateTime.date().daysTo(now.date());
-    if ((days == 0 && now.secsTo(dateTime) <= 3600)   // not more than an hour in the future
-    ||  (days > 0 && days < 7))
-      ;  // use fancy date format
-    else
-      format = (format == FancyShortDate) ? ShortDate : LongDate;  // fancy date not applicable
-  }
-  return KLocalePrivate::formatDateTime(this, dateTime, format, includeSeconds, days);
+    int daysTo = dateTime.date().daysTo( now.date() );
+    int secsTo = now.secsTo( dateTime );
+    return KLocalePrivate::formatDateTime( this, dateTime, format, includeSeconds, daysTo, secsTo );
 }
 
 QString KLocale::formatDateTime(const KDateTime &dateTime, DateFormat format,
@@ -2382,20 +2173,10 @@ QString KLocale::formatDateTime(const KDateTime &dateTime, DateFormat format,
     dt = formatDate( dateTime.date(), format );
   else
   {
-    int days = -1;
-    if (format == FancyShortDate || format == FancyLongDate)
-    {
-      // Use the time specification (i.e. time zone, etc.) of 'dateTime' to
-      // check whether it's less than a week ago.
-      KDateTime now = KDateTime::currentDateTime(dateTime.timeSpec());
-      days = dateTime.date().daysTo(now.date());
-      if ((days == 0 && now.secsTo(dateTime) <= 3600)   // not more than an hour in the future
-      ||  (days > 0 && days < 7))
-        ;  // use fancy date format
-      else
-        format = (format == FancyShortDate) ? ShortDate : LongDate;  // fancy date not applicable
-    }
-    dt = KLocalePrivate::formatDateTime(this, dateTime.dateTime(), format, (options & Seconds), days);
+    KDateTime now = KDateTime::currentDateTime(dateTime.timeSpec());
+    int daysTo = dateTime.date().daysTo(now.date());
+    int secsTo = now.secsTo(dateTime);
+    dt = KLocalePrivate::formatDateTime(this, dateTime.dateTime(), format, (options & Seconds), daysTo, secsTo);
   }
   if (options & TimeZone)
   {

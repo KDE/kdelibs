@@ -450,6 +450,7 @@ int KCalendarSystemHebrewPrivate::hndays( int mon, int year ) const
 KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale * locale )
         : KCalendarSystem( locale ), d( new KCalendarSystemHebrewPrivate )
 {
+    setMaxMonthsInYear(13);
 }
 
 // Ok

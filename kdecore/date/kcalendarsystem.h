@@ -616,9 +616,9 @@ protected:
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const = 0;
 
     /**
-     * Returns the locale used for translations and formats for this 
+     * Returns the locale used for translations and formats for this
      * calendar system instance.  This allows a calendar system instance to be
-     * independent of the global translations and formats if required.  All 
+     * independent of the global translations and formats if required.  All
      * implementations must refer to this locale.
      *
      * Only for internal calendar system use; if public access is required then
@@ -638,6 +638,20 @@ protected:
      * @return locale to use
      */
     const KLocale *locale() const;
+
+    /**
+     * Sets the maximum number of months in a year
+     *
+     * Only for internal calendar system use
+     */
+    void setMaxMonthsInYear( int maxMonths );
+
+    /**
+     * Sets the maximum number of days in a week
+     *
+     * Only for internal calendar system use
+     */
+    void setMaxDaysInWeek( int maxDays );
 
 private:
     Q_DISABLE_COPY( KCalendarSystem )
