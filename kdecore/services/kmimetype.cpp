@@ -97,7 +97,7 @@ KMimeType::Ptr KMimeType::defaultMimeTypePtr()
 
 bool KMimeType::isDefault() const
 {
-    return this == defaultMimeTypePtr().data();
+    return name() == defaultMimeTypePtr()->name();
 }
 
 /**

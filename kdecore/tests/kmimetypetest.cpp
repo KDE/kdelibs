@@ -125,6 +125,10 @@ void KMimeTypeTest::testByName()
 
     KMimeType::Ptr bzip2 = KMimeType::mimeType("application/x-bzip2", KMimeType::ResolveAliases);
     QVERIFY( bzip2 );
+
+    KMimeType::Ptr defaultMime = KMimeType::mimeType("application/octet-stream");
+    QVERIFY(defaultMime);
+    QVERIFY(defaultMime->isDefault());
 }
 
 void KMimeTypeTest::testIcons()
