@@ -22,7 +22,7 @@
 
 #include <QtCore/QString>
 #include <ksharedptr.h>
-#include "plasmaconversion_export.h"
+#include "conversion_export.h"
 
 class KLocalizedString;
 
@@ -31,7 +31,7 @@ namespace KUnitConversion
 
 class UnitCategory;
 
-class PLASMACONVERSION_EXPORT Complex
+class CONVERSION_EXPORT Complex
 {
 public:
     Complex();
@@ -40,7 +40,7 @@ public:
     virtual double fromDefault(double) const = 0;
 };
 
-class PLASMACONVERSION_EXPORT Unit : public QSharedData
+class CONVERSION_EXPORT Unit : public QSharedData
 {
 public:
     Unit(UnitCategory* category, int id, double multiplier, const QString& symbol,

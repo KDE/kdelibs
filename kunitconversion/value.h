@@ -22,14 +22,14 @@
 
 #include <QtCore/QString>
 #include "unit.h"
-#include "plasmaconversion_export.h"
+#include "conversion_export.h"
 
 class QVariant;
 
 namespace KUnitConversion
 {
 
-class PLASMACONVERSION_EXPORT Value
+class CONVERSION_EXPORT Value
 {
 public:
     Value();

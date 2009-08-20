@@ -25,7 +25,7 @@ set(conversion_HEADERS
     value.h
     unit.h
     unitcategory.h
-    plasmaconversion_export.h
+    conversion_export.h
 )
 
 kde4_add_library(conversion SHARED ${conversion_LIB_SRCS})

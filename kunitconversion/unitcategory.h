@@ -25,12 +25,12 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <kurl.h>
-#include "plasmaconversion_export.h"
+#include "conversion_export.h"
 
 namespace KUnitConversion
 {
 
-class PLASMACONVERSION_EXPORT UnitCategory : public QObject
+class CONVERSION_EXPORT UnitCategory : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name)

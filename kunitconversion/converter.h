@@ -21,7 +21,7 @@
 #define CONVERSION_CONVERTER_H
 
 #include <conversion/value.h>
-#include <conversion/plasmaconversion_export.h>
+#include <conversion/conversion_export.h>
 #include <QtCore/QVariant>
 
 namespace KUnitConversion
@@ -111,7 +111,7 @@ enum UnitId {
 
 class UnitCategory;
 
-class PLASMACONVERSION_EXPORT Converter : public QObject
+class CONVERSION_EXPORT Converter : public QObject
 {
     Q_OBJECT
 public:
