@@ -39,14 +39,11 @@ class KGzipFilter::Private
 {
 public:
     Private()
+    : headerWritten(false), footerWritten(false), compressed(false), mode(0), crc(0)
     {
         zStream.zalloc = (alloc_func)0;
         zStream.zfree = (free_func)0;
         zStream.opaque = (voidpf)0;
-        headerWritten = false;
-        footerWritten = false;
-        compressed = false;
-        mode = 0;
     }
 
     z_stream zStream;
