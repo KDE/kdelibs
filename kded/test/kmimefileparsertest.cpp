@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
- *  Copyright 2007 David Faure <faure@kde.org>
+ *  Copyright 2007, 2009 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -95,7 +95,10 @@ private Q_SLOTS:
         const QString ext1 = "*.kmimefileparserunittest";
         const QString ext2 = "*.kmimefileparserunittest2";
 
-        QByteArray testFile = "# Test data\n40:text/plain:*.kmimefileparserunittest\n20:text/plain:*.kmimefileparserunittest2";
+        QByteArray testFile = "# Test data\n"
+                              "40:text/plain:*.kmimefileparserunittest\n"
+                              "40:text/plain:*.kmimefileparserunittest:cs\n"
+                              "20:text/plain:*.kmimefileparserunittest2::futureextension";
         QBuffer buf(&testFile);
         QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs;
         QVERIFY(KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::Globs2WithWeight, mimeTypeGlobs));
@@ -103,10 +106,13 @@ private Q_SLOTS:
         QCOMPARE(mimeTypeGlobs.count(), 1);
         QVERIFY(mimeTypeGlobs.contains("text/plain"));
         const KMimeFileParser::GlobList textGlobs = mimeTypeGlobs.value("text/plain");
+        QCOMPARE(textGlobs.count(), 2);
         QCOMPARE(textGlobs[0].pattern, ext1);
         QCOMPARE(textGlobs[0].weight, 40);
+        QCOMPARE(textGlobs[0].flags, (int)KMimeTypeFactory::CaseSensitive);
         QCOMPARE(textGlobs[1].pattern, ext2);
         QCOMPARE(textGlobs[1].weight, 20);
+        QCOMPARE(textGlobs[1].flags, 0);
     }
 
     void testParseGlobs()
@@ -258,9 +264,11 @@ private Q_SLOTS:
             }
             int offset = mimeptr->offset();
             Q_FOREACH(const KMimeFileParser::Glob& glob, globs) {
-                m_globList.append(KMimeTypeFactory::OtherPattern(glob.pattern,
+                const QString adjustedPattern = (glob.flags & KMimeTypeFactory::CaseSensitive) ? glob.pattern : glob.pattern.toLower();
+                m_globList.append(KMimeTypeFactory::OtherPattern(adjustedPattern,
                                                                  offset,
-                                                                 glob.weight));
+                                                                 glob.weight,
+                                                                 glob.flags));
             }
         }
         kDebug() << allMimes.count() << "mimetypes," << m_globList.count() << "patterns";
@@ -272,41 +280,52 @@ private Q_SLOTS:
         QFETCH(QString, expectedMimeType);
 
         // Is the fast pattern dict worth it? (answer: yes)
-        QTime dt; dt.start();
-        const int repeat = 100;
+        //QTime dt; dt.start();
+
+        QBENCHMARK {
+
         // To investigate the difference if sycoca is slower than linear search,
         // comment out one block, callgrind, comment out the other block, callgrind, and compare.
 #if 1
-        for (int i = 0; i < repeat; ++i) {
+        //for (int i = 0; i < repeat; ++i) {
             QList<KMimeType::Ptr> mimeList = KMimeTypeFactory::self()->findFromFileName(fileName);
             QString mime = mimeList.isEmpty() ? QString() : mimeList.first()->name();
             QCOMPARE(mime, expectedMimeType);
-        }
-        qDebug() << "Lookup using ksycoca:" << dt.elapsed();
+        //}
+        //qDebug() << "Lookup using ksycoca:" << dt.elapsed();
 #endif
+        }
+
 #if 1
-        dt.start();
-        for (int i = 0; i < repeat; ++i) {
-            QString mime = matchGlobHelper(m_globList, fileName, i==0);
+        QBENCHMARK {
+        //dt.start();
+        //for (int i = 0; i < repeat; ++i) {
+            //bool verbose = i == 0;
+            bool verbose = false;
+            QString mime = matchGlobHelper(m_globList, fileName, verbose);
             if (mime.isEmpty()) {
                 const QString lowerCase = fileName.toLower();
-                mime = matchGlobHelper(m_globList, lowerCase, i==0);
+                mime = matchGlobHelper(m_globList, lowerCase, verbose);
             }
             QCOMPARE(mime, expectedMimeType);
+        //}
+        //qDebug() << "Lookup using linear search:" << dt.elapsed();
         }
-        qDebug() << "Lookup using linear search:" << dt.elapsed();
 #endif
+
     }
 
 private:
     QString matchGlobHelper(const KMimeTypeFactory::OtherPatternList& globs, const QString& fileName, bool verbose)
     {
+        const QString lowerCaseFileName = fileName.toLower();
+
         QString mime;
         bool found = false;
         int numPatterns = 0;
         Q_FOREACH(const KMimeTypeFactory::OtherPattern& glob, globs) {
             ++numPatterns;
-            if (KMimeTypeFactory::matchFileName(fileName, glob.pattern)) {
+            if (KMimeTypeFactory::matchFileName((glob.flags & KMimeTypeFactory::CaseSensitive) ? fileName : lowerCaseFileName, glob.pattern)) {
                 found = true;
                 KMimeType* ptr = KMimeTypeFactory::self()->createEntry(glob.offset);
                 Q_ASSERT(ptr);

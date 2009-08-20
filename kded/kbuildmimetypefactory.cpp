@@ -351,14 +351,17 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
         Q_FOREACH(const KMimeFileParser::Glob& glob, globs) {
             const QString &pattern = glob.pattern;
             Q_ASSERT(!pattern.isEmpty());
-            if (glob.weight == 50 && isFastPattern(pattern)) {
+            if (glob.weight == 50 && isFastPattern(pattern) && ((glob.flags & CaseSensitive) == 0)) {
                 // The bulk of the patterns is *.foo with weight 50 --> those go into the fast
                 // pattern dict.
-                m_fastPatternDict->add(pattern.mid(2) /* extension only*/, KSycocaEntry::Ptr::staticCast(mimeType));
-            } else if (glob.weight > 50) {
-                highWeightPatternOffset.append(OtherPattern(pattern, mimeType->offset(), glob.weight));
+                m_fastPatternDict->add(pattern.mid(2).toLower() /* extension only*/, KSycocaEntry::Ptr::staticCast(mimeType));
             } else {
-                lowWeightPatternOffset.append(OtherPattern(pattern, mimeType->offset(), glob.weight));
+                const QString adjustedPattern = (glob.flags & CaseSensitive) ? pattern : pattern.toLower();
+                if (glob.weight > 50) {
+                    highWeightPatternOffset.append(OtherPattern(adjustedPattern, mimeType->offset(), glob.weight, glob.flags));
+                } else {
+                    lowWeightPatternOffset.append(OtherPattern(adjustedPattern, mimeType->offset(), glob.weight, glob.flags));
+                }
             }
         }
     }
@@ -374,6 +377,7 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
         str << op.pattern;
         str << (qint32)op.offset;
         str << (qint32)op.weight;
+        str << (qint32)op.flags;
     }
     str << QString(""); // end of list marker (has to be a string !)
 
@@ -382,6 +386,7 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
         str << op.pattern;
         str << (qint32)op.offset;
         str << (qint32)op.weight;
+        str << (qint32)op.flags;
     }
     str << QString(""); // end of list marker (has to be a string !)
 

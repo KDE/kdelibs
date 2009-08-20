@@ -158,24 +158,6 @@ QString KMimeTypeFactory::resolveAlias(const QString& mime) const
     return m_aliases.value(mime);
 }
 
-QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName( const QString &filename, QString *matchingExtension )
-{
-    // Assume we're NOT building a database
-    if (!stream()) return QList<KMimeType::Ptr>();
-
-    // "Applications MUST first try a case-sensitive match, then try again with
-    // the filename converted to lower-case if that fails. This is so that
-    // main.C will be seen as a C++ file, but IMAGE.GIF will still use the
-    // *.gif pattern."
-    QList<KMimeType::Ptr> mimeList = findFromFileNameHelper(filename, matchingExtension);
-    if (mimeList.isEmpty()) {
-        const QString lowerCase = filename.toLower();
-        if (lowerCase != filename)
-            mimeList = findFromFileNameHelper(lowerCase, matchingExtension);
-    }
-    return mimeList;
-}
-
 QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &extension)
 {
     QList<KMimeType::Ptr> mimeList;
@@ -257,13 +239,15 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
         QString pattern;
         qint32 mimetypeOffset;
         qint32 weight;
+        qint32 flags;
         Q_FOREVER {
             KSycocaEntry::read(*str, pattern);
             if (pattern.isEmpty()) // end of list
                 break;
             (*str) >> mimetypeOffset;
             (*str) >> weight;
-            patternList.push_back(OtherPattern(pattern, mimetypeOffset, weight));
+            (*str) >> flags;
+            patternList.push_back(OtherPattern(pattern, mimetypeOffset, weight, flags));
         }
     }
 
@@ -274,11 +258,17 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
         matchingPatternLength = foundExt.length() + 2; // *.foo -> length=5
         lastMatchedWeight = 50;
     }
+
+    // "Applications MUST match globs case-insensitively, except when the case-sensitive
+    // attribute is set to true."
+    // KMimeFileParser takes care of putting case-insensitive patterns in lowercase.
+    const QString lowerCaseFileName = fileName.toLower();
+
     OtherPatternList::const_iterator it = patternList.constBegin();
     const OtherPatternList::const_iterator end = patternList.constEnd();
     for ( ; it != end; ++it ) {
         const OtherPattern op = *it;
-        if ( matchFileName( fileName, op.pattern ) ) {
+        if ( matchFileName( (op.flags & CaseSensitive) ? fileName : lowerCaseFileName, op.pattern ) ) {
             // Is this a lower-weight pattern than the last match? Stop here then.
             if (op.weight < lastMatchedWeight)
                 break;
@@ -303,8 +293,11 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
     }
 }
 
-QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper(const QString &fileName, QString *pMatchingExtension)
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName(const QString &fileName, QString *pMatchingExtension)
 {
+    // Assume we're NOT building a database
+    if (!stream()) return QList<KMimeType::Ptr>();
+
     // First try the high weight matches (>50), if any.
     QList<KMimeType::Ptr> matchingMimeTypes;
     QString foundExt;
@@ -316,7 +309,8 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper(const QString &fi
         const int lastDot = fileName.lastIndexOf('.');
         if (lastDot != -1) { // if no '.', skip the extension lookup
             const int ext_len = fileName.length() - lastDot - 1;
-            const QString simpleExtension = fileName.right( ext_len );
+            const QString simpleExtension = fileName.right( ext_len ).toLower();
+            // (toLower because fast matterns are always case-insensitive and saved as lowercase)
 
             matchingMimeTypes = findFromFastPatternDict(simpleExtension);
             if (!matchingMimeTypes.isEmpty()) {

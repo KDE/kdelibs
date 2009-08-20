@@ -19,6 +19,7 @@
 
 #include "kmimefileparser.h"
 #include <kglobal.h>
+#include <kdeversion.h>
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 #include <kmimetypefactory.h>
@@ -104,6 +105,10 @@ bool KMimeFileParser::parseGlobFile(QIODevice* file, Format format, AllGlobs& gl
 {
     if (!file->open(QIODevice::ReadOnly))
         return false;
+
+    // If we're not going to get the "cs" flag because smi is too old, then we need to emulate it for *.C at least.
+    const bool caseSensitiveHackNeeded = (KMimeType::sharedMimeInfoVersion() <= KDE_MAKE_VERSION(0, 60, 0));
+
     QTextStream stream(file);
     //stream.setCodec("UTF-8"); // should be all latin1
     QString line;
@@ -111,30 +116,52 @@ bool KMimeFileParser::parseGlobFile(QIODevice* file, Format format, AllGlobs& gl
         line = stream.readLine();
         if (line.isEmpty() || line.startsWith('#'))
             continue;
-        int pos = line.indexOf(':');
-        if (pos == -1) // syntax error
+
+        const QStringList fields = line.split(':', QString::KeepEmptyParts);
+        if (fields.count() < 2) // syntax error
             continue;
+
+        QString mimeTypeName, pattern;
+        QStringList flagList;
         int weight = 50;
         if (format == Globs2WithWeight) {
-            weight = line.left(pos).toInt();
-            line = line.mid(pos+1);
-            pos = line.indexOf(':', pos + 1);
-            if (pos == -1) // syntax error
+            if (fields.count() < 3) // syntax error
                 continue;
+            weight = fields[0].toInt();
+            mimeTypeName = fields[1];
+            pattern = fields[2];
+            const QString flagsStr = fields.value(3); // could be empty
+            flagList = flagsStr.split(',', QString::SkipEmptyParts);
+        } else {
+            mimeTypeName = fields[0];
+            pattern = fields[1];
         }
-        const QString mimeTypeName = line.left(pos);
-        const QString pattern = line.mid(pos+1);
         Q_ASSERT(!pattern.isEmpty());
+        Q_ASSERT(!pattern.contains(':'));
+        bool caseSensitive = flagList.contains("cs");
+
+        if (caseSensitiveHackNeeded && (pattern == "*.C" || pattern == "*.c" || pattern == "core"))
+            caseSensitive = true;
+
         GlobList& globList = globs[mimeTypeName]; // find or create entry
         if (pattern == "__NOGLOBS__") {
             globList.clear();
         } else {
+            int flags = 0;
+            if (caseSensitive)
+                flags = KMimeTypeFactory::CaseSensitive;
+
             // Check for duplicates, like when installing kde.xml and freedesktop.org.xml
             // in the same prefix, and they both have text/plain:*.txt
-            if (!globList.containsPattern(pattern)) {
+            GlobList::iterator existingEntry = globList.findPattern(pattern);
+            if (existingEntry == globList.end()) {
                 //if (mimeTypeName == "text/plain")
                 //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file, with weight" << weight;
-                globList.append(Glob(weight, pattern));
+                globList.append(Glob(weight, pattern, flags));
+            } else {
+                // replace existing entry. Necessary for the "case sensitive" hack
+                // where the entry with the flags follows the entry without them.
+                *existingEntry = Glob(weight, pattern, flags);
             }
         }
     }

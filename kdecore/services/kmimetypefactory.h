@@ -71,6 +71,11 @@ public:
      */
     QStringList parents(const QString& mime);
 
+    enum GlobMatchingFlag {
+        NoFlag = 0,
+        CaseSensitive = 0x1
+    };
+
 private: // only for KMimeType
     friend class KMimeType;
     friend class KMimeFileParserTest;
@@ -154,11 +159,12 @@ protected: // accessed by KBuildMimeTypeFactory
 
     struct OtherPattern
     {
-        OtherPattern(const QString& pat, qint32 off, qint32 w)
-            : pattern(pat), offset(off), weight(w) {}
+        OtherPattern(const QString& pat, qint32 off, qint32 w, qint32 fl)
+            : pattern(pat), offset(off), weight(w), flags(fl) {}
         QString pattern;
         qint32 offset;
         qint32 weight;
+        qint32 flags;
     };
     typedef QList<OtherPattern> OtherPatternList;
 
@@ -166,7 +172,6 @@ private:
     // Read magic files
     void parseMagic();
 
-    QList<KMimeType::Ptr> findFromFileNameHelper(const QString &filename, QString *matchingExtension);
     QList<KMimeType::Ptr> findFromFastPatternDict(const QString &extension);
     /**
      * Look into either the high-weight patterns or the low-weight patterns.

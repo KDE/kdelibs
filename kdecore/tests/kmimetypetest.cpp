@@ -164,9 +164,13 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
 
     QTest::newRow("text") << "textfile.txt" << "text/plain";
     QTest::newRow("case-insensitive search") << "textfile.TxT" << "text/plain";
+
     QTest::newRow("case-sensitive uppercase match") << "textfile.C" << "text/x-c++src";
     QTest::newRow("case-sensitive lowercase match") << "textfile.c" << "text/x-csrc";
-    // TODO QTest::newRow("case-sensitive long-extension match") << "foo.PS.gz" << "application/x-gzpostscript";
+    QTest::newRow("case-sensitive long-extension match") << "foo.PS.gz" << "application/x-gzpostscript";
+    QTest::newRow("case-sensitive-only match") << "core" << "application/x-core";
+    QTest::newRow("case-sensitive-only match") << "Core" << "application/octet-stream"; // #198477
+
     QTest::newRow("desktop file") << "foo.desktop" << "application/x-desktop";
     QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
     QTest::newRow("double-extension file") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";

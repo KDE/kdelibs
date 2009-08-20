@@ -44,20 +44,22 @@ public:
     void parseGlobs(const QStringList&);
 
     struct Glob {
-        Glob(int w = 50, const QString& pat = QString() ) : weight(w), pattern(pat) {}
+        Glob(int w = 50, const QString& pat = QString(), int _flags = 0)
+            : weight(w), flags(_flags), pattern(pat) {}
         int weight;
+        int flags;
         QString pattern;
     };
     class GlobList : public QList<Glob>
     {
     public:
-        bool containsPattern(const QString& pattern) const {
-            const_iterator it = begin();
-            const const_iterator myend = end();
+        iterator findPattern(const QString& pattern) {
+            iterator it = begin();
+            const iterator myend = end();
             for (; it != myend; ++it)
                 if ((*it).pattern == pattern)
-                    return true;
-            return false;
+                    return it;
+            return end();
         }
     };
     enum Format { OldGlobs, Globs2WithWeight };
