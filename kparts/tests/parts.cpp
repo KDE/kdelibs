@@ -2,6 +2,7 @@
 #include <kparts/event.h>
 
 #include "parts.h"
+#include <kactionmenu.h>
 #include <kactioncollection.h>
 
 #include <QtGui/QCheckBox>
@@ -21,7 +22,7 @@
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
     : KParts::ReadOnlyPart(parent),
-    m_componentData("kpartstestpart")
+      m_componentData("kpartstestpart")
 {
     setComponentData(m_componentData, false);
     m_edit = new QTextEdit( parentWidget );
@@ -32,14 +33,37 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     m_componentData.dirs()->addResourceDir( "data", KDESRCDIR );
     setXMLFile( "kpartstest_part1.rc" );
 
+    // An action and an action menu (test code for #70459)
+
     KAction* testAction = actionCollection()->addAction("p1_blah");
     testAction->setText("Part1's action");
+    testAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    connect(testAction, SIGNAL(triggered()), this, SLOT(slotBlah()));
+
+    KActionMenu * menu = new KActionMenu(KIcon("mail_forward"), "Foo", this);
+    actionCollection()->addAction("p1_foo", menu);
+
+    KAction* mailForward = new KAction(KIcon("mail_forward"), "Bar", this);
+    mailForward->setShortcut(Qt::CTRL + Qt::Key_F);
+    connect(mailForward, SIGNAL(triggered()), this, SLOT(slotFooBar()));
+    actionCollection()->addAction("p1_foo_bar", mailForward);
+    menu->addAction(mailForward);
 
     loadPlugins();
 }
 
 Part1::~Part1()
 {
+}
+
+void Part1::slotBlah()
+{
+  m_edit->setText( "Blah" );
+}
+
+void Part1::slotFooBar()
+{
+  m_edit->setText( "FooBar" );
 }
 
 bool Part1::openFile()
@@ -72,10 +96,13 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
     w->setObjectName( "Part2Widget" );
     setWidget( w );
 
+    m_componentData.dirs()->addResourceDir( "data", KDESRCDIR );
+    setXMLFile( "kpartstest_part2.rc" );
+
     /*QCheckBox * cb =*/ new QCheckBox( "something", w );
 
-    QLineEdit * l = new QLineEdit( "something", widget() );
-    l->move(0,50);
+    //QLineEdit * l = new QLineEdit( "something", widget() );
+    //l->move(0,50);
     // Since the main widget is a dummy one, we HAVE to set
     // strong focus for it, otherwise we get the
     // the famous activating-file-menu-switches-part bug.

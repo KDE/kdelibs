@@ -17,6 +17,10 @@ public:
   Part1( QObject *parent, QWidget * parentWidget );
   virtual ~Part1();
 
+public slots:
+ void slotBlah();
+ void slotFooBar();
+
 protected:
   virtual bool openFile();
 

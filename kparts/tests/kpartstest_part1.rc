@@ -6,6 +6,7 @@
  </Menu>
  <Menu name="Part1Menu"><text>Part1's Menu</text>
   <Action name="p1_blah"/>
+  <Action name="p1_foo"/>
   <Menu name="Part1Sub"><text>Stupid Submenu</text>
    <Action name="p1_blah"/>
   </Menu>
