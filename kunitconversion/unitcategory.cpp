@@ -96,7 +96,7 @@ Value UnitCategory::convert(const Value& value, UnitPtr toUnit)
 
 void UnitCategory::addUnitMapValues(UnitPtr unit, const QString& names)
 {
-    QStringList list = names.split(';');
+    const QStringList list = names.split(';');
     foreach (const QString& name, list) {
         d->unitMap[name] = unit;
     }
