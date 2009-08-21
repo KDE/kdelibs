@@ -5,7 +5,7 @@ include_directories( ${KDE4_KPARTS_INCLUDES} )
 ########### next target ###############
 
 set(kpartstest_SRCS
-example.cpp
+testmainwindow.cpp
 parts.cpp
 notepad.cpp
 )
@@ -32,12 +32,12 @@ target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} )
 
 ########### next target ###############
 
-set(ghostviewtest_SRCS
-ghostview.cpp
+set(partviewer_SRCS
+partviewer.cpp
 )
 
-kde4_add_executable(ghostviewtest TEST ${ghostviewtest_SRCS})
-target_link_libraries(ghostviewtest  ${KDE4_KPARTS_LIBS} )
+kde4_add_executable(partviewer TEST ${partviewer_SRCS})
+target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} )
 
 ########### next target ###############
 
@@ -88,7 +88,7 @@ KPARTS_UNIT_TESTS(${kparts_unittests})
 
 # Normally this would be needed. For the test programs we can avoid that, see addResourceDir.
 #install( FILES notepadpart.rc  DESTINATION  ${DATA_INSTALL_DIR}/notepadpart )
-#install( FILES ghostviewtest_shell.rc  DESTINATION  ${DATA_INSTALL_DIR}/ghostviewtest )
+#install( FILES partviewer_shell.rc  DESTINATION  ${DATA_INSTALL_DIR}/partviewer )
 #install( FILES kpartstest_shell.rc  DESTINATION  ${DATA_INSTALL_DIR}/kpartstest )
 #install( FILES kpartstest_part1.rc  DESTINATION  ${DATA_INSTALL_DIR}/kpartstestpart )
 

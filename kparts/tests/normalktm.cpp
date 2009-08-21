@@ -1,3 +1,23 @@
+/*
+    Copyright (c) 2000 David Faure <faure@kde.org>
+    Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
+
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2 of the License or ( at
+    your option ) version 3 or, at the discretion of KDE e.V. ( which shall
+    act as a proxy as in section 14 of the GPLv3 ), any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
 
 #include "normalktm.h"
 #include "parts.h"
@@ -19,7 +39,7 @@
 #include <kmenubar.h>
 #include <kicon.h>
 
-Shell::Shell()
+TestMainWindow::TestMainWindow()
     : KXmlGuiWindow()
 {
     // We can do this "switch active part" because we have a splitter with
@@ -68,24 +88,24 @@ Shell::Shell()
     m_editorpart = 0;
 }
 
-Shell::~Shell()
+TestMainWindow::~TestMainWindow()
 {
 }
 
-void Shell::slotFileOpen()
+void TestMainWindow::slotFileOpen()
 {
     if ( !m_part1->openUrl( KStandardDirs::locate("data", KGlobal::mainComponent().componentName()+"/kpartstest_shell.rc" ) ) )
         KMessageBox::error(this, "Couldn't open file !");
 }
 
-void Shell::slotFileOpenRemote()
+void TestMainWindow::slotFileOpenRemote()
 {
     KUrl u ( "http://www.kde.org/index.html" );
     if ( !m_part1->openUrl( u ) )
         KMessageBox::error(this, "Couldn't open file !");
 }
 
-void Shell::embedEditor()
+void TestMainWindow::embedEditor()
 {
     // replace part2 with the editor part
     delete m_part2;
@@ -98,7 +118,7 @@ void Shell::embedEditor()
     m_paCloseEditor->setEnabled(true);
 }
 
-void Shell::slotFileCloseEditor()
+void TestMainWindow::slotFileCloseEditor()
 {
     delete m_editorpart;
     m_editorpart = 0;
@@ -109,7 +129,7 @@ void Shell::slotFileCloseEditor()
     m_paCloseEditor->setEnabled(false);
 }
 
-void Shell::slotFileEdit()
+void TestMainWindow::slotFileEdit()
 {
     if ( !m_editorpart )
         embedEditor();
@@ -120,11 +140,11 @@ void Shell::slotFileEdit()
 
 int main( int argc, char **argv )
 {
-    // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
+    // we cheat and call ourselves kpartstest for TestMainWindow::slotFileOpen()
     KCmdLineArgs::init( argc, argv, "kpartstest", 0, ki18n("kpartstest"), 0);
     KApplication app;
 
-    Shell *shell = new Shell;
+    TestMainWindow *shell = new TestMainWindow;
     shell->show();
 
     app.exec();

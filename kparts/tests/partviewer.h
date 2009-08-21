@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2000 David Faure <faure@kde.org>
+    Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
 
     This library is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -18,21 +19,25 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef plugin_spellcheck_h
-#define plugin_spellcheck_h
+#ifndef PARTVIEWER_H
+#define PARTVIEWER_H
 
-#include <kparts/plugin.h>
+#include <kparts/mainwindow.h>
 
-class PluginSpellCheck : public KParts::Plugin
+class PartViewer : public KParts::MainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    PluginSpellCheck( QObject* parent = 0,
-                      const QVariantList& = QVariantList() );
-    virtual ~PluginSpellCheck();
+  PartViewer();
+  virtual ~PartViewer();
 
-public Q_SLOTS:
-    void slotSpellCheck();
+  void openUrl( const KUrl & url );
+
+protected Q_SLOTS:
+  void slotFileOpen();
+
+private:
+  KParts::ReadOnlyPart *m_part;
 };
 
 #endif

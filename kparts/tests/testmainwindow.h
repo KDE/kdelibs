@@ -19,50 +19,41 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __parts_h__
-#define __parts_h__
+#ifndef TESTMAINWINDOW_H
+#define TESTMAINWINDOW_H
 
-#include <kparts/part.h>
-#include <kcomponentdata.h>
+#include <kparts/mainwindow.h>
 
-class QTextEdit;
-namespace KParts {
-class GUIActivateEvent;
-}
+namespace KParts { class PartManager; }
+class KAction;
+class QWidget;
 
-class Part1 : public KParts::ReadOnlyPart
+class TestMainWindow : public KParts::MainWindow
 {
   Q_OBJECT
 public:
-  Part1( QObject *parent, QWidget * parentWidget );
-  virtual ~Part1();
+  TestMainWindow();
+  virtual ~TestMainWindow();
 
-public slots:
- void slotBlah();
- void slotFooBar();
-
-protected:
-  virtual bool openFile();
-
-protected:
-  QTextEdit * m_edit;
-  KComponentData m_componentData;
-};
-
-class Part2 : public KParts::Part
-{
-  Q_OBJECT
-public:
-  Part2( QObject *parent, QWidget * parentWidget );
-  virtual ~Part2();
+protected Q_SLOTS:
+  void slotFileOpen();
+  void slotFileOpenRemote();
+  void slotFileEdit();
+  void slotFileCloseEditor();
 
 protected:
-  // This is not mandatory - only if you care about setting the
-  // part caption when the part is used in a multi-part environment
-  // (i.e. in a part manager)
-  // There is a default impl for ReadOnlyPart...
-  virtual void guiActivateEvent( KParts::GUIActivateEvent * );
-  KComponentData m_componentData;
+  void embedEditor();
+
+private:
+
+  KAction * m_paEditFile;
+  KAction * m_paCloseEditor;
+
+  KParts::ReadOnlyPart *m_part1;
+  KParts::Part *m_part2;
+  KParts::ReadWritePart *m_editorpart;
+  KParts::PartManager *m_manager;
+  QWidget *m_splitter;
 };
 
 #endif
