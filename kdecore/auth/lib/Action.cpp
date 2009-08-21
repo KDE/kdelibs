@@ -34,6 +34,7 @@ public:
     Private() : valid(false) {}
     
     QString name;
+    QString details;
     QVariantMap args;
     bool valid;
 };
@@ -54,7 +55,7 @@ Action::Action(const Action &action)
     d->args = action.d->args;
 }
 
-Action::Action(const char *name)
+Action::Action(const QString &name)
 {
     d = new Private();
     
@@ -62,11 +63,12 @@ Action::Action(const char *name)
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
-Action::Action(const QString &name)
+Action::Action(const QString &name, const QString &details)
 {
     d = new Private();
     
     setName(name);
+    setDetails(details);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
@@ -106,6 +108,16 @@ void Action::setName(const QString &name)
     
     d->name = name;
     d->valid = exp.exactMatch(name);
+}
+
+QString Action::details() const
+{
+    return d->details;
+}
+
+void Action::setDetails(const QString &details)
+{
+    d->details = details;
 }
 
 bool Action::isValid() const

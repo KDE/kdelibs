@@ -98,13 +98,16 @@ public:
      * This creates a new action object with this name
      * @param name The name of the new action
      */
-    Action(const char *name);
-
-    /**
-     * This creates a new action object with this name
-     * @param name The name of the new action
-     */
     Action(const QString &name);
+    
+    /**
+     * This creates a new action object with this name and details
+     * @param name The name of the new action
+     * @param details The details of the action
+     *
+     * @see setDetails
+     */
+    Action(const QString &name, const QString &details);
 
     /// Virtual destructor
     virtual ~Action();
@@ -154,6 +157,25 @@ public:
      * there's no default constructor)
      */
     void setName(const QString &name);
+    
+    /**
+     * @brief Sets the action's details
+     * 
+     * You can use this function to provide the user more details
+     * (if the backend supports it) on the action being authorized in
+     * the authorization dialog
+     */
+    void setDetails(const QString &details);
+    
+    /**
+     * @brief Gets the action's details
+     *
+     * The details that will be shown in the authorization dialog, if the
+     * backend supports it.
+     *
+     * @return The action's details
+     */
+    QString details() const;
 
     /**
      * @brief Returns if the object represents a valid action
