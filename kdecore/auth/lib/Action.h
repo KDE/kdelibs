@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QHash>
 
-#include "kdecore_export.h"
+#include <kdecore_export.h>
 
 #include "ActionReply.h"
 #include "ActionWatcher.h"
@@ -61,6 +61,8 @@ namespace KAuth
  * Each action object contains a QVariantMap object that is passed directly to the
  * helper when the action is executed. You can access this map using the arguments()
  * method. You can insert into it any kind of custom data you need to pass to the helper.
+ *
+ * @since 4.4
  */
 class KDECORE_EXPORT Action
 {

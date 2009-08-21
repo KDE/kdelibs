@@ -25,7 +25,7 @@
 #include <QMap>
 #include <QDataStream>
 
-#include "kdecore_export.h"
+#include <kdecore_export.h>
 
 namespace KAuth
 {
@@ -62,6 +62,8 @@ namespace KAuth
 * comparisons.
 *
 * To quickly check for success or failure of an action, you can use succeeded() or failed().
+*
+* @since 4.4
 */
 class KDECORE_EXPORT ActionReply
 {
