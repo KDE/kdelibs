@@ -239,7 +239,7 @@ from an ontology using the \ref nepomuk-rcgen "Resource Generator"):
 
 \code
 Nepomuk::File f( "/home/foo/bar.txt" );
-QString description = f.getDescription();
+QString description = f.description();
 QList<Tag> tags = f.getTags();
 QListIterator<Tag> it( tags );
 while( it.hasNext() )
@@ -294,148 +294,53 @@ Resource subclasses that provide wrapper methods for Resource::getProperty and R
 ontology descriptions.
 
 
-\section rcgen_syntax Syntax
-
-The resource generator executable is called nepomuk-rcgen and has the following syntax:
-
-\code
-nepomuk-rcgen --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
-\endcode
-
-This writes all header and source files that have been generated from the ontology in &lt;ontologyfile&gt; to
-the destination folder &lt;sourcefolder&gt;.
-Optionally templates can be specified (see \ref rcgen_templates for details on templates).
-
-
-\code
-nepomuk-rcgen --listsources [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
-\endcode
-
-This command simply lists all source files that would be generated from the ontology in &lt;ontologyfile&gt;
-on stdout. It can be used to create build lists.
-
-\code
-nepomuk-rcgen --listheaders [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
-\endcode
-
-This command simply lists all header files that would be generated from the ontology in &lt;ontologyfile&gt;
-on stdout. It can be used to create installation lists.
-
-\code
-nepomuk-rcgen --listincludes --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
-\endcode
-
-This will list all headers that would be generated from &lt;ontologyfile&gt; as include statement on stdout.
-This is a rarely used command that can help to create a header that automatically includes all classes
-from this ontology.
-
-
 \section rcgen_cmake Usage through CMake
 
 The simplest way to use the resource generator is through CMake. Nepomuk provides a macro to automatically
-create a list of source and header files from an ontology file and use them to create arbitrary targets
-(either link them into an installable library or directly link them into the using application).
-
-To use the Nepomuk cmake magic one has to include the NepomukMacros:
+add the class generation target. The macro is used similar to the macro for adding ui files.
 
 \code
-include(NepomukMacros)
+include(NepomukAddOntologyClasses)
 \endcode
 
-This will provide a macro called NEPOMUK_GENERATE_FROM_ONTOLOGY with the following parameters:
+This will provide a macro called NEPOMUK_ADD_ONTOLOGY_CLASSES:
 
--# The ontology file to be parsed
--# The target directory where to put the new files
--# A variable in which the list of generated headers will be stored
--# A variable in which the list of generated sources will be stored
--# A variable in which the list of includes will be stored (mostly unused)
--# An optional list of template files
+\code
+NEPOMUK_ADD_ONTOLOGY_CLASSES(<sources-var>
+         [FAST]
+         [ONTOLOGIES] <onto-file1> [<onto-file2> ...]
+         [CLASSES <classname1> [<classname2> ...]]
+         [VISIBILITY <visibility-name>]
+       )
+\endcode
 
-HELP: This macro needs improvement to make parameters optional!
+If FAST is specified the rcgen parameter --fast will be used which results in resource classes
+not based on Nepomuk::Resource but on a custom class which does not perform any checks and simply
+writes the data to Nepomuk (hence the name fast).
 
+The optional CLASSES parameter allows to specify the classes to be generated (RDF class names) in
+case one does not want all classes in the ontologies to be generated. If omitted all classes in the
+ontology files will be generated.
+
+The optional VISIBILITY parameter can only be used in non-fast mode and allows to set the gcc visibility
+to make the generated classes usable in a publically exported API. The <visibility-name> is used to create
+the name of the export macro and the export include file. Thus, when using "VISIBILITY foobar" include
+file "foobar_export.h" needs to define FOOBAR_EXPORT.
 
 \subsection rcgen_cmake_example Example
 
 \code
-project(metadata_test)
+include(NepomukAddOntologyClasses)
 
-include(NepomukMacros)
+set(SRCS [...])
 
-NEPOMUK_GENERATE_FROM_ONTOLOGY(
-  myontology.nrl
-  ${metadata_test_BINARY_DIR}
-  TEST_HEADERS
-  TEST_SOURCES
-  TEST_INCLUDES
+nepomuk_add_ontology_classes(SRCS ONTOLOGIES ontology.trig)
+
+kde4_add_executable(foobar ${SRCS})
+target_link_libraries(foobar
+  nepomuk
 )
-
-kde4_add_library(metadata_test SHARED ${TEST_SOURCES})
-target_link_libraries(metadata_test
-  kmetadata
-)
-
-install(TARGETS metadata_test DESTINATION ${LIB_INSTALL_DIR})
-install(FILES ${TEST_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata)
 \endcode
-
-
-\section rcgen_templates Templates
-
-@warning Template usage is discouraged. Their main purpose is to support the creation of the
-basic properties of the Resource class.
-
-An rcgen template has to provide the full skeleton for a generated class including
-the proper namespace, the constructor, and the destructor. They will be assigned to the specific
-classes according to their filename: The part before the first dot needs to match the class name
-in lower case. If the class name if followed by ".h" the template is assigned to the header, if it
-is followed by  ".cpp", the template is assigned to the source. The following variables
-will be replaced:
-
-\subsection rcgen_templates_header Header template
-
-\code
-NEPOMUK_OTHERCLASSES
-\endcode
-
-Will be replaced by the declarations of the classes used in the header file.
-
-\code
-NEPOMUK_METHODS
-\endcode
-
-Will be replaced by the declarations of the getter and setter methods that are
-generated for the class.
-
-
-\subsection rcgen_templates_sources Source template
-
-\code
-NEPOMUK_INCLUDES
-\endcode
-
-Will be replaced by all the necessary includes for the types used in the class.
-
-\code
-NEPOMUK_METHODS
-\endcode
-
-Will be replaced with the definitions of the getter and setter methods that are
-generated for the class.
-
-
-\subsection rcgen_templates_misc All
-
-The following variables are also replaced:
-
-\code
-NEPOMUK_RESOURCENAME
-NEPOMUK_RESOURCENAMELOWER
-NEPOMUK_RESOURCETYPEURI
-NEPOMUK_PARENTRESOURCE
-NEPOMUK_PARENTRESOURCELOWER
-NEPOMUK_RESOURCECOMMENT
-\endcode
-
 */
 
 // DOXYGEN_SET_RECURSIVE = NO
