@@ -460,6 +460,8 @@
 <!ENTITY Scott.Wheeler.mail '<email>wheeler@kde.org</email>'>
 <!ENTITY Anders.Widell '<personname><firstname>Anders</firstname><surname>Widell</surname></personname>'>
 <!ENTITY Anders.Widell.mail '<email>awl@passagen.se</email>'>
+<!ENTITY Matthew.Woehlke '<personname><firstname>Matthew</firstname><surname>Woehlke</surname></personname>'>
+<!ENTITY Matthew.Woehlke.mail '<email>mw_triad@users.sourceforge.net</email>'>
 <!ENTITY Marc.Wolf '<personname><firstname>Marc</firstname><surname>Wolf</surname></personname>'>
 <!ENTITY Marc.Wolf.mail '<email>marc@vries.demon.co.uk</email>'>
 <!ENTITY Bernd.Johannes.Wuebben '<personname><firstname>Bernd</firstname><othername>Johannes</othername><surname>Wuebben</surname></personname>'>
