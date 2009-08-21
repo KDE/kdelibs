@@ -4192,6 +4192,12 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
     kDebug(6005) << this << "checkLinkSecurity refused";
     return false;
   }
+
+  if (d->m_bClearing)
+  {
+    return false;
+  }
+
   if ( child->m_bPreloaded )
   {
     kDebug(6005) << "preload";
