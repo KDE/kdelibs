@@ -52,8 +52,7 @@ class KDEUI_EXPORT KRestrictedLine : public KLineEdit
 public:
 
   /**
-   * Constructor: This contructor takes three - optional - arguments.
-   *  The first two parameters are simply passed on to QLineEdit.
+   * Constructor
    *  @param parent   pointer to the parent widget
    */
   explicit KRestrictedLine( QWidget* parent = 0);
@@ -81,7 +80,8 @@ Q_SIGNALS:
   void	invalidChar(int);
 
 protected:
-  void	keyPressEvent( QKeyEvent *e );
+    void keyPressEvent( QKeyEvent *e );
+    void inputMethodEvent(QInputMethodEvent *e);
 
 private:
   KRestrictedLinePrivate * const d;

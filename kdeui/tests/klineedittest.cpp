@@ -14,6 +14,8 @@
 #include <khbox.h>
 
 #include "klineedittest.h"
+#include <QLabel>
+#include <krestrictedline.h>
 
 KLineEditTest::KLineEditTest ( QWidget* widget )
               :QWidget( widget )
@@ -35,6 +37,19 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
     connect( m_lineedit, SIGNAL( returnPressed(const QString&) ),
              SLOT( slotReturnPressed(const QString&) ) );
+
+    QHBoxLayout* restrictedHBox = new QHBoxLayout;
+    m_restrictedLine = new KRestrictedLine(this);
+    m_restrictedLine->setValidChars(QString::fromUtf8("aeiouyé"));
+    connect(m_restrictedLine, SIGNAL(invalidChar(int)), this, SLOT(slotInvalidChar(int)));
+    connect( m_restrictedLine, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
+    connect( m_restrictedLine, SIGNAL( returnPressed(const QString&) ),
+             SLOT( slotReturnPressed(const QString&) ) );
+    restrictedHBox->addWidget(new QLabel("Vowels only:", this));
+    restrictedHBox->addWidget(m_restrictedLine);
+    m_invalidCharLabel = new QLabel(this);
+    restrictedHBox->addWidget(m_invalidCharLabel);
+
 
     KHBox *hbox = new KHBox (this);
     m_btnExit = new QPushButton( "E&xit", hbox );
@@ -64,8 +79,9 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
 	m_btnClickMessage->setCheckable (true);
 	m_btnClickMessage->setFixedSize(100,30);
 	connect( m_btnClickMessage, SIGNAL( toggled(bool) ), SLOT( slotClickMessage(bool) ) );
-	
+
     layout->addWidget( m_lineedit );
+    layout->addLayout( restrictedHBox );
     layout->addWidget( hbox );
     setWindowTitle( "KLineEdit Unit Test" );
 }
@@ -141,6 +157,11 @@ void KLineEditTest::slotHide()
     m_lineedit->setText( "My dog ate the homework, whaaaaaaaaaaaaaaaaaaaaaaa"
                           "aaaaaaaaaaaaaaaaaaaaaaaaa! I want my mommy!" );
     QTimer::singleShot( 1000, this, SLOT(show()) );
+}
+
+void KLineEditTest::slotInvalidChar(int key)
+{
+    m_invalidCharLabel->setText(QString("Invalid char: %1").arg(key));
 }
 
 int main ( int argc, char **argv)

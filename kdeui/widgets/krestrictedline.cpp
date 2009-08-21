@@ -22,8 +22,8 @@
  */
 
 #include "krestrictedline.h"
+#include <kdebug.h>
 
-#include <QtCore/QCOORD>
 #include <QtGui/QKeyEvent>
 
 class KRestrictedLinePrivate
@@ -47,31 +47,49 @@ KRestrictedLine::~KRestrictedLine()
 
 void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 {
-  // let KLineEdit process "special" keys and return/enter
-  // so that we still can use the default key binding
-  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete 
-      || e->key() == Qt::Key_Backspace || (e->modifiers() & (Qt::ControlModifier | Qt::AltModifier 
-      | Qt::MetaModifier | Qt::GroupSwitchModifier)))
+    // let KLineEdit process "special" keys and return/enter
+    // so that we still can use the default key binding
+    if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete
+        || e->key() == Qt::Key_Backspace
+        || (e->modifiers() & (Qt::ControlModifier | Qt::AltModifier
+                              | Qt::MetaModifier | Qt::GroupSwitchModifier)))
     {
-      KLineEdit::keyPressEvent(e);
-      return;
+        KLineEdit::keyPressEvent(e);
+        return;
     }
 
-  // do we have a list of valid chars &&
-  // is the pressed key in the list of valid chars?
-  if (!d->qsValidChars.isEmpty() && !d->qsValidChars.contains(e->text()))
-    {
-      // invalid char, emit signal and return
-      emit (invalidChar(e->key()));
-      return;
+    // do we have a list of valid chars &&
+    // is the pressed key in the list of valid chars?
+    if (!d->qsValidChars.isEmpty() && !d->qsValidChars.contains(e->text())) {
+        // invalid char, emit signal and return
+        emit invalidChar(e->key());
+    } else {
+        // valid char: let KLineEdit process this key as usual
+        KLineEdit::keyPressEvent(e);
     }
-  else
-	// valid char: let KLineEdit process this key as usual
-	KLineEdit::keyPressEvent(e);
-
-  return;
 }
 
+void KRestrictedLine::inputMethodEvent(QInputMethodEvent *e)
+{
+    const QString str = e->commitString();
+    if (!d->qsValidChars.isEmpty() && !str.isEmpty()) {
+        bool allOK = true;
+        Q_FOREACH(QChar ch, str) {
+            if (!d->qsValidChars.contains(ch)) {
+                emit invalidChar(ch.unicode());
+                allOK = false;
+            }
+        }
+        // ## we can't remove invalid chars from the string, however.
+        // we really need a validator (with a different signal like invalidChar(QChar)
+        // or invalidCharacters(QString) maybe.
+
+        if (!allOK)
+            return;
+    }
+
+    KLineEdit::inputMethodEvent(e);
+}
 
 void KRestrictedLine::setValidChars( const QString& valid)
 {

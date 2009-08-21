@@ -4,6 +4,8 @@
 #include <QtGui/QWidget>
 #include <QtCore/QPointer>
 
+class QLabel;
+class KRestrictedLine;
 class QString;
 class QPushButton;
 
@@ -31,8 +33,11 @@ private Q_SLOTS:
    void resultOutput( const QString& );
    void slotReturnPressed( const QString& );
    void slotClickMessage(bool click);
+   void slotInvalidChar(int);
 protected:
-   QPointer<KLineEdit> m_lineedit;
+   KLineEdit* m_lineedit;
+   KRestrictedLine* m_restrictedLine;
+   QLabel* m_invalidCharLabel;
    QPushButton* m_btnExit;
    QPushButton* m_btnReadOnly;
    QPushButton* m_btnPassword;
