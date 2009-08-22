@@ -438,7 +438,7 @@ void KNotificationItem::showMessage(const QString & title, const QString & messa
                                                 QDBusConnection::sessionBus());
     }
 
-    uint id;
+    uint id = 0;
     d->notificationsClient->Notify(d->title, id, icon, title, message, QStringList(), QVariantMap(), timeout);
 }
 
