@@ -54,7 +54,7 @@ public:
     };
 };
 
-class ConverterPrivate: public QSharedData
+class ConverterPrivate
 {
 public:
     QList<UnitCategory *> categories;

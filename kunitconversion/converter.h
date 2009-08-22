@@ -23,7 +23,6 @@
 #include <conversion/value.h>
 #include <conversion/conversion_export.h>
 #include <QtCore/QVariant>
-#include <QtCore/QSharedDataPointer>
 
 namespace KUnitConversion
 {
@@ -170,8 +169,7 @@ public:
     QList<UnitCategory*> categories() const;
 
 private:
-    Q_DISABLE_COPY(Converter)
-    QSharedDataPointer<ConverterPrivate> d;
+    ConverterPrivate *d;
 };
 
 } // KUnitConversion namespace
