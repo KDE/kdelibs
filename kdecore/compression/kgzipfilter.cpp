@@ -248,7 +248,7 @@ bool KGzipFilter::writeHeader( const QByteArray & fileName )
 void KGzipFilter::writeFooter()
 {
     Q_ASSERT( d->headerWritten );
-    if (!d->headerWritten) kDebug() << kBacktrace();
+    if (!d->headerWritten) kDebug(7005) << kBacktrace();
     Q_ASSERT(!d->footerWritten);
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
