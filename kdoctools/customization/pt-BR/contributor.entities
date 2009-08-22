@@ -1,0 +1,11 @@
+<!-- Contains general entity definitions for the names of the translators.
+     See ../entities/contributor.entities. -->
+     
+<!-- Inclui este arquivo para teste, se funcionar tudo bem eu posto uma mensagem na lista. -->
+
+<!ENTITY Andre.Marcelo.Alvarenga '<personname><firstname>André</firstname><othername>Marcelo</othername><surname>Alvarenga</surname></personname>'>
+<!ENTITY Andre.Marcelo.Alvarenga.mail '<email>andrealvarenga@gmx.net></email>'>
+
+<!ENTITY Andre.Alvarenga '<personname><firstname>André</firstname><surname>Alvarenga</surname></personname>'>
+<!ENTITY Andre.Alvarenga.mail '<email></email>'>
+
