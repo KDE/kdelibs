@@ -277,8 +277,8 @@ public:
 
 
 #if !defined(KDE_NO_DEBUG_OUTPUT)
-/* __VA_ARGS__ should work with any supported GCC version and MSVC >= 2005 */
-# if defined(Q_CC_GNU) || (defined(Q_CC_MSVC) && _MSC_VER >= 1400)
+/* __VA_ARGS__ should work with any supported GCC version and MSVC > 2005 */
+# if defined(Q_CC_GNU) || (defined(Q_CC_MSVC) && _MSC_VER >= 1500)
 #  define kDebug(...) for (bool _k_kDebugDoOutput_ = !KDebug::hasNullOutputQtDebugMsg(__VA_ARGS__); \
                            KDE_ISUNLIKELY(_k_kDebugDoOutput_); _k_kDebugDoOutput_ = false) \
                            KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)(__VA_ARGS__)
