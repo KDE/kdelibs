@@ -31,12 +31,10 @@
 
 using namespace KUnitConversion;
 
-static const char* URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
+static const char URL[] = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
 
-Currency::Currency(QObject* parent)
-: UnitCategory(parent)
+Currency::Currency()
 {
-    setObjectName("currency");
     setName(i18n("Currency"));
     setDescription(i18n("From ECB"));
     setUrl(KUrl("http://www.ecb.int/stats/exchange/eurofxref/html/index.en.html"));

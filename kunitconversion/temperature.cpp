@@ -60,10 +60,9 @@ class RomerConv : public Complex
 };
 
 
-Temperature::Temperature(QObject* parent)
-: UnitCategory(parent)
+Temperature::Temperature()
+: UnitCategory()
 {
-    setObjectName("temperature");
     setName(i18n("Temperature"));
 
     setDefaultUnit(UP(Kelvin, 1,

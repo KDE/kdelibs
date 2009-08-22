@@ -24,10 +24,8 @@
 
 using namespace KUnitConversion;
 
-Mass::Mass(QObject* parent)
-: UnitCategory(parent)
+Mass::Mass()
 {
-    setObjectName("mass");
     setName(i18n("Mass"));
 
     U(Yottagram, 1e+24,

@@ -25,7 +25,7 @@
 class FuelEfficiency : public KUnitConversion::UnitCategory
 {
 public:
-    explicit FuelEfficiency(QObject* parent = 0);
+    FuelEfficiency();
 };
 
 #endif

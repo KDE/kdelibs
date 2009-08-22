@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Length::Length(QObject* parent)
-: UnitCategory(parent)
+Length::Length()
 {
-    setObjectName("length");
     setName(i18n("Length"));
 
     U(Yottameter, 1e+24,

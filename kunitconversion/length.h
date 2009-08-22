@@ -25,7 +25,7 @@
 class Length : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Length(QObject* parent = 0);
+    Length();
 };
 
 #endif

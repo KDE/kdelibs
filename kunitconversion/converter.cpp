@@ -45,11 +45,10 @@ namespace KUnitConversion
 class InvalidCategory : public UnitCategory
 {
 public:
-    InvalidCategory(QObject* parent = 0) : UnitCategory(parent)
+    InvalidCategory()
     {
         const QString s;
         const KLocalizedString ls;
-        setObjectName("invalid");
         setName(i18n("Invalid"));
         setDefaultUnit(UP(InvalidUnit, 1.0, s, s, s, ls, ls));
     };
@@ -58,26 +57,30 @@ public:
 class Converter::Private : public QAtomicInt, public QObject
 {
 public:
+    QList<UnitCategory *> categories;
     Private()
     {
-        new InvalidCategory(this);
-        new Length(this);
-        new Area(this);
-        new Volume(this);
-        new Temperature(this);
-        new Velocity(this);
-        new Mass(this);
-        new Pressure(this);
-        new Energy(this);
-        new Currency(this);
-        new Power(this);
-        new Time(this);
-        new FuelEfficiency(this);
-        new Density(this);
+        // the invalid category MUST be the first item
+        categories.append(new InvalidCategory);
+
+        categories.append(new Length);
+        categories.append(new Area);
+        categories.append(new Volume);
+        categories.append(new Temperature);
+        categories.append(new Velocity);
+        categories.append(new Mass);
+        categories.append(new Pressure);
+        categories.append(new Energy);
+        categories.append(new Currency);
+        categories.append(new Power);
+        categories.append(new Time);
+        categories.append(new FuelEfficiency);
+        categories.append(new Density);
     };
 
     ~Private()
     {
+        qDeleteAll(categories);
     };
 };
 
@@ -153,17 +156,19 @@ UnitPtr Converter::unit(int unitId) const
 
 UnitCategory* Converter::category(const QString& category) const
 {
-    QList<UnitCategory*> categories = d->findChildren<UnitCategory*>(category);
-    if (!categories.isEmpty()) {
-        return categories[0];
+    foreach (UnitCategory *u, categories()) {
+        if (u->name() == category)
+            return u;
     }
+
+    // not found
     return 0;
 }
 
 QList<UnitCategory*> Converter::categories() const
 {
-    QList<UnitCategory*> categories = d->findChildren<UnitCategory*>();
-    categories.removeAll(category("invalid"));
+    QList<UnitCategory*> categories = d->categories;
+    categories.removeAt(0);
     return categories;
 }
 

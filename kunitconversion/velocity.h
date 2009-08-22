@@ -25,7 +25,7 @@
 class Velocity : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Velocity(QObject* parent = 0);
+    Velocity();
 };
 
 #endif

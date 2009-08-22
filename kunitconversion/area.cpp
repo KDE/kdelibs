@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Area::Area(QObject* parent)
-: UnitCategory(parent)
+Area::Area()
 {
-    setObjectName("area");
     setName(i18n("Area"));
 
     U(SquareYottameter, 1e+48,

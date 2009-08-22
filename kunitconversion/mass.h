@@ -26,7 +26,7 @@
 class Mass : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Mass(QObject* parent = 0);
+    Mass();
 };
 
 #endif

@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Energy::Energy(QObject* parent)
-: UnitCategory(parent)
+Energy::Energy()
 {
-    setObjectName("energy");
     setName(i18n("Energy"));
 
     U(Yottajoule, 1e+24,

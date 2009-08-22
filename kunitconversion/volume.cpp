@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Volume::Volume(QObject* parent)
-: UnitCategory(parent)
+Volume::Volume()
 {
-    setObjectName("volume");
     setName(i18n("Volume"));
 
     U(CubicYottameter, 1e+72,

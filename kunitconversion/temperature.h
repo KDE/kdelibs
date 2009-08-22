@@ -25,7 +25,7 @@
 class Temperature : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Temperature(QObject* parent = 0);
+    Temperature();
 };
 
 #endif

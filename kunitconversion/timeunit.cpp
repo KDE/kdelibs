@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Time::Time(QObject* parent)
-: UnitCategory(parent)
+Time::Time()
 {
-    setObjectName("time");
     setName(i18n("Time"));
 
     U(Yottasecond, 1e+24,

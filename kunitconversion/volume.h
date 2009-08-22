@@ -25,7 +25,7 @@
 class Volume : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Volume(QObject* parent = 0);
+    Volume();
 };
 
 #endif

@@ -30,12 +30,10 @@
 namespace KUnitConversion
 {
 
-class CONVERSION_EXPORT UnitCategory : public QObject
+class CONVERSION_EXPORT UnitCategory
 {
-    Q_OBJECT
-    Q_PROPERTY(QString name READ name)
 public:
-    explicit UnitCategory(QObject* parent = 0);
+    UnitCategory();
     virtual ~UnitCategory();
 
     /**

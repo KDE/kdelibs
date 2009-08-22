@@ -23,10 +23,9 @@
 
 using namespace KUnitConversion;
 
-Pressure::Pressure(QObject* parent)
-: UnitCategory(parent)
+Pressure::Pressure()
+: UnitCategory()
 {
-    setObjectName("pressure");
     setName(i18n("Pressure"));
 
     U(Yottapascal, 1e+24,

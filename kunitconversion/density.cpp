@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Density::Density(QObject* parent)
-: UnitCategory(parent)
+Density::Density()
 {
-    setObjectName("density");
     setName(i18n("Density"));
 
     U(YottakilogramsPerCubicMeter, 1e+24,

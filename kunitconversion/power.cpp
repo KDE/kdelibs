@@ -23,10 +23,8 @@
 
 using namespace KUnitConversion;
 
-Power::Power(QObject* parent)
-: UnitCategory(parent)
+Power::Power()
 {
-    setObjectName("power");
     setName(i18n("Power"));
 
     U(Yottawatt, 1e+24,

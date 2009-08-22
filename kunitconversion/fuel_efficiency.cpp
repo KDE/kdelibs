@@ -41,10 +41,8 @@ class mpgi : public Complex
     double fromDefault(double value) const { return 282.5 / value; };
 };
 
-FuelEfficiency::FuelEfficiency(QObject* parent)
-: UnitCategory(parent)
+FuelEfficiency::FuelEfficiency()
 {
-    setObjectName("fuelefficiency");
     setName(i18n("Fuel Efficiency"));
 
     setDefaultUnit(UP(LitersPer100Kilometers, 1,

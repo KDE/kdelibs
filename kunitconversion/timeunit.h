@@ -25,7 +25,7 @@
 class Time : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Time(QObject* parent = 0);
+    Time();
 };
 
 #endif

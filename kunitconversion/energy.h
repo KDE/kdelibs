@@ -25,7 +25,7 @@
 class Energy : public KUnitConversion::UnitCategory
 {
 public:
-    explicit Energy(QObject* parent = 0);
+    Energy();
 };
 
 #endif

@@ -42,9 +42,8 @@ public:
     KUrl url;
 };
 
-UnitCategory::UnitCategory(QObject* parent)
-: QObject(parent)
-, d(new UnitCategory::Private)
+UnitCategory::UnitCategory()
+  : d(new UnitCategory::Private)
 {
 }
 
