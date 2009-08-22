@@ -54,12 +54,14 @@ public:
     };
 };
 
-class Converter::Private : public QAtomicInt, public QObject
+class ConverterPrivate: public QSharedData
 {
 public:
     QList<UnitCategory *> categories;
-    Private()
+    ConverterPrivate()
     {
+        KGlobal::locale()->insertCatalog("libconversion");
+
         // the invalid category MUST be the first item
         categories.append(new InvalidCategory);
 
@@ -78,30 +80,21 @@ public:
         categories.append(new Density);
     };
 
-    ~Private()
+    ~ConverterPrivate()
     {
         qDeleteAll(categories);
     };
 };
 
-Converter::Private* Converter::d = 0;
+K_GLOBAL_STATIC(ConverterPrivate, static_d)
 
 Converter::Converter(QObject* parent)
-: QObject(parent)
+: QObject(parent), d(static_cast<ConverterPrivate *>(static_d))
 {
-    KGlobal::locale()->insertCatalog("libconversion");
-    if (!d) {
-        d = new Converter::Private;
-    }
-    d->ref();
 }
 
 Converter::~Converter()
 {
-    if (!d->deref()) {
-        delete d;
-        d = 0;
-    }
 }
 
 Value Converter::convert(const Value& value, const QString& toUnit) const
