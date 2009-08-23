@@ -726,6 +726,15 @@ float Font::floatWidth(QChar* str, int pos, int len, int /*extraCharsAvailable*/
     return width(str, 0, pos, len, false /*fast algorithm*/);
 }
 
+float Font::floatWidth(QChar* str, int pos, int len) const
+{
+    // For now, this is slow but correct...
+    // or rather it /would/ be correct if QFontMetricsF had charWidth(); 
+    // so instead the approximate width is used
+    QFontMetricsF fm(cfi->f);
+    return float(fm.width(QString::fromRawData(str + pos, len)));
+}
+
 }
 
 // kate: indent-width 4; replace-tabs off; tab-width 8; space-indent on; hl c++;
