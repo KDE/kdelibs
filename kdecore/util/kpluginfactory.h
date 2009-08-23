@@ -141,7 +141,7 @@ KComponentData name::componentData() \
 
 /**
  * \relates KPluginFactory
- * K_PLUGIN_FACTORY_DECLARATION defines the KPluginFactory subclass. This macro can <b>not</b> be used in a
+ * K_PLUGIN_FACTORY_DEFINITION defines the KPluginFactory subclass. This macro can <b>not</b> be used in a
  * header file.
  *
  * \param name The name of the KPluginFactory derived class. This is the name you'll need for
