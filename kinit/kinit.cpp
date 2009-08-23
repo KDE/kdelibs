@@ -52,6 +52,7 @@
 #include <QtCore/QRegExp>
 #include <QtGui/QFont>
 #include <kcomponentdata.h>
+#include <kdemacros.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>
 #include <kglobal.h>
@@ -1698,7 +1699,11 @@ int main(int argc, char **argv, char **envp)
 #ifdef Q_WS_X11
    if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty())
    {
+#ifdef __KDE_HAVE_GCC_VISIBILITY
        QString extra = KStandardDirs::locate("lib", QLatin1String("libplasma.so.3"), *s_instance);
+#else
+       QString extra;
+#endif
        // can't use KLibLoader here as it would unload the library
        // again
        if (!extra.isEmpty()) {
