@@ -5,8 +5,7 @@
 
 namespace WebCore
 {
-    using namespace DOM;
-    typedef DOMString String;
+    typedef DOM::DOMString String;
 }
 
 #endif // PlatformString_h

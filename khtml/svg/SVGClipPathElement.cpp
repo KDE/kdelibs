@@ -26,7 +26,7 @@
 #if ENABLE(SVG)
 #include "SVGClipPathElement.h"
 
-#include "CSSStyleSelector.h"
+#include "css/cssstyleselector.h"
 #include "Document.h"
 #include "SVGNames.h"
 #include "SVGTransformList.h"

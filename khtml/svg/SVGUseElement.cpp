@@ -32,7 +32,7 @@
 #if ENABLE(SVG)
 #include "SVGUseElement.h"
 
-#include "CSSStyleSelector.h"
+#include "css/cssstyleselector.h"
 /*#include "CString.h"*/
 #include "Document.h"
 /*#include "Event.h"

@@ -29,17 +29,14 @@
 #ifndef SVGRenderStyleDefs_h
 #define SVGRenderStyleDefs_h
 
-#if ENABLE(SVG)
-#include "Color.h"
-#include "Path.h"
-#include "PlatformString.h"
+#include "dom/dom_string.h"
+#include "css/css_valueimpl.h"
+#include "css/css_svgvalueimpl.h"
+
+#include <QColor>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
-
-// KHTML API compat
 #include <wtf/PassRefPtr.h>
-#include "CSSValue.h"
-#include "CSSValueList.h"
 
 // Helper macros for 'SVGRenderStyle'
 #define SVG_RS_DEFINE_ATTRIBUTE(Data, Type, Name, Initial) \
@@ -74,7 +71,11 @@
     if(!(Group->Variable == Value)) \
         Group.access()->Variable = Value;
 
-namespace WebCore
+using DOM::SVGPaintImpl;
+using DOM::CSSValueImpl;
+using DOM::CSSValueListImpl;
+    
+namespace khtml
 {
     enum EBaselineShift {
         BS_BASELINE, BS_SUB, BS_SUPER, BS_LENGTH
@@ -129,16 +130,9 @@ namespace WebCore
         PE_VISIBLE_STROKE, PE_VISIBLE_FILL, PE_VISIBLE_PAINTED, PE_ALL
     };
     
-    //class CSSValue;
-    //class CSSValueList;
-    class SVGPaint;
-
     // Inherited/Non-Inherited Style Datastructures
     class StyleFillData : public RefCounted<StyleFillData> {
     public:
-        static PassRefPtr<StyleFillData> create() { return adoptRef(new StyleFillData); }
-        PassRefPtr<StyleFillData> copy() const { return adoptRef(new StyleFillData(*this)); }
-        
         bool operator==(const StyleFillData &other) const;
         bool operator!=(const StyleFillData &other) const
         {
@@ -146,18 +140,14 @@ namespace WebCore
         }
 
         float opacity;
-        RefPtr<SVGPaint> paint;
+        RefPtr<SVGPaintImpl> paint;
 
-    private:
         StyleFillData();
         StyleFillData(const StyleFillData&);
     };
 
     class StyleStrokeData : public RefCounted<StyleStrokeData> {
     public:
-        static PassRefPtr<StyleStrokeData> create() { return adoptRef(new StyleStrokeData); }
-        PassRefPtr<StyleStrokeData> copy() const { return adoptRef(new StyleStrokeData(*this)); }
-
         bool operator==(const StyleStrokeData&) const;
         bool operator!=(const StyleStrokeData& other) const
         {
@@ -167,22 +157,18 @@ namespace WebCore
         float opacity;
         float miterLimit;
 
-        RefPtr<CSSValue> width;
-        RefPtr<CSSValue> dashOffset;
+        RefPtr<CSSValueImpl> width;
+        RefPtr<CSSValueImpl> dashOffset;
 
-        RefPtr<SVGPaint> paint;
-        RefPtr<CSSValueList> dashArray;
+        RefPtr<SVGPaintImpl> paint;
+        RefPtr<CSSValueListImpl> dashArray;
 
-    private:        
         StyleStrokeData();
         StyleStrokeData(const StyleStrokeData&);
     };
 
     class StyleStopData : public RefCounted<StyleStopData> {
     public:
-        static PassRefPtr<StyleStopData> create() { return adoptRef(new StyleStopData); }
-        PassRefPtr<StyleStopData> copy() const { return adoptRef(new StyleStopData(*this)); }
-
         bool operator==(const StyleStopData &other) const;
         bool operator!=(const StyleStopData &other) const
         {
@@ -190,80 +176,63 @@ namespace WebCore
         }
 
         float opacity;
-        Color color;
+        QColor color;
 
-    private:        
         StyleStopData();
         StyleStopData(const StyleStopData&);
     };
 
     class StyleTextData : public RefCounted<StyleTextData> {
     public:
-        static PassRefPtr<StyleTextData> create() { return adoptRef(new StyleTextData); }
-        PassRefPtr<StyleTextData> copy() const { return adoptRef(new StyleTextData(*this)); }
-        
         bool operator==(const StyleTextData& other) const;
         bool operator!=(const StyleTextData& other) const
         {
             return !(*this == other);
         }
 
-        RefPtr<CSSValue> kerning;
+        RefPtr<CSSValueImpl> kerning;
 
-    private:
         StyleTextData();
         StyleTextData(const StyleTextData& other);
     };
 
     class StyleClipData : public RefCounted<StyleClipData> {
     public:
-        static PassRefPtr<StyleClipData> create() { return adoptRef(new StyleClipData); }
-        PassRefPtr<StyleClipData> copy() const { return adoptRef(new StyleClipData(*this)); }
-
         bool operator==(const StyleClipData &other) const;
         bool operator!=(const StyleClipData &other) const
         {
             return !(*this == other);
         }
 
-        String clipPath;
+        DOMString clipPath;
 
-    private:
         StyleClipData();
         StyleClipData(const StyleClipData&);
     };
 
     class StyleMaskData : public RefCounted<StyleMaskData> {
     public:
-        static PassRefPtr<StyleMaskData> create() { return adoptRef(new StyleMaskData); }
-        PassRefPtr<StyleMaskData> copy() const { return adoptRef(new StyleMaskData(*this)); }
-
         bool operator==(const StyleMaskData &other) const;
         bool operator!=(const StyleMaskData &other) const { return !(*this == other); }
 
-        String maskElement;
+        DOMString maskElement;
 
-    private:        
         StyleMaskData();
         StyleMaskData(const StyleMaskData&);
     };
 
     class StyleMarkerData : public RefCounted<StyleMarkerData> {
     public:
-        static PassRefPtr<StyleMarkerData> create() { return adoptRef(new StyleMarkerData); }
-        PassRefPtr<StyleMarkerData> copy() const { return adoptRef(new StyleMarkerData(*this)); }
-
         bool operator==(const StyleMarkerData &other) const;
         bool operator!=(const StyleMarkerData &other) const
         {
             return !(*this == other);
         }
 
-        String startMarker;
-        String midMarker;
-        String endMarker;
+        DOMString startMarker;
+        DOMString midMarker;
+        DOMString endMarker;
 
-    private:
         StyleMarkerData();
         StyleMarkerData(const StyleMarkerData&);
     };
@@ -271,32 +240,27 @@ namespace WebCore
     // Note : the rule for this class is, *no inheritance* of these props
     class StyleMiscData : public RefCounted<StyleMiscData> {
     public:
-        static PassRefPtr<StyleMiscData> create() { return adoptRef(new StyleMiscData); }
-        PassRefPtr<StyleMiscData> copy() const { return adoptRef(new StyleMiscData(*this)); }
-
         bool operator==(const StyleMiscData &other) const;
         bool operator!=(const StyleMiscData &other) const
         {
             return !(*this == other);
         }
 
-        String filter;
-        Color floodColor;
+        DOMString filter;
+        QColor floodColor;
         float floodOpacity;
 
-        Color lightingColor;
+        QColor lightingColor;
 
         // non-inherited text stuff lives here not in StyleTextData.
-        RefPtr<CSSValue> baselineShiftValue;
+        RefPtr<CSSValueImpl> baselineShiftValue;
 
-    private:
         StyleMiscData();
         StyleMiscData(const StyleMiscData&);
     };
 
-} // namespace WebCore
+} 
 
-#endif // ENABLE(SVG)
 #endif // SVGRenderStyleDefs_h
 
 // vim:ts=4

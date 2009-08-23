@@ -27,7 +27,7 @@
 /*#include "ExceptionBase.h"*/
 #include "wtf/RefCounted.h"
 
-namespace WebCore {
+namespace DOM {
 
     class SVGException : public RefCounted<SVGException> /*: public ExceptionBase*/ {
     public:
@@ -48,20 +48,23 @@ namespace WebCore {
         // KHTML compatibility code
     public:
         unsigned short code() const { return m_code; }
-        String name() const { return m_name; }
-        String message() const { return m_message; }
+        DOM::DOMString name() const { return m_name; }
+        DOM::DOMString message() const { return m_message; }
 
-        String toString() const {
+        DOM::DOMString toString() const {
             // FIXME not implemented
-            return String();
+            return DOMString();
         }
 
     private:
         unsigned short m_code;
-        String m_name;
-        String m_message;
+        DOM::DOMString m_name;
+        DOM::DOMString m_message;
     };
+}
 
+namespace WebCore {
+    typedef DOM::SVGException SVGException;
 } // namespace WebCore
 
 #endif // ENABLE(SVG)

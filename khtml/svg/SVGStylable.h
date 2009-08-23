@@ -26,7 +26,7 @@
 #if ENABLE(SVG)
 #include <wtf/PassRefPtr.h>
 #include "xml/Document.h"
-#include "CSSValue.h"
+#include "css/css_valueimpl.h"
 
 namespace WebCore {
 
@@ -40,8 +40,8 @@ namespace WebCore {
         SVGStylable();
         virtual ~SVGStylable();
 
-        virtual CSSStyleDeclaration* style() = 0;
-        virtual PassRefPtr<CSSValue> getPresentationAttribute(const String&) = 0;
+        virtual DOM::CSSStyleDeclarationImpl* style() = 0;
+        virtual PassRefPtr<DOM::CSSValueImpl> getPresentationAttribute(const DOMString&) = 0;
     };
 
 } // namespace WebCore

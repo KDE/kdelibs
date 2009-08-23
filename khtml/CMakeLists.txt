@@ -32,7 +32,6 @@ set(khtmlgraphics_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/Path.cpp
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/GraphicsTypes.cpp
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/PathTraversalState.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/Color.cpp
   #${CMAKE_SOURCE_DIR}/khtml/platform/graphics/Image.cpp
   #${CMAKE_SOURCE_DIR}/khtml/platform/MIMETypeRegistry.cpp
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/AffineTransformQt.cpp
@@ -42,7 +41,6 @@ set(khtmlgraphics_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/IntRectQt.cpp
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/IntSizeQt.cpp
   ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/PathQt.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/ColorQt.cpp
   #${CMAKE_SOURCE_DIR}/khtml/platform/qt/MIMETypeRegistryQt.cpp
 )
 
@@ -72,8 +70,6 @@ set(khtmlsvg_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGFitToViewBox.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGCircleElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStyleElement.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGColor.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPaint.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGEllipseElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPointList.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGAnimatedPoints.cpp
@@ -352,6 +348,7 @@ set(khtmlcss_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/css/css_stylesheetimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_ruleimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_valueimpl.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/css/css_svgvalueimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_base.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/cssparser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/cssstyleselector.cpp
@@ -359,7 +356,7 @@ set(khtmlcss_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/css/parser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_renderstyledeclarationimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_mediaquery.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/css/SVGCSSParser.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/css/css_svgcssparser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/SVGCSSStyleSelector.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_webfont.cpp
 )

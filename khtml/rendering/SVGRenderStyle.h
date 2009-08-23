@@ -24,18 +24,17 @@
 #ifndef SVGRenderStyle_h
 #define SVGRenderStyle_h
 
-#include <wtf/Platform.h>
-
-#if ENABLE(SVG)
-#include "CSSValueList.h"
-#include "DataRef.h"
-#include "GraphicsTypes.h"
-#include "SVGPaint.h"
+#include "css/css_svgvalueimpl.h"
+#include "platform/graphics/GraphicsTypes.h"
+#include "platform/graphics/Path.h"
+#include "rendering/DataRef.h"
 #include "SVGRenderStyleDefs.h"
 
 #include <stdint.h>
 
-namespace WebCore
+using DOM::DOMString;
+
+namespace khtml
 {
     class SVGRenderStyle : public RefCounted<SVGRenderStyle> {    
     public:
@@ -72,38 +71,38 @@ namespace WebCore
 
         // SVG CSS Properties (using DataRef's)
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, fill, opacity, FillOpacity, fillOpacity, 1.0f)
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(SVGPaint, fill, paint, FillPaint, fillPaint, SVGPaint::defaultFill())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(SVGPaintImpl, fill, paint, FillPaint, fillPaint, SVGPaintImpl::defaultFill())
 
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, stroke, opacity, StrokeOpacity, strokeOpacity, 1.0f)
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(SVGPaint, stroke, paint, StrokePaint, strokePaint, SVGPaint::defaultStroke())
-        /*SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueList, stroke, dashArray, StrokeDashArray, strokeDashArray, 0)*/
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(SVGPaintImpl, stroke, paint, StrokePaint, strokePaint, SVGPaintImpl::defaultStroke())
+        /*SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImplList, stroke, dashArray, StrokeDashArray, strokeDashArray, 0)*/
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, stroke, miterLimit, StrokeMiterLimit, strokeMiterLimit, 4.0f)
         
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValue, stroke, width, StrokeWidth, strokeWidth, 0)
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValue, stroke, dashOffset, StrokeDashOffset, strokeDashOffset, 0);
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImpl, stroke, width, StrokeWidth, strokeWidth, 0)
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImpl, stroke, dashOffset, StrokeDashOffset, strokeDashOffset, 0);
 
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValue, text, kerning, Kerning, kerning, 0)
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImpl, text, kerning, Kerning, kerning, 0)
 
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, stops, opacity, StopOpacity, stopOpacity, 1.0f)
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(Color, stops, color, StopColor, stopColor, Color(0, 0, 0))
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(QColor, stops, color, StopColor, stopColor, QColor(0, 0, 0))
 
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(String, clip, clipPath, ClipPath, clipPath, String())
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(String, mask, maskElement, MaskElement, maskElement, String())
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(String, markers, startMarker, StartMarker, startMarker, String())
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(String, markers, midMarker, MidMarker, midMarker, String())
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(String, markers, endMarker, EndMarker, endMarker, String())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(DOMString, clip, clipPath, ClipPath, clipPath, DOMString())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(DOMString, mask, maskElement, MaskElement, maskElement, DOMString())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(DOMString, markers, startMarker, StartMarker, startMarker, DOMString())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(DOMString, markers, midMarker, MidMarker, midMarker, DOMString())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(DOMString, markers, endMarker, EndMarker, endMarker, DOMString())
 
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(String, misc, filter, Filter, filter, String())
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(DOMString, misc, filter, Filter, filter, DOMString())
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, misc, floodOpacity, FloodOpacity, floodOpacity, 1.0f)
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(Color, misc, floodColor, FloodColor, floodColor, Color(0, 0, 0))
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(Color, misc, lightingColor, LightingColor, lightingColor, Color(255, 255, 255))
-        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValue, misc, baselineShiftValue, BaselineShiftValue, baselineShiftValue, 0)
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(QColor, misc, floodColor, FloodColor, floodColor, QColor(0, 0, 0))
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(QColor, misc, lightingColor, LightingColor, lightingColor, QColor(255, 255, 255))
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImpl, misc, baselineShiftValue, BaselineShiftValue, baselineShiftValue, 0)
 
         // convenience
-        bool hasStroke() const { return (strokePaint()->paintType() != SVGPaint::SVG_PAINTTYPE_NONE); }
-        bool hasFill() const { return (fillPaint()->paintType() != SVGPaint::SVG_PAINTTYPE_NONE); }
+        bool hasStroke() const { return (strokePaint()->paintType() != SVGPaintImpl::SVG_PAINTTYPE_NONE); }
+        bool hasFill() const { return (fillPaint()->paintType() != SVGPaintImpl::SVG_PAINTTYPE_NONE); }
 
-        static float cssPrimitiveToLength(const RenderObject*, CSSValue*, float defaultValue = 0.0f);
+        static float cssPrimitiveToLength(const RenderObject*, CSSValueImpl*, float defaultValue = 0.0f);
 
     protected:
         // inherit
@@ -167,7 +166,7 @@ namespace WebCore
         } svg_noninherited_flags;
 
         // inherited attributes
-        DataRef<StyleFillData> fill;
+        khtml::DataRef<StyleFillData> fill;
         DataRef<StyleStrokeData> stroke;
         DataRef<StyleMarkerData> markers;
         DataRef<StyleTextData> text;
@@ -212,9 +211,8 @@ namespace WebCore
         }
     };
 
-} // namespace WebCore
+} // namespace khtml
 
-#endif // ENABLE(SVG)
 #endif // SVGRenderStyle_h
 
 // vim:ts=4

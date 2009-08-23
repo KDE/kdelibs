@@ -26,9 +26,12 @@
 #include "SVGList.h"
 #include "SVGPathSeg.h"
 
+namespace khtml {
+    class Path;
+}
+
 namespace WebCore {
 
-    class Path;
     class SVGElement;
  
     class SVGPathSegList : public SVGList<RefPtr<SVGPathSeg> > {
@@ -37,7 +40,7 @@ namespace WebCore {
         virtual ~SVGPathSegList();
 
         unsigned getPathSegAtLength(double);
-        Path toPathData();
+        khtml::Path toPathData();
         
     private:
         SVGPathSegList(const QualifiedName&);

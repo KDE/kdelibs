@@ -50,6 +50,7 @@
 #include <css/cssvalues.h>
 #include <css/cssproperties.h>
 #include <khtml_part.h>
+#include <khtmlview.h>
 
 #include <editing/editing_p.h>
 #include <editing/editor.h>

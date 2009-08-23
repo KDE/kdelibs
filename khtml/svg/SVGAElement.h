@@ -55,7 +55,7 @@ namespace WebCore {
         
         virtual bool supportsFocus() const;
         virtual bool isMouseFocusable() const;
-        virtual bool isKeyboardFocusable(KeyboardEvent*) const;
+        virtual bool isKeyboardFocusable(DOM::KeyboardEventImpl*) const;
         virtual bool isFocusable() const;
 
         virtual bool childShouldCreateRenderer(Node*) const;

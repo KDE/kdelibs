@@ -39,7 +39,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-namespace WebCore {
+using namespace WebCore;
+
+namespace khtml {
 
 Path::Path()
     : m_path(new QPainterPath())
@@ -186,7 +188,7 @@ bool Path::isEmpty() const
     return m_path->isEmpty();
 }
 
-String Path::debugString() const
+DOM::DOMString Path::debugString() const
 {
     QString ret;
     for (int i = 0; i < m_path->elementCount(); ++i) {

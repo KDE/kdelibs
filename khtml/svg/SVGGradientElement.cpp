@@ -26,7 +26,7 @@
 #if ENABLE(SVG)
 #include "SVGGradientElement.h"
 
-#include "CSSStyleSelector.h"
+#include "css/cssstyleselector.h"
 #include "RenderPath.h"
 #include "RenderSVGHiddenContainer.h"
 #include "SVGNames.h"
@@ -141,7 +141,7 @@ Vector<SVGGradientStop> SVGGradientElement::buildStops() const
             SVGStopElement* stop = static_cast<SVGStopElement*>(element);
             float stopOffset = stop->offset();
 
-            Color color;
+            QColor color;
             float opacity;
 
             if (stop->renderer()) {

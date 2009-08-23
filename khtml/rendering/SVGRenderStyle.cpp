@@ -31,13 +31,11 @@
 #if ENABLE(SVG)
 #include "SVGRenderStyle.h"
 
-#include "CSSPrimitiveValue.h"
-#include "CSSValueList.h"
 #include "RenderObject.h"
 #include "RenderStyle.h"
 #include "SVGStyledElement.h"
 
-namespace WebCore {
+namespace khtml {
 
 SVGRenderStyle::SVGRenderStyle()
 {
@@ -120,9 +118,9 @@ void SVGRenderStyle::inheritFrom(const SVGRenderStyle* svgInheritParent)
     svg_inherited_flags = svgInheritParent->svg_inherited_flags;
 }
 
-float SVGRenderStyle::cssPrimitiveToLength(const RenderObject* item, CSSValue* value, float defaultValue)
+float SVGRenderStyle::cssPrimitiveToLength(const RenderObject* item, DOM::CSSValueImpl* value, float defaultValue)
 {
-    CSSPrimitiveValue* primitive = static_cast<CSSPrimitiveValue*>(value);
+    DOM::CSSPrimitiveValueImpl* primitive = static_cast<DOM::CSSPrimitiveValueImpl*>(value);
     if (!primitive) return defaultValue;
 
     /*unsigned short cssType = (primitive ? primitive->primitiveType() : (unsigned short) DOM::CSSPrimitiveValue::CSS_UNKNOWN);

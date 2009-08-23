@@ -337,13 +337,13 @@ void SVGSVGElement::forceRedraw()
     // FIXME: Implement me (see bug 11275)
 }
 
-NodeList* SVGSVGElement::getIntersectionList(const FloatRect& rect, SVGElement*)
+DOM::NodeListImpl* SVGSVGElement::getIntersectionList(const FloatRect& rect, SVGElement*)
 {
     // FIXME: Implement me (see bug 11274)
     return 0;
 }
 
-NodeList* SVGSVGElement::getEnclosureList(const FloatRect& rect, SVGElement*)
+DOM::NodeListImpl* SVGSVGElement::getEnclosureList(const FloatRect& rect, SVGElement*)
 {
     // FIXME: Implement me (see bug 11274)
     return 0;

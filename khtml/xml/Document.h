@@ -31,7 +31,8 @@
 #include "Frame.h"
 #include "xml/dom_nodeimpl.h"
 #include "misc/htmlnames.h"
-//#include "wtf/PassRefPtr.h"
+#include "dom/dom_exception.h"
+#include "dom/dom_node.h"
 #include "dom/QualifiedName.h"
 #include "css/css_valueimpl.h"
 #include "css/cssproperties.h"
@@ -45,25 +46,26 @@
 
 namespace WebCore
 {
-    using namespace khtml;
-    using namespace DOM;
-    typedef DocumentImpl Document;
-    typedef DOMImplementationImpl DOMImplementation;
-    typedef ElementImpl Element;
-    typedef ElementImpl StyledElement;
-    typedef DOMString String;
-    typedef DOMStringImpl StringImpl;
-    typedef NodeImpl Node;
-    typedef AttributeImpl Attribute;
-    typedef EventImpl Event;
-    typedef RegisteredListenerList RegisteredEventListenerList;
-    typedef CSSStyleDeclarationImpl CSSStyleDeclaration;
+    typedef DOM::DocumentImpl Document;
+    typedef DOM::DOMImplementationImpl DOMImplementation;
+    typedef DOM::ElementImpl Element;
+    typedef DOM::ElementImpl StyledElement;
+    typedef DOM::DOMString String;
+    typedef DOM::DOMStringImpl StringImpl;
+    typedef DOM::NodeImpl Node;
+    typedef DOM::AttributeImpl Attribute;
+    typedef DOM::EventImpl Event;
+    typedef DOM::EventListener EventListener;
+    typedef DOM::RegisteredListenerList RegisteredEventListenerList;
+    typedef DOM::CSSStyleDeclarationImpl CSSStyleDeclaration;
     typedef QChar UChar;
-    typedef AttributeImpl MappedAttribute;
+    typedef DOM::AttributeImpl MappedAttribute;
     //typedef RenderCanvas RenderView;
-    typedef StyleSheetImpl StyleSheet;
+    typedef DOM::StyleSheetImpl StyleSheet;
     //typedef QColor Color;
-    typedef NodeImpl EventTargetNode;
+    typedef DOM::NodeImpl EventTargetNode;
+    typedef DOM::QualifiedName QualifiedName;
+    typedef DOM::DOMException  DOMException;
 }
 
 #endif

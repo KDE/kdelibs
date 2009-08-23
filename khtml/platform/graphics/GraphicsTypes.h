@@ -26,11 +26,12 @@
 #ifndef GraphicsTypes_h
 #define GraphicsTypes_h
 
-#include "PlatformString.h"
+#include "dom/dom_string.h"
 
-namespace WebCore {
 
-    //class String;
+using DOM::DOMString;
+
+namespace khtml {
 
     // Note: These constants exactly match the NSCompositeOperator constants of
     // AppKit on Mac OS X Tiger. If these ever change, we'll need to change the
@@ -58,14 +59,14 @@ namespace WebCore {
 
     enum HorizontalAlignment { AlignLeft, AlignRight, AlignHCenter };
 
-    String compositeOperatorName(CompositeOperator);
-    bool parseCompositeOperator(const String&, CompositeOperator&);
+    DOMString compositeOperatorName(CompositeOperator);
+    bool parseCompositeOperator(const DOMString&, CompositeOperator&);
 
-    String lineCapName(LineCap);
-    bool parseLineCap(const String&, LineCap&);
+    DOMString lineCapName(LineCap);
+    bool parseLineCap(const DOMString&, LineCap&);
 
-    String lineJoinName(LineJoin);
-    bool parseLineJoin(const String&, LineJoin&);
+    DOMString lineJoinName(LineJoin);
+    bool parseLineJoin(const DOMString&, LineJoin&);
 
 }
 

@@ -44,9 +44,11 @@
 // khtml
 #include "css_base.h"
 
+
 namespace WebCore {
 
 using namespace SVGNames;
+using namespace DOM;
 
 static HashSet<const SVGStyledElement*>* gElementsWithInstanceUpdatesBlocked = 0;
 
@@ -79,7 +81,7 @@ static void mapAttributeToCSSProperty(HashMap<DOMStringImpl*, int>* propertyName
 {
     /*int propertyId = cssPropertyID(attrName.localName());*/
     QString propName = attrName.localName().string();
-    int propertyId = getPropertyID(propName.toLatin1(), propName.length());
+    int propertyId = DOM::getPropertyID(propName.toLatin1(), propName.length());
     ASSERT(propertyId > 0);
     propertyNameToIdMap->set(attrName.localName().implementation(), propertyId);
 }
@@ -94,13 +96,13 @@ int SVGStyledElement::cssPropertyIdForSVGAttributeName(const QualifiedName& attr
     if (!propertyNameToIdMap) {
         propertyNameToIdMap = new HashMap<DOMStringImpl*, int>;
         // This is a list of all base CSS and SVG CSS properties which are exposed as SVG XML attributes
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, alignment_baselineAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, baseline_shiftAttr);*/
+        mapAttributeToCSSProperty(propertyNameToIdMap, alignment_baselineAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, baseline_shiftAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, clipAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, clip_pathAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, clip_ruleAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, colorAttr);
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, color_interpolationAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, color_interpolationAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, color_interpolation_filtersAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, color_profileAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, color_renderingAttr); 
@@ -108,20 +110,20 @@ int SVGStyledElement::cssPropertyIdForSVGAttributeName(const QualifiedName& attr
         mapAttributeToCSSProperty(propertyNameToIdMap, directionAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, displayAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, dominant_baselineAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, enable_backgroundAttr);*/
+        mapAttributeToCSSProperty(propertyNameToIdMap, enable_backgroundAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, fillAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, fill_opacityAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, fill_ruleAttr);
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, filterAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, filterAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, flood_colorAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, flood_opacityAttr);*/
+        mapAttributeToCSSProperty(propertyNameToIdMap, flood_opacityAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, font_familyAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, font_sizeAttr);
-        //mapAttributeToCSSProperty(propertyNameToIdMap, font_stretchAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, font_stretchAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, font_styleAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, font_variantAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, font_weightAttr);
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, glyph_orientation_horizontalAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, glyph_orientation_horizontalAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, glyph_orientation_verticalAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, image_renderingAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, kerningAttr);
@@ -134,24 +136,24 @@ int SVGStyledElement::cssPropertyIdForSVGAttributeName(const QualifiedName& attr
         mapAttributeToCSSProperty(propertyNameToIdMap, opacityAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, overflowAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, pointer_eventsAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, shape_renderingAttr);*/
+        mapAttributeToCSSProperty(propertyNameToIdMap, shape_renderingAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stop_colorAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stop_opacityAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, strokeAttr);
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, stroke_dasharrayAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, stroke_dasharrayAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stroke_dashoffsetAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stroke_linecapAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stroke_linejoinAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, stroke_miterlimitAttr);*/
+        mapAttributeToCSSProperty(propertyNameToIdMap, stroke_miterlimitAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stroke_opacityAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, stroke_widthAttr);
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, text_anchorAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, text_anchorAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, text_decorationAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, text_renderingAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, unicode_bidiAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, visibilityAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, word_spacingAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, writing_modeAttr);*/
+        mapAttributeToCSSProperty(propertyNameToIdMap, writing_modeAttr);
     }
     return propertyNameToIdMap->get(attrName.localName().implementation());
 }
@@ -299,7 +301,7 @@ RenderStyle* SVGStyledElement::resolveStyle(RenderStyle* parentStyle)
     return document()->styleSelector()->styleForElement(this/*, parentStyle*/);
 }
 
-PassRefPtr<CSSValue> SVGStyledElement::getPresentationAttribute(const String& name)
+PassRefPtr<DOM::CSSValueImpl> SVGStyledElement::getPresentationAttribute(const String& name)
 {
     /*MappedAttribute* cssSVGAttr = mappedAttributes()->getAttributeItem(name);
     if (!cssSVGAttr || !cssSVGAttr->style())

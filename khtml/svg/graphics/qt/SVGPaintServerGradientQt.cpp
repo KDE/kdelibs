@@ -44,7 +44,7 @@ void SVGPaintServerGradient::fillColorArray(QGradient& gradient, const Vector<SV
     kDebug() << stops.size() << endl;
     for (unsigned i = 0; i < stops.size(); ++i) {
         float offset = stops[i].first;
-        Color color = stops[i].second;
+        QColor color = stops[i].second;
         kDebug() << "offset" << offset << "color" << color << endl;
 
         QColor c(color.red(), color.green(), color.blue());

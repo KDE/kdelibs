@@ -29,7 +29,6 @@
 #if ENABLE(SVG)
 
 #include "AffineTransform.h"
-#include "Color.h"
 #include "SVGPaintServer.h"
 
 #include <wtf/RefCounted.h>
@@ -54,11 +53,7 @@ namespace WebCore {
         SPREADMETHOD_REPEAT = 3
     };
 
-#if PLATFORM(CG)
-    typedef std::pair<CGFloat, Color> SVGGradientStop;
-#else
-    typedef std::pair<float, Color> SVGGradientStop;
-#endif
+    typedef std::pair<float, QColor> SVGGradientStop;
 
 
     class SVGPaintServerGradient : public SVGPaintServer {
@@ -137,7 +132,7 @@ namespace WebCore {
 #endif
     };
 
-    inline SVGGradientStop makeGradientStop(float offset, const Color& color)
+    inline SVGGradientStop makeGradientStop(float offset, const QColor& color)
     {
         return std::make_pair(offset, color);
     }

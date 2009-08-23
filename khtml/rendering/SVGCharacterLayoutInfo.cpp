@@ -39,6 +39,7 @@
 
 namespace WebCore {
 using namespace khtml;
+using namespace DOM;
 
 // Helper function
 static float calculateBaselineShift(RenderObject* item)

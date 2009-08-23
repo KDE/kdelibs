@@ -29,9 +29,12 @@
 #include "FloatPoint.h"
 #include <wtf/Vector.h>
 
-namespace WebCore {
-    
+namespace khtml {
     class Path;
+}
+
+namespace WebCore {
+    typedef khtml::Path Path;
     
     class PathTraversalState {
     public:

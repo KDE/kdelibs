@@ -35,7 +35,7 @@
 
 namespace WebCore {
 
-RenderSVGTextPath::RenderSVGTextPath(Node* n)
+RenderSVGTextPath::RenderSVGTextPath(DOM::NodeImpl* n)
     : RenderSVGInline(n)
     , m_startOffset(0.0f)
     , m_exactAlignment(true)

@@ -33,7 +33,7 @@ namespace WebCore {
 using namespace khtml;
 class RenderSVGInlineText : public RenderText {
 public:
-    RenderSVGInlineText(Node*, DOMStringImpl*);
+    RenderSVGInlineText(DOM::NodeImpl*, DOM::DOMStringImpl*);
     virtual const char* renderName() const { return "RenderSVGInlineText"; }
     virtual void absoluteRects(Vector<IntRect>& rects, int tx, int ty, bool topLevel = true);
     virtual bool requiresLayer() { return false; }

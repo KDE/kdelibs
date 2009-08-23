@@ -108,7 +108,7 @@ void SVGDocument::close()
      DocumentImpl::close();
 
      if (doload) {
-         document()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+         document()->dispatchWindowEvent(DOM::EventImpl::LOAD_EVENT, false, false);
      }
 }
 
