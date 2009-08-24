@@ -948,6 +948,7 @@ install(FILES
   Plasma/ComboBox
   Plasma/ConfigLoader
   Plasma/Containment
+  Plasma/ContainmentActions
   Plasma/Context
   Plasma/Corona
   Plasma/DataContainer
