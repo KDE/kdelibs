@@ -21,7 +21,9 @@
 #include <QtDBus/QtDBus>
 
 // wait 100ms after last service
-#define TIMEOUT_LAN 100
+#define TIMEOUT_LAST_SERVICE 100
+// and at least 700ms for first WAN answer
+#define TIMEOUT_START_WAN 700
 
 /*
  * Proxy class for interface org.freedesktop.Avahi.Server

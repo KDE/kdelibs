@@ -58,7 +58,7 @@ void ServiceTypeBrowser::startBrowse()
 	connect(b,SIGNAL(AllForNow()),d,SLOT(finished()));
 	connect(&d->m_timer,SIGNAL(timeout()), d, SLOT(finished()));
 	d->m_browser=b;
-	d->m_timer.start(TIMEOUT_LAN);
+	d->m_timer.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAST_SERVICE : TIMEOUT_START_WAN);
 }
 
 void ServiceTypeBrowserPrivate::finished()
@@ -69,7 +69,7 @@ void ServiceTypeBrowserPrivate::finished()
 
 void ServiceTypeBrowserPrivate::gotNewServiceType(int,int,const QString& type,const QString&,uint)
 {
-	m_timer.start(TIMEOUT_LAN);
+	m_timer.start(TIMEOUT_LAST_SERVICE);
 	m_servicetypes+=type;
 	emit m_parent->serviceTypeAdded(type);
 }
@@ -78,7 +78,7 @@ void ServiceTypeBrowserPrivate::gotNewServiceType(int,int,const QString& type,co
 
 void ServiceTypeBrowserPrivate::gotRemoveServiceType(int,int,const QString& type,const QString&,uint)
 {
-	m_timer.start(TIMEOUT_LAN);
+	m_timer.start(TIMEOUT_LAST_SERVICE);
 	m_servicetypes.removeAll(type);
 	emit m_parent->serviceTypeRemoved(type);
 }

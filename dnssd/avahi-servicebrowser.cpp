@@ -80,7 +80,7 @@ void ServiceBrowser::startBrowse()
 	connect(b,SIGNAL(AllForNow()),d,SLOT(browserFinished()));
 	d->m_browser=b;
 	connect(&d->m_timer,SIGNAL(timeout()), d, SLOT(browserFinished()));
-	d->m_timer.start(TIMEOUT_LAN);
+	d->m_timer.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAST_SERVICE : TIMEOUT_START_WAN);
 }
 
 void ServiceBrowserPrivate::serviceResolved(bool success)
@@ -110,7 +110,7 @@ RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s) const
 
 void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
-	m_timer.start(TIMEOUT_LAN);
+	m_timer.start(TIMEOUT_LAST_SERVICE);
 	RemoteService::Ptr svr(new RemoteService(name, type,domain));
 	if (m_autoResolve) {
 		connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
@@ -124,7 +124,7 @@ void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QSt
 
 void ServiceBrowserPrivate::gotRemoveService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
-	m_timer.start(TIMEOUT_LAN);
+	m_timer.start(TIMEOUT_LAST_SERVICE);
 	RemoteService::Ptr svr=find(RemoteService::Ptr(new RemoteService(name, type,domain)));
 	emit m_parent->serviceRemoved(svr);
 	m_services.removeAll(svr);
