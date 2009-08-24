@@ -260,7 +260,7 @@ float DOMString::toFloat(bool* ok) const
 	    *ok = false;
         return 0;
     }
-    return impl->toInt(ok);
+    return impl->toFloat(ok);
 }
 
 DOMString DOMString::number(float f)
