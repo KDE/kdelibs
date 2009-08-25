@@ -132,7 +132,6 @@ SVGResource* SVGGradientElement::canvasResource()
 Vector<SVGGradientStop> SVGGradientElement::buildStops() const
 {
     Vector<SVGGradientStop> stops;
-    RenderStyle* gradientStyle = 0;
 
     for (Node* n = firstChild(); n; n = n->nextSibling()) {
         SVGElement* element = n->isSVGElement() ? static_cast<SVGElement*>(n) : 0;
@@ -141,34 +140,13 @@ Vector<SVGGradientStop> SVGGradientElement::buildStops() const
             SVGStopElement* stop = static_cast<SVGStopElement*>(element);
             float stopOffset = stop->offset();
 
-            QColor color;
-            float opacity;
+            RenderStyle* stopStyle = stop->computedStyle();
+            QColor color   = stopStyle->svgStyle()->stopColor();
+            float  opacity = stopStyle->svgStyle()->stopOpacity();
 
-            if (stop->renderer()) {
-                RenderStyle* stopStyle = stop->renderer()->style();
-                color = stopStyle->svgStyle()->stopColor();
-                opacity = stopStyle->svgStyle()->stopOpacity();
-            } else {
-                // If there is no renderer for this stop element, then a parent element
-                // set display="none" - ie. <g display="none"><linearGradient><stop>..
-                // Unfortunately we have to manually rebuild the stop style. See pservers-grad-19-b.svg
-                if (!gradientStyle)
-                    gradientStyle = const_cast<SVGGradientElement*>(this)->styleForRenderer(parent()->renderer());
-
-                RenderStyle* stopStyle = stop->resolveStyle(gradientStyle);
-
-                color = stopStyle->svgStyle()->stopColor();
-                opacity = stopStyle->svgStyle()->stopOpacity();
-
-                /*stopStyle->deref(document()->renderArena());*/
-            }
-
-            stops.append(makeGradientStop(stopOffset, qRgba(color.red(), color.green(), color.blue(), int(opacity * 255.))));
+            stops.append(makeGradientStop(stopOffset, QColor(color.red(), color.green(), color.blue(), int(opacity * 255.))));
         }
     }
-
-    /*if (gradientStyle)
-        gradientStyle->deref(document()->renderArena());*/
 
     return stops;
 }
