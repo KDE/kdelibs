@@ -614,6 +614,13 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
         CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS
     };
     SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP__KHTML_BORDER_RADIUS, borderRadiusProperties);
+    
+    static const int markerProperties[] = {
+        CSS_PROP_MARKER_START, 
+        CSS_PROP_MARKER_MID,
+        CSS_PROP_MARKER_END
+    };
+    SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP_MARKER, markerProperties);
 
     #undef SET_SHORTHAND_MAP_ENTRY
 }
