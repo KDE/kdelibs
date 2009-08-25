@@ -308,18 +308,31 @@ KTranslitSerbian::KTranslitSerbian ()
     } while (0)
     // basic
     SR_DICTI2E_ENTRY("ије", "е");
+    SR_DICTI2E_ENTRY("ИЈЕ", "Е");
     SR_DICTI2E_ENTRY("иј", "е");
+    SR_DICTI2E_ENTRY("ИЈ", "Е");
     SR_DICTI2E_ENTRY("је", "е");
+    SR_DICTI2E_ENTRY("ЈЕ", "Е");
     SR_DICTI2E_ENTRY("ље", "ле");
+    SR_DICTI2E_ENTRY("ЉЕ", "ЛЕ");
     SR_DICTI2E_ENTRY("ње", "не");
+    SR_DICTI2E_ENTRY("ЊЕ", "НЕ");
     SR_DICTI2E_ENTRY("ио", "ео");
+    SR_DICTI2E_ENTRY("ИО", "ЕО");
     SR_DICTI2E_ENTRY("иљ", "ел");
+    SR_DICTI2E_ENTRY("ИЉ", "ЕЛ");
     // special cases (include one prev. letter)
     SR_DICTI2E_ENTRY("лије", "ли");
+    SR_DICTI2E_ENTRY("ЛИЈЕ", "ЛИ");
     SR_DICTI2E_ENTRY("лијен", "лењ");
+    SR_DICTI2E_ENTRY("Лијен", "Лењ");
+    SR_DICTI2E_ENTRY("ЛИЈЕН", "ЛЕЊ");
     SR_DICTI2E_ENTRY("мија", "меја");
+    SR_DICTI2E_ENTRY("МИЈА", "МЕЈА");
     SR_DICTI2E_ENTRY("мије", "мејe");
+    SR_DICTI2E_ENTRY("МИЈЕ", "МЕЈE");
     SR_DICTI2E_ENTRY("није", "ни");
+    SR_DICTI2E_ENTRY("НИЈЕ", "НИ");
 
     d->maxReflexLen = 0;
     foreach (const QString &reflex, d->dictI2E.keys()) {
