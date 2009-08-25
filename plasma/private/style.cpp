@@ -138,8 +138,13 @@ void Style::drawComplexControl(ComplexControl control,
         subLine.moveCenter(subControlRect(control, option, SC_ScrollBarSubLine, widget).center());
         addLine.moveCenter(subControlRect(control, option, SC_ScrollBarAddLine, widget).center());
 
-        const QRect slider =
-            subControlRect(control, option, SC_ScrollBarSlider, widget).adjusted(1, 0, -1, 0);
+	QRect slider = subControlRect(control, option, SC_ScrollBarSlider, widget);
+
+        if (scrollOption && scrollOption->orientation == Qt::Horizontal) {
+            slider.adjust(0, 1, 0, -1);
+        } else {
+            slider.adjust(1, 0, -1, 0);
+        }
 
         if (scrollOption && scrollOption->orientation == Qt::Horizontal && d->scrollbar->hasElement("background-horizontal-center")) {
             d->scrollbar->setElementPrefix("background-horizontal");
