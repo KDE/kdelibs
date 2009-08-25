@@ -1154,6 +1154,11 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
 
+    if (!(option.state & QStyle::State_Enabled))
+    {
+        opt.palette.setCurrentColorGroup(QPalette::Disabled);
+    }
+
     // Unset the mouse over bit if we're not drawing the first column
     if (index.column() > 0)
         opt.state &= ~QStyle::State_MouseOver;
