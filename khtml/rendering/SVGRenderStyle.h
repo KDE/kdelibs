@@ -75,7 +75,7 @@ namespace khtml
 
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, stroke, opacity, StrokeOpacity, strokeOpacity, 1.0f)
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(SVGPaintImpl, stroke, paint, StrokePaint, strokePaint, SVGPaintImpl::defaultStroke())
-        /*SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImplList, stroke, dashArray, StrokeDashArray, strokeDashArray, 0)*/
+        SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueListImpl, stroke, dashArray, StrokeDashArray, strokeDashArray, 0)
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL(float, stroke, miterLimit, StrokeMiterLimit, strokeMiterLimit, 4.0f)
         
         SVG_RS_DEFINE_ATTRIBUTE_DATAREF_WITH_INITIAL_REFCOUNTED(CSSValueImpl, stroke, width, StrokeWidth, strokeWidth, 0)
