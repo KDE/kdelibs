@@ -466,7 +466,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     }
     if( modifiers.contains('l') )
     {
-      supp += QString("; %1").arg(acceptLanguagesHeader());
+      supp += QString("; %1").arg(KGlobal::locale()->language());
     }
   }
   d->modifiers = modifiers;
