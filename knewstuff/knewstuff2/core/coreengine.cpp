@@ -532,6 +532,10 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
     EntryHandler eh(*m_uploadedentry);
     QDomElement exml = eh.entryXML();
 
+    QDomDocument doc;
+    QDomElement root = doc.createElement("ghnsupload");
+    root.appendChild(exml);
+
     QFile f(sourcemeta.path());
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
         kError() << "Cannot write meta information to '" << sourcemeta << "'." << endl;
@@ -543,7 +547,7 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
         return;
     }
     QTextStream metastream(&f);
-    metastream << exml;
+    metastream << root;
     f.close();
 
     KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);

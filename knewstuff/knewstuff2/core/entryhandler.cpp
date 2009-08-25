@@ -91,6 +91,18 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
     QDomElement el = doc.createElement("stuff");
     el.setAttribute("category", entry.category());
 
+    KTranslatable name = entry.name();
+
+    QStringList::ConstIterator it;
+    QDomElement e;
+    QStringList langs;
+
+    langs = name.languages();
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
+        e = addElement(doc, el, "name", name.translated(*it));
+        e.setAttribute("lang", *it);
+    }
+
     QDomElement author = addElement(doc, el, "author", entry.author().name());
     if (!entry.author().email().isEmpty())
         author.setAttribute("email", entry.author().email());
@@ -124,20 +136,9 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
     (void)addElement(doc, el, "releasedate",
                      entry.releaseDate().toString(Qt::ISODate));
 
-    KTranslatable name = entry.name();
     KTranslatable summary = entry.summary();
     KTranslatable preview = entry.preview();
     KTranslatable payload = entry.payload();
-
-    QStringList::ConstIterator it;
-    QDomElement e;
-    QStringList langs;
-
-    langs = name.languages();
-    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "name", name.translated(*it));
-        e.setAttribute("lang", *it);
-    }
 
     langs = summary.languages();
     for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
