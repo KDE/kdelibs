@@ -316,6 +316,7 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("иљ", "ел");
     // special cases (include one prev. letter)
     SR_DICTI2E_ENTRY("лије", "ли");
+    SR_DICTI2E_ENTRY("лијен", "лењ");
     SR_DICTI2E_ENTRY("мија", "меја");
     SR_DICTI2E_ENTRY("мије", "мејe");
     SR_DICTI2E_ENTRY("није", "ни");
