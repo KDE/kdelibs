@@ -33,7 +33,7 @@ class KUrlRequester;
 
 /**
  * A dialog that allows editing entries of a KUrlBar ( KUrlBarItem).
- * The dialog offers to configure a given url, description and icon.
+ * The dialog offers to configure a given url, label and icon.
  * See the class-method getInformation() for easy usage.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -52,7 +52,7 @@ public:
      *                for the user to decide if he wants the entry to be
      *                available globally or just for the current application.
      * @p url the url of the item
-     * @p description a short, translated description of the item
+     * @p label a short, translated description of the item
      * @p icon an icon for the item
      * @p appLocal tells whether the item should be local for this application
      *             or be available globally
@@ -63,7 +63,7 @@ public:
      * used (KMimeType::pixmapForUrl()).
      */
     static bool getInformation( bool allowGlobal, KUrl& url,
-                                QString& description, QString& icon,
+                                QString& label, QString& icon,
                                 bool& appLocal, int iconSize,
                                 QWidget *parent = 0 );
 
@@ -74,7 +74,7 @@ public:
      *                for the user to decide if he wants the entry to be
      *                available globally or just for the current application.
      * @p url the url of the item
-     * @p description a short, translated description of the item
+     * @p label a short, translated description of the item
      * @p icon an icon for the item
      * @p appLocal tells whether the item should be local for this application
      *             or be available globally
@@ -85,7 +85,7 @@ public:
      * used (KMimeType::pixmapForUrl()).
      */
     KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
-                         const QString& description, const QString &icon,
+                         const QString& label, const QString &icon,
                          bool appLocal = true,
                          int iconSize = KIconLoader::SizeMedium,
                          QWidget *parent = 0);
@@ -100,9 +100,9 @@ public:
     KUrl url() const;
 
     /**
-     * @returns the configured description
+     * @returns the configured label
      */
-    QString description() const;
+    QString label() const;
 
     /**
      * @returns the configured icon
@@ -125,9 +125,9 @@ private:
      */
     KUrlRequester * m_urlEdit;
     /**
-     * The KLineEdit used for editing the description
+     * The KLineEdit used for editing the label
      */
-    KLineEdit     * m_edit;
+    KLineEdit     * m_labelEdit;
     /**
      * The KIconButton to configure the icon
      */

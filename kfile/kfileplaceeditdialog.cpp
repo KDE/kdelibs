@@ -52,18 +52,18 @@
 
 
 bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
-                                          QString& description, QString& icon,
+                                          QString& label, QString& icon,
                                           bool& appLocal, int iconSize,
                                           QWidget *parent )
 {
     KFilePlaceEditDialog *dialog = new KFilePlaceEditDialog(allowGlobal, url,
-                                                            description, icon,
+                                                            label, icon,
                                                             appLocal,
                                                             iconSize, parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
         url         = dialog->url();
-        description = dialog->description();
+        label       = dialog->label();
         icon        = dialog->icon();
         appLocal    = dialog->applicationLocal();
 
@@ -76,7 +76,7 @@ bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
 }
 
 KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
-                                           const QString& description,
+                                           const QString& label,
                                            const QString &icon, bool appLocal,
                                            int iconSize,
                                            QWidget *parent)
@@ -95,13 +95,16 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     box->addLayout( layout );
 
     QString whatsThisText = i18n("<qt>This is the text that will appear in the Places panel.<br /><br />"
-                                 "The description should consist of one or two words "
-                                 "that will help you remember what this entry refers to.</qt>");
-    m_edit = new KLineEdit( wdg );
-    layout->addRow( i18n("&Description:"), m_edit );
-    m_edit->setText( description.isEmpty() ? url.fileName() : description );
-    m_edit->setWhatsThis( whatsThisText );
-    layout->labelForField(m_edit)->setWhatsThis( whatsThisText );
+                                 "The label should consist of one or two words "
+                                 "that will help you remember what this entry refers to. "
+                                 "If you do not enter a label, it will be derived from "
+                                 "the location's URL.</qt>");
+    m_labelEdit = new KLineEdit(wdg);
+    layout->addRow(i18n("L&abel:"), m_labelEdit);
+    m_labelEdit->setText(label);
+    m_labelEdit->setClickMessage(i18n("Enter descriptive label here"));
+    m_labelEdit->setWhatsThis(whatsThisText);
+    layout->labelForField(m_labelEdit)->setWhatsThis(whatsThisText);
 
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<br /><br />"
                          "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
@@ -145,7 +148,13 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     else
         m_appLocal = 0L;
     connect(m_urlEdit->lineEdit(),SIGNAL(textChanged ( const QString & )),this,SLOT(urlChanged(const QString & )));
-    m_edit->setFocus();
+    if (!label.isEmpty()) {
+        // editing existing entry
+        m_labelEdit->setFocus();
+    } else {
+        // new entry
+        m_urlEdit->setFocus();
+    }
     setMainWidget( wdg );
 }
 
@@ -163,9 +172,21 @@ KUrl KFilePlaceEditDialog::url() const
     return m_urlEdit->url();
 }
 
-QString KFilePlaceEditDialog::description() const
+QString KFilePlaceEditDialog::label() const
 {
-    return m_edit->text();
+    if (!m_labelEdit->text().isEmpty()) {
+        return m_labelEdit->text();
+    }
+
+    // derive descriptive label from the URL
+    KUrl url = m_urlEdit->url();
+    if (!url.fileName().isEmpty()) {
+        return url.fileName();
+    }
+    if (!url.host().isEmpty()) {
+        return url.host();
+    }
+    return url.scheme();
 }
 
 const QString &KFilePlaceEditDialog::icon() const

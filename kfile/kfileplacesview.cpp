@@ -646,17 +646,17 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     } else if (edit != 0 && result == edit) {
         KBookmark bookmark = placesModel->bookmarkForIndex(index);
         KUrl url = bookmark.url();
-        QString description = bookmark.text();
+        QString label = bookmark.text();
         QString iconName = bookmark.icon();
         bool appLocal = !bookmark.metaDataItem("OnlyInApp").isEmpty();
 
-        if (KFilePlaceEditDialog::getInformation(true, url, description,
+        if (KFilePlaceEditDialog::getInformation(true, url, label,
                                                  iconName, appLocal, 64, this))
         {
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();
 
-            placesModel->editPlace(index, description, url, iconName, appName);
+            placesModel->editPlace(index, label, url, iconName, appName);
         }
 
     } else if (remove != 0 && result == remove) {
@@ -680,17 +680,17 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     } else if (eject != 0 && result == eject) {
         placesModel->requestEject(index);
     } else if (add != 0 && result == add) {
-        KUrl url = QDir::homePath();
-        QString description = i18n("Enter a description");
+        KUrl url = d->currentUrl;
+        QString label;
         QString iconName = "folder";
         bool appLocal = true;
-        if (KFilePlaceEditDialog::getInformation(true, url, description,
+        if (KFilePlaceEditDialog::getInformation(true, url, label,
                                                  iconName, appLocal, 64, this))
         {
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();
 
-            placesModel->addPlace(description, url, iconName, appName);
+            placesModel->addPlace(label, url, iconName, appName);
         }
     }
 
