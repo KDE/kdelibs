@@ -1195,18 +1195,13 @@ bool KPixmapCache::recreateCacheFiles()
         return false;
     }
 
-    KPixmapCacheIndexHeader indexHeader = { 0 };
     d->mCacheId = ::time(0);
     d->mTimestamp = ::time(0);
-
-    memcpy(indexHeader.magic, KPC_MAGIC, sizeof(indexHeader.magic));
-    indexHeader.cacheVersion = KPIXMAPCACHE_VERSION;
-    indexHeader.timestamp = d->mTimestamp;
-    indexHeader.cacheId = d->mCacheId;
-
+    
     // We can't know the full size until custom headers written.
     // mmapFiles() will take care of correcting the size.
-    indexHeader.size = 0;
+    KPixmapCacheIndexHeader indexHeader = { {0}, KPIXMAPCACHE_VERSION, 0, d->mCacheId, d->mTimestamp };
+    memcpy(indexHeader.magic, KPC_MAGIC, sizeof(indexHeader.magic));
 
     indexfile.write(reinterpret_cast<char*>(&indexHeader), sizeof indexHeader);
 
@@ -1217,10 +1212,8 @@ bool KPixmapCache::recreateCacheFiles()
         return false;
     }
 
-    KPixmapCacheDataHeader dataHeader = { 0 };
+    KPixmapCacheDataHeader dataHeader = { {0}, KPIXMAPCACHE_VERSION, sizeof dataHeader };
     memcpy(dataHeader.magic, KPC_MAGIC, sizeof(dataHeader.magic));
-    dataHeader.cacheVersion = KPIXMAPCACHE_VERSION;
-    dataHeader.size = sizeof dataHeader;
 
     datafile.write(reinterpret_cast<char*>(&dataHeader), sizeof dataHeader);
 
