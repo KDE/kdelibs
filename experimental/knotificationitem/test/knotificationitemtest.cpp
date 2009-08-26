@@ -27,6 +27,7 @@
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <kmenu.h>
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
     tray->setToolTipTitle("DBus System tray test");
     tray->setToolTipSubTitle("This is a test of the new systemtray specification");
 
-    //tray->setToolTip("konqueror", "DBus System tray test", "This is a test of the new systemtray specification");
+    tray->setToolTip("konqueror", "DBus System tray test", "This is a test of the new systemtray specification");
 
     tray->showMessage("message test", "Test of the new systemtray notifications wrapper", "konqueror", 3000);
     //tray->setStandardActionsEnabled(false);
