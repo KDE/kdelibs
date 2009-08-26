@@ -216,15 +216,17 @@ QIcon KNotificationItem::attentionIconPixmap() const
 
 void KNotificationItem::setAttentionMovie(QMovie *movie)
 {
-    //really ugly, but frameCount just returns 0 usually...
-    for (int i=0; true; ++i) {
+    if (movie != 0) {
+        //really ugly, but frameCount just returns 0 usually...
+        for (int i=0; true; ++i) {
 
-        if (!movie->jumpToFrame(i)) {
-            break;
+            if (!movie->jumpToFrame(i)) {
+                break;
+            }
+
+            QImage frame = movie->currentImage();
+            d->movieVector.append(d->imageToStruct(frame));
         }
-
-        QImage frame = movie->currentImage();
-        d->movieVector.append(d->imageToStruct(frame));
     }
 
     d->movie = movie;
