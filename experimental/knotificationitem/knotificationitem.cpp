@@ -436,7 +436,7 @@ bool KNotificationItem::standardActionsEnabled() const
 void KNotificationItem::showMessage(const QString & title, const QString & message, const QString &icon, int timeout)
 {
     if (!d->notificationsClient) {
-        d->notificationsClient = new org::freedesktop::Notifications("org.freedesktop.Notifications", "/Notifications",
+        d->notificationsClient = new org::freedesktop::Notifications("org.freedesktop.Notifications", "/org/freedesktop/Notifications",
                                                 QDBusConnection::sessionBus());
     }
 
