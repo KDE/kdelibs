@@ -6239,6 +6239,9 @@ bool KHTMLPart::handleMouseMoveEventDrag(khtml::MouseMoveEvent *event)
 #ifdef QT_NO_DRAGANDDROP
   return false;
 #else
+  if (!dndEnabled())
+    return false;
+
   DOM::Node innerNode = event->innerNode();
 
   if( (d->m_bMousePressed &&
