@@ -540,7 +540,7 @@ bool KBugReport::sendBugReport()
   kDebug() << "kbugreport: sendbugmail exit, status " << proc.exitStatus() << " code " << proc.exitCode();
 
   QByteArray line;
-  if (proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 1) { // XXX too restrictive?
+  if (proc.exitStatus() == QProcess::NormalExit && proc.exitCode() != 0) {
       // XXX not stderr?
       while (!proc.atEnd())
           line = proc.readLine();
