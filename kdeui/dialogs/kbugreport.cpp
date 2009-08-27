@@ -53,7 +53,7 @@
 class KBugReportPrivate {
 public:
     KBugReportPrivate(KBugReport *q): q(q) {}
-  
+
     void _k_slotConfigureEmail();
     void _k_slotSetFrom();
     void _k_appChanged(int);
@@ -62,7 +62,7 @@ public:
     KBugReport *q;
     QProcess * m_process;
     const KAboutData * m_aboutData;
-    
+
     KTextEdit * m_lineedit;
     KLineEdit * m_subject;
     QLabel * m_from;
@@ -70,7 +70,7 @@ public:
     QString m_strVersion;
     QGroupBox * m_bgSeverity;
     QPushButton * m_configureEmail;
-  
+
     KComboBox *appcombo;
     QString lastError;
     QString kde_version;
@@ -524,13 +524,17 @@ bool KBugReport::sendBugReport()
       command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") );
 
   QProcess proc;
-  proc.start( command, QStringList() << " --subject " << d->m_subject->text() << " --recipient " << recipient );
+  QStringList args;
+  args << "--subject" << d->m_subject->text() << "--recipient" << recipient;
+  proc.start( command, args );
+  //kDebug() << command << args;
   if (!proc.waitForStarted())
   {
     kError() << "Unable to open a pipe to " << command << endl;
     return false;
   }
   proc.write( text().toAscii() );
+  proc.closeWriteChannel();
 
   proc.waitForFinished();
   kDebug() << "kbugreport: sendbugmail exit, status " << proc.exitStatus() << " code " << proc.exitCode();
