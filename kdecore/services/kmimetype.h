@@ -175,12 +175,11 @@ public:
      *
      * Equivalent to
      * \code
-     * KUrl u;
-     * u.setPath(path);
+     * KUrl u(path);
      * return findByUrl( u, mode, true, fast_mode );
      * \endcode
      *
-     * @param path the path to the file
+     * @param path the path to the file (a file name is enough, in fast mode)
      * @param mode the mode of the file (used, for example, to identify
      *              executables)
      * @param fast_mode If set to true no disk access is allowed to
