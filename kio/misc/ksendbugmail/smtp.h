@@ -124,6 +124,7 @@ public Q_SLOTS:
 
     void socketReadyToRead();
     void socketClosed();
+    void socketError(QAbstractSocket::SocketError);
 
 Q_SIGNALS:
     void connectionClosed();
