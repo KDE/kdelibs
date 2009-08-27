@@ -177,24 +177,14 @@ void SMTP::connectTimerTick(void)
     kDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... ";
     sock = KSocketFactory::connectToHost("smtp", serverHost, hostPort, this);
 
-#if 0
-    // socket can't fail here
-    if (!sock->connect()) {
-        timeOutTimer.stop();
-        kDebug() << "connection failed!";
-        socketClosed();
-        emit error(ConnectError);
-        connected = false;
-        return;
-    }
-#endif
     connected = true;
     finished = false;
     state = Init;
     serverState = None;
 
     connect(sock, SIGNAL(readyRead()), this, SLOT(socketReadyToRead()));
-    connect(sock, SIGNAL(error()), this, SLOT(socketClosed()));
+    connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), this,
+            SLOT(socketError(QAbstractSocket::SocketError)));
     connect(sock, SIGNAL(disconnected()), this, SLOT(socketClosed()));
     timeOutTimer.stop();
     kDebug() << "connected";
@@ -245,13 +235,21 @@ void SMTP::socketReadyToRead()
     }
 }
 
+void SMTP::socketError(QAbstractSocket::SocketError socketError)
+{
+    kDebug() << socketError << sock->errorString();
+    Q_UNUSED(socketError);
+    emit error(ConnectError);
+    socketClosed();
+}
+
 void SMTP::socketClosed()
 {
     timeOutTimer.stop();
     kDebug() << "connection terminated";
     connected = false;
-    delete sock;
-    sock = 0L;
+    sock->deleteLater();
+    sock = 0;
     emit connectionClosed();
 }
 

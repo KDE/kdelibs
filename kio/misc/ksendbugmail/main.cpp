@@ -36,8 +36,7 @@
 #include "smtp.h"
 
 void BugMailer::slotError(int errornum) {
-    kDebug() << "slotError\n";
-    QString str, lstr;
+    QString lstr;
 
     switch(errornum) {
         case SMTP::ConnectError:
@@ -56,21 +55,23 @@ void BugMailer::slotError(int errornum) {
             lstr = sm->getLastLine().trimmed();
             lstr = i18n("Server said: \"%1\"", lstr);
     }
+    kDebug() << lstr;
+
     fputs(lstr.toUtf8().data(), stdout);
     fflush(stdout);
 
-    ::exit(1);
+    qApp->exit(1);
 }
 
 void BugMailer::slotSend() {
-    kDebug() << "slotSend\n";
-    ::exit(0);
+    kDebug();
+    qApp->exit(0);
 }
 
 int main(int argc, char **argv) {
 
     KAboutData d("ksendbugmail", "kdelibs4", ki18n("KSendBugMail"), "1.0",
-                 ki18n("Sends a short bug report to submit@bugs.kde.org"),
+                 ki18n("Sends a bug report by email"),
                  KAboutData::License_GPL, ki18n("(c) 2000 Stephan Kulow"));
     d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
 
@@ -92,7 +93,7 @@ int main(int argc, char **argv) {
             recipient = recipient.mid(1).left(recipient.length() - 2);
         }
     }
-    kDebug() << "recp \"" << recipient << "\"\n";
+    kDebug() << "recp" << recipient;
 
     QString subject = args->getOption("subject");
     if (subject.isEmpty())
