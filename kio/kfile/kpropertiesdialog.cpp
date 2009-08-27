@@ -2834,7 +2834,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
         int index = d->m_devicelist.indexOf(deviceStr);
         if (index != -1)
         {
-            //kDebug(250) << "found it " << index;
+            //kDebug(250) << "found it" << index;
             slotActivated( index );
         }
     }
@@ -2891,9 +2891,13 @@ void KDevicePropsPlugin::updateInfo()
 
 void KDevicePropsPlugin::slotActivated( int index )
 {
-    // Update mountpoint so that it matches the device that was selected in the combo
-    d->device->setEditText( d->m_devicelist[index] );
-    d->mountpoint->setText( d->mountpointlist[index] );
+    // index can be more than the number of known devices, when the user types
+    // a "custom" device.
+    if (index < d->m_devicelist.count()) {
+        // Update mountpoint so that it matches the device that was selected in the combo
+        d->device->setEditText(d->m_devicelist[index]);
+        d->mountpoint->setText(d->mountpointlist[index]);
+    }
 
     updateInfo();
 }
