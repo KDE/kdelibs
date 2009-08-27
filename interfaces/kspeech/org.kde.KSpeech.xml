@@ -117,6 +117,21 @@
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
         
+        <method name="setOutputModule">
+            <arg name="module" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="setLanguage">
+            <arg name="language" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="setVoiceType">
+            <arg name="voiceType" type="i" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
         <method name="setSpeed">
             <arg name="speed" type="i" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
