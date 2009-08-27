@@ -273,6 +273,8 @@ void KUrlRequester::setText(const QString& text)
 void KUrlRequester::setStartDir(const KUrl& startDir)
 {
     d->m_startDir = startDir;
+    if (startDir.isLocalFile())
+        d->myCompletion->setDir(startDir.toLocalFile());
 }
 
 void KUrlRequester::changeEvent(QEvent *e)
