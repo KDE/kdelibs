@@ -23,18 +23,24 @@
 #include <kbugreport.h>
 
 int main(int argc, char **argv) {
-   KAboutData about("kbugreporttest", 0, ki18n("kbugreporttest"), "version");
-   KCmdLineArgs::init(argc, argv, &about);
 
-   KApplication a;
-   a.setQuitOnLastWindowClosed(false);
-   KBugReport rep(0,true,&about);
-   rep.exec();
-   KAboutData about1("kbugreporttest", 0, ki18n("kbugreporttest"), "version",
-                     ki18n("description"), KAboutData::License_Unknown,
-                     ki18n("copyright"), ki18n("bug report tool"),
-                     QByteArray(), "test@bugs.kde.org");
-   KBugReport rep1(0,true,&about1);
-   rep1.exec();
-   return 0;
+    // First a bug report to bugs.kde.org
+    KAboutData about("kbugreporttest", 0, ki18n("kbugreporttest"), "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication a;
+    a.setQuitOnLastWindowClosed(false);
+    KBugReport rep(0,true,&about);
+    rep.exec();
+
+    // Then a bug report by email.
+    // Change the email address to check if it worked :)
+    KAboutData about1("kbugreporttest", 0, ki18n("kbugreporttest"), "version",
+                      ki18n("description"), KAboutData::License_Unknown,
+                      ki18n("copyright"), ki18n("bug report tool"),
+                      QByteArray(), "null@bugs.kde.org");
+    KBugReport rep1(0,true,&about1);
+    rep1.exec();
+
+    return 0;
 }
