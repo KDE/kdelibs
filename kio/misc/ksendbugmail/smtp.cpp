@@ -248,7 +248,8 @@ void SMTP::socketClosed()
     timeOutTimer.stop();
     kDebug() << "connection terminated";
     connected = false;
-    sock->deleteLater();
+    if (sock)
+        sock->deleteLater();
     sock = 0;
     emit connectionClosed();
 }
