@@ -87,6 +87,13 @@ void Dialog::addPluginInfos(const KPluginInfo::List &plugininfos)
     for (KPluginInfo::List::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it ) {
         d->registeredComponents.append(it->pluginName());
+        if (it->kcmServices().isEmpty()) {
+            // this plugin has no kcm services, still we want to show the disable/enable stuff
+            // so add a dummy kcm
+            KService::Ptr service = it->service();
+            d->kcmInfos << KCModuleInfo(service);
+            continue;
+        }
         foreach (const KService::Ptr &service, it->kcmServices()) {
             d->kcmInfos << KCModuleInfo(service);
         }
@@ -215,6 +222,69 @@ bool DialogPrivate::isPluginImmutable(const KPluginInfo &pinfo) const
     return pinfo.property("X-KDE-PluginInfo-Immutable").toBool();
 }
 
+KPageWidgetItem *DialogPrivate::createPageItem(KPageWidgetItem *parentItem,
+                                               const QString &name, const QString &comment,
+                                               const QString &iconName, int weight)
+{
+    Q_Q(Dialog);
+    QWidget * page = new QWidget( q );
+
+    QCheckBox *checkBox = new QCheckBox(i18n("Enable component"), page);
+    QLabel *iconLabel = new QLabel(page);
+    QLabel *commentLabel = new QLabel(comment, page);
+    commentLabel->setTextFormat(Qt::RichText);
+    QVBoxLayout * layout = new QVBoxLayout(page);
+    layout->addWidget(checkBox);
+    layout->addWidget(iconLabel);
+    layout->addWidget(commentLabel);
+    layout->addStretch();
+    page->setLayout(layout);
+
+    KPageWidgetItem *item = new KPageWidgetItem(page, name);
+    item->setIcon(KIcon(iconName));
+    iconLabel->setPixmap(item->icon().pixmap(128, 128));
+    item->setProperty("_k_weight", weight);
+    checkBoxForItem.insert(item, checkBox);
+
+    const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(q->pageWidget()->model());
+    Q_ASSERT(model);
+
+    if (parentItem) {
+        const QModelIndex parentIndex = model->index(parentItem);
+        const int siblingCount = model->rowCount(parentIndex);
+        int row = 0;
+        for (; row < siblingCount; ++row) {
+            KPageWidgetItem *siblingItem = model->item(parentIndex.child(row, 0));
+            if (siblingItem->property("_k_weight").toInt() > weight) {
+                // the item we found is heavier than the new module
+                q->insertPage(siblingItem, item);
+                break;
+            }
+        }
+        if (row == siblingCount) {
+            // the new module is either the first or the heaviest item
+            q->addSubPage(parentItem, item);
+        }
+    } else {
+        const int siblingCount = model->rowCount();
+        int row = 0;
+        for (; row < siblingCount; ++row) {
+            KPageWidgetItem *siblingItem = model->item(model->index(row, 0));
+            if (siblingItem->property("_k_weight").toInt() > weight) {
+                // the item we found is heavier than the new module
+                q->insertPage(siblingItem, item);
+                break;
+            }
+        }
+        if (row == siblingCount) {
+            // the new module is either the first or the heaviest item
+            q->addPage(item);
+        }
+    }
+
+    return (item);
+}
+
 void DialogPrivate::parseGroupFile( const QString & filename )
 {
     Q_Q(Dialog);
@@ -226,64 +296,10 @@ void DialogPrivate::parseGroupFile( const QString & filename )
         }
         KConfigGroup conf(&file, group);
 
-        QWidget * page = new QWidget( q );
-
-        const QString iconName = conf.readEntry("Icon");
-        QCheckBox *checkBox = new QCheckBox(i18n("Enable component"), page);
-        QLabel *iconLabel = new QLabel(page);
-        QLabel *comment = new QLabel(conf.readEntry("Comment"), page);
-        comment->setTextFormat(Qt::RichText);
-        QVBoxLayout * layout = new QVBoxLayout(page);
-        layout->addWidget(checkBox);
-        layout->addWidget(iconLabel);
-        layout->addWidget(comment);
-        layout->addStretch();
-        page->setLayout(layout);
-
-        KPageWidgetItem *item = new KPageWidgetItem(page, conf.readEntry("Name"));
-        item->setIcon(KIcon(iconName));
-        iconLabel->setPixmap(item->icon().pixmap(128, 128));
-        const int weight = conf.readEntry("Weight", 100);
-        item->setProperty("_k_weight", weight);
-        checkBoxForItem.insert(item, checkBox);
-
-        const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(q->pageWidget()->model());
-        Q_ASSERT(model);
         const QString parentId = conf.readEntry("Parent");
         KPageWidgetItem *parentItem = pageItemForGroupId.value(parentId);
-        if (parentItem) {
-            const QModelIndex parentIndex = model->index(parentItem);
-            const int siblingCount = model->rowCount(parentIndex);
-            int row = 0;
-            for (; row < siblingCount; ++row) {
-                KPageWidgetItem *siblingItem = model->item(parentIndex.child(row, 0));
-                if (siblingItem->property("_k_weight").toInt() > weight) {
-                    // the item we found is heavier than the new module
-                    q->insertPage(siblingItem, item);
-                    break;
-                }
-            }
-            if (row == siblingCount) {
-                // the new module is either the first or the heaviest item
-                q->addSubPage(parentItem, item);
-            }
-        } else {
-            const int siblingCount = model->rowCount();
-            int row = 0;
-            for (; row < siblingCount; ++row) {
-                KPageWidgetItem *siblingItem = model->item(model->index(row, 0));
-                if (siblingItem->property("_k_weight").toInt() > weight) {
-                    // the item we found is heavier than the new module
-                    q->insertPage(siblingItem, item);
-                    break;
-                }
-            }
-            if (row == siblingCount) {
-                // the new module is either the first or the heaviest item
-                q->addPage(item);
-            }
-        }
-
+        KPageWidgetItem *item = createPageItem(parentItem, conf.readEntry("Name"), conf.readEntry("Comment"),
+                                               conf.readEntry("Icon"), conf.readEntry("Weight", 100));
         pageItemForGroupId.insert(group, item);
     }
 }
@@ -320,16 +336,36 @@ void DialogPrivate::createDialogFromServices()
         }
         const QString parentId = info.service()->property("X-KDE-CfgDlgHierarchy", QVariant::String).toString();
         KPageWidgetItem *parent = pageItemForGroupId.value(parentId);
+        if (!parent) {
+            // dummy kcm
+            bool foundPlugin = false;
+            foreach (KPluginInfo pinfo, plugininfos) {
+                if (pinfo.service() == info.service()) {
+                    if (!pinfo.kcmServices().count()) {
+                        const KService::Ptr service = info.service();
+                        // FIXME get weight from service or plugin info
+                        const int weight = 1000;
+                        KPageWidgetItem *item = createPageItem(0, service->name(), service->comment(), service->icon(), weight);
+                        connectItemCheckBox(item, pinfo, pinfo.isPluginEnabled());
+                        foundPlugin = true;
+                        break;
+                    }
+                }
+            }
+            if (foundPlugin) {
+                continue;
+            }
+        }
         KPageWidgetItem *item = q->addModule(info, parent, arguments);
         kDebug(700) << "added KCM '" << info.moduleName() << "'";
         foreach (KPluginInfo pinfo, plugininfos) {
             kDebug(700) << pinfo.pluginName();
             if (pinfo.kcmServices().contains(info.service())) {
                 const bool isEnabled = isPluginForKCMEnabled(&info, pinfo);
-                item->setEnabled(isEnabled);
                 kDebug(700) << "correct KPluginInfo for this KCM";
                 // this KCM belongs to a plugin
-                if (parent && pinfo.kcmServices().count() > 1) {
+                if (parent && pinfo.kcmServices().count() >= 1) {
+                    item->setEnabled(isEnabled);
                     const KPluginInfo &plugin = pluginForItem.value(parent);
                     if (plugin.isValid()) {
                         if (plugin != pinfo) {
@@ -342,16 +378,7 @@ void DialogPrivate::createDialogFromServices()
                         }
                         // else everything is fine
                     } else {
-                        QCheckBox *checkBox = checkBoxForItem.value(parent);
-                        Q_ASSERT(checkBox);
-                        pluginForItem.insert(parent, pinfo);
-                        parent->setCheckable(!isPluginImmutable(pinfo));
-                        parent->setChecked(isEnabled);
-                        checkBox->setVisible(!isPluginImmutable(pinfo));
-                        checkBox->setChecked(isEnabled);
-                        q->connect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
-                        q->connect(parent, SIGNAL(toggled(bool)), checkBox, SLOT(setChecked(bool)));
-                        q->connect(checkBox, SIGNAL(clicked(bool)), parent, SLOT(setChecked(bool)));
+                        connectItemCheckBox(parent, pinfo, isEnabled);
                     }
                 } else {
                     pluginForItem.insert(item, pinfo);
@@ -387,16 +414,7 @@ void DialogPrivate::createDialogFromServices()
                 if (!allowEmpty) {
                     q->removePage(it.value());
                 } else {
-                    QCheckBox *checkBox = checkBoxForItem.value(it.value());
-                    Q_ASSERT(checkBox);
-                    pluginForItem.insert(it.value(), pinfo);
-                    it.value()->setCheckable(!isPluginImmutable(pinfo));
-                    it.value()->setChecked(pinfo.isPluginEnabled());
-                    checkBox->setVisible(!isPluginImmutable(pinfo));
-                    checkBox->setChecked(pinfo.isPluginEnabled());
-                    q->connect(it.value(), SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
-                    q->connect(it.value(), SIGNAL(toggled(bool)), checkBox, SLOT(setChecked(bool)));
-                    q->connect(checkBox, SIGNAL(clicked(bool)), it.value(), SLOT(setChecked(bool)));
+                    connectItemCheckBox(it.value(), pinfo, pinfo.isPluginEnabled());
                 }
             }
         }
@@ -418,6 +436,21 @@ void DialogPrivate::createDialogFromServices()
     QObject::connect(q, SIGNAL(applyClicked()), q, SLOT(_k_syncConfiguration()));
     QObject::connect(q, SIGNAL(configCommitted(const QByteArray &)), q,
             SLOT(_k_reparseConfiguration(const QByteArray &)));
+}
+
+void DialogPrivate::connectItemCheckBox(KPageWidgetItem *item, const KPluginInfo &pinfo, bool isEnabled)
+{
+    Q_Q(Dialog);
+    QCheckBox *checkBox = checkBoxForItem.value(item);
+    Q_ASSERT(checkBox);
+    pluginForItem.insert(item, pinfo);
+    item->setCheckable(!isPluginImmutable(pinfo));
+    item->setChecked(isEnabled);
+    checkBox->setVisible(!isPluginImmutable(pinfo));
+    checkBox->setChecked(isEnabled);
+    q->connect(item, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
+    q->connect(item, SIGNAL(toggled(bool)), checkBox, SLOT(setChecked(bool)));
+    q->connect(checkBox, SIGNAL(clicked(bool)), item, SLOT(setChecked(bool)));
 }
 
 void DialogPrivate::_k_syncConfiguration()

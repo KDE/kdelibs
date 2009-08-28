@@ -69,6 +69,13 @@ class DialogPrivate : public KCMultiDialogPrivate
         void _k_reparseConfiguration(const QByteArray &a);
         virtual void _k_clientChanged();
 
+        KPageWidgetItem *createPageItem(KPageWidgetItem *parentItem,
+                                        const QString &name, const QString &comment,
+                                        const QString &iconName, int weight);
+
+        void connectItemCheckBox(KPageWidgetItem *item, const KPluginInfo &pinfo,
+                            bool isEnabled);
+
     private:
         /**
          * @internal
