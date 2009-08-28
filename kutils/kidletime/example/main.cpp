@@ -17,9 +17,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#include <KApplication>
-#include <KCmdLineArgs>
-#include <KAboutData>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include "KIdleTest.h"
 
 int main(int argc, char **argv)
