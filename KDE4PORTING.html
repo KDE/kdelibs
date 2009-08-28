@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Guide to Porting Applications to KDE 4.0</title>
+<title>Guide to Porting Applications to KDE 4.x</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
 <!--
@@ -50,7 +50,7 @@ pre {
 </style>
 </head>
 <body>
-<h1>Porting Applications to KDE 4.0</h1>
+<h1>Porting Applications to KDE 4</h1>
 
 <h2>Note</h2>
 <p>All modules should build from /trunk/KDE/kdelibs; there is no snapshot branch any longer. Major changes happen on Mondays (in any timezone) so expect rapid changes during that time. Things should be generally stable otherwise, but this <b>is</b> the development area, so there are no guarantees.</p>
@@ -58,7 +58,7 @@ pre {
 <p>Deprecated classed that have been renamed to e.g. K3Foo are in kde3support.</p>
 
 <p>This document contains the changes you have to apply to programs written for
-KDE 3.x when you want to port them to KDE 4.0.<br>
+KDE 3.x when you want to port them to KDE 4.x.<br>
 
 <h3><a name="TOC">Table of Contents</a></h3>
 
@@ -701,7 +701,7 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 </ul>
 
 <h4>KStaticDeleter</h4>
-<p>Either use K3StaticDeleter or port to the <a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdecore/html/group__KDEMacros.html#g75ca0c60b03dc5e4f9427263bf4043c7">K_GLOBAL_STATIC</a> macro.
+<p>Either use K3StaticDeleter or port to the <a href="http://api.kde.org/4.x-api/kdelibs-apidocs/kdecore/html/group__KDEMacros.html#ga75ca0c60b03dc5e4f9427263bf4043c7">K_GLOBAL_STATIC</a> macro.
 
 <h4>KStdAccel</h4>
 <p>Renamed to <a href="#KStandardShortcut">KStandardShortcut</a></p>
@@ -1065,7 +1065,7 @@ least a few in Qt. Please report application bugs to the appropriate maintainer
 or list, and general (i.e. occurring in many/all applications) bugs to
 <a href="mailto:kde-core-devel@kde.org">k-c-d</a>.</p>
 
-<p>See the <a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/classKColorScheme.html">KColorScheme documentation</a> for further information.</p>
+<p>See the <a href="http://api.kde.org/4.x-api/kdelibs-apidocs/kdeui/html/classKColorScheme.html">KColorScheme documentation</a> for further information.</p>
 
 <h4><a name="KColorTable">KColorTable</a> (was KPaletteTable)</h4>
 <ul>
@@ -2109,7 +2109,7 @@ and KIconLoader::loadMimeTypeIcon with that icon name.</li>
 <li>KMimeType::diagnoseFileName has been replaced with KMimeType::extractKnownExtension which returns the extension only, not the pattern</li>
 <li>KMimeType::mimeType(someName) now behaves like KServiceType::serviceType(someName), i.e. it returns 0 if that name doesn't exist,
 instead of returning the application/octet-stream mimetype. Test for null!</li>
-<li>iconForURL has been deprecated, will possibly be removed for KDE 4.0 final, use iconNameForURL instead</li>
+<li>iconForURL has removed, use iconNameForURL instead</li>
 <li>KMimeType::findFormatByFileContent has been removed. Use KMimeType::isBinaryData instead.</li>
 </ul>
 
@@ -3067,8 +3067,8 @@ The widgets should also use setWindowTitle() rather than setTitle().</p>
 <h4>For more details, see the following:</h4>
 <ul>
 <li><a href="http://doc.trolltech.com/4.3/printing.html">Printing with Qt</a></li>
-<li><a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kutils/html/classKPrintPreview.html">KPrintPreview apidocs</a></li>
-<li><a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/namespaceKdePrint.html">KdePrint::createPrintDialog apidocs</a></li>
+<li><a href="http://api.kde.org/4.x-api/kdelibs-apidocs/kutils/html/classKPrintPreview.html">KPrintPreview apidocs</a></li>
+<li><a href="http://api.kde.org/4.x-api/kdelibs-apidocs/kdeui/html/namespaceKdePrint.html">KdePrint::createPrintDialog apidocs</a></li>
 <li><a href="http://techbase.kde.org/Projects/KDEPrint/KDE4#Porting">KDEPrint Porting on TechBase</a></li>
 </ul>
 
