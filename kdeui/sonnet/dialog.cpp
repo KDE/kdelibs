@@ -2,6 +2,7 @@
  * dialog.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2009  Michel Ludwig <michel.ludwig@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,6 +30,7 @@
 #include <kconfig.h>
 #include <kguiitem.h>
 #include <klocale.h>
+#include <kprogressdialog.h>
 #include <kdebug.h>
 
 #include <QtGui/QListView>
@@ -58,6 +60,7 @@ public:
     Ui_SonnetUi ui;
     ReadOnlyStringListModel *suggestionsModel;
     QWidget *wdg;
+    KProgressDialog *progressDialog;
     QString   originalBuffer;
     BackgroundChecker *checker;
 
@@ -81,6 +84,8 @@ Dialog::Dialog(BackgroundChecker *checker,
 
     setDefaultButton(User1);
     d->checker = checker;
+
+    d->progressDialog = NULL;
 
     initGui();
     initConnections();
@@ -131,6 +136,7 @@ void Dialog::initGui()
 {
     d->wdg = new QWidget(this);
     d->ui.setupUi(d->wdg);
+    setGuiEnabled(false);
 
     //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
     updateDictionaryComboBox();
@@ -150,14 +156,54 @@ void Dialog::activeAutoCorrect( bool _active )
 
 void Dialog::slotAutocorrect()
 {
+    setGuiEnabled(false);
+    setProgressDialogVisible(true);
     kDebug();
     emit autoCorrect(d->currentWord.word, d->ui.m_replacement->text() );
     slotReplaceWord();
 }
 
+void Dialog::setGuiEnabled(bool b)
+{
+  d->wdg->setEnabled(b);
+}
+
+void Dialog::setProgressDialogVisible(bool b)
+{
+  if (!b)
+  {
+    if (d->progressDialog)
+    {
+      d->progressDialog->hide();
+      d->progressDialog->deleteLater();
+      d->progressDialog = NULL;
+    }
+  }
+  else
+  {
+    if (d->progressDialog)
+    {
+      return;
+    }
+    d->progressDialog = new KProgressDialog(this, i18nc("@title:window", "Check Spelling"),
+                                                    i18nc("progress label", "Spell checking in progress..."));
+    d->progressDialog->setModal(true);
+    d->progressDialog->setAutoClose(false);
+    d->progressDialog->setAutoReset(false);
+    // create an 'indefinite' progress box as we currently cannot get progress feedback from
+    // the speller
+    d->progressDialog->progressBar()->reset();
+    d->progressDialog->progressBar()->setRange(0, 0);
+    d->progressDialog->progressBar()->setValue(0);
+    connect(d->progressDialog, SIGNAL(cancelClicked()), this, SLOT(slotCancel()));
+    d->progressDialog->setMinimumDuration(500);
+  }
+}
+
 void Dialog::slotFinished()
 {
     kDebug();
+    setProgressDialogVisible(false);
     emit stop();
     //FIXME: should we emit done here?
     emit done(d->checker->text());
@@ -168,6 +214,7 @@ void Dialog::slotFinished()
 void Dialog::slotCancel()
 {
     kDebug();
+    setProgressDialogVisible(false);
     emit cancel();
     emit spellCheckStatus(i18n("Spell check canceled."));
     reject();
@@ -219,19 +266,28 @@ void Dialog::show()
     kDebug()<<"Showing dialog";
     updateDictionaryComboBox();
     if (d->originalBuffer.isEmpty())
+    {
         d->checker->start();
+    }
     else
+    {
         d->checker->setText(d->originalBuffer);
+    }
+    setProgressDialogVisible(true);
 }
 
 void Dialog::slotAddWord()
 {
+   setGuiEnabled(false);
+   setProgressDialogVisible(true);
    d->checker->addWordToPersonal(d->currentWord.word);
    d->checker->continueChecking();
 }
 
 void Dialog::slotReplaceWord()
 {
+    setGuiEnabled(false);
+    setProgressDialogVisible(true);
     emit replace( d->currentWord.word, d->currentWord.start,
                   d->ui.m_replacement->text() );
     d->checker->replace(d->currentWord.start,
@@ -242,6 +298,8 @@ void Dialog::slotReplaceWord()
 
 void Dialog::slotReplaceAll()
 {
+    setGuiEnabled(false);
+    setProgressDialogVisible(true);
     d->replaceAllMap.insert( d->currentWord.word,
                              d->ui.m_replacement->text() );
     slotReplaceWord();
@@ -249,11 +307,15 @@ void Dialog::slotReplaceAll()
 
 void Dialog::slotSkip()
 {
+    setGuiEnabled(false);
+    setProgressDialogVisible(true);
     d->checker->continueChecking();
 }
 
 void Dialog::slotSkipAll()
 {
+    setGuiEnabled(false);
+    setProgressDialogVisible(true);
     //### do we want that or should we have a d->ignoreAll list?
     Speller speller = d->checker->speller();
     speller.addToPersonal(d->currentWord.word);
@@ -290,6 +352,8 @@ void Dialog::fillSuggestions( const QStringList& suggs )
 
 void Dialog::slotMisspelling(const QString& word, int start)
 {
+    setGuiEnabled(true);
+    setProgressDialogVisible(false);
     emit misspelling(word, start);
     //NOTE this is HACK I had to introduce because BackgroundChecker lacks 'virtual' marks on methods
     //this dramatically reduces spellchecking time in Lokalize
@@ -310,7 +374,6 @@ void Dialog::slotMisspelling(const QString& word, int start)
 
 void Dialog::slotDone()
 {
-    kDebug()<<"Dialog done!";
     d->restart=false;
     QString currentLanguage = d->checker->speller().language();
     emit done(d->checker->text());
@@ -325,6 +388,8 @@ void Dialog::slotDone()
     }
     else
     {
+        setProgressDialogVisible(false);
+        kDebug()<<"Dialog done!";
         emit spellCheckStatus(i18n("Spell check complete."));
         accept();
     }

@@ -3,6 +3,7 @@
  * dialog.h
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2009  Michel Ludwig <michel.ludwig@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -112,6 +113,9 @@ namespace Sonnet
         void slotChangeLanguage( const QString& );
         void slotSelectionChanged(const QModelIndex &);
         void slotAutocorrect();
+
+        void setGuiEnabled(bool b);
+        void setProgressDialogVisible(bool b);
 
     private:
         void updateDialog( const QString& word );
