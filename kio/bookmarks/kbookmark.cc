@@ -683,7 +683,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
         QDomNodeList children = elem.childNodes();
         for ( int childno = 0; childno < children.count(); childno++)
         {
-            bookmarks.append( KBookmark( children.item(childno).cloneNode(true).toElement() ));
+            bookmarks.append( KBookmark( children.item(childno).toElement() ));
         }
         return bookmarks;
     }
