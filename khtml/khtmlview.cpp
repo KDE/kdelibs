@@ -746,6 +746,8 @@ void KHTMLView::setContentsPos( int x, int y)
 
 void KHTMLView::scrollBy(int x, int y)
 {
+   if (d->scrollTimerId)
+       d->newScrollTimer(this, 0);
    horizontalScrollBar()->setValue( horizontalScrollBar()->value()+x );
    verticalScrollBar()->setValue( verticalScrollBar()->value()+y );
 }
