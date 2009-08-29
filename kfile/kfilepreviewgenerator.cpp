@@ -1107,6 +1107,14 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
 
     if (d->m_previewShown != show) {
         d->m_previewShown = show;
+        if (!show) {
+            // When turning off the previews, the directory must be refreshed
+            // so that the previews get be replaced again by the MIME type icons.
+            KDirLister* dirLister = d->m_dirModel->dirLister();
+            dirLister->stop();
+            const KUrl url = dirLister->url();
+            dirLister->openUrl(url, KDirLister::NoFlags);
+        }
         updateIcons();
     }
 }
