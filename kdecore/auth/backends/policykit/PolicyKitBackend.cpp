@@ -76,7 +76,7 @@ bool PolicyKitBackend::isCallerAuthorized(const QString &action, QByteArray call
 
     s >> pid;
 
-    return (PolkitQt::Auth::isCallerAuthorized(action, pid, true) == PolkitQt::Auth::Yes);
+    return (PolkitQt::Auth::isCallerAuthorized(action, pid, false) == PolkitQt::Auth::Yes);
 }
 
 } // namespace Auth
