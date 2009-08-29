@@ -27,10 +27,11 @@
 #include <kdecore_export.h>
 
 #include "ActionReply.h"
-#include "ActionWatcher.h"
 
 namespace KAuth
 {
+
+class ActionWatcher;
 
 /**
  * @brief Class to access, authorize and execute actions.

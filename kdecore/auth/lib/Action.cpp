@@ -24,6 +24,7 @@
 #include <QRegExp>
 
 #include "BackendsManager.h"
+#include "ActionWatcher.h"
 
 namespace KAuth
 {
