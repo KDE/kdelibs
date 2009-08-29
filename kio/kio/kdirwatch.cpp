@@ -49,6 +49,7 @@
 
 #include <sys/stat.h>
 #include <assert.h>
+#include <errno.h>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
@@ -134,6 +135,7 @@ KDirWatchPrivate::KDirWatchPrivate()
     statEntries( 0 ),
     m_ref( 0 ),
     delayRemove( false ),
+    m_delayedRelinkedEntry( NULL ),
     rescan_all( false ),
     rescan_timer()
 {
@@ -735,6 +737,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #endif
     e->m_status = Normal;
     e->m_nlink = stat_buf.st_nlink;
+    e->m_ino = stat_buf.st_ino;
   }
   else {
     e->isDir = isDir;
@@ -1031,6 +1034,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
 #endif
         e->m_status = Normal;
         e->m_nlink = stat_buf.st_nlink;
+		e->m_ino = stat_buf.st_ino;
       }
       else {
         e->m_ctime = invalid_ctime;
@@ -1136,9 +1140,33 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 #endif
       e->m_status = Normal;
       e->m_nlink = stat_buf.st_nlink;
+      e->m_ino = stat_buf.st_ino;	  
       return Created;
     }
 
+	if ( e->m_ctime != invalid_ctime && stat_buf.st_ino != e->m_ino ) {
+		kDebug(7001) << "hard link change for " << e->path << " detected";
+		int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF
+			|IN_DONT_FOLLOW|IN_MODIFY|IN_ATTRIB;
+	  
+		inotify_rm_watch (m_inotify_fd, e->wd);
+		int wd = inotify_add_watch( m_inotify_fd, QFile::encodeName( e->path ), mask );
+		if ( wd == -1 ) {
+			// it's save to delay cause it won't be added to delayed removal list
+			m_delayedRelinkedEntry = e;
+			QTimer::singleShot( 200, this, SLOT(slotRewatchDelayed()) );
+			return Changed;
+		
+		} else {
+			e->wd = wd;
+			e->m_ctime = stat_buf.st_ctime;
+			e->m_nlink = stat_buf.st_nlink;
+			e->m_ino = stat_buf.st_ino;
+			kDebug(7001) << "re-watch for " << e->path << " finished";
+			return Changed;
+		}
+	}
+	
 #ifdef Q_OS_WIN
     stat_buf.st_ctime = stat_buf.st_mtime;
 #endif
@@ -1225,6 +1253,33 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
 
     if (event & Changed)
       c->instance->setDirty(path);
+  }
+}
+
+void KDirWatchPrivate::slotRewatchDelayed()
+{
+  if ( m_delayedRelinkedEntry ) {
+	kDebug(7001) << "try re-watch for " << m_delayedRelinkedEntry->path;
+
+	KDE_struct_stat stat_buf;
+	QByteArray tpath = QFile::encodeName(m_delayedRelinkedEntry->path);
+	int ret = KDE_stat(tpath, &stat_buf);
+	if ( ret ) {
+	  m_delayedRelinkedEntry = NULL;
+	  return;
+	}
+	
+	int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF
+	  |IN_DONT_FOLLOW|IN_MODIFY|IN_ATTRIB;
+	inotify_rm_watch( m_inotify_fd, m_delayedRelinkedEntry->wd );
+	ret = inotify_add_watch( m_inotify_fd, QFile::encodeName( m_delayedRelinkedEntry->path ), mask);
+	if ( !ret ) {
+	  m_delayedRelinkedEntry->wd = ret;
+	  emitEvent( m_delayedRelinkedEntry, Changed );
+	  kDebug(7001) << "re-watch for " << m_delayedRelinkedEntry->path << " successed";
+	} 
+	
+	m_delayedRelinkedEntry = NULL;
   }
 }
 
@@ -1645,7 +1700,24 @@ void KDirWatch::addDir( const QString& _path, WatchModes watchModes)
 
 void KDirWatch::addFile( const QString& _path )
 {
-  if (d) d->addEntry(this, _path, 0, false);
+  if ( !d )
+	return;
+  
+  //TODO: detect link change, ino change
+  KDirWatchPrivate::Entry* e = d->entry(_path);
+  if ( e ) {
+	KDE_struct_stat lstat_buf;
+	QByteArray tpath (QFile::encodeName(_path));
+	if ( KDE_lstat(tpath, &lstat_buf) == 0 ) {
+	  if ( S_ISREG(lstat_buf.st_mode) && e->m_status != KDirWatchPrivate::NonExistent 
+		   && lstat_buf.st_ino != e->m_ino ) {
+		kDebug(7001) << "detected an exist entry with different inode, delete watch first";
+		d->removeEntry(this, _path, 0);
+	  }
+	}
+  }
+	  
+  d->addEntry(this, _path, 0, false);
 }
 
 QDateTime KDirWatch::ctime( const QString &_path ) const

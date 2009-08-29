@@ -136,6 +136,8 @@ public:
     time_t m_ctime;
     // the last observed link count
     int m_nlink;
+	// last observed inode ( considering hard link changes )
+	ino_t m_ino;
     entryStatus m_status;
     entryMode m_mode;
     bool isDir;
@@ -207,7 +209,8 @@ public Q_SLOTS:
   void inotifyEventReceived(); // for inotify
   void slotRemoveDelayed();
   void fswEventReceived(const QString &path);  // for QFileSystemWatcher
-
+  void slotRewatchDelayed();
+  
 public:
   QTimer timer;
   EntryMap m_mapEntries;
@@ -223,6 +226,8 @@ public:
   QSet<Entry *> removeList;
   bool delayRemove;
 
+  Entry *m_delayedRelinkedEntry;
+  
   bool rescan_all;
   QTimer rescan_timer;
 
