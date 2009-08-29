@@ -209,6 +209,10 @@ Action::AuthStatus Action::executeAsync(const QString &helperID, QObject *target
         return s;
     }
 
+    if (helperID.isEmpty()) {
+        return Invalid;
+    }
+
     if (target && slot) {
         QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
     }
@@ -236,7 +240,11 @@ ActionReply Action::execute(const QString &helperID) const
     case UserCancelled:
         return ActionReply::UserCancelledReply;
     default:
-        return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
+        if (!helperID.isEmpty()) {
+            return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
+        } else {
+            return ActionReply::SuccessReply;
+        }
     }
 }
 
