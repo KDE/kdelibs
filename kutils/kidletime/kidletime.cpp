@@ -62,7 +62,7 @@ KIdleTime *KIdleTime::instance()
 class KIdleTimePrivate
 {
 public:
-    KIdleTimePrivate() : catchResume(false) {};
+    KIdleTimePrivate() : catchResume(false), currentId(0) {}
 
     Q_DECLARE_PUBLIC(KIdleTime)
     KIdleTime *q_ptr;
@@ -70,9 +70,13 @@ public:
     void loadSystem();
     void unloadCurrentSystem();
     void _k_resumingFromIdle();
+    void _k_timeoutReached(int msec);
 
     QPointer<AbstractSystemPoller> poller;
     bool catchResume;
+
+    int currentId;
+    QHash<int, int> associations;
 };
 
 KIdleTime::KIdleTime()
@@ -86,7 +90,7 @@ KIdleTime::KIdleTime()
     d_ptr->loadSystem();
 
     connect(d_ptr->poller, SIGNAL(resumingFromIdle()), this, SLOT(_k_resumingFromIdle()));
-    connect(d_ptr->poller, SIGNAL(timeoutReached(int)), this, SIGNAL(timeoutReached(int)));
+    connect(d_ptr->poller, SIGNAL(timeoutReached(int)), this, SLOT(_k_timeoutReached(int)));
 }
 
 KIdleTime::~KIdleTime()
@@ -105,18 +109,33 @@ void KIdleTime::catchNextResumeEvent()
     }
 }
 
-void KIdleTime::addIdleTimeout(int msec)
+int KIdleTime::addIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
 
     d->poller->addTimeout(msec);
+
+    ++d->currentId;
+    d->associations[d->currentId] = msec;
+
+    return d->currentId;
 }
 
-void KIdleTime::removeIdleTimeout(int msec)
+void KIdleTime::removeIdleTimeout(int identifier)
 {
     Q_D(KIdleTime);
 
-    d->poller->removeTimeout(msec);
+    if (!d->associations.contains(identifier)) {
+        return;
+    }
+
+    int msec = d->associations[identifier];
+
+    d->associations.remove(identifier);
+
+    if (!d->associations.values().contains(msec)) {
+        d->poller->removeTimeout(msec);
+    }
 }
 
 void KIdleTime::removeAllIdleTimeouts()
@@ -191,6 +210,18 @@ void KIdleTimePrivate::_k_resumingFromIdle()
     }
 }
 
+void KIdleTimePrivate::_k_timeoutReached(int msec)
+{
+    Q_Q(KIdleTime);
+
+    if (associations.values().contains(msec)) {
+        foreach (int key, associations.keys(msec)) {
+            emit q->timeoutReached(key);
+            emit q->timeoutReached(key, msec);
+        }
+    }
+}
+
 void KIdleTime::simulateUserActivity()
 {
     Q_D(KIdleTime);
@@ -205,11 +236,11 @@ int KIdleTime::idleTime() const
     return d->poller->forcePollRequest();
 }
 
-QList<int> KIdleTime::idleTimeouts() const
+QHash<int, int> KIdleTime::idleTimeouts() const
 {
     Q_D(const KIdleTime);
 
-    return d->poller->timeouts();
+    return d->associations;
 }
 
 #include "kidletime.moc"

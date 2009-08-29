@@ -31,7 +31,7 @@ public:
     virtual ~KIdleTest();
 
 public slots:
-    void timeoutReached(int timeout);
+    void timeoutReached(int id, int timeout);
     void resumeEvent();
 };
 

@@ -20,6 +20,7 @@
 #define KIDLETIME_H
 
 #include <QtCore/QObject>
+#include <QtCore/QHash>
 #include <kutils_export.h>
 class KIdleTimePrivate;
 
@@ -32,6 +33,8 @@ class KIdleTimePrivate;
  *       specified otherwise
  *
  * @author Dario Freddi
+ *
+ * @since 4.4
  */
 class KUTILS_EXPORT KIdleTime : public QObject
 {
@@ -60,13 +63,14 @@ public:
     int idleTime() const;
 
     /**
-     * Returns the list of timeouts, in milliseconds, the library is currently listening to.
+     * Returns the list of timeout identifiers associated with their duration, in milliseconds,
+     * the library is currently listening to.
      *
      * @see addIdleTimeout
      * @see removeIdleTimeout
      * @see timeoutReached
      */
-    QList<int> idleTimeouts() const;
+    QHash<int, int> idleTimeouts() const;
 
     /**
      * Attempts to simulate user activity. This implies that after calling this
@@ -80,26 +84,30 @@ public:
 public Q_SLOTS:
     /**
      * Adds a new timeout to catch. When calling this method, after the system will be idle for
-     * \c msec milliseconds, the signal \link timeoutReached will be triggered. Please note that until you will
-     * call \link removeIdleTimeout or \link removeAllIdleTimeouts, the signal will be triggered every
-     * time the system will be idle for \c msec milliseconds
+     * \c msec milliseconds, the signal \c timeoutReached will be triggered. Please note that until you will
+     * call \c removeIdleTimeout or \c removeAllIdleTimeouts, the signal will be triggered every
+     * time the system will be idle for \c msec milliseconds. This function also returns an unique
+     * token for the timeout just added to allow easier identification.
      *
      * @param msec the time, in milliseconds, after which the signal will be triggered
+     *
+     * @returns an unique identifier for the timeout being added, that will be streamed by timeoutReached
      *
      * @see removeIdleTimeout
      * @see removeAllIdleTimeouts
      * @see timeoutReached
      *
      */
-    void addIdleTimeout(int msec);
+    int addIdleTimeout(int msec);
     
     /**
-     * Stops catching the idle timeout at \c msec, if it was registered earlier with addIdleTimeout.
+     * Stops catching the idle timeout identified by the token \c identifier,
+     * if it was registered earlier with addIdleTimeout.
      * Otherwise does nothing.
      *
-     * @param msec the time, in milliseconds, of the timeout you want to stop listening to
+     * @param identifier the token returned from addIdleTimeout of the timeout you want to stop listening to
      */
-    void removeIdleTimeout(int msec);
+    void removeIdleTimeout(int identifier);
     
     /**
      * Stops catching every set timeout (if any). This means that after calling this method, the signal
@@ -139,18 +147,29 @@ Q_SIGNALS:
     void resumingFromIdle();
     
     /**
-     * Triggered when the system has been idle for \c msec milliseconds.
+     * Triggered when the system has been idle for x milliseconds, identified by the previously set
+     * timeout.
      * <p>
      * This signal is triggered whenever each timeout previously registered with \link addIdleTimeout
-     * is reached. It is guaranteed that \c msec will exactly correspond to the timeout
-     * registered with \link addIdleTimeout
+     * is reached.
+     *
+     * @param identifier the identifier of the timeout the system has reached
+     *
+     * @see addIdleTimeout
+     * @see removeIdleTimeout
+     */
+    void timeoutReached(int identifier);
+
+    /**
+     * Overload. Streams the duration as well. It is guaranteed that \c msec will exactly
+     * correspond to the timeout registered with \link addIdleTimeout
      *
      * @param msec the time, in milliseconds, the system has been idle for
      *
      * @see addIdleTimeout
      * @see removeIdleTimeout
      */
-    void timeoutReached(int msec);
+    void timeoutReached(int identifier, int msec);
 
 private:
     KIdleTime();
@@ -158,6 +177,7 @@ private:
     KIdleTimePrivate * const d_ptr;
 
     Q_PRIVATE_SLOT(d_func(), void _k_resumingFromIdle())
+    Q_PRIVATE_SLOT(d_func(), void _k_timeoutReached(int))
 
 };
 

@@ -25,7 +25,7 @@
 KIdleTest::KIdleTest()
 {
     connect(KIdleTime::instance(), SIGNAL(resumingFromIdle()), this, SLOT(resumeEvent()));
-    connect(KIdleTime::instance(), SIGNAL(timeoutReached(int)), this, SLOT(timeoutReached(int)));
+    connect(KIdleTime::instance(), SIGNAL(timeoutReached(int,int)), this, SLOT(timeoutReached(int,int)));
 
     KIdleTime::instance()->catchNextResumeEvent();
 
@@ -49,8 +49,10 @@ void KIdleTest::resumeEvent()
     KIdleTime::instance()->addIdleTimeout(25000);
 }
 
-void KIdleTest::timeoutReached(int timeout)
+void KIdleTest::timeoutReached(int id, int timeout)
 {
+    Q_UNUSED(id)
+
     if (timeout == 5000) {
         printf("5 seconds passed, stay still some more...\n");
     } else if (timeout == 10000) {
