@@ -45,9 +45,9 @@ macro(NEPOMUK_ADD_ONTOLOGY_CLASSES _sources)
         get_filename_component(_filename ${_arg} NAME)
         list(APPEND _ontofilenames ${_filename})
       elseif(${_current_arg_type} STREQUAL "class")
-        list(APPEND _classes "--class ${_arg}")
+        list(APPEND _classes "--class" "${_arg}")
       else(${_current_arg_type} STREQUAL "onto")
-        set(_visibility "--visibility ${_arg}")
+        set(_visibility "--visibility" "${_arg}")
       endif(${_current_arg_type} STREQUAL "onto")
     endif(${_arg} STREQUAL "ONTOLOGIES")
   endforeach(_arg)
@@ -63,7 +63,7 @@ macro(NEPOMUK_ADD_ONTOLOGY_CLASSES _sources)
 
     # we generate the files in the current binary dir
     set(_targetdir ${CMAKE_CURRENT_BINARY_DIR})
-
+    
     # generate the list of source and header files
     execute_process(
       COMMAND ${RCGEN} ${_fastmode} --listheaders --prefix ${_targetdir}/ ${_classes} ${_visibility} ${_ontologies}
