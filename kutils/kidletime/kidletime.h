@@ -137,6 +137,17 @@ public Q_SLOTS:
      */
     void catchNextResumeEvent();
 
+    /**
+     * Stops listening for resume event. This function serves for canceling \c catchNextResumeEvent, as it
+     * will have effect just when \c catchNextResumeEvent has been called and \c resumingFromIdle not
+     * yet triggered
+     *
+     * @see resumingFromIdle
+     * @see catchNextResumeEvent
+     *
+     */
+    void stopCatchingResumeEvent();
+
 Q_SIGNALS:
     /**
      * Triggered, if KIdleTime is catching resume events, when the system resumes from an idle state. This means

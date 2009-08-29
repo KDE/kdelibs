@@ -109,6 +109,16 @@ void KIdleTime::catchNextResumeEvent()
     }
 }
 
+void KIdleTime::stopCatchingResumeEvent()
+{
+    Q_D(KIdleTime);
+
+    if (d->catchResume) {
+        d->catchResume = false;
+        d->poller->stopCatchingIdleEvents();
+    }
+}
+
 int KIdleTime::addIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
