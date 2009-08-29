@@ -64,6 +64,20 @@ namespace Sonnet
         // Hide warning about done(), which is a slot in QDialog and a signal here.
         using KDialog::done;
 
+        /**
+         * Controls whether an (indefinite) progress dialog is shown when the spell
+         * checking takes longer than the given time to complete. By default no
+         * progress dialog is shown. If the progress dialog is set to be shown, no
+         * time consuming operation (for example, showing a notification message) should
+         * be performed in a slot connected to the 'done' signal as this might trigger
+         * the progress dialog unnecessarily.
+         *
+         * @param timeout time after which the progress dialog should appear; a negative
+         *                value can be used to hide it
+         * @since 4.4
+         */
+         void showProgressDialog(int timeout = 500);
+
     public Q_SLOTS:
         void setBuffer(const QString &);
 

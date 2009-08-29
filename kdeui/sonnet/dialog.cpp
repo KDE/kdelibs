@@ -69,6 +69,8 @@ public:
     bool restart;//used when text is distributed across several qtextedits, eg in KAider
 
     QMap<QString, QString> dictsMap;
+
+    int progressDialogTimeout;
 };
 
 Dialog::Dialog(BackgroundChecker *checker,
@@ -85,6 +87,7 @@ Dialog::Dialog(BackgroundChecker *checker,
     setDefaultButton(User1);
     d->checker = checker;
 
+    d->progressDialogTimeout = -1;
     d->progressDialog = NULL;
 
     initGui();
@@ -154,6 +157,11 @@ void Dialog::activeAutoCorrect( bool _active )
         d->ui.m_autoCorrect->hide();
 }
 
+void Dialog::showProgressDialog(int timeout)
+{
+  d->progressDialogTimeout = timeout;
+}
+
 void Dialog::slotAutocorrect()
 {
     setGuiEnabled(false);
@@ -179,7 +187,7 @@ void Dialog::setProgressDialogVisible(bool b)
       d->progressDialog = NULL;
     }
   }
-  else
+  else if(d->progressDialogTimeout >= 0)
   {
     if (d->progressDialog)
     {
@@ -196,7 +204,7 @@ void Dialog::setProgressDialogVisible(bool b)
     d->progressDialog->progressBar()->setRange(0, 0);
     d->progressDialog->progressBar()->setValue(0);
     connect(d->progressDialog, SIGNAL(cancelClicked()), this, SLOT(slotCancel()));
-    d->progressDialog->setMinimumDuration(500);
+    d->progressDialog->setMinimumDuration(d->progressDialogTimeout);
   }
 }
 
