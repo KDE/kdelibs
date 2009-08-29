@@ -134,6 +134,9 @@
 <!ENTITY traducteurYohannHamon    '<othercredit role="translator"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurYohannHamon     '<othercredit role="reviewer"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurQuentinHarbulot    '<othercredit role="translator"><firstname>Quentin</firstname><surname>Harbulot</surname><affiliation><address><email>kant_120@hotmail.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurQuentinHarbulot     '<othercredit role="reviewer"><firstname>Quentin</firstname><surname>Harbulot</surname><affiliation><address><email>kant_120@hotmail.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurPierreHecart    '<othercredit role="translator"><firstname>Pierre</firstname><surname>Hécart</surname><affiliation><address><email>phecart@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPierreHecart     '<othercredit role="reviewer"><firstname>Pierre</firstname><surname>Hécart</surname><affiliation><address><email>phecart@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -282,6 +285,7 @@
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
 <!ENTITY gregoireHubert  'Grégoire Hubert <email>greg@coolkeums.org</email>'>
 <!ENTITY YohannHamon  'Yohann Hamon <email>yohann_hamon@yahoo.fr</email>'>
+<!ENTITY QuentinHarbulot  'Quentin Harbulot <email>kant_120@hotmail.fr</email>'>
 <!ENTITY PierreHecart  'Pierre Hécart <email>phecart@gmail.com</email>'>
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
 <!ENTITY EquipeKDE         'l&apos;équipe française &kde;<email>doc@kde-france.org</email>'>
