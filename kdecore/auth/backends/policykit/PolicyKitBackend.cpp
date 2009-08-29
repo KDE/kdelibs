@@ -33,7 +33,12 @@ PolicyKitBackend::PolicyKitBackend()
 
 Action::AuthStatus PolicyKitBackend::authorizeAction(const QString &action)
 {    
-    return PolkitQt::Auth::computeAndObtainAuth(action) ? Action::Authorized : Action::Denied;
+    switch (PolkitQt::Auth::computeAndObtainAuth(action)) {
+    case PolkitQt::Auth::Yes:
+        return Action::Authorized;
+    default:
+        return Action::Denied;
+    }
 }
 
 void PolicyKitBackend::setupAction(const QString &action)
