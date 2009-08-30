@@ -111,7 +111,7 @@ public:
     Action(const QString &name, const QString &details);
 
     /// Virtual destructor
-    virtual ~Action();
+    ~Action();
 
     /// Assignment operator
     Action &operator=(const Action &action);
@@ -353,42 +353,8 @@ public:
      */
     ActionReply execute(const QString &helperID) const;
 
-    /**
-     * @brief Asynchronously executes the action
-     *
-     * This method executes the action an returns immediately. The return value is false if
-     * a communication error occurred or if the authorization has been denied.
-     * Note that if you try to execute a non-existent action, you won't get false here.
-     * Instead, you'll get a NoSuchAction error reply as the parameter of the watcher's
-     * actionPerformed() signal.
-     *
-     * To know when the action has been completed, and to get the reply data,
-     * you can connect to the actionPerformed() signal of the action watcher object.
-     * You can do this also by passing the target object and the slot to the parameters of this method.
-     * If on of the parameter is NULL, no connection is made.
-     *
-     * @param target The object to connect to the actionPerformed() signal
-     * @param slot The slot to connect to the actionPerformed() signal
-     * @return Action::Authorized if the execution is started successfully,
-     *         Action::Denied if the user doesn't have the authorization, 
-     *         Action::Error if some other error occurred 
-     */
-    AuthStatus executeAsync(QObject *target = NULL, const char *slot = NULL);
-
-    /**
-     * @brief Asynchronously executes the action with a specific helperID
-     *
-     * This method works exactly as the executeAsync(QObject*,const char*) method, but it lets you
-     * specify a different helperID, if you don't want to change it with setHelperID()
-     *
-     * @param helperID The helper ID to use for this invocation
-     * @param target The object to connect to the actionPerformed() signal
-     * @param slot The slot to connect to the actionPerformed() signal
-     * @return Action::Authorized if the execution is started successfully,
-     *         Action::Denied if the user doesn't have the authorization, 
-     *         Action::Error if some other error occurred 
-     */
-    AuthStatus executeAsync(const QString &helperID, QObject *target = 0, const char *slot = 0);
+    void setExecutesAsync(bool async);
+    bool executesAsync() const;
 
     /**
      * @brief Asynchronously executes a group of actions with a single request

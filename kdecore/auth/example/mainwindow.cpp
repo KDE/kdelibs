@@ -27,15 +27,17 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include "../../../kdeui/widgets/kpushbutton.h"
 #include "ui_mainwindow.h"
 #include <Action.h>
+#include "ActionWatcher.h"
+#include "../../../kdeui/actions/kaction.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindowClass)
 {
     ui->setupUi(this);
-    Action::setHelperID("org.kde.auth.example");
     progressBar = new QProgressBar();
     pushButton = new QPushButton();
     pushButton->setText("Stop");
@@ -45,6 +47,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->statusBar()->addPermanentWidget(pushButton);
     pushButton->hide();
     progressBar->hide();
+    KAction *action = new KAction(this);
+    ui->menuFile->addAction(action);
+    action->setIcon(KIcon("dialog-ok-apply"));
+    action->setAuthAction("org.kde.auth.example.kactionaction");
+    connect(action, SIGNAL(authorized(KAuth::Action)), this, SLOT(kactionTriggered()));
+    ui->openButton->setAuthAction("org.kde.auth.example.read");
+    ui->saveButton->setAuthAction("org.kde.auth.example.write");
+    ui->longButton->setAuthAction("org.kde.auth.example.longaction");
 }
 
 MainWindow::~MainWindow()
@@ -62,10 +72,10 @@ void MainWindow::on_actionOpen_triggered()
 
     if (!file.open(QIODevice::ReadOnly)) {
         if (file.error() & QFile::PermissionsError) {
-            Action readAction = "org.kde.auth.example.read";
+            Action readAction("org.kde.auth.example.read");
             readAction.addArgument("filename", filename);
 
-            ActionReply reply = readAction.execute();
+            ActionReply reply = readAction.execute("org.kde.auth.example");
             if (reply.failed())
                 QMessageBox::information(this, "Error", QString("KAuth returned an error code: %1").arg(reply.errorCode()));
             else
@@ -89,11 +99,11 @@ void MainWindow::on_actionSave_triggered()
 
     if (!file.open(QIODevice::WriteOnly)) {
         if (file.error() & QFile::PermissionsError) {
-            Action writeAction = "org.kde.auth.example.write";
+            Action writeAction("org.kde.auth.example.write");
             writeAction.addArgument("filename", filename);
             writeAction.addArgument("contents", ui->plainTextEdit->toPlainText());
 
-            ActionReply reply = writeAction.execute();
+            ActionReply reply = writeAction.execute("org.kde.auth.example");
             if (reply.failed())
                 QMessageBox::information(this, "Error", QString("KAuth returned an error code: %1").arg(reply.errorCode()));
         } else
@@ -106,12 +116,12 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_longAction_triggered()
 {
-    Action longAction = "org.kde.auth.example.longaction";
+    Action longAction("org.kde.auth.example.longaction");
+    longAction.setExecutesAsync(true);
     connect(longAction.watcher(), SIGNAL(progressStep(int)), progressBar, SLOT(setValue(int)));
     connect(longAction.watcher(), SIGNAL(actionPerformed(ActionReply)), this, SLOT(longActionPerformed(ActionReply)));
 
-
-    if (longAction.executeAsync() != Action::Authorized)
+    if (longAction.execute("org.kde.auth.example") != ActionReply::SuccessReply)
         this->statusBar()->showMessage("Could not execute the long action");
     else {
         pushButton->show();
@@ -134,4 +144,9 @@ void MainWindow::longActionPerformed(ActionReply reply)
         statusBar()->showMessage("Action succeeded", 10000);
     else
         statusBar()->showMessage(QString("Could not execute the long action: %1").arg(reply.errorCode()), 10000);
+}
+
+void MainWindow::kactionTriggered()
+{
+    qDebug() << "Eat that!!!";
 }

@@ -25,30 +25,25 @@
 
 #include <kdecore_export.h>
 
-#define KDE4_AUTH_HELPER(ID, HelperClass) \
+#define KDE4_AUTH_HELPER_MAIN(ID, HelperClass) \
     int main(int argc, char **argv) { return KAuth::HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
 
 namespace KAuth
 {
 
 /**
- * @brief Support class with some static methods useful to the helper's code
+ * @brief Support class with some KDECORE_EXPORT methods useful to the helper's code
  *
  * This class provides the API to write the helper tool that executes your actions.
- * You don't create instances of HelperSupport. Instead, you use its static methods.
+ * You don't create instances of HelperSupport. Instead, you use its KDECORE_EXPORT methods.
  *
  * This them you can notify the application of progress in your action's execution
  * and you can check if the application asked you to terminate it.
  *
  * @since 4.4
  */
-class KDECORE_EXPORT HelperSupport
+namespace HelperSupport
 {
-    HelperSupport();
-
-    static void helperDebugHandler(QtMsgType type, const char *msg);
-
-public:
     /**
      * @brief Send a progressStep signal to the caller application
      *
@@ -61,7 +56,7 @@ public:
      *
      * @param step The progress indicator
      */
-    static void progressStep(int step);
+    KDECORE_EXPORT void progressStep(int step);
     
     /**
     * @brief Send a progressStep signal to the caller application
@@ -74,7 +69,7 @@ public:
     *
     * @param data The progress data
     */
-    static void progressStep(const QVariantMap &data);
+    KDECORE_EXPORT void progressStep(const QVariantMap &data);
 
     /**
      * @brief Check if the caller asked the helper to stop the execution
@@ -87,7 +82,7 @@ public:
      *
      * @return true if the helper has been asked to stop, false otherwise
      */
-    static bool isStopped();
+    KDECORE_EXPORT bool isStopped();
 
     
     /**
@@ -103,8 +98,8 @@ public:
      * @param responder The responder object for the helper. The macro passes a default-constructed,
      *                  heap-allocated object of the class specified as the last macro parameter
      */
-    static int helperMain(int argc, char **argv, const char *id, QObject *responder);
-};
+    KDECORE_EXPORT int helperMain(int argc, char **argv, const char *id, QObject *responder);
+} // namespace HelperSupport
 
 } // namespace Auth
 

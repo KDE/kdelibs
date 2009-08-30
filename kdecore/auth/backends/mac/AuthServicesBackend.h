@@ -25,7 +25,7 @@
 namespace KAuth
 {
 
-class AuthServicesBackend : public QObject, public AuthBackend
+class AuthServicesBackend : public AuthBackend
 {
     Q_OBJECT
     Q_INTERFACES(KAuth::AuthBackend)

@@ -30,9 +30,11 @@
 namespace KAuth
 {
 
-static bool remote_dbg = false;
+    namespace HelperSupport {
+        void helperDebugHandler(QtMsgType type, const char *msg);
+    }
 
-HelperSupport::HelperSupport() {}
+static bool remote_dbg = false;
 
 int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *responder)
 {
@@ -50,7 +52,7 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
     BackendsManager::helperProxy()->setHelperResponder(responder);
 
     QCoreApplication app(argc, argv);
-    QTimer::singleShot(10000, &app, SLOT(quit()));
+    //QTimer::singleShot(10000, &app, SLOT(quit()));
     app.exec(); //krazy:exclude=crashy
 
     return 0;

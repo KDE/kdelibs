@@ -32,12 +32,13 @@ namespace KAuth
 class Action::Private
 {
 public:
-    Private() : valid(false) {}
+    Private() : valid(false), async(false) {}
     
     QString name;
     QString details;
     QVariantMap args;
     bool valid;
+    bool async;
 };
 
 static QString s_helperID;
@@ -195,30 +196,14 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
     return BackendsManager::helperProxy()->executeActions(list, helperID);
 }
 
-Action::AuthStatus Action::executeAsync(QObject *target, const char *slot)
+bool Action::executesAsync() const
 {
-    if(!isValid())
-        return Action::Invalid;
-    
-    return executeAsync(helperID(), target, slot);
+    return d->async;
 }
 
-Action::AuthStatus Action::executeAsync(const QString &helperID, QObject *target, const char *slot)
+void Action::setExecutesAsync(bool async)
 {
-    AuthStatus s = authorize();
-    if (s == Denied || s == UserCancelled || s == Invalid) {
-        return s;
-    }
-
-    if (helperID.isEmpty()) {
-        return Invalid;
-    }
-
-    if (target && slot) {
-        QObject::connect(watcher(), SIGNAL(actionPerformed(ActionReply)), target, slot);
-    }
-
-    return executeActions(QList<Action>() << *this, NULL, helperID) ? Action::Authorized : Action::Error;
+    d->async = async;
 }
 
 ActionReply Action::execute() const
@@ -241,10 +226,19 @@ ActionReply Action::execute(const QString &helperID) const
     case UserCancelled:
         return ActionReply::UserCancelledReply;
     default:
-        if (!helperID.isEmpty()) {
-            return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
+        if (d->async) {
+            if (helperID.isEmpty()) {
+                return Invalid;
+            }
+
+            return executeActions(QList<Action>() << *this, NULL, helperID) ?
+                    ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
         } else {
-            return ActionReply::SuccessReply;
+            if (!helperID.isEmpty()) {
+                return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
+            } else {
+                return ActionReply::SuccessReply;
+            }
         }
     }
 }

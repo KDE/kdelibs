@@ -54,6 +54,7 @@ class KDECORE_EXPORT ActionWatcher : public QObject
     class Private;
     Private *d;
 
+    ActionWatcher();
     ActionWatcher(const QString &action);
 
 private slots:

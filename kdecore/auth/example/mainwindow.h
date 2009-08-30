@@ -51,6 +51,7 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
     void on_longAction_triggered();
+    void kactionTriggered();
     void stopLongAction();
     void longActionPerformed(ActionReply reply);
 };

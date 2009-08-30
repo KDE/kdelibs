@@ -53,7 +53,12 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
     stream << list;
 
+    qDebug() << "Executing" << helperID;
+
+    QDBusConnection::systemBus().interface()->startService(helperID);
+
     if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
+        qDebug() << "Fuck";
         return false;
     }
 
@@ -66,6 +71,7 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
     QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::NoBlock); // This is a NO_REPLY method
     if (reply.type() == QDBusMessage::ErrorMessage) {
+        qDebug() << "blah";
         return false;
     }
 
@@ -100,6 +106,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     if (reply.type() == QDBusMessage::ErrorMessage) {
         ActionReply r = ActionReply::DBusErrorReply;
         r.setErrorDescription(reply.errorMessage());
+        qDebug() << reply.errorMessage();
 
         return r;
     }

@@ -65,6 +65,8 @@ ActionReply MyHelper::write(QVariantMap args)
 
 ActionReply MyHelper::longaction(QVariantMap args)
 {
+    qDebug() << "hello";
+
     for (int i = 1; i <= 100; i++) {
         if (HelperSupport::isStopped())
             break;
@@ -75,4 +77,4 @@ ActionReply MyHelper::longaction(QVariantMap args)
     return ActionReply::SuccessReply;
 }
 
-KDE4_AUTH_HELPER("org.kde.auth.example", MyHelper)
+KDE4_AUTH_HELPER_MAIN("org.kde.auth.example", MyHelper)
