@@ -36,6 +36,7 @@
 #define KDE_DEFAULT_BUTTON_LAYOUT 0
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 #define KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES true
+#define KDE_DEFAULT_NATURAL_SORTING true
 
 class KUrl;
 
@@ -437,6 +438,22 @@ public:
      * @return Returns true if user wants to show icons.
      */
     static bool showIconsOnPushButtons();
+    
+    /**
+     * Returns true, if user visible strings should be sorted in a natural way:
+     * image 1.jpg
+     * image 2.jpg
+     * image 10.jpg
+     * image 11.jpg
+     * If false is returned, the strings are sorted by their unicode values:
+     * image 10.jpg
+     * image 11.jpg
+     * image 1.jpg
+     * image 2.jpg
+     *
+     * @since 4.4
+     */     
+    static bool naturalSorting();
 
     enum GraphicEffect {
         NoEffects               = 0x0000, ///< GUI with no effects at all.
@@ -505,7 +522,7 @@ public:
     enum ChangeType { PaletteChanged = 0, FontChanged, StyleChanged,
                       SettingsChanged, IconChanged, CursorChanged,
                       ToolbarStyleChanged, ClipboardConfigChanged,
-                      BlockShortcuts };
+                      BlockShortcuts, NaturalSortingChanged };
 
     /**
      * Notifies all KDE applications on the current display of a change.
@@ -602,6 +619,12 @@ Q_SIGNALS:
      * Emitted by BlockShortcuts
      */
     void blockShortcuts(int data);
+    
+    /**
+     * Emitted when the natural sorting has been changed.
+     * @since 4.4
+     */
+    void naturalSortingChanged();
 
 private:
     friend class KApplication;

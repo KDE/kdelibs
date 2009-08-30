@@ -25,9 +25,11 @@
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kdatetime.h>
+#include <kglobalsettings.h>
 #include <klocale.h>
 #include <kstringhandler.h>
-#include <kdebug.h>
+
+#include <Qt>
 
 // TODO KDE 4.1: bring Nepomuk stuff from Dolphin to kdelibs/nepomuk
 // in the form of a separate subclass
@@ -35,13 +37,39 @@
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
 public:
-    KDirSortFilterProxyModelPrivate() : m_sortFoldersFirst(true) {}
+    KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q);
+    
+    int compare(const QString&, const QString&, Qt::CaseSensitivity caseSensitivity  = Qt::CaseSensitive) const;
+    void slotNaturalSortingChanged();
 
     bool m_sortFoldersFirst;
+    bool m_naturalSorting;
 };
 
+KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q) :
+    m_sortFoldersFirst(true),
+    m_naturalSorting(KGlobalSettings::naturalSorting())
+{
+    connect(KGlobalSettings::self(), SIGNAL(naturalSortingChanged()),
+            q, SLOT(slotNaturalSortingChanged()));
+}
+
+inline int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QString& a,
+                                                                              const QString& b,
+                                                                              Qt::CaseSensitivity caseSensitivity) const
+{
+    return m_naturalSorting ? KStringHandler::naturalCompare(a, b, caseSensitivity)
+                            : QString::compare(a, b, caseSensitivity);
+}
+
+
+void KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::slotNaturalSortingChanged()
+{
+    m_naturalSorting = KGlobalSettings::naturalSorting();
+}
+
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
-    : KCategorizedSortFilterProxyModel(parent), d(new KDirSortFilterProxyModelPrivate)
+    : KCategorizedSortFilterProxyModel(parent), d(new KDirSortFilterProxyModelPrivate(this))
 {
     setDynamicSortFilter(true);
 
@@ -129,7 +157,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     switch (left.column()) {
     case KDirModel::Name: {
-        return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+        return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
     }
 
     case KDirModel::Size: {
@@ -146,7 +174,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
             // their names. So we have always everything ordered. We also check
             // if we are taking in count their cases.
             if (leftCount == rightCount) {
-                return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+                return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
             }
 
             // If one of them has unknown child items, place them on the end. If we
@@ -169,7 +197,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
         // If what we are measuring is two files and they have the same size,
         // sort them by their file names.
         if (leftFileItem.size() == rightFileItem.size()) {
-            return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
         }
 
         // If their sizes are different, sort them by their sizes, as expected.
@@ -181,7 +209,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
         KDateTime rightModifiedTime = rightFileItem.time(KFileItem::ModificationTime).toLocalZone();
 
         if (leftModifiedTime == rightModifiedTime) {
-            return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
         }
 
         return leftModifiedTime < rightModifiedTime;
@@ -196,7 +224,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
         int rightPermissionsPoints = pointsForPermissions(rightFileInfo);
 
         if (leftPermissionsPoints == rightPermissionsPoints) {
-            return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
         }
 
         return leftPermissionsPoints > rightPermissionsPoints;
@@ -204,26 +232,26 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     case KDirModel::Owner: {
         if (leftFileItem.user() == rightFileItem.user()) {
-            return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
         }
 
-        return KStringHandler::naturalCompare(leftFileItem.user(), rightFileItem.user()) < 0;
+        return d->compare(leftFileItem.user(), rightFileItem.user()) < 0;
     }
 
     case KDirModel::Group: {
         if (leftFileItem.group() == rightFileItem.group()) {
-            return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
         }
 
-        return KStringHandler::naturalCompare(leftFileItem.group(), rightFileItem.group()) < 0;
+        return d->compare(leftFileItem.group(), rightFileItem.group()) < 0;
     }
 
     case KDirModel::Type: {
         if (leftFileItem.mimetype() == rightFileItem.mimetype()) {
-            return KStringHandler::naturalCompare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
         }
 
-        return KStringHandler::naturalCompare(leftFileItem.mimeComment(), rightFileItem.mimeComment()) < 0;
+        return d->compare(leftFileItem.mimeComment(), rightFileItem.mimeComment()) < 0;
     }
 
     }
@@ -232,3 +260,5 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     // the right thing for now.
     return KCategorizedSortFilterProxyModel::subSortLessThan(left, right);
 }
+
+#include "kdirsortfilterproxymodel.moc"

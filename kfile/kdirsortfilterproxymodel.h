@@ -50,6 +50,8 @@
 class KFILE_EXPORT KDirSortFilterProxyModel
     : public KCategorizedSortFilterProxyModel
 {
+    Q_OBJECT
+    
 public:
     KDirSortFilterProxyModel(QObject* parent = 0);
     virtual ~KDirSortFilterProxyModel();
@@ -87,7 +89,9 @@ protected:
      */
     virtual bool subSortLessThan(const QModelIndex& left,
                                  const QModelIndex& right) const;
-
+private:
+    Q_PRIVATE_SLOT(d, void slotNaturalSortingChanged())
+    
 private:
     class KDirSortFilterProxyModelPrivate;
     KDirSortFilterProxyModelPrivate* const d;

@@ -731,6 +731,13 @@ bool KGlobalSettings::showIconsOnPushButtons()
                        KDE_DEFAULT_ICON_ON_PUSHBUTTON);
 }
 
+bool KGlobalSettings::naturalSorting()
+{
+    KConfigGroup g( KGlobal::config(), "KDE" );
+    return g.readEntry("NaturalSorting",
+                       KDE_DEFAULT_NATURAL_SORTING);
+}
+
 KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevel()
 {
     // This variable stores whether _graphicEffects has the default value because it has not been
@@ -839,6 +846,10 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         // FIXME KAccel port
         //KGlobalAccel::blockShortcuts(arg);
         emit q->blockShortcuts(arg); // see kwin
+        break;
+        
+    case NaturalSortingChanged:
+        emit q->naturalSortingChanged();
         break;
 
     default:
