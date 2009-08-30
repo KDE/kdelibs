@@ -285,11 +285,11 @@ void KNotification::Private::raiseWidget(QWidget *w)
 	}
 }
 
-
-KNotification *KNotification::event( const QString& eventid , const QString& text,
+KNotification *KNotification::event( const QString& eventid , const QString& title, const QString& text,
         const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KComponentData &componentData)
 {
 	KNotification *notify=new KNotification(eventid, widget, flags);
+	notify->setTitle(title);
 	notify->setText(text);
 	notify->setPixmap(pixmap);
 	notify->setComponentData(componentData);
@@ -299,8 +299,14 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	return notify;
 }
 
+KNotification *KNotification::event( const QString& eventid , const QString& text,
+        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KComponentData &componentData)
+{
+	return event( eventid, QString(), text, pixmap, widget, flags, componentData );
+}
 
-KNotification *KNotification::event( StandardEvent eventid , const QString& text,
+
+KNotification *KNotification::event( StandardEvent eventid , const QString& title, const QString& text,
 		const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags)
 {
 	QString message;
@@ -319,7 +325,13 @@ KNotification *KNotification::event( StandardEvent eventid , const QString& text
 			message = QLatin1String("notification");
 			break;
 	}
-	return event( message, text, pixmap, widget , flags | DefaultEvent );
+	return event( message, title, text, pixmap, widget , flags | DefaultEvent );
+}
+
+KNotification *KNotification::event( StandardEvent eventid , const QString& text,
+        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags)
+{
+    return event( eventid, QString(), text, pixmap, widget , flags );
 }
 
 void KNotification::ref()
