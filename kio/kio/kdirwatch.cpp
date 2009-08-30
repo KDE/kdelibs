@@ -1260,29 +1260,30 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
 
 void KDirWatchPrivate::slotRewatchDelayed()
 {
+#if defined (HAVE_SYS_INOTIFY_H)
   if ( m_delayedRelinkedEntry ) {
-	kDebug(7001) << "try re-watch for " << m_delayedRelinkedEntry->path;
+  	kDebug(7001) << "try re-watch for " << m_delayedRelinkedEntry->path;
 
-	KDE_struct_stat stat_buf;
-	QByteArray tpath = QFile::encodeName(m_delayedRelinkedEntry->path);
-	int ret = KDE_stat(tpath, &stat_buf);
-	if ( ret ) {
-	  m_delayedRelinkedEntry = NULL;
-	  return;
-	}
-	
-	int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF
-	  |IN_DONT_FOLLOW|IN_MODIFY|IN_ATTRIB;
-	inotify_rm_watch( m_inotify_fd, m_delayedRelinkedEntry->wd );
-	ret = inotify_add_watch( m_inotify_fd, QFile::encodeName( m_delayedRelinkedEntry->path ), mask);
-	if ( !ret ) {
-	  m_delayedRelinkedEntry->wd = ret;
-	  emitEvent( m_delayedRelinkedEntry, Changed );
-	  kDebug(7001) << "re-watch for " << m_delayedRelinkedEntry->path << " successed";
-	} 
-	
-	m_delayedRelinkedEntry = NULL;
+  	KDE_struct_stat stat_buf;
+  	int ret = KDE::stat(m_delayedRelinkedEntry->path, &stat_buf);
+  	if ( ret ) {
+  	  m_delayedRelinkedEntry = NULL;
+  	  return;
+  	}
+
+  	int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF
+  	  |IN_DONT_FOLLOW|IN_MODIFY|IN_ATTRIB;
+  	inotify_rm_watch( m_inotify_fd, m_delayedRelinkedEntry->wd );
+  	ret = inotify_add_watch( m_inotify_fd, QFile::encodeName( m_delayedRelinkedEntry->path ), mask);
+  	if ( !ret ) {
+  	  m_delayedRelinkedEntry->wd = ret;
+  	  emitEvent( m_delayedRelinkedEntry, Changed );
+  	  kDebug(7001) << "re-watch for " << m_delayedRelinkedEntry->path << " successed";
+  	} 
+
+  	m_delayedRelinkedEntry = NULL;
   }
+#endif
 }
 
 // Remove entries which were marked to be removed
@@ -1710,8 +1711,7 @@ void KDirWatch::addFile( const QString& _path )
   KDirWatchPrivate::Entry* e = d->entry(_path);
   if ( e ) {
 	KDE_struct_stat lstat_buf;
-	QByteArray tpath (QFile::encodeName(_path));
-	if ( KDE_lstat(tpath, &lstat_buf) == 0 ) {
+	if ( KDE::lstat(_path, &lstat_buf) == 0 ) {
 	  if ( S_ISREG(lstat_buf.st_mode) && e->m_status != KDirWatchPrivate::NonExistent 
 		   && lstat_buf.st_ino != e->m_ino ) {
 		kDebug(7001) << "detected an exist entry with different inode, delete watch first";
