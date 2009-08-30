@@ -209,7 +209,9 @@ public Q_SLOTS:
   void inotifyEventReceived(); // for inotify
   void slotRemoveDelayed();
   void fswEventReceived(const QString &path);  // for QFileSystemWatcher
-  void slotRewatchDelayed();
+
+private Q_SLOTS:  
+  void slotRewatchDelayed(); // used only when inotify is present
   
 public:
   QTimer timer;
@@ -225,8 +227,6 @@ public:
   // removeList is allowed to contain any entry at most once
   QSet<Entry *> removeList;
   bool delayRemove;
-
-  Entry *m_delayedRelinkedEntry;
   
   bool rescan_all;
   QTimer rescan_timer;
@@ -244,7 +244,8 @@ public:
   QSocketNotifier *mSn;
   bool supports_inotify;
   int m_inotify_fd;
-
+  Entry *m_delayedRelinkedEntry;
+  
   bool useINotify(Entry*);
 #endif
 #ifdef HAVE_QFILESYSTEMWATCHER

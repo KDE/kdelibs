@@ -135,7 +135,6 @@ KDirWatchPrivate::KDirWatchPrivate()
     statEntries( 0 ),
     m_ref( 0 ),
     delayRemove( false ),
-    m_delayedRelinkedEntry( NULL ),
     rescan_all( false ),
     rescan_timer()
 {
@@ -203,6 +202,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   if ( supports_inotify ) {
     availableMethods << "INotify";
     fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
+    m_delayedRelinkedEntry = NULL;
 
     mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
     connect( mSn, SIGNAL(activated( int )),
@@ -1144,6 +1144,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       return Created;
     }
 
+#if defined (HAVE_SYS_INOTIFY_H)
 	if ( e->m_ctime != invalid_ctime && stat_buf.st_ino != e->m_ino ) {
 		kDebug(7001) << "hard link change for " << e->path << " detected";
 		int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF
@@ -1166,6 +1167,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 			return Changed;
 		}
 	}
+#endif
 	
 #ifdef Q_OS_WIN
     stat_buf.st_ctime = stat_buf.st_mtime;
@@ -1702,7 +1704,8 @@ void KDirWatch::addFile( const QString& _path )
 {
   if ( !d )
 	return;
-  
+
+#ifdef HAVE_SYS_INOTIFY_H  
   //TODO: detect link change, ino change
   KDirWatchPrivate::Entry* e = d->entry(_path);
   if ( e ) {
@@ -1716,7 +1719,8 @@ void KDirWatch::addFile( const QString& _path )
 	  }
 	}
   }
-	  
+#endif
+  
   d->addEntry(this, _path, 0, false);
 }
 
