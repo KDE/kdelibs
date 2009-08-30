@@ -308,7 +308,7 @@ void KMenuBar::updateFallbackSize()
         if( d->fallback_mode )
         {
             d->fallback_mode = false;
-//            KWin::setStrut( winId(), 0, 0, 0, 0 ); KWin will set strut as it will see fit
+            KWin::setStrut( winId(), 0, 0, 0, 0 );
             setMinimumSize( 0, 0 );
             setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
             updateMenuBarSize();
