@@ -98,7 +98,7 @@ public:
     KStandardGuiItem::StandardItem guiItem() const;
 
     /**
-     * Sets the Icon Set for this button. It also takes into account hte
+     * Sets the Icon Set for this button. It also takes into account the
      * KGlobalSettings::showIconsOnPushButtons() setting.
      */
     void setIcon( const KIcon &icon );
