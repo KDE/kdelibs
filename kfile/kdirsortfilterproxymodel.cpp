@@ -31,9 +31,6 @@
 
 #include <Qt>
 
-// TODO KDE 4.1: bring Nepomuk stuff from Dolphin to kdelibs/nepomuk
-// in the form of a separate subclass
-
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
 public:
