@@ -78,6 +78,14 @@ namespace Sonnet
          */
          void showProgressDialog(int timeout = 500);
 
+        /**
+         * Controls whether a message box indicating the completion of the spell checking
+         * is shown or not. By default it is not shown.
+         *
+         * @since 4.4
+         */
+        void showSpellCheckCompletionMessage( bool b = true );
+
     public Q_SLOTS:
         void setBuffer(const QString &);
 

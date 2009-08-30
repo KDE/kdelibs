@@ -30,6 +30,7 @@
 #include <kconfig.h>
 #include <kguiitem.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 #include <kprogressdialog.h>
 #include <kdebug.h>
 
@@ -71,6 +72,25 @@ public:
     QMap<QString, QString> dictsMap;
 
     int progressDialogTimeout;
+    bool showCompletionMessageBox;
+    bool canceled;
+
+    void deleteProgressDialog(bool directly)
+    {
+      if (progressDialog)
+      {
+        progressDialog->hide();
+        if (directly)
+        {
+          delete progressDialog;
+        }
+        else
+        {
+          progressDialog->deleteLater();
+        }
+        progressDialog = NULL;
+      }
+    }
 };
 
 Dialog::Dialog(BackgroundChecker *checker,
@@ -87,6 +107,8 @@ Dialog::Dialog(BackgroundChecker *checker,
     setDefaultButton(User1);
     d->checker = checker;
 
+    d->canceled = false;
+    d->showCompletionMessageBox = false;
     d->progressDialogTimeout = -1;
     d->progressDialog = NULL;
 
@@ -162,6 +184,11 @@ void Dialog::showProgressDialog(int timeout)
   d->progressDialogTimeout = timeout;
 }
 
+void Dialog::showSpellCheckCompletionMessage( bool b )
+{
+  d->showCompletionMessageBox = b;
+}
+
 void Dialog::slotAutocorrect()
 {
     setGuiEnabled(false);
@@ -180,12 +207,7 @@ void Dialog::setProgressDialogVisible(bool b)
 {
   if (!b)
   {
-    if (d->progressDialog)
-    {
-      d->progressDialog->hide();
-      d->progressDialog->deleteLater();
-      d->progressDialog = NULL;
-    }
+    d->deleteProgressDialog(true);
   }
   else if(d->progressDialogTimeout >= 0)
   {
@@ -222,7 +244,9 @@ void Dialog::slotFinished()
 void Dialog::slotCancel()
 {
     kDebug();
-    setProgressDialogVisible(false);
+    d->canceled = true;
+    d->deleteProgressDialog(false); // this method can be called in response to
+                                    // pressing 'Cancel' on the dialog
     emit cancel();
     emit spellCheckStatus(i18n("Spell check canceled."));
     reject();
@@ -272,6 +296,7 @@ void Dialog::updateDialog( const QString& word )
 void Dialog::show()
 {
     kDebug()<<"Showing dialog";
+    d->canceled = false;
     updateDictionaryComboBox();
     if (d->originalBuffer.isEmpty())
     {
@@ -400,6 +425,10 @@ void Dialog::slotDone()
         kDebug()<<"Dialog done!";
         emit spellCheckStatus(i18n("Spell check complete."));
         accept();
+        if(!d->canceled && d->showCompletionMessageBox)
+        {
+          KMessageBox::information(this, i18n("Spell check complete."), i18nc("@title:window", "Check Spelling"));
+        }
     }
 }
 
