@@ -1205,7 +1205,7 @@ void KRun::scanFile()
     if (d->m_strURL.query().isEmpty()) {
         KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL);
         assert(mime);
-        if (mime->name() != "application/octet-stream" || d->m_bIsLocalFile) {
+        if (!mime->isDefault() || d->m_bIsLocalFile) {
             kDebug(7010) << "Scanfile: MIME TYPE is " << mime->name();
             mimeTypeDetermined(mime->name());
             return;
