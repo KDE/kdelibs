@@ -21,14 +21,17 @@
 #define AUTH_BACKEND_H
 
 #include <QtPlugin>
+#include <QObject>
 
 #include "Action.h"
 
 namespace KAuth
 {
 
-class AuthBackend
+class AuthBackend : public QObject
 {
+    Q_OBJECT
+
 public:
     virtual ~AuthBackend();
     virtual void setupAction(const QString &action) = 0;
@@ -36,6 +39,9 @@ public:
     virtual Action::AuthStatus actionStatus(const QString &action) = 0;
     virtual QByteArray callerID() const = 0;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID) = 0;
+
+Q_SIGNALS:
+    void actionStatusChanged(const QString &action, Action::AuthStatus status);
 };
 
 } // namespace Auth

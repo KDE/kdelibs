@@ -21,13 +21,14 @@
 #define POLICYKIT_BACKEND_H
 
 #include "AuthBackend.h"
+#include <QHash>
 
 class QByteArray;
 
 namespace KAuth
 {
 
-class PolicyKitBackend : public QObject, public AuthBackend
+class PolicyKitBackend : public AuthBackend
 {
     Q_OBJECT
     Q_INTERFACES(KAuth::AuthBackend)
@@ -39,6 +40,15 @@ public:
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
+
+Q_SIGNALS:
+    void actionStatusChanged(const QString &action, Action::AuthStatus status);
+
+private Q_SLOTS:
+    void checkForResultChanged();
+
+private:
+    QHash<QString, Action::AuthStatus> m_cachedResults;
 };
 
 } // namespace Auth

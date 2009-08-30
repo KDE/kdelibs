@@ -26,6 +26,7 @@
 #include <kdecore_export.h>
 
 #include "ActionReply.h"
+#include "Action.h"
 
 namespace KAuth
 {
@@ -60,6 +61,7 @@ private slots:
     void actionPerformedSlot(const QString &action, const ActionReply &reply);
     void progressStepSlot(const QString &action, int i);
     void progressStepSlot(const QString &action, const QVariantMap &data);
+    void statusChangedSlot(const QString &action, Action::AuthStatus status);
     
 public:
     /**
@@ -143,6 +145,8 @@ signals:
     * @param data The progress data from the helper
     */
     void progressStep(const QVariantMap &data);
+
+    void statusChanged(int status);
 };
 
 } // namespace Auth

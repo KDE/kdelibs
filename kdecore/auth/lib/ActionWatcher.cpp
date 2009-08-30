@@ -17,6 +17,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
+#include "Action.h"
 #include "ActionWatcher.h"
 #include "BackendsManager.h"
 
@@ -44,6 +45,8 @@ ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
     connect(helper, SIGNAL(actionPerformed(QString, ActionReply)), this, SLOT(actionPerformedSlot(QString, ActionReply)));
     connect(helper, SIGNAL(progressStep(QString, int)), this, SLOT(progressStepSlot(QString, int)));
     connect(helper, SIGNAL(progressStep(QString, QVariantMap)), this, SLOT(progressStepSlot(QString, QVariantMap)));
+    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString,Action::AuthStatus)),
+            this, SLOT(statusChangedSlot(QString,Action::AuthStatus)));
 }
 
 ActionWatcher::~ActionWatcher()
@@ -87,6 +90,13 @@ void ActionWatcher::progressStepSlot(const QString &action, const QVariantMap &d
 {
     if(d->action == action)
         emit progressStep(data);
+}
+
+void ActionWatcher::statusChangedSlot(const QString &action, Action::AuthStatus status)
+{
+    if(d->action == action) {
+        emit statusChanged(status);
+    }
 }
 
 } // namespace Auth
