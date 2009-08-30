@@ -1047,8 +1047,13 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
     const bool modified = locationEdit->lineEdit()->isModified();
     locationEdit->lineEdit()->setModified( false );
 
-    if ((!i.isNull() && i.isDir() ) ||
-        (locationEdit->hasFocus() && !locationEdit->currentText().isEmpty())) // don't disturb
+    // Don't lose the typed (or preselected by program) filename
+    // when clicking on a directory - or when clicking on the view
+    if (i.isNull() || i.isDir())
+        return;
+
+    if (locationEdit->hasFocus() &&
+        !locationEdit->currentText().isEmpty()) // don't disturb while editing
         return;
 
     if (!(ops->mode() & KFile::Files)) {
