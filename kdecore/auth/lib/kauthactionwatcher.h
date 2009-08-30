@@ -25,8 +25,8 @@
 
 #include <kdecore_export.h>
 
-#include "ActionReply.h"
-#include "Action.h"
+#include "kauthactionreply.h"
+#include "kauthaction.h"
 
 namespace KAuth
 {

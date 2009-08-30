@@ -26,8 +26,8 @@
 #include <QString>
 #include <QVariant>
 
-#include "ActionReply.h"
-#include "ActionWatcher.h"
+#include "kauthactionreply.h"
+#include "kauthactionwatcher.h"
 
 namespace KAuth
 {

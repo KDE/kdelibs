@@ -29,8 +29,8 @@
 
 #include "../../../kdeui/widgets/kpushbutton.h"
 #include "ui_mainwindow.h"
-#include <Action.h>
-#include "ActionWatcher.h"
+#include <kauthaction.h>
+#include "kauthactionwatcher.h"
 #include "../../../kdeui/actions/kaction.h"
 
 

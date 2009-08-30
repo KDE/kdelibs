@@ -17,8 +17,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#include "Action.h"
-#include "ActionWatcher.h"
+#include "kauthactionwatcher.h"
 #include "BackendsManager.h"
 
 #include <QHash>

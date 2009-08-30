@@ -17,7 +17,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#include "HelperSupport.h"
+#include "kauthhelpersupport.h"
 
 #include <cstdlib>
 #include <syslog.h>

@@ -24,7 +24,7 @@
 #include <QProgressBar>
 #include <QPushButton>
 
-#include <ActionReply.h>
+#include <kauthactionreply.h>
 
 using namespace KAuth;
 

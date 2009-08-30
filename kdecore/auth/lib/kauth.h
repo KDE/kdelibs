@@ -20,9 +20,9 @@
 #ifndef KAUTH_H
 #define KAUTH_H
 
-#include "Action.h"
-#include "ActionReply.h"
-#include "ActionWatcher.h"
-#include "HelperSupport.h"
+#include "kauthaction.h"
+#include "kauthactionreply.h"
+#include "kauthactionwatcher.h"
+#include "kauthhelpersupport.h"
 
 #endif

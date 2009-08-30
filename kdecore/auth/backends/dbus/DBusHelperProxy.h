@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QVariant>
 #include "HelperProxy.h"
-#include "ActionReply.h"
+#include "kauthactionreply.h"
 
 namespace KAuth
 {

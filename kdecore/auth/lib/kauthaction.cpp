@@ -17,14 +17,14 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#include "Action.h"
+#include "kauthaction.h"
 
 #include <QDebug>
 #include <QPluginLoader>
 #include <QRegExp>
 
 #include "BackendsManager.h"
-#include "ActionWatcher.h"
+#include "kauthactionwatcher.h"
 
 namespace KAuth
 {

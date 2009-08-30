@@ -23,7 +23,7 @@
 #include <QtPlugin>
 #include <QObject>
 
-#include "Action.h"
+#include "kauthaction.h"
 
 namespace KAuth
 {
