@@ -986,6 +986,7 @@ install(FILES
   Plasma/ScrollWidget
   Plasma/Service
   Plasma/ServiceJob
+  Plasma/Separator
   Plasma/SignalPlotter
   Plasma/Slider
   Plasma/SpinBox
