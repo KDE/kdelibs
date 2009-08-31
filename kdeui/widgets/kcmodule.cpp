@@ -45,6 +45,7 @@ public:
         _about( 0 ),
         _useRootOnlyMessage( false ),
         _firstshow(true),
+        _authAction(0),
         _unmanagedWidgetChangeState( false )
         { }
 
