@@ -342,6 +342,11 @@ protected Q_SLOTS:
    * settings are compared and a corresponding changed() signal is emitted
    */
    void widgetChanged();
+   
+  /**
+   * The status of the auth action, if one, has changed
+   */
+   void authStatusChanged(int);
 
 protected:
 

@@ -3,7 +3,8 @@
 
    Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
    Copyright (C) 2004 Frans Englich <frans.englich@telia.com>
-
+   Copyright (C) 2009 Dario Freddi <drf@kde.org>
+   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -36,6 +37,7 @@
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include "auth/lib/kauthaction.h"
+#include "auth/lib/kauthactionwatcher.h"
 
 class KCModulePrivate
 {
@@ -48,6 +50,8 @@ public:
         _authAction(0),
         _unmanagedWidgetChangeState( false )
         { }
+
+    void authStatusChanged(int status);
 
     KCModule::Buttons _buttons;
     KComponentData _componentData;
@@ -135,6 +139,9 @@ void KCModule::setNeedsAuthorization(bool needsAuth)
         d->_authAction = new KAuth::Action(QString("org.kde.kcontrol." + d->_about->appName() + ".save"));
         d->_needsAuthorization = d->_authAction->isValid();
         KAuth::Action::setHelperID("org.kde.kcontrol." + d->_about->appName());
+        connect(d->_authAction->watcher(), SIGNAL(statusChanged(int)),
+                this, SLOT(authStatusChanged(int)));
+        authStatusChanged(d->_authAction->status());
     } else {
         d->_authAction = 0;
     }
@@ -148,6 +155,25 @@ bool KCModule::needsAuthorization() const
 KAuth::Action *KCModule::authAction() const
 {
     return d->_authAction;
+}
+
+void KCModule::authStatusChanged(int status)
+{
+    KAuth::Action::AuthStatus s = (KAuth::Action::AuthStatus)status;
+
+    switch(s) {
+        case KAuth::Action::Authorized:
+            setUseRootOnlyMessage(false);
+            break;
+        case KAuth::Action::AuthRequired:
+            setUseRootOnlyMessage(true);
+            setRootOnlyMessage(i18n("You will be asked to authenticate to save this module"));
+            break;
+        default:
+            setUseRootOnlyMessage(true);
+            setRootOnlyMessage(i18n("You are not allowed to save this module."));
+            break;
+    }
 }
 
 KCModule::~KCModule()
