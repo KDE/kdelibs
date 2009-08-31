@@ -437,7 +437,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                                                                   "your local computer to the Internet.\n"
                                                                   "Do you really want to continue?"),
                                                              fileUploads,
-                                                             i18n("Send Confirmation"),KGuiItem(i18n("&Send Files"), "document-export"));
+                                                             i18n("Send Confirmation"),KGuiItem(i18np("&Send File", "&Send Files", fileUploads.count()), "document-export"));
 
 
         if (result == KMessageBox::Cancel) {
