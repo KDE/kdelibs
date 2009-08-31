@@ -85,6 +85,11 @@ macro_log_feature(OPENSSL_FOUND "OpenSSL" "A toolkit implementing the Secure Soc
 macro_optional_find_package(Libintl)
 macro_log_feature(LIBINTL_FOUND "Libintl" "Library for message translation" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages.")
 
+if (UNIX AND NOT APPLE)
+macro_optional_find_package(PolkitQt)
+macro_log_feature(POLKITQT_FOUND "PolkitQt" "Qt Wrapper around Policykit" "http://api.kde.org/polkit-qt" FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work, hence to enable some workspace functionalities")
+endif (UNIX AND NOT APPLE)
+
 macro_optional_find_package(OpenGL)
 macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
 
