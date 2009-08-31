@@ -22,11 +22,12 @@
 #include "kdirselectdialog.h"
 
 #include <kgenericfactory.h>
+#include <kpluginfactory.h>
 
-typedef KGenericFactory<KFileModule> KFileModuleFactory;
-Q_EXPORT_PLUGIN( KFileModuleFactory("kfile") )
+K_PLUGIN_FACTORY(KFileModuleFactory, registerPlugin<KFileModule>();)
+K_EXPORT_PLUGIN(KFileModuleFactory("kfilemodule"))
 
-KFileModule::KFileModule(QObject* parent, const QStringList&)
+KFileModule::KFileModule(QObject* parent, const QVariantList&)
     : KAbstractFileModule(parent)
 {
 }

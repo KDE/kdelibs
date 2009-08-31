@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KIO/FileModule
+Name=filemodule
+Comment=KIO File Module

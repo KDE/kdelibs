@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=KFileModule
+Comment=The default KDE file module providing the standard file dialog
+X-KDE-ServiceTypes=KIO/FileModule
+Type=Service
+X-KDE-Library=kfilemodule
+

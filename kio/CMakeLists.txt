@@ -299,6 +299,7 @@ install( FILES
  renamedialogplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
  kio/kfilewrite.desktop
+ kfile/kiofilemodule.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )

@@ -26,7 +26,7 @@ class KFileModule : public KAbstractFileModule
 {
     Q_OBJECT
 public:
-    KFileModule(QObject* parent, const QStringList&);
+    KFileModule(QObject* parent, const QVariantList&);
 
     virtual QWidget* createFileWidget(const KUrl& startDir, QWidget *parent);
 

@@ -45,6 +45,7 @@
 #include "kabstractfilewidget.h"
 #include "kabstractfilemodule.h"
 #include "krecentdirs.h"
+#include "kservice.h"
 
 /** File dialogs are native by default on Windows. */
 #ifdef Q_WS_WIN
@@ -138,18 +139,25 @@ static QString qtFilter(const QString& filter)
 }
 
 static KAbstractFileModule* s_module = 0;
+static KAbstractFileModule* loadFileModule( const QString& moduleName )
+{
+    KService::Ptr fileModuleService = KService::serviceByDesktopName(moduleName);
+    if(fileModuleService)
+        return fileModuleService->createInstance<KAbstractFileModule>();
+    else
+        return 0;
+}
+
+static const char* s_defaultFileModuleName = "kfilemodule";
 static KAbstractFileModule* fileModule()
 {
-    if (!s_module) {
-        // TODO fix memleak -- qApp post routine for deleting the module ?
-        KPluginLoader loader("libkfilemodule");
-        KPluginFactory *factory = loader.factory();
-        if (!factory) {
-            kWarning() << "KFileDialog wasn't able to find libkfilemodule: " << loader.errorString();
-        } else {
-            s_module = factory->create<KAbstractFileModule>();
-            if (!s_module) {
-                kWarning() << "An error occurred while loading libkfilemodule";
+    if(!s_module) {
+        QString moduleName = KConfigGroup(KGlobal::config(), ConfigGroup).readEntry("file module", s_defaultFileModuleName);
+        if(!(s_module = loadFileModule(moduleName))) {
+            kDebug() << "Failed to load configured file module" << moduleName;
+            if(moduleName != s_defaultFileModuleName) {
+                kDebug() << "Falling back to default file module.";
+                s_module = loadFileModule(s_defaultFileModuleName);
             }
         }
     }

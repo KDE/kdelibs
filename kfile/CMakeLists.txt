@@ -73,12 +73,7 @@ install( FILES
 set(kfilemodule_SRCS
   kfilemodule.cpp
 )
-
-if (WIN32)
-  kde4_add_plugin(kfilemodule ${kfilemodule_SRCS})
-else (WIN32)
-  kde4_add_plugin(kfilemodule WITH_PREFIX ${kfilemodule_SRCS})
-endif (WIN32)
-
+kde4_add_plugin(kfilemodule ${kfilemodule_SRCS})
 target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS})
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})
+install(FILES kfilemodule.desktop DESTINATION ${SERVICES_INSTALL_DIR})
