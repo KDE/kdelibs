@@ -42,6 +42,9 @@
  * The .desktop file for the application should state X-DBUS-StartupType=Unique,
  * see ktoolinvocation.h
  *
+ * If you use command line options before start() is called, you MUST call addCmdLineOptions()
+ * so that the KUniqueApplication-specific command-line options can still work.
+ *
  * If your application is used to open files, it should also support the --tempfile
  * option (see KCmdLineArgs::addTempFileOption()), to delete tempfiles after use.
  * Add X-KDE-HasTempFileOption=true to the .desktop file to indicate this.
