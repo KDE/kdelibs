@@ -40,6 +40,8 @@
 
 #include "auth/lib/kauthaction.h"
 
+#include "kcolorscheme.h"
+
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
 
@@ -296,8 +298,14 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
     kDebug(710) << moduleInfo.moduleName();
     KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
-  item->setHeader( moduleInfo.comment() );
+  
+  if (kcm->useRootOnlyMessage()) {
+  item->setHeader( "<b>"+moduleInfo.comment() + "</b><br><i>" + kcm->rootOnlyMessage() + "</i>" );
+  item->setIcon( KIcon( moduleInfo.icon(), 0, QStringList() << "dialog-warning" ) );
+  } else {
+    item->setHeader( moduleInfo.comment() );
   item->setIcon( KIcon( moduleInfo.icon() ) );
+  }
     item->setProperty("_k_weight", moduleInfo.weight());
 
     bool updateCurrentPage = false;

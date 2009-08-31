@@ -49,6 +49,8 @@
 
 #include <kcmoduleloader.h>
 
+#include "kcolorscheme.h"
+
 #include "ksettingswidgetadaptor.h"
 
 /*
@@ -121,9 +123,13 @@ void KCModuleProxyPrivate::loadModule()
 		{
 			rootInfo = new QLabel( parent );
 			topLayout->insertWidget( 0, rootInfo );
-
-			rootInfo->setFrameShape( QFrame::Box );
-			rootInfo->setFrameShadow( QFrame::Raised );
+			
+			QPalette palette = rootInfo->palette();
+			KStatefulBrush stbrush(KColorScheme::Window, KColorScheme::NeutralBackground);
+			qDebug() << stbrush.brush(rootInfo);
+			palette.setBrush(QPalette::Window, stbrush.brush(rootInfo));
+			rootInfo->setPalette(palette);
+			rootInfo->setAutoFillBackground(true);
 
 			const QString message = kcm->rootOnlyMessage();
 			if( message.isEmpty() )
