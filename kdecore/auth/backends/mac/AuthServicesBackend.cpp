@@ -36,7 +36,7 @@ AuthorizationRef authRef()
     return s_authRef;
 }
 
-AuthServicesBackend::AuthServicesBackend() : QObject(NULL) {}
+AuthServicesBackend::AuthServicesBackend() : AuthBackend() {}
 
 void AuthServicesBackend::setupAction(const QString&)
 {

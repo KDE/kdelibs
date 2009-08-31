@@ -109,7 +109,7 @@ if (UNIX)
       util/kmacroexpander_unix.cpp
       fakes.c
    )
-   
+
    if (POLKITQT_FOUND)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
        auth/backends/policykit/PolicyKitBackend.cpp
