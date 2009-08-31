@@ -167,11 +167,11 @@ void KCModule::authStatusChanged(int status)
             break;
         case KAuth::Action::AuthRequired:
             setUseRootOnlyMessage(true);
-            setRootOnlyMessage(i18n("You will be asked to authenticate to save this module"));
+            setRootOnlyMessage(i18n("You will be asked to authenticate before saving"));
             break;
         default:
             setUseRootOnlyMessage(true);
-            setRootOnlyMessage(i18n("You are not allowed to save this module."));
+            setRootOnlyMessage(i18n("You are not allowed to save the configuration"));
             break;
     }
 }
