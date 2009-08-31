@@ -47,14 +47,14 @@ void output(QList<Action> actions)
     foreach(Action action, actions) {
         out << dent << "<action id=\"" << action.name << "\" >\n";
         
-        foreach(QString lang, action.descriptions.keys()) {
+        foreach(const QString& lang, action.descriptions.keys()) {
             out << dent << dent << "<description";
             if(lang != "en")
                 out << " xml:lang=\"" << lang << '"';
             out << '>' << action.descriptions.value(lang) << "</description>\n";
         }
         
-        foreach(QString lang, action.messages.keys()) {
+        foreach(const QString& lang, action.messages.keys()) {
             out << dent << dent << "<message";
             if(lang != "en")
                 out << " xml:lang=\"" << lang << '"';
