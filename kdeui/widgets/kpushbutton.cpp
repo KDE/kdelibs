@@ -330,7 +330,7 @@ void KPushButton::setAuthAction(KAuth::Action *action)
 {
     if (d->authAction) {
         disconnect(d->authAction->watcher(), 0, 0, 0);
-        delete d->authAction;
+        //delete d->authAction;
         d->authAction = 0;
     }
 
