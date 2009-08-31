@@ -517,7 +517,7 @@ install( FILES
 )
 
 install( FILES auth/backends/dbus/org.kde.auth.conf
-	 DESTINATION /etc/dbus-1/system.d )
+	 DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
 
 install( FILES auth/backends/dbus/dbus_policy.stub 
                auth/backends/dbus/dbus_service.stub
