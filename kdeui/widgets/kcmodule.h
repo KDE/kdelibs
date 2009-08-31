@@ -28,7 +28,9 @@
 #include <QtCore/QVariant>
 #include <QtGui/QWidget>
 
+#ifdef Q_WS_X11
 #include <fixx11h.h>
+#endif
 
 class QStringList;
 class KAboutData;
