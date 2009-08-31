@@ -60,7 +60,9 @@ class QSocketNotifier;
 #endif
 
 #include <sys/time.h>
+#include <sys/param.h>
 #include <ctime>
+
 
 #define invalid_ctime ((time_t)-1)
 
@@ -136,8 +138,8 @@ public:
     time_t m_ctime;
     // the last observed link count
     int m_nlink;
-	// last observed inode ( considering hard link changes )
-	ino_t m_ino;
+    // last observed inode ( considering hard link changes )
+    ino_t m_ino;
     entryStatus m_status;
     entryMode m_mode;
     bool isDir;
