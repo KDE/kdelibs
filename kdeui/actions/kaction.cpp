@@ -76,7 +76,7 @@ void KActionPrivate::slotTriggered()
           q->setEnabled(false);
           break;
       case KAuth::Action::Authorized:
-          emit q->authorized(*authAction);
+          emit q->authorized(authAction);
           break;
       default:
           break;

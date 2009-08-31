@@ -72,21 +72,21 @@ void KCMultiDialogPrivate::updateButtons(KCModuleProxy *currentModule)
     Q_Q(KCMultiDialog);
     q->enableButton(KDialog::Help, currentModule->buttons() & KCModule::Help);
     q->enableButton(KDialog::Default, currentModule->buttons() & KCModule::Default);
+    q->disconnect(q, SIGNAL(applyClicked()), q, SLOT(slotApplyClicked()));
+    q->disconnect(q, SIGNAL(okClicked()), q, SLOT(slotOkClicked()));
+    q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotApplyClicked()));
+    q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotOkClicked()));
     
     if (currentModule->realModule()->needsAuthorization()) {
-        q->disconnect(q, SIGNAL(applyClicked()), q, SLOT(slotApplyClicked()));
-        q->disconnect(q, SIGNAL(okClicked()), q, SLOT(slotOkClicked()));
         q->button(KDialog::Apply)->setAuthAction(currentModule->realModule()->authAction());
         q->button(KDialog::Ok)->setAuthAction(currentModule->realModule()->authAction());
-        q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action)), SLOT(slotApplyClicked()));
-        q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action)), SLOT(slotOkClicked()));
+        q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), SLOT(slotApplyClicked()));
+        q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), SLOT(slotOkClicked()));
     } else {
         q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
         q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
         q->button(KDialog::Apply)->setAuthAction(currentModule->realModule()->authAction());
         q->button(KDialog::Ok)->setAuthAction(currentModule->realModule()->authAction());
-        q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action)), q, SLOT(slotApplyClicked()));
-        q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action)), q, SLOT(slotOkClicked()));
     }
 }
 

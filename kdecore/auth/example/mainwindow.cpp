@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menuFile->addAction(action);
     action->setIcon(KIcon("dialog-ok-apply"));
     action->setAuthAction("org.kde.auth.example.kactionaction");
-    connect(action, SIGNAL(authorized(KAuth::Action)), this, SLOT(kactionTriggered()));
+    connect(action, SIGNAL(authorized(KAuth::Action*)), this, SLOT(kactionTriggered()));
     ui->openButton->setAuthAction("org.kde.auth.example.read");
     ui->saveButton->setAuthAction("org.kde.auth.example.write");
     ui->longButton->setAuthAction("org.kde.auth.example.longaction");

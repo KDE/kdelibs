@@ -97,7 +97,7 @@ void KPushButton::KPushButtonPrivate::slotClickedInternal()
             parent->setEnabled(false);
             break;
         case KAuth::Action::Authorized:
-            emit parent->authorized(*authAction);
+            emit parent->authorized(authAction);
             break;
         default:
             break;

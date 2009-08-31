@@ -525,7 +525,7 @@ Q_SIGNALS:
      *
      * @param action The object set with setAuthAction()
      */
-    void authorized(KAuth::Action action);
+    void authorized(KAuth::Action *action);
 
     /**
      * Emitted when the global shortcut is changed. A global shortcut is
