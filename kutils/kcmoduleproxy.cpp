@@ -121,7 +121,7 @@ void KCModuleProxyPrivate::loadModule()
 				kcm->useRootOnlyMessage() && /* kcm wants root message */
 				!KUser().isSuperUser() ) /* Not necessary if we're root */
 		{
-			rootInfo = new QLabel( parent );
+			/*rootInfo = new QLabel( parent );
 			topLayout->insertWidget( 0, rootInfo );
 			
 			QPalette palette = rootInfo->palette();
@@ -146,7 +146,7 @@ void KCModuleProxyPrivate::loadModule()
 				  "required that you provide the root password to be "
 				  "able to change the module's properties. If "
 				  "you cannot provide the password, the changes of the "
-				  "module cannot be saved " ) );
+				  "module cannot be saved " ) );*/
 		}
 	}
 	else
