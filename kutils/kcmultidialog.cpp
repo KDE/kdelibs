@@ -207,7 +207,7 @@ void KCMultiDialogPrivate::apply()
         KCModuleProxy *proxy = module.kcm;
 
         if (proxy->changed()) {
-            
+            proxy->save();
             /**
                 * Add name of the components the kcm belongs to the list
                 * of updated components.
