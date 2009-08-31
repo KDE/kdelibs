@@ -396,6 +396,10 @@ void KAction::setAuthAction(KAuth::Action *action)
         disconnect(d->authAction->watcher(), 0, 0, 0);
         //delete d->authAction;
         d->authAction = 0;
+        if (!d->oldIcon.isNull()) {
+            setIcon(d->oldIcon);
+            d->oldIcon = KIcon();
+        }
     }
 
     if (action != 0) {
