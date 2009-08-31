@@ -94,7 +94,6 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
       kernel/kstandarddirs_unix.cpp
-      auth/backends/policykit/PolicyKitBackend.cpp
       network/k3httpproxysocketdevice.cpp
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
@@ -106,7 +105,17 @@ if (UNIX)
       util/kmacroexpander_unix.cpp
       fakes.c
    )
+   
+   if (POLKITQT_FOUND)
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+       auth/backends/policykit/PolicyKitBackend.cpp
+   )
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
+   else (POLKITQT_FOUND)
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+       auth/backends/fake/FakeBackend.cpp
+   )
+   endif (POLKITQT_FOUND)
 endif (UNIX)
 
 
@@ -300,6 +309,7 @@ set(kdecore_LIB_SRCS
 )
 
 set_source_files_properties( auth/backends/policykit/PolicyKitBackend.cpp
+                             auth/backends/fake/FakeBackend.cpp
 			     auth/backends/mac/AuthServicesBackend.cpp
 			     auth/backends/dbus/DBusHelperProxy.cpp
 			     PROPERTIES COMPILE_FLAGS -DQT_STATICPLUGIN )
