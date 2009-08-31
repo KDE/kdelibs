@@ -355,7 +355,7 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} )
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 

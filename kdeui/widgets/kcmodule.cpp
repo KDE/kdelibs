@@ -35,6 +35,7 @@
 #include <kglobal.h>
 #include <kcomponentdata.h>
 #include <klocale.h>
+#include "auth/lib/kauthaction.h"
 
 class KCModulePrivate
 {
@@ -56,6 +57,9 @@ public:
     bool _useRootOnlyMessage : 1;
     bool _firstshow : 1;
 
+    bool  _needsAuthorization : 1;
+    KAuth::Action *_authAction;
+    
     // this member is used to record the state on non-automatically
     // managed widgets, allowing for mixed KConfigXT-drive and manual
     // widgets to coexist peacefully and do the correct thing with
@@ -121,6 +125,28 @@ KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* wid
     connect( manager, SIGNAL( widgetModified() ), SLOT( widgetChanged() ));
     d->managers.append( manager );
     return manager;
+}
+
+void KCModule::setNeedsAuthorization(bool needsAuth)
+{
+    d->_needsAuthorization = needsAuth;
+    if (needsAuth && d->_about) {
+        d->_authAction = new KAuth::Action("org.kde.kcontrol." + d->_about->appName() + ".save");
+        d->_needsAuthorization = d->_authAction->isValid();
+        KAuth::Action::setHelperID("org.kde.kcontrol" + d->_about->appName());
+    } else {
+        d->_authAction = 0;
+    }
+}
+
+bool KCModule::needsAuthorization() const
+{
+    return d->_needsAuthorization;
+}
+
+KAuth::Action *KCModule::authAction() const
+{
+    return d->_authAction;
 }
 
 KCModule::~KCModule()

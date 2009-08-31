@@ -28,12 +28,18 @@
 #include <QtCore/QVariant>
 #include <QtGui/QWidget>
 
+#include <fixx11h.h>
+
 class QStringList;
 class KAboutData;
 class KConfigDialogManager;
 class KConfigSkeleton;
 class KCModulePrivate;
 class KComponentData;
+
+namespace KAuth {
+    class Action;
+}
 
 /**
  * The base class for configuration modules.
@@ -197,6 +203,40 @@ public:
    * @return a list of @ref KConfigDialogManager's in use, if any.
    */
   QList<KConfigDialogManager*> configs() const;
+  
+  /**
+   * Tell if the module's save() method requires authorization to be executed.
+   *
+   * The module can set this property to @c true if it requires authorization.
+   * It will still have to execute the action itself using the KAuth library, so
+   * this method is not technically needed to perform the action, but
+   * using this and/or the setAuthAction() method will ensure that hosting
+   * applications like System Settings or kcmshell behave correctly.
+   *
+   * Called with @c true, if no action has been previously set using setAuthAction(),
+   * this method will set the action to a default value of "org.kde.kcontrol.name.save" where
+   * "name" is the aboutData()->appName() return value. This default action won't be set if
+   * the aboutData() object is not valid.
+   *
+   * Note that called with @c false, this method will reset the action name set with setAuthAction().
+   *
+   * @param needsAuth Tells if the module's save() method requires authorization to be executed.
+   */
+  void setNeedsAuthorization(bool needsAuth);
+  
+  /**
+   * Returns the value previously set with setNeedsAuthorization(). By default it's @c false.
+   *
+   * @return @c true if the module's save() method requires authorization, @c false otherwise
+   */
+  bool needsAuthorization() const;
+
+  /**
+   * Returns the action previously set with setAuthAction(). By default its an invalid action.
+   *
+   * @return The action that has to be authorized to execute the save() method.
+   */
+  KAuth::Action *authAction() const;
 
 public Q_SLOTS:
   /**

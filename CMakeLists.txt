@@ -131,6 +131,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/io
                           ${CMAKE_SOURCE_DIR}/kdecore/jobs
                           ${CMAKE_SOURCE_DIR}/kdecore/kernel
+			  ${CMAKE_SOURCE_DIR}/kdecore/kauth/lib
                           ${CMAKE_SOURCE_DIR}/kdecore/network
                           ${CMAKE_SOURCE_DIR}/kdecore/services
                           ${CMAKE_SOURCE_DIR}/kdecore/localization
@@ -159,7 +160,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/util
                         ${CMAKE_SOURCE_DIR}/kdeui/widgets
                         ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
-                        ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
+                        ${CMAKE_SOURCE_DIR}/kdeui/xmlgui             
                         ${KDE4_KDECORE_INCLUDES})
 
 # kio depends on kdeui

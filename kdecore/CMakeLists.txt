@@ -14,6 +14,9 @@ configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/networ
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
 
+include(auth/ConfigureChecks.cmake)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/lib/ )
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
@@ -61,8 +64,9 @@ endif (HAVE_RESOLV_LIBRARY)
 if (APPLE)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/kkernel_mac.cpp
+      auth/backends/mac/AuthServicesBackend.cpp
    )
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY} ${SECURITY_LIBRARY})
 endif (APPLE)
 
 if (WIN32)
@@ -90,6 +94,7 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
       kernel/kstandarddirs_unix.cpp
+      auth/backends/policykit/PolicyKitBackend.cpp
       network/k3httpproxysocketdevice.cpp
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
@@ -101,6 +106,7 @@ if (UNIX)
       util/kmacroexpander_unix.cpp
       fakes.c
    )
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
 endif (UNIX)
 
 
@@ -125,6 +131,11 @@ endif (UNIX)
 
 
 ########### next target ###############
+
+qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
+                     auth/backends/dbus/org.kde.auth.xml
+		     auth/backends/dbus/DBusHelperProxy.h
+                     KAuth::DBusHelperProxy)
 
 set(kdecore_LIB_SRCS
    compression/kgzipfilter.cpp
@@ -168,6 +179,15 @@ set(kdecore_LIB_SRCS
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
+   auth/lib/kauthaction.cpp
+   auth/lib/kauthactionreply.cpp
+   auth/lib/kauthactionwatcher.cpp
+   auth/lib/AuthBackend.cpp
+   auth/lib/BackendsManager.cpp
+   auth/lib/HelperProxy.cpp
+   auth/lib/kauthhelpersupport.cpp
+   auth/backends/dbus/DBusHelperProxy.cpp
+   ${kauth_dbus_adaptor_SRCS}
    services/kfoldermimetype.cpp
    services/kmimetypefactory.cpp
    services/kmimemagicrule.cpp
@@ -279,6 +299,10 @@ set(kdecore_LIB_SRCS
    ${kdecore_OPTIONAL_SRCS}
 )
 
+set_source_files_properties( auth/backends/policykit/PolicyKitBackend.cpp
+			     auth/backends/mac/AuthServicesBackend.cpp
+			     auth/backends/dbus/DBusHelperProxy.cpp
+			     PROPERTIES COMPILE_FLAGS -DQT_STATICPLUGIN )
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
@@ -361,6 +385,26 @@ endif(KDE4_ENABLE_FINAL)
 
 install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
 
+########### next target ###############
+
+# KAuth policy generator executable
+set(kauth_policy_gen_SRCS
+    auth/policy-gen/policy-gen.cpp )
+
+if(APPLE)
+   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+       auth/backends/mac/kauth-policy-gen-mac.cpp )
+elseif(UNIX)
+   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+       auth/backends/policykit/kauth-policy-gen-polkit.cpp )
+endif()
+
+kde4_add_executable(kauth-policy-gen ${kauth_policy_gen_SRCS})
+
+target_link_libraries( kauth-policy-gen ${QT_QTCORE_LIBRARY} )
+
+install( TARGETS kauth-policy-gen DESTINATION ${LIBEXEC_INSTALL_DIR} COMPONENT Devel)
+
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
@@ -418,6 +462,11 @@ install( FILES
    network/klocalsocket.h
    network/ksocketfactory.h
    network/ktcpsocket.h
+   auth/lib/kauthaction.h
+   auth/lib/kauthactionreply.h
+   auth/lib/kauthactionwatcher.h
+   auth/lib/kauthhelpersupport.h
+   auth/lib/kauth.h
    services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h
@@ -467,6 +516,13 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
+install( FILES auth/backends/dbus/org.kde.auth.conf
+	 DESTINATION /etc/dbus-1/system.d )
+
+install( FILES auth/backends/dbus/dbus_policy.stub 
+               auth/backends/dbus/dbus_service.stub
+         DESTINATION ${DATA_INSTALL_DIR}/kauth COMPONENT Devel)
+
 install( FILES sonnet/backgroundchecker.h sonnet/speller.h sonnet/globals.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 
@@ -476,3 +532,5 @@ install( FILES
    sonnet/sonnetspeller.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )
+
+#add_subdirectory(auth/example)

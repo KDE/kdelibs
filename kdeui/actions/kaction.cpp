@@ -29,6 +29,8 @@
 #include "kglobalaccel_p.h"
 #include "klocale.h"
 #include "kmessagebox.h"
+#include "auth/lib/kauthaction.h"
+#include "auth/lib/kauthactionwatcher.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QShortcutEvent>
@@ -66,8 +68,47 @@ void KActionPrivate::slotTriggered()
   emit q->activated();
 #endif
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
+
+  if (authAction) {
+      KAuth::Action::AuthStatus s = authAction->authorize();
+      switch(s) {
+      case KAuth::Action::Denied:
+          q->setEnabled(false);
+          break;
+      case KAuth::Action::Authorized:
+          emit q->authorized(*authAction);
+          break;
+      default:
+          break;
+      }
+  }
 }
 
+void KActionPrivate::authStatusChanged(int status)
+{
+    KAuth::Action::AuthStatus s = (KAuth::Action::AuthStatus)status;
+
+    switch(s) {
+        case KAuth::Action::Authorized:
+            q->setEnabled(true);
+            if(!oldIcon.isNull()) {
+                q->setIcon(oldIcon);
+                oldIcon = KIcon();
+            }
+            break;
+        case KAuth::Action::AuthRequired:
+            q->setEnabled(true);
+            oldIcon = KIcon(q->icon());
+            q->setIcon(KIcon("dialog-password"));
+            break;
+        default:
+            q->setEnabled(false);
+            if(!oldIcon.isNull()) {
+                q->setIcon(oldIcon);
+                oldIcon = KIcon();
+            }
+    }
+}
 
 bool KAction::event(QEvent *event)
 {
@@ -333,6 +374,36 @@ void KAction::setHelpText(const QString& text)
     setToolTip(text);
     if (whatsThis().isEmpty())
         setWhatsThis(text);
+}
+
+KAuth::Action *KAction::authAction() const
+{
+    return d->authAction;
+}
+
+void KAction::setAuthAction(const QString &actionName)
+{
+    if (actionName.isEmpty()) {
+        setAuthAction(0);
+    } else {
+        setAuthAction(new KAuth::Action(actionName));
+    }
+}
+
+void KAction::setAuthAction(KAuth::Action *action)
+{
+    if (d->authAction) {
+        disconnect(d->authAction->watcher(), 0, 0, 0);
+        delete d->authAction;
+        d->authAction = 0;
+    }
+
+    if (action != 0) {
+        d->authAction = action;
+        connect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
+                this, SLOT(authStatusChanged(int)));
+        d->authStatusChanged(d->authAction->status());
+    }
 }
 
 /* vim: et sw=2 ts=2

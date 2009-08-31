@@ -28,6 +28,10 @@ class QDrag;
 class QMenu;
 class KIcon;
 
+namespace KAuth {
+    class Action;
+}
+
 /**
  * @brief A QPushButton with drag-support and KGuiItem support
  *
@@ -127,6 +131,34 @@ public:
      */
      QMenu *delayedMenu();
 
+    /**
+     * Returns the action object associated with this button, or 0 if it does not have one
+     *
+     * @returns the KAuth::Action associated with this button.
+     */
+     KAuth::Action *authAction() const;
+
+    /**
+     * Sets the action object associated with this button
+     *
+     * By setting a KAuth::Action, this button will become associated with it, and
+     * whenever it gets clicked, it will trigger the authorization and execution process
+     * for the action. The signal activated will also be emitted whenever the button gets
+     * clicked and the action gets authorized. Pass 0 to this function to disassociate the button
+     *
+     * @param action the KAuth::Action to associate with this button.
+     */
+     void setAuthAction(KAuth::Action *action);
+
+     /**
+     * Sets the action object associated with this button
+     *
+     * Overloaded member to allow creating the action by name
+     *
+     * @param actionName the name of the action to associate
+     */
+     void setAuthAction(const QString &actionName);
+
 protected:
     /**
      * Reimplement this and return the QDrag object that should be used
@@ -150,6 +182,24 @@ protected:
      */
     virtual void startDrag();
 
+Q_SIGNALS:
+    /**
+     * Signal emitted when the button is triggered and authorized
+     *
+     * If the button needs authorization, whenever the user triggers it,
+     * the authorization process automatically begins.
+     * If it succeeds, this signal is emitted. The KAuth::Action object is provided for convenience
+     * if you have multiple Action objects, but of course it's always the same set with
+     * setAuthAction().
+     *
+     * WARNING: If your button needs authorization you should connect eventual slots processing
+     * stuff to this signal, and NOT clicked. Clicked will be emitted even if the user has not
+     * been authorized
+     *
+     * @param action The object set with setAuthAction()
+     */
+    void authorized(KAuth::Action action);
+
 private:
     /**
      * Internal.
@@ -165,6 +215,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotPressedInternal())
     Q_PRIVATE_SLOT(d, void slotClickedInternal())
     Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout())
+    Q_PRIVATE_SLOT(d, void authStatusChanged(int))
 };
 
 #endif // KPUSHBUTTON_H

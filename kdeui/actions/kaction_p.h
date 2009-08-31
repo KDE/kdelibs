@@ -25,15 +25,20 @@
 
 class KAction;
 
+namespace KAuth {
+    class Action;
+}
+
 class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentData(KGlobal::mainComponent()), globalShortcutEnabled(false), q(0)
+            : componentData(KGlobal::mainComponent()), globalShortcutEnabled(false), q(0), authAction(0)
         {
         }
 
         void slotTriggered();
+        void authStatusChanged(int status);
 
         void init(KAction *q_ptr);
         void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
@@ -53,6 +58,10 @@ class KActionPrivate
         bool globalShortcutEnabled : 1;
         bool neverSetGlobalShortcut : 1;
         KAction *q;
+
+        KAuth::Action *authAction;
+        // TODO: Remove whenever QIcon overlays will get fixed
+        KIcon oldIcon;
 };
 
 #endif

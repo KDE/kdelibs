@@ -36,6 +36,10 @@ class KIcon;
 class KShapeGesture;
 class KRockerGesture;
 
+namespace KAuth {
+    class Action;
+}
+
 //TODO Reduce the word count. This is not very focused and takes too long to read.
 //Keep in mind that QAction also has documentation that we don't need to repeat here.
 /**
@@ -457,6 +461,34 @@ public:
     void setRockerGesture(const KRockerGesture& gest, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
     /**
+     * Returns the action object associated with this action, or 0 if it does not have one
+     *
+     * @returns the KAuth::Action associated with this action.
+     */
+     KAuth::Action *authAction() const;
+
+    /**
+     * Sets the action object associated with this action
+     *
+     * By setting a KAuth::Action, this action will become associated with it, and
+     * whenever it gets clicked, it will trigger the authorization and execution process
+     * for the action. The signal activated will also be emitted whenever the action gets
+     * clicked and the action gets authorized. Pass 0 to this function to disassociate the action
+     *
+     * @param action the KAuth::Action to associate with this action.
+     */
+     void setAuthAction(KAuth::Action *action);
+
+     /**
+     * Sets the action object associated with this action
+     *
+     * Overloaded member to allow creating the action by name
+     *
+     * @param actionName the name of the action to associate
+     */
+     void setAuthAction(const QString &actionName);
+
+    /**
      * @reimp
      */
     bool event(QEvent*);
@@ -479,6 +511,23 @@ Q_SIGNALS:
     void triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
     /**
+     * Signal emitted when the action is triggered and authorized
+     *
+     * If the action needs authorization, when the user triggers the action,
+     * the authorization process automatically begins.
+     * If it succeeds, this signal is emitted. The KAuth::Action object is provided for convenience
+     * if you have multiple KAuthorizedAction objects, but of course it's always the same set with
+     * setAuthAction().
+     *
+     * WARNING: If your action needs authorization you should connect eventual slots processing
+     * stuff to this signal, and NOT triggered. Triggered will be emitted even if the user has not
+     * been authorized
+     *
+     * @param action The object set with setAuthAction()
+     */
+    void authorized(KAuth::Action action);
+
+    /**
      * Emitted when the global shortcut is changed. A global shortcut is
      * subject to be changed by the global shortcuts kcm.
      */
@@ -489,6 +538,7 @@ private:
     friend class KActionCollectionPrivate; // Needs access to the component
     friend class KShortcutsEditorDelegate; // Needs access to the component
     Q_PRIVATE_SLOT(d, void slotTriggered())
+    Q_PRIVATE_SLOT(d, void authStatusChanged(int))
     class KActionPrivate* const d;
     friend class KActionPrivate;
     friend class KGlobalShortcutTest;
