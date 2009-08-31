@@ -51,7 +51,7 @@ void output(QList<Action> actions)
             out << dent << dent << "<description";
             if(lang != "en")
                 out << " xml:lang=\"" << lang << '"';
-            out << '>' << action.descriptions.value(lang) << "</description>\n";
+            out << '>' << action.messages.value(lang) << "</description>\n";
         }
         
         foreach(const QString& lang, action.messages.keys()) {

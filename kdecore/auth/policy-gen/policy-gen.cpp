@@ -52,11 +52,11 @@ QList<Action> parse(QSettings &ini)
     QList<Action> actions;
     QRegExp actionExp("[a-z]+(\\.[a-z]+)*");
     QRegExp descriptionExp("description(?:\\[(\\w+)\\])?");
-    QRegExp messageExp("message(?:\\[(\\w+)\\])?");
+    QRegExp nameExp("name(?:\\[(\\w+)\\])?");
     QRegExp policyExp("yes|no|auth_self|auth_admin");
     
     descriptionExp.setCaseSensitivity(Qt::CaseInsensitive);
-    messageExp.setCaseSensitivity(Qt::CaseInsensitive);
+    nameExp.setCaseSensitivity(Qt::CaseInsensitive);
     
     foreach(const QString &name, ini.childGroups()) {
         Action action;
@@ -78,8 +78,8 @@ QList<Action> parse(QSettings &ini)
                 
                 action.descriptions.insert(lang, ini.value(key).toString());
                 
-            }else if(messageExp.exactMatch(key)) {
-                QString lang = messageExp.capturedTexts().at(1);
+            }else if(nameExp.exactMatch(key)) {
+                QString lang = nameExp.capturedTexts().at(1);
                 
                 if(lang.isEmpty())
                     lang = "en";

@@ -49,7 +49,7 @@ void output(QList<Action> actions)
 				rule = kAuthorizationRuleAuthenticateAsAdmin;
 
 			CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
-			CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.messages.value("en").toAscii(), kCFStringEncodingASCII);
+			CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value("en").toAscii(), kCFStringEncodingASCII);
 
             err = AuthorizationRightSet(auth, action.name.toAscii(), cfRule, cfPrompt, NULL, NULL);
             if (err != noErr) {

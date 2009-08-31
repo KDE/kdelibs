@@ -132,11 +132,8 @@ void KCModule::setNeedsAuthorization(bool needsAuth)
 {
     d->_needsAuthorization = needsAuth;
     if (needsAuth && d->_about) {
-        qDebug() << "org.kde.kcontrol." + d->_about->appName() + ".save";
         d->_authAction = new KAuth::Action(QString("org.kde.kcontrol." + d->_about->appName() + ".save"));
         d->_needsAuthorization = d->_authAction->isValid();
-	qDebug() << d->_needsAuthorization;
-	qDebug() << d->_authAction;
         KAuth::Action::setHelperID("org.kde.kcontrol." + d->_about->appName());
     } else {
         d->_authAction = 0;
