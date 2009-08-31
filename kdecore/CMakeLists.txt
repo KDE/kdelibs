@@ -417,7 +417,15 @@ endif()
 
 kde4_add_executable(kauth-policy-gen ${kauth_policy_gen_SRCS})
 
-target_link_libraries( kauth-policy-gen ${QT_QTCORE_LIBRARY} )
+
+set( KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY} )
+if (APPLE)
+  set( KAUTH_POLICY_GEN_LIBRARIES ${KAUTH_POLICY_GEN_LIBRARIES} ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
+endif (APPLE)
+
+
+target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
+
 
 install( TARGETS kauth-policy-gen DESTINATION ${LIBEXEC_INSTALL_DIR} COMPONENT Devel)
 
