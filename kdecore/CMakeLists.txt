@@ -116,9 +116,11 @@ if (UNIX)
    )
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
    else (POLKITQT_FOUND)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-       auth/backends/fake/FakeBackend.cpp
-   )
+     if (NOT APPLE)
+       set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+           auth/backends/fake/FakeBackend.cpp
+       )
+     endif (NOT APPLE)
    endif (POLKITQT_FOUND)
 endif (UNIX)
 
