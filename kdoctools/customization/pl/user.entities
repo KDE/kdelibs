@@ -111,6 +111,7 @@
 <!ENTITY kcontrolcenter-biernik    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrolcenter-miejscownik    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrol-biernik    '&kcontrolcenter-biernik;'>
+<!ENTITY kcontrolcenter    '&kcontrolcenter-mianownik;'>
 
 <!ENTITY kdm-mianownik    '<application>KDM</application>'>
 <!ENTITY kdm-dopelniacz    '<application>KDM</application>'>
@@ -182,6 +183,10 @@
 <!ENTITY konsole-biernik    '<application>Konsolę</application>'>
 <!ENTITY konsole-narzednik    '<application>Konsolą</application>'>
 <!ENTITY konsole-miejscownik    '<application>Konsoli</application>'>
+
+<!ENTITY konsolekalendar-mianownik    '<application>konsolekalendar</application>'>
+<!ENTITY konsolekalendar-dopelniacz    '<application>konsolekalendara</application>'>
+<!ENTITY konsolekalendar-biernik    '<application>konsolekalendarowi</application>'>
 
 <!ENTITY kontact-mianownik    '<application>Kontact</application>'>
 <!ENTITY kontact-dopelniacz    '<application>Kontact</application>'>
