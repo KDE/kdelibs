@@ -64,7 +64,7 @@ public:
 public slots:
     void stopAction(const QString &action);
     void performActions(QByteArray blob, const QByteArray &callerID);
-    QByteArray performAction(const QString &action, const QByteArray &callerID, QByteArray arguments);
+    QByteArray performAction(const QString &action, const QByteArray &callerID, QVariantMap arguments);
 
 signals:
     void remoteSignal(int type, const QString &action, const QByteArray &blob); // This signal is sent from the helper to the app

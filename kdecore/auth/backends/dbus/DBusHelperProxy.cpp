@@ -84,11 +84,6 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
         return ActionReply::HelperBusyReply;
     }
 
-    QByteArray blob;
-    QDataStream stream(&blob, QIODevice::WriteOnly);
-
-    stream << arguments;
-
     if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
         return ActionReply::DBusErrorReply;
     }
@@ -97,7 +92,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
 
     QList<QVariant> args;
-    args << action << BackendsManager::authBackend()->callerID() << blob;
+    args << action << BackendsManager::authBackend()->callerID() << arguments;
     message.setArguments(args);
 
     m_actionsInProgress.push_back(action);
@@ -198,18 +193,14 @@ void DBusHelperProxy::performActions(QByteArray blob, const QByteArray &callerID
 
     QList<QPair<QString, QVariantMap> >::const_iterator i = actions.constBegin();
     while (i != actions.constEnd()) {
-        QByteArray blob;
-        QDataStream stream(&blob, QIODevice::WriteOnly);
 
-        stream << i->second;
-
-        emit remoteSignal(ActionPerformed, i->first, performAction(i->first, callerID, blob));
+        emit remoteSignal(ActionPerformed, i->first, performAction(i->first, callerID, i->second));
 
         i++;
     }
 }
 
-QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArray &callerID, QByteArray arguments)
+QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArray &callerID, QVariantMap args)
 {
     if (!responder) {
         return ActionReply::NoResponderReply.serialized();
@@ -218,10 +209,6 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
     if (!m_currentAction.isEmpty()) {
         return ActionReply::HelperBusyReply.serialized();
     }
-
-    QVariantMap args;
-    QDataStream s(&arguments, QIODevice::ReadOnly);
-    s >> args;
 
     if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
         QString slotname = action;
@@ -235,6 +222,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
         m_currentAction = action;
         emit remoteSignal(ActionStarted, action, QByteArray());
+	qDebug() << slotname.toAscii() << responder;
         bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
         emit remoteSignal(ActionPerformed, action, retVal.serialized());
         m_currentAction = "";
