@@ -619,13 +619,16 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     // We have a file name either explicitly specified, or have checked that
     // we could stat it and it is not a directory.  Set it.
     if (!filename.isEmpty()) {
+        QLineEdit* lineEdit = d->locationEdit->lineEdit();
         kDebug(kfile_area) << "selecting filename" << filename;
         if (statRes) {
             d->setLocationText(filename);
         } else {
-            d->locationEdit->lineEdit()->setText(filename);
+            lineEdit->setText(filename);
+            // Preserve this filename when clicking on the view (cf _k_fileHighlighted)
+            lineEdit->setModified(true);
         }
-        d->locationEdit->lineEdit()->selectAll();
+        lineEdit->selectAll();
     }
 
     d->locationEdit->setFocus();
@@ -1044,17 +1047,11 @@ void KFileWidget::accept()
 
 void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
 {
+    if ((!i.isNull() && i.isDir() ) ||
+        (locationEdit->hasFocus() && !locationEdit->currentText().isEmpty())) // don't disturb
+        return;
+
     const bool modified = locationEdit->lineEdit()->isModified();
-    locationEdit->lineEdit()->setModified( false );
-
-    // Don't lose the typed (or preselected by program) filename
-    // when clicking on a directory - or when clicking on the view
-    if (i.isNull() || i.isDir())
-        return;
-
-    if (locationEdit->hasFocus() &&
-        !locationEdit->currentText().isEmpty()) // don't disturb while editing
-        return;
 
     if (!(ops->mode() & KFile::Files)) {
         if (i.isNull()) {
@@ -1076,6 +1073,7 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
         emit q->selectionChanged();
     }
 
+    locationEdit->lineEdit()->setModified( false );
     locationEdit->lineEdit()->selectAll();
 }
 
