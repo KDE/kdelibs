@@ -36,12 +36,11 @@ public:
     
     QString name;
     QString details;
+    QString helperId;
     QVariantMap args;
     bool valid;
     bool async;
 };
-
-static QString s_helperID;
 
 // Constructors
 Action::Action()
@@ -147,15 +146,15 @@ ActionWatcher *Action::watcher()
     return ActionWatcher::watcher(d->name);
 }
 
-QString Action::helperID()
+QString Action::helperID() const
 {
-    return s_helperID;
+    return d->helperId;
 }
 
 // TODO: Check for helper id's syntax
 void Action::setHelperID(const QString &id)
 {
-    s_helperID = id;
+    d->helperId = id;
 }
 
 // Authorizaton methods

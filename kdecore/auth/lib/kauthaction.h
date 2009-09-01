@@ -213,14 +213,14 @@ public:
      *
      * @return The default helper ID.
      */
-    static QString helperID();
+    QString helperID() const;
 
     /**
      * @brief Sets the default helper ID used for actions execution
      *
      * @param id The default helper ID.
      */
-    static void setHelperID(const QString &id);
+    void setHelperID(const QString &id);
 
     /**
      * @brief Gets the ActionWatcher object for this action
@@ -383,9 +383,9 @@ public:
      *
      * @param actions The list of actions to execute
      * @param deniedActions A pointer to a list to fill with the denied actions. Pass NULL if you don't need them.
-     * @param helperID An optional helper ID, if you don't want to use the default one set with setHelperID().
+     * @param helperID The helper ID to execute the actions on.
      */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions = NULL, const QString &helper_id = helperID());
+    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helper_id);
 
     /**
      * @brief Ask the helper to stop executing an action
