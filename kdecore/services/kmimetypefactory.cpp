@@ -25,6 +25,8 @@
 #include <kshell.h>
 #include <kdebug.h>
 
+extern int servicesDebugArea();
+
 K_GLOBAL_STATIC(KSycocaFactorySingleton<KMimeTypeFactory>, kMimeTypeFactoryInstance)
 
 KMimeTypeFactory::KMimeTypeFactory()
@@ -273,7 +275,7 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
             if (op.weight < lastMatchedWeight)
                 break;
             if (lastMatchedWeight > 0 && op.weight > lastMatchedWeight) // can't happen
-                kWarning(7009) << "Assumption failed; globs2 weights not sorted correctly"
+                kWarning(servicesDebugArea()) << "Assumption failed; globs2 weights not sorted correctly"
                                << op.weight << ">" << lastMatchedWeight;
             // Is this a shorter or a longer match than an existing one, or same length?
             if (op.pattern.length() < matchingPatternLength) {
@@ -428,7 +430,7 @@ void KMimeTypeFactory::parseMagic()
     while (magicIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
         const QString fileName = magicIter.previous();
         QFile magicFile(fileName);
-        kDebug(7009) << "Now parsing " << fileName;
+        kDebug(servicesDebugArea()) << "Now parsing " << fileName;
         if (magicFile.open(QIODevice::ReadOnly))
             m_magicRules += parseMagicFile(&magicFile, fileName);
     }
@@ -461,7 +463,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
     QList<KMimeMagicRule> rules;
     QByteArray header = file->read(12);
     if (header != QByteArray::fromRawData("MIME-Magic\0\n", 12)) {
-        kWarning(7009) << "Invalid magic file " << fileName << " starts with " << header;
+        kWarning(servicesDebugArea()) << "Invalid magic file " << fileName << " starts with " << header;
         return rules;
     }
     QList<KMimeMagicMatch> matches; // toplevel matches (indent==0)
@@ -486,14 +488,14 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
             const QString line = file->readLine();
             const int pos = line.indexOf(':');
             if (pos == -1) { // syntax error
-                kWarning(7009) << "Syntax error in " << mimeTypeName
+                kWarning(servicesDebugArea()) << "Syntax error in " << mimeTypeName
                                << " ':' not present in section name" << endl;
                 break;
             }
             priority = line.left(pos).toInt();
             mimeTypeName = line.mid(pos+1);
             mimeTypeName = mimeTypeName.left(mimeTypeName.length()-2); // remove ']\n'
-            //kDebug(7009) << "New rule for " << mimeTypeName
+            //kDebug(servicesDebugArea()) << "New rule for " << mimeTypeName
             //             << " with priority " << priority << endl;
         } else {
             // Parse line in the section
@@ -504,7 +506,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                 indent = ch - '0';
                 ch = readNumber(indent, file);
                 if (ch != '>') {
-                    kWarning(7009) << "Invalid magic file " << fileName << " '>' not found, got " << ch << " at pos " << file->pos();
+                    kWarning(servicesDebugArea()) << "Invalid magic file " << fileName << " '>' not found, got " << ch << " at pos " << file->pos();
                     break;
                 }
             }
@@ -513,7 +515,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
             match.m_rangeStart = 0;
             ch = readNumber(match.m_rangeStart, file);
             if (ch != '=') {
-                kWarning(7009) << "Invalid magic file " << fileName << " '=' not found";
+                kWarning(servicesDebugArea()) << "Invalid magic file " << fileName << " '=' not found";
                 break;
             }
 
@@ -569,7 +571,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                         file->getChar(&ch);
                     }
                     invalidLine = true;
-                    kDebug(7009) << "invalid line - garbage found - ch=" << ch;
+                    kDebug(servicesDebugArea()) << "invalid line - garbage found - ch=" << ch;
                     break;
                 }
                 if (ch == '\n' || invalidLine)

@@ -47,6 +47,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+extern int servicesDebugArea();
+
 template class KSharedPtr<KMimeType>;
 
 static KMimeType::Ptr s_pDefaultMimeType;
@@ -309,7 +311,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
             device, KMimeTypeFactory::AllRules, &magicAccuracy, beginning );
         // mime can't be 0, except in case of install problems.
         // However we get magicAccuracy==0 for octet-stream, i.e. no magic match found.
-        //kDebug(7009) << "findFromContent said" << (mime?mime->name():QString()) << "with accuracy" << magicAccuracy;
+        //kDebug(servicesDebugArea()) << "findFromContent said" << (mime?mime->name():QString()) << "with accuracy" << magicAccuracy;
         if (mime && magicAccuracy > 0) {
 
             // Disambiguate conflicting extensions (if magic found something and the magicrule was <80)
@@ -318,7 +320,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
                 // "if glob_match is subclass or equal to sniffed_type, use glob_match"
                 const QString sniffedMime = mime->name();
                 foreach(const KMimeType::Ptr &mimeFromPattern, mimeList) {
-                    //kDebug(7009) << "sniffedMime=" << sniffedMime << "mimeFromPattern=" << mimeFromPattern->name();
+                    //kDebug(servicesDebugArea()) << "sniffedMime=" << sniffedMime << "mimeFromPattern=" << mimeFromPattern->name();
                     if (mimeFromPattern->is(sniffedMime)) {
                         // We have magic + pattern pointing to this, so it's a pretty good match
                         if (accuracy)

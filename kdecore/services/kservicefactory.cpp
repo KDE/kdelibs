@@ -27,6 +27,8 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
+extern int servicesDebugArea();
+
 K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceFactory>, kServiceFactoryInstance)
 
 KServiceFactory::KServiceFactory()
@@ -125,13 +127,14 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
 
     int offset = m_relNameDict->find_string( _name );
     if (!offset) {
-        kDebug() << QString("findServiceByDesktopPath: %1 not found").arg( _name );
+        //kDebug(servicesDebugArea()) << "findServiceByDesktopPath:" << _name << "not found";
         return KService::Ptr(); // Not found
     }
 
     KService::Ptr newService(createEntry(offset));
-    if ( !newService )
-        kDebug() << "findServiceByDesktopPath: createEntry failed!";
+    if (!newService) {
+        kDebug(servicesDebugArea()) << "findServiceByDesktopPath: createEntry failed!";
+    }
     // Check whether the dictionary was right
     // It's ok that it's wrong, for the case where we're looking up an unknown service,
     // and the hash value gave us another one.

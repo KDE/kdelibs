@@ -42,6 +42,11 @@
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
 
+int servicesDebugArea() {
+    static int s_area = KDebug::registerArea("kdecore (services)");
+    return s_area;
+}
+
 QDataStream &operator<<(QDataStream &s, const KService::ServiceTypeAndPreference &st)
 {
     s << st.preference << st.serviceType;
@@ -89,7 +94,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     entryMap.remove("Type");
     if ( m_strType.isEmpty() )
     {
-        /*kWarning(7012) << "The desktop entry file " << entryPath
+        /*kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
           << " has no Type=... entry."
           << " It should be \"Application\" or \"Service\"" << endl;
           m_bValid = false;
@@ -97,7 +102,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         m_strType = "Application";
     } else if ( m_strType != "Application" && m_strType != "Service" )
     {
-        kWarning(7012) << "The desktop entry file " << entryPath
+        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
                        << " has Type=" << m_strType
                        << " instead of \"Application\" or \"Service\"" << endl;
         m_bValid = false;
@@ -112,7 +117,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     if ( m_strType == "Application" ) {
         // It's an application? Should have an Exec line then, otherwise we can't run it
         if (m_strExec.isEmpty()) {
-            kWarning(7012) << "The desktop entry file " << entryPath
+            kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
                            << " has Type=" << m_strType
                            << " but no Exec line" << endl;
             m_bValid = false;
@@ -134,7 +139,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
          (resource != "apps") &&
          !absPath)
     {
-        kWarning(7012) << "The desktop entry file " << entryPath
+        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
                        << " has Type=" << m_strType << " but is located under \"" << resource
                        << "\" instead of \"apps\"" << endl;
         m_bValid = false;
@@ -146,7 +151,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
          (resource != "services") &&
          !absPath)
     {
-        kWarning(7012) << "The desktop entry file " << entryPath
+        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
                        << " has Type=" << m_strType << " but is located under \"" << resource
                        << "\" instead of \"services\"";
         m_bValid = false;
@@ -189,7 +194,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
     entryMap.remove("X-KDE-Library");
     if (!m_strLibrary.isEmpty() && m_strType == "Application") {
-        kWarning(7012) << "The desktop entry file" << entryPath
+        kWarning(servicesDebugArea()) << "The desktop entry file" << entryPath
                        << "has Type=" << m_strType
                        << "but also has a X-KDE-Library key. This works for now,"
                           " but makes user-preference handling difficult, so support for this might"
@@ -217,7 +222,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     while ( st_it.hasNext() ) {
         const QString st = st_it.next();
         if (st.isEmpty()) {
-            kWarning(7012) << "The desktop entry file" << entryPath
+            kWarning(servicesDebugArea()) << "The desktop entry file" << entryPath
                            << "has an empty mimetype!";
             continue;
         }
@@ -272,7 +277,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         const QString key = it.key();
         // do not store other translations like Name[fr]; kbuildsycoca will rerun if we change languages anyway
         if (!key.contains('[')) {
-            //kDebug(7012) << "  Key =" << key << " Data =" << *it;
+            //kDebug(servicesDebugArea()) << "  Key =" << key << " Data =" << *it;
             m_mapProps.insert(key, QVariant(*it));
         }
     }
@@ -296,7 +301,7 @@ void KServicePrivate::parseActions(const KDesktopFile *config, KService* q)
         if (config->hasActionGroup(group)) {
             const KConfigGroup cg = config->actionGroup(group);
             if ( !cg.hasKey( "Name" ) || !cg.hasKey( "Exec" ) ) {
-                kWarning(7012) << "The action" << group << "in the desktop file" << q->entryPath()
+                kWarning(servicesDebugArea()) << "The action" << group << "in the desktop file" << q->entryPath()
                                << "has no Name or no Exec key";
             } else {
                 m_actions.append(KServiceAction(group,
@@ -306,7 +311,7 @@ void KServicePrivate::parseActions(const KDesktopFile *config, KService* q)
                                                 cg.readEntry("NoDisplay", false)));
             }
         } else {
-            kWarning(7012) << "The desktop file" << q->entryPath()
+            kWarning(servicesDebugArea()) << "The desktop file" << q->entryPath()
                            << "references the action" << group << "but doesn't define it";
         }
     }
@@ -432,7 +437,7 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
     QVector<ServiceTypeAndPreference>::ConstIterator it = d->m_serviceTypes.begin();
     for( ; it != d->m_serviceTypes.end(); ++it ) {
         const QString& st = (*it).serviceType;
-        //kDebug(7012) << "    has " << (*it);
+        //kDebug(servicesDebugArea()) << "    has " << (*it);
         if ( st == ptr->name() )
             return true;
         // also the case of parent servicetypes
@@ -514,7 +519,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
         t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
         if (t == QVariant::Invalid)
         {
-            kDebug(7012) << "Request for unknown property '" << _name << "'\n";
+            kDebug(servicesDebugArea()) << "Request for unknown property '" << _name << "'\n";
             return QVariant(); // Unknown property: Invalid variant.
         }
     }
@@ -522,7 +527,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
     if ( (it == m_mapProps.end()) || (!it->isValid()))
     {
-        //kDebug(7012) << "Property not found " << _name;
+        //kDebug(servicesDebugArea()) << "Property not found " << _name;
         return QVariant(); // No property set.
     }
 
@@ -806,7 +811,7 @@ QString KService::exec() const
     Q_D(const KService);
     if (d->m_strType == "Application" && d->m_strExec.isEmpty())
     {
-        kWarning(7012) << "The desktop entry file " << entryPath()
+        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath()
                        << " has Type=" << d->m_strType << " but has no Exec field." << endl;
     }
     return d->m_strExec;
@@ -836,7 +841,7 @@ bool KService::terminal() const
     return d->m_bTerminal;
 }
 
-// KDE4: remove and port code to entryPath?
+// KDE5: remove and port code to entryPath?
 QString KService::desktopEntryPath() const
 {
     return entryPath();

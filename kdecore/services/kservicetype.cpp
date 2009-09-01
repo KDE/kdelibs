@@ -29,6 +29,8 @@
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 
+extern int servicesDebugArea();
+
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
 
@@ -215,7 +217,7 @@ KServiceType::Ptr KServiceType::parentType()
 
     d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
     if (!d->parentType)
-        kWarning(7009) << "'" << entryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'";
+        kWarning(servicesDebugArea()) << entryPath() << "specifies undefined mimetype/servicetype"<< parentSt;
     return d->parentType;
 }
 
