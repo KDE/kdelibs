@@ -271,7 +271,8 @@
 <!ENTITY systemsettings-celownik    '<application>Ustawieniom systemowym</application>'>
 <!ENTITY systemsettings-biernik    '<application>Ustawienia systemowe</application>'>
 <!ENTITY systemsettings-narzednik    '<application>Ustawieniami systemowymi</application>'>
-<!ENTITY systemsettings-miejscownik    '<application>Ustawieniach systemowych/application>'>
+<!ENTITY systemsettings-miejscownik    '<application>Ustawieniach systemowych</application>'>
+<!ENTITY systemsettings    '&systemsettings-mianownik;'>
 
 <!ENTITY UNIX-mianownik    'Unix'>
 <!ENTITY UNIX-dopelniacz    'Uniksa'>
