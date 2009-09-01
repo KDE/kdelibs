@@ -41,7 +41,7 @@ class ActionWatcher;
  * of the Action class with the same name refers to the same action.
  *
  * Once you have an action object you can tell the helper to execute it
- * (asking the user to authenticate if needed) with on the execute*() methods
+ * (asking the user to authenticate if needed) with one of the execute*() methods.
  * The simplest thing to do is to execute a single action synchronously
  * blocking for the reply, using the execute() method.
  *
@@ -86,8 +86,8 @@ public:
     /**
      * @brief Default constructor
      *
-     * This constructor se the name to the empty string.
-     * A such action is invalid and cannot be authorized nor executed, so
+     * This constructor sets the name to the empty string.
+     * Such an action is invalid and cannot be authorized nor executed, so
      * you need to call setName() before you can use the object.
      */
     Action();
@@ -120,7 +120,7 @@ public:
      * @brief Comparison operator
      *
      * This comparison operator compares the <b>names</b> of two
-     * actions and returns whether they're the same. It doesn't
+     * actions and returns whether they are the same. It does not
      * care about the arguments stored in the actions. However,
      * if two actions are invalid they'll match as equal, even
      * if the invalid names are different.
@@ -143,7 +143,7 @@ public:
      *
      * This is the unique attribute that identifies
      * an action object. Two action objects with the same
-     * name always refers to the same action.
+     * name always refer to the same action.
      *
      * @return The action name
      */
@@ -153,7 +153,7 @@ public:
      * @brief Sets the action's name.
      *
      * It's not common to change the action name
-     * after it's creation. Usually you set the name
+     * after its creation. Usually you set the name
      * with the constructor (and you have to, because
      * there's no default constructor)
      */
@@ -182,7 +182,7 @@ public:
      * @brief Returns if the object represents a valid action
      *
      * Action names have to respect a simple syntax.
-     * They have to be made by all lowercase characters, separated
+     * They have to be all in lowercase characters, separated
      * by dots. Dots can't appear at the beginning and at the end of
      * the name.
      *
@@ -378,7 +378,7 @@ public:
      * list << action1 << action2;
      * Action::executeActions(list);
      * @endcode
-     * The return value will be false if communication errors occour. It will also be false if <b>all</b> the actions
+     * The return value will be false if communication errors occur. It will also be false if <b>all</b> the actions
      * in the list are denied.
      *
      * @param actions The list of actions to execute
@@ -403,7 +403,7 @@ public:
     /**
      * @brief Ask the helper to stop executing an action, using a specific helper ID
      *
-     * This method works exactly as the stop() method, but it let's you specify an helper ID different from the
+     * This method works exactly as the stop() method, but it lets you specify an helper ID different from the
      * default one.
      *
      * To stop an action you need to send the stop request to the helper that is executing that action. This of course means you have to

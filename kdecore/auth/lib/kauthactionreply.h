@@ -111,7 +111,7 @@ public:
     /**
      * @brief Constructor to directly set the type.
      *
-     * This constructor directly set the reply type. You shouldn't need to
+     * This constructor directly sets the reply type. You shouldn't need to
      * directly call this constructor, because you can use the more convenient
      * predefined replies constants. You also shouldn't create a reply with
      * the KAuthError type because it's reserved for errors coming from the
@@ -249,10 +249,10 @@ public:
     /**
      * @brief Serialize the reply into a QByteArray.
      *
-     * This is a conveniece method used internally to sent the reply to a remote peer.
+     * This is a convenience method used internally to sent the reply to a remote peer.
      * To recreate the reply, use deserialize()
      *
-     * @return A QByteArray rapresentation of this reply
+     * @return A QByteArray representation of this reply
      */
     QByteArray serialized() const;
 
