@@ -45,7 +45,6 @@ public:
     ~LabelPrivate()
     {
         delete svg;
-        delete native;
     }
 
     void setPixmap(Label *q)
@@ -88,23 +87,22 @@ public:
     QString imagePath;
     QString absImagePath;
     Svg *svg;
-    QLabel *native;
 };
 
 Label::Label(QGraphicsWidget *parent)
     : QGraphicsProxyWidget(parent),
       d(new LabelPrivate(this))
 {
-    d->native = new QLabel;
-    connect(d->native, SIGNAL(linkActivated(QString)), this, SIGNAL(linkActivated(QString)));
-    connect(d->native, SIGNAL(linkHovered(QString)), this, SIGNAL(linkHovered(QString)));
+    QLabel *native = new QLabel;
+    connect(native, SIGNAL(linkActivated(QString)), this, SIGNAL(linkActivated(QString)));
+    connect(native, SIGNAL(linkHovered(QString)), this, SIGNAL(linkHovered(QString)));
 
     connect(Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(setPalette()));
     connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), this, SLOT(setPalette()));
 
-    d->native->setAttribute(Qt::WA_NoSystemBackground);
-    d->native->setWordWrap(true);
-    setWidget(d->native);
+    native->setAttribute(Qt::WA_NoSystemBackground);
+    native->setWordWrap(true);
+    setWidget(native);
     d->setPalette();
 }
 
