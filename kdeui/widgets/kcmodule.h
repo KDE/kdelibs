@@ -332,6 +332,16 @@ Q_SIGNALS:
    */
   void quickHelpChanged();
 
+  /**
+   * Indicate that the module's root message has changed.
+   *
+   * Emits this signal whenever the module's root message changes.
+   *
+   * @since 4.4
+   *
+   */
+  void rootOnlyMessageChanged(bool use, QString message);
+
 protected Q_SLOTS:
 
   /**

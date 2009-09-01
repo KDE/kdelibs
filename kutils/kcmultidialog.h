@@ -174,6 +174,7 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
         Q_PRIVATE_SLOT(d_func(), void _k_slotCurrentPageChanged(KPageWidgetItem *))
         Q_PRIVATE_SLOT(d_func(), void _k_clientChanged())
         Q_PRIVATE_SLOT(d_func(), void _k_dialogClosed())
+        Q_PRIVATE_SLOT(d_func(), void _k_updateHeader(bool use, const QString &message))
 };
 
 #endif

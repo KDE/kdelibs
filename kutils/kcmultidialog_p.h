@@ -52,6 +52,7 @@ class KCMultiDialogPrivate : public KPageDialogPrivate
         void _k_slotCurrentPageChanged(KPageWidgetItem *);
         virtual void _k_clientChanged();
         void _k_dialogClosed();
+        void _k_updateHeader(bool use, const QString &message);
 
         void updateButtons(KCModuleProxy *currentModule);
     private:

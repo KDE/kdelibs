@@ -92,6 +92,22 @@ void KCMultiDialogPrivate::updateButtons(KCModuleProxy *currentModule)
     }
 }
 
+void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
+{
+    Q_Q(KCMultiDialog);
+    KPageWidgetItem *item = q->currentPage();
+    KCModuleProxy *kcm = qobject_cast<KCModuleProxy*>(item->widget());
+
+    if (use) {
+        item->setHeader( "<b>"+kcm->moduleInfo().comment() + "</b><br><i>" +
+                         message + "</i>" );
+        item->setIcon( KIcon( kcm->moduleInfo().icon(), 0, QStringList() << "dialog-warning" ) );
+    } else {
+        item->setHeader( kcm->moduleInfo().comment() );
+        item->setIcon( KIcon( kcm->moduleInfo().icon() ) );
+    }
+}
+
 void KCMultiDialogPrivate::_k_clientChanged()
 {
     Q_Q(KCMultiDialog);
@@ -299,13 +315,13 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
     kDebug(710) << moduleInfo.moduleName();
     KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
   
-  if (kcm->useRootOnlyMessage()) {
-  item->setHeader( "<b>"+moduleInfo.comment() + "</b><br><i>" + kcm->rootOnlyMessage() + "</i>" );
-  item->setIcon( KIcon( moduleInfo.icon(), 0, QStringList() << "dialog-warning" ) );
-  } else {
-    item->setHeader( moduleInfo.comment() );
-  item->setIcon( KIcon( moduleInfo.icon() ) );
-  }
+    if (kcm->useRootOnlyMessage()) {
+        item->setHeader( "<b>"+moduleInfo.comment() + "</b><br><i>" + kcm->rootOnlyMessage() + "</i>" );
+        item->setIcon( KIcon( moduleInfo.icon(), 0, QStringList() << "dialog-warning" ) );
+    } else {
+        item->setHeader( moduleInfo.comment() );
+        item->setIcon( KIcon( moduleInfo.icon() ) );
+    }
     item->setProperty("_k_weight", moduleInfo.weight());
 
     bool updateCurrentPage = false;
@@ -352,7 +368,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
     }
 
     connect(kcm, SIGNAL(changed(bool)), this, SLOT(_k_clientChanged()));
-
+    connect(kcm->realModule(), SIGNAL(rootOnlyMessageChanged(bool,QString)), this, SLOT(_k_updateHeader(bool,QString)));
 
     Q_D(KCMultiDialog);
   KCMultiDialogPrivate::CreatedModule cm;

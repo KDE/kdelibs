@@ -174,6 +174,8 @@ void KCModule::authStatusChanged(int status)
             setRootOnlyMessage(i18n("You are not allowed to save the configuration"));
             break;
     }
+
+    qDebug() << useRootOnlyMessage();
 }
 
 KCModule::~KCModule()
@@ -244,6 +246,7 @@ void KCModule::setAboutData( const KAboutData* about )
 void KCModule::setRootOnlyMessage(const QString& message)
 {
     d->_rootOnlyMessage = message;
+    emit rootOnlyMessageChanged(d->_useRootOnlyMessage, d->_rootOnlyMessage);
 }
 
 QString KCModule::rootOnlyMessage() const
@@ -254,6 +257,7 @@ QString KCModule::rootOnlyMessage() const
 void KCModule::setUseRootOnlyMessage(bool on)
 {
     d->_useRootOnlyMessage = on;
+    emit rootOnlyMessageChanged(d->_useRootOnlyMessage, d->_rootOnlyMessage);
 }
 
 bool KCModule::useRootOnlyMessage() const
