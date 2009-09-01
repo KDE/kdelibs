@@ -315,6 +315,8 @@ static bool revmatch(const char *host, const char *nplist)
     {
       if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
         return true;
+      if ( nptr[-1]=='/' ) // "bugs.kde.org" vs "http://bugs.kde.org", the config UI says URLs are ok
+        return true;
       if ( hptr == host ) // e.g. revmatch("bugs.kde.org","mybugs.kde.org")
         return false;
 
