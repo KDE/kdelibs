@@ -239,7 +239,7 @@ KCookieJar::KCookieJar()
     KConfig cfg( "khtml/domain_info", KConfig::NoGlobals, "data" );
     KConfigGroup group( &cfg, QString() );
     QStringList countries = group.readEntry( "twoLevelTLD", QStringList() );
-    foreach ( const QString& country, countries ) {
+    Q_FOREACH ( const QString& country, countries ) {
        m_twoLevelTLD.insert( country, 1 );
     }
 }
@@ -1129,9 +1129,9 @@ KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
     QString domain;
 
     if (_domain.isEmpty())
-        stripDomain( _fqdn, domain );
+        stripDomain(_fqdn, domain);
     else
-        domain = _domain;
+        stripDomain (_domain, domain);
 
     return m_cookieDomains.value(domain);
 }
@@ -1497,7 +1497,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     // Reset current domain settings first.
     //  (must make a copy because setDomainAdvice() might delete the domain from m_domainList inside the for loop)
     const QStringList domains = m_domainList;
-    foreach( const QString &domain, domains )
+    Q_FOREACH( const QString &domain, domains )
     {
          setDomainAdvice(domain, KCookieDunno);
     }
