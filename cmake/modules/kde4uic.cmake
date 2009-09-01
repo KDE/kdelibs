@@ -35,7 +35,6 @@ if (KDE4_HEADER)
     -tr tr2i18n
     ${KDE_UIC_FILE}
     OUTPUT_VARIABLE _uic_CONTENTS
-    ERROR_QUIET
   )
 
    set(KDE_UIC_CPP_FILE ${KDE_UIC_H_FILE})
