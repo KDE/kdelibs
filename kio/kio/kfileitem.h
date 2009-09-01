@@ -638,5 +638,10 @@ public:
 KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
 KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 
+/**
+ * Support for qDebug() << aFileItem
+ * \since 4.4
+ */
+KIO_EXPORT QDebug operator<<(QDebug stream, const KFileItem& item);
 
 #endif

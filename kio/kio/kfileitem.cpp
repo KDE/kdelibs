@@ -1460,3 +1460,13 @@ bool KFileItem::isRegularFile() const
 {
     return S_ISREG(d->m_fileMode);
 }
+
+QDebug operator<<(QDebug stream, const KFileItem& item)
+{
+    if (item.isNull()) {
+        stream << "[null KFileItem]";
+    } else {
+        stream << "[KFileItem for" << item.url() << "]";
+    }
+    return stream;
+}
