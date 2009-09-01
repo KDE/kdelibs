@@ -413,6 +413,9 @@ if(APPLE)
 elseif(UNIX)
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/policykit/kauth-policy-gen-polkit.cpp )
+elseif(WIN32)
+    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+       auth/backends/fake/kauth-policy-gen-polkit.cpp )
 endif()
 
 kde4_add_executable(kauth-policy-gen ${kauth_policy_gen_SRCS})
