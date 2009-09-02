@@ -351,6 +351,37 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 
 ########### next target ###############
 
+# KAuth policy generator executable
+set(kauth_policy_gen_SRCS
+    auth/policy-gen/policy-gen.cpp )
+
+if(APPLE)
+   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+       auth/backends/mac/kauth-policy-gen-mac.cpp )
+elseif(UNIX)
+   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+       auth/backends/policykit/kauth-policy-gen-polkit.cpp )
+elseif(WIN32)
+    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+       auth/backends/fake/kauth-policy-gen-polkit.cpp )
+endif()
+
+kde4_add_executable(kauth-policy-gen ${kauth_policy_gen_SRCS})
+
+
+set( KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY} )
+if (APPLE)
+  set( KAUTH_POLICY_GEN_LIBRARIES ${KAUTH_POLICY_GEN_LIBRARIES} ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
+endif (APPLE)
+
+
+target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
+
+
+install( TARGETS kauth-policy-gen DESTINATION ${LIBEXEC_INSTALL_DIR} COMPONENT Devel)
+
+########### next target ###############
+
 configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
 
 kde4_add_executable(kde4-config NOGUI kde-config.cpp )
@@ -401,37 +432,6 @@ else(KDE4_ENABLE_FINAL)
 endif(KDE4_ENABLE_FINAL)
 
 install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-########### next target ###############
-
-# KAuth policy generator executable
-set(kauth_policy_gen_SRCS
-    auth/policy-gen/policy-gen.cpp )
-
-if(APPLE)
-   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-       auth/backends/mac/kauth-policy-gen-mac.cpp )
-elseif(UNIX)
-   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-       auth/backends/policykit/kauth-policy-gen-polkit.cpp )
-elseif(WIN32)
-    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-       auth/backends/fake/kauth-policy-gen-polkit.cpp )
-endif()
-
-kde4_add_executable(kauth-policy-gen ${kauth_policy_gen_SRCS})
-
-
-set( KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY} )
-if (APPLE)
-  set( KAUTH_POLICY_GEN_LIBRARIES ${KAUTH_POLICY_GEN_LIBRARIES} ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
-endif (APPLE)
-
-
-target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
-
-
-install( TARGETS kauth-policy-gen DESTINATION ${LIBEXEC_INSTALL_DIR} COMPONENT Devel)
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
