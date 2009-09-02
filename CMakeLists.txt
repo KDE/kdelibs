@@ -146,7 +146,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/io
                           ${CMAKE_SOURCE_DIR}/kdecore/jobs
                           ${CMAKE_SOURCE_DIR}/kdecore/kernel
-			  ${CMAKE_SOURCE_DIR}/kdecore/kauth/lib
+                          ${CMAKE_SOURCE_DIR}/kdecore/auth/lib
                           ${CMAKE_SOURCE_DIR}/kdecore/network
                           ${CMAKE_SOURCE_DIR}/kdecore/services
                           ${CMAKE_SOURCE_DIR}/kdecore/localization
