@@ -98,6 +98,9 @@ macro_optional_find_package(Soprano)
 macro_log_feature(Soprano_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 
 
+macro_optional_find_package(QCA2)
+macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma")
+
 ################# Disallow in-source build #################
 
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
@@ -118,6 +121,13 @@ remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 # for including config.h and for includes like <kparts/foo.h>
 include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces)
+
+if(QCA2_FOUND)
+    include_directories(
+        ${QCA2_INCLUDE_DIR}
+    )
+endif(QCA2_FOUND)
+
 
 # Those variables for  are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
