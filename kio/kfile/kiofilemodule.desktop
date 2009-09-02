@@ -2,4 +2,11 @@
 Type=ServiceType
 X-KDE-ServiceType=KIO/FileModule
 Name=filemodule
+Name[nds]=Dateimoduul
+Name[sv]=filmodul
+Name[x-test]=xxfilemodulexx
 Comment=KIO File Module
+Comment[nds]=KIO-Dateimoduul
+Comment[sv]=KIO-filmodul
+Comment[uk]=Модуль файлів KIO
+Comment[x-test]=xxKIO File Modulexx
