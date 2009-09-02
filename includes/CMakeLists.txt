@@ -275,7 +275,7 @@ install( FILES
   KNSBookmarkImporterImpl
   KNTLM
   KNotification
-  KNotificationAreaItem
+  KNotificationItem
   KNotificationRestrictions
   KNotifyConfigWidget
   KNumInput
