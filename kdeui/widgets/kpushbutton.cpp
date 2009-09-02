@@ -34,8 +34,8 @@
 #include <kguiitem.h>
 #include <kicon.h>
 
-#include "auth/lib/kauthaction.h"
-#include "auth/lib/kauthactionwatcher.h"
+#include "auth/kauthaction.h"
+#include "auth/kauthactionwatcher.h"
 
 static bool s_useIcons = false;
 

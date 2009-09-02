@@ -15,7 +15,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
 
 include(auth/ConfigureChecks.cmake)
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/lib/ )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
@@ -195,13 +195,13 @@ set(kdecore_LIB_SRCS
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
-   auth/lib/kauthaction.cpp
-   auth/lib/kauthactionreply.cpp
-   auth/lib/kauthactionwatcher.cpp
-   auth/lib/AuthBackend.cpp
-   auth/lib/BackendsManager.cpp
-   auth/lib/HelperProxy.cpp
-   auth/lib/kauthhelpersupport.cpp
+   auth/kauthaction.cpp
+   auth/kauthactionreply.cpp
+   auth/kauthactionwatcher.cpp
+   auth/AuthBackend.cpp
+   auth/BackendsManager.cpp
+   auth/HelperProxy.cpp
+   auth/kauthhelpersupport.cpp
    auth/backends/dbus/DBusHelperProxy.cpp
    ${kauth_dbus_adaptor_SRCS}
    services/kfoldermimetype.cpp
@@ -490,11 +490,11 @@ install( FILES
    network/klocalsocket.h
    network/ksocketfactory.h
    network/ktcpsocket.h
-   auth/lib/kauthaction.h
-   auth/lib/kauthactionreply.h
-   auth/lib/kauthactionwatcher.h
-   auth/lib/kauthhelpersupport.h
-   auth/lib/kauth.h
+   auth/kauthaction.h
+   auth/kauthactionreply.h
+   auth/kauthactionwatcher.h
+   auth/kauthhelpersupport.h
+   auth/kauth.h
    services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h

@@ -38,7 +38,7 @@
 #include <ktoolinvocation.h>
 #include <kdebug.h>
 
-#include "auth/lib/kauthaction.h"
+#include "auth/kauthaction.h"
 
 #include "kcolorscheme.h"
 

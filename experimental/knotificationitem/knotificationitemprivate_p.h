@@ -99,7 +99,6 @@ public:
 
     KNotificationItem *q;
 
-    QDBusConnection dbus;
     KNotificationItem::ItemCategory category;
     QString id;
     QString title;

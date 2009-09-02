@@ -29,8 +29,8 @@
 #include "kglobalaccel_p.h"
 #include "klocale.h"
 #include "kmessagebox.h"
-#include "auth/lib/kauthaction.h"
-#include "auth/lib/kauthactionwatcher.h"
+#include "kauthaction.h"
+#include "kauthactionwatcher.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QShortcutEvent>

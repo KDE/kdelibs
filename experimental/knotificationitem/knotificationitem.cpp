@@ -588,7 +588,6 @@ const int KNotificationItemPrivate::s_protocolVersion = 0;
 
 KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
     : q(item),
-      dbus(QDBusConnection::sessionBus()),
       category(KNotificationItem::ApplicationStatus),
       status(KNotificationItem::Passive),
       movie(0),
@@ -617,7 +616,7 @@ void KNotificationItemPrivate::init(const QString &extraId)
     notificationItemDbus = new KNotificationItemDBus(q);
     q->setAssociatedWidget(qobject_cast<QWidget*>(q->parent()));
 
-    QObject::connect(dbus.interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+    QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                      q, SLOT(serviceChange(QString,QString,QString)));
 
     //create a default menu, just like in KSystemtrayIcon
