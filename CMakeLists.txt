@@ -168,7 +168,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/itemviews
                         ${CMAKE_SOURCE_DIR}/kdeui/jobs
                         ${CMAKE_SOURCE_DIR}/kdeui/kernel
-                        ${CMAKE_SOURCE_DIR}/kdeui/knotifications
+                        ${CMAKE_SOURCE_DIR}/kdeui/notifications
                         ${CMAKE_SOURCE_DIR}/kdeui/paged
                         ${CMAKE_SOURCE_DIR}/kdeui/plotting
                         ${CMAKE_SOURCE_DIR}/kdeui/shortcuts
