@@ -940,17 +940,24 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types COMPONENT Devel)
 
 install(FILES
   Plasma/AbstractRunner
+  Plasma/AccessAppletJob
+  Plasma/AccessManager
   Plasma/AnimationDriver
   Plasma/Animator
   Plasma/Applet
   Plasma/AppletScript
+  Plasma/AuthorizationInterface
+  Plasma/AuthorizationManager
+  Plasma/AuthorizationRule
   Plasma/CheckBox
+  Plasma/ClientPinRequest
   Plasma/ComboBox
   Plasma/ConfigLoader
   Plasma/Containment
   Plasma/ContainmentActions
   Plasma/Context
   Plasma/Corona
+  Plasma/Credentials
   Plasma/DataContainer
   Plasma/DataEngine
   Plasma/DataEngineManager
