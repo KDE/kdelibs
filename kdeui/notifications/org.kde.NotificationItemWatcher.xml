@@ -1,0 +1,37 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.NotificationItemWatcher">
+
+    <method name="RegisterService">
+       <arg name="service" type="s" direction="in"/>
+    </method>
+
+    <method name="RegisteredServices">
+        <arg type="as" direction="out"/>
+        <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QStringList"/>
+    </method>
+
+    <method name="ProtocolVersion">
+        <arg type="i" direction="out"/>
+    </method>
+
+    <method name="RegisterNotificationHost">
+       <arg name="service" type="s" direction="in"/>
+    </method>
+
+    <method name="IsNotificationHostRegistered">
+       <arg name="service" type="b" direction="out"/>
+    </method>
+
+    <signal name="ServiceRegistered">
+        <arg type="s"/>
+    </signal>
+
+    <signal name="ServiceUnregistered">
+        <arg type="s"/>
+    </signal>
+
+    <signal name="NotificationHostRegistered">
+    </signal>
+  </interface>
+</node>

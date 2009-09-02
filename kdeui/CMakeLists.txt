@@ -17,6 +17,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
  ${CMAKE_CURRENT_SOURCE_DIR}/jobs
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
+ ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
  ${CMAKE_CURRENT_SOURCE_DIR}/plotting
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
@@ -130,6 +131,12 @@ set(kdeui_LIB_SRCS
  kernel/kstyle.cpp
  kernel/kstartupinfo.cpp
  kernel/kglobalsettings.cpp
+ notifications/knotificationitem.cpp
+ notifications/knotificationitemdbus_p.cpp
+ notifications/ksystemtrayicon.cpp
+ notifications/knotification.cpp
+ notifications/knotificationmanager.cpp
+ notifications/knotificationrestrictions.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
  paged/kpageview.cpp
@@ -165,9 +172,6 @@ set(kdeui_LIB_SRCS
  util/kmanagerselection.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
- util/knotification.cpp
- util/knotificationmanager.cpp
- util/knotificationrestrictions.cpp
  util/knumvalidator.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
@@ -175,7 +179,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapprovider.cpp
  util/kstandardguiitem.cpp
  util/ksvgrenderer.cpp
- util/ksystemtrayicon.cpp
  util/kwallet.cpp
  util/kwhatsthismanager.cpp
  util/kwordwrap.cpp
@@ -316,6 +319,14 @@ install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
+
+set(notificationitemwatcher_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.NotificationItemWatcher.xml)
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${notificationitemwatcher_xml} notificationwatcher_interface)
+set(notifications_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.freedesktop.Notifications.xml)
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${notifications_xml} notifications_interface)
+
+qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.NotificationItem.xml
+                     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/knotificationitemdbus_p.h KNotificationItemDBus)
 
 set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
 set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
@@ -472,6 +483,10 @@ install( FILES
  kernel/kstyle.h
  kernel/kstartupinfo.h
  kernel/kglobalsettings.h
+ notifications/knotificationitem.h
+ notifications/ksystemtrayicon.h
+ notifications/knotification.h
+ notifications/knotificationrestrictions.h
  paged/kpagedialog.h
  paged/kpagemodel.h
  paged/kpageview.h
@@ -496,8 +511,6 @@ install( FILES
  util/kkeyserver.h
  util/kmanagerselection.h
  util/kmodifierkeyinfo.h
- util/knotification.h
- util/knotificationrestrictions.h
  util/knumvalidator.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
@@ -505,7 +518,6 @@ install( FILES
  util/kpixmapprovider.h
  util/kstandardguiitem.h
  util/ksvgrenderer.h
- util/ksystemtrayicon.h
  util/kwallet.h
  util/kwordwrap.h
  util/kxerrorhandler.h
@@ -593,6 +605,11 @@ install( FILES
   jobs/org.kde.JobViewServer.xml
   jobs/org.kde.JobView.xml
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
+install(FILES
+    notifications/org.kde.NotificationItem.xml
+    notifications/org.kde.NotificationItemWatcher.xml
+    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 if (NOT Q_WS_X11)
     # install our copy of the rgb.txt named colors list on systems without X11

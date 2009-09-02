@@ -110,6 +110,7 @@ KDEUI_EXECUTABLE_TESTS(
   kmessagetest
   kmodifierkeyinfotest
   knewpassworddialogtest
+  knotificationitemtest
   knotificationrestrictionstest
   knuminputtest
   kpagedialogtest
