@@ -19,7 +19,8 @@
 
 #include "kselectionproxymodel.h"
 
-#include <QItemSelectionRange>
+#include <QtCore/QStringList>
+#include <QtGui/QItemSelectionRange>
 
 class KSelectionProxyModelPrivate
 {
@@ -1362,6 +1363,21 @@ QVariant KSelectionProxyModel::data( const QModelIndex & index, int role ) const
 QVariant KSelectionProxyModel::headerData( int section, Qt::Orientation orientation, int role  ) const
 {
   return sourceModel()->headerData(section, orientation, role);
+}
+
+QMimeData* KSelectionProxyModel::mimeData( const QModelIndexList & indexes ) const
+{
+  Q_ASSERT(sourceModel());
+  QModelIndexList sourceIndexes;
+  foreach(const QModelIndex& index, indexes)
+    sourceIndexes << mapToSource(index);
+  return sourceModel()->mimeData(sourceIndexes);
+}
+
+QStringList KSelectionProxyModel::mimeTypes() const
+{
+  Q_ASSERT(sourceModel());
+  return sourceModel()->mimeTypes();
 }
 
 bool KSelectionProxyModel::hasChildren ( const QModelIndex & parent) const

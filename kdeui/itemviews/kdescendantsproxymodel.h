@@ -165,6 +165,9 @@ class KDEUI_EXPORT KDescendantsProxyModel : public QAbstractProxyModel
     QVariant data( const QModelIndex & index, int role = Qt::DisplayRole ) const;
     virtual int rowCount( const QModelIndex & parent = QModelIndex() ) const;
 
+    virtual QMimeData* mimeData( const QModelIndexList & indexes ) const;
+    virtual QStringList mimeTypes() const;
+
     virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
     virtual QModelIndex index(int, int, const QModelIndex &parent = QModelIndex() ) const;
     virtual QModelIndex parent(const QModelIndex&) const;

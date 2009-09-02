@@ -22,6 +22,8 @@
 
 #include "kdebug.h"
 
+#include <QtCore/QStringList>
+
 /**
   @internal
 
@@ -579,6 +581,21 @@ QVariant KDescendantsProxyModel::data(const QModelIndex & index, int role) const
     return sourceIndex.data(role);
   }
 
+}
+
+QMimeData* KDescendantsProxyModel::mimeData( const QModelIndexList & indexes ) const
+{
+  Q_ASSERT(sourceModel());
+  QModelIndexList sourceIndexes;
+  foreach(const QModelIndex& index, indexes)
+    sourceIndexes << mapToSource(index);
+  return sourceModel()->mimeData(sourceIndexes);
+}
+
+QStringList KDescendantsProxyModel::mimeTypes() const
+{
+  Q_ASSERT(sourceModel());
+  return sourceModel()->mimeTypes();
 }
 
 bool KDescendantsProxyModel::hasChildren ( const QModelIndex & parent ) const
