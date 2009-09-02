@@ -17,12 +17,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef CONVERSION_UNIT_H
-#define CONVERSION_UNIT_H
+#ifndef KUNITCONVERSION_UNIT_H
+#define KUNITCONVERSION_UNIT_H
 
 #include <QtCore/QString>
 #include <ksharedptr.h>
-#include "conversion_export.h"
+#include "kunitconversion_export.h"
 
 class KLocalizedString;
 
@@ -31,7 +31,7 @@ namespace KUnitConversion
 
 class UnitCategory;
 
-class CONVERSION_EXPORT Complex
+class KUNITCONVERSION_EXPORT Complex
 {
 public:
     Complex();
@@ -40,7 +40,7 @@ public:
     virtual double fromDefault(double) const = 0;
 };
 
-class CONVERSION_EXPORT Unit : public QSharedData
+class KUNITCONVERSION_EXPORT Unit : public QSharedData
 {
 public:
     Unit(UnitCategory* category, int id, double multiplier, const QString& symbol,
@@ -107,6 +107,6 @@ typedef KSharedPtr<Unit> UnitPtr;
     (KUnitConversion::UnitPtr(new KUnitConversion::Unit(this, id, m, s, d, sy, r, i)))
 #define U(id, m, s, d, sy, r, i) (new KUnitConversion::Unit(this, id, m, s, d, sy, r, i))
 
-} // Conversion namespace
+} // KUnitConversion namespace
 
 #endif

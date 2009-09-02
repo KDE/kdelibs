@@ -17,20 +17,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef CONVERSION_UNITCATEGORY_H
-#define CONVERSION_UNITCATEGORY_H
+#ifndef KUNITCONVERSION_UNITCATEGORY_H
+#define KUNITCONVERSION_UNITCATEGORY_H
 
 #include "value.h"
 #include "unit.h"
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <kurl.h>
-#include "conversion_export.h"
+#include "kunitconversion_export.h"
 
 namespace KUnitConversion
 {
 
-class CONVERSION_EXPORT UnitCategory
+class KUNITCONVERSION_EXPORT UnitCategory
 {
 public:
     UnitCategory();
@@ -121,6 +121,6 @@ private:
     Private* const d;
 };
 
-} // Conversion namespace
+} // KUnitConversion namespace
 
 #endif

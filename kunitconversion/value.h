@@ -17,19 +17,19 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef CONVERSION_VALUE_H
-#define CONVERSION_VALUE_H
+#ifndef KUNITCONVERSION_VALUE_H
+#define KUNITCONVERSION_VALUE_H
 
 #include <QtCore/QString>
 #include "unit.h"
-#include "conversion_export.h"
+#include "kunitconversion_export.h"
 
 class QVariant;
 
 namespace KUnitConversion
 {
 
-class CONVERSION_EXPORT Value
+class KUNITCONVERSION_EXPORT Value
 {
 public:
     Value();
@@ -80,6 +80,6 @@ private:
     Private* const d;
 };
 
-} // Conversion namespace
+} // KUnitConversion namespace
 
 #endif

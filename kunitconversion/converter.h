@@ -17,11 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef CONVERSION_CONVERTER_H
-#define CONVERSION_CONVERTER_H
+#ifndef KUNITCONVERSION_CONVERTER_H
+#define KUNITCONVERSION_CONVERTER_H
 
-#include <conversion/value.h>
-#include <conversion/conversion_export.h>
+#include <kunitconversion/value.h>
+#include <kunitconversion/kunitconversion_export.h>
 #include <QtCore/QVariant>
 
 namespace KUnitConversion
@@ -112,7 +112,7 @@ enum UnitId {
 class UnitCategory;
 
 class ConverterPrivate;
-class CONVERSION_EXPORT Converter : public QObject
+class KUNITCONVERSION_EXPORT Converter : public QObject
 {
     Q_OBJECT
 public:

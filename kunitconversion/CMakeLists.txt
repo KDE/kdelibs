@@ -1,6 +1,6 @@
-project(conversion)
+project(kunitconversion)
 
-set(conversion_LIB_SRCS
+set(kunitconversion_LIB_SRCS
     converter.cpp
     value.cpp
     unit.cpp
@@ -20,17 +20,23 @@ set(conversion_LIB_SRCS
     density.cpp
 )
 
-set(conversion_HEADERS
+set(kunitconversion_HEADERS
     converter.h
     value.h
     unit.h
     unitcategory.h
-    conversion_export.h
+    kunitconversion_export.h
 )
 
-kde4_add_library(conversion SHARED ${conversion_LIB_SRCS})
-target_link_libraries(conversion ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS})
-set_target_properties(conversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
-install(TARGETS conversion ${INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES ${conversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/conversion COMPONENT Devel)
-install(FILES FindConversion.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
+kde4_add_library(kunitconversion SHARED ${kunitconversion_LIB_SRCS})
+target_link_libraries(kunitconversion ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS})
+set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+install(TARGETS kunitconversion ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(FILES FindKUnitConversion.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
+install(FILES ${kunitconversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kunitconversion COMPONENT Devel)
+install(FILES
+  KUnitConversion/Converter
+  KUnitConversion/Value
+  KUnitConversion/Unit
+  KUnitConversion/UnitCategory
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitConversion COMPONENT Devel)

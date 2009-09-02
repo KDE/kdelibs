@@ -161,6 +161,3 @@ void UnitCategory::setUrl(const KUrl& url)
 }
 
 }
-
-#include "unitcategory.moc"
-
