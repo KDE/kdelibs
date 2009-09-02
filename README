@@ -157,7 +157,7 @@ headings and other identifying marks.
 
 Common Mistakes
 ---------------
-If cmake claims Qt cannot be found, look at http://www.trolltech.com/
+If cmake claims Qt cannot be found, look at http://qt.nokia.com/
 to get a copy of Qt, version 4.4 or newer. If you have peeked there
 already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
