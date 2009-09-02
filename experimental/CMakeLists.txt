@@ -16,7 +16,6 @@ else(BUILDING_EXPERIMENTAL_SEPARATELY)
                        ${KDE4_KDEUI_INCLUDES})
 endif(BUILDING_EXPERIMENTAL_SEPARATELY)
 
-add_subdirectory(knotificationitem)
 
 if(BUILDING_EXPERIMENTAL_SEPARATELY)
    macro_display_feature_log()
