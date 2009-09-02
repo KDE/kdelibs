@@ -891,7 +891,12 @@ install( FILES
   Sonnet/Highlighter
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Sonnet COMPONENT Devel)
 
-
+install( FILES
+  KAuth/Action
+  KAuth/ActionReply
+  KAuth/ActionWatcher
+  KAuth/HelperSupport
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAuth COMPONENT Devel)
 
 install( FILES
   ThreadWeaver/DependencyPolicy
