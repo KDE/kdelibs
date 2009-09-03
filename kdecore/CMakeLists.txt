@@ -84,7 +84,7 @@ if (WIN32)
       util/kmacroexpander_win.cpp
       util/kshell_win.cpp
       util/kuser_win.cpp
-	  date/ktimezone_win.cpp
+      date/ktimezone_win.cpp
       auth/backends/fake/FakeBackend.cpp
    )
    if(NOT MSVC)
@@ -112,10 +112,10 @@ if (UNIX)
    )
 
    if (POLKITQT_FOUND)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-       auth/backends/policykit/PolicyKitBackend.cpp
-   )
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
+      set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+          auth/backends/policykit/PolicyKitBackend.cpp
+      )
+      set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
    else (POLKITQT_FOUND)
      if (NOT APPLE)
        set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -150,7 +150,7 @@ endif (UNIX)
 
 qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
                      auth/backends/dbus/org.kde.auth.xml
-		     auth/backends/dbus/DBusHelperProxy.h
+                     auth/backends/dbus/DBusHelperProxy.h
                      KAuth::DBusHelperProxy)
 
 set(kdecore_LIB_SRCS
@@ -317,9 +317,9 @@ set(kdecore_LIB_SRCS
 
 set_source_files_properties( auth/backends/policykit/PolicyKitBackend.cpp
                              auth/backends/fake/FakeBackend.cpp
-			     auth/backends/mac/AuthServicesBackend.cpp
-			     auth/backends/dbus/DBusHelperProxy.cpp
-			     PROPERTIES COMPILE_FLAGS -DQT_STATICPLUGIN )
+                             auth/backends/mac/AuthServicesBackend.cpp
+                             auth/backends/dbus/DBusHelperProxy.cpp
+                             PROPERTIES COMPILE_FLAGS -DQT_STATICPLUGIN )
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
@@ -545,7 +545,7 @@ install( FILES
 )
 
 install( FILES auth/backends/dbus/org.kde.auth.conf
-	 DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
+         DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
 
 install( FILES auth/backends/dbus/dbus_policy.stub 
                auth/backends/dbus/dbus_service.stub
