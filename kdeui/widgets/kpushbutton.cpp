@@ -328,6 +328,10 @@ void KPushButton::setAuthAction(const QString &actionName)
 
 void KPushButton::setAuthAction(KAuth::Action *action)
 {
+    if (d->authAction == action) {
+        return;
+    }
+
     if (d->authAction) {
         disconnect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));
