@@ -1,11 +1,20 @@
 [Desktop Entry]
 Name=KFileModule
+Name[bg]=Модул KFile
 Name[nds]=K-Dateimoduul
 Name[sv]=Kfil-modul
+Name[tr]=KFile Modülü
 Name[x-test]=xxKFileModulexx
 Comment=The default KDE file module providing the standard file dialog
+Comment[bg]=Подразбиращият се файлов модул на KDE, осигуряващ стандартния диалогов прозорец за файлове
+Comment[es]=El módulo de archivos por omisión de KDE que proporciona el diálogo de archivos estándar
+Comment[id]=Modul berkas KDE standar menyediakan dialog berkas standar
+Comment[kk]=Стандартты файл диалогын қамтамасыз ететін KDE файл модулі
 Comment[nds]=Dat KDE-Standarddateimoduul, dat den Standard-Dateidialoog praatstellt
+Comment[pt]=O módulo de ficheiros predefinido do KDE, que fornece a janela de ficheiros normal
+Comment[pt_BR]=O módulo de ficheiros predefinido do KDE, que fornece a janela de ficheiros normal
 Comment[sv]=KDE:s standardmodul för filer som tillhandahåller standarddialogrutan för filer
+Comment[tr]=Standart dosya penceresini sağlayan KDE öntanımlı dosya modülü
 Comment[uk]=Типовий модуль KDE, що забезпечує роботу стандартного діалогового вікна роботи з файлами
 Comment[x-test]=xxThe default KDE file module providing the standard file dialogxx
 X-KDE-ServiceTypes=KIO/FileModule
