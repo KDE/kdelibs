@@ -605,7 +605,7 @@ void KNotificationItemPrivate::init(const QString &extraId)
     // Ensure that closing the last KMainWindow doesn't exit the application
     // if a system tray icon is still present.
     KGlobal::ref();
-    KGlobal::locale()->insertCatalog("knotificationitem");
+
     qDBusRegisterMetaType<ExperimentalKDbusImageStruct>();
     qDBusRegisterMetaType<ExperimentalKDbusImageVector>();
     qDBusRegisterMetaType<ExperimentalKDbusToolTipStruct>();
