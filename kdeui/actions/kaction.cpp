@@ -392,8 +392,13 @@ void KAction::setAuthAction(const QString &actionName)
 
 void KAction::setAuthAction(KAuth::Action *action)
 {
+    if (d->authAction == action) {
+        return;
+    }
+  
     if (d->authAction) {
-        disconnect(d->authAction->watcher(), 0, 0, 0);
+        disconnect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
+                this, SLOT(authStatusChanged(int)));
         //delete d->authAction;
         d->authAction = 0;
         if (!d->oldIcon.isNull()) {
