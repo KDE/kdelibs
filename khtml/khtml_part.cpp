@@ -400,16 +400,16 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "format-font-size-more", i18n( "Enlarge Font" ), this );
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
       connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncFontSizeFast() ));
-      d->m_paIncZoomFactor->setWhatsThis( i18n( "Enlarge Font<br /><br />"
+      d->m_paIncZoomFactor->setWhatsThis( i18n( "<qt>Enlarge Font<br /><br />"
                                                 "Make the font in this window bigger. "
-                            "Click and hold down the mouse button for a menu with all available font sizes." ) );
+                            "Click and hold down the mouse button for a menu with all available font sizes.</qt>" ) );
 
       d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "format-font-size-less", i18n( "Shrink Font" ), this );
       actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
       connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecFontSizeFast() ));
-      d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<br /><br />"
+      d->m_paDecZoomFactor->setWhatsThis( i18n( "<qt>Shrink Font<br /><br />"
                                                 "Make the font in this window smaller. "
-                            "Click and hold down the mouse button for a menu with all available font sizes." ) );
+                            "Click and hold down the mouse button for a menu with all available font sizes.</qt>" ) );
       if (!parentPart()) {
           // For framesets, this action also affects frames, so only
           // the frameset needs to define a shortcut for the action.
@@ -425,20 +425,20 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
   d->m_paFind->setShortcutContext( Qt::WidgetWithChildrenShortcut ); // default context conflicts when splitting konqueror
-  d->m_paFind->setWhatsThis( i18n( "Find text<br /><br />"
-                                   "Shows a dialog that allows you to find text on the displayed page." ) );
+  d->m_paFind->setWhatsThis( i18n( "<qt>Find text<br /><br />"
+                                   "Shows a dialog that allows you to find text on the displayed page.</qt>" ) );
 
   d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
   d->m_paFindNext->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  d->m_paFindNext->setWhatsThis( i18n( "Find next<br /><br />"
+  d->m_paFindNext->setWhatsThis( i18n( "<qt>Find next<br /><br />"
                                        "Find the next occurrence of the text that you "
-                                       "have found using the <b>Find Text</b> function" ) );
+                                       "have found using the <b>Find Text</b> function.</qt>" ) );
 
   d->m_paFindPrev = actionCollection()->addAction( KStandardAction::FindPrev, "findPrevious",
                                                    this, SLOT( slotFindPrev() ) );
-  d->m_paFindPrev->setWhatsThis( i18n( "Find previous<br /><br />"
+  d->m_paFindPrev->setWhatsThis( i18n( "<qt>Find previous<br /><br />"
                                        "Find the previous occurrence of the text that you "
-                                       "have found using the <b>Find Text</b> function" ) );
+                                       "have found using the <b>Find Text</b> function.</qt>" ) );
 
   d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
@@ -466,9 +466,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
   d->m_paPrintFrame->setIcon( KIcon( "document-print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
-  d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<br /><br />"
+  d->m_paPrintFrame->setWhatsThis( i18n( "<qt>Print Frame<br /><br />"
                                          "Some pages have several frames. To print only a single frame, click "
-                                         "on it and then use this function." ) );
+                                         "on it and then use this function.</qt>" ) );
 
   // Warning: The name selectAll is used hardcoded by some 3rd parties to remove the
   // shortcut for selectAll so they do not get ambigous shortcuts. Renaming it
