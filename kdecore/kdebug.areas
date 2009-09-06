@@ -50,6 +50,7 @@
 912        ksmartcard (kdelibs)
 920        Solid (kdelibs)
 921        Solid Networking
+930        KUnitConversion
 
 1000        kparts
 

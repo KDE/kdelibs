@@ -28,6 +28,8 @@ set(kunitconversion_HEADERS
     kunitconversion_export.h
 )
 
+add_definitions(-DKDE_DEFAULT_DEBUG_AREA=930)
+
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
 kde4_add_library(kunitconversion SHARED ${kunitconversion_LIB_SRCS})
