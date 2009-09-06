@@ -464,7 +464,7 @@ void KCategorizedView::Private::topToBottomVisualRect(const QModelIndex &index, 
     item.size.setWidth(viewportWidth());
 }
 
-void KCategorizedView::Private::_k_slotCollapseOrExpandClicked()
+void KCategorizedView::Private::_k_slotCollapseOrExpandClicked(QModelIndex)
 {
 }
 

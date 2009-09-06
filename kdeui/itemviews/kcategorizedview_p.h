@@ -122,7 +122,7 @@ public:
     void topToBottomVisualRect(const QModelIndex &index, Item &item,
                                const Block &block, const QPoint &blockPos) const;
 
-    void _k_slotCollapseOrExpandClicked();
+    void _k_slotCollapseOrExpandClicked(QModelIndex);
 
     KCategorizedView *q;
     KCategorizedSortFilterProxyModel *proxyModel;

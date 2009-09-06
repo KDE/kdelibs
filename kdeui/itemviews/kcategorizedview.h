@@ -302,7 +302,7 @@ private:
     class Private;
     Private *const d;
 
-    Q_PRIVATE_SLOT(d, void _k_slotCollapseOrExpandClicked())
+    Q_PRIVATE_SLOT(d, void _k_slotCollapseOrExpandClicked(QModelIndex))
 };
 
 #endif // KCATEGORIZEDVIEW_H
