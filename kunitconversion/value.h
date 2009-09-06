@@ -66,6 +66,11 @@ public:
     /**
     * convert to another unit
     **/
+    Value convertTo(UnitPtr unit) const;
+
+    /**
+    * convert to another unit
+    **/
     Value convertTo(int unit) const;
 
     /**

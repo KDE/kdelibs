@@ -115,6 +115,15 @@ Value Converter::convert(const Value& value, int toUnit) const
     return category->convert(value, toUnit);
 }
 
+Value Converter::convert(const Value& value, UnitPtr toUnit) const
+{
+    UnitCategory* category = value.unit()->category();
+    if (!category) {
+        return Value();
+    }
+    return category->convert(value, toUnit);
+}
+
 UnitCategory* Converter::categoryForUnit(const QString& unit) const
 {
     foreach (UnitCategory* u, categories()) {

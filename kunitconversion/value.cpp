@@ -116,6 +116,11 @@ Value& Value::operator=(const Value& value)
     return *this;
 }
 
+Value Value::convertTo(UnitPtr unit) const
+{
+    return d->converter.convert(*this, unit);
+}
+
 Value Value::convertTo(int unit) const
 {
     return d->converter.convert(*this, unit);

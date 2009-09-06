@@ -27,7 +27,7 @@
 namespace KUnitConversion
 {
 enum UnitId {
-    InvalidUnit = 0,
+    InvalidUnit = -1, NoUnit = 0, Percent = 1,
     // Area
     SquareYottameter = 1000, SquareZettameter, SquareExameter, SquarePetameter, SquareTerameter,
     SquareGigameter, SquareMegameter, SquareKilometer, SquareHectometer, SquareDecameter,
@@ -128,6 +128,7 @@ public:
      **/
     Value convert(const Value& value, const QString& toUnit = QString()) const;
     Value convert(const Value& value, int toUnit) const;
+    Value convert(const Value& value, UnitPtr toUnit) const;
 
     /**
      * Find unit category for unit.
