@@ -36,9 +36,3 @@ set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
 install(TARGETS kunitconversion ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES FindKUnitConversion.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 install(FILES ${kunitconversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kunitconversion COMPONENT Devel)
-install(FILES
-  KUnitConversion/Converter
-  KUnitConversion/Value
-  KUnitConversion/Unit
-  KUnitConversion/UnitCategory
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitConversion COMPONENT Devel)

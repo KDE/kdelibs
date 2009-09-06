@@ -467,7 +467,7 @@ if (UNIX)
         K3ProcessController
         K3ShellProcess
       DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
-   endif (QT_QT3SUPPORT_FOUND) 
+   endif (QT_QT3SUPPORT_FOUND)
 
    install( FILES
      KPty
@@ -1028,3 +1028,10 @@ if(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
       DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
 endif(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
 
+
+install(FILES
+  KUnitConversion/Converter
+  KUnitConversion/Value
+  KUnitConversion/Unit
+  KUnitConversion/UnitCategory
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitConversion COMPONENT Devel)
