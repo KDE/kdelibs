@@ -28,6 +28,8 @@ set(kunitconversion_HEADERS
     kunitconversion_export.h
 )
 
+include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
+
 kde4_add_library(kunitconversion SHARED ${kunitconversion_LIB_SRCS})
 target_link_libraries(kunitconversion ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS})
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})

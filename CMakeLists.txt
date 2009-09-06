@@ -269,6 +269,7 @@ add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( security )
 add_subdirectory( plasma )
+add_subdirectory( kunitconversion )
 add_subdirectory( includes )
 
 macro_optional_add_subdirectory( doc  )
