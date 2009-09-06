@@ -75,6 +75,8 @@ public:
     virtual long caretMaxOffset() const;
     virtual unsigned long caretMaxRenderedOffset() const;
 
+    virtual bool rendererIsNeeded(khtml::RenderStyle *);
+
 protected:
     // note: since DOMStrings are shared, str should always be copied when making
     // a change or returning a string

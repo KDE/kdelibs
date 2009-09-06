@@ -39,6 +39,7 @@
 #include "misc/loader_client.h"
 #include "misc/helper.h"
 #include "rendering/render_style.h"
+#include "rendering/render_position.h"
 #include <QtCore/QTextIStream>
 
 // svg
@@ -116,7 +117,6 @@ namespace DOM {
     class DocumentImpl;
     class ElementImpl;
     class EventImpl;
-    class Position;
     class Selection;
 }
 
@@ -134,6 +134,7 @@ namespace khtml {
     class InlineBox;
     class InlineFlowBox;
     class CounterNode;
+    class RenderPosition;
 
 /**
  * Base Class for all rendering tree objects.
@@ -243,6 +244,7 @@ public:
     QString information() const;
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream &stream, const QString &ind = QString()) const;
+    void printLineBoxTree() const;
 #endif
 
     static RenderObject *createObject(DOM::NodeImpl* node, RenderStyle* style);
@@ -580,7 +582,8 @@ public:
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction, bool inside = false);
     void setInnerNode(NodeInfo& info);
 
-    virtual DOM::Position positionForCoordinates(int x, int y);
+    // Position/Selection stuff
+    virtual RenderPosition positionForCoordinates(int x, int y);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);

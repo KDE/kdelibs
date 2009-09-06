@@ -38,10 +38,10 @@
 #include "rendering/render_replaced.h"
 #include "rendering/render_generated.h"
 #include "rendering/counter_tree.h"
+#include "rendering/render_position.h"
 
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
-#include "xml/dom_position.h"
 #include "dom/dom_doc.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
@@ -1958,6 +1958,19 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (hasFirstLine()) { ts << " hasFirstLine"; }
     if (afterPageBreak()) { ts << " afterPageBreak"; }
 }
+
+void RenderObject::printLineBoxTree() const
+{
+    RenderObject* child = firstChild();
+    for (; child; child = child->nextSibling())
+        child->printLineBoxTree();
+    if (isRenderBlock()) {
+        const RenderBlock* block = static_cast<const RenderBlock*>(this);
+        RootInlineBox* rootBox = block->firstRootBox();
+        for (; rootBox; rootBox = rootBox->nextRootBox())
+            rootBox->printTree();
+    }
+}
 #endif
 
 bool RenderObject::shouldSelect() const
@@ -2394,9 +2407,9 @@ void RenderObject::arenaDelete(RenderArena *arena)
     arenaDelete(arena, dynamic_cast<void *>(this));
 }
 
-Position RenderObject::positionForCoordinates(int /*x*/, int /*y*/)
+RenderPosition RenderObject::positionForCoordinates(int /*x*/, int /*y*/)
 {
-    return Position(element(), caretMinOffset());
+    return RenderPosition(element(), caretMinOffset());
 }
 
 bool RenderObject::isPointInsideSelection(int x, int y, const Selection &sel) const

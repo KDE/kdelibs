@@ -345,6 +345,9 @@ public:
     //Called when mapping from id to this node in document should be added
     virtual void addId   (const DOMString& id);
 
+    // Synchronize style attribute after it was changed via CSS DOM (html5)
+    void synchronizeStyleAttribute(const DOMString& value);
+
 protected:
     void createAttributeMap() const;
     void createInlineDecl(); // for inline styles
@@ -431,6 +434,10 @@ public:
     inline void clearClass() { m_classNames.clear(); }
     void setClass(const DOMString& string);
     inline const ClassNames& classNames() const { return m_classNames; }
+
+    // Rewrites value if attribute already exists or adds a new attribute otherwise
+    // @important: any changes won't be propagated to parent Element
+    void setValueWithoutElementUpdate(NodeImpl::Id id, DOMStringImpl *value);
 
 protected:
     ElementImpl *m_element;

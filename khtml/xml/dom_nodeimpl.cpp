@@ -1207,12 +1207,12 @@ bool NodeImpl::inSameContainingBlockFlowElement(NodeImpl *n)
     return n ? enclosingBlockFlowElement() == n->enclosingBlockFlowElement() : false;
 }
 
-Position NodeImpl::positionForCoordinates(int x, int y) const
+RenderPosition NodeImpl::positionForCoordinates(int x, int y) const
 {
     if (renderer())
         return renderer()->positionForCoordinates(x, y);
 
-    return Position(const_cast<NodeImpl *>(this), 0);
+    return RenderPosition();
 }
 
 bool NodeImpl::isPointInsideSelection(int x, int y, const Selection &sel) const
@@ -1220,15 +1220,15 @@ bool NodeImpl::isPointInsideSelection(int x, int y, const Selection &sel) const
     if (sel.state() != Selection::RANGE)
         return false;
 
-    Position pos(positionForCoordinates(x, y));
+    RenderPosition pos(positionForCoordinates(x, y));
     if (pos.isEmpty())
         return false;
 
     NodeImpl *n = sel.start().node();
     while (n) {
         if (n == pos.node()) {
-            if ((n == sel.start().node() && pos.offset() < sel.start().offset()) ||
-                (n == sel.end().node() && pos.offset() > sel.end().offset())) {
+            if ((n == sel.start().node() && pos.domOffset() < sel.start().offset()) ||
+                (n == sel.end().node() && pos.domOffset() > sel.end().offset())) {
                 return false;
             }
             return true;

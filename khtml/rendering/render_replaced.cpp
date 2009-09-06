@@ -26,6 +26,7 @@
 #include "render_layer.h"
 #include "render_canvas.h"
 #include "render_line.h"
+#include "rendering/render_position.h"
 
 #include "render_arena.h"
 
@@ -146,11 +147,11 @@ unsigned long RenderReplaced::caretMaxRenderedOffset() const
     return 1;
 }
 
-Position RenderReplaced::positionForCoordinates(int _x, int _y)
+RenderPosition RenderReplaced::positionForCoordinates(int _x, int _y)
 {
     InlineBox *box = placeHolderBox();
     if (!box)
-        return Position(element(), 0);
+        return RenderPosition(element(), 0);
   
     RootInlineBox *root = box->root();
   
@@ -161,15 +162,15 @@ Position RenderReplaced::positionForCoordinates(int _x, int _y)
     int bottom = root->nextRootBox() ? absy + root->nextRootBox()->topOverflow() : absy + root->bottomOverflow();
   
     if (_y < top)
-        return Position(element(), caretMinOffset()); // coordinates are above
+        return RenderPosition(element(), caretMinOffset()); // coordinates are above
         
     if (_y >= bottom)
-        return Position(element(), caretMaxOffset()); // coordinates are below
+        return RenderPosition(element(), caretMaxOffset()); // coordinates are below
         
     if (element()) {
         if (_x <= absx + xPos() + (width() / 2))
-            return Position(element(), 0);
-        return Position(element(), 1);
+            return RenderPosition(element(), 0);
+        return RenderPosition(element(), 1);
     }
   
     return RenderBox::positionForCoordinates(_x, _y);

@@ -40,7 +40,6 @@
 #include "dom/html_document.h"
 #include "dom/dom2_range.h"
 #include "editing/editor.h"
-#include "editing/htmlediting.h"
 #include "html/html_documentimpl.h"
 #include "html/html_baseimpl.h"
 #include "html/html_objectimpl.h"
@@ -1466,9 +1465,10 @@ void KHTMLPart::slotDebugRenderTree()
     d->m_doc->renderer()->printTree();
     // dump out the contents of the rendering & DOM trees
 //    QString dumps;
-//    QTextStream outputStream(dumps,QIODevice::WriteOnly);
+//    QTextStream outputStream(&dumps,QIODevice::WriteOnly);
 //    d->m_doc->renderer()->layer()->dump( outputStream );
 //    kDebug() << "dump output:" << "\n" + dumps;
+//    d->m_doc->renderer()->printLineBoxTree();
   }
 #endif
 }
@@ -3398,6 +3398,9 @@ void KHTMLPart::selectionLayoutChanged()
     if (d->editor_context.m_caretBlinks && d->editor_context.m_caretPaint)
       d->editor_context.m_caretBlinkTimer = startTimer(qApp->cursorFlashTime() / 2);
     d->editor_context.m_selection.needsCaretRepaint();
+    // make sure that caret is visible
+    QRect r(d->editor_context.m_selection.getRepaintRect());
+    d->m_view->ensureVisible(r.x(), r.y());
   }
 
   if (d->m_doc)
@@ -3416,11 +3419,10 @@ void KHTMLPart::notifySelectionChanged(bool closeTyping)
     ed->clearTypingStyle();
 
     if (closeTyping)
-      khtml::TypingCommand::closeTyping(ed->lastEditCommand());
+        ed->closeTyping();
   }
 
   emitSelectionChanged();
-
 }
 
 void KHTMLPart::timerEvent(QTimerEvent *e)
@@ -6048,7 +6050,7 @@ void KHTMLPart::handleMousePressEventDoubleClick(khtml::MouseDoubleClickEvent *e
 
     if (mouse->button() == Qt::LeftButton && !innerNode.isNull() && innerNode.handle()->renderer() &&
         innerNode.handle()->renderer()->shouldSelect()) {
-        Position pos(innerNode.handle()->positionForCoordinates(event->x(), event->y()));
+        Position pos(innerNode.handle()->positionForCoordinates(event->x(), event->y()).position());
         if (pos.node() && (pos.node()->nodeType() == Node::TEXT_NODE || pos.node()->nodeType() == Node::CDATA_SECTION_NODE)) {
             selection.moveTo(pos);
             selection.expandUsingGranularity(Selection::WORD);
@@ -6072,7 +6074,7 @@ void KHTMLPart::handleMousePressEventTripleClick(khtml::MouseDoubleClickEvent *e
 
     if (mouse->button() == Qt::LeftButton && !innerNode.isNull() && innerNode.handle()->renderer() &&
         innerNode.handle()->renderer()->shouldSelect()) {
-        Position pos(innerNode.handle()->positionForCoordinates(event->x(), event->y()));
+        Position pos(innerNode.handle()->positionForCoordinates(event->x(), event->y()).position());
         if (pos.node() && (pos.node()->nodeType() == Node::TEXT_NODE || pos.node()->nodeType() == Node::CDATA_SECTION_NODE)) {
             selection.moveTo(pos);
             selection.expandUsingGranularity(Selection::LINE);
@@ -6104,9 +6106,10 @@ void KHTMLPart::handleMousePressEventSingleClick(khtml::MousePressEvent *event)
             if (!extendSelection && isPointInsideSelection(event->x(), event->y())) {
                 return;
             }
-            Position pos(innerNode.handle()->positionForCoordinates(event->x(), event->y()));
+            Position pos(innerNode.handle()->positionForCoordinates(event->x(), event->y()).position());
             if (pos.isEmpty())
                 pos = Position(innerNode.handle(), innerNode.handle()->caretMinOffset());
+            kDebug() << event->x() << event->y() << pos << endl;
 
             sel = caret();
             if (extendSelection && sel.notEmpty()) {
@@ -6208,7 +6211,7 @@ bool KHTMLPart::isExtendingSelection() const
 void KHTMLPart::extendSelectionTo(int x, int y, const DOM::Node &innerNode)
 {
     // handle making selection
-    Position pos(innerNode.handle()->positionForCoordinates(x, y));
+    Position pos(innerNode.handle()->positionForCoordinates(x, y).position());
 
     // Don't modify the selection if we're not on a node.
     if (pos.isEmpty())
@@ -6446,7 +6449,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #ifdef APPLE_CHANGES
       if (d->editor_context.m_selection.base().node()->isContentEditable())
 #endif
-        selection.moveTo(d->editor_context.m_selection.base().node()->positionForCoordinates(event->x(), event->y()));
+        selection.moveTo(d->editor_context.m_selection.base().node()->positionForCoordinates(event->x(), event->y()).position());
       setCaret(selection);
     }
     // get selected text and paste to the clipboard

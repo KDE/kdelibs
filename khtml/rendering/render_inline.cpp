@@ -27,13 +27,12 @@
 
 #include "render_arena.h"
 #include "render_block.h"
+#include "rendering/render_position.h"
 
 #include <xml/dom_docimpl.h>
-#include <xml/dom_position.h>
 
 #include <kglobal.h>
 
-using DOM::Position;
 using namespace khtml;
 
 void RenderInline::setStyle(RenderStyle* _style)
@@ -907,7 +906,7 @@ bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
     return inside;
 }
 
-Position RenderInline::positionForCoordinates(int x, int y)
+RenderPosition RenderInline::positionForCoordinates(int x, int y)
 {
     for (RenderObject *c = continuation(); c; c = c->continuation()) {
         if (c->isInline() || c->firstChild())

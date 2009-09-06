@@ -325,11 +325,10 @@ void AttributeImpl::rewriteValue( const DOMString& newValue )
 	if (m_data.value == value)
 	    return;
 
-	m_data.value->deref();
-	m_data.value = value;
-	m_data.value->ref();
-    }
-    else {
+        m_data.value->deref();
+        m_data.value = value;
+        m_data.value->ref();
+    } else {
 	m_data.attr->rewriteValue(newValue);
     }
 }
@@ -1354,6 +1353,12 @@ void ElementImpl::focus()
     document()->setFocusNode(this);
 }
 
+void ElementImpl::synchronizeStyleAttribute(const DOMString& value)
+{
+    attributes()->setValueWithoutElementUpdate(ATTR_STYLE, value.implementation());
+}
+
+
 // -------------------------------------------------------------------------
 
 XMLElementImpl::XMLElementImpl(DocumentImpl *doc, NamespaceName namespacename, LocalName localName, PrefixName prefix)
@@ -1672,6 +1677,27 @@ void NamedAttrMapImpl::setClass(const DOMString& string)
 
     m_classNames.parseClassAttribute(string, m_element->document()->htmlMode() != DocumentImpl::XHtml &&
             m_element->document()->inCompatMode());
+}
+
+void NamedAttrMapImpl::setValueWithoutElementUpdate(NodeImpl::Id id, DOMStringImpl* value)
+{
+    // FIXME properly fix case value == 0
+    int index = find(id, emptyPrefixName, true);
+    if (index >= 0) {
+        m_attrs[index].rewriteValue(value ? value : DOMStringImpl::empty());
+        return;
+    }
+
+    if (!value)
+        return;
+
+    AttributeImpl attr;
+    attr.m_localName = LocalName::fromId(localNamePart(id));
+    attr.m_namespace = NamespaceName::fromId(namespacePart(id));
+    attr.m_prefix = emptyPrefixName;
+    attr.m_data.value = value;
+    attr.m_data.value->ref();
+    m_attrs.append(attr);
 }
 
 }

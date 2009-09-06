@@ -32,8 +32,8 @@
 #include "render_canvas.h"
 #include "break_lines.h"
 #include "render_arena.h"
+#include "rendering/render_position.h"
 #include <xml/dom_nodeimpl.h>
-#include <xml/dom_position.h>
 
 #include <misc/loader.h>
 #include <misc/helper.h>
@@ -456,7 +456,6 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     bool justified = text->style()->textAlign() == JUSTIFY && toAdd > 0;
     int numSpaces = 0;
     if (justified) {
-
         for( int i = 0; i < m_len; i++ )
             if ( text->str->s[m_start+i].category() == QChar::Separator_Space )
 	        numSpaces++;
@@ -538,6 +537,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
 int InlineTextBox::widthFromStart(int pos) const
 {
   // gasp! sometimes pos is i < 0 which crashes Font::width
+  // kDebug() << this << pos << endl;
   pos = qMax(pos, 0);
 
   const RenderText *t = renderText();
@@ -579,7 +579,7 @@ int InlineTextBox::widthFromStart(int pos) const
 
       // check run without spaces
       if ( current > start ) {
-          w += f->width(t->str->s + m_start, m_len, start, current - start, t->isSimpleText());
+          w += f->width(t->str->s + m_start, m_len, start, current - start, false);
           start = current;
       }
     }
@@ -590,7 +590,8 @@ int InlineTextBox::widthFromStart(int pos) const
 
   //kDebug(6000) << "default";
   // else use existing width function
-  return f->width(t->str->s + m_start, m_len, 0, pos, t->isSimpleText());
+  // kDebug() << "result width:" << f->width(t->str->s + m_start, m_len, 0, pos, false) << endl;
+  return f->width(t->str->s + m_start, m_len, 0, pos, false);
 
 }
 
@@ -823,7 +824,11 @@ const InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool 
         off = s->m_start + s->m_len;
     }
     // we are now in the correct text run
-    pos = (offset > off ? s->m_len : s->m_len - (off - offset) );
+    if (offset >= s->m_start && offset < s->m_start + s->m_len) {
+        pos = offset - s->m_start;
+    } else {
+        pos = (offset > off ? s->m_len : s->m_len - (off - offset) );
+    }
     return s;
 }
 
@@ -934,53 +939,142 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     return SelectionPointAfter;
 }
 
- 
-Position RenderText::positionForCoordinates(int _x, int _y)
+unsigned RenderText::convertToDOMPosition(unsigned position) const
 {
+    if (isBR())
+        return 0;
+    /*const */DOMStringImpl* domString = originalString();
+    /*const */DOMStringImpl* renderedString = string();
+    if (domString == renderedString) {
+        // kDebug() << "[rendered == dom]" << position << endl;
+        return position;
+    }
+    /* kDebug() << "[convert]" << position << endl
+        << DOMString(domString) << endl
+        << DOMString(renderedString) << endl;*/
+
+    if (!domString || !renderedString)
+        return position;
+
+    unsigned domLength = domString->length();
+    unsigned i = 0, j = 0;
+    for (; i < domLength && j < position;) {
+        bool isRenderedSpace = renderedString->unicode()[j].isSpace();
+        bool isDOMSpace = domString->unicode()[i].isSpace();
+        if (isRenderedSpace && isDOMSpace) {
+            ++i;
+            ++j;
+            continue;
+        }
+        if (isRenderedSpace) {
+            ++j;
+            continue;
+        }
+        if (isDOMSpace) {
+            ++i;
+            continue;
+        }
+        ++i;
+        ++j;
+    }
+    // kDebug() << "[result]" << i << endl;
+    return i;
+}
+
+unsigned RenderText::convertToRenderedPosition(unsigned position) const
+{
+    if (isBR())
+        return 0;
+    /*const */DOMStringImpl* domString = originalString();
+    /*const */DOMStringImpl* renderedString = string();
+    if (domString == renderedString) {
+        // kDebug() << "[rendered == dom]" << position << endl;
+        return position;
+    }
+    /* kDebug() << "[convert]" << position << endl
+        << DOMString(domString) << endl
+        << DOMString(renderedString) << endl;*/
+
+    if (!domString || !renderedString)
+        return position;
+
+    unsigned renderedLength = renderedString->length();
+    unsigned i = 0, j = 0;
+    for (; i < position && j < renderedLength;) {
+        bool isRenderedSpace = renderedString->unicode()[j].isSpace();
+        bool isDOMSpace = domString->unicode()[i].isSpace();
+        if (isRenderedSpace && isDOMSpace) {
+            ++i;
+            ++j;
+            continue;
+        }
+        if (isRenderedSpace) {
+            ++j;
+            continue;
+        }
+        if (isDOMSpace) {
+            ++i;
+            continue;
+        }
+        ++i;
+        ++j;
+    }
+    // kDebug() << "[result]" << j << endl;
+    return j;
+}
+
+RenderPosition RenderText::positionForCoordinates(int _x, int _y)
+{
+    // kDebug() << this << _x << _y << endl;
     if (!firstTextBox() || stringLength() == 0)
         return Position(element(), 0);
 
     int absx, absy;
     containingBlock()->absolutePosition(absx, absy);
+    // kDebug() << "absolute(" << absx << absy << ")" << endl;
 
     if (_y < absy + firstTextBox()->root()->bottomOverflow() && _x < absx + firstTextBox()->m_x) {
         // at the y coordinate of the first line or above
         // and the x coordinate is to the left than the first text box left edge
-        return Position(element(), firstTextBox()->m_start);
+        return RenderPosition(element(), firstTextBox()->m_start);
     }
 
     if (_y >= absy + lastTextBox()->root()->topOverflow() && _x >= absx + lastTextBox()->m_x + lastTextBox()->m_width) {
         // at the y coordinate of the last line or below
         // and the x coordinate is to the right than the last text box right edge
-        return Position(element(), lastTextBox()->m_start + lastTextBox()->m_len);
+        return RenderPosition(element(), lastTextBox()->m_start + lastTextBox()->m_len);
     }
 
     for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox()) {
+        // kDebug() << "[check box]" << box << endl;
         if (_y >= absy + box->root()->topOverflow() && _y < absy + box->root()->bottomOverflow()) {
             if (_x < absx + box->m_x + box->m_width) {
                 // and the x coordinate is to the left of the right edge of this box
                 // check to see if position goes in this box
                 int offset;
-                box->checkSelectionPoint(_x, _y, absx, absy, offset);
+                box->checkSelectionPoint(_x, absy + box->yPos(), absx, absy, offset);
+                // kDebug() << "offset" << offset << endl;
                 if (offset != -1) {
-                    return Position(element(), offset + box->m_start);
+                    // kDebug() << "return" << Position(element(), convertToDOMPosition(offset + box->m_start)) << endl;
+                    return RenderPosition(element(), offset + box->m_start);
                 }
             }
             else if (!box->prevOnLine() && _x < absx + box->m_x)
                 // box is first on line
                 // and the x coordinate is to the left than the first text box left edge
-                return Position(element(), box->m_start);
+                return RenderPosition(element(), box->m_start);
             else if (!box->nextOnLine() && _x >= absx + box->m_x + box->m_width)
                 // box is last on line
                 // and the x coordinate is to the right than the last text box right edge
-                return Position(element(), box->m_start + box->m_len);
+                return RenderPosition(element(), box->m_start + box->m_len);
         }
     }
-    return Position(element(), 0);
+    return RenderPosition(element(), 0);
 }
 
 void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const
 {
+    // kDebug() << offset << flags << endl;
   if (!m_firstTextBox) {
     _x = _y = height = -1;
     width = 1;
@@ -997,9 +1091,11 @@ void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, i
 
   _x = s->m_x + s->widthFromStart(pos);
   _y = s->m_y + s->baseline() - fm.ascent();
+  // kDebug() << "(" << _x << _y << ")" << endl;
   width = 1;
   if (flags & CFOverride) {
     width = offset < caretMaxOffset() ? fm.width(str->s[offset]) : 1;
+    // kDebug() << "CFOverride" << width << endl;
   }/*end if*/
 #if 0
   kDebug(6040) << "_x="<<_x << " s->m_x="<<s->m_x

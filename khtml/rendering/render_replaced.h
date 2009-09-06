@@ -32,11 +32,6 @@
 class KHTMLView;
 class QWidget;
 
-namespace DOM
-{
-    class Position;
-}
-
 namespace khtml {
 
 class RenderReplaced : public RenderBox
@@ -66,7 +61,7 @@ public:
     virtual long caretMinOffset() const;
     virtual long caretMaxOffset() const;
     virtual unsigned long caretMaxRenderedOffset() const;
-    virtual DOM::Position positionForCoordinates(int x, int y);
+    virtual RenderPosition positionForCoordinates(int x, int y);
     virtual bool forceTransparentText() const { return false; }
 
 protected:

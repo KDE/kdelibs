@@ -47,12 +47,14 @@
 #include <QRect>
 
 #define EDIT_DEBUG 0
+#define DEBUG_CARET
 
 using khtml::EditorContext;
 using khtml::findWordBoundary;
 using khtml::InlineTextBox;
 using khtml::RenderObject;
 using khtml::RenderText;
+using khtml::RenderPosition;
 
 namespace DOM {
 
@@ -189,6 +191,9 @@ void Selection::moveTo(const Position &pos)
 void Selection::moveTo(const Position &base, const Position &extent)
 {
 //   kdDebug(6200) << "Selection::moveTo: base(" << base.node() << "," << base.offset() << "), extent(" << extent.node() << "," << extent.offset() << ")" << endl;
+#ifdef DEBUG_CARET
+    kDebug() << *this << base << extent << endl;
+#endif
     assignBaseAndExtent(base, extent);
     validate();
 }
@@ -337,7 +342,7 @@ int Selection::xPosForVerticalArrowNavigation(EPositionType type, bool recalc) c
     {
         int y, w, h;
         if (pos.node()->renderer())
-            pos.node()->renderer()->caretPos(pos.offset(), 0, x, y, w, h);
+            pos.node()->renderer()->caretPos(pos.renderedOffset(), 0, x, y, w, h);
         part->d->editor_context.m_xPosForVerticalArrowNavigation = x;
     }
     else {
@@ -472,7 +477,14 @@ void Selection::layoutCaret()
         // EDIT FIXME: Enhance call to pass along selection
         // upstream/downstream affinity to get the right position.
         int w;
-        caretPos().node()->renderer()->caretPos(caretPos().offset(), true, m_caretX, m_caretY, w, m_caretSize);
+        int offset = RenderPosition::fromDOMPosition(caretPos()).renderedOffset();
+#ifdef DEBUG_CARET
+        kDebug() << "[before caretPos()]" << m_caretX << endl;
+#endif
+        caretPos().node()->renderer()->caretPos(offset, true, m_caretX, m_caretY, w, m_caretSize);
+#ifdef DEBUG_CARET
+        kDebug() << "[after caretPos()]" << m_caretX << endl;
+#endif
     }
 
     m_needsCaretLayout = false;
@@ -503,6 +515,7 @@ void Selection::needsCaretRepaint()
     if (!v)
         return;
 
+    // kDebug() << "[NeedsCaretLayout]" << m_needsCaretLayout << endl;
     if (m_needsCaretLayout) {
         // repaint old position and calculate new position
         v->updateContents(getRepaintRect());
@@ -559,9 +572,15 @@ void Selection::paintCaret(QPainter *p, const QRect &rect)
 
 void Selection::validate(ETextGranularity granularity)
 {
+#ifdef DEBUG_CARET
+    kDebug() << *this << granularity << endl;
+#endif
     // move the base and extent nodes to their equivalent leaf positions
     bool baseAndExtentEqual = base() == extent();
     if (base().notEmpty()) {
+#ifdef DEBUG_CARET
+        kDebug() << "[base not empty]" << endl;
+#endif
         Position pos = base().equivalentLeafPosition();
         assignBase(pos);
         if (baseAndExtentEqual)
@@ -595,6 +614,9 @@ void Selection::validate(ETextGranularity granularity)
 
     // calculate the correct start and end positions
     if (granularity == CHARACTER) {
+#ifdef DEBUG_CARET
+        kDebug() << "[character:baseIsStart]" << m_baseIsStart << base() << extent() << endl;
+#endif
         if (m_baseIsStart)
             assignStartAndEnd(base(), extent());
         else
@@ -605,18 +627,36 @@ void Selection::validate(ETextGranularity granularity)
         int baseEndOffset = base().offset();
         int extentStartOffset = extent().offset();
         int extentEndOffset = extent().offset();
+#ifdef DEBUG_CARET
+        kDebug() << "WORD GRANULARITY:" << baseStartOffset << baseEndOffset << extentStartOffset << extentEndOffset << endl;
+#endif
         if (base().notEmpty() && (base().node()->nodeType() == Node::TEXT_NODE || base().node()->nodeType() == Node::CDATA_SECTION_NODE)) {
             DOMString t = base().node()->nodeValue();
             QChar *chars = t.unicode();
             uint len = t.length();
+#ifdef DEBUG_CARET
+            kDebug() << "text:" << QString::fromRawData(chars, len) << endl;
+#endif
             findWordBoundary(chars, len, base().offset(), &baseStartOffset, &baseEndOffset);
+#ifdef DEBUG_CARET
+            kDebug() << "after find word boundary" << baseStartOffset << baseEndOffset << endl;
+#endif
         }
         if (extent().notEmpty() && (extent().node()->nodeType() == Node::TEXT_NODE || extent().node()->nodeType() == Node::CDATA_SECTION_NODE)) {
             DOMString t = extent().node()->nodeValue();
             QChar *chars = t.unicode();
             uint len = t.length();
+#ifdef DEBUG_CARET
+            kDebug() << "text:" << QString::fromRawData(chars, len) << endl;
+#endif
             findWordBoundary(chars, len, extent().offset(), &extentStartOffset, &extentEndOffset);
+#ifdef DEBUG_CARET
+            kDebug() << "after find word boundary" << baseStartOffset << baseEndOffset << endl;
+#endif
         }
+#ifdef DEBUG_CARET
+        kDebug() << "is start:" << m_baseIsStart << endl;
+#endif
         if (m_baseIsStart) {
             assignStart(Position(base().node(), baseStartOffset));
             assignEnd(Position(extent().node(), extentEndOffset));
@@ -810,8 +850,11 @@ static bool startAndEndLineNodesIncludingNode(NodeImpl *node, int offset, Select
     if (node && node->renderer() && (node->nodeType() == Node::TEXT_NODE || node->nodeType() == Node::CDATA_SECTION_NODE)) {
         int pos;
         int selectionPointY;
-        RenderText *renderer = static_cast<RenderText *>(node->renderer());
-        const InlineTextBox * run = renderer->findInlineTextBox( offset, pos );
+        RenderPosition rp = RenderPosition::fromDOMPosition(Position(node, offset));
+        pos = rp.renderedOffset();
+        // RenderText *renderer = static_cast<RenderText *>(node->renderer());
+        // const InlineTextBox * run = renderer->findInlineTextBox( offset, pos );
+        const InlineTextBox* run = static_cast<InlineTextBox*>(node->renderer()->inlineBox(pos));
         DOMString t = node->nodeValue();
 
         if (!run)
@@ -820,7 +863,7 @@ static bool startAndEndLineNodesIncludingNode(NodeImpl *node, int offset, Select
         selectionPointY = run->m_y;
 
         // Go up to first non-inline element.
-        khtml::RenderObject *renderNode = renderer;
+        khtml::RenderObject *renderNode = node->renderer();
         while (renderNode && renderNode->isInline())
             renderNode = renderNode->parent();
 
@@ -842,7 +885,7 @@ static bool startAndEndLineNodesIncludingNode(NodeImpl *node, int offset, Select
         if (!lastRunAt (renderNode, selectionPointY, endNode, endOffset))
             return false;
 
-        selection.moveTo(Position(startNode, startOffset), Position(endNode, endOffset));
+        selection.moveTo(RenderPosition(startNode, startOffset).position(), RenderPosition(endNode, endOffset).position());
 
         return true;
     }
@@ -1004,6 +1047,17 @@ void Selection::debugPosition() const
 #endif
 
     fprintf(stderr, "================================\n");
+}
+
+QDebug operator<<(QDebug stream, const Selection& selection)
+{
+    stream << "Selection["
+        << selection.base()
+        << selection.extent()
+        << selection.start()
+        << selection.end()
+        << selection.affinity() << "]";
+    return stream;
 }
 
 } // namespace DOM

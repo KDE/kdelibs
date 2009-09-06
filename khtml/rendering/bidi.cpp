@@ -1826,6 +1826,8 @@ static inline bool requiresLineBox(BidiIterator& it)
         return false;
     if (it.obj->isInlineFlow())
         return (getBorderPaddingMargin(it.obj, it.endOfInline) != 0);
+    if (it.obj->isText() && !static_cast<RenderText*>(it.obj)->length())
+        return false;
     if (it.obj->style()->preserveWS() || it.obj->isBR())
         return true;
 

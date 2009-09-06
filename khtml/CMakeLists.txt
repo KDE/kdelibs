@@ -219,7 +219,6 @@ set(khtmlediting_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/editing/jsediting.cpp
   ${CMAKE_SOURCE_DIR}/khtml/editing/editing.cpp
   ${CMAKE_SOURCE_DIR}/khtml/editing/editor.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/editing/htmlediting.cpp
   ${CMAKE_SOURCE_DIR}/khtml/editing/htmlediting_impl.cpp
 )
 
@@ -344,6 +343,7 @@ set(khtmlrender_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/rendering/enumerate.cpp
   ${CMAKE_SOURCE_DIR}/khtml/rendering/counter_tree.cpp
   ${CMAKE_SOURCE_DIR}/khtml/rendering/render_canvasimage.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/render_position.cpp
 )
 
 # khtml/css/Makefile.am: khtmlcss

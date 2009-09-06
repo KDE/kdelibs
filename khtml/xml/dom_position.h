@@ -26,10 +26,18 @@
 #ifndef __dom_position_h__
 #define __dom_position_h__
 
+#include <QDebug>
+
 namespace DOM {
 
 class ElementImpl;
 class NodeImpl;
+
+NodeImpl *rootNavigableElement(NodeImpl *node);
+bool inSameRootNavigableElement(NodeImpl *n1, NodeImpl *n2);
+
+void printEnclosingBlockTree(NodeImpl *node);
+void printRootEditableTree(NodeImpl *node);
 
 class Position
 {
@@ -75,14 +83,12 @@ public:
     bool inLastEditableInRootEditableElement() const;
     bool inFirstEditableInContainingEditableBlock() const;
     bool inLastEditableInContainingEditableBlock() const;
-    
+
     Position &operator=(const Position &o);
-    
+
     friend bool operator==(const Position &a, const Position &b);
     friend bool operator!=(const Position &a, const Position &b);
-    
-    void debugPosition(const char *msg="") const;
-    
+
 private:
     NodeImpl *m_node;
     long m_offset;
@@ -97,6 +103,8 @@ inline bool operator!=(const Position &a, const Position &b)
 {
     return !(a == b);
 }
+
+QDebug operator<<(QDebug stream, const Position& position);
 
 } // namespace DOM
 

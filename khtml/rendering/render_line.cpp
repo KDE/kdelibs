@@ -342,6 +342,56 @@ InlineBox* InlineBox::closestLeafChildForXPos(int _x, int _tx)
     return box->closestLeafChildForXPos(_x, _tx);
 }
 
+#ifdef ENABLE_DUMP
+static QString getInlineBoxType(const InlineBox* box)
+{
+    if (box->isInlineTextBox())
+        return "Text";
+    if (box->isRootInlineBox())
+        return "RootBox";
+    if (box->isInlineFlowBox())
+        return "FlowBox";
+    if (box->isPlaceHolderBox())
+        return "PlaceHolderBox";
+    return "InlineBox";
+}
+
+QString InlineBox::information() const
+{
+    QString result;
+    QTextStream out(&result, QIODevice::WriteOnly);
+    out << getInlineBoxType(this) << "(" << (void*)this << ") "
+        << "Pos" << "(" << xPos() << "," << yPos() << ") "
+        << "Size" << "(" << width() << "," << height() << ") "
+        << "Overflow" << "(" << topOverflow() << "," << bottomOverflow() << ") "
+        << (object() ? object()->renderName() : "NoRenderObject") << "(" << (void*)object() << ") ";
+    if (isInlineTextBox()) {
+        const InlineTextBox* textBox = static_cast<const InlineTextBox*>(this);
+        out << "Text[" << textBox->renderText()->data().substring(textBox->start(), textBox->len()).string() << "]";
+    }
+    return result;
+}
+
+void InlineBox::printTree(int indent) const
+{
+    QString temp;
+    temp.fill(' ', indent);
+
+    kDebug() << (temp + information());
+    if (isRootInlineBox()) {
+        // const RootInlineBox* root = static_cast<const RootInlineBox*>(this);
+    }
+    if (isInlineTextBox()) {
+        //
+    }
+    if (isInlineFlowBox()) {
+        const InlineFlowBox* flowBox = static_cast<const InlineFlowBox*>(this);
+        for (InlineBox* box = flowBox->firstChild(); box; box = box->nextOnLine())
+            box->printTree(indent + 2);
+    }
+}
+#endif
+
 int InlineFlowBox::marginLeft() const
 {
     if (!includeLeftEdge())

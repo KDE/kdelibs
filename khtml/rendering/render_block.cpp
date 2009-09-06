@@ -39,10 +39,10 @@
 #include "render_table.h"
 #include "render_canvas.h"
 #include "render_layer.h"
+#include "rendering/render_position.h"
 
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
-#include <xml/dom_position.h>
 #include <xml/dom_selection.h>
 #include <html/html_formimpl.h>
 #include <misc/htmltags.h>
@@ -2760,40 +2760,39 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
                                               sty+o->startY + o->node->marginTop() - o->node->yPos(), HitTestAll ) ;
         }
     }
-
     inBox |= RenderFlow::nodeAtPoint(info, _x, _y, _tx, _ty, hitTestAction, inBox);
     return inBox;
 }
 
-Position RenderBlock::positionForBox(InlineBox *box, bool start) const
+RenderPosition RenderBlock::positionForBox(InlineBox *box, bool start) const
 {
     if (!box)
-        return Position();
+        return RenderPosition();
 
     if (!box->object()->element())
-        return Position(element(), start ? caretMinOffset() : caretMaxOffset());
+        return RenderPosition(element(), start ? caretMinOffset() : caretMaxOffset());
 
     if (!box->isInlineTextBox())
-        return Position(box->object()->element(), start ? box->object()->caretMinOffset() : box->object()->caretMaxOffset());
+        return RenderPosition(box->object()->element(), start ? box->object()->caretMinOffset() : box->object()->caretMaxOffset());
 
     InlineTextBox *textBox = static_cast<InlineTextBox *>(box);
-    return Position(box->object()->element(), start ? textBox->start() : textBox->start() + textBox->len());
+    return RenderPosition(box->object()->element(), start ? textBox->start() : textBox->start() + textBox->len());
 }
 
-Position RenderBlock::positionForRenderer(RenderObject *renderer, bool start) const
+RenderPosition RenderBlock::positionForRenderer(RenderObject *renderer, bool start) const
 {
     if (!renderer)
-        return Position(element(), 0);
+        return RenderPosition(element(), 0);
 
     NodeImpl *node = renderer->element() ? renderer->element() : element();
     if (!node)
-        return Position();
+        return RenderPosition();
 
     long offset = start ? node->caretMinOffset() : node->caretMaxOffset();
-    return Position(node, offset);
+    return RenderPosition(node, offset);
 }
 
-Position RenderBlock::positionForCoordinates(int _x, int _y)
+RenderPosition RenderBlock::positionForCoordinates(int _x, int _y)
 {
     if (isTable())
         return RenderFlow::positionForCoordinates(_x, _y);
@@ -2842,7 +2841,7 @@ Position RenderBlock::positionForCoordinates(int _x, int _y)
             // y coordinate is below last root line box
             return positionForBox(lastRootBox()->lastLeafChild(), false);
 
-        return Position(element(), 0);
+        return RenderPosition(element(), 0);
     }
 
     // see if any child blocks exist at this y coordinate
@@ -2867,7 +2866,7 @@ Position RenderBlock::positionForCoordinates(int _x, int _y)
         return firstChild()->positionForCoordinates(_x, _y);
 
     // still no luck...return this render object's element and offset 0
-    return Position(element(), 0);
+    return RenderPosition(element(), 0);
 }
 
 void RenderBlock::calcMinMaxWidth()

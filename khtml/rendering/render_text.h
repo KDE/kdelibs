@@ -42,10 +42,6 @@ class QFontMetrics;
 const int cNoTruncation = -1;
 const int cFullTruncation = -2;
 
-namespace DOM {
-    class Position;
-}
-
 namespace khtml
 {
     class RenderText;
@@ -180,7 +176,7 @@ public:
 
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inBox);
 
-    virtual DOM::Position positionForCoordinates(int _x, int _y);
+    virtual RenderPosition positionForCoordinates(int _x, int _y);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
@@ -280,7 +276,12 @@ public:
      */
     const InlineTextBox * findInlineTextBox( int offset, int &pos,
     					bool checkFirstLetter = false ) const;
-	
+
+    // helper methods to convert Position from rendered text into DOM position
+    // (takes into account space collapsing)
+    unsigned convertToDOMPosition(unsigned position) const;
+    unsigned convertToRenderedPosition(unsigned position) const;
+
 protected: // members
     InlineTextBox* m_firstTextBox;
     InlineTextBox* m_lastTextBox;

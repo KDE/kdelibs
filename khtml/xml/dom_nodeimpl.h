@@ -45,6 +45,7 @@ namespace khtml {
     class RenderStyle;
     class RenderObject;
     class RenderArena;
+    class RenderPosition;
 }
 
 namespace DOM {
@@ -55,7 +56,6 @@ class DocumentImpl;
 class ElementImpl;
 class RegisteredEventListener;
 class EventImpl;
-class Position;
 class Selection;
 
 struct RegisteredListenerList {
@@ -185,7 +185,7 @@ public:
     bool inSameRootEditableElement(NodeImpl *);
     bool inSameContainingBlockFlowElement(NodeImpl *);
 
-    Position positionForCoordinates(int x, int y) const;
+    khtml::RenderPosition positionForCoordinates(int x, int y) const;
     bool isPointInsideSelection(int x, int y, const Selection &) const;
 
     // used by the parser. Doesn't do as many error checkings as

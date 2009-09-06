@@ -21,8 +21,6 @@
  */
 #include "render_br.h"
 
-#include "xml/dom_position.h"
-
 using namespace khtml;
 using DOM::Position;
 
@@ -51,9 +49,9 @@ unsigned long RenderBR::caretMaxRenderedOffset() const
     return 1;
 }
 
-Position RenderBR::positionForCoordinates(int /*_x*/, int /*_y*/)
+RenderPosition RenderBR::positionForCoordinates(int /*_x*/, int /*_y*/)
 {
-    return Position(element(), 0);
+    return RenderPosition(element(), 0);
 }
 
 #if 0

@@ -34,6 +34,7 @@
 #include "rendering/render_generated.h"
 #include "rendering/render_inline.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_position.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom_position.h"
 #include "css/css_valueimpl.h"
@@ -690,11 +691,11 @@ void RenderContainer::removeSuperfluousAnonymousBlockChild( RenderObject* child 
     child->detach();
 }
 
-Position RenderContainer::positionForCoordinates(int _x, int _y)
+RenderPosition RenderContainer::positionForCoordinates(int _x, int _y)
 {
     // no children...return this render object's element, if there is one, and offset 0
     if (!firstChild())
-        return Position(element(), 0);
+        return RenderPosition(element(), 0);
   
     // look for the geometrically-closest child and pass off to that child
     int min = INT_MAX;

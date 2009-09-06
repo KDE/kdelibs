@@ -27,6 +27,8 @@
 
 #include <QObject>
 
+#include "wtf/PassRefPtr.h"
+
 class QKeyEvent;
 
 class KHTMLPart;
@@ -34,7 +36,7 @@ class KHTMLView;
 class KHTMLEditorPart;
 
 namespace khtml {
-  class EditCommand;
+  class EditCommandImpl;
   struct EditorContext;
 }
 
@@ -143,22 +145,22 @@ public:
   /**
    * Returns the most recent edit command applied.
    */
-  khtml::EditCommand lastEditCommand() const;
+  WTF::PassRefPtr<khtml::EditCommandImpl> lastEditCommand() const;
 
   /**
    * Called when editing has been applied.
    */
-  void appliedEditing(khtml::EditCommand &);
+  void appliedEditing(khtml::EditCommandImpl *);
 
   /**
    * Called when editing has been unapplied.
    */
-  void unappliedEditing(khtml::EditCommand &);
+  void unappliedEditing(khtml::EditCommandImpl *);
 
   /**
    * Called when editing has been reapplied.
    */
-  void reappliedEditing(khtml::EditCommand &);
+  void reappliedEditing(khtml::EditCommandImpl *);
 
   /**
    * Returns the typing style for the document.
@@ -174,6 +176,14 @@ public:
    * Clears the typing style for the document.
    */
   void clearTypingStyle();
+
+  void closeTyping();
+
+  /**
+   * indent/outdent current selection
+   */
+  void indent();
+  void outdent();
 
 private:
   /** Handles key events. Returns true if event has been handled. */

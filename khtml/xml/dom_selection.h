@@ -165,6 +165,8 @@ inline bool operator!=(const Selection &a, const Selection &b)
     return !(a == b);
 }
 
+QDebug operator<<(QDebug stream, const Selection& selection);
+
 } // namespace DOM
 
 #endif  // __dom_selection_h__

@@ -60,6 +60,11 @@ public:
     // Overridden to prevent the normal delete from being called.
     void operator delete(void* ptr, size_t sz);
 
+#ifdef ENABLE_DUMP
+    QString information() const;
+    void printTree(int indent = 0) const;
+#endif
+
 private:
     // The normal operator new is disallowed.
     void* operator new(size_t sz) throw();

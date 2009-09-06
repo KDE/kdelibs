@@ -660,7 +660,7 @@ unsigned DOMStringImpl::computeHash(const QChar* str, unsigned int length)
 
 DOMStringImpl* DOMStringImpl::empty()
 {
-    static DOMString e;
+    static DOMString e("");
     return e.implementation();
 }
 

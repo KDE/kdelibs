@@ -24,13 +24,8 @@
 
 #include "render_object.h"
 
-namespace DOM {
-    class Position;
-}
-
 namespace khtml
 {
-
 
 /**
  * Base class for rendering objects that can have children
@@ -62,7 +57,7 @@ public:
 
     virtual void setStyle(RenderStyle* _style);
 
-    virtual DOM::Position positionForCoordinates(int x, int y);
+    virtual RenderPosition positionForCoordinates(int x, int y);
 
 protected:
     // Generate CSS content

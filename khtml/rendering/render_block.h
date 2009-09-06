@@ -186,7 +186,7 @@ public:
 
     bool isPointInScrollbar(int x, int y, int tx, int ty);
 
-    virtual DOM::Position positionForCoordinates(int x, int y);
+    virtual RenderPosition positionForCoordinates(int x, int y);
 
     virtual void calcMinMaxWidth();
     void calcInlineMinMaxWidth();
@@ -196,8 +196,8 @@ public:
 
     virtual int getBaselineOfFirstLineBox();
 
-    RootInlineBox* firstRootBox() { return static_cast<RootInlineBox*>(m_firstLineBox); }
-    RootInlineBox* lastRootBox() { return static_cast<RootInlineBox*>(m_lastLineBox); }
+    RootInlineBox* firstRootBox() const { return static_cast<RootInlineBox*>(m_firstLineBox); }
+    RootInlineBox* lastRootBox() const { return static_cast<RootInlineBox*>(m_lastLineBox); }
 
     virtual InlineFlowBox* getFirstLineBox();
 
@@ -213,8 +213,8 @@ protected:
     void newLine();
 
 private:
-    DOM::Position positionForBox(InlineBox *box, bool start=true) const;
-    DOM::Position positionForRenderer(RenderObject *renderer, bool start=true) const;
+    RenderPosition positionForBox(InlineBox *box, bool start=true) const;
+    RenderPosition positionForRenderer(RenderObject *renderer, bool start=true) const;
 
 protected:
     struct FloatingObject {

@@ -42,6 +42,8 @@
 
 #define d this
 
+using khtml::RenderPosition;
+
 using namespace DOM;
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, KHTMLFind *parent ) :
@@ -583,7 +585,7 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
       {
         int dummy;
         static_cast<khtml::RenderText *>(node->renderer())
-          ->caretPos( sel.start().offset(), false, x, y, dummy, dummy ); // more precise than posOfChar
+          ->caretPos( RenderPosition::fromDOMPosition(sel.start()).renderedOffset(), false, x, y, dummy, dummy ); // more precise than posOfChar
         //kDebug(6050) << "topleft: " << x << "," << y;
         if ( x != -1 || y != -1 )
         {
@@ -627,7 +629,7 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
     {
       int x, y, height, dummy;
       static_cast<khtml::RenderText *>(sel.end().node()->renderer())
-          ->caretPos( sel.end().offset(), false, x, y, dummy, height ); // more precise than posOfChar
+          ->caretPos( RenderPosition::fromDOMPosition(sel.end()).renderedOffset(), false, x, y, dummy, height ); // more precise than posOfChar
       //kDebug(6050) << "bottomright: " << x << "," << y+height;
     }
   }

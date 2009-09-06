@@ -83,7 +83,6 @@
 #include <html/HTMLAudioElement.h>
 #include <html/HTMLVideoElement.h>
 #include <html/HTMLSourceElement.h>
-#include <editing/htmlediting.h>
 #include <editing/jsediting.h>
 
 // SVG (WebCore)
@@ -1580,7 +1579,9 @@ void DocumentImpl::updateSelection()
     else {
         RenderObject *startRenderer = s.start().node() ? s.start().node()->renderer() : 0;
         RenderObject *endRenderer = s.end().node() ? s.end().node()->renderer() : 0;
-        static_cast<RenderCanvas*>(m_render)->setSelection(startRenderer, s.start().offset(), endRenderer, s.end().offset());
+        RenderPosition renderedStart = RenderPosition::fromDOMPosition(s.start());
+        RenderPosition renderedEnd   = RenderPosition::fromDOMPosition(s.end());
+        static_cast<RenderCanvas*>(m_render)->setSelection(startRenderer, renderedStart.renderedOffset(), endRenderer, renderedEnd.renderedOffset());
     }
 }
 
@@ -2976,6 +2977,7 @@ JSEditor *DocumentImpl::jsEditor()
 
 bool DocumentImpl::execCommand(const DOMString &command, bool userInterface, const DOMString &value)
 {
+    kDebug() << "[execute command]" << command << userInterface << value << endl;
     return jsEditor()->execCommand(jsEditor()->commandImp(command), userInterface, value);
 }
 
@@ -2996,6 +2998,7 @@ bool DocumentImpl::queryCommandState(const DOMString &command)
 
 bool DocumentImpl::queryCommandSupported(const DOMString &command)
 {
+    kDebug() << "[query command supported]" << command << endl;
     return jsEditor()->queryCommandSupported(jsEditor()->commandImp(command));
 }
 
