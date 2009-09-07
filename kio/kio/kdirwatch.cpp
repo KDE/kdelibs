@@ -295,9 +295,7 @@ void KDirWatchPrivate::inotifyEventReceived()
             e->wd = 0;
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
-            Entry* sub_entry = 0;
-            Q_FOREACH(sub_entry, e->m_entries)
-              if (sub_entry->path == e->path + '/' + path) break;
+            Entry* sub_entry = e->findSubEntry(e->path + '/' + path);
 
             if (sub_entry /*&& sub_entry->isDir*/) {
               removeEntry(0, e, sub_entry);
@@ -1514,10 +1512,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           // check for creation of a directory we have to watch
         QString tpath(e->path + QLatin1Char('/') + fe->filename);
 
-        Entry* sub_entry = 0;
-        foreach(sub_entry, e->m_entries)
-          if (sub_entry->path == tpath) break;
-
+        Entry* sub_entry = e->findSubEntry(tpath);
         if (sub_entry && sub_entry->isDir) {
           removeEntry(0, e, sub_entry);
           sub_entry->m_status = Normal;
@@ -1625,8 +1620,8 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
     if (ev == Changed && e->isDir && e->m_entries.count()) {
       Entry* sub_entry = 0;
       Q_FOREACH(sub_entry, e->m_entries) {
-        if(e->isDir) {
-          if (QFileInfo(sub_entry->path).isDir())
+        if(e->isDir) { // ####### !?!? Already checked above
+          if (QFileInfo(sub_entry->path).isDir()) // ##### !? no comparison between sub_entry->path and path?
             break;
         } else {
           if (QFileInfo(sub_entry->path).isFile())
