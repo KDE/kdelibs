@@ -44,6 +44,7 @@ namespace KAuth {
 //Keep in mind that QAction also has documentation that we don't need to repeat here.
 /**
  * @short Class to encapsulate user-driven action or event
+ * @extends QAction
  *
  * The KAction class (and derived and super classes) extends QAction,
  * which provides a way to easily encapsulate a "real" user-selected
