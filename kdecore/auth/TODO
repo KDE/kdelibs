@@ -4,12 +4,3 @@ Todo list for libkauth:
   This is useful for debugging.
 - Check with others on k-c-d if it's needed to add strings with error descriptions.
 - Stop requests must be action-specific instead of global
-
-If the library gets included into kdelibs:
-
-kdelibs inclusion TODO list:
-- Add dummy backend
-- Switch code to kdelibs things like kDebug ecc..
-- Find a place for the example app
-- Improve the example app, using KAuthorizedAction and KAuthorizedButton.
-- Check the correctness of dbus installation paths
