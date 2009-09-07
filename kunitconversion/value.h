@@ -48,10 +48,16 @@ public:
 
     /**
      * Convert value to a string
-     *
-     * @return value as string
+     * @param fieldWidth width of the formatted field, padded by spaces.
+     *                   Positive value aligns right, negative aligns left
+     * @param format type of floating point formating, like in QString::arg
+     * @param precision number of digits after the decimal separator
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
+     * @return value as a string
      **/
-    QString toString() const;
+    QString toString(int fieldWidth = 0, char format = 'g', int precision = -1,
+                     const QChar& fillChar = QLatin1Char(' ')) const;
 
     /**
      * Number part of the value

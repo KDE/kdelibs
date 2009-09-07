@@ -88,10 +88,10 @@ bool Value::isValid() const
     return (d->unit && d->unit->isValid());
 }
 
-QString Value::toString() const
+QString Value::toString(int fieldWidth, char format, int precision, const QChar& fillChar) const
 {
     if (isValid()) {
-        return d->unit->toString(d->number);
+        return d->unit->toString(d->number, fieldWidth, format, precision, fillChar);
     }
     return QString();
 }

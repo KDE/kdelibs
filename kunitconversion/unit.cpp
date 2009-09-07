@@ -138,12 +138,13 @@ double Unit::fromDefault(double value) const
     }
 }
 
-QString Unit::toString(double value) const
+QString Unit::toString(double value, int fieldWidth, char format, int precision,
+                       const QChar& fillChar) const
 {
-    if ((int)value == value) {
+    if ((int)value == value && precision < 1) {
         return d->integer.subs((int)value).toString();
     }
-    return d->real.subs(value).toString();
+    return d->real.subs(value, fieldWidth, format, precision, fillChar).toString();
 }
 
 bool Unit::isValid() const
