@@ -60,7 +60,7 @@ public:
     QList<UnitCategory *> categories;
     ConverterPrivate()
     {
-        KGlobal::locale()->insertCatalog("libconversion");
+        KGlobal::locale()->insertCatalog("libkunitconversion");
 
         // the invalid category MUST be the first item
         categories.append(new InvalidCategory);
