@@ -20,9 +20,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
-if (POLKITQT_FOUND)
-   include_directories( ${POLKITQT_INCLUDE_DIR} )
-endif (POLKITQT_FOUND)
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
