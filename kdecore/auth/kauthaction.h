@@ -68,7 +68,7 @@ class ActionWatcher;
 class KDECORE_EXPORT Action
 {
     class Private;
-    Private *d;
+    Private * const d;
 
 public:
     /**
@@ -91,7 +91,7 @@ public:
      * you need to call setName() before you can use the object.
      */
     Action();
-    
+
     /** Copy constructor */
     Action(const Action &action);
 
@@ -100,7 +100,7 @@ public:
      * @param name The name of the new action
      */
     Action(const QString &name);
-    
+
     /**
      * This creates a new action object with this name and details
      * @param name The name of the new action
@@ -115,7 +115,7 @@ public:
 
     /// Assignment operator
     Action &operator=(const Action &action);
-    
+
     /**
      * @brief Comparison operator
      *
@@ -125,10 +125,10 @@ public:
      * if two actions are invalid they'll match as equal, even
      * if the invalid names are different.
      *
-     * @returns true if the two actions are the same or both invalid 
+     * @returns true if the two actions are the same or both invalid
      */
     bool operator==(const Action &action);
-    
+
     /**
     * @brief Negated comparison operator
     *
@@ -158,16 +158,16 @@ public:
      * there's no default constructor)
      */
     void setName(const QString &name);
-    
+
     /**
      * @brief Sets the action's details
-     * 
+     *
      * You can use this function to provide the user more details
      * (if the backend supports it) on the action being authorized in
      * the authorization dialog
      */
     void setDetails(const QString &details);
-    
+
     /**
      * @brief Gets the action's details
      *
@@ -186,7 +186,7 @@ public:
      * by dots. Dots can't appear at the beginning and at the end of
      * the name.
      *
-     * In other words, the action name has to match this perl-like 
+     * In other words, the action name has to match this perl-like
      * regular expression:
      * @verbatim
      * /^[a-z]+(\.[a-z]+)*$/
@@ -196,11 +196,11 @@ public:
      * valid syntax.
      *
      * Invalid actions cannot be authorized nor executed.
-     * The empty string is not a valid action name, so the default 
+     * The empty string is not a valid action name, so the default
      * constructor returns an invalid action.
      */
     bool isValid() const;
-    
+
     /**
      * @brief Gets the default helper ID used for actions execution
      *
@@ -244,7 +244,7 @@ public:
      * @param arguments The new arguments map
      */
     void setArguments(const QVariantMap &arguments);
-    
+
     /**
      * @brief Returns map object used to pass arguments to the helper.
      *
@@ -268,7 +268,7 @@ public:
     * @param value The value of the new entry
     */
     void addArgument(const QString &key, const QVariant &value);
-    
+
     /**
      * @brief Acquires authorization for an action without excuting it.
      *
@@ -331,7 +331,7 @@ public:
      *
      * The method checks for authorization before to execute the action. If the user is not authorized, the
      * return value will be ActionReply::AuthorizationDeniedReply.
-     * If the user cancels the authentication, the return value should be ActionReply::UserCancelledReply. 
+     * If the user cancels the authentication, the return value should be ActionReply::UserCancelledReply.
      * Due to policykit limitations, this currently only with the Mac OS X backend.
      *
      * If the helper is busy executing another action (or action group) the reply will be ActionReply::HelperBusyReply

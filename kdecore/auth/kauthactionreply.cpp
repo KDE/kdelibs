@@ -46,8 +46,8 @@ const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusErr
 
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)
+        : d(new Private())
 {
-    d = new Private;
     d->data = reply.d->data;
     d->errorCode = reply.d->errorCode;
     d->errorDescription = reply.d->errorDescription;
@@ -55,22 +55,22 @@ ActionReply::ActionReply(const ActionReply &reply)
 }
 
 ActionReply::ActionReply()
+        : d(new Private())
 {
-    d = new Private;
     d->errorCode = 0;
     d->type = Success;
 }
 
 ActionReply::ActionReply(ActionReply::Type type)
+        : d(new Private())
 {
-    d = new Private;
     d->errorCode = 0;
     d->type = type;
 }
 
 ActionReply::ActionReply(int error)
+        : d(new Private())
 {
-    d = new Private;
     d->errorCode = error;
     d->type = KAuthError;
 }

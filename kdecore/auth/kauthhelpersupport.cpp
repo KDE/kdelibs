@@ -30,9 +30,10 @@
 namespace KAuth
 {
 
-    namespace HelperSupport {
-        void helperDebugHandler(QtMsgType type, const char *msg);
-    }
+namespace HelperSupport
+{
+void helperDebugHandler(QtMsgType type, const char *msg);
+}
 
 static bool remote_dbg = false;
 

@@ -32,18 +32,18 @@ QList<Action> parse(QSettings &ini);
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-    
-    if(argc < 2) {
+
+    if (argc < 2) {
         qCritical("Too few arguments");
         return 1;
     }
-    
+
     QSettings ini(argv[1], QSettings::IniFormat);
     if (ini.status()) {
         qCritical("Error loading file: %s", argv[1]);
         return 1;
     }
-    
+
     output(parse(ini));
 }
 
@@ -54,62 +54,62 @@ QList<Action> parse(QSettings &ini)
     QRegExp descriptionExp("description(?:\\[(\\w+)\\])?");
     QRegExp nameExp("name(?:\\[(\\w+)\\])?");
     QRegExp policyExp("yes|no|auth_self|auth_admin");
-    
+
     descriptionExp.setCaseSensitivity(Qt::CaseInsensitive);
     nameExp.setCaseSensitivity(Qt::CaseInsensitive);
-    
+
     foreach(const QString &name, ini.childGroups()) {
         Action action;
-        
-        if(!actionExp.exactMatch(name)){
+
+        if (!actionExp.exactMatch(name)) {
             qCritical("Wrong action syntax: %s\n", name.toAscii().data());
             exit(1);
         }
-        
+
         action.name = name;
         ini.beginGroup(name);
-        
-        foreach(const QString &key, ini.childKeys()){
-            if(descriptionExp.exactMatch(key)) {
+
+        foreach(const QString &key, ini.childKeys()) {
+            if (descriptionExp.exactMatch(key)) {
                 QString lang = descriptionExp.capturedTexts().at(1);
-                
-                if(lang.isEmpty())
+
+                if (lang.isEmpty())
                     lang = "en";
-                
+
                 action.descriptions.insert(lang, ini.value(key).toString());
-                
-            }else if(nameExp.exactMatch(key)) {
+
+            } else if (nameExp.exactMatch(key)) {
                 QString lang = nameExp.capturedTexts().at(1);
-                
-                if(lang.isEmpty())
+
+                if (lang.isEmpty())
                     lang = "en";
-                
+
                 action.messages.insert(lang, ini.value(key).toString());
-                
-            }else if(key.toLower() == "policy") {
+
+            } else if (key.toLower() == "policy") {
                 QString policy = ini.value(key).toString();
-                if(!policyExp.exactMatch(policy)) {
+                if (!policyExp.exactMatch(policy)) {
                     qCritical("Wrong policy: %s", policy.toAscii().data());
                     exit(1);
                 }
                 action.policy = policy;
-                
-            }else if(key.toLower() == "persistence") {
+
+            } else if (key.toLower() == "persistence") {
                 QString persistence = ini.value(key).toString();
-                if(persistence != "session" && persistence != "always") {
+                if (persistence != "session" && persistence != "always") {
                     qCritical("Wrong persistence: %s", persistence.toAscii().data());
                     exit(1);
                 }
                 action.persistence = persistence;
             }
         }
-        
-        if(action.policy.isEmpty() || action.messages.isEmpty() || action.descriptions.isEmpty()) {
+
+        if (action.policy.isEmpty() || action.messages.isEmpty() || action.descriptions.isEmpty()) {
             qCritical("Missing option in action: %s", name.toAscii().data());
             exit(1);
         }
         ini.endGroup();
-        
+
         actions.append(action);
     }
 

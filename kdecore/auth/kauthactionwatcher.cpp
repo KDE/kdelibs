@@ -28,14 +28,24 @@ namespace KAuth
 class ActionWatcher::Private
 {
 public:
+    Private(ActionWatcher *parent) : q(parent) {}
+
+    ActionWatcher *q;
     QString action;
+
+    void actionStartedSlot(const QString &action);
+    void actionPerformedSlot(const QString &action, const ActionReply &reply);
+    void progressStepSlot(const QString &action, int i);
+    void progressStepSlot(const QString &action, const QVariantMap &data);
+    void statusChangedSlot(const QString &action, Action::AuthStatus status);
 };
 
 static QHash<QString, ActionWatcher *> s_watchers;
 
-ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
+ActionWatcher::ActionWatcher(const QString &action)
+        : QObject(0)
+        , d(new Private(this))
 {
-    d = new Private;
     d->action = action;
 
     HelperProxy *helper = BackendsManager::helperProxy();
@@ -44,8 +54,8 @@ ActionWatcher::ActionWatcher(const QString &action) : QObject(NULL)
     connect(helper, SIGNAL(actionPerformed(QString, ActionReply)), this, SLOT(actionPerformedSlot(QString, ActionReply)));
     connect(helper, SIGNAL(progressStep(QString, int)), this, SLOT(progressStepSlot(QString, int)));
     connect(helper, SIGNAL(progressStep(QString, QVariantMap)), this, SLOT(progressStepSlot(QString, QVariantMap)));
-    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString,Action::AuthStatus)),
-            this, SLOT(statusChangedSlot(QString,Action::AuthStatus)));
+    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString, Action::AuthStatus)),
+            this, SLOT(statusChangedSlot(QString, Action::AuthStatus)));
 }
 
 ActionWatcher::~ActionWatcher()
@@ -67,35 +77,41 @@ QString ActionWatcher::action() const
     return d->action;
 }
 
-void ActionWatcher::actionStartedSlot(const QString &action)
+void ActionWatcher::Private::actionStartedSlot(const QString &taction)
 {
-    if(d->action == action)
-        emit actionStarted();
+    if (taction == action) {
+        emit q->actionStarted();
+    }
 }
 
-void ActionWatcher::actionPerformedSlot(const QString &action, const ActionReply &reply)
+void ActionWatcher::Private::actionPerformedSlot(const QString &taction, const ActionReply &reply)
 {
-    if(d->action == action)
-        emit actionPerformed(reply);
+    if (taction == action) {
+        emit q->actionPerformed(reply);
+    }
 }
 
-void ActionWatcher::progressStepSlot(const QString &action, int i)
+void ActionWatcher::Private::progressStepSlot(const QString &taction, int i)
 {
-    if(d->action == action)
-        emit progressStep(i);
+    if (taction == action) {
+        emit q->progressStep(i);
+    }
 }
 
-void ActionWatcher::progressStepSlot(const QString &action, const QVariantMap &data)
+void ActionWatcher::Private::progressStepSlot(const QString &taction, const QVariantMap &data)
 {
-    if(d->action == action)
-        emit progressStep(data);
+    if (taction == action) {
+        emit q->progressStep(data);
+    }
 }
 
-void ActionWatcher::statusChangedSlot(const QString &action, Action::AuthStatus status)
+void ActionWatcher::Private::statusChangedSlot(const QString &taction, Action::AuthStatus status)
 {
-    if(d->action == action) {
-        emit statusChanged(status);
+    if (taction == action) {
+        emit q->statusChanged(status);
     }
 }
 
 } // namespace Auth
+
+#include "kauthactionwatcher.moc"

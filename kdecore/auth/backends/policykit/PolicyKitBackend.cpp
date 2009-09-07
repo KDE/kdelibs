@@ -33,7 +33,7 @@ PolicyKitBackend::PolicyKitBackend()
 }
 
 Action::AuthStatus PolicyKitBackend::authorizeAction(const QString &action)
-{    
+{
     switch (PolkitQt::Auth::computeAndObtainAuth(action)) {
     case PolkitQt::Auth::Yes:
         return Action::Authorized;
@@ -44,10 +44,10 @@ Action::AuthStatus PolicyKitBackend::authorizeAction(const QString &action)
 
 void PolicyKitBackend::setupAction(const QString &action)
 {
-    connect (PolkitQt::Context::instance(), SIGNAL(configChanged()),
-             this, SLOT(checkForResultChanged()));
-    connect (PolkitQt::Context::instance(), SIGNAL(consoleKitDBChanged()),
-             this, SLOT(checkForResultChanged()));
+    connect(PolkitQt::Context::instance(), SIGNAL(configChanged()),
+            this, SLOT(checkForResultChanged()));
+    connect(PolkitQt::Context::instance(), SIGNAL(consoleKitDBChanged()),
+            this, SLOT(checkForResultChanged()));
 
     m_cachedResults[action] = actionStatus(action);
 }
@@ -55,7 +55,7 @@ void PolicyKitBackend::setupAction(const QString &action)
 Action::AuthStatus PolicyKitBackend::actionStatus(const QString &action)
 {
     PolkitQt::Auth::Result r = PolkitQt::Auth::isCallerAuthorized(action, QCoreApplication::applicationPid(),
-                                                                  false);
+                               false);
     switch (r) {
     case PolkitQt::Auth::Yes:
         return Action::Authorized;
@@ -88,7 +88,7 @@ bool PolicyKitBackend::isCallerAuthorized(const QString &action, QByteArray call
 
 void PolicyKitBackend::checkForResultChanged()
 {
-    foreach (const QString &action, m_cachedResults.keys()) {
+    foreach(const QString &action, m_cachedResults.keys()) {
         if (m_cachedResults[action] != actionStatus(action)) {
             m_cachedResults[action] = actionStatus(action);
             emit actionStatusChanged(action, m_cachedResults[action]);

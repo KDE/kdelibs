@@ -52,18 +52,17 @@ class KDECORE_EXPORT ActionWatcher : public QObject
     Q_OBJECT
 
     class Private;
-    Private *d;
+    Private * const d;
 
     ActionWatcher();
     ActionWatcher(const QString &action);
 
-private slots:
-    void actionStartedSlot(const QString &action);
-    void actionPerformedSlot(const QString &action, const ActionReply &reply);
-    void progressStepSlot(const QString &action, int i);
-    void progressStepSlot(const QString &action, const QVariantMap &data);
-    void statusChangedSlot(const QString &action, Action::AuthStatus status);
-    
+    Q_PRIVATE_SLOT(d, void actionStartedSlot(const QString &action));
+    Q_PRIVATE_SLOT(d, void actionPerformedSlot(const QString &action, const ActionReply &reply));
+    Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, int i));
+    Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, const QVariantMap &data));
+    Q_PRIVATE_SLOT(d, void statusChangedSlot(const QString &action, Action::AuthStatus status));
+
 public:
     /**
      * @brief Factory method to get watchers

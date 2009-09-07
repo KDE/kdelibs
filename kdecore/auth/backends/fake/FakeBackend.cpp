@@ -31,7 +31,7 @@ FakeBackend::FakeBackend()
 }
 
 Action::AuthStatus FakeBackend::authorizeAction(const QString &action)
-{    
+{
     Q_UNUSED(action)
     return Action::Denied;
 }

@@ -35,21 +35,21 @@ void output(QList<Action> actions)
 
         err = AuthorizationRightGet(action.name.toAscii(), NULL);
 
-		if (err == errAuthorizationDenied) {
-			
-			QString rule;
-		
-			if (action.policy == "yes")
-				rule = kAuthorizationRuleClassAllow;
-			else if (action.policy == "no")
-				rule = kAuthorizationRuleClassDeny;
-			else if (action.policy == "auth_self")
-				rule = kAuthorizationRuleAuthenticateAsSessionUser;
-			else if (action.policy == "auth_admin")
-				rule = kAuthorizationRuleAuthenticateAsAdmin;
+        if (err == errAuthorizationDenied) {
 
-			CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
-			CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value("en").toAscii(), kCFStringEncodingASCII);
+            QString rule;
+
+            if (action.policy == "yes")
+                rule = kAuthorizationRuleClassAllow;
+            else if (action.policy == "no")
+                rule = kAuthorizationRuleClassDeny;
+            else if (action.policy == "auth_self")
+                rule = kAuthorizationRuleAuthenticateAsSessionUser;
+            else if (action.policy == "auth_admin")
+                rule = kAuthorizationRuleAuthenticateAsAdmin;
+
+            CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
+            CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value("en").toAscii(), kCFStringEncodingASCII);
 
             err = AuthorizationRightSet(auth, action.name.toAscii(), cfRule, cfPrompt, NULL, NULL);
             if (err != noErr) {

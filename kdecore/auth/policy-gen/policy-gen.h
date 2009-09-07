@@ -23,15 +23,14 @@
 #include <QString>
 #include <QMap>
 
-struct Action
-{
+struct Action {
     QString name;
     QString vendor;
     QString icon;
-    
+
     QMap<QString, QString> descriptions;
     QMap<QString, QString> messages;
-    
+
     QString policy;
     QString persistence;
 };

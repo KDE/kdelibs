@@ -33,7 +33,7 @@ class Action::Private
 {
 public:
     Private() : valid(false), async(false) {}
-    
+
     QString name;
     QString details;
     QString helperId;
@@ -44,30 +44,27 @@ public:
 
 // Constructors
 Action::Action()
+        : d(new Private())
 {
-    d = new Private();
 }
 
 Action::Action(const Action &action)
+        : d(new Private())
 {
-    d = new Private();
-    
     setName(action.d->name);
     d->args = action.d->args;
 }
 
 Action::Action(const QString &name)
+        : d(new Private())
 {
-    d = new Private();
-    
     setName(name);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
 Action::Action(const QString &name, const QString &details)
+        : d(new Private())
 {
-    d = new Private();
-    
     setName(name);
     setDetails(details);
     BackendsManager::authBackend()->setupAction(d->name);
@@ -106,7 +103,7 @@ QString Action::name() const
 void Action::setName(const QString &name)
 {
     QRegExp exp("[a-z]+(\\.[a-z]+)*");
-    
+
     d->name = name;
     d->valid = exp.exactMatch(name);
 }
@@ -160,17 +157,17 @@ void Action::setHelperID(const QString &id)
 // Authorizaton methods
 Action::AuthStatus Action::authorize() const
 {
-    if(!isValid())
+    if (!isValid())
         return Action::Invalid;
-    
+
     return BackendsManager::authBackend()->authorizeAction(d->name);
 }
 
 Action::AuthStatus Action::status() const
 {
-    if(!isValid())
+    if (!isValid())
         return Action::Invalid;
-    
+
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
@@ -207,17 +204,17 @@ void Action::setExecutesAsync(bool async)
 
 ActionReply Action::execute() const
 {
-    if(!isValid())
+    if (!isValid())
         return ActionReply::InvalidActionReply;
-    
+
     return execute(helperID());
 }
 
 ActionReply Action::execute(const QString &helperID) const
 {
     AuthStatus s = authorize();
-    
-    switch(s) {
+
+    switch (s) {
     case Denied:
         return ActionReply::AuthorizationDeniedReply;
     case Invalid:
@@ -231,7 +228,7 @@ ActionReply Action::execute(const QString &helperID) const
             }
 
             return executeActions(QList<Action>() << *this, NULL, helperID) ?
-                    ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
+                   ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
         } else {
             if (!helperID.isEmpty()) {
                 return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
