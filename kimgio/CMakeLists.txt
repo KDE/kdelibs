@@ -21,7 +21,7 @@ if(JASPER_FOUND)
     install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif(JASPER_FOUND)
-macro_log_feature(JASPER_FOUND "JasPer" "JasPer JPEG2000 Library" "http://www.ece.uvic.ca/~mdadams/jasper/" FALSE "" "Provides support for JPEG-2000 images.")
+macro_log_feature(JASPER_FOUND "JasPer" "JasPer JPEG2000 Library" "http://www.ece.uvic.ca/~mdadams/jasper" FALSE "" "Provides support for JPEG-2000 images.")
 
 ##################################
 
@@ -101,7 +101,7 @@ if(OPENEXR_FOUND)
 install(TARGETS kimg_exr  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 endif(OPENEXR_FOUND)
-macro_log_feature(OPENEXR_FOUND "OpenEXR" "OpenEXR Package" "http://www.openexr.com/" FALSE "" "High dynamic range image manipulation library.")
+macro_log_feature(OPENEXR_FOUND "OpenEXR" "A library for manipulating OpenEXR image files" "http://www.openexr.com" FALSE "" "Provides support for OpenEXR images.")
 
 
 ########### install files ###############
