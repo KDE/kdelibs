@@ -402,7 +402,7 @@ Currency::Currency()
       ki18ncp("amount in units (integer)", "%1 rand", "%1 rands")
     );
 
-    m_cache = KStandardDirs::locateLocal("data", "libconversion/currency.xml");
+    m_cache = KStandardDirs::locateLocal("data", "libkunitconversion/currency.xml");
     m_update = true;
 }
 
