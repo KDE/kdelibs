@@ -57,11 +57,11 @@ class KDECORE_EXPORT ActionWatcher : public QObject
     ActionWatcher();
     ActionWatcher(const QString &action);
 
-    Q_PRIVATE_SLOT(d, void actionStartedSlot(const QString &action));
-    Q_PRIVATE_SLOT(d, void actionPerformedSlot(const QString &action, const ActionReply &reply));
-    Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, int i));
-    Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, const QVariantMap &data));
-    Q_PRIVATE_SLOT(d, void statusChangedSlot(const QString &action, Action::AuthStatus status));
+    Q_PRIVATE_SLOT(d, void actionStartedSlot(const QString &action))
+    Q_PRIVATE_SLOT(d, void actionPerformedSlot(const QString &action, const ActionReply &reply))
+    Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, int i))
+    Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, const QVariantMap &data))
+    Q_PRIVATE_SLOT(d, void statusChangedSlot(const QString &action, Action::AuthStatus status))
 
 public:
     /**
