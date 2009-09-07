@@ -31,9 +31,9 @@ a função do item.</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Ajuda</guimenu>
-<guimenuitem>Relatar falha...</guimenuitem>
+<guimenuitem>Relatar erro...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Abre o diálogo para relatar falhas</action> onde 
+<listitem><para><action>Abre o diálogo para relatar erros</action> onde 
 você pode comunicar um erro ou <quote>sugerir</quote> uma funcionalidade.</para></listitem>
 </varlistentry>
 
