@@ -22,7 +22,6 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 if (POLKITQT_FOUND)
    include_directories( ${POLKITQT_INCLUDE_DIR} )
-   message(${POLKITQT_INCLUDE_DIR})
 endif (POLKITQT_FOUND)
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
@@ -366,7 +365,7 @@ elseif(WIN32)
        auth/backends/fake/kauth-policy-gen-polkit.cpp )
 endif()
 
-kde4_add_executable(kauth-policy-gen ${kauth_policy_gen_SRCS})
+kde4_add_executable(kauth-policy-gen NOGUI RUN_UNINSTALLED ${kauth_policy_gen_SRCS})
 
 
 set( KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY} )
@@ -378,7 +377,7 @@ endif (APPLE)
 target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
 
 
-install( TARGETS kauth-policy-gen DESTINATION ${LIBEXEC_INSTALL_DIR} COMPONENT Devel)
+install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 
 ########### next target ###############
 

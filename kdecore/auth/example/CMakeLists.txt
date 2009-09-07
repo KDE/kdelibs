@@ -13,9 +13,12 @@ target_link_libraries(kauth_example kdecore ${QT_QTGUI_LIBRARY} kdeui )
 
 # Auth example helper
 set(kauth_helper_srcs helper/helper.cpp)
+kde4_add_executable(kauth_helper ${kauth_helper_srcs})
+target_link_libraries(kauth_helper kdecore)
+install(TARGETS kauth_helper DESTINATION ${LIBEXEC_INSTALL_DIR})
 
-kde4_auth_add_helper(kauth_helper org.kde.auth.example root ${kauth_helper_srcs})
-kde4_auth_register_actions(org.kde.auth.example actions.actions)
+kde4_install_auth_helper_files(kauth_helper org.kde.auth.example root)
+kde4_install_auth_actions(org.kde.auth.example actions.actions)
 
 # miscellaneous
 set_target_properties(kauth_example PROPERTIES COMPILE_FLAGS "-Wall -ggdb")

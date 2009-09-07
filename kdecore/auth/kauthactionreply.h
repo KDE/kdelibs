@@ -148,13 +148,18 @@
  stay away from typos, because we don't have any way to detect them. The second parameter is the name of the helper's class.
  Your helper, if complex, can be composed of a lot of source files, but the important thing is to include this macro in one at least one of them.
  
- To build the helper, the MacroKAuth.cmake module provides a macro kde4_auth_add_helper(). Use it in your cmake file like this:
+ To build the helper, KDE macros provide a function named kde4_install_auth_helper_files(). Use it in your cmake file like this:
  
  @code
- kde4_auth_add_helper(<helper_target> <helper_id> <user> <sources>)
+ kde4_add_executable(<helper_target> your sources...)
+ target_link_libraries(<helper_target> your libraries...)
+ install(TARGETS <helper_target> DESTINATION ${LIBEXEC_INSTALL_DIR})
+
+ kde4_install_auth_helper_files(<helper_target> <helper_id> <user>)
  @endcode
  
- The first argument is the cmake target name for the helper executable, that will be create using the add_executable with the source files you provide as last argument. The second argument is the
+ The first argument is the cmake target name for the helper executable, which you have to build and install separately. Make sure to INSTALL THE HELPER IN ${LIBEXEC_INSTALL_DIR},
+ otherwise kde4_install_auth_helper_files will not work. The second argument is the
  helper id. Please be sure to don't misspell it, and to not quote it. The user parameter is the user that the helper has to be run as. It usually is root, but some actions could require less strict
  permissions, so you should use the right user where possible (for example the user apache if you have to mess with apache settings). Note that the target created by this macro already links to
  libkauth and QtCore
@@ -162,7 +167,7 @@
  @section kauth_actions Action registration
  To be able to authorize the actions, they have to be added to the policy database. To do this in a cross-platform way, we provide a cmake macro. It looks like:
  @code
- kde4_auth_register_actions(<helper_id> <actions definition file>)
+ kde4_install_auth_actions(<helper_id> <actions definition file>)
  @endcode
  
  The action definition file describes which actions are implemented by your code and which default security options they should have. It is a common text file in ini format, with one section for
