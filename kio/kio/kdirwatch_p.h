@@ -152,6 +152,14 @@ public:
     int clients();
     bool isValid() { return m_clients.count() || m_entries.count(); }
 
+    Entry* findSubEntry(const QString& path) const {
+        Q_FOREACH(Entry* sub_entry, m_entries) {
+            if (sub_entry->path == path)
+                return sub_entry;
+        }
+        return 0;
+    }
+
     bool dirty;
     void propagate_dirty();
 
