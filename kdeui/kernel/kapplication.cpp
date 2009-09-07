@@ -689,7 +689,7 @@ static void checkRestartVersion( QSessionManager& sm )
     int format;
     unsigned long nitems, after;
     unsigned char* data;
-    if( XGetWindowProperty( dpy, RootWindow( dpy, 0 ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
+    if( dpy != NULL && XGetWindowProperty( dpy, RootWindow( dpy, 0 ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
         0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
         if( type == XA_CARDINAL && format == 32 ) {
             int version = *( long* ) data;
@@ -700,6 +700,8 @@ static void checkRestartVersion( QSessionManager& sm )
         }
         XFree( data );
     }
+    if( getenv( "KDE_SESSION_VERSION" ) != NULL && atoi( getenv( "KDE_SESSION_VERSION" )) == KDE_VERSION_MAJOR )
+        return; // we run in our native session, no need to wrap
 #define NUM_TO_STRING2( num ) #num
 #define NUM_TO_STRING( num ) NUM_TO_STRING2( num )
     QString wrapper = KStandardDirs::findExe( "kde" NUM_TO_STRING( KDE_VERSION_MAJOR ) ); // "kde4", etc.
