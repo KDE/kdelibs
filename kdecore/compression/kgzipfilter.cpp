@@ -303,7 +303,14 @@ KGzipFilter::Result KGzipFilter::uncompress_noop()
 
 KGzipFilter::Result KGzipFilter::uncompress()
 {
+#ifndef NDEBUG
+    if (d->mode == 0)
+        kFatal() << "mode==0; KGzipFilter::init was not called!";
+    else if (d->mode == QIODevice::WriteOnly)
+        kFatal() << "uncompress called but the filter was opened for writing!";
     Q_ASSERT ( d->mode == QIODevice::ReadOnly );
+#endif
+
     if ( d->compressed )
     {
 #ifdef DEBUG_GZIP
