@@ -335,6 +335,10 @@ QString HalDevice::description() const
         return storageDescription();
     } else if (category=="volume") {
         return volumeDescription();
+    } else if (category=="net.80211") {
+        return QObject::tr("WLAN Interface");
+    } else if (category=="net.80203") {
+        return QObject::tr("Networking Interface");
     } else {
         return product();
     }
