@@ -44,7 +44,7 @@ void output(QList<Action> actions)
 
     out << header;
 
-    foreach(Action action, actions) {
+    foreach(const Action &action, actions) {
         out << dent << "<action id=\"" << action.name << "\" >\n";
 
         foreach(const QString& lang, action.descriptions.keys()) {

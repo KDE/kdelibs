@@ -20,9 +20,9 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include <QString>
-#include <QVariant>
-#include <QHash>
+#include <QtCore/QString>
+#include <QtCore/QVariant>
+#include <QtCore/QHash>
 
 #include <kdecore_export.h>
 

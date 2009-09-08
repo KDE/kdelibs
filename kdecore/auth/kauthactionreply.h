@@ -20,10 +20,10 @@
 #ifndef ACTION_REPLY_H
 #define ACTION_REPLY_H
 
-#include <QString>
-#include <QVariant>
-#include <QMap>
-#include <QDataStream>
+#include <QtCore/QString>
+#include <QtCore/QVariant>
+#include <QtCore/QMap>
+#include <QtCore/QDataStream>
 
 #include <kdecore_export.h>
 /**

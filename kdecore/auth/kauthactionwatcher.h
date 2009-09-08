@@ -20,8 +20,8 @@
 #ifndef ACTION_WATCHER_H
 #define ACTION_WATCHER_H
 
-#include <QObject>
-#include <QString>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include <kdecore_export.h>
 
@@ -89,7 +89,7 @@ public:
     /// Returns the action name associated with this watcher
     QString action() const;
 
-signals:
+Q_SIGNALS:
     /**
      * @brief Signal emitted when an action starts the execution
      *

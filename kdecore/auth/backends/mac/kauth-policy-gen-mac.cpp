@@ -31,7 +31,7 @@ void output(QList<Action> actions)
 
     OSStatus err;
 
-    foreach(Action action, actions) {
+    foreach(const Action &action, actions) {
 
         err = AuthorizationRightGet(action.name.toAscii(), NULL);
 
