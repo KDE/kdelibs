@@ -336,10 +336,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   m_initialPath.clear();
   m_currentPath.clear();
 
-  QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
-  int port = m_bUseProxy ? m_proxyURL.port() : m_port;
-
-  if (!ftpOpenControlConnection(host, port) )
+  if (!ftpOpenControlConnection() )
     return false;          // error emitted by ftpOpenControlConnection
   infoMessage( i18n("Connected to host %1", m_host) );
 
@@ -361,6 +358,13 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
  *
  * @return true on success.
  */
+bool Ftp::ftpOpenControlConnection()
+{
+  QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
+  int port = m_bUseProxy ? m_proxyURL.port() : m_port;
+  return ftpOpenControlConnection(host, port);
+}
+
 bool Ftp::ftpOpenControlConnection( const QString &host, int port )
 {
   // implicitly close, then try to open a new connection ...
@@ -442,6 +446,7 @@ bool Ftp::ftpLogin()
   info.url.setUser( user );
 
   QByteArray tempbuf;
+  QString lastServerResponse;
   int failedAuth = 0;
 
   do
@@ -459,7 +464,7 @@ bool Ftp::ftpLogin()
       {
         errorMsg = i18n("Message sent:\nLogin using username=%1 and "
                         "password=[hidden]\n\nServer replied:\n%2\n\n"
-                        , user, ftpResponse(0));
+                        , user, lastServerResponse);
       }
 
       if ( user != FTP_LOGIN )
@@ -506,7 +511,8 @@ bool Ftp::ftpLogin()
     // get back a "230" or "331".
     if ( !loggedIn && !needPass )
     {
-      kDebug(7102) << "Login failed: " << ftpResponse(0);
+      lastServerResponse = ftpResponse(0);
+      kDebug(7102) << "Login failed: " << lastServerResponse;
       ++failedAuth;
       continue;  // Well we failed, prompt the user please!!
     }
@@ -526,7 +532,16 @@ bool Ftp::ftpLogin()
         cacheAuthentication( info );
       failedAuth = -1;
     }
-
+    else
+    {
+        // some servers don't let you login anymore
+        // if you fail login once, so restart the connection here
+        lastServerResponse = ftpResponse(0);
+        if (!ftpOpenControlConnection())
+        {
+            return false;
+        }
+    }
   } while( ++failedAuth );
 
 

@@ -269,6 +269,7 @@ private:
    *
    * @return true on success.
    */
+  bool ftpOpenControlConnection();
   bool ftpOpenControlConnection( const QString & host, int port );
 
   /**
