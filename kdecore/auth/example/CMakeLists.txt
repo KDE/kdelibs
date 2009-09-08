@@ -1,5 +1,3 @@
-include (MacroKAuth)
-
 # Auth example application
 
 set( kauth_example_sources
