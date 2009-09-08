@@ -1,21 +1,28 @@
 [org.kde.auth.example.read]
 Name=Read action
-Name[it]=Azione di lettura
+Name[uk]=Дія з читання
 Description=Read action description
+Description[uk]=Опис дії з читання
 Policy=auth_admin
 Persistence=session
 
 [org.kde.auth.example.write]
 Name=Write action
+Name[uk]=Дія з запису
 Description=Write action description
+Description[uk]=Опис дії з запису
 Policy=auth_admin
 
 [org.kde.auth.example.longaction]
 Name=Long action
+Name[uk]=Віддалена дія
 Description=Long action description
+Description[uk]=Опис віддаленої дії
 Policy=auth_admin
 
 [org.kde.auth.example.kactionaction]
 Name=Action KAction
+Name[uk]=Дія KAction
 Description=Long action description
+Description[uk]=Опис віддаленої дії
 Policy=auth_admin
