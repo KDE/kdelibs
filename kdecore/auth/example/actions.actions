@@ -1,28 +1,68 @@
 [org.kde.auth.example.read]
 Name=Read action
+Name[nds]=Leesakschoon
+Name[pt]=Acção da leitura
+Name[pt_BR]=Ação de leitura
+Name[sv]=Läsåtgärd
 Name[uk]=Дія з читання
+Name[zh_TW]=讀取動作
 Description=Read action description
+Description[nds]=Beschrieven för Leesakschoon
+Description[pt]=Descrição da acção de leitura
+Description[pt_BR]=Descrição da ação de leitura
+Description[sv]=Beskrivning av läsåtgärd
 Description[uk]=Опис дії з читання
+Description[zh_TW]=讀取動作描述
 Policy=auth_admin
 Persistence=session
 
 [org.kde.auth.example.write]
 Name=Write action
+Name[nds]=Schrievakschoon
+Name[pt]=Acção de escrita
+Name[pt_BR]=Ação de gravação
+Name[sv]=Skrivåtgärd 
 Name[uk]=Дія з запису
+Name[zh_TW]=寫入動作
 Description=Write action description
+Description[nds]=Beschrieven för Schrievakschoon
+Description[pt]=Descrição da acção de escrita
+Description[pt_BR]=Descrição da ação de gravação
+Description[sv]=Beskrivning av skrivåtgärd
 Description[uk]=Опис дії з запису
+Description[zh_TW]=寫入動作描述
 Policy=auth_admin
 
 [org.kde.auth.example.longaction]
 Name=Long action
+Name[nds]=Langakschoon
+Name[pt]=Acção longa
+Name[pt_BR]=Ação longa
+Name[sv]=Lång åtgärd
 Name[uk]=Віддалена дія
+Name[zh_TW]=長動作
 Description=Long action description
+Description[nds]=Beschrieven för Langakschoon
+Description[pt]=Descrição da acção longa
+Description[pt_BR]=Descrição da ação longa
+Description[sv]=Beskrivning av lång åtgärd
 Description[uk]=Опис віддаленої дії
+Description[zh_TW]=長動作描述
 Policy=auth_admin
 
 [org.kde.auth.example.kactionaction]
 Name=Action KAction
+Name[nds]=Akschoon KAction
+Name[pt]=Acção do KAction
+Name[pt_BR]=Ação KAction
+Name[sv]=Åtgärd KAction
 Name[uk]=Дія KAction
+Name[zh_TW]=動作 KAction
 Description=Long action description
+Description[nds]=Beschrieven för Langakschoon
+Description[pt]=Descrição da acção longa
+Description[pt_BR]=Descrição da ação longa
+Description[sv]=Beskrivning av lång åtgärd
 Description[uk]=Опис віддаленої дії
+Description[zh_TW]=長動作描述
 Policy=auth_admin
