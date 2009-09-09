@@ -29,14 +29,13 @@ namespace Solid
     class Predicate::Private
     {
     public:
-        enum OperatorType { AtomType, AndType, OrType, IsType };
 
-        Private() : isValid(false), type(AtomType),
+        Private() : isValid(false), type(PropertyCheck),
                     compOperator(Predicate::Equals),
                     operand1(0), operand2(0) {}
 
         bool isValid;
-        OperatorType type;
+        Type type;
 
         DeviceInterface::Type ifaceType;
         QString property;
@@ -93,7 +92,7 @@ Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType)
     : d(new Private())
 {
     d->isValid = true;
-    d->type = Private::IsType;
+    d->type = InterfaceCheck;
     d->ifaceType = ifaceType;
 }
 
@@ -105,14 +104,14 @@ Solid::Predicate::Predicate(const QString &ifaceName)
     if (((int)ifaceType)!=-1)
     {
         d->isValid = true;
-        d->type = Private::IsType;
+        d->type = InterfaceCheck;
         d->ifaceType = ifaceType;
     }
 }
 
 Solid::Predicate::~Predicate()
 {
-    if (d->type!=Private::AtomType && d->type!=Private::IsType) {
+    if (d->type!=PropertyCheck && d->type!=InterfaceCheck) {
         delete d->operand1;
         delete d->operand2;
     }
@@ -125,7 +124,7 @@ Solid::Predicate &Solid::Predicate::operator=(const Predicate &other)
     d->isValid = other.d->isValid;
     d->type = other.d->type;
 
-    if (d->type!=Private::AtomType && d->type!=Private::IsType)
+    if (d->type!=PropertyCheck && d->type!=InterfaceCheck)
     {
         Predicate* operand1 = new Predicate(*(other.d->operand1));
         delete d->operand1;
@@ -150,7 +149,7 @@ Solid::Predicate Solid::Predicate::operator &(const Predicate &other)
     Predicate result;
 
     result.d->isValid = true;
-    result.d->type = Private::AndType;
+    result.d->type = Conjunction;
     result.d->operand1 = new Predicate(*this);
     result.d->operand2 = new Predicate(other);
 
@@ -168,7 +167,7 @@ Solid::Predicate Solid::Predicate::operator|(const Predicate &other)
     Predicate result;
 
     result.d->isValid = true;
-    result.d->type = Private::OrType;
+    result.d->type = Disjunction;
     result.d->operand1 = new Predicate(*this);
     result.d->operand2 = new Predicate(other);
 
@@ -192,13 +191,13 @@ bool Solid::Predicate::matches(const Device &device) const
 
     switch(d->type)
     {
-    case Private::OrType:
+    case Disjunction:
         return d->operand1->matches(device)
             || d->operand2->matches(device);
-    case Private::AndType:
+    case Conjunction:
         return d->operand1->matches(device)
             && d->operand2->matches(device);
-    case Private::AtomType:
+    case PropertyCheck:
     {
         const DeviceInterface *iface = device.asDeviceInterface(d->ifaceType);
 
@@ -233,7 +232,7 @@ bool Solid::Predicate::matches(const Device &device) const
         }
         break;
     }
-    case Private::IsType:
+    case InterfaceCheck:
         return device.isDeviceInterface(d->ifaceType);
     }
 
@@ -248,13 +247,13 @@ QSet<Solid::DeviceInterface::Type> Solid::Predicate::usedTypes() const
 
         switch(d->type)
         {
-        case Private::OrType:
-        case Private::AndType:
+        case Disjunction:
+        case Conjunction:
             res+= d->operand1->usedTypes();
             res+= d->operand2->usedTypes();
             break;
-        case Private::AtomType:
-        case Private::IsType:
+        case PropertyCheck:
+        case InterfaceCheck:
             res << d->ifaceType;
             break;
         }
@@ -269,10 +268,10 @@ QString Solid::Predicate::toString() const
 {
     if (!d->isValid) return "False";
 
-    if (d->type!=Private::AtomType && d->type!=Private::IsType)
+    if (d->type!=PropertyCheck && d->type!=InterfaceCheck)
     {
         QString op = " AND ";
-        if (d->type==Private::OrType) op = " OR ";
+        if (d->type==Disjunction) op = " OR ";
 
         return '['+d->operand1->toString()+op+d->operand2->toString()+']';
     }
@@ -282,7 +281,7 @@ QString Solid::Predicate::toString() const
 
         if (ifaceName.isEmpty()) ifaceName = "Unknown";
 
-        if (d->type==Private::IsType) {
+        if (d->type==InterfaceCheck) {
             return "IS "+ifaceName;
         }
 
@@ -334,6 +333,43 @@ QString Solid::Predicate::toString() const
     }
 }
 
+Solid::Predicate::Type Solid::Predicate::type()
+{
+    return d->type;
+}
 
+Solid::DeviceInterface::Type Solid::Predicate::interfaceType()
+{
+    return d->ifaceType;
+}
 
+QString Solid::Predicate::propertyName()
+{
+    return d->property;
+}
 
+QVariant Solid::Predicate::matchingValue()
+{
+    return d->value;
+}
+
+Solid::Predicate::ComparisonOperator Solid::Predicate::comparisonOperator()
+{
+    return d->compOperator;
+}
+
+Solid::Predicate Solid::Predicate::firstOperand()
+{
+    if( d->operand1 ) {
+        return *d->operand1;
+    }
+    return Predicate();
+}
+
+Solid::Predicate Solid::Predicate::secondOperand()
+{
+    if( d->operand2 ) {
+        return *d->operand2;
+    }
+    return Predicate();
+}

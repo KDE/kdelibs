@@ -53,6 +53,16 @@ namespace Solid
         enum ComparisonOperator { Equals, Mask };
 
         /**
+         * The predicate type which controls how the predicate is handled
+         *
+         * - PropertyCheck, the predicate contains a comparison that needs to be matched using a ComparisonOperator
+         * - Conjunction, the two contained predicates need to be true for this predicate to be true
+         * - Disjunction, either of the two contained predicates may be true for this predicate to be true
+         * - InterfaceCheck, the device type is compared
+         */
+        enum Type { PropertyCheck, Conjunction, Disjunction, InterfaceCheck };
+
+        /**
          * Constructs an invalid predicate.
          */
         Predicate();
@@ -190,6 +200,68 @@ namespace Solid
          * correct, Predicate() otherwise
          */
         static Predicate fromString(const QString &predicate);
+
+        /**
+        * Retrieves the predicate type, used to determine how to handle the predicate
+        *
+        * @since 4.4
+        * @return the predicate type
+        */
+        Type type();
+
+        /**
+         * Retrieves the interface type.
+         *
+         * @note This is only valid for InterfaceCheck and PropertyCheck types
+         * @since 4.4
+         * @return a device interface type used by the predicate
+         */
+        DeviceInterface::Type interfaceType();
+
+        /**
+         * Retrieves the property name used when retrieving the value to compare against
+         *
+         * @note This is only valid for the PropertyCheck type
+         * @since 4.4
+         * @return a property name
+         */
+        QString propertyName();
+
+        /**
+         * Retrieves the value used when comparing a devices property to see if it matches the predicate
+         *
+         * @note This is only valid for the PropertyCheck type
+         * @since 4.4
+         * @return the value used
+         */
+        QVariant matchingValue();
+
+        /**
+         * Retrieves the comparison operator used to compare a property's value
+         *
+         * @since 4.4
+         * @note This is only valid for Conjunction and Disjunction types
+         * @return the comparison operator used
+         */
+        ComparisonOperator comparisonOperator();
+
+        /**
+         * A smaller, inner predicate which is the first to appear and is compared with the second one
+         *
+         * @since 4.4
+         * @note This is only valid for Conjunction and Disjunction types
+         * @return The predicate used for the first operand
+         */
+        Predicate firstOperand();
+
+        /**
+         * A smaller, inner predicate which is the second to appear and is compared with the first one
+         *
+         * @since 4.4
+         * @note This is only valid for Conjunction and Disjunction types
+         * @return The predicate used for the second operand
+         */
+        Predicate secondOperand();
 
     private:
         class Private;
