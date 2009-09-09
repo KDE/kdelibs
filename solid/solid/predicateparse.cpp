@@ -31,10 +31,13 @@ void PredicateParse_mainParse(const char *_code);
 #include <QtCore/QStringList>
 
 static Solid::Predicate *s_result = 0;
+static const char* s_predicate = 0;
 
 Solid::Predicate Solid::Predicate::fromString(const QString &predicate)
 {
-    PredicateParse_mainParse(predicate.toAscii());
+    const QByteArray predicateData = predicate.toAscii();
+    s_predicate = predicateData.constData();
+    PredicateParse_mainParse(predicateData);
 
     if (s_result == 0)
     {
@@ -55,8 +58,9 @@ void PredicateParse_setResult(void *result)
     s_result = (Solid::Predicate *) result;
 }
 
-void PredicateParse_errorDetected()
+void PredicateParse_errorDetected(const char* s)
 {
+    qWarning("ERROR from solid predicate parser: %s", s);
     s_result = 0;
 }
 
@@ -209,4 +213,9 @@ void *PredicateParse_appendStringListValue(char *name, void *list)
     free(name);
 
     return new QVariant(new_list);
+}
+
+void PredicateLexer_unknownToken(const char* text)
+{
+    qWarning("ERROR from solid predicate parser: unrecognized token '%s' in predicate '%s'\n", text, s_predicate);
 }

@@ -1,5 +1,6 @@
 %{
 #include "predicate_parser.h"
+#include "predicateparse.h"
 #include <string.h>
 #include <stdlib.h>
 #define YY_NO_UNPUT
@@ -38,7 +39,7 @@ DIGIT [0-9]
 
 [ \t\n]+ /* eat up whitespace */
 
-. { printf( "Unrecognized character: %s\n", Solidtext ); }
+. { PredicateLexer_unknownToken(Solidtext); }
 
 %%
 

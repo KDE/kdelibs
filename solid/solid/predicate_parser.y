@@ -76,8 +76,7 @@ string_list_rec: /* empty */ { $$ = PredicateParse_newEmptyStringListValue(); }
 
 void Soliderror ( const char *s )  /* Called by Solidparse on error */
 {
-    printf ("ERROR: %s\n", s);
-    PredicateParse_errorDetected();
+    PredicateParse_errorDetected(s);
 }
 
 void PredicateParse_mainParse( const char *_code )

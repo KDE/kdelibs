@@ -73,7 +73,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -103,6 +102,8 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+
+#endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
@@ -160,7 +161,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -496,6 +505,7 @@ char *Solidtext;
 #line 1 "predicate_lexer.l"
 #line 2 "predicate_lexer.l"
 #include "predicate_parser.h"
+#include "predicateparse.h"
 #include <string.h>
 #include <stdlib.h>
 #define YY_NO_UNPUT
@@ -505,7 +515,7 @@ void PredicateParse_initLexer( const char *_code );
 char *PredicateParse_putSymbol( char *_name );
 char *PredicateParse_putString( char *_str );
 
-#line 509 "predicate_lexer.c"
+#line 519 "predicate_lexer.c"
 
 #define INITIAL 0
 
@@ -586,7 +596,12 @@ static int input (void );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -594,7 +609,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( Solidtext, Solidleng, 1, Solidout )
+#define ECHO do { if (fwrite( Solidtext, Solidleng, 1, Solidout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -605,7 +620,7 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		int n; \
+		size_t n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( Solidin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -687,10 +702,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 16 "predicate_lexer.l"
+#line 17 "predicate_lexer.l"
 
 
-#line 694 "predicate_lexer.c"
+#line 709 "predicate_lexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -775,87 +790,87 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 18 "predicate_lexer.l"
+#line 19 "predicate_lexer.l"
 { return EQ; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 19 "predicate_lexer.l"
+#line 20 "predicate_lexer.l"
 { return MASK; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "predicate_lexer.l"
+#line 22 "predicate_lexer.l"
 { return AND; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 22 "predicate_lexer.l"
+#line 23 "predicate_lexer.l"
 { return OR; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 23 "predicate_lexer.l"
+#line 24 "predicate_lexer.l"
 { return IS; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 25 "predicate_lexer.l"
+#line 26 "predicate_lexer.l"
 { Solidlval.valb = 1; return VAL_BOOL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 26 "predicate_lexer.l"
+#line 27 "predicate_lexer.l"
 { Solidlval.valb = 0; return VAL_BOOL; }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 28 "predicate_lexer.l"
+#line 29 "predicate_lexer.l"
 { Solidlval.name = PredicateParse_putString( Solidtext ); return VAL_STRING; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 30 "predicate_lexer.l"
+#line 31 "predicate_lexer.l"
 { Solidlval.vali = atoi( Solidtext ); return VAL_NUM; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 31 "predicate_lexer.l"
+#line 32 "predicate_lexer.l"
 { Solidlval.vali = atoi( Solidtext ); return VAL_NUM; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 33 "predicate_lexer.l"
+#line 34 "predicate_lexer.l"
 { Solidlval.vald = atof( Solidtext ); return VAL_FLOAT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 35 "predicate_lexer.l"
+#line 36 "predicate_lexer.l"
 { Solidlval.name = PredicateParse_putSymbol( Solidtext ); return VAL_ID; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 37 "predicate_lexer.l"
+#line 38 "predicate_lexer.l"
 { Solidlval.name = 0; return (int)(*Solidtext); }
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 39 "predicate_lexer.l"
+#line 40 "predicate_lexer.l"
 /* eat up whitespace */
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 41 "predicate_lexer.l"
-{ printf( "Unrecognized character: %s\n", Solidtext ); }
+#line 42 "predicate_lexer.l"
+{ PredicateLexer_unknownToken(Solidtext); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 43 "predicate_lexer.l"
+#line 44 "predicate_lexer.l"
 ECHO;
 	YY_BREAK
-#line 859 "predicate_lexer.c"
+#line 874 "predicate_lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1613,8 +1628,8 @@ YY_BUFFER_STATE Solid_scan_string (yyconst char * yystr )
 
 /** Setup the input buffer state to scan the given bytes. The next call to Solidlex() will
  * scan from a @e copy of @a bytes.
- * @param bytes the byte buffer to scan
- * @param len the number of bytes in the buffer pointed to by @a bytes.
+ * @param yybytes the byte buffer to scan
+ * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
@@ -1853,7 +1868,7 @@ void Solidfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 43 "predicate_lexer.l"
+#line 44 "predicate_lexer.l"
 
 
 
