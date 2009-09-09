@@ -446,9 +446,9 @@ public:
      * image 10.jpg
      * image 11.jpg
      * If false is returned, the strings are sorted by their unicode values:
+     * image 1.jpg
      * image 10.jpg
      * image 11.jpg
-     * image 1.jpg
      * image 2.jpg
      *
      * @since 4.4
