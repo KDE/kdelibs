@@ -79,11 +79,10 @@ bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
     }
 
     if (loop.authInfo().isModified()) {
+        kDebug(7019) << "username=" << info.username << "password=[hidden]";
         info = loop.authInfo();
         return true;
     }
-
-    kDebug(7019) << "username=" << info.username << "password=[hidden]";
 
     return false;
 }
@@ -150,9 +149,7 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
         return -1;
     }
 
-    if (loop.authInfo().isModified()) {
-        info = loop.authInfo();
-    }
+    info = loop.authInfo();
 
     kDebug(7019) << "username=" << info.username << "password=[hidden]";
 
