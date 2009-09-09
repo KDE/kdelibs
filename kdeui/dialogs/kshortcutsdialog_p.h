@@ -52,7 +52,8 @@ enum ColumnDesignation {
     GlobalPrimary,
     GlobalAlternate,
     RockerGesture,
-    ShapeGesture
+    ShapeGesture,
+    Id
 };
 
 
@@ -315,6 +316,9 @@ private:
 
     //! The localized action name
     QString m_actionNameInTable;
+
+    //! The action id. Needed for exporting and importing
+    QString m_id;
 
 };
 

@@ -432,7 +432,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
     }
 
     item->setKeySequence(column, capture);
-    q->keyChange();
+     q->keyChange();
     //force view update
     item->setText(column, capture.toString(QKeySequence::NativeText));
 }
@@ -536,7 +536,7 @@ void KShortcutsEditorPrivate::importConfiguration(KConfigBase *config)
 
             KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
 
-            QString actionName = item->data(Name).toString();
+            QString actionName = item->data(Id).toString();
             KShortcut sc(globalShortcutsGroup.readEntry(actionName, QString()));
             changeKeyShortcut(item, GlobalPrimary, sc.primary());
         }

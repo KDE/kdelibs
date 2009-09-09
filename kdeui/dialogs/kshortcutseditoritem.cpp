@@ -41,10 +41,11 @@ KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *act
     , m_oldRockerGesture(0)
 {
     // Filtering message requested by translators (scripting).
+    m_id = m_action->objectName();
     m_actionNameInTable = i18nc("@item:intable Action name in shortcuts configuration", "%1", KGlobal::locale()->removeAcceleratorMarker(m_action->text()));
     if (m_actionNameInTable.isEmpty()) {
         kWarning() << "Action without text!" << m_action->objectName();
-        m_actionNameInTable = m_action->objectName();
+        m_actionNameInTable = m_id;
     }
 }
 
@@ -71,6 +72,8 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
         switch(column) {
         case Name:
             return m_actionNameInTable;
+        case Id:
+            return m_id;
         case LocalPrimary:
         case LocalAlternate:
         case GlobalPrimary:
