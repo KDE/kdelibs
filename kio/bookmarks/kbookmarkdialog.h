@@ -36,9 +36,9 @@ class QGridLayout;
  * This class provides a Dialog for editing properties, adding Bookmarks and creating new folders.
  * It can be used to show dialogs for common tasks with bookmarks.
  *
- * It is used by KBookmarkMenu to show a dialog for "Properties", "Add Bookmark" and "Create New Folder"
- * If you want to customize those dialogs, derive from KBookmarkOwner and reimplement bookmarkDialog()
- * Return a KBookmarkDialog subclass and reimplement initLayout(), aboutToShow() and save()
+ * It is used by KBookmarkMenu to show a dialog for "Properties", "Add Bookmark" and "Create New Folder".
+ * If you want to customize those dialogs, derive from KBookmarkOwner and reimplement bookmarkDialog(),
+ * return a KBookmarkDialog subclass and reimplement initLayout(), aboutToShow() and save().
 **/
 
 class KIO_EXPORT KBookmarkDialog : public KDialog
