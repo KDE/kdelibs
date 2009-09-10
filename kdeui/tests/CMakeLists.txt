@@ -160,5 +160,13 @@ set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
 kde4_add_executable(kplottest TEST ${kplottest_SRCS})
 target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})
 
+## kcolorutilsdemo
+
+SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp ../colors/kcolorspaces.cpp)
+kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
+kde4_add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
+target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES})
+
+
 add_subdirectory(proxymodeltestapp)
 
