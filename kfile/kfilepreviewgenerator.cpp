@@ -998,6 +998,10 @@ void KFilePreviewGenerator::Private::killPreviewJobs()
     }
     m_previewJobs.clear();
     m_sequenceIndices.clear();
+    
+    m_iconUpdateTimer->stop();
+    m_scrollAreaTimer->stop();
+    m_changedItemsTimer->stop();
 }
 
 void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
