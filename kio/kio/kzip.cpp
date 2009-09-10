@@ -17,26 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-/*
-	This class implements a kioslave to access ZIP files from KDE.
-    you can use it in QIODevice::ReadOnly or in QIODevice::WriteOnly mode, and it
-    behaves just as expected (i hope ;-) ).
-    It can also be used in QIODevice::ReadWrite mode, in this case one can
-    append files to an existing zip archive. when you append new files, which
-    are not yet in the zip, it works as expected, they are appended at the end.
-    when you append a file, which is already in the file, the reference to the
-    old file is dropped and the new one is added to the zip. but the
-    old data from the file itself is not deleted, it is still in the
-    zipfile. so when you want to have a small and garbagefree zipfile,
-    just read the contents of the appended zipfile and write it to a new one
-    in QIODevice::WriteOnly mode. especially take care of this, when you don't want
-    to leak information of how intermediate versions of files in the zip
-    were looking.
-    For more information on the zip fileformat go to
-    http://www.pkware.com/support/appnote.html .
-
-*/
-
 #include "kzip.h"
 #include "kfilterdev.h"
 #include "klimitediodevice.h"

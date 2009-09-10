@@ -22,7 +22,8 @@
 
 class KZipFileEntry;
 /**
- *   This class implements a kioslave to access zip files from KDE.
+ *   A class for reading / writing zip archives.
+ *
  *   You can use it in QIODevice::ReadOnly or in QIODevice::WriteOnly mode, and it
  *   behaves just as expected.
  *   It can also be used in QIODevice::ReadWrite mode, in this case one can
@@ -31,14 +32,14 @@ class KZipFileEntry;
  *   When you append a file, which is already in the file, the reference to the
  *   old file is dropped and the new one is added to the zip - but the
  *   old data from the file itself is not deleted, it is still in the
- *   zipfile. so when you want to have a small and garbage-free zipfile,
+ *   zipfile. So when you want to have a small and garbage-free zipfile,
  *   just read the contents of the appended zip file and write it to a new one
  *   in QIODevice::WriteOnly mode. This is especially important when you don't want
  *   to leak information of how intermediate versions of files in the zip
  *   were looking.
+ *
  *   For more information on the zip fileformat go to
  *   http://www.pkware.com/products/enterprise/white_papers/appnote.html
- * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
  */
 class KIO_EXPORT KZip : public KArchive
