@@ -81,7 +81,8 @@ namespace KIO {
          * @param packedArgs the arguments
          */
         SimpleJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs)
-            : m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command)
+            : m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command),
+              m_checkOnHold(false)
         {
             if (m_url.hasSubUrl())
             {
@@ -98,6 +99,11 @@ namespace KIO {
         KUrl m_url;
         KUrl m_subUrl;
         int m_command;
+
+        // for use in KIO::Scheduler
+        QString m_protocol;
+        QString m_proxy;
+        bool m_checkOnHold;
 
         void simpleJobInit();
 

@@ -66,7 +66,6 @@ typedef QMap<Slave *, QList<SimpleJob *> * > CoSlaveMap;
 class KIO::SchedulerPrivate
 {
 public:
-    class JobData;
     class ProtocolInfo;
     class ProtocolInfoDict : public QHash<QString, ProtocolInfo*>
     {
@@ -76,7 +75,6 @@ public:
         ProtocolInfo *get(const QString &protocol);
     };
 
-    typedef QHash<KIO::SimpleJob*, JobData> ExtraJobData;
     typedef QList<SimpleJob *> JobList;
 
     SchedulerPrivate() :
@@ -116,7 +114,6 @@ public:
     JobList newJobs;
 
     CoSlaveMap coSlaves;
-    ExtraJobData extraJobData;
     SlaveConfig *slaveConfig;
     SessionData *sessionData;
     bool checkOnHold;
@@ -211,33 +208,6 @@ Scheduler* Scheduler::self()
 {
     return schedulerPrivate->q;
 }
-
-
-//
-// There are two kinds of protocol:
-// (1) The protocol of the url
-// (2) The actual protocol that the io-slave uses.
-//
-// These two often match, but not necessarily. Most notably, they don't
-// match when doing ftp via a proxy.
-// In that case (1) is ftp, but (2) is http.
-//
-// JobData::protocol stores (2) while Job::url().protocol() returns (1).
-// The ProtocolInfoDict is indexed with (2).
-//
-// We schedule slaves based on (2) but tell the slave about (1) via
-// Slave::setProtocol().
-
-class KIO::SchedulerPrivate::JobData
-{
-public:
-    JobData() : checkOnHold(false) { }
-
-public:
-    QString protocol;
-    QString proxy;
-    bool checkOnHold;
-};
 
 
 Scheduler::Scheduler()
@@ -382,16 +352,16 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
     }
 }
 
-void SchedulerPrivate::doJob(SimpleJob *job) {
-    JobData jobData;
-    jobData.protocol = KProtocolManager::slaveProtocol(job->url(), jobData.proxy);
-//    kDebug(7006) << "protocol=" << jobData->protocol;
+void SchedulerPrivate::doJob(SimpleJob *job)
+{
+    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+    jobPriv->m_protocol = KProtocolManager::slaveProtocol(job->url(), jobPriv->m_proxy);
+//    kDebug(7006) << "protocol=" << jobP->m_protocol;
     if (jobCommand(job) == CMD_GET)
     {
-       jobData.checkOnHold = checkOnHold;
+       jobPriv->m_checkOnHold = checkOnHold;
        checkOnHold = false;
     }
-    extraJobData.insert(job, jobData);
     newJobs.append(job);
     slaveTimer.start(0);
 #ifndef NDEBUG
@@ -400,11 +370,10 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
 #endif
 }
 
-void SchedulerPrivate::scheduleJob(SimpleJob *job) {
+void SchedulerPrivate::scheduleJob(SimpleJob *job)
+{
     newJobs.removeOne(job);
-    const JobData& jobData = extraJobData.value(job);
-
-    QString protocol = jobData.protocol;
+    QString protocol = SimpleJobPrivate::get(job)->m_protocol;
 //    kDebug(7006) << "protocol=" << protocol;
     ProtocolInfo *protInfo = protInfoDict.get(protocol);
     protInfo->joblist.append(job);
@@ -418,9 +387,8 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
     if ( !slave  )
     {
         // was not yet running (don't call this on a finished job!)
-        JobData jobData = extraJobData.value(job);
         newJobs.removeAll(job);
-        ProtocolInfo *protInfo = protInfoDict.get(jobData.protocol);
+        ProtocolInfo *protInfo = protInfoDict.get(SimpleJobPrivate::get(job)->m_protocol);
         protInfo->joblist.removeAll(job);
 
         // Search all slaves to see if job is in the queue of a coSlave
@@ -436,7 +404,6 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
         }
         if (!slave)
         {
-           extraJobData.remove(job);
            return; // Job was not yet running and not in a coSlave queue.
         }
     }
@@ -583,8 +550,8 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
 //        kDebug(7006) << "scheduler: job started " << job;
 
 
-    SchedulerPrivate::JobData jobData = extraJobData.value(job);
-    setupSlave(slave, job->url(), jobData.protocol, jobData.proxy, newSlave);
+    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+    setupSlave(slave, job->url(), jobPriv->m_protocol, jobPriv->m_proxy, newSlave);
     startJob(job, slave);
 
     slaveTimer.start(0);
@@ -595,9 +562,9 @@ bool SchedulerPrivate::startJobDirect()
 {
     debug_info();
     SimpleJob *job = newJobs.takeFirst();
-    SchedulerPrivate::JobData jobData = extraJobData.value(job);
+    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
-    QString protocol = jobData.protocol;
+    QString protocol = jobPriv->m_protocol;
     ProtocolInfo *protInfo = protInfoDict.get(protocol);
 
     bool newSlave = false;
@@ -619,7 +586,7 @@ bool SchedulerPrivate::startJobDirect()
     protInfo->idleSlaves.removeAll(slave);
 //       kDebug(7006) << "scheduler: job started " << job;
 
-    setupSlave(slave, job->url(), protocol, jobData.proxy, newSlave);
+    setupSlave(slave, job->url(), protocol, jobPriv->m_proxy, newSlave);
     startJob(job, slave);
     return true;
 }
@@ -655,11 +622,11 @@ static Slave *searchIdleList(SlaveList &idleSlaves, const KUrl &url, const QStri
 Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact)
 {
     Slave *slave = 0;
-    JobData jobData = extraJobData.value(job);
+    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
-    if (jobData.checkOnHold)
+    if (jobPriv->m_checkOnHold)
     {
-       slave = Slave::holdSlave(jobData.protocol, job->url());
+       slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
        if (slave)
           return slave;
     }
@@ -699,7 +666,7 @@ Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, b
           return slave;
     }
 
-    return searchIdleList(protInfo->idleSlaves, job->url(), jobData.protocol, exact);
+    return searchIdleList(protInfo->idleSlaves, job->url(), jobPriv->m_protocol, exact);
 }
 
 Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url)
@@ -721,7 +688,6 @@ Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job, con
       if (job)
       {
          protInfo->joblist.removeAll(job);
-         extraJobData.remove(job);
          job->slotError( error, errortext );
       }
    }
@@ -734,9 +700,9 @@ void SchedulerPrivate::slotSlaveStatus(pid_t, const QByteArray&, const QString &
 
 void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 {
-    JobData jobData = extraJobData.take(job);
+    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
-    ProtocolInfo *protInfo = protInfoDict.get(jobData.protocol);
+    ProtocolInfo *protInfo = protInfoDict.get(jobPriv->m_protocol);
     slave->disconnect(job);
     protInfo->activeSlaves.removeAll(slave);
     if (slave->isAlive())
