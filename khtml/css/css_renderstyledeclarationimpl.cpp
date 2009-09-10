@@ -1186,7 +1186,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     default:
         kWarning() << "Unhandled property:" << getPropertyName(propertyID);
-        Q_ASSERT( 0 );
+        //Q_ASSERT( 0 );
         break;
     }
     return 0;
