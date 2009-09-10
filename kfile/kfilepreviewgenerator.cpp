@@ -1112,7 +1112,9 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
             // so that the previews get be replaced again by the MIME type icons.
             KDirLister* dirLister = d->m_dirModel->dirLister();
             const KUrl url = dirLister->url();
-            dirLister->openUrl(url, KDirLister::NoFlags);
+            if (url.isValid()) {
+                dirLister->openUrl(url, KDirLister::NoFlags);
+            }
         }
         updateIcons();
     }
