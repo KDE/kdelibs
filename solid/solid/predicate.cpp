@@ -333,32 +333,32 @@ QString Solid::Predicate::toString() const
     }
 }
 
-Solid::Predicate::Type Solid::Predicate::type()
+Solid::Predicate::Type Solid::Predicate::type() const
 {
     return d->type;
 }
 
-Solid::DeviceInterface::Type Solid::Predicate::interfaceType()
+Solid::DeviceInterface::Type Solid::Predicate::interfaceType() const
 {
     return d->ifaceType;
 }
 
-QString Solid::Predicate::propertyName()
+QString Solid::Predicate::propertyName() const
 {
     return d->property;
 }
 
-QVariant Solid::Predicate::matchingValue()
+QVariant Solid::Predicate::matchingValue() const
 {
     return d->value;
 }
 
-Solid::Predicate::ComparisonOperator Solid::Predicate::comparisonOperator()
+Solid::Predicate::ComparisonOperator Solid::Predicate::comparisonOperator() const
 {
     return d->compOperator;
 }
 
-Solid::Predicate Solid::Predicate::firstOperand()
+Solid::Predicate Solid::Predicate::firstOperand() const
 {
     if( d->operand1 ) {
         return *d->operand1;
@@ -366,10 +366,11 @@ Solid::Predicate Solid::Predicate::firstOperand()
     return Predicate();
 }
 
-Solid::Predicate Solid::Predicate::secondOperand()
+Solid::Predicate Solid::Predicate::secondOperand() const
 {
     if( d->operand2 ) {
         return *d->operand2;
     }
     return Predicate();
 }
+

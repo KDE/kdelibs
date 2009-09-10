@@ -207,7 +207,7 @@ namespace Solid
         * @since 4.4
         * @return the predicate type
         */
-        Type type();
+        Type type() const;
 
         /**
          * Retrieves the interface type.
@@ -216,7 +216,7 @@ namespace Solid
          * @since 4.4
          * @return a device interface type used by the predicate
          */
-        DeviceInterface::Type interfaceType();
+        DeviceInterface::Type interfaceType() const;
 
         /**
          * Retrieves the property name used when retrieving the value to compare against
@@ -225,7 +225,7 @@ namespace Solid
          * @since 4.4
          * @return a property name
          */
-        QString propertyName();
+        QString propertyName() const;
 
         /**
          * Retrieves the value used when comparing a devices property to see if it matches the predicate
@@ -234,7 +234,7 @@ namespace Solid
          * @since 4.4
          * @return the value used
          */
-        QVariant matchingValue();
+        QVariant matchingValue() const;
 
         /**
          * Retrieves the comparison operator used to compare a property's value
@@ -243,7 +243,7 @@ namespace Solid
          * @note This is only valid for Conjunction and Disjunction types
          * @return the comparison operator used
          */
-        ComparisonOperator comparisonOperator();
+        ComparisonOperator comparisonOperator() const;
 
         /**
          * A smaller, inner predicate which is the first to appear and is compared with the second one
@@ -252,7 +252,7 @@ namespace Solid
          * @note This is only valid for Conjunction and Disjunction types
          * @return The predicate used for the first operand
          */
-        Predicate firstOperand();
+        Predicate firstOperand() const;
 
         /**
          * A smaller, inner predicate which is the second to appear and is compared with the first one
@@ -261,7 +261,7 @@ namespace Solid
          * @note This is only valid for Conjunction and Disjunction types
          * @return The predicate used for the second operand
          */
-        Predicate secondOperand();
+        Predicate secondOperand() const;
 
     private:
         class Private;
