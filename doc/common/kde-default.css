@@ -223,22 +223,22 @@ p, h1, h2, h3, h4, h5, h6, td, th {
 /* Visual cues for GUI elements etc in the text */
 
 .guimenu, .guimenuitem, .guisubmenu { 
-  background-color: rgb(240,240,240);
+  background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
 }
 
 .guilabel, .interface, .guibutton { 
-  background-color: rgb(240,240,240);
+  background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
 }
 
 .shortcut { 
-  background-color: rgb(240,240,240);
+  background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
 }
 
 .shortcut .keycap { 
-  background-color: rgb(240,240,240);
+  background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
 }
 
@@ -247,7 +247,7 @@ p, h1, h2, h3, h4, h5, h6, td, th {
 }
 
 .accel { 
-  background-color: rgb(240,240,240);
+  background-color: rgb(220,220,220);
   color: rgb(0,0,0); 
   text-decoration: underline;
 }
@@ -270,7 +270,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .screen, .programlisting { 
-  background-color: rgb(240,240,240);
+  background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
   border-style: dotted;
   border-color: rgb(0,0,0);
