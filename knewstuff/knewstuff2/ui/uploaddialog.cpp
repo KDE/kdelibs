@@ -22,17 +22,20 @@
 #include <QtGui/QLayout>
 #include <QtGui/QDoubleSpinBox>
 #include <QtCore/QString>
-#include <ktextedit.h>
 
+#include <kaboutdata.h>
 #include <kcombobox.h>
-#include <klineedit.h>
-#include <klocale.h>
-#include <kdebug.h>
-#include <kurlrequester.h>
-#include <kmessagebox.h>
+#include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <klineedit.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <ktextedit.h>
+#include <kurlrequester.h>
 #include <kuser.h>
+
+#include <kdebug.h>
 
 //#include "engine.h"
 #include "knewstuff2/core/entry.h"
@@ -47,69 +50,21 @@ UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
 {
     m_entry = NULL;
 
+    // popuplate dialog with stuff
+    QWidget* _mainWidget = new QWidget(this);
+    setMainWidget(_mainWidget);
+    setupUi(_mainWidget);
+
     setCaption(i18n("Share Hot New Stuff"));
     setButtons(Ok | Cancel);
     setDefaultButton(Cancel);
     setModal(false);
     showButtonSeparator(true);
 
-    QFrame *topPage = new QFrame(this);
-    setMainWidget(topPage);
-
-    QGridLayout *topLayout = new QGridLayout(topPage);
-
-    QLabel *sectionselfLabel = new QLabel(i18n("Please give some information about yourself."), topPage);
-    topLayout->addWidget(sectionselfLabel, 0, 0, 1, 2);
-
-    QLabel *authorLabel = new QLabel(i18n("Author:"), topPage);
-    topLayout->addWidget(authorLabel, 1, 0);
-    mAuthorEdit = new KLineEdit(topPage);
-    topLayout->addWidget(mAuthorEdit, 1, 1);
-
-    QLabel *emailLabel = new QLabel(i18n("Email address:"), topPage);
-    topLayout->addWidget(emailLabel, 2, 0);
-    mEmailEdit = new KLineEdit(topPage);
-    topLayout->addWidget(mEmailEdit, 2, 1);
-
-    QLabel *sectionuploadLabel = new QLabel(i18n("Please describe your upload."), topPage);
-    topLayout->addWidget(sectionuploadLabel, 3, 0, 1, 2);
-
-    QLabel *nameLabel = new QLabel(i18n("Name:"), topPage);
-    topLayout->addWidget(nameLabel, 4, 0);
-    mNameEdit = new KLineEdit(topPage);
-    topLayout->addWidget(mNameEdit, 4, 1);
-
-    QLabel *versionLabel = new QLabel(i18n("Version:"), topPage);
-    topLayout->addWidget(versionLabel, 5, 0);
-    mVersionEdit = new KLineEdit(topPage);
-    topLayout->addWidget(mVersionEdit, 5, 1);
-
-    QLabel *licenseLabel = new QLabel(i18n("License:"), topPage);
-    topLayout->addWidget(licenseLabel, 6, 0);
-    mLicenseCombo = new KComboBox(topPage);
-    mLicenseCombo->setEditable(true);
-    mLicenseCombo->addItem(i18n("GPL"));
-    mLicenseCombo->addItem(i18n("LGPL"));
-    mLicenseCombo->addItem(i18n("BSD"));
-    topLayout->addWidget(mLicenseCombo, 6, 1);
-
-    QLabel *previewLabel = new QLabel(i18n("Preview URL:"), topPage);
-    topLayout->addWidget(previewLabel, 7, 0);
-    mPreviewUrl = new KUrlRequester(topPage);
-    topLayout->addWidget(mPreviewUrl, 7, 1);
-
-    QLabel *summaryLabel = new QLabel(i18n("Summary:"), topPage);
-    topLayout->addWidget(summaryLabel, 8, 0, 1, 2);
-    mSummaryEdit = new KTextEdit(topPage);
-    topLayout->addWidget(mSummaryEdit, 9, 0, 1, 2);
-
-    QLabel *sectionlangLabel = new QLabel(i18n("In which language did you describe the above?"), topPage);
-    topLayout->addWidget(sectionlangLabel, 10, 0, 1, 2);
-
-    QLabel *languageLabel = new QLabel(i18n("Language:"), topPage);
-    topLayout->addWidget(languageLabel, 11, 0);
-    mLanguageCombo = new KComboBox(topPage);
-    topLayout->addWidget(mLanguageCombo, 11, 1);
+    mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
+                                 "%1 Add-On Uploader",
+                                 KGlobal::activeComponent().aboutData()->programName()));
+    mTitleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
     QStringList languagecodes = KGlobal::locale()->languageList();
     for (int i = 0; i < languagecodes.count(); i++) {

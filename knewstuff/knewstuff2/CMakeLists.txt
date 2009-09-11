@@ -49,7 +49,7 @@ set(knewstuff2_SRCS
   engine.cpp
 )
 
-kde4_add_ui_files(knewstuff2_ui_SRCS ui/DownloadDialog.ui)
+kde4_add_ui_files(knewstuff2_ui_SRCS ui/DownloadDialog.ui ui/UploadDialog.ui)
 
 kde4_add_library(knewstuff2 SHARED ${knewstuff2_core_SRCS} ${knewstuff2_dxs_SRCS} ${knewstuff2_ui_SRCS} ${knewstuff2_SRCS})
 

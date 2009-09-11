@@ -2,6 +2,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (C) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (C) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -23,6 +24,8 @@
 #include <kurl.h>
 #include <knewstuff2/knewstuff_export.h>
 
+#include "ui_UploadDialog.h"
+
 class KComboBox;
 class KLineEdit;
 class KUrlRequester;
@@ -42,11 +45,11 @@ class Entry;
  *
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
- * Josef Spillner (spillner@kde.org)
+ * Jeremy Whiting (jpwhiting@kde.org)
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT UploadDialog : public KDialog
+class KNEWSTUFF_EXPORT UploadDialog : public KDialog, public Ui::UploadDialog
 {
     Q_OBJECT
 public:
@@ -85,15 +88,6 @@ protected Q_SLOTS:
     void slotOk();
 
 private:
-    KLineEdit *mNameEdit;
-    KLineEdit *mAuthorEdit;
-    KLineEdit *mEmailEdit;
-    KLineEdit *mVersionEdit;
-    KUrlRequester *mPreviewUrl;
-    KTextEdit *mSummaryEdit;
-    KComboBox *mLanguageCombo;
-    KComboBox *mLicenseCombo;
-
     KUrl mPayloadUrl;
 
     Entry *m_entry;
