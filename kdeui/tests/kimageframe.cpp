@@ -15,34 +15,39 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KCOLORUTILSDEMO_H
-#define KCOLORUTILSDEMO_H
+#include "kimageframe.h"
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOption>
+#include <QtGui/QPainter>
 
-#include "ui_kcolorutilsdemo.h"
-
-class KColorUtilsDemo: public QWidget, Ui::form
+KImageFrame::KImageFrame(QWidget *parent) : QFrame(parent), _w(0), _h(0)
 {
-    Q_OBJECT
-public:
-    KColorUtilsDemo(QWidget* parent = 0);
-    virtual ~KColorUtilsDemo() {}
+}
 
-public Q_SLOTS:
-    void inputChanged();
-    void lumaChanged();
-    void mixChanged();
-    void shadeChanged();
+void KImageFrame::setImage(const QImage &img)
+{
+    _img = img;
+    _w = img.width();
+    _h = img.height();
+    update();
+}
 
-    void inputSpinChanged();
-    void inputSwatchChanged(const QColor&);
+void KImageFrame::paintEvent(QPaintEvent*)
+{
+    QPainter p(this);
+    QStyleOptionFrame opt;
+    QRect rf(frameRect()), ri(0, 0, _w, _h);
 
-    void targetSpinChanged();
-    void targetSwatchChanged(const QColor&);
+    opt.rect = rf;
+    opt.state = QStyle::State_Sunken;
 
-protected:
-    QImage _leOutImg, _mtMixOutImg, _mtTintOutImg;
-    bool _noUpdate;
-};
+    style()->drawPrimitive(QStyle::PE_Frame, &opt, &p, this);
 
-#endif
+    ri.moveCenter(rf.center());
+    p.drawImage(ri, _img);
+
+    p.end();
+}
+
+#include "kimageframe.moc"
 // kate: hl C++; indent-width 4; replace-tabs on;

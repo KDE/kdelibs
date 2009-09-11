@@ -162,7 +162,7 @@ target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})
 
 ## kcolorutilsdemo
 
-SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp ../colors/kcolorspaces.cpp)
+SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp ../colors/kcolorspaces.cpp)
 kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
 kde4_add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
 target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES})

@@ -23,9 +23,14 @@
 #include <kcolorutils.h>
 #include <kcolorscheme.h>
 
-KColorUtilsDemo::KColorUtilsDemo(QWidget *parent) : QWidget(parent)
+KColorUtilsDemo::KColorUtilsDemo(QWidget *parent) : QWidget(parent),
+  _leOutImg(128, 128, QImage::Format_RGB32),
+  _mtMixOutImg(128, 16, QImage::Format_RGB32),
+  _mtTintOutImg(128, 16, QImage::Format_RGB32)
 {
+    _noUpdate = true;
     setupUi(this);
+    _noUpdate = false;
 
     inputSpinChanged();
     targetSpinChanged();
@@ -46,10 +51,60 @@ void KColorUtilsDemo::inputChanged()
 
 void KColorUtilsDemo::lumaChanged()
 {
+    QColor base = inColor->color();
+
+    for (int y = 0; y < 128; ++y)
+    {
+        qreal k = qreal(y - 64) / 64.0;
+
+        for (int x = 0; x < 128; ++x)
+        {
+            qreal c;
+
+            QColor r;
+            if (leOpLighten->isChecked())
+            {
+                c = qreal(128 - x) / 64.0;
+                r = KColorUtils::lighten(base, k, c);
+            }
+            else if (leOpDarken->isChecked())
+            {
+                c = qreal(x) / 64.0;
+                r = KColorUtils::darken(base, -k, c);
+            }
+            else
+            {
+                c = qreal(x - 64) / 64.0;
+                r = KColorUtils::shade(base, k, c);
+            }
+            _leOutImg.setPixel(x, y, r.rgb());
+        }
+    }
+
+    leOut->setImage(_leOutImg);
 }
 
 void KColorUtilsDemo::mixChanged()
 {
+    QColor base = inColor->color();
+    QColor target = mtTarget->color();
+
+    for (int x = 0; x < 128; ++x)
+    {
+        qreal k = qreal(x) / 128.0;
+
+        QRgb m = KColorUtils::mix(base, target, k).rgb();
+        QRgb t = KColorUtils::tint(base, target, k).rgb();
+
+        for (int y = 0; y < 16; ++y)
+        {
+            _mtMixOutImg.setPixel(x, y, m);
+            _mtTintOutImg.setPixel(x, y, t);
+        }
+    }
+
+    mtMixOut->setImage(_mtMixOutImg);
+    mtTintOut->setImage(_mtTintOutImg);
 }
 
 void setBackground(QWidget *widget, const QColor &color)
@@ -57,6 +112,12 @@ void setBackground(QWidget *widget, const QColor &color)
     QPalette palette = widget->palette();
     palette.setColor(widget->backgroundRole(), color);
     widget->setPalette(palette);
+
+    QString name = color.name();
+    name += " (" + QString::number(color.red()) + ", "
+                 + QString::number(color.green()) + ", "
+                 + QString::number(color.blue()) + ")";
+    widget->setToolTip(name);
 }
 
 #define SET_SHADE(_n, _c, _cn, _ch) \

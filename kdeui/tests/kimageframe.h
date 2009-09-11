@@ -15,33 +15,27 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KCOLORUTILSDEMO_H
-#define KCOLORUTILSDEMO_H
+#ifndef KIMAGEFRAME_H
+#define KIMAGEFRAME_H
 
-#include "ui_kcolorutilsdemo.h"
+#include <QtGui/QFrame>
 
-class KColorUtilsDemo: public QWidget, Ui::form
+class KImageFrame : public QFrame
 {
     Q_OBJECT
 public:
-    KColorUtilsDemo(QWidget* parent = 0);
-    virtual ~KColorUtilsDemo() {}
+    KImageFrame(QWidget* parent = 0);
+    virtual ~KImageFrame() {}
 
 public Q_SLOTS:
-    void inputChanged();
-    void lumaChanged();
-    void mixChanged();
-    void shadeChanged();
+    void setImage(const QImage&);
 
-    void inputSpinChanged();
-    void inputSwatchChanged(const QColor&);
-
-    void targetSpinChanged();
-    void targetSwatchChanged(const QColor&);
+protected Q_SLOTS:
+    void paintEvent(QPaintEvent*);
 
 protected:
-    QImage _leOutImg, _mtMixOutImg, _mtTintOutImg;
-    bool _noUpdate;
+    QImage _img;
+    int _w, _h;
 };
 
 #endif
