@@ -531,7 +531,9 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
     KFileItemList itemList;
     for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
         const QModelIndex index = m_dirModel->index(row, 0);
+        Q_ASSERT(index.isValid());
         const KFileItem item = m_dirModel->itemForIndex(index);
+        Q_ASSERT(!item.isNull());
 
         if (m_previewShown) {
             const KUrl url = item.url();
