@@ -366,7 +366,14 @@ void EnginePrivate::slotProvidersFinished()
     }
 
     Entry *entry = uploaddialog->entry();
-    entry->setPayload(m_uploadfile);
+    KTranslatable payload;
+    // add all the translations to the payload
+    QStringList langs = entry->name().languages();
+    for (QStringList::const_iterator it = langs.constBegin(); it != langs.constEnd(); ++it) {
+        payload.addString(*it, m_uploadfile);
+    }
+    entry->setPayload(payload);
+
     if (!entry) {
         stopLoop();
         return;

@@ -148,13 +148,13 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
 
     langs = preview.languages();
     for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "preview", preview.translated(*it));
+        e = addElement(doc, el, "preview", KUrl(preview.translated(*it)).fileName());
         e.setAttribute("lang", *it);
     }
 
     langs = payload.languages();
     for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "payload", payload.translated(*it));
+        e = addElement(doc, el, "payload", KUrl(payload.translated(*it)).fileName());
         e.setAttribute("lang", *it);
     }
 
