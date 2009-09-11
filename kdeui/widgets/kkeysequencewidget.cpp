@@ -298,6 +298,7 @@ void KKeySequenceWidgetPrivate::init()
     keyButton = new KKeySequenceButton(this, q);
     keyButton->setFocusPolicy(Qt::StrongFocus);
     keyButton->setIcon(KIcon("configure"));
+    keyButton->setToolTip(i18n("Click on the button, then enter the shortcut like you would in the program.\nExample for Ctrl+a: hold the Ctrl key and press a."));
     layout->addWidget(keyButton);
 
     clearButton = new QToolButton(q);
