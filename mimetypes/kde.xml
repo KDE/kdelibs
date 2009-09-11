@@ -372,7 +372,7 @@ Notes:
     <glob pattern="*.wsz"/>
   </mime-type>
 
-  <mime-type type="video/x-ms-wmp"> <!-- fdo #19671 -->
+  <mime-type type="video/x-ms-wmp"> <!-- fdo #19671, rejected because "not a file type, only a plugin type" -->
     <comment>Microsoft Media Format</comment>
     <sub-class-of type="video/x-ms-wmv"/>
     <alias type="video/mediaplayer"/>
