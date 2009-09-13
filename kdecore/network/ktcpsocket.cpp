@@ -612,6 +612,8 @@ KTcpSocket::State KTcpSocket::state() const
 bool KTcpSocket::waitForConnected(int msecs)
 {
     bool ret = d->sock.waitForConnected(msecs);
+    if (!ret)
+        setErrorString(d->sock.errorString());
     setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
     return ret;
 }
@@ -620,6 +622,8 @@ bool KTcpSocket::waitForConnected(int msecs)
 bool KTcpSocket::waitForDisconnected(int msecs)
 {
     bool ret = d->sock.waitForDisconnected(msecs);
+    if (!ret)
+        setErrorString(d->sock.errorString());
     setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
     return ret;
 }
