@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#include <locale.h>
+
 #include "klocalizedstringtest.h"
 #include <kdebug.h>
 #include "qtest_kde.h"
