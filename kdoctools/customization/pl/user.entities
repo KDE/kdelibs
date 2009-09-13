@@ -137,6 +137,7 @@
 <!ENTITY kicker-miejscownik    '<application>Kickerze</application>'>
 
 <!ENTITY kickoff-mianownik    '<application>Kickoff</application>'>
+<!ENTITY kickoff-dopelniacz    '<application>Kickoffa</application>'>
 
 <!ENTITY klipper-mianownik    '<application>Klipper</application>'>
 <!ENTITY klipper-dopelniacz    '<application>Klippera</application>'>
@@ -160,6 +161,13 @@
 <!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-miejscownik    '&kmenu-mianownik;'>
 <!ENTITY kmenu    '&kmenu-mianownik;'>
+
+<!ENTITY kmenuedit-mianownik    '<application>Edytor menu &kde;</application>'>
+<!ENTITY kmenuedit-dopelniacz    '<application>Edytora menu &kde;</application>'>
+<!ENTITY kmenuedit-celownik    '<application>Edytorowi menu &kde;</application>'>
+<!ENTITY kmenuedit-biernik    '<application>Edytora menu &kde;</application>'>
+<!ENTITY kmenuedit-narzednik    '<application>Edytorem menu &kde;</application>'>
+<!ENTITY kmenuedit-miejscownik    '<application>Edytorze menu &kde;</application>'>
 
 <!ENTITY knode-mianownik    '<application>Knode</application>'>
 <!ENTITY knode-dopelniacz    '<application>Knode</application>'>
