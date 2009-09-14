@@ -103,7 +103,7 @@ QString Action::name() const
 
 void Action::setName(const QString &name)
 {
-    QRegExp exp("[a-z]+(\\.[a-z]+)*");
+    QRegExp exp("[0-z]+(\\.[0-z]+)*");
 
     d->name = name;
     d->valid = exp.exactMatch(name);
