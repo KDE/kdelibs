@@ -341,13 +341,14 @@ void KXmlGui_UnitTest::testPartMerging()
         "  <Action name=\"last_page\"/>\n"
         "  <Separator/>\n"
         "  <Action name=\"action_in_merge_group\" group=\"new_merge\"/>\n"
+        "  <Action name=\"undefined_group\" group=\"no_such_merge\"/>\n"
         "  <Action name=\"last_from_part\"/>\n"
         " </Menu>\n"
         "</MenuBar>\n"
         "</kpartgui>\n";
 
     TestGuiClient partClient(partXml);
-    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" << "last_page" << "last_from_part" << "action_in_merge_group");
+    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" << "last_page" << "last_from_part" << "action_in_merge_group" << "undefined_group");
     factory.addClient(&partClient);
 
     //debugActions(goMenu->actions());
@@ -364,6 +365,7 @@ void KXmlGui_UnitTest::testPartMerging()
                  << "first_page"
                  << "last_page"
                  << "separator"
+                 << "undefined_group"
                  << "last_from_part"
                  // End of <Merge>
                  << "host_after_merge"
