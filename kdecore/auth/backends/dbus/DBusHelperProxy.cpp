@@ -21,13 +21,17 @@
 
 #include <QObject>
 #include <QMap>
-#include <QtDBus>
+#include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusConnection>
 #include <QDebug>
+#include <QTimer>
 
 #include <syslog.h>
 
 #include "BackendsManager.h"
 #include "authadaptor.h"
+
+Q_DECLARE_METATYPE(QTimer*)
 
 namespace KAuth
 {
@@ -224,6 +228,9 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
     s >> args;
 
     if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
+        QTimer *timer = responder->property("__KAuth_Helper_Shutdown_Timer").value<QTimer*>();
+        timer->stop();
+
         QString slotname = action;
         if (slotname.startsWith(m_name + '.')) {
             slotname = slotname.right(slotname.length() - m_name.length() - 1);
@@ -238,6 +245,8 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
         bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
         emit remoteSignal(ActionPerformed, action, retVal.serialized());
         m_currentAction = "";
+
+        timer->start();
 
         if (success) {
             return retVal.serialized();

@@ -27,6 +27,8 @@
 
 #include "BackendsManager.h"
 
+Q_DECLARE_METATYPE(QTimer*)
+
 namespace KAuth
 {
 
@@ -53,7 +55,12 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
     BackendsManager::helperProxy()->setHelperResponder(responder);
 
     QCoreApplication app(argc, argv);
-    //QTimer::singleShot(10000, &app, SLOT(quit()));
+    // Attach the timer
+    QTimer *timer = new QTimer(0);
+    responder->setProperty("__KAuth_Helper_Shutdown_Timer", QVariant::fromValue(timer));
+    timer->setInterval(10000);
+    timer->start();
+    QObject::connect(timer, SIGNAL(timeout()), &app, SLOT(quit()));
     app.exec(); //krazy:exclude=crashy
 
     return 0;
