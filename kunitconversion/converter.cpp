@@ -50,6 +50,7 @@ public:
         const KLocalizedString ls;
         setName(i18n("Invalid"));
         setDefaultUnit(UP(InvalidUnit, 1.0, s, s, s, ls, ls));
+        setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (default)", "%1 %2"));
     };
 };
 

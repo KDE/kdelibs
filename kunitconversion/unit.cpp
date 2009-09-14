@@ -147,6 +147,13 @@ QString Unit::toString(double value, int fieldWidth, char format, int precision,
     return d->real.subs(value, fieldWidth, format, precision, fillChar).toString();
 }
 
+QString Unit::toSymbolString(double value, int fieldWidth, char format, int precision,
+                             const QChar& fillChar) const
+{
+    return category()->symbolStringFormat().arg(value, fieldWidth, format, precision, fillChar)
+            .arg(d->symbol);
+}
+
 bool Unit::isValid() const
 {
     return !d->symbol.isEmpty();

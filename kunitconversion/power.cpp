@@ -26,6 +26,7 @@ using namespace KUnitConversion;
 Power::Power()
 {
     setName(i18n("Power"));
+    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (power)", "%1 %2"));
 
     U(Yottawatt, 1e+24,
       i18nc("power unit symbol", "YW"),

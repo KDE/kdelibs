@@ -27,6 +27,7 @@ Pressure::Pressure()
 : UnitCategory()
 {
     setName(i18n("Pressure"));
+    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (pressure)", "%1 %2"));
 
     U(Yottapascal, 1e+24,
       i18nc("pressure unit symbol", "YPa"),

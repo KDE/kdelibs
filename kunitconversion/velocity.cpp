@@ -33,6 +33,7 @@ class BeaufortConv : public Complex
 Velocity::Velocity()
 {
     setName(i18n("Velocity"));
+    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (velocity)", "%1 %2"));
 
     setDefaultUnit(UP(MeterPerSecond, 1,
       i18nc("velocity unit symbol", "m/s"),

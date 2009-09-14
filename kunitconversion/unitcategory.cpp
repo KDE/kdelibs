@@ -40,6 +40,7 @@ public:
     QList<UnitPtr> units;
     QString description;
     KUrl url;
+    QString symbolStringFormat;
 };
 
 UnitCategory::UnitCategory()
@@ -50,6 +51,16 @@ UnitCategory::UnitCategory()
 UnitCategory::~UnitCategory()
 {
     delete d;
+}
+
+void UnitCategory::setSymbolStringFormat(const QString& symbolStringFormat)
+{
+    d->symbolStringFormat = symbolStringFormat;
+}
+
+QString UnitCategory::symbolStringFormat() const
+{
+    return d->symbolStringFormat;
 }
 
 QList<UnitPtr> UnitCategory::units() const

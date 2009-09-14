@@ -26,6 +26,7 @@ using namespace KUnitConversion;
 Length::Length()
 {
     setName(i18n("Length"));
+    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (length", "%1 %2"));
 
     U(Yottameter, 1e+24,
       i18nc("length unit symbol", "Ym"),

@@ -26,6 +26,7 @@ using namespace KUnitConversion;
 Time::Time()
 {
     setName(i18n("Time"));
+    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (time)", "%1 %2"));
 
     U(Yottasecond, 1e+24,
       i18nc("time unit symbol", "Ys"),

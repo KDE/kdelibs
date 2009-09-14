@@ -26,6 +26,7 @@ using namespace KUnitConversion;
 Volume::Volume()
 {
     setName(i18n("Volume"));
+    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (volume)", "%1 %2"));
 
     U(CubicYottameter, 1e+72,
       i18nc("volume unit symbol", "Ym³"),

@@ -96,6 +96,15 @@ QString Value::toString(int fieldWidth, char format, int precision, const QChar&
     return QString();
 }
 
+QString Value::toSymbolString(int fieldWidth, char format, int precision,
+                              const QChar& fillChar) const
+{
+    if (isValid()) {
+        return d->unit->toSymbolString(d->number, fieldWidth, format, precision, fillChar);
+    }
+    return QString();
+}
+
 double Value::number() const
 {
     return d->number;
