@@ -278,9 +278,10 @@ static void checkActions(const QList<QAction*>& actions, const QStringList& expe
         else
             QCOMPARE(action->objectName(), expectedActions[i]);
     }
+    QCOMPARE(actions.count(), expectedActions.count());
 }
 
-void KXmlGui_UnitTest::testMergingSeparators()
+void KXmlGui_UnitTest::testPartMerging()
 {
     const QByteArray hostXml =
         "<?xml version = '1.0'?>\n"
@@ -290,11 +291,11 @@ void KXmlGui_UnitTest::testMergingSeparators()
         " <Menu name=\"go\"><text>&amp;Go</text>\n"
         "  <!-- go_up, go_back, go_forward, go_home: coming from ui_standards.rc -->\n"
         "  <Merge/>\n"
-        "  <Action name=\"go_history\"/>\n"
-        "  <Action name=\"go_most_often\"/>\n"
+        "  <Action name=\"host_after_merge\"/>\n"
+        "  <Action name=\"host_after_merge_2\"/>\n"
         "  <Separator/>\n"
-        "  <Action name=\"history\"/>\n"
-        "  <Action name=\"closedtabs\"/>\n"
+        "  <DefineGroup name=\"new_merge\"/>\n"
+        "  <Action name=\"last_from_host\"/>\n"
         " </Menu>\n"
         "</MenuBar>\n"
         "</gui>\n";
@@ -302,7 +303,7 @@ void KXmlGui_UnitTest::testMergingSeparators()
 
     TestGuiClient hostClient;
     hostClient.createActions(QStringList() << "go_up" << "go_back" << "go_forward" << "go_home"
-                             << "go_history" << "go_most_often");
+                             << "host_after_merge" << "host_after_merge_2" << "last_from_host");
     hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
@@ -321,9 +322,10 @@ void KXmlGui_UnitTest::testMergingSeparators()
                  << "go_forward"
                  << "go_home"
                  << "separator"
-                 << "go_history"
-                 << "go_most_often"
-                 << "separator");
+                 << "host_after_merge"
+                 << "host_after_merge_2"
+                 << "separator"
+                 << "last_from_host");
 
     kDebug() << "Now merging the part";
 
@@ -338,16 +340,14 @@ void KXmlGui_UnitTest::testMergingSeparators()
         "  <Action name=\"first_page\"/>\n"
         "  <Action name=\"last_page\"/>\n"
         "  <Separator/>\n"
-        "  <Action name=\"go_document_back\"/>\n"
-        "  <Action name=\"go_document_forward\" />\n"
-        "  <Separator/>\n"
-        "  <Action name=\"go_goto_page\"/>\n"
+        "  <Action name=\"action_in_merge_group\" group=\"new_merge\"/>\n"
+        "  <Action name=\"last_from_part\"/>\n"
         " </Menu>\n"
         "</MenuBar>\n"
         "</kpartgui>\n";
 
     TestGuiClient partClient(partXml);
-    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" << "last_page");
+    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" << "last_page" << "last_from_part" << "action_in_merge_group");
     factory.addClient(&partClient);
 
     //debugActions(goMenu->actions());
@@ -357,10 +357,23 @@ void KXmlGui_UnitTest::testMergingSeparators()
                  << "go_forward"
                  << "go_home"
                  << "separator"
+                 // Contents of the <Merge>:
                  << "go_previous"
                  << "go_next"
                  << "separator"
-                 << "first_page");
+                 << "first_page"
+                 << "last_page"
+                 << "separator"
+                 << "last_from_part"
+                 // End of <Merge>
+                 << "host_after_merge"
+                 << "host_after_merge_2"
+                 << "separator"
+                 // Contents of <DefineGroup>
+                 << "action_in_merge_group"
+                 // End of <DefineGroup>
+                 << "last_from_host"
+        );
 }
 
 void KXmlGui_UnitTest::testUiStandardsMerging_data()
