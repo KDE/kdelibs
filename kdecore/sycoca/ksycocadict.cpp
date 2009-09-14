@@ -69,7 +69,7 @@ public:
 
     KSycocaDictStringList *stringlist;
     QDataStream *stream;
-    qint32 offset;
+    qint64 offset;
     quint32 hashTableSize;
     QList<qint32> hashList;
 };
@@ -413,7 +413,7 @@ KSycocaDict::save(QDataStream &str)
    struct hashtable_entry {
       string_entry *entry;
       QList<string_entry*>* duplicates;
-      int duplicate_offset;
+      qint64 duplicate_offset;
    };
 
    hashtable_entry *hashTable = new hashtable_entry[ sz ];
@@ -534,7 +534,7 @@ qint32 KSycocaDict::Private::offsetForKey(const QString& key) const
    const uint hash = hashKey(key) % hashTableSize;
    //kDebug(7011) << "hash is" << hash;
 
-   const uint off = offset+sizeof(qint32)*hash;
+   const qint32 off = offset+sizeof(qint32)*hash;
    //kDebug(7011) << QString("off is %1").arg(off,8,16);
    stream->device()->seek( off );
 
