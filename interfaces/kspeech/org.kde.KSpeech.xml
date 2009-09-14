@@ -72,6 +72,7 @@
         <method name="ssmlFilterXsltFile">
             <arg type="s" direction="out"/>
         </method>
+
         <method name="setSsmlFilterXsltFile">
             <arg name="ssmlFilterXsltFile" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
@@ -101,6 +102,15 @@
             <arg type="i" direction="out"/>
         </method>        
 
+        <method name="outputModules">
+            <arg type="as" direction="out"/>
+        </method>
+
+        <method name="languagesByModule">
+            <arg name="module" type="s" direction="in"/>
+            <arg type="as" direction="out"/>
+        </method>
+        
         <method name="stop">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
