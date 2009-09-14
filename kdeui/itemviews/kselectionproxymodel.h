@@ -261,6 +261,7 @@ public:
 
   virtual QMimeData* mimeData( const QModelIndexList & indexes ) const;
   virtual QStringList mimeTypes() const;
+  virtual Qt::DropActions supportedDropActions() const;
 
   virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
   virtual QModelIndex index(int, int, const QModelIndex& = QModelIndex() ) const;

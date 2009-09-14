@@ -1380,6 +1380,12 @@ QStringList KSelectionProxyModel::mimeTypes() const
   return sourceModel()->mimeTypes();
 }
 
+Qt::DropActions KSelectionProxyModel::supportedDropActions() const
+{
+  Q_ASSERT(sourceModel());
+  return sourceModel()->supportedDropActions();
+}
+
 bool KSelectionProxyModel::hasChildren ( const QModelIndex & parent) const
 {
   return rowCount(parent) > 0;
