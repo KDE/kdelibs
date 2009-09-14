@@ -141,10 +141,10 @@ public:
     /**
      * Find unit for string unit.
      *
-     * @param unit unit string to find unit for.
+     * @param unitString unit string to find unit for.
      * @return unit for string unit
      **/
-    UnitPtr unit(const QString& unit) const;
+    UnitPtr unit(const QString& unitString) const;
 
     /**
     * Find unit for unit enum.

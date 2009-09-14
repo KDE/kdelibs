@@ -99,29 +99,35 @@ Converter::~Converter()
 
 Value Converter::convert(const Value& value, const QString& toUnit) const
 {
-    UnitCategory* category = value.unit()->category();
-    if (!category) {
-        return Value();
+    if (!value.unit().isNull()) {
+        UnitCategory* category = value.unit()->category();
+        if (!category) {
+            return category->convert(value, toUnit);
+        }
     }
-    return category->convert(value, toUnit);
+    return Value();
 }
 
 Value Converter::convert(const Value& value, int toUnit) const
 {
-    UnitCategory* category = value.unit()->category();
-    if (!category) {
-        return Value();
+    if (!value.unit().isNull()) {
+        UnitCategory* category = value.unit()->category();
+        if (!category) {
+            return category->convert(value, toUnit);
+        }
     }
-    return category->convert(value, toUnit);
+    return Value();
 }
 
 Value Converter::convert(const Value& value, UnitPtr toUnit) const
 {
-    UnitCategory* category = value.unit()->category();
-    if (!category) {
-        return Value();
+    if (!toUnit.isNull() && !value.unit().isNull()) {
+        UnitCategory* category = value.unit()->category();
+        if (category) {
+            return category->convert(value, toUnit);
+        }
     }
-    return category->convert(value, toUnit);
+    return Value();
 }
 
 UnitCategory* Converter::categoryForUnit(const QString& unit) const
@@ -131,29 +137,29 @@ UnitCategory* Converter::categoryForUnit(const QString& unit) const
             return u;
         }
     }
-    return 0;
+    return d->categories[0];
 }
 
-UnitPtr Converter::unit(const QString& unit) const
+UnitPtr Converter::unit(const QString& unitString) const
 {
-    foreach (UnitCategory* u, categories()) {
-        UnitPtr unitClass = u->unit(unit);
+    foreach (UnitCategory* u, d->categories) {
+        UnitPtr unitClass = u->unit(unitString);
         if (unitClass) {
             return unitClass;
         }
     }
-    return UnitPtr();
+    return unit(InvalidUnit);
 }
 
 UnitPtr Converter::unit(int unitId) const
 {
-    foreach (UnitCategory* u, categories()) {
+    foreach (UnitCategory* u, d->categories) {
         UnitPtr unitClass = u->unit(unitId);
         if (unitClass) {
             return unitClass;
         }
     }
-    return UnitPtr();
+    return unit(InvalidUnit);
 }
 
 UnitCategory* Converter::category(const QString& category) const
@@ -164,7 +170,7 @@ UnitCategory* Converter::category(const QString& category) const
     }
 
     // not found
-    return 0;
+    return d->categories[0];
 }
 
 QList<UnitCategory*> Converter::categories() const
