@@ -32,7 +32,7 @@ private Q_SLOTS:
     void testVersionHandlerSameVersion();
     void testVersionHandlerNewVersionNothingKept();
     void testVersionHandlerNewVersionUserChanges();
-    void testMergingSeparators();
+    void testPartMerging();
     void testUiStandardsMerging_data();
     void testUiStandardsMerging();
     void testActionListAndSeparator();
