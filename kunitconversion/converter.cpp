@@ -21,7 +21,6 @@
 
 #include <kglobal.h>
 #include <klocale.h>
-#include <kdebug.h>
 
 #include "unitcategory.h"
 #include "area.h"
@@ -101,7 +100,7 @@ Value Converter::convert(const Value& value, const QString& toUnit) const
 {
     if (!value.unit().isNull()) {
         UnitCategory* category = value.unit()->category();
-        if (!category) {
+        if (category) {
             return category->convert(value, toUnit);
         }
     }
@@ -112,7 +111,7 @@ Value Converter::convert(const Value& value, int toUnit) const
 {
     if (!value.unit().isNull()) {
         UnitCategory* category = value.unit()->category();
-        if (!category) {
+        if (category) {
             return category->convert(value, toUnit);
         }
     }
