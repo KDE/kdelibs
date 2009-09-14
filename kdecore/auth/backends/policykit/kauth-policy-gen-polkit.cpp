@@ -44,26 +44,28 @@ void output(QList<Action> actions)
 
     out << header;
 
-    foreach(const Action &action, actions) {
+    foreach (const Action &action, actions) {
         out << dent << "<action id=\"" << action.name << "\" >\n";
 
-        foreach(const QString &lang, action.descriptions.keys()) {
+        foreach (const QString &lang, action.descriptions.keys()) {
             out << dent << dent << "<description";
             if (lang != "en")
                 out << " xml:lang=\"" << lang << '"';
             out << '>' << action.messages.value(lang) << "</description>\n";
         }
 
-        foreach(const QString &lang, action.messages.keys()) {
+        foreach (const QString &lang, action.messages.keys()) {
             out << dent << dent << "<message";
-            if (lang != "en")
+            if (lang != "en") {
                 out << " xml:lang=\"" << lang << '"';
+            }
             out << '>' << action.descriptions.value(lang) << "</message>\n";
         }
 
         QString policy = action.policy;
-        if (!action.persistence.isEmpty())
+        if (!action.persistence.isEmpty() && policy != "yes" && policy != "no") {
             policy += "_keep_" + action.persistence;
+        }
 
         out << QString(policy_tag).arg(policy);
 

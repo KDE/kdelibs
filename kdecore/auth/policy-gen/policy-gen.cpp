@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 QList<Action> parse(QSettings &ini)
 {
     QList<Action> actions;
-    QRegExp actionExp("[a-z]+(\\.[a-z]+)*");
+    QRegExp actionExp("[0-z]+(\\.[0-z]+)*");
     QRegExp descriptionExp("description(?:\\[(\\w+)\\])?");
     QRegExp nameExp("name(?:\\[(\\w+)\\])?");
     QRegExp policyExp("yes|no|auth_self|auth_admin");
