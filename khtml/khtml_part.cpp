@@ -113,6 +113,7 @@ using namespace DOM;
 #include <kurllabel.h>
 
 #include <QtGui/QClipboard>
+#include <QtGui/QToolTip>
 #include <QtCore/QFile>
 #include <QtCore/QMetaEnum>
 #include <QtGui/QTextDocument>
@@ -1987,6 +1988,9 @@ void KHTMLPart::slotFinished( KJob * job )
 
 void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 {
+  if ( d->m_view->underMouse() )
+    QToolTip::hideText();  // in case a previous tooltip is still shown
+
   // No need to show this for a new page until an error is triggered
   if (!parentPart()) {
     removeJSErrorExtension();
