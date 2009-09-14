@@ -78,6 +78,12 @@ public:
     double number() const;
 
     /**
+     * rounds value to decimal count
+     * @param decimals decimal count.
+     **/
+    Value& round(uint decimals);
+
+    /**
      * Unit part of the value
      **/
     UnitPtr unit() const;
