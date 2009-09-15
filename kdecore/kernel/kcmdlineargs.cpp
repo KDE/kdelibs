@@ -891,6 +891,7 @@ KCmdLineArgsStatic::parseAllArgs()
          }
          else if ((option == "version") || (option == "v"))
          {
+             KCmdLineArgs::enable_i18n(); // because programName() may have kuit tags
              s->printQ(QString::fromLatin1("Qt: %1\n").arg(QString::fromLatin1(qVersion())));
              s->printQ(QString::fromLatin1("KDE: %1\n").arg(QString::fromLatin1(KDE_VERSION_STRING)));
              s->printQ(QString::fromLatin1("%1: %2\n").arg(s->about->programName()).arg(s->about->version()));
