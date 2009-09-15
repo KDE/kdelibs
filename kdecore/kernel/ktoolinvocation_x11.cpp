@@ -287,7 +287,6 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
             exe = browserApp;
             if (exe.startsWith('!')) {
                 exe = exe.mid(1); // Literal command
-                exe += " %u";
             } else {
                 // desktop file ID
                 KService::Ptr service = KService::serviceByStorageId(exe);
