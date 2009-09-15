@@ -39,6 +39,7 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include "kmessage.h"
+#include "kservice.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QProcess>
@@ -261,6 +262,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 
     QStringList args;
     args << url;
+    QString error;
 
     // This method should launch a webbrowser, preferrably without doing a mimetype
     // check first, like KRun (i.e. kde-open) would do.
@@ -283,6 +285,24 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
         const QString browserApp = config.readPathEntry("BrowserApplication", QString());
         if (!browserApp.isEmpty()) {
             exe = browserApp;
+            if (exe.startsWith('!')) {
+                exe = exe.mid(1); // Literal command
+                exe += " %u";
+            } else {
+                // desktop file ID
+                KService::Ptr service = KService::serviceByStorageId(exe);
+                if (service) {
+                    kDebug() << "Starting service" << service->entryPath();
+                    if (startServiceByDesktopPath(service->entryPath(), args,
+                            &error, 0, 0, startup_id)) {
+                        KMessage::message(KMessage::Error,
+                                          // TODO: i18n("Could not launch %1:\n\n%2", exe, error),
+                                          i18n("Could not launch the browser:\n\n%1", error),
+                                          i18n("Could not Launch Browser"));
+                    }
+                    return;
+                }
+            }
         } else {
             const QString kfmclient = KStandardDirs::findExe("kfmclient");
             if (!kfmclient.isEmpty()) {
@@ -299,7 +319,6 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     }
 
     kDebug(180) << "Using" << exe << "to open" << url;
-    QString error;
     if (kdeinitExec(exe, args, &error, NULL, startup_id ))
     {
         KMessage::message(KMessage::Error,
