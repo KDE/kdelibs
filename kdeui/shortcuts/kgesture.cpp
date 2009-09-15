@@ -18,8 +18,6 @@
 */
 
 #include "kgesture.h"
-#include "kgesture_p.h"
-
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <math.h>

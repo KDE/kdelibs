@@ -36,7 +36,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
-#include "kshortcut_p.h"
 #include <kaction.h>
 #include <kactioncollection.h>
 

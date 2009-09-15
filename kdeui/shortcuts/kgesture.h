@@ -141,6 +141,12 @@ private:
     KShapeGesturePrivate * const d;
 };
 
+uint qHash(int);
+inline uint qHash(const KShapeGesture &key)
+{
+    return qHash(key.hashable());
+}
+
 class KRockerGesturePrivate;
 
 class KDEUI_EXPORT KRockerGesture
@@ -231,6 +237,11 @@ public:
 private:
     KRockerGesturePrivate * const d;
 };
+
+inline uint qHash(const KRockerGesture &key)
+{
+    return qHash(key.hashable());
+}
 
 //KGESTURE_H
 #endif

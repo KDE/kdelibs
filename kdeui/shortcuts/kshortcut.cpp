@@ -20,7 +20,6 @@
 */
 
 #include "kshortcut.h"
-#include "kshortcut_p.h"
 
 #include <QtGui/QActionEvent>
 #include <QtGui/QKeySequence>

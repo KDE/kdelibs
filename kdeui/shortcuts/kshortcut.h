@@ -242,6 +242,20 @@ private:
     class KShortcutPrivate *const d;
 };
 
+uint qHash(int);
+inline uint qHash(const KShortcut &key)
+{
+    return qHash(key.primary()[0]) + qHash(key.primary()[1]);
+}
+
+inline uint qHash(const QKeySequence &key)
+{
+    uint hash = 0;
+    for(uint i = 0; i < key.count(); i++)
+       hash += qHash(key[i]);
+    return hash;
+}
+
 Q_DECLARE_METATYPE(KShortcut)
 
 #endif // KSHORTCUT_H
