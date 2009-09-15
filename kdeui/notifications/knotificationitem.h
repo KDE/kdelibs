@@ -239,7 +239,7 @@ public:
      * wants to request attention (usually the systemtray
      * will blink between this icon and the main one)
      *
-     * @arg pixmap a QPixmap representing the icon, use setIcon(const QString) when possible
+     * @arg name KIconLoader-compatible name of icon to use
      */
     void setAttentionIconByName(const QString &name);
 
@@ -253,6 +253,8 @@ public:
     /**
      * Sets the pixmap of the requesting attention icon.
      * Use setAttentionIcon(const QString) instead when possible.
+     *
+     * @arg icon pixmap to use for requesting attention.
      */
     void setAttentionIconByPixmap(const QIcon &icon);
 
