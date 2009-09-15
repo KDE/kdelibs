@@ -1131,9 +1131,10 @@ void KUrlTest::testSetEncodedFragment_data()
 
 void KUrlTest::testSetEncodedFragment()
 {
-    // QtSw task number: TODO (mail sent)
     // Bug fixed in 4.5.1 by Thiago
+#if QT_VERSION < 0x040501
     QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
+#endif
 
     QFETCH(QByteArray, base);
     QFETCH(QByteArray, fragment);
@@ -1228,9 +1229,12 @@ void KUrlTest::testSubURL()
   QCOMPARE(url1Splitted[2].url(), QString("tar:/README"));
   const KUrl url1Rejoined = KUrl::join(url1Splitted);
   // Bug fixed in 4.5.1 by Thiago
+#if QT_VERSION < 0x040501
   QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
+#endif
   QCOMPARE(url1Rejoined.url(), url1.url());
   QCOMPARE(url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/"));
+
 }
 
 void KUrlTest::testSetUser()
@@ -1452,6 +1456,11 @@ void KUrlTest::testMoreBrokenStuff()
   weird = "http://strange<username>@strange<hostname>/";
   QVERIFY( !weird.isValid() );
 
+  {
+      QUrl url;
+      url.setUrl("http://strange<username>@ok_hostname/", QUrl::TolerantMode);
+      QVERIFY(url.isValid());
+  }
   weird = "http://strange<username>@ok_hostname/";
   QVERIFY( weird.isValid() ); // KDE3: was valid. Fixed by _setEncodedUrl.
   QCOMPARE( weird.host(), QString("ok_hostname") );
@@ -1626,10 +1635,22 @@ void KUrlTest::testOtherProtocols()
   QCOMPARE( leo.path(), QString("text/html,http://www.invalid/" ) );
 
   KUrl ptal( "ptal://mlc:usb@PC_970" ); // User=mlc, password=usb, host=PC_970
+#if QT_VERSION >= 0x040600
+  QCOMPARE(ptal.url(), QString("ptal://mlc:usb@")); // The host "PC_970" is invalid according to STD3 validation
+  KUrl ptalSimpler("ptal://mlc:usb@pc123");
+  QCOMPARE(ptalSimpler.url(), QString("ptal://mlc:usb@pc123"));
+#else
+  QUrl ptal_qurl;
+  ptal_qurl.setUrl("ptal://mlc:usb@PC_970", QUrl::TolerantMode);
+  QVERIFY(ptal_qurl.isValid());
+  QCOMPARE(QString::fromLatin1(ptal_qurl.toEncoded()), QString::fromLatin1("ptal://mlc:usb@PC_970"));
+  QCOMPARE( ptal_qurl.host(), QString("pc_970") );
+
   QVERIFY( ptal.isValid() );
   QCOMPARE( ptal.host(), QString("pc_970") );
   QCOMPARE( ptal.user(), QString("mlc") );
   QCOMPARE( ptal.pass(), QString("usb") );
+#endif
 }
 
 void KUrlTest::testUtf8()
