@@ -52,7 +52,7 @@ class ReadOnlyStringListModel: public QStringListModel
 {
 public:
     ReadOnlyStringListModel(QObject* parent):QStringListModel(parent){}
-    Qt::ItemFlags flags(const QModelIndex& index) const {return Qt::ItemIsEnabled | Qt::ItemIsSelectable;}
+    Qt::ItemFlags flags(const QModelIndex& index) const {Q_UNUSED(index); return Qt::ItemIsEnabled | Qt::ItemIsSelectable;}
 };
 
 class Dialog::Private
@@ -73,6 +73,7 @@ public:
 
     int progressDialogTimeout;
     bool showCompletionMessageBox;
+    bool spellCheckContinuedAfterReplacement;
     bool canceled;
 
     void deleteProgressDialog(bool directly)
@@ -109,6 +110,7 @@ Dialog::Dialog(BackgroundChecker *checker,
 
     d->canceled = false;
     d->showCompletionMessageBox = false;
+    d->spellCheckContinuedAfterReplacement = true;
     d->progressDialogTimeout = -1;
     d->progressDialog = NULL;
 
@@ -187,6 +189,11 @@ void Dialog::showProgressDialog(int timeout)
 void Dialog::showSpellCheckCompletionMessage( bool b )
 {
   d->showCompletionMessageBox = b;
+}
+
+void Dialog::setSpellCheckContinuedAfterReplacement( bool b )
+{
+  d->spellCheckContinuedAfterReplacement = b;
 }
 
 void Dialog::slotAutocorrect()
@@ -321,12 +328,19 @@ void Dialog::slotReplaceWord()
 {
     setGuiEnabled(false);
     setProgressDialogVisible(true);
+    QString replacementText = d->ui.m_replacement->text();
     emit replace( d->currentWord.word, d->currentWord.start,
-                  d->ui.m_replacement->text() );
-    d->checker->replace(d->currentWord.start,
-                        d->currentWord.word,
-                        d->ui.m_replacement->text());
-    d->checker->continueChecking();
+                  replacementText );
+
+    if( d->spellCheckContinuedAfterReplacement ) {
+      d->checker->replace(d->currentWord.start,
+                          d->currentWord.word,
+                          replacementText);
+      d->checker->continueChecking();
+    }
+    else {
+      d->checker->stop();
+    }
 }
 
 void Dialog::slotReplaceAll()

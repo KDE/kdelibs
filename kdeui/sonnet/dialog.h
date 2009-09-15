@@ -86,6 +86,14 @@ namespace Sonnet
          */
         void showSpellCheckCompletionMessage( bool b = true );
 
+        /**
+         * Controls whether the spell checking is continued after the replacement of a
+         * mispelled word has been performed. By default it is continued.
+         *
+         * @since 4.4
+         */
+        void setSpellCheckContinuedAfterReplacement( bool b );
+
     public Q_SLOTS:
         void setBuffer(const QString &);
 
