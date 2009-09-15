@@ -435,6 +435,13 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
         file.setTextModeEnabled(true); // to get eol translation
         writeEntries(locale, file, writeMap);
 
+        if (!file.flush()) {
+            // Couldn't write. Disk full?
+            kWarning() << "Couldn't write" << filePath() << ". Disk full?";
+            file.abort();
+            return false;
+        }
+
         if (!file.size() && (fileMode == (QFile::ReadUser | QFile::WriteUser))) {
             // File is empty and doesn't have special permissions: delete it.
             file.abort();

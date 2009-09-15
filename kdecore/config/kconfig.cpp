@@ -280,6 +280,7 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
     return theMap;
 }
 
+// TODO KDE5: return a bool value
 void KConfig::sync()
 {
     Q_D(KConfig);
@@ -325,6 +326,8 @@ void KConfig::sync()
             }
             if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData)) {
                 d->bDirty = true;
+                // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
+                // config file is immutable or disk full)
             }
             if (tmp->isLocked()) {
                 tmp->unlock();
@@ -334,6 +337,8 @@ void KConfig::sync()
         if (writeLocals) {
             if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions(), d->componentData)) {
                 d->bDirty = true;
+                // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
+                // config file is immutable or disk full)
             }
         }
         if (d->mBackend->isLocked()) {
