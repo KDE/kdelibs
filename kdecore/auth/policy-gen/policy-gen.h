@@ -22,11 +22,10 @@
 
 #include <QString>
 #include <QMap>
+#include <QHash>
 
 struct Action {
     QString name;
-    QString vendor;
-    QString icon;
 
     QMap<QString, QString> descriptions;
     QMap<QString, QString> messages;
@@ -35,7 +34,7 @@ struct Action {
     QString persistence;
 };
 
-extern void output(QList<Action> actions);
+extern void output(QList<Action> actions, QHash<QString, QString> domain);
 
 
 #endif

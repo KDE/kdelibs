@@ -24,7 +24,7 @@
 
 using namespace std;
 
-void output(QList<Action> actions)
+void output(QList<Action> actions, QHash<QString, QString> domain)
 {
     AuthorizationRef auth;
     AuthorizationCreate(NULL, NULL, kAuthorizationFlagDefaults, &auth);

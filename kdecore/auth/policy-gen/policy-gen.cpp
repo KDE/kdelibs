@@ -28,6 +28,7 @@
 using namespace std;
 
 QList<Action> parse(QSettings &ini);
+QHash<QString, QString> parseDomain(QSettings &ini);
 
 int main(int argc, char **argv)
 {
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    output(parse(ini));
+    output(parse(ini), parseDomain(ini));
 }
 
 QList<Action> parse(QSettings &ini)
@@ -60,6 +61,10 @@ QList<Action> parse(QSettings &ini)
 
     foreach(const QString &name, ini.childGroups()) {
         Action action;
+
+        if (name == "Domain") {
+            continue;
+        }
 
         if (!actionExp.exactMatch(name)) {
             qCritical("Wrong action syntax: %s\n", name.toAscii().data());
@@ -116,5 +121,24 @@ QList<Action> parse(QSettings &ini)
     return actions;
 }
 
+
+QHash<QString, QString> parseDomain(QSettings& ini)
+{
+    QHash<QString, QString> rethash;
+
+    if (ini.childGroups().contains("Domain")) {
+        if (ini.contains("Domain/Name")) {
+            rethash["vendor"] = ini.value("Domain/Name").toString();
+        }
+        if (ini.contains("Domain/URL")) {
+            rethash["vendorurl"] = ini.value("Domain/URL").toString();
+        }
+        if (ini.contains("Domain/Icon")) {
+            rethash["icon"] = ini.value("Domain/Icon").toString();
+        }
+    }
+
+    return rethash;
+}
 
 

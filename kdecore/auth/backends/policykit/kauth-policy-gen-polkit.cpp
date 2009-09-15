@@ -38,11 +38,21 @@ const char policy_tag[] = ""
 
 const char dent[] = "   ";
 
-void output(QList<Action> actions)
+void output(QList<Action> actions, QHash<QString, QString> domain)
 {
     QTextStream out(stdout);
 
     out << header;
+
+    if (domain.contains("vendor")) {
+        out << "<vendor>" << domain["vendor"] << "</vendor>\n";
+    }
+    if (domain.contains("vendorurl")) {
+        out << "<vendor_url>" << domain["vendorurl"] << "</vendor_url>\n";
+    }
+    if (domain.contains("icon")) {
+        out << "<icon_name>" << domain["icon"] << "</icon_name>\n";
+    }
 
     foreach (const Action &action, actions) {
         out << dent << "<action id=\"" << action.name << "\" >\n";
