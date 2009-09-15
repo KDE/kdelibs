@@ -21,6 +21,8 @@
 #include <kdebug.h>
 #include <qtest_kde.h>
 #include <kdiroperator.h>
+#include <kconfiggroup.h>
+#include <qtreeview.h>
 
 /**
  * Unit test for KDirOperator
@@ -46,6 +48,24 @@ private Q_SLOTS:
         QCOMPARE(dirOp.iconsZoom(), 5);
     }
 
+    void testReadConfig()
+    {
+        // Test: Make sure readConfig() and then setView() restores
+        // the correct kind of view.
+        KDirOperator *dirOp = new KDirOperator;
+        dirOp->setView(KFile::DetailTree);
+        dirOp->setShowHiddenFiles(true);
+        KConfigGroup cg(KGlobal::config(), "diroperator");
+        dirOp->writeConfig(cg);
+
+        delete dirOp;
+        dirOp = new KDirOperator;
+        dirOp->readConfig(cg);
+        dirOp->setView(KFile::Default);
+        QVERIFY(dirOp->showHiddenFiles());
+        // KDirOperatorDetail inherits QTreeView, so this test should work
+        QVERIFY(qobject_cast<QTreeView*>(dirOp->view()));
+    }
 };
 
 QTEST_KDEMAIN( KDirOperatorTest, GUI )
