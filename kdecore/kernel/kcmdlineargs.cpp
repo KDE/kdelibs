@@ -891,9 +891,15 @@ KCmdLineArgsStatic::parseAllArgs()
          }
          else if ((option == "version") || (option == "v"))
          {
-             s->printQ(QString::fromLatin1("Qt: %1\n").arg(QString::fromLatin1(qVersion())));
-             s->printQ(QString::fromLatin1("KDE: %1\n").arg(QString::fromLatin1(KDE_VERSION_STRING)));
-             s->printQ(QString::fromLatin1("%1: %2\n").arg(s->about->programName()).arg(s->about->version()));
+            KCmdLineArgs::enable_i18n();
+            s->printQ(i18nc("@info:shell message on appcmd --version; "
+                            "%3 application name, other %n version strings",
+                            "Qt: %1\n"
+                            "KDE: %2\n"
+                            "%3: %4\n",
+                            QString::fromLatin1(qVersion()),
+                            QString::fromLatin1(KDE_VERSION_STRING),
+                            s->about->programName(), s->about->version()));
             exit(0);
          } else if (option == "license")
          {
