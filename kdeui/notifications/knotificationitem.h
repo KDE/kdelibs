@@ -52,6 +52,7 @@ class KNotificationItemPrivate;
  *  in a different way the icons from normal applications and for
  *  instance the ones about hardware status.
  *  @author Marco Martin <notmart@gmail.com>
+ *  @since 4.4
  */
 class KDEUI_EXPORT KNotificationItem : public QObject
 {
@@ -77,9 +78,14 @@ public:
      * importance of the events that happens in the parent application
      */
     enum ItemStatus {
-        Passive = 1, /**Nothing is happening in the application, showing this icon is not required*/
-        Active = 2 /**The application is doing something or is important that is always reachable from the user*/,
-        NeedsAttention = 3 /**The application requests the attention of the user, for instance battery running out or a new IM message incoming*/
+        /// Nothing is happening in the application, so showing this icon is not required
+        Passive = 1,
+        /// The application is doing something, or it is important that the
+        /// icon is always reachable from the user
+        Active = 2,
+        /// The application requests the attention of the user, for instance
+        /// battery running out or a new IM message was received
+        NeedsAttention = 3
     };
 
     /**
@@ -87,11 +93,18 @@ public:
      * so can be drawn in a different way or in a different place
      */
     enum ItemCategory {
-        ApplicationStatus = 1, /**An icon for a normal application, can be seen as its taskbar entry*/
-        Communications = 2 /**This is a communication oriented application this icon will be used for things such as the notification of a new message*/,
-        SystemServices = 3 /**This is a system service, it can show itself in the system tray if it requires interaction from the user or wants to inform him about something*/,
-        Hardware = 4 /**This application shows hardware status or a mean to control it*/,
-	Reserved = 129
+        /// An icon for a normal application, can be seen as its taskbar entry
+        ApplicationStatus = 1,
+        /// This is a communication oriented application; this icon will be used
+        /// for things such as the notification of a new message
+        Communications = 2,
+        /// This is a system service, it can show itself in the system tray if
+        /// it requires interaction from the user or wants to inform him about
+        /// something
+        SystemServices = 3,
+        /// This application shows hardware status or a means to control it
+        Hardware = 4,
+        Reserved = 129
     };
 
     /**
