@@ -32,30 +32,44 @@ void KTraderParse_mainParse( const char *_code );
 #include <stdlib.h>
 #include <kdebug.h>
 
+#include <QtCore/QThreadStorage>
+
+namespace KTraderParse
+{
+
+struct ParsingData
+{
+    ParseTreeBase::Ptr ptr;
+    QByteArray buffer;
+};
+
+}
+
 using namespace KTraderParse;
 
-K_GLOBAL_STATIC(ParseTreeBase::Ptr, pTree)
-static const char* sCode = 0;
+K_GLOBAL_STATIC(QThreadStorage<ParsingData *>, s_parsingData)
 
 ParseTreeBase::Ptr KTraderParse::parseConstraints( const QString& _constr )
 {
-  const QByteArray buffer = _constr.toUtf8();
-  sCode = buffer.constData();
-  KTraderParse_mainParse( sCode );
-  sCode = 0;
-  assert( pTree );
-  return *pTree;
+    ParsingData *data = new ParsingData();
+    s_parsingData->setLocalData(data);
+    data->buffer = _constr.toUtf8();
+    KTraderParse_mainParse(data->buffer.constData());
+    ParseTreeBase::Ptr ret = data->ptr;
+    s_parsingData->setLocalData(0);
+    return ret;
 }
 
 void KTraderParse_setParseTree( void *_ptr1 )
 {
-  *pTree = static_cast<ParseTreeBase*>( _ptr1 );
+    ParsingData *data = s_parsingData->localData();
+    data->ptr = static_cast<ParseTreeBase*>(_ptr1);
 }
 
 
 void KTraderParse_error( const char* err )
 {
-  kWarning(7014) << "Parsing '" << sCode << "' gave" << err;
+    kWarning(7014) << "Parsing" << s_parsingData->localData()->buffer << "gave:" << err;
 }
 
 void* KTraderParse_newOR( void *_ptr1, void *_ptr2 )
@@ -156,8 +170,9 @@ void* KTraderParse_newMIN2( char *_id )
 
 void KTraderParse_destroy(void *node)
 {
+    ParsingData *data = s_parsingData->localData();
     ParseTreeBase *p = reinterpret_cast<ParseTreeBase *>(node);
-    if (p != pTree->data()) {
+    if (p != data->ptr) {
         delete p;
     }
 }
