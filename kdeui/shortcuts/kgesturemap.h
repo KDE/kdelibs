@@ -26,6 +26,7 @@
 #include <QPolygon>
 
 #include "kgesture.h"
+#include "kgesture_p.h"
 
 class KApplication;
 class KAction;

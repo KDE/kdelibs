@@ -20,6 +20,7 @@
 */
 
 #include "kshortcut.h"
+#include "kshortcut_p.h"
 
 #include <QtGui/QActionEvent>
 #include <QtGui/QKeySequence>
@@ -162,7 +163,7 @@ bool KShortcut::conflictsWith(const QKeySequence &needle) const
     bool alternateConflicts = false;
 
     if (!d->primary.isEmpty()) {
-        primaryConflicts = 
+        primaryConflicts =
             (    d->primary.matches(needle) == QKeySequence::NoMatch
               && needle.matches(d->primary) == QKeySequence::NoMatch )
             ? false
@@ -170,7 +171,7 @@ bool KShortcut::conflictsWith(const QKeySequence &needle) const
     }
 
     if (!d->alternate.isEmpty()) {
-        alternateConflicts= 
+        alternateConflicts=
             (    d->alternate.matches(needle) == QKeySequence::NoMatch
               && needle.matches(d->alternate) == QKeySequence::NoMatch )
             ? false

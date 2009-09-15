@@ -158,7 +158,7 @@ void KGestureMap::matchShapeGesture()
     float dist, minDist = 20.0;
     KAction *bestMatch = 0;
 
-    for (QHash<KShapeGesture, KAction *>::const_iterator it = m_shapeGestures.constBegin(); 
+    for (QHash<KShapeGesture, KAction *>::const_iterator it = m_shapeGestures.constBegin();
         it != m_shapeGestures.constEnd(); ++it) {
         dist = m_shapeGesture.distance(it.key(), 1000.0);
         if (dist < minDist) {
@@ -180,7 +180,7 @@ void KGestureMap::stopAcquisition()
 
 //TODO: Probably kwin, kded and others should not have a gesture map.
 //Maybe making them friends and providing a private "die()" function would work.
-/* 
+/*
  * Act on rocker gestures immediately and collect movement data for evaluation.
  * The decision when to consume and when to relay an event is quite tricky.
  * I decided to only consume clicks that belong to completed rocker gestures.
