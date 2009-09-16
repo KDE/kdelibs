@@ -726,7 +726,7 @@ void KXmlGui_UnitTest::testXMLFileReplacement() {
     createXmlFile(fileOrig, 2, AddToolBars);
     const QString filenameOrig = fileOrig.fileName();
     fileOrig.close();
-    
+
     KTemporaryFile fileReplace;
     QVERIFY(fileReplace.open());
     createXmlFile(fileReplace, 2, AddModifiedToolBars);
@@ -736,29 +736,30 @@ void KXmlGui_UnitTest::testXMLFileReplacement() {
     // finally, our local xml file has <ActionProperties/>
     QFile fileLocal(KStandardDirs::locateLocal("appdata", "testui.rc"));
     QVERIFY(fileLocal.open(QIODevice::WriteOnly));
-    createXmlFile(fileLocal, 1, AddActionProperties);    
+    createXmlFile(fileLocal, 1, AddActionProperties);
     const QString filenameLocal = fileLocal.fileName();
     fileLocal.close();
-    
+
     TestGuiClient client;
     // first make sure that the "original" file is loaded, correctly
     client.setXMLFilePublic(filenameOrig);
     QString xml = client.domDocument().toString();
-    QVERIFY(xml.contains("<Action name=\"print\" />"));
-    QVERIFY(!xml.contains("<Action name=\"home\" />"));
+    //qDebug() << xml;
+    QVERIFY(xml.contains("<Action name=\"print\""));
+    QVERIFY(!xml.contains("<Action name=\"home\""));
     QVERIFY(!xml.contains("<ActionProperties>"));
-    
+
     // now test the replacement (+ local file)
     client.replaceXMLFile(filenameReplace, filenameLocal);
     xml = client.domDocument().toString();
-    QVERIFY(!xml.contains("<Action name=\"print\" />"));
-    QVERIFY(xml.contains("<Action name=\"home\" />"));
+    QVERIFY(!xml.contains("<Action name=\"print\""));
+    QVERIFY(xml.contains("<Action name=\"home\""));
     QVERIFY(xml.contains("<ActionProperties>"));
 
     // re-check after a reload
     client.reloadXML();
     QString reloadedXml = client.domDocument().toString();
-    QVERIFY(!reloadedXml.contains("<Action name=\"print\" />"));
-    QVERIFY(reloadedXml.contains("<Action name=\"home\" />"));
+    QVERIFY(!reloadedXml.contains("<Action name=\"print\""));
+    QVERIFY(reloadedXml.contains("<Action name=\"home\""));
     QVERIFY(reloadedXml.contains("<ActionProperties>"));
 }
