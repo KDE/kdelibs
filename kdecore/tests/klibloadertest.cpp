@@ -69,8 +69,7 @@ void KLibLoaderTest::testWorking_KLibLoader_KGenericFactory()
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
-    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
-    //delete obj;
+    delete obj;
 }
 
 // old loader, old plugin
@@ -96,8 +95,7 @@ void KLibLoaderTest::testWorking_KLibLoader_KPluginFactory()
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
-    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
-    //delete obj;
+    delete obj;
 }
 
 // new loader, old plugin
