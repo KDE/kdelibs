@@ -1,5 +1,7 @@
 project(kunitconversion)
 
+add_subdirectory(tests)
+
 set(kunitconversion_LIB_SRCS
     converter.cpp
     value.cpp
