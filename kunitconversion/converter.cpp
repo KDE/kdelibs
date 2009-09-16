@@ -135,7 +135,7 @@ UnitCategory* Converter::categoryForUnit(const QString& unit) const
             return u;
         }
     }
-    return d->categories[0];
+    return d->categories[InvalidCategory];
 }
 
 UnitPtr Converter::unit(const QString& unitString) const
