@@ -1643,7 +1643,7 @@ void KUrlTest::testOtherProtocols()
   QUrl ptal_qurl;
   ptal_qurl.setUrl("ptal://mlc:usb@PC_970", QUrl::TolerantMode);
   QVERIFY(ptal_qurl.isValid());
-  QCOMPARE(QString::fromLatin1(ptal_qurl.toEncoded()), QString::fromLatin1("ptal://mlc:usb@PC_970"));
+  QCOMPARE(QString::fromLatin1(ptal_qurl.toEncoded()), QString::fromLatin1("ptal://mlc:usb@pc_970"));
   QCOMPARE( ptal_qurl.host(), QString("pc_970") );
 
   QVERIFY( ptal.isValid() );
