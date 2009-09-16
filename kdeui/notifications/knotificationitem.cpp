@@ -41,7 +41,7 @@
 #include <kmessagebox.h>
 #include <kactioncollection.h>
 
-
+#include <netinet/in.h>
 
 #include "notificationitemadaptor.h"
 
@@ -857,8 +857,21 @@ ExperimentalKDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImag
     ExperimentalKDbusImageStruct icon;
     icon.width = image.size().width();
     icon.height = image.size().height();
+    if (image.format() == QImage::Format_ARGB32) {
+        icon.data = QByteArray((char*)image.bits(), image.numBytes());
+    } else {
+        QImage image32 = image.convertToFormat(QImage::Format_ARGB32);
+        icon.data = QByteArray((char*)image.bits(), image.numBytes());
+    }
 
-    icon.data = QByteArray((char*)image.bits(), image.numBytes());
+    //swap to network byte order if we are little endian
+    if (QSysInfo::ByteOrder == QSysInfo::LittleEndian) {
+        uint32_t *uintBuf = (uint32_t *) icon.data.data();
+        for (uint i = 0; i < icon.data.size()/sizeof(uint32_t *); ++i) {
+            *uintBuf = htonl(*uintBuf);
+            ++uintBuf;
+        }
+    }
 
     return icon;
 }
