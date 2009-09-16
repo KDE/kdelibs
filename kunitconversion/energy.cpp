@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Energy::Energy()
+Energy::Energy() : UnitCategory(EnergyCategory)
 {
     setName(i18n("Energy"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (energy)", "%1 %2"));

@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Length::Length()
+Length::Length() : UnitCategory(LengthCategory)
 {
     setName(i18n("Length"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (length", "%1 %2"));

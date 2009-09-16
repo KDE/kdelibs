@@ -41,11 +41,13 @@ public:
     QString description;
     KUrl url;
     QString symbolStringFormat;
+    int id;
 };
 
-UnitCategory::UnitCategory()
+UnitCategory::UnitCategory(int id)
   : d(new UnitCategory::Private)
 {
+    d->id = id;
 }
 
 UnitCategory::~UnitCategory()
@@ -169,6 +171,11 @@ KUrl UnitCategory::url() const
 void UnitCategory::setUrl(const KUrl& url)
 {
     d->url = url;
+}
+
+int UnitCategory::id() const
+{
+    return d->id;
 }
 
 }

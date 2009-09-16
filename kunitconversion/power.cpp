@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Power::Power()
+Power::Power() : UnitCategory(PowerCategory)
 {
     setName(i18n("Power"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (power)", "%1 %2"));

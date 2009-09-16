@@ -33,7 +33,7 @@ namespace KUnitConversion
 class KUNITCONVERSION_EXPORT UnitCategory
 {
 public:
-    UnitCategory();
+    UnitCategory(int id);
     virtual ~UnitCategory();
 
     /**
@@ -105,6 +105,11 @@ public:
     Value convert(const Value& value, const QString& toUnit = QString());
     Value convert(const Value& value, int toUnit);
     virtual Value convert(const Value& value, UnitPtr toUnit);
+
+    /**
+     * @return category id.
+     **/
+    int id() const;
 
 protected:
     void setName(const QString& name);

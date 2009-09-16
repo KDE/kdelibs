@@ -26,6 +26,11 @@
 
 namespace KUnitConversion
 {
+enum CategoryId {
+    InvalidCategory = -1, LengthCategory, AreaCategory, VolumeCategory, TemperatureCategory,
+    VelocityCategory, MassCategory, PressureCategory, EnergyCategory, CurrencyCategory,
+    PowerCategory, TimeCategory, FuelEfficiencyCategory, DensityCategory
+};
 enum UnitId {
     InvalidUnit = -1, NoUnit = 0, Percent = 1,
     // Area
@@ -158,9 +163,17 @@ public:
      * Find unit category.
      *
      * @param category name of the category to find (length, area, mass, etc.).
-     * @return unit category named category or 0.
+     * @return unit category named category or invalid category.
      **/
     UnitCategory* category(const QString& category) const;
+
+    /**
+     * Find unit category.
+     *
+     * @param categoryId id of the category to find (LengthCategory, AreaCategory, etc.).
+     * @return unit category which id is categoryId or invalid category.
+     **/
+    UnitCategory* category(int categoryId) const;
 
     /**
      * Returns a list of all unit categories.

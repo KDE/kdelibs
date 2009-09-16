@@ -60,8 +60,7 @@ class RomerConv : public Complex
 };
 
 
-Temperature::Temperature()
-: UnitCategory()
+Temperature::Temperature() : UnitCategory(TemperatureCategory)
 {
     setName(i18n("Temperature"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (temperature)", "%1 %2"));

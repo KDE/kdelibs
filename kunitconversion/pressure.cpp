@@ -23,8 +23,7 @@
 
 using namespace KUnitConversion;
 
-Pressure::Pressure()
-: UnitCategory()
+Pressure::Pressure() : UnitCategory(PressureCategory)
 {
     setName(i18n("Pressure"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (pressure)", "%1 %2"));

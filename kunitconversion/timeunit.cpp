@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Time::Time()
+Time::Time() : UnitCategory(TimeCategory)
 {
     setName(i18n("Time"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (time)", "%1 %2"));

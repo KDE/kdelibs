@@ -30,7 +30,7 @@ class BeaufortConv : public Complex
     double fromDefault(double value) const { return pow(value / 0.836, 2.0 / 3.0); };
 };
 
-Velocity::Velocity()
+Velocity::Velocity() : UnitCategory(VelocityCategory)
 {
     setName(i18n("Velocity"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (velocity)", "%1 %2"));

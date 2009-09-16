@@ -33,7 +33,7 @@ using namespace KUnitConversion;
 
 static const char URL[] = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
 
-Currency::Currency()
+Currency::Currency() : UnitCategory(CurrencyCategory)
 {
     setName(i18n("Currency"));
     setDescription(i18n("From ECB"));

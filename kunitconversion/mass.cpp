@@ -24,7 +24,7 @@
 
 using namespace KUnitConversion;
 
-Mass::Mass()
+Mass::Mass() : UnitCategory(MassCategory)
 {
     setName(i18n("Mass"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (mass)", "%1 %2"));

@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Area::Area()
+Area::Area() : UnitCategory(AreaCategory)
 {
     setName(i18n("Area"));
     // i18n: Used when converting to symbol string e.g. 2.34 m²

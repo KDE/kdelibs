@@ -41,7 +41,7 @@ class mpgi : public Complex
     double fromDefault(double value) const { return 282.5 / value; };
 };
 
-FuelEfficiency::FuelEfficiency()
+FuelEfficiency::FuelEfficiency() : UnitCategory(FuelEfficiencyCategory)
 {
     setName(i18n("Fuel Efficiency"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (fuel efficiency)", "%1 %2"));

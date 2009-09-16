@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Volume::Volume()
+Volume::Volume() : UnitCategory(VolumeCategory)
 {
     setName(i18n("Volume"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (volume)", "%1 %2"));

@@ -23,7 +23,7 @@
 
 using namespace KUnitConversion;
 
-Density::Density()
+Density::Density() : UnitCategory(DensityCategory)
 {
     setName(i18n("Density"));
     setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (density)", "%1 %2"));

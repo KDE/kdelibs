@@ -41,10 +41,10 @@
 namespace KUnitConversion
 {
 
-class InvalidCategory : public UnitCategory
+class Invalid : public UnitCategory
 {
 public:
-    InvalidCategory()
+    Invalid() : UnitCategory(InvalidCategory)
     {
         const QString s;
         const KLocalizedString ls;
@@ -57,27 +57,25 @@ public:
 class ConverterPrivate
 {
 public:
-    QList<UnitCategory *> categories;
+    QMap<int, UnitCategory *> categories;
     ConverterPrivate()
     {
         KGlobal::locale()->insertCatalog("libkunitconversion");
 
-        // the invalid category MUST be the first item
-        categories.append(new InvalidCategory);
-
-        categories.append(new Length);
-        categories.append(new Area);
-        categories.append(new Volume);
-        categories.append(new Temperature);
-        categories.append(new Velocity);
-        categories.append(new Mass);
-        categories.append(new Pressure);
-        categories.append(new Energy);
-        categories.append(new Currency);
-        categories.append(new Power);
-        categories.append(new Time);
-        categories.append(new FuelEfficiency);
-        categories.append(new Density);
+        categories[InvalidCategory] = new Invalid;
+        categories[LengthCategory] = new Length;
+        categories[AreaCategory] = new Area();
+        categories[VolumeCategory] = new Volume;
+        categories[TemperatureCategory] = new Temperature;
+        categories[VelocityCategory] = new Velocity;
+        categories[MassCategory] = new Mass;
+        categories[PressureCategory] = new Pressure;
+        categories[EnergyCategory] = new Energy;
+        categories[CurrencyCategory] = new Currency;
+        categories[PowerCategory] = new Power;
+        categories[TimeCategory] = new Time;
+        categories[FuelEfficiencyCategory] = new FuelEfficiency;
+        categories[DensityCategory] = new Density;
     };
 
     ~ConverterPrivate()
@@ -164,18 +162,26 @@ UnitPtr Converter::unit(int unitId) const
 
 UnitCategory* Converter::category(const QString& category) const
 {
-    foreach (UnitCategory *u, categories()) {
+    foreach (UnitCategory *u, d->categories) {
         if (u->name() == category)
             return u;
     }
-
     // not found
-    return d->categories[0];
+    return d->categories[InvalidCategory];
+}
+
+UnitCategory* Converter::category(int categoryId) const
+{
+    if (d->categories.contains(categoryId)) {
+        return d->categories[categoryId];
+    }
+    // not found
+    return d->categories[InvalidCategory];
 }
 
 QList<UnitCategory*> Converter::categories() const
 {
-    QList<UnitCategory*> categories = d->categories;
+    QList<UnitCategory*> categories = d->categories.values();
     categories.removeAt(0);
     return categories;
 }
