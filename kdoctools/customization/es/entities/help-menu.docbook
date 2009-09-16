@@ -10,7 +10,7 @@
 </menuchoice>
 </term>
 <listitem><para><action>Inicia el sistema de ayuda de KDE</action> 
-mostrando las páginas de información de &kappname;. 
+mostrando las páginas de información de &kappname; 
 (este documento).</para></listitem>
 </varlistentry>
 
@@ -23,11 +23,11 @@ mostrando las páginas de información de &kappname;.
 <guimenuitem>¿Qué es esto?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Modifica la forma del puntero transformandola en
+<listitem><para><action>Modifica la forma del puntero transformándola en
 una combinación de flecha e 
 interrogación.</action> Al pulsar sobre elementos dentro de &kappname; 
-se abrirá una ventana de ayuda (si existe para ese caso particular) 
-describiendo la función de dicho elemento.</para></listitem>
+se abrirá una ventana de ayuda (si existe para cada caso particular) 
+describiendo la función de dichos elementos.</para></listitem>
 </varlistentry>
 
 
@@ -46,7 +46,7 @@ mejora o nueva propiedad <quote>deseable</quote>.</para></listitem>
 <guimenu>Ayuda</guimenu>
 <guimenuitem>Acerca de &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Mostrará información sobre la versión y el 
+<listitem><para><action>Muestra información sobre la versión de la aplicación y su 
 autor.</action></para></listitem>
 </varlistentry>
 
