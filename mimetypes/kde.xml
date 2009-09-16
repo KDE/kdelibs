@@ -76,17 +76,6 @@ Notes:
     </magic>
     <root-XML namespaceURI='http://www.newzbin.com/DTD/2003/nzb' localName='nzb'/>
   </mime-type>
-  <mime-type type="application/x-openraster">
-    <comment>OpenRaster document</comment>
-    <magic priority="50">
-      <match type="string" value="PK\003\004" offset="0">
-        <match type="string" value="mimetype" offset="30">
-          <match type="string" value="application/x-openraster" offset="38"/>
-        </match>
-      </match>
-    </magic>
-    <glob pattern="*.odr"/>
-  </mime-type>
   <mime-type type="application/x-plasma">
     <sub-class-of type="application/zip"/>
     <comment>plasmoid</comment>
