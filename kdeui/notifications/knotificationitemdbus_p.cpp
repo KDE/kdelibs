@@ -46,7 +46,7 @@
 #include "notificationitemadaptor.h"
 
 // Marshall the ImageStruct data into a D-BUS argument
-const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbusImageStruct &icon)
+const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusImageStruct &icon)
 {
     argument.beginStructure();
     argument << icon.width;
@@ -57,7 +57,7 @@ const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbus
 }
 
 // Retrieve the ImageStruct data from the D-BUS argument
-const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbusImageStruct &icon)
+const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusImageStruct &icon)
 {
     qint32 width;
     qint32 height;
@@ -78,9 +78,9 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbus
 
 
 // Marshall the ImageVector data into a D-BUS argument
-const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbusImageVector &iconVector)
+const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusImageVector &iconVector)
 {
-    argument.beginArray(qMetaTypeId<ExperimentalKDbusImageStruct>());
+    argument.beginArray(qMetaTypeId<KDbusImageStruct>());
     for (int i=0; i<iconVector.size(); ++i) {
         argument << iconVector[i]; 
     }
@@ -89,13 +89,13 @@ const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbus
 }
 
 // Retrieve the ImageVector data from the D-BUS argument
-const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbusImageVector &iconVector)
+const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusImageVector &iconVector)
 {
     argument.beginArray();
     iconVector.clear();
 
     while ( !argument.atEnd() ) {
-       ExperimentalKDbusImageStruct element;
+       KDbusImageStruct element;
        argument >> element;
        iconVector.append(element);
     }
@@ -107,7 +107,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbus
 }
 
 // Marshall the ToolTipStruct data into a D-BUS argument
-const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbusToolTipStruct &toolTip)
+const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusToolTipStruct &toolTip)
 {
     argument.beginStructure();
     argument << toolTip.icon;
@@ -119,10 +119,10 @@ const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbus
 }
 
 // Retrieve the ToolTipStruct data from the D-BUS argument
-const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbusToolTipStruct &toolTip)
+const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusToolTipStruct &toolTip)
 {
     QString icon;
-    ExperimentalKDbusImageVector image;
+    KDbusImageVector image;
     QString title;
     QString subTitle;
 
@@ -207,7 +207,7 @@ QString KNotificationItemDBus::IconName() const
     return m_notificationItem->iconName();
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::IconPixmap() const
+KDbusImageVector KNotificationItemDBus::IconPixmap() const
 {
     return m_notificationItem->d->serializedIcon;
 }
@@ -217,7 +217,7 @@ QString KNotificationItemDBus::OverlayIconName() const
     return m_notificationItem->overlayIconName();
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::OverlayIconPixmap() const
+KDbusImageVector KNotificationItemDBus::OverlayIconPixmap() const
 {
     return m_notificationItem->d->serializedOverlayIcon;
 }
@@ -229,12 +229,12 @@ QString KNotificationItemDBus::AttentionIconName() const
     return m_notificationItem->attentionIconName();
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::AttentionIconPixmap() const
+KDbusImageVector KNotificationItemDBus::AttentionIconPixmap() const
 {
     return m_notificationItem->d->serializedAttentionIcon;
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::AttentionMovie() const
+KDbusImageVector KNotificationItemDBus::AttentionMovie() const
 {
     return m_notificationItem->d->movieVector;
 }
@@ -242,9 +242,9 @@ ExperimentalKDbusImageVector KNotificationItemDBus::AttentionMovie() const
 
 //ToolTip
 
-ExperimentalKDbusToolTipStruct KNotificationItemDBus::ToolTip() const
+KDbusToolTipStruct KNotificationItemDBus::ToolTip() const
 {
-    ExperimentalKDbusToolTipStruct toolTip;
+    KDbusToolTipStruct toolTip;
     toolTip.icon = m_notificationItem->toolTipIconName();
     toolTip.image = m_notificationItem->d->serializedToolTipIcon;
     toolTip.title = m_notificationItem->toolTipTitle();

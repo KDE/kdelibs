@@ -30,17 +30,17 @@
 #include <QPixmap>
 
 //Custom message type for DBus
-struct ExperimentalKDbusImageStruct {
+struct KDbusImageStruct {
     int width;
     int height;
     QByteArray data;
 };
 
-typedef QVector<ExperimentalKDbusImageStruct> ExperimentalKDbusImageVector;
+typedef QVector<KDbusImageStruct> KDbusImageVector;
 
-struct ExperimentalKDbusToolTipStruct {
+struct KDbusToolTipStruct {
     QString icon;
-    ExperimentalKDbusImageVector image;
+    KDbusImageVector image;
     QString title;
     QString subTitle;
 };
@@ -57,13 +57,13 @@ class KNotificationItemDBus : public QObject
     Q_PROPERTY(QString Status READ Status)
     Q_PROPERTY(int WindowId READ WindowId)
     Q_PROPERTY(QString IconName READ IconName)
-    Q_PROPERTY(ExperimentalKDbusImageVector IconPixmap READ IconPixmap)
+    Q_PROPERTY(KDbusImageVector IconPixmap READ IconPixmap)
     Q_PROPERTY(QString OverlayIconName READ OverlayIconName)
-    Q_PROPERTY(ExperimentalKDbusImageVector OverlayIconPixmap READ OverlayIconPixmap)
+    Q_PROPERTY(KDbusImageVector OverlayIconPixmap READ OverlayIconPixmap)
     Q_PROPERTY(QString AttentionIconName READ AttentionIconName)
-    Q_PROPERTY(ExperimentalKDbusImageVector AttentionIconPixmap READ AttentionIconPixmap)
-    Q_PROPERTY(ExperimentalKDbusImageVector AttentionMovie READ AttentionMovie)
-    Q_PROPERTY(ExperimentalKDbusToolTipStruct ToolTip READ ToolTip)
+    Q_PROPERTY(KDbusImageVector AttentionIconPixmap READ AttentionIconPixmap)
+    Q_PROPERTY(KDbusImageVector AttentionMovie READ AttentionMovie)
+    Q_PROPERTY(KDbusToolTipStruct ToolTip READ ToolTip)
 
     friend class KNotificationItem;
 public:
@@ -111,7 +111,7 @@ public:
     /**
      * @return a serialization of the icon data
      */
-    ExperimentalKDbusImageVector IconPixmap() const;
+    KDbusImageVector IconPixmap() const;
 
     /**
      * @return the name of the overlay of the main icon to be displayed
@@ -122,7 +122,7 @@ public:
     /**
      * @return a serialization of the icon data
      */
-    ExperimentalKDbusImageVector OverlayIconPixmap() const;
+    KDbusImageVector OverlayIconPixmap() const;
 
     /**
      * @return the name of the icon to be displayed when the application
@@ -134,17 +134,17 @@ public:
     /**
      * @return a serialization of the requesting attention icon data
      */
-    ExperimentalKDbusImageVector AttentionIconPixmap() const;
+    KDbusImageVector AttentionIconPixmap() const;
 
     /**
      * @return a serialization of the requesting attention movie data
      */
-    ExperimentalKDbusImageVector AttentionMovie() const;
+    KDbusImageVector AttentionMovie() const;
 
     /**
      * all the data needed for a tooltip
      */
-    ExperimentalKDbusToolTipStruct ToolTip() const;
+    KDbusToolTipStruct ToolTip() const;
 
 
 public Q_SLOTS:
@@ -208,19 +208,19 @@ private:
 };
 
 
-const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbusImageStruct &icon);
-const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbusImageStruct &icon);
+const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusImageStruct &icon);
+const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusImageStruct &icon);
 
-Q_DECLARE_METATYPE(ExperimentalKDbusImageStruct)
+Q_DECLARE_METATYPE(KDbusImageStruct)
 
-const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbusImageVector &iconVector);
-const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbusImageVector &iconVector);
+const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusImageVector &iconVector);
+const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusImageVector &iconVector);
 
-Q_DECLARE_METATYPE(ExperimentalKDbusImageVector)
+Q_DECLARE_METATYPE(KDbusImageVector)
 
-const QDBusArgument &operator<<(QDBusArgument &argument, const ExperimentalKDbusToolTipStruct &toolTip);
-const QDBusArgument &operator>>(const QDBusArgument &argument, ExperimentalKDbusToolTipStruct &toolTip);
+const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusToolTipStruct &toolTip);
+const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusToolTipStruct &toolTip);
 
-Q_DECLARE_METATYPE(ExperimentalKDbusToolTipStruct)
+Q_DECLARE_METATYPE(KDbusToolTipStruct)
 
 #endif

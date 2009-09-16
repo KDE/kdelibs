@@ -88,8 +88,8 @@ public:
     void legacyWheelEvent(int delta);
     void legacyActivated(QSystemTrayIcon::ActivationReason reason);
 
-    ExperimentalKDbusImageStruct imageToStruct(const QImage &image);
-    ExperimentalKDbusImageVector iconToVector(const QIcon &icon);
+    KDbusImageStruct imageToStruct(const QImage &image);
+    KDbusImageVector iconToVector(const QIcon &icon);
     bool checkVisibility(QPoint pos, bool perform = true);
 
     static const int s_protocolVersion;
@@ -102,21 +102,21 @@ public:
     KNotificationItem::ItemStatus status;
 
     QString iconName;
-    ExperimentalKDbusImageVector serializedIcon;
+    KDbusImageVector serializedIcon;
     QIcon icon;
 
     QString overlayIconName;
-    ExperimentalKDbusImageVector serializedOverlayIcon;
+    KDbusImageVector serializedOverlayIcon;
     QIcon overlayIcon;
 
     QString attentionIconName;
     QIcon attentionIcon;
-    ExperimentalKDbusImageVector serializedAttentionIcon;
+    KDbusImageVector serializedAttentionIcon;
     QMovie *movie;
-    ExperimentalKDbusImageVector movieVector;
+    KDbusImageVector movieVector;
 
     QString toolTipIconName;
-    ExperimentalKDbusImageVector serializedToolTipIcon;
+    KDbusImageVector serializedToolTipIcon;
     QIcon toolTipIcon;
     QString toolTipTitle;
     QString toolTipSubTitle;

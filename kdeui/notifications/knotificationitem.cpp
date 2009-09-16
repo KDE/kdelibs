@@ -112,7 +112,7 @@ void KNotificationItem::setStatus(const ItemStatus status)
 
 void KNotificationItem::setIconByName(const QString &name)
 {
-    d->serializedIcon = ExperimentalKDbusImageVector();
+    d->serializedIcon = KDbusImageVector();
     d->iconName = name;
     emit d->notificationItemDbus->NewIcon();
     if (d->systemTrayIcon) {
@@ -189,7 +189,7 @@ QIcon KNotificationItem::overlayIconPixmap() const
 
 void KNotificationItem::setAttentionIconByName(const QString &name)
 {
-    d->serializedAttentionIcon = ExperimentalKDbusImageVector();
+    d->serializedAttentionIcon = KDbusImageVector();
     d->attentionIconName = name;
     emit d->notificationItemDbus->NewAttentionIcon();
 }
@@ -283,7 +283,7 @@ void KNotificationItem::setToolTip(const QIcon &icon, const QString &title, cons
 
 void KNotificationItem::setToolTipIconByName(const QString &name)
 {
-    d->serializedToolTipIcon = ExperimentalKDbusImageVector();
+    d->serializedToolTipIcon = KDbusImageVector();
     d->toolTipIconName = name;
     emit d->notificationItemDbus->NewToolTip();
 }
@@ -606,9 +606,9 @@ void KNotificationItemPrivate::init(const QString &extraId)
     // if a system tray icon is still present.
     KGlobal::ref();
 
-    qDBusRegisterMetaType<ExperimentalKDbusImageStruct>();
-    qDBusRegisterMetaType<ExperimentalKDbusImageVector>();
-    qDBusRegisterMetaType<ExperimentalKDbusToolTipStruct>();
+    qDBusRegisterMetaType<KDbusImageStruct>();
+    qDBusRegisterMetaType<KDbusImageVector>();
+    qDBusRegisterMetaType<KDbusToolTipStruct>();
 
     actionCollection = new KActionCollection(q);
     notificationItemDbus = new KNotificationItemDBus(q);
@@ -852,9 +852,9 @@ void KNotificationItemPrivate::minimizeRestore(bool show)
 #endif
 }
 
-ExperimentalKDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImage &image)
+KDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImage &image)
 {
-    ExperimentalKDbusImageStruct icon;
+    KDbusImageStruct icon;
     icon.width = image.size().width();
     icon.height = image.size().height();
     if (image.format() == QImage::Format_ARGB32) {
@@ -876,9 +876,9 @@ ExperimentalKDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImag
     return icon;
 }
 
-ExperimentalKDbusImageVector KNotificationItemPrivate::iconToVector(const QIcon &icon)
+KDbusImageVector KNotificationItemPrivate::iconToVector(const QIcon &icon)
 {
-    ExperimentalKDbusImageVector iconVector;
+    KDbusImageVector iconVector;
 
     QPixmap iconPixmap = icon.pixmap(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
 
