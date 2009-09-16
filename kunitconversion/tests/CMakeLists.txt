@@ -10,4 +10,5 @@ endmacro(KUNITCONVERSION_UNIT_TESTS)
 
 KUNITCONVERSION_UNIT_TESTS(
     valuetest
+    categorytest
 )
