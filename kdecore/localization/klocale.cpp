@@ -337,71 +337,18 @@ void KLocalePrivate::initMainCatalogs()
   }
 }
 
-static inline void getLanguagesFromVariable(QStringList& list, const char* variable)
+static void getLanguagesFromVariable(QStringList& list, const char* variable,
+                                     bool isLanguageList = false)
 {
-  QByteArray var( qgetenv(variable) );
-  if (!var.isEmpty())
-    list += QFile::decodeName(var).split(':');
-}
-
-void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
-{
-  KConfigGroup cg(config, "Locale");
-
-  // Set the country as specified by the KDE config or use default,
-  // do not consider environment variables.
-  if (country.isEmpty())
-    country = cg.readEntry("Country");
-  if (country.isEmpty())
-      country = KLocale::defaultCountry();
-
-  // Collect possible languages by decreasing priority.
-  // The priority is as follows:
-  // - KDE_LANG environment variable (can be a list)
-  // - KDE configuration (can be a list)
-  // - environment variables considered by gettext(3)
-  // The environment variables are not considered if useEnv is false.
-  QStringList list;
-
-  if (!language.isEmpty())
-      list.append(language);
-
-  // Collect languages set by KDE_LANG.
-  if (useEnv)
-    getLanguagesFromVariable(list, "KDE_LANG");
-
-  // Collect languages set by KDE config.
-  QString languages(cg.readEntry("Language", QString()));
-  if (!languages.isEmpty())
-    list += languages.split(':');
-
-  // Collect languages read from environment variables by gettext(3).
-  QStringList rawList;
-  if (useEnv) {
-    // Collect by same order of priority as for gettext(3).
-
-    // LANGUAGE should contain colon-separated list of exact language codes,
-    // so add them directly.
-    getLanguagesFromVariable(list, "LANGUAGE");
-
-    // Other environment variables contain locale string, which should
-    // be checked for all combinations yielding language codes.
-    getLanguagesFromVariable(rawList, "LC_ALL");
-    getLanguagesFromVariable(rawList, "LC_MESSAGES");
-    getLanguagesFromVariable(rawList, "LANG");
-  }
-#ifdef Q_WS_WIN // how about Mac?
-  rawList += QLocale::system().name(); // fall back to the system language
-#endif
-
-#ifndef Q_WS_WIN
-  if (useEnv) // Collect languages  - continued...
-#endif
-  {
-    // Process the raw list to create possible combinations.
-    foreach (const QString &ln, rawList) {
+  QByteArray var(qgetenv(variable));
+  if (!var.isEmpty()) {
+    QString value = QFile::decodeName(var);
+    if (isLanguageList) {
+      list += value.split(':');
+    } else {
+      // Process the value to create possible combinations.
       QString lang, ctry, modf, cset;
-      KLocale::splitLocale(ln, lang, ctry, modf, cset);
+      KLocale::splitLocale(value, lang, ctry, modf, cset);
 
       if (!ctry.isEmpty() && !modf.isEmpty()) {
         list += lang + '_' + ctry + '@' + modf;
@@ -418,6 +365,49 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
       list += lang;
     }
   }
+}
+
+void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
+{
+  KConfigGroup cg(config, "Locale");
+
+  // Set the country as specified by the KDE config or use default,
+  // do not consider environment variables.
+  if (country.isEmpty())
+    country = cg.readEntry("Country");
+  if (country.isEmpty())
+      country = KLocale::defaultCountry();
+
+  // Collect possible languages by decreasing priority.
+  // The priority is as follows:
+  // - the internally set language, if any
+  // - KDE_LANG environment variable (can be a list)
+  // - KDE configuration (can be a list)
+  // - environment variables considered by gettext(3)
+  // The environment variables are not considered if useEnv is false.
+  QStringList list;
+  if (!language.isEmpty()) {
+    list += language;
+  }
+  if (useEnv) {
+    // KDE_LANG contains list of language codes, not locale string.
+    getLanguagesFromVariable(list, "KDE_LANG", true);
+  }
+  QString languages(cg.readEntry("Language", QString()));
+  if (!languages.isEmpty()) {
+    list += languages.split(':');
+  }
+  if (useEnv) {
+    // Collect languages by same order of priority as for gettext(3).
+    // LANGUAGE contains list of language codes, not locale string.
+    getLanguagesFromVariable(list, "LANGUAGE", true);
+    getLanguagesFromVariable(list, "LC_ALL");
+    getLanguagesFromVariable(list, "LC_MESSAGES");
+    getLanguagesFromVariable(list, "LANG");
+  }
+#ifdef Q_WS_WIN // how about Mac?
+  list += QLocale::system().name(); // fall back to the system language
+#endif
 
   // Send the list to filter for really present languages on the system.
   setLanguage(list);
