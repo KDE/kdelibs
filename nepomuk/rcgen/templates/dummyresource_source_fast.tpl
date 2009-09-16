@@ -20,6 +20,8 @@
 #include <soprano/literalvalue.h>
 #include <soprano/model.h>
 #include <soprano/nao.h>
+#include <soprano/rdf.h>
+#include <soprano/rdfs.h>
 
 using namespace NepomukFast;
 
@@ -31,6 +33,12 @@ Resource::Resource( const QUrl& uri, const QUrl& graphUri, const QUrl& type )
 
     if ( m_graphUri.isEmpty() )
         m_graphUri = Nepomuk::ResourceManager::instance()->generateUniqueUri( QString() );
+
+    if ( m_type.isEmpty() )
+        m_type = Soprano::Vocabulary::RDFS::Resource();
+
+    // add the type right away
+    Nepomuk::ResourceManager::instance()->mainModel()->addStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_type, m_graphUri );
 }
 
 QUrl Resource::uri() const
