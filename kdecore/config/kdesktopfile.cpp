@@ -61,7 +61,7 @@ KDesktopFile::KDesktopFile(const char * resourceType, const QString &fileName)
 }
 
 KDesktopFile::KDesktopFile(const QString &fileName)
-    : KConfig(*new KDesktopFilePrivate("apps", fileName))
+    : KConfig(*new KDesktopFilePrivate("apps", fileName)) // TODO KDE5: default to xdgdata-apps instead of apps
 {
     Q_D(KDesktopFile);
     reparseConfiguration();
