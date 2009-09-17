@@ -20,7 +20,6 @@
 #include "kfilterproxysearchline.h"
 
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QTimer>
 #include <QSortFilterProxyModel>
 
@@ -69,18 +68,12 @@ void KFilterProxySearchLine::Private::slotSearchLineActivate()
 KFilterProxySearchLine::KFilterProxySearchLine( QWidget* parent )
         : QWidget( parent ), d( new Private( this ) )
 {
-    QLabel *label = new QLabel( i18n( "S&earch:" ), this );
-    label->setObjectName( QLatin1String( "kde toolbar widget" ) );
-
     d->searchLine = new KLineEdit( this );
     d->searchLine->setClearButtonShown( true );
-
-    label->setBuddy( d->searchLine );
-    label->show();
+    d->searchLine->setClickMessage(i18n("Search..."));
 
     QHBoxLayout* layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
-    layout->addWidget( label );
     layout->addWidget( d->searchLine );
 
     connect( d->searchLine, SIGNAL( textChanged( const QString& ) ),
