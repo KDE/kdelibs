@@ -40,6 +40,12 @@ struct KPtyProcessPrivate : KProcessPrivate {
     {
     }
 
+    void _k_onStateChanged(QProcess::ProcessState newState)
+    {
+        if (newState == QProcess::NotRunning && addUtmp)
+            pty->logout();
+    }
+
     KPtyDevice *pty;
     KPtyProcess::PtyChannels ptyChannels;
     bool addUtmp : 1;
@@ -52,6 +58,8 @@ KPtyProcess::KPtyProcess(QObject *parent) :
 
     d->pty = new KPtyDevice(this);
     d->pty->open();
+    connect(this, SIGNAL(stateChanged(QProcess::ProcessState)),
+            SLOT(_k_onStateChanged(QProcess::ProcessState)));
 }
 
 KPtyProcess::KPtyProcess(int ptyMasterFd, QObject *parent) :
@@ -61,12 +69,19 @@ KPtyProcess::KPtyProcess(int ptyMasterFd, QObject *parent) :
 
     d->pty = new KPtyDevice(this);
     d->pty->open(ptyMasterFd);
+    connect(this, SIGNAL(stateChanged(QProcess::ProcessState)),
+            SLOT(_k_onStateChanged(QProcess::ProcessState)));
 }
 
 KPtyProcess::~KPtyProcess()
 {
     Q_D(KPtyProcess);
 
+    if (state() != QProcess::NotRunning && d->addUtmp) {
+        d->pty->logout();
+        disconnect(SIGNAL(stateChanged(QProcess::ProcessState)),
+                   this, SLOT(_k_onStateChanged(QProcess::ProcessState)));
+    }
     delete d->pty;
 }
 
