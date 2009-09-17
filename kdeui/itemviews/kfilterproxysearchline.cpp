@@ -70,7 +70,7 @@ KFilterProxySearchLine::KFilterProxySearchLine( QWidget* parent )
 {
     d->searchLine = new KLineEdit( this );
     d->searchLine->setClearButtonShown( true );
-    d->searchLine->setClickMessage(i18n("Search..."));
+    d->searchLine->setClickMessage(i18n("Search"));
 
     QHBoxLayout* layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
