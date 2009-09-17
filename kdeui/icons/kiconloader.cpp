@@ -365,43 +365,6 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
     }
 }
 
-#define KICONLOADER_CHECKS
-#ifdef KICONLOADER_CHECKS
-// Keep a list of recently created and destroyed KIconLoader instances in order
-// to detect bugs like #68528.
-struct KIconLoaderDebug
-{
-    KIconLoaderDebug( KIconLoader* l, const QString& a )
-        : loader( l ), appname( a ), valid( true )
-        {}
-    KIconLoader* loader;
-    QString appname;
-    bool valid;
-    QString delete_bt;
-};
-
-static QList< KIconLoaderDebug > *kiconloaders;
-
-static void registerIconLoader( KIconLoader* iconloader, const QString& _appname )
-{
-    if( kiconloaders == NULL )
-        kiconloaders = new QList< KIconLoaderDebug>();
-    // check for the (very unlikely case) that new KIconLoader gets allocated
-    // at exactly same address like some previous one
-    for( QList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
-         it != kiconloaders->end();
-         )
-        {
-        if( (*it).loader == iconloader )
-            it = kiconloaders->erase( it );
-        else
-            ++it;
-        }
-    kiconloaders->append( KIconLoaderDebug( iconloader, _appname ));
-}
-
-#endif
-
 KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject* parent)
     : QObject(parent)
 {
@@ -410,9 +373,6 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject*
 
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
-#ifdef KICONLOADER_CHECKS
-    registerIconLoader(this, _appname);
-#endif
     d->init( _appname, _dirs );
 }
 
@@ -424,9 +384,6 @@ KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
 
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
-#ifdef KICONLOADER_CHECKS
-    registerIconLoader(this, componentData.componentName());
-#endif
     d->init(componentData.componentName(), componentData.dirs());
 }
 
@@ -546,19 +503,6 @@ bool KIconLoaderPrivate::initIconThemes()
 
 KIconLoader::~KIconLoader()
 {
-#ifdef KICONLOADER_CHECKS
-    for( QList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
-         it != kiconloaders->end();
-         ++it )
-        {
-        if( (*it).loader == this )
-            {
-            (*it).valid = false;
-            (*it).delete_bt = kBacktrace();
-            break;
-            }
-        }
-#endif
     delete d;
 }
 
