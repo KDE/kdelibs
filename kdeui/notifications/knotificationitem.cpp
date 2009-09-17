@@ -866,8 +866,8 @@ KDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImage &image)
 
     //swap to network byte order if we are little endian
     if (QSysInfo::ByteOrder == QSysInfo::LittleEndian) {
-        uint32_t *uintBuf = (uint32_t *) icon.data.data();
-        for (uint i = 0; i < icon.data.size()/sizeof(uint32_t *); ++i) {
+        quint32 *uintBuf = (quint32 *) icon.data.data();
+        for (uint i = 0; i < icon.data.size()/sizeof(quint32 *); ++i) {
             *uintBuf = htonl(*uintBuf);
             ++uintBuf;
         }
