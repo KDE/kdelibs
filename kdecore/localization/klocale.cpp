@@ -406,7 +406,7 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
     getLanguagesFromVariable(list, "LANG");
   }
 #ifdef Q_WS_WIN // how about Mac?
-  getLanguagesFromVariable(list, QLocale::system().name()); // fall back to the system language
+  getLanguagesFromVariable(list, QLocale::system().name().toLocal8Bit().data()); // fall back to the system language
 #endif
 
   // Send the list to filter for really present languages on the system.
