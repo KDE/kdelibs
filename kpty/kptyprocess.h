@@ -130,6 +130,8 @@ protected:
      */
     virtual void setupChildProcess();
 
+private:
+    Q_PRIVATE_SLOT(d_func(), void _k_onStateChanged(QProcess::ProcessState));
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KPtyProcess::PtyChannels)
