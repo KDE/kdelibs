@@ -1256,10 +1256,12 @@ KIO::MetaData::MetaData(const QMap<QString,QVariant>& map)
 
 KIO::MetaData & KIO::MetaData::operator += ( const QMap<QString,QVariant> &metaData )
 {
-  QMap<QString,QVariant>::ConstIterator it;
+  QMapIterator<QString,QVariant> it (metaData);
   
-  for(it = metaData.constBegin(); it !=  metaData.constEnd(); ++it)
+  while(it.hasNext()) {
+     it.next();
      insert(it.key(), it.value().toString());
+   }
 
   return *this;
 }
@@ -1267,22 +1269,18 @@ KIO::MetaData & KIO::MetaData::operator += ( const QMap<QString,QVariant> &metaD
 KIO::MetaData & KIO::MetaData::operator = ( const QMap<QString,QVariant> &metaData )
 {
   clear();
-
-  QMap<QString,QVariant>::ConstIterator it;
-  for(it = metaData.constBegin(); it !=  metaData.constEnd(); ++it)
-     insert(it.key(), it.value().toString());
-
-  return *this;
+  return (*this += metaData);
 }
 
 QVariant KIO::MetaData::toVariant() const
 {
- QMap<QString, QVariant> map;
- QMap<QString,QString>::ConstIterator it;
- QMap<QString,QString>::ConstIterator itEnd = constEnd();
-
- for(it = constBegin(); it != itEnd; ++it)
+  QMap<QString, QVariant> map;
+  QMapIterator <QString,QString> it (*this);
+ 
+ while (it.hasNext()) {
+   it.next();
    map.insert(it.key(), it.value());
+ }
 
  return QVariant(map);
 }
