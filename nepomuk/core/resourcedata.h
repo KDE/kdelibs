@@ -64,6 +64,8 @@ namespace Nepomuk {
             return m_ref;
         }
 
+        bool isFile();
+
         /**
          * Until the resource has not been synced or even loaded the actual URI is not known.
          * It might even be possible that none exists yet. Thus, the identifier used to create
