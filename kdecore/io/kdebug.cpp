@@ -181,11 +181,7 @@ struct KDebugPrivate
         QtOutput = 2,
         SyslogOutput = 3,
         NoOutput = 4,
-#ifdef QT_NO_DEBUG
-        DefaultOutput = NoOutput,
-#else
         DefaultOutput = QtOutput,
-#endif
         Unknown = 5
     };
 
