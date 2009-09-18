@@ -64,8 +64,6 @@ namespace Nepomuk {
             return m_ref;
         }
 
-        bool isFile();
-
         /**
          * Tries to determine if this resource represents a file by examining the type and the uri.
          */
