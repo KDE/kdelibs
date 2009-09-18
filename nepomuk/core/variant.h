@@ -1,4 +1,4 @@
-/* 
+/*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
  *
@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -36,7 +36,7 @@ namespace Nepomuk {
      * \class Variant variant.h Nepomuk/Variant
      *
      * The %Nepomuk Variant extends over QVariant by introducing
-     * direct support for Resource embedding, automatic list conversion 
+     * direct support for Resource embedding, automatic list conversion
      * and a restricted set of supported types.
      *
      * Important differences are:
@@ -47,7 +47,7 @@ namespace Nepomuk {
      *     method.
      * \li toString and toStringList always return a valid list and do automatic
      *     conversion from the actual type used in the Variant. Thus, if one only
-     *     needs to display the value in a Variant toString and toStringList 
+     *     needs to display the value in a Variant toString and toStringList
      *     do the job.
      *
      * \author Sebastian Trueg <trueg@kde.org>
@@ -160,7 +160,7 @@ namespace Nepomuk {
         bool operator!=( const Variant& other ) const;
 
         bool isValid() const;
-                
+
         /**
          * \return the QT Meta type id of the type
          */
@@ -215,27 +215,98 @@ namespace Nepomuk {
 
         QVariant variant() const;
 
+        /**
+         * Convert into an int value. Returns a valid value for
+         * all decimal types.
+         *
+         * Will return the first value of an int list.
+         */
         int toInt() const;
+
+        /**
+         * Convert into a qlonglong value. Returns a valid value for
+         * all decimal types.
+         *
+         * Will return the first value of a qlonglong list.
+         */
         qlonglong toInt64() const;
+
+        /**
+         * Convert into a uint value. Returns a valid value for
+         * all decimal types.
+         *
+         * Will return the first value of a uint list.
+         */
         uint toUnsignedInt() const;
+
+        /**
+         * Convert into a qulonglong value. Returns a valid value for
+         * all decimal types.
+         *
+         * Will return the first value of a qulonglong list.
+         */
         qulonglong toUnsignedInt64() const;
 
+        /**
+         * Convert into a bool value.
+         *
+         * Will return the first value of a bool list.
+         */
         bool toBool() const;
+
+        /**
+         * Convert into a double value.
+         *
+         * Will return the first value of a double list.
+         */
         double toDouble() const;
 
         /**
          * The toString() method is a little more powerful than other
          * toXXX methods since it actually converts all values to string.
-         * Thus, toString should work always (even list variants are converted 
+         * Thus, toString should work always (even list variants are converted
          * to a comma-separated list)
          *
          * Resources are converted to a string representation of their URI.
          */
         QString toString() const;
+
+        /**
+         * Convert into a QDate value.
+         *
+         * Will return the first value of a QDate list.
+         */
         QDate toDate() const;
+
+        /**
+         * Convert into a QTime value.
+         *
+         * Will return the first value of a QTime list.
+         */
         QTime toTime() const;
+
+        /**
+         * Convert into a QDateTime value.
+         *
+         * Will return the first value of a QDateTime list.
+         */
         QDateTime toDateTime() const;
+
+        /**
+         * Convert into a QUrl value. Can handle both QUrl and Resource variants.
+         * The latter will be converted into its resource URI
+         *
+         * Will return the first value of a QUrl list.
+         *
+         * \sa Resource::resourceUri
+         */
         QUrl toUrl() const;
+
+        /**
+         * Convert into a Resource value.
+         *
+         * Will return the first value of a Resource list.
+         */
         Resource toResource() const;
 
         QList<int> toIntList() const;
