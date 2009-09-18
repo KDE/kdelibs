@@ -48,6 +48,11 @@
 # endif
 #endif
 
+#ifdef QT_NO_DEBUG /* The application is compiled in release mode */
+# define KDE_DEBUG_ENABLED_BY_DEFAULT false
+#else
+# define KDE_DEBUG_ENABLED_BY_DEFAULT true
+#endif
 
 /**
  * An indicator of where you are in a source file, to be used in
@@ -242,14 +247,28 @@ public:
     inline QDebug operator()(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
         { if (cond) return operator()(area); return kDebugDevNull(); }
 
-    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type, int area = KDE_DEFAULT_DEBUG_AREA);
+#if 1 // TODO: remove before 4.4 is released
+    /// @internal
+    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type,
+                                             int area);
+    /// @internal
     static KDECORE_EXPORT bool hasNullOutput(QtMsgType type, bool condition,
-                                             int area = KDE_DEFAULT_DEBUG_AREA);
+                                             int area);
+#endif
 
+    /// @internal
+    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type,
+                                             bool condition,
+                                             int area,
+                                             bool enableByDefault);
+
+    /// @internal
     static inline bool hasNullOutputQtDebugMsg(int area = KDE_DEFAULT_DEBUG_AREA)
-        { return hasNullOutput(QtDebugMsg, area); }
+        { return hasNullOutput(QtDebugMsg, true, area, KDE_DEBUG_ENABLED_BY_DEFAULT); }
+    /// @internal
     static inline bool hasNullOutputQtDebugMsg(bool condition, int area = KDE_DEFAULT_DEBUG_AREA)
-        { return hasNullOutput(QtDebugMsg, condition, area); }
+        { return hasNullOutput(QtDebugMsg, condition, area, KDE_DEBUG_ENABLED_BY_DEFAULT); }
+
     /**
      * @since 4.4
      * Register a debug area dynamically.

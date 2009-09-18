@@ -378,7 +378,7 @@ struct KDebugPrivate
         return config;
     }
 
-    Cache::Iterator areaData(QtMsgType type, unsigned int num)
+    Cache::Iterator areaData(QtMsgType type, unsigned int num, bool enableByDefault = true)
     {
         if (!configObject()) {
             // we don't have a config and we can't create one...
@@ -402,7 +402,7 @@ struct KDebugPrivate
             static bool s_firstDebugFromApplication = true;
             if (s_firstDebugFromApplication) {
                 s_firstDebugFromApplication = false;
-                writeGroupForNamedArea(it->name, true);
+                writeGroupForNamedArea(it->name, enableByDefault);
             }
         }
 
@@ -736,9 +736,32 @@ void kClearDebugConfig()
     }
 }
 
-// static
+#if 1 // TODO: remove before 4.4 is released
+// static, deprecated
 bool KDebug::hasNullOutput(QtMsgType type, int area)
 {
+    return KDebug::hasNullOutput(type, true, area, true /*enableByDefault*/);
+}
+
+// static, deprecated
+bool KDebug::hasNullOutput(QtMsgType type, bool condition, int area)
+{
+    if (!condition) {
+        return true;
+    }
+    return KDebug::hasNullOutput(type, true, area, true /*enableByDefault*/);
+}
+#endif
+
+// static
+bool KDebug::hasNullOutput(QtMsgType type,
+                           bool condition,
+                           int area,
+                           bool enableByDefault)
+{
+    if (!condition) {
+        return true;
+    }
     if (kDebug_data.isDestroyed()) {
          // kDebugStream() will generate a warning anyway, so we don't.
         return false;
@@ -755,7 +778,7 @@ bool KDebug::hasNullOutput(QtMsgType type, int area)
         }
     }
 
-    KDebugPrivate::Cache::Iterator it = d->areaData(type, area);
+    KDebugPrivate::Cache::Iterator it = d->areaData(type, area, enableByDefault);
     const bool ret = it->mode[d->level(type)] == KDebugPrivate::NoOutput;
 
     // cache result for next time...
@@ -767,15 +790,6 @@ bool KDebug::hasNullOutput(QtMsgType type, int area)
     }
 
     return ret;
-}
-
-// static
-bool KDebug::hasNullOutput(QtMsgType type, bool condition, int area)
-{
-    if (!condition) {
-        return true;
-    }
-    return KDebug::hasNullOutput(type, area);
 }
 
 int KDebug::registerArea(const QByteArray& areaName, bool enabled)
@@ -793,4 +807,3 @@ int KDebug::registerArea(const QByteArray& areaName, bool enabled)
     d->writeGroupForNamedArea(areaName, enabled);
     return areaNumber;
 }
-
