@@ -38,11 +38,11 @@ void KDebugTest::initTestCase()
 
     // Now set up logging to file
     KConfig config("kdebugrc");
-    //config.group("0").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("180").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoFilename", "myarea.dbg");
     config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.group("qttest").writeEntry("WarnOutput", 0 /*FileOutput*/);
     config.sync();
 
     kClearDebugConfig();
@@ -111,6 +111,7 @@ void KDebugTest::testDebugToFile()
 {
     kDebug(180) << "TEST DEBUG 180";
     kDebug(0) << "TEST DEBUG 0";
+    kWarning() << "TEST WARNING 0";
     // The calls to kDebug(0) created a dynamic debug area named after the componentdata name
     KConfig config("kdebugrc");
     QVERIFY(config.hasGroup("qttest"));
@@ -121,6 +122,7 @@ void KDebugTest::testDebugToFile()
     QList<QByteArray> expected;
     expected << "/kdecore (kdelibs) KDebugTest::testDebugToFile: TEST DEBUG 180\n";
     expected << "KDebugTest::testDebugToFile: TEST DEBUG 0\n";
+    expected << "KDebugTest::testDebugToFile: TEST WARNING 0\n";
     expected << "KDebugTest::testDebugToFile: TEST DEBUG with newline\n";
     expected << "newline\n";
     expected << "/kdecore (kdelibs) TestClass::getSomething: Nested kDebug call\n";
