@@ -119,8 +119,8 @@ protected:
     void addIdMapValue(UnitPtr unit, int id);
     void setDescription(const QString& desc);
     void setUrl(const KUrl& url);
-    void setSymbolStringFormat(const QString& symbolStringFormat);
-    QString symbolStringFormat() const;
+    void setSymbolStringFormat(const KLocalizedString& symbolStringFormat);
+    KLocalizedString symbolStringFormat() const;
 
 private:
     friend class Unit;

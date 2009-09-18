@@ -18,6 +18,7 @@
  */
 
 #include "unitcategory.h"
+#include <klocalizedstring.h>
 
 namespace KUnitConversion
 {
@@ -40,7 +41,7 @@ public:
     QList<UnitPtr> units;
     QString description;
     KUrl url;
-    QString symbolStringFormat;
+    KLocalizedString symbolStringFormat;
     int id;
 };
 
@@ -55,12 +56,12 @@ UnitCategory::~UnitCategory()
     delete d;
 }
 
-void UnitCategory::setSymbolStringFormat(const QString& symbolStringFormat)
+void UnitCategory::setSymbolStringFormat(const KLocalizedString& symbolStringFormat)
 {
     d->symbolStringFormat = symbolStringFormat;
 }
 
-QString UnitCategory::symbolStringFormat() const
+KLocalizedString UnitCategory::symbolStringFormat() const
 {
     return d->symbolStringFormat;
 }

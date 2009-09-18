@@ -44,7 +44,7 @@ class mpgi : public Complex
 FuelEfficiency::FuelEfficiency() : UnitCategory(FuelEfficiencyCategory)
 {
     setName(i18n("Fuel Efficiency"));
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (fuel efficiency)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (fuel efficiency)", "%1 %2"));
 
     setDefaultUnit(UP(LitersPer100Kilometers, 1,
       i18nc("fuelefficiency unit symbol", "l/100 km"),

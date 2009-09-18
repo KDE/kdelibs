@@ -29,15 +29,15 @@ void ConverterTest::initTestCase()
 void ConverterTest::testCategory()
 {
     QCOMPARE(c.categoryForUnit("km")->id(), (int)LengthCategory);
-    QCOMPARE(c.category(i18n("Length"))->id(), (int)LengthCategory);
-    QCOMPARE(c.category(LengthCategory)->name(), i18n("Length"));
+    QCOMPARE(c.category(QString("Length"))->id(), (int)LengthCategory);
+    QCOMPARE(c.category(LengthCategory)->name(), QString("Length"));
     QVERIFY(c.categories().size() > 0);
 }
 
 void ConverterTest::testUnits()
 {
-    QCOMPARE(c.unit(i18n("km"))->symbol(), i18n("km"));
-    QCOMPARE(c.unit(Kilogram)->symbol(), i18n("kg"));
+    QCOMPARE(c.unit(QString("km"))->symbol(), QString("km"));
+    QCOMPARE(c.unit(Kilogram)->symbol(), QString("kg"));
 }
 
 void ConverterTest::testConvert()
@@ -54,7 +54,7 @@ void ConverterTest::testInvalid()
 {
     QCOMPARE(c.categoryForUnit("does not exist")->id(), (int)InvalidCategory);
     QCOMPARE(c.unit("does not exist")->symbol(), QString(""));
-    QCOMPARE(c.category("does not exist")->name(), i18n("Invalid"));
+    QCOMPARE(c.category("does not exist")->name(), QString("Invalid"));
 }
 
 QTEST_KDEMAIN(ConverterTest, NoGUI)

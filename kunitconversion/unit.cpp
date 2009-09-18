@@ -150,8 +150,8 @@ QString Unit::toString(double value, int fieldWidth, char format, int precision,
 QString Unit::toSymbolString(double value, int fieldWidth, char format, int precision,
                              const QChar& fillChar) const
 {
-    return category()->symbolStringFormat().arg(value, fieldWidth, format, precision, fillChar)
-            .arg(d->symbol);
+    return category()->symbolStringFormat().subs(value, fieldWidth, format, precision, fillChar)
+            .subs(d->symbol).toString();
 }
 
 bool Unit::isValid() const

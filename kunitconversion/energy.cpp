@@ -26,7 +26,7 @@ using namespace KUnitConversion;
 Energy::Energy() : UnitCategory(EnergyCategory)
 {
     setName(i18n("Energy"));
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (energy)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (energy)", "%1 %2"));
 
     U(Yottajoule, 1e+24,
       i18nc("energy unit symbol", "YJ"),

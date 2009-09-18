@@ -27,7 +27,7 @@ using namespace KUnitConversion;
 Mass::Mass() : UnitCategory(MassCategory)
 {
     setName(i18n("Mass"));
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (mass)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (mass)", "%1 %2"));
 
     U(Yottagram, 1e+24,
       i18nc("mass unit symbol", "Yg"),

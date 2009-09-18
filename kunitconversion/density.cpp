@@ -26,7 +26,7 @@ using namespace KUnitConversion;
 Density::Density() : UnitCategory(DensityCategory)
 {
     setName(i18n("Density"));
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (density)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (density)", "%1 %2"));
 
     U(YottakilogramsPerCubicMeter, 1e+24,
       i18nc("density unit symbol", "YKg/m³"),

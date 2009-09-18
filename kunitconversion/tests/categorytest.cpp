@@ -29,7 +29,7 @@ void CategoryTest::initTestCase()
 void CategoryTest::testInfo()
 {
     UnitCategory* cg = c.category(AreaCategory);
-    QCOMPARE(cg->name(), i18n("Area"));
+    QCOMPARE(cg->name(), QString("Area"));
     QCOMPARE(cg->description(), QString(""));
     QCOMPARE(cg->url(), KUrl());
     QCOMPARE(cg->id(), (int)AreaCategory);
@@ -38,10 +38,10 @@ void CategoryTest::testInfo()
 void CategoryTest::testUnits()
 {
     UnitCategory* cg = c.category(MassCategory);
-    QCOMPARE(cg->defaultUnit()->symbol(), i18n("kg"));
-    QCOMPARE(cg->hasUnit(i18n("g")), true);
-    QCOMPARE(cg->unit(i18n("g"))->symbol(), i18n("g"));
-    QCOMPARE(cg->unit(Kilogram)->symbol(), i18n("kg"));
+    QCOMPARE(cg->defaultUnit()->symbol(), QString("kg"));
+    QCOMPARE(cg->hasUnit(QString("g")), true);
+    QCOMPARE(cg->unit(QString("g"))->symbol(), QString("g"));
+    QCOMPARE(cg->unit(Kilogram)->symbol(), QString("kg"));
     QVERIFY(cg->units().size() > 0);
     QVERIFY(cg->allUnits().size() > 0);
 }
@@ -60,9 +60,9 @@ void CategoryTest::testConvert()
 void CategoryTest::testInvalid()
 {
     UnitCategory* cg = c.category(99999);
-    QCOMPARE(cg->name(), i18n("Invalid"));
+    QCOMPARE(cg->name(), QString("Invalid"));
     cg = c.category("don't exist");
-    QCOMPARE(cg->name(), i18n("Invalid"));
+    QCOMPARE(cg->name(), QString("Invalid"));
 }
 
 QTEST_KDEMAIN(CategoryTest, NoGUI)

@@ -38,7 +38,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
     setName(i18n("Currency"));
     setDescription(i18n("From ECB"));
     setUrl(KUrl("http://www.ecb.int/stats/exchange/eurofxref/html/index.en.html"));
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (currency)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (currency)", "%1 %2"));
 
     // Static rates
     setDefaultUnit(UP(Eur, 1,

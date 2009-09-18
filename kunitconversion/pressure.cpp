@@ -26,7 +26,7 @@ using namespace KUnitConversion;
 Pressure::Pressure() : UnitCategory(PressureCategory)
 {
     setName(i18n("Pressure"));
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (pressure)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (pressure)", "%1 %2"));
 
     U(Yottapascal, 1e+24,
       i18nc("pressure unit symbol", "YPa"),

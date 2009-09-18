@@ -27,7 +27,7 @@ Area::Area() : UnitCategory(AreaCategory)
 {
     setName(i18n("Area"));
     // i18n: Used when converting to symbol string e.g. 2.34 m²
-    setSymbolStringFormat(i18nc("%1 value, %2 unit symbol (area)", "%1 %2"));
+    setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (area)", "%1 %2"));
 
     U(SquareYottameter, 1e+48,
       // i18n: Used when unit symbol is needed.
