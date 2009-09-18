@@ -110,10 +110,9 @@ public:
     /**
      * Construct a new notification icon
      *
-     * @arg parent the parent object for this object. If the object passed in as
+     * @param parent the parent object for this object. If the object passed in as
      * a parent is also a QWidget, it will  be used as the main application window
      * represented by this icon and will be shown/hidden when an activation is requested.
-     * @see associatedWidget
      * @see associatedWidget
      **/
     explicit KNotificationItem(QObject *parent = 0);
@@ -130,8 +129,8 @@ public:
      * associate configuration information with this item in a way that can persist
      * between sessions or application restarts.
      *
-     * @arg id the unique id for this icon
-     * @arg parent the parent object for this object. If the object passed in as
+     * @param id the unique id for this icon
+     * @param parent the parent object for this object. If the object passed in as
      * a parent is also a QWidget, it will  be used as the main application window
      * represented by this icon and will be shown/hidden when an activation is requested.
      * @see associatedWidget
@@ -141,7 +140,7 @@ public:
     ~KNotificationItem();
 
     /**
-     * The id which was specified in the constructor. This should be
+     * @return The id which was specified in the constructor. This should be
      * guaranteed to be consistent between application starts and
      * untranslated, as host applications displaying items may use it for
      * storing configuration related to this item.
@@ -151,7 +150,7 @@ public:
     /**
      * Sets the category for this icon, usually it's needed to call this function only once
      *
-     * @arg category the new category for this icon
+     * @param category the new category for this icon
      */
     void setCategory(const ItemCategory category);
 
@@ -171,9 +170,7 @@ public:
     QString title() const;
 
     /**
-     * Sets a new status for this icon,
-     * a newStatus will be emitted after this call
-     * @see newStatus()
+     * Sets a new status for this icon.
      */
     void setStatus(const ItemStatus status);
 
@@ -186,7 +183,7 @@ public:
     /**
      * Sets a new main icon for the system tray
      *
-     * @arg name it must be a KIconLoader compatible name, this is
+     * @param name it must be a KIconLoader compatible name, this is
      * the preferred way to set an icon
      */
     void setIconByName(const QString &name);
@@ -200,7 +197,7 @@ public:
     /**
      * Sets a new main icon for the system tray
      *
-     * @arg pixmap a QPixmap representing the icon, use setIcon(const QString) when possible
+     * @param pixmap our icon, use setIcon(const QString) when possible
      */
     void setIconByPixmap(const QIcon &icon);
 
@@ -211,7 +208,8 @@ public:
 
     /**
      * Sets an icon to be used as overlay for the main one
-     * @arg icon name
+     * @param icon name, if name is and empty QString()
+     *     (and overlayIconPixmap() is empty too) the icon will be removed
      */
     void setOverlayIconByName(const QString &name);
 
@@ -222,8 +220,10 @@ public:
 
     /**
      * Sets an icon to be used as overlay for the main one
+     *   setOverlayIconByPixmap(QIcon()) will remove the overlay when
+     *   overlayIconName() is empty too.
      *
-     * @arg pixmap a QPixmap representing the icon, use setOverlayIcon(const QString) when possible
+     * @param pixmap our overlay icon, use setOverlayIcon(const QString) when possible.
      */
     void setOverlayIconByPixmap(const QIcon &icon);
 
@@ -239,7 +239,7 @@ public:
      * wants to request attention (usually the systemtray
      * will blink between this icon and the main one)
      *
-     * @arg name KIconLoader-compatible name of icon to use
+     * @param name KIconLoader-compatible name of icon to use
      */
     void setAttentionIconByName(const QString &name);
 
@@ -254,7 +254,7 @@ public:
      * Sets the pixmap of the requesting attention icon.
      * Use setAttentionIcon(const QString) instead when possible.
      *
-     * @arg icon pixmap to use for requesting attention.
+     * @param icon QIcon to use for requesting attention.
      */
     void setAttentionIconByPixmap(const QIcon &icon);
 
@@ -292,38 +292,23 @@ public:
     /**
      * Sets a new toolTip or this icon, a toolTip is composed of an icon,
      * a title ad a text, all fields are optional.
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
      *
-     * @arg iconName a KIconLoader compatible name for the tootip icon
-     * @arg title tootip title
-     * @arg subTitle subtitle for the toolTip
+     * @param iconName a KIconLoader compatible name for the tootip icon
+     * @param title tootip title
+     * @param subTitle subtitle for the toolTip
      */
     void setToolTip(const QString &iconName, const QString &title, const QString &subTitle);
 
     /**
-     * Sets a new toolTip or this icon, using a QPixmap as an icon instead of the name.
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
-     *
-     * If possible setToolTip(const QString &, const QString &, const QString &) should be used.
-     */
-    void setToolTip(const QPixmap &icon, const QString &title, const QString &subTitle);
-
-    /**
      * Sets a new toolTip or this notification icon.
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
      * This is an overloaded member provided for convenience
      */
     void setToolTip(const QIcon &icon, const QString &title, const QString &subTitle);
 
     /**
      * Set a new icon for the toolTip
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
      *
-     * @arg name the name for the icon
+     * @param name the name for the icon
      */
     void setToolTipIconByName(const QString &name);
 
@@ -335,11 +320,9 @@ public:
 
     /**
      * Set a new icon for the toolTip.
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
      *
-     * Use setToolTipIcon(QPixmap) if possible.
-     * @arg pixmap representing the icon
+     * Use setToolTipIconByName(QString) if possible.
+     * @param pixmap representing the icon
      */
     void setToolTipIconByPixmap(const QIcon &icon);
 
@@ -350,8 +333,6 @@ public:
 
     /**
      * Sets a new title for the toolTip
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
      */
     void setToolTipTitle(const QString &title);
 
@@ -362,8 +343,6 @@ public:
 
     /**
      * Sets a new subtitle for the toolTip
-     * newToolTip() signal will be emitted
-     * @see newToolTip()
      */
     void setToolTipSubTitle(const QString &subTitle);
 
@@ -378,7 +357,6 @@ public:
      * call by the systemtray over dbus
      * usually you don't need to call this unless you want to use
      * a custom KMenu subclass as context menu
-     * @see contextMenu(int, int)
      */
     void setContextMenu(KMenu *menu);
 
@@ -408,10 +386,18 @@ public:
     void setStandardActionsEnabled(bool enabled);
 
     /**
-     * Sets whether to show the standard items in the menu, such as Quit
+     * @return if the standard items in the menu, such as Quit
      */
     bool standardActionsEnabled() const;
 
+    /**
+     * Shows the user a notification. If possible use KNotify instead
+     *
+     * @param title message title
+     * @param message the actual text shown to the user
+     * @param icon icon to be shown to the user
+     * @param timeout how much time will elaps before hiding the message
+     */
     void showMessage(const QString &title, const QString &message, const QString &icon, int timeout = 10000);
 
 
@@ -420,22 +406,34 @@ public Q_SLOTS:
     /**
      * Shows the main widget and try to position it on top
      * of the other windows, if the widget is already visible, hide it.
+     *
+     * @param pos if it's a valid position it represents the mouse coordinates when the event was triggered
      */
     virtual void activate(const QPoint &pos = QPoint());
 
 Q_SIGNALS:
     /**
-     * Inform the host application that the mouse wheel has been used
+     * Inform the host application that the mouse wheel (or another mean of scrolling) has been used
+     *
+     * @param delta the amount of scrolling, can be either positive or negative
+     * @param orientation direction of the scrolling, can be either horizontal or vertical
      */
     void scrollRequested(int delta, Qt::Orientation orientation);
 
     /**
      * Inform the host application that an activation has been requested
+     * @param active if it's true the application asked for the activatin
+     *              of the main window, if it's false it asked for hiding
+     * @param pos the position in the screen where the user clicked to
+     *  trigger this signal, QPoint() if it's not the consequence of a mouse click.
      */
     void activateRequested(bool active, const QPoint &pos);
 
     /**
-     * Alternate activate action
+     * Alternate activate action, for instance middle mouse click
+     *
+     * @param pos the position in the screen where the user clicked to
+     *  trigger this signal, QPoint() if it's not the consequence of a mouse click.
      */
     void secondaryActivateRequested(const QPoint &pos);
 
