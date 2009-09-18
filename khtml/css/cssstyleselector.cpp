@@ -3322,13 +3322,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         FontDef fontDef = style->htmlFont().fontDef;
         int oldSize;
-        int size = 0;
+        float size = 0;
 
         float toPix = logicalDpiY/72.0f;
         if (toPix  < 96.0f/72.0f)
             toPix = 96.0f/72.0f;
 
-        int minFontSize = int(settings->minFontSize() * toPix);
+        float minFontSize = settings->minFontSize() * toPix;
 
         if(parentNode) {
             oldSize = parentStyle->font().pixelSize();
@@ -3350,14 +3350,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #endif
             switch(primitiveValue->getIdent())
             {
-            case CSS_VAL_XX_SMALL: size = int( fontSizes[0] ); break;
-            case CSS_VAL_X_SMALL:  size = int( fontSizes[1] ); break;
-            case CSS_VAL_SMALL:    size = int( fontSizes[2] ); break;
-            case CSS_VAL_MEDIUM:   size = int( fontSizes[3] ); break;
-            case CSS_VAL_LARGE:    size = int( fontSizes[4] ); break;
-            case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
-            case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
-            case CSS_VAL__KHTML_XXX_LARGE: size = int( fontSizes[7] ); break;
+            case CSS_VAL_XX_SMALL: size = fontSizes[0]; break;
+            case CSS_VAL_X_SMALL:  size = fontSizes[1]; break;
+            case CSS_VAL_SMALL:    size = fontSizes[2]; break;
+            case CSS_VAL_MEDIUM:   size = fontSizes[3]; break;
+            case CSS_VAL_LARGE:    size = fontSizes[4]; break;
+            case CSS_VAL_X_LARGE:  size = fontSizes[5]; break;
+            case CSS_VAL_XX_LARGE: size = fontSizes[6]; break;
+            case CSS_VAL__KHTML_XXX_LARGE: size = fontSizes[7]; break;
             case CSS_VAL_LARGER:
                 size = nextFontSize(fontSizes, oldSize, false);
                 break;
@@ -3373,14 +3373,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
                 if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
                      view && view->part())
-                    size = int( primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) *
-                                view->part()->fontScaleFactor() ) / 100;
+                    size = primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) *
+                                view->part()->fontScaleFactor() / 100.0;
 		else
-                    size = int( primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) );
+                    size = primitiveValue->computeLengthFloat(parentStyle, logicalDpiY);
             }
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                size = int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
-                        * parentStyle->font().pixelSize()) / 100;
+                size = primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
+                       * parentStyle->font().pixelSize() / 100.0;
             else
                 return;
         }
@@ -3393,7 +3393,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         //kDebug( 6080 ) << "computed raw font size: " << size;
 
-	fontDef.size = size;
+	fontDef.size = qRound(size);
         fontDirty |= style->setFontDef( fontDef );
         return;
     }
