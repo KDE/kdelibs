@@ -181,7 +181,7 @@ struct KDebugPrivate
         QtOutput = 2,
         SyslogOutput = 3,
         NoOutput = 4,
-        DefaultOutput = QtOutput,
+        DefaultOutput = QtOutput, // if you change DefaultOutput, also change the defaults in kdebugdialog!
         Unknown = 5
     };
 
