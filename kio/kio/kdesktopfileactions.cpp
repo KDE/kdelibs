@@ -31,6 +31,16 @@
 #include <klocale.h>
 #include "kservice.h"
 
+//Solid
+#include <solid/devicenotifier.h>
+#include <solid/device.h>
+#include <solid/deviceinterface.h>
+#include <solid/predicate.h>
+#include <solid/storageaccess.h>
+#include <solid/opticaldrive.h>
+#include <solid/opticaldisc.h>
+#include <solid/block.h>
+
 enum BuiltinServiceType { ST_MOUNT = 0x0E1B05B0, ST_UNMOUNT = 0x0E1B05B1 }; // random numbers
 
 static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg );
@@ -146,39 +156,48 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
     if ( !_url.isLocalFile() )
         return result;
 
+    bool mounted;
+
     KDesktopFile cfg( _url.toLocalFile() );
-    QString type = cfg.readType();
-
-    if ( type.isEmpty() )
-        return result;
-
-    if ( cfg.hasDeviceType() ) {
+    if ( cfg.hasDeviceType() ) {  // url to desktop file
         const QString dev = cfg.readDevice();
         if ( dev.isEmpty() ) {
             QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.toLocalFile() );
             KMessageBoxWrapper::error(0, tmp);
-        } else {
-            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );
-            // not mounted ?
-            if ( !mp ) {
-                KServiceAction mount("mount", i18n("Mount"), QString(), QString(), false);
-                mount.setData(QVariant(ST_MOUNT));
-                result.append(mount);
-            } else {
-                QString text;
-#ifdef HAVE_VOLMGT
-                /*
-                 *  Solaris' volume management can only umount+eject
-                 */
-                text = i18n("Eject");
-#else
-                text = i18n("Unmount");
-#endif
-                KServiceAction unmount("unmount", text, QString(), QString(), false);
-                unmount.setData(QVariant(ST_UNMOUNT));
-                result.append(unmount);
-            }
+            return result;
         }
+
+        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );
+        mounted = mp ? true : false;
+    }
+    else { // url to device
+        Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", _url.toLocalFile());
+        QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
+        if (devList.empty()) {
+            kDebug(7000) << "Device" << _url.toLocalFile() << "not found";
+            return result;
+        }
+        Solid::StorageAccess *access = devList[0].as<Solid::StorageAccess>();
+        mounted = access->isAccessible();
+    }
+
+    if ( !mounted ) { //not mounted
+        KServiceAction mount("mount", i18n("Mount"), QString(), QString(), false);
+        mount.setData(QVariant(ST_MOUNT));
+        result.append(mount);
+    } else { // mounted
+        QString text;
+#ifdef HAVE_VOLMGT
+         /*
+          *  Solaris' volume management can only umount+eject
+          */
+        text = i18n("Eject");
+#else
+        text = i18n("Unmount");
+#endif
+        KServiceAction unmount("unmount", text, QString(), QString(), false);
+        unmount.setData(QVariant(ST_UNMOUNT));
+        result.append(unmount);
     }
 
     return result;
@@ -253,38 +272,70 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
         //kDebug(7000) << "MOUNT&UNMOUNT";
 
         KDesktopFile cfg( path );
-        const QString dev = cfg.readDevice();
-        if ( dev.isEmpty() ) {
-            QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  path );
-            KMessageBoxWrapper::error( 0, tmp );
-            return;
-        }
-        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );
-
-        if ( actionData == ST_MOUNT ) {
-            // Already mounted? Strange, but who knows ...
-            if ( mp ) {
-                kDebug(7000) << "ALREADY Mounted";
+        if (cfg.hasDeviceType()) { // path to desktop file
+            const QString dev = cfg.readDevice();
+            if ( dev.isEmpty() ) {
+                QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  path );
+                KMessageBoxWrapper::error( 0, tmp );
                 return;
             }
+            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );
 
-            const KConfigGroup group = cfg.desktopGroup();
-            bool ro = group.readEntry("ReadOnly", false);
-            QString fstype = group.readEntry( "FSType" );
-            if ( fstype == "Default" ) // KDE-1 thing
-                fstype.clear();
-            QString point = group.readEntry( "MountPoint" );
+            if ( actionData == ST_MOUNT ) {
+                // Already mounted? Strange, but who knows ...
+                if ( mp ) {
+                    kDebug(7000) << "ALREADY Mounted";
+                    return;
+                }
+
+                const KConfigGroup group = cfg.desktopGroup();
+                bool ro = group.readEntry("ReadOnly", false);
+                QString fstype = group.readEntry( "FSType" );
+                if ( fstype == "Default" ) // KDE-1 thing
+                    fstype.clear();
+                QString point = group.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
-            (void)new KAutoMount( ro, fstype.toLatin1(), dev, point, path, false );
+                (void)new KAutoMount( ro, fstype.toLatin1(), dev, point, path, false );
 #endif
-        } else if ( actionData == ST_UNMOUNT ) {
-            // Not mounted? Strange, but who knows ...
-            if ( !mp )
-                return;
+            } else if ( actionData == ST_UNMOUNT ) {
+                // Not mounted? Strange, but who knows ...
+                if ( !mp )
+                    return;
 
 #ifndef Q_WS_WIN
-            (void)new KAutoUnmount( mp->mountPoint(), path );
+                (void)new KAutoUnmount( mp->mountPoint(), path );
 #endif
+            }
+        }
+        else { // path to device
+            Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", path);
+            QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
+            if (!devList.empty()) {
+                Solid::Device device = devList[0];
+                if ( actionData == ST_MOUNT ) {
+                    if (device.is<Solid::StorageVolume>()) {
+                        Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
+                        if (access) {
+                            access->setup();
+                        }
+                    }
+                } else if ( actionData == ST_UNMOUNT ) {
+                    if (device.is<Solid::OpticalDisc>()) {
+                        Solid::OpticalDrive *drive = device.parent().as<Solid::OpticalDrive>();
+                        if (drive != 0) {
+                            drive->eject();
+                        }
+                    } else if (device.is<Solid::StorageVolume>()) {
+                        Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
+                        if (access && access->isAccessible()) {
+                            access->teardown();
+                        }
+                    }
+                }
+            }
+            else {
+                kDebug(7000) << "Device" << path << "not found";
+            }
         }
     } else {
         kDebug() << action.name() << "first url's path=" << urls.first().path() << "exec=" << action.exec();
