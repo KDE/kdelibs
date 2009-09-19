@@ -5527,14 +5527,14 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
 void KHTMLPart::show()
 {
-  if ( d->m_view )
-    d->m_view->show();
+  if ( widget() )
+    widget()->show();
 }
 
 void KHTMLPart::hide()
 {
-  if ( d->m_view )
-    d->m_view->hide();
+  if ( widget() )
+    widget()->hide();
 }
 
 DOM::Node KHTMLPart::nodeUnderMouse() const
