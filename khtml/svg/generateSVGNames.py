@@ -1,4 +1,8 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+# misc/gennames.py generates the appropriate ID_ and ATTR_ constants
+# as well as static mappings. This generates WC compatibility stuff ---
+# the Names constants.
 
 attrsList = []
 tagsList = []
@@ -40,10 +44,10 @@ for i in tagsList:
     f.write(" " * 8 + "extern DOM::QualifiedName %sTag;\n" % (i.replace("-", "_")))
     definition = definition + (" " * 8 + "DOM::QualifiedName %sTag;\n" % (i.replace("-", "_")))
     # ID_TEXT is hidden, we need to use ATTR_TEXT instead
-    if i == text:
-        initString = initString + ("            %sTag = DOM::QualifiedName(makeId(DOM::svgNamespace, localNamePart(ATTR_%s)), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
+    if i == 'text':
+        initString = initString + ("            %sTag = DOM::QualifiedName(DOM::makeId(DOM::svgNamespace, DOM::localNamePart(ATTR_%s)), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
     else:
-        initString = initString + ("            %sTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_%s), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
+        initString = initString + ("            %sTag = DOM::QualifiedName(DOM::makeId(DOM::svgNamespace, ID_%s), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
 for i in attrsList:
     f.write(" " * 8 + "extern DOM::QualifiedName %sAttr;\n" % (i.replace("-", "_")))
     definition = definition + (" " * 8 + "DOM::QualifiedName %sAttr;\n" % (i.replace("-", "_")))
@@ -86,7 +90,7 @@ f.write("    namespace XLinkNames {\n")
 for i in xlinkAttrs:
     f.write(" " * 8 + "extern DOM::QualifiedName %sAttr;\n" % (i.replace("-", "_")))
     definitionXLink = definitionXLink + (" " * 8 + "DOM::QualifiedName %sAttr;\n" % (i.replace("-", "_")))
-    initString = initString + ("            WebCore::XLinkNames::%sAttr = DOM::QualifiedName(ATTR_%s, DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
+    initString = initString + ("            WebCore::XLinkNames::%sAttr = DOM::QualifiedName(ATTR_XLINK_%s, DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
 f.write("    }\n")
 f.write("}\n")
 f.write("\n")
