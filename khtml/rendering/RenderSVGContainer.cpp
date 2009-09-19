@@ -257,14 +257,9 @@ void RenderSVGContainer::layout()
     calculateLocalTransform();
 
     for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
-        // Only force our kids to layout if we're being asked to relayout as a result of a parent changing
-        // FIXME: We should be able to skip relayout of non-relative kids when only bounds size has changed
-        // that's a possible future optimization using LayoutState
-        // http://bugs.webkit.org/show_bug.cgi?id=15391
+        // ### TODO: we only want to relayout if our size/transform changed kids
         if (child->isText()) continue;
-        if (selfNeedsLayout())
-            child->setNeedsLayout(true);
-
+        child->setNeedsLayout(true);
         child->layoutIfNeeded();
         ASSERT(!child->needsLayout());
     }

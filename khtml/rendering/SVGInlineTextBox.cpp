@@ -340,23 +340,19 @@ void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int t
     RenderText* text = renderText();
     ASSERT(text);
 
-    bool isPrinting = false;//FIXME khtml text->document()->printing();
-
     // Determine whether or not we're selected.
-    bool haveSelection = !isPrinting && selectionState() != RenderObject::SelectionNone;
-    /*FIXME khtml if (!haveSelection && paintInfo.phase == PaintPhaseSelection)
+    bool haveSelection = text->selectionState() != RenderObject::SelectionNone;
+    if (!haveSelection && paintInfo.phase == PaintActionSelection)
         // When only painting the selection, don't bother to paint if there is none.
-        return;*/
+        return;
 
     // Determine whether or not we have a composition.
     /*bool containsComposition = text->document()->frame()->editor()->compositionNode() == text->node();
     bool useCustomUnderlines = containsComposition && text->document()->frame()->editor()->compositionUsesCustomUnderlines();*/
 
     // Set our font
-    RenderStyle* styleToUse = text->style(/*isFirstLineStyle()*/);
+    RenderStyle* styleToUse = text->style(m_firstLine);
     const Font* font = &styleToUse->htmlFont();
-    /*FIXME khtml if (*font != paintInfo.context->font())
-        paintInfo.context->setFont(*font);*/
     if (styleToUse->font() != paintInfo.p->font())
         paintInfo.p->setFont(styleToUse->font());
 
@@ -408,7 +404,9 @@ void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int t
 #endif
 
     //FIXME khtml paintInfo.context->drawText(run, origin);
-    kDebug() << "font size:" << font->getFontDef().size << endl;
+    kDebug() << "font size:" << font->getFontDef().size;
+    kDebug() << "text:" << QString::fromRawData(renderText()->string()->s + m_start, m_len);
+
     font->drawText(paintInfo.p, svgChar.x, svgChar.y, renderText()->string()->s, renderText()->string()->l, m_start, m_len,
             m_toAdd, m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 

@@ -102,12 +102,11 @@ void RenderSVGRoot::layout()
     m_height = static_cast<int>(m_height * svg->currentScale());
 
     for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
+        // ### TODO: we only want to relayout if our size/transform changed kids
         if (child->isText()) continue;
-        if (selfNeedsLayout()) // either bounds or transform changed, force kids to relayout
-            child->setNeedsLayout(true);
-
+        child->setNeedsLayout(true);
         child->layoutIfNeeded();
-        //FIXME VTOKAREV ASSERT(!child->needsLayout());
+        // ASSERT(!child->needsLayout());
     }
 
     /*if (checkForRepaint)
