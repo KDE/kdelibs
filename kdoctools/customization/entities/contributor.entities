@@ -83,6 +83,8 @@
 <!ENTITY Robert.Cimrman.mail '<email>cimrman3@students.zcu.cz</email>'>
 <!ENTITY John.Cirillo '<personname><firstname>John</firstname><surname>Cirillo</surname></personname>'>
 <!ENTITY John.Cirillo.mail '<email><!-- FIXME --></email>'>
+<!ENTITY Raphael.Kubo.da.Costa '<personname><firstname>Raphael</firstname><othername>Kubo da</othername><surname>Costa</surname></personname>'>
+<!ENTITY Raphael.Kubo.da.Costa.mail '<email>kubito@gmail.com</email>'>
 <!ENTITY Claudiu.Costin '<personname><firstname>Claudiu</firstname><surname>Costin</surname></personname>'>
 <!ENTITY Claudiu.Costin.mail '<email>claudiuc@kde.org</email>'>
 <!ENTITY Neal.Crook '<personname><firstname>Neal</firstname><surname>Crook</surname></personname>'>
@@ -198,6 +200,8 @@
 <!ENTITY Greg.M.Holmes.mail '<email><!-- FIXME --></email>'>
 <!ENTITY Chris.Howells '<personname><firstname>Chris</firstname><surname>Howells</surname></personname>'>
 <!ENTITY Chris.Howells.mail '<email>howells@kde.org</email>'>
+<!ENTITY Harald.Hvaal '<personname><firstname>Harald</firstname><surname>Hvaal</surname></personname>'>
+<!ENTITY Harald.Hvaal.mail '<email>haraldhv@stud.ntnu.no</email>'>
 
 <!ENTITY Geert.Jansen '<personname><firstname>Geert</firstname><surname>Jansen</surname></personname>'>
 <!ENTITY Geert.Jansen.mail '<email>g.t.jansen@stud.tue.nl</email>'>
