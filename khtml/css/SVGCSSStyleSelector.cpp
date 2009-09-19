@@ -136,7 +136,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setAlignmentBaseline(*primitiveValue);
             break;
         }
-        case CSSPropertyBaselineShift:
+        case CSS_PROP_BaselineShift:
         {
             HANDLE_INHERIT_AND_INITIAL(baselineShift, BaselineShift);
             if (!primitiveValue)
@@ -163,21 +163,21 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
 
             break;
         }
-        case CSSPropertyKerning:
+        case CSS_PROP_Kerning:
         {
             if (isInherit) {
-                HANDLE_INHERIT_COND(CSSPropertyKerning, kerning, Kerning)
+                HANDLE_INHERIT_COND(CSS_PROP_Kerning, kerning, Kerning)
                 return;
             }
             else if (isInitial) {
-                HANDLE_INITIAL_COND_WITH_VALUE(CSSPropertyKerning, Kerning, Kerning)
+                HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_Kerning, Kerning, Kerning)
                 return;
             }
 
             svgstyle->setKerning(primitiveValue);
             break;
         }
-        case CSSPropertyPointerEvents:
+        case CSS_PROP_PointerEvents:
         {
             HANDLE_INHERIT_AND_INITIAL(pointerEvents, PointerEvents)
             if (!primitiveValue)
@@ -186,28 +186,28 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setPointerEvents(*primitiveValue);
             break;
         }
-        case CSSPropertyDominantBaseline:
+        case CSS_PROP_DominantBaseline:
         {
             HANDLE_INHERIT_AND_INITIAL(dominantBaseline, DominantBaseline)
             if (primitiveValue)
                 svgstyle->setDominantBaseline(*primitiveValue);
             break;
         }
-        case CSSPropertyColorInterpolation:
+        case CSS_PROP_ColorInterpolation:
         {
             HANDLE_INHERIT_AND_INITIAL(colorInterpolation, ColorInterpolation)
             if (primitiveValue)
                 svgstyle->setColorInterpolation(*primitiveValue);
             break;
         }
-        case CSSPropertyColorInterpolationFilters:
+        case CSS_PROP_ColorInterpolationFilters:
         {
             HANDLE_INHERIT_AND_INITIAL(colorInterpolationFilters, ColorInterpolationFilters)
             if (primitiveValue)
                 svgstyle->setColorInterpolationFilters(*primitiveValue);
             break;
         }
-        case CSSPropertyColorRendering:
+        case CSS_PROP_ColorRendering:
         {
             HANDLE_INHERIT_AND_INITIAL(colorRendering, ColorRendering)
             if (primitiveValue)
@@ -230,28 +230,28 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             break;
         }
 #if 0
-        case CSSPropertyStrokeLinejoin:
+        case CSS_PROP_StrokeLinejoin:
         {
             HANDLE_INHERIT_AND_INITIAL(joinStyle, JoinStyle)
             if (primitiveValue)
                 svgstyle->setJoinStyle(*primitiveValue);
             break;
         }
-        case CSSPropertyImageRendering:
+        case CSS_PROP_ImageRendering:
         {
             HANDLE_INHERIT_AND_INITIAL(imageRendering, ImageRendering)
             if (primitiveValue)
                 svgstyle->setImageRendering(*primitiveValue);
             break;
         }
-        case CSSPropertyShapeRendering:
+        case CSS_PROP_ShapeRendering:
         {
             HANDLE_INHERIT_AND_INITIAL(shapeRendering, ShapeRendering)
             if (primitiveValue)
                 svgstyle->setShapeRendering(*primitiveValue);
             break;
         }
-        case CSSPropertyTextRendering:
+        case CSS_PROP_TextRendering:
         {
             HANDLE_INHERIT_AND_INITIAL(textRendering, TextRendering)
             if (primitiveValue)
@@ -292,7 +292,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             break;
         }
 #if 0
-        case CSSPropertyStrokeDasharray:
+        case CSS_PROP_StrokeDasharray:
         {
             HANDLE_INHERIT_AND_INITIAL(strokeDashArray, StrokeDashArray)
             if (!primitiveValue && value) {
@@ -303,7 +303,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
         
             break;
         }
-        case CSSPropertyStrokeDashoffset:
+        case CSS_PROP_StrokeDashoffset:
         {
             HANDLE_INHERIT_AND_INITIAL(strokeDashOffset, StrokeDashOffset)
             if (!primitiveValue)
@@ -369,7 +369,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             break;
         }
 #if 0
-        case CSSPropertyMarkerStart:
+        case CSS_PROP_MarkerStart:
         {
             HANDLE_INHERIT_AND_INITIAL(startMarker, StartMarker)
             if (!primitiveValue)
@@ -385,7 +385,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setStartMarker(s);
             break;
         }
-        case CSSPropertyMarkerMid:
+        case CSS_PROP_MarkerMid:
         {
             HANDLE_INHERIT_AND_INITIAL(midMarker, MidMarker)
             if (!primitiveValue)
@@ -401,7 +401,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setMidMarker(s);
             break;
         }
-        case CSSPropertyMarkerEnd:
+        case CSS_PROP_MarkerEnd:
         {
             HANDLE_INHERIT_AND_INITIAL(endMarker, EndMarker)
             if (!primitiveValue)
@@ -417,14 +417,14 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setEndMarker(s);
             break;
         }
-        case CSSPropertyStrokeLinecap:
+        case CSS_PROP_StrokeLinecap:
         {
             HANDLE_INHERIT_AND_INITIAL(capStyle, CapStyle)
             if (primitiveValue)
                 svgstyle->setCapStyle(*primitiveValue);
             break;
         }
-        case CSSPropertyStrokeMiterlimit:
+        case CSS_PROP_StrokeMiterlimit:
         {
             HANDLE_INHERIT_AND_INITIAL(strokeMiterLimit, StrokeMiterLimit)
             if (!primitiveValue)
@@ -440,7 +440,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setStrokeMiterLimit(f);
             break;
         }
-        case CSSPropertyFilter:
+        case CSS_PROP_Filter:
         {
             HANDLE_INHERIT_AND_INITIAL(filter, Filter)
             if (!primitiveValue)
@@ -455,7 +455,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setFilter(s);
             break;
         }
-        case CSSPropertyMask:
+        case CSS_PROP_Mask:
         {
             HANDLE_INHERIT_AND_INITIAL(maskElement, MaskElement)
             if (!primitiveValue)
@@ -488,15 +488,30 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setClipPath(s);
             break;
         }
-#if 0
-        case CSSPropertyTextAnchor:
+
+        case CSS_PROP_TEXT_ANCHOR:
         {
             HANDLE_INHERIT_AND_INITIAL(textAnchor, TextAnchor)
-            if (primitiveValue)
-                svgstyle->setTextAnchor(*primitiveValue);
+            if (primitiveValue) {
+                kDebug() << primitiveValue->getIdent();
+                switch (primitiveValue->getIdent()) {
+                    case CSS_VAL_START:
+                        svgstyle->setTextAnchor(TA_START);
+                        break;
+                    case CSS_VAL_MIDDLE:
+                        svgstyle->setTextAnchor(TA_MIDDLE);
+                        break;
+                    case CSS_VAL_END:
+                        svgstyle->setTextAnchor(TA_END);
+                        break;
+                }
+                
+            }
             break;
         }
-        case CSSPropertyWritingMode:
+        
+#if 0
+        case CSS_PROP_WritingMode:
         {
             HANDLE_INHERIT_AND_INITIAL(writingMode, WritingMode)
             if (primitiveValue)
@@ -522,7 +537,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             break;
         }
 #if 0
-        case CSSPropertyLightingColor:
+        case CSS_PROP_LightingColor:
         {
             HANDLE_INHERIT_AND_INITIAL(lightingColor, LightingColor);
 
@@ -539,7 +554,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setLightingColor(col);
             break;
         }
-        case CSSPropertyFloodOpacity:
+        case CSS_PROP_FloodOpacity:
         {
             HANDLE_INHERIT_AND_INITIAL(floodOpacity, FloodOpacity)
             if (!primitiveValue)
@@ -557,7 +572,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setFloodOpacity(f);
             break;
         }
-        case CSSPropertyFloodColor:
+        case CSS_PROP_FloodColor:
         {
             Color col;
             if (isInitial)
@@ -576,7 +591,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             svgstyle->setFloodColor(col);
             break;
         }
-        case CSSPropertyGlyphOrientationHorizontal:
+        case CSS_PROP_GlyphOrientationHorizontal:
         {
             HANDLE_INHERIT_AND_INITIAL(glyphOrientationHorizontal, GlyphOrientationHorizontal)
             if (!primitiveValue)
@@ -591,7 +606,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
 
             break;
         }
-        case CSSPropertyGlyphOrientationVertical:
+        case CSS_PROP_GlyphOrientationVertical:
         {
             HANDLE_INHERIT_AND_INITIAL(glyphOrientationVertical, GlyphOrientationVertical)
             if (!primitiveValue)
@@ -607,7 +622,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
 
             break;
         }
-        case CSSPropertyEnableBackground:
+        case CSS_PROP_EnableBackground:
             // Silently ignoring this property for now
             // http://bugs.webkit.org/show_bug.cgi?id=6022
             break;

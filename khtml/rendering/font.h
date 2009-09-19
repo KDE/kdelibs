@@ -248,6 +248,8 @@ public:
 
     // SVG helper function
     float floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, int& charsConsumed, DOM::DOMString& glyphName) const;
+    
+    float floatWidth(QChar* str, int pos, int len) const;
 
 private:
     static CachedFontFamily* queryFamily(const QString& name, int weight, bool italic);

@@ -55,7 +55,7 @@ namespace WebCore {
 
 static inline bool isVerticalWritingMode(const SVGRenderStyle* style)
 {
-    return style->writingMode() == WM_TBRL || style->writingMode() == WM_TB; 
+    return style->writingMode() == WM_TBRL || style->writingMode() == WM_TB;
 }
 
 static inline EAlignmentBaseline dominantBaselineToShift(bool isVerticalText, const RenderObject* text, const Font& font)
@@ -94,7 +94,7 @@ static inline EAlignmentBaseline dominantBaselineToShift(bool isVerticalText, co
             return dominantBaselineToShift(isVerticalText, text->parent(), font);
 
         ASSERT_NOT_REACHED();
-        return AB_AUTO;    
+        return AB_AUTO;
     }
     case DB_IDEOGRAPHIC:
         return AB_IDEOGRAPHIC;
@@ -134,7 +134,7 @@ static inline float alignmentBaselineToShift(bool isVerticalText, const RenderOb
         else
             baseline = dominantBaselineToShift(isVerticalText, text, font);
 
-        ASSERT(baseline != AB_AUTO);    
+        ASSERT(baseline != AB_AUTO);
     }
 
     // Note: http://wiki.apache.org/xmlgraphics-fop/LineLayout/AlignmentHandling
@@ -237,14 +237,14 @@ static inline float calculateGlyphAdvanceAndShiftRespectingOrientation(bool isVe
         if (orientationAngle != 0.0f && !orientationIsMultiplyOf180Degrees)
             return glyphWidth;
 
-        return glyphHeight; 
+        return glyphHeight;
     }
 
     // horizontal orientation handling
     if (orientationAngle == 90.0f) {
         xOrientationShift = glyphWidth / 2.0f;
         yOrientationShift = -font.descent();
-        svgChar.orientationShiftX = -glyphWidth / 2.0f - font.descent(); 
+        svgChar.orientationShiftX = -glyphWidth / 2.0f - font.descent();
         svgChar.orientationShiftY = font.descent();
     } else if (orientationAngle == 270.0f) {
         xOrientationShift = -glyphWidth / 2.0f;
@@ -430,7 +430,7 @@ struct SVGRootInlineBoxPaintWalker {
         teardownFillPaintServer();
         teardownStrokePaintServer();
 
-        // Finalize text rendering 
+        // Finalize text rendering
         if (!flowBox->isRootInlineBox()) {
             //FIXME khtml finishRenderSVGContent(object, m_paintInfo, m_boundingBox, m_filter, m_savedInfo.context);
             m_filter = 0;
@@ -497,7 +497,7 @@ struct SVGRootInlineBoxPaintWalker {
 
         startOffset += textBox->start();
 
-        int textDecorations = styleToUse->textDecorationsInEffect(); 
+        int textDecorations = styleToUse->textDecorationsInEffect();
 
         int textWidth = 0;
         IntPoint decorationOrigin;
@@ -596,7 +596,7 @@ void SVGRootInlineBox::paint(RenderObject::PaintInfo& paintInfo, int tx, int ty)
     //kDebug() << "paint at" << tx << ty << endl;
     //kDebug() << "pos: (" << (tx + xPos()) << "," << (ty + yPos()) << ")" << endl;
     //kDebug() << "size: " << width() << "x" << height() << endl;
- 
+
     // Render text, chunk-by-chunk
     SVGRootInlineBoxPaintWalker walkerCallback(this, filter, paintInfo, tx, ty);
     SVGTextChunkWalker<SVGRootInlineBoxPaintWalker> walker(&walkerCallback,
@@ -608,7 +608,7 @@ void SVGRootInlineBox::paint(RenderObject::PaintInfo& paintInfo, int tx, int ty)
 
     walkTextChunks(&walker);
 
-    // Finalize text rendering 
+    // Finalize text rendering
     //FIXME khtml finishRenderSVGContent(object(), paintInfo, boundingBox, filter, savedInfo.context);
     //paintInfo.context->restore();
 }
@@ -637,8 +637,8 @@ float cummulatedWidthOfInlineBoxCharacterRange(SVGInlineBoxCharacterRange& range
     RenderText* text = textBox->renderText();
     RenderStyle* style = text->style();
 
-    /*FIXME return style->font().floatWidth(svgTextRunForInlineTextBox(text->characters() + textBox->start() + range.startOffset, range.endOffset - range.startOffset, style, textBox, 0));*/
-    return 0;
+    return style->htmlFont().floatWidth(text->text(), textBox->start() + range.startOffset,
+                                        range.endOffset - range.startOffset);
 }
 
 float cummulatedHeightOfInlineBoxCharacterRange(SVGInlineBoxCharacterRange& range)
@@ -649,9 +649,8 @@ float cummulatedHeightOfInlineBoxCharacterRange(SVGInlineBoxCharacterRange& rang
 
     InlineTextBox* textBox = static_cast<InlineTextBox*>(range.box);
     RenderText* text = textBox->renderText();
-    /*FIXME const Font& font = text->style()->font();
-
-    return (range.endOffset - range.startOffset) * (font.ascent() + font.descent());*/
+    const khtml::Font& font = text->style()->htmlFont();
+    return (range.endOffset - range.startOffset) * (font.ascent() + font.descent());
     return 0;
 }
 
@@ -681,6 +680,7 @@ static float cummulatedWidthOrHeightOfTextChunk(SVGTextChunk& chunk, bool calcWi
 
     for (; it != end; ++it) {
         SVGInlineBoxCharacterRange& range = *it;
+        kDebug() << "box range:" << range.startOffset << range.endOffset;
 
         SVGInlineTextBox* box = static_cast<SVGInlineTextBox*>(range.box);
         RenderStyle* style = box->object()->style();
@@ -708,6 +708,7 @@ static float cummulatedWidthOrHeightOfTextChunk(SVGTextChunk& chunk, bool calcWi
             subRange.box = range.box;
             subRange.startOffset = i;
             subRange.endOffset = i + positionOffset;
+            kDebug() << "got subrange:" << subRange.startOffset << subRange.endOffset;
 
             if (calcWidthOnly)
                 length += cummulatedWidthOfInlineBoxCharacterRange(subRange);
@@ -757,12 +758,14 @@ static float cummulatedHeightOfTextChunk(SVGTextChunk& chunk)
 
 static float calculateTextAnchorShiftForTextChunk(SVGTextChunk& chunk, ETextAnchor anchor)
 {
-    float shift = 0.0f;
+   float shift = 0.0f;
 
     if (chunk.isVerticalText)
         shift = cummulatedHeightOfTextChunk(chunk);
     else
         shift = cummulatedWidthOfTextChunk(chunk);
+
+    kDebug() << anchor << shift << TA_MIDDLE;
 
     if (anchor == TA_MIDDLE)
         shift *= -0.5f;
@@ -863,7 +866,7 @@ static void applyTextLengthCorrectionToTextChunk(SVGTextChunk& chunk)
         chunk.ctm = newChunkCtm;
     }
 
-    // Apply correction to chunk 
+    // Apply correction to chunk
     if (spacingToApply != 0.0f) {
         Vector<SVGChar>::iterator chunkIt = chunk.start;
         for (; chunkIt != chunk.end; ++chunkIt) {
@@ -928,7 +931,7 @@ void SVGRootInlineBox::buildLayoutInformation(InlineFlowBox* start, SVGCharacter
 
 
     LastGlyphInfo lastGlyph;
-    
+
     for (InlineBox* curr = start->firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isText())
             buildLayoutInformationForTextBox(info, static_cast<InlineTextBox*>(curr), lastGlyph);
@@ -975,7 +978,7 @@ void SVGRootInlineBox::buildLayoutInformation(InlineFlowBox* start, SVGCharacter
 
                 AffineTransform ctm;
                 float computedLength = 0.0f;
- 
+
                 for (; it != end; ++it) {
                     SVGTextChunk& chunk = *it;
 
@@ -1017,7 +1020,7 @@ void SVGRootInlineBox::layoutInlineBoxes()
     int highY = INT_MIN;
 
     // Layout all child boxes
-    Vector<SVGChar>::iterator it = m_svgChars.begin(); 
+    Vector<SVGChar>::iterator it = m_svgChars.begin();
     layoutInlineBoxes(this, it, lowX, highX, lowY, highY);
     ASSERT(it == m_svgChars.end());
 }
@@ -1025,15 +1028,15 @@ void SVGRootInlineBox::layoutInlineBoxes()
 void SVGRootInlineBox::layoutInlineBoxes(InlineFlowBox* start, Vector<SVGChar>::iterator& it, int& lowX, int& highX, int& lowY, int& highY)
 {
     for (InlineBox* curr = start->firstChild(); curr; curr = curr->nextOnLine()) {
-        RenderStyle* style = curr->object()->style();    
+        RenderStyle* style = curr->object()->style();
         const Font& font = style->htmlFont();
 
         if (curr->object()->isText()) {
             SVGInlineTextBox* textBox = static_cast<SVGInlineTextBox*>(curr);
             unsigned length = textBox->len();
 
-            SVGChar curChar = *it; 
-            ASSERT(it != m_svgChars.end());  
+            SVGChar curChar = *it;
+            ASSERT(it != m_svgChars.end());
 
             FloatRect stringRect;
             for (unsigned i = 0; i < length; ++i) {
@@ -1253,7 +1256,7 @@ void SVGRootInlineBox::buildLayoutInformationForTextBox(SVGCharacterLayoutInfo& 
             float correctedGlyphAdvance = glyphAdvance;
 
             // Handle lengthAdjust="spacingAndGlyphs" by specifying per-character scale operations
-            if (info.pathTextLength > 0.0f && info.pathChunkLength > 0.0f) { 
+            if (info.pathTextLength > 0.0f && info.pathChunkLength > 0.0f) {
                 if (isVerticalText) {
                     svgChar.pathData->yScale = info.pathChunkLength / info.pathTextLength;
                     spacing *= svgChar.pathData->yScale;
@@ -1453,7 +1456,7 @@ void SVGRootInlineBox::buildTextChunks(Vector<SVGChar>& svgChars, InlineFlowBox*
 #if DEBUG_CHUNK_BUILDING > 1
                     fprintf(stderr, " | -> Close mid-text chunk, at endOffset: %i and starting new mid chunk!\n", range.endOffset);
 #endif
-    
+
                     // Prepare for next chunk, if we're not at the end
                     startTextChunk(info);
                     if (i + 1 == length) {
@@ -1482,11 +1485,11 @@ void SVGRootInlineBox::buildTextChunks(Vector<SVGChar>& svgChars, InlineFlowBox*
                 // This should only hold true for the first character of the first chunk
                 if (isFirstCharacter)
                     isFirstCharacter = false;
-    
+
                 ++info.it;
             }
 
-#if DEBUG_CHUNK_BUILDING > 1    
+#if DEBUG_CHUNK_BUILDING > 1
             fprintf(stderr, " -> Finished inline text box!\n");
 #endif
 
@@ -1555,7 +1558,7 @@ void SVGRootInlineBox::buildTextChunks(Vector<SVGChar>& svgChars, InlineFlowBox*
 #endif
 }
 
-const Vector<SVGTextChunk>& SVGRootInlineBox::svgTextChunks() const 
+const Vector<SVGTextChunk>& SVGRootInlineBox::svgTextChunks() const
 {
     return m_svgTextChunks;
 }
@@ -1590,7 +1593,7 @@ void SVGRootInlineBox::layoutTextChunks()
 
         // text-path & textLength, with lengthAdjust="spacing" is already handled for textPath layouts.
         applyTextLengthCorrectionToTextChunk(chunk);
- 
+
         // text-anchor is already handled for textPath layouts.
         applyTextAnchorToTextChunk(chunk);
     }
