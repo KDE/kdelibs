@@ -171,10 +171,8 @@ void SVGStyledElement::parseMappedAttribute(MappedAttribute* attr)
 {
     // NOTE: Any subclass which overrides parseMappedAttribute for a property handled by
     // cssPropertyIdForSVGAttributeName will also have to override mapToEntry to disable the default eSVG mapping
-    kDebug() << "parse:" << attr->localName() << attr->value() << "id=" << attr->id() << endl;
     int id = attr->id();
     if (id == ATTR_STYLE) {
-        kDebug() << "handle style" << endl;
         if (inlineStyleDecls()) {
             inlineStyleDecls()->clear();
         } else {
@@ -185,7 +183,6 @@ void SVGStyledElement::parseMappedAttribute(MappedAttribute* attr)
         return;
     }
     int propId = SVGStyledElement::cssPropertyIdForSVGAttributeName(attr->name());
-    kDebug() << "propId" << propId << endl;
     if (propId > 0) {
         addCSSProperty(attr, propId, attr->value());
         setChanged();
