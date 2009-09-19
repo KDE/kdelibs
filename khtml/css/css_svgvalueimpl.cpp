@@ -27,8 +27,7 @@
 namespace DOM {
     
 SVGColorImpl::SVGColorImpl()
-    : CSSValueImpl()
-    , m_colorType(SVG_COLORTYPE_UNKNOWN)
+    : m_colorType(SVG_COLORTYPE_UNKNOWN)
 {
 }
 

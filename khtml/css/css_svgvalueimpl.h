@@ -29,8 +29,16 @@
 #include "css/css_valueimpl.h"
 
 namespace DOM {
-    
-class SVGColorImpl : public CSSValueImpl {
+
+class SVGCSSValueImpl : public CSSValueImpl {
+public:
+    virtual bool isSVGColor() const { return false; }
+    virtual bool isSVGPaint() const { return false; }
+
+    virtual unsigned short cssValueType() const { return DOM::CSSValue::CSS_SVG_VALUE; }
+};
+
+class SVGColorImpl : public SVGCSSValueImpl {
 public:
     SVGColorImpl();
     SVGColorImpl(const DOMString& rgbColor);

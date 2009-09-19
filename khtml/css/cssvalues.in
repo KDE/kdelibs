@@ -570,7 +570,7 @@ all
 # inherit
 
 # CSS_PROP_WRITING_MODE:
-lr-tb 
+lr-tb
 rl_tb
 tb-rl
 lr

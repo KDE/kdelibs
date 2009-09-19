@@ -76,7 +76,7 @@ StyleStrokeData::StyleStrokeData()
     opacity = SVGRenderStyle::initialStrokeOpacity();
     miterLimit = SVGRenderStyle::initialStrokeMiterLimit();
     dashOffset = SVGRenderStyle::initialStrokeDashOffset();
-    /*dashArray = SVGRenderStyle::initialStrokeDashArray();*/
+    dashArray = SVGRenderStyle::initialStrokeDashArray();
 }
 
 StyleStrokeData::StyleStrokeData(const StyleStrokeData& other)
@@ -121,7 +121,7 @@ bool StyleStopData::operator==(const StyleStopData &other) const
 
 StyleTextData::StyleTextData()
 {
-    /*kerning = SVGRenderStyle::initialKerning();*/
+    kerning = SVGRenderStyle::initialKerning();
 }
 
 StyleTextData::StyleTextData(const StyleTextData& other)
