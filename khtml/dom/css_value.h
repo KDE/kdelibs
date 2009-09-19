@@ -260,7 +260,9 @@ public:
         CSS_PRIMITIVE_VALUE = 1,
         CSS_VALUE_LIST = 2,
         CSS_CUSTOM = 3,
-        CSS_INITIAL = 4
+        CSS_INITIAL = 4,
+        
+        CSS_SVG_VALUE = 1001 ///< Not part of DOM
     };
 
     /**
