@@ -138,8 +138,6 @@ namespace DOM {
 
 	bool parseValue( int propId, bool important );
         bool parseSVGValue( int propId, bool important );
-        CSSValueImpl* parseSVGPaint();
-        CSSValueImpl* parseSVGColor();
 	bool parseShortHand( int propId, const int *properties, int numProperties, bool important );
 	bool parse4Values( int propId, const int *properties, bool important );
 	bool parseContent( int propId, bool important );
@@ -182,6 +180,10 @@ namespace DOM {
         // CSS3 Parsing Routines (for properties specific to CSS3)
         bool parseShadow(int propId, bool important);
 
+        // SVG parsing:
+        CSSValueImpl* parseSVGStrokeDasharray();
+        CSSValueImpl* parseSVGPaint();
+        CSSValueImpl* parseSVGColor();
     private:
         // defines units allowed for a certain property, used in parseUnit
         enum Units {
@@ -218,6 +220,7 @@ namespace DOM {
         int m_inParseShorthand;
         int m_currentShorthand;
         bool m_implicitShorthand;
+        
 
 	static CSSParser *currentParser;
 

@@ -569,3 +569,11 @@ all
 # none
 # inherit
 
+# CSS_PROP_WRITING_MODE:
+lr-tb 
+rl_tb
+tb-rl
+lr
+rl
+tb
+

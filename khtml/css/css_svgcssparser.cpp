@@ -213,8 +213,8 @@ bool CSSParser::parseSVGValue(int propId, bool important)
         break;*/
 
     case CSS_PROP_STOP_COLOR: // TODO : icccolor
-    //case CSS_PROP_FloodColor:
-    //case CSS_PROP_LightingColor:
+    case CSS_PROP_FLOOD_COLOR:
+    case CSS_PROP_LIGHTING_COLOR:
         if ((id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT)/* ||
            (id >= CSS_VAL_Aliceblue && id <= CSS_VAL_Yellowgreen)*/)
             parsedValue = new SVGColorImpl(domString(value->string));
@@ -228,33 +228,34 @@ bool CSSParser::parseSVGValue(int propId, bool important)
 
         break;
 
-    /*case CSS_PROP_WritingMode:
+    case CSS_PROP_WRITING_MODE:
     // lr-tb | rl_tb | tb-rl | lr | rl | tb | inherit
-        if (id >= CSS_VAL_LrTb && id <= CSS_VAL_Tb)
+        if (id >= CSS_VAL_LR_TB && id <= CSS_VAL_TB)
             valid_primitive = true;
-        break;*/
+        break;
 
     case CSS_PROP_STROKE_WIDTH:         // <length> | inherit
-    //case CSS_PROP_StrokeDashoffset:
+    case CSS_PROP_STROKE_DASHOFFSET:
         valid_primitive = validUnit(value, FLength | FPercent, false);
         break;
-    /*case CSS_PROP_StrokeDasharray:     // none | <dasharray> | inherit
-        if (id == CSS_VAL_None)
+
+    case CSS_PROP_STROKE_DASHARRAY:     // none | <dasharray> | inherit
+        if (id == CSS_VAL_NONE)
             valid_primitive = true;
         else
             parsedValue = parseSVGStrokeDasharray();
 
         break;
 
-    case CSS_PROP_Kerning:              // auto | normal | <length> | inherit
-        if (id == CSS_VAL_Auto || id == CSS_VAL_Normal)
+    case CSS_PROP_KERNING:              // auto | normal | <length> | inherit
+        if (id == CSS_VAL_AUTO || id == CSS_VAL_NORMAL)
             valid_primitive = true;
         else
             valid_primitive = validUnit(value, FLength, false);
-        break;*/
+        break;
 
     case CSS_PROP_CLIP_PATH:    // <uri> | none | inherit
-    //case CSS_PROP_Filter:
+    case CSS_PROP_FILTER:
         if (id == CSS_VAL_NONE)
             valid_primitive = true;
         else if (value->unit == CSSPrimitiveValue::CSS_URI) {
@@ -265,22 +266,13 @@ bool CSSParser::parseSVGValue(int propId, bool important)
         break;
 
     /* shorthand properties */
-    /*case CSS_PROP_Marker:
+    case CSS_PROP_MARKER:
     {
-        ShorthandScope scope(this, propId);
-        m_implicitShorthand = true;
-        if (!parseValue(CSS_PROP_MarkerStart, important))
-            return false;
-        if (valueList->current()) {
-            rollbackLastProperties(1);
-            return false;
-        }
-        CSS_VAL_ *value = parsedProperties[numParsedProperties - 1]->value();
-        addProperty(CSS_PROP_MarkerMid, value, important);
-        addProperty(CSS_PROP_MarkerEnd, value, important);
-        m_implicitShorthand = false;
-        return true;
-    }*/
+        const int properties[3] = { CSS_PROP_MARKER_START, CSS_PROP_MARKER_MID,
+                                    CSS_PROP_MARKER_END };
+        return parseShortHand(propId, properties, 3, important);
+
+    }
     default:
         // If you crash here, it's because you added a css property and are not handling it
         // in either this switch statement or the one in CSSParser::parseValue
@@ -308,10 +300,10 @@ bool CSSParser::parseSVGValue(int propId, bool important)
     addProperty(propId, parsedValue, important);
     return true;
 }
-#if 0
-PassRefPtr<CSS_VAL_> CSSParser::parseSVGStrokeDasharray()
+
+CSSValueImpl* CSSParser::parseSVGStrokeDasharray()
 {
-    CSS_VAL_List* ret = new CSS_VAL_List;
+    CSSValueListImpl* ret = new CSSValueListImpl;
     Value* value = valueList->current();
     bool valid_primitive = true;
     while (value) {
@@ -319,9 +311,9 @@ PassRefPtr<CSS_VAL_> CSSParser::parseSVGStrokeDasharray()
         if (!valid_primitive)
             break;
         if (value->id != 0)
-            ret->append(new CSSPrimitiveValue(value->id));
+            ret->append(new CSSPrimitiveValueImpl(value->id));
         else if (value->unit >= CSSPrimitiveValue::CSS_NUMBER && value->unit <= CSSPrimitiveValue::CSS_KHZ)
-            ret->append(new CSSPrimitiveValue(value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit));
+            ret->append(new CSSPrimitiveValueImpl(value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit));
         value = valueList->next();
         if (value && value->unit == Value::Operator && value->iValue == ',')
             value = valueList->next();
@@ -333,7 +325,7 @@ PassRefPtr<CSS_VAL_> CSSParser::parseSVGStrokeDasharray()
 
     return ret;
 }
-#endif
+
 CSSValueImpl* CSSParser::parseSVGPaint()
 {
     CSSPrimitiveValueImpl* val;

@@ -334,7 +334,13 @@ DOM::DOMString getValueName(unsigned short id) KDE_NO_EXPORT;
 #define CSS_VAL_FILL 324
 #define CSS_VAL_STROKE 325
 #define CSS_VAL_ALL 326
+#define CSS_VAL_LR_TB  327
+#define CSS_VAL_RL_TB 328
+#define CSS_VAL_TB_RL 329
+#define CSS_VAL_LR 330
+#define CSS_VAL_RL 331
+#define CSS_VAL_TB 332
 
-#define CSS_VAL_TOTAL 327
+#define CSS_VAL_TOTAL 333
 #endif
 
