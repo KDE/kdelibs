@@ -28,7 +28,6 @@
 
 #if ENABLE(SVG)
 
-#include "Color.h"
 #include "SVGPaintServer.h"
 
 namespace WebCore {
@@ -40,8 +39,8 @@ namespace WebCore {
 
         virtual SVGPaintServerType type() const { return SolidPaintServer; }
 
-        Color color() const;
-        void setColor(const Color&);
+        QColor color() const;
+        void setColor(const QColor&);
 
         /*virtual TextStream& externalRepresentation(TextStream&) const;*/
 
@@ -52,7 +51,7 @@ namespace WebCore {
     private:
         SVGPaintServerSolid();
 
-        Color m_color;
+        QColor m_color;
     };
 
 } // namespace WebCore

@@ -26,46 +26,80 @@
 
 #include <wtf/RefPtr.h>
 
-namespace WebCore {
+namespace khtml {
 
-template <typename T> class DataRef {
+template <class DATA>
+class DataRef
+{
 public:
-    const T* get() const { return m_data.get(); }
-
-    const T& operator*() const { return *get(); }
-    const T* operator->() const { return get(); }
-
-    T* access()
+    DataRef()
     {
-        if (!m_data->hasOneRef())
-            m_data = m_data->copy();
-        return m_data.get();
+        data=0;
+    }
+
+    DataRef( const DataRef<DATA> &d )
+    {
+        data = d.data;
+        data->ref();
+    }
+
+    ~DataRef()
+    {
+        if(data) data->deref();
+    }
+
+    const DATA* operator->() const
+    {
+        return data;
+    }
+
+    const DATA* get() const
+    {
+        return data;
+    }
+
+    DATA* access()
+    {
+        if (!data->hasOneRef())
+        {
+            data->deref();
+            data = new DATA(*data);
+            data->ref();
+        }
+        return data;
     }
 
     void init()
     {
-        ASSERT(!m_data);
-        m_data = T::create();
+        data = new DATA;
+        data->ref();
     }
 
-    bool operator==(const DataRef<T>& o) const
+    DataRef<DATA>& operator=(const DataRef<DATA>& d)
     {
-        ASSERT(m_data);
-        ASSERT(o.m_data);
-        return m_data == o.m_data || *m_data == *o.m_data;
+        if (data==d.data)
+            return *this;
+        if (data)
+            data->deref();
+        data = d.data;
+
+        data->ref();
+
+        return *this;
     }
-    
-    bool operator!=(const DataRef<T>& o) const
-    {
-        ASSERT(m_data);
-        ASSERT(o.m_data);
-        return m_data != o.m_data && *m_data != *o.m_data;
+
+    bool operator == ( const DataRef<DATA> &o ) const {
+        return (*data == *(o.data) );
+    }
+
+    bool operator != ( const DataRef<DATA> &o ) const {
+        return (*data != *(o.data) );
     }
 
 private:
-    RefPtr<T> m_data;
+    DATA* data;
 };
 
-} // namespace WebCore
+} // namespace khtml
 
 #endif // DataRef_h

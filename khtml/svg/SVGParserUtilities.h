@@ -24,9 +24,13 @@
 
 #include "ParserUtilities.h"
 
+namespace khtml {
+    class Path;
+}
+
 namespace WebCore {
 
-    class Path;
+    typedef khtml::Path Path;
     class SVGPointList;
     class SVGPathSegList;
 

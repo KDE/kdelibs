@@ -32,7 +32,7 @@
 
 namespace WebCore {
     
-RenderSVGInline::RenderSVGInline(NodeImpl* n)
+RenderSVGInline::RenderSVGInline(DOM::NodeImpl* n)
     : RenderInline(n)
 {
 }

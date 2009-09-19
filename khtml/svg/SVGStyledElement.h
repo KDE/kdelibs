@@ -45,8 +45,8 @@ namespace WebCore {
         virtual bool isStyled() const { return true; }
         virtual bool supportsMarkers() const { return false; }
 
-        virtual PassRefPtr<CSSValue> getPresentationAttribute(const String& name);
-        virtual CSSStyleDeclaration* style() { return StyledElement::style(); }
+        virtual PassRefPtr<DOM::CSSValueImpl> getPresentationAttribute(const DOMString& name);
+        virtual DOM::CSSStyleDeclarationImpl* style() { return StyledElement::style(); }
 
         bool isKnownAttribute(const QualifiedName&);
 

@@ -66,7 +66,7 @@ public:
     SVGDocumentExtensions(Document*);
     ~SVGDocumentExtensions();
     
-    EventListener* createSVGEventListener(const String& functionName, const String& code, Node*);
+    DOM::EventListener* createSVGEventListener(const DOMString& functionName, const DOMString& code, DOM::NodeImpl*);
     
     void addTimeContainer(SVGSVGElement*);
     void removeTimeContainer(SVGSVGElement*);

@@ -102,8 +102,8 @@ namespace WebCore
         void unsuspendRedrawAll();
         void forceRedraw();
 
-        NodeList* getIntersectionList(const FloatRect&, SVGElement* referenceElement);
-        NodeList* getEnclosureList(const FloatRect&, SVGElement* referenceElement);
+        DOM::NodeListImpl* getIntersectionList(const FloatRect&, SVGElement* referenceElement);
+        DOM::NodeListImpl* getEnclosureList(const FloatRect&, SVGElement* referenceElement);
         bool checkIntersection(SVGElement*, const FloatRect&);
         bool checkEnclosure(SVGElement*, const FloatRect&);
         void deselectAll();

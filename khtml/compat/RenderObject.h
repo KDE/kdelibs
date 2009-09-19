@@ -7,6 +7,7 @@
 namespace WebCore
 {
     using khtml::RenderObject;
+    using khtml::RenderStyle;
 } // namespace WebCore
 
 #endif // RenderObject_h

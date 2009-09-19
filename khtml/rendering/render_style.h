@@ -45,11 +45,12 @@
 #include "dom/dom_string.h"
 #include "misc/khtmllayout.h"
 #include "misc/shared.h"
+#include "rendering/DataRef.h"
 #include "rendering/font.h"
+#include "rendering/SVGRenderStyle.h"
 
 #include <assert.h>
 
-#include "SVGRenderStyle.h"
 
 #define SET_VAR(group,variable,value) \
     if (!(group->variable == value)) \
@@ -72,78 +73,6 @@ namespace khtml {
 
     class CachedImage;
     class CachedObject;
-
-template <class DATA>
-class DataRef
-{
-public:
-
-    DataRef()
-    {
-	data=0;
-    }
-    DataRef( const DataRef<DATA> &d )
-    {
-    	data = d.data;
-	data->ref();
-    }
-
-    ~DataRef()
-    {
-    	if(data) data->deref();
-    }
-
-    const DATA* operator->() const
-    {
-    	return data;
-    }
-
-    const DATA* get() const
-    {
-    	return data;
-    }
-
-
-    DATA* access()
-    {
-    	if (!data->hasOneRef())
-	{
-	    data->deref();
-	    data = new DATA(*data);
-	    data->ref();
-	}
-	return data;
-    }
-
-    void init()
-    {
-    	data = new DATA;
-	data->ref();
-    }
-
-    DataRef<DATA>& operator=(const DataRef<DATA>& d)
-    {
-    	if (data==d.data)
-	    return *this;
-    	if (data)
-    	    data->deref();
-    	data = d.data;
-
-	data->ref();
-
-	return *this;
-    }
-
-    bool operator == ( const DataRef<DATA> &o ) const {
-	return (*data == *(o.data) );
-    }
-    bool operator != ( const DataRef<DATA> &o ) const {
-	return (*data != *(o.data) );
-    }
-
-private:
-    DATA* data;
-};
 
 
 //------------------------------------------------
@@ -983,7 +912,7 @@ protected:
     RenderStyle* pseudoStyle;
 
 // SVG Style
-    DataRef<WebCore::SVGRenderStyle> m_svgStyle;
+    DataRef<khtml::SVGRenderStyle> m_svgStyle;
 
 // !END SYNC!
 
@@ -1546,8 +1475,8 @@ public:
     static bool initialTextOverflow() { return false; }
 
     // SVG
-    const WebCore::SVGRenderStyle* svgStyle() const { return m_svgStyle.get(); }
-    WebCore::SVGRenderStyle* accessSVGStyle() { return m_svgStyle.access(); }
+    const khtml::SVGRenderStyle* svgStyle() const { return m_svgStyle.get(); }
+    khtml::SVGRenderStyle* accessSVGStyle() { return m_svgStyle.access(); }
 };
 
 class RenderPageStyle {

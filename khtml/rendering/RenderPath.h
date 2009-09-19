@@ -56,8 +56,8 @@ public:
     // Returns an unscaled bounding box (not even including localTransform()) for this vector path
     virtual FloatRect relativeBBox(bool includeStroke = true) const;
 
-    const Path& path() const;
-    void setPath(const Path& newPath);
+    const khtml::Path& path() const;
+    void setPath(const khtml::Path& newPath);
 
     virtual bool isRenderPath() const { return true; }
     virtual const char* renderName() const { return "RenderPath"; }
@@ -83,7 +83,7 @@ public:
 private:
     FloatPoint mapAbsolutePointToLocal(const FloatPoint&) const;
 
-    mutable Path m_path;
+    mutable khtml::Path m_path;
     mutable FloatRect m_fillBBox;
     mutable FloatRect m_strokeBbox;
     FloatRect m_markerBounds;

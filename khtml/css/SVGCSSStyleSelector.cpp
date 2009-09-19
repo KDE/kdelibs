@@ -30,21 +30,14 @@
 
 #include "cssstyleselector.h"
 #include "css_valueimpl.h"
+#include "css_svgvalueimpl.h"
 #include "cssvalues.h"
 
-#include "SVGColor.h"
 #include "SVGNames.h"
-#include "SVGPaint.h"
 #include "SVGRenderStyle.h"
 #include "SVGRenderStyleDefs.h"
 #include "SVGStyledElement.h"
 
-/*#include "CSSStyleSelector.h"
-
-#include "CSSPrimitiveValueMappings.h"
-#include "CSSPropertyNames.h"
-#include "CSSValueList.h"
-#include <stdlib.h>*/
 #include <wtf/MathExtras.h>
 
 #define HANDLE_INHERIT(prop, Prop) \
@@ -81,6 +74,7 @@ if (id == propID) { \
 
 namespace khtml {
 
+using namespace DOM;
 using namespace WebCore;
 
 static float roundToNearestGlyphOrientationAngle(float angle)
@@ -130,9 +124,10 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
     // background) occur in this list as well and are only hit when mapping
     // "inherit" or "initial" into front-end values.
     switch (id) {
-#if 0
 		// ident only properties
-		case CSSPropertyAlignmentBaseline:
+#if 0
+
+		case CSS_PROP_ALIGNMENT_BASELINE:
         {
             HANDLE_INHERIT_AND_INITIAL(alignmentBaseline, AlignmentBaseline)
             if (!primitiveValue)
@@ -269,7 +264,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
         {
             HANDLE_INHERIT_AND_INITIAL(fillPaint, FillPaint)
             if (!primitiveValue && value) {
-                SVGPaint *paint = static_cast<SVGPaint*>(value);
+                SVGPaintImpl *paint = static_cast<SVGPaintImpl*>(value);
                 if (paint)
                     svgstyle->setFillPaint(paint);
             }
@@ -280,7 +275,7 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
         {
             HANDLE_INHERIT_AND_INITIAL(strokePaint, StrokePaint)
             if (!primitiveValue && value) {
-                SVGPaint *paint = static_cast<SVGPaint*>(value);
+                SVGPaintImpl *paint = static_cast<SVGPaintImpl*>(value);
                 if (paint)
                     svgstyle->setStrokePaint(paint);
             }
@@ -513,12 +508,12 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
         {
             HANDLE_INHERIT_AND_INITIAL(stopColor, StopColor);
 
-            SVGColor* c = static_cast<SVGColor*>(value);
+            SVGColorImpl* c = static_cast<SVGColorImpl*>(value);
             if (!c)
                 return CSSStyleSelector::applyRule(id, value);
 
-            Color col;
-            if (c->colorType() == SVGColor::SVG_COLORTYPE_CURRENTCOLOR)
+            QColor col;
+            if (c->colorType() == SVGColorImpl::SVG_COLORTYPE_CURRENTCOLOR)
                 col = style->color();
             else
                 col = c->color();
@@ -531,12 +526,12 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
         {
             HANDLE_INHERIT_AND_INITIAL(lightingColor, LightingColor);
 
-            SVGColor* c = static_cast<SVGColor*>(value);
+            SVGColorImpl* c = static_cast<SVGColorImpl*>(value);
             if (!c)
                 return CSSStyleSelector::applyProperty(id, value);
 
             Color col;
-            if (c->colorType() == SVGColor::SVG_COLORTYPE_CURRENTCOLOR)
+            if (c->colorType() == SVGColorImpl::SVG_COLORTYPE_CURRENTCOLOR)
                 col = m_style->color();
             else
                 col = c->color();
@@ -568,11 +563,11 @@ void CSSStyleSelector::applySVGRule(int id, DOM::CSSValueImpl* value)
             if (isInitial)
                 col = SVGRenderStyle::initialFloodColor();
             else {
-                SVGColor *c = static_cast<SVGColor*>(value);
+                SVGColorImpl *c = static_cast<SVGColorImpl*>(value);
                 if (!c)
                     return CSSStyleSelector::applyProperty(id, value);
 
-                if (c->colorType() == SVGColor::SVG_COLORTYPE_CURRENTCOLOR)
+                if (c->colorType() == SVGColorImpl::SVG_COLORTYPE_CURRENTCOLOR)
                     col = m_style->color();
                 else
                     col = c->color();

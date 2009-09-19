@@ -49,8 +49,7 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 
 <block>"#"{hexcolor}           {yyTok = HEXCOLOR; return yyTok;}
 "#"{ident}              {yyTok = HASH; return yyTok;}
-
-/* @rule tokens surrounding css declaration blocks with { } braces must start a BEGIN(at_rule) context */
+ /* @rule tokens surrounding css declaration blocks with { } braces must start a BEGIN(at_rule) context */
 "@import"               {BEGIN(mediaquery); yyTok = IMPORT_SYM; return yyTok;}
 "@page"                 {BEGIN(at_rule); yyTok = PAGE_SYM; return yyTok;}
 "@media"                {BEGIN(mediaquery); yyTok = MEDIA_SYM; return yyTok;}

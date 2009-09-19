@@ -38,7 +38,10 @@
 
 const float QUARTER = 0.552f; // approximation of control point positions on a bezier
                               // to simulate a quarter of a circle.
-namespace WebCore {
+                              
+using namespace WebCore;
+
+namespace khtml {
 
 static void pathLengthApplierFunction(void* info, const PathElement* element)
 {

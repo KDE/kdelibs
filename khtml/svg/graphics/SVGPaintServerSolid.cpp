@@ -40,12 +40,12 @@ SVGPaintServerSolid::~SVGPaintServerSolid()
 {
 }
 
-Color SVGPaintServerSolid::color() const
+QColor SVGPaintServerSolid::color() const
 {
     return m_color;
 }
 
-void SVGPaintServerSolid::setColor(const Color& color)
+void SVGPaintServerSolid::setColor(const QColor& color)
 {
     m_color = color;
 }

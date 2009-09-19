@@ -46,6 +46,8 @@
 
 namespace WebCore {
 
+using namespace DOM;
+
 //using namespace HTMLNames;
 //using namespace EventNames;
 

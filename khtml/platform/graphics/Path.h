@@ -27,37 +27,22 @@
 #ifndef Path_h
 #define Path_h
 
-#include "wtf/Platform.h"
+#include "dom/dom_string.h"
+#include "platform/graphics/FloatPoint.h"
+#include "platform/graphics/FloatRect.h"
+#include <QPainterPath>
 
-#if PLATFORM(CG)
-typedef struct CGPath PlatformPath;
-#elif PLATFORM(QT)
-#include <qglobal.h>
-QT_BEGIN_NAMESPACE
-class QPainterPath;
-QT_END_NAMESPACE
 typedef QPainterPath PlatformPath;
-#elif PLATFORM(WX) && USE(WXGC)
-class wxGraphicsPath;
-typedef wxGraphicsPath PlatformPath;
-#elif PLATFORM(CAIRO)
-namespace WebCore {
-    struct CairoPath;
-}
-typedef WebCore::CairoPath PlatformPath;
-#else
-typedef void PlatformPath;
-#endif
-
-// for class String
-#include "Document.h"
 
 namespace WebCore {
-
     class AffineTransform;
-    class FloatPoint;
-    class FloatSize;
-    class FloatRect;
+}
+
+namespace khtml {
+    using WebCore::AffineTransform;
+    using WebCore::FloatPoint;
+    using WebCore::FloatSize;
+    using WebCore::FloatRect;
     //class String;
 
     enum WindRule {
@@ -114,7 +99,7 @@ namespace WebCore {
         void setWindingRule(WindRule rule) { m_rule = rule; }
         WindRule windingRule() const { return m_rule; }
 
-        String debugString() const;
+        DOM::DOMString debugString() const;
 
         PlatformPath* platformPath() const { return m_path; }
 

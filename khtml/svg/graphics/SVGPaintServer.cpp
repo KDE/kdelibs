@@ -72,12 +72,12 @@ SVGPaintServer* SVGPaintServer::fillPaintServer(const RenderStyle* style, const 
     if (!style->svgStyle()->hasFill())
         return 0;
 
-    SVGPaint* fill = style->svgStyle()->fillPaint();
+    SVGPaintImpl* fill = style->svgStyle()->fillPaint();
 
     SVGPaintServer* fillPaintServer = 0;
-    SVGPaint::SVGPaintType paintType = fill->paintType();
-    if (paintType == SVGPaint::SVG_PAINTTYPE_URI ||
-        paintType == SVGPaint::SVG_PAINTTYPE_URI_RGBCOLOR) {
+    SVGPaintImpl::SVGPaintType paintType = fill->paintType();
+    if (paintType == SVGPaintImpl::SVG_PAINTTYPE_URI ||
+        paintType == SVGPaintImpl::SVG_PAINTTYPE_URI_RGBCOLOR) {
         AtomicString id(SVGURIReference::getTarget(fill->uri()));
         fillPaintServer = getPaintServerById(item->document(), id);
         SVGElement* svgElement = static_cast<SVGElement*>(item->element());
@@ -85,13 +85,13 @@ SVGPaintServer* SVGPaintServer::fillPaintServer(const RenderStyle* style, const 
 
         if (item->isRenderPath() && fillPaintServer)
             fillPaintServer->addClient(static_cast<SVGStyledElement*>(svgElement));
-        else if (!fillPaintServer && paintType == SVGPaint::SVG_PAINTTYPE_URI)
+        else if (!fillPaintServer && paintType == SVGPaintImpl::SVG_PAINTTYPE_URI)
             svgElement->document()->accessSVGExtensions()->addPendingResource(id, static_cast<SVGStyledElement*>(svgElement)); 
     }
-    if (paintType != SVGPaint::SVG_PAINTTYPE_URI && !fillPaintServer) {
+    if (paintType != SVGPaintImpl::SVG_PAINTTYPE_URI && !fillPaintServer) {
         fillPaintServer = sharedSolidPaintServer();
         SVGPaintServerSolid* fillPaintServerSolid = static_cast<SVGPaintServerSolid*>(fillPaintServer);
-        if (paintType == SVGPaint::SVG_PAINTTYPE_CURRENTCOLOR)
+        if (paintType == SVGPaintImpl::SVG_PAINTTYPE_CURRENTCOLOR)
             fillPaintServerSolid->setColor(style->color());
         else
             fillPaintServerSolid->setColor(fill->color());
@@ -112,12 +112,12 @@ SVGPaintServer* SVGPaintServer::strokePaintServer(const RenderStyle* style, cons
     if (!style->svgStyle()->hasStroke())
         return 0;
 
-    SVGPaint* stroke = style->svgStyle()->strokePaint();
+    SVGPaintImpl* stroke = style->svgStyle()->strokePaint();
 
     SVGPaintServer* strokePaintServer = 0;
-    SVGPaint::SVGPaintType paintType = stroke->paintType();
-    if (paintType == SVGPaint::SVG_PAINTTYPE_URI ||
-        paintType == SVGPaint::SVG_PAINTTYPE_URI_RGBCOLOR) {
+    SVGPaintImpl::SVGPaintType paintType = stroke->paintType();
+    if (paintType == SVGPaintImpl::SVG_PAINTTYPE_URI ||
+        paintType == SVGPaintImpl::SVG_PAINTTYPE_URI_RGBCOLOR) {
         AtomicString id(SVGURIReference::getTarget(stroke->uri()));
         strokePaintServer = getPaintServerById(item->document(), id);
 
@@ -126,13 +126,13 @@ SVGPaintServer* SVGPaintServer::strokePaintServer(const RenderStyle* style, cons
  
         if (item->isRenderPath() && strokePaintServer)
             strokePaintServer->addClient(static_cast<SVGStyledElement*>(svgElement));
-        else if (!strokePaintServer && paintType == SVGPaint::SVG_PAINTTYPE_URI)
+        else if (!strokePaintServer && paintType == SVGPaintImpl::SVG_PAINTTYPE_URI)
             svgElement->document()->accessSVGExtensions()->addPendingResource(id, static_cast<SVGStyledElement*>(svgElement)); 
     }
-    if (paintType != SVGPaint::SVG_PAINTTYPE_URI && !strokePaintServer) {
+    if (paintType != SVGPaintImpl::SVG_PAINTTYPE_URI && !strokePaintServer) {
         strokePaintServer = sharedSolidPaintServer();
         SVGPaintServerSolid* strokePaintServerSolid = static_cast<SVGPaintServerSolid*>(strokePaintServer);
-        if (paintType == SVGPaint::SVG_PAINTTYPE_CURRENTCOLOR)
+        if (paintType == SVGPaintImpl::SVG_PAINTTYPE_CURRENTCOLOR)
             strokePaintServerSolid->setColor(style->color());
         else
             strokePaintServerSolid->setColor(stroke->color());

@@ -252,7 +252,7 @@ namespace WebCore {
         virtual void addCSSProperty(Attribute* attr, int id, int value);
 
     private:
-        void addSVGEventListener(const EventImpl::EventId& eventType, const Attribute*);
+        void addSVGEventListener(const DOM::EventImpl::EventId& eventType, const DOM::AttributeImpl*);
         virtual bool haveLoadedRequiredResources();
 
         Node* m_shadowParent;

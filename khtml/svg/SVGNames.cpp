@@ -2,6 +2,8 @@
 
 #include "svg/XLinkNames.h"
 
+using namespace DOM;
+
 namespace WebCore {
     namespace HTMLNames {
         DOM::QualifiedName classAttr;

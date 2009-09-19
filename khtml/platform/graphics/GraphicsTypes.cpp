@@ -29,7 +29,7 @@
 #include "PlatformString.h"
 #include <wtf/Assertions.h>
 
-namespace WebCore {
+namespace khtml {
 
 static const char* const compositeOperatorNames[] = {
     "clear",
@@ -49,7 +49,7 @@ static const char* const compositeOperatorNames[] = {
 };
 const int numCompositeOperatorNames = sizeof(compositeOperatorNames) / sizeof(compositeOperatorNames[0]);
 
-bool parseCompositeOperator(const String& s, CompositeOperator& op)
+bool parseCompositeOperator(const DOM::DOMString& s, CompositeOperator& op)
 {
     for (int i = 0; i < numCompositeOperatorNames; i++)
         if (s == compositeOperatorNames[i]) {
@@ -59,14 +59,14 @@ bool parseCompositeOperator(const String& s, CompositeOperator& op)
     return false;
 }
 
-String compositeOperatorName(CompositeOperator op)
+DOM::DOMString compositeOperatorName(CompositeOperator op)
 {
     ASSERT(op >= 0);
     ASSERT(op < numCompositeOperatorNames);
     return compositeOperatorNames[op];
 }
 
-bool parseLineCap(const String& s, LineCap& cap)
+bool parseLineCap(const DOM::DOMString& s, LineCap& cap)
 {
     if (s == "butt") {
         cap = ButtCap;
@@ -83,7 +83,7 @@ bool parseLineCap(const String& s, LineCap& cap)
     return false;
 }
 
-String lineCapName(LineCap cap)
+DOM::DOMString lineCapName(LineCap cap)
 {
     ASSERT(cap >= 0);
     ASSERT(cap < 3);
@@ -91,7 +91,7 @@ String lineCapName(LineCap cap)
     return names[cap];
 }
 
-bool parseLineJoin(const String& s, LineJoin& join)
+bool parseLineJoin(const DOM::DOMString& s, LineJoin& join)
 {
     if (s == "miter") {
         join = MiterJoin;
@@ -108,7 +108,7 @@ bool parseLineJoin(const String& s, LineJoin& join)
     return false;
 }
 
-String lineJoinName(LineJoin join)
+DOM::DOMString lineJoinName(LineJoin join)
 {
     ASSERT(join >= 0);
     ASSERT(join < 3);

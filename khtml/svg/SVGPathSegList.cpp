@@ -94,7 +94,7 @@ unsigned SVGPathSegList::getPathSegAtLength(double)
     return 0; // The SVG spec is unclear as to what to return when the distance is not on the path    
 }
 
-Path SVGPathSegList::toPathData()
+khtml::Path SVGPathSegList::toPathData()
 {
     // FIXME : This should also support non-normalized PathSegLists
     Path pathData;
