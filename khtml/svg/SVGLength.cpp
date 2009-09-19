@@ -251,6 +251,8 @@ bool SVGLength::setValueAsString(const String& s)
     if (ptr != end && type == LengthTypeNumber)
         return false;
 
+    kDebug() << convertedNumber << type;
+
     m_unit = storeUnit(extractMode(m_unit), type);
     m_valueInSpecifiedUnits = convertedNumber;
     return true;

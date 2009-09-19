@@ -133,16 +133,9 @@ unsigned short IDTableBase::grabId(DOMStringImpl* origName, CaseNormalizeMode cn
 
 void IDTableBase::addStaticMapping(unsigned id, const DOMString& name)
 {
-    DOMStringImpl* nameImpl = name.implementation();
-    if (nameImpl) nameImpl->ref();
-    
+    addHiddenMapping(id, name);
     IDTableBase::MappingKey::caseNormalizationMode = IDS_CaseSensitive;
-
-    assert(id == m_mappings.size());
-    assert(!m_mappingLookup.contains(nameImpl));
-    m_mappings.append(Mapping(nameImpl));
-    m_mappings[m_mappings.size() - 1].refCount = 1; // Pin it.
-    m_mappingLookup[nameImpl] = id;
+    m_mappingLookup[name.implementation()] = id;
 }
 
 void IDTableBase::addHiddenMapping(unsigned id, const DOMString& name)
@@ -150,9 +143,10 @@ void IDTableBase::addHiddenMapping(unsigned id, const DOMString& name)
     DOMStringImpl* nameImpl = name.implementation();
     if (nameImpl) nameImpl->ref();
 
-    assert(id == m_mappings.size());
-    m_mappings.append(Mapping(nameImpl));
-    m_mappings[m_mappings.size() - 1].refCount = 1; // Pin it.    
+    if (id >= m_mappings.size())
+        m_mappings.resize(id + 1);
+    m_mappings[id] = Mapping(nameImpl);
+    m_mappings[id].refCount = 1; // Pin it.
 }
 
 }

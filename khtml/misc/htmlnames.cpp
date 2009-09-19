@@ -10,10 +10,11 @@ IDTable<NamespaceFactory>* NamespaceFactory::initIdTable()
 {
     if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..
     s_idTable = new IDTable<NamespaceFactory>();
-    s_idTable->addStaticMapping(DOM::xhtmlNamespace, XHTML_NAMESPACE);
-    s_idTable->addStaticMapping(DOM::emptyNamespace, DOMString());
+    s_idTable->addStaticMapping(DOM::xmlNamespace, XML_NAMESPACE);
     s_idTable->addStaticMapping(DOM::svgNamespace, SVG_NAMESPACE);
+    s_idTable->addStaticMapping(DOM::xhtmlNamespace, XHTML_NAMESPACE);
     s_idTable->addStaticMapping(DOM::xlinkNamespace, XLINK_NAMESPACE);
+    s_idTable->addStaticMapping(DOM::emptyNamespace, DOMString());
     return s_idTable;
 }
 
@@ -226,7 +227,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_TOP), "top");
     s_idTable->addStaticMapping(localNamePart(ATTR_TOPMARGIN), "topmargin");
     s_idTable->addStaticMapping(localNamePart(ATTR_TRUESPEED), "truespeed");
-    s_idTable->addStaticMapping(localNamePart(ATTR_TYPE), "type");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_TYPE), "type");
     s_idTable->addStaticMapping(localNamePart(ATTR_UNKNOWN), "unknown");
     s_idTable->addStaticMapping(localNamePart(ATTR_VALIGN), "valign");
     s_idTable->addStaticMapping(localNamePart(ATTR_VALUETYPE), "valuetype");
@@ -249,7 +250,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_DATETIME), "datetime");
     s_idTable->addStaticMapping(localNamePart(ATTR_FOR), "for");
     s_idTable->addStaticMapping(localNamePart(ATTR_HEADERS), "headers");
-    s_idTable->addStaticMapping(localNamePart(ATTR_HREF), "href");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_HREF), "href");
     s_idTable->addStaticMapping(localNamePart(ATTR_ID), "id");
     s_idTable->addStaticMapping(localNamePart(ATTR_LONGDESC), "longdesc");
     s_idTable->addStaticMapping(localNamePart(ATTR_NAME), "name");
@@ -575,10 +576,10 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_YCHANNELSELECTOR), "yChannelSelector");
     s_idTable->addStaticMapping(localNamePart(ATTR_Z), "z");
     s_idTable->addStaticMapping(localNamePart(ATTR_ZOOMANDPAN), "zoomAndPan");
-    s_idTable->addStaticMapping(localNamePart(ATTR_ACTUATE), "actuate");
-    s_idTable->addStaticMapping(localNamePart(ATTR_ARCROLE), "arcrole");
-    s_idTable->addStaticMapping(localNamePart(ATTR_ROLE), "role");
-    s_idTable->addStaticMapping(localNamePart(ATTR_SHOW), "show");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_ACTUATE), "actuate");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_ARCROLE), "arcrole");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_ROLE), "role");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_SHOW), "show");
     return s_idTable;
 }
 

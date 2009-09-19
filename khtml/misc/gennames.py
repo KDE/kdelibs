@@ -1,6 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# List of namespaces.The 2nd part in the array states whether the attributes
+# should be in the namespace
+namespaces = {
+    "xhtml": ['"http://www.w3.org/1999/xhtml"', False, 0 ],
+    "empty": [ "DOMString()", False, 1 ],
+    "svg":   ['"http://www.w3.org/2000/svg"', False, 2 ],
+    "xlink": ['"http://www.w3.org/1999/xlink"', True, 3 ],
+    "xml":   ['"http://www.w3.org/2000/xmlns/"', True, 4 ]
+}
+
 cache = {}
 namesList = []
 
@@ -8,10 +18,13 @@ additionalCaseSensitiveAttrs = []
 lastCaseInsensitiveAttr      = 0
 
 
-def constName(prefix, i):
-    return (prefix + "_%s") % i.upper().replace("-", "_");
+def constName(prefix, ns, i):
+    if namespaces[ns][1]:
+        return (prefix + "_%s_%s") % (ns.upper(), i.upper().replace("-", "_"));
+    else:
+        return (prefix + "_%s") % i.upper().replace("-", "_");
 
-def parseFile(fname, isAttrs, isHtmlAttrs):
+def parseFile(fname, ns, isAttrs, isHtmlAttrs):
     global cache
     global namesList
 
@@ -31,7 +44,7 @@ def parseFile(fname, isAttrs, isHtmlAttrs):
             continue
 
         # don't add it twice to names list
-        cons = constName(prefix, i)
+        cons = constName(prefix, ns, i)
         alreadyDefined = [k for k in namesList if k[2] == cons]
         if len(alreadyDefined) > 0:
             continue
@@ -46,29 +59,29 @@ def parseFile(fname, isAttrs, isHtmlAttrs):
             additionalCaseSensitiveAttrs.append(cons)
 
         cache[i] = key
-        namesList.append([key, i, cons])
+        namesList.append([key, i, cons, ns])
     f.close();
 
-def parseTags(fname):
-    parseFile(fname, False, False)
+def parseTags(fname, ns):
+    parseFile(fname, ns, False, False)
 
-def parseAttrs(fname, isHtml):
-    parseFile(fname, True, isHtml)
+def parseAttrs(fname, ns, isHtml):
+    parseFile(fname, ns, True, isHtml)
 
 # parse htmltags.in
-parseTags("htmltags.in");
+parseTags("htmltags.in", "xhtml");
 lastTagId = len(cache)
 
 # parse htmlattrs.in file
-parseAttrs("htmlattrs.in", True)
+parseAttrs("htmlattrs.in", "xhtml", True)
 lastAttrId = len(cache)
 
 # parse SVG tags, attrs
-parseTags("../svg/svgtags.in")
-parseAttrs("../svg/svgattrs.in", False)
+parseTags("../svg/svgtags.in", "svg")
+parseAttrs("../svg/svgattrs.in", "svg", False)
 
 # parse XLink attrs
-parseAttrs("../svg/xlinkattrs.in", False)
+parseAttrs("../svg/xlinkattrs.in", "xlink", False)
 
 # sort the list
 def func(a, b):
@@ -88,13 +101,46 @@ out.write("#define HTMLNames_h\n")
 out.write("\n")
 out.write("#include \"misc/idstring.h\"\n")
 out.write("\n")
-out.write("#define XHTML_NAMESPACE \"http://www.w3.org/1999/xhtml\"\n")
-out.write("#define SVG_NAMESPACE \"http://www.w3.org/2000/svg\"\n")
-out.write("#define XLINK_NAMESPACE \"http://www.w3.org/1999/xlink\"\n")
+
+# Print out namespace string constants
+for n in namespaces.keys():
+    uri = namespaces[n][0];
+    if uri.startswith('"'):
+        out.write("#define %s_NAMESPACE %s\n" % (n.upper(), uri))
+
+# Now the main macros and constants
+out.write("namespace DOM {\n\
+\n\
+#define NodeImpl_IdNSMask    0xffff0000\n\
+#define NodeImpl_IdLocalMask 0x0000ffff\n\
+\n");
+
+for n in namespaces.keys():
+    out.write("const quint32 %sNamespace = %d;\n" % (n, namespaces[n][2]));
+
+out.write("const quint16 anyNamespace = 0xffff;\n\
+const quint16 anyLocalName = 0xffff;\n\
+const quint16 emptyPrefix = 0;\n\
+\n\
+inline quint16 localNamePart(quint32 id) { return id & NodeImpl_IdLocalMask; }\n\
+inline quint16 namespacePart(quint32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }\n\
+inline quint32 makeId(quint16 n, quint16 l) { return (n << 16) | l; }\n\
+\n\
+const quint32 anyQName = makeId(anyNamespace, anyLocalName);\n\
+\n\
+}\n")
+out.write("\n")
+
+
+# Now the ATTR_ and ID_ constants
 out.write("\n")
 for i in namesList:
     if i[2].startswith("ATTR"):
-        out.write("#define %s %d\n" % (i[2], 65536 + i[0]))
+        attrNS = i[3]
+        useNS  = "empty"
+        if namespaces[attrNS][1]:
+            useNS = attrNS
+        out.write("#define %s ((DOM::%s << 16) | %d)\n" % (i[2], useNS + "Namespace", i[0]))
     else:
         out.write("#define %s %d\n" % (i[2], i[0]))
 out.write("#define ID_LAST_TAG %d\n" % (lastTagId))
@@ -107,27 +153,6 @@ for i in additionalCaseSensitiveAttrs:
     s = s + " || (id) == %s" % i
 s = s + ")"
 out.write("#define caseSensitiveAttr(id) (%s)\n" % s)
-out.write("\n")
-out.write("namespace DOM {\n\
-\n\
-#define NodeImpl_IdNSMask    0xffff0000\n\
-#define NodeImpl_IdLocalMask 0x0000ffff\n\
-\n\
-const quint16 xhtmlNamespace = 0;\n\
-const quint16 emptyNamespace = 1;\n\
-const quint16 svgNamespace = 2;\n\
-const quint16 xlinkNamespace = 3;\n\
-const quint16 anyNamespace = 0xffff;\n\
-const quint16 anyLocalName = 0xffff;\n\
-const quint16 emptyPrefix = 0;\n\
-\n\
-inline quint16 localNamePart(quint32 id) { return id & NodeImpl_IdLocalMask; }\n\
-inline quint16 namespacePart(quint32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }\n\
-inline quint32 makeId(quint16 n, quint16 l) { return (n << 16) | l; }\n\
-\n\
-const quint32 anyQName = makeId(anyNamespace, anyLocalName);\n\
-\n\
-}\n")
 out.write("\n")
 out.write("namespace khtml {\n\
 \n\
@@ -196,17 +221,22 @@ out.write("namespace khtml {\n\n")
 out.write("IDTable<NamespaceFactory>* NamespaceFactory::s_idTable;\n\
 IDTable<NamespaceFactory>* NamespaceFactory::initIdTable()\n\
 {\n\
-    s_idTable = new IDTable<NamespaceFactory>();\n\
-    s_idTable->addStaticMapping(DOM::xhtmlNamespace, XHTML_NAMESPACE);\n\
-    s_idTable->addStaticMapping(DOM::emptyNamespace, DOMString());\n\
-    s_idTable->addStaticMapping(DOM::svgNamespace, SVG_NAMESPACE);\n\
-    s_idTable->addStaticMapping(DOM::xlinkNamespace, XLINK_NAMESPACE);\n\
-    return s_idTable;\n\
+    if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..\n\
+    s_idTable = new IDTable<NamespaceFactory>();\n");
+for n in namespaces.keys():
+    uri = namespaces[n][0];
+    if uri.startswith('"'):
+        out.write("    s_idTable->addStaticMapping(DOM::%sNamespace, %s_NAMESPACE);\n" % (n, n.upper()))
+    else:
+        out.write("    s_idTable->addStaticMapping(DOM::%sNamespace, %s);\n" % (n, uri))
+
+out.write("    return s_idTable;\n\
 }\n\
 \n\
 IDTable<LocalNameFactory>* LocalNameFactory::s_idTable;\n\
 IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()\n\
 {\n\
+    if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..\n\
     s_idTable = new IDTable<LocalNameFactory>();\n\
     s_idTable->addStaticMapping(0, DOMString());\n\
 %s\
@@ -216,6 +246,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()\n\
 IDTable<PrefixFactory>* PrefixFactory::s_idTable;\n\
 IDTable<PrefixFactory>* PrefixFactory::initIdTable()\n\
 {\n\
+    if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..\n\
     s_idTable = new IDTable<PrefixFactory>();\n\
     s_idTable->addStaticMapping(DOM::emptyPrefix, DOMString());\n\
     return s_idTable;\n\
