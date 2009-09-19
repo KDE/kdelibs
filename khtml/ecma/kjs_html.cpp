@@ -69,9 +69,6 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 
-// CVE-2009-2537 (vendors agreed on max 10000 elements)
-#define MAX_SELECT_LENGTH 10000
-
 using namespace DOM;
 
 namespace KJS {
@@ -467,7 +464,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
     }
     case DesignMode:
         doc.setDesignMode((value->toString(exec).qstring().toLower()=="on"));
-        return;  
+        return;
   }
 
   /* The rest of the properties require a body. Note that Doc::body may be the
@@ -2158,7 +2155,12 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
         return jsUndefined();
       }
       else if (id == KJS::HTMLElement::SelectRemove) {
-        select.remove(int(args[0]->toNumber(exec)));
+        // Apparently this takes both elements and indices (ebay.fr)
+        DOM::NodeImpl* node = toNode(args[0]);
+        if (node && node->id() == ID_OPTION)
+          select.removeChild(node, exception);
+        else
+          select.remove(int(args[0]->toNumber(exec)));
         return jsUndefined();
       }
     }
@@ -2183,7 +2185,7 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       DOM::HTMLButtonElementImpl& button = static_cast<DOM::HTMLButtonElementImpl&>(element);
       if (id == KJS::HTMLElement::ButtonClick) {
         button.click();
-        return jsUndefined();      
+        return jsUndefined();
       }
     }
     break;
@@ -2459,9 +2461,6 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
                                          JSObject *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
 
                                          if ( coll )
-                                           if (value->toInteger(exec) >= MAX_SELECT_LENGTH)
-                                             setDOMException(exec, DOMException::INDEX_SIZE_ERR);
-                                           else
                                              coll->put(exec, "length", value);
                                          return;
                                        }
@@ -3216,6 +3215,12 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
     bool converted = value->getUInt32(newLen);
 
     if (!converted) {
+      return;
+    }
+
+    // CVE-2009-2537 (vendors agreed on max 10000 elements)
+    if (newLen > 10000) {
+      setDOMException(exec, DOMException::INDEX_SIZE_ERR);
       return;
     }
 
