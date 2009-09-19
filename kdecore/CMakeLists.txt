@@ -362,7 +362,7 @@ elseif(WIN32)
        auth/backends/fake/kauth-policy-gen-polkit.cpp )
 endif()
 
-kde4_add_executable(kauth-policy-gen NOGUI RUN_UNINSTALLED ${kauth_policy_gen_SRCS})
+kde4_add_executable(kauth-policy-gen NOGUI ${kauth_policy_gen_SRCS})
 
 
 set( KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY} )

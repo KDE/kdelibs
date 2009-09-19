@@ -49,7 +49,7 @@ install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
 
-kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
+kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
 
 target_link_libraries(meinproc4 kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 
