@@ -6578,7 +6578,11 @@ void KHTMLPart::runAdFilter()
             {
                 if ( KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
                 {
-                    // We found an IMG, IFRAME or INPUT (of type IMAGE) matching a filter.
+                    // Since any kids of node will be deleted, too, fastforward nextNode
+                    // until we get outside of node.
+                    while (nextNode && nextNode->isAncestor(node))
+                        nextNode = nextNode->traverseNextNode();
+
                     node->ref();
                     NodeImpl *parent = node->parent();
                     if( parent )
