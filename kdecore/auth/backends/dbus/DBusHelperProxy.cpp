@@ -31,7 +31,9 @@
 #include "BackendsManager.h"
 #include "authadaptor.h"
 
+#ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE(QTimer*)
+#endif
 
 namespace KAuth
 {
@@ -310,4 +312,6 @@ void debugMessageReceived(int t, const QString &message)
 
 } // namespace Auth
 
+#ifndef KDE_USE_FINAL
 Q_EXPORT_PLUGIN2(helper_proxy, KAuth::DBusHelperProxy)
+#endif
