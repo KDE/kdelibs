@@ -50,7 +50,8 @@ bool SVGPaintServerSolid::setup(QPainter* painter, QPainterPath* painterPath, co
             painterPath->setFillRule(renderStyle->svgStyle()->fillRule() == RULE_EVENODD ? Qt::OddEvenFill : Qt::WindingFill);
         /*context->setFillRule(renderStyle->svgStyle()->fillRule());*/
 
-        /* if(isPaintingText()) ... */
+        if (isPaintingText && !(type & ApplyToStrokeTargetType))
+            painter->setPen(c);
     }
 
     if ((type & ApplyToStrokeTargetType) && renderStyle->svgStyle()->hasStroke()) {
