@@ -413,7 +413,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     /**
-     * Inform the host application that the mouse wheel (or another mean of scrolling) has been used
+     * Inform the host application that the mouse wheel
+     * (or another mean of scrolling that the visualization provides) has been used
      *
      * @param delta the amount of scrolling, can be either positive or negative
      * @param orientation direction of the scrolling, can be either horizontal or vertical
@@ -421,7 +422,9 @@ Q_SIGNALS:
     void scrollRequested(int delta, Qt::Orientation orientation);
 
     /**
-     * Inform the host application that an activation has been requested
+     * Inform the host application that an activation has been requested,
+     *           for instance left mouse click, but this is not guaranteed since
+     *           it's dependent from the visualization
      * @param active if it's true the application asked for the activatin
      *              of the main window, if it's false it asked for hiding
      * @param pos the position in the screen where the user clicked to
@@ -430,7 +433,9 @@ Q_SIGNALS:
     void activateRequested(bool active, const QPoint &pos);
 
     /**
-     * Alternate activate action, for instance middle mouse click
+     * Alternate activate action,
+     * for instance left mouse click, but this is not guaranteed since
+     * it's dependent from the visualization
      *
      * @param pos the position in the screen where the user clicked to
      *  trigger this signal, QPoint() if it's not the consequence of a mouse click.
