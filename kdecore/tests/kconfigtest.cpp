@@ -579,6 +579,12 @@ void KConfigTest::testChangeGroup()
     newGroup.changeGroup("FooBar"); // deprecated!
     QCOMPARE(newGroup.name(), QString("FooBar"));
     QCOMPARE(sc3.name(), QString("Hello")); // unchanged
+
+    // Write into the "changed group" and check that it works
+    newGroup.writeEntry("InFooBar", "FB");
+    QCOMPARE(KConfigGroup(&sc, "FooBar").entryMap().value("InFooBar"), QString("FB"));
+    QCOMPARE(KConfigGroup(&sc, "Hello").entryMap().value("InFooBar"), QString());
+
     KConfigGroup rootGroup(sc.group(""));
     QCOMPARE(rootGroup.name(), QString("<default>"));
     KConfigGroup sc32(rootGroup.group("Hello"));

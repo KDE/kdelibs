@@ -648,17 +648,16 @@ void KConfigGroup::deleteGroup(WriteConfigFlags flags)
 
 void KConfigGroup::changeGroup( const QString &group )
 {
-    changeGroup(group.toUtf8().constData());
+    Q_ASSERT_X(isValid(), "KConfigGroup::changeGroup", "accessing an invalid group");
+    d.detach();
+    d->mName = group.toUtf8();
 }
 
 void KConfigGroup::changeGroup( const char *group )
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::changeGroup", "accessing an invalid group");
-
-    KConfigGroup pnt(parent());
-    // detach (QExplicitlySharedDataPointer takes care of deleting the old d if necessary)
-    // ### temporary solution until QExplicitlySharedDataPointer has detach()
-    d = new KConfigGroupPrivate(&pnt, pnt.isGroupImmutable(group), d->bConst, group);
+    d.detach();
+    d->mName = group;
 }
 
 QString KConfigGroup::name() const
