@@ -192,8 +192,20 @@ void KDirSelectDialog::Private::_k_slotUrlActivated( const QString& text )
 void KDirSelectDialog::Private::_k_slotComboTextChanged( const QString& text )
 {
     m_treeView->blockSignals(true);
-    m_treeView->setCurrentUrl( KUrl( text ) );
-    m_treeView->blockSignals(false);
+    KUrl url( text );
+#ifdef Q_OS_WIN
+    if( url.isLocalFile() && !m_treeView->rootUrl().isParentOf( url ) )
+    {
+        KUrl tmp = url.upUrl();
+        while(tmp != KUrl("file:///")) {
+            url = tmp; 
+            tmp = url.upUrl();
+        }
+        m_treeView->setRootUrl( url );
+    }
+#endif
+    m_treeView->setCurrentUrl( url );
+    m_treeView->blockSignals( false );
 }
 
 void KDirSelectDialog::Private::_k_slotContextMenu( const QPoint& pos )
