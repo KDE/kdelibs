@@ -192,7 +192,7 @@ void Selection::moveTo(const Position &base, const Position &extent)
 {
 //   kdDebug(6200) << "Selection::moveTo: base(" << base.node() << "," << base.offset() << "), extent(" << extent.node() << "," << extent.offset() << ")" << endl;
 #ifdef DEBUG_CARET
-    kDebug() << *this << base << extent << endl;
+    kDebug(6200) << *this << base << extent << endl;
 #endif
     assignBaseAndExtent(base, extent);
     validate();
@@ -479,11 +479,11 @@ void Selection::layoutCaret()
         int w;
         int offset = RenderPosition::fromDOMPosition(caretPos()).renderedOffset();
 #ifdef DEBUG_CARET
-        kDebug() << "[before caretPos()]" << m_caretX << endl;
+        kDebug(6200) << "[before caretPos()]" << m_caretX << endl;
 #endif
         caretPos().node()->renderer()->caretPos(offset, true, m_caretX, m_caretY, w, m_caretSize);
 #ifdef DEBUG_CARET
-        kDebug() << "[after caretPos()]" << m_caretX << endl;
+        kDebug(6200) << "[after caretPos()]" << m_caretX << endl;
 #endif
     }
 
@@ -515,7 +515,7 @@ void Selection::needsCaretRepaint()
     if (!v)
         return;
 
-    // kDebug() << "[NeedsCaretLayout]" << m_needsCaretLayout << endl;
+    // kDebug(6200) << "[NeedsCaretLayout]" << m_needsCaretLayout << endl;
     if (m_needsCaretLayout) {
         // repaint old position and calculate new position
         v->updateContents(getRepaintRect());
@@ -573,13 +573,13 @@ void Selection::paintCaret(QPainter *p, const QRect &rect)
 void Selection::validate(ETextGranularity granularity)
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << granularity << endl;
+    kDebug(6200) << *this << granularity << endl;
 #endif
     // move the base and extent nodes to their equivalent leaf positions
     bool baseAndExtentEqual = base() == extent();
     if (base().notEmpty()) {
 #ifdef DEBUG_CARET
-        kDebug() << "[base not empty]" << endl;
+        kDebug(6200) << "[base not empty]" << endl;
 #endif
         Position pos = base().equivalentLeafPosition();
         assignBase(pos);
@@ -615,7 +615,7 @@ void Selection::validate(ETextGranularity granularity)
     // calculate the correct start and end positions
     if (granularity == CHARACTER) {
 #ifdef DEBUG_CARET
-        kDebug() << "[character:baseIsStart]" << m_baseIsStart << base() << extent() << endl;
+        kDebug(6200) << "[character:baseIsStart]" << m_baseIsStart << base() << extent() << endl;
 #endif
         if (m_baseIsStart)
             assignStartAndEnd(base(), extent());
@@ -628,18 +628,18 @@ void Selection::validate(ETextGranularity granularity)
         int extentStartOffset = extent().offset();
         int extentEndOffset = extent().offset();
 #ifdef DEBUG_CARET
-        kDebug() << "WORD GRANULARITY:" << baseStartOffset << baseEndOffset << extentStartOffset << extentEndOffset << endl;
+        kDebug(6200) << "WORD GRANULARITY:" << baseStartOffset << baseEndOffset << extentStartOffset << extentEndOffset << endl;
 #endif
         if (base().notEmpty() && (base().node()->nodeType() == Node::TEXT_NODE || base().node()->nodeType() == Node::CDATA_SECTION_NODE)) {
             DOMString t = base().node()->nodeValue();
             QChar *chars = t.unicode();
             uint len = t.length();
 #ifdef DEBUG_CARET
-            kDebug() << "text:" << QString::fromRawData(chars, len) << endl;
+            kDebug(6200) << "text:" << QString::fromRawData(chars, len) << endl;
 #endif
             findWordBoundary(chars, len, base().offset(), &baseStartOffset, &baseEndOffset);
 #ifdef DEBUG_CARET
-            kDebug() << "after find word boundary" << baseStartOffset << baseEndOffset << endl;
+            kDebug(6200) << "after find word boundary" << baseStartOffset << baseEndOffset << endl;
 #endif
         }
         if (extent().notEmpty() && (extent().node()->nodeType() == Node::TEXT_NODE || extent().node()->nodeType() == Node::CDATA_SECTION_NODE)) {
@@ -647,15 +647,15 @@ void Selection::validate(ETextGranularity granularity)
             QChar *chars = t.unicode();
             uint len = t.length();
 #ifdef DEBUG_CARET
-            kDebug() << "text:" << QString::fromRawData(chars, len) << endl;
+            kDebug(6200) << "text:" << QString::fromRawData(chars, len) << endl;
 #endif
             findWordBoundary(chars, len, extent().offset(), &extentStartOffset, &extentEndOffset);
 #ifdef DEBUG_CARET
-            kDebug() << "after find word boundary" << baseStartOffset << baseEndOffset << endl;
+            kDebug(6200) << "after find word boundary" << baseStartOffset << baseEndOffset << endl;
 #endif
         }
 #ifdef DEBUG_CARET
-        kDebug() << "is start:" << m_baseIsStart << endl;
+        kDebug(6200) << "is start:" << m_baseIsStart << endl;
 #endif
         if (m_baseIsStart) {
             assignStart(Position(base().node(), baseStartOffset));

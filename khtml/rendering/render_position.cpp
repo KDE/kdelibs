@@ -52,13 +52,13 @@ RenderPosition RenderPosition::fromDOMPosition(const Position& position)
         return (!position.offset() && renderObject->inlineBox(0)) ? RenderPosition(Position(node, 0)) : RenderPosition();
         // return renderObject->inlineBox(0) ? RenderPosition(position) : RenderPosition();
 
-    kDebug() << "[text position]" << position << endl;
+    kDebug(6040) << "[text position]" << position << endl;
     const RenderText *renderText = static_cast<const RenderText*>(renderObject);
     int domOffset = position.offset();
     int renderOffset = renderText->convertToRenderedPosition(domOffset);
     domOffset = renderText->convertToDOMPosition(renderOffset);
     // now we need to modify original position
-    kDebug() << "[equivalent offset]" << domOffset << endl;
+    kDebug(6040) << "[equivalent offset]" << domOffset << endl;
     RenderPosition result(Position(node, domOffset));
     if (!result.getInlineBoxAndOffset(renderOffset))
         return RenderPosition();
@@ -70,10 +70,10 @@ InlineBox* RenderPosition::getInlineBoxAndOffset(int& offset) const
     // default value
     offset = 0;
     if (!renderer()) {
-        kDebug() << "[EMPTY POSITION]" << endl;
+        kDebug(6040) << "[EMPTY POSITION]" << endl;
         return 0;
     }
-    kDebug() << "[find inline box]" << m_position << endl;
+    kDebug(6040) << "[find inline box]" << m_position << endl;
 
     const NodeImpl* node = m_position.node();
     /*const*/ RenderObject* renderObject = node->renderer();
@@ -93,15 +93,15 @@ InlineBox* RenderPosition::getInlineBoxAndOffset(int& offset) const
     for (textBox = renderText->firstTextBox(); textBox; textBox = textBox->nextTextBox()) {
         if (renderOffset >= textBox->start() && renderOffset <= textBox->end()) {
             offset = renderOffset; // - textBox->start();
-            kDebug() << "[result]" << offset << textBox << endl;
+            kDebug(6040) << "[result]" << offset << textBox << endl;
             return textBox;
         } else if (renderOffset < textBox->start()) {
             offset = textBox->start();
-            kDebug() << "[result]" << offset << textBox << endl;
+            kDebug(6040) << "[result]" << offset << textBox << endl;
             return textBox;
         } else if (!textBox->nextTextBox()) {
             offset = textBox->start() + textBox->len();
-            kDebug() << "[result]" << offset << textBox << endl;
+            kDebug(6040) << "[result]" << offset << textBox << endl;
             return textBox;
         }
         // choose right box we're at
@@ -112,7 +112,7 @@ InlineBox* RenderPosition::getInlineBoxAndOffset(int& offset) const
 
 bool RenderPosition::rendersInDifferentPosition(const RenderPosition& self, const RenderPosition& other)
 {
-    kDebug() << "[compare]" << self.position() << other.position() << endl;
+    kDebug(6040) << "[compare]" << self.position() << other.position() << endl;
     if (self == other) return false;
     if (self.isEmpty() || other.isEmpty()) return false;
     // if (self.renderer() != other.renderer()) return true;
@@ -148,19 +148,19 @@ bool RenderPosition::rendersOnSameLine(const RenderPosition& self, const RenderP
 
 RenderPosition RenderPosition::previousLinePosition(int x)
 {
-    kDebug() << "[Previous line at x]" << x << endl;
+    kDebug(6040) << "[Previous line at x]" << x << endl;
     if (!renderer()) return *this;
 
     int rOffset;
     NodeImpl* node = m_position.node();
     InlineBox *box = getInlineBoxAndOffset(rOffset);
-    kDebug() << "[box;offset]" << box << rOffset << endl;
+    kDebug(6040) << "[box;offset]" << box << rOffset << endl;
 
     RenderBlock *containingBlock = 0;
     RootInlineBox *root = 0;
     if (box)
         root = box->root()->prevRootBox();
-    kDebug() << "[root]" << root << endl;
+    kDebug(6040) << "[root]" << root << endl;
     if (root) {
         containingBlock = node->renderer()->containingBlock();
     } else {
@@ -169,28 +169,28 @@ RenderPosition RenderPosition::previousLinePosition(int x)
         // block and find the last root line box in that block.
         NodeImpl *startBlock = node->enclosingBlockFlowElement();
         NodeImpl *n = node->previousEditable();
-        kDebug() << "[StartBlock]" << startBlock << (startBlock ? startBlock->renderer() : 0) << endl;
+        kDebug(6040) << "[StartBlock]" << startBlock << (startBlock ? startBlock->renderer() : 0) << endl;
         while (n && startBlock == n->enclosingBlockFlowElement())
             n = n->previousEditable();
-        kDebug() << "[n]" << n << (n ? n->renderer() : 0) << (n ? n->nodeName() : "") << endl;
+        kDebug(6040) << "[n]" << n << (n ? n->renderer() : 0) << (n ? n->nodeName() : "") << endl;
         printEnclosingBlockTree(n);
         if (n) {
             while (n && !Position(n, n->caretMaxOffset()).inRenderedContent()) {
-                kDebug() << "[previous]" << n << endl;
+                kDebug(6040) << "[previous]" << n << endl;
                 n = n->previousEditable();
             }
-            kDebug() << "[n]" << n << (n ? n->renderer() : 0) << endl;
+            kDebug(6040) << "[n]" << n << (n ? n->renderer() : 0) << endl;
             if (n && inSameRootNavigableElement(n, node)) {
                 assert(n->renderer());
                 // box = n->renderer()->inlineBox(n->caretMaxOffset());
                 int offset;
                 box = RenderPosition::fromDOMPosition(Position(n, n->caretMaxOffset())).getInlineBoxAndOffset(offset);
-                kDebug() << "[box]" << box << offset << endl;
+                kDebug(6040) << "[box]" << box << offset << endl;
                 // previous root line box found
                 if (box) {
                     root = box->root();
                     containingBlock = n->renderer()->containingBlock();
-                    kDebug() << "[root,block]" << root << containingBlock << endl;
+                    kDebug(6040) << "[root,block]" << root << containingBlock << endl;
                 }
                 return RenderPosition::fromDOMPosition(Position(n, n->caretMaxOffset())).position();
             }
@@ -200,9 +200,9 @@ RenderPosition RenderPosition::previousLinePosition(int x)
     if (root) {
         int absx, absy;
         containingBlock->absolutePosition(absx, absy);
-        kDebug() << "[cb]" << containingBlock << absx << absy << endl;
+        kDebug(6040) << "[cb]" << containingBlock << absx << absy << endl;
         RenderObject *renderer = root->closestLeafChildForXPos(x, absx)->object();
-        kDebug() << "[renderer]" << renderer << endl;
+        kDebug(6040) << "[renderer]" << renderer << endl;
         return renderer->positionForCoordinates(x, absy + root->topOverflow());
     }
 
@@ -211,13 +211,13 @@ RenderPosition RenderPosition::previousLinePosition(int x)
 
 RenderPosition RenderPosition::nextLinePosition(int x)
 {
-    kDebug() << "[Next line at x]" << x << endl;
+    kDebug(6040) << "[Next line at x]" << x << endl;
     if (!renderer()) return *this;
 
     int rOffset;
     NodeImpl* node = m_position.node();
     InlineBox *box = getInlineBoxAndOffset(rOffset);
-    kDebug() << "[box;offset]" << box << rOffset << endl;
+    kDebug(6040) << "[box;offset]" << box << rOffset << endl;
 
     RenderBlock *containingBlock = 0;
     RootInlineBox *root = 0;
@@ -261,7 +261,7 @@ RenderPosition RenderPosition::nextLinePosition(int x)
 
 /*bool RenderPosition::haveRenderPosition()
 {
-    kDebug() << *this << endl;
+    kDebug(6040) << *this << endl;
     if (isEmpty())
         return false;
 
@@ -277,10 +277,10 @@ RenderPosition RenderPosition::nextLinePosition(int x)
     }
     else if (renderer->isText()) {
         RenderText *textRenderer = static_cast<RenderText *>(renderer);
-        kDebug() << "text" << textRenderer << endl;
+        kDebug(6040) << "text" << textRenderer << endl;
         unsigned rOffset = textRenderer->convertToRenderedPosition(offset());
         for (InlineTextBox *box = textRenderer->firstTextBox(); box; box = box->nextTextBox()) {
-            kDebug() << "box" << box << box->m_start << box->m_start + box->m_len << endl;
+            kDebug(6040) << "box" << box << box->m_start << box->m_start + box->m_len << endl;
             if (rOffset >= box->m_start && rOffset <= box->m_start + box->m_len) {
                 return true;
             }

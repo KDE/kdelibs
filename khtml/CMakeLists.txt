@@ -2,6 +2,8 @@
 project(khtml)
 KDE4_NO_ENABLE_FINAL(khtml)
 
+add_definitions(-DKDE_DEFAULT_DEBUG_AREA=6000)
+
 ########svg#########
 add_definitions(-DENABLE_SVG)
 add_definitions(-DENABLE_SVG_FONTS)

@@ -190,7 +190,7 @@ long Position::renderedOffset() const
 Position Position::equivalentLeafPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << endl;
+    kDebug(6200) << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -199,7 +199,7 @@ Position Position::equivalentLeafPosition() const
         return *this;
 
 #ifdef DEBUG_CARET
-    kDebug() << "[Position]" << this << endl;
+    kDebug(6200) << "[Position]" << this << endl;
 #endif
     NodeImpl *n = node();
     int count = 0;
@@ -208,7 +208,7 @@ Position Position::equivalentLeafPosition() const
         if (!n || !n->inSameContainingBlockFlowElement(node()))
             return *this;
 #ifdef DEBUG_CARET
-        kDebug() << "[iterate]" << n << count << n->maxOffset() << endl;
+        kDebug(6200) << "[iterate]" << n << count << n->maxOffset() << endl;
 #endif
         if (count + n->maxOffset() >= offset()) {
             count = offset() - count;
@@ -222,7 +222,7 @@ Position Position::equivalentLeafPosition() const
 Position Position::previousRenderedEditablePosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << endl;
+    kDebug(6200) << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -245,7 +245,7 @@ Position Position::previousRenderedEditablePosition() const
 Position Position::nextRenderedEditablePosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << endl;
+    kDebug(6200) << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -268,14 +268,14 @@ Position Position::nextRenderedEditablePosition() const
 Position Position::previousCharacterPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << endl;
+    kDebug(6200) << *this << endl;
 #endif
     if (isEmpty())
         return Position();
 
     NodeImpl *fromRootNavigableElement = rootNavigableElement(node());
 #ifdef DEBUG_CARET
-    kDebug() << "RootElement" << fromRootNavigableElement << endl;
+    kDebug(6200) << "RootElement" << fromRootNavigableElement << endl;
 #endif
     PositionIterator it(*this);
 
@@ -284,12 +284,12 @@ Position Position::previousCharacterPosition() const
     while (!it.atStart()) {
         Position pos = it.previous();
 #ifdef DEBUG_CARET
-        kDebug() << "iterate" << pos << endl;
+        kDebug(6200) << "iterate" << pos << endl;
 #endif
 
         if (rootNavigableElement(pos.node()) != fromRootNavigableElement) {
 #ifdef DEBUG_CARET
-            kDebug() << "different root" << rootNavigableElement(pos.node()) << endl;
+            kDebug(6200) << "different root" << rootNavigableElement(pos.node()) << endl;
 #endif
             return *this;
         }
@@ -298,7 +298,7 @@ Position Position::previousCharacterPosition() const
             return currentRPosition.position();
     }
 #ifdef DEBUG_CARET
-    kDebug() << "no previous position" << endl;
+    kDebug(6200) << "no previous position" << endl;
 #endif
     return *this;
 }
@@ -306,7 +306,7 @@ Position Position::previousCharacterPosition() const
 Position Position::nextCharacterPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << endl;
+    kDebug(6200) << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -396,7 +396,7 @@ Position Position::nextLinePosition(int x) const
 Position Position::equivalentUpstreamPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug() << *this << endl;
+    kDebug(6200) << *this << endl;
 #endif
     if (!node())
         return Position();
@@ -406,7 +406,7 @@ Position Position::equivalentUpstreamPosition() const
     PositionIterator it(*this);
     for (; !it.atStart(); it.previous()) {
 #ifdef DEBUG_CARET
-        kDebug() << "[iterate]" << it.current() << endl;
+        kDebug(6200) << "[iterate]" << it.current() << endl;
 #endif
         NodeImpl *currentBlock = it.current().node()->enclosingBlockFlowElement();
         if (block != currentBlock)
