@@ -445,7 +445,7 @@ public:
     virtual void restoreState(const QString &state);
 
     // -----------------------------------------------------------------------------
-    // Notification of document stucture changes
+    // Notification of document structure changes
 
     /**
      * Notifies the node that it has been inserted into the document. This is called during document parsing, and also

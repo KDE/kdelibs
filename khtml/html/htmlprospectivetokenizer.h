@@ -23,8 +23,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef htmlprospectivetokenizer_h
-#define htmlprospectivetokenizer_h
+#ifndef HTMLPROSPECTIVETOKENIZER_H
+#define HTMLPROSPECTIVETOKENIZER_H
 
 #include "misc/stringit.h"
 #include <wtf/Vector.h>

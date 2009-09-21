@@ -1030,7 +1030,7 @@ void AutoTableLayout::layout()
     qDebug("variable satisfied: available is %d",  available );
 #endif
 
-    // spread over fixed colums
+    // spread over fixed columns
     if ( available > 0 && numFixed) {
         // still have some width to spread, distribute to fixed columns
         for ( int i = 0; i < nEffCols; i++ ) {
@@ -1048,7 +1048,7 @@ void AutoTableLayout::layout()
     qDebug("after fixed distribution: available=%d",  available );
 #endif
 
-    // spread over percent colums
+    // spread over percent columns
     if ( available > 0 && hasPercent && totalPercent < 100 * PERCENT_SCALE_FACTOR) {
         // still have some width to spread, distribute weighted to percent columns
         for ( int i = 0; i < nEffCols; i++ ) {

@@ -867,7 +867,7 @@ void ProspectiveTokenizer::emitTag()
     if (o)
         m_document->docLoader()->registerPreload( o );
 
-    m_urlToLoad = QString();
+    m_urlToLoad = DOMString();
     m_linkIsStyleSheet = false;
 }
     

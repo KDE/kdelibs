@@ -769,7 +769,7 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
 
   ### TODO:
   A lot can be optimised here based on the display type, lots of
-  optimisations are unimplemented, and currently result in the
+  optimizations are unimplemented, and currently result in the
   worst case result causing a relayout of the containing block.
 */
 RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const

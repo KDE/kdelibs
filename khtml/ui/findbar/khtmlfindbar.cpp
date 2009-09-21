@@ -162,7 +162,7 @@ void KHTMLFindBar::slotAddPatternToHistory()
             d->m_find->lineEdit()->setText(QString());
             d->m_find->blockSignals(sb);
         }
-        m_prevPattern = QString();
+        m_prevPattern.clear();
     }
 }
 

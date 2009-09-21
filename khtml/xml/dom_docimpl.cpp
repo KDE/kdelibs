@@ -2332,7 +2332,7 @@ void DocumentImpl::rebuildStyleSheetList(bool force)
                 title = title.replace('&',  "&&");
                 if ( !m_availableSheets.contains( title ) )
                     m_availableSheets.append( title );
-                title = QString();
+                title.clear();
             }
 
             if (sheet) {

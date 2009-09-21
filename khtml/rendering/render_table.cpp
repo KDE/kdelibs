@@ -1213,7 +1213,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 //     kDebug()<<"row"<<cRow<<"col"<<cCol;
 //     kDebug()<<"cSpan"<<cSpan<<"rSpan"<<rSpan;
 
-    //check wether we need to update any of the cells with span = 0
+    //check whether we need to update any of the cells with span = 0
     QList< int > columnsToAvoid;
     if( containsSpansZero ) {
         //Update any column which its last span update was in a previous column
@@ -1866,7 +1866,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     unsigned int endrow = totalRows;
     findRowCover(startrow, endrow, rowPos, y - os - ty - qMax(cbsw21, os), y + h + os - ty + qMax(cbsw2, os));
 
-    // A binary search is probably not worthwhile for coloumns
+    // A binary search is probably not worthwhile for columns
     unsigned int startcol = 0;
     unsigned int endcol = totalCols;
     if ( style()->direction() == LTR ) {

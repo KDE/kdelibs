@@ -1215,7 +1215,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
             break;
             // neutrals
         case QChar::DirB:
-            // ### what do we do with newline and paragraph seperators that come to here?
+            // ### what do we do with newline and paragraph separators that come to here?
             break;
         case QChar::DirS:
             // ### implement rule L1

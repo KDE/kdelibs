@@ -1,5 +1,8 @@
+%{
+/* //krazy:skip */
+%}
 struct PubIDInfo {
-    enum eMode { 
+    enum eMode {
         eQuirks,        /* always quirks mode, unless there's an internal subset */
         eQuirks3,       /* ditto, but but pre-HTML4 (no tbody) */
         eAlmostStandards,
