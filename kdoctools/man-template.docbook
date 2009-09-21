@@ -5,41 +5,41 @@
 
 <refentry lang="&language;">
 <refentryinfo>
-<title>KDE User's Manual</title>
+<title>&kde; User's Manual</title>
 <author><personname>
-<firstname><!-- --Your first name-- --></firstname>
-<surname><!-- --Your last name-- --></surname>
+<firstname><!--Your first name--></firstname>
+<surname><!--Your last name--></surname>
 </personname>
-<affiliation><address><email><!-- --Your email address-- --></email></address></affiliation></author>
-<date><!-- --Date when this manpage was written, in the ISO 8601 format
-'yyyy-mm-dd'-- --></date>
+<email><!--Your email address--></email></author>
+<date><!--Date when this manpage was written, in the ISO 8601 format
+'yyyy-mm-dd'--></date>
 <productname>K Desktop Environment</productname>
 </refentryinfo>
 
 <refmeta>
-<refentrytitle><command><!-- --The command this page is about-- --></command></refentrytitle>
-<manvolnum><!-- --The section this page should be in-- --></manvolnum>
+<refentrytitle><command><!--The command this page is about--></command></refentrytitle>
+<manvolnum><!--The section this page should be in--></manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname><command><!-- --The command this page is about-- --></command></refname>
-<refpurpose><!-- --Very brief description, suitable for 'whatis'-- --></refpurpose>
+<refname><command><!--The command this page is about--></command></refname>
+<refpurpose><!--Very brief description, suitable for 'whatis'--></refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command><!-- --The command this page is about-- --></command>
-<arg choice="req"><!-- --Required command specific options-- --></arg>
-<arg choice="opt"><!-- --Optional command specific options-- --></arg>
-<arg choice="opt">KDE Generic Options</arg>
+<command><!--The command this page is about--></command>
+<arg choice="req"><!--Required command specific options--></arg>
+<arg choice="opt"><!--Optional command specific options--></arg>
+<arg choice="opt">&kde; Generic Options</arg>
 <arg choice="opt">Qt Generic Options</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1>
 <title>Description</title>
-<para><!-- --Description of the app, what it's for, what it does and doesn't
-do.-- --> </para> 
+<para><!--Description of the app, what it's for, what it does and doesn't
+do.--> </para> 
 
 </refsect1>
 
@@ -49,73 +49,74 @@ do.-- --> </para>
 
 </refsect1>
 
-<!-- --The Following sections are optional, but recommended if they are
-applicable.-- -->
+<!--The Following sections are optional, but recommended if they are
+applicable.-->
 
 <refsect1>
 <title>Environment</title>
-<para><!-- --Environment variablesars that affect this command, how to set
+<para><!--Environment variablesars that affect this command, how to set
 them, who sets them, how they affect it, probably in a variablelist.  Only for
-man sections 1, 6, 7 and 8-- --></para>
+man sections 1, 6, 7 and 8--></para>
 </refsect1>
 
 <refsect1>
 <title>Files</title>
-<para><!-- --Files used by this command (eg, rc files, locations of caches
+<para><!--Files used by this command (eg, rc files, locations of caches
 etc.)  who puts them there, how they are configured, and if it's safe
-to remove them, probably in a variablelist.-- --></para>
+to remove them, probably in a variablelist.--></para>
 </refsect1>
 
 <refsect1>
 <title>See Also</title>
-<para><!-- --foo(1)-style references, use a simplelist for these-- --></para>
+<para><!--foo(1)-style references, use a simplelist for these--></para>
 
 <para>More detailed user documentation is available from <ulink
-url="help:/<!-- --commandname-- -->">help:/<!-- --command-- --></ulink>
-(either enter this <acronym>URL</acronym> into &konqueror;, or run
+url="help:/ --commandname-- ">help:/<!--command--></ulink>
+(either enter this &URL; into &konqueror;, or run
 <userinput><command>khelpcenter</command>
-<parameter>help:/<!-- --command-- --></parameter></userinput>).</para>
+<parameter>help:/<!--command--></parameter></userinput>).</para>
 
-<para>There is also further information available at <!-- --link to
-website if applicable-- --></para>
+<para>There is also further information available at <!--link to
+website if applicable--></para>
 </refsect1>
 
 <refsect1>
 <title>Examples</title>
-<para><!-- -- Give examples on how to use the program with different parameters
+<para><!-- Give examples on how to use the program with different parameters
 here, don't forget to explain what each invocation does exactly. Be verbose,
-many users find this the most useful part of the documentation! -- --></para>
+many users find this the most useful part of the documentation! --></para>
 </refsect1>
 
 <refsect1>
 <title>Standards</title>
 
-<para><!-- --If the app adheres to any particular standards or RFC's, note
-them here.-- --> </para>
+<para><!--If the app adheres to any particular standards or RFC's, note
+them here.--> </para>
 </refsect1>
 
 <refsect1>
 <title>History</title>
-<para><!-- --Programs derived from other sources sometimes have this, or you
+<para><!--Programs derived from other sources sometimes have this, or you
 might keep a modification log here.  If the log gets overly long or detailed,
-consider maintaining it in a separate file, though.-- -->
+consider maintaining it in a separate file, though.-->
+</para>
 </refsect1>
 
 <refsect1>
 <title>Bugs</title>
-<para><!-- --Things that cause specific errors, so that people may avoid it,
-or at least will be prepared for it.-- -->
+<para><!--Things that cause specific errors, so that people may avoid it,
+or at least will be prepared for it.-->
 </para>
 </refsect1>
 
 <refsect1>
 <title>Restrictions</title>
-<para><!-- --Bugs you don't plan to fix. :-)-- --></para>
+<para><!--Bugs you don't plan to fix. :-)--></para>
 </refsect1>
 
 <refsect1>
 <title>Authors</title>
-<para><!-- --Author information of the developer and man page writer.-- --></para>
+<para><!--Author information of the developer and man page writer.--></para>
 </refsect1>
 
 </refentry>

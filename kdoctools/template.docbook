@@ -69,9 +69,8 @@ and use `&George.N.Ugnacious; &George.N.Ugnacious.mail;' in the author element.
 </personname>
 <email>gnu@kde.org</email>
 </author>
-</authorgroup>
-
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
+</authorgroup>
 
 <copyright>
 <year>2002</year>
@@ -427,7 +426,7 @@ Section</link> for the answer.</para>
 </qandaentry>
 <qandaentry>
 <question>
-<para>Why can't I twiddle my documents?</para>
+<para>Why can I not twiddle my documents?</para>
 </question>
 <answer>
 <para>You can only twiddle your documents if you have the foobar.lib
@@ -455,9 +454,9 @@ Program copyright 1997 John Q. Hacker <email>jqh@kde.org</email>
 <para>
 Contributors:
 <itemizedlist>
-<listitem><para>Konqui the KDE Dragon <email>konqui@kde.org</email></para>
+<listitem><para>Konqui the &kde; Dragon <email>konqui@kde.org</email></para>
 </listitem>
-<listitem><para>Tux the Linux Penguin <email>tux@linux.org</email></para>
+<listitem><para>Tux the &Linux; Penguin <email>tux@linux.org</email></para>
 </listitem>
 </itemizedlist>
 </para>
