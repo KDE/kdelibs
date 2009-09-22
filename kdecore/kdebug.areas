@@ -1,9 +1,14 @@
 # Old-style hardcoded debug areas for kdebug().
-# Please consider using KDebug::registerArea("areaname") instead.
+# ************************************************
+# Please consider not adding anything to this file.
+# ************************************************
+# For standalone applications, just use kDebug() and an entry named after your
+# application will appear in kdebugdialog.
+# For other cases (shared libs, plugins...), you can also use KDebug::registerArea("areaname").
 #
 # Previous instructions: If you plan to add some areas, look at http://lists.kde.org/?l=kde-devel&m=106607933724723&w=2 first.
 #
-#Format : number<tab>description
+# Format : number<tab>description
 
 125        kdeui (KGlobalAccel)
 129        kdeui (KAction)
