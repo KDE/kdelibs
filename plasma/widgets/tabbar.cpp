@@ -292,7 +292,7 @@ void TabBar::resizeEvent(QGraphicsSceneResizeEvent * event)
 
 void TabBar::setCurrentIndex(int index)
 {
-    if (index > d->tabProxy->native->count() ||
+    if (index >= d->tabProxy->native->count() ||
         d->tabProxy->native->count() <= 1 ||
         d->currentIndex == index) {
         return;
