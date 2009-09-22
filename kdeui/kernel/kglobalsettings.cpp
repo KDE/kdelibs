@@ -944,7 +944,7 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
 void KGlobalSettings::Private::applySingleClick()
 {
     // handled internally by KStyles
-    if (qApp->style()->inherits("KStyle")) return;
+    if (qApp->type() != QApplication::GuiClient || qApp->style()->inherits("KStyle")) return;
 
     bool useSingleClick = singleClick();
     if( useSingleClick )
