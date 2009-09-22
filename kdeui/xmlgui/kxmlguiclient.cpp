@@ -55,6 +55,8 @@ public:
 
   bool mergeXML( QDomElement &base, QDomElement &additive,
                  KActionCollection *actionCollection );
+  bool isEmptyContainer(const QDomElement& base,
+                        KActionCollection *actionCollection) const;
 
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
@@ -202,8 +204,8 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   if ( !d->m_localXMLFile.isEmpty() ) {
     if ( !allFiles.contains( d->m_localXMLFile ) )
       allFiles.prepend( d->m_localXMLFile );
-  }    
-  
+  }
+
   QString doc;
   if ( !allFiles.isEmpty() )
     file = findMostRecentXMLFile(allFiles, doc);
@@ -231,7 +233,7 @@ void KXMLGUIClient::replaceXMLFile( const QString& xmlfile, const QString& local
   if ( !QDir::isAbsolutePath ( xmlfile ) ) {
     kWarning() << "xml file" << xmlfile << "is not an absolute path";
   }
- 
+
   setLocalXMLFile ( localxmlfile );
   setXMLFile ( xmlfile, merge );
 }
@@ -471,39 +473,44 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
         }
     }
 
+    return isEmptyContainer(base, actionCollection);
+}
+
+bool KXMLGUIClientPrivate::isEmptyContainer(const QDomElement& base, KActionCollection *actionCollection) const
+{
     // now we check if we are empty (in which case we return "true", to
     // indicate the caller that it can delete "us" (the base element
     // argument of "this" call)
-    bool deleteMe = true;
-
     QDomNode n = base.firstChild();
-    while ( !n.isNull() )
-    {
-        QDomElement e = n.toElement();
+    while (!n.isNull()) {
+        const QDomElement e = n.toElement();
         n = n.nextSibling(); // Advance now so that we can safely delete e
         if (e.isNull())
             continue;
 
         const QString tag = e.tagName();
 
+        static const QString &tagAction = KGlobal::staticQString("Action");
+        static const QString &tagSeparator = KGlobal::staticQString("Separator");
+        static const QString &tagText = KGlobal::staticQString("text");
+        static const QString &tagMerge = KGlobal::staticQString("Merge");
         if (equalstr(tag, tagAction)) {
             // if base contains an implemented action, then we must not get
             // deleted (note that the actionCollection contains both,
-            // "global" and "local" actions
+            // "global" and "local" actions)
+            static const QString &attrName = KGlobal::staticQString("name");
             if (actionCollection->action(e.attribute(attrName))) {
-                deleteMe = false;
-                break;
+                return false;
             }
         }
         else if (equalstr(tag, tagSeparator)) {
             // if we have a separator which has *not* the weak attribute
             // set, then it must be owned by the "local" tree in which case
             // we must not get deleted either
-            QString weakAttr = e.attribute( attrWeakSeparator );
-            if ( weakAttr.isEmpty() || weakAttr.toInt() != 1 )
-            {
-                deleteMe = false;
-                break;
+            static const QString &attrWeakSeparator = KGlobal::staticQString("weakSeparator");
+            const QString weakAttr = e.attribute(attrWeakSeparator);
+            if (weakAttr.isEmpty() || weakAttr.toInt() != 1) {
+                return false;
             }
         }
 
@@ -520,14 +527,12 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
         // case (at this position we can be *sure* that the container is
         // *not* empty, as the recursive call for it was in the first loop
         // which deleted the element in case the call returned "true"
-        else
-        {
-            deleteMe = false;
-            break;
+        else {
+            return false;
         }
     }
 
-    return deleteMe;
+    return true; // I'm empty, please delete me.
 }
 
 QDomElement KXMLGUIClientPrivate::findMatchingElement( const QDomElement &base, const QDomElement &additive )
