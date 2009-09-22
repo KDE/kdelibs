@@ -155,6 +155,8 @@
 <!ENTITY Robert.Gogolok.mail '<email>mail@robert-gogolok.de</email>'>
 <!ENTITY Nicolas.Goutte '<personname><firstname>Nicolas</firstname><surname>Goutte</surname></personname>'>
 <!ENTITY Nicolas.Goutte.mail '<email>goutte@kde.org</email>'>
+<!ENTITY Martin.Graesslin '<personname><firstname>Martin</firstname><surname>Gräßlin</surname></personname>'>
+<!ENTITY Martin.Graesslin.mail '<email>kde@martin-graesslin.com</email>'>
 <!ENTITY Kurt.Granroth '<personname><firstname>Kurt</firstname><surname>Granroth</surname></personname>'>
 <!ENTITY Kurt.Granroth.mail '<email>granroth@kde.org</email>'>
 <!ENTITY Wilco.Greven '<personname><firstname>Wilco</firstname><surname>Greven</surname></personname>'>
@@ -401,10 +403,10 @@
 <!ENTITY Jonathan.Singer.mail '<email>jsinger@leeta.net</email>'>
 <!ENTITY Martin.Sommer '<personname><firstname>Martin</firstname><surname>Sommer</surname></personname>'>
 <!ENTITY Martin.Sommer.mail '<email>msommer@suse.de</email>'>
+<!ENTITY Klaus.Staerk '<personname><firstname>Klaus</firstname><surname>Stärk</surname></personname>'>
 <!ENTITY Klaus.Staerk.mail '<email>staerk@kde.org</email>'>
 <!ENTITY Andrew.Stanley-Jones '<personname><firstname>Andrew</firstname><surname>Stanley-Jones</surname></personname>'>
 <!ENTITY Andrew.Stanley-Jones.mail '<email>asj@chowtown.cban.com</email>'>
-<!ENTITY Klaus.Staerk '<personname><firstname>Klaus</firstname><surname>Stärk</surname></personname>'>
 <!ENTITY George.Staikos '<personname><firstname>George</firstname><surname>Staikos</surname></personname>'>
 <!ENTITY George.Staikos.mail '<email>staikos@kde.org</email>'>
 <!ENTITY Russ.Steffen '<personname><firstname>Russ</firstname><surname>Steffen</surname></personname>'>
