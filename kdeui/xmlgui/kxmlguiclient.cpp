@@ -316,6 +316,17 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
         base.parentNode().replaceChild(additive, base);
         return true;
     } else {
+        // Merge attributes
+        {
+            const QDomNamedNodeMap attribs = additive.attributes();
+            const uint attribcount = attribs.count();
+
+            for(uint i = 0; i < attribcount; ++i) {
+                const QDomNode node = attribs.item(i);
+                base.setAttribute(node.nodeName(), node.nodeValue());
+            }
+        }
+
         // iterate over all elements in the container (of the global DOM tree)
         QDomNode n = base.firstChild();
         while ( !n.isNull() )
@@ -417,16 +428,6 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
                         base.removeChild( e );
                         additive.removeChild(matchingElement); // make sure we don't append it below
                         continue;
-                    }
-
-                    // Merge attributes
-                    const QDomNamedNodeMap attribs = matchingElement.attributes();
-                    const uint attribcount = attribs.count();
-
-                    for(uint i = 0; i < attribcount; ++i)
-                    {
-                        const QDomNode node = attribs.item(i);
-                        e.setAttribute(node.nodeName(), node.nodeValue());
                     }
 
                     continue;
@@ -545,7 +546,7 @@ QDomElement KXMLGUIClientPrivate::findMatchingElement( const QDomElement &base, 
   while ( !n.isNull() )
   {
     QDomElement e = n.toElement();
-    n = n.nextSibling(); // Advance now so that we can safely delete e
+    n = n.nextSibling(); // Advance now so that we can safely delete e -- TODO we don't, so simplify this
     if (e.isNull())
        continue;
 

@@ -479,6 +479,12 @@ void KXmlGui_UnitTest::testUiStandardsMerging()
     TestGuiClient client;
     client.createActions(actions);
     client.createGUI(xml, true /*ui_standards.rc*/);
+
+    const QDomDocument domDocument = client.domDocument();
+    const QDomElement docElem = domDocument.documentElement();
+    QCOMPARE(docElem.attribute("name"), QString("foo")); // not standard_containers from ui_standards.rc
+    QCOMPARE(docElem.attribute("version"), QString("1")); // not standard_containers from ui_standards.rc
+
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
