@@ -172,6 +172,10 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name)
 {
     ProcessListEntry *ple;
     foreach(ple,processList) {
+        if (ple->pid < 0) { 
+            qDebug() << "negative pid!";
+            continue;
+        }
         if (ple->name == name || ple->name == name + ".exe") {
             return ple;
         }
