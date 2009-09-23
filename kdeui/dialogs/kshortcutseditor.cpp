@@ -124,7 +124,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
         }
         // Yes it happens. Some apps don't set the programName.
         if (displayTitle.isEmpty()) {
-            displayTitle = "Unknown";
+            displayTitle = i18n("Unknown");
         }
     }
 
