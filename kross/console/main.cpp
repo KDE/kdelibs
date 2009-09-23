@@ -128,5 +128,6 @@ int main(int argc, char **argv)
 
     // Free the KApplication instance and exit the program.
     delete app;
+    Kross::Manager::self().deleteModules();
     return result;
 }

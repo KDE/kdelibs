@@ -361,6 +361,12 @@ QObject* Manager::module(const QString& modulename)
     return 0;
 }
 
+void Manager::deleteModules()
+{
+    qDeleteAll(d->modules);
+    d->modules.clear();
+}
+
 bool Manager::executeScriptFile(const QUrl& file)
 {
     krossdebug( QString("Manager::executeScriptFile() file='%1'").arg(file.toString()) );

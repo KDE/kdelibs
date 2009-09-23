@@ -215,6 +215,14 @@ namespace Kross {
             QObject* module(const QString& modulename);
 
             /**
+             * External modules are dynamically loadable and are normally deleted
+             * when the kross library is unloaded.
+             * Applications may choose to call deleteModules() instead to control
+             * deletion of the modules at another time.
+             */
+            void deleteModules();
+
+            /**
             * Execute a script file.
             * \param file The script file that should be executed.
             */
