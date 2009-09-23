@@ -743,6 +743,27 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
     return false;
 }
 
+QString KHTMLSettings::adFilteredBy( const QString &url, bool *isWhiteListed ) const
+{
+    QString m = d->adWhiteList.urlMatchedBy(url);
+    if (!m.isEmpty())
+    {
+        if (isWhiteListed != 0)
+            *isWhiteListed = true;
+        return (m);
+    }
+
+    m = d->adBlackList.urlMatchedBy(url);
+    if (!m.isEmpty())
+    {
+        if (isWhiteListed != 0)
+            *isWhiteListed = false;
+        return (m);
+    }
+
+    return (QString());
+}
+
 void KHTMLSettings::addAdFilter( const QString &url )
 {
     KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::NoGlobals )->group( "Filter Settings" );

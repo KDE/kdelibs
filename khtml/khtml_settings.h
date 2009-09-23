@@ -186,7 +186,23 @@ public:
     bool isPluginsEnabled( const QString& hostname = QString() ) const;
 
     // AdBlocK Filtering
+
+    /** tests whether @p url is filtered.
+     * @param url the URL to test.
+     * @return @c true if the URL is blacklisted and is not whitelisted.
+     */
     bool isAdFiltered( const QString &url ) const;
+
+    /** identify the filter which matches @p url.
+     * @param url the URL to test.
+     * @param isWhiteListed if not @c NULL, set to @c true if the URL matched
+     * a whitelist filter; set to @c false if it matched a blacklist filter.
+     * @return the filter string that matched,
+     * or @c QString() if no filter matched.
+     * @since 4.4
+    */
+    QString adFilteredBy( const QString &url, bool *isWhiteListed = 0 ) const;
+
     bool isAdFilterEnabled() const;
     bool isHideAdsEnabled() const;
     void addAdFilter( const QString &url );
