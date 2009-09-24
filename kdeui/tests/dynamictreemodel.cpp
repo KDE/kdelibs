@@ -426,7 +426,7 @@ ModelMoveCommand::ModelMoveCommand(DynamicTreeModel *model, QObject *parent)
 
 bool ModelMoveCommand::emitPreSignal(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
-#ifdef QT_VERSION >= 0x040600
+#if QT_VERSION >= 0x040600
   return m_model->beginMoveRows(srcParent, srcStart, srcEnd, destParent, destRow);
 #endif
 }
@@ -471,7 +471,7 @@ void ModelMoveCommand::doCommand()
 
 void ModelMoveCommand::emitPostSignal()
 {
-#ifdef QT_VERSION >= 0x040600
+#if QT_VERSION >= 0x040600
   m_model->endMoveRows();
 #endif
 }
