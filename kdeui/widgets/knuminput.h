@@ -436,15 +436,9 @@ class KDoubleLine;
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
  *
- * It uses the KDoubleValidator validator class. KDoubleNumInput
- * enforces the value to be in the given range, but see the class
- * documentation of KDoubleSpinBox for the tricky
- * interrelationship of precision and values. All of what is said
- * there applies here, too.
- *
  * \image html kdoublenuminput.png "KDE Double Number Input Spinbox"
  *
- * @see KIntNumInput, KDoubleSpinBox
+ * @see KIntNumInput
  */
 
 class KDEUI_EXPORT KDoubleNumInput : public KNumInput
