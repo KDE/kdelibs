@@ -43,6 +43,8 @@
 #include <QtCore/QTimer>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusConnectionInterface>
 
 
 // FIXME: connect to some NepomukServer signal which emit enabled/disabled information
@@ -84,28 +86,30 @@ public:
     void init() {
         QMutexLocker lock( &m_initMutex );
 
-        if ( !dbusModel ) {
-            dbusModel = dbusClient.createModel( "main" );
-        }
-
-        if ( !mutexModel ) {
-            mutexModel = new Soprano::Util::MutexModel( Soprano::Util::MutexModel::ReadWriteMultiThreading );
-        }
-
-        // we may get disconnected from the server but we don't want to try
-        // to connect every time the model is requested
-        if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
-            if ( mutexModel->parentModel() == localSocketModel )
-                mutexModel->setParentModel( 0 );
-            delete localSocketModel;
-            localSocketModel = 0;
-            QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
-            if ( localSocketClient.connect( socketName ) ) {
-                localSocketModel = localSocketClient.createModel( "main" );
+        if ( QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.NepomukStorage") ) {
+            if ( !dbusModel ) {
+                dbusModel = dbusClient.createModel( "main" );
             }
-            else {
-                m_socketConnectFailed = true;
-                kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
+
+            if ( !mutexModel ) {
+                mutexModel = new Soprano::Util::MutexModel( Soprano::Util::MutexModel::ReadWriteMultiThreading );
+            }
+
+            // we may get disconnected from the server but we don't want to try
+            // to connect every time the model is requested
+            if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
+                if ( mutexModel->parentModel() == localSocketModel )
+                    mutexModel->setParentModel( 0 );
+                delete localSocketModel;
+                localSocketModel = 0;
+                QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
+                if ( localSocketClient.connect( socketName ) ) {
+                    localSocketModel = localSocketClient.createModel( "main" );
+                }
+                else {
+                    m_socketConnectFailed = true;
+                    kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
+                }
             }
         }
     }
