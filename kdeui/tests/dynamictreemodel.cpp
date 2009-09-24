@@ -475,3 +475,120 @@ void ModelMoveCommand::emitPostSignal()
   m_model->endMoveRows();
 #endif
 }
+
+
+ModelMoveLayoutChangeCommand::ModelMoveLayoutChangeCommand(DynamicTreeModel* model, QObject* parent): ModelMoveCommand(model, parent)
+{
+
+}
+
+ModelMoveLayoutChangeCommand::~ModelMoveLayoutChangeCommand()
+{
+
+}
+
+bool ModelMoveLayoutChangeCommand::emitPreSignal(const QModelIndex& srcParent, int srcStart, int srcEnd, const QModelIndex& destParent, int destRow)
+{
+  m_model->layoutAboutToBeChanged();
+
+  const int column = 0;
+
+  for (int row = srcStart; row <= srcEnd; ++row)
+  {
+    m_beforeMoveList << m_model->index(row, column, srcParent);
+  }
+
+  if (srcParent != destParent)
+  {
+    for (int row = srcEnd + 1; row < m_model->rowCount(srcParent); ++row)
+    {
+      m_beforeMoveList << m_model->index(row, column, srcParent);
+    }
+    for (int row = destRow; row < m_model->rowCount(destParent); ++row)
+    {
+      m_beforeMoveList << m_model->index(row, column, destParent);
+    }
+  } else {
+    if (destRow < srcStart)
+    {
+      for (int row = destRow; row < srcStart; ++row)
+      {
+        m_beforeMoveList << m_model->index(row, column, srcParent);
+      }
+    } else {
+      for (int row = srcStart + (srcEnd - srcStart + 1); row < destRow; ++row)
+      {
+        m_beforeMoveList << m_model->index(row, column, srcParent);
+      }
+    }
+  }
+}
+
+void ModelMoveLayoutChangeCommand::emitPostSignal()
+{
+  int srcStart = m_startRow;
+  int srcEnd = m_endRow;
+  int destRow = m_destRow;
+
+  // Moving indexes may affect the m_rowNumbers and m_destRowNumbers.
+  // Instead of adjusting them programmatically, the test writer must specify them if they change.
+
+  const QList<int> sourceRowNumbers = m_endOfMoveSourceAncestors.isEmpty() ? m_rowNumbers : m_endOfMoveSourceAncestors;
+  QModelIndex srcParent = findIndex(sourceRowNumbers);
+
+  const QList<int> destRowNumbers = m_endOfMoveDestAncestors.isEmpty() ? m_destRowNumbers : m_endOfMoveDestAncestors;
+  QModelIndex destParent = findIndex(destRowNumbers);
+
+  const int column = 0;
+
+  QModelIndexList afterMoveList;
+
+  if (srcParent != destParent)
+  {
+    for (int row = destRow; row <= (destRow + (srcEnd - srcStart)); ++row)
+    {
+      afterMoveList << m_model->index(row, column, destParent);
+    }
+    for (int row = srcStart; row < m_model->rowCount(srcParent); ++row)
+    {
+      afterMoveList << m_model->index(row, column, srcParent);
+    }
+    for (int row = destRow + (srcEnd - srcStart + 1); row < m_model->rowCount(destParent); ++row)
+    {
+      afterMoveList << m_model->index(row, column, destParent);
+    }
+  } else {
+    if (destRow < srcStart)
+    {
+      for (int row = srcStart; row <= srcEnd; ++row)
+      {
+        afterMoveList << m_model->index(destRow + (srcStart - row), column, destParent);
+      }
+    } else {
+      for (int row = srcStart; row <= srcEnd; ++row)
+      {
+        afterMoveList << m_model->index(destRow + (srcStart - row - 1), column, destParent);
+      }
+    }
+    if (destRow < srcStart)
+    {
+      for (int row = destRow + 1; row <= srcStart; ++row)
+      {
+        afterMoveList << m_model->index(row, column, srcParent);
+      }
+    } else {
+      for (int row = srcStart + (srcEnd - srcStart + 1); row < (srcStart + (destRow - srcEnd)); ++row)
+      {
+        afterMoveList << m_model->index(row - (srcEnd - srcStart + 1), column, srcParent);
+      }
+    }
+  }
+
+  m_model->changePersistentIndexList(m_beforeMoveList, afterMoveList);
+  m_beforeMoveList.clear();
+  m_model->layoutChanged();
+
+
+}
+
+

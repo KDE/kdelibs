@@ -115,6 +115,81 @@ void ModelCommander::setDefaultCommands()
   setCommand("insert03", commandList);
   commandList.clear();
 
+  ModelMoveLayoutChangeCommand *moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
+  moveCommand->setAncestorRowNumbers(QList<int>() << 10);
+  moveCommand->setStartRow(0);
+  moveCommand->setEndRow(0);
+  moveCommand->setDestAncestors(QList<int>() << 10);
+  moveCommand->setDestRow(5);
+
+  commandList << moveCommand;
+
+  setCommand("move01", commandList);
+  commandList.clear();
+
+  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
+  moveCommand->setAncestorRowNumbers(QList<int>() << 10);
+  moveCommand->setStartRow(4);
+  moveCommand->setEndRow(4);
+  moveCommand->setDestAncestors(QList<int>() << 10);
+  moveCommand->setDestRow(0);
+
+  commandList << moveCommand;
+
+  setCommand("move02", commandList);
+  commandList.clear();
+
+  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
+  moveCommand->setStartRow(0);
+  moveCommand->setEndRow(0);
+  // At the beginning of the move, the target parent is row index 10
+  moveCommand->setDestAncestors(QList<int>() << 10);
+  // Because one of the parents 'older' siblings is moved, the target becomes row index 9
+  moveCommand->setEndOfMoveDestAncestors(QList<int>() << 9);
+  moveCommand->setDestRow(5);
+
+  commandList << moveCommand;
+
+
+  setCommand("move03", commandList);
+  commandList.clear();
+
+  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
+  moveCommand->setAncestorRowNumbers(QList<int>() << 9);
+  moveCommand->setEndOfMoveSourceAncestors(QList<int>() << 10);
+  moveCommand->setStartRow(5);
+  moveCommand->setEndRow(5);
+  moveCommand->setDestRow(0);
+
+  commandList << moveCommand;
+
+  setCommand("move04", commandList);
+  commandList.clear();
+
+  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
+  moveCommand->setStartRow(4);
+  moveCommand->setEndRow(4);
+  moveCommand->setDestAncestors(QList<int>() << 10);
+  moveCommand->setEndOfMoveDestAncestors(QList<int>() << 9);
+  moveCommand->setDestRow(0);
+
+  commandList << moveCommand;
+
+  setCommand("move05", commandList);
+  commandList.clear();
+
+  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
+  moveCommand->setAncestorRowNumbers(QList<int>() << 9);
+  moveCommand->setEndOfMoveSourceAncestors(QList<int>() << 10);
+  moveCommand->setStartRow(0);
+  moveCommand->setEndRow(0);
+  moveCommand->setDestRow(4);
+
+  commandList << moveCommand;
+
+  setCommand("move06", commandList);
+  commandList.clear();
+
   // Give the top level item 10 'younger' siblings.
   ins = new ModelInsertCommand(m_model, this);
   ins->setStartRow(11);

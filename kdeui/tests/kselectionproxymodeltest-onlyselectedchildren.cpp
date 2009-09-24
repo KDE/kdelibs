@@ -58,6 +58,64 @@ protected:
     QTest::newRow("insert03") << signalList << persistentList;
     signalList.clear();
 
+    signalList << (QVariantList() << LayoutAboutToBeChanged);
+    signalList << (QVariantList() << LayoutChanged);
+
+    persistentList << getChange( indexFinder, 0, 0, 4 );
+    persistentList << getChange( indexFinder, 1, 4, -1 );
+
+    QTest::newRow("move01") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << (QVariantList() << LayoutAboutToBeChanged);
+    signalList << (QVariantList() << LayoutChanged);
+
+    persistentList << getChange( indexFinder, 4, 4, -4 );
+    persistentList << getChange( indexFinder, 0, 3, 1 );
+
+    QTest::newRow("move02") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << (QVariantList() << LayoutAboutToBeChanged);
+    signalList << (QVariantList() << LayoutChanged);
+
+    persistentList << getChange( indexFinder, 5, 9, 1 );
+
+    QTest::newRow("move03") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << (QVariantList() << LayoutAboutToBeChanged);
+    signalList << (QVariantList() << LayoutChanged);
+
+    persistentList << getChange( indexFinder, 5, 5, -1, true );
+    persistentList << getChange( indexFinder, 6, 10, -1 );
+
+    QTest::newRow("move04") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << (QVariantList() << LayoutAboutToBeChanged);
+    signalList << (QVariantList() << LayoutChanged);
+
+    persistentList << getChange( indexFinder, 0, 9, 1 );
+
+    QTest::newRow("move05") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
+    signalList << (QVariantList() << LayoutAboutToBeChanged);
+    signalList << (QVariantList() << LayoutChanged);
+
+    persistentList << getChange( indexFinder, 0, 0, -1, true );
+    persistentList << getChange( indexFinder, 1, 10, -1 );
+
+    QTest::newRow("move06") << signalList << persistentList;
+    signalList.clear();
+    persistentList.clear();
+
     QTest::newRow("insert04") << signalList << persistentList;
     signalList.clear();
 

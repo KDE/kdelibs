@@ -165,6 +165,15 @@ class KDescendantsProxyModelPrivate
   QList<QPersistentModelIndex> m_terminalIndexes;
   void descendNewIndexes();
 
+  /**
+    Persists all model indexes below @p index.
+   */
+  void iterateAllIndexes(const QModelIndex &index);
+
+  QList<QPersistentModelIndex> m_layoutChangePersistentIndexes;
+//   QModelIndexList m_nonPersistentIndexes;
+  QModelIndexList m_proxyIndexes;
+
 };
 
 KDescendantsProxyModel::KDescendantsProxyModel( QObject *parent )
@@ -519,19 +528,70 @@ void KDescendantsProxyModelPrivate::sourceModelReset()
   q->reset();
 }
 
+
+void KDescendantsProxyModelPrivate::iterateAllIndexes(const QModelIndex &parent)
+{
+  Q_Q(KDescendantsProxyModel);
+  const int rowCount = q->rowCount(parent);
+  const int columnCount = q->columnCount(parent);
+  QModelIndex idx;
+  QModelIndex proxyIndex;
+  for (int row = 0; row < rowCount; ++row)
+  {
+    for (int column = 0; column < columnCount; ++column)
+    {
+      proxyIndex = q->index(row, column, parent);
+      m_proxyIndexes << proxyIndex;
+
+      idx = q->mapToSource(proxyIndex);
+//       m_nonPersistentIndexes << idx;
+      m_layoutChangePersistentIndexes << QPersistentModelIndex(idx);
+      iterateAllIndexes(proxyIndex);
+    }
+  }
+}
+
 void KDescendantsProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
   Q_Q(KDescendantsProxyModel);
 
-  q->layoutAboutToBeChanged();
+  emit q->layoutAboutToBeChanged();
+
+  iterateAllIndexes(QModelIndex());
 }
 
 void KDescendantsProxyModelPrivate::sourceLayoutChanged()
 {
   Q_Q(KDescendantsProxyModel);
 
+  for(int i = 0; i < m_proxyIndexes.size(); ++i)
+  {
+    // We can't change only the proxied indexes from the source model here.
+    // The problem is that this model does not have the same structure as the source model
+    // because it changes the parents of indexes. This means that if in the source model,
+    // B is moved below E, the indexes C and F need to be updated. However, in this model,
+    // D and E also need to be updated because the tree is flattened and their row value is changed.
+
+    // A
+    // B
+    // C
+    // - D
+    // - E
+    // - F
+
+//     if (m_nonPersistentIndexes.at(i) != m_layoutChangePersistentIndexes.at(i))
+//     {
+      q->changePersistentIndex(m_proxyIndexes.at(i), q->mapFromSource(m_layoutChangePersistentIndexes.at(i)));
+//     }
+  }
+
+  m_layoutChangePersistentIndexes.clear();
+//   m_nonPersistentIndexes.clear();
+  m_proxyIndexes.clear();
+
   m_descendantsCount.clear();
-  q->layoutChanged();
+
+  emit q->layoutChanged();
 }
 
 QModelIndex KDescendantsProxyModel::mapToSource(const QModelIndex &proxyIndex) const

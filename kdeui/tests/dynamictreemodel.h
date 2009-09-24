@@ -229,5 +229,26 @@ protected:
   int m_destRow;
 };
 
+class ModelMoveLayoutChangeCommand : public ModelMoveCommand
+{
+  Q_OBJECT
+public:
+  ModelMoveLayoutChangeCommand(DynamicTreeModel* model, QObject* parent);
+  virtual ~ModelMoveLayoutChangeCommand();
+
+  virtual bool emitPreSignal(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow);
+
+  virtual void emitPostSignal();
+
+  void setEndOfMoveSourceAncestors(QList<int> rows ) { m_endOfMoveSourceAncestors = rows; }
+  void setEndOfMoveDestAncestors(QList<int> rows ) { m_endOfMoveDestAncestors = rows; }
+
+private:
+  QModelIndexList m_beforeMoveList;
+  QList<int> m_endOfMoveSourceAncestors;
+  QList<int> m_endOfMoveDestAncestors;
+
+};
+
 
 #endif

@@ -92,6 +92,66 @@ void DescendantsProxyModelTest::testData()
   signalList.clear();
   persistentList.clear();
 
+  signalList << (QVariantList() << LayoutAboutToBeChanged);
+  signalList << (QVariantList() << LayoutChanged);
+
+  persistentList << getChange( indexFinder, 11, 11, 4 );
+  persistentList << getChange( indexFinder, 12, 15, -1 );
+
+  QTest::newRow("move01") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << (QVariantList() << LayoutAboutToBeChanged);
+  signalList << (QVariantList() << LayoutChanged);
+
+  persistentList << getChange( indexFinder, 15, 15, -4 );
+  persistentList << getChange( indexFinder, 11, 14, 1 );
+
+  QTest::newRow("move02") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << (QVariantList() << LayoutAboutToBeChanged);
+  signalList << (QVariantList() << LayoutChanged);
+
+  persistentList << getChange( indexFinder, 0, 0, 15 );
+  persistentList << getChange( indexFinder, 1, 15, -1 );
+
+  QTest::newRow("move03") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << (QVariantList() << LayoutAboutToBeChanged);
+  signalList << (QVariantList() << LayoutChanged);
+
+  persistentList << getChange( indexFinder, 15, 15, -15 );
+  persistentList << getChange( indexFinder, 0, 14, 1 );
+
+  QTest::newRow("move04") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << (QVariantList() << LayoutAboutToBeChanged);
+  signalList << (QVariantList() << LayoutChanged);
+
+  persistentList << getChange( indexFinder, 4, 4, 6 );
+  persistentList << getChange( indexFinder, 5, 10, -1 );
+
+  QTest::newRow("move05") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
+  signalList << (QVariantList() << LayoutAboutToBeChanged);
+  signalList << (QVariantList() << LayoutChanged);
+
+  persistentList << getChange( indexFinder, 10, 10, -6 );
+  persistentList << getChange( indexFinder, 4, 9, 1 );
+
+  QTest::newRow("move06") << signalList << persistentList;
+  signalList.clear();
+  persistentList.clear();
+
   signalList << getSignal(RowsAboutToBeInserted, indexFinder, 21, 30);
   signalList << getSignal(RowsInserted, indexFinder, 21, 30);
 

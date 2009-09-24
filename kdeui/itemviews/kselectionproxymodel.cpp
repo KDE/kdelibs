@@ -158,6 +158,15 @@ public:
 
   KSelectionProxyModel::FilterBehavior m_filterBehavior;
 
+  /**
+    Persists all model indexes below @p index.
+  */
+  void iterateAllIndexes(const QModelIndex &index);
+
+  QList<QPersistentModelIndex> m_layoutChangePersistentIndexes;
+  QModelIndexList m_nonPersistentIndexes;
+  QModelIndexList m_proxyIndexes;
+
 };
 
 QModelIndexList KSelectionProxyModelPrivate::toNonPersistent(const QList<QPersistentModelIndex> &list) const
@@ -223,16 +232,53 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
   }
 }
 
+void KSelectionProxyModelPrivate::iterateAllIndexes(const QModelIndex &parent)
+{
+  Q_Q(KSelectionProxyModel);
+  const int rowCount = q->rowCount(parent);
+  const int columnCount = q->columnCount(parent);
+  QModelIndex idx;
+  QModelIndex proxyIndex;
+  for (int row = 0; row < rowCount; ++row)
+  {
+    for (int column = 0; column < columnCount; ++column)
+    {
+      proxyIndex = q->index(row, column, parent);
+      m_proxyIndexes << proxyIndex;
+
+      idx = q->mapToSource(proxyIndex);
+      m_nonPersistentIndexes << idx;
+      m_layoutChangePersistentIndexes << QPersistentModelIndex(idx);
+      iterateAllIndexes(proxyIndex);
+    }
+  }
+}
 
 void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
   Q_Q(KSelectionProxyModel);
+
   emit q->layoutAboutToBeChanged();
+
+  iterateAllIndexes(QModelIndex());
 }
 
 void KSelectionProxyModelPrivate::sourceLayoutChanged()
 {
   Q_Q(KSelectionProxyModel);
+
+  for(int i = 0; i < m_proxyIndexes.size(); ++i)
+  {
+    if (m_nonPersistentIndexes.at(i) != m_layoutChangePersistentIndexes.at(i))
+    {
+      q->changePersistentIndex(m_proxyIndexes.at(i), q->mapFromSource(m_layoutChangePersistentIndexes.at(i)));
+    }
+  }
+
+  m_layoutChangePersistentIndexes.clear();
+  m_nonPersistentIndexes.clear();
+  m_proxyIndexes.clear();
+
   emit q->layoutChanged();
 }
 
