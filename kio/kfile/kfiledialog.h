@@ -6,7 +6,6 @@
                   2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
                   2001 Frerich Raabe <raabe@kde.org>
                   2007 David Faure <faure@kde.org>
-                  2009 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -85,22 +84,19 @@ public:
     enum OperationMode { Other = 0, Opening, Saving };
 
     /**
-     * Defines the options to use when calling getSave* functions.
-     */
-    enum Option {
-        ConfirmOverwrite  = 0x01,   /**< Confirm whether to overwrite file to save. */
-        ShowInlinePreview = 0x02    /**< Always show an inline preview. */
-    };
-    Q_DECLARE_FLAGS(Options, Option)
-
-    /**
       * Constructs a file dialog.
       *
-      * @param startDir Specifies the starting directory and/or initially selected
-      *                 file name, or a last used directory and optional file name
-      *                 using the @c kfiledialog:/// syntax.
-      *                 Refer to the KFileWidget documentation for more information
-      *                 on this parameter.
+      * @param startDir This can either be
+      *         @li The URL of the directory to start in.
+      *         @li A KUrl() to start in the current working
+      *             directory, or the last directory where a file has been
+      *             selected.
+      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+      *             directory last used by a filedialog in the same application that specified
+      *             the same keyword.
+      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+      *             in the directory last used by a filedialog in any application that specified the
+      *             same keyword.
       *
       * @param filter A shell glob or a mime-type-filter that specifies
       *               which files to display.
@@ -113,8 +109,6 @@ public:
       *               display a check box with the caption "Open as read-only".
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileDialog.
-      *
-      * @see KFileWidget::KFileWidget()
       */
     KFileDialog( const KUrl& startDir, const QString& filter,
                  QWidget *parent, QWidget* widget = 0 );
@@ -340,17 +334,23 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static QString getOpenFileName( const KUrl& startDir= KUrl(),
                                     const QString& filter= QString(),
@@ -375,17 +375,23 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static QStringList getOpenFileNames( const KUrl& startDir= KUrl(),
                                          const QString& filter = QString(),
@@ -401,17 +407,23 @@ public:
      * Note that with
      * this method the user must select an existing URL.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static KUrl getOpenUrl( const KUrl& startDir = KUrl(),
                             const QString& filter = QString(),
@@ -427,17 +439,23 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static KUrl::List getOpenUrls( const KUrl& startDir = KUrl(),
                                    const QString& filter = QString(),
@@ -453,50 +471,28 @@ public:
      * Note that with this
      * method the user need not select an existing filename.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static QString getSaveFileName( const KUrl& startDir = KUrl(),
                                     const QString& filter = QString(),
                                     QWidget *parent = 0,
                                     const QString& caption = QString() );
-
-    /**
-     * Creates a modal file dialog and returns the selected
-     * filename or an empty string if none was chosen.
-     *
-     * Note that with this
-     * method the user need not select an existing filename.
-     *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
-     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
-     *    Otherwise you can set the text to be displayed for the each glob, and
-     *    provide multiple globs, see setFilter() for details.
-     * @param parent The widget the dialog will be centered on initially.
-     * @param caption The name of the dialog widget.
-     * @param options Dialog options.
-     *
-     * @see KFileWidget::KFileWidget()
-     *
-     * @since 4.4
-     */
-    static QString getSaveFileName( const KUrl& startDir,
-                                    const QString& filter,
-                                    QWidget *parent,
-                                    const QString& caption,
-                                    Options options );
 
 
     /**
@@ -508,81 +504,54 @@ public:
                                        const QString& caption );
 
     /**
-     * This function accepts the window id of the parent window, instead
-     * of QWidget*. It should be used only when necessary.
-     *
-     * @since 4.4
-     */
-    static QString getSaveFileNameWId( const KUrl &startDir, const QString& filter,
-                                       WId parent_id,
-                                       const QString& caption,
-                                       Options options );
-
-    /**
      * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
      *
      * Note that with this
      * method the user need not select an existing filename.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static KUrl getSaveUrl( const KUrl& startDir = KUrl(),
                             const QString& filter = QString(),
                             QWidget *parent = 0,
                             const QString& caption = QString() );
 
-    /**
-     * Creates a modal file dialog and returns the selected
-     * filename or an empty string if none was chosen.
-     *
-     * Note that with this
-     * method the user need not select an existing filename.
-     *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
-     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
-     *    Otherwise you can set the text to be displayed for the each glob, and
-     *    provide multiple globs, see setFilter() for details.
-     * @param parent The widget the dialog will be centered on initially.
-     * @param caption The name of the dialog widget.
-     * @param options Dialog options.
-     *
-     * @see KFileWidget::KFileWidget()
-     *
-     * @since 4.4
-     */
-    static KUrl getSaveUrl( const KUrl& startDir,
-                            const QString& filter,
-                            QWidget *parent,
-                            const QString& caption,
-                            Options options );
-
 
     /**
      * Creates a modal directory-selection dialog and returns the selected
      * directory (local only) or an empty string if none was chosen.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      * @return the path to an existing local directory.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static QString getExistingDirectory( const KUrl& startDir = KUrl(),
                                          QWidget * parent = 0,
@@ -593,14 +562,20 @@ public:
      * directory or an empty string if none was chosen.
      * This version supports remote urls.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      * @return the url to an existing directory (local or remote).
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static KUrl getExistingDirectoryUrl( const KUrl& startDir = KUrl(),
                                          QWidget * parent = 0,
@@ -610,13 +585,19 @@ public:
      * Creates a modal file dialog with an image previewer and returns the
      * selected url or an empty string if none was chosen.
      *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
+     *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     *
-     * @see KFileWidget::KFileWidget()
      */
     static KUrl getImageOpenUrl( const KUrl& startDir = KUrl(),
                                  QWidget *parent = 0,
@@ -713,18 +694,13 @@ public:
      * This method implements the logic to determine the user's default directory
      * to be listed. E.g. the documents directory, home directory or a recently
      * used directory.
-     *
-     * @param startDir Starting directory or @c kfiledialog:/// URL.
-     *                 Refer to the KFileWidget documentation for more information
-     *                 on this parameter.
-     * @param recentDirClass If the @c kfiledialog:/// syntax is used, this
-     *        will return the string to be passed to KRecentDirs::dir() and
-     *        KRecentDirs::add().
+     * @param startDir A url, to be used. May use the 'kfiledialog:///keyword' and
+     *                 'kfiledialog:///keyword?global' syntax
+     *                 as documented in the KFileDialog() constructor.
+     * @param recentDirClass If the 'kfiledialog:///' syntax is used, recentDirClass
+     *        will contain the string to be used later for KRecentDir::dir()
      * @return The URL that should be listed by default (e.g. by KFileDialog or
      *         KDirSelectDialog).
-     *
-     * @see KFileWidget::KFileWidget()
-     * @see KFileWidget::getStartUrl( const KUrl& startDir, QString& recentDirClass );
      */
     static KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass );
 
