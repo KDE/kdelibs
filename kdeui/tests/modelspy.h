@@ -34,7 +34,9 @@ enum SignalType
   RowsRemoved,
   RowsAboutToBeMoved,
   RowsMoved,
-  DataChanged
+  DataChanged,
+  LayoutAboutToBeChanged,
+  LayoutChanged
 };
 
 Q_DECLARE_METATYPE( QModelIndex )
@@ -58,6 +60,9 @@ protected slots:
   void rowsRemoved(const QModelIndex &parent, int start, int end);
   void rowsAboutToBeMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart);
   void rowsMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart);
+
+  void layoutAboutToBeChanged();
+  void layoutChanged();
 
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
