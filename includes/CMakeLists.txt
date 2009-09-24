@@ -165,7 +165,6 @@ install( FILES
   KDiskFreeSpace
   KDiskFreeSpaceInfo
   KDoubleNumInput
-  KDoubleSpinBox
   KDoubleValidator
   KEMailSettings
   KEditListBox

@@ -16,7 +16,6 @@ install( FILES
  kurllabel.png
  kruler.png
  kcmodule.png
- kdoublespinbox.png
  kdoublenuminput.png
  klistbox.png
  k3listview.png
