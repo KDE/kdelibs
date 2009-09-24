@@ -120,6 +120,13 @@ void ProxyModelTest::handleSignal(QVariantList expected)
     QCOMPARE(result.at(2), expected.at(2) );
     break;
   }
+  case LayoutAboutToBeChanged:
+  case LayoutChanged:
+  {
+    QVERIFY( expected.size() == 0 );
+    QVERIFY( result.size() == 0 );
+    break;
+  }
   case RowsAboutToBeMoved:
   case RowsMoved:
   {
@@ -261,7 +268,7 @@ void ProxyModelTest::doTest()
 #if 0
     kDebug() << parent << change.startRow << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
 #endif
-    QVERIFY(change.endRow < m_proxyModel->rowCount(parent));
+    Q_ASSERT(change.endRow < m_proxyModel->rowCount(parent));
 
     QModelIndex topLeft = m_proxyModel->index( change.startRow, 0, parent );
     QModelIndex bottomRight = m_proxyModel->index( change.endRow, columnCount - 1, parent );
@@ -307,6 +314,7 @@ void ProxyModelTest::doTest()
     QVariantList expected = signalList.takeAt(0);
     handleSignal(expected);
   }
+
   // Make sure we didn't get any signals we didn't expect.
   QVERIFY(m_modelSpy->isEmpty());
 
