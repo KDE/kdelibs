@@ -1627,6 +1627,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       int currentMonth = tmptr->tm_mon;
       //kDebug(7102) << "Current time :" << asctime( tmptr );
       // Reset time fields
+      tmptr->tm_isdst = -1; // We do not anything about day saving time
       tmptr->tm_sec = 0;
       tmptr->tm_min = 0;
       tmptr->tm_hour = 0;
