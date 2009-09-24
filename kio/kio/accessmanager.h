@@ -24,6 +24,7 @@
 #define KIO_ACCESSMANAGER_H
 
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
 
 #include <kio/global.h>
 
@@ -44,6 +45,15 @@ class KIO_EXPORT AccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
 public:
+    /*!
+      Extensions to QNetworkRequest::Attribute enums.
+      @since 4.3.2
+    */
+    enum Attribute {
+        MetaData = QNetworkRequest::User, /** < Used to send KIO MetaData back and forth. type: QVariant::Map. */
+        KioError /**< Used to send KIO error codes that cannot be mapped into QNetworkReply::NetworkError. type: QVariant::Int */
+    };
+
     AccessManager(QObject *parent);
     virtual ~AccessManager();
     /** 

@@ -125,7 +125,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     KIO::MetaData metaData;
 
     // Add the user-specified meta data first...
-    QVariant userMetaData = request.attribute (QNetworkRequest::User);
+    QVariant userMetaData = request.attribute (static_cast<QNetworkRequest::Attribute>(MetaData));
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
       metaData += userMetaData.toMap();
     }

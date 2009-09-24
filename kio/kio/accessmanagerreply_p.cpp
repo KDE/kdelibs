@@ -22,6 +22,7 @@
  */
 
 #include "accessmanagerreply_p.h"
+#include "accessmanager.h"
 
 #include <kdebug.h>
 #include <job.h>
@@ -158,7 +159,8 @@ void AccessManagerReply::setMimeType(KIO::Job *kioJob, const QString &mimeType)
 
 void AccessManagerReply::jobDone(KJob *kJob)
 {
-    switch (kJob->error())
+    const int errcode = kJob->error();
+    switch (errcode)
     {
         case 0:
             setError(QNetworkReply::NoError, errorString());
@@ -200,20 +202,21 @@ void AccessManagerReply::jobDone(KJob *kJob)
             break;
         case KIO::ERR_COULD_NOT_AUTHENTICATE:
             setError(QNetworkReply::AuthenticationRequiredError, errorString());
-            kDebug( 7044 ) << kJob->error();
+            kDebug( 7044 ) << errcode;
             break;
         case KIO::ERR_UNSUPPORTED_PROTOCOL:
         case KIO::ERR_NO_SOURCE_PROTOCOL:
             setError(QNetworkReply::ProtocolUnknownError, errorString());
-            kDebug( 7044 ) << kJob->error();
+            kDebug( 7044 ) << errcode;
             break;
         case KIO::ERR_UNSUPPORTED_ACTION:
             setError(QNetworkReply::ProtocolInvalidOperationError, errorString());
-            kDebug( 7044 ) << kJob->error();
+            kDebug( 7044 ) << errcode;
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, errorString());
-            kDebug( 7044 ) << kJob->error();
+            setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
+            kDebug( 7044 ) << errcode;
     }
 
     emit finished();
@@ -228,6 +231,7 @@ void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job
     // temporary one assume code 302 which is most often used
     if (q->attribute(QNetworkRequest::HttpStatusCodeAttribute).isNull())
         q->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 302);
+
     q->setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
     emit q->finished();
 }
