@@ -113,6 +113,7 @@
     <Separator/>
     <MergeLocal/>
   </Menu>
+  <MergeLocal name="before_go"/>
   <Menu name="go"><text>&amp;Go</text>
     <Action name="go_up"/>
     <Action name="go_back"/>
