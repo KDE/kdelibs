@@ -186,7 +186,6 @@ void ModelInsertCommand::doCommand()
       {
         m_model->m_childItems[parentId].append(QList<qint64>());
       }
-//       QString name = QUuid::createUuid().toString();
       qint64 id = m_model->newId();
       QString name = QString::number(id);
 
@@ -420,9 +419,16 @@ void ModelDataChangeCommand::doCommand()
 
 
 ModelMoveCommand::ModelMoveCommand(DynamicTreeModel *model, QObject *parent)
-  : ModelChangeCommand(model, parent)
+: ModelChangeCommand(model, parent)
 {
 
+}
+
+bool ModelMoveCommand::emitPreSignal(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
+{
+#ifdef QT_VERSION >= 0x040600
+  return m_model->beginMoveRows(srcParent, srcStart, srcEnd, destParent, destRow);
+#endif
 }
 
 void ModelMoveCommand::doCommand()
@@ -430,11 +436,10 @@ void ModelMoveCommand::doCommand()
   QModelIndex srcParent = findIndex(m_rowNumbers);
   QModelIndex destParent = findIndex(m_destRowNumbers);
 
-  // TODO: Uncomment for Qt 4.6
-//   if (!m_model->beginMoveRows(srcParent, m_startRow, m_endRow, destParent, m_destRow))
-//   {
-//     return;
-//   }
+  if (!emitPreSignal(srcParent, m_startRow, m_endRow, destParent, m_destRow))
+  {
+    return;
+  }
 
   for (int column = 0; column < m_numCols; ++column)
   {
@@ -457,14 +462,16 @@ void ModelMoveCommand::doCommand()
 
     foreach(const qint64 id, l)
     {
-      if (m_model->m_childItems[destParent.internalId()].size() <= column)
-      {
-        m_model->m_childItems[destParent.internalId()].append(QList<qint64>());
-      }
       m_model->m_childItems[destParent.internalId()][column].insert(d++, id);
     }
   }
 
-  // TODO: Uncomment for Qt 4.6
-//   m_model->endMoveRows();
+  emitPostSignal();
+}
+
+void ModelMoveCommand::emitPostSignal()
+{
+#ifdef QT_VERSION >= 0x040600
+  m_model->endMoveRows();
+#endif
 }

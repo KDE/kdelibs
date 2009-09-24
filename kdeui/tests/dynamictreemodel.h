@@ -74,7 +74,6 @@ private:
   friend class ModelRemoveCommand;
   friend class ModelDataChangeCommand;
   friend class ModelMoveCommand;
-  friend class ModelFakeMoveCommand;
   friend class ModelMoveLayoutChangeCommand;
 //   friend class ModelSortIndexCommand;
   friend class ModelSortIndexLayoutChangeCommand;
@@ -215,7 +214,11 @@ public:
 
   virtual ~ModelMoveCommand() {}
 
+  virtual bool emitPreSignal(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow);
+
   virtual void doCommand();
+
+  virtual void emitPostSignal();
 
   void setDestAncestors( QList<int> rows ) { m_destRowNumbers = rows; }
 
