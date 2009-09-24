@@ -170,6 +170,6 @@ private slots:
 };
 
 
-QTEST_KDEMAIN(OnlySelectedChildrenTest, GUI)
+QTEST_KDEMAIN_CORE(OnlySelectedChildrenTest)
 #include "kselectionproxymodeltest-onlyselectedchildren.moc"
 

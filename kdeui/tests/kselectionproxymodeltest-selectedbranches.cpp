@@ -260,6 +260,6 @@ private slots:
 };
 
 
-QTEST_KDEMAIN(SelectedBranchesTest, GUI)
+QTEST_KDEMAIN_CORE(SelectedBranchesTest)
 #include "kselectionproxymodeltest-selectedbranches.moc"
 

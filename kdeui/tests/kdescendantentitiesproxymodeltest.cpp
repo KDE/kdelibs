@@ -294,5 +294,5 @@ void DescendantsProxyModelTest::cleanupTestCase()
 }
 
 
-QTEST_KDEMAIN(DescendantsProxyModelTest, GUI)
+QTEST_KDEMAIN_CORE(DescendantsProxyModelTest)
 #include "kdescendantentitiesproxymodeltest.moc"
