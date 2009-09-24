@@ -117,7 +117,6 @@
 2003        ksim
 2100	    kgpg
 2200	    kdf
-2300	    kdelirc
 
 # kdeaccessibility
 2400        kttsd (daemon)
