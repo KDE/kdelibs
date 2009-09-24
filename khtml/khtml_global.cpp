@@ -255,5 +255,5 @@ void KHTMLGlobal::finalCheck()
             kWarning(6000) << "Document" << s_docs->first() << "wasn't deleted";
         }
     }
-    assert( !s_refcnt );
+    //assert( !s_refcnt );
 }
