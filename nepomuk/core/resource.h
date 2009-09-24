@@ -100,46 +100,38 @@ namespace Nepomuk {
          * The actual resource data is loaded on demand. Thus, it is possible to work
          * with Resources as if they were in memory all the time.
          *
-         * \param uriOrIdentifier The unique URI or an arbitrary identifier of the resource.
-         *                        If it exists as a resource URI in the RDF store it is used to load the
-         *                        related properties. If not the passed string is treated
-         *                        as an identifier.
-         *                        If a resource exists in the store which has this identifier
-         *                        set this resource's properties are loaded. Otherwise the
-         *                        resource is created in the store
-         *                        with a new random URI which can be accessed through \a uri
-         *                        after the resource has been synced. The resource can later
-         *                        again be found through the same identifier.
-         *                        In Nepomuk there are two ways of identifying a resource
-         *                        uniquely:
-         *                        \li The URI of the resource which is generated randomly
-         *                        by the framework and can only be accessed in a read-only
-         *                        fashion.
-         *                        \li An identifier in combination with the resource type (Be
-         *                        aware that this identification can only be guaranteed if identifiers
-         *                        are never set manually via addIdentifier but only through the
-         *                        constructor.)
+         * \param pathOrIdentifier The path to a file or an arbitrary identifier of the resource.
+         * The following cases are handled:
+         * \li A local file path is converted to a local file URL
+         * \li A URI which already exist in Nepomuk results in loading of that particular resource.
+         * \li A string which already exists as the nao:identifier of a resource results in loading
+         * of that particular resource.
+         * \li A URI which does not exist yet is used to create a new resource (Caution: due to
+         * encoding weirdness using KUrl::url or QUrl::toString here might result in unwanted
+         * behaviour. It is recommended to always use the Resource(QUrl,QUrl) constructor if
+         * possible)
+         * \li Any other string is used as nao:identifier for a new resource. This resource can
+         * later be loaded again by using the same identifier with this constructor.
          *
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
          *             in case the resource already exists the type will be read from the
-         *             store. (This is a QString instead of a QUrl for historical reasons)
+         *             store.
          *
          * Example:
          *
-         * The best way to understand the URI and identifier system is through file resources.
-         * When a Resource object is created with the local path of the file as an identifier:
+         * The best way to understand the path or identifier system is through tags.
+         * There are two ways to create a resource that represents an existing tag. The first is the
+         * low level one: use the unique URI of the tag with the Resource(QUrl,QUrl) constructor.
+         * The second one is to use this constructor with the name of the tag as its identifier:
          *
          * \code
-         * Resource myfile( "/tmp/testfile.txt" );
+         * Resource myTag( "Nepomuk" );
          * \endcode
          *
-         * Now the URI of the resource in the store representing metadata for the file /tmp/testfile.txt
-         * is referred to by myfile.uri() which differs from the path of the file. However, the path of
-         * the file is saved as a \a hasIdentifier relation which means that it can be used to easily find
-         * the related resource.
+         * This will result in Resource loading the tag with nao:identifier "Nepomuk".
          */
-        Resource( const QString& uriOrIdentifier, const QUrl& type = QUrl() );
+        Resource( const QString& pathOrIdentifier, const QUrl& type = QUrl() );
 
         /**
          * \overload
@@ -149,18 +141,20 @@ namespace Nepomuk {
          *
          * \since 4.3
          */
-        Resource( const QString& uriOrIdentifier, const QUrl& type, ResourceManager* manager );
+        Resource( const QString& pathOrIdentifier, const QUrl& type, ResourceManager* manager );
 
         /**
          * \deprecated use Resource( const QString&, const QUrl& )
          */
-        KDE_DEPRECATED Resource( const QString& uriOrIdentifier, const QString& type );
+        KDE_DEPRECATED Resource( const QString& pathOrIdentifier, const QString& type );
 
         /**
          * Creates a new Resource object.
          *
          * \param uri The URI of the resource. If no resource with this URI exists, a new one is
-         * created.
+         * created. Using an empty QUrl will result in a new resource with a random URI being created
+         * on the first call to setProperty.
+         *
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
          *             in case the resource already exists the type will be read from the
