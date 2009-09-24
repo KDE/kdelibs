@@ -79,30 +79,22 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     switch (op) {
         case HeadOperation: {
             kDebug( 7044 ) << "HeadOperation:" << req.url();
-
             kioJob = KIO::mimetype(req.url(), KIO::HideProgressInfo);
-
             break;
         }
         case GetOperation: {
             kDebug( 7044 ) << "GetOperation:" << req.url();
-
             kioJob = KIO::get(req.url(), KIO::NoReload, KIO::HideProgressInfo);
-
             break;
         }
         case PutOperation: {
             kDebug( 7044 ) << "PutOperation:" << req.url();
-
             kioJob = KIO::put(req.url(), -1, KIO::HideProgressInfo);
-
             break;
         }
         case PostOperation: {
             kDebug( 7044 ) << "PostOperation:" << req.url();
-
             kioJob = KIO::http_post(req.url(), outgoingData->readAll(), KIO::HideProgressInfo);
-
             break;
         }
         default:
@@ -115,8 +107,14 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     kioJob->addMetaData(d->metaDataForRequest(req));
 
-    if ( op == PostOperation && !kioJob->metaData().contains("content-type")) 
-        kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded" );
+    if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
+        QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
+        if (header.isValid())
+          kioJob->addMetaData("content-type",
+                              QString::fromLatin1("Content-Type: %1").arg(header.toString()));
+        else
+          kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded");
+    }
 
     return reply;
 }
