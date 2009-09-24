@@ -45,6 +45,11 @@ class IndexFinder
       return parent;
     }
 
+    bool operator==( const IndexFinder &other )
+    {
+      return (m_rows == other.m_rows && m_model == other.m_model );
+    }
+
   private:
     QList<int> m_rows;
     QAbstractItemModel *m_model;
