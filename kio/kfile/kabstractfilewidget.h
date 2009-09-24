@@ -38,6 +38,22 @@ class KFileWidgetPrivate;
 class KUrlComboBox;
 class KFileFilterCombo;
 
+/**
+ * Base class for KFileWidget.
+ *
+ * This abstract interface allows KFileDialog (in kio) to call methods
+ * on the dlopened KFileWidget (from kfilemodule.so)
+ *
+ * In addition to the pure virtual methods defined below, the implementations
+ * of KAbstractFileWidget are expected to define the following signals:
+ * <ul>
+ * <li>fileSelected(const KUrl&)</li>
+ * <li>fileHighlighted(const KUrl&)</li>
+ * <li>selectionChanged()</li>
+ * <li>filterChanged(const QString&)</li>
+ * <li>accepted()</li>
+ * </ul>
+ */
 class KIO_EXPORT KAbstractFileWidget
 {
 public:

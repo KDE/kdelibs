@@ -746,13 +746,25 @@ Q_SIGNALS:
       * is to connect to the okClicked() signal inherited from KDialog
       * and call selectedFile(), selectedFiles(),
       * selectedUrl() or selectedUrls().
+      *
+      * \since 4.4
       */
-    void fileSelected(const QString&);
+    void fileSelected(const KUrl&);
+    /**
+     * @deprecated, connect to fileSelected(const KUrl&) instead
+     */
+    QT_MOC_COMPAT void fileSelected(const QString&); // TODO KDE5: remove
 
     /**
       * Emitted when the user highlights a file.
+      *
+      * \since 4.4
       */
-    void fileHighlighted(const QString&);
+    void fileHighlighted(const KUrl&);
+    /**
+     * @deprecated, connect to fileSelected(const KUrl&) instead
+     */
+    QT_MOC_COMPAT void fileHighlighted(const QString&); // TODO KDE5: remove
 
     /**
      * Emitted when the user hilights one or more files in multiselection mode.

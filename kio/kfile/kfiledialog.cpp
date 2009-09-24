@@ -275,17 +275,22 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     // Publish signals
     // TODO: Move the relevant signal declarations from KFileWidget to the
     //       KAbstractFileWidget interface?
-    //
     //       Else, all of these connects (including "accepted") are not typesafe.
+    // Answer: you cannot define signals in a non-qobject base class (DF).
+    //         I simply documentde them in kabstractfilewidget.h now.
     kDebug (kfile_area) << "KFileDialog connecting signals";
-    connect(fileQWidget, SIGNAL(fileSelected(const QString&)),
-                         SIGNAL(fileSelected(const QString&)));
-    connect(fileQWidget, SIGNAL(fileHighlighted(const QString&)),
-                         SIGNAL(fileHighlighted(const QString&)));
+    connect(fileQWidget, SIGNAL(fileSelected(KUrl)),
+                         SIGNAL(fileSelected(KUrl)));
+    connect(fileQWidget, SIGNAL(fileHighlighted(KUrl)),
+                         SIGNAL(fileHighlighted(KUrl)));
+    connect(fileQWidget, SIGNAL(fileSelected(QString)),
+                         SIGNAL(fileSelected(QString)));
+    connect(fileQWidget, SIGNAL(fileHighlighted(QString)),
+                         SIGNAL(fileHighlighted(QString)));
     connect(fileQWidget, SIGNAL(selectionChanged()),
                          SIGNAL(selectionChanged()));
-    connect(fileQWidget, SIGNAL(filterChanged(const QString&)),
-                         SIGNAL(filterChanged(const QString&)));
+    connect(fileQWidget, SIGNAL(filterChanged(QString)),
+                         SIGNAL(filterChanged(QString)));
 
     connect(fileQWidget, SIGNAL(accepted()), SLOT(accept()));
     //connect(fileQWidget, SIGNAL(canceled()), SLOT(slotCancel()));

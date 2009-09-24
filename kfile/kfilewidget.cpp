@@ -1038,7 +1038,8 @@ void KFileWidget::accept()
     d->addToRecentDocuments();
 
     if (!(mode() & KFile::Files)) { // single selection
-        emit fileSelected(d->url.url());
+        emit fileSelected(d->url.url()); // old
+        emit fileSelected(d->url);
     }
 
     d->ops->close();
@@ -1067,7 +1068,8 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
             setLocationText( url );
         }
 
-        emit q->fileHighlighted(url.url());
+        emit q->fileHighlighted(url.url()); // old
+        emit q->fileHighlighted(url);
     } else {
         multiSelectionChanged();
         emit q->selectionChanged();
