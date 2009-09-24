@@ -116,7 +116,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
           kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded");
     }
 
-    kDebug () << "Job '" << kioJob << "' started...";
+    //kDebug () << "Job '" << kioJob << "' started...";
     return reply;
 }
 
@@ -126,7 +126,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     KIO::MetaData metaData;
 
     // Add the user-specified meta data first...
-    QVariant userMetaData = request.attribute (QNetworkRequest::User);
+    QVariant userMetaData = request.attribute (static_cast<QNetworkRequest::Attribute>(MetaData));
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
       metaData += userMetaData.toMap();
     }
