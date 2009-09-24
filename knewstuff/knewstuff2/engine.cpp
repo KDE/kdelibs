@@ -84,7 +84,7 @@ private Q_SLOTS:
      * of them from the static methods */
     void slotEntryChanged(KNS::Entry *entry);
 
-    void slotProvidersFinished();
+    void slotHandleUpload();
     void slotEntriesFinished();
 
     void slotDownloadDialogClosed();
@@ -120,7 +120,7 @@ void EnginePrivate::workflow()
     if (m_command == command_upload) {
         connect(this,
                 SIGNAL(signalProvidersFinished()),
-                SLOT(slotProvidersFinished()));
+                SLOT(slotHandleUpload()));
         connect(this,
                 SIGNAL(signalProvidersFailed()),
                 SLOT(stopLoop()));
@@ -331,41 +331,45 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
     }
 }
 
-void EnginePrivate::slotProvidersFinished()
+void EnginePrivate::slotHandleUpload()
 {
     // NOTE: this is only connected when we are doing an upload
     //kDebug() << "Engine: slotProvidersFinished";
-
-    int ret;
 
     //Provider *fakeprovider = new Provider();
     //fakeprovider->setName(QString("Fake Provider"));
     //fakeprovider->setUploadUrl(KUrl("http://localhost/dav/"));
     //fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
-
+    
+    
+    // let the user select the provider
     QPointer<ProviderDialog> provdialog = new ProviderDialog(NULL);
     for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); ++it) {
         Provider *provider = (*it);
         provdialog->addProvider(provider);
     }
     //provdialog.addProvider(fakeprovider);
-    ret = provdialog->exec();
-    if (ret == QDialog::Rejected) {
+    if (provdialog->exec() == QDialog::Rejected) {
         stopLoop();
         return;
     }
 
     KNS::Provider *provider = provdialog->provider();
 
+    // fill in the details of the upload (name, author...)
     QPointer<UploadDialog> uploaddialog = new UploadDialog(NULL);
     uploaddialog->setPayloadFile(KUrl(m_uploadfile));
-    ret = uploaddialog->exec();
-    if (ret == QDialog::Rejected) {
+    if (uploaddialog->exec() == QDialog::Rejected) {
         stopLoop();
         return;
     }
 
     Entry *entry = uploaddialog->entry();
+    if (!entry) {
+        stopLoop();
+        return;
+    }
+    
     KTranslatable payload;
     // add all the translations to the payload
     QStringList langs = entry->name().languages();
@@ -374,11 +378,6 @@ void EnginePrivate::slotProvidersFinished()
     }
     entry->setPayload(payload);
 
-    if (!entry) {
-        stopLoop();
-        return;
-    }
-
     EntryHandler eh(*entry);
     QDomElement xml = eh.entryXML();
     QByteArray ar;
@@ -386,8 +385,6 @@ void EnginePrivate::slotProvidersFinished()
     txt << xml;
     //kDebug() << "Upload: " << QString(ar);
 
-    disconnect(this, SIGNAL(signalEntryUploaded()), this, SLOT(stopLoop()));
-    disconnect(this, SIGNAL(signalEntryFailed()), this, SLOT(stopLoop()));
     connect(this, SIGNAL(signalEntryUploaded()), SLOT(stopLoop()));
     connect(this, SIGNAL(signalEntryFailed()), SLOT(stopLoop()));
 

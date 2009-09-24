@@ -38,9 +38,9 @@ ProviderHandler::ProviderHandler(const Provider& provider)
 }
 
 ProviderHandler::ProviderHandler(const QDomElement& providerxml)
+    :mProviderXML(providerxml)
+    ,mValid(false)
 {
-    mValid = false;
-    mProviderXML = providerxml;
     mProvider = deserializeElement(providerxml);
 }
 
