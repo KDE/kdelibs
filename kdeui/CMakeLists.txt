@@ -186,6 +186,9 @@ set(kdeui_LIB_SRCS
  util/kxmessages.cpp
  util/kxutils.cpp
  util/kundostack.cpp
+ util/kpixmapsequence.cpp
+ util/kpixmapsequenceoverlaypainter.cpp
+ util/kpixmapsequencewidget.cpp
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
  widgets/karrowbutton.cpp
@@ -524,6 +527,9 @@ install( FILES
  util/kxutils.h
  util/kxmessages.h
  util/kundostack.h
+ util/kpixmapsequence.h
+ util/kpixmapsequenceoverlaypainter.h
+ util/kpixmapsequencewidget.h
  widgets/kactionselector.h
  widgets/kanimatedbutton.h
  widgets/karrowbutton.h
