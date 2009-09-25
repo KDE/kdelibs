@@ -149,7 +149,7 @@ void DynamicTreeModel::clear()
 
 
 ModelChangeCommand::ModelChangeCommand( DynamicTreeModel *model, QObject *parent )
-    : QObject(parent), m_model(model), m_numCols(1), m_startRow(-1), m_endRow(-1)
+    : QObject(parent), m_model(model), m_startRow(-1), m_endRow(-1), m_numCols(1)
 {
 
 }
@@ -522,6 +522,8 @@ bool ModelMoveLayoutChangeCommand::emitPreSignal(const QModelIndex& srcParent, i
       }
     }
   }
+  // We assume that the move was legal here.
+  return true;
 }
 
 void ModelMoveLayoutChangeCommand::emitPostSignal()
