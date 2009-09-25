@@ -76,8 +76,6 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
     }
 
     createLayout();
-
-    setDirty(true);
 }
 
 void KFileMetaPropsPlugin::createLayout()
