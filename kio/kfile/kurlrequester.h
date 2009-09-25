@@ -132,12 +132,14 @@ public:
     QString filter() const;
 
     /**
-     * @returns a pointer to the filedialog
-     * You can use this to customize the dialog, e.g. to specify a filter.
-     * Never returns 0L.
+     * @returns a pointer to the filedialog.
+     * You can use this to customize the dialog, e.g. to call setLocationLabel
+     * or other things which are not accessible in the KUrlRequester API.
      *
-     * Remove in KDE4? KUrlRequester should use KDirSelectDialog for
-     * (mode & KFile::Directory) && !(mode & KFile::File)
+     * Never returns 0. This method creates the file dialog on demand.
+     *
+     * Important: in "Directory only" mode, a KDirSelectDialog is used
+     * instead, so calling this method is useless.
      */
     virtual KFileDialog * fileDialog() const;
 
