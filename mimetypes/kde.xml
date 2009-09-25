@@ -270,12 +270,6 @@ Notes:
     <glob pattern="*.kourse"/>
   </mime-type>
 
-  <mime-type type="text/mrml">
-    <comment>MRML document</comment>
-    <acronym>MRML</acronym>
-    <expanded-acronym>Multimedia Retrieval Markup Language</expanded-acronym>
-    <glob pattern="*.mrml"/>
-  </mime-type>
   <mime-type type="application/vnd.kde.okular-archive">
     <comment>Okular document archive</comment>
     <glob pattern="*.okular"/>

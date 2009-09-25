@@ -530,8 +530,8 @@ void KMimeTypeTest::testMimeTypeParent()
     // Must be least-specific last, i.e. breadth first.
     QCOMPARE(allShellParents.last(), QString("application/octet-stream"));
 
-    // Check that text/mrml knows that it inherits from text/plain (implicitly)
-    const KMimeType::Ptr mrml = KMimeType::mimeType("text/mrml");
+    // Check that text/x-mrml knows that it inherits from text/plain (implicitly)
+    const KMimeType::Ptr mrml = KMimeType::mimeType("text/x-mrml");
     if (!mrml)
         QSKIP("kdelibs not installed", SkipAll);
     QVERIFY(mrml->is("text/plain"));
