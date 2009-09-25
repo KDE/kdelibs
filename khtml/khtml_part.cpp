@@ -578,16 +578,20 @@ KHTMLPart::~KHTMLPart()
   KConfigGroup config( KGlobal::config(), "HTML Settings" );
   config.writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
 
+  // avoid side-effects from setFocus calls in the rest of the dtor (#194850)
+  if (d->m_manager) // the PartManager for this part's children
+  {
+    d->m_manager->removePart(this);
+  }
+  if (manager()) // the PartManager that this part is in
+  {
+    manager()->removePart(this); // ~Part does this, but we have to do it before
+  }
+
   slotWalletClosed();
   if (!parentPart()) { // only delete it if the top khtml_part closes
     removeJSErrorExtension();
     delete d->m_statusBarPopupLabel;
-  }
-
-  if ( d->m_manager )
-  {
-    d->m_manager->setActivePart( 0 );
-    // We specify "this" as parent qobject for d->manager, so no need to delete it.
   }
 
   stopAutoScroll();
@@ -604,10 +608,10 @@ KHTMLPart::~KHTMLPart()
            this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
 
   clear();
+  hide();
 
   if ( d->m_view )
   {
-    widget()->hide();
     d->m_view->m_part = 0;
   }
 
