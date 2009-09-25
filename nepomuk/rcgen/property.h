@@ -106,7 +106,7 @@ public:
     /**
      * Returns the domain resource the property belongs to.
      */
-    ResourceClass* domain() const;
+    ResourceClass* domain( bool onlyReturnGeneratedClass = false ) const;
 
     /**
      * Sets the inverse property of this property.

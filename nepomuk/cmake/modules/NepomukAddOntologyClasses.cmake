@@ -6,7 +6,7 @@
 #   NEPOMUK_ADD_ONTOLOGY_CLASSES(<sources-var>
 #         [FAST]
 #         [ONTOLOGIES] <onto-file1> [<onto-file2> ...]
-#         [CLASSES <classname1> [<classname2> ...]]
+#         [CLASSES <class1> [<class2> ...]]
 #         [VISIBILITY <visibility-name>]
 #       )
 #
@@ -14,7 +14,7 @@
 # not based on Nepomuk::Resource but on a custom class which does not perform any checks and simply
 # writes the data to Nepomuk (hence the name fast).
 #
-# The optional CLASSES parameter allows to specify the classes to be generated (RDF class names) in
+# The optional CLASSES parameter allows to specify the classes to be generated (RDF URIs) in
 # case one does not want all classes in the ontologies to be generated.
 #
 # The optional VISIBILITY parameter can only be used in non-fast mode and allows to set the gcc visibility
@@ -70,14 +70,17 @@ macro(NEPOMUK_ADD_ONTOLOGY_CLASSES _sources)
       OUTPUT_VARIABLE _out_headers
       RESULT_VARIABLE rcgen_result
       )
+    if(NOT ${rcgen_result} EQUAL 0)
+      message(SEND_ERROR "Running ${RCGEN} to generate list of headers failed with error code ${rcgen_result}")
+    endif(NOT ${rcgen_result} EQUAL 0)
+
     execute_process(
       COMMAND ${RCGEN} ${_fastmode} --listsources --prefix ${_targetdir}/ ${_classes} ${_visibility} ${_ontologies}
       OUTPUT_VARIABLE _out_sources
+      RESULT_VARIABLE rcgen_result
       )
-
-    # If the first call succeeds it is very very likely that the rest will, too
     if(NOT ${rcgen_result} EQUAL 0)
-      message(SEND_ERROR "Failed to generate Nepomuk resource classes list.")
+      message(SEND_ERROR "Running ${RCGEN} to generate list of sources failed with error code ${rcgen_result}")
     endif(NOT ${rcgen_result} EQUAL 0)
     
     add_custom_command(OUTPUT ${_out_headers} ${_out_sources}

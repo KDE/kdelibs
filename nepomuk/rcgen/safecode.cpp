@@ -58,7 +58,7 @@ QString SafeCode::propertyReversePropertyGetterDeclaration( const Property* prop
     Q_ASSERT( rc );
     Q_ASSERT( property->domain() );
     return QString( "%1 %2%3%4Of() const" )
-        .arg( QString("QList<") + property->domain()->name( nameSpace ) + QString(">") )
+        .arg( QString("QList<") + property->domain(true)->name( nameSpace ) + QString(">") )
         .arg( !nameSpace.isEmpty() ? QString("%1::%2::").arg(nameSpace).arg(rc->name()) : QString() )
         .arg( property->name()[0].toLower() )
         .arg( property->name().mid(1) );
@@ -183,7 +183,7 @@ QString SafeCode::propertyReversePropertyGetterDefinition( const Property* prope
                   "    return convertResourceList<%2>( manager()->allResourcesWithProperty( QUrl::fromEncoded(\"%1\"), *this ) );\n"
                   "}\n" )
          .arg( property->uri().toString() )
-         .arg( property->domain()->name() );
+         .arg( property->domain(true)->name() );
 
     return s;
 }

@@ -250,7 +250,7 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
         }
 
         if( !p->hasSimpleType() )
-            includes.insert( p->domain()->name() );
+            includes.insert( p->domain(true)->name() );
     }
 
 
@@ -361,7 +361,7 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
         if ( m_mode == SafeMode )
             ms << m_code->propertyReversePropertyGetterDefinition( p, resourceClass ) << endl;
 
-        includes.append( QString( "#include \"%1\"" ).arg( p->domain()->headerName() ) );
+        includes.append( QString( "#include \"%1\"" ).arg( p->domain(true)->headerName() ) );
     }
 
     //

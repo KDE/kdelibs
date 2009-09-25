@@ -19,6 +19,8 @@
 #include <QtCore/QHash>
 #include <QtCore/QRegExp>
 
+#include <Soprano/Vocabulary/RDFS>
+
 extern bool quiet;
 
 Property::Property()
@@ -93,9 +95,15 @@ void Property::setDomain( ResourceClass *domain )
     m_domain = domain;
 }
 
-ResourceClass* Property::domain() const
+ResourceClass* Property::domain( bool onlyReturnGeneratedClass ) const
 {
-    return m_domain;
+    ResourceClass* domain = m_domain;
+    if(onlyReturnGeneratedClass) {
+        while( !domain->generateClass() &&
+               domain->uri() != Soprano::Vocabulary::RDFS::Resource() )
+            domain = domain->parentClass();
+    }
+    return domain;
 }
 
 void Property::setInverseProperty( Property *property )

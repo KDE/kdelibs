@@ -14,7 +14,6 @@
 
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
-#include <QtCore/QDebug>
 #include <QtCore/QCoreApplication>
 
 #include "kaboutdata.h"
@@ -142,7 +141,7 @@ int main( int argc, char** argv )
     // instances in terms of generation
     if( !classesToGenerate.isEmpty() ) {
         foreach( ResourceClass* rc, prsr.parsedClasses() ) {
-            rc->setGenerateClass( classesToGenerate.contains( rc->name() ) );
+            rc->setGenerateClass( classesToGenerate.contains( rc->uri().toString() ) );
         }
     }
 
@@ -185,7 +184,7 @@ int main( int argc, char** argv )
         QTextStream s( stdout, QIODevice::WriteOnly );
         QStringListIterator it( l );
         while( it.hasNext() )
-            s << "#include <kmetadata/" << it.next() << ">" << endl;
+            s << "#include <nepomuk/" << it.next() << ">" << endl;
     }
 
     return 0;
