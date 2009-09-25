@@ -607,8 +607,7 @@ KHTMLPart::~KHTMLPart()
 
   if ( d->m_view )
   {
-    d->m_view->hide();
-    d->m_view->viewport()->hide();
+    widget()->hide();
     d->m_view->m_part = 0;
   }
 
