@@ -169,6 +169,7 @@ public:
     void _k_slotUpdateUrl();
     void _k_slotOpenDialog();
 
+    KUrl m_startDir;
     KUrlRequester *m_parent;
     KLineEdit *edit;
     KComboBox *combo;
@@ -211,7 +212,6 @@ KUrlRequester::KUrlRequester( const KUrl& url, QWidget *parent)
     setUrl( url );
 }
 
-
 KUrlRequester::~KUrlRequester()
 {
     delete d;
@@ -221,6 +221,7 @@ KUrlRequester::~KUrlRequester()
 void KUrlRequester::KUrlRequesterPrivate::init()
 {
     m_parent->setMargin(0);
+    m_parent->setSpacing(-1); // use default spacing
 
     myFileDialog = 0L;
 
@@ -238,8 +239,6 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     myButton->setToolTip(i18n("Open file dialog"));
 
     m_parent->connect(myButton, SIGNAL(pressed()), SLOT(_k_slotUpdateUrl()));
-
-    m_parent->setSpacing( KDialog::spacingHint() );
 
     widget->installEventFilter( m_parent );
     m_parent->setFocusProxy( widget );
@@ -266,6 +265,18 @@ void KUrlRequester::setPath( const QString& path )
     d->setText( path );
 }
 
+void KUrlRequester::setText(const QString& text)
+{
+    d->setText(text);
+}
+
+void KUrlRequester::setStartDir(const KUrl& startDir)
+{
+    d->m_startDir = startDir;
+    if (startDir.isLocalFile())
+        d->myCompletion->setDir(startDir.toLocalFile());
+}
+
 void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
@@ -281,6 +292,11 @@ KUrl KUrlRequester::url() const
     return d->url();
 }
 
+KUrl KUrlRequester::startDir() const
+{
+    return d->m_startDir;
+}
+
 QString KUrlRequester::text() const
 {
     return d->text();
@@ -289,15 +305,18 @@ QString KUrlRequester::text() const
 void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
 {
     KUrl newurl;
-    if ( (fileDialogMode & KFile::Directory) && !(fileDialogMode & KFile::File) ||
+    if ( ((fileDialogMode & KFile::Directory) && !(fileDialogMode & KFile::File)) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
-         (myFileDialog && ((myFileDialog->mode() & KFile::Directory) &&
-         (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
+         (myFileDialog && (myFileDialog->mode() & KFile::Directory) &&
+                          (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0) )
     {
+        const KUrl openUrl = (!m_parent->url().isEmpty() && !m_parent->url().isRelative() )
+          ? m_parent->url() : m_startDir;
+
         if (fileDialogMode & KFile::LocalOnly)
-            newurl = KFileDialog::getExistingDirectory(m_parent->url(), m_parent);
+            newurl = KFileDialog::getExistingDirectory( openUrl, m_parent);
         else
-            newurl = KFileDialog::getExistingDirectoryUrl(m_parent->url(), m_parent);
+            newurl = KFileDialog::getExistingDirectoryUrl( openUrl, m_parent);
         if ( !newurl.isValid() )
         {
             return;
@@ -308,12 +327,15 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
       emit m_parent->openFileDialog( m_parent );
 
       KFileDialog *dlg = m_parent->fileDialog();
-      if ( !url().isEmpty() ) {
+      if ( !url().isEmpty() && !url().isRelative() ) {
           KUrl u( url() );
           // If we won't be able to list it (e.g. http), then don't try :)
           if ( KProtocolManager::supportsListing( u ) )
               dlg->setSelection( u.url() );
+      } else {
+          dlg->setUrl(m_startDir);
       }
+
 
       if ( dlg->exec() != QDialog::Accepted )
       {
@@ -436,8 +458,9 @@ const KEditListBox::CustomEditor &KUrlRequester::customEditor()
         edit = qobject_cast<KLineEdit*>( d->combo->lineEdit() );
 
 #ifndef NDEBUG
-    if ( !edit )
+    if ( !edit ) {
         kWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
+    }
 #endif
 
     d->editor.setRepresentationWidget(this);

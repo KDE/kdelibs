@@ -55,9 +55,9 @@ class KIO_EXPORT KUrlRequester : public KHBox
     Q_OBJECT
     Q_PROPERTY( KUrl url READ url WRITE setUrl USER true )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
-    Q_FLAGS( KFile::Modes )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
+    Q_PROPERTY(QString text READ text WRITE setText)
 
 public:
     /**
@@ -89,6 +89,12 @@ public:
      */
     KUrl url() const;
 
+    /**
+     * @returns the current start dir
+     * @since 4.3
+     */
+    KUrl startDir() const;
+    
     /**
      * @returns the current text in the lineedit or combobox.
      * This does not do the URL expansion that url() does, it's only provided
@@ -191,14 +197,34 @@ public Q_SLOTS:
      * Sets the url in the lineedit to @p url.
      */
     void setUrl( const KUrl& url );
-
+    
+    /**
+     * Sets the start dir @p startDir.
+     * The start dir is only used when the URL isn't set.
+     * @since 4.3
+     */
+    void setStartDir( const KUrl& startDir );
+    
     /**
      * Sets the url in the lineedit to @p KUrl::fromPath(path).
      * This is only for local paths; do not pass a url here.
      * This method is mostly for "local paths only" url requesters,
      * for instance those set up with setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly)
+     *
+     * @deprecated Use setUrl(KUrl(path)) instead.
      */
-    void setPath( const QString& path );
+    KDE_DEPRECATED void setPath(const QString& path);
+
+    /**
+     * Sets the current text in the lineedit or combobox.
+     * This is used for cases where KUrlRequester is used to
+     * enter URL-or-something-else, like KOpenWithDialog where you
+     * can type a full command with arguments.
+     *
+     * @see text
+     * @since 4.3
+     */
+    void setText(const QString& text);
 
     /**
      * Clears the lineedit/combobox.
