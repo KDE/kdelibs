@@ -375,8 +375,20 @@ public:
      * get, aka read.
      * @param url the full url for this request. Host, port and user of the URL
      *        can be assumed to be the same as in the last setHost() call.
+     *
      * The slave should first "emit" the mimetype by calling mimeType(),
      * and then "emit" the data using the data() method.
+     *
+     * The reason why we need get() to emit the mimetype is:
+     * when pasting a URL in krunner, or konqueror's location bar,
+     * we have to find out what is the mimetype of that URL.
+     * Rather than doing it with a call to mimetype(), then the app or part
+     * would have to do a second request to the same server, this is done
+     * like this: get() is called, and when it emits the mimetype, the job
+     * is put on hold and the right app or part is launched. When that app
+     * or part calls get(), the slave is magically reused, and the download
+     * can now happen. All with a single call to get() in the slave.
+     * This mechanism is also described in KIO::get().
      */
     virtual void get( const KUrl& url );
 
