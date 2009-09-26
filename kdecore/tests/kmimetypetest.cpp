@@ -179,14 +179,12 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
     QTest::newRow("double-extension file") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";
     QTest::newRow("single-extension file") << "foo.bz2" << "application/x-bzip";
-//    QTest::newRow(".doc should assume msword") << "somefile.doc" << "application/msword";
+    QTest::newRow(".doc should assume msword") << "somefile.doc" << "application/msword"; // #204139
     QTest::newRow("glob that uses [] syntax, 1") << "Makefile" << "text/x-makefile";
     QTest::newRow("glob that uses [] syntax, 2") << "makefile" << "text/x-makefile";
     QTest::newRow("glob that ends with *, no extension") << "README" << "text/x-readme";
     QTest::newRow("glob that ends with *, extension") << "README.foo" << "text/x-readme";
     QTest::newRow("glob that ends with *, also matches *.txt. Higher weight wins.") << "README.txt" << "text/plain";
-    // This test has undefined results if we can't use sniffing to sort out whether it's word or text/plain.
-    //QTest::newRow("glob that ends with *, also matches *.doc, which is either word or text/plain.") << "README.doc" << "text/plain";
     QTest::newRow("glob that ends with *, also matches *.nfo. Higher weight wins.") << "README.nfo" << "text/x-nfo";
     // fdo bug 15436, needs shared-mime-info >= 0.40 (and this tests the globs2-parsing code).
     QTest::newRow("glob that ends with *, also matches *.pdf. *.pdf has higher weight") << "README.pdf" << "application/pdf";
