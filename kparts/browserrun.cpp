@@ -135,9 +135,9 @@ void BrowserRun::scanFile()
       if (proto == "https" || proto == "webdavs") {
             metaData.insert("main_frame_request", "TRUE" );
             metaData.insert("ssl_was_in_use", "TRUE" );
-            metaData.insert("ssl_activate_warnings", "TRUE" );
+           // metaData.insert("ssl_activate_warnings", "TRUE" );
       } else if (proto == "http" || proto == "webdav") {
-            metaData.insert("ssl_activate_warnings", "TRUE" );
+           // metaData.insert("ssl_activate_warnings", "TRUE" );
             metaData.insert("ssl_was_in_use", "FALSE" );
       }
 
