@@ -2452,8 +2452,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 
     if (m_focusNode != newFocusNode) {
         NodeImpl *oldFocusNode = m_focusNode;
-        // Set focus on the new node
-        m_focusNode = newFocusNode;
+
+        // We are blurring, so m_focusNode ATM is 0; this is observable to the
+        // event handlers.
+        m_focusNode = 0;
+        
         // Remove focus from the existing focus node (if any)
         if (oldFocusNode) {
             if (oldFocusNode->active())
@@ -2471,7 +2474,8 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
 
             if ((oldFocusNode == this) && oldFocusNode->hasOneRef()) {
-                oldFocusNode->deref(); // deletes this
+                oldFocusNode->deref(); // may delete this, if there are not kids keeping it alive...
+                                       // so we better not add any.
                 return;
             }
 	    else {
@@ -2479,7 +2483,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             }
         }
 
-        if (m_focusNode) {
+        // It's possible that one of the blur, etc. handlers has already set focus.
+        // in that case, we don't want to override it.
+        if (!m_focusNode && newFocusNode) {
+            // Set focus on the new node
+            m_focusNode = newFocusNode;
             m_focusNode->ref();
             m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
             if (m_focusNode != newFocusNode) return;
