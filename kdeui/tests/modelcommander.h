@@ -47,9 +47,9 @@ protected:
   void setCommand(const QString &name, ModelChangeCommandList list);
 
 private:
+  int m_counter;
   DynamicTreeModel *m_model;
   QList<QPair<QString, ModelChangeCommandList> > m_commands;
-  int m_counter;
 
 };
 
