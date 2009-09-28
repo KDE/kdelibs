@@ -108,8 +108,8 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
         return new ResourceData( QUrl(), QString(), type, this );
     }
 
-    // special case: files (only absolute paths for now)
-    if ( uriOrId[0] == '/' ) {
+    // special case: local files
+    if ( QFile::exists(uriOrId) ) {
         return data( QUrl::fromLocalFile (uriOrId), type );
     }
 
