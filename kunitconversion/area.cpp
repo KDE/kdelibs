@@ -213,7 +213,7 @@ Area::Area() : UnitCategory(AreaCategory)
     U(Acre, 4046.86,
       i18nc("area unit symbol", "acre"),
       i18nc("unit description in lists", "acres"),
-      i18nc("unit synonyms for matching user input", "acre;acres;acre"),
+      i18nc("unit synonyms for matching user input", "acre;acres"),
       ki18nc("amount in units (real)", "%1 acres"),
       ki18ncp("amount in units (integer)", "%1 acre", "%1 acres")
     );
