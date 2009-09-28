@@ -145,7 +145,7 @@ void KColorButton::paintEvent( QPaintEvent* )
   //First, sort out where it goes
   QRect labelRect = style()->subElementRect( QStyle::SE_PushButtonContents,
       &butOpt, this );
-  int shift = style()->pixelMetric( QStyle::PM_ButtonMargin );
+  int shift = style()->pixelMetric( QStyle::PM_ButtonMargin ) / 2;
   labelRect.adjust(shift, shift, -shift, -shift);
   int x, y, w, h;
   labelRect.getRect(&x, &y, &w, &h);
