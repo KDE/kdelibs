@@ -352,9 +352,13 @@ bool KSocketDevice::connect(const KResolverEntry& address, OpenMode mode)
   if (kde_connect(m_sockfd, address.address(), address.length()) == -1)
     {
       if (errno == EISCONN)
-	return true;		// we're already connected
+	{
+	  KActiveSocketBase::open(Unbuffered | mode);
+	  return true;		// we're already connected
+	}
       else if (errno == EALREADY || errno == EINPROGRESS)
 	{
+	  KActiveSocketBase::open(Unbuffered | mode);
 	  setError(InProgress);
 	  return true;
 	}
