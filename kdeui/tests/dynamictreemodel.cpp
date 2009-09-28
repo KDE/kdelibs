@@ -457,11 +457,17 @@ void ModelMoveCommand::doCommand()
       if (srcParent == destParent)
         d = m_destRow - (m_endRow - m_startRow + 1);
       else
-        d = m_destRow - (m_endRow - m_startRow) + 1;
+        d = m_destRow - (m_endRow - m_startRow);
     }
 
     foreach(const qint64 id, l)
     {
+
+      if (!m_model->m_childItems.contains(destParent.internalId()))
+      {
+        m_model->m_childItems[destParent.internalId()].append(QList<qint64>());
+      }
+
       m_model->m_childItems[destParent.internalId()][column].insert(d++, id);
     }
   }
