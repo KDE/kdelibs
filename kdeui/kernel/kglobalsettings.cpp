@@ -158,7 +158,6 @@ class KGlobalSettings::Private
         void kdisplaySetPalette();
         void kdisplaySetStyle();
         void kdisplaySetFont();
-        void applySingleClick();
         void applyGUIStyle();
 
         /**
@@ -194,7 +193,6 @@ KGlobalSettings::KGlobalSettings()
     d->kdisplaySetStyle();
     d->kdisplaySetFont();
     d->propagateSettings(SETTINGS_QT);
-    d->applySingleClick();
 
     QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                            "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
@@ -830,7 +828,6 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_MOUSE) {
             KGlobalSettingsData::self()->dropMouseSettingsCache();
-            applySingleClick();
         }
         propagateSettings(category);
         break;
@@ -939,22 +936,6 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
     }
 
     return palette;
-}
-
-void KGlobalSettings::Private::applySingleClick()
-{
-    // handled internally by KStyles
-    if (qApp->type() != QApplication::GuiClient || qApp->style()->inherits("KStyle")) return;
-
-    bool useSingleClick = singleClick();
-    if( useSingleClick )
-    {
-        qApp->setStyleSheet("QAbstractItemView { activate-on-singleclick: 1; }");
-    }
-    else
-    {
-        qApp->setStyleSheet("QAbstractItemView { activate-on-singleclick: 0; }");
-    }
 }
 
 void KGlobalSettings::Private::kdisplaySetPalette()
