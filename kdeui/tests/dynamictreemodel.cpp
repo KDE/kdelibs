@@ -429,6 +429,7 @@ bool ModelMoveCommand::emitPreSignal(const QModelIndex &srcParent, int srcStart,
 #if QT_VERSION >= 0x040600
   return m_model->beginMoveRows(srcParent, srcStart, srcEnd, destParent, destRow);
 #endif
+  return false;
 }
 
 void ModelMoveCommand::doCommand()
