@@ -366,6 +366,11 @@ void KWindowSystem::init(int what)
 
 }
 
+bool KWindowSystem::allowedActionsSupported()
+{
+    return false;
+}
+
 int KWindowSystem::currentDesktop()
 {
     return 1;
