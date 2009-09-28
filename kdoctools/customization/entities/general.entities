@@ -173,7 +173,6 @@
 <!ENTITY kapptemplate	"<application>KAppTemplate</application>">
 <!ENTITY kaphorism	"<application>KAphorism</application>">
 <!ENTITY karbon14	"<application>Karbon14</application>">
-<!ENTITY karm	"<application>KTimetracker</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
 <!ENTITY kate	"<application>Kate</application>">
 <!ENTITY katomic	"<application>KAtomic</application>">
