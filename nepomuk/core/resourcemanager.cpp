@@ -56,44 +56,40 @@ Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manage
 
 Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, const QUrl& type )
 {
-    if ( uri.isEmpty() ) {
+    QUrl url( uri );
+
+    if ( url.isEmpty() ) {
         // return an invalid resource which may be activated by calling setProperty
-        return new ResourceData( uri, QString(), type, this );
+        return new ResourceData( url, QString(), type, this );
     }
 
     // default to "file" scheme, i.e. we do not allow an empty scheme
-    if ( uri.scheme().isEmpty() ) {
-        QUrl fileUri( uri );
-        fileUri.setScheme( "file" );
-        return data( fileUri, type );
+    if ( url.scheme().isEmpty() ) {
+        url.setScheme( "file" );
     }
 
     // if scheme is file, try to follow a symlink
-    if ( uri.scheme() == "file" ) {
-        QFileInfo fileInfo( uri.toLocalFile() );
-        if ( fileInfo.isSymLink() ) {
-            QString linkTarget = fileInfo.canonicalFilePath();
-            // linkTarget is empty for dangling symlinks
-            if ( !linkTarget.isEmpty() ) {
-                QUrl targetUri( linkTarget );
-                targetUri.setScheme( "file" );
-                return data( targetUri, type );
-            }
+    if ( url.scheme() == "file" ) {
+        QFileInfo fileInfo( url.toLocalFile() );
+        QString linkTarget = fileInfo.canonicalFilePath();
+        // linkTarget is empty for dangling symlinks
+        if ( !linkTarget.isEmpty() ) {
+            url = QUrl::fromLocalFile( linkTarget );
         }
     }
 
-    ResourceDataHash::iterator it = m_initializedData.find( uri.toString() );
+    ResourceDataHash::iterator it = m_initializedData.find( url.toString() );
 
     //
     // The uriOrId has no local representation yet -> create one
     //
     if( it == m_initializedData.end() ) {
-//        kDebug() << "No existing ResourceData instance found for uri " << uri;
+//        kDebug() << "No existing ResourceData instance found for uri " << url;
         //
         // The actual URI is already known here
         //
-        ResourceData* d = new ResourceData( uri, QString(), type, this );
-        m_initializedData.insert( uri.toString(), d );
+        ResourceData* d = new ResourceData( url, QString(), type, this );
+        m_initializedData.insert( url.toString(), d );
 
         return d;
     }
@@ -114,19 +110,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
 
     // special case: files (only absolute paths for now)
     if ( uriOrId[0] == '/' ) {
-        // try to follow a symlink
-        QFileInfo fileInfo( uriOrId );
-        if ( fileInfo.isSymLink() ) {
-            QString linkTarget = fileInfo.canonicalFilePath();
-            // linkTarget is empty for dangling symlinks, use given url for those
-            if ( !linkTarget.isEmpty() ) {
-                return data( linkTarget, type );
-            }
-        }
-        ResourceDataHash::iterator it = m_initializedData.find( "file://" + uriOrId );
-        if ( it != m_initializedData.end() ) {
-            return *it;
-        }
+        return data( QUrl::fromLocalFile (uriOrId), type );
     }
 
     ResourceDataHash::iterator it = m_initializedData.find( uriOrId );
