@@ -421,6 +421,14 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByte
     return findByUrlHelper(url, mode, false, &buffer, accuracy);
 }
 
+KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* device,
+                                                mode_t mode, int* accuracy )
+{
+    KUrl url;
+    url.setPath(name);
+    return findByUrlHelper(url, mode, false, device, accuracy);
+}
+
 QString KMimeType::extractKnownExtension(const QString &fileName)
 {
     QString pattern;
@@ -435,6 +443,13 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
     QByteArray cache;
     return KMimeTypeFactory::self()->findFromContent(
         &buffer, KMimeTypeFactory::AllRules, accuracy, cache );
+}
+
+KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
+{
+    QByteArray cache;
+    return KMimeTypeFactory::self()->findFromContent(
+        device, KMimeTypeFactory::AllRules, accuracy, cache );
 }
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )

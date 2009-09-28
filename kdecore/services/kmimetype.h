@@ -223,6 +223,40 @@ public:
                                      mode_t mode = 0, int *accuracy=0 );
 
     /**
+     * Tries to find out the MIME type of a data chunk by looking for
+     * certain magic numbers and characteristic strings in it.
+     *
+     * @param device the IO device providing the data to examine
+     * @param accuracy If not a null pointer, *accuracy is set to the
+     *          accuracy of the match (which is in the range 0..100)
+     * @return a pointer to the KMimeType. "application/octet-stream" is
+     *          returned if the type can not be found this way.
+     * @since 4.4
+     */
+    static Ptr findByContent( QIODevice* device, int* accuracy = 0 );
+
+    /**
+     * Tries to find out the MIME type of filename/url and a data chunk.
+     * Whether to trust the extension or the data depends on the results of both approaches,
+     * and is determined automatically.
+     *
+     * This method is useful for instance in the get() method of kioslaves, and anywhere else
+     * where a filename is associated with some data which is available immediately.
+     *
+     * @param name the filename or url representing this data.
+     * Only used for the extension, not used as a local filename.
+     * @param device the IO device providing the data to examine when the extension isn't conclusive in itself
+     * @param mode the mode of the file (used, for example, to identify executables)
+     * @param accuracy If not a null pointer, *accuracy is set to the
+     *          accuracy of the match (which is in the range 0..100)
+     * @return a pointer to the KMimeType. "application/octet-stream" is
+     *          returned if the type can not be found this way.
+     * @since 4.4
+     */
+    static Ptr findByNameAndContent( const QString& name, QIODevice* device,
+                                     mode_t mode = 0, int* accuracy = 0 );
+
+    /**
      * Tries to find out the MIME type of a file by looking for
      * certain magic numbers and characteristic strings in it.
      * This function is similar to the previous one. Note that the
