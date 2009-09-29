@@ -65,9 +65,51 @@ namespace KKeyServer {
     
     static QMultiMap<int, uint> scancodes;
     static long lastLayoutID = -1;
+#ifdef QT_MAC_USE_COCOA
+    static TISInputSourceRef lastLayout = 0;
+#else
     static KeyboardLayoutRef lastLayout = NULL;
+#endif
     
     void updateScancodes() {
+#ifdef QT_MAC_USE_COCOA
+        TISInputSourceRef layout = TISCopyCurrentKeyboardLayoutInputSource();
+        if (!layout) {
+            kWarning() << "Error retrieving current layout";
+            return;
+        }
+        if (layout != lastLayout) {
+#ifndef NDEBUG
+            const void *name = TISGetInputSourceProperty(layout, kTISPropertyLocalizedName);
+            kDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef)name, 0);
+#endif
+            lastLayout = layout;
+            scancodes.clear();
+
+            CFDataRef data = static_cast<CFDataRef>(TISGetInputSourceProperty(layout,
+                                         kTISPropertyUnicodeKeyLayoutData));
+            const UCKeyboardLayout *ucData = data ? reinterpret_cast<const UCKeyboardLayout *>(CFDataGetBytePtr(data)) : 0;
+
+            if (!ucData) {
+                kWarning() << "Error retrieving current layout character data";
+                return;
+            }
+
+            for (int i = 0; i < 128; ++i) {
+                UInt32 tmpState = 0;
+                UniChar str[4];
+                UniCharCount actualLength = 0;
+                OSStatus err = UCKeyTranslate(ucData, i, kUCKeyActionDown, 0, LMGetKbdType(),
+                    kUCKeyTranslateNoDeadKeysMask, &tmpState, 4, &actualLength, str);
+                if (err != noErr) {
+                    kWarning() << "Error translating unicode key" << err;
+                } else {
+                    if (str[0] && str[0] != kFunctionKeyCharCode)
+                        scancodes.insert(str[0], i);
+                }
+            }
+        }
+#else
         KeyboardLayoutRef layout;
         if (KLGetCurrentKeyboardLayout(&layout) != noErr) {
             kWarning() << "Error retrieving current layout";
@@ -93,6 +135,7 @@ namespace KKeyServer {
                 }
             }
         }
+#endif
     }
     
 #define SCANCODE(name, value) { Qt::Key_ ## name, value }    
