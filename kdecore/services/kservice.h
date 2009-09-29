@@ -527,6 +527,9 @@ public:
         return 0;
     }
 
+    /**
+     * @deprecated Use the non-static service->createInstance<T>(parent, args, &error)
+     */
     template <class T>
     static KDE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
@@ -534,6 +537,10 @@ public:
         return service->createInstance<T>(parent, args, error);
     }
 
+    /**
+     * @deprecated Use the non-static service->createInstance<T>(parent, args, &error)
+     * where args is a QVariantList rather than a QStringList
+     */
     template <class T>
     static KDE_DEPRECATED T *createInstance( const KService::Ptr &service,
                               QObject *parent,
