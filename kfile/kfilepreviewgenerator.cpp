@@ -527,6 +527,10 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
         // to be generated when an external data change has occured.
         return;
     }
+    // dataChanged emitted for the root dir (e.g. permission changes)
+    if (!topLeft.isValid() || !bottomRight.isValid()) {
+        return;
+    }
 
     KFileItemList itemList;
     for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
