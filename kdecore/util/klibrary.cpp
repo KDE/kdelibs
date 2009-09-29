@@ -159,6 +159,7 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
     return factory;
 }
 
+// deprecated
 KPluginFactory* KLibrary::factory(const char* factoryname)
 {
     if (fileName().isEmpty()) {

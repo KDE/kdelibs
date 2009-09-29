@@ -194,6 +194,9 @@ KPluginFactory *KPluginLoader::factory()
 
 
     if (d->lib) {
+        // Calling a deprecated method, but this is the only way to
+        // support both new and old-style factories for now.
+        // KDE5: remove the whole if().
         return d->lib->factory(d->name.toUtf8());
     }
 
