@@ -761,7 +761,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // Those things only apply to 'single file' mode
     QString filename;
     bool isTrash = false;
-    bool isDevice = false;
     d->m_bFromTemplate = false;
 
     // And those only to 'multiple' mode
@@ -787,7 +786,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         QString path;
         if ( !d->m_bFromTemplate ) {
             isTrash = ( properties->kurl().protocol().toLower() == "trash" );
-            isDevice = ( properties->kurl().protocol().toLower() == "device" );
             // Extract the full name, but without file: for local files
             if ( isReallyLocal )
                 path = properties->kurl().toLocalFile();
@@ -879,7 +877,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory += ')';
     }
 
-    if ( !isDevice && !isTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
+    if ( !isTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
     {
         KIconButton *iconButton = new KIconButton( d->m_frame );
         int bsize = 66 + 2 * iconButton->style()->pixelMetric(QStyle::PM_ButtonMargin);
@@ -913,7 +911,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
     grid->addWidget(d->iconArea, curRow, 0, Qt::AlignLeft);
 
-    if (d->bMultiple || isTrash || isDevice || hasRoot)
+    if (d->bMultiple || isTrash || hasRoot)
     {
         QLabel *lab = new QLabel(d->m_frame );
         if ( d->bMultiple )
@@ -954,8 +952,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     ++curRow;
 
     QLabel *l;
-    if ( !mimeComment.isEmpty() && !isDevice && !isTrash)
-    {
+    if (!mimeComment.isEmpty() && !isTrash) {
         l = new QLabel(i18n("Type:"), d->m_frame );
 
         grid->addWidget(l, curRow, 0, Qt::AlignRight);
@@ -964,8 +961,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         box->setSpacing(20); // ### why 20?
         l = new QLabel(mimeComment, box );
 
-#ifdef Q_WS_X11
-        //TODO: wrap for win32 or mac?
         QPushButton *button = new QPushButton(box);
 
         button->setIcon( KIcon(QString::fromLatin1("configure")) );
@@ -980,7 +975,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
         if (!KAuthorized::authorizeKAction("editfiletype"))
             button->hide();
-#endif
 
         grid->addWidget(box, curRow++, 2);
     }
@@ -1143,24 +1137,23 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 
 void KFilePropsPlugin::slotEditFileType()
 {
-#ifdef Q_WS_X11
     QString mime;
-    if ( d->mimeType == KMimeType::defaultMimeType() ) {
-        int pos = d->oldFileName.lastIndexOf( '.' );
-        if ( pos != -1 )
+    if (d->mimeType == KMimeType::defaultMimeType()) {
+        const int pos = d->oldFileName.lastIndexOf('.');
+        if (pos != -1)
             mime = '*' + d->oldFileName.mid(pos);
         else
             mime = '*';
-    }
-    else
+    }  else {
         mime = d->mimeType;
-    //TODO: wrap for win32 or mac?
+    }
     QString keditfiletype = QString::fromLatin1("keditfiletype");
     KRun::runCommand( keditfiletype
-                      + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
-                      + ' ' + KShell::quoteArg(mime),
-                      keditfiletype, keditfiletype /*unused*/, properties->topLevelWidget());
+#ifdef Q_WS_X11
+                      + " --parent " + QString::number( (ulong)properties->window()->winId())
 #endif
+                      + ' ' + KShell::quoteArg(mime),
+                      keditfiletype, keditfiletype /*unused*/, properties->window());
 }
 
 void KFilePropsPlugin::slotIconChanged()

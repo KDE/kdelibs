@@ -374,7 +374,7 @@ public:
   bool isDirty() const;
 
 public Q_SLOTS:
-  void setDirty(); // same as setDirty( true )
+  void setDirty(); // same as setDirty( true ). TODO KDE5: void setDirty(bool dirty=true);
 
 Q_SIGNALS:
   /**
