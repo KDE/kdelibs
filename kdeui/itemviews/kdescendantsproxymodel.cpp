@@ -233,6 +233,28 @@ QModelIndex KDescendantsProxyModelPrivate::findSourceIndexForRow( int row, QMode
 void KDescendantsProxyModel::setSourceModel(QAbstractItemModel * sourceModel)
 {
   Q_D(KDescendantsProxyModel);
+
+  disconnect( sourceModel, SIGNAL(modelReset()), this, SLOT( sourceModelReset() ) );
+  disconnect( sourceModel, SIGNAL(modelAboutToBeReset()), this, SLOT(sourceModelAboutToBeReset() ) );
+  disconnect( sourceModel, SIGNAL(layoutChanged()), this, SLOT(sourceLayoutChanged()) );
+  disconnect( sourceModel, SIGNAL(layoutAboutToBeChanged()), this, SLOT(sourceLayoutAboutToBeChanged()) );
+  disconnect( sourceModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+          this, SLOT(sourceDataChanged(const QModelIndex &, const QModelIndex & ) ) );
+  disconnect( sourceModel, SIGNAL(rowsInserted(const QModelIndex, int, int)),
+          this, SLOT(sourceRowsInserted(const QModelIndex, int, int)) );
+  disconnect( sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex, int, int)),
+          this, SLOT(sourceRowsAboutToBeInserted(const QModelIndex, int, int)) );
+  disconnect( sourceModel, SIGNAL(rowsRemoved(const QModelIndex, int, int)),
+          this, SLOT(sourceRowsRemoved(const QModelIndex, int, int)) );
+  disconnect( sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)),
+          this, SLOT(sourceRowsAboutToBeRemoved(const QModelIndex, int, int)) );
+#if QT_VERSION >= 0x040600
+  disconnect( sourceModel, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)),
+          this, SLOT(sourceRowsMoved(const QModelIndex, int, int, const QModelIndex, int)) );
+  disconnect( sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)),
+          this, SLOT(sourceRowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int) ) );
+#endif
+
   QAbstractProxyModel::setSourceModel( sourceModel );
   connect( sourceModel, SIGNAL(modelReset()), SLOT( sourceModelReset() ) );
   connect( sourceModel, SIGNAL(modelAboutToBeReset()), SLOT(sourceModelAboutToBeReset() ) );
@@ -248,13 +270,12 @@ void KDescendantsProxyModel::setSourceModel(QAbstractItemModel * sourceModel)
           SLOT(sourceRowsRemoved(const QModelIndex, int, int)) );
   connect( sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)),
           SLOT(sourceRowsAboutToBeRemoved(const QModelIndex, int, int)) );
-
-          
-  // Uncomment for Qt4.6          
-//   connect( sourceModel, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)),
-//           SLOT(sourceRowsMoved(const QModelIndex, int, int, const QModelIndex, int)) );
-//   connect( sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)),
-//           SLOT(sourceRowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int) ) );
+#if QT_VERSION >= 0x040600
+  connect( sourceModel, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)),
+          SLOT(sourceRowsMoved(const QModelIndex, int, int, const QModelIndex, int)) );
+  connect( sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)),
+          SLOT(sourceRowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int) ) );
+#endif
 
   d->m_descendantsCount.clear();
   reset();
@@ -404,11 +425,11 @@ void KDescendantsProxyModelPrivate::insertOrRemoveRows(const QModelIndex &source
     // need to notify that we're also removing the descendants.
     for (int childRow = start; childRow <= end; childRow++)
     {
-      QModelIndex childIndex = q->sourceModel()->index(childRow,column,sourceParentIndex);
+      QModelIndex childIndex = q->sourceModel()->index(childRow, column, sourceParentIndex);
       if (q->sourceModel()->hasChildren(childIndex))
         proxy_end += descendantCount(childIndex);
     }
-
+    Q_ASSERT( proxy_end <= q->rowCount() );
     q->beginRemoveRows(m_rootDescendIndex, proxy_start, proxy_end);
   }
 }
@@ -474,8 +495,10 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &
   Q_Q(KDescendantsProxyModel);
   int c = descendedRow(parent);
   int d = descendedRow(destParent);
-  // TODO: Uncomment for Qt 4.6
-//   q->beginMoveRows(QModelIndex(), c+1+start, c+1+end, QModelIndex(), d+1+destRow);
+
+#if QT_VERSION >= 0x040600
+  q->beginMoveRows(QModelIndex(), c+1+start, c+1+end, QModelIndex(), d+1+destRow);
+#endif
 }
 
 void KDescendantsProxyModelPrivate::sourceRowsMoved(const QModelIndex &sourceParentIndex, int start, int end, const QModelIndex &destParentIndex, int destRow)
@@ -489,8 +512,9 @@ void KDescendantsProxyModelPrivate::sourceRowsMoved(const QModelIndex &sourcePar
 
   m_descendantsCount.clear();
 
-  // TODO: Uncomment for Qt 4.6
-//   q->endMoveRows();
+#if QT_VERSION >= 0x040600
+  q->endMoveRows();
+#endif
 }
 
 

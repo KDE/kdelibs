@@ -1205,6 +1205,32 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
 {
   Q_D(KSelectionProxyModel);
 
+  disconnect(sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
+          this, SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
+  disconnect(sourceModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+          this, SLOT(sourceRowsInserted(const QModelIndex &, int, int)));
+  disconnect(sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
+          this, SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
+  disconnect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+          this, SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
+
+#if QT_VERSION >= 0x040600
+  disconnect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+         this, SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+  disconnect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          this, SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+#endif
+  disconnect(sourceModel, SIGNAL(modelAboutToBeReset()),
+          this, SLOT(sourceModelAboutToBeReset()));
+  disconnect(sourceModel, SIGNAL(modelReset()),
+          this, SLOT(sourceModelReset()));
+  disconnect(sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+          this, SLOT(sourceDataChanged(const QModelIndex &, const QModelIndex & )));
+  disconnect(sourceModel, SIGNAL(layoutAboutToBeChanged()),
+          this, SLOT(sourceLayoutAboutToBeChanged()));
+  disconnect(sourceModel, SIGNAL(layoutChanged()),
+          this, SLOT(sourceLayoutChanged()));
+
   QAbstractProxyModel::setSourceModel(sourceModel);
   d->createProxyChain();
   d->selectionChanged(d->m_selectionModel->selection(), QItemSelection());
@@ -1217,12 +1243,12 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
   connect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
           SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
-
-  // TODO: Uncomment for Qt4.6
-//   connect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-//           SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-//   connect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-//           SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+#if QT_VERSION >= 0x040600
+  connect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+#endif
   connect(sourceModel, SIGNAL(modelAboutToBeReset()),
           SLOT(sourceModelAboutToBeReset()));
   connect(sourceModel, SIGNAL(modelReset()),
