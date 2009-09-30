@@ -82,15 +82,10 @@ public:
 Q_SIGNALS:
         /**
          * Specific (proper) codec was selected
-         */
-	void triggered(QTextCodec *codec);
-
-        /**
-         * Specific (proper) codec was selected
          *
-         * @returns codec name
+         * Note that triggered(const QString&) is emitted too (as defined in KSelectAction)
          */
-        void triggered(const QString&);
+        void triggered(QTextCodec *codec);
 
         /**
          * Autodetection has been selected.
@@ -108,6 +103,9 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
 	virtual void actionTriggered(QAction*);
+
+protected:
+        using KSelectAction::triggered;
 
 private:
 	class Private;
