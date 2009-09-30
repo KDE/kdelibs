@@ -72,6 +72,7 @@
 #cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_UNISTD_H 1
+#cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
 #cmakedefine HAVE_LANGINFO_H 1
 

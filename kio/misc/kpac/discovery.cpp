@@ -33,7 +33,7 @@
 #ifdef HAVE_ARPA_NAMESER8_COMPAT_H
 #include <arpa/nameser8_compat.h>
 #endif
-#ifdef __APPLE__
+#ifdef HAVE_ARPA_NAMESER_COMPAT_H
 #include <arpa/nameser_compat.h>
 #endif
 #ifdef HAVE_SYS_PARAM_H
