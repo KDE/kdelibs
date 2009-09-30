@@ -220,7 +220,8 @@ void HTMLBodyElementImpl::attach()
 
     RenderStyle* style = document()->styleSelector()->styleForElement(this);
     style->ref();
-    if (parentNode()->renderer() && style->display() != NONE) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed()
+                                 && style->display() != NONE) {
         if (style->display() == BLOCK)
             // only use the quirky class for block display
             m_render = new (document()->renderArena()) RenderBody(this);
@@ -371,7 +372,8 @@ void HTMLFrameElementImpl::attach()
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
-    if (parentNode()->renderer() && document()->isURLAllowed(url.string()))  {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed()
+                                 && document()->isURLAllowed(url.string()))  {
         RenderStyle* _style = document()->styleSelector()->styleForElement(this);
         _style->ref();
         if ( _style->display() != NONE ) {
@@ -620,10 +622,11 @@ void HTMLFrameSetElementImpl::attach()
     }
 
     // ignore display: none
-    if ( parentNode()->renderer() ) {
+    if ( parentNode()->renderer() && parentNode()->renderer()->childAllowed() ) {
+        RenderStyle* _style = document()->styleSelector()->styleForElement(this);
         m_render = new (document()->renderArena()) RenderFrameSet(this);
-        m_render->setStyle(document()->styleSelector()->styleForElement(this));
-       parentNode()->renderer()->addChild(m_render, nextRenderer());
+        m_render->setStyle(_style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
 
     NodeBaseImpl::attach();
@@ -754,8 +757,8 @@ void HTMLIFrameElementImpl::attach()
 
     RenderStyle* style = document()->styleSelector()->styleForElement(this);
     style->ref();
-    if (document()->isURLAllowed(url.string()) &&
-        parentNode()->renderer() && style->display() != NONE) {
+    if (document()->isURLAllowed(url.string()) && parentNode()->renderer()
+        && parentNode()->renderer()->childAllowed() && style->display() != NONE) {
         m_render = new (document()->renderArena()) RenderPartObject(this);
         m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
