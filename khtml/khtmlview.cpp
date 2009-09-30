@@ -2289,6 +2289,17 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 			keyReleaseEvent(ke);
 		    block = true;
 		}
+
+                if (qobject_cast<KUrlRequester*>(w->parentWidget()) &&
+		    e->type() == QEvent::KeyPress) {
+		    // Since keypress events on the upload widget will
+		    // be forwarded to the lineedit anyway,
+		    // block the original copy at this level to prevent
+		    // double-emissions of events it doesn't accept
+		    e->ignore();
+		    block = true;
+		}
+
 		break;
             case QEvent::FocusIn:
             case QEvent::FocusOut:
