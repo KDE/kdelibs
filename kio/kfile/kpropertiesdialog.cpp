@@ -437,9 +437,7 @@ void KPropertiesDialog::slotOk()
     QList<KPropertiesDialogPlugin*>::const_iterator pageListIt;
     d->m_aborted = false;
 
-    KFilePropsPlugin * filePropsPlugin = 0L;
-    if (qobject_cast<KFilePropsPlugin*>(d->m_pageList.first()))
-        filePropsPlugin = static_cast<KFilePropsPlugin *>(d->m_pageList.first());
+    KFilePropsPlugin * filePropsPlugin = qobject_cast<KFilePropsPlugin*>(d->m_pageList.first());
 
     // If any page is dirty, then set the main one (KFilePropsPlugin) as
     // dirty too. This is what makes it possible to save changes to a global
