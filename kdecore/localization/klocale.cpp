@@ -936,11 +936,11 @@ static QString digitSetString (KLocale::DigitSet digitSet)
 {
     switch (digitSet) {
     case KLocale::ArabicIndicDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("٠١٢٣٤٥٦٧٨٩");
     case KLocale::EasternArabicIndicDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("۰۱۲۳۴۵۶۷۸۹");
     case KLocale::DevenagariDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("०१२३४५६७८९");
     default:
         return QString::fromUtf8("0123456789");
     }
