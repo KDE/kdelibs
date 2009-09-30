@@ -52,12 +52,12 @@ public:
      */
     virtual ~KCupsOptionsWidget();
 
-public slots:
-
     /**
-     * Toggle widget enabled/disabled depending on if CUPS printer selected
-     */
-    void toggleEnabled();
+    * Return if Cups is running on system
+    */
+    static bool cupsAvailable();
+
+public slots:
 
     /**
      * Setup the given QPrinter with the selected print options
@@ -68,7 +68,6 @@ protected:
 
     virtual void setupCupsOptions( QStringList &cupsOptions );
     void setCupsOption( QStringList &cupsOptions, const QString option, const QString value );
-    bool cupsAvailable();
 
     QPrintDialog *m_dialog;
 
