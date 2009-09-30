@@ -256,6 +256,7 @@ KFileMetaInfo::~KFileMetaInfo() {
 }
 bool
 KFileMetaInfo::applyChanges() {
+
     // go through all editable fields and group them by writer
     QHash<KFileWritePlugin*, QVariantMap> data;
     QHash<QString, KFileMetaInfoItem>::const_iterator i;
@@ -268,8 +269,6 @@ KFileMetaInfo::applyChanges() {
     // call the writers on the data they can write
     bool ok = true;
     QHash<KFileWritePlugin*, QVariantMap>::const_iterator j;
-    QFile file(p->kurl.toLocalFile());
-    file.open(QIODevice::ReadOnly);
     for (j = data.constBegin(); j != data.constEnd(); ++j) {
         ok &= j.key()->write(p->kurl, j.value());
     }
