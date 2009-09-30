@@ -1236,6 +1236,8 @@ void KRun::scanFile()
     kDebug(7010) << " Job " << job << " is about getting from " << d->m_strURL.url();
 }
 
+// When arriving in that method there are 5 possible states:
+// must_init, must_scan_file, found_dir, done+error or done+success.
 void KRun::slotTimeout()
 {
     kDebug(7010) << this << " slotTimeout called";
@@ -1275,7 +1277,7 @@ void KRun::slotStatResult(KJob * job)
     d->m_job = 0L;
     if (job->error()) {
         d->m_showingDialog = true;
-        kError(7010) << this << "ERROR" << job->error() << ' ' << job->errorString();
+        kError(7010) << this << "ERROR" << job->error() << job->errorString();
         job->uiDelegate()->showErrorMessage();
         //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
         d->m_showingDialog = false;
@@ -1360,70 +1362,15 @@ void KRun::mimeTypeDetermined(const QString& mimeType)
     foundMimeType(mimeType);
 
     d->m_showingDialog = false;
+
+    // We cannot assume that we're finished here. Some reimplementations
+    // start a KIO job and call setFinished only later.
 }
 
 void KRun::foundMimeType(const QString& type)
 {
     kDebug(7010) << "Resulting mime type is " << type;
 
-    /*
-      // Automatically unzip stuff
-
-      // Disabled since the new KIO doesn't have filters yet.
-
-      if ( type == "application/x-gzip"  ||
-           type == "application/x-bzip"  ||
-           type == "application/x-bzip"  ||
-           type == "application/x-lzma"  ||
-           type == "application/x-xz" )
-      {
-        KUrl::List lst = KUrl::split( m_strURL );
-        if ( lst.isEmpty() )
-        {
-          QString tmp = i18n( "Malformed URL" );
-          tmp += "\n";
-          tmp += m_strURL.url();
-          KMessageBoxWrapper::error( 0L, tmp );
-          return;
-        }
-
-        if ( type == "application/x-gzip" )
-          lst.prepend( KUrl( "gzip:/decompress" ) );
-        else if ( type == "application/x-bzip" )
-          lst.prepend( KUrl( "bzip:/decompress" ) );
-        else if ( type == "application/x-bzip" )
-          lst.prepend( KUrl( "bzip2:/decompress" ) );
-        else if ( type == "application/x-lzma" )
-          lst.prepend( KUrl( "lzma:/decompress" ) );
-        else if ( type == "application/x-xz" )
-          lst.prepend( KUrl( "xz:/decompress" ) );
-        else if ( type == "application/x-tar" )
-          lst.prepend( KUrl( "tar:/" ) );
-
-        // Move the HTML style reference to the leftmost URL
-        KUrl::List::Iterator it = lst.begin();
-        ++it;
-        (*lst.begin()).setRef( (*it).ref() );
-        (*it).setRef( QString() );
-
-        // Create the new URL
-        m_strURL = KUrl::join( lst );
-
-        kDebug(7010) << "Now trying with " << debugString(m_strURL.url());
-
-        killJob();
-
-        // We don't know if this is a file or a directory. Let's test this first.
-        // (For instance a tar.gz is a directory contained inside a file)
-        // It may be a directory or a file, let's stat
-        KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
-        connect( job, SIGNAL( result( KJob * ) ),
-                 this, SLOT( slotStatResult( KJob * ) ) );
-        m_job = job;
-
-        return;
-      }
-    */
     KIO::TransferJob *job = qobject_cast<KIO::TransferJob *>(d->m_job);
     if (job) {
         job->putOnHold();
@@ -1445,10 +1392,13 @@ void KRun::foundMimeType(const QString& type)
         if (serv && serv->hasMimeType(mime.data())) {
             KUrl::List lst;
             lst.append(d->m_strURL);
-            d->m_bFinished = KRun::run(*serv, lst, d->m_window, false, QString(), d->m_asn);
-            /// Note: the line above means that if that service failed, we'll
-            /// go to runUrl to maybe find another service, even though a dialog
-            /// box was displayed. That's good if runUrl tries another service,
+            if (KRun::run(*serv, lst, d->m_window, false, QString(), d->m_asn)) {
+                setFinished(true);
+                return;
+            }
+            /// Note: if that service failed, we'll go to runUrl below to
+            /// maybe find another service, even though an error dialog box was
+            /// already displayed. That's good if runUrl tries another service,
             /// but it's not good if it tries the same one :}
         }
     }
@@ -1459,15 +1409,10 @@ void KRun::foundMimeType(const QString& type)
         d->m_strURL.setPath(d->m_localPath);
     }
 
-    if (!d->m_bFinished && KRun::runUrl(d->m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName, d->m_asn)) {
-        d->m_bFinished = true;
-    }
-    else {
-        d->m_bFinished = true;
+    if (!KRun::runUrl(d->m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName, d->m_asn)) {
         d->m_bFault = true;
     }
-
-    d->startTimer();
+    setFinished(true);
 }
 
 void KRun::killJob()
@@ -1481,6 +1426,9 @@ void KRun::killJob()
 
 void KRun::abort()
 {
+    if (d->m_bFinished) {
+        return;
+    }
     kDebug(7010) << this << "m_showingDialog=" << d->m_showingDialog;
     killJob();
     // If we're showing an error message box, the rest will be done
@@ -1583,7 +1531,8 @@ bool KRun::progressInfo() const
 void KRun::setFinished(bool finished)
 {
     d->m_bFinished = finished;
-    // TODO d->startTimer(); (and later on remove it from callers...)
+    if (finished)
+        d->startTimer();
 }
 
 void KRun::setJob(KIO::Job *job)

@@ -563,7 +563,6 @@ void BrowserRun::slotCopyToTempFileResult(KJob *job)
     }
     setError( true ); // see above
     setFinished( true );
-    timer().start( 0 );
 }
 
 bool BrowserRun::isTextExecutable( const QString &mimeType )

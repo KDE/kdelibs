@@ -347,6 +347,7 @@ public:
 Q_SIGNALS:
     /**
      * Emitted when the operation finished.
+     * This signal is emitted in all cases of completion, whether successful or with error.
      * @see hasFinished()
      */
     void finished();
@@ -410,6 +411,11 @@ protected:
      * the application associated with this mimetype.
      * Reimplement this method to implement a different behavior,
      * like opening the component for displaying the URL embedded.
+     *
+     * Important: call setFinished(true) once you are done!
+     * Usually at the end of the foundMimeType reimplementation, but if the
+     * reimplementation is asynchronous (e.g. uses KIO jobs) then
+     * it can be called later instead.
      */
     virtual void foundMimeType(const QString& type);
 
@@ -460,8 +466,10 @@ protected:
 
     /**
      * Returns the timer object.
+     * @deprecated setFinished(true) now takes care of the timer().start(0),
+     * so this can be removed.
      */
-    QTimer& timer();
+    KDE_DEPRECATED QTimer& timer();
 
     /**
      * Indicate that the next action is to scan the file.
