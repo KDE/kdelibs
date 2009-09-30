@@ -240,6 +240,7 @@ void KLocalizedStringTest::testThreads()
     futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
     futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
     futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
+    KGlobal::locale()->removeCatalog("kdelibs4");
     Q_FOREACH(QFuture<void> f, futures)
         f.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
