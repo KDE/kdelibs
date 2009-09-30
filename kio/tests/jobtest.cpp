@@ -53,11 +53,6 @@ QTEST_KDEMAIN( JobTest, NoGUI )
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
-static QString homeTmpDir()
-{
-    return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest/";
-}
-
 static QString otherTmpDir()
 {
 #ifdef Q_WS_WIN
@@ -92,14 +87,9 @@ void JobTest::initTestCase()
 
     // Start with a clean base dir
     cleanupTestCase();
-    QDir dir; // TT: why not a static method?
-    if ( !QFile::exists( homeTmpDir() ) ) {
-        bool ok = dir.mkdir( homeTmpDir() );
-        if ( !ok )
-            kFatal() << "Couldn't create " << homeTmpDir();
-    }
+    homeTmpDir(); // create it
     if ( !QFile::exists( otherTmpDir() ) ) {
-        bool ok = dir.mkdir( otherTmpDir() );
+        bool ok = QDir().mkdir( otherTmpDir() );
         if ( !ok )
             kFatal() << "Couldn't create " << otherTmpDir();
     }

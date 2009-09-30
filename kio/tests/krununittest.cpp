@@ -1,10 +1,11 @@
 /*
  *  Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
- *  Copyright (C) 2007 David Faure   <faure@kde.org>
+ *  Copyright (C) 2007, 2009 David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
- *  License version 2 as published by the Free Software Foundation;
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +28,7 @@ QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 #include <kservice.h>
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
+#include "kiotesthelper.h" // createTestFile etc.
 
 void KRunUnitTest::initTestCase()
 {
@@ -174,4 +176,60 @@ void KRunUnitTest::testProcessDesktopExecNoFile()
     QFETCH(bool, tempfiles);
     QFETCH(QString, expected);
     QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tempfiles)), expected);
+}
+
+class KRunImpl : public KRun
+{
+public:
+    KRunImpl(const KUrl& url, bool isLocalFile = false)
+        : KRun(url, 0, 0, isLocalFile, false) {}
+
+    virtual void foundMimeType(const QString& type) {
+        m_mimeType = type;
+        // don't call KRun::foundMimeType, we don't want to start an app ;-)
+        setFinished(true);
+    }
+
+    QString mimeTypeFound() const { return m_mimeType; }
+
+private:
+    QString m_mimeType;
+};
+
+void KRunUnitTest::testMimeTypeFile()
+{
+    const QString filePath = homeTmpDir() + "file";
+    createTestFile(filePath, true);
+    KRunImpl* krun = new KRunImpl(filePath, true);
+    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("text/plain"));
+}
+
+void KRunUnitTest::testMimeTypeDirectory()
+{
+    const QString dir = homeTmpDir() + "dir";
+    createTestDirectory(dir);
+    KRunImpl* krun = new KRunImpl(dir, true);
+    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("inode/directory"));
+}
+
+void KRunUnitTest::testMimeTypeBrokenLink()
+{
+    const QString dir = homeTmpDir() + "dir";
+    createTestDirectory(dir);
+    KRunImpl* krun = new KRunImpl(dir + "/testlink", true);
+    QSignalSpy spyError(krun, SIGNAL(error()));
+    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QVERIFY(krun->mimeTypeFound().isEmpty());
+    QCOMPARE(spyError.count(), 1);
+}
+
+void KRunUnitTest::testMimeTypeDoesNotExist()
+{
+    KRunImpl* krun = new KRunImpl(KUrl("/does/not/exist"));
+    QSignalSpy spyError(krun, SIGNAL(error()));
+    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QVERIFY(krun->mimeTypeFound().isEmpty());
+    QCOMPARE(spyError.count(), 1);
 }

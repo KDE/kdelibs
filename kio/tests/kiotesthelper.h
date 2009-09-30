@@ -19,6 +19,7 @@
 
 // This file can only be included once in a given binary
 
+#include <kdebug.h>
 #include <QtCore/qglobal.h>
 #include <kde_file.h>
 #ifdef Q_OS_UNIX
@@ -27,6 +28,17 @@
 #include <sys/utime.h>
 #endif
 #include <errno.h>
+
+QString homeTmpDir()
+{
+    const QString dir = QFile::decodeName(getenv("KDEHOME")) + "/kiotests/";
+    if (!QFile::exists(dir)) {
+        const bool ok = QDir().mkdir(dir);
+        if ( !ok )
+            kFatal() << "Couldn't create " << dir;
+    }
+    return dir;
+}
 
 QDateTime s_referenceTimeStamp;
 
@@ -47,12 +59,12 @@ static void setTimeStamp( const QString& path, const QDateTime& mtime )
 #endif
 }
 
-static void createTestFile( const QString& path )
+static void createTestFile( const QString& path, bool plainText = false )
 {
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
         kFatal() << "Can't create " << path;
-    QByteArray data("Hello\0world", 11);
+    QByteArray data(plainText ? "Hello world" : "Hello\0world", 11);
     QCOMPARE( data.size(), 11 );
     f.write(data);
     f.close();
@@ -80,17 +92,15 @@ static void createTestDirectory( const QString& path, CreateTestDirectoryOptions
     if ( !ok && !dir.exists() )
         kFatal() << "couldn't create " << path;
     createTestFile( path + "/testfile" );
-#ifndef Q_WS_WIN
     if ( (opt & NoSymlink) == 0 ) {
+#ifndef Q_WS_WIN
         createTestSymlink( path + "/testlink" );
         QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
-    }
 #else
     // to not change the filecount everywhere in the tests
-    if ( (opt & NoSymlink) == 0 ) {
         createTestFile( path + "/testlink" );
-    }
 #endif
+    }
     setTimeStamp( path, s_referenceTimeStamp );
 }
 
