@@ -799,7 +799,7 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
 
 void ElementImpl::defaultEventHandler(EventImpl *e)
 {
-    if (document()->part() && e->id() == EventImpl::KEYPRESS_EVENT && e->isKeyRelatedEvent()) {
+    if (!e->defaultHandled() && document()->part() && e->id() == EventImpl::KEYPRESS_EVENT && e->isKeyRelatedEvent()) {
         const KHTMLPart* part = document()->part();
         bool isContentEditableElement = part->isEditable() || (focused() && isContentEditable());
         if (isContentEditableElement || part->isCaretMode()) {
