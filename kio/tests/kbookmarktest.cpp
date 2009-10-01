@@ -51,13 +51,18 @@ void KBookmarkTest::testMimeDataOneBookmark()
     QVERIFY( !bookmark.isNull() );
     bookmark.populateMimeData( mimeData );
 
+    QDomDocument doc;
     QVERIFY( KUrl::List::canDecode( mimeData ) );
     QVERIFY( KBookmark::List::canDecode( mimeData ) );
-    const KBookmark::List decodedBookmarks = KBookmark::List::fromMimeData( mimeData );
+    const KBookmark::List decodedBookmarks = KBookmark::List::fromMimeData( mimeData, doc );
     QVERIFY( !decodedBookmarks.isEmpty() );
     QCOMPARE( decodedBookmarks.count(), 1 );
     QVERIFY( !decodedBookmarks[0].isNull() );
     compareBookmarks( bookmark, decodedBookmarks[0] );
+
+    // Do like keditbookmarks's paste code: (CreateCommand::execute)
+    // Crashed before passing "doc" to fromMimeData (#160679)
+    QDomElement clonedElem = decodedBookmarks[0].internalElement().cloneNode().toElement();
 
     delete mimeData;
 }
@@ -78,9 +83,10 @@ void KBookmarkTest::testMimeDataBookmarkList()
     initialBookmarks.append( bookmark2 );
     initialBookmarks.populateMimeData( mimeData );
 
+    QDomDocument doc;
     QVERIFY( KUrl::List::canDecode( mimeData ) );
     QVERIFY( KBookmark::List::canDecode( mimeData ) );
-    const KBookmark::List decodedBookmarks = KBookmark::List::fromMimeData( mimeData );
+    const KBookmark::List decodedBookmarks = KBookmark::List::fromMimeData( mimeData, doc );
     QCOMPARE( decodedBookmarks.count(), 2 );
     QVERIFY( !decodedBookmarks[0].isNull() );
     QVERIFY( !decodedBookmarks[1].isNull() );

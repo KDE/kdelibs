@@ -217,7 +217,7 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, c
 {
     if (isNull())
         return KBookmark();
-    QDomDocument doc = element.ownerDocument();    
+    QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );
     elem.setAttribute( "href", url.url() ); // gives us utf8
 
@@ -674,10 +674,16 @@ QStringList KBookmark::List::mimeDataTypes()
 
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
 {
+    QDomDocument doc;
+    kWarning(7043) << "Deprecated method called, with wrong lifetime of QDomDocument, will probably crash";
+    return fromMimeData(mimeData, doc);
+}
+
+KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData, QDomDocument& doc )
+{
     KBookmark::List bookmarks;
     QByteArray payload = mimeData->data( "application/x-xbel" );
     if ( !payload.isEmpty() ) {
-        QDomDocument doc;
         doc.setContent( payload );
         QDomElement elem = doc.documentElement();
         QDomNodeList children = elem.childNodes();
