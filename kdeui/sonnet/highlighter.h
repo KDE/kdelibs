@@ -1,4 +1,4 @@
-/**
+/*
  * highlighter.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
@@ -28,7 +28,6 @@
 
 class QTextEdit;
 
-/// The sonnet namespace
 namespace Sonnet
 {
     /// The Sonnet Highlighter

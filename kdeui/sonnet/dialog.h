@@ -1,5 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
-/**
+/*
  * dialog.h
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
@@ -36,8 +36,8 @@ namespace Sonnet
      * @short Spellcheck dialog
      *
      * \code
-     * Sonnet::Dialog = dlg=new Sonnet::Dialog(new Sonnet::BackgroundChecker(
-     *          this), this);
+     * Sonnet::Dialog dlg = new Sonnet::Dialog(
+     *       new Sonnet::BackgroundChecker(this), this);
      * //connect signals
      * ...
      * dlg->setBuffer( someText );
