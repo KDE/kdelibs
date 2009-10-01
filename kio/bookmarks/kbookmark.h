@@ -73,8 +73,21 @@ public:
          * @return the list of bookmarks
          * @note those bookmarks are valid QDomElements, but their parent QDomDocument
          * is already deleted, do not use ownerDocument()
+         * @deprecated use fromMimeData(mimeData, doc), to avoid crashes
          */
-        static KBookmark::List fromMimeData( const QMimeData *mimeData );
+        static KDE_DEPRECATED KBookmark::List fromMimeData( const QMimeData *mimeData );
+
+        /**
+         * Extract a list of bookmarks from the contents of @p mimeData.
+         * Decoding will fail if @p mimeData does not contain any bookmarks.
+         * @param mimeData the mime data to extract from; cannot be 0
+         * @param parentDocument pass an empty QDomDocument here, it will be used as
+         * container for the bookmarks. You just need to make sure it stays alive longer
+         * (or just as long) as the returned bookmarks.
+         * @return the list of bookmarks
+         * @since 4.3.2
+         */
+        static KBookmark::List fromMimeData( const QMimeData *mimeData, QDomDocument& parentDocument );
     };
 
 
@@ -148,13 +161,13 @@ public:
      * @param url the new bookmark URL
      */
     void setUrl(const KUrl &url);
-    
+
     /**
      * @return the pixmap file for this bookmark
      * (i.e. the name of the icon)
      */
     QString icon() const;
-    
+
     /**
      * Set the icon name of the bookmark
      *
@@ -167,22 +180,22 @@ public:
      * @since 4.1
      */
     QString mimeType() const;
-    
+
     /**
      * Set the Mime-Type of this item
-     * 
+     *
      * @param Mime-Type
      * @since 4.1
      */
     void setMimeType(const QString &mimeType);
-    
+
     /**
      * @return if the bookmark should be shown in the toolbar
      * (used by the filtered toolbar)
      *
      */
     bool showInToolbar() const;
-    
+
     /**
      * Set whether this bookmark is show in a filterd toolbar
      */
@@ -204,7 +217,7 @@ public:
      * Return the "address" of this bookmark in the whole tree.
      * This is used when telling other processes about a change
      * in a given bookmark. The encoding of the address is "/4/2", for
-     * instance, to designate the 2nd child inside the 4th child of the 
+     * instance, to designate the 2nd child inside the 4th child of the
      * root bookmark.
      */
     QString address() const;
@@ -265,8 +278,8 @@ public:
      * @return the metadata container node for a certain matadata owner
      * @since 4.1
      */
-    QDomNode metaData(const QString &owner, bool create) const;     
-     
+    QDomNode metaData(const QString &owner, bool create) const;
+
     /**
      * Get the value of a specific metadata item (owner = "http://www.kde.org").
      * @param key Name of the metadata item
@@ -277,7 +290,7 @@ public:
 
     /**
      * Change the value of a specific metadata item, or create the given item
-     * if it doesn't exist already (owner = "http://www.kde.org").     
+     * if it doesn't exist already (owner = "http://www.kde.org").
      * @param key Name of the metadata item to change
      * @param value Value to use for the specified metadata item
      * @param mode Whether to overwrite the item's value if it exists already or not.
