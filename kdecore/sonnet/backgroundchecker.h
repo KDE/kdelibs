@@ -1,4 +1,4 @@
-/**
+/*
  * backgroundchecker.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
@@ -27,6 +27,9 @@
 
 #include <QtCore/QObject>
 
+/**
+ * The sonnet namespace.
+ */
 namespace Sonnet
 {
     class Speller;

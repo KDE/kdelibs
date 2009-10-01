@@ -1,5 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
-/**
+/*
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -35,6 +35,7 @@ namespace Sonnet
     class SpellerPlugin;
 
     /**
+     * \internal
      * @short Class used to deal with dictionaries
      *
      * This class manages all dictionaries. It's the top level
@@ -52,11 +53,6 @@ namespace Sonnet
          * Loader is reference counted so if you don't want to have it deleted
          * under you simply have to hold it in a Loader::Ptr for as long as
          * you're using it.
-         *
-         * @param config is the name of config file which
-         *        loader should use to read default language
-         *        and default client values. If no value will
-         *        be passed Loader will use global sonnetrc file.
          */
         static Loader *openLoader();
 

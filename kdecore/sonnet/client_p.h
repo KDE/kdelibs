@@ -1,5 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
-/**
+/*
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -26,7 +26,7 @@
 #include <QtCore/QString>
 
 #include <kdecore_export.h>
-/**
+/*
  * The fact that this class inherits from QObject makes me
  * hugely unhappy. The reason for as of this writing is that
  * I don't really feel like writing my own KLibFactory
@@ -36,6 +36,10 @@ namespace Sonnet
 {
     class SpellerPlugin;
 
+    /**
+     * \internal
+     * Client
+     */
     class KDECORE_EXPORT Client : public QObject
     {
         Q_OBJECT

@@ -1,5 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
-/**
+/*
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -31,6 +31,9 @@ namespace Sonnet
 {
     class Loader;
 
+    /**
+     * Settings class
+     */
     class KDECORE_EXPORT Settings
     {
     public:
