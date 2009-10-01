@@ -2107,7 +2107,10 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         if (listener) {
 	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
-            docimpl->addWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
+	    if (docimpl)
+		docimpl->addWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
+	    else
+		kWarning() << "document missing on Window::AddEventListener. why?";
         }
         return jsUndefined();
     }
@@ -2115,7 +2118,10 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         if (listener) {
 	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
-            docimpl->removeWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
+	    if (docimpl)
+		docimpl->removeWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
+	    else
+		kWarning() << "document missing on Window::RemoveEventListener. why?";
         }
         return jsUndefined();
     }
