@@ -279,6 +279,8 @@
 <!ENTITY Anne-Marie.Mahfouf.mail '<email>annma@kde.org</email>'>
 <!ENTITY Martin.Maierhofer '<personname><firstname>Martin</firstname><surname>Maierhofer</surname></personname>'>
 <!ENTITY Martin.Maierhofer.mail '<email>m.maierhofer@tees.ac.uk</email>'>
+<!ENTITY Marco.Martin '<personname><firstname>Marco</firstname><surname>Martin</surname></personname>'>
+<!ENTITY Marco.Martin.mail '<email>notmart@gmail.com</email>'>
 <!ENTITY Dirk.Mueller '<personname><firstname>Dirk</firstname><surname>Müller</surname></personname>'>
 <!ENTITY Mike.McBride '<personname><firstname>Mike</firstname><surname>McBride</surname></personname>'>
 <!ENTITY Mike.McBride.mail '<email>mpmcbride7@yahoo.com</email>'>
