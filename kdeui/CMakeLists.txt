@@ -349,6 +349,10 @@ if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
 endif(MINGW)
 
+if(Q_WS_X11)
+   target_link_libraries(kdeui ${QT_QTNETWORK_LIBRARY})
+endif(Q_WS_X11)
+
 if(Q_WS_MAC)
    target_link_libraries(kdeui ${CARBON_LIBRARY})
 endif(Q_WS_MAC)

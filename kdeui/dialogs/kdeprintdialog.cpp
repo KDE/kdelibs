@@ -39,9 +39,13 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
 {
     QPrintDialog *dialog = new QPrintDialog( printer, parent );
 #ifdef Q_WS_X11
-    KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
-    KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
-    dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab << customTabs );
+    if ( KCupsOptionsWidget::cupsAvailable() ) {
+        KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
+        KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
+        dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab << customTabs );
+    } else {
+        dialog->setOptionTabs( customTabs );
+    }
 #else
     foreach( QWidget* w, customTabs ) // reparent to avoid leaks
         w->setParent( dialog );
@@ -49,7 +53,6 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     dialog->setWindowTitle( KDialog::makeStandardCaption( i18nc( "@title:window", "Print" ) ) );
     return dialog;
 }
-
 
 QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
                                           QWidget *parent)
