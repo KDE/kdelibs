@@ -788,6 +788,7 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
                 << "Fix the program" << endl;
   }
 
+  QMutexLocker locker(mutex);
   // determine the fallback string
   QString fallback;
   if ( msgid_plural == NULL )

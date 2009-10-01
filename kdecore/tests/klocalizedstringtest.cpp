@@ -238,6 +238,7 @@ void KLocalizedStringTest::testThreads()
     futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
     futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
     futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
+    futures << QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench);
     KGlobal::locale()->removeCatalog("kdelibs4");
     Q_FOREACH(QFuture<void> f, futures)
         f.waitForFinished();
