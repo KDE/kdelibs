@@ -181,7 +181,7 @@ qint64 KSocketBuffer::consumeBuffer(char *destbuffer, qint64 maxlen, bool discar
     {
       QByteArray& item = it.next();
       // calculate how much we'll copy
-      size_t to_copy = item.size() - offset;
+      qint64 to_copy = item.size() - offset;
       if (to_copy > maxlen)
 	to_copy = maxlen;
 
