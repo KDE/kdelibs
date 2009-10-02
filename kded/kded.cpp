@@ -96,6 +96,10 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    else
    {
       KToolInvocation::kdeinitExecWait( exe, args );
+
+      if (callBackObj && callBackSlot) {
+          QTimer::singleShot(0, callBackObj, callBackSlot);
+      }
    }
 }
 
