@@ -533,7 +533,7 @@ bool KBugReport::sendBugReport()
     kError() << "Unable to open a pipe to " << command << endl;
     return false;
   }
-  proc.write( text().toAscii() );
+  proc.write( text().toUtf8() );
   proc.closeWriteChannel();
 
   proc.waitForFinished();

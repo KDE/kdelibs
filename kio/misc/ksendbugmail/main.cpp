@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
             subject = subject.mid(1).left(subject.length() - 2);
     }
     QTextStream input(stdin, QIODevice::ReadOnly);
+    input.setCodec("UTF-8");
     QString text, line;
     while (!input.atEnd()) {
         line = input.readLine();
