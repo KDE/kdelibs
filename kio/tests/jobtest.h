@@ -65,6 +65,7 @@ private Q_SLOTS:
     void deleteManyFilesIndependently();
     void deleteManyFilesTogether();
     void stat();
+    void mostLocalUrl();
     void mimeType();
     //void newApiPerformance();
     void calculateRemainingSeconds();

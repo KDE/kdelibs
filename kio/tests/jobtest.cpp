@@ -1333,6 +1333,17 @@ void JobTest::stat()
 #endif
 }
 
+void JobTest::mostLocalUrl()
+{
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    createTestFile( filePath );
+    KIO::StatJob* job = KIO::mostLocalUrl(filePath, KIO::HideProgressInfo);
+    QVERIFY(job);
+    bool ok = job->exec();
+    QVERIFY(ok);
+    QCOMPARE(job->mostLocalUrl().toLocalFile(), filePath);
+}
+
 void JobTest::mimeType()
 {
 #if 1

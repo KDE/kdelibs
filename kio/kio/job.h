@@ -451,6 +451,16 @@ namespace KIO {
     KIO_EXPORT ListJob *listRecursive( const KUrl& url, JobFlags flags = DefaultFlags,
                             bool includeHidden = true );
 
+    /**
+     * Tries to map a local URL for the given URL, using a KIO job.
+     *
+     * Starts a (stat) job for determining the "most local URL" for a given URL.
+     * Retrieve the result with StatJob::mostLocalUrl in the result slot.
+     * @param url The URL we are testing.
+     * \since 4.4
+     */
+    KIO_EXPORT StatJob* mostLocalUrl(const KUrl& url, JobFlags flags = DefaultFlags);
+
 }
 
 #endif

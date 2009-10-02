@@ -775,6 +775,17 @@ const UDSEntry & StatJob::statResult() const
     return d_func()->m_statResult;
 }
 
+KUrl StatJob::mostLocalUrl() const
+{
+    if (!url().isLocalFile()) {
+        const UDSEntry& udsEntry = d_func()->m_statResult;
+        const QString path = udsEntry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
+        if (!path.isEmpty())
+            return KUrl(path);
+    }
+    return url();
+}
+
 void StatJobPrivate::start(Slave *slave)
 {
     Q_Q(StatJob);
@@ -848,6 +859,17 @@ StatJob *KIO::stat(const KUrl& url, JobFlags flags)
 {
     // Assume sideIsSource. Gets are more common than puts.
     return stat( url, StatJob::SourceSide, 2, flags );
+}
+
+StatJob *KIO::mostLocalUrl(const KUrl& url, JobFlags flags)
+{
+    StatJob* job = stat( url, StatJob::SourceSide, 2, flags );
+    if (url.isLocalFile()) {
+        QTimer::singleShot(0, job, SLOT(slotFinished()));
+        Scheduler::cancelJob( job ); // deletes the slave if not 0
+        //job->d_func()->m_slave = 0; // -> set to 0
+    }
+    return job;
 }
 
 StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFlags flags )

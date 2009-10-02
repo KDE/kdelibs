@@ -88,7 +88,7 @@ namespace KIO {
      *
      * \code
      *  if ( job->error() )
-     *      job->ui()->showErrorDialog();
+     *      job->ui()->showErrorMessage();
      * \endcode
      * @see KIO::Scheduler
      */
@@ -144,7 +144,7 @@ namespace KIO {
          *   i18n( "Could not read\n%1" ).arg( errortext );
          * \endcode
          * Use this to display the error yourself, but for a dialog box
-         * use Job::showErrorDialog. Do not call it if error()
+         * use ui()->showErrorMessage(). Do not call it if error()
          * is not 0.
          * @return the error message and if there is no error, a message
          *         telling the user that the app is broken, so check with
@@ -461,11 +461,37 @@ namespace KIO {
         void setDetails( short int details );
 
         /**
+         * @brief Result of the stat operation.
          * Call this in the slot connected to result,
          * and only after making sure no error happened.
          * @return the result of the stat
          */
         const UDSEntry & statResult() const;
+
+        /**
+         * @brief most local URL
+         * Call this in the slot connected to result,
+         * and only after making sure no error happened.
+         * @return the most local URL for the URL we were stat'ing.
+         *
+         * Sample usage:
+         * <code>
+         * KIO::StatJob* job = KIO::mostLocalUrl("desktop:/foo");
+         * job->setWindow(this);
+         * connect(job, SIGNAL(result(KJob*)), this, SLOT(slotMostLocalUrlResult(KJob*)));
+         * [...]
+         * // and in the slot
+         * if (job->error()) {
+         *    [...] // doesn't exist
+         * } else {
+         *    const KUrl localUrl = job->mostLocalUrl();
+         *    // localUrl = file:///$HOME/Desktop/foo
+         *    [...]
+         * }
+         *
+         * \since 4.4
+         */
+        KUrl mostLocalUrl() const;
 
     Q_SIGNALS:
         /**
