@@ -96,8 +96,8 @@ private Q_SLOTS:
         const QString ext2 = "*.kmimefileparserunittest2";
 
         QByteArray testFile = "# Test data\n"
-                              "40:text/plain:*.kmimefileparserunittest\n"
                               "40:text/plain:*.kmimefileparserunittest:cs\n"
+                              "40:text/plain:*.kmimefileparserunittest\n"
                               "20:text/plain:*.kmimefileparserunittest2::futureextension";
         QBuffer buf(&testFile);
         QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs;

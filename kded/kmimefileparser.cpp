@@ -158,10 +158,6 @@ bool KMimeFileParser::parseGlobFile(QIODevice* file, Format format, AllGlobs& gl
                 //if (mimeTypeName == "text/plain")
                 //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file, with weight" << weight;
                 globList.append(Glob(weight, pattern, flags));
-            } else {
-                // replace existing entry. Necessary for the "case sensitive" hack
-                // where the entry with the flags follows the entry without them.
-                *existingEntry = Glob(weight, pattern, flags);
             }
         }
     }
