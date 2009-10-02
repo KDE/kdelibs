@@ -1,6 +1,6 @@
 project(kded)
 
-add_subdirectory( test )
+add_subdirectory( tests )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
