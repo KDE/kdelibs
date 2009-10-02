@@ -40,9 +40,11 @@ class QProgressBar;
 class KStatusBarJobTracker::Private
 {
 public:
-    Private(QWidget *parent)
+    Private(QWidget *parent, bool withStopButton)
         : parent(parent)
-        , currentProgressWidget(0) { }
+        , currentProgressWidget(0)
+        , showStopButton(withStopButton)
+    { }
 
     ~Private() {
     }
@@ -52,6 +54,7 @@ public:
     QWidget *parent;
     QMap<KJob*, ProgressWidget*> progressWidget;
     ProgressWidget *currentProgressWidget;
+    bool showStopButton;
 };
 
 

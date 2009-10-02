@@ -34,7 +34,7 @@
 #include <kglobal.h>
 
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
-    : KAbstractWidgetJobTracker(parent), d(new Private(parent))
+    : KAbstractWidgetJobTracker(parent), d(new Private(parent, button))
 {
 }
 
@@ -153,19 +153,24 @@ void KStatusBarJobTracker::Private::ProgressWidget::init(KJob *job, QWidget *par
     box->setSpacing(0);
     widget->setLayout(box);
 
-    button = new KPushButton(i18n("Stop"), widget);
-    box->addWidget(button);
     stack = new QStackedWidget(widget);
     box->addWidget(stack);
-    connect(button, SIGNAL(clicked(bool)),
-            this, SLOT(killJob()));
+
+    if (q->d->showStopButton) {
+        button = new KPushButton(i18n("Stop"), widget);
+        box->addWidget(button);
+        connect(button, SIGNAL(clicked(bool)),
+                this, SLOT(killJob()));
+    } else {
+        button = 0;
+    }
 
     progressBar = new QProgressBar(widget);
     progressBar->installEventFilter(this);
     progressBar->setMinimumWidth(w);
     stack->insertWidget(1, progressBar);
 
-    label = new QLabel("", widget);
+    label = new QLabel(widget);
     label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     label->installEventFilter(this);
     label->setMinimumWidth(w);

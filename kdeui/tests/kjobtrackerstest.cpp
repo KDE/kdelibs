@@ -151,17 +151,19 @@ int main(int argc, char **argv)
 
     KApplication app;
 
-    QMainWindow *main = new QMainWindow;
-    main->show();
-
     KTestJob *testJob = new KTestJob(10 /* 100000 bytes to process */);
 
     KWidgetJobTracker *tracker1 = new KWidgetJobTracker();
     tracker1->registerJob(testJob);
 
+    QMainWindow *main = new QMainWindow;
+    main->setWindowTitle("Mainwindow with statusbar-job-tracker");
+    main->show();
+
     QStatusBar *statusBar = new QStatusBar(main);
     KStatusBarJobTracker *tracker2 = new KStatusBarJobTracker(main, true);
     tracker2->registerJob(testJob);
+    tracker2->setStatusBarMode(KStatusBarJobTracker::ProgressOnly);
     statusBar->addWidget(tracker2->widget(testJob));
 
     main->setStatusBar(statusBar);
