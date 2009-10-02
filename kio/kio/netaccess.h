@@ -51,15 +51,17 @@ namespace KIO {
    * synchronous downloads and uploads, as well as temporary file
    * creation and removal. The functions appear to be blocking,
    * but the Qt event loop continues running while the operations
-   * are handled. This means that the GUI will not freeze.
+   * are handled. More precisely, the GUI will still repaint, but no user
+   * interaction will be possible. If you can, please use async KIO jobs instead!
    *
    * This class isn't meant to be used as a class but only as a simple
    * namespace for static functions, though an instance of the class
-   * is built for internal purposes.
+   * is built for internal purposes. TODO KDE5: turn into namespace,
+   * and make the qobject class private.
    *
    * Port to kio done by David Faure, faure@kde.org
    *
-   * @short Provides an easy, synchronous interface to KIO file operations.
+   * @short Provides a blocking interface to KIO file operations.
    */
 class KIO_EXPORT NetAccess : public QObject
 {
