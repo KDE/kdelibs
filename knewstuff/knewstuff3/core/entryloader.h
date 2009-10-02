@@ -15,10 +15,10 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_ENTRY_LOADER_H
-#define KNEWSTUFF2_ENTRY_LOADER_H
+#ifndef KNEWSTUFF3_ENTRY_LOADER_H
+#define KNEWSTUFF3_ENTRY_LOADER_H
 
-#include <knewstuff2/core/entry.h>
+#include <knewstuff3/entry.h>
 
 #include <QtXml/qdom.h>
 #include <QtCore/QObject>

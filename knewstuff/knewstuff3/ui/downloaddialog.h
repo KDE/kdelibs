@@ -1,9 +1,9 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/downloaddialog.h.
     Copyright (C) 2005 by Enrico Ros <eros.kde@email.it>
     Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
-    Copyright (C) 2007 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (C) 2007-2009 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,17 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_UI_DOWNLOADDIALOG_H
-#define KNEWSTUFF2_UI_DOWNLOADDIALOG_H
+#ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_H
+#define KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 
 #include <QMutex>
 
 #include <kdialog.h>
 #include <ktitlewidget.h>
 
-#include <knewstuff2/dxs/dxsengine.h>
-#include <knewstuff2/core/category.h>
+#include <knewstuff3/engine.h>
+#include <knewstuff3/core/feed.h>
+#include <knewstuff3/core/category.h>
 
 #include "ui_DownloadDialog.h"
 
@@ -70,7 +71,7 @@ class DownloadDialog : public KDialog, public Ui::DownloadDialog
     Q_OBJECT
 
 public:
-    DownloadDialog(DxsEngine* engine, QWidget * parent);
+    DownloadDialog(Engine* engine, QWidget * parent);
     ~DownloadDialog();
 
     enum EntryAction {
@@ -152,7 +153,7 @@ private:
     QTimer * messageTimer;
     QTimer * networkTimer;
 
-    DxsEngine *m_engine;
+    Engine *m_engine;
     QMap<QString, QString> categorymap;
     QMap<const Feed*, KNS::ItemsModel*> m_models;
     QSortFilterProxyModel * m_filteredModel;

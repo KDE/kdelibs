@@ -1,5 +1,5 @@
 /*
-    knewstuff2/providerbase.h
+    knewstuff3/provider.h
     This file is part of KNewStuff2.
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
@@ -16,10 +16,10 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_PROVIDER_H
-#define KNEWSTUFF2_PROVIDER_H
+#ifndef KNEWSTUFF3_PROVIDER_H
+#define KNEWSTUFF3_PROVIDER_H
 
-#include "core/entry.h"
+#include "entry.h"
 #include "core/ktranslatable.h"
 
 #include <kurl.h>
@@ -49,18 +49,20 @@ namespace KNS
      *
      * @internal
      */
-    class KNEWSTUFF_EXPORT ProviderBase
+    class KNEWSTUFF_EXPORT Provider: public QObject
     {
+        Q_OBJECT
     public:
+        typedef QList<Provider*> List;
         /**
          * Constructor.
          */
-        ProviderBase();
+        Provider();
 
         /**
          * Destructor.
          */
-        ~ProviderBase();
+        virtual ~Provider();
 
         /**
          * set the provider data xml, to initialize the provider
@@ -125,7 +127,7 @@ namespace KNS
         void ratingSetFailed(Entry *);
 
     protected:
-        class ProviderBasePrivate *d;
+        class ProviderPrivate *d;
     };
 
 }

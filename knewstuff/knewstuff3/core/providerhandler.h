@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF2_PROVIDER_HANDLER_H
 #define KNEWSTUFF2_PROVIDER_HANDLER_H
 
-#include <knewstuff2/core/provider.h>
+#include <knewstuff3/provider.h>
 
 #include <QtXml/qdom.h>
 #include <QtCore/QObject>

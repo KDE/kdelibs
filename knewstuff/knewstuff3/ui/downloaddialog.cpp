@@ -33,13 +33,13 @@
 
 #include <kdebug.h>
 
-#include "knewstuff2/core/provider.h"
-#include "knewstuff2/core/providerhandler.h"
-#include "knewstuff2/core/entry.h"
-#include "knewstuff2/core/entryhandler.h"
-#include "knewstuff2/core/category.h"
+//#include "knewstuff2/core/provider.h"
+#include "knewstuff3/core/providerhandler.h"
+//#include "knewstuff2/core/entry.h"
+#include "knewstuff3/core/entryhandler.h"
+#include "knewstuff3/core/category.h"
 
-#include "knewstuff2/dxs/dxs.h"
+//#include "knewstuff3/dxs/dxs.h"
 
 // local includes
 #include "ui_DownloadDialog.h"
@@ -53,7 +53,7 @@ const char * ConfigGroup = "DownloadDialog Settings";
 
 using namespace KNS;
 
-DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
+DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
         : KDialog(_parent)
 {
     setButtons(0);
@@ -167,25 +167,25 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
 {
     kDebug(551) << "perform action: " << action;
     const Provider * provider = m_providers.contains(entry) ? m_providers[entry] : NULL;
-    Dxs * dxs = m_engine->dxsObject(provider);
+    //Dxs * dxs = m_engine->dxsObject(provider);
     switch (action) {
     case kViewInfo:
-        if (provider && dxs) {
-            if (provider->webService().isValid()) {
-                dxs->call_info();
-            } else {
+        //if (provider && dxs) {
+            //if (provider->webService().isValid()) {
+            //    dxs->call_info();
+            //} else {
                 slotInfo(provider->name().representation(),
                          provider->webAccess().pathOrUrl(),
                          QString());
-            }
-        }
+            //}
+        //}
         break;
     case kComments:
         // show the entry's comments
-        if (provider && dxs) {
-            connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
-            dxs->call_comments(entry->idNumber());
-        }
+        //if (provider && dxs) {
+        //    connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
+        //    dxs->call_comments(entry->idNumber());
+        //}
         break;
     case kChanges:
         // show the entry's changelog
@@ -223,9 +223,9 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         int ret = commentDialog->exec();
         if (ret == QDialog::Accepted) {
             QString s = commentDialog->comment();
-            if (dxs && !s.isEmpty()) {
-                dxs->call_comment(entry->idNumber(), s);
-            }
+            //if (dxs && !s.isEmpty()) {
+            //    dxs->call_comment(entry->idNumber(), s);
+            //}
         }
     }
     break;
@@ -235,9 +235,9 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         int ret = ratingDialog->exec();
         if (ret == QDialog::Accepted) {
             int rating = ratingDialog->rating();
-            if (dxs) {
-                dxs->call_rating(entry->idNumber(), rating);
-            }
+            //if (dxs) {
+            //    dxs->call_rating(entry->idNumber(), rating);
+            //}
         }
     }
     break;

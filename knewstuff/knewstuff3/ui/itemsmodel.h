@@ -1,5 +1,5 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/itemsmodel.h.
     Copyright (C) 2008 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
@@ -16,13 +16,13 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_UI_ITEMSMODEL_H
-#define KNEWSTUFF2_UI_ITEMSMODEL_H
+#ifndef KNEWSTUFF3_UI_ITEMSMODEL_H
+#define KNEWSTUFF3_UI_ITEMSMODEL_H
 
 #include <QAbstractListModel>
 #include <QtGui/QImage>
 
-#include <knewstuff2/core/entry.h>
+#include <knewstuff3/entry.h>
 
 namespace KNS
 {

@@ -1,7 +1,8 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/entry.h.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -16,11 +17,11 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_ENTRY_H
-#define KNEWSTUFF2_ENTRY_H
+#ifndef KNEWSTUFF3_ENTRY_H
+#define KNEWSTUFF3_ENTRY_H
 
-#include <knewstuff2/core/author.h>
-#include <knewstuff2/core/ktranslatable.h>
+#include <knewstuff3/core/author.h>
+#include <knewstuff3/core/ktranslatable.h>
 
 #include <kurl.h>
 

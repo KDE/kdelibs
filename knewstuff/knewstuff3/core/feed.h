@@ -15,11 +15,11 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_FEED_H
-#define KNEWSTUFF2_FEED_H
+#ifndef KNEWSTUFF3_FEED_H
+#define KNEWSTUFF3_FEED_H
 
-#include <knewstuff2/core/ktranslatable.h>
-#include <knewstuff2/core/entry.h>
+#include <knewstuff3/core/ktranslatable.h>
+#include <knewstuff3/entry.h>
 
 #include <kurl.h>
 

@@ -1,7 +1,8 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/provider.cpp
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "providerbase.h"
+#include "provider.h"
 
 #include "core/feed.h"
 
@@ -27,10 +28,10 @@
 namespace KNS
 {
 
-class ProviderBasePrivate
+class ProviderPrivate
 {
 public:
-    ProviderBasePrivate() {}
+    ProviderPrivate() {}
 
     KTranslatable name;
     KUrl icon;
@@ -40,38 +41,40 @@ public:
 
 };
 
-ProviderBase::ProviderBase()
-        : d(new ProviderBasePrivate)
+Provider::Provider()
+        : d(new ProviderPrivate)
 {
 }
 
-ProviderBase::~ProviderBase()
+Provider::~Provider()
 {
     delete d;
 }
 
-void ProviderBase::setProviderData(const QString & xmldata)
+void Provider::setProviderData(const QString & xmldata)
 {
     
 }
 
-KTranslatable ProviderBase::name() const
+KTranslatable Provider::name() const
 {
     return d->name;
 }
 
-KUrl ProviderBase::icon() const
+KUrl Provider::icon() const
 {
     return d->icon;
 }
 
-QStringList ProviderBase::availableFeeds() const
+QStringList Provider::availableFeeds() const
 {
     return d->feeds.keys();
 }
 
-void ProviderBase::loadFeed(const QString & feedname, int page)
+void Provider::loadFeed(const QString & feedname, int page)
 {
 }
 
 }
+
+#include "provider.moc"

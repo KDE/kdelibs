@@ -16,8 +16,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_UI_ITEMSVIEWDELEGATE_H
-#define KNEWSTUFF2_UI_ITEMSVIEWDELEGATE_H
+#ifndef KNEWSTUFF3_UI_ITEMSVIEWDELEGATE_H
+#define KNEWSTUFF3_UI_ITEMSVIEWDELEGATE_H
 
 #include <kwidgetitemdelegate.h>
 
@@ -28,8 +28,8 @@
 #include <QtGui/QLabel>
 #include <QtGui/QToolButton>
 
-#include <knewstuff2/core/entry.h>
-#include <knewstuff2/ui/downloaddialog.h>
+#include <knewstuff3/entry.h>
+#include <knewstuff3/ui/downloaddialog.h>
 
 #include <kicon.h>
 #include <kmenu.h>
