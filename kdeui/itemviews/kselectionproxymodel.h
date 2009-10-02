@@ -262,6 +262,7 @@ public:
   virtual QMimeData* mimeData( const QModelIndexList & indexes ) const;
   virtual QStringList mimeTypes() const;
   virtual Qt::DropActions supportedDropActions() const;
+  virtual bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
   virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
   virtual QModelIndex index(int, int, const QModelIndex& = QModelIndex() ) const;

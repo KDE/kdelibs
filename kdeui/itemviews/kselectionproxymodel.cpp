@@ -1446,4 +1446,28 @@ QItemSelectionModel *KSelectionProxyModel::selectionModel() const
   return d->m_selectionModel;
 }
 
+bool KSelectionProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+{
+  if ((row == -1) && (column == -1))
+    return sourceModel()->dropMimeData(data, action, -1, -1, mapToSource(parent));
+
+  int source_destination_row = -1;
+  int source_destination_column = -1;
+  QModelIndex source_parent;
+
+  if (row == rowCount(parent)) {
+    source_parent = mapToSource(parent);
+    source_destination_row = sourceModel()->rowCount(source_parent);
+  } else {
+    QModelIndex proxy_index = index(row, column, parent);
+    QModelIndex source_index = mapToSource(proxy_index);
+    source_destination_row = source_index.row();
+    source_destination_column = source_index.column();
+    source_parent = source_index.parent();
+  }
+  return sourceModel()->dropMimeData(data, action, source_destination_row,
+                                source_destination_column, source_parent);
+}
+
+
 #include "moc_kselectionproxymodel.cpp"
