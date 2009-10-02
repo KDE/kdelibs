@@ -40,9 +40,6 @@
 #include <QMutexLocker>
 #include <QtCore/QBool>
 
-#ifdef __GNUC__
-#warning used non public api for now
-#endif
 extern bool kde_kiosk_exception;
 
 
