@@ -61,7 +61,7 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qstring_qstring("") == "" )
 		self.assert_( self.object1.func_qstring_qstring(" ") == " " )
 		self.assert_( self.object1.func_qstring_qstring(" Another \n\r Test!   $%&\" ") == " Another \n\r Test!   $%&\" " )
-
+		self.assert_( self.object1.func_qstring_qstring("áêïòñα") == "áêïòñα" )
 		self.assert_( self.object1.func_qstring_qstring(unicode("abcdef")) == "abcdef" )
 		self.assert_( self.object1.func_qstring_qstring(u"\u03B1") == u"\u03B1".encode('utf8') )
 
