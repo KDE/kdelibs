@@ -256,9 +256,10 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
+#if QT_VERSION >= 0x040600
   Q_Q(KSelectionProxyModel);
-  // TODO: Uncomment for Qt 4.6
-//   q->beginResetModel();
+  q->beginResetModel();
+#endif
 }
 
 void KSelectionProxyModelPrivate::sourceModelReset()
@@ -268,9 +269,11 @@ void KSelectionProxyModelPrivate::sourceModelReset()
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
   m_rootIndexList.clear();
-  // TODO: Uncomment for Qt 4.6
-//   q->endResetModel();
+#if QT_VERSION >= 0x040600
+  q->endResetModel();
+#else
   q->reset();
+#endif
 }
 
 QPair<int, int> KSelectionProxyModelPrivate::getRootRange(const QModelIndex &sourceParent, int start, int end) const
@@ -530,7 +533,6 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
-
   Q_Q(KSelectionProxyModel);
 
   if (isInModel(srcParent))
@@ -538,8 +540,9 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
     if (isInModel(destParent))
     {
       // The easy case.
-      // TODO: Uncomment for Qt 4.6
-//       q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
+#if QT_VERSION >= 0x040600
+      q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
+#endif
       return;
     }
   }
@@ -548,14 +551,18 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
 void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
   Q_Q(KSelectionProxyModel);
+  Q_UNUSED(srcStart);
+  Q_UNUSED(srcEnd);
+  Q_UNUSED(destRow);
 
   if (isInModel(srcParent))
   {
     if (isInModel(destParent))
     {
       // The easy case.
-      // TODO: Uncomment for Qt 4.6
-//       q->endMoveRows();
+#if QT_VERSION >= 0x040600
+      q->endMoveRows();
+#endif
       return;
     }
   }
@@ -937,6 +944,7 @@ QList<QPair<QModelIndex, QModelIndexList> > KSelectionProxyModelPrivate::regroup
   QList<QPair<QModelIndex, QModelIndexList> > groups;
 
   // TODO: implement me.
+  Q_UNUSED(list);
 //   foreach (const QModelIndex idx, list)
 //   {
 //
