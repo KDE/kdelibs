@@ -44,17 +44,17 @@ public:
 
   QList<QAbstractProxyModel *> m_proxyChain;
 
-  void sourceRowsAboutToBeInserted(const QModelIndex &, int start, int end);
-  void sourceRowsInserted(const QModelIndex &, int start, int end);
-  void sourceRowsAboutToBeRemoved(const QModelIndex &, int start, int end);
-  void sourceRowsRemoved(const QModelIndex &, int start, int end);
+  void sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
+  void sourceRowsInserted(const QModelIndex &parent, int start, int end);
+  void sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end);
+  void sourceRowsRemoved(const QModelIndex &parent, int start, int end);
   void sourceRowsAboutToBeMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int destRow);
   void sourceRowsMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int destRow);
   void sourceModelAboutToBeReset();
   void sourceModelReset();
   void sourceLayoutAboutToBeChanged();
   void sourceLayoutChanged();
-  void sourceDataChanged(const QModelIndex &,const QModelIndex &);
+  void sourceDataChanged(const QModelIndex &topLeft ,const QModelIndex &bottomRight);
 
   void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected );
 
