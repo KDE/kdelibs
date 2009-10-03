@@ -563,10 +563,6 @@ public:
      */
     virtual void del( const KUrl &url, bool isfile);
 
-    // TODO KDE4: use setLinkDest for kio_file but also kio_remote (#97129)
-    // For kio_file it's the same as del+symlink, but for kio_remote it allows
-    // to keep the icon etc.
-
     /**
      * Change the destination of a symlink
      * @param url the url of the symlink to modify
