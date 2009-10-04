@@ -215,10 +215,10 @@ void AccessManagerReply::jobDone(KJob *kJob)
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, errorString());
-            setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
             kDebug() << errcode;
     }
 
+    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
     emit finished();
 }
 
