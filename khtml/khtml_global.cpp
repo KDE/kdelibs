@@ -244,16 +244,18 @@ KHTMLSettings *KHTMLGlobal::defaultHTMLSettings()
 
 void KHTMLGlobal::finalCheck()
 {
-    //kDebug(6000) << "s_refcnt=" << s_refcnt;
+#ifndef NDEBUG
     if (s_refcnt) {
         if (s_parts && !s_parts->isEmpty()) {
-            kWarning(6000) << s_parts->count() << "parts not deleted";
-            kWarning(6000) << "Part" << s_parts->first() << "wasn't deleted";
+            Q_FOREACH(KHTMLPart *part, *s_parts) {
+                kWarning(6000) << "Part" << part->url() << "was not deleted";
+            }
         }
         if (s_docs && !s_docs->isEmpty()) {
-            kWarning(6000) << s_docs->count() << "docs not deleted";
-            kWarning(6000) << "Document" << s_docs->first() << "wasn't deleted";
+            Q_FOREACH(DOM::DocumentImpl *doc, *s_docs) {
+                kWarning(6000) << "Document" << doc->URL() << "was not deleted";
+            }
         }
     }
-    //assert( !s_refcnt );
+#endif
 }
