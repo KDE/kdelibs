@@ -1,5 +1,5 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/uploaddialog.h.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (C) 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2009 Jeremy Whiting <jpwhiting@kde.org>
@@ -17,12 +17,12 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_UI_UPLOADDIALOG_H
-#define KNEWSTUFF2_UI_UPLOADDIALOG_H
+#ifndef KNEWSTUFF3_UI_UPLOADDIALOG_H
+#define KNEWSTUFF3_UI_UPLOADDIALOG_H
 
 #include <kdialog.h>
 #include <kurl.h>
-#include <knewstuff2/knewstuff_export.h>
+#include <knewstuff3/knewstuff_export.h>
 
 #include "ui_UploadDialog.h"
 

@@ -1,7 +1,7 @@
 /*
-    This file is part of KNewStuff2.
-    Copyright (c) 2008-2009 Jeremy Whiting <jpwhiting@kde.org>
+    knewstuff3/client.h.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2008-2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ class ClientPrivate;
  * performed by the engine. Depending on the providers, traditional
  * GHNS, DXS, or OpenDesktopServices are used transparently.
  * This class is the one which applications should use.
- * In most cases, either \ref upload() or \ref download() will be called by the
+ * In most cases, either \ref uploadDialog() or \ref downloadDialog() will be called by the
  * application to upload or download data.
  */
 class KNEWSTUFF_EXPORT Client: public QObject
@@ -53,6 +53,15 @@ public:
      *
      */
     ~Client();
+
+	/**
+	 * @brief initialize the client (and it's underlying engine) based on the given configfile name
+	 
+	 * Initialize the engine by reading the given config file, creates an engine internally. 
+	 * Initializes any providers found therein, loads any cache if caching is enabled, reads the
+	 * list of installed entries from kconfig.
+	 */
+	bool init(const QString& config);
 
     /**
      * @brief Synchronous way of starting the download workflow.
@@ -145,8 +154,6 @@ public:
      * @see uploadDialogModal()
      */
     void uploadDialog(const QString& file);
-
-    bool init(const QString& config);
 
 private:
 

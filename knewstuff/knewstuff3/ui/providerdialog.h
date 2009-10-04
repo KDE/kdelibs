@@ -15,10 +15,10 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_UI_PROVIDERDIALOG_H
-#define KNEWSTUFF2_UI_PROVIDERDIALOG_H
+#ifndef KNEWSTUFF3_UI_PROVIDERDIALOG_H
+#define KNEWSTUFF3_UI_PROVIDERDIALOG_H
 
-#include <knewstuff2/knewstuff_export.h>
+#include <knewstuff3/knewstuff_export.h>
 
 #include <kdialog.h>
 

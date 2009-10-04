@@ -56,8 +56,6 @@ public:
         kSummary,
         /** a string of the version e.g. "v1.0 alpha" */
         kVersion,
-        /** the release number */
-        kRelease,
         /** the release date */
         kReleaseDate,
         /** the payload */

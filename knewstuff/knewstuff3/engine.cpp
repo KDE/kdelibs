@@ -24,8 +24,9 @@
 //#include "providerhandler.h"
 //#include "entryloader.h"
 //#include "providerloader.h"
-//#include "installation.h"
-//#include "security.h"
+#include "knewstuff3/core/installation.h"
+#include "knewstuff3/core/feed.h"
+#include "knewstuff3/core/security.h"
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -57,7 +58,7 @@ using namespace KNS;
 
 Engine::Engine(QObject* parent)
         : QObject(parent), m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
-        m_initialized(false), m_cachepolicy(CacheNever), m_automationpolicy(AutomationOn)
+        m_initialized(false), m_cachepolicy(CacheNever)
 {
 }
 
@@ -193,49 +194,49 @@ QString Engine::componentName() const
     return m_componentname;
 }
 
-void Engine::start()
-{
-    //kDebug() << "starting engine";
+//void Engine::start()
+//{
+//    //kDebug() << "starting engine";
 
-    if (!m_initialized) {
-        kError() << "Must call KNS::Engine::init() first." << endl;
-        return;
-    }
+//    if (!m_initialized) {
+//        kError() << "Must call KNS::Engine::init() first." << endl;
+//        return;
+//    }
 
-    // first load the registry, so we know which entries are installed
-    loadRegistry();
+//    // first load the registry, so we know which entries are installed
+//    loadRegistry();
 
-    // then load the providersCache if caching is enabled
-    if (m_cachepolicy != CacheNever) {
-        loadProvidersCache();
-    }
+//    // then load the providersCache if caching is enabled
+//    if (m_cachepolicy != CacheNever) {
+//        loadProvidersCache();
+//    }
 
-    // FIXME: also return if CacheResident and its conditions fulfilled
-    if (m_cachepolicy == CacheOnly) {
-        //emit signalEntriesFinished();
-        return;
-    }
+//    // FIXME: also return if CacheResident and its conditions fulfilled
+//    if (m_cachepolicy == CacheOnly) {
+//        //emit signalEntriesFinished();
+//        return;
+//    }
 
-    ProviderLoader *provider_loader = new ProviderLoader(this);
+//    //ProviderLoader *provider_loader = new ProviderLoader(this);
 
-    // make connections before loading, just in case the iojob is very fast
-    connect(provider_loader,
-            SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
-            SLOT(slotProvidersLoaded(KNS::Provider::List)));
-    connect(provider_loader,
-            SIGNAL(signalProvidersFailed()),
-            SLOT(slotProvidersFailed()));
+//    //// make connections before loading, just in case the iojob is very fast
+//    //connect(provider_loader,
+//    //        SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
+//    //        SLOT(slotProvidersLoaded(KNS::Provider::List)));
+//    //connect(provider_loader,
+//    //        SIGNAL(signalProvidersFailed()),
+//    //        SLOT(slotProvidersFailed()));
 
-    provider_loader->load(m_providersurl);
-}
+//    //provider_loader->load(m_providersurl);
+//}
 
-void Engine::loadEntries(Provider *provider)
-{
-    //kDebug() << "loading entries";
+//void Engine::loadEntries(Provider *provider)
+//{
+//    //kDebug() << "loading entries";
 
-    if (m_cachepolicy == CacheOnly) {
-        return;
-    }
+//    if (m_cachepolicy == CacheOnly) {
+//        return;
+//    }
 
     //if (provider != m_provider_index[pid(provider)]) {
     //    // this is the cached provider, and a new provider has been loaded from the internet
@@ -244,59 +245,59 @@ void Engine::loadEntries(Provider *provider)
     //    return;
     //}
 
-    QStringList feeds = provider->feeds();
-    for (int i = 0; i < feeds.count(); i++) {
-        Feed *feed = provider->downloadUrlFeed(feeds.at(i));
-        if (feed) {
-            ++m_activefeeds;
+    //QStringList feeds = provider->availableFeeds();
+    //for (int i = 0; i < feeds.count(); i++) {
+    //    Feed *feed = provider->downloadUrlFeed(feeds.at(i));
+    //    if (feed) {
+    //        ++m_activefeeds;
 
-            EntryLoader *entry_loader = new EntryLoader(this);
+    //        EntryLoader *entry_loader = new EntryLoader(this);
 
-            connect(entry_loader,
-                    SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
-                    SLOT(slotEntriesLoaded(KNS::Entry::List)));
-            connect(entry_loader,
-                    SIGNAL(signalEntriesFailed()),
-                    SLOT(slotEntriesFailed()));
-            connect(entry_loader,
-                    SIGNAL(signalProgress(KJob*, unsigned long)),
-                    SLOT(slotProgress(KJob*, unsigned long)));
+    //        connect(entry_loader,
+    //                SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
+    //                SLOT(slotEntriesLoaded(KNS::Entry::List)));
+    //        connect(entry_loader,
+    //                SIGNAL(signalEntriesFailed()),
+    //                SLOT(slotEntriesFailed()));
+    //        connect(entry_loader,
+    //                SIGNAL(signalProgress(KJob*, unsigned long)),
+    //                SLOT(slotProgress(KJob*, unsigned long)));
 
-            entry_loader->load(provider, feed);
-        }
-    }
-}
+    //        entry_loader->load(provider, feed);
+    //    }
+    //}
+//}
 
-void Engine::downloadPreview(Entry *entry)
-{
-    if (m_previewfiles.contains(entry)) {
-        // FIXME: ensure somewhere else that preview file even exists
-        //kDebug() << "Reusing preview from '" << m_previewfiles[entry] << "'";
-        emit signalPreviewLoaded(KUrl::fromPath(m_previewfiles[entry]));
-        return;
-    }
+//void Engine::downloadPreview(Entry *entry)
+//{
+//    if (m_previewfiles.contains(entry)) {
+//        // FIXME: ensure somewhere else that preview file even exists
+//        //kDebug() << "Reusing preview from '" << m_previewfiles[entry] << "'";
+//        emit signalPreviewLoaded(KUrl::fromPath(m_previewfiles[entry]));
+//        return;
+//    }
 
-    KUrl source = KUrl(entry->preview().representation());
+//    KUrl source = KUrl(entry->preview().representation());
 
-    if (!source.isValid()) {
-        kError() << "The entry doesn't have a preview." << endl;
-        return;
-    }
+//    if (!source.isValid()) {
+//        kError() << "The entry doesn't have a preview." << endl;
+//        return;
+//    }
 
-    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
-    //kDebug() << "Downloading preview '" << source << "' to '" << destination << "'";
+//    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
+//    //kDebug() << "Downloading preview '" << source << "' to '" << destination << "'";
 
-    // FIXME: check for validity
-    KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    connect(job,
-            SIGNAL(result(KJob*)),
-            SLOT(slotPreviewResult(KJob*)));
-    connect(job,
-            SIGNAL(progress(KJob*, unsigned long)),
-            SLOT(slotProgress(KJob*, unsigned long)));
+//    // FIXME: check for validity
+//    KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
+//    connect(job,
+//            SIGNAL(result(KJob*)),
+//            SLOT(slotPreviewResult(KJob*)));
+//    connect(job,
+//            SIGNAL(progress(KJob*, unsigned long)),
+//            SLOT(slotProgress(KJob*, unsigned long)));
 
-    m_entry_jobs[job] = entry;
-}
+//    m_entry_jobs[job] = entry;
+//}
 
 void Engine::downloadPayload(Entry *entry)
 {
@@ -342,31 +343,31 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
 {
     //kDebug() << "Uploading " << entry->name().representation() << "...";
 
-    if (m_uploadedentry) {
-        kError() << "Another upload is in progress!" << endl;
-        return false;
-    }
+    //if (m_uploadedentry) {
+    //    kError() << "Another upload is in progress!" << endl;
+    //    return false;
+    //}
 
-    if (!provider->uploadUrl().isValid()) {
-        kError() << "The provider doesn't support uploads." << endl;
-        return false;
+    //if (!provider->uploadUrl().isValid()) {
+    //    kError() << "The provider doesn't support uploads." << endl;
+    //    return false;
 
-        // FIXME: support for <noupload> will go here (file bundle creation etc.)
-    }
+    //    // FIXME: support for <noupload> will go here (file bundle creation etc.)
+    //}
 
-    // FIXME: validate files etc.
-    m_uploadprovider = provider;
-    m_uploadedentry = entry;
+    //// FIXME: validate files etc.
+    //m_uploadprovider = provider;
+    //m_uploadedentry = entry;
 
-    KUrl sourcepayload = KUrl(entry->payload().representation());
-    KUrl destfolder = provider->uploadUrl();
+    //KUrl sourcepayload = KUrl(entry->payload().representation());
+    //KUrl destfolder = provider->uploadUrl();
 
-    destfolder.setFileName(sourcepayload.fileName());
+    //destfolder.setFileName(sourcepayload.fileName());
 
-    KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    connect(fcjob,
-            SIGNAL(result(KJob*)),
-            SLOT(slotUploadPayloadResult(KJob*)));
+    //KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
+    //connect(fcjob,
+    //        SIGNAL(result(KJob*)),
+    //        SLOT(slotUploadPayloadResult(KJob*)));
 
     return true;
 }
@@ -374,45 +375,45 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
 void Engine::slotProvidersLoaded(KNS::Provider::List list)
 {
     // note: this is only called from loading the online providers
-    ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
-    delete loader;
+    //ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
+    //delete loader;
 
-    mergeProviders(list);
+    //mergeProviders(list);
 }
 
 void Engine::slotProvidersFailed()
 {
-    kDebug() << "slotProvidersFailed";
-    ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
-    delete loader;
+    //kDebug() << "slotProvidersFailed";
+    //ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
+    //delete loader;
 
     emit signalProvidersFailed();
 }
 
 void Engine::slotEntriesLoaded(KNS::Entry::List list)
 {
-    EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
-    if (!loader) return;
-    const Provider *provider = loader->provider();
-    Feed *feed = loader->feed();
-    delete loader;
-    m_activefeeds--;
+    //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
+    //if (!loader) return;
+    //const Provider *provider = loader->provider();
+    //Feed *feed = loader->feed();
+    //delete loader;
+    //m_activefeeds--;
     //kDebug() << "entriesloaded m_activefeeds: " << m_activefeeds;
 
     //kDebug() << "Provider source " << provider->name().representation();
     //kDebug() << "Feed source " << feed->name().representation();
     //kDebug() << "Feed data: " << feed;
 
-    mergeEntries(list, feed, provider);
+    //mergeEntries(list, feed, provider);
 }
 
 void Engine::slotEntriesFailed()
 {
-    EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
-    delete loader;
-    m_activefeeds--;
+    //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
+    //delete loader;
+    //m_activefeeds--;
 
-    emit signalEntriesFailed();
+    //emit signalEntriesFailed();
 }
 
 void Engine::slotProgress(KJob *job, unsigned long percent)
@@ -480,81 +481,81 @@ void Engine::slotPreviewResult(KJob *job)
 
 void Engine::slotUploadPayloadResult(KJob *job)
 {
-    if (job->error()) {
-        kError() << "Cannot upload payload file." << endl;
-        kError() << job->errorString() << endl;
+    //if (job->error()) {
+    //    kError() << "Cannot upload payload file." << endl;
+    //    kError() << job->errorString() << endl;
 
-        m_uploadedentry = NULL;
-        m_uploadprovider = NULL;
+    //    m_uploadedentry = NULL;
+    //    m_uploadprovider = NULL;
 
-        emit signalEntryFailed();
-        return;
-    }
+    //    emit signalEntryFailed();
+    //    return;
+    //}
 
-    if (m_uploadedentry->preview().representation().isEmpty()) {
-        // FIXME: we abuse 'job' here for the shortcut if there's no preview
-        slotUploadPreviewResult(job);
-        return;
-    }
+    //if (m_uploadedentry->preview().representation().isEmpty()) {
+    //    // FIXME: we abuse 'job' here for the shortcut if there's no preview
+    //    slotUploadPreviewResult(job);
+    //    return;
+    //}
 
-    KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
-    KUrl destfolder = m_uploadprovider->uploadUrl();
+    //KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
+    //KUrl destfolder = m_uploadprovider->uploadUrl();
 
-    destfolder.setFileName(sourcepreview.fileName());
+    //destfolder.setFileName(sourcepreview.fileName());
 
-    KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    connect(fcjob,
-            SIGNAL(result(KJob*)),
-            SLOT(slotUploadPreviewResult(KJob*)));
+    //KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
+    //connect(fcjob,
+    //        SIGNAL(result(KJob*)),
+    //        SLOT(slotUploadPreviewResult(KJob*)));
 }
 
 void Engine::slotUploadPreviewResult(KJob *job)
 {
-    if (job->error()) {
-        kError() << "Cannot upload preview file." << endl;
-        kError() << job->errorString() << endl;
+    //if (job->error()) {
+    //    kError() << "Cannot upload preview file." << endl;
+    //    kError() << job->errorString() << endl;
 
-        m_uploadedentry = NULL;
-        m_uploadprovider = NULL;
+    //    m_uploadedentry = NULL;
+    //    m_uploadprovider = NULL;
 
-        emit signalEntryFailed();
-        return;
-    }
+    //    emit signalEntryFailed();
+    //    return;
+    //}
 
-    // FIXME: the following save code is also in cacheEntry()
-    // when we upload, the entry should probably be cached!
+    //// FIXME: the following save code is also in cacheEntry()
+    //// when we upload, the entry should probably be cached!
 
-    // FIXME: adhere to meta naming rules as discussed
-    KUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
-    KUrl destfolder = m_uploadprovider->uploadUrl();
+    //// FIXME: adhere to meta naming rules as discussed
+    //KUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
+    //KUrl destfolder = m_uploadprovider->uploadUrl();
 
-    destfolder.setFileName(sourcemeta.fileName());
+    //destfolder.setFileName(sourcemeta.fileName());
 
-    EntryHandler eh(*m_uploadedentry);
-    QDomElement exml = eh.entryXML();
+    //EntryHandler eh(*m_uploadedentry);
+    //QDomElement exml = eh.entryXML();
 
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnsupload");
-    root.appendChild(exml);
+    //QDomDocument doc;
+    //QDomElement root = doc.createElement("ghnsupload");
+    //root.appendChild(exml);
 
-    QFile f(sourcemeta.path());
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kError() << "Cannot write meta information to '" << sourcemeta << "'." << endl;
+    //QFile f(sourcemeta.path());
+    //if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    //    kError() << "Cannot write meta information to '" << sourcemeta << "'." << endl;
 
-        m_uploadedentry = NULL;
-        m_uploadprovider = NULL;
+    //    m_uploadedentry = NULL;
+    //    m_uploadprovider = NULL;
 
-        emit signalEntryFailed();
-        return;
-    }
-    QTextStream metastream(&f);
-    metastream << root;
-    f.close();
+    //    emit signalEntryFailed();
+    //    return;
+    //}
+    //QTextStream metastream(&f);
+    //metastream << root;
+    //f.close();
 
-    KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    connect(fcjob,
-            SIGNAL(result(KJob*)),
-            SLOT(slotUploadMetaResult(KJob*)));
+    //KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
+    //connect(fcjob,
+    //        SIGNAL(result(KJob*)),
+    //        SLOT(slotUploadMetaResult(KJob*)));
 }
 
 void Engine::slotUploadMetaResult(KJob *job)
@@ -637,13 +638,13 @@ void Engine::loadRegistry()
                 continue;
             }
 
-            EntryHandler handler(stuff);
-            if (!handler.isValid()) {
-                kWarning() << "Invalid GHNS installation metadata.";
-                continue;
-            }
+			Entry * e = new Entry;
+			e->setEntryData(stuff);
+            //if (!e->isValid()) {
+            //    kWarning() << "Invalid GHNS installation metadata.";
+            //    continue;
+            //}
 
-            Entry *e = handler.entryptr();
             e->setStatus(Entry::Installed);
             e->setSource(Entry::Registry);
             m_entry_registry.insert(id(e), e);
@@ -712,26 +713,26 @@ void Engine::loadProvidersCache()
 
     // handle each provider
     while (!provider.isNull()) {
-        ProviderHandler handler(provider);
-        if (!handler.isValid()) {
-            kWarning() << "Invalid provider metadata.";
-            continue;
-        }
-
-        Provider *p = handler.providerptr();
-        m_provider_cache.append(p);
-        m_provider_index[pid(p)] = p;
-
-        emit signalProviderLoaded(p);
-
-        loadFeedCache(p);
-
-        // no longer needed because EnginePrivate::slotProviderLoaded calls loadEntries
-        //if (m_automationpolicy == AutomationOn) {
-        //    loadEntries(p);
+        //ProviderHandler handler(provider);
+        //if (!handler.isValid()) {
+        //    kWarning() << "Invalid provider metadata.";
+        //    continue;
         //}
 
-        provider = provider.nextSiblingElement("provider");
+        //Provider *p = handler.providerptr();
+        //m_provider_cache.append(p);
+        //m_provider_index[pid(p)] = p;
+
+        //emit signalProviderLoaded(p);
+
+        //loadFeedCache(p);
+
+        //// no longer needed because EnginePrivate::slotProviderLoaded calls loadEntries
+        ////if (m_automationpolicy == AutomationOn) {
+        ////    loadEntries(p);
+        ////}
+
+        //provider = provider.nextSiblingElement("provider");
     }
 
     if (m_cachepolicy == CacheOnly) {
@@ -761,69 +762,69 @@ void Engine::loadFeedCache(Provider *provider)
 
     kDebug() << "Load from directory: " + cachedir;
 
-    QStringList feeds = provider->feeds();
+    QStringList feeds = provider->availableFeeds();
     for (int i = 0; i < feeds.count(); i++) {
-        Feed *feed = provider->downloadUrlFeed(feeds.at(i));
-        QString feedname = feeds.at(i);
+        //Feed *feed = provider->downloadUrlFeed(feeds.at(i));
+        //QString feedname = feeds.at(i);
 
-        QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
-        QString cachefile = cachedir + '/' + idbase64 + ".xml";
+        //QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
+        //QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
-        kDebug() << "  + Load from file: " + cachefile;
+        //kDebug() << "  + Load from file: " + cachefile;
 
-        bool ret;
-        QFile f(cachefile);
-        ret = f.open(QIODevice::ReadOnly);
-        if (!ret) {
-            kWarning() << "The file could not be opened.";
-            return;
-        }
+        //bool ret;
+        //QFile f(cachefile);
+        //ret = f.open(QIODevice::ReadOnly);
+        //if (!ret) {
+        //    kWarning() << "The file could not be opened.";
+        //    return;
+        //}
 
-        QDomDocument doc;
-        ret = doc.setContent(&f);
-        if (!ret) {
-            kWarning() << "The file could not be parsed.";
-            return;
-        }
+        //QDomDocument doc;
+        //ret = doc.setContent(&f);
+        //if (!ret) {
+        //    kWarning() << "The file could not be parsed.";
+        //    return;
+        //}
 
-        QDomElement root = doc.documentElement();
-        if (root.tagName() != "ghnsfeeds") {
-            kWarning() << "The file doesn't seem to be of interest.";
-            return;
-        }
+        //QDomElement root = doc.documentElement();
+        //if (root.tagName() != "ghnsfeeds") {
+        //    kWarning() << "The file doesn't seem to be of interest.";
+        //    return;
+        //}
 
-        QDomElement entryel = root.firstChildElement("entry-id");
-        if (entryel.isNull()) {
-            kWarning() << "Missing entries in the cache.";
-            return;
-        }
+        //QDomElement entryel = root.firstChildElement("entry-id");
+        //if (entryel.isNull()) {
+        //    kWarning() << "Missing entries in the cache.";
+        //    return;
+        //}
 
-        while (!entryel.isNull()) {
-            QString idbase64 = entryel.text();
-            //kDebug() << "loading cache for entry: " << QByteArray::fromBase64(idbase64.toUtf8());
+        //while (!entryel.isNull()) {
+        //    QString idbase64 = entryel.text();
+        //    //kDebug() << "loading cache for entry: " << QByteArray::fromBase64(idbase64.toUtf8());
 
-            QString filepath = entrycachedir + '/' + idbase64 + ".meta";
+        //    QString filepath = entrycachedir + '/' + idbase64 + ".meta";
 
-            //kDebug() << "from file '" + filepath + "'.";
+        //    //kDebug() << "from file '" + filepath + "'.";
 
-            // FIXME: pass feed and make loadEntryCache return void for consistency?
-            Entry *entry = loadEntryCache(filepath);
-            if (entry) {
-                QString entryid = id(entry);
+        //    // FIXME: pass feed and make loadEntryCache return void for consistency?
+        //    Entry *entry = loadEntryCache(filepath);
+        //    if (entry) {
+        //        QString entryid = id(entry);
 
-                if (m_entry_registry.contains(entryid)) {
-                    Entry * registryEntry = m_entry_registry.value(entryid);
-                    entry->setStatus(registryEntry->status());
-                    entry->setInstalledFiles(registryEntry->installedFiles());
-                }
+        //        if (m_entry_registry.contains(entryid)) {
+        //            Entry * registryEntry = m_entry_registry.value(entryid);
+        //            entry->setStatus(registryEntry->status());
+        //            entry->setInstalledFiles(registryEntry->installedFiles());
+        //        }
 
-                feed->addEntry(entry);
-                //kDebug() << "entry " << entry->name().representation() << " loaded from cache";
-                emit signalEntryLoaded(entry, feed, provider);
-            }
+        //        feed->addEntry(entry);
+        //        //kDebug() << "entry " << entry->name().representation() << " loaded from cache";
+        //        emit signalEntryLoaded(entry, feed, provider);
+        //    }
 
-            entryel = entryel.nextSiblingElement("entry-id");
-        }
+        //    entryel = entryel.nextSiblingElement("entry-id");
+        //}
     }
 }
 
@@ -856,13 +857,13 @@ KNS::Entry *Engine::loadEntryCache(const QString& filepath)
         return NULL;
     }
 
-    EntryHandler handler(stuff);
-    if (!handler.isValid()) {
-        kWarning() << "Invalid GHNS installation metadata.";
-        return NULL;
-    }
+    Entry *e = new Entry;
+	e->setEntryData(stuff);
+    //if (!handler.isValid()) {
+    //    kWarning() << "Invalid GHNS installation metadata.";
+    //    return NULL;
+    //}
 
-    Entry *e = handler.entryptr();
     e->setStatus(Entry::Downloadable);
     m_entry_cache.append(e);
     m_entry_index[id(e)] = e;
@@ -940,17 +941,17 @@ bool Engine::providerCached(Provider *provider)
 
 bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
 {
-    QStringList oldfeeds = oldprovider->feeds();
-    QStringList feeds = provider->feeds();
+    QStringList oldfeeds = oldprovider->availableFeeds();
+    QStringList feeds = provider->availableFeeds();
     if (oldfeeds.count() != feeds.count())
         return true;
     for (int i = 0; i < feeds.count(); i++) {
-        Feed *oldfeed = oldprovider->downloadUrlFeed(feeds.at(i));
-        Feed *feed = provider->downloadUrlFeed(feeds.at(i));
-        if (!oldfeed)
-            return true;
-        if (feed->feedUrl() != oldfeed->feedUrl())
-            return true;
+        //Feed *oldfeed = oldprovider->downloadUrlFeed(feeds.at(i));
+        //Feed *feed = provider->downloadUrlFeed(feeds.at(i));
+        //if (!oldfeed)
+        //    return true;
+        //if (feed->feedUrl() != oldfeed->feedUrl())
+        //    return true;
     }
     return false;
 }
@@ -1028,107 +1029,106 @@ bool Engine::entryChanged(Entry *oldentry, Entry *entry)
 {
     // possibly return true if the status changed? depends on when this is called
     if ((!oldentry) || (entry->releaseDate() > oldentry->releaseDate())
-            || (entry->version() > oldentry->version())
-            || (entry->release() > oldentry->release()))
+            || (entry->version() > oldentry->version()))
         return true;
     return false;
 }
 
-void Engine::mergeEntries(Entry::List entries, Feed *feed, const Provider *provider)
-{
-    for (Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
-        // TODO: find entry in entrycache, replace if needed
-        // don't forget marking as 'updateable'
-        Entry *e = (*it);
-        QString thisId = id(e);
-        // set it to Installed if it's in the registry
+//void Engine::mergeEntries(Entry::List entries, Feed *feed, const Provider *provider)
+//{
+//    for (Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
+//        // TODO: find entry in entrycache, replace if needed
+//        // don't forget marking as 'updateable'
+//        Entry *e = (*it);
+//        QString thisId = id(e);
+//        // set it to Installed if it's in the registry
 
-        if (m_entry_registry.contains(thisId)) {
-            // see if the one online is newer (higher version, release, or release date)
-            Entry *registryentry = m_entry_registry[thisId];
-            e->setInstalledFiles(registryentry->installedFiles());
+//        if (m_entry_registry.contains(thisId)) {
+//            // see if the one online is newer (higher version, release, or release date)
+//            Entry *registryentry = m_entry_registry[thisId];
+//            e->setInstalledFiles(registryentry->installedFiles());
 
-            if (entryChanged(registryentry, e)) {
-                e->setStatus(Entry::Updateable);
-                emit signalEntryChanged(e);
-            } else {
-                // it hasn't changed, so set the status to that of the registry entry
-                e->setStatus(registryentry->status());
-            }
+//            if (entryChanged(registryentry, e)) {
+//                e->setStatus(Entry::Updateable);
+//                emit signalEntryChanged(e);
+//            } else {
+//                // it hasn't changed, so set the status to that of the registry entry
+//                e->setStatus(registryentry->status());
+//            }
 
-            if (entryCached(e)) {
-                // in the registry and the cache, so take the cached one out
-                Entry * cachedentry = m_entry_index[thisId];
-                if (entryChanged(cachedentry, e)) {
-                    //kDebug() << "CACHE: update entry";
-                    cachedentry->setStatus(Entry::Updateable);
-                    // entry has changed
-                    if (m_cachepolicy != CacheNever) {
-                        cacheEntry(e);
-                    }
-                    emit signalEntryChanged(e);
-                }
+//            if (entryCached(e)) {
+//                // in the registry and the cache, so take the cached one out
+//                Entry * cachedentry = m_entry_index[thisId];
+//                if (entryChanged(cachedentry, e)) {
+//                    //kDebug() << "CACHE: update entry";
+//                    cachedentry->setStatus(Entry::Updateable);
+//                    // entry has changed
+//                    if (m_cachepolicy != CacheNever) {
+//                        cacheEntry(e);
+//                    }
+//                    emit signalEntryChanged(e);
+//                }
 
-                // take cachedentry out of the feed
-                feed->removeEntry(cachedentry);
-                //emit signalEntryRemoved(cachedentry, feed);
-            } else {
-                emit signalEntryLoaded(e, feed, provider);
-            }
+//                // take cachedentry out of the feed
+//                feed->removeEntry(cachedentry);
+//                //emit signalEntryRemoved(cachedentry, feed);
+//            } else {
+//                emit signalEntryLoaded(e, feed, provider);
+//            }
 
-        } else {
-            e->setStatus(Entry::Downloadable);
+//        } else {
+//            e->setStatus(Entry::Downloadable);
 
-            if (entryCached(e)) {
-                //kDebug() << "CACHE: hit entry " << e->name().representation();
-                // FIXME: separate version updates from server-side translation updates?
-                Entry *cachedentry = m_entry_index[thisId];
-                if (entryChanged(cachedentry, e)) {
-                    //kDebug() << "CACHE: update entry";
-                    e->setStatus(Entry::Updateable);
-                    // entry has changed
-                    if (m_cachepolicy != CacheNever) {
-                        cacheEntry(e);
-                    }
-                    emit signalEntryChanged(e);
-                    // FIXME: cachedentry can now be deleted, but it's still in the list!
-                    // FIXME: better: assigne all values to 'e', keeps refs intact
-                }
-                // take cachedentry out of the feed
-                feed->removeEntry(cachedentry);
-                //emit signalEntryRemoved(cachedentry, feed);
-            } else {
-                if (m_cachepolicy != CacheNever) {
-                    //kDebug() << "CACHE: miss entry " << e->name().representation();
-                    cacheEntry(e);
-                }
-                emit signalEntryLoaded(e, feed, provider);
-            }
+//            if (entryCached(e)) {
+//                //kDebug() << "CACHE: hit entry " << e->name().representation();
+//                // FIXME: separate version updates from server-side translation updates?
+//                Entry *cachedentry = m_entry_index[thisId];
+//                if (entryChanged(cachedentry, e)) {
+//                    //kDebug() << "CACHE: update entry";
+//                    e->setStatus(Entry::Updateable);
+//                    // entry has changed
+//                    if (m_cachepolicy != CacheNever) {
+//                        cacheEntry(e);
+//                    }
+//                    emit signalEntryChanged(e);
+//                    // FIXME: cachedentry can now be deleted, but it's still in the list!
+//                    // FIXME: better: assigne all values to 'e', keeps refs intact
+//                }
+//                // take cachedentry out of the feed
+//                feed->removeEntry(cachedentry);
+//                //emit signalEntryRemoved(cachedentry, feed);
+//            } else {
+//                if (m_cachepolicy != CacheNever) {
+//                    //kDebug() << "CACHE: miss entry " << e->name().representation();
+//                    cacheEntry(e);
+//                }
+//                emit signalEntryLoaded(e, feed, provider);
+//            }
 
-            m_entry_cache.append(e);
-            m_entry_index[thisId] = e;
-        }
-    }
+//            m_entry_cache.append(e);
+//            m_entry_index[thisId] = e;
+//        }
+//    }
 
-    if (m_cachepolicy != CacheNever) {
-        // extra code to get the feedname from the provider, we could use feed->name().representation()
-        // but would need to remove spaces, and latinize it since it can be any encoding
-        // besides feeds.size() has a max of 4 currently (unsorted, score, downloads, and latest)
-        QStringList feeds = provider->feeds();
-        QString feedname;
-        for (int i = 0; i < feeds.size(); ++i) {
-            if (provider->downloadUrlFeed(feeds[i]) == feed) {
-                feedname = feeds[i];
-            }
-        }
-        cacheFeed(provider, feedname, feed, entries);
-    }
+//    if (m_cachepolicy != CacheNever) {
+//        // extra code to get the feedname from the provider, we could use feed->name().representation()
+//        // but would need to remove spaces, and latinize it since it can be any encoding
+//        // besides feeds.size() has a max of 4 currently (unsorted, score, downloads, and latest)
+//        QStringList feeds = provider->feeds();
+//        QString feedname;
+//        for (int i = 0; i < feeds.size(); ++i) {
+//            if (provider->downloadUrlFeed(feeds[i]) == feed) {
+//                feedname = feeds[i];
+//            }
+//        }
+//        cacheFeed(provider, feedname, feed, entries);
+//    }
 
-    emit signalEntriesFeedFinished(feed);
-    if (m_activefeeds == 0) {
-        emit signalEntriesFinished();
-    }
-}
+//    emit signalEntriesFeedFinished(feed);
+//    if (m_activefeeds == 0) {
+//        emit signalEntriesFinished();
+//    }
+//}
 
 void Engine::cacheProvider(Provider *provider)
 {
@@ -1144,25 +1144,25 @@ void Engine::cacheProvider(Provider *provider)
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsproviders");
 
-    for (Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); ++it) {
-        Provider *p = (*it);
-        ProviderHandler ph(*p);
-        QDomElement pxml = ph.providerXML();
-        root.appendChild(pxml);
-    }
-    ProviderHandler ph(*provider);
-    QDomElement pxml = ph.providerXML();
-    root.appendChild(pxml);
+    //for (Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); ++it) {
+    //    Provider *p = (*it);
+    //    ProviderHandler ph(*p);
+    //    QDomElement pxml = ph.providerXML();
+    //    root.appendChild(pxml);
+    //}
+    //ProviderHandler ph(*provider);
+    //QDomElement pxml = ph.providerXML();
+    //root.appendChild(pxml);
 
-    QFile f(cachefile);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kError() << "Cannot write meta information to '" << cachedir << "'." << endl;
-        // FIXME: ignore?
-        return;
-    }
-    QTextStream metastream(&f);
-    metastream << root;
-    f.close();
+    //QFile f(cachefile);
+    //if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    //    kError() << "Cannot write meta information to '" << cachedir << "'." << endl;
+    //    // FIXME: ignore?
+    //    return;
+    //}
+    //QTextStream metastream(&f);
+    //metastream << root;
+    //f.close();
 
     /*QStringList feeds = p->feeds();
     for(int i = 0; i < feeds.count(); i++) {
@@ -1171,40 +1171,40 @@ void Engine::cacheProvider(Provider *provider)
     }*/
 }
 
-void Engine::cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries)
-{
-    // feed cache file is a list of entry-id's that are part of this feed
-    KStandardDirs d;
+//void Engine::cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries)
+//{
+//    // feed cache file is a list of entry-id's that are part of this feed
+//    KStandardDirs d;
 
-    Q_UNUSED(feed);
+//    Q_UNUSED(feed);
 
-    QString cachedir = d.saveLocation("cache", m_componentname + "kns2feeds.cache");
+//    QString cachedir = d.saveLocation("cache", m_componentname + "kns2feeds.cache");
 
-    QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
-    QString cachefile = idbase64 + ".xml";
+//    QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
+//    QString cachefile = idbase64 + ".xml";
 
-    kDebug() << "Caching feed to file '" + cachefile + "'.";
+//    kDebug() << "Caching feed to file '" + cachefile + "'.";
 
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnsfeeds");
-    for (int i = 0; i < entries.count(); i++) {
-        QString idbase64 = id(entries.at(i)).toUtf8().toBase64();
-        QDomElement entryel = doc.createElement("entry-id");
-        root.appendChild(entryel);
-        QDomText entrytext = doc.createTextNode(idbase64);
-        entryel.appendChild(entrytext);
-    }
+//    QDomDocument doc;
+//    QDomElement root = doc.createElement("ghnsfeeds");
+//    for (int i = 0; i < entries.count(); i++) {
+//        QString idbase64 = id(entries.at(i)).toUtf8().toBase64();
+//        QDomElement entryel = doc.createElement("entry-id");
+//        root.appendChild(entryel);
+//        QDomText entrytext = doc.createTextNode(idbase64);
+//        entryel.appendChild(entrytext);
+//    }
 
-    QFile f(cachedir + cachefile);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kError() << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
-        // FIXME: ignore?
-        return;
-    }
-    QTextStream metastream(&f);
-    metastream << root;
-    f.close();
-}
+//    QFile f(cachedir + cachefile);
+//    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+//        kError() << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
+//        // FIXME: ignore?
+//        return;
+//    }
+//    QTextStream metastream(&f);
+//    metastream << root;
+//    f.close();
+//}
 
 void Engine::cacheEntry(Entry *entry)
 {
@@ -1224,8 +1224,7 @@ void Engine::cacheEntry(Entry *entry)
     // FIXME: adhere to meta naming rules as discussed
     // FIXME: maybe related filename to base64-encoded id(), or the reverse?
 
-    EntryHandler eh(*entry);
-    QDomElement exml = eh.entryXML();
+    QDomElement exml = entry->entryData();
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnscache");
@@ -1266,8 +1265,7 @@ void Engine::registerEntry(Entry *entry)
 
     //kDebug() << " + Save to file '" + registryfile + "'.";
 
-    EntryHandler eh(*entry);
-    QDomElement exml = eh.entryXML();
+    QDomElement exml = entry->entryData();
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsinstall");
@@ -1319,15 +1317,15 @@ QString Engine::pid(const Provider *p)
     // If no download URL exists, a feed or web service URL must exist
     // if (p->downloadUrl().isValid())
     // return p->downloadUrl().url();
-    QStringList feeds = p->feeds();
+    QStringList feeds = p->availableFeeds();
     for (int i = 0; i < feeds.count(); i++) {
         QString feedtype = feeds.at(i);
-        Feed *f = p->downloadUrlFeed(feedtype);
-        if (f->feedUrl().isValid())
-            return m_componentname + f->feedUrl().url();
+        //Feed *f = p->downloadUrlFeed(feedtype);
+        //if (f->feedUrl().isValid())
+        //    return m_componentname + f->feedUrl().url();
     }
-    if (p->webService().isValid())
-        return m_componentname + p->webService().url();
+    //if (p->webService().isValid())
+    //    return m_componentname + p->webService().url();
     return m_componentname;
 }
 
@@ -1633,11 +1631,6 @@ void Engine::slotInstallationVerification(int result)
         emit signalInstallationFinished();
     else
         emit signalInstallationFailed();
-}
-
-void Engine::setAutomationPolicy(AutomationPolicy policy)
-{
-    m_automationpolicy = policy;
 }
 
 void Engine::setCachePolicy(CachePolicy policy)

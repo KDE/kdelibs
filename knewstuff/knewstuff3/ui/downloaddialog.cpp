@@ -1,9 +1,9 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/downloaddialog.cpp.
     Copyright (C) 2005 by Enrico Ros <eros.kde@email.it>
     Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
-    Copyright (C) 2007 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (C) 2007-2009 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QPixmap>
 #include <QtGui/QSortFilterProxyModel>
+
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kmessagebox.h>
@@ -34,20 +35,21 @@
 #include <kdebug.h>
 
 //#include "knewstuff2/core/provider.h"
-#include "knewstuff3/core/providerhandler.h"
+//#include "knewstuff3/core/providerhandler.h"
 //#include "knewstuff2/core/entry.h"
-#include "knewstuff3/core/entryhandler.h"
+//#include "knewstuff3/core/entryhandler.h"
 #include "knewstuff3/core/category.h"
 
 //#include "knewstuff3/dxs/dxs.h"
 
 // local includes
 #include "ui_DownloadDialog.h"
+
 #include "itemsmodel.h"
 #include "itemsviewdelegate.h"
 #include "kdxsrating.h"
-#include "kdxscomment.h"
-#include "kdxscomments.h"
+//#include "kdxscomment.h"
+//#include "kdxscomments.h"
 
 const char * ConfigGroup = "DownloadDialog Settings";
 
@@ -174,9 +176,9 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
             //if (provider->webService().isValid()) {
             //    dxs->call_info();
             //} else {
-                slotInfo(provider->name().representation(),
-                         provider->webAccess().pathOrUrl(),
-                         QString());
+                //slotInfo(provider->name().representation(),
+                //         provider->webAccess().pathOrUrl(),
+                //         QString());
             //}
         //}
         break;
@@ -219,14 +221,14 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         break;
     case kCollabComment: {
         // open comment dialog
-        QPointer<KDXSComment> commentDialog = new KDXSComment(this);
-        int ret = commentDialog->exec();
-        if (ret == QDialog::Accepted) {
-            QString s = commentDialog->comment();
+        //QPointer<KDXSComment> commentDialog = new KDXSComment(this);
+        //int ret = commentDialog->exec();
+        //if (ret == QDialog::Accepted) {
+        //    QString s = commentDialog->comment();
             //if (dxs && !s.isEmpty()) {
             //    dxs->call_comment(entry->idNumber(), s);
             //}
-        }
+        //}
     }
     break;
     case kCollabRate: {
@@ -319,10 +321,10 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
         QString feedName = m_sortCombo->currentText();
         QString feedType = m_sortCombo->itemData(sortType).toString();
 
-        const Provider * currentProvider = m_entriesByProvider.keys()[m_sourceCombo->currentIndex()];
-        Feed * selectedFeed = currentProvider->downloadUrlFeed(feedType);
-        m_filteredModel->setSourceModel(m_models.value(selectedFeed));
-        m_collaborationButton->setEnabled(false);
+        //const Provider * currentProvider = m_entriesByProvider.keys()[m_sourceCombo->currentIndex()];
+        //Feed * selectedFeed = currentProvider->downloadUrlFeed(feedType);
+        //m_filteredModel->setSourceModel(m_models.value(selectedFeed));
+        //m_collaborationButton->setEnabled(false);
     }
 }
 
@@ -345,15 +347,15 @@ void DownloadDialog::slotLoadProviderDXS()
             // update the sortCombo with this provider's feeds
             populateSortCombo(providers[i]);
 
-            Feed * selectedFeed = providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString());
-            m_filteredModel->setSourceModel(m_models.value(selectedFeed));
+            //Feed * selectedFeed = providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString());
+            //m_filteredModel->setSourceModel(m_models.value(selectedFeed));
             //m_list->setProvider(providers[i],
             //    providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString()));
             break;
         }
     }
-    m_hasDxs = (provider && m_engine->dxsObject(provider) != NULL);
-    m_collaborationButton->setEnabled(m_hasDxs);
+    //m_hasDxs = (provider && m_engine->dxsObject(provider) != NULL);
+    //m_collaborationButton->setEnabled(m_hasDxs);
 }
 
 void DownloadDialog::slotUpdateSearch()
@@ -426,7 +428,7 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
     if (!m_models.value(feed)) {
         // new feed
         kDebug(551) << "making a new model for this feed" << feed;
-        m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
+        //m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
         connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)),
                 m_models[feed], SLOT(slotEntryChanged(KNS::Entry*)));
         if (provider->name().representation() == m_sourceCombo->currentText()) {
@@ -481,19 +483,19 @@ void DownloadDialog::refresh()
 
 void DownloadDialog::populateSortCombo(const Provider * provider)
 {
-    QString url = provider->webAccess().pathOrUrl();
-    if (url.isEmpty()) {
-        m_providerLinkLabel->hide();
-    } else {
-        m_providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
-    }
+    //QString url = provider->webAccess().pathOrUrl();
+    //if (url.isEmpty()) {
+    //    m_providerLinkLabel->hide();
+    //} else {
+    //    m_providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
+    //}
 
-    QStringList feeds = provider->feeds();
+    QStringList feeds = provider->availableFeeds();
     m_sortCombo->clear();
     for (int i = 0; i < feeds.size(); ++i) {
-        QString feedName = provider->downloadUrlFeed(feeds[i])->name().representation();
-        kDebug(551) << "adding feed " << feeds[i] << " to combobox";
-        m_sortCombo->addItem(feedName, feeds[i]); // put in the name for the text, and feeds[i] for the userData
+        //QString feedName = provider->downloadUrlFeed(feeds[i])->name().representation();
+        //kDebug(551) << "adding feed " << feeds[i] << " to combobox";
+        //m_sortCombo->addItem(feedName, feeds[i]); // put in the name for the text, and feeds[i] for the userData
     }
 }
 
@@ -511,14 +513,14 @@ void DownloadDialog::slotInfo(QString provider, QString server, QString version)
 
 void DownloadDialog::slotComments(QStringList comments)
 {
-    QPointer<KDXSComments> commentsdlg = new KDXSComments(this);
+    //QPointer<KDXSComments> commentsdlg = new KDXSComments(this);
 
-    for (QStringList::const_iterator it = comments.constBegin(); it != comments.constEnd(); ++it) {
-        //kDebug() << "Comment: " << (*it);
-        commentsdlg->addComment("foo", (*it));
-    }
+    //for (QStringList::const_iterator it = comments.constBegin(); it != comments.constEnd(); ++it) {
+    //    //kDebug() << "Comment: " << (*it);
+    //    commentsdlg->addComment("foo", (*it));
+    //}
 
-    commentsdlg->exec();
+    //commentsdlg->exec();
 }
 
 ///////////////// DXS ////////////////////

@@ -26,6 +26,7 @@
 #include <kurl.h>
 
 #include <QtCore/QDate>
+#include <QtXml/QDomElement>
 #include <QtCore/QString>
 
 namespace KNS
@@ -42,7 +43,7 @@ struct EntryPrivate;
  *
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
- * Josef Spillner (spillner@kde.org)
+ * Jeremy Whiting (jpwhiting@kde.org)
  */
 class KNEWSTUFF_EXPORT Entry
 {
@@ -62,10 +63,26 @@ public:
      */
     ~Entry();
 
+	/**
+	 * set the xml for the entry
+	 * parses the xml and sets the private members accordingly
+	 * used to deserialize data loaded from provider
+	 *
+	 * @param xmldata string to load xml data from
+	 *
+	 * @returns whether or not setting the values was successful
+	 */
+	bool setEntryData(const QDomElement & xmldata);
+	
+	/**
+	 * get the xml string for the entry
+	 */
+	QDomElement entryData() const;
+	
     /**
      * Sets the name for this data object.
      */
-    void setName(const KTranslatable& name);
+    //void setName(const KTranslatable& name);
 
     /**
      * Retrieve the name of the data object.
@@ -77,7 +94,7 @@ public:
     /**
      * Sets the data category, e.g. 'kdesktop/wallpaper'.
      */
-    void setCategory(const QString& category);
+    //void setCategory(const QString& category);
 
     /**
      * Retrieve the category of the data object.
@@ -89,7 +106,7 @@ public:
     /**
      * Sets the author of the object.
      */
-    void setAuthor(const Author& author);
+    //void setAuthor(const Author& author);
 
     /**
      * Retrieve the author of the object.
@@ -101,7 +118,7 @@ public:
     /**
      * Sets the license (abbreviation) applicable to the object.
      */
-    void setLicense(const QString& license);
+    //void setLicense(const QString& license);
 
     /**
      * Retrieve the license name of the object.
@@ -113,7 +130,7 @@ public:
     /**
      * Sets a short description on what the object is all about.
      */
-    void setSummary(const KTranslatable& summary);
+    //void setSummary(const KTranslatable& summary);
 
     /**
      * Retrieve a short description about the object.
@@ -125,7 +142,7 @@ public:
     /**
      * Sets the version number.
      */
-    void setVersion(const QString& version);
+    //void setVersion(const QString& version);
 
     /**
      * Retrieve the version string of the object.
@@ -135,22 +152,9 @@ public:
     QString version() const;
 
     /**
-     * Sets the release number, which is increased for feature-equal objects
-     * with the same version number, but slightly updated contents.
-     */
-    void setRelease(int release);
-
-    /**
-     * Retrieve the release number of the object
-     *
-     * @return object release
-     */
-    int release() const;
-
-    /**
      * Sets the release date.
      */
-    void setReleaseDate(const QDate& releasedate);
+    //void setReleaseDate(const QDate& releasedate);
 
     /**
      * Retrieve the date of the object's publication.
@@ -162,7 +166,7 @@ public:
     /**
      * Sets the object's file.
      */
-    void setPayload(const KTranslatable& url);
+    //void setPayload(const KTranslatable& url);
 
     /**
      * Retrieve the file name of the object.
@@ -175,7 +179,7 @@ public:
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    void setPreview(const KTranslatable& url);
+    //void setPreview(const KTranslatable& url);
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
@@ -191,18 +195,17 @@ public:
     void setInstalledFiles(const QStringList& files);
 
     /**
+     * Retrieve the locally installed files.
+     * @return file names
+     */
+    QStringList installedFiles() const;
+
+    /**
      * Set the files that have been uninstalled by the uninstall command.
      * @param files local file names
      * @since 4.1
      */
     void setUnInstalledFiles(const QStringList& files);
-
-
-    /**
-     * Retrieve the locally installed files.
-     * @return file names
-     */
-    QStringList installedFiles() const;
 
     /**
      * Retrieve the locally uninstalled files.
@@ -211,14 +214,12 @@ public:
      */
     QStringList uninstalledFiles() const;
 
-
-
     /**
      * Sets the rating between 0 (worst) and 100 (best).
      *
      * @internal
      */
-    void setRating(int rating);
+    //void setRating(int rating);
 
     /**
      * Retrieve the rating for the object, which has been determined by its
@@ -233,7 +234,7 @@ public:
      *
      * @internal
      */
-    void setDownloads(int downloads);
+    //void setDownloads(int downloads);
 
     /**
      * Retrieve the download count for the object, which has been determined
@@ -251,7 +252,7 @@ public:
      *
      * @ref checksum Checksum for the entry
      */
-    void setChecksum(const QString& checksum);
+    //void setChecksum(const QString& checksum);
 
     /**
      * Sets the signature of the entry. This will be a digital signature

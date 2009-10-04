@@ -1,6 +1,7 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/uploaddialog.cpp.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
+	Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -38,7 +39,7 @@
 #include <kdebug.h>
 
 //#include "engine.h"
-#include "knewstuff2/core/entry.h"
+#include "knewstuff3/entry.h"
 #include "knewstuff2/core/author.h"
 
 #include <kconfiggroup.h>
@@ -113,12 +114,12 @@ void UploadDialog::slotOk()
     name.addString(language, mNameEdit->text());
 
     m_entry = new Entry;
-    m_entry->setName(name);
-    m_entry->setAuthor(author);
-    m_entry->setVersion(mVersionEdit->text());
-    m_entry->setLicense(mLicenseCombo->currentText());
-    m_entry->setPreview(previewurl);
-    m_entry->setSummary(summary);
+    //m_entry->setName(name);
+    //m_entry->setAuthor(author);
+    //m_entry->setVersion(mVersionEdit->text());
+    //m_entry->setLicense(mLicenseCombo->currentText());
+    //m_entry->setPreview(previewurl);
+    //m_entry->setSummary(summary);
 
     if (mPayloadUrl.isValid()) {
         KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));

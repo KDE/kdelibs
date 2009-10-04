@@ -1,5 +1,5 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/itemsmodel.cpp.
     Copyright (C) 2008 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
@@ -69,9 +69,6 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
         break;
     case kVersion:
         return entry->version();
-        break;
-    case kRelease:
-        return entry->release();
         break;
     case kReleaseDate:
         return entry->releaseDate();

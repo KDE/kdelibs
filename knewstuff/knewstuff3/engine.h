@@ -84,26 +84,6 @@ public:
         CacheOnly
     };
 
-    /**
-     * Engine automation can be activated to let the engine take care by
-     * itself of all the method calls needed in a workflow. For example,
-     * the download workflow will require entries to be loaded after the
-     * providers, and preview images for all entries afterwards.
-     *
-     * Calling the methods for those load operations is necessary when
-     * automation is off, but it is redundant (and in fact considered an
-     * error) when automation is switched on.
-     *
-     * The default automation policy is AutomationOff.
-     */
-    enum AutomationPolicy {
-        /**< Turn on automation, and take care of method calls. */
-        AutomationOn,
-        /**< Turn off automation, and let the application call the methods. (default) */
-        AutomationOff
-    };
-
-    void setAutomationPolicy(AutomationPolicy policy);
     void setCachePolicy(CachePolicy policy);
 
     /**
@@ -140,7 +120,7 @@ public:
      * @see signalPreviewLoaded
      * @see signalPreviewFailed
      */
-    void start();
+    //void start();
 
     /**
      * Loads all entries of all the feeds from a provider. This means that
@@ -157,7 +137,7 @@ public:
      * @see signalEntriesFinished
      * @see signalEntriesFeedFinished
      */
-    void loadEntries(Provider *provider);
+    //void loadEntries(Provider *provider);
     //void loadProvider(); // FIXME: for consistency?
 
     /**
@@ -171,7 +151,7 @@ public:
      * @see signalPreviewLoaded
      * @see signalPreviewFailed
      */
-    void downloadPreview(Entry *entry);
+    //void downloadPreview(Entry *entry);
 
     /**
      * Downloads a payload file. The payload file matching most closely
@@ -355,7 +335,6 @@ private:
 
     bool m_initialized;
     CachePolicy m_cachepolicy;
-    AutomationPolicy m_automationpolicy;
 };
 
 }

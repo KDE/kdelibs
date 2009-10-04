@@ -1,5 +1,5 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/ui/knewstuffbutton.cpp.
     Copyright (c) 2004 Aaron J. Seigo <aseigo@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 #include <klocale.h>
 #include <kicon.h>
 
-#include "knewstuff2/engine.h"
+#include "knewstuff3/client.h"
 
 namespace KNS
 {
@@ -85,7 +85,7 @@ void Button::showDialog()
 
     //m_downloadDialog->exec(); // TODO: make non-modal?
 
-    KNS::Engine::download();
+    KNS::Client::download();
 
     emit dialogFinished();
 }
