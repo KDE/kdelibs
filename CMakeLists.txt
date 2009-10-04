@@ -56,7 +56,7 @@ find_package(ZLIB)
 macro_log_feature(ZLIB_FOUND "ZLib" "The Zlib compression library" "http://www.zlib.net" TRUE "" "Required by the core KDE libraries and some critical kioslaves.")
 
 set(STRIGI_MIN_VERSION 0.6.3)
-find_package(Strigi)
+find_package(Strigi REQUIRED)
 macro_log_feature(STRIGI_FOUND "Strigi" "A fast and small desktop searching program" "http://strigi.sourceforge.net" TRUE "${STRIGI_MIN_VERSION}" "Required by some critical kioslaves.")
 
 #optional features
