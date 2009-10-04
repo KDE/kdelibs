@@ -56,10 +56,12 @@ public:
 
 	/**
 	 * @brief initialize the client (and it's underlying engine) based on the given configfile name
-	 
+     *	 
 	 * Initialize the engine by reading the given config file, creates an engine internally. 
 	 * Initializes any providers found therein, loads any cache if caching is enabled, reads the
 	 * list of installed entries from kconfig.
+	 * @param config filename of config file to load, usually appname.knsrc
+	 * @returns 
 	 */
 	bool init(const QString& config);
 

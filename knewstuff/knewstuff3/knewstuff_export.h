@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2007 David Faure <faure@kde.org>
+    Copyright (C) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -15,14 +16,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_EXPORT_H
-#define KNEWSTUFF2_EXPORT_H
+#ifndef KNEWSTUFF3_EXPORT_H
+#define KNEWSTUFF3_EXPORT_H
 
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
 
 #ifndef KNEWSTUFF_EXPORT
-# if defined(MAKE_KNEWSTUFF2_LIB)
+# if defined(MAKE_KNEWSTUFF3_LIB)
 /* We are building this library */
 #  define KNEWSTUFF_EXPORT KDE_EXPORT
 # else

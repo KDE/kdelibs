@@ -1,7 +1,7 @@
 /*
-    This file is part of KNewStuff2.
-    Copyright (c) 2008-2009 Jeremy Whiting <jpwhiting@kde.org>
+    knewstuff3/client.cpp.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2008-2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

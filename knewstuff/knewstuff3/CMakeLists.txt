@@ -58,7 +58,7 @@ install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAUL
 
 install(FILES
   core/author.h
-  core/entry.h
+  entry.h
   core/category.h
   core/ktranslatable.h
   core/installation.h
@@ -73,7 +73,8 @@ install(FILES
 )
 
 install(FILES
-  engine.h
+  client.h
+  entry.h
   knewstuff_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )
