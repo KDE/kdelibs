@@ -141,7 +141,8 @@ void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
             }
         }
 
-        setAttribute(QNetworkRequest::User, kioJob->metaData().toVariant());
+        setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData),
+                     kioJob->metaData().toVariant());
         d->m_metaDataRead = true;
     }
 
@@ -218,7 +219,7 @@ void AccessManagerReply::jobDone(KJob *kJob)
             kDebug( 7044 ) << errcode;
     }
 
-    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
+    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::ErrorCode), errcode);
     emit finished();
 }
 
