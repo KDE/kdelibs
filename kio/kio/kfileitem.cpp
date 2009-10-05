@@ -1321,6 +1321,17 @@ KUrl KFileItem::targetUrl() const
       return url();
 }
 
+KUrl KFileItem::nepomukUri() const
+{
+    if(isLocalFile()) {
+        return url();
+    }
+    else {
+        const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
+        return KUrl(nepomukUriStr);
+    }
+}
+
 /*
  * Mimetype handling.
  *

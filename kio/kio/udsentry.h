@@ -219,6 +219,20 @@ namespace KIO
             /// @since 4.4
             UDS_DISPLAY_TYPE = 24 | UDS_STRING,
 
+            /// The URI of the corresponding Nepomuk resource.
+            /// KIO slaves can use this optional entry to provide
+            /// client applications with a Nepomuk resource to be used
+            /// for annotations like tags or ratings. A typical example
+            /// is to provide the URI of the Nepomuk resource corresponding
+            /// to a file in a search result
+            /// Client applications should only provide annotations for
+            /// entries that provide this URI
+            ///
+            /// URIs need to be encoded using KUrl::url()
+            ///
+            /// @since 4.4
+            UDS_NEPOMUK_URI = 25 | UDS_STRING,
+
             /// Extra data (used only if you specified Columns/ColumnsTypes)
             /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
             /// until UDS_EXTRA_END.
