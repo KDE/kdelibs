@@ -219,7 +219,7 @@ void DeleteJobPrivate::statNextSrc()
         // Fast path for KFileItems in directory views
         while(m_currentStat != m_srcList.end()) {
             m_currentURL = (*m_currentStat);
-            KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentURL);
+            const KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentURL);
             if (cachedItem.isNull())
                 break;
             //kDebug(7007) << "Found cached info about" << m_currentURL << "isDir=" << cachedItem.isDir() << "isLink=" << cachedItem.isLink();
@@ -343,6 +343,7 @@ void DeleteJobPrivate::deleteNextDir()
                 // Call rmdir - works for kioslaves with canDeleteRecursive too,
                 // CMD_DEL will trigger the recursive deletion in the slave.
                 SimpleJob* job = KIO::rmdir( *it );
+                job->addMetaData(QString::fromLatin1("recurse"), "true");
                 Scheduler::scheduleJob(job);
                 dirs.erase(it);
                 q->addSubjob( job );

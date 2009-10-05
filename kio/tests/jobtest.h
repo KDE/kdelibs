@@ -64,6 +64,8 @@ private Q_SLOTS:
     void deleteManyDirs();
     void deleteManyFilesIndependently();
     void deleteManyFilesTogether();
+    void rmdirEmpty();
+    void rmdirNotEmpty();
     void stat();
     void mostLocalUrl();
     void mimeType();

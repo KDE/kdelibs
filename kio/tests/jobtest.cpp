@@ -1305,6 +1305,26 @@ void JobTest::deleteManyFilesTogether()
     deleteManyFilesTogether(false);
 }
 
+void JobTest::rmdirEmpty()
+{
+    const QString dir = homeTmpDir() + "dir";
+    QDir().mkdir(dir);
+    QVERIFY(QFile::exists(dir));
+    KIO::Job* job = KIO::rmdir(dir);
+    QVERIFY(job->exec());
+    QVERIFY(!QFile::exists(dir));
+}
+
+void JobTest::rmdirNotEmpty()
+{
+    const QString dir = homeTmpDir() + "dir";
+    createTestDirectory(dir);
+    createTestDirectory(dir + "/subdir");
+    KIO::Job* job = KIO::rmdir(dir);
+    QVERIFY(!job->exec());
+    QVERIFY(QFile::exists(dir));
+}
+
 void JobTest::stat()
 {
 #if 1

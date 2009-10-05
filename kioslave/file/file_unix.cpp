@@ -531,8 +531,10 @@ void FileProtocol::del(const KUrl& url, bool isfile)
        *****/
 
       kDebug( 7101 ) << "Deleting directory " << url.url();
-      if (!deleteRecursive(path))
-          return;
+      if (metaData(QLatin1String("recurse")) == QLatin1String("true")) {
+          if (!deleteRecursive(path))
+              return;
+      }
       if ( ::rmdir( _path.data() ) == -1 ) {
 	if ((errno == EACCES) || (errno == EPERM))
 	  error(KIO::ERR_ACCESS_DENIED, path);
