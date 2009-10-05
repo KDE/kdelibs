@@ -150,8 +150,8 @@ public:
   // TODO: Find out if this breaks when indexes are modified because of higher siblings move/insert/remove
   mutable QHash< void *, QPersistentModelIndex> m_map;
 
-  bool m_omitChildren;
   bool m_startWithChildTrees;
+  bool m_omitChildren;
   bool m_omitDescendants;
   bool m_includeAllSelected;
   bool m_rowsRemoved;
