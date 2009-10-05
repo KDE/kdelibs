@@ -516,7 +516,8 @@ void Kded::recreate(bool initial)
    {
       if(!delayedCheck)
          updateDirWatch(); // this would search all the directories
-      runBuildSycoca();
+      if (bCheckSycoca)
+         runBuildSycoca();
       recreateDone();
       if(delayedCheck)
       {
@@ -809,9 +810,6 @@ public:
           // newInstance method.
 
           Kded *kded = Kded::self();
-
-          if (bCheckSycoca)
-              runBuildSycoca();
 
           kded->recreate(true); // initial
 
