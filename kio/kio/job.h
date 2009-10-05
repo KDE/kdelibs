@@ -47,8 +47,8 @@ namespace KIO {
      * Removes a single directory.
      *
      * The directory is assumed to be empty.
-     *
-     *
+     * The job will fail if the directory is not empty.
+     * Use KIO::del() (DeleteJob) to delete non-empty directories.
      *
      * @param url The URL of the directory to remove.
      * @return A pointer to the job handling the operation.
