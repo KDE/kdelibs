@@ -198,7 +198,7 @@ public:
     void slotResultDeletingDirs( KJob * job );
     void deleteNextDir();
     void sourceStated(const UDSEntry& entry, const KUrl& sourceUrl);
-    void skip( const KUrl & sourceURL );
+    void skip(const KUrl & sourceURL, bool isDir);
     void slotResultRenaming( KJob * job );
     void slotResultSettingDirAttributes( KJob * job );
     void setNextDirAttribute();
@@ -207,7 +207,7 @@ public:
     bool shouldOverwriteDir( const QString& path ) const;
     bool shouldOverwriteFile( const QString& path ) const;
     bool shouldSkip( const QString& path ) const;
-    void skipSrc();
+    void skipSrc(bool isDir);
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
@@ -610,11 +610,11 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
     }
 }
 
-void CopyJobPrivate::skipSrc()
+void CopyJobPrivate::skipSrc(bool isDir)
 {
     m_dest = m_globalDest;
     destinationState = m_globalDestinationState;
-    skip( *m_currentStatSrc );
+    skip(*m_currentStatSrc, isDir);
     ++m_currentStatSrc;
     statCurrentSrc();
 }
@@ -804,9 +804,18 @@ void CopyJobPrivate::startListing( const KUrl & src )
     q->addSubjob( newjob );
 }
 
-void CopyJobPrivate::skip( const KUrl & sourceUrl )
+void CopyJobPrivate::skip(const KUrl & sourceUrl, bool isDir)
 {
-    dirsToRemove.removeAll( sourceUrl );
+    KUrl dir = sourceUrl;
+    if (!isDir) {
+        // Skipping a file: make sure not to delete the parent dir (#208418)
+        dir.setPath(dir.directory());
+    }
+    while (dirsToRemove.removeAll(dir) > 0) {
+        // Do not rely on rmdir() on the parent directories aborting.
+        // Exclude the parent dirs explicitely.
+        dir.setPath(dir.directory());
+    }
 }
 
 bool CopyJobPrivate::shouldOverwriteDir( const QString& path ) const
@@ -849,7 +858,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
             if ( m_bAutoSkipDirs ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
                 m_skipList.append( oldURL.path( KUrl::AddTrailingSlash ) );
-                skip( oldURL );
+                skip(oldURL, true);
                 dirs.erase( it ); // Move on to next dir
             } else {
                 // Did the user choose to overwrite already?
@@ -1001,7 +1010,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             // fall through
         case R_SKIP:
             m_skipList.append( existingDest );
-            skip( (*it).uSource );
+            skip((*it).uSource, true);
             // Move on to next dir
             dirs.erase( it );
             m_processedDirs++;
@@ -1092,7 +1101,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
         // Should we skip automatically ?
         if ( m_bAutoSkipFiles )
         {
-            skip( (*it).uSource );
+            skip((*it).uSource, false);
             m_fileProcessedSize = (*it).size;
             files.erase( it ); // Move on to next file
         }
@@ -1287,7 +1296,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             // fall through
         case R_SKIP:
             // Move on to next file
-            skip( (*it).uSource );
+            skip((*it).uSource, false);
             m_processedSize += (*it).size;
             files.erase( it );
             m_processedFiles++;
@@ -1726,7 +1735,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             bool isDir = (err == ERR_DIR_ALREADY_EXIST); // ## technically, isDir means "source is dir", not "dest is dir" #######
             if ((isDir && m_bAutoSkipDirs) || (!isDir && m_bAutoSkipFiles)) {
                 // Move on to next source url
-                skipSrc();
+                skipSrc(isDir);
                 return;
             } else if ((isDir && m_bOverwriteAllDirs) || (!isDir && m_bOverwriteAllFiles)) {
                 ; // nothing to do, stat+copy+del will overwrite
@@ -1818,7 +1827,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     // fall through
                 case R_SKIP:
                     // Move on to next url
-                    skipSrc();
+                    skipSrc(isDir);
                     return;
                 case R_OVERWRITE_ALL:
                     if (destIsDir)
