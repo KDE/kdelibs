@@ -82,7 +82,7 @@ public:
 
   @p selectionModel The selection model used to filter what is presented by the proxy.
   */
-  
+
   explicit KSelectionProxyModel(QItemSelectionModel *selectionModel, QObject *parent = 0 );
 
   /**
@@ -209,7 +209,7 @@ public:
       - K
       - L
     @endverbatim
-    
+
     Note that selecting 'E' in this behavior would have no effect because its ancestor 'B' is already in the model. The ChildrenOfSelected behavior is provided for convenience.
 
     IncludeAllSelected has the effect of including all selected items in the tree even if an ancestor is already in the tree.
@@ -228,7 +228,7 @@ public:
       - J
       - K
       - L
-    @endverbatim    
+    @endverbatim
 
     This would be useful for example if showing containers (for example maildirs) in one view and their items in another. Sub-maildirs would still appear in the proxy, but
     could be filtered out using a QSortfilterProxyModel.
@@ -268,6 +268,30 @@ public:
   virtual QModelIndex index(int, int, const QModelIndex& = QModelIndex() ) const;
   virtual QModelIndex parent(const QModelIndex&) const;
   virtual int columnCount(const QModelIndex& = QModelIndex() ) const;
+
+signals:
+#if !defined(Q_MOC_RUN)
+private: // Don't allow subclasses to emit these signals.
+#endif
+
+  /**
+    @internal
+    Emitted before @p removeRootIndex, an index in the sourceModel is removed from
+    the root selected indexes. This may be unrelated to rows removed from the model,
+    depending on configuration.
+  */
+  void rootIndexAboutToBeRemoved( const QModelIndex &removeRootIndex );
+
+  /**
+    @internal
+    Emitted when @p newIndex, an index in the sourceModel is added to the root selected
+    indexes. This may be unrelated to rows inserted to the model,
+    depending on configuration.
+  */
+  void rootIndexAdded( const QModelIndex &newIndex );
+
+protected:
+  QList<QPersistentModelIndex> sourceRootIndexes() const;
 
 private:
   Q_DECLARE_PRIVATE(KSelectionProxyModel)

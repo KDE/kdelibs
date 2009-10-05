@@ -268,7 +268,15 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
-  m_rootIndexList.clear();
+
+  QList<QPersistentModelIndex>::iterator it = m_rootIndexList.begin();
+  const QList<QPersistentModelIndex>::iterator end = m_rootIndexList.end();
+
+  while (it != end)
+  {
+    emit q->rootIndexAboutToBeRemoved(*it);
+    it = m_rootIndexList.erase(it);
+  }
 #if QT_VERSION >= 0x040600
   q->endResetModel();
 #else
@@ -521,6 +529,7 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
     QPersistentModelIndex idx = it.next();
     if (!idx.isValid())
     {
+      emit q->rootIndexAboutToBeRemoved(idx);
       it.remove();
     }
   }
@@ -698,15 +707,18 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         if (rowCount <= 0)
         {
           // It doesn't have any children in the model, but we need to remove it from storage anyway.
+          emit q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRow));
           m_rootIndexList.removeAt(startRow);
           continue;
         }
 
         q->beginRemoveRows(QModelIndex(), _start, _start + rowCount - 1);
+        emit q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRow));
         m_rootIndexList.removeAt(startRow);
         q->endRemoveRows();
       } else {
         q->beginRemoveRows(QModelIndex(), startRow, startRow);
+        emit q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRow));
         m_rootIndexList.removeAt(startRow);
         q->endRemoveRows();
       }
@@ -753,6 +765,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         if (isDescendantOf(newIndexes, topLeft))
         {
           q->beginRemoveRows(QModelIndex(), row, row);
+          emit q->rootIndexAboutToBeRemoved(m_rootIndexList.at(row));
           m_rootIndexList.removeAt(row);
           q->endRemoveRows();
         }
@@ -1003,11 +1016,13 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
         q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
         Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(rootListRow, newIndex);
+        emit q->rootIndexAdded(newIndex);
         q->endInsertRows();
       } else {
         // Even if the newindex doesn't have any children to put into the model yet,
         // We still need to make sure it's future children are inserted into the model.
         m_rootIndexList.insert(rootListRow, newIndex);
+        emit q->rootIndexAdded(newIndex);
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
@@ -1015,6 +1030,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
       q->beginInsertRows(QModelIndex(), row, row);
       Q_ASSERT(newIndex.isValid());
       m_rootIndexList.insert(row, newIndex);
+      emit q->rootIndexAdded(newIndex);
       q->endInsertRows();
     }
   }
@@ -1475,6 +1491,12 @@ bool KSelectionProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction ac
   }
   return sourceModel()->dropMimeData(data, action, source_destination_row,
                                 source_destination_column, source_parent);
+}
+
+QList<QPersistentModelIndex> KSelectionProxyModel::sourceRootIndexes() const
+{
+  Q_D(const KSelectionProxyModel);
+  return d->m_rootIndexList;
 }
 
 
