@@ -253,9 +253,9 @@ const int FontChange = XFontChange;
 #ifdef NormalState
 #ifndef FIXX11H_NormalState
 #define FIXX11H_NormalState
-const XID XNormalState = NormalState;
+const int XNormalState = NormalState;
 #undef NormalState
-const XID NormalState = XNormalState;
+const int NormalState = XNormalState;
 #endif
 #undef NormalState
 #endif
