@@ -130,6 +130,9 @@ PrivacyCompactPolicy	stringlist  \n delimited P3P compact tag policies
 
 textmode		bool	When true, switches FTP up/downloads to ascii transfer mode (read by ftp)
 
+recurse                 bool    When true, del() will be able to delete non-empty directories.  (read by file)
+                                Otherwise, del() is supposed to give an error on non-empty directories.
+
 DefaultRemoteProtocol	string	Protocol to redirect file://<hostname>/ URLs to, default is "smb" (read by file)
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.

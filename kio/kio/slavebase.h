@@ -560,6 +560,10 @@ public:
      * @param url file/directory to delete
      * @param isfile if true, a file should be deleted.
      *               if false, a directory should be deleted.
+     *
+     * By default, del() on a directory should FAIL if the directory is not empty.
+     * However, if metadata("recurse") == "true", then the slave can do a recursive deletion.
+     * This behavior is only invoked if the slave specifies deleteRecursive=true in its protocol file.
      */
     virtual void del( const KUrl &url, bool isfile);
 
@@ -867,6 +871,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
+    void error( int _errid, const QByteArray &_text );
     void send(int cmd, const QByteArray& arr = QByteArray());
     SlaveBasePrivate* const d;
     friend class SlaveBasePrivate;
