@@ -367,6 +367,7 @@ public:
 
     /**
      * Sets the main widget associated with this NotificationIcon
+     * it must be a top level window, (i.e. not have a parentWidget())
      */
     void setAssociatedWidget(QWidget *parent);
 

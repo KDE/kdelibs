@@ -358,6 +358,10 @@ KMenu *KNotificationItem::contextMenu() const
 
 void KNotificationItem::setAssociatedWidget(QWidget *associatedWidget)
 {
+    if (!associatedWidget || associatedWidget->parentWidget()) {
+        return;
+    }
+
     d->associatedWidget = associatedWidget;
     if (d->systemTrayIcon) {
         delete d->systemTrayIcon;
