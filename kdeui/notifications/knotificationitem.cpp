@@ -358,18 +358,23 @@ KMenu *KNotificationItem::contextMenu() const
 
 void KNotificationItem::setAssociatedWidget(QWidget *associatedWidget)
 {
-    if (!associatedWidget || associatedWidget->parentWidget()) {
+    if (associatedWidget ) {
         return;
     }
 
-    d->associatedWidget = associatedWidget;
+    if (associatedWidget) {
+        d->associatedWidget = associatedWidget->window();
+    } else {
+        d->associatedWidget = 0;
+    }
+
     if (d->systemTrayIcon) {
         delete d->systemTrayIcon;
         d->systemTrayIcon = 0;
         d->setLegacySystemTrayEnabled(true);
     }
 
-    if (associatedWidget) {
+    if (d->associatedWidget) {
         QAction *action = d->actionCollection->action("minimizeRestore");
 
         if (!action) {
@@ -379,7 +384,7 @@ void KNotificationItem::setAssociatedWidget(QWidget *associatedWidget)
         }
 
 #ifdef Q_WS_X11
-        KWindowInfo info = KWindowSystem::windowInfo(associatedWidget->winId(), NET::WMDesktop);
+        KWindowInfo info = KWindowSystem::windowInfo(d->associatedWidget->winId(), NET::WMDesktop);
         d->onAllDesktops = info.onAllDesktops();
 #else
         d->onAllDesktops = false;
