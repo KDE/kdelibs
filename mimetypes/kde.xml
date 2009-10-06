@@ -50,7 +50,7 @@ Notes:
     <comment>KNewStuff package</comment>
     <glob pattern="*.kns"/>
   </mime-type>
-  <mime-type type="application/x-kwallet"> <!-- fdo #6326 -->
+  <mime-type type="application/x-kwallet"> <!-- fdo #6326 rejected, will stay KDE-specific -->
     <comment>KWallet wallet</comment>
     <magic priority="80">
       <match type="string" value="KWALLET" offset="0"/>
@@ -86,7 +86,7 @@ Notes:
     <comment>SuperKaramba theme</comment>
     <glob pattern="*.skz"/>
   </mime-type>
-  <mime-type type="application/x-vnd.kde.kexi"> <!-- ??? -->
+  <mime-type type="application/x-vnd.kde.kexi"> <!-- added to shared-mime-info-0.70 -->
     <comment>Kexi project file</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
@@ -116,7 +116,7 @@ Notes:
     <comment>AAC sound</comment>
     <glob pattern="*.aac"/>
   </mime-type>
-  <mime-type type="audio/x-pn-realaudio-plugin">
+  <mime-type type="audio/x-pn-realaudio-plugin"> <!-- Not a type of file, so will not go to shared-mime-info -->
     <comment>RealAudio plugin file</comment>
   </mime-type>
   <mime-type type="application/vnd.kde.kphotoalbum-import"> <!-- fdo #12732 -->
@@ -158,7 +158,7 @@ Notes:
     <comment>Kate file list loader plugin list</comment>
     <glob pattern="*.katefl"/>
   </mime-type>
-  <mime-type type="text/x-objchdr"> <!-- ??? -->
+  <mime-type type="text/x-objchdr"> <!-- ??? Useless, without glob or magic. Remove? -->
     <sub-class-of type="text/x-csrc"/>
     <comment>Objective-C header</comment>
   </mime-type>
@@ -219,11 +219,11 @@ Notes:
     <comment>file to open a shell</comment>
     <glob pattern="*.shell"/>
   </mime-type>
-  <mime-type type="application/x-smb-server">
+  <mime-type type="application/x-smb-server"> <!-- KDE-specific -->
     <sub-class-of type="inode/directory"/>
     <comment>Windows server</comment>
   </mime-type>
-  <mime-type type="application/x-smb-workgroup">
+  <mime-type type="application/x-smb-workgroup"> <!-- KDE-specific -->
     <sub-class-of type="inode/directory"/>
     <comment>Windows workgroup</comment>
   </mime-type>
@@ -397,25 +397,25 @@ Notes:
     <sub-class-of type="video/x-theora+ogg"/>
   </mime-type>
 
-  <mime-type type="application/x-kexiproject-shortcut"> <!-- inclusion in fdo depends on fdo #18109 -->
+  <mime-type type="application/x-kexiproject-shortcut"> <!-- added to shared-mime-info 0.70 -->
     <comment>shortcut to Kexi project on database server</comment>
     <glob pattern="*.kexis"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite"> <!-- inclusion in fdo depends on fdo #18109 -->
+  <mime-type type="application/x-kexiproject-sqlite"> <!-- added to shared-mime-info 0.70 -->
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite2"> <!-- inclusion in fdo depends on fdo #18109 -->
+  <mime-type type="application/x-kexiproject-sqlite2"> <!-- added to shared-mime-info 0.70 -->
     <sub-class-of type="application/x-sqlite2"/>
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite3"> <!-- inclusion in fdo depends on fdo #18109 -->
+  <mime-type type="application/x-kexiproject-sqlite3"> <!-- added to shared-mime-info 0.70 -->
     <sub-class-of type="application/x-sqlite3"/>
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
-  <mime-type type="application/x-kexi-connectiondata"> <!-- inclusion in fdo depends on fdo #18109 -->
+  <mime-type type="application/x-kexi-connectiondata"> <!-- added to shared-mime-info 0.70 -->
     <comment>data for database server connection</comment>
     <glob pattern="*.kexic"/>
   </mime-type>
