@@ -78,7 +78,10 @@ namespace KKeyServer {
             kWarning() << "Error retrieving current layout";
             return;
         }
-        if (layout != lastLayout) {
+        if (layout == lastLayout) {
+            CFRelease(layout);
+        } else {
+            // keyboard layout changed
 #ifndef NDEBUG
             const void *name = TISGetInputSourceProperty(layout, kTISPropertyLocalizedName);
             kDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef)name, 0);
