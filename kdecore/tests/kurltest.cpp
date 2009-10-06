@@ -1458,29 +1458,29 @@ void KUrlTest::testMoreBrokenStuff()
 
   {
       QUrl url;
-      url.setUrl("http://strange<username>@ok_hostname/", QUrl::TolerantMode);
+      url.setUrl("http://strange<username>@hostname/", QUrl::TolerantMode);
       QVERIFY(url.isValid());
   }
-  weird = "http://strange<username>@ok_hostname/";
+  weird = "http://strange<username>@hostname/";
   QVERIFY( weird.isValid() ); // KDE3: was valid. Fixed by _setEncodedUrl.
-  QCOMPARE( weird.host(), QString("ok_hostname") );
+  QCOMPARE( weird.host(), QString("hostname") );
 
   weird = "http://strange;hostname/";
-  QVERIFY( weird.isValid() ); // KDE3: was invalid. bah*2.
+  QVERIFY( !weird.isValid() );
 
   weird = "http://strange;username@strange;hostname/";
-  QVERIFY( weird.isValid() ); // KDE3: was invalid. bah*3.
+  QVERIFY( !weird.isValid() );
 
-  weird = "http://strange;username@ok_hostname/";
+  weird = "http://strange;username@hostname/";
   QVERIFY( weird.isValid() );
-  QCOMPARE( weird.host(), QString("ok_hostname") );
+  QCOMPARE( weird.host(), QString("hostname") );
 
   weird = "http://strange;username:password@strange;hostname/";
-  QVERIFY( weird.isValid() ); // KDE3: was invalid
+  QVERIFY( !weird.isValid() );
 
-  weird = "http://strange;username:password@ok_hostname/";
+  weird = "http://strange;username:password@hostname/";
   QVERIFY( weird.isValid() );
-  QCOMPARE( weird.host(), QString("ok_hostname") );
+  QCOMPARE( weird.host(), QString("hostname") );
 
   weird = "http://[strange;hostname]/";
   QVERIFY( !weird.isValid() );
@@ -1508,15 +1508,10 @@ void KUrlTest::testMoreBrokenStuff()
   KUrl broken;
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
-  QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
-  QCOMPARE( broken.url(), QString("ptal://mlc:usb:PC_970") ); // FAILS - but we need it...
-
+  QVERIFY (!broken.errorString().isEmpty());
+  //QCOMPARE( broken.url(), QString("ptal://mlc:usb:PC_970") ); // QUrl doesn't provide the initial string if it's an invalid url
   QUrl brokenUrl( "ptal://mlc:usb:PC_970" );
   QVERIFY( !brokenUrl.isValid() );
-  QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
-  QCOMPARE( brokenUrl.toString(), QString("ptal://mlc:usb:PC_970") );
-  QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
-  QCOMPARE( brokenUrl.toEncoded(), QByteArray("ptal://mlc:usb:PC_970") );
 
   QUrl dxOffEagle( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
   QVERIFY(dxOffEagle.isValid());
@@ -1889,12 +1884,6 @@ void KUrlTest::testIdn()
   KUrl uwp( "http://%C3%A4.de" );
   QVERIFY( uwp.isValid() );
   QCOMPARE( thiago.url(), QString("http://xn--4ca.de") ); // as above
-
-  // #183720
-  const QByteArray init = ".kde.org";
-  const QString fromAce = QUrl::fromAce(init);
-  QCOMPARE( fromAce, QString(".kde.org"));
-  QCOMPARE( QUrl::toAce(fromAce), init );
 }
 
 void KUrlTest::testUriMode()
