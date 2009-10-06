@@ -19,7 +19,7 @@
 
 #include "value.h"
 #include "converter.h"
-#include <math.h>
+#include <qmath.h>
 
 namespace KUnitConversion
 {
@@ -108,7 +108,7 @@ QString Value::toSymbolString(int fieldWidth, char format, int precision,
 
 Value& Value::round(uint decimals)
 {
-    uint div = pow(10, decimals);
+    uint div = qPow(10, decimals);
     double add = 0.5 / (double)div;
 
     d->number = (int)((d->number + add) * div) / (double)div;
