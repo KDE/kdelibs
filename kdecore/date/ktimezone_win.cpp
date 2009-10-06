@@ -224,6 +224,99 @@ Transitions transitions( const TIME_ZONE_INFORMATION & tz, int year ) {
 }
 
 
+static const int MAX_KEY_LENGTH = 255;
+
+// TCHAR can be either uchar, or wchar_t:
+static inline QString tchar_to_qstring( TCHAR * ustr ) {
+    const char * str = reinterpret_cast<const char*>( ustr );
+    return QString::fromLocal8Bit( str );
+}
+static inline QString tchar_to_qstring( const wchar_t * str ) {
+    return QString::fromWCharArray( str );
+}
+
+static QStringList list_key( HKEY key ) {
+
+    DWORD numSubKeys = 0;
+    QStringList result;
+
+    if ( RegQueryInfoKey( key, 0, 0, 0, &numSubKeys, 0, 0, 0, 0, 0, 0, 0 ) == ERROR_SUCCESS )
+        for ( DWORD i = 0 ; i < numSubKeys ; ++i ) {
+            TCHAR name[MAX_KEY_LENGTH+1];
+            DWORD nameLen = MAX_KEY_LENGTH;
+            if ( RegEnumKeyEx( key, i, name, &nameLen, 0, 0, 0, 0 ) == ERROR_SUCCESS )
+                result.push_back( tchar_to_qstring( name ) );
+        }
+
+    return result;
+}
+
+static QStringList list_standard_names()
+{
+    QStringList standardNames;
+    
+    HKEY timeZones;
+    QStringList keys;
+    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, timeZonesKey, 0, KEY_READ, &timeZones ) == ERROR_SUCCESS )
+        keys = list_key(timeZones);
+
+    std::basic_string<TCHAR> path( timeZonesKey );
+    path += TEXT( "\\" );
+
+    const HKeyCloser closer( timeZones );
+    Q_FOREACH( const QString & keyname, keys ) {
+	
+        std::basic_string<TCHAR> keypath(path);
+        keypath	+= keyname.toLocal8Bit().data();
+	HKEY key;
+	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
+	    return standardNames; // FIXME what's the right error handling here?
+	}
+
+	const HKeyCloser closer( key );
+
+	TIME_ZONE_INFORMATION tz;
+	get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
+
+	standardNames << tchar_to_qstring(tz.StandardName);
+    }
+    return standardNames;
+}
+
+static std::basic_string<TCHAR> pathFromZoneName(const KTimeZone& zone)
+{
+    std::basic_string<TCHAR> path( timeZonesKey );
+    path += TEXT( "\\" );
+
+    HKEY timeZones;
+    QStringList keys;
+    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, timeZonesKey, 0, KEY_READ, &timeZones ) == ERROR_SUCCESS )
+        keys = list_key(timeZones);
+
+    const HKeyCloser closer( timeZones );
+    Q_FOREACH( const QString & keyname, keys ) {
+	
+        std::basic_string<TCHAR> keypath(path);
+        keypath	+= keyname.toLocal8Bit().data();
+	HKEY key;
+	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
+	    return 0; // FIXME what's the right error handling here?
+	}
+
+	const HKeyCloser closer( key );
+
+	TIME_ZONE_INFORMATION tz;
+	get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
+
+	if ( tchar_to_qstring(tz.StandardName) == zone.name() ) {
+	    return keypath;
+	}
+    }
+    Q_ASSERT(false);
+
+    return path;
+}
+
 /******************************************************************************/
 
 class KSystemTimeZoneSourceWindowsPrivate
@@ -276,9 +369,7 @@ KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
 {
     KSystemTimeZoneDataWindows* data = new KSystemTimeZoneDataWindows();
 
-    std::basic_string<TCHAR> path( timeZonesKey );
-    path += TEXT( "\\" );
-    path += zone.name().toLocal8Bit().data();
+    std::basic_string<TCHAR> path = pathFromZoneName(zone);
 
     HKEY key;
     if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
@@ -389,33 +480,6 @@ static int offset_at_zone_time( const KTimeZone * caller, const SYSTEMTIME & zon
 }
 
 
-static const int MAX_KEY_LENGTH = 255;
-
-// TCHAR can be either uchar, or wchar_t:
-static inline QString tchar_to_qstring( TCHAR * ustr ) {
-    const char * str = reinterpret_cast<const char*>( ustr );
-    return QString::fromLocal8Bit( str );
-}
-static inline QString tchar_to_qstring( const wchar_t * str ) {
-    return QString::fromWCharArray( str );
-}
-
-static QStringList list_key( HKEY key ) {
-
-    DWORD numSubKeys = 0;
-    QStringList result;
-
-    if ( RegQueryInfoKey( key, 0, 0, 0, &numSubKeys, 0, 0, 0, 0, 0, 0, 0 ) == ERROR_SUCCESS )
-        for ( DWORD i = 0 ; i < numSubKeys ; ++i ) {
-            TCHAR name[MAX_KEY_LENGTH+1];
-            DWORD nameLen = MAX_KEY_LENGTH;
-            if ( RegEnumKeyEx( key, i, name, &nameLen, 0, 0, 0, 0 ) == ERROR_SUCCESS )
-                result.push_back( tchar_to_qstring( name ) );
-        }
-
-    return result;
-}
-
 
 KSystemTimeZoneBackendWindows * KSystemTimeZoneBackendWindows::clone() const
 {
@@ -470,10 +534,6 @@ KSystemTimeZoneWindows::KSystemTimeZoneWindows(KTimeZoneSource *source, const QS
 
 QStringList KSystemTimeZoneWindows::listTimeZones() 
 {
-    HKEY timeZones;
-    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, timeZonesKey, 0, KEY_READ, &timeZones ) != ERROR_SUCCESS )
-        return QStringList();
-    const HKeyCloser closer( timeZones );
-    return list_key( timeZones );
+    return list_standard_names();
 }
 
