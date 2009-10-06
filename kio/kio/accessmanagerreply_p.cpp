@@ -219,7 +219,7 @@ void AccessManagerReply::jobDone(KJob *kJob)
             kDebug( 7044 ) << errcode;
     }
 
-    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::ErrorCode), errcode);
+    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
     emit finished();
 }
 
