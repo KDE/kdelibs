@@ -358,10 +358,6 @@ KMenu *KNotificationItem::contextMenu() const
 
 void KNotificationItem::setAssociatedWidget(QWidget *associatedWidget)
 {
-    if (associatedWidget ) {
-        return;
-    }
-
     if (associatedWidget) {
         d->associatedWidget = associatedWidget->window();
     } else {
