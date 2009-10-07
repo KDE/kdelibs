@@ -800,29 +800,30 @@ static bool isUnsigned(const QString& type)
 /**
   Return parameter declaration for given type.
 */
-QString param( const QString &type )
+QString param( const QString &t )
 {
-    if ( type == "String" )           return "const QString &";
-    else if ( type == "StringList" )  return "const QStringList &";
-    else if ( type == "Font" )        return "const QFont &";
-    else if ( type == "Rect" )        return "const QRect &";
-    else if ( type == "Size" )        return "const QSize &";
-    else if ( type == "Color" )       return "const QColor &";
-    else if ( type == "Point" )       return "const QPoint &";
-    else if ( type == "Int" )         return "int";
-    else if ( type == "UInt" )        return "uint";
-    else if ( type == "Bool" )        return "bool";
-    else if ( type == "Double" )      return "double";
-    else if ( type == "DateTime" )    return "const QDateTime &";
-    else if ( type == "LongLong" )    return "qint64";
-    else if ( type == "ULongLong" )   return "quint64";
-    else if ( type == "IntList" )     return "const QList<int> &";
-    else if ( type == "Enum" )        return "int";
-    else if ( type == "Path" )        return "const QString &";
-    else if ( type == "PathList" )    return "const QStringList &";
-    else if ( type == "Password" )    return "const QString &";
-    else if ( type == "Url" )         return "const KUrl &";
-    else if ( type == "UrlList" )     return "const KUrl::List &";
+    const QString type = t.toLower();
+    if ( type == "string" )           return "const QString &";
+    else if ( type == "stringlist" )  return "const QStringList &";
+    else if ( type == "font" )        return "const QFont &";
+    else if ( type == "rect" )        return "const QRect &";
+    else if ( type == "size" )        return "const QSize &";
+    else if ( type == "color" )       return "const QColor &";
+    else if ( type == "point" )       return "const QPoint &";
+    else if ( type == "int" )         return "int";
+    else if ( type == "uint" )        return "uint";
+    else if ( type == "bool" )        return "bool";
+    else if ( type == "double" )      return "double";
+    else if ( type == "datetime" )    return "const QDateTime &";
+    else if ( type == "longlong" )    return "qint64";
+    else if ( type == "ulonglong" )   return "quint64";
+    else if ( type == "intlist" )     return "const QList<int> &";
+    else if ( type == "enum" )        return "int";
+    else if ( type == "path" )        return "const QString &";
+    else if ( type == "pathlist" )    return "const QStringList &";
+    else if ( type == "password" )    return "const QString &";
+    else if ( type == "url" )         return "const KUrl &";
+    else if ( type == "urllist" )     return "const KUrl::List &";
     else {
         std::cerr <<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
         return "QString"; //For now, but an assert would be better
@@ -832,58 +833,60 @@ QString param( const QString &type )
 /**
   Actual C++ storage type for given type.
 */
-QString cppType( const QString &type )
+QString cppType( const QString &t )
 {
-    if ( type == "String" )           return "QString";
-    else if ( type == "StringList" )  return "QStringList";
-    else if ( type == "Font" )        return "QFont";
-    else if ( type == "Rect" )        return "QRect";
-    else if ( type == "Size" )        return "QSize";
-    else if ( type == "Color" )       return "QColor";
-    else if ( type == "Point" )       return "QPoint";
-    else if ( type == "Int" )         return "int";
-    else if ( type == "UInt" )        return "uint";
-    else if ( type == "Bool" )        return "bool";
-    else if ( type == "Double" )      return "double";
-    else if ( type == "DateTime" )    return "QDateTime";
-    else if ( type == "LongLong" )    return "qint64";
-    else if ( type == "ULongLong" )   return "quint64";
-    else if ( type == "IntList" )     return "QList<int>";
-    else if ( type == "Enum" )        return "int";
-    else if ( type == "Path" )        return "QString";
-    else if ( type == "PathList" )    return "QStringList";
-    else if ( type == "Password" )    return "QString";
-    else if ( type == "Url" )         return "KUrl";
-    else if ( type == "UrlList" )     return "KUrl::List";
+    const QString type = t.toLower();
+    if ( type == "string" )           return "QString";
+    else if ( type == "stringlist" )  return "QStringList";
+    else if ( type == "font" )        return "QFont";
+    else if ( type == "rect" )        return "QRect";
+    else if ( type == "size" )        return "QSize";
+    else if ( type == "color" )       return "QColor";
+    else if ( type == "point" )       return "QPoint";
+    else if ( type == "int" )         return "int";
+    else if ( type == "uint" )        return "uint";
+    else if ( type == "bool" )        return "bool";
+    else if ( type == "double" )      return "double";
+    else if ( type == "datetime" )    return "QDateTime";
+    else if ( type == "longlong" )    return "qint64";
+    else if ( type == "ulonglong" )   return "quint64";
+    else if ( type == "intlist" )     return "QList<int>";
+    else if ( type == "enum" )        return "int";
+    else if ( type == "path" )        return "QString";
+    else if ( type == "pathlist" )    return "QStringList";
+    else if ( type == "password" )    return "QString";
+    else if ( type == "url" )         return "KUrl";
+    else if ( type == "urllist" )     return "KUrl::List";
     else {
         std::cerr<<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
         return "QString"; //For now, but an assert would be better
     }
 }
 
-QString defaultValue( const QString &type )
+QString defaultValue( const QString &t )
 {
-    if ( type == "String" )           return "\"\""; // Use empty string, not null string!
-    else if ( type == "StringList" )  return "QStringList()";
-    else if ( type == "Font" )        return "QFont()";
-    else if ( type == "Rect" )        return "QRect()";
-    else if ( type == "Size" )        return "QSize()";
-    else if ( type == "Color" )       return "QColor(128, 128, 128)";
-    else if ( type == "Point" )       return "QPoint()";
-    else if ( type == "Int" )         return "0";
-    else if ( type == "UInt" )        return "0";
-    else if ( type == "Bool" )        return "false";
-    else if ( type == "Double" )      return "0.0";
-    else if ( type == "DateTime" )    return "QDateTime()";
-    else if ( type == "LongLong" )    return "0";
-    else if ( type == "ULongLong" )   return "0";
-    else if ( type == "IntList" )     return "QList<int>()";
-    else if ( type == "Enum" )        return "0";
-    else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
-    else if ( type == "PathList" )    return "QStringList()";
-    else if ( type == "Password" )    return "\"\""; // Use empty string, not null string!
-    else if ( type == "Url" )         return "KUrl()";
-    else if ( type == "UrlList" )     return "KUrl::List()";
+    const QString type = t.toLower();
+    if ( type == "string" )           return "\"\""; // Use empty string, not null string!
+    else if ( type == "stringlist" )  return "QStringList()";
+    else if ( type == "font" )        return "QFont()";
+    else if ( type == "rect" )        return "QRect()";
+    else if ( type == "size" )        return "QSize()";
+    else if ( type == "color" )       return "QColor(128, 128, 128)";
+    else if ( type == "point" )       return "QPoint()";
+    else if ( type == "int" )         return "0";
+    else if ( type == "uint" )        return "0";
+    else if ( type == "bool" )        return "false";
+    else if ( type == "double" )      return "0.0";
+    else if ( type == "datedime" )    return "QDateTime()";
+    else if ( type == "longlong" )    return "0";
+    else if ( type == "ulonglong" )   return "0";
+    else if ( type == "intlist" )     return "QList<int>()";
+    else if ( type == "enum" )        return "0";
+    else if ( type == "path" )        return "\"\""; // Use empty string, not null string!
+    else if ( type == "pathlist" )    return "QStringList()";
+    else if ( type == "password" )    return "\"\""; // Use empty string, not null string!
+    else if ( type == "url" )         return "KUrl()";
+    else if ( type == "urllist" )     return "KUrl::List()";
     else {
         std::cerr<<"Error, kconfig_compiler does not support the \""<< type <<"\" type!"<<std::endl;
         return "QString"; //For now, but an assert would be better
