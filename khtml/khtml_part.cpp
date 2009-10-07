@@ -5549,10 +5549,14 @@ DOM::Node KHTMLPart::nonSharedNodeUnderMouse() const
 
 void KHTMLPart::emitSelectionChanged()
 {
-  emit d->m_extension->enableAction( "copy", hasSelection() );
-
-  emit d->m_extension->selectionInfo( selectedText() );
-  emit selectionChanged();
+    // Don't emit signals about our selection if this is a frameset;
+    // the active frame has the selection (#187403)
+    if (!d->m_activeFrame)
+    {
+        emit d->m_extension->enableAction( "copy", hasSelection() );
+        emit d->m_extension->selectionInfo( selectedText() );
+        emit selectionChanged();
+    }
 }
 
 int KHTMLPart::zoomFactor() const

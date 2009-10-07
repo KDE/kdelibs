@@ -193,7 +193,7 @@ void KHTMLPartBrowserExtension::cut()
 {
     if ( m_extensionProxy )
     {
-        callExtensionProxyMethod( "cut()" );
+        callExtensionProxyMethod( "cut" );
         return;
     }
 
@@ -210,16 +210,16 @@ void KHTMLPartBrowserExtension::copy()
 {
     if ( m_extensionProxy )
     {
-        callExtensionProxyMethod( "copy()" );
+        callExtensionProxyMethod( "copy" );
         return;
     }
 
-    kDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()";
     if ( !m_editableFormWidget )
     {
         // get selected text and paste to the clipboard
         QString text = m_part->selectedText();
         text.replace( QChar( 0xa0 ), ' ' );
+        //kDebug(6050) << text;
 
         QClipboard *cb = QApplication::clipboard();
         disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
@@ -285,7 +285,7 @@ void KHTMLPartBrowserExtension::paste()
 {
     if ( m_extensionProxy )
     {
-        callExtensionProxyMethod( "paste()" );
+        callExtensionProxyMethod( "paste" );
         return;
     }
 
@@ -301,10 +301,6 @@ void KHTMLPartBrowserExtension::paste()
 void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
 {
     if ( !m_extensionProxy )
-        return;
-
-    int slot = m_extensionProxy->metaObject()->indexOfSlot( method );
-    if ( slot == -1 )
         return;
 
     QMetaObject::invokeMethod(m_extensionProxy, method, Qt::DirectConnection);
