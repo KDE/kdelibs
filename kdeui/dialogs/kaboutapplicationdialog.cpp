@@ -45,6 +45,8 @@ public:
           aboutData(0)
     {}
 
+    void init( const KAboutData *aboutData, Options opt );
+
     void _k_showLicense( const QString &number );
 
     KAboutApplicationDialog *q;
@@ -56,26 +58,38 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
   : KDialog(parent),
     d(new Private(this))
 {
-    if (aboutData == 0)
-        aboutData = KGlobal::mainComponent().aboutData();
+    d->init( aboutData, NoOptions );
+}
 
-    d->aboutData = aboutData;
+KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, Options opt, QWidget *parent)
+  : KDialog(parent),
+    d(new Private(this))
+{
+    d->init( aboutData, opt );
+}
+
+void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
+{
+    if (ad == 0)
+        ad = KGlobal::mainComponent().aboutData();
+
+    aboutData = ad;
 
     if (!aboutData) {
         QLabel *errorLabel = new QLabel(i18n("<qt>No information available.<br />"
-                                             "The supplied KAboutData object does not exist.</qt>"), this);
+                                             "The supplied KAboutData object does not exist.</qt>"), q);
     
         errorLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        setMainWidget(errorLabel);
+        q->setMainWidget(errorLabel);
         return;
     }
 
-    setPlainCaption(i18n("About %1", aboutData->programName()));
-    setButtons(KDialog::Close);
-    setDefaultButton(KDialog::Close);
-    setModal(false);
+    q->setPlainCaption(i18n("About %1", aboutData->programName()));
+    q->setButtons(KDialog::Close);
+    q->setDefaultButton(KDialog::Close);
+    q->setModal(false);
 
-    KTitleWidget *titleWidget = new KTitleWidget(this);
+    KTitleWidget *titleWidget = new KTitleWidget(q);
 
     QIcon windowIcon;
     if (!aboutData->programIconName().isEmpty()) {
@@ -89,8 +103,12 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     else if (aboutData->programLogo().canConvert<QImage>())
         titleWidget->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()), KTitleWidget::ImageLeft);
 
-    titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>",
-                         aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
+    if ( opt & HideKdeVersion )
+        titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />&nbsp;</html>",
+                                  aboutData->programName(), aboutData->version()));
+    else
+        titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>",
+                                  aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
@@ -126,14 +144,14 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                                                                        i18n("License: %1",
                                                                             license.name(KAboutData::FullName))));
         showLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        connect(showLicenseLabel, SIGNAL(linkActivated(QString)), this, SLOT(_k_showLicense(QString)));
+        connect(showLicenseLabel, SIGNAL(linkActivated(QString)), q, SLOT(_k_showLicense(QString)));
 
         aboutLayout->addWidget(showLicenseLabel);
     }
 
     aboutLayout->addStretch();
 
-    QWidget *aboutWidget = new QWidget(this);
+    QWidget *aboutWidget = new QWidget(q);
     aboutWidget->setLayout(aboutLayout);
 
     tabWidget->addTab(aboutWidget, i18n("&About"));
@@ -213,6 +231,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
     }
 
+    if ( !( opt & HideTranslators ) ) {
     const QList<KAboutPerson> translatorList = aboutData->translators();
 
     if(translatorList.count() > 0) {
@@ -234,6 +253,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         translatorTextBrowser->setHtml(translatorPageText);
         tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
     }
+    }
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(titleWidget);
@@ -243,7 +263,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     QWidget *mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
 
-    setMainWidget(mainWidget);
+    q->setMainWidget(mainWidget);
 }
 
 KAboutApplicationDialog::~KAboutApplicationDialog()
