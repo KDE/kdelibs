@@ -866,7 +866,7 @@ KDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImage &image)
         icon.data = QByteArray((char*)image.bits(), image.numBytes());
     } else {
         QImage image32 = image.convertToFormat(QImage::Format_ARGB32);
-        icon.data = QByteArray((char*)image.bits(), image.numBytes());
+        icon.data = QByteArray((char*)image32.bits(), image32.numBytes());
     }
 
     //swap to network byte order if we are little endian
