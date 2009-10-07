@@ -24,6 +24,8 @@
 
 #include <kdialog.h>
 
+#include <QtCore/QFlags>
+
 class KAboutData;
 
 /**
@@ -44,8 +46,25 @@ class KAboutData;
 class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
 {
     Q_OBJECT
-
+    Q_FLAGS( Options )
     public:
+        enum Option {
+            NoOptions       = 0x0,
+            HideTranslators = 0x1,
+            HideKdeVersion  = 0x2
+        };
+        Q_DECLARE_FLAGS( Options, Option )
+
+        /**
+         * Constructor. Creates a fully featured "About Application" dialog box.
+         *
+         * @param aboutData A pointer to a KAboutData object which data
+         *        will be used for filling the dialog.
+         * @param parent The parent of the dialog box. You should use the
+         *        toplevel window so that the dialog becomes centered.
+         */
+        explicit KAboutApplicationDialog(const KAboutData *aboutData, Options opts, QWidget *parent = 0);
+
         /**
          * Constructor. Creates a fully featured "About Application" dialog box.
          *
@@ -66,5 +85,7 @@ class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
 
         Q_DISABLE_COPY( KAboutApplicationDialog )
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( KAboutApplicationDialog::Options )
 
 #endif
