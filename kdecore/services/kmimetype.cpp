@@ -233,6 +233,11 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
     return KMimeType::Ptr();
 }
 
+static bool mimeTypeListSortByName(const KMimeType::Ptr& m1, const KMimeType::Ptr& m2)
+{
+    return m1->name() < m2->name();
+}
+
 /*
 
 As agreed on the XDG list (and unlike the current shared-mime spec):
@@ -341,6 +346,8 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
         if (accuracy)
             *accuracy = 20;
         // We have to pick one...
+        // At least make this deterministic
+        qSort(mimeList.begin(), mimeList.end(), mimeTypeListSortByName);
         return mimeList.first();
     }
 
