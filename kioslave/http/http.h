@@ -301,6 +301,7 @@ protected:
     * long as no error occurs.
     */
   ssize_t write(const void *buf, size_t nbytes);
+  using SlaveBase::write;
 
   /**
     * Add an encoding on to the appropriate stack this
