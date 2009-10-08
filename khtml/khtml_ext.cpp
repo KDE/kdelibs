@@ -200,10 +200,12 @@ void KHTMLPartBrowserExtension::cut()
     if ( !m_editableFormWidget )
         return;
 
-    if ( m_editableFormWidget->inherits( "QLineEdit" ) )
-        static_cast<QLineEdit *>( &(*m_editableFormWidget) )->cut();
-    else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-        static_cast<QTextEdit *>( &(*m_editableFormWidget) )->cut();
+    QLineEdit* lineEdit = qobject_cast<QLineEdit *>( m_editableFormWidget );
+    if ( lineEdit && !lineEdit->isReadOnly() )
+        lineEdit->cut();
+    QTextEdit* textEdit = qobject_cast<QTextEdit *>( m_editableFormWidget );
+    if ( textEdit && !textEdit->isReadOnly() )
+        textEdit->cut();
 }
 
 void KHTMLPartBrowserExtension::copy()
@@ -249,10 +251,12 @@ void KHTMLPartBrowserExtension::copy()
     }
     else
     {
-        if ( m_editableFormWidget->inherits( "QLineEdit" ) )
-            static_cast<QLineEdit *>( &(*m_editableFormWidget) )->copy();
-        else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-            static_cast<QTextEdit *>( &(*m_editableFormWidget) )->copy();
+        QLineEdit* lineEdit = qobject_cast<QLineEdit *>( m_editableFormWidget );
+        if ( lineEdit )
+            lineEdit->copy();
+        QTextEdit* textEdit = qobject_cast<QTextEdit *>( m_editableFormWidget );
+        if ( textEdit )
+            textEdit->copy();
     }
 }
 
@@ -292,10 +296,12 @@ void KHTMLPartBrowserExtension::paste()
     if ( !m_editableFormWidget )
         return;
 
-    if ( m_editableFormWidget->inherits( "QLineEdit" ) )
-        static_cast<QLineEdit *>( &(*m_editableFormWidget) )->paste();
-    else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-        static_cast<QTextEdit *>( &(*m_editableFormWidget) )->paste();
+    QLineEdit* lineEdit = qobject_cast<QLineEdit *>( m_editableFormWidget );
+    if ( lineEdit && !lineEdit->isReadOnly() )
+        lineEdit->paste();
+    QTextEdit* textEdit = qobject_cast<QTextEdit *>( m_editableFormWidget );
+    if ( textEdit && !textEdit->isReadOnly() )
+        textEdit->paste();
 }
 
 void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
