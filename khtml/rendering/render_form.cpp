@@ -265,10 +265,10 @@ void RenderFormElement::updateFromElement()
 {
     m_widget->setEnabled(!element()->disabled());
 
-    // If we've disabled/made r/o a focused element, clear its focus,
+    // If we've disabled a focused element, clear its focus,
     // so Qt doesn't do funny stuff like let one type into a disabled
     // line edit.
-    if ((element()->disabled() || element()->readOnly()) && element()->focused())
+    if (element()->disabled() && element()->focused())
         document()->quietResetFocus();
 
     RenderWidget::updateFromElement();
