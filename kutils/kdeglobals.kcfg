@@ -435,10 +435,6 @@
   </entry>
  </group>
  <group name="Paths" >
-  <entry key="Trash" type="Path" >
-   <label>Path for the trash can</label>
-   <default>$HOME/Desktop/Trash</default>
-  </entry>
   <entry key="Autostart" type="Path" >
     <label>Path to the autostart directory</label>
     <whatsthis>Path to the directory containing executables to be run on session login</whatsthis>
