@@ -172,7 +172,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         const QList<KAboutPerson> lst = aboutData->authors();
         for (int i = 0; i < lst.size(); ++i) {
-            authorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(lst.at(i).name());
+            QString pname = i18nc("@item Author name in about dialog", "%1", lst.at(i).name());
+            authorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(pname);
             if (!lst.at(i).emailAddress().isEmpty())
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg(lst.at(i).emailAddress());
             if (!lst.at(i).webAddress().isEmpty())
@@ -196,7 +197,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         const QList<KAboutPerson> lst = aboutData->credits();
         for (int i = 0; i < lst.size(); ++i) {
-            creditsPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(lst.at(i).name());
+            QString pname = i18nc("@item Contributor name in about dialog.", "%1", lst.at(i).name());
+            creditsPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(pname);
             if (!lst.at(i).emailAddress().isEmpty())
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg(lst.at(i).emailAddress());
             if (!lst.at(i).webAddress().isEmpty())
