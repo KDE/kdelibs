@@ -36,6 +36,7 @@
 #include <QDir>
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QCoreApplication>
+#include <QProcess>
 #include <config.h>
 #include <config-prefix.h>
 #include <kconfiggroup.h>
@@ -50,6 +51,15 @@ static void printResult(const QString &s)
 		QString path = QDir::convertSeparators( s );
         printf("%s\n", path.toLocal8Bit().constData());
 	}
+}
+
+static QString readXdg( const char* type )
+{
+    QProcess proc;
+    proc.start( "xdg-user-dir", QStringList() << type );
+    if (!proc.waitForStarted() || !proc.waitForFinished())
+        return QString();
+    return QString::fromLocal8Bit( proc.readAll()).trimmed();
 }
 
 int main(int argc, char **argv)
@@ -193,10 +203,10 @@ int main(int argc, char **argv)
     {
         //code duplicated with KGlobalSettings::initPath()
         if ( type == "desktop" )
-        {
-            KConfigGroup g( KGlobal::config(), "Paths" );
-            QString path=QDir::homePath() + "/Desktop/";
-            path=g.readPathEntry( "Desktop", path);
+        { // QDesktopServices is QtGui :-/
+            QString path = readXdg( "DESKTOP" );
+            if (path.isEmpty())
+                path = QDir::homePath() + QLatin1String("/Desktop");
             path=QDir::cleanPath( path );
             if ( !path.endsWith('/') )
               path.append(QLatin1Char('/'));
@@ -215,13 +225,9 @@ int main(int argc, char **argv)
         }
         else if ( type == "document" )
         {
-            KConfigGroup g( KGlobal::config(), "Paths" );
-#ifdef Q_WS_WIN
-            QString path=getWin32ShellFoldersPath(QLatin1String("Personal"));
-#else
-            QString path=QDir::homePath();
-#endif
-            path=g.readPathEntry( "Desktop", path);
+            QString path = readXdg( "DOCUMENTS" );
+            if ( path.isEmpty())
+                path = QDir::homePath() + QLatin1String("/Documents");
             path=QDir::cleanPath( path );
             if ( !path.endsWith('/') )
               path.append(QLatin1Char('/'));

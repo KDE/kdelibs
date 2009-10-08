@@ -444,16 +444,6 @@
     <whatsthis>Path to the directory containing executables to be run on session login</whatsthis>
     <default>$KDEHOME/Autostart</default>
   </entry>
-  <entry key="Desktop" type="Path" >
-    <label>Path to the desktop directory</label>
-    <whatsthis>Directory where the files on the desktop are stored</whatsthis>
-    <default>$HOME/Desktop</default>
-  </entry>
-  <entry key="Documents" type="Path" >
-    <label>Path to documents folder</label>
-    <whatsthis></whatsthis>
-    <default>$HOME</default>
-  </entry>
  </group>
  <group name="PreviewSettings" >
   <entry key="BoostSize" type="Bool" />
