@@ -127,7 +127,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
     if (d.isEmpty())
         return;
 
-    kDebug() << "Got" << d.size() << "bytes as input";
+    //kDebug() << "Got" << d.size() << "bytes as input";
     if (m_firstData) {
         if (m_deflateMode) {
             bool zlibHeader = true;
