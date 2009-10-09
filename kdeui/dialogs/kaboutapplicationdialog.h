@@ -50,6 +50,10 @@ class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
     Q_OBJECT
     Q_FLAGS( Options )
     public:
+
+        /**
+         * @since 4.4
+         */
         enum Option {
             NoOptions       = 0x0,
             HideTranslators = 0x1,
@@ -64,6 +68,8 @@ class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
          *        will be used for filling the dialog.
          * @param parent The parent of the dialog box. You should use the
          *        toplevel window so that the dialog becomes centered.
+         *
+         * @since 4.4
          */
         explicit KAboutApplicationDialog(const KAboutData *aboutData, Options opts, QWidget *parent = 0);
 
