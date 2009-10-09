@@ -69,9 +69,9 @@ FuelEfficiency::FuelEfficiency() : UnitCategory(FuelEfficiencyCategory)
     );
     U(KilometrePerLitre, new kmpl(),
       i18nc("fuelefficiency unit symbol", "kmpl"),
-      i18nc("unit description in lists", "kilometres per litre"),
-      i18nc("unit synonyms for matching user input", "kilometre per litre;kilometres per litre;kmpl;km/l"),
-      ki18nc("amount in units (real)", "%1 kilometres per litre"),
-      ki18ncp("amount in units (integer)", "%1 kilometre per litre", "%1 kilometres per litre")
+      i18nc("unit description in lists", "kilometers per liter"),
+      i18nc("unit synonyms for matching user input", "kilometer per liter;kilometers per liter;kmpl;km/l"),
+      ki18nc("amount in units (real)", "%1 kilometers per liter"),
+      ki18ncp("amount in units (integer)", "%1 kilometer per liter", "%1 kilometers per liter")
     );
 }
