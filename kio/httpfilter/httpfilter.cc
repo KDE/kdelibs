@@ -124,35 +124,36 @@ HTTPFilterGZip::~HTTPFilterGZip()
 void
 HTTPFilterGZip::slotInput(const QByteArray &d)
 {
-    //kDebug() << "Got" << d.size() << "bytes as input";
-    if (!d.isEmpty()) {
+    if (d.isEmpty())
+        return;
 
-        if (m_firstData) {
-            if (m_deflateMode) {
-                bool zlibHeader = true;
-                // Autodetect broken webservers (thanks Microsoft) who send raw-deflate
-                // instead of zlib-headers-deflate when saying Content-Encoding: deflate.
-                const char firstChar = d[0];
-                if ((firstChar & 0x0f) != 8) {
-                    // In a zlib header, CM should be 8 (cf RFC 1950)
+    kDebug() << "Got" << d.size() << "bytes as input";
+    if (m_firstData) {
+        if (m_deflateMode) {
+            bool zlibHeader = true;
+            // Autodetect broken webservers (thanks Microsoft) who send raw-deflate
+            // instead of zlib-headers-deflate when saying Content-Encoding: deflate.
+            const char firstChar = d[0];
+            if ((firstChar & 0x0f) != 8) {
+                // In a zlib header, CM should be 8 (cf RFC 1950)
+                zlibHeader = false;
+            } else if (d.size() > 1) {
+                const char flg = d[1];
+                if ((firstChar * 256 + flg) % 31 != 0) { // Not a multiple of 31? invalid zlib header then
                     zlibHeader = false;
-                } else if (d.size() > 1) {
-                    const char flg = d[1];
-                    if ((firstChar * 256 + flg) % 31 != 0) { // Not a multiple of 31? invalid zlib header then
-                        zlibHeader = false;
-                    }
                 }
-                //if (!zlibHeader)
-                //    kDebug() << "Bad webserver, uses raw-deflate instead of zlib-deflate...";
-                m_gzipFilter->init(QIODevice::ReadOnly, zlibHeader ? KGzipFilter::ZlibHeader : KGzipFilter::RawDeflate);
-            } else {
-                m_gzipFilter->init(QIODevice::ReadOnly, KGzipFilter::GZipHeader);
             }
-            m_firstData = false;
+            //if (!zlibHeader)
+            //    kDebug() << "Bad webserver, uses raw-deflate instead of zlib-deflate...";
+            m_gzipFilter->init(QIODevice::ReadOnly, zlibHeader ? KGzipFilter::ZlibHeader : KGzipFilter::RawDeflate);
+        } else {
+            m_gzipFilter->init(QIODevice::ReadOnly, KGzipFilter::GZipHeader);
         }
-
-        m_gzipFilter->setInBuffer(d.constData(), d.size());
+        m_firstData = false;
     }
+
+    m_gzipFilter->setInBuffer(d.constData(), d.size());
+
     while (!m_gzipFilter->inBufferEmpty() && !m_finished) {
         char buf[8192];
         m_gzipFilter->setOutBuffer(buf, sizeof(buf));
