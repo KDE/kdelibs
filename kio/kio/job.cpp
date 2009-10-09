@@ -74,8 +74,6 @@ static inline Slave *jobSlave(SimpleJob *job)
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
-
 Job::Job() : KCompositeJob(*new JobPrivate, 0)
 {
     setCapabilities( KJob::Killable | KJob::Suspendable );

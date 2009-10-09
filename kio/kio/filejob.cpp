@@ -70,8 +70,6 @@ public:
 
 using namespace KIO;
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
-
 FileJob::FileJob(FileJobPrivate &dd)
     : SimpleJob(dd)
 {

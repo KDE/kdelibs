@@ -57,8 +57,6 @@ using namespace KIO;
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
-
 enum DestinationState {
     DEST_NOT_STATED,
     DEST_IS_DIR,

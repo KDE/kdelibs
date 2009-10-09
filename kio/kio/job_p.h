@@ -28,6 +28,8 @@
 #include "jobuidelegate.h"
 #include "kuiserverjobtracker.h"
 
+#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
+
 namespace KIO {
     class Slave;
 

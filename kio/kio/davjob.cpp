@@ -42,8 +42,6 @@
 
 #include "jobuidelegate.h"
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
-
 using namespace KIO;
 
 /** @internal */
