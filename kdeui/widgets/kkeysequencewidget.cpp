@@ -506,8 +506,8 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
     //on windows F12 is reserved by the debugger at all times, so we can't use it for a global shortcut
     if (KKeySequenceWidget::GlobalShortcuts && keySequence.toString().contains("F12")) {
         QString title = i18n("Reserved Shortcut");
-        QString message = i18n("The F12 key is reserved on Windows and it can't be used for a global shortcut.\n"
-                               "Please choose another one");
+        QString message = i18n("The F12 key is reserved on Windows, so cannot be used for a global shortcut.\n"
+                               "Please choose another one.");
 
         KMessageBox::sorry(q, message, title);
         return false;
