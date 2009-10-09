@@ -78,7 +78,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     if (!aboutData) {
         QLabel *errorLabel = new QLabel(i18n("<qt>No information available.<br />"
                                              "The supplied KAboutData object does not exist.</qt>"), q);
-    
+
         errorLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
         q->setMainWidget(errorLabel);
         return;
@@ -123,7 +123,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 
     if (!aboutData->homepage().isEmpty())
         aboutPageText += '\n' + QString("<a href=\"%1\">%1</a>").arg(aboutData->homepage()) + '\n';
-	aboutPageText = aboutPageText.trimmed();
+    aboutPageText = aboutPageText.trimmed();
 
     QLabel *aboutLabel = new QLabel;
     aboutLabel->setWordWrap(true);
@@ -198,8 +198,8 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-			if (i < lst.size() - 1)
-				authorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+            if (i < lst.size() - 1)
+                authorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         KTextBrowser *authorTextBrowser = new KTextBrowser;
@@ -223,8 +223,8 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-			if (i < lst.size() - 1)
-				creditsPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+            if (i < lst.size() - 1)
+                creditsPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
@@ -235,27 +235,27 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     }
 
     if ( !( opt & HideTranslators ) ) {
-    const QList<KAboutPerson> translatorList = aboutData->translators();
+        const QList<KAboutPerson> translatorList = aboutData->translators();
 
-    if(translatorList.count() > 0) {
-        QString translatorPageText;
+        if(translatorList.count() > 0) {
+            QString translatorPageText;
 
-        QList<KAboutPerson>::ConstIterator it;
-        for(it = translatorList.begin(); it != translatorList.end(); ++it) {
-            translatorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg((*it).name());
-            if (!(*it).emailAddress().isEmpty())
-                translatorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg((*it).emailAddress());
-            translatorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+            QList<KAboutPerson>::ConstIterator it;
+            for(it = translatorList.begin(); it != translatorList.end(); ++it) {
+                translatorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg((*it).name());
+                if (!(*it).emailAddress().isEmpty())
+                    translatorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg((*it).emailAddress());
+                translatorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+            }
+
+            translatorPageText += KAboutData::aboutTranslationTeam();
+
+            KTextBrowser *translatorTextBrowser = new KTextBrowser;
+            translatorTextBrowser->setFrameStyle(QFrame::NoFrame);
+            translatorTextBrowser->setPalette(transparentBackgroundPalette);
+            translatorTextBrowser->setHtml(translatorPageText);
+            tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
         }
-
-        translatorPageText += KAboutData::aboutTranslationTeam();
-
-        KTextBrowser *translatorTextBrowser = new KTextBrowser;
-        translatorTextBrowser->setFrameStyle(QFrame::NoFrame);
-        translatorTextBrowser->setPalette(transparentBackgroundPalette);
-        translatorTextBrowser->setHtml(translatorPageText);
-        tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
-    }
     }
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
