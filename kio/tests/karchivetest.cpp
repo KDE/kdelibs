@@ -42,7 +42,7 @@ static void writeTestFilesToArchive( KArchive* archive )
     bool ok;
     ok = archive->writeFile( "empty", "weis", "users", "", 0 );
     QVERIFY( ok );
-    ok = archive->writeFile( "test1", "weis", "users", "Hallo", 5 );
+    ok = archive->writeFile( "test1", "weis", "users", "Hallo", 5, 0100440 );
     QVERIFY( ok );
     // Now let's try with the prepareWriting/writeData/finishWriting API
     ok = archive->prepareWriting( "test2", "weis", "users", 8 );
@@ -316,7 +316,7 @@ void KArchiveTest::testReadTar()
     QCOMPARE( listing[ 6], QString("mode=40777 user=%1 group=%2 path=my type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 8], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29") );
-    QCOMPARE( listing[ 9], QString("mode=100644 user=weis group=users path=test1 type=file size=5") );
+    QCOMPARE( listing[ 9], QString("mode=100440 user=weis group=users path=test1 type=file size=5") );
     QCOMPARE( listing[10], QString("mode=100644 user=weis group=users path=test2 type=file size=8") );
     QCOMPARE( listing[11], QString("mode=40777 user=%1 group=%2 path=z type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     // This one was added with addLocalFile, so ignore mode/user/group.
@@ -516,7 +516,7 @@ void KArchiveTest::testReadZip()
     QCOMPARE( listing[ 7], QString("mode=40777 path=my type=dir") );
     QCOMPARE( listing[ 8], QString("mode=40777 path=my/dir type=dir") );
     QCOMPARE( listing[ 9], QString("mode=100644 path=my/dir/test3 type=file size=29") );
-    QCOMPARE( listing[10], QString("mode=100644 path=test1 type=file size=5") );
+    QCOMPARE( listing[10], QString("mode=100440 path=test1 type=file size=5") );
     QCOMPARE( listing[11], QString("mode=100644 path=test2 type=file size=8") );
     QCOMPARE( listing[12], QString("mode=40777 path=z type=dir") );
     // This one was added with addLocalFile, so ignore mode
