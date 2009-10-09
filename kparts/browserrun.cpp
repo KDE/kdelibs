@@ -335,10 +335,6 @@ static QString makeQuestion( const KUrl& url, const QString& mimeType, const QSt
 // TODO should take a QWidget* parent argument
 BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
 {
-    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
-    // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
-    //       FileTypeDetails::updateAskSave()
-
     QString question = makeQuestion( url, mimeType, suggestedFileName );
 
     // text and icon used for the open button
@@ -351,10 +347,9 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
     int choice = KMessageBox::questionYesNoCancel(
         0, question, url.host(),
         KStandardGuiItem::saveAs(), openItem, KStandardGuiItem::cancel(),
-        QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
+        QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC with kdebase/runtime/keditfiletype/filetypedetails.cpp!!!
 
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
-    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 }
 
 //static
@@ -363,7 +358,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this function in sync with
-    // kdebase/apps/konqueror/settings/filetypes/filetypedetails.cpp
+    // kdebase/runtime/keditfiletype/filetypedetails.cpp
     //       FileTypeDetails::updateAskSave()
 
     KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
