@@ -71,7 +71,7 @@ void KCookie::getXCookie()
 #endif
     if (d->m_Display.isEmpty())
     {
-	kError(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.\n";
+	kError(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.";
 	return;
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
@@ -83,20 +83,20 @@ void KCookie::getXCookie()
     proc.start("xauth", QStringList() << "list" << disp);
     if (!proc.waitForStarted())
     {
-	kError(kdesuDebugArea()) << k_lineinfo << "Could not run xauth.\n";
+	kError(kdesuDebugArea()) << k_lineinfo << "Could not run xauth.";
 	return;
     }
     proc.waitForReadyRead(100);
     QByteArray output = proc.readLine().simplified();
     if (output.isEmpty())
     {
-       kWarning(kdesuDebugArea()) << "No X authentication info set for display " <<
-       d->m_Display << endl; return;
+       kWarning(kdesuDebugArea()) << "No X authentication info set for display" << d->m_Display;
+       return;
     }
     QList<QByteArray> lst = output.split(' ');
     if (lst.count() != 3)
     {
-	kError(kdesuDebugArea()) << k_lineinfo << "parse error.\n";
+	kError(kdesuDebugArea()) << k_lineinfo << "parse error.";
 	return;
     }
     d->m_DisplayAuth = (lst[1] + ' ' + lst[2]);

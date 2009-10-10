@@ -58,7 +58,7 @@ KDEsuClient::KDEsuClient()
     QString display = QString::fromAscii(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
-        kWarning(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set\n";
+        kWarning(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.";
         return;
     }
 
@@ -96,7 +96,7 @@ int KDEsuClient::connect()
     d->sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (d->sockfd < 0)
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "socket(): " << perror << "\n";
+	kWarning(kdesuDebugArea()) << k_lineinfo << "socket():" << perror;
 	return -1;
     }
     struct sockaddr_un addr;
@@ -119,7 +119,7 @@ int KDEsuClient::connect()
     {
        if (euid != getuid())
        {
-            kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid = " << euid;
+            kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid =" << euid;
             close(d->sockfd); d->sockfd = -1;
             return -1;
        }
@@ -141,7 +141,7 @@ int KDEsuClient::connect()
     }
     if (s.st_uid != getuid())
     {
-        kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid = " << s.st_uid;
+        kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid =" << s.st_uid;
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
@@ -161,7 +161,7 @@ int KDEsuClient::connect()
     {
         if (cred.uid != getuid())
         {
-            kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid = " << cred.uid;
+            kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid =" << cred.uid;
             close(d->sockfd); d->sockfd = -1;
             return -1;
         }
@@ -193,7 +193,7 @@ int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
     int nbytes = recv(d->sockfd, buf, 1023, 0);
     if (nbytes <= 0)
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "no reply from daemon\n";
+	kWarning(kdesuDebugArea()) << k_lineinfo << "no reply from daemon.";
 	return -1;
     }
     buf[nbytes] = '\000';
@@ -309,7 +309,7 @@ QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
     QList<QByteArray> list;
     if( !reply.isEmpty() )
     {
-        // kDebug(kdesuDebugArea()) << "Found a matching entry: " << reply;
+        // kDebug(kdesuDebugArea()) << "Found a matching entry:" << reply;
         while (1)
         {
             pos = reply.indexOf( '\007', index );
@@ -392,7 +392,7 @@ static QString findDaemon()
 
     if (daemon.isEmpty())
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "daemon not found\n";
+	kWarning(kdesuDebugArea()) << k_lineinfo << "daemon not found.";
     }
     return daemon;
 }
@@ -407,7 +407,7 @@ bool KDEsuClient::isServerSGID()
     KDE_struct_stat sbuf;
     if (KDE::stat(d->daemon, &sbuf) < 0)
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "stat(): " << perror << "\n";
+	kWarning(kdesuDebugArea()) << k_lineinfo << "stat():" << perror;
 	return false;
     }
     return (sbuf.st_mode & S_ISGID);
@@ -421,7 +421,7 @@ int KDEsuClient::startServer()
        return -1;
 
     if (!isServerSGID()) {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "kdesud not setgid!\n";
+	kWarning(kdesuDebugArea()) << k_lineinfo << "kdesud not setgid!";
     }
 
     // kdesud only forks to the background after it is accepting

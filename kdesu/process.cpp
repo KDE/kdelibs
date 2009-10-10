@@ -106,7 +106,7 @@ int PtyProcess::checkPidExited(pid_t pid)
 
 	if (ret < 0)
 	{
-		kError(kdesuDebugArea()) << k_lineinfo << "waitpid(): " << perror << "\n";
+		kError(kdesuDebugArea()) << k_lineinfo << "waitpid():" << perror;
 		return Error;
 	}
 	if (ret == pid)
@@ -148,7 +148,7 @@ int PtyProcess::init()
     d->m_pPTY = new KPty();
     if (!d->m_pPTY->open())
     {
-        kError(kdesuDebugArea()) << k_lineinfo << "Failed to open PTY.\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "Failed to open PTY.";
         return -1;
     }
     d->m_Inbuf.resize(0);
@@ -199,7 +199,7 @@ QByteArray PtyProcess::readAll(bool block)
     int flags = fcntl(fd(), F_GETFL);
     if (flags < 0)
     {
-        kError(kdesuDebugArea()) << k_lineinfo << "fcntl(F_GETFL): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "fcntl(F_GETFL):" << perror;
         return ret;
     }
     int oflags = flags;
@@ -292,7 +292,7 @@ void PtyProcess::setExitString(const QByteArray &exit)
 
 int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 {
-    kDebug(kdesuDebugArea()) << k_lineinfo << "Running `" << command << "'\n";
+    kDebug(kdesuDebugArea()) << k_lineinfo << "Running" << command;
     int i;
 
     if (init() < 0)
@@ -300,7 +300,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
     if ((m_Pid = fork()) == -1)
     {
-        kError(kdesuDebugArea()) << k_lineinfo << "fork(): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "fork():" << perror;
         return -1;
     }
 
@@ -344,7 +344,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         QString file = KStandardDirs::findExe(command);
         if (file.isEmpty())
         {
-            kError(kdesuDebugArea()) << k_lineinfo << command << " not found\n";
+            kError(kdesuDebugArea()) << k_lineinfo << command << "not found.";
             _exit(1);
         }
         path = QFile::encodeName(file);
@@ -360,7 +360,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     argp[i] = NULL;
 
     execv(path, const_cast<char **>(argp));
-    kError(kdesuDebugArea()) << k_lineinfo << "execv(\"" << path << "\"): " << perror << "\n";
+    kError(kdesuDebugArea()) << k_lineinfo << "execv(" << path << "):" << perror;
     _exit(1);
     return -1; // Shut up compiler. Never reached.
 }
@@ -378,7 +378,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
 int PtyProcess::WaitSlave()
 {
-    kDebug(kdesuDebugArea()) << k_lineinfo << "Child pid " << m_Pid;
+    kDebug(kdesuDebugArea()) << k_lineinfo << "Child pid" << m_Pid;
 
     struct termios tio;
     while (1)
@@ -389,12 +389,12 @@ int PtyProcess::WaitSlave()
         }
         if (!d->m_pPTY->tcGetAttr(&tio))
         {
-            kError(kdesuDebugArea()) << k_lineinfo << "tcgetattr(): " << perror << "\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "tcgetattr():" << perror;
             return -1;
         }
         if (tio.c_lflag & ECHO)
         {
-            kDebug(kdesuDebugArea()) << k_lineinfo << "Echo mode still on.\n";
+            kDebug(kdesuDebugArea()) << k_lineinfo << "Echo mode still on.";
             usleep(10000);
             continue;
         }
@@ -421,7 +421,7 @@ void PtyProcess::setErase(bool erase)
 }
 
 /*
- * Copy output to stdout until the child process exists, or a line of output
+ * Copy output to stdout until the child process exits, or a line of output
  * matches `m_Exit'.
  * We have to use waitpid() to test for exit. Merely waiting for EOF on the
  * pty does not work, because the target process may have children still
@@ -449,7 +449,7 @@ int PtyProcess::waitForChild()
         {
             if (errno != EINTR)
             {
-                kError(kdesuDebugArea()) << k_lineinfo << "select(): " << perror << "\n";
+                kError(kdesuDebugArea()) << k_lineinfo << "select():" << perror;
                 return -1;
             }
             ret = 0;
@@ -534,13 +534,13 @@ int PtyProcess::setupTTY()
     struct ::termios tio;
     if (tcgetattr(0, &tio) < 0)
     {
-        kError(kdesuDebugArea()) << k_lineinfo << "tcgetattr(): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "tcgetattr():" << perror;
         return -1;
     }
     tio.c_oflag &= ~OPOST;
     if (tcsetattr(0, TCSANOW, &tio) < 0)
     {
-        kError(kdesuDebugArea()) << k_lineinfo << "tcsetattr(): " << perror << "\n";
+        kError(kdesuDebugArea()) << k_lineinfo << "tcsetattr():" << perror;
         return -1;
     }
 

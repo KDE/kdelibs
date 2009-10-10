@@ -80,7 +80,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     d->m_superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 
     if ( d->m_superUserCommand != "sudo" && d->m_superUserCommand != "su" ) {
-      kWarning() << "unknown super user command";
+      kWarning() << "unknown super user command.";
       d->m_superUserCommand = DEFAULT_SUPER_USER_COMMAND;
     }
 }
@@ -169,12 +169,12 @@ int SuProcess::exec(const char *password, int check)
     // kDebug(kdesuDebugArea()) << k_lineinfo << "Done StubProcess::exec()";
 
     SuErrors ret = (SuErrors) ConverseSU(password);
-    // kDebug(kdesuDebugArea()) << k_lineinfo << "Conversation returned " << ret;
+    // kDebug(kdesuDebugArea()) << k_lineinfo << "Conversation returned" << ret;
 
     if (ret == error)
     {
         if (!check)
-            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with su failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with su failed.";
         return ret;
     }
     if (check == NeedPassword)
@@ -218,7 +218,7 @@ int SuProcess::exec(const char *password, int check)
     if (iret < 0)
     {
         if (!check)
-            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed.";
         return iret;
     }
     else if (iret == 1)
@@ -256,7 +256,7 @@ int SuProcess::ConverseSU(const char *password)
         line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
-        kDebug(kdesuDebugArea()) << k_lineinfo << "Read line <" << line << ">";
+        kDebug(kdesuDebugArea()) << k_lineinfo << "Read line" << line;
 
         switch (state)
         {
@@ -281,7 +281,7 @@ int SuProcess::ConverseSU(const char *password)
                         break;
 
                     line = more;
-                    kDebug(kdesuDebugArea()) << k_lineinfo << "Read line <" << more << ">";
+                    kDebug(kdesuDebugArea()) << k_lineinfo << "Read another line" << more;
                 }
 
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.

@@ -111,7 +111,7 @@ int SshProcess::exec(const char *password, int check)
     if (ret < 0)
     {
         if (!check)
-            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with ssh failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with ssh failed.";
         return ret;
     }
     if (check == 2)
@@ -131,7 +131,7 @@ int SshProcess::exec(const char *password, int check)
     if (ret < 0)
     {
         if (!check)
-            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed\n";
+            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed.";
         return ret;
     }
     else if (ret == 1)
