@@ -432,6 +432,7 @@ int PtyProcess::waitForChild()
 {
     fd_set fds;
     FD_ZERO(&fds);
+    QByteArray remainder;
 
     while (1)
     {
@@ -457,26 +458,30 @@ int PtyProcess::waitForChild()
 
         if (ret)
         {
-            QByteArray output = readAll(false);
-            bool lineStart = true;
-            while (!output.isNull())
-            {
+            forever {
+                QByteArray output = readAll(false);
+                if (output.isEmpty())
+                    break;
+                if (m_bTerminal)
+                {
+                    fwrite(output.constData(), output.size(), 1, stdout);
+                    fflush(stdout);
+                }
                 if (!m_Exit.isEmpty())
                 {
                     // match exit string only at line starts
-                    int pos = output.indexOf(m_Exit);
-                    if ((pos >= 0) && ((pos == 0 && lineStart) || (output.at (pos - 1) == '\n')))
-                    {
-                        kill(m_Pid, SIGTERM);
+                    remainder += output;
+                    while (remainder.length() >= m_Exit.length()) {
+                        if (remainder.startsWith(m_Exit)) {
+                            kill(m_Pid, SIGTERM);
+                            remainder.remove(0, m_Exit.length());
+                        }
+                        int off = remainder.indexOf('\n');
+                        if (off < 0)
+                            break;
+                        remainder.remove(0, off + 1);
                     }
                 }
-                if (m_bTerminal)
-                {
-                    fputs(output, stdout);
-                    fflush(stdout);
-                }
-                lineStart = output.endsWith( '\n' );
-                output = readAll(false);
             }
         }
 
