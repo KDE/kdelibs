@@ -74,51 +74,51 @@ Temperature::Temperature() : UnitCategory(TemperatureCategory)
     ));
     U(Celsius, new CelsiusConv(),
       i18nc("temperature unit symbol", "°C"),
-      i18nc("unit description in lists", "celsiuses"),
+      i18nc("unit description in lists", "Celsius"),
       i18nc("unit synonyms for matching user input", "celsius;celsiuses;°C;C"),
-      ki18nc("amount in units (real)", "%1 celsiuses"),
-      ki18ncp("amount in units (integer)", "%1 celsius", "%1 celsiuses")
+      ki18nc("amount in units (real)", "%1 degrees Celsius"),
+      ki18ncp("amount in units (integer)", "%1 degree Celsius", "%1 degrees Celsius")
     );
     U(Fahrenheit, new FahrenheitConv(),
       i18nc("temperature unit symbol", "°F"),
-      i18nc("unit description in lists", "fahrenheits"),
+      i18nc("unit description in lists", "Fahrenheit"),
       i18nc("unit synonyms for matching user input", "fahrenheit;fahrenheits;°F;F"),
-      ki18nc("amount in units (real)", "%1 fahrenheits"),
-      ki18ncp("amount in units (integer)", "%1 fahrenheit", "%1 fahrenheits")
+      ki18nc("amount in units (real)", "%1 degrees Fahrenheit"),
+      ki18ncp("amount in units (integer)", "%1 degree Fahrenheit", "%1 degrees Fahrenheit")
     );
     U(Rankine, 0.555556,
-      i18nc("temperature unit symbol", "°R"),
-      i18nc("unit description in lists", "rankines"),
+      i18nc("temperature unit symbol", "R"),
+      i18nc("unit description in lists", "Rankines"),
       i18nc("unit synonyms for matching user input", "rankine;rankines;°R;R"),
-      ki18nc("amount in units (real)", "%1 rankines"),
-      ki18ncp("amount in units (integer)", "%1 rankine", "%1 rankines")
+      ki18nc("amount in units (real)", "%1 Rankines"),
+      ki18ncp("amount in units (integer)", "%1 Rankine", "%1 Rankines")
     );
     U(Delisle, new DelisleConv(),
       i18nc("temperature unit symbol", "°De"),
-      i18nc("unit description in lists", "delisles"),
+      i18nc("unit description in lists", "Delisle"),
       i18nc("unit synonyms for matching user input", "delisle;delisles;°De;De"),
-      ki18nc("amount in units (real)", "%1 delisles"),
-      ki18ncp("amount in units (integer)", "%1 delisle", "%1 delisles")
+      ki18nc("amount in units (real)", "%1 degrees Delisle"),
+      ki18ncp("amount in units (integer)", "%1 degree Delisle", "%1 degrees Delisle")
     );
     U(TemperatureNewton, new NewtonConv(),
       i18nc("temperature unit symbol", "°N"),
-      i18nc("unit description in lists", "newtons"),
+      i18nc("unit description in lists", "Newton"),
       i18nc("unit synonyms for matching user input", "newton;newtons;°N;N"),
-      ki18nc("amount in units (real)", "%1 newtons"),
-      ki18ncp("amount in units (integer)", "%1 newton", "%1 newtons")
+      ki18nc("amount in units (real)", "%1 degrees Newton"),
+      ki18ncp("amount in units (integer)", "%1 degree Newton", "%1 degrees Newton")
     );
     U(Reaumur, new ReaumurConv(),
       i18nc("temperature unit symbol", "°Ré"),
-      i18nc("unit description in lists", "réaumurs"),
+      i18nc("unit description in lists", "Réaumur"),
       i18nc("unit synonyms for matching user input", "réaumur;réaumurs;°Ré;reaumur;reaumurs;Re;Ré"),
-      ki18nc("amount in units (real)", "%1 réaumurs"),
-      ki18ncp("amount in units (integer)", "%1 réaumur", "%1 réaumurs")
+      ki18nc("amount in units (real)", "%1 degrees Réaumur"),
+      ki18ncp("amount in units (integer)", "%1 degree Réaumur", "%1 degrees Réaumur")
     );
     U(Romer, new RomerConv(),
       i18nc("temperature unit symbol", "°Rø"),
-      i18nc("unit description in lists", "rømer"),
+      i18nc("unit description in lists", "Rømer"),
       i18nc("unit synonyms for matching user input", "rømer;rømer;°Rø;romer;romers;Ro;Rø"),
-      ki18nc("amount in units (real)", "%1 rømer"),
-      ki18ncp("amount in units (integer)", "%1 rømer", "%1 rømer")
+      ki18nc("amount in units (real)", "%1 degrees Rømer"),
+      ki18ncp("amount in units (integer)", "%1 degree Rømer", "%1 degrees Rømer")
     );
 }

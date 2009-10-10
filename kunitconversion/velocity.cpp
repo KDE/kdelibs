@@ -83,10 +83,10 @@ Velocity::Velocity() : UnitCategory(VelocityCategory)
     // http://en.wikipedia.org/wiki/Speed_of_sound
     U(Mach, 343,
       i18nc("velocity unit symbol", "Ma"),
-      i18nc("unit description in lists", "machs"),
+      i18nc("unit description in lists", "Mach"),
       i18nc("unit synonyms for matching user input", "mach;machs;Ma;speed of sound"),
-      ki18nc("amount in units (real)", "%1 machs"),
-      ki18ncp("amount in units (integer)", "%1 mach", "%1 machs")
+      ki18nc("amount in units (real)", "Mach %1"),
+      ki18ncp("amount in units (integer)", "Mach %1", "Mach %1")
     );
     U(SpeedOfLight, 2.99792e+08,
       i18nc("velocity unit symbol", "c"),
