@@ -148,13 +148,13 @@ class KGlobalSettings::Private
 {
     public:
         Private(KGlobalSettings *q)
-            : q(q)
+            : q(q), activated(false)
         {
         }
 
         void _k_slotNotifyChange(int, int);
 
-        void propagateSettings(SettingsCategory category);
+        void propagateQtSettings();
         void kdisplaySetPalette();
         void kdisplaySetStyle();
         void kdisplaySetFont();
@@ -179,6 +179,7 @@ class KGlobalSettings::Private
         static void rereadOtherSettings();
 
         KGlobalSettings *q;
+        bool activated;
 };
 
 KGlobalSettings* KGlobalSettings::self()
@@ -190,10 +191,6 @@ KGlobalSettings* KGlobalSettings::self()
 KGlobalSettings::KGlobalSettings()
     : QObject(0), d(new Private(this))
 {
-    d->kdisplaySetStyle();
-    d->kdisplaySetFont();
-    d->propagateSettings(SETTINGS_QT);
-
     QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                            "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
 }
@@ -201,6 +198,17 @@ KGlobalSettings::KGlobalSettings()
 KGlobalSettings::~KGlobalSettings()
 {
     delete d;
+}
+
+void KGlobalSettings::activate()
+{
+    if (!d->activated) {
+        d->activated = true;
+
+        d->kdisplaySetStyle(); // implies palette setup
+        d->kdisplaySetFont();
+        d->propagateQtSettings();
+    }
 }
 
 int KGlobalSettings::dndEventDelay()
@@ -795,8 +803,10 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
 {
     switch(changeType) {
     case StyleChanged:
-        KGlobal::config()->reparseConfiguration();
-        kdisplaySetStyle();
+        if (activated) {
+            KGlobal::config()->reparseConfiguration();
+            kdisplaySetStyle();
+        }
         break;
 
     case ToolbarStyleChanged:
@@ -805,14 +815,18 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         break;
 
     case PaletteChanged:
-        KGlobal::config()->reparseConfiguration();
-        kdisplaySetPalette();
+        if (activated) {
+            KGlobal::config()->reparseConfiguration();
+            kdisplaySetPalette();
+        }
         break;
 
     case FontChanged:
         KGlobal::config()->reparseConfiguration();
         KGlobalSettingsData::self()->dropFontSettingsCache();
-        kdisplaySetFont();
+        if (activated) {
+            kdisplaySetFont();
+        }
         break;
 
     case SettingsChanged: {
@@ -822,7 +836,13 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         if (category == SETTINGS_MOUSE) {
             KGlobalSettingsData::self()->dropMouseSettingsCache();
         }
-        propagateSettings(category);
+        if (category == SETTINGS_QT) {
+            if (activated) {
+                propagateQtSettings();
+            }
+        } else {
+            emit q->settingsChanged(category);
+        }
         break;
     }
     case IconChanged:
@@ -934,7 +954,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
     if (cg.readEntry("nopaletteChange", false))
         return;
 
-    if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
+    if (qApp->type() == QApplication::GuiClient) {
         QApplication::setPalette( q->createApplicationPalette() );
     }
     emit q->kdisplayPaletteChanged();
@@ -944,7 +964,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
 
 void KGlobalSettings::Private::kdisplaySetFont()
 {
-    if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
+    if (qApp->type() == QApplication::GuiClient) {
         KGlobalSettingsData* data = KGlobalSettingsData::self();
 
         QApplication::setFont( data->font(KGlobalSettingsData::GeneralFont) );
@@ -961,7 +981,7 @@ void KGlobalSettings::Private::kdisplaySetFont()
 
 void KGlobalSettings::Private::kdisplaySetStyle()
 {
-    if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
+    if (qApp->type() == QApplication::GuiClient) {
         applyGUIStyle();
 
         // Reread palette from config file.
@@ -1016,7 +1036,7 @@ void KGlobalSettings::Private::applyCursorTheme()
 }
 
 
-void KGlobalSettings::Private::propagateSettings(SettingsCategory arg)
+void KGlobalSettings::Private::propagateQtSettings()
 {
     KConfigGroup cg( KGlobal::config(), "KDE" );
 
@@ -1035,7 +1055,8 @@ void KGlobalSettings::Private::propagateSettings(SettingsCategory arg)
     num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
 
-    emit q->settingsChanged(arg);
+    // KDE5: this seems fairly pointless
+    emit q->settingsChanged(SETTINGS_QT);
 }
 
 #include "kglobalsettings.moc"

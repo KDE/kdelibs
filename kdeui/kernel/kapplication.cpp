@@ -547,7 +547,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 #endif
 
     // Trigger initial settings
-    KGlobalSettings::self();
+    KGlobalSettings::self()->activate();
 
     KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
