@@ -38,6 +38,8 @@
 #include <QStringList>
 #include <QList>
 #include <QHash>
+#include <QPair>
+#include <QSet>
 #include <QFile>
 #include <QIODevice>
 #include <QTextStream>
@@ -156,8 +158,10 @@ class Scriptface : public JSObject
     };
 
     // Helper methods to interface functions.
-    QString loadProps_bin (const QString &fpath);
     QString loadProps_text (const QString &fpath);
+    QString loadProps_bin (const QString &fpath);
+    QString loadProps_bin_00 (const QString &fpath);
+    QString loadProps_bin_01 (const QString &fpath);
 
     // Virtual implementations.
     bool getOwnPropertySlot (ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
@@ -197,6 +201,13 @@ class Scriptface : public JSObject
     // Not QStrings, in order to avoid conversion from UTF-8 when
     // loading compiled maps (less latency on startup).
     QHash<QByteArray, QHash<QByteArray, QByteArray> > phraseProps;
+    // Unresolved property values per phrase,
+    // containing the pointer to compiled pmap file handle and offset in it.
+    QHash<QByteArray, QPair<QFile*, quint64> > phraseUnparsedProps;
+    QHash<QByteArray, QByteArray> resolveUnparsedProps (const QByteArray &phrase);
+    // Set of loaded pmap files by paths and file handle pointers.
+    QSet<QString> loadedPmapPaths;
+    QSet<QFile*> loadedPmapHandles;
 
     // User config.
     TsConfigGroup config;
@@ -729,7 +740,9 @@ Scriptface::Scriptface (ExecState *exec, const TsConfigGroup &config_)
 {}
 
 Scriptface::~Scriptface ()
-{}
+{
+    qDeleteAll(loadedPmapHandles);
+}
 
 bool Scriptface::getOwnPropertySlot (ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
@@ -1143,17 +1156,20 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
         file_check.close();
 
         // Load from appropriate type of map.
-        QString errorString;
-        if (haveCompiled) {
-            errorString = loadProps_bin(qfpath);
+        if (!loadedPmapPaths.contains(qfpath)) {
+            QString errorString;
+            if (haveCompiled) {
+                errorString = loadProps_bin(qfpath);
+            }
+            else {
+                errorString = loadProps_text(qfpath);
+            }
+            if (!errorString.isEmpty()) {
+                return throwError(exec, SyntaxError, errorString);
+            }
+            dbgout("Loaded property map: %1", qfpath);
+            loadedPmapPaths.insert(qfpath);
         }
-        else {
-            errorString = loadProps_text(qfpath);
-        }
-        if (!errorString.isEmpty()) {
-            return throwError(exec, SyntaxError, errorString);
-        }
-        dbgout("Loaded property map: %1", qfpath);
     }
 
     return jsUndefined();
@@ -1172,6 +1188,9 @@ JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
 
     QByteArray qphrase = normKeystr(phrase->toString(exec).qstring());
     QHash<QByteArray, QByteArray> props = phraseProps.value(qphrase);
+    if (props.isEmpty()) {
+        props = resolveUnparsedProps(qphrase);
+    }
     if (!props.isEmpty()) {
         QByteArray qprop = normKeystr(prop->toString(exec).qstring());
         QByteArray qval = props.value(qprop);
@@ -1543,19 +1562,38 @@ QString Scriptface::loadProps_text (const QString &fpath)
     return QString();
 }
 
-static int bin_read_int (const char *fc, qlonglong len, qlonglong &pos)
+// Read big-endian integer of nbytes length at position pos
+// in character array fc of length len.
+// Update position to point after the number.
+// In case of error, pos is set to -1.
+template <typename T>
+static int bin_read_int_nbytes (const char *fc, qlonglong len, qlonglong &pos, int nbytes)
 {
-    // Binary format is big-endian, 32-bit integer.
-    static const int nbytes = 4;
     if (pos + nbytes > len) {
         pos = -1;
         return 0;
     }
-    int num = qFromBigEndian<quint32>((uchar*) fc + pos);
+    T num = qFromBigEndian<T>((uchar*) fc + pos);
     pos += nbytes;
     return num;
 }
 
+// Read 64-bit big-endian integer.
+static quint64 bin_read_int64 (const char *fc, qlonglong len, qlonglong &pos)
+{
+    return bin_read_int_nbytes<quint64>(fc, len, pos, 8);
+}
+
+// Read 32-bit big-endian integer.
+static quint32 bin_read_int (const char *fc, qlonglong len, qlonglong &pos)
+{
+    return bin_read_int_nbytes<quint32>(fc, len, pos, 4);
+}
+
+// Read string at position pos of character array fc of lenght n.
+// String is represented as 32-bit big-endian byte length followed by bytes.
+// Update position to point after the string.
+// In case of error, pos is set to -1.
 static QByteArray bin_read_string (const char *fc, qlonglong len, qlonglong &pos)
 {
     // Binary format stores strings as length followed by byte sequence.
@@ -1577,7 +1615,31 @@ QString Scriptface::loadProps_bin (const QString &fpath)
 {
     QFile file(fpath);
     if (!file.open(QIODevice::ReadOnly)) {
-        return QString(SPREF"loadProps_bin: cannot read file '%1'")
+        return QString(SPREF"loadProps: cannot read file '%1'")
+                      .arg(fpath);
+    }
+    // Collect header.
+    QByteArray head(8, '0');
+    file.read(head.data(), head.size());
+    file.close();
+
+    // Choose pmap loader based on header.
+    if (head == "TSPMAP00") {
+        return loadProps_bin_00(fpath);
+    } else if (head == "TSPMAP01") {
+        return loadProps_bin_01(fpath);
+    }
+    else {
+        return QString(SPREF"loadProps: unknown version of compiled map '%1'")
+                      .arg(fpath);
+    }
+}
+
+QString Scriptface::loadProps_bin_00 (const QString &fpath)
+{
+    QFile file(fpath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QString(SPREF"loadProps: cannot read file '%1'")
                       .arg(fpath);
     }
     QByteArray fctmp = file.readAll();
@@ -1634,9 +1696,72 @@ QString Scriptface::loadProps_bin (const QString &fpath)
     END_PROP_PARSE:
 
     if (pos < 0) {
-        return QString(SPREF"loadProps_bin: corrupt compiled map %1")
+        return QString(SPREF"loadProps: corrupt compiled map '%1'")
                       .arg(fpath);
     }
 
     return QString();
+}
+
+QString Scriptface::loadProps_bin_01 (const QString &fpath)
+{
+    QFile *file = new QFile(fpath);
+    if (!file->open(QIODevice::ReadOnly)) {
+        return QString(SPREF"loadProps: cannot read file '%1'")
+                      .arg(fpath);
+    }
+
+    QByteArray fstr;
+    qlonglong pos;
+
+    // Read the header and number and length of entry keys.
+    fstr = file->read(8 + 4 + 8);
+    pos = 0;
+    QByteArray head = fstr.left(8);
+    pos += 8;
+    if (head != "TSPMAP01") {
+        return QString(SPREF"loadProps: corrupt compiled map '%1'")
+                      .arg(fpath);
+    }
+    quint32 numekeys = bin_read_int(fstr, fstr.size(), pos);
+    quint64 lenekeys = bin_read_int64(fstr, fstr.size(), pos);
+
+    // Read entry keys.
+    fstr = file->read(lenekeys);
+    pos = 0;
+    for (quint32 i = 0; i < numekeys; ++i) {
+        QByteArray ekey = bin_read_string(fstr, lenekeys, pos);
+        quint64 offset = bin_read_int64(fstr, lenekeys, pos);
+        phraseUnparsedProps[ekey] = QPair<QFile*, quint64>(file, offset);
+    }
+
+    // // Read property keys.
+    // ...when it becomes necessary
+
+    loadedPmapHandles.insert(file);
+    return QString();
+}
+
+QHash<QByteArray, QByteArray> Scriptface::resolveUnparsedProps (const QByteArray &phrase)
+{
+    QPair<QFile*, quint64> ref = phraseUnparsedProps.value(phrase);
+    QFile *file = ref.first;
+    quint64 offset = ref.second;
+    QHash<QByteArray, QByteArray> props;
+    if (file != NULL && file->seek(offset)) {
+        QByteArray fstr = file->read(4 + 4);
+        qlonglong pos = 0;
+        quint32 numpkeys = bin_read_int(fstr, fstr.size(), pos);
+        quint32 lenpkeys = bin_read_int(fstr, fstr.size(), pos);
+        fstr = file->read(lenpkeys);
+        pos = 0;
+        for (quint32 i = 0; i < numpkeys; ++i) {
+            QByteArray pkey = bin_read_string(fstr, lenpkeys, pos);
+            QByteArray pval = bin_read_string(fstr, lenpkeys, pos);
+            props[pkey] = pval;
+        }
+        phraseProps[phrase] = props;
+        phraseUnparsedProps.remove(phrase);
+    }
+    return props;
 }
