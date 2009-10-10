@@ -1,0 +1,24 @@
+/** @mainpage Some random bits and pieces
+
+Some utility classes for KSettings, KCModule and KPlugin.
+
+@authors
+Matthias Kretz \<kretz@kde.org\><br>
+Rafael Fernández López \<ereslibre@kde.org\><br>
+Matthias Elter \<elter@kde.org\><br>
+Daniel Molkentin \<molkentin@kde.org\><br>
+Frans Englich \<frans.englich@telia.com\><br>
+Tobias Koenig \<tokoe@kde.org\><br>
+Matthias Hoelzer-Kluepfel \<hoelzer@kde.org\>
+
+@maintainers
+[Unknown/None]
+
+@licenses
+@lgpl
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore kdeui kio
+// DOXYGEN_SET_PROJECT_NAME = KUtils
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

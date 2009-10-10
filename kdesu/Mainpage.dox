@@ -1,0 +1,21 @@
+/** @mainpage Console-mode authentication
+
+libkdesu provides functionality for building GUI front ends for
+(password asking) console mode programs. For example, kdesu and
+kdessh use it to interface with su and ssh respectively.
+
+@authors
+Geert Jansen \<jansen@kde.org\>
+
+@maintainers
+Adriaan de Groot \<groot@kde.org\>
+
+@licenses
+@lgpl
+
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore
+// DOXYGEN_SET_PROJECT_NAME = KDEsu
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

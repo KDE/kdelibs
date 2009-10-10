@@ -1,0 +1,29 @@
+/** @mainpage ImageFormat Plugins
+
+Provides imageformat plugins for Qt so that it can read more image file types.
+
+@authors
+Sirtaj Singh Kang \<taj@kde.org><br>
+Dirk Schoenberger<br>
+Torben Weis \<weis@kde.org><br>
+Thomas Tanghus \<tanghus@kde.org><br>
+Antonio Larossa \<larossa@kde.org\><br>
+Sven Wiegand \<SWiegand@tfh-berlin.de><br>
+Dominik Seichter \<domseichter@web.de><br>
+Nadeem Hasan \<nhasan@kde.org><br>
+Melchior Franz \<mfranz@kde.org><br>
+Allen Barnett \<allen@lignumcomputing.com><br>
+Ignacio Castaño \<castano@ludicon.com><br>
+Christoph Hormann \<chris_hormann@gmx.de><br>
+Michael Ritzert \<kde@ritzert.de>
+
+@maintainers
+[Unknown/None]
+
+@licenses
+@lgpl
+
+*/
+
+// DOXYGEN_SET_PROJECT_NAME = KImgIO
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

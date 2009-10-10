@@ -1,0 +1,26 @@
+/** @mainpage The KDE Daemon
+
+KDED runs in the background and performs a number of small tasks.  Some
+of these tasks are built in, others are started on demand.
+<p>
+The chances are you are looking here because you want to write a
+KDED module.  For that, see KDEDModule in kdecore and the
+<a href="http://websvn.kde.org/trunk/KDE/kdelibs/kded/README.kded?view=markup">KDED
+README</a>.
+
+
+@authors
+David Faure \<dfaure@kde.org\><br>
+Waldo Bastian \<bastian@kde.org\>
+
+@maintainers
+[Unknown/None]
+
+@licenses
+@lgpl
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore kdeui kio
+// DOXYGEN_SET_PROJECT_NAME = KDED
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

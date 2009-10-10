@@ -1,0 +1,26 @@
+/** @mainpage KDE Documentation Tools
+
+Provides a KIO slave for accessing application documentation for
+KDE and GNOME applications.
+
+@authors
+Eric Bischoff
+Claudiu Costin
+Frederik Fouvry
+David Rugge
+
+@maintainers
+[Unknown/None]
+
+@licenses
+Note: most of the files do not have licenses.
+This should be corrected.  The intention appears
+to be for the files to have a @bsd license, but
+this needs to be confirmed with the copyright
+holders.
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore kdeui kio
+// DOXYGEN_SET_PROJECT_NAME = KDocTools
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
