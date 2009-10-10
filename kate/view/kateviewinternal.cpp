@@ -772,6 +772,8 @@ QPoint KateViewInternal::cursorToCoordinate( const KTextEditor::Cursor & cursor,
 
   if (includeBorder) x += m_leftBorder->width();
 
+  x -= startX();
+
   return QPoint(x, y);
 }
 
@@ -2798,7 +2800,7 @@ KTextEditor::Cursor KateViewInternal::coordinatesToCursor(const QPoint& _coord) 
 
   KTextEditor::Cursor ret = KTextEditor::Cursor::invalid();
 
-  coord.setX( coord.x() - m_leftBorder->width() );
+  coord.setX( coord.x() - m_leftBorder->width()  + startX() );
 
   const KateTextLayout& thisLine = yToKateTextLayout(coord.y());
   if (thisLine.isValid())
