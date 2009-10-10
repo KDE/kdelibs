@@ -2649,6 +2649,14 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_ExclusiveIndicatorHeight:
             return widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
 
+        case PM_CheckListControllerSize:
+        case PM_CheckListButtonSize:
+        {
+            int checkBoxSize = widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget);
+            int radioButtonSize = widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
+            return qMax(checkBoxSize, radioButtonSize);
+        }
+
         case PM_DockWidgetFrameWidth:
             return widgetLayoutProp(WT_DockWidget, DockWidget::FrameWidth, option, widget);
 
