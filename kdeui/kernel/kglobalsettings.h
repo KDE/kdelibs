@@ -539,6 +539,16 @@ public:
     static KGlobalSettings* self();
 
     /**
+     * Makes all globally applicable settings take effect
+     * and starts listening for changes to these settings.
+     *
+     * This is usually called only by the KApplication constructor.
+     *
+     * @since 4.3.3
+     */
+    void activate();
+
+    /**
      * Valid values for the settingsChanged signal
      */
     enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
