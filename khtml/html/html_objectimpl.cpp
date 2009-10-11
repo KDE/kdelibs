@@ -101,7 +101,7 @@ void HTMLPartContainerElementImpl::setWidget(QWidget* widget)
 {
     if (widget == m_childWidget)
         return; // The same part got navigated. Don't do anything
-        
+
     QWidget* oldWidget = m_childWidget;
     m_childWidget = widget;
     if (m_childWidget)
@@ -308,10 +308,7 @@ void HTMLObjectBaseElementImpl::attach() {
     {
         if (m_imageLike) {
             m_render = new (document()->renderArena()) RenderImage(this);
-            // make sure we don't attach the inner contents
-            addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
-        }
-        else {
+        } else {
             m_render = new (document()->renderArena()) RenderPartObject(this);
             // If we already have a widget, set it.
             if (childWidget())
