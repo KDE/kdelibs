@@ -479,8 +479,10 @@ QFont KGlobalSettingsData::largeFont( const QString& text )
             fam.prepend(fontName);
     }
 
-    if (mLargeFont)
+    if (mLargeFont) {
         fam.prepend(mLargeFont->family());
+        delete mLargeFont;
+    }
 
     for(QStringList::ConstIterator it = fam.constBegin();
         it != fam.constEnd(); ++it)
@@ -528,6 +530,7 @@ void KGlobalSettingsData::dropFontSettingsCache()
         mFonts[i] = 0;
     }
     delete mLargeFont;
+    mLargeFont = 0;
 }
 
 KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
