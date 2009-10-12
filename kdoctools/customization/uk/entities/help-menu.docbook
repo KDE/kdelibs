@@ -9,7 +9,7 @@
 <guimenuitem>Зміст...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Викликає систему довідки KDE</action> відкриваючи у ній довідкові сторінки &kappname;. (цей документ).</para></listitem>
+<listitem><para><action>Викликає систему довідки KDE</action>, відкриваючи у ній довідкові сторінки &kappname;. (цей документ).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -56,6 +56,6 @@
 <guimenu>Довідка</guimenu>
 <guimenuitem>Про KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Цей пункт меню відкриє вікно з даними про версію KDE та іншою загальною інформацією</action></para></listitem>
+<listitem><para><action>Цей пункт меню відкриє вікно з даними про версію KDE та іншою загальною інформацією.</action></para></listitem>
 </varlistentry>
 </variablelist>
