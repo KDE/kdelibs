@@ -89,7 +89,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
 
     if (hasPrefix && !kdeinit)
         kDebug(150) << "plugins should not have a 'lib' prefix:" << libname;
-#ifdef Q_OS_WIN
+#ifdef Q_CC_MSVC
     // first remove the 'lib' prefix in front of windows plugins
     libname = fixLibPrefix(libname);
 #endif
@@ -107,7 +107,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
         return libfile;
 
     // Now look where they don't belong but sometimes are
-#ifndef Q_OS_WIN
+#ifndef Q_CC_MSVC
     if (!hasPrefix)
         libname = fileinfo.path() + QLatin1String("/lib") + fileinfo.fileName();
 #endif
