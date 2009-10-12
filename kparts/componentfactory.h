@@ -75,7 +75,7 @@ namespace KParts
                                           const QStringList &args = QStringList(),
                                           int *error = 0 )
         {
-            KLibrary *library = KLibLoader::self()->library( libraryName );
+            KLibrary *library = KLibLoader::self()->library( QString( libraryName ) ); // compatibility hack
             if ( !library )
             {
                 if ( error )
