@@ -54,6 +54,7 @@ private Q_SLOTS:
 
 public:
     KFileItemListProperties m_props;
+    QStringList m_mimeTypeList;
     QActionGroup m_executeServiceActionGroup;
     QActionGroup m_runApplicationActionGroup;
     QList<KAction*> m_ownActions;

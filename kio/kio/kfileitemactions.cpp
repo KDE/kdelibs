@@ -33,7 +33,6 @@
 #include <kglobal.h>
 #include <kicon.h>
 #include <kstandarddirs.h>
-#include <kservice.h>
 #include <kservicetypetrader.h>
 #include <QFile>
 
@@ -187,6 +186,15 @@ KFileItemActions::~KFileItemActions()
 void KFileItemActions::setItemListProperties(const KFileItemListProperties& itemListProperties)
 {
     d->m_props = itemListProperties;
+
+    d->m_mimeTypeList.clear();
+    const KFileItemList items = d->m_props.items();
+    KFileItemList::const_iterator kit = items.constBegin();
+    const KFileItemList::const_iterator kend = items.constEnd();
+    for (; kit != kend; ++kit) {
+        if (!d->m_mimeTypeList.contains((*kit).mimetype()))
+            d->m_mimeTypeList << (*kit).mimetype();
+    }
 }
 
 int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
@@ -415,19 +423,11 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 }
 
 
-KService::List KFileItemActionsPrivate::associatedApplications(const QString& traderConstraint)
+// static
+KService::List KFileItemActions::associatedApplications(const QStringList& mimeTypeList, const QString& traderConstraint)
 {
     if (!KAuthorized::authorizeKAction("openwith")) {
         return KService::List();
-    }
-
-    const KFileItemList items = m_props.items();
-    QStringList mimeTypeList;
-    KFileItemList::const_iterator kit = items.constBegin();
-    const KFileItemList::const_iterator kend = items.constEnd();
-    for (; kit != kend; ++kit) {
-        if (!mimeTypeList.contains((*kit).mimetype()))
-            mimeTypeList << (*kit).mimetype();
     }
 
     QString constraint = traderConstraint;
@@ -490,7 +490,7 @@ KService::List KFileItemActionsPrivate::associatedApplications(const QString& tr
 
 void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& traderConstraint)
 {
-    const KService::List offers = d->associatedApplications(traderConstraint);
+    const KService::List offers = associatedApplications(d->m_mimeTypeList, traderConstraint);
 
     //// Ok, we have everything, now insert
 
@@ -581,7 +581,7 @@ KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, 
 
 KAction* KFileItemActions::preferredOpenWithAction(const QString& traderConstraint)
 {
-    const KService::List offers = d->associatedApplications(traderConstraint);
+    const KService::List offers = associatedApplications(d->m_mimeTypeList, traderConstraint);
     if (offers.isEmpty()) {
         return 0;
     }

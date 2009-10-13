@@ -243,8 +243,8 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
         if ( isTextExecutable(mimeType) )
             mimeType = QLatin1String("text/plain"); // view, don't execute
         // ... -> ask whether to save
-        BrowserOpenOrSaveQuestion question(KRun::url(), mimeType, suggestedFileName());
-        BrowserOpenOrSaveQuestion::Result res = question.askOpenOrSave(d->m_window);
+        BrowserOpenOrSaveQuestion question(d->m_window, KRun::url(), mimeType, suggestedFileName());
+        BrowserOpenOrSaveQuestion::Result res = question.askOpenOrSave();
         if (res == BrowserOpenOrSaveQuestion::Save) {
             save( KRun::url(), suggestedFileName() );
             kDebug(1000) << "Save: returning Handled";
@@ -315,8 +315,8 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
 BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
 {
     Q_UNUSED(offer);
-    BrowserOpenOrSaveQuestion question(url, mimeType, suggestedFileName);
-    const BrowserOpenOrSaveQuestion::Result result = question.askOpenOrSave(0);
+    BrowserOpenOrSaveQuestion question(0, url, mimeType, suggestedFileName);
+    const BrowserOpenOrSaveQuestion::Result result = question.askOpenOrSave();
     return result == BrowserOpenOrSaveQuestion::Save ? Save
         : BrowserOpenOrSaveQuestion::Open ? Open
         : Cancel;
@@ -325,8 +325,8 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 //static, deprecated
 BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
 {
-    BrowserOpenOrSaveQuestion question(url, mimeType, suggestedFileName);
-    const BrowserOpenOrSaveQuestion::Result result = question.askEmbedOrSave(0, flags);
+    BrowserOpenOrSaveQuestion question(0, url, mimeType, suggestedFileName);
+    const BrowserOpenOrSaveQuestion::Result result = question.askEmbedOrSave(flags);
     return result == BrowserOpenOrSaveQuestion::Save ? Save
         : BrowserOpenOrSaveQuestion::Embed ? Open
         : Cancel;

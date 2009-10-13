@@ -86,6 +86,7 @@ ENDMACRO(KPARTS_EXECUTABLE_TESTS)
 
 set(kparts_unittests
   parttest
+  openorsavequestion_unittest
 )
 KPARTS_UNIT_TESTS(${kparts_unittests})
 

@@ -30,13 +30,23 @@ int main(int argc, char **argv)
     KCmdLineArgs::init(argc, argv, "openorsavequestion", QByteArray(), ki18n("Test for the 'open or save' question"), "0");
     KApplication app;
 
-    BrowserOpenOrSaveQuestion questionOpen(KUrl("foo.pdf"),
+    // A test for both 1) "unknown mimetype"  2) no associated app
+    {
+        BrowserOpenOrSaveQuestion questionOpenUnknownMimeType(0, KUrl("http://www.example.com/foo.foo"),
+                                                              QString::fromLatin1("application/foo"));
+        BrowserOpenOrSaveQuestion::Result res = questionOpenUnknownMimeType.askOpenOrSave();
+        kDebug() << res;
+    }
+
+    // The normal case
+    BrowserOpenOrSaveQuestion questionOpen(0, KUrl("http://www.example.com/foo.pdf"),
                                            QString::fromLatin1("application/pdf"),
                                            QString::fromLatin1("file.pdf"));
-    BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave(0);
+    BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave();
     kDebug() << res;
-    // TODO if (questionOpen.selectedService())
-    // TODO    kDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
+    if (res == BrowserOpenOrSaveQuestion::Open && questionOpen.selectedService())
+        kDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
 
+    
     return 0;
 }

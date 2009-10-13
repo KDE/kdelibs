@@ -26,9 +26,9 @@
 #include "browserrun.h"
 #include <kservice.h>
 
-class BrowserOpenOrSaveQuestionPrivate;
-
 namespace KParts {
+
+class BrowserOpenOrSaveQuestionPrivate;
 
 /**
  * This class shows the dialog that asks the user whether to
@@ -47,7 +47,7 @@ public:
      * @param mimeType the mimetype of the URL
      * @param suggestedFileName optional file name suggested by the server (HTTP Content-Disposition)
      */
-    BrowserOpenOrSaveQuestion(const KUrl& url, const QString& mimeType, const QString& suggestedFileName = QString());
+    BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType, const QString& suggestedFileName = QString());
     ~BrowserOpenOrSaveQuestion();
 
     enum Result { Save, Open, Embed, Cancel };
@@ -57,7 +57,7 @@ public:
      * @param parent parent widget for the dialog
      * @return Save, Open or Cancel.
      */
-    Result askOpenOrSave(QWidget* parent);
+    Result askOpenOrSave();
 
     /**
      * Ask the user whether to save or open a url in another application.
@@ -67,12 +67,18 @@ public:
      * But if the server said "attachment", it means the user is download a file for saving it.
      * @return Save, Embed or Cancel.
      */
-    Result askEmbedOrSave(QWidget* parent, int flags = 0);
+    Result askEmbedOrSave(int flags = 0);
     // KDE5 TODO: move BrowserRun::AskEmbedOrSaveFlags to this class.
     
     // TODO askOpenEmbedOrSave
 
-    // TODO KService::Ptr selectedService() const;
+    /**
+     * @return the service that was selected during askOpenOrSave,
+     * if it returned Open.
+     * In all other cases (no associated application, Save or Cancel
+     * selected), this returns 0
+     */
+    KService::Ptr selectedService() const;
 
 private:
     BrowserOpenOrSaveQuestionPrivate* const d;

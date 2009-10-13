@@ -21,6 +21,7 @@
 #ifndef KFILEITEMACTIONS_H
 #define KFILEITEMACTIONS_H
 
+#include <kservice.h>
 #include <kfileitem.h>
 #include <kio/kio_export.h>
 
@@ -88,6 +89,23 @@ public:
      * @return the action - or 0 if no application was found.
      */
     KAction* preferredOpenWithAction(const QString& traderConstraint);
+
+    /**
+     * Helper method used internally, can also be used for similar GUIs that
+     * show the list of associated applications.
+     * Used in KParts::BrowserOpenOrSaveQuestion for example.
+     *
+     * This is basically a KMimeTypeTrader::query, but it also cleans up duplicates,
+     * and honours OnlyShowIn and NotShowIn fields.
+     *
+     * Returns the applications associated with all the given mimetypes.
+     * @param mimeTypeList the mimetypes
+     * @param traderConstraint this optional constraint allows to exclude the current application
+     * from the "open with" list. Example: "DesktopEntryName != 'kfmclient'".
+     * @return the list of services.
+     * @since 4.4
+     */
+    static KService::List associatedApplications(const QStringList& mimeTypeList, const QString& traderConstraint);
 
     /**
      * Generate the user-defined actions and submenus, and adds them to the @p menu.
