@@ -31,6 +31,8 @@
 
 #include <QtCore/QString>
 
+#include <locale.h>
+
 #include "klocalizedstringtest.moc"
 
 void KLocalizedStringTest::initTestCase ()
