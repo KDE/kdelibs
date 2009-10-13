@@ -1,0 +1,84 @@
+/*
+    Copyright (c) 2009 David Faure <faure@kde.org>
+
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2 of the License or ( at
+    your option ) version 3 or, at the discretion of KDE e.V. ( which shall
+    act as a proxy as in section 14 of the GPLv3 ), any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#ifndef BROWSEROPENORSAVEQUESTION_H
+#define BROWSEROPENORSAVEQUESTION_H
+
+#include "kparts_export.h"
+#include <kdialog.h>
+#include "browserrun.h"
+#include <kservice.h>
+
+class BrowserOpenOrSaveQuestionPrivate;
+
+namespace KParts {
+
+/**
+ * This class shows the dialog that asks the user whether to
+ * save a url or open a url in another application.
+ *
+ * It also has the variant which asks "save or embed" (e.g. into konqueror).
+ *
+ * @since 4.4
+ */
+class KPARTS_EXPORT BrowserOpenOrSaveQuestion
+{
+public:
+    /**
+     * Constructor, for all kinds of dialogs shown in this class.
+     * @param url the URL in question
+     * @param mimeType the mimetype of the URL
+     * @param suggestedFileName optional file name suggested by the server (HTTP Content-Disposition)
+     */
+    BrowserOpenOrSaveQuestion(const KUrl& url, const QString& mimeType, const QString& suggestedFileName = QString());
+    ~BrowserOpenOrSaveQuestion();
+
+    enum Result { Save, Open, Embed, Cancel };
+    
+    /**
+     * Ask the user whether to save or open a url in another application.
+     * @param parent parent widget for the dialog
+     * @return Save, Open or Cancel.
+     */
+    Result askOpenOrSave(QWidget* parent);
+
+    /**
+     * Ask the user whether to save or open a url in another application.
+     * @param parent parent widget for the dialog
+     * @param flags set to BrowserRun::AttachmentDisposition if suggested by the server
+     * This is used because by default text/html files are opened embedded in browsers, not saved.
+     * But if the server said "attachment", it means the user is download a file for saving it.
+     * @return Save, Embed or Cancel.
+     */
+    Result askEmbedOrSave(QWidget* parent, int flags = 0);
+    // KDE5 TODO: move BrowserRun::AskEmbedOrSaveFlags to this class.
+    
+    // TODO askOpenEmbedOrSave
+
+    // TODO KService::Ptr selectedService() const;
+
+private:
+    BrowserOpenOrSaveQuestionPrivate* const d;
+};
+
+}
+
+#endif /* BROWSEROPENORSAVEQUESTION_H */
+

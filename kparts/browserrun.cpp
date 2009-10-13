@@ -32,6 +32,7 @@
 #include <kde_file.h>
 #include <kstandarddirs.h>
 #include "browserrun_p.h"
+#include "browseropenorsavequestion.h"
 #include <assert.h>
 
 using namespace KParts;
@@ -241,17 +242,16 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
     {
         if ( isTextExecutable(mimeType) )
             mimeType = QLatin1String("text/plain"); // view, don't execute
-        kDebug(1000) << "ask for saving";
-        KService::Ptr offer = KMimeTypeTrader::self()->preferredService(mimeType, "Application");
         // ... -> ask whether to save
-        KParts::BrowserRun::AskSaveResult res = askSave( KRun::url(), offer, mimeType, suggestedFileName() );
-        if ( res == KParts::BrowserRun::Save ) {
+        BrowserOpenOrSaveQuestion question(KRun::url(), mimeType, suggestedFileName());
+        BrowserOpenOrSaveQuestion::Result res = question.askOpenOrSave(d->m_window);
+        if (res == BrowserOpenOrSaveQuestion::Save) {
             save( KRun::url(), suggestedFileName() );
             kDebug(1000) << "Save: returning Handled";
             setFinished( true );
             return Handled;
         }
-        else if ( res == KParts::BrowserRun::Cancel ) {
+        else if (res == BrowserOpenOrSaveQuestion::Cancel) {
             // saving done or canceled
             kDebug(1000) << "Cancel: returning Handled";
             setFinished( true );
@@ -311,85 +311,25 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
     i18n("Execute File?"), KGuiItem(i18n("Execute")) ) == KMessageBox::Continue );
 }
 
-static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFileName )
-{
-    QString surl = url.prettyUrl();
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-    QString comment = mimeType;
-
-    // Test if the mimeType is not recognize as octet-stream.
-    // If so then keep mime-type as comment
-    if (mime && mime->name() != KMimeType::defaultMimeType()) {
-        // The mime-type is known so display the comment instead of mime-type
-        comment = mime->comment();
-    }
-    // The strange order in the i18n() calls below is due to the possibility
-    // of surl containing a '%'
-    if ( suggestedFileName.isEmpty() )
-        return i18n("Open '%2'?\nType: %1", comment, surl);
-    else
-        return i18n("Open '%3'?\nName: %2\nType: %1", comment, suggestedFileName, surl);
-}
-
-//static
-// TODO should take a QWidget* parent argument
+//static, deprecated
 BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
 {
-    QString question = makeQuestion( url, mimeType, suggestedFileName );
-
-    // text and icon used for the open button
-    KGuiItem openItem;
-    if (offer && !offer->name().isEmpty())
-        openItem = KGuiItem(i18n("&Open with '%1'", offer->name()), offer->icon());
-    else
-        openItem = KGuiItem(i18n("&Open with..."), "system-run");
-
-    int choice = KMessageBox::questionYesNoCancel(
-        0, question, url.host(),
-        KStandardGuiItem::saveAs(), openItem, KStandardGuiItem::cancel(),
-        QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC with kdebase/runtime/keditfiletype/filetypedetails.cpp!!!
-
-    return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
+    Q_UNUSED(offer);
+    BrowserOpenOrSaveQuestion question(url, mimeType, suggestedFileName);
+    const BrowserOpenOrSaveQuestion::Result result = question.askOpenOrSave(0);
+    return result == BrowserOpenOrSaveQuestion::Save ? Save
+        : BrowserOpenOrSaveQuestion::Open ? Open
+        : Cancel;
 }
 
-//static
-// TODO should take a QWidget* parent argument
+//static, deprecated
 BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
 {
-    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
-    // NOTE: Keep this function in sync with
-    // kdebase/runtime/keditfiletype/filetypedetails.cpp
-    //       FileTypeDetails::updateAskSave()
-
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-    // Don't ask for:
-    // - html (even new tabs would ask, due to about:blank!)
-    // - dirs obviously (though not common over HTTP :),
-    // - images (reasoning: no need to save, most of the time, because fast to see)
-    // e.g. postscript is different, because takes longer to read, so
-    // it's more likely that the user might want to save it.
-    // - multipart/* ("server push", see kmultipart)
-    // - other strange 'internal' mimetypes like print/manager...
-    // KEEP IN SYNC!!!
-    if (flags != (int)AttachmentDisposition && mime && (
-         mime->is( "text/html" ) ||
-         mime->is( "application/xml" ) ||
-         mime->is( "inode/directory" ) ||
-         mimeType.startsWith( "image" ) ||
-         mime->is( "multipart/x-mixed-replace" ) ||
-         mime->is( "multipart/replace" ) ||
-         mimeType.startsWith( "print" ) ) )
-        return Open;
-
-    QString question = makeQuestion( url, mimeType, suggestedFileName );
-
-    // don't use KStandardGuiItem::open() here which has trailing ellipsis!
-    int choice = KMessageBox::questionYesNoCancel(
-        0, question, url.host(),
-        KStandardGuiItem::saveAs(), KGuiItem( i18n( "&Open" ), "document-open"), KStandardGuiItem::cancel(),
-        QLatin1String("askEmbedOrSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
-    return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
-    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
+    BrowserOpenOrSaveQuestion question(url, mimeType, suggestedFileName);
+    const BrowserOpenOrSaveQuestion::Result result = question.askEmbedOrSave(0, flags);
+    return result == BrowserOpenOrSaveQuestion::Save ? Save
+        : BrowserOpenOrSaveQuestion::Embed ? Open
+        : Cancel;
 }
 
 // Default implementation, overridden in KHTMLRun

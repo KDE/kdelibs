@@ -18,6 +18,7 @@ set(kparts_LIB_SRCS
    historyprovider.cpp
    browserinterface.cpp
    browserrun.cpp
+   browseropenorsavequestion.cpp
    statusbarextension.cpp
    )
 

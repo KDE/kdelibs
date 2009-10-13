@@ -82,8 +82,13 @@ namespace KParts {
          * @param mimeType the mimetype of the URL
          * @param suggestedFileName optional file name suggested by the server
          * @return Save, Open or Cancel.
+         * @deprecated use BrowserOpenOrSaveQuestion
+         * @code
+         *  BrowserOpenOrSaveQuestion dlg(url, mimeType, suggestedFileName);
+         *  dlg.askEmbedOrSave(parent, flags);
+         * @endcode
          */
-        static AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
+        static KDE_DEPRECATED AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
 
         enum AskEmbedOrSaveFlags { InlineDisposition = 0, AttachmentDisposition = 1 };
         /**
@@ -94,8 +99,14 @@ namespace KParts {
          * @param suggestedFileName optional filename suggested by the server
          * @param flags set to AttachmentDisposition if suggested by the server
          * @return Save, Open or Cancel.
+         * @deprecated use BrowserOpenOrSaveQuestion
+         * @code
+         *  BrowserOpenOrSaveQuestion dlg(url, mimeType, suggestedFileName);
+         *  dlg.askEmbedOrSave(parent, flags);
+         *  // Important: returns Embed now, not Open!
+         * @endcode
          */
-        static AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
+        static KDE_DEPRECATED AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
 
         // virtual so that KHTML can implement differently (HTML cache)
         virtual void save( const KUrl & url, const QString & suggestedFileName );

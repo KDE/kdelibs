@@ -39,6 +39,11 @@ partviewer.cpp
 kde4_add_executable(partviewer TEST ${partviewer_SRCS})
 target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} )
 
+########### test prog for "open or save question" ###############
+
+kde4_add_executable(openorsavequestion TEST openorsavequestion.cpp)
+target_link_libraries(openorsavequestion  ${KDE4_KPARTS_LIBS} )
+
 ########### next target ###############
 
 set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
