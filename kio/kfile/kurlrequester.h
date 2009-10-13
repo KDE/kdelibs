@@ -45,6 +45,8 @@ class QEvent;
  *
  * You can change this behavior by using setMode() or setFilter().
  *
+ * The default window modality for the file dialog is Qt::ApplicationModal
+ *
  * \image html kurlrequester.png "KDE URL Requester"
  *
  * @short A widget to request a filename/url from the user
@@ -58,6 +60,7 @@ class KIO_EXPORT KUrlRequester : public KHBox
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
     Q_PROPERTY(QString text READ text WRITE setText)
+    Q_PROPERTY( Qt::WindowModality fileDialogModality READ fileDialogModality WRITE setFileDialogModality )
 
 public:
     /**
@@ -193,6 +196,18 @@ public:
      */
     void setClickMessage(const QString& msg);
 
+    /**
+     * @returns the window modality of the file dialog set with setFileDialogModality
+     * @since 4.4
+     */
+    Qt::WindowModality fileDialogModality();
+
+    /**
+     * Set the window modality for the file dialog to @p modality
+     * Directory selection dialogs are always modal
+     * @since 4.4
+     */
+    void setFileDialogModality(Qt::WindowModality modality);
 
 public Q_SLOTS:
     /**
@@ -283,6 +298,7 @@ private:
 
     Q_PRIVATE_SLOT(d, void _k_slotUpdateUrl())
     Q_PRIVATE_SLOT(d, void _k_slotOpenDialog())
+    Q_PRIVATE_SLOT(d, void _k_slotFileDialogFinished())
 
 };
 

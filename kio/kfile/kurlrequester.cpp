@@ -168,6 +168,7 @@ public:
     // slots
     void _k_slotUpdateUrl();
     void _k_slotOpenDialog();
+    void _k_slotFileDialogFinished();
 
     KUrl m_startDir;
     KUrlRequester *m_parent;
@@ -179,6 +180,7 @@ public:
     KUrlDragPushButton *myButton;
     KFileDialog *myFileDialog;
     KUrlCompletion *myCompletion;
+    Qt::WindowModality fileDialogModality;
 };
 
 
@@ -224,6 +226,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     m_parent->setSpacing(-1); // use default spacing
 
     myFileDialog = 0L;
+    fileDialogModality = Qt::ApplicationModal;
 
     if ( !combo && !edit ) {
         edit = new KLineEdit( m_parent );
@@ -304,7 +307,15 @@ QString KUrlRequester::text() const
 
 void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
 {
-    KUrl newurl;
+    if ( myFileDialog )
+        if ( myFileDialog->isVisible() )
+        {
+            //The file dialog is already being shown, raise it and exit
+            myFileDialog->raise();
+            myFileDialog->activateWindow();
+            return;
+        }
+
     if ( ((fileDialogMode & KFile::Directory) && !(fileDialogMode & KFile::File)) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
          (myFileDialog && (myFileDialog->mode() & KFile::Directory) &&
@@ -313,40 +324,63 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
         const KUrl openUrl = (!m_parent->url().isEmpty() && !m_parent->url().isRelative() )
           ? m_parent->url() : m_startDir;
 
+        /* FIXME We need a new abstract interface for using KDirSelectDialog in a non-modal way */
+
+        KUrl newurl;
         if (fileDialogMode & KFile::LocalOnly)
             newurl = KFileDialog::getExistingDirectory( openUrl, m_parent);
         else
             newurl = KFileDialog::getExistingDirectoryUrl( openUrl, m_parent);
-        if ( !newurl.isValid() )
+
+        if ( newurl.isValid() )
         {
-            return;
+            m_parent->setUrl( newurl );
+            emit m_parent->urlSelected( url() );
         }
     }
     else
     {
-      emit m_parent->openFileDialog( m_parent );
+        emit m_parent->openFileDialog( m_parent );
 
-      KFileDialog *dlg = m_parent->fileDialog();
-      if ( !url().isEmpty() && !url().isRelative() ) {
+        //Creates the fileDialog if it doesn't exist yet
+        KFileDialog *dlg = m_parent->fileDialog();
+
+        if ( !url().isEmpty() && !url().isRelative() ) {
           KUrl u( url() );
           // If we won't be able to list it (e.g. http), then don't try :)
           if ( KProtocolManager::supportsListing( u ) )
               dlg->setSelection( u.url() );
-      } else {
+        } else {
           dlg->setUrl(m_startDir);
-      }
+        }
 
+        //Update the file dialog window modality
+        if ( dlg->windowModality() != fileDialogModality )
+            dlg->setWindowModality(fileDialogModality);
 
-      if ( dlg->exec() != QDialog::Accepted )
-      {
-          return;
-      }
-
-      newurl = dlg->selectedUrl();
+        if ( fileDialogModality == Qt::NonModal )
+        {
+            dlg->show();
+        } else {
+            dlg->exec();
+        }
     }
+}
 
-    m_parent->setUrl( newurl );
-    emit m_parent->urlSelected( url() );
+void KUrlRequester::KUrlRequesterPrivate::_k_slotFileDialogFinished()
+{
+    if ( !myFileDialog )
+        return;
+
+    if ( myFileDialog->result() == QDialog::Accepted )
+    {
+        KUrl newUrl = myFileDialog->selectedUrl();
+        if ( newUrl.isValid() )
+        {
+            m_parent->setUrl( newUrl );
+            emit m_parent->urlSelected( url() );
+        }
+    }
 }
 
 void KUrlRequester::setMode( KFile::Modes mode)
@@ -384,9 +418,10 @@ KFileDialog * KUrlRequester::fileDialog() const
     if (!d->myFileDialog) {
         QWidget *p = parentWidget();
         d->myFileDialog = new KFileDialog(QString(), d->fileDialogFilter, p);
-        d->myFileDialog->setModal(true);
         d->myFileDialog->setMode(d->fileDialogMode);
         d->myFileDialog->setCaption(windowTitle());
+        d->myFileDialog->setWindowModality(d->fileDialogModality);
+        connect(d->myFileDialog, SIGNAL(finished()), SLOT(_k_slotFileDialogFinished()));
     }
 
     return d->myFileDialog;
@@ -446,6 +481,16 @@ QString KUrlRequester::clickMessage() const
         return d->edit->clickMessage();
     else
         return QString();
+}
+
+Qt::WindowModality KUrlRequester::fileDialogModality()
+{
+    return d->fileDialogModality;
+}
+
+void KUrlRequester::setFileDialogModality(Qt::WindowModality modality)
+{
+    d->fileDialogModality = modality;
 }
 
 const KEditListBox::CustomEditor &KUrlRequester::customEditor()
