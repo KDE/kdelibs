@@ -43,8 +43,8 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
 
   public:
     /**
-      Constuctor.  Also sets the base value.
-    */
+     * Constructor.  Also sets the base value.
+     */
     explicit KIntValidator ( QWidget * parent, int base = 10 );
     /**
      * Constructor.  Also sets the minimum, maximum, and numeric base values.
