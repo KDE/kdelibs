@@ -33,10 +33,10 @@ int main(int argc, char **argv)
     BrowserOpenOrSaveQuestion questionOpen(KUrl("foo.pdf"),
                                            QString::fromLatin1("application/pdf"),
                                            QString::fromLatin1("file.pdf"));
-    BrowserRun::AskSaveResult res = questionOpen.askOpenOrSave(0);
+    BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave(0);
     kDebug() << res;
-    if (questionOpen.selectedService())
-        kDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
+    // TODO if (questionOpen.selectedService())
+    // TODO    kDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
 
     return 0;
 }
