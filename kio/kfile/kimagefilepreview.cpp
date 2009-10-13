@@ -155,7 +155,7 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
                 this, SLOT(_k_slotFailed(const KFileItem&)));
 }
 
-void KImageFilePreview::resizeEvent( QResizeEvent *e )
+void KImageFilePreview::resizeEvent( QResizeEvent * )
 {
     clearPreview();
     d->currentURL = KUrl(); // force this to actually happen
@@ -181,7 +181,7 @@ void KImageFilePreview::gotPreview( const KFileItem& item, const QPixmap& pm )
             if (d->m_timeLine->state() == QTimeLine::Running) {
                 d->m_timeLine->setCurrentTime(0);
             }
-    
+
             d->m_pmTransition = pm;
             d->m_pmTransitionOpacity = 0;
             d->m_pmCurrentOpacity = 1;
