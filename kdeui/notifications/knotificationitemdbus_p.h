@@ -151,7 +151,7 @@ public Q_SLOTS:
     //interaction
     /**
      * Shows the context menu associated to this item
-     * at the desidered screen position
+     * at the desired screen position
      */
     void ContextMenu(int x, int y);
 
