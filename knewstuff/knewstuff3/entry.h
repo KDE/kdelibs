@@ -72,12 +72,12 @@ public:
 	 *
 	 * @returns whether or not setting the values was successful
 	 */
-	bool setEntryData(const QDomElement & xmldata);
+	bool setEntryXML(const QDomElement & xmldata);
 	
 	/**
 	 * get the xml string for the entry
 	 */
-	QDomElement entryData() const;
+	QDomElement entryXML() const;
 	
     /**
      * Sets the name for this data object.

@@ -19,6 +19,8 @@
 
 #include "entry.h"
 
+#include "xmlloader.h"
+
 #include <kdebug.h>
 
 using namespace KNS;
@@ -73,7 +75,7 @@ Entry::~Entry()
     delete d;
 }
 
-bool Entry::setEntryData(const QDomElement & xmldata)
+bool Entry::setEntryXML(const QDomElement & xmldata)
 {
     if (xmldata.tagName() != "stuff")
 		return false;
@@ -145,20 +147,10 @@ bool Entry::setEntryData(const QDomElement & xmldata)
     return true;
 }
 
-QDomElement addElement(QDomDocument& doc, QDomElement& parent,
-                                     const QString& tag, const QString& value)
-{
-    QDomElement n = doc.createElement(tag);
-    n.appendChild(doc.createTextNode(value));
-    parent.appendChild(n);
-
-    return n;
-}
-
 /**
  * get the xml string for the entry
  */
-QDomElement Entry::entryData() const
+QDomElement Entry::entryXML() const
 {
     QDomDocument doc;
 

@@ -139,50 +139,50 @@ void ClientPrivate::workflow()
 //        m_uploadedEntry = NULL;
 //    }
 
-//    if (m_command == command_download) {
-//        m_downloaddialog = new DownloadDialog(m_engine, m_parent);
-//        //kDebug() << "adding!";
-//        s_dialogs.insert(componentName(), m_downloaddialog);
+    if (m_command == command_download) {
+        m_downloaddialog = new DownloadDialog(m_engine, m_parent);
+        //kDebug() << "adding!";
+        //s_dialogs.insert(componentName(), m_downloaddialog);
 
-//        //connect(this, SIGNAL(signalEntriesFinished()),
-//        //        SLOT(slotEntriesFinished()));
-//        //connect(this,
-//        //        SIGNAL(signalEntryChanged(KNS::Entry *)),
-//        //        SLOT(slotEntryChanged(KNS::Entry *)));
-//        //connect(this,
-//        //        SIGNAL(signalProvidersFailed()),
-//        //        SLOT(slotDownloadDialogClosed()));
-//        //connect(m_downloaddialog,
-//        //        SIGNAL(destroyed(QObject*)),
-//        //        SLOT(slotDownloadDialogDestroyed()));
-//        //connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
-//        //kDebug() << "done adding!";
+        //connect(this, SIGNAL(signalEntriesFinished()),
+        //        SLOT(slotEntriesFinished()));
+        //connect(this,
+        //        SIGNAL(signalEntryChanged(KNS::Entry *)),
+        //        SLOT(slotEntryChanged(KNS::Entry *)));
+        //connect(this,
+        //        SIGNAL(signalProvidersFailed()),
+        //        SLOT(slotDownloadDialogClosed()));
+        //connect(m_downloaddialog,
+        //        SIGNAL(destroyed(QObject*)),
+        //        SLOT(slotDownloadDialogDestroyed()));
+        //connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
+        //kDebug() << "done adding!";
 
-//        m_downloaddialog->show();
-//    }
+        m_downloaddialog->show();
+    }
 
 //    start();
 
-//    if (m_modal) {
-//        QEventLoop loop;
-//        m_loop = &loop;
-//        loop.exec();
-//    }
+    if (m_modal) {
+        QEventLoop loop;
+        m_loop = &loop;
+        loop.exec();
+    }
 }
 
-//void ClientPrivate::stopLoop()
-//{
-//    m_command = command_none;
+void ClientPrivate::stopLoop()
+{
+    m_command = command_none;
 
-//    if (m_loop) {
-//        m_loop->exit();
-//        m_loop = 0;
+    if (m_loop) {
+        m_loop->exit();
+        m_loop = 0;
 
-//        if (m_downloaddialog) {
-//            slotDownloadDialogDestroyed();
-//        }
-//    }
-//}
+        if (m_downloaddialog) {
+            slotDownloadDialogDestroyed();
+        }
+    }
+}
 
 KNS::Entry::List Client::download()
 {
@@ -212,8 +212,8 @@ KNS::Entry::List Client::download()
 
 KNS::Entry::List Client::downloadDialogModal(QWidget*)
 {
-    //kDebug() << "Client: downloadDialogModal";
-    KDialog *existingDialog = ClientPrivate::s_dialogs.value(d->m_engine->componentName());
+    kDebug() << "Client: downloadDialogModal";
+    KDialog *existingDialog = d->m_downloaddialog;
     if (existingDialog) {
         existingDialog->show();
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
@@ -432,10 +432,10 @@ void ClientPrivate::slotDownloadDialogClosed()
     //kDebug() << sender() << m_downloaddialog;
     //disconnect(m_downloaddialog, SIGNAL(destroyed(QObject*)),
     //           this, SLOT(slotDownloadDialogDestroyed()));
-    //slotDownloadDialogDestroyed();
-    //m_downloaddialog->deleteLater();
-    //m_downloaddialog = NULL;
-    //stopLoop();
+    slotDownloadDialogDestroyed();
+    m_downloaddialog->deleteLater();
+    m_downloaddialog = NULL;
+    stopLoop();
     //emit signalDownloadDialogDone(QList<KNS::Entry*>::fromSet(m_changedEntries));
 }
 

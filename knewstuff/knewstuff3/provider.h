@@ -41,7 +41,7 @@ namespace KNS
      * @short KNewStuff Base Provider class.
      *
      * This class provides accessors for the provider object.
-     * It should probably not be used directly by the application.
+     * It should not be used directly by the application.
      * This class is the base class and will be instantiated for
      * static website providers.
      *
@@ -67,7 +67,12 @@ namespace KNS
         /**
          * set the provider data xml, to initialize the provider
          */
-        virtual void setProviderData(const QString & xmldata);
+        virtual bool setProviderXML(QDomElement & xmldata);
+
+        /**
+         * get the xml for the provider
+         */
+        virtual QDomElement providerXML() const;
 
         /**
          * Retrieves the common name of the provider.

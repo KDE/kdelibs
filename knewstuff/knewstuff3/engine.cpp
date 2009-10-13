@@ -28,6 +28,8 @@
 #include "knewstuff3/core/feed.h"
 #include "knewstuff3/core/security.h"
 
+#include "knewstuff3/xmlloader.h"
+
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -182,6 +184,20 @@ bool Engine::init(const QString &configfile)
 
     m_initialized = true;
 
+    // load the registry first, so we know which entries are installed
+    loadRegistry();
+    
+    // initialize providers at this point
+    // then load the providersCache if caching is enabled
+    if (m_cachepolicy != CacheNever) {
+        loadProvidersCache();
+    }
+
+    // load the providers
+    if (m_cachepolicy != CacheOnly) {
+        loadProviders();
+    }
+
     return true;
 }
 
@@ -194,41 +210,17 @@ QString Engine::componentName() const
     return m_componentname;
 }
 
-//void Engine::start()
-//{
-//    //kDebug() << "starting engine";
 
-//    if (!m_initialized) {
-//        kError() << "Must call KNS::Engine::init() first." << endl;
-//        return;
-//    }
+void Engine::loadProviders()
+{
+    kDebug(550) << "loading providers from " << m_providersurl;
 
-//    // first load the registry, so we know which entries are installed
-//    loadRegistry();
+    XmlLoader * loader = new XmlLoader(this);
+    connect(loader, SIGNAL(signalLoaded(QDomDocument)), SLOT(slotProvidersLoaded(QDomDocument)));
+    connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
-//    // then load the providersCache if caching is enabled
-//    if (m_cachepolicy != CacheNever) {
-//        loadProvidersCache();
-//    }
-
-//    // FIXME: also return if CacheResident and its conditions fulfilled
-//    if (m_cachepolicy == CacheOnly) {
-//        //emit signalEntriesFinished();
-//        return;
-//    }
-
-//    //ProviderLoader *provider_loader = new ProviderLoader(this);
-
-//    //// make connections before loading, just in case the iojob is very fast
-//    //connect(provider_loader,
-//    //        SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
-//    //        SLOT(slotProvidersLoaded(KNS::Provider::List)));
-//    //connect(provider_loader,
-//    //        SIGNAL(signalProvidersFailed()),
-//    //        SLOT(slotProvidersFailed()));
-
-//    //provider_loader->load(m_providersurl);
-//}
+    loader->load(KUrl(m_providersurl));
+}
 
 //void Engine::loadEntries(Provider *provider)
 //{
@@ -372,8 +364,31 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
     return true;
 }
 
-void Engine::slotProvidersLoaded(KNS::Provider::List list)
+void Engine::slotProvidersLoaded(QDomDocument doc)
 {
+    kDebug() << "slotProvidersLoaded";
+
+    // get each provider element, and create a provider object from it
+    QDomElement providers = doc.documentElement();
+
+    if (providers.tagName() != "ghnsproviders" &&
+            providers.tagName() != "knewstuffproviders") {
+        kWarning(550) << "No document in providers.xml.";
+        emit signalProvidersFailed();
+        return;
+    }
+
+    QDomNode n;
+    for (n = providers.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        QDomElement p = n.toElement();
+
+        if (p.tagName() == "provider") {
+            Provider * provider = new Provider;
+            if (provider->setProviderXML(p))
+                m_provider_cache.append(provider);
+        }
+    }
+
     // note: this is only called from loading the online providers
     //ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
     //delete loader;
@@ -582,7 +597,7 @@ void Engine::loadRegistry()
 {
     KStandardDirs d;
 
-    //kDebug() << "Loading registry of files for the component: " << m_componentname;
+    kDebug() << "Loading registry of files for the component: " << m_componentname;
 
     QString realAppName = m_componentname.split(':')[0];
 
@@ -639,7 +654,7 @@ void Engine::loadRegistry()
             }
 
 			Entry * e = new Entry;
-			e->setEntryData(stuff);
+			e->setEntryXML(stuff);
             //if (!e->isValid()) {
             //    kWarning() << "Invalid GHNS installation metadata.";
             //    continue;
@@ -858,7 +873,7 @@ KNS::Entry *Engine::loadEntryCache(const QString& filepath)
     }
 
     Entry *e = new Entry;
-	e->setEntryData(stuff);
+	e->setEntryXML(stuff);
     //if (!handler.isValid()) {
     //    kWarning() << "Invalid GHNS installation metadata.";
     //    return NULL;
@@ -1144,12 +1159,11 @@ void Engine::cacheProvider(Provider *provider)
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsproviders");
 
-    //for (Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); ++it) {
-    //    Provider *p = (*it);
-    //    ProviderHandler ph(*p);
-    //    QDomElement pxml = ph.providerXML();
-    //    root.appendChild(pxml);
-    //}
+    for (Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); ++it) {
+        Provider *p = (*it);
+        QDomElement pxml = p->providerXML();
+        root.appendChild(pxml);
+    }
     //ProviderHandler ph(*provider);
     //QDomElement pxml = ph.providerXML();
     //root.appendChild(pxml);
@@ -1224,7 +1238,7 @@ void Engine::cacheEntry(Entry *entry)
     // FIXME: adhere to meta naming rules as discussed
     // FIXME: maybe related filename to base64-encoded id(), or the reverse?
 
-    QDomElement exml = entry->entryData();
+    QDomElement exml = entry->entryXML();
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnscache");
@@ -1265,7 +1279,7 @@ void Engine::registerEntry(Entry *entry)
 
     //kDebug() << " + Save to file '" + registryfile + "'.";
 
-    QDomElement exml = entry->entryData();
+    QDomElement exml = entry->entryXML();
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsinstall");
@@ -1631,11 +1645,6 @@ void Engine::slotInstallationVerification(int result)
         emit signalInstallationFinished();
     else
         emit signalInstallationFailed();
-}
-
-void Engine::setCachePolicy(CachePolicy policy)
-{
-    m_cachepolicy = policy;
 }
 
 QStringList KNS::Engine::archiveEntries(const QString& path, const KArchiveDirectory * dir)

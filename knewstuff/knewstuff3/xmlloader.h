@@ -1,7 +1,8 @@
 /*
-    This file is part of KNewStuff2.
+    knewstuff3/xmlloader.h.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -16,10 +17,8 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_PROVIDER_LOADER_H
-#define KNEWSTUFF2_PROVIDER_LOADER_H
-
-#include <knewstuff3/provider.h>
+#ifndef KNEWSTUFF3_XML_LOADER_H
+#define KNEWSTUFF3_XML_LOADER_H
 
 #include <QtXml/qdom.h>
 #include <QtCore/QObject>
@@ -31,43 +30,46 @@ class KJob;
 
 namespace KIO
 {
-class Job;
+    class Job;
 }
 
 namespace KNS
 {
 
+QDomElement addElement(QDomDocument& doc, QDomElement& parent,
+                                 const QString& tag, const QString& value);
+
 /**
- * KNewStuff provider loader.
- * This class sets up a list of all possible providers by querying
- * the main provider database for this specific application.
+ * KNewStuff xml loader.
+ * This class loads an xml document from a kurl and returns the
+ * resulting domdocument once completed.
  * It should probably not be used directly by the application.
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT ProviderLoader : public QObject
+class XmlLoader : public QObject
 {
     Q_OBJECT
 public:
     /**
      * Constructor.
      */
-    ProviderLoader(QObject* parent);
+    XmlLoader(QObject* parent);
 
     /**
-     * Starts asynchronously loading the list of providers from the
+     * Starts asynchronously loading the xml document from the
      * specified URL.
      *
-     * @param providersurl location of the XML file containing the providers
+     * @param url location of the XML file
      */
-    void load(const QString &providersurl);
+    void load(const KUrl & url);
 
 Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
-    void signalProvidersLoaded(KNS::Provider::List);
-    void signalProvidersFailed();
+    void signalLoaded(QDomDocument);
+    void signalFailed();
 
 protected Q_SLOTS:
     void slotJobData(KIO::Job *, const QByteArray &);
@@ -75,8 +77,6 @@ protected Q_SLOTS:
 
 private:
     QByteArray m_jobdata;
-
-    Provider::List m_providers;
 };
 
 }

@@ -41,6 +41,7 @@ set(knewstuff3_SRCS
   engine.cpp
   entry.cpp
   provider.cpp
+  xmlloader.cpp
 )
 
 kde4_add_ui_files(knewstuff3_ui_SRCS ui/DownloadDialog.ui ui/UploadDialog.ui)

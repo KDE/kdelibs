@@ -84,8 +84,6 @@ public:
         CacheOnly
     };
 
-    void setCachePolicy(CachePolicy policy);
-
     /**
      * Initializes the engine. This step is application-specific and relies
      * on an external configuration file, which determines all the details
@@ -221,6 +219,11 @@ public:
 
 Q_SIGNALS:
     /**
+     * Indicates a message to be added to the ui's log, or sent to a messagebox
+     */
+    void signalMessage(const QString& message);
+
+    /**
      * Indicates that the list of providers has been successfully loaded.
      * This signal might occur twice, for the local cache and for updated provider
      * information from the ProvidersUrl.
@@ -256,7 +259,7 @@ Q_SIGNALS:
 protected:
     //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
-    void slotProvidersLoaded(KNS::Provider::List list);
+    void slotProvidersLoaded(QDomDocument);
     void slotProvidersFailed();
 
     void slotEntriesLoaded(KNS::Entry::List list);
@@ -274,6 +277,12 @@ private Q_SLOTS:
     void slotInstallationVerification(int result);
 
 private:
+    /*
+     * load providers from the providersurl in the knsrc file
+     * creates providers based on their type and adds them to the list of providers
+     */
+    void loadProviders();
+    
     void loadRegistry();
     void loadProvidersCache();
     KNS::Entry *loadEntryCache(const QString& filepath);
