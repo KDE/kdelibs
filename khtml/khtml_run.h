@@ -51,7 +51,6 @@ public:
 
 protected:
   virtual void save( const KUrl & url, const QString & suggestedFilename );
-  bool askSave( const KUrl & url, KService::Ptr offer, const QString & mimeType, const QString & suggestedFilename );
 
 private:
   khtml::ChildFrame *m_child;
