@@ -132,6 +132,12 @@ public:
      QMenu *delayedMenu();
 
     /**
+     * Reimplemented to add arrow for delayed menu
+     * @since 4.4
+     */
+    virtual QSize sizeHint() const;
+
+    /**
      * Returns the action object associated with this button, or 0 if it does not have one
      *
      * @returns the KAuth::Action associated with this button.
@@ -176,6 +182,12 @@ protected:
      * Reimplemented to add drag-support
      */
     virtual void mouseMoveEvent( QMouseEvent * );
+
+    /**
+     * Reimplemented to add arrow for delayed menu
+     * @since 4.4
+     */
+    virtual void paintEvent( QPaintEvent * );
 
     /**
      * Starts a drag (dragCopy() by default) using dragObject()

@@ -18,6 +18,8 @@
 */
 
 #include "kpushbutton.h"
+#include <QStyleOptionToolButton>
+#include <QStylePainter>
 
 #include <QtGui/QDrag>
 #include <QtGui/QActionEvent>
@@ -148,7 +150,7 @@ void KPushButton::KPushButtonPrivate::readSettings()
 
 
 KPushButton::KPushButton( QWidget *parent )
-    : QPushButton( parent ), d( new KPushButtonPrivate(this) ) 
+    : QPushButton( parent ), d( new KPushButtonPrivate(this) )
 {
     init( KGuiItem( "" ) );
 }
@@ -349,6 +351,29 @@ void KPushButton::setAuthAction(KAuth::Action *action)
                 this, SLOT(authStatusChanged(int)));
         d->authStatusChanged(d->authAction->status());
     }
+}
+
+QSize KPushButton::sizeHint() const
+{
+    const bool tempSetMenu = !menu() && d->delayedMenu;
+    if (tempSetMenu)
+        const_cast<KPushButton *>(this)->setMenu(d->delayedMenu);
+    const QSize sz = QPushButton::sizeHint();
+    if (tempSetMenu)
+        const_cast<KPushButton *>(this)->setMenu(0);
+    return sz;
+}
+
+void KPushButton::paintEvent( QPaintEvent * )
+{
+    QStylePainter p(this);
+    QStyleOptionButton option;
+    initStyleOption(&option);
+    
+    if (d->delayedMenu)
+        option.features |= QStyleOptionButton::HasMenu;
+
+    p.drawControl(QStyle::CE_PushButton, option);
 }
 
 #include "kpushbutton.moc"
