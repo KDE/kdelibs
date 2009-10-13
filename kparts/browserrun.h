@@ -84,8 +84,8 @@ namespace KParts {
          * @return Save, Open or Cancel.
          * @deprecated use BrowserOpenOrSaveQuestion
          * @code
-         *  BrowserOpenOrSaveQuestion dlg(url, mimeType, suggestedFileName);
-         *  dlg.askEmbedOrSave(parent, flags);
+         *  BrowserOpenOrSaveQuestion dlg(parent, url, mimeType, suggestedFileName);
+         *  dlg.askEmbedOrSave(flags);
          * @endcode
          */
         static KDE_DEPRECATED AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
@@ -101,8 +101,8 @@ namespace KParts {
          * @return Save, Open or Cancel.
          * @deprecated use BrowserOpenOrSaveQuestion
          * @code
-         *  BrowserOpenOrSaveQuestion dlg(url, mimeType, suggestedFileName);
-         *  dlg.askEmbedOrSave(parent, flags);
+         *  BrowserOpenOrSaveQuestion dlg(parent, url, mimeType, suggestedFileName);
+         *  dlg.askEmbedOrSave(flags);
          *  // Important: returns Embed now, not Open!
          * @endcode
          */
