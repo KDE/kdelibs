@@ -483,7 +483,7 @@ QString KUrlRequester::clickMessage() const
         return QString();
 }
 
-Qt::WindowModality KUrlRequester::fileDialogModality()
+Qt::WindowModality KUrlRequester::fileDialogModality() const
 {
     return d->fileDialogModality;
 }

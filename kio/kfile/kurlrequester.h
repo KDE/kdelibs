@@ -200,7 +200,7 @@ public:
      * @returns the window modality of the file dialog set with setFileDialogModality
      * @since 4.4
      */
-    Qt::WindowModality fileDialogModality();
+    Qt::WindowModality fileDialogModality() const;
 
     /**
      * Set the window modality for the file dialog to @p modality
