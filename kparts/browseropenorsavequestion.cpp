@@ -87,7 +87,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave(QWidg
         KStandardGuiItem::saveAs(), openItem, KStandardGuiItem::cancel(),
         QLatin1String("askSave")+ d->mimeType); // dontAskAgainName, KEEP IN SYNC with kdebase/runtime/keditfiletype/filetypedetails.cpp!!!
 
-    return choice == KMessageBox::Yes ? BrowserRun::Save : (choice == KMessageBox::No ? BrowserRun::Open : BrowserRun::Cancel);
+    return choice == KMessageBox::Yes ? Save : (choice == KMessageBox::No ? Open : Cancel);
 }
 
 #if 0
@@ -121,7 +121,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(QWid
          d->mimeType.startsWith("image") ||
          mime->is("multipart/x-mixed-replace") ||
          mime->is("multipart/replace")))
-        return BrowserRun::Open;
+        return Open;
 
     QString question = makeQuestion(d->url, d->mimeType, d->suggestedFileName);
 
@@ -130,6 +130,6 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(QWid
         parent, question, d->url.host(),
         KStandardGuiItem::saveAs(), KGuiItem(i18n("&Open"), "document-open"), KStandardGuiItem::cancel(),
         QLatin1String("askEmbedOrSave")+ d->mimeType); // dontAskAgainName, KEEP IN SYNC!!!
-    return choice == KMessageBox::Yes ? BrowserRun::Save : (choice == KMessageBox::No ? BrowserRun::Open : BrowserRun::Cancel);
+    return choice == KMessageBox::Yes ? Save : (choice == KMessageBox::No ? Open : Cancel);
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 }
