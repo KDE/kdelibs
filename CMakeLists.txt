@@ -10,9 +10,9 @@ include(CPack)
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 3)
-set (KDE_VERSION_RELEASE 71)
+set (KDE_VERSION_RELEASE 72)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.3.71 (KDE 4.4 >= 20091007))")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.3.72 (KDE 4.4 >= 20091013))")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -32,6 +32,7 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 ################# now find all used packages #################
 
+set (QT_MIN_VERSION "4.6.0")
 find_package(KDE4Internal REQUIRED)
 include(KDE4Defaults)
 include (MacroLibrary)
