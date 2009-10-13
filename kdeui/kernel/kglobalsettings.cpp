@@ -291,7 +291,7 @@ int KGlobalSettings::contextMenuKey ()
 
     s = shortCuts.at(0);
 
-    if ( s.startsWith( "default(" ) ) {
+    if ( s.startsWith( QLatin1String("default(") ) ) {
         s = s.mid( 8, s.length() - 9 );
     }
 

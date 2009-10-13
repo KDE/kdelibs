@@ -269,7 +269,7 @@ public:
   virtual QModelIndex parent(const QModelIndex&) const;
   virtual int columnCount(const QModelIndex& = QModelIndex() ) const;
 
-signals:
+Q_SIGNALS:
 #if !defined(Q_MOC_RUN)
 private: // Don't allow subclasses to emit these signals.
 #endif

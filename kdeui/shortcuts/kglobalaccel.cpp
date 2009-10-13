@@ -253,7 +253,7 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
         // internal registry. That happened above.
         if (!action->property("isConfigurationAction").toBool()) {
             // If it's a session shortcut unregister it.
-            action->objectName().startsWith("_k_session:")
+            action->objectName().startsWith(QLatin1String("_k_session:"))
                 ? iface.unRegister(actionId)
                 : iface.setInactive(actionId);
         }

@@ -958,7 +958,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         return pix;
 
     // Special case for absolute path icons.
-    if (name.startsWith("favicons/"))
+    if (name.startsWith(QLatin1String("favicons/")))
     {
        favIconOverlay = true;
        name = KStandardDirs::locateLocal("cache", name+".png");

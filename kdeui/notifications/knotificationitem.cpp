@@ -127,7 +127,7 @@ QString KNotificationItem::iconName() const
 
 void KNotificationItem::setIconByPixmap(const QIcon &icon)
 {
-    d->iconName = QString();
+    d->iconName.clear();
     d->serializedIcon = d->iconToVector(icon);
     emit d->notificationItemDbus->NewIcon();
 
@@ -201,7 +201,7 @@ QString KNotificationItem::attentionIconName() const
 
 void KNotificationItem::setAttentionIconByPixmap(const QIcon &icon)
 {
-    d->attentionIconName = QString();
+    d->attentionIconName.clear();
     d->serializedAttentionIcon = d->iconToVector(icon);
     d->attentionIcon = icon;
     emit d->notificationItemDbus->NewAttentionIcon();
@@ -295,7 +295,7 @@ QString KNotificationItem::toolTipIconName() const
 
 void KNotificationItem::setToolTipIconByPixmap(const QIcon &icon)
 {
-    d->toolTipIconName = QString();
+    d->toolTipIconName.clear();
     d->serializedToolTipIcon = d->iconToVector(icon);
     d->toolTipIcon = icon;
     emit d->notificationItemDbus->NewToolTip();
@@ -675,7 +675,7 @@ void KNotificationItemPrivate::serviceChange(const QString& name, const QString&
             //registered
             legacy = false;
         }
-    } else if (name.startsWith("org.kde.Notification-")) {
+    } else if (name.startsWith(QLatin1String("org.kde.Notification-"))) {
         if (newOwner.isEmpty() && (!notificationItemWatcher ||
                                    !notificationItemWatcher->IsNotificationHostRegistered())) {
             //unregistered

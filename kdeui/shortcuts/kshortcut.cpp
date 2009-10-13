@@ -100,7 +100,7 @@ KShortcut::KShortcut(const QString &s)
 
     //TODO: what is the "(default)" thingie used for?
     for( int i=0; i < sCuts.count(); i++)
-        if( sCuts[i].startsWith( "default(" ) )
+        if( sCuts[i].startsWith( QLatin1String("default(") ) )
             sCuts[i] = sCuts[i].mid( 8, sCuts[i].length() - 9 );
 
     if (sCuts.count() >= 1) {
