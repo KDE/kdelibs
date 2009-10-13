@@ -3,6 +3,10 @@ add_subdirectory(kconfig_compiler)
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
+# QtTest needs this in order to include the gui stuff.                                       
+# The alternative (which requires Qt>=4.6) is #include <QTestGui>                            
+add_definitions(-DQT_GUI_LIB)                                                                
+
 
 MACRO(KDEUI_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
