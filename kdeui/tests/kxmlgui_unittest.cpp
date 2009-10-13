@@ -297,13 +297,17 @@ void KXmlGui_UnitTest::testPartMerging()
         "  <DefineGroup name=\"new_merge\"/>\n"
         "  <Action name=\"last_from_host\"/>\n"
         " </Menu>\n"
+        " <Menu name=\"file\"><text>&amp;File</text>\n"
+        "  <DefineGroup name=\"placed_merge\" append=\"new_merge\"/>\n"
+        " </Menu>\n"
         "</MenuBar>\n"
         "</gui>\n";
 
 
     TestGuiClient hostClient;
     hostClient.createActions(QStringList() << "go_up" << "go_back" << "go_forward" << "go_home"
-                             << "host_after_merge" << "host_after_merge_2" << "last_from_host");
+                             << "host_after_merge" << "host_after_merge_2" << "last_from_host"
+                             << "file_new" << "file_open" << "file_quit");
     hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
@@ -314,6 +318,7 @@ void KXmlGui_UnitTest::testPartMerging()
     QVERIFY(goMenuW);
     QMenu* goMenu = qobject_cast<QMenu *>(goMenuW);
     QVERIFY(goMenu);
+    QMenu* fileMenu = qobject_cast<QMenu *>(factory.container("file", &hostClient));
 
     //debugActions(goMenu->actions());
     checkActions(goMenu->actions(), QStringList()
@@ -326,6 +331,11 @@ void KXmlGui_UnitTest::testPartMerging()
                  << "host_after_merge_2"
                  << "separator"
                  << "last_from_host");
+    checkActions(fileMenu->actions(), QStringList()
+                 << "file_new"
+                 << "file_open"
+                 << "separator"
+                 << "file_quit");
 
     kDebug() << "Now merging the part";
 
@@ -344,11 +354,17 @@ void KXmlGui_UnitTest::testPartMerging()
         "  <Action name=\"undefined_group\" group=\"no_such_merge\"/>\n"
         "  <Action name=\"last_from_part\"/>\n"
         " </Menu>\n"
+        " <Menu name=\"file\"><text>&amp;File</text>\n"
+        "  <Action group=\"placed_merge\" name=\"action_in_placed_merge\"/>\n"
+        "  <Action name=\"other_file_action\"/>\n"
+        " </Menu>\n"
         "</MenuBar>\n"
         "</kpartgui>\n";
 
     TestGuiClient partClient(partXml);
-    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" << "last_page" << "last_from_part" << "action_in_merge_group" << "undefined_group");
+    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" <<
+            "last_page" << "last_from_part" << "action_in_merge_group" << "undefined_group" <<
+            "action_in_placed_merge" << "other_file_action" );
     factory.addClient(&partClient);
 
     //debugActions(goMenu->actions());
@@ -376,6 +392,13 @@ void KXmlGui_UnitTest::testPartMerging()
                  // End of <DefineGroup>
                  << "last_from_host"
         );
+        checkActions(fileMenu->actions(), QStringList()
+                 << "file_new"
+                 << "action_in_placed_merge"
+                 << "file_open"
+                 << "separator"
+                 << "file_quit"
+                 << "other_file_action");
 }
 
 void KXmlGui_UnitTest::testUiStandardsMerging_data()
