@@ -40,6 +40,7 @@
 #include <QtGui/QCommonStyle>
 #include <QtGui/QPalette>
 #include <QtGui/QStylePlugin>
+#include <typeinfo>
 
 class QStyleOptionProgressBar;
 class QStyleOptionTab;
@@ -1578,6 +1579,9 @@ private:
     // fitt's law label support: QLabel focusing its buddy widget
     const QObject *clickedLabel;
 
+    template<typename T>
+    static T extractOptionHelper(T*);
+
 public:
 /** @name QStyle Methods
  * These are methods reimplemented from QStyle. Usually it's not necessary to
@@ -1669,12 +1673,25 @@ class KStyleFactory: public QStylePlugin
     }
 };
 
+// get the pointed-to type from a pointer
+template<typename T>
+T KStyle::extractOptionHelper(T*)
+{
+    return T();
+}
 
 template<typename T>
 T KStyle::extractOption(Option* option)
 {
-    if (option && dynamic_cast<T>(option)) {
-        return static_cast<T>(option);
+    if (option) {
+        if (dynamic_cast<T>(option))
+            return static_cast<T>(option);
+        // Ugly hacks for when RTLD_GLOBAL is not used (quite common with plugins, really)
+        // and dynamic_cast fails.
+        // This is still partially broken as it doesn't take into account subclasses.
+        // ### KDE5 do this somehow differently
+        if ( qstrcmp(typeid(*option).name(), typeid(extractOptionHelper(static_cast<T>(0))).name()) == 0 )
+            return static_cast<T>(option);
     }
 
     //### warn if cast failed?
