@@ -206,11 +206,11 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
     );
     U(Gbp, 1e+99,
       i18nc("currency unit symbol", "GBP"),
-      i18nc("unit description in lists", "pound sterlings"),
+      i18nc("unit description in lists", "pounds sterling"),
       i18nc("unit synonyms for matching user input",
             "pound;pounds;GBP;gbp;£;UK;sterling;sterlings"),
-      ki18nc("amount in units (real)", "%1 pound sterlings"),
-      ki18ncp("amount in units (integer)", "%1 pound sterlings", "%1 pound sterlings")
+      ki18nc("amount in units (real)", "%1 pounds sterling"),
+      ki18ncp("amount in units (integer)", "%1 pound sterling", "%1 pounds sterling")
     );
     U(Huf, 1e+99,
       i18nc("currency unit symbol", "HUF"),
