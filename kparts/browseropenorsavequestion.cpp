@@ -50,13 +50,13 @@ public:
     {
         // Use askSave or askEmbedOrSave from filetypesrc
         dontAskConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
-        
+
         setCaption(url.host());
         setButtons(KDialog::Yes | KDialog::No | KDialog::Cancel);
         setObjectName("questionYesNoCancel");
         setButtonGuiItem(KDialog::Cancel, KStandardGuiItem::cancel());
         setDefaultButton(KDialog::Yes);
-        
+
         QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget());
         mainLayout->setSpacing(KDialog::spacingHint() * 2); // provide extra spacing
         mainLayout->setMargin(0);
@@ -94,7 +94,7 @@ public:
         QLabel* mimeTypeLabel = new QLabel(mainWidget());
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
         textVLayout->addWidget(mimeTypeLabel);
-            
+
         hLayout->addLayout(textVLayout,5);
 
         mainLayout->addStretch(15);
@@ -112,14 +112,14 @@ public:
         KConfigGroup cg(dontAskConfig, "Notification Messages"); // group name comes from KMessageBox
         const QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
         if (dontAsk == "yes" || dontAsk == "true") {
-            return KDialog::Yes;
+            return KDialog::Yes; // i.e. "Save"
         } else if (dontAsk == "no" || dontAsk == "false") {
-            return KDialog::No;
+            return KDialog::No; // i.e. "Open"
         }
 
         KNotification::event("messageQuestion", // why does KMessageBox uses Information for questionYesNoCancel?
                              questionLabel->text(), // also include mimetype?
-                             QPixmap(), 
+                             QPixmap(),
                              window());
         const int result = exec();
 
@@ -128,6 +128,12 @@ public:
             cg.sync();
         }
         return result;
+    }
+
+    void showService(KService::Ptr selectedService)
+    {
+        KGuiItem openItem(i18nc("@label:button", "&Open with %1", selectedService->name()), selectedService->icon());
+        setButtonGuiItem(KDialog::No, openItem);
     }
 
     KUrl url;
@@ -145,8 +151,8 @@ public Q_SLOTS:
     void slotAppSelected(QAction* action)
     {
         selectedService = action->data().value<KService::Ptr>();
-        KGuiItem openItem(i18nc("@label:button", "&Open with %1", selectedService->name()), selectedService->icon());
-        setButtonGuiItem(KDialog::No, openItem);
+        //showService(selectedService);
+        done(KDialog::No);
     }
 };
 
@@ -158,7 +164,7 @@ BrowserOpenOrSaveQuestion::BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl
 
 BrowserOpenOrSaveQuestion::~BrowserOpenOrSaveQuestion()
 {
-    delete d;    
+    delete d;
 }
 
 static KAction* createAppAction(const KService::Ptr& service, QObject* parent)
@@ -200,7 +206,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
             menu->addAction(act);
             if (first) {
                 first = false;
-                d->slotAppSelected(act); // sets the guiitem
+                d->showService(*it); // sets the guiitem
             }
         }
     }
