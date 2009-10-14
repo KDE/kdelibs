@@ -43,30 +43,24 @@ class KAutostart::Private
         }
 
         QString name;
-        KDesktopFile* df;
+        KDesktopFile *df;
 };
 
-KAutostart::KAutostart(const QString& entryName,
-           QObject* parent)
+KAutostart::KAutostart(const QString& entryName, QObject* parent)
     : QObject(parent),
       d(new Private)
 {
-    if (entryName.isEmpty())
-    {
-        // XXX sure that the mainComponent is available at this point?
+    if (entryName.isEmpty()) {
         d->name = KGlobal::mainComponent().aboutData()->appName();
-    }
-    else
-    {
+    } else {
         d->name = entryName;
     }
 
-    if (!d->name.endsWith(QLatin1String(".desktop")))
-    {
+    if (!d->name.endsWith(QLatin1String(".desktop"))) {
         d->name.append(".desktop");
     }
 
-    d->df = new KDesktopFile( "autostart", d->name);
+    d->df = new KDesktopFile("autostart", d->name);
 }
 
 KAutostart::~KAutostart()
@@ -79,8 +73,7 @@ void KAutostart::setAutostarts(bool autostart)
     d->df->desktopGroup().writeEntry("Hidden", !autostart);
 }
 
-bool KAutostart::autostarts(const QString& environment,
-                            Conditions check) const
+bool KAutostart::autostarts(const QString& environment, Conditions check) const
 {
     // check if this is actually a .desktop file
     bool starts = d->df->desktopGroup().exists();
@@ -88,17 +81,15 @@ bool KAutostart::autostarts(const QString& environment,
     // check the hidden field
     starts = starts && !d->df->desktopGroup().readEntry("Hidden", false);
 
-    if (!environment.isEmpty())
-    {
+    if (!environment.isEmpty()) {
         starts = starts && checkAllowedEnvironment(environment);
     }
 
-    if (check & CheckCommand)
-    {
+    if (check & CheckCommand) {
         starts = starts && d->df->tryExec();
     }
-    if (check & CheckCondition)
-    {
+
+    if (check & CheckCondition) {
         starts = starts && checkStartCondition();
     }
 
@@ -112,38 +103,44 @@ bool KAutostart::checkStartCondition() const
         return true;
 
     QStringList list = condition.split(':');
-    if (list.count() < 4)
+    if (list.count() < 4) {
         return true;
-    if (list[0].isEmpty() || list[2].isEmpty())
+    }
+
+    if (list[0].isEmpty() || list[2].isEmpty()) {
         return true;
+    }
 
     KConfig config(list[0], KConfig::NoGlobals);
     KConfigGroup cg(&config, list[1]);
 
     bool defaultValue = (list[3].toLower() == "true");
-
     return cg.readEntry(list[2], defaultValue);
 }
 
 bool KAutostart::checkAllowedEnvironment( const QString& environment ) const
 {
     QStringList allowed = allowedEnvironments();
-    if( !allowed.isEmpty())
-        return allowed.contains( environment );
+    if (!allowed.isEmpty()) {
+        return allowed.contains(environment);
+    }
+
     QStringList excluded = excludedEnvironments();
-    if( !excluded.isEmpty())
+    if (!excluded.isEmpty()) {
         return !excluded.contains( environment );
+    }
+
     return true;
 }
 
 QString KAutostart::command() const
 {
-    return d->df->desktopGroup().readEntry( "Exec", QString() );
+    return d->df->desktopGroup().readEntry("Exec", QString());
 }
 
-void KAutostart::setCommand(const QString& command)
+void KAutostart::setCommand(const QString &command)
 {
-    d->df->desktopGroup().writeEntry( "Exec", command );
+    d->df->desktopGroup().writeEntry("Exec", command);
 }
 
 QString KAutostart::visibleName() const
@@ -151,9 +148,9 @@ QString KAutostart::visibleName() const
     return d->df->readName();
 }
 
-void KAutostart::setVisibleName(const QString& name)
+void KAutostart::setVisibleName(const QString &name)
 {
-    d->df->desktopGroup().writeEntry( "Name", name );
+    d->df->desktopGroup().writeEntry("Name", name);
 }
 
 bool KAutostart::isServiceRegistered(const QString& entryName)
@@ -163,12 +160,12 @@ bool KAutostart::isServiceRegistered(const QString& entryName)
 
 QString KAutostart::commandToCheck() const
 {
-    return d->df->desktopGroup().readPathEntry( "TryExec", QString() );
+    return d->df->desktopGroup().readPathEntry("TryExec", QString());
 }
 
-void KAutostart::setCommandToCheck(const QString& exec)
+void KAutostart::setCommandToCheck(const QString &exec)
 {
-    d->df->desktopGroup().writePathEntry( "TryExec", exec );
+    d->df->desktopGroup().writePathEntry("TryExec", exec);
 }
 
 // do not specialize the readEntry template -
@@ -177,15 +174,17 @@ KAutostart::StartPhase readEntry(const KConfigGroup &group, const char* key, con
 {
     const QByteArray data = group.readEntry(key, QByteArray());
 
-    if (data.isNull())
+    if (data.isNull()) {
         return aDefault;
+    }
 
-    if (data == "0" || data == "BaseDesktop")
+    if (data == "0" || data == "BaseDesktop") {
         return KAutostart::BaseDesktop;
-    else if (data == "1" || data == "DesktopServices")
+    } else if (data == "1" || data == "DesktopServices") {
         return KAutostart::DesktopServices;
-    else if (data == "2" || data == "Applications")
+    } else if (data == "2" || data == "Applications") {
         return KAutostart::Applications;
+    }
 
     return aDefault;
 }
@@ -209,25 +208,25 @@ void KAutostart::setStartPhase(KAutostart::StartPhase phase)
         case Applications: // This is the default
             break;
     }
-    d->df->desktopGroup().writeEntry( "X-KDE-autostart-phase", data );
+
+    d->df->desktopGroup().writeEntry("X-KDE-autostart-phase", data);
 }
 
 QStringList KAutostart::allowedEnvironments() const
 {
-    return d->df->desktopGroup().readXdgListEntry( "OnlyShowIn" );
+    return d->df->desktopGroup().readXdgListEntry("OnlyShowIn");
 }
 
 void KAutostart::setAllowedEnvironments(const QStringList& environments)
 {
-    d->df->desktopGroup().writeXdgListEntry( "OnlyShowIn", environments );
+    d->df->desktopGroup().writeXdgListEntry("OnlyShowIn", environments);
 }
 
 void KAutostart::addToAllowedEnvironments(const QString& environment)
 {
     QStringList envs = allowedEnvironments();
 
-    if (envs.contains(environment))
-    {
+    if (envs.contains(environment)) {
         return;
     }
 
@@ -240,8 +239,7 @@ void KAutostart::removeFromAllowedEnvironments(const QString& environment)
     QStringList envs = allowedEnvironments();
     int index = envs.indexOf(environment);
 
-    if (index < 0)
-    {
+    if (index < 0) {
         return;
     }
 
@@ -263,8 +261,7 @@ void KAutostart::addToExcludedEnvironments(const QString& environment)
 {
     QStringList envs = excludedEnvironments();
 
-    if (envs.contains(environment))
-    {
+    if (envs.contains(environment)) {
         return;
     }
 
@@ -277,8 +274,7 @@ void KAutostart::removeFromExcludedEnvironments(const QString& environment)
     QStringList envs = excludedEnvironments();
     int index = envs.indexOf(environment);
 
-    if (index < 0)
-    {
+    if (index < 0) {
         return;
     }
 
