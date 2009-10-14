@@ -106,7 +106,7 @@ public:
 
         mainLayout->addStretch(15);
         dontAskAgainCheckBox = new QCheckBox(mainWidget());
-        dontAskAgainCheckBox->setText(i18nc("@label:checkbox", "Do not ask again for files of this type"));
+        dontAskAgainCheckBox->setText(i18nc("@label:checkbox", "Remember action for files of this type"));
         mainLayout->addWidget(dontAskAgainCheckBox);
 
         showButtonSeparator(true);
@@ -204,7 +204,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
     const KService::List apps = KFileItemActions::associatedApplications(QStringList() << d->mimeType,
                                                                          QString() /* TODO trader constraint */);
     if (apps.isEmpty()) {
-        KGuiItem openItem(i18nc("@label:button", "&Open with..."), "system-run");
+        KGuiItem openItem(i18nc("@label:button", "&Open with..."), "document-open");
         d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
         d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
     } else {
@@ -215,7 +215,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
             d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
         } else {
             KMenu* menu = new KMenu(d);
-            KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "system-run");
+            KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");
             d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithItem);
             d->setButtonMenu(BrowserOpenOrSaveQuestionPrivate::OpenWith, menu, KDialog::InstantPopup);
             QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
