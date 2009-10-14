@@ -257,7 +257,8 @@ if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
                                          dialogs/kcupsoptionswidget_p.cpp
                                          dialogs/kcupsoptionsjobwidget_p.cpp
-                                         dialogs/kcupsoptionspageswidget_p.cpp )
+                                         dialogs/kcupsoptionspageswidget_p.cpp
+                                         dialogs/kcupsoptionssettingswidget_p.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp )
