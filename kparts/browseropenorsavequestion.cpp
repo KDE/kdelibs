@@ -45,6 +45,12 @@ class KParts::BrowserOpenOrSaveQuestionPrivate : public KDialog
 {
     Q_OBJECT
 public:
+    // Mapping to KDialog button codes
+    static const KDialog::ButtonCode Save = KDialog::Yes;
+    static const KDialog::ButtonCode OpenDefault = KDialog::User2;
+    static const KDialog::ButtonCode OpenWith = KDialog::User1;
+    static const KDialog::ButtonCode Cancel = KDialog::Cancel;
+        
     BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const KUrl& url, const QString& mimeType, const QString& suggestedFileName)
         : KDialog(parent), url(url), mimeType(mimeType), suggestedFileName(suggestedFileName)
     {
@@ -52,10 +58,11 @@ public:
         dontAskConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
 
         setCaption(url.host());
-        setButtons(KDialog::Yes | KDialog::No | KDialog::Cancel);
+        setButtons(Save | OpenDefault | OpenWith | Cancel);
         setObjectName("questionYesNoCancel");
-        setButtonGuiItem(KDialog::Cancel, KStandardGuiItem::cancel());
-        setDefaultButton(KDialog::Yes);
+        setButtonGuiItem(Save, KStandardGuiItem::saveAs());
+        setButtonGuiItem(Cancel, KStandardGuiItem::cancel());
+        setDefaultButton(Save);
 
         QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget());
         mainLayout->setSpacing(KDialog::spacingHint() * 2); // provide extra spacing
@@ -112,9 +119,9 @@ public:
         KConfigGroup cg(dontAskConfig, "Notification Messages"); // group name comes from KMessageBox
         const QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
         if (dontAsk == "yes" || dontAsk == "true") {
-            return KDialog::Yes; // i.e. "Save"
+            return Save;
         } else if (dontAsk == "no" || dontAsk == "false") {
-            return KDialog::No; // i.e. "Open"
+            return OpenDefault;
         }
 
         KNotification::event("messageQuestion", // why does KMessageBox uses Information for questionYesNoCancel?
@@ -124,7 +131,7 @@ public:
         const int result = exec();
 
         if (dontAskAgainCheckBox->isChecked()) {
-            cg.writeEntry(dontShowAgainName, result == KDialog::Yes);
+            cg.writeEntry(dontShowAgainName, result == Save);
             cg.sync();
         }
         return result;
@@ -133,7 +140,7 @@ public:
     void showService(KService::Ptr selectedService)
     {
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", selectedService->name()), selectedService->icon());
-        setButtonGuiItem(KDialog::No, openItem);
+        setButtonGuiItem(OpenWith, openItem);
     }
 
     KUrl url;
@@ -143,6 +150,14 @@ public:
     KService::Ptr selectedService;
     KSqueezedTextLabel* questionLabel;
 
+protected:
+    virtual void slotButtonClicked(int button)
+    {
+        kDebug() << button;
+        if (button != OpenWith) {
+            done(button);
+        }
+    }
 private:
     QCheckBox* dontAskAgainCheckBox;
     KSharedConfig::Ptr dontAskConfig;
@@ -152,7 +167,7 @@ public Q_SLOTS:
     {
         selectedService = action->data().value<KService::Ptr>();
         //showService(selectedService);
-        done(KDialog::No);
+        done(OpenWith);
     }
 };
 
@@ -186,38 +201,37 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
     // I thought about using KFileItemActions, but we don't want a submenu, nor the slots....
     // and we want no menu at all if there's only one offer.
     // TODO: we probably need a setTraderConstraint(), to exclude the current application?
-    bool first = true;
     const KService::List apps = KFileItemActions::associatedApplications(QStringList() << d->mimeType,
                                                                          QString() /* TODO trader constraint */);
     if (apps.isEmpty()) {
         KGuiItem openItem(i18nc("@label:button", "&Open with..."), "system-run");
-        d->setButtonGuiItem(KDialog::No, openItem);
-    } else if (apps.count() == 1) {
+        d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
+        d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
+    } else {
         KService::Ptr offer = apps.first();
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", offer->name()), offer->icon());
-        d->setButtonGuiItem(KDialog::No, openItem);
-    } else {
-        KPushButton* openButton = d->button(KDialog::No);
-        KMenu* menu = new KMenu(openButton);
-        openButton->setDelayedMenu(menu);
-        QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
-        for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
-            KAction* act = createAppAction(*it, d);
-            menu->addAction(act);
-            if (first) {
-                first = false;
-                d->showService(*it); // sets the guiitem
+        d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
+        if (apps.count() == 1) {
+            d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
+        } else {
+            KMenu* menu = new KMenu(d);
+            KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "system-run");
+            d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithItem);
+            d->setButtonMenu(BrowserOpenOrSaveQuestionPrivate::OpenWith, menu, KDialog::InstantPopup);
+            QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
+            for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
+                KAction* act = createAppAction(*it, d);
+                menu->addAction(act);
             }
         }
     }
-
-    d->setButtonGuiItem(KDialog::Yes, KStandardGuiItem::saveAs());
 
     // KEEP IN SYNC with kdebase/runtime/keditfiletype/filetypedetails.cpp!!!
     const QString dontAskAgain = QLatin1String("askSave") + d->mimeType;
 
     const int choice = d->execute(dontAskAgain);
-    return choice == KDialog::Yes ? Save : (choice == KDialog::No ? Open : Cancel);
+    return choice == BrowserOpenOrSaveQuestionPrivate::Save ? Save
+        : (choice == BrowserOpenOrSaveQuestionPrivate::Cancel ? Cancel : Open);
 }
 
 KService::Ptr BrowserOpenOrSaveQuestion::selectedService() const
@@ -256,17 +270,18 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
     if (d->autoEmbedMimeType(flags))
         return Embed;
 
-    d->setButtonGuiItem(KDialog::Yes, KStandardGuiItem::saveAs());
     // don't use KStandardGuiItem::open() here which has trailing ellipsis!
-    d->setButtonGuiItem(KDialog::No, KGuiItem(i18nc("@label:button", "&Open"), "document-open"));
+    d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, KGuiItem(i18nc("@label:button", "&Open"), "document-open"));
+    d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
 
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
 
     const QString dontAskAgain = QLatin1String("askEmbedOrSave")+ d->mimeType; // KEEP IN SYNC!!!
+    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 
     const int choice = d->execute(dontAskAgain);
-    return choice == KDialog::Yes ? Save : (choice == KDialog::No ? Embed : Cancel);
-    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
+    return choice == BrowserOpenOrSaveQuestionPrivate::Save ? Save
+        : (choice == BrowserOpenOrSaveQuestionPrivate::Cancel ? Cancel : Embed);
 }
 
 #include "browseropenorsavequestion.moc"
