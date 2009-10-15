@@ -20,6 +20,8 @@
 #define QT_NO_CAST_FROM_ASCII
 #include "autostart.h"
 
+#include <QtCore/QDir>
+
 #include <kautostart.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -64,17 +66,6 @@ void AutoStart::setPhaseDone()
    m_phasedone = true;
 }
 
-static QString extractName(QString path) // krazy:exclude=passbyvalue
-{
-  int i = path.lastIndexOf(QLatin1Char('/'));
-  if (i >= 0)
-     path = path.mid(i+1);
-  i = path.lastIndexOf(QLatin1Char('.'));
-  if (i >= 0)
-     path = path.left(i);
-  return path;
-}
-
 void
 AutoStart::loadAutoStartList()
 {
@@ -86,17 +77,31 @@ AutoStart::loadAutoStartList()
        it != files.end();
        ++it)
    {
-       KAutostart config(*it);
-       if( !config.autostarts(QString::fromLatin1("KDE"), KAutostart::CheckAll))
+       QString path = *it;
+       KAutostart config(path);
+
+       if (!config.autostarts(QString::fromLatin1("KDE"), KAutostart::CheckAll)) {
            continue;
+       }
 
        AutoStartItem *item = new AutoStartItem;
-       item->name = extractName(*it);
-       item->service = *it;
+
+       // the service is the file name part of the path
+       int i = path.lastIndexOf(QDir::separator());
+       if (i >= 0) {
+           path = path.mid(i+1);
+       }
+       item->service = path;
+
+       // the name is part before the file name suffix of "*.desktop"
+       i = path.lastIndexOf(QLatin1Char('.'));
+       if (i >= 0) {
+           path = path.left(i);
+       }
+       item->name = path;
+
        item->startAfter = config.startAfter();
-       item->phase = config.startPhase();
-       if (item->phase < 0)
-          item->phase = 0;
+       item->phase = qBound(KAutostart::BaseDesktop, config.startPhase(), KAutostart::Applications);
        m_startList->append(item);
    }
 }
