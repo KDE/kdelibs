@@ -547,7 +547,6 @@ QStringList KSycoca::allResourceDirs()
 
 void KSycoca::flagError()
 {
-    kFatal(7011) << QThread::currentThread() << "ERROR: KSycoca database corruption!"; // TODO remove
     kWarning(7011) << "ERROR: KSycoca database corruption!";
     KSycocaPrivate* d = ksycocaInstance->sycoca()->d;
     if (d->readError)
