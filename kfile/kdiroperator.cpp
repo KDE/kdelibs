@@ -19,6 +19,7 @@
 */
 
 #include "kdiroperator.h"
+#include <kprotocolmanager.h>
 #include "kdirmodel.h"
 #include "kdiroperatordetailview_p.h"
 #include "kdirsortfilterproxymodel.h"
@@ -1115,7 +1116,7 @@ void KDirOperator::rereadDir()
 
 bool KDirOperator::Private::openUrl(const KUrl& url, KDirLister::OpenUrlFlags flags)
 {
-    bool result = dirLister->openUrl(url, flags);
+    const bool result = KProtocolManager::supportsListing(url) && dirLister->openUrl(url, flags);
     if (!result)   // in that case, neither completed() nor canceled() will be emitted by KDL
         _k_slotCanceled();
 
@@ -2614,7 +2615,7 @@ bool KDirOperator::showHiddenFiles() const
     return d->actionCollection->action("show hidden")->isChecked();
 }
 
-QStyleOptionViewItem::Position KDirOperator::decorationPosition() const 
+QStyleOptionViewItem::Position KDirOperator::decorationPosition() const
 {
     return d->decorationPosition;
 }
