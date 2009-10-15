@@ -74,9 +74,13 @@ int main(int argc, char **argv)
         a.exec();
     } else
 #endif
-    if (argv1 == QLatin1String("justone")) {
+    if (argv1 == QLatin1String("localonly")) {
         QString name = KFileDialog::getOpenFileName(startDir);
         qDebug("filename=%s",name.toLatin1().constData());
+    }
+    else if (argv1 == QLatin1String("oneurl")) {
+        KUrl url = KFileDialog::getOpenUrl(startDir);
+        qDebug() << "url=" << url;
     }
 
     else if (argv1 == QLatin1String("existingDirectoryUrl")) {
