@@ -47,21 +47,30 @@ public:
         delete svg;
     }
 
-    void setPixmap(Label *q)
+    void setPixmap()
     {
         if (imagePath.isEmpty()) {
+            delete svg;
+            svg = 0;
             return;
         }
 
         KMimeType::Ptr mime = KMimeType::findByPath(absImagePath);
         QPixmap pm(q->size().toSize());
 
-        if (mime->is("image/svg+xml") || mime->is("application/x-gzip")) {
-            svg = new Svg();
-            svg->setImagePath(imagePath);
+        if (mime->is("image/svg+xml") || mime->is("image/svg+xml-compressed")) {
+            if (!svg || svg->imagePath() != absImagePath) {
+                delete svg;
+                svg = new Svg();
+                svg->setImagePath(imagePath);
+                QObject::connect(svg, SIGNAL(repaintNeeded()), q, SLOT(setPixmap()));
+            }
+
             QPainter p(&pm);
             svg->paint(&p, pm.rect());
         } else {
+            delete svg;
+            svg = 0;
             pm = QPixmap(absImagePath);
         }
 
@@ -146,7 +155,7 @@ void Label::setImage(const QString &path)
         d->absImagePath = Theme::defaultTheme()->imagePath(path);
     }
 
-    d->setPixmap(this);
+    d->setPixmap();
 }
 
 QString Label::image() const
@@ -205,7 +214,7 @@ void Label::dataUpdated(const QString &sourceName, const Plasma::DataEngine::Dat
 
 void Label::resizeEvent(QGraphicsSceneResizeEvent *event)
 {
-    d->setPixmap(this);
+    d->setPixmap();
     QGraphicsProxyWidget::resizeEvent(event);
 }
 

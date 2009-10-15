@@ -159,11 +159,12 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 private:
-    PushButtonPrivate *const d;
-
-    friend class PushButtonPrivate;
     Q_PRIVATE_SLOT(d, void syncBorders())
     Q_PRIVATE_SLOT(d, void animationUpdate(qreal progress))
+    Q_PRIVATE_SLOT(d, void setPixmap())
+
+    friend class PushButtonPrivate;
+    PushButtonPrivate *const d;
 };
 
 } // namespace Plasma

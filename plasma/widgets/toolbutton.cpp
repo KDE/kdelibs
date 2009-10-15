@@ -58,20 +58,31 @@ public:
         delete svg;
     }
 
-    void setPixmap(ToolButton *q)
+    void setPixmap()
     {
         if (imagePath.isEmpty()) {
+            delete svg;
+            svg = 0;
             return;
         }
 
         KMimeType::Ptr mime = KMimeType::findByPath(absImagePath);
         QPixmap pm(q->size().toSize());
+        pm.fill(Qt::transparent);
 
-        if (mime->is("image/svg+xml")) {
-            svg = new Svg();
+        if (mime->is("image/svg+xml") || mime->is("image/svg+xml-compressed")) {
+            if (!svg || svg->imagePath() != absImagePath) {
+                delete svg;
+                svg = new Svg();
+                svg->setImagePath(imagePath);
+                QObject::connect(svg, SIGNAL(repaintNeeded()), q, SLOT(setPixmap()));
+            }
+
             QPainter p(&pm);
             svg->paint(&p, pm.rect());
         } else {
+            delete svg;
+            svg = 0;
             pm = QPixmap(absImagePath);
         }
 
@@ -218,7 +229,7 @@ void ToolButton::setImage(const QString &path)
         d->absImagePath = Theme::defaultTheme()->imagePath(path);
     }
 
-    d->setPixmap(this);
+    d->setPixmap();
 }
 
 void ToolButton::setIcon(const QIcon &icon)
@@ -253,7 +264,7 @@ QToolButton *ToolButton::nativeWidget() const
 
 void ToolButton::resizeEvent(QGraphicsSceneResizeEvent *event)
 {
-    d->setPixmap(this);
+    d->setPixmap();
 
    if (d->background) {
         //resize all four panels
