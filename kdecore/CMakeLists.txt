@@ -184,7 +184,6 @@ set(kdecore_LIB_SRCS
    jobs/kjobuidelegate.cpp
    jobs/kjobtrackerinterface.cpp
    kernel/kauthorized.cpp
-   kernel/kautostart.cpp
    kernel/kaboutdata.cpp
    kernel/kcmdlineargs.cpp
    kernel/kglobal.cpp
@@ -296,6 +295,7 @@ set(kdecore_LIB_SRCS
    text/kcodecs.cpp
    text/kstringhandler.cpp
    util/kallocator.cpp
+   util/kautostart.cpp
    util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
@@ -464,7 +464,6 @@ install( FILES
    jobs/kjobtrackerinterface.h
    kernel/kaboutdata.h
    kernel/kauthorized.h
-   kernel/kautostart.h
    kernel/kcmdlineargs.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
@@ -516,6 +515,7 @@ install( FILES
    text/kcodecs.h
    text/kstringhandler.h
    util/kallocator.h
+   util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h
    util/kgenericfactory.h
