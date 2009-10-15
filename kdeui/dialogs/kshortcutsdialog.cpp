@@ -64,34 +64,38 @@ public:
     void changeShortcutScheme(const QString &scheme)
     {
         if (m_keyChooser->isModified() && KMessageBox::questionYesNo(q,
-                i18n("The current shortcut scheme is modified. Save before switching to the new one?")) == KMessageBox::Yes)
+                i18n("The current shortcut scheme is modified. Save before switching to the new one?")) == KMessageBox::Yes) {
             m_keyChooser->save();
-        else
+        } else {
             m_keyChooser->undoChanges();
+        }
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         m_keyChooser->clearCollections();
 
-        foreach (KActionCollection *collection, m_collections)
-        {
+        foreach (KActionCollection *collection, m_collections) {
             // passing an empty stream forces the clients to reread the XML
             KXMLGUIClient *client = const_cast<KXMLGUIClient *>(collection->parentGUIClient());
-            client->setXMLGUIBuildDocument( QDomDocument() );
+            if (client) {
+                client->setXMLGUIBuildDocument( QDomDocument() );
+            }
         }
 
         //get xmlguifactory
-        if (!m_collections.isEmpty())
-        {
+        if (!m_collections.isEmpty()) {
             const KXMLGUIClient *client = m_collections.first()->parentGUIClient();
-            if (client)
-            {
+            if (client) {
                 KXMLGUIFactory *factory = client->factory();
-                if (factory)
+                if (factory) {
                     factory->changeShortcutScheme(scheme);
+                }
             }
         }
-        foreach (KActionCollection *collection, m_collections)
+
+        foreach (KActionCollection *collection, m_collections) {
             m_keyChooser->addCollection(collection);
+        }
+
         QApplication::restoreOverrideCursor();
      }
 
