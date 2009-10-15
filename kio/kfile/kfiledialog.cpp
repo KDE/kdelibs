@@ -1114,6 +1114,7 @@ public:
         dlg.setOperationMode(KFileDialog::Saving);
         dlg.setMode(KFile::File|KFile::LocalOnly);
         dlg.setCaption(caption);
+        dlg.setConfirmOverwrite(!(options & QFileDialog::DontConfirmOverwrite));
         dlg.exec();
 
         QString rv(dlg.selectedFile());
