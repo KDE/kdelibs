@@ -9,6 +9,3 @@ kde4_no_enable_final(solid)
 
 add_subdirectory( solid )
 add_subdirectory( tests )
-#please do not enable the examples subdir as it contains
-#tutorial CMakeList.txt files that break the buildsystem.
-#add_subdirectory( examples )
