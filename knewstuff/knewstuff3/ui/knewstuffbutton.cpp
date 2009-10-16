@@ -85,7 +85,8 @@ void Button::showDialog()
 
     //m_downloadDialog->exec(); // TODO: make non-modal?
 
-    KNS::Client::download();
+    KNS::Client *client(new KNS::Client);
+	client->downloadDialog(this);
 
     emit dialogFinished();
 }

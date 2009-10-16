@@ -66,8 +66,8 @@ public:
     static QHash<QString, QPointer<KDialog> > s_dialogs;
 
     Command m_command;
-    UploadDialog *m_uploaddialog;
-    DownloadDialog *m_downloaddialog;
+    QPointer<UploadDialog> m_uploaddialog;
+    QPointer<DownloadDialog> m_downloaddialog;
     QString m_uploadfile;
     KNS::Entry *m_uploadedEntry;
     KNS::Provider::List m_providers;
@@ -80,10 +80,10 @@ public:
 public:
     void slotDownloadDialogDestroyed();
 
-private:
     /** stop the event loop */
     void stopLoop();
 
+private:
     void slotProviderLoaded(KNS::Provider *provider);
 
     /** slot for when entries are changed, so we can return a list
@@ -155,7 +155,7 @@ void ClientPrivate::workflow()
         //connect(m_downloaddialog,
         //        SIGNAL(destroyed(QObject*)),
         //        SLOT(slotDownloadDialogDestroyed()));
-        //connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
+        QObject::connect(m_downloaddialog, SIGNAL(finished()), m_parent, SLOT(slotDownloadDialogClosed()));
         //kDebug() << "done adding!";
 
         m_downloaddialog->show();
@@ -184,33 +184,33 @@ void ClientPrivate::stopLoop()
     }
 }
 
-KNS::Entry::List Client::download()
-{
-    KNS::Entry::List entries;
+//KNS::Entry::List Client::download()
+//{
+//    KNS::Entry::List entries;
 
-    Client *client = new Client(0);
+//    Client *client = new Client(0);
 
-    KComponentData component = KGlobal::activeComponent();
-    QString name = component.componentName();
+//    KComponentData component = KGlobal::activeComponent();
+//    QString name = component.componentName();
 
-    bool ret = client->init(name + ".knsrc");
-    if (!ret) {
-        delete client;
-        return entries;
-    }
+//    bool ret = client->init(name + ".knsrc");
+//    if (!ret) {
+//        delete client;
+//        return entries;
+//    }
 
-    KNS::Entry::List tempList = client->downloadDialogModal(0);
+//    KNS::Entry::List tempList = client->downloadDialogModal(0);
 
-    // copy the list since the entries will be deleted when we delete the client
-    foreach(Entry * entry, tempList) {
-        entries << new Entry(*entry);
-    }
-    delete client;
+//    // copy the list since the entries will be deleted when we delete the client
+//    foreach(Entry * entry, tempList) {
+//        entries << new Entry(*entry);
+//    }
+//    delete client;
 
-    return entries;
-}
+//    return entries;
+//}
 
-KNS::Entry::List Client::downloadDialogModal(QWidget*)
+KNS::Entry::List Client::downloadDialogModal(QWidget* parent)
 {
     kDebug() << "Client: downloadDialogModal";
     KDialog *existingDialog = d->m_downloaddialog;
@@ -218,7 +218,7 @@ KNS::Entry::List Client::downloadDialogModal(QWidget*)
         existingDialog->show();
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
-        return QList<KNS::Entry*>();
+        return QList<KNS::Entry*>(); // return an empty list, there's already a dialog showing
     }
 
     d->m_command = ClientPrivate::command_download;
@@ -229,7 +229,7 @@ KNS::Entry::List Client::downloadDialogModal(QWidget*)
     return QList<KNS::Entry*>::fromSet(d->m_changedEntries);
 }
 
-void Client::downloadDialog()
+void Client::downloadDialog(QWidget * parent)
 {
     //kDebug() << "Client: downloadDialog";
     KDialog *existingDialog = ClientPrivate::s_dialogs.value(d->m_engine->componentName());
@@ -252,46 +252,39 @@ void Client::downloadDialog()
     d->workflow();
 }
 
-void Client::downloadDialog(QObject * receiver, const char * slot)
-{
-    //QObject::disconnect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), receiver, slot);
-    //QObject::connect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), receiver, slot);
-    downloadDialog();
-}
+//KNS::Entry *ClientPrivate::upload(const QString& file, QWidget * parent = 0)
+//{
+//    KNS::Entry *entry = NULL;
 
-KNS::Entry *ClientPrivate::upload(const QString& file)
-{
-    KNS::Entry *entry = NULL;
+//    Client client(0);
 
-    Client client(0);
+//    KComponentData component = KGlobal::activeComponent();
+//    QString name = component.componentName();
 
-    KComponentData component = KGlobal::activeComponent();
-    QString name = component.componentName();
+//    bool ret = client.init(name + ".knsrc");
+//    if (!ret) return entry;
 
-    bool ret = client.init(name + ".knsrc");
-    if (!ret) return entry;
+//    entry = client.uploadDialogModal(file);
 
-    entry = client.uploadDialogModal(file);
+//    // FIXME: refcounting?
+//    return entry;
+//}
 
-    // FIXME: refcounting?
-    return entry;
-}
+//KNS::Entry *Client::upload(const QString& file)
+//{
+//#ifdef __GNUC__
+//#warning KNS::Client::upload() not implemented!
+//#endif
+//#if 0
+//    return d->upload(file);
+//#else
+//    Q_UNUSED(file);
+//#endif
+//    Q_ASSERT(false);
+//    return 0;
+//}
 
-KNS::Entry *Client::upload(const QString& file)
-{
-#ifdef __GNUC__
-#warning KNS::Client::upload() not implemented!
-#endif
-#if 0
-    return d->upload(file);
-#else
-    Q_UNUSED(file);
-#endif
-    Q_ASSERT(false);
-    return 0;
-}
-
-KNS::Entry *Client::uploadDialogModal(const QString& file)
+KNS::Entry *Client::uploadDialogModal(const QString& file, QWidget * parent)
 {
     //kDebug() << "Client: uploadDialogModal";
 
@@ -304,7 +297,7 @@ KNS::Entry *Client::uploadDialogModal(const QString& file)
     return d->m_uploadedEntry;
 }
 
-void Client::uploadDialog(const QString& file)
+void Client::uploadDialog(const QString& file, QWidget * parent)
 {
     //kDebug() << "Client: uploadDialog";
 
@@ -318,6 +311,18 @@ void Client::uploadDialog(const QString& file)
     d->m_uploadfile = file;
 
     d->workflow();
+}
+
+void Client::slotDownloadDialogClosed()
+{
+    d->m_downloaddialog->deleteLater();
+	d->stopLoop();
+}
+
+void Client::slotUploadDialogClosed()
+{
+	d->m_uploaddialog->deleteLater();
+	d->stopLoop();
 }
 
 //void ClientPrivate::slotProviderLoaded(KNS::Provider *provider)
@@ -434,7 +439,6 @@ void ClientPrivate::slotDownloadDialogClosed()
     //           this, SLOT(slotDownloadDialogDestroyed()));
     slotDownloadDialogDestroyed();
     m_downloaddialog->deleteLater();
-    m_downloaddialog = NULL;
     stopLoop();
     //emit signalDownloadDialogDone(QList<KNS::Entry*>::fromSet(m_changedEntries));
 }

@@ -82,22 +82,14 @@ public:
     KNS::Entry::List downloadDialogModal(QWidget* parent = 0);
 
     /**
-     * @brief Recommended download workflow entry point.
+     * @brief Asynchronous way of starting the download workflow.
      *
-     * This method is a static convenience wrapper around \ref downloadDialogModal()
-     * which does not require the manual construction of an Client object.
-     * The Client will be configured to load appname.knsrc.
-     * The resulting entry list must not be freed, as the Client will continue
-     * to keep track of it.
-     *
-     * @return List of installed or deinstalled entries
-     * NOTE: this is a copy of each entry because this call deletes its own
-     * engine which deletes the original entries, so you need to delete the entries
-     * returned in the list
+     * This method should be used whenever a blocking application with a
+     * non-blocking GUI during GHNS operations is not suitable.
      *
      * @see downloadDialogModal()
      */
-    static KNS::Entry::List download();
+    void downloadDialog(QWidget* parent = 0);
 
     /**
      * @brief Synchronous way of starting the upload workflow.
@@ -108,43 +100,7 @@ public:
      *
      * @return Uploaded entry, or \b null in case of failures
      */
-    KNS::Entry *uploadDialogModal(const QString& file);
-
-    /**
-     * @brief Recommended upload workflow entry point.
-     *
-     * This method is a static convenience wrapper around \ref uploadDialogModal()
-     * which does not require the manual construction of an Client object.
-     * The Client will be configured to load appname.knsrc.
-     * The resulting entry must not be freed, as the Client will continue
-     * to keep track of it.
-     *
-     * @return Uploaded entry, or \b null in case of failures
-     *
-     * @see uploadDialogModal()
-     */
-    static KNS::Entry *upload(const QString& file);
-
-    /**
-     * @brief Asynchronous way of starting the download workflow.
-     *
-     * This method should be used whenever a blocking application with a
-     * non-blocking GUI during GHNS operations is not suitable.
-     *
-     * @see downloadDialogModal()
-     */
-    void downloadDialog();
-
-    /**
-     * @brief Asynchronous way of starting the download workflow and getting feedback to a slot when the dialog closes.
-     *
-     * This method should be used whenever a blocking application with a
-     * non-blocking GUI during GHNS operations is not suitable.
-     * the slot passed in should have the signature (KNS::Entry::List) as its parameter
-     *
-     * @see downloadDialogModal()
-     */
-    void downloadDialog(QObject * receiver, const char * slot);
+    KNS::Entry *uploadDialogModal(const QString& file, QWidget *parent = 0);
 
     /**
      * @brief Asynchronous way of starting the upload workflow.
@@ -155,8 +111,13 @@ public:
      *
      * @see uploadDialogModal()
      */
-    void uploadDialog(const QString& file);
+    void uploadDialog(const QString& file, QWidget *parent = 0);
 
+private Q_SLOTS:
+
+	void slotDownloadDialogClosed();
+	void slotUploadDialogClosed();
+	
 private:
 
     friend class ClientPrivate;
