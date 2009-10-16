@@ -539,8 +539,7 @@ KLauncher::slotAutoStart()
 	 }
          return;
       }
-      KDesktopFile df("autostart", service);
-      s = new KService(&df);
+      s = new KService(service);
    }
    while (!start_service(s, QStringList(), QStringList(), "0", false, true, QDBusMessage()));
    // Loop till we find a service that we can start.
