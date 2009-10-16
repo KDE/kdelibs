@@ -557,4 +557,3 @@ install( FILES
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )
 
-#add_subdirectory(auth/example)
