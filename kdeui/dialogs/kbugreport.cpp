@@ -290,6 +290,8 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     lay->addWidget( label );
     lay->addSpacing(10);
 
+    d->appcombo->setFocus();
+
     d->_k_updateUrl();
 
     setButtonText(Ok, i18n("&Launch Bug Report Wizard"));
