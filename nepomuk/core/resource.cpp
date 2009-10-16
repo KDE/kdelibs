@@ -418,6 +418,11 @@ QString Nepomuk::Resource::genericIcon() const
     Variant symbol = property( Soprano::Vocabulary::NAO::hasSymbol() );
     if ( symbol.isString() ) {
         return symbol.toString();
+    } else if ( symbol.isStringList() ) {
+        const QStringList l = symbol.toStringList();
+        if ( l.isEmpty() )
+            return QString();
+        return l.first();
     }
 
     // strigi mimetypes are sadly not very reliable, I keep the code here for future use
