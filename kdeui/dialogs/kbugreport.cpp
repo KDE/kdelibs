@@ -273,6 +273,8 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     d->m_lineedit->setMinimumHeight( 180 ); // make it big
     d->m_lineedit->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
     d->m_lineedit->setLineWrapMode(QTextEdit::WidgetWidth);
+    d->m_lineedit->setCheckSpellingEnabled(true);
+    d->m_lineedit->setSpellCheckingLanguage("en");
     lay->addWidget( d->m_lineedit, 10 /*stretch*/ );
 
     d->_k_slotSetFrom();
