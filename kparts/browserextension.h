@@ -283,9 +283,7 @@ private:
   * @li @p searchProvider : Lookup selected text at default search provider
   *
   * [normal actions]
-  * @li @p print : Print :-)
-  * @li @p reparseConfiguration : Re-read configuration and apply it.
-  * @li @p refreshMimeTypes : If the view uses mimetypes it should re-determine them.
+  * @li None anymore.
   *
   *
   * The view defines a slot with the name of the action in order to implement the action.
@@ -297,13 +295,11 @@ private:
   * enable them when the selection changes, emitting enableAction().
   *
   * The normal actions do not depend on the selection.
-  * You need to enable 'print' when printing is possible - you can even do that
-  * in the constructor.
   *
-  * A special case is the configuration slots, not connected to any action directly,
-  * and having parameters.
+  * A special case is the configuration slots, not connected to any action directly.
   *
   * [configuration slot]
+  * @li @p reparseConfiguration : Re-read configuration and apply it.
   * @li @p disableScrolling: no scrollbars
   */
 class KPARTS_EXPORT BrowserExtension : public QObject
