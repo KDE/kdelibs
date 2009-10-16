@@ -444,6 +444,10 @@ bool Ftp::ftpLogin()
   if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
       info.url.setPort( m_port );
   info.url.setUser( user );
+  if( user == FTP_LOGIN )
+      info.setExtraField("anonymous", true);
+  else
+      info.setExtraField("anonymous", false);
 
   QByteArray tempbuf;
   QString lastServerResponse;
@@ -475,7 +479,6 @@ bool Ftp::ftpLogin()
       info.commentLabel = i18n( "Site:" );
       info.comment = i18n("<b>%1</b>",  m_host );
       info.keepPassword = true; // Prompt the user for persistence as well.
-      info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
       bool disablePassDlg = config()->readEntry( "DisablePassDlg", false );
       if ( disablePassDlg || !openPasswordDialog( info, errorMsg ) )
@@ -485,8 +488,19 @@ bool Ftp::ftpLogin()
       }
       else
       {
-        user = info.username;
-        pass = info.password;
+		// User can decide go anonymous using checkbox
+        if( info.getExtraField( "anonymous" ).toBool() )
+        {
+	      user = FTP_LOGIN;
+	      pass = FTP_PASSWD;
+          m_user = FTP_LOGIN;
+          m_pass = FTP_PASSWD;
+		}
+		else
+		{
+		  user = info.username;
+          pass = info.password;
+	    }
       }
     }
 
@@ -1385,11 +1399,8 @@ void Ftp::listDir( const KUrl &url )
   {
     KUrl realURL;
     realURL.setProtocol( "ftp" );
-    if ( m_user != FTP_LOGIN )
-      realURL.setUser( m_user );
-    // We set the password, so that we don't ask for it if it was given
-    if ( m_pass != FTP_PASSWD )
-      realURL.setPass( m_pass );
+    realURL.setUser( m_user );
+    realURL.setPass( m_pass );
     realURL.setHost( m_host );
     if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
         realURL.setPort( m_port );
