@@ -32,8 +32,6 @@ install(FILES
 )
 
 ######## kidletime ####################
-add_subdirectory(kidletime)
-
 configure_file(kidletime/config-kidletime.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kidletime.h )
 
 set(kidletime_LIB_SRCS
