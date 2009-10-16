@@ -45,10 +45,31 @@ public:
      * Constructor, for all kinds of dialogs shown in this class.
      * @param url the URL in question
      * @param mimeType the mimetype of the URL
+     */
+    BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType);
+    ~BrowserOpenOrSaveQuestion();
+
+    /**
+     * Sets the suggested filename, shown in the dialog.
      * @param suggestedFileName optional file name suggested by the server (HTTP Content-Disposition)
      */
-    BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType, const QString& suggestedFileName = QString());
-    ~BrowserOpenOrSaveQuestion();
+    void setSuggestedFileName(const QString& suggestedFileName);
+
+    /**
+     * Set of features that should be enabled in this dialog.
+     * This allows to add features before making all applications ready for those features
+     * (e.g. applications need to read selectedService() otherwise the dialog should not
+     * show the service selection button)
+     */
+    enum Feature { BasicFeatures = 0, /**< Only the basic save, open, embed, cancel button */
+                   ServiceSelection = 1 /**< Shows "Open With..." with the associated applications for the mimetype */
+    };
+    Q_DECLARE_FLAGS(Features, Feature);
+
+    /**
+     * Enables the given features in the dialog
+     */
+    void setFeatures(Features features);
 
     enum Result { Save, Open, Embed, Cancel };
     
@@ -76,7 +97,9 @@ public:
      * @return the service that was selected during askOpenOrSave,
      * if it returned Open.
      * In all other cases (no associated application, Save or Cancel
-     * selected), this returns 0
+     * selected), this returns 0.
+     *
+     * Requires setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection).
      */
     KService::Ptr selectedService() const;
 

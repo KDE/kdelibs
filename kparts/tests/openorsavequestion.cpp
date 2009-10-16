@@ -40,8 +40,9 @@ int main(int argc, char **argv)
 
     // The normal case
     BrowserOpenOrSaveQuestion questionOpen(0, KUrl("http://www.example.com/foo.pdf"),
-                                           QString::fromLatin1("application/pdf"),
-                                           QString::fromLatin1("file.pdf"));
+                                           QString::fromLatin1("application/pdf"));
+    questionOpen.setSuggestedFileName(QString::fromLatin1("file.pdf"));
+    questionOpen.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
     BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave();
     kDebug() << res;
     if (res == BrowserOpenOrSaveQuestion::Open && questionOpen.selectedService())

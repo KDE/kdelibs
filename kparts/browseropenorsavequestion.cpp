@@ -51,8 +51,9 @@ public:
     static const KDialog::ButtonCode OpenWith = KDialog::User1;
     static const KDialog::ButtonCode Cancel = KDialog::Cancel;
         
-    BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const KUrl& url, const QString& mimeType, const QString& suggestedFileName)
-        : KDialog(parent), url(url), mimeType(mimeType), suggestedFileName(suggestedFileName)
+    BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const KUrl& url, const QString& mimeType)
+        : KDialog(parent), url(url), mimeType(mimeType),
+          features(0)
     {
         // Use askSave or askEmbedOrSave from filetypesrc
         dontAskConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
@@ -86,12 +87,9 @@ public:
         questionLabel = new KSqueezedTextLabel(mainWidget());
         textVLayout->addWidget(questionLabel);
 
-        if (!suggestedFileName.isEmpty()) {
-            QLabel* label = new QLabel(mainWidget());
-            label->setText(i18nc("@label File name", "Name: %1", suggestedFileName));
-            label->setWhatsThis(i18nc("@info:whatsthis", "This is the file name suggested by the server"));
-            textVLayout->addWidget(label);
-        }
+        fileNameLabel = new QLabel(mainWidget());
+        fileNameLabel->hide();
+        textVLayout->addWidget(fileNameLabel);
 
         mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
         QString mimeDescription = mimeType;
@@ -146,14 +144,14 @@ public:
     KUrl url;
     QString mimeType;
     KMimeType::Ptr mime;
-    QString suggestedFileName;
     KService::Ptr selectedService;
     KSqueezedTextLabel* questionLabel;
+    BrowserOpenOrSaveQuestion::Features features;
+    QLabel* fileNameLabel;
 
 protected:
     virtual void slotButtonClicked(int button)
     {
-        kDebug() << button;
         if (button != OpenWith) {
             done(button);
         }
@@ -172,8 +170,8 @@ public Q_SLOTS:
 };
 
 
-BrowserOpenOrSaveQuestion::BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType, const QString& suggestedFileName)
-    : d(new BrowserOpenOrSaveQuestionPrivate(parent, url, mimeType, suggestedFileName))
+BrowserOpenOrSaveQuestion::BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType)
+    : d(new BrowserOpenOrSaveQuestionPrivate(parent, url, mimeType))
 {
 }
 
@@ -197,6 +195,7 @@ static KAction* createAppAction(const KService::Ptr& service, QObject* parent)
 BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
 {
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
+    d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
 
     // I thought about using KFileItemActions, but we don't want a submenu, nor the slots....
     // and we want no menu at all if there's only one offer.
@@ -206,17 +205,15 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
     if (apps.isEmpty()) {
         KGuiItem openItem(i18nc("@label:button", "&Open with..."), "document-open");
         d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
-        d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
     } else {
         KService::Ptr offer = apps.first();
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", offer->name()), offer->icon());
         d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
-        if (apps.count() == 1) {
-            d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
-        } else {
+        if (apps.count() > 1 && (d->features & ServiceSelection)) {
             KMenu* menu = new KMenu(d);
             KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");
             d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithItem);
+            d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, true);
             d->setButtonMenu(BrowserOpenOrSaveQuestionPrivate::OpenWith, menu, KDialog::InstantPopup);
             QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
             for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
@@ -282,6 +279,20 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
     const int choice = d->execute(dontAskAgain);
     return choice == BrowserOpenOrSaveQuestionPrivate::Save ? Save
         : (choice == BrowserOpenOrSaveQuestionPrivate::Cancel ? Cancel : Embed);
+}
+
+void BrowserOpenOrSaveQuestion::setFeatures(Features features)
+{
+    d->features = features;
+}
+
+void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFileName)
+{
+    if (!suggestedFileName.isEmpty()) {
+        d->fileNameLabel->setText(i18nc("@label File name", "Name: %1", suggestedFileName));
+        d->fileNameLabel->setWhatsThis(i18nc("@info:whatsthis", "This is the file name suggested by the server"));
+        d->fileNameLabel->show();
+    }
 }
 
 #include "browseropenorsavequestion.moc"
