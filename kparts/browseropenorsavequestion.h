@@ -64,7 +64,7 @@ public:
     enum Feature { BasicFeatures = 0, /**< Only the basic save, open, embed, cancel button */
                    ServiceSelection = 1 /**< Shows "Open With..." with the associated applications for the mimetype */
     };
-    Q_DECLARE_FLAGS(Features, Feature);
+    Q_DECLARE_FLAGS(Features, Feature)
 
     /**
      * Enables the given features in the dialog
