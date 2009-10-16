@@ -1,8 +1,4 @@
 
-add_subdirectory( example )
-
-
-
 ########### next target ###############
 
 set(kconfig_compiler_SRCS kconfig_compiler.cpp)
