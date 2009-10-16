@@ -88,12 +88,14 @@ void KPasswordDialog::KPasswordDialogPrivate::updateFields()
         ui.userEdit->setEnabled( false );
         ui.domainEdit->setEnabled( false );
         ui.passEdit->setEnabled( false );
+    	ui.keepCheckBox->setEnabled( false );
     }
     else
     {
         ui.userEdit->setEnabled(!( m_flags & KPasswordDialog::UsernameReadOnly ));
         ui.domainEdit->setEnabled(!( m_flags & KPasswordDialog::DomainReadOnly ));
         ui.passEdit->setEnabled( true );
+    	ui.keepCheckBox->setEnabled( true );
     }
 }
 
