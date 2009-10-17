@@ -76,8 +76,12 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
       m_groundingOccurence(0),
       m_rm(rm)
 {
-    if( m_mainType.isEmpty() )
-        m_mainType = Soprano::Vocabulary::RDFS::Resource();
+    if( m_mainType.isEmpty() ) {
+        if( isFile() )
+            m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
+        else
+            m_mainType = Soprano::Vocabulary::RDFS::Resource();
+    }
 
     m_types << m_mainType;
 
