@@ -118,6 +118,7 @@ check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
+check_function_exists(getgrouplist    HAVE_GETGROUPLIST)              # kio
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
 
