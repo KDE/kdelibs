@@ -1787,7 +1787,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     if (user != 0L)
         strUser = user->pw_name;
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_CYGWIN)
+#ifdef HAVE_GETGROUPLIST
     // pick the groups to which the user belongs
     int groupCount = 0;
 #ifdef Q_OS_MAC
@@ -1808,7 +1808,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         if (mygroup)
             groupList += QString::fromLocal8Bit(mygroup->gr_name);
     }
-#endif //Q_OS_UNIX
+#endif // HAVE_GETGROUPLIST
 
     bool isMyGroup = groupList.contains(d->strGroup);
 
