@@ -257,6 +257,9 @@ void KStandarddirsTest::testAddResourceType()
 
     ret = KStandardDirs::locate("dtd", "customization/kde-chunk.xsl");
     QVERIFY(!ret.isEmpty());
+
+    const QStringList files = KGlobal::dirs()->findAllResources("dtd", "customization/*", KStandardDirs::NoDuplicates);
+    QVERIFY(files.count() > 2);
 }
 
 void KStandarddirsTest::testAddResourceDir()
