@@ -139,7 +139,7 @@ QString SafeCode::propertyGetterDefinition( const Property* property, const Reso
     else {
         s += QString("{\n"
                      "%1"
-                     "    return %2( property( QUrl::fromEncoded(\"%3\") ).toResource().uri() );\n"
+                     "    return %2( property( QUrl::fromEncoded(\"%3\") ).toResource().resourceUri() );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( property->typeString( true ) )
