@@ -125,6 +125,15 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/kdebugrc" ) );
     QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "share/config/colors/Web.colors" ) ); // didn't match the filter
 
+    QStringList fileNames;
+    const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
+    QVERIFY( !configFilesWithFilter.isEmpty() );
+    QVERIFY( configFilesWithFilter.count() >= 5 ); // back to ~ 9
+    QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
+    QCOMPARE(fileNames.count(), configFilesWithFilter.count());
+    QVERIFY(fileNames.contains("kdebugrc"));
+
 #if 0
     list = t.findAllResources("html", "en/*/index.html", false);
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
