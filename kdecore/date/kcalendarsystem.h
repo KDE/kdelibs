@@ -498,6 +498,17 @@ public:
      * For example, March 20th 1989 with the format "%y:%m:%d" results
      * in "89:03:20".
      *
+     * Format string is a good candidate to be made translatable,
+     * so that translators can adapt it to their language's convention.
+     * There should also be a context stating format's purpose,
+     * and kdedt-format keyword (for automatic validation of translations):
+     * \code
+     *   QString reportMonthFmt = KGlobal::locale()->calendar()->formatDate(
+     *     QDate(aYear, aMonth, 1),
+     *     i18nc("(kdedt-format) month and year in the monthly report header",
+     *           "%B %Y"));
+     * \endcode
+     *
      * @see KLocale::formatDate
      *
      * @param date the date to be formatted
