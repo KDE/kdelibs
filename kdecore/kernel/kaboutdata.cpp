@@ -808,13 +808,19 @@ QList<KAboutPerson>
 KAboutData::translators() const
 {
     QList<KAboutPerson> personList;
+    
+    KLocale *tmpLocale = NULL;
+    if (KGlobal::locale()) {
+        tmpLocale = new KLocale(*KGlobal::locale());
+        tmpLocale->setActiveCatalog(catalogName());
+    }
 
     QString translatorName;
     if (!d->translatorName.isEmpty()) {
         translatorName = d->translatorName.toString();
     }
     else {
-        translatorName = i18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS);
+        translatorName = ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(tmpLocale);
     }
 
     QString translatorEmail;
@@ -822,8 +828,10 @@ KAboutData::translators() const
         translatorEmail = d->translatorEmail.toString();
     }
     else {
-        translatorEmail = i18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS);
+        translatorEmail = ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(tmpLocale);
     }
+
+    delete tmpLocale;
 
     if ( translatorName.isEmpty() || translatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
         return personList;
