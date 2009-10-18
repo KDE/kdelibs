@@ -146,7 +146,7 @@ public:
 
     int totalRows() const { return m_totalRows; }
     int totalCols() const { return m_totalCols; }
-    int border() const { return m_border; }
+    int border() const { return frameborder ? m_border : 0; }
     virtual void detach();
 
     virtual void recalcStyle( StyleChange ch );
