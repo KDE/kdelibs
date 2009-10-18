@@ -79,7 +79,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
     if( m_mainType.isEmpty() ) {
         if( !m_uri.isEmpty() &&
             m_uri.scheme() == QLatin1String("file") &&
-            QFile::exists( m_url.toLocalFile() ) )
+            QFile::exists( m_uri.toLocalFile() ) )
             m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
         else
             m_mainType = Soprano::Vocabulary::RDFS::Resource();
