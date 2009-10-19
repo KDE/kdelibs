@@ -239,8 +239,8 @@ void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsigned long percent)
 {
-    qulonglong kiloBytes = job->totalAmount(KJob::Bytes) / 2046;
-    emit q->downloadProgress(kiloBytes / ((double)percent / 100), kiloBytes);
+    qulonglong bytes = job->totalAmount(KJob::Bytes);
+    emit q->downloadProgress(bytes * ((double)percent / 100), bytes);
 }
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_permanentRedirection(KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl)
