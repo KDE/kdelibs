@@ -54,7 +54,7 @@ ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): 
 
   KSelectionProxyModel *selProxyModel = new KSelectionProxyModel(rootModelView->selectionModel(), this);
   selProxyModel->setSourceModel(m_rootModel);
-  selProxyModel->setFilterBehavior(KSelectionProxyModel::OnlySelectedChildren);
+  selProxyModel->setFilterBehavior(KSelectionProxyModel::ChildrenOfExactSelection);
 
 
   QTreeView *selProxyModelView = new QTreeView(splitter);

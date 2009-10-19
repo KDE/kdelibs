@@ -1148,7 +1148,7 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
 
   switch(behavior)
   {
-  case SelectedBranches:
+  case SubTrees:
   {
     d->m_omitChildren = false;
     d->m_omitDescendants = false;
@@ -1156,14 +1156,14 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
     d->m_includeAllSelected = false;
     break;
   }
-  case SelectedBranchesRoots:
+  case SubTreeRoots:
   {
     d->m_omitChildren = true;
     d->m_startWithChildTrees = false;
     d->m_includeAllSelected = false;
     break;
   }
-  case SelectedBranchesChildren:
+  case SubTreesWithoutRoots:
   {
     d->m_omitChildren = false;
     d->m_omitDescendants = true;
@@ -1171,14 +1171,14 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
     d->m_includeAllSelected = false;
     break;
   }
-  case OnlySelected:
+  case ExactSelection:
   {
     d->m_omitChildren = true;
     d->m_startWithChildTrees = false;
     d->m_includeAllSelected = true;
     break;
   }
-  case OnlySelectedChildren:
+  case ChildrenOfExactSelection:
   {
     d->m_omitChildren = false;
     d->m_omitDescendants = true;

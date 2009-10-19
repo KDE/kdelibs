@@ -99,11 +99,11 @@ public:
 
   enum FilterBehavior
   {
-    SelectedBranches,
-    SelectedBranchesRoots,
-    SelectedBranchesChildren,
-    OnlySelected,
-    OnlySelectedChildren
+    SubTrees,
+    SubTreeRoots,
+    SubTreesWithoutRoots,
+    ExactSelection,
+    ChildrenOfExactSelection
   };
   Q_ENUMS(FilterBehavior)
 

@@ -30,7 +30,7 @@ public:
   OnlySelectedChildrenTest(QObject *parent = 0)
       : SelectionProxyModelTest( parent )
   {
-    m_proxyModel->setFilterBehavior(KSelectionProxyModel::OnlySelectedChildren);
+    m_proxyModel->setFilterBehavior(KSelectionProxyModel::ChildrenOfExactSelection);
   }
 
 protected:
