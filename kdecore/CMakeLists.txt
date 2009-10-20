@@ -64,9 +64,9 @@ endif (HAVE_RESOLV_LIBRARY)
 if (APPLE)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/kkernel_mac.cpp
-      auth/backends/mac/AuthServicesBackend.cpp
    )
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY} ${SECURITY_LIBRARY})
+
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
 endif (APPLE)
 
 if (WIN32)
@@ -106,20 +106,33 @@ if (UNIX)
       util/kmacroexpander_unix.cpp
       fakes.c
    )
-
-   if (POLKITQT_FOUND)
-      set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-          auth/backends/policykit/PolicyKitBackend.cpp
-      )
-      set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
-   else (POLKITQT_FOUND)
-     if (NOT APPLE)
-       set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-           auth/backends/fake/FakeBackend.cpp
-       )
-     endif (NOT APPLE)
-   endif (POLKITQT_FOUND)
 endif (UNIX)
+
+if (KAUTH_BACKEND STREQUAL "POLKITQT")
+    message(STATUS "Building PolkitQt KAuth backend")
+
+    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+       auth/backends/policykit/PolicyKitBackend.cpp
+    )
+
+    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
+elseif (KAUTH_BACKEND STREQUAL "APPLE")
+    message(STATUS "Building Apple KAuth backend")
+
+    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+       auth/backends/mac/AuthServicesBackend.cpp
+    )
+
+    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${SECURITY_LIBRARY})
+elseif (KAUTH_BACKEND STREQUAL "FAKE")
+    message(STATUS "Building Fake KAuth backend")
+    message("WARNING: KAuth will be built with Fake backend. The library will not work properly unless compiled with
+             a working backend")
+
+    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+       auth/backends/fake/FakeBackend.cpp
+    )
+endif ()
 
 
 add_subdirectory( kconfig_compiler )
@@ -354,13 +367,13 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 set(kauth_policy_gen_SRCS
     auth/policy-gen/policy-gen.cpp )
 
-if(APPLE)
+if(KAUTH_BACKEND STREQUAL "APPLE")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/mac/kauth-policy-gen-mac.cpp )
-elseif(UNIX)
+elseif(KAUTH_BACKEND STREQUAL "POLKITQT")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/policykit/kauth-policy-gen-polkit.cpp )
-elseif(WIN32)
+else()
     set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/fake/kauth-policy-gen-polkit.cpp )
 endif()
