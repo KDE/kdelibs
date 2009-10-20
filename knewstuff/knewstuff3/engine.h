@@ -259,7 +259,7 @@ Q_SIGNALS:
 protected:
     //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
-    void slotProvidersLoaded(QDomDocument);
+    void slotProvidersLoaded(const QDomDocument& doc);
     void slotProvidersFailed();
 
     void slotEntriesLoaded(KNS::Entry::List list);

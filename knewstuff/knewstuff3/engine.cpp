@@ -216,7 +216,7 @@ void Engine::loadProviders()
     kDebug(550) << "loading providers from " << m_providersurl;
 
     XmlLoader * loader = new XmlLoader(this);
-    connect(loader, SIGNAL(signalLoaded(QDomDocument)), SLOT(slotProvidersLoaded(QDomDocument)));
+    connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProvidersLoaded(const QDomDocument&)));
     connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
     loader->load(KUrl(m_providersurl));
@@ -364,7 +364,7 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
     return true;
 }
 
-void Engine::slotProvidersLoaded(QDomDocument doc)
+void Engine::slotProvidersLoaded(const QDomDocument& doc)
 {
     kDebug() << "slotProvidersLoaded";
 

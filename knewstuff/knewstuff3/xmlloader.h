@@ -68,7 +68,7 @@ Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
-    void signalLoaded(QDomDocument);
+    void signalLoaded(const QDomDocument&);
     void signalFailed();
 
 protected Q_SLOTS:
