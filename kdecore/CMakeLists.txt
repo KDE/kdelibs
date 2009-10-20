@@ -163,9 +163,12 @@ set(kdecore_LIB_SRCS
    config/kcoreconfigskeleton.cpp
    date/kcalendarsystem.cpp
    date/kcalendarsystemgregorian.cpp
+   date/kcalendarsystemgregorianproleptic.cpp
    date/kcalendarsystemhijri.cpp
    date/kcalendarsystemhebrew.cpp
+   date/kcalendarsystemindiannational.cpp
    date/kcalendarsystemjalali.cpp
+   date/kcalendarsystemjulian.cpp
    date/kdatetime.cpp
    date/ktimezone.cpp
    date/ksystemtimezone.cpp
