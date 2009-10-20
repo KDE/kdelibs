@@ -32,7 +32,7 @@
 namespace KNS3
 {
 
-struct EntryPrivate;
+class EntryPrivate;
 
 /**
  * @short KNewStuff data entry container.
@@ -61,28 +61,12 @@ public:
     /**
      * Destructor.
      */
-    ~Entry();
+    virtual ~Entry();
 
-	/**
-	 * set the xml for the entry
-	 * parses the xml and sets the private members accordingly
-	 * used to deserialize data loaded from provider
-	 *
-	 * @param xmldata string to load xml data from
-	 *
-	 * @returns whether or not setting the values was successful
-	 */
-	bool setEntryXML(const QDomElement & xmldata);
-	
-	/**
-	 * get the xml string for the entry
-	 */
-	QDomElement entryXML() const;
-	
     /**
      * Sets the name for this data object.
      */
-    //void setName(const KTranslatable& name);
+    void setName(const KTranslatable& name);
 
     /**
      * Retrieve the name of the data object.
@@ -91,10 +75,13 @@ public:
      */
     KTranslatable name() const;
 
+    void setUniqueId(const QString& id);
+    QString uniqueId() const;
+    
     /**
      * Sets the data category, e.g. 'kdesktop/wallpaper'.
      */
-    //void setCategory(const QString& category);
+    void setCategory(const QString& category);
 
     /**
      * Retrieve the category of the data object.
@@ -106,7 +93,7 @@ public:
     /**
      * Sets the author of the object.
      */
-    //void setAuthor(const Author& author);
+    void setAuthor(const Author& author);
 
     /**
      * Retrieve the author of the object.
@@ -118,7 +105,7 @@ public:
     /**
      * Sets the license (abbreviation) applicable to the object.
      */
-    //void setLicense(const QString& license);
+    void setLicense(const QString& license);
 
     /**
      * Retrieve the license name of the object.
@@ -130,7 +117,7 @@ public:
     /**
      * Sets a short description on what the object is all about.
      */
-    //void setSummary(const KTranslatable& summary);
+    void setSummary(const KTranslatable& summary);
 
     /**
      * Retrieve a short description about the object.
@@ -142,7 +129,7 @@ public:
     /**
      * Sets the version number.
      */
-    //void setVersion(const QString& version);
+    void setVersion(const QString& version);
 
     /**
      * Retrieve the version string of the object.
@@ -154,7 +141,7 @@ public:
     /**
      * Sets the release date.
      */
-    //void setReleaseDate(const QDate& releasedate);
+    void setReleaseDate(const QDate& releasedate);
 
     /**
      * Retrieve the date of the object's publication.
@@ -166,7 +153,7 @@ public:
     /**
      * Sets the object's file.
      */
-    //void setPayload(const KTranslatable& url);
+    void setPayload(const KTranslatable& url);
 
     /**
      * Retrieve the file name of the object.
@@ -179,7 +166,8 @@ public:
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    //void setPreview(const KTranslatable& url);
+    void setPreview(const KTranslatable& url);
+    // FIXME I'd prefer pixmap or icon here, any good reason for ktranslatable?
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
@@ -219,7 +207,7 @@ public:
      *
      * @internal
      */
-    //void setRating(int rating);
+    void setRating(int rating);
 
     /**
      * Retrieve the rating for the object, which has been determined by its
@@ -234,7 +222,7 @@ public:
      *
      * @internal
      */
-    //void setDownloads(int downloads);
+    void setDownloads(int downloads);
 
     /**
      * Retrieve the download count for the object, which has been determined
@@ -246,6 +234,46 @@ public:
 
     // FIXME: below here, everything under consideration
 
+
+    /**
+     * set the xml for the entry
+     * parses the xml and sets the private members accordingly
+     * used to deserialize data loaded from provider
+     *
+     * @param xmldata string to load xml data from
+     *
+     * @returns whether or not setting the values was successful
+     */
+    virtual bool setEntryXML(const QDomElement & xmldata) = 0;
+
+    /**
+    * get the xml string for the entry
+    */
+    virtual QDomElement entryXML() const = 0;
+
+    /**
+     * Source of the entry, A entry's data is coming from either cache, or an online provider
+     * this helps the engine know which data to use when merging cached entries with online
+     * entry data
+     */
+    enum Source {
+        Cache,
+        Online,
+        Registry
+    };
+
+    void setSource(Source source);
+    Source source() const;
+
+    /**
+     * Returns the checksum for the entry.
+     *
+     * If an empty string is returned, no checksum was assigned.
+     *
+     * @return Checksum of this entry
+     */
+    //QString checksum() const;
+
     /**
      * Sets the checksum of the entry. This will be a string representation
      * of an MD5 sum of the entry's selected payload file.
@@ -255,31 +283,22 @@ public:
     //void setChecksum(const QString& checksum);
 
     /**
-     * Sets the signature of the entry. This will be a digital signature
-     * in OpenPGP-compliant format.
-     *
-     * @ref signature Signature for the entry
-     */
-    void setSignature(const QString& signature);
-
-    /**
-     * Returns the checksum for the entry.
-     *
-     * If an empty string is returned, no checksum was assigned.
-     *
-     * @return Checksum of this entry
-     */
-    QString checksum() const;
-
-    /**
      * Returns the signature for the entry.
      *
      * If an empty string is returned, no signature was assigned.
      *
      * @return Signature of this entry
      */
-    QString signature() const;
+    //QString signature() const;
 
+    /**
+     * Sets the signature of the entry. This will be a digital signature
+     * in OpenPGP-compliant format.
+     *
+     * @ref signature Signature for the entry
+     */
+    //void setSignature(const QString& signature);
+    
     /**
      * Status of the entry. An entry will be downloadable from the provider's
      * site prior to the download. Once downloaded and installed, it will
@@ -310,29 +329,15 @@ public:
      *
      * @return Current status of the entry
      */
-    // FIXME KDE5 make it const
-    Status status();
+    Status status() const;
 
-    /**
-     * Source of the entry, A entry's data is coming from either cache, or an online provider
-     * this helps the engine know which data to use when merging cached entries with online
-     * entry data
-     */
-    enum Source {
-        Cache,
-        Online,
-        Registry
-    };
-
-    void setSource(Source source);
-    // FIXME KDE5 make it const
-    Source source();
-
-    void setIdNumber(int number);
-    int idNumber() const;
-
+    //void setIdNumber(int number);
+    //int idNumber() const;
+protected:
+    EntryPrivate* const d_ptr;
+    Entry(EntryPrivate &dd, QObject *parent);
 private:
-    EntryPrivate * const d;
+    Q_DECLARE_PRIVATE(Entry);
 };
 
 }

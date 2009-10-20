@@ -8,13 +8,16 @@ set(knewstuff3_core_SRCS
    core/ktranslatable.cpp
    core/author.cpp
    core/category.cpp
+   core/entry.cpp
 #   core/entryhandler.cpp
 #   core/entryloader.cpp
-   core/feed.cpp
+   staticxml/feed.cpp
 #   core/providerhandler.cpp
 #   core/providerloader.cpp
    core/installation.cpp
    core/security.cpp
+   staticxml/entry.cpp
+   core/provider.cpp
    staticxml/staticxmlprovider.cpp
    attica/atticaprovider.cpp
 )
@@ -41,8 +44,6 @@ set(knewstuff3_ui_SRCS
 set(knewstuff3_SRCS
   client.cpp
   engine.cpp
-  entry.cpp
-  provider.cpp
   xmlloader.cpp
 )
 

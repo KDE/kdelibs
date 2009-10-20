@@ -17,7 +17,7 @@
 #ifndef KNEWSTUFF3_ATTICA_PROVIDER_H
 #define KNEWSTUFF3_ATTICA_PROVIDER_H
 
-#include "provider.h"
+#include "core/provider.h"
 
 namespace KNS3
 {

@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF3_CLIENT_H
 #define KNEWSTUFF3_CLIENT_H
 
-#include <knewstuff3/entry.h>
+#include <knewstuff3/core/entry.h>
 
 namespace KNS3
 {

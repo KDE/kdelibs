@@ -22,7 +22,7 @@
 #include <QAbstractListModel>
 #include <QtGui/QImage>
 
-#include <knewstuff3/entry.h>
+#include <knewstuff3/core/entry.h>
 
 namespace KNS3
 {

@@ -39,10 +39,11 @@
 #include <kdebug.h>
 
 //#include "engine.h"
-#include "knewstuff3/entry.h"
+#include "knewstuff3/core/entry.h"
 #include "knewstuff3/core/author.h"
 
 #include <kconfiggroup.h>
+#include <staticxml/entry.h>
 
 using namespace KNS3;
 
@@ -113,7 +114,8 @@ void UploadDialog::slotOk()
     KTranslatable name;
     name.addString(language, mNameEdit->text());
 
-    m_entry = new Entry;
+    // FIXME use the right sub class of entry
+    m_entry = new StaticXmlEntry;
     //m_entry->setName(name);
     //m_entry->setAuthor(author);
     //m_entry->setVersion(mVersionEdit->text());

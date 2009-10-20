@@ -20,12 +20,9 @@
 
 #include "engine.h"
 
-//#include "entryhandler.h"
-//#include "providerhandler.h"
-//#include "entryloader.h"
-//#include "providerloader.h"
+#include "knewstuff3/core/entry.h"
 #include "knewstuff3/core/installation.h"
-#include "knewstuff3/core/feed.h"
+#include "knewstuff3/staticxml/feed.h"
 #include "knewstuff3/core/security.h"
 
 #include "knewstuff3/xmlloader.h"
@@ -662,9 +659,10 @@ void Engine::loadRegistry()
                 kWarning() << "Missing GHNS installation metadata.";
                 continue;
             }
-
-			Entry * e = new Entry;
-			e->setEntryXML(stuff);
+            
+            // FIXME use the right sub class of entry
+            Entry * e = new StaticXmlEntry;
+            e->setEntryXML(stuff);
             //if (!e->isValid()) {
             //    kWarning() << "Invalid GHNS installation metadata.";
             //    continue;
@@ -881,8 +879,9 @@ KNS3::Entry *Engine::loadEntryCache(const QString& filepath)
         kWarning() << "Missing GHNS cache metadata.";
         return NULL;
     }
-
-    Entry *e = new Entry;
+    
+    // FIXME use the right sub class of entry
+    Entry *e = new StaticXmlEntry;
 	e->setEntryXML(stuff);
     //if (!handler.isValid()) {
     //    kWarning() << "Invalid GHNS installation metadata.";
@@ -1289,6 +1288,8 @@ void Engine::registerEntry(Entry *entry)
 
     //kDebug() << " + Save to file '" + registryfile + "'.";
 
+// TODO: serialization of entries
+/*
     QDomElement exml = entry->entryXML();
 
     QDomDocument doc;
@@ -1308,6 +1309,7 @@ void Engine::registerEntry(Entry *entry)
     QTextStream metastream(&f);
     metastream << root;
     f.close();
+*/
 }
 
 void KNS3::Engine::unregisterEntry(Entry * entry)
@@ -1370,7 +1372,7 @@ bool Engine::install(const QString &payloadfile)
     // FIXME: first of all, do the security stuff here
     // this means check sum comparison and signature verification
     // signature verification might take a long time - make async?!
-
+    /*
     if (m_installation->checksumPolicy() != Installation::CheckNever) {
         if (entry->checksum().isEmpty()) {
             if (m_installation->checksumPolicy() == Installation::CheckIfPossible) {
@@ -1395,6 +1397,7 @@ bool Engine::install(const QString &payloadfile)
             //kDebug() << "Verify signature...";
         }
     }
+    */
 
     //kDebug() << "INSTALL resourceDir " << m_installation->standardResourceDir();
     //kDebug() << "INSTALL targetDir " << m_installation->targetDir();

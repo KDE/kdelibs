@@ -17,11 +17,12 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #ifndef KNEWSTUFF3_ENGINE_H
 #define KNEWSTUFF3_ENGINE_H
 
-#include <knewstuff3/provider.h>
-#include <knewstuff3/entry.h>
+#include <knewstuff3/core/provider.h>
+#include <knewstuff3/staticxml/entry.h>
 
 #include <knewstuff3/knewstuff_export.h>
 

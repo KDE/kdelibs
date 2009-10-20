@@ -18,7 +18,7 @@
 #include "atticaprovider.h"
 
 #include "xmlloader.h"
-#include "core/feed.h"
+#include "staticxml/feed.h"
 
 #include <kdebug.h>
 #include <klocale.h>

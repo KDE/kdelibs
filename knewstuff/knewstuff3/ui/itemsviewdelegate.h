@@ -28,7 +28,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QToolButton>
 
-#include <knewstuff3/entry.h>
+#include <knewstuff3/core/entry.h>
 #include <knewstuff3/ui/downloaddialog.h>
 
 #include <kicon.h>

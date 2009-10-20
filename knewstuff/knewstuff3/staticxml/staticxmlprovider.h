@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF3_STATICXML_PROVIDER_H
 #define KNEWSTUFF3_STATICXML_PROVIDER_H
 
-#include "knewstuff3/provider.h"
+#include "knewstuff3/core/provider.h"
 
 namespace KNS3
 {

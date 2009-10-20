@@ -25,7 +25,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-#include "provider.h"
+#include "core/provider.h"
 
 using namespace KNS3;
 

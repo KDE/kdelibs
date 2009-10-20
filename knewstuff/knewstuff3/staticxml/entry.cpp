@@ -17,7 +17,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "entry.h"
+#include "knewstuff3/staticxml/entry.h"
 
 #include "xmlloader.h"
 
@@ -25,58 +25,38 @@
 
 using namespace KNS3;
 
-struct KNS3::EntryPrivate {
-    EntryPrivate() : mReleaseDate(QDate::currentDate())
-            , mRating(0)
-            , mDownloads(0)
-            , mIdNumber(0)
-            , mStatus(Entry::Invalid)
-            , mSource(Entry::Online) {}
+#include "knewstuff3/core/entry_p.h"
 
-    QString mCategory;
-    QString mLicense;
-    QString mVersion;
-    QDate mReleaseDate;
-    Author mAuthor;
-    int mRating;
-    int mDownloads;
-    KTranslatable mName;
-    KTranslatable mSummary;
-    KTranslatable mPayload;
-    KTranslatable mPreview;
-    QStringList mInstalledFiles;
-    int mIdNumber;
-    QStringList mUnInstalledFiles;
-
-    QString mChecksum;
-    QString mSignature;
-    Entry::Status mStatus;
-    Entry::Source mSource;
+class KNS3::StaticXmlEntryPrivate :public EntryPrivate {
+public:
+    StaticXmlEntryPrivate() 
+    {}
 };
 
-Entry::Entry()
-        : d(new EntryPrivate)
+StaticXmlEntry::StaticXmlEntry()
+: d_ptr(new StaticXmlEntryPrivate)
 {
 }
 
-Entry::Entry(const Entry& other)
-        : d(new EntryPrivate(*other.d))
+StaticXmlEntry::StaticXmlEntry(const StaticXmlEntry& other)
+: d_ptr(new StaticXmlEntryPrivate(*other.d_ptr))
 {
 }
 
-Entry& Entry::operator=(const Entry & other)
+StaticXmlEntry& StaticXmlEntry::operator=(const StaticXmlEntry & other)
 {
-    *d = *other.d;
+    *d_ptr = *other.d_ptr;
     return *this;
 }
 
-Entry::~Entry()
+StaticXmlEntry::~StaticXmlEntry()
 {
-    delete d;
+    delete d_ptr;
 }
 
-bool Entry::setEntryXML(const QDomElement & xmldata)
+bool StaticXmlEntry::setEntryXML(const QDomElement & xmldata)
 {
+    Q_D(StaticXmlEntry);
     if (xmldata.tagName() != "stuff")
 		return false;
 
@@ -127,7 +107,7 @@ bool Entry::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "installedfile") {
             d->mInstalledFiles << e.text();
         } else if (e.tagName() == "id") {
-            d->mIdNumber = e.text().toInt();
+            d->mUniqueId = e.text();
             //kDebug() << "got id number: " << idNumber;
         }
     }
@@ -150,8 +130,9 @@ bool Entry::setEntryXML(const QDomElement & xmldata)
 /**
  * get the xml string for the entry
  */
-QDomElement Entry::entryXML() const
+QDomElement StaticXmlEntry::entryXML() const
 {
+    Q_D(const StaticXmlEntry);
     QDomDocument doc;
 
     QDomElement el = doc.createElement("stuff");
@@ -193,8 +174,8 @@ QDomElement Entry::entryXML() const
     foreach(const QString &file, d->mInstalledFiles) {
         (void)addElement(doc, el, "installedfile", file);
     }
-    if (d->mIdNumber > 0) {
-        addElement(doc, el, "id", QString::number(d->mIdNumber));
+    if (!d->mUniqueId.isEmpty()) {
+        addElement(doc, el, "id", d->mUniqueId);
     }
 
     (void)addElement(doc, el, "releasedate",
@@ -225,112 +206,3 @@ QDomElement Entry::entryXML() const
     return el;
 }
 
-KTranslatable Entry::name() const
-{
-    return d->mName;
-}
-
-QString Entry::category() const
-{
-    return d->mCategory;
-}
-
-Author Entry::author() const
-{
-    return d->mAuthor;
-}
-
-QString Entry::license() const
-{
-    return d->mLicense;
-}
-
-KTranslatable Entry::summary() const
-{
-    return d->mSummary;
-}
-
-QString Entry::version() const
-{
-    return d->mVersion;
-}
-
-QDate Entry::releaseDate() const
-{
-    return d->mReleaseDate;
-}
-
-KTranslatable Entry::payload() const
-{
-    return d->mPayload;
-}
-
-KTranslatable Entry::preview() const
-{
-    return d->mPreview;
-}
-
-int Entry::rating() const
-{
-    return d->mRating;
-}
-
-int Entry::downloads() const
-{
-    return d->mDownloads;
-}
-
-QString Entry::checksum() const
-{
-    return d->mChecksum;
-}
-
-QString Entry::signature() const
-{
-    return d->mSignature;
-}
-
-Entry::Status Entry::status()
-{
-    return d->mStatus;
-}
-
-void Entry::setStatus(Status status)
-{
-    d->mStatus = status;
-}
-
-Entry::Source Entry::source()
-{
-    return d->mSource;
-}
-
-void Entry::setSource(Source source)
-{
-    d->mSource = source;
-}
-
-void KNS3::Entry::setInstalledFiles(const QStringList & files)
-{
-    d->mInstalledFiles = files;
-}
-
-QStringList KNS3::Entry::installedFiles() const
-{
-    return d->mInstalledFiles;
-}
-
-int Entry::idNumber() const
-{
-    return d->mIdNumber;
-}
-
-void KNS3::Entry::setUnInstalledFiles(const QStringList & files)
-{
-    d->mUnInstalledFiles = files;
-}
-
-QStringList KNS3::Entry::uninstalledFiles() const
-{
-    return d->mUnInstalledFiles;
-}

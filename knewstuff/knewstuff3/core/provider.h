@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF3_PROVIDER_H
 #define KNEWSTUFF3_PROVIDER_H
 
-#include "knewstuff3/entry.h"
+#include "knewstuff3/core/entry.h"
 #include "knewstuff3/core/ktranslatable.h"
 
 #include <kurl.h>
