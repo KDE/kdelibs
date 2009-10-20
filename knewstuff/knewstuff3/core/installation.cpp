@@ -18,7 +18,7 @@
 
 #include "installation.h"
 
-struct KNS::InstallationPrivate {
+struct KNS3::InstallationPrivate {
     InstallationPrivate() {
         m_checksumpolicy = Installation::CheckIfPossible;
         m_signaturepolicy = Installation::CheckIfPossible;
@@ -39,7 +39,7 @@ struct KNS::InstallationPrivate {
     bool m_customname;
 };
 
-using namespace KNS;
+using namespace KNS3;
 
 Installation::Installation()
         : d(new InstallationPrivate)

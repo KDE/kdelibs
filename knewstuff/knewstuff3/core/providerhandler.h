@@ -30,7 +30,7 @@ namespace KIO
 class Job;
 }
 
-namespace KNS
+namespace KNS3
 {
 
 /**

@@ -31,7 +31,7 @@ class KLineEdit;
 class KUrlRequester;
 class KTextEdit;
 
-namespace KNS
+namespace KNS3
 {
 
 class Entry;

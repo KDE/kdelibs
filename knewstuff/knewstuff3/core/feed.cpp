@@ -20,9 +20,9 @@
 
 #include <kdebug.h>
 
-using namespace KNS;
+using namespace KNS3;
 
-struct KNS::FeedPrivate {
+struct KNS3::FeedPrivate {
     KTranslatable mName;
     KTranslatable mDescription;
     KUrl mFeed;

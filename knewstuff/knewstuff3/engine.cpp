@@ -55,8 +55,10 @@
 #define _WIN32_IE 0x0500
 #include <shlobj.h>
 #endif
+#include "attica/atticaprovider.h"
+#include "staticxml/staticxmlprovider.h"
 
-using namespace KNS;
+using namespace KNS3;
 
 Engine::Engine(QObject* parent)
         : QObject(parent), m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
@@ -383,9 +385,17 @@ void Engine::slotProvidersLoaded(const QDomDocument& doc)
         QDomElement p = n.toElement();
 
         if (p.tagName() == "provider") {
-            Provider * provider = new Provider;
-            if (provider->setProviderXML(p))
-                m_provider_cache.append(provider);
+            if (p.attribute("type") == "rest") {
+                AtticaProvider *provider = new AtticaProvider;
+                if (provider->setProviderXML(p)) {
+                    m_provider_cache.append(provider);
+                }
+            } else {
+                StaticXmlProvider * provider = new StaticXmlProvider;
+                if (provider->setProviderXML(p)) {
+                    m_provider_cache.append(provider);
+                }
+            }
         }
     }
 
@@ -405,7 +415,7 @@ void Engine::slotProvidersFailed()
     emit signalProvidersFailed();
 }
 
-void Engine::slotEntriesLoaded(KNS::Entry::List list)
+void Engine::slotEntriesLoaded(KNS3::Entry::List list)
 {
     //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
     //if (!loader) return;
@@ -843,7 +853,7 @@ void Engine::loadFeedCache(Provider *provider)
     }
 }
 
-KNS::Entry *Engine::loadEntryCache(const QString& filepath)
+KNS3::Entry *Engine::loadEntryCache(const QString& filepath)
 {
     bool ret;
     QFile f(filepath);
@@ -1300,7 +1310,7 @@ void Engine::registerEntry(Entry *entry)
     f.close();
 }
 
-void KNS::Engine::unregisterEntry(Entry * entry)
+void KNS3::Engine::unregisterEntry(Entry * entry)
 {
     KStandardDirs d;
 
@@ -1583,7 +1593,7 @@ bool Engine::install(const QString &payloadfile)
     return true;
 }
 
-bool Engine::uninstall(KNS::Entry *entry)
+bool Engine::uninstall(KNS3::Entry *entry)
 {
     entry->setStatus(Entry::Deleted);
 
@@ -1647,7 +1657,7 @@ void Engine::slotInstallationVerification(int result)
         emit signalInstallationFailed();
 }
 
-QStringList KNS::Engine::archiveEntries(const QString& path, const KArchiveDirectory * dir)
+QStringList KNS3::Engine::archiveEntries(const QString& path, const KArchiveDirectory * dir)
 {
     QStringList files;
     foreach(const QString &entry, dir->entries()) {

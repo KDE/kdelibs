@@ -22,24 +22,24 @@
 #include <QLayout>
 #include <QTreeWidget>
 
-
 #include <klocale.h>
 #include <kmessagebox.h>
 
-//#include "engine.h"
-#include "knewstuff2/core/provider.h"
+#include "provider.h"
 
-using namespace KNS;
+using namespace KNS3;
 
 class ProviderItem : public QTreeWidgetItem
 {
 public:
     ProviderItem(QTreeWidget *parent, Provider *provider) :
-            QTreeWidgetItem(parent), mProvider(provider) {
+            QTreeWidgetItem(parent), mProvider(provider)
+    {
         setText(0, provider->name().representation());
     }
 
-    Provider *provider() {
+    Provider *provider()
+    {
         return mProvider;
     }
 
@@ -104,7 +104,7 @@ void ProviderDialog::slotOk()
     accept();
 }
 
-KNS::Provider *ProviderDialog::provider() const
+KNS3::Provider *ProviderDialog::provider() const
 {
     return m_provider;
 }

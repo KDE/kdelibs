@@ -18,13 +18,13 @@
 #ifndef KTRANSLATABLE_H
 #define KTRANSLATABLE_H
 
-#include <knewstuff2/knewstuff_export.h>
+#include <knewstuff3/knewstuff_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
 
-namespace KNS
+namespace KNS3
 {
 
 class KTranslatablePrivate;

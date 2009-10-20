@@ -31,7 +31,7 @@ namespace KIO
 class Job;
 }
 
-namespace KNS
+namespace KNS3
 {
 
 class Feed;
@@ -80,7 +80,7 @@ Q_SIGNALS:
     /**
      * Indicates that the list of entries has been successfully loaded.
      */
-    void signalEntriesLoaded(KNS::Entry::List list);
+    void signalEntriesLoaded(KNS3::Entry::List list);
 
     /**
      * Indicates that the list of entries could not be loaded.

@@ -15,14 +15,14 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_CATEGORY_H
-#define KNEWSTUFF2_CATEGORY_H
+#ifndef KNEWSTUFF3_CATEGORY_H
+#define KNEWSTUFF3_CATEGORY_H
 
-#include <knewstuff2/core/ktranslatable.h>
+#include <knewstuff3/core/ktranslatable.h>
 
 #include <kurl.h>
 
-namespace KNS
+namespace KNS3
 {
 
 struct CategoryPrivate;

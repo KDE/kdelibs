@@ -21,7 +21,7 @@
 #include <kdebug.h>
 #include "qasyncimage_p.h"
 
-namespace KNS
+namespace KNS3
 {
 ItemsModel::ItemsModel(QObject * parent, bool hasWebService)
         : QAbstractListModel(parent), m_hasPreviewImages(false), m_hasWebService(hasWebService)
@@ -102,7 +102,7 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
     return QVariant();
 }
 
-KNS::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
+KNS3::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
 {
     if (index.row() < 0)
         return 0;

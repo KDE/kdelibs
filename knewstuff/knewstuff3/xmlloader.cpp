@@ -27,7 +27,7 @@
 #include <kio/job.h>
 #include <klocale.h>
 
-namespace KNS
+namespace KNS3
 {
 
     XmlLoader::XmlLoader(QObject* parent)

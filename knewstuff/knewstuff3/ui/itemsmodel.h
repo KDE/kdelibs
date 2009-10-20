@@ -24,7 +24,7 @@
 
 #include <knewstuff3/entry.h>
 
-namespace KNS
+namespace KNS3
 {
 static const int kPreviewWidth = 96;
 static const int kPreviewHeight = 72;
@@ -82,14 +82,14 @@ public:
 
     void removeEntry(Entry * entry);
 
-    KNS::Entry* entryForIndex(const QModelIndex & index) const;
+    KNS3::Entry* entryForIndex(const QModelIndex & index) const;
 
     bool hasPreviewImages() const;
 
     bool hasWebService() const;
 
 public slots:
-    void slotEntryChanged(KNS::Entry * entry);
+    void slotEntryChanged(KNS3::Entry * entry);
 private slots:
     void slotEntryPreviewLoaded(const QString &url, const QImage & pix);
 private:

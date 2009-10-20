@@ -28,7 +28,7 @@
 
 #include "feed.h"
 
-using namespace KNS;
+using namespace KNS3;
 
 ProviderHandler::ProviderHandler(const Provider& provider)
 {

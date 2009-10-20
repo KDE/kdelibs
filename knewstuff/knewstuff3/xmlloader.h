@@ -33,7 +33,7 @@ namespace KIO
     class Job;
 }
 
-namespace KNS
+namespace KNS3
 {
 
 QDomElement addElement(QDomDocument& doc, QDomElement& parent,

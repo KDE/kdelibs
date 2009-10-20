@@ -19,16 +19,16 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_UI_ITEMSVIEW_H
-#define KNEWSTUFF2_UI_ITEMSVIEW_H
+#ifndef KNEWSTUFF3_UI_ITEMSVIEW_H
+#define KNEWSTUFF3_UI_ITEMSVIEW_H
 
 #include <QtCore/QSet>
 #include <QtGui/QListView>
 #include <QtGui/QLabel>
 #include <QtGui/QSortFilterProxyModel>
 
-#include <knewstuff2/dxs/dxsengine.h>
-#include <knewstuff2/core/category.h>
+#include <knewstuff3/dxs/dxsengine.h>
+#include <knewstuff3/core/category.h>
 
 namespace Ui
 {
@@ -37,7 +37,7 @@ class DownloadDialog;
 
 class QLabel;
 
-namespace KNS
+namespace KNS3
 {
 
 class EntryView;

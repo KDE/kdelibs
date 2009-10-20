@@ -22,7 +22,7 @@
 
 #include <kdebug.h>
 
-using namespace KNS;
+using namespace KNS3;
 
 EntryHandler::EntryHandler(const Entry& entry)
 {

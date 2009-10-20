@@ -25,7 +25,7 @@
 #include <QtXml/QDomElement>
 #include <QtCore/QString>
 
-namespace KNS
+namespace KNS3
 {
 
 /**

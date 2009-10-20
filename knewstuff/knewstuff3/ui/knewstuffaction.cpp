@@ -22,9 +22,9 @@
 #include <klocale.h>
 #include <kactioncollection.h>
 
-using namespace KNS;
+using namespace KNS3;
 
-KAction *KNS::standardAction(const QString &what,
+KAction *KNS3::standardAction(const QString &what,
                              const QObject *receiver,
                              const char *slot, KActionCollection *parent,
                              const char *name)

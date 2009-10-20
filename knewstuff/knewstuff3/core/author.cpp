@@ -19,9 +19,9 @@
 
 #include "author.h"
 
-using namespace KNS;
+using namespace KNS3;
 
-struct KNS::AuthorPrivate {
+struct KNS3::AuthorPrivate {
     QString mName;
     QString mEmail;
     QString mJabber;

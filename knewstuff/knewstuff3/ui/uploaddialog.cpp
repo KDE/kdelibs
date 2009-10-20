@@ -40,11 +40,11 @@
 
 //#include "engine.h"
 #include "knewstuff3/entry.h"
-#include "knewstuff2/core/author.h"
+#include "knewstuff3/core/author.h"
 
 #include <kconfiggroup.h>
 
-using namespace KNS;
+using namespace KNS3;
 
 UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
         KDialog(parent)

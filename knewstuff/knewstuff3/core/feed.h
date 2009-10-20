@@ -23,7 +23,7 @@
 
 #include <kurl.h>
 
-namespace KNS
+namespace KNS3
 {
 
 struct FeedPrivate;

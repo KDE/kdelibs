@@ -15,6 +15,8 @@ set(knewstuff3_core_SRCS
 #   core/providerloader.cpp
    core/installation.cpp
    core/security.cpp
+   staticxml/staticxmlprovider.cpp
+   attica/atticaprovider.cpp
 )
 
 set(knewstuff3_ui_SRCS

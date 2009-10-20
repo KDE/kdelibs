@@ -52,22 +52,22 @@
 #include <ktitlewidget.h>
 #include <ktoolinvocation.h>
 
-#include "knewstuff2/core/provider.h"
-#include "knewstuff2/core/providerhandler.h"
-#include "knewstuff2/core/entry.h"
-#include "knewstuff2/core/entryhandler.h"
-#include "knewstuff2/core/category.h"
+#include "knewstuff3/core/provider.h"
+#include "knewstuff3/core/providerhandler.h"
+#include "knewstuff3/core/entry.h"
+#include "knewstuff3/core/entryhandler.h"
+#include "knewstuff3/core/category.h"
 
-#include "knewstuff2/dxs/dxs.h"
+#include "knewstuff3/dxs/dxs.h"
 
-#include "knewstuff2/ui/qprogressindicator.h"
+#include "knewstuff3/ui/qprogressindicator.h"
 
 // local includes
 #include "ui_DownloadDialog.h"
 #include "kdxsbutton.h"
 #include "qasyncimage_p.h"
 
-using namespace KNS;
+using namespace KNS3;
 
 static bool NameSorter(const Entry* e1, const Entry* e2)
 {
@@ -286,7 +286,7 @@ void EntryView::buildContents()
     starsString = "<div style='width: " + QString::number(grayPixels) + "px;background-image: url(" + starBgIconPath + "); background-repeat: repeat-x;'>" + starsString + "&nbsp;</div>";
 
     // precalc the string for displaying author (parsing email)
-    KNS::Author author = m_entry->author();
+    KNS3::Author author = m_entry->author();
     QString authorString = author.name();
 
     QString emailString = author.email();

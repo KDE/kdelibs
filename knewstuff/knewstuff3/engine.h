@@ -32,7 +32,7 @@
 class KJob;
 class KArchiveDirectory;
 
-namespace KNS
+namespace KNS3
 {
 
 class Installation;
@@ -209,7 +209,7 @@ public:
      *
      * @note FIXME: I don't believe this works yet :)
      */
-    bool uninstall(KNS::Entry *entry);
+    bool uninstall(KNS3::Entry *entry);
 
     /**
      * @return the component name the engine is using, or an empty string if not
@@ -228,20 +228,20 @@ Q_SIGNALS:
      * This signal might occur twice, for the local cache and for updated provider
      * information from the ProvidersUrl.
      */
-    void signalProviderLoaded(KNS::Provider *provider);
-    void signalProviderChanged(KNS::Provider *provider);
+    void signalProviderLoaded(KNS3::Provider *provider);
+    void signalProviderChanged(KNS3::Provider *provider);
     void signalProvidersFailed();
 
     //void signalEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
     //void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
-    void signalEntryChanged(KNS::Entry *entry);
+    void signalEntryChanged(KNS3::Entry *entry);
     void signalEntriesFailed();
 
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
 
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
-    void signalPayloadFailed(KNS::Entry *entry);
+    void signalPayloadFailed(KNS3::Entry *entry);
 
     void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
     void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
@@ -255,14 +255,14 @@ Q_SIGNALS:
 
     void signalProgress(const QString & message, int percentage);
 
-    void signalDownloadDialogDone(KNS::Entry::List);
+    void signalDownloadDialogDone(KNS3::Entry::List);
 protected:
     //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
     void slotProvidersLoaded(const QDomDocument& doc);
     void slotProvidersFailed();
 
-    void slotEntriesLoaded(KNS::Entry::List list);
+    void slotEntriesLoaded(KNS3::Entry::List list);
     void slotEntriesFailed();
 
     void slotPayloadResult(KJob *job);
@@ -285,7 +285,7 @@ private:
     
     void loadRegistry();
     void loadProvidersCache();
-    KNS::Entry *loadEntryCache(const QString& filepath);
+    KNS3::Entry *loadEntryCache(const QString& filepath);
 #if 0
     void loadEntriesCache();
 #endif

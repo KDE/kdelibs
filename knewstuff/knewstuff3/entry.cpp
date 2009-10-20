@@ -23,9 +23,9 @@
 
 #include <kdebug.h>
 
-using namespace KNS;
+using namespace KNS3;
 
-struct KNS::EntryPrivate {
+struct KNS3::EntryPrivate {
     EntryPrivate() : mReleaseDate(QDate::currentDate())
             , mRating(0)
             , mDownloads(0)
@@ -310,12 +310,12 @@ void Entry::setSource(Source source)
     d->mSource = source;
 }
 
-void KNS::Entry::setInstalledFiles(const QStringList & files)
+void KNS3::Entry::setInstalledFiles(const QStringList & files)
 {
     d->mInstalledFiles = files;
 }
 
-QStringList KNS::Entry::installedFiles() const
+QStringList KNS3::Entry::installedFiles() const
 {
     return d->mInstalledFiles;
 }
@@ -325,12 +325,12 @@ int Entry::idNumber() const
     return d->mIdNumber;
 }
 
-void KNS::Entry::setUnInstalledFiles(const QStringList & files)
+void KNS3::Entry::setUnInstalledFiles(const QStringList & files)
 {
     d->mUnInstalledFiles = files;
 }
 
-QStringList KNS::Entry::uninstalledFiles() const
+QStringList KNS3::Entry::uninstalledFiles() const
 {
     return d->mUnInstalledFiles;
 }

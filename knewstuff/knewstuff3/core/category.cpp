@@ -18,9 +18,9 @@
 
 #include "category.h"
 
-using namespace KNS;
+using namespace KNS3;
 
-struct KNS::CategoryPrivate {
+struct KNS3::CategoryPrivate {
     KTranslatable mName;
     KTranslatable mDescription;
     KUrl mIcon;

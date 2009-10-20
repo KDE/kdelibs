@@ -24,7 +24,7 @@
 
 class QTreeWidget;
 
-namespace KNS
+namespace KNS3
 {
 
 class Provider;

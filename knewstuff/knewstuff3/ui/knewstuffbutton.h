@@ -16,14 +16,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFFBUTTON_H
-#define KNEWSTUFFBUTTON_H
+#ifndef KNEWSTUFF3BUTTON_H
+#define KNEWSTUFF3BUTTON_H
 
-#include <knewstuff2/knewstuff_export.h>
+#include <knewstuff3/knewstuff_export.h>
 
 #include <kpushbutton.h>
 
-namespace KNS
+namespace KNS3
 {
 
 class Engine;

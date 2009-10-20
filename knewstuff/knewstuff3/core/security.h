@@ -33,7 +33,7 @@ struct KeyStruct {
 };
 
 class KProcess;
-namespace KNS
+namespace KNS3
 {
 
 /**

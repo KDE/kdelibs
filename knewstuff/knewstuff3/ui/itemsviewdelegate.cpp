@@ -33,7 +33,7 @@ static const int kLabel = 0;
 static const int kInstall = 1;
 static const int kRating = 2;
 
-namespace KNS
+namespace KNS3
 {
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
@@ -299,7 +299,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
 
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(DownloadDialog::kContactEmail, entry);
 }
 
@@ -310,7 +310,7 @@ void ItemsViewDelegate::slotActionTriggered(QAction *action)
 
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(DownloadDialog::EntryAction(action->data().toInt()), entry);
 }
 
@@ -321,7 +321,7 @@ void ItemsViewDelegate::slotInstallClicked()
     if (index.isValid()) {
         const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
+        KNS3::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
         if ( !entry )
             return;
 

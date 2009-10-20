@@ -15,14 +15,14 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF2_INSTALLATION_H
-#define KNEWSTUFF2_INSTALLATION_H
+#ifndef KNEWSTUFF3_INSTALLATION_H
+#define KNEWSTUFF3_INSTALLATION_H
 
-#include <knewstuff2/knewstuff_export.h>
+#include <knewstuff3/knewstuff_export.h>
 
 #include <QtCore/QString>
 
-namespace KNS
+namespace KNS3
 {
 
 struct InstallationPrivate;

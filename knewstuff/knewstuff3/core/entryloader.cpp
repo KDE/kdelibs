@@ -28,7 +28,7 @@
 #include <kio/job.h>
 #include <klocale.h>
 
-using namespace KNS;
+using namespace KNS3;
 
 EntryLoader::EntryLoader(QObject* parent)
         : QObject(parent)

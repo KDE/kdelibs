@@ -21,7 +21,7 @@
 
 #include <knewstuff3/entry.h>
 
-namespace KNS
+namespace KNS3
 {
 
 class ClientPrivate;
@@ -79,7 +79,7 @@ public:
      *
      * @return List of installed or deinstalled entries
      */
-    KNS::Entry::List downloadDialogModal(QWidget* parent = 0);
+    KNS3::Entry::List downloadDialogModal(QWidget* parent = 0);
 
     /**
      * @brief Asynchronous way of starting the download workflow.
@@ -100,7 +100,7 @@ public:
      *
      * @return Uploaded entry, or \b null in case of failures
      */
-    KNS::Entry *uploadDialogModal(const QString& file, QWidget *parent = 0);
+    KNS3::Entry *uploadDialogModal(const QString& file, QWidget *parent = 0);
 
     /**
      * @brief Asynchronous way of starting the upload workflow.

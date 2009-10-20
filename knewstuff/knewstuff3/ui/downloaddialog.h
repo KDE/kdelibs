@@ -41,7 +41,7 @@ class QLabel;
 class QProgressIndicator;
 class QSortFilterProxyModel;
 
-namespace KNS
+namespace KNS3
 {
 
 class DownloadDialog;
@@ -104,10 +104,10 @@ public:
 
 private Q_SLOTS:
     /** slot to add an entry (connected to the engine's signalEntryAdded */
-    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
-    void slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
+    void slotEntryLoaded(KNS3::Entry *entry, const KNS3::Feed *feed, const KNS3::Provider *provider);
+    void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
     void slotEntriesFailed();
-    void slotPayloadFailed(KNS::Entry * entry);
+    void slotPayloadFailed(KNS3::Entry * entry);
     void slotPayloadLoaded(KUrl url);
 
     void slotResetMessage();
@@ -126,14 +126,14 @@ private Q_SLOTS:
     void slotFault();
     void slotError();
     // file downloading
-    void slotEntryChanged(KNS::Entry *);
+    void slotEntryChanged(KNS3::Entry *);
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
     void slotProgress(const QString & text, int percentage);
     void slotProvidersFailed();
 
-    void slotPerformAction(DownloadDialog::EntryAction action, KNS::Entry * entry);
+    void slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry);
     void slotCollabAction(QAction * action);
 
     void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
@@ -155,7 +155,7 @@ private:
 
     Engine *m_engine;
     QMap<QString, QString> categorymap;
-    QMap<const Feed*, KNS::ItemsModel*> m_models;
+    QMap<const Feed*, KNS3::ItemsModel*> m_models;
     QSortFilterProxyModel * m_filteredModel;
     ItemsViewDelegate * mDelegate;
 

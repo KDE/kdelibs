@@ -24,7 +24,7 @@
 
 #include "knewstuff3/client.h"
 
-namespace KNS
+namespace KNS3
 {
 
 Button::Button(const QString& what,
@@ -85,7 +85,7 @@ void Button::showDialog()
 
     //m_downloadDialog->exec(); // TODO: make non-modal?
 
-    KNS::Client *client(new KNS::Client);
+    KNS3::Client *client(new KNS3::Client);
 	client->downloadDialog(this);
 
     emit dialogFinished();

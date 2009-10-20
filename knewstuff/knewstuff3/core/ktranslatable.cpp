@@ -23,7 +23,7 @@
 
 #include <QtCore/QMutableStringListIterator>
 
-using namespace KNS;
+using namespace KNS3;
 
 KTranslatable::KTranslatable()
         : d(0)

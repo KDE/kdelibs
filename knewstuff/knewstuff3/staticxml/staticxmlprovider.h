@@ -16,16 +16,10 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef KNEWSTUFF3_PROVIDER_H
-#define KNEWSTUFF3_PROVIDER_H
+#ifndef KNEWSTUFF3_STATICXML_PROVIDER_H
+#define KNEWSTUFF3_STATICXML_PROVIDER_H
 
-#include "knewstuff3/entry.h"
-#include "knewstuff3/core/ktranslatable.h"
-
-#include <kurl.h>
-
-#include <QtCore/QList>
-#include <QtCore/QString>
+#include "knewstuff3/provider.h"
 
 namespace KNS3
 {
@@ -42,7 +36,7 @@ namespace KNS3
      *
      * @internal
      */
-    class KNEWSTUFF_EXPORT Provider: public QObject
+    class KNEWSTUFF_EXPORT StaticXmlProvider: public Provider
     {
         Q_OBJECT
     public:
@@ -50,39 +44,39 @@ namespace KNS3
         /**
          * Constructor.
          */
-        Provider();
+        StaticXmlProvider();
 
         /**
          * Destructor.
          */
-        virtual ~Provider();
+        virtual ~StaticXmlProvider();
 
         /**
          * set the provider data xml, to initialize the provider
          */
-        virtual bool setProviderXML(QDomElement & xmldata) = 0;
+        virtual bool setProviderXML(QDomElement & xmldata);
 
         /**
          * get the xml for the provider
          */
-        virtual QDomElement providerXML() const = 0;
+        virtual QDomElement providerXML() const;
 
         /**
          * Retrieves the common name of the provider.
          *
          * @return provider name
          */
-        virtual KTranslatable name() const = 0;
+        virtual KTranslatable name() const;
 
         /**
          * Retrieves the icon URL for this provider.
          *
          * @return icon URL
          */
-        virtual KUrl icon() const = 0; // FIXME use KIcon or pixmap?
+        KUrl icon() const;
 
         virtual bool hasFeeds() const { return true; }
-        virtual QStringList availableFeeds() const = 0;
+        virtual QStringList availableFeeds() const;
         
         /*
          * load the given feed and given page
@@ -91,7 +85,7 @@ namespace KNS3
          *
          * Note: the engine connects to feedLoaded() signal to get the result
          */
-        virtual void loadFeed(const QString & feedname, int page = 0) = 0;
+        virtual void loadFeed(const QString & feedname, int page = 0);
 
         virtual bool hasSearch() const { return false; }
 
@@ -125,8 +119,7 @@ namespace KNS3
         void ratingSetFailed(Entry *);
 
     protected:
-        // in case we want to introduce a d-ptr later
-        class ProviderPrivate *d;
+        class StaticXmlProviderPrivate *d;
     };
 
 }

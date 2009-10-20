@@ -35,9 +35,9 @@
 #include <qeventloop.h>
 #include <qpointer.h>
 
-using namespace KNS;
+using namespace KNS3;
 
-class KNS::ClientPrivate
+class KNS3::ClientPrivate
 {
 public:
     ClientPrivate(QWidget * parent)
@@ -61,7 +61,7 @@ public:
 	bool init(const QString & config);
 
     void workflow();
-    KNS::Entry* upload(const QString& file);
+    KNS3::Entry* upload(const QString& file);
 
     static QHash<QString, QPointer<KDialog> > s_dialogs;
 
@@ -69,13 +69,13 @@ public:
     QPointer<UploadDialog> m_uploaddialog;
     QPointer<DownloadDialog> m_downloaddialog;
     QString m_uploadfile;
-    KNS::Entry *m_uploadedEntry;
-    KNS::Provider::List m_providers;
+    KNS3::Entry *m_uploadedEntry;
+    KNS3::Provider::List m_providers;
     bool m_modal;
 	QWidget * m_parent;
-    QSet<KNS::Entry*> m_changedEntries;
+    QSet<KNS3::Entry*> m_changedEntries;
     QEventLoop* m_loop;
-    KNS::Engine * m_engine;
+    KNS3::Engine * m_engine;
 
 public:
     void slotDownloadDialogDestroyed();
@@ -84,11 +84,11 @@ public:
     void stopLoop();
 
 private:
-    void slotProviderLoaded(KNS::Provider *provider);
+    void slotProviderLoaded(KNS3::Provider *provider);
 
     /** slot for when entries are changed, so we can return a list
      * of them from the static methods */
-    void slotEntryChanged(KNS::Entry *entry);
+    void slotEntryChanged(KNS3::Entry *entry);
 
     void slotHandleUpload();
     void slotEntriesFinished();
@@ -97,7 +97,7 @@ private:
 };
 
 
-QHash<QString, QPointer<KDialog> > KNS::ClientPrivate::s_dialogs;
+QHash<QString, QPointer<KDialog> > KNS3::ClientPrivate::s_dialogs;
 
 Client::Client(QWidget* parent)
         : d(new ClientPrivate(parent))
@@ -210,7 +210,7 @@ void ClientPrivate::stopLoop()
 //    return entries;
 //}
 
-KNS::Entry::List Client::downloadDialogModal(QWidget* parent)
+KNS3::Entry::List Client::downloadDialogModal(QWidget* parent)
 {
     kDebug() << "Client: downloadDialogModal";
     KDialog *existingDialog = d->m_downloaddialog;
@@ -218,7 +218,7 @@ KNS::Entry::List Client::downloadDialogModal(QWidget* parent)
         existingDialog->show();
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
-        return QList<KNS::Entry*>(); // return an empty list, there's already a dialog showing
+        return QList<KNS3::Entry*>(); // return an empty list, there's already a dialog showing
     }
 
     d->m_command = ClientPrivate::command_download;
@@ -226,7 +226,7 @@ KNS::Entry::List Client::downloadDialogModal(QWidget* parent)
 
     d->workflow();
 
-    return QList<KNS::Entry*>::fromSet(d->m_changedEntries);
+    return QList<KNS3::Entry*>::fromSet(d->m_changedEntries);
 }
 
 void Client::downloadDialog(QWidget * parent)
@@ -284,7 +284,7 @@ void Client::downloadDialog(QWidget * parent)
 //    return 0;
 //}
 
-KNS::Entry *Client::uploadDialogModal(const QString& file, QWidget * parent)
+KNS3::Entry *Client::uploadDialogModal(const QString& file, QWidget * parent)
 {
     //kDebug() << "Client: uploadDialogModal";
 
@@ -402,7 +402,7 @@ void ClientPrivate::slotHandleUpload()
     //m_uploadedEntry=entry;
 }
 
-void ClientPrivate::slotEntryChanged(KNS::Entry * entry)
+void ClientPrivate::slotEntryChanged(KNS3::Entry * entry)
 {
     //kDebug() << "adding entries to list of changed entries";
     m_changedEntries << entry;

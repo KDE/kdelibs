@@ -37,7 +37,7 @@
 #include <kpassworddialog.h>
 #include <kprocess.h>
 
-using namespace KNS;
+using namespace KNS3;
 
 Security::Security()
 {

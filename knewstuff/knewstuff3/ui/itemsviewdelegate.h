@@ -34,7 +34,7 @@
 #include <kicon.h>
 #include <kmenu.h>
 
-namespace KNS
+namespace KNS3
 {
 class ItemsViewDelegate: public KWidgetItemDelegate
 {
@@ -58,7 +58,7 @@ public:
 
 signals:
 
-    void performAction(DownloadDialog::EntryAction action, KNS::Entry * entry);
+    void performAction(DownloadDialog::EntryAction action, KNS3::Entry * entry);
 
     //protected:
     //virtual bool eventFilter(QObject *watched, QEvent *event);

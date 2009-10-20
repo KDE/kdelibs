@@ -34,13 +34,7 @@
 
 #include <kdebug.h>
 
-//#include "knewstuff2/core/provider.h"
-//#include "knewstuff3/core/providerhandler.h"
-//#include "knewstuff2/core/entry.h"
-//#include "knewstuff3/core/entryhandler.h"
 #include "knewstuff3/core/category.h"
-
-//#include "knewstuff3/dxs/dxs.h"
 
 // local includes
 #include "ui_DownloadDialog.h"
@@ -48,12 +42,10 @@
 #include "itemsmodel.h"
 #include "itemsviewdelegate.h"
 #include "kdxsrating.h"
-//#include "kdxscomment.h"
-//#include "kdxscomments.h"
 
 const char * ConfigGroup = "DownloadDialog Settings";
 
-using namespace KNS;
+using namespace KNS3;
 
 DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
         : KDialog(_parent)
@@ -62,16 +54,16 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
 
     m_engine = _engine;
     connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
-    connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)), SLOT(slotEntryChanged(KNS::Entry*)));
-    connect(m_engine, SIGNAL(signalPayloadFailed(KNS::Entry*)), SLOT(slotPayloadFailed(KNS::Entry*)));
+    connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)), SLOT(slotEntryChanged(KNS3::Entry*)));
+    connect(m_engine, SIGNAL(signalPayloadFailed(KNS3::Entry*)), SLOT(slotPayloadFailed(KNS3::Entry*)));
     connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
     connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
     connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
 
-    connect(m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-            this, SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
-    connect(m_engine, SIGNAL(signalEntryRemoved(KNS::Entry*, const KNS::Feed*)),
-            this, SLOT(slotEntryRemoved(KNS::Entry *, const KNS::Feed *)));
+    connect(m_engine, SIGNAL(signalEntryLoaded(KNS3::Entry*, const KNS3::Feed*, const KNS3::Provider*)),
+            this, SLOT(slotEntryLoaded(KNS3::Entry*, const KNS3::Feed*, const KNS3::Provider*)));
+    connect(m_engine, SIGNAL(signalEntryRemoved(KNS3::Entry*, const KNS3::Feed*)),
+            this, SLOT(slotEntryRemoved(KNS3::Entry *, const KNS3::Feed *)));
 
     // initialize the private classes
     messageTimer = new QTimer(this);
@@ -94,8 +86,8 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     // create the delegate
     mDelegate = new ItemsViewDelegate(m_listView, this);
     m_listView->setItemDelegate(mDelegate);
-    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, KNS::Entry *)),
-            SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS::Entry *)));
+    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, KNS3::Entry *)),
+            SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS3::Entry *)));
 
     // create the filter model
     m_filteredModel = new QSortFilterProxyModel(this);
@@ -165,7 +157,7 @@ DownloadDialog::~DownloadDialog()
     saveDialogSize(group, KConfigBase::Persistent);
 }
 
-void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::Entry * entry)
+void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry)
 {
     kDebug(551) << "perform action: " << action;
     const Provider * provider = m_providers.contains(entry) ? m_providers[entry] : NULL;
@@ -252,7 +244,7 @@ void DownloadDialog::slotCollabAction(QAction * action)
     QModelIndex currentIndex = m_listView->currentIndex();
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(m_filteredModel->sourceModel());
     QModelIndex index = m_filteredModel->mapToSource(currentIndex);
-    KNS::Entry * entry = realmodel->entryForIndex(index);
+    KNS3::Entry * entry = realmodel->entryForIndex(index);
     slotPerformAction(entryAction, entry);
 }
 
@@ -374,12 +366,12 @@ void DownloadDialog::slotSearchTextChanged()
     m_searchTimer->start();
 }
 
-void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
+void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
 {
     categorymap.clear();
 
-    for (QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
-        KNS::Category *category = (*it);
+    for (QList<KNS3::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
+        KNS3::Category *category = (*it);
         //kDebug(551) << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
         // FIXME: use icon from remote URLs (see non-DXS providers as well)
@@ -394,7 +386,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
     slotLoadProviderDXS();
 }
 
-void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
+void DownloadDialog::slotEntries(QList<KNS3::Entry*> _entries)
 {
     Q_UNUSED(_entries);
 
@@ -429,8 +421,8 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
         // new feed
         kDebug(551) << "making a new model for this feed" << feed;
         //m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
-        connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)),
-                m_models[feed], SLOT(slotEntryChanged(KNS::Entry*)));
+        connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)),
+                m_models[feed], SLOT(slotEntryChanged(KNS3::Entry*)));
         if (provider->name().representation() == m_sourceCombo->currentText()) {
             // this provider is selected, so refresh the feed combobox
             populateSortCombo(provider);
@@ -438,13 +430,13 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
     }
     mMutex.unlock();
 
-    KNS::ItemsModel* thisModel = m_models.value(feed);
+    KNS3::ItemsModel* thisModel = m_models.value(feed);
 
     Q_ASSERT(thisModel != NULL);
     thisModel->addEntry(entry);
 }
 
-void DownloadDialog::slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed)
+void DownloadDialog::slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed)
 {
     Q_ASSERT(m_models[feed] != NULL);
 
@@ -525,13 +517,13 @@ void DownloadDialog::slotComments(QStringList comments)
 
 ///////////////// DXS ////////////////////
 
-void DownloadDialog::slotEntryChanged(KNS::Entry * entry)
+void DownloadDialog::slotEntryChanged(KNS3::Entry * entry)
 {
     Q_UNUSED(entry)
     setCursor(Qt::ArrowCursor);
 }
 
-void DownloadDialog::slotPayloadFailed(KNS::Entry * entry)
+void DownloadDialog::slotPayloadFailed(KNS3::Entry * entry)
 {
     setCursor(Qt::ArrowCursor);
     KMessageBox::error(this, i18n("Could not install %1", entry->name().representation()),
