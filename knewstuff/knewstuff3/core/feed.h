@@ -27,7 +27,7 @@
 namespace KNS3
 {
 
-struct FeedPrivate;
+class FeedPrivate;
 
 /**
  * @short KNewStuff feed.

@@ -21,7 +21,7 @@
 #include "provider.h"
 
 #include "xmlloader.h"
-#include "staticxml/feed.h"
+#include "core/feed.h"
 
 #include <kdebug.h>
 #include <klocale.h>

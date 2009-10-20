@@ -9,11 +9,7 @@ set(knewstuff3_core_SRCS
    core/author.cpp
    core/category.cpp
    core/entry.cpp
-#   core/entryhandler.cpp
-#   core/entryloader.cpp
-   staticxml/feed.cpp
-#   core/providerhandler.cpp
-#   core/providerloader.cpp
+   core/feed.cpp
    core/installation.cpp
    core/security.cpp
    staticxml/entry.cpp
