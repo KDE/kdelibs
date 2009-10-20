@@ -27,12 +27,23 @@
 
 #include "kdatetime.h"
 #include "kcalendarsystemgregorian.h"
+#include "kcalendarsystemgregorianproleptic.h"
 #include "kcalendarsystemhebrew.h"
 #include "kcalendarsystemhijri.h"
+#include "kcalendarsystemindiannational.h"
 #include "kcalendarsystemjalali.h"
+#include "kcalendarsystemjulian.h"
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {
+    if ( calendarType == "gregorian" ) {
+        return new KCalendarSystemGregorian( locale );
+    }
+
+    if ( calendarType == "gregorian-proleptic" ) {
+        return new KCalendarSystemGregorianProleptic( locale );
+    }
+
     if ( calendarType == "hebrew" ) {
         return new KCalendarSystemHebrew( locale );
     }
@@ -41,12 +52,16 @@ KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLo
         return new KCalendarSystemHijri( locale );
     }
 
-    if ( calendarType == "gregorian" ) {
-        return new KCalendarSystemGregorian( locale );
+    if ( calendarType == "indian-national" ) {
+        return new KCalendarSystemIndianNational( locale );
     }
 
     if ( calendarType == "jalali" ) {
         return new KCalendarSystemJalali( locale );
+    }
+
+    if ( calendarType == "julian" ) {
+        return new KCalendarSystemJulian( locale );
     }
 
     // ### HPB: Should it really be a default here?
@@ -57,10 +72,16 @@ QStringList KCalendarSystem::calendarSystems()
 {
     QStringList lst;
 
+    lst.append( "gregorian" );
+    //Do not return in list as we don't want used unless the client absolutely knows what they are doing
+    //This is to prevent interop issues with the "gregorian" being a hybrid Julian/Gregorian, and to prevent
+    //double listing of Gregorian confusing users about which to use.
+    //lst.append( "gregorian-proleptic" );
     lst.append( "hebrew" );
     lst.append( "hijri" );
-    lst.append( "gregorian" );
+    lst.append( "indian-national" );
     lst.append( "jalali" );
+    lst.append( "julian" );
 
     return lst;
 }
@@ -71,6 +92,10 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
         return ki18nc( "@item Calendar system", "Gregorian" ).toString( KGlobal::locale() );
     }
 
+    if ( calendarType == "gregorian-proleptic" ) {
+        return ki18nc( "@item Calendar system", "Gregorian (Proleptic)" ).toString( KGlobal::locale() );
+    }
+
     if ( calendarType == "hebrew" ) {
         return ki18nc( "@item Calendar system", "Hebrew" ).toString( KGlobal::locale() );
     }
@@ -79,8 +104,16 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
         return ki18nc("@item Calendar system", "Hijri").toString( KGlobal::locale());
     }
 
+    if ( calendarType == "indian-national" ) {
+        return ki18nc("@item Calendar system", "Indian National").toString( KGlobal::locale());
+    }
+
     if ( calendarType == "jalali" ) {
         return ki18nc( "@item Calendar system", "Jalali" ).toString( KGlobal::locale() );
+    }
+
+    if ( calendarType == "julian" ) {
+        return ki18nc( "@item Calendar system", "Julian" ).toString( KGlobal::locale() );
     }
 
     return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( KGlobal::locale() );
@@ -111,6 +144,8 @@ public:
     int maxDaysInWeek;
     int maxMonthsInYear;
 
+    bool hasYear0;
+
     const KLocale *locale;
 };
 
@@ -123,18 +158,18 @@ bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int d
     return true;
 }
 
-// Utility to correctly add year numbers together
+// Utility to correctly add year numbers together because some systems such as
 // Julian and Gregorian calendars don't have a year 0
-// In 4.4 will need to check on a Calendar System basis
-// but for 4.3 all current systems do not use year 0
 int KCalendarSystemPrivate::addYearNumber( int originalYear, int addYears ) const
 {
     int newYear = originalYear + addYears;
 
-    if ( originalYear > 0 && newYear <= 0 ) {
-        newYear = newYear - 1;
-    } else if ( originalYear < 0 && newYear >= 0 ) {
-        newYear = newYear + 1;
+    if (!hasYear0) {
+        if ( originalYear > 0 && newYear <= 0 ) {
+            newYear = newYear - 1;
+        } else if ( originalYear < 0 && newYear >= 0 ) {
+            newYear = newYear + 1;
+        }
     }
 
     return newYear;
@@ -164,6 +199,7 @@ KCalendarSystem::KCalendarSystem( const KLocale *locale ) : d( new KCalendarSyst
 {
     setMaxDaysInWeek(7);
     setMaxMonthsInYear(12);
+    setHasYear0(false);
     d->locale = locale;
 }
 
@@ -343,7 +379,7 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
         if ( setDate( firstOfNewMonth, newYear, newMonth, 1 ) ) {
             daysInNewMonth = daysInMonth( firstOfNewMonth );
             newDay = ( daysInNewMonth < originalDay ) ? daysInNewMonth : originalDay;
-            
+
             if ( setDate( newDate, newYear, newMonth, newDay ) ) {
                 return newDate;
             }
@@ -437,15 +473,15 @@ int KCalendarSystem::daysInMonth( const QDate &date ) const
 {
     // Days In Month = jd of first day of next month minus jd of first day of this month
     // Use setAnyDate() to allow correct calculation in last valid year
-    
+
     if ( isValid( date ) ) {
         QDate firstDayOfThisMonth, firstDayOfNextMonth;
 
         int thisYear = year( date );
         int thisMonth = month( date );
-        
+
         setDate( firstDayOfThisMonth, thisYear, thisMonth, 1 );
-        
+
         //check if next month falls in next year
         if ( thisMonth < monthsInYear( date ) ) {
             setDate( firstDayOfNextMonth, thisYear, thisMonth + 1, 1 );
@@ -973,4 +1009,9 @@ void KCalendarSystem::setMaxMonthsInYear( int maxMonths )
 void KCalendarSystem::setMaxDaysInWeek( int maxDays )
 {
     d->maxDaysInWeek = maxDays;
+}
+
+void KCalendarSystem::setHasYear0( bool hasYear0 )
+{
+    d->hasYear0 = hasYear0;
 }

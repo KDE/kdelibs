@@ -698,6 +698,13 @@ protected:
      */
     void setMaxDaysInWeek( int maxDays );
 
+    /**
+    * Sets if Calendar System has Year 0 or not
+    *
+    * Only for internal calendar system use
+    */
+    void setHasYear0( bool hasYear0 );
+
 private:
     Q_DISABLE_COPY( KCalendarSystem )
     KCalendarSystemPrivate * const d;
