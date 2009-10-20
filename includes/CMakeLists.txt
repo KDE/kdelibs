@@ -973,6 +973,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types COMPONENT Devel)
 
 install(FILES
   Plasma/AbstractRunner
+  Plasma/AbstractToolBox
   Plasma/AccessAppletJob
   Plasma/AccessManager
   Plasma/AnimationDriver
