@@ -21,16 +21,17 @@
 
 namespace KNS3
 {
-
+    class AtticaProviderPrivate;
+    
     /**
-     * @short KNewStuff Base Provider class.
+     * @short KNewStuff Attica Provider class.
      *
      * This class provides accessors for the provider object.
      * It should not be used directly by the application.
      * This class is the base class and will be instantiated for
-     * static website providers.
+     * websites that implement the Open Collaboration Services.
      *
-     * @author Jeremy Whiting <jpwhiting@kde.org>
+     * @author Frederik Gladhorn <gladhorn@kde.org>
      *
      * @internal
      */
@@ -42,11 +43,6 @@ namespace KNS3
         AtticaProvider();
 
         ~AtticaProvider();
-
-        
-        virtual KTranslatable name() const;
-
-        KUrl icon() const;
 
         virtual QStringList availableFeeds() const;
 
@@ -63,10 +59,11 @@ namespace KNS3
         
         virtual void loadFeed(const QString& feedname, int page = 0);
 
-        
-       
-    private:
-        class AtticaProviderPrivate *d;
+        protected:
+            AtticaProviderPrivate * const d_ptr;
+            AtticaProvider(AtticaProviderPrivate &dd);
+        private:
+            Q_DECLARE_PRIVATE(AtticaProvider)
     };
 
 }

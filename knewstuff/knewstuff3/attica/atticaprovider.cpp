@@ -19,6 +19,7 @@
 
 #include "xmlloader.h"
 #include "core/feed.h"
+#include "core/provider_p.h"
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -27,44 +28,24 @@
 namespace KNS3
 {
 
-class AtticaProviderPrivate
+class AtticaProviderPrivate :public ProviderPrivate
 {
 public:
-    AtticaProviderPrivate() {}
-
-    KTranslatable mName;
-    // map of download urls to their feed name
-    QMap<QString, KUrl> mDownloadUrls;
-    KUrl mUploadUrl;
-    KUrl mNoUploadUrl;
-    KUrl mIcon;
-    // cache of all entries known from this provider so far, mapped by their id
-    QMap<QString, Entry*> mEntries;
-    QMap<QString, Feed*> mFeeds;
-
+    AtticaProviderPrivate()
+    {}
 };
 
 AtticaProvider::AtticaProvider()
-        : d(new AtticaProviderPrivate)
+    : d_ptr(new AtticaProviderPrivate)
 {
+    // TODO
+    Q_D(AtticaProvider);
+    d->mName = KTranslatable("Attica");
 }
 
 AtticaProvider::~AtticaProvider()
 {
-    delete d;
-}
-
-
-KTranslatable AtticaProvider::name() const
-{
-    // FIXME
-    return KTranslatable("Attica");
-}
-
-KUrl AtticaProvider::icon() const
-{
-    // FIXME
-    return KUrl();
+    // d_ptr is deleted in base class!
 }
 
 QStringList AtticaProvider::availableFeeds() const
@@ -80,114 +61,21 @@ void AtticaProvider::loadFeed(const QString& feedname, int page)
 
 bool AtticaProvider::setProviderXML(QDomElement & xmldata)
 {
+    Q_D(AtticaProvider);
     kDebug(550) << "setting provider xml";
 
     if (xmldata.tagName() != "provider")
         return false;
-
-    d->mUploadUrl = xmldata.attribute("uploadurl");
-    d->mNoUploadUrl = xmldata.attribute("nouploadurl");
-
-    QString downloadurl = xmldata.attribute("downloadurl");
-    QString downloadlatest = xmldata.attribute("downloadurl-latest");
-    QString downloadscore = xmldata.attribute("downloadurl-score");
-    QString downloaddownloads = xmldata.attribute("downloadurl-downloads");
-
-    if (!downloadlatest.isEmpty()) {
-        Feed *feedlatest = new Feed();
-        feedlatest->setName(i18nc("describes the feed of the latest posted entries", "Latest"));
-        feedlatest->setFeedUrl(downloadlatest);
-        d->mFeeds.insert("latest", feedlatest);
-    }
-    if (!downloadscore.isEmpty()) {
-        Feed *feedscore = new Feed();
-        feedscore->setName(i18n("Highest Rated"));
-        feedscore->setFeedUrl(downloadscore);
-        d->mFeeds.insert("score", feedscore);
-    }
-    if (!downloaddownloads.isEmpty()) {
-        Feed *feeddownloads = new Feed();
-        feeddownloads->setName(i18n("Most Downloads"));
-        feeddownloads->setFeedUrl(downloaddownloads);
-        d->mFeeds.insert("downloads", feeddownloads);
-    }
-    if (!downloadurl.isEmpty()) {
-        Feed *feedgeneric = new Feed();
-        // feedgeneric->setName(i18n("Unsorted"));
-        // Currently this is used for latest
-        feedgeneric->setName(i18nc("describes the feed of the latest posted entries", "Latest"));
-        feedgeneric->setFeedUrl(downloadurl);
-        d->mFeeds.insert(QString(), feedgeneric);
-    }
-
-    // FIXME: what exactly is the following condition supposed to do?
-    // FIXME: make sure new KUrl in KDE 4 handles this right
-    // FIXME: this depends on freedesktop.org icon naming... introduce 'desktopicon'?
-    KUrl iconurl(xmldata.attribute("icon"));
-    if (!iconurl.isValid())
-        iconurl.setPath(xmldata.attribute("icon"));
-    d->mIcon = iconurl;
-
-    QDomNode n;
-    for (n = xmldata.firstChild(); !n.isNull(); n = n.nextSibling()) {
-        QDomElement e = n.toElement();
-        if (e.tagName() == "title") {
-            QString lang = e.attribute("lang");
-            d->mName.addString(lang, e.text().trimmed());
-        }
-    }
-
-    // Validation
-
-    if ((d->mNoUploadUrl.isValid()) && (d->mUploadUrl.isValid())) {
-        kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given";
-        return false;
-    }
-
-    if ((!d->mNoUploadUrl.isValid()) && (!d->mUploadUrl.isValid())) {
-        kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl given";
-        return false;
-    }
 
     return true;
 }
 
 QDomElement AtticaProvider::providerXML() const
 {
+    Q_D(const AtticaProvider);
     QDomDocument doc;
 
     QDomElement el = doc.createElement("provider");
-
-    QStringList::ConstIterator it;
-    QDomElement e;
-    const QStringList langs = d->mName.languages();
-    for (it = langs.begin(); it != langs.end(); ++it) {
-        e = addElement(doc, el, "title", d->mName.translated(*it));
-        e.setAttribute("lang", *it);
-    }
-
-    /*if(provider.downloadUrl().isValid())
-    {
-      el.setAttribute("downloadurl", provider.downloadUrl().url());
-    }*/
-    if (d->mUploadUrl.isValid()) {
-        el.setAttribute("uploadurl", d->mUploadUrl.url());
-    }
-    if (d->mNoUploadUrl.isValid()) {
-        el.setAttribute("nouploadurl", d->mNoUploadUrl.url());
-    }
-    if (d->mIcon.isValid()) {
-        el.setAttribute("icon", d->mIcon.url());
-    }
-
-    const QStringList feeds = d->mFeeds.keys();
-    for (QStringList::ConstIterator it = feeds.begin(); it != feeds.end(); ++it) {
-        Feed *feed = d->mFeeds.value((*it));
-        if ((*it).isEmpty())
-            el.setAttribute("downloadurl", feed->feedUrl().url());
-        else
-            el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
-    }
 
     return el;
 }
