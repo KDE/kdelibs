@@ -37,6 +37,8 @@ public:
     AtticaProviderPrivate()
     {    
     }
+
+    Attica::ProviderManager m_providerManager;
     
 };
 
@@ -46,22 +48,13 @@ AtticaProvider::AtticaProvider()
     // TODO
     Q_D(AtticaProvider);
     d->mName = KTranslatable("Attica");
+
+    connect(&d->m_providerManager, SIGNAL(providersChanged()), SLOT(providerLoaded()));
 }
 
 AtticaProvider::~AtticaProvider()
 {
     // d_ptr is deleted in base class!
-}
-
-QStringList AtticaProvider::availableFeeds() const
-{
-    // FIXME
-    return QStringList();
-}
-
-void AtticaProvider::loadFeed(const QString& feedname, int page)
-{
-
 }
 
 bool AtticaProvider::setProviderXML(QDomElement & xmldata)
@@ -86,6 +79,18 @@ QDomElement AtticaProvider::providerXML() const
 
     return el;
 }
+
+void providerLoaded()
+{
+
+}
+
+QStringList AtticaProvider::availableFeeds() const
+{
+    // FIXME
+    return QStringList();
+}
+
 }
 
 #include "atticaprovider.moc"

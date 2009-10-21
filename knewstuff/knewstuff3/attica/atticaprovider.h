@@ -57,7 +57,7 @@ namespace KNS3
         virtual QDomElement providerXML() const;
 
         
-        virtual void loadFeed(const QString& feedname, int page = 0);
+        virtual void loadFeed(const QString& feedname, int page = 0) {}
 
         protected:
             AtticaProviderPrivate * const d_ptr;

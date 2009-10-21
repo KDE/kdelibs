@@ -234,6 +234,8 @@ public:
 
     // FIXME: below here, everything under consideration
 
+    QString providerId() const;
+    void setProviderId(const QString& id);
 
     /**
      * set the xml for the entry

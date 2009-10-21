@@ -66,6 +66,18 @@ void Entry::setUniqueId(const QString& id)
     d->mUniqueId = id;
 }
 
+QString Entry::providerId() const
+{
+    Q_D(const Entry);
+    return d->mProviderId;
+}
+
+void Entry::setProviderId(const QString& id)
+{
+    Q_D(Entry);
+    d->mProviderId = id;
+}
+
 QString Entry::category() const
 {
     Q_D(const Entry);

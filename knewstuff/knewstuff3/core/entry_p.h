@@ -55,6 +55,7 @@ class EntryPrivate {
         KTranslatable mPreview;
         QStringList mInstalledFiles;
         QString mUniqueId;
+        QString mProviderId;
         QStringList mUnInstalledFiles;
         
         QString mChecksum;

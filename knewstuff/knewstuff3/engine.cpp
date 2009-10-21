@@ -94,7 +94,7 @@ bool Engine::init(const QString &configfile)
     KConfigGroup group = conf.group("KNewStuff2");
     m_providersurl = group.readEntry("ProvidersUrl", QString());
     //m_componentname = group.readEntry("ComponentName", QString());
-    m_componentname = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
+    m_applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
 
     // FIXME: add support for several categories later on
     // FIXME: read out only when actually installing as a performance improvement?
@@ -206,7 +206,7 @@ QString Engine::componentName() const
         return QString();
     }
 
-    return m_componentname;
+    return m_applicationName;
 }
 
 
@@ -604,9 +604,9 @@ void Engine::loadRegistry()
 {
     KStandardDirs d;
 
-    kDebug() << "Loading registry of files for the component: " << m_componentname;
+    kDebug() << "Loading registry of files for the component: " << m_applicationName;
 
-    QString realAppName = m_componentname.split(':')[0];
+    QString realAppName = m_applicationName.split(':')[0];
 
     // this must be same as in registerEntry()
     const QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
@@ -695,7 +695,7 @@ void Engine::loadProvidersCache()
     KStandardDirs d;
 
     // use the componentname so we get the cache specific to this knsrc (kanagram, wallpaper, etc.)
-    QString cachefile = d.findResource("cache", m_componentname + "kns2providers.cache.xml");
+    QString cachefile = d.findResource("cache", m_applicationName + "kns2providers.cache.xml");
     if (cachefile.isEmpty()) {
         kDebug() << "Cache not present, skip loading.";
         return;
@@ -769,7 +769,7 @@ void Engine::loadFeedCache(Provider *provider)
 
     kDebug() << "Loading feed cache.";
 
-    QStringList cachedirs = d.findDirs("cache", m_componentname + "kns2feeds.cache");
+    QStringList cachedirs = d.findDirs("cache", m_applicationName + "kns2feeds.cache");
     if (cachedirs.size() == 0) {
         kDebug() << "Cache directory not present, skip loading.";
         return;
@@ -1161,7 +1161,7 @@ void Engine::cacheProvider(Provider *provider)
     kDebug() << "Caching provider.";
 
     QString cachedir = d.saveLocation("cache");
-    QString cachefile = cachedir + m_componentname + "kns2providers.cache.xml";
+    QString cachefile = cachedir + m_applicationName + "kns2providers.cache.xml";
 
     kDebug() << " + Save to file '" + cachefile + "'.";
 
@@ -1333,7 +1333,7 @@ QString Engine::id(Entry *e)
     // This is the primary key of an entry:
     // A lookup on the name, which must exist but might be translated
     // This requires some care for comparison since translations might be added
-    return m_componentname + e->name().language() + ':' + e->name().representation();
+    return m_applicationName + e->name().language() + ':' + e->name().representation();
 }
 
 QString Engine::pid(const Provider *p)
@@ -1352,7 +1352,7 @@ QString Engine::pid(const Provider *p)
     }
     //if (p->webService().isValid())
     //    return m_componentname + p->webService().url();
-    return m_componentname;
+    return m_applicationName;
 }
 
 bool Engine::install(const QString &payloadfile)

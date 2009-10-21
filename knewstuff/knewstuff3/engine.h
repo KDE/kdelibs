@@ -332,7 +332,9 @@ private:
     Provider *m_uploadprovider;
 
     QString m_providersurl;
-    QString m_componentname;
+
+    // the name of the app that uses hot new stuff
+    QString m_applicationName;
 
     QMap<Entry*, QString> m_previewfiles;
     QMap<Entry*, QString> m_payloadfiles;
