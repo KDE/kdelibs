@@ -227,13 +227,21 @@ Transitions transitions( const TIME_ZONE_INFORMATION & tz, int year ) {
 static const int MAX_KEY_LENGTH = 255;
 
 // TCHAR can be either uchar, or wchar_t:
-static inline QString tchar_to_qstring( TCHAR * ustr ) {
-    const char * str = reinterpret_cast<const char*>( ustr );
-    return QString::fromLocal8Bit( str );
-}
-static inline QString tchar_to_qstring( const wchar_t * str ) {
+#ifdef UNICODE
+static inline QString tchar_to_qstring( const TCHAR * str ) {
     return QString::fromWCharArray( str );
 }
+static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
+    return str.toStdWString();
+}
+#else
+static inline QString tchar_to_qstring( const TCHAR * ustr ) {
+    return QString::fromLocal8Bit( str );
+}
+static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
+    return std::basic_string<TCHAR>( str.toLocal8Bit().constData() );
+}
+#endif
 
 static QStringList list_key( HKEY key ) {
 
@@ -267,7 +275,7 @@ static QStringList list_standard_names()
     Q_FOREACH( const QString & keyname, keys ) {
 	
         std::basic_string<TCHAR> keypath(path);
-        keypath	+= keyname.toLocal8Bit().data();
+        keypath	+= qstring_to_tcharstring(keyname);
 	HKEY key;
 	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
 	    return standardNames; // FIXME what's the right error handling here?
@@ -297,7 +305,7 @@ static std::basic_string<TCHAR> pathFromZoneName(const KTimeZone& zone)
     Q_FOREACH( const QString & keyname, keys ) {
 	
         std::basic_string<TCHAR> keypath(path);
-        keypath	+= keyname.toLocal8Bit().data();
+        keypath	+= qstring_to_tcharstring(keyname);
 	HKEY key;
 	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
 	    return 0; // FIXME what's the right error handling here?
