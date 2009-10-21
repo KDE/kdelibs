@@ -335,7 +335,7 @@ public:
     //int idNumber() const;
 protected:
     EntryPrivate* const d_ptr;
-    Entry(EntryPrivate &dd, QObject *parent);
+    Entry(EntryPrivate &dd);
 private:
     Q_DECLARE_PRIVATE(Entry);
 };

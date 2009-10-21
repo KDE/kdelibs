@@ -19,6 +19,7 @@
 */
 
 #include "provider.h"
+#include "knewstuff3/core/provider_p.h"
 
 #include "xmlloader.h"
 #include "core/feed.h"
@@ -29,9 +30,32 @@
 
 namespace KNS3
 {
-Provider::Provider() {}
 
-Provider::~Provider() {}
+Provider::Provider()
+    :d_ptr(new ProviderPrivate)
+{}
+
+Provider::~Provider()
+{
+    delete d_ptr;
+}
+
+Provider::Provider(ProviderPrivate &dd)
+    : d_ptr(&dd)
+{
+}
+    
+KTranslatable Provider::name() const
+{
+    Q_D(const Provider);
+    return d->mName;
+}
+
+KUrl Provider::icon() const
+{
+    Q_D(const Provider);
+    return d->mIcon;
+}
 
 }
 

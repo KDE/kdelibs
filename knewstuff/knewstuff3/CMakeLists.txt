@@ -9,6 +9,7 @@ set(knewstuff3_core_SRCS
    core/author.cpp
    core/category.cpp
    core/entry.cpp
+   core/provider.cpp
    core/feed.cpp
    core/installation.cpp
    core/security.cpp

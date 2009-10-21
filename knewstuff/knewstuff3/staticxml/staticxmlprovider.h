@@ -23,7 +23,8 @@
 
 namespace KNS3
 {
-
+    class StaticXmlProviderPrivate;
+    
     /**
      * @short KNewStuff Base Provider class.
      *
@@ -61,24 +62,10 @@ namespace KNS3
          */
         virtual QDomElement providerXML() const;
 
-        /**
-         * Retrieves the common name of the provider.
-         *
-         * @return provider name
-         */
-        virtual KTranslatable name() const;
-
-        /**
-         * Retrieves the icon URL for this provider.
-         *
-         * @return icon URL
-         */
-        KUrl icon() const;
-
         virtual bool hasFeeds() const { return true; }
         virtual QStringList availableFeeds() const;
         
-        /*
+        /**
          * load the given feed and given page
          * @param feedname String name of the feed to load, as returned from availableFeeds()
          * @param page     page number to load
@@ -87,39 +74,11 @@ namespace KNS3
          */
         virtual void loadFeed(const QString & feedname, int page = 0);
 
-        virtual bool hasSearch() const { return false; }
-
-        /*
-         * load the given search and return given page
-         * @param searchstring string to search with
-         * @param page         page number to load
-         *
-         * Note: the engine connects to searchResults() signal to get the result
-         */
-        virtual void loadSearch(const QString & searchstring, int page = 0) {}
-
-        virtual bool hasCommenting() const { return false; }
-        virtual void getComments(Entry *, int page = 0) {}
-        virtual void addComment(Entry*, const QString & comment) {}
-
-        virtual bool hasRatings() const { return false; }
-        virtual void getRating(Entry*) {}
-        virtual void setRating(Entry*, int) {}
-
-    signals:
-        void feedLoaded(QString feedname, int page, int totalpages, Entry::List);
-        void searchResults(QString searchstring, int page, int totalpages, Entry::List);
-
-        void comments(Entry *, int page, int totalpages);
-        void commentAdded(Entry *);
-        void commentAddFailed(Entry *);
-
-        void entryRating(Entry*, int rating);
-        void ratingSet(Entry*);
-        void ratingSetFailed(Entry *);
-
     protected:
-        class StaticXmlProviderPrivate *d;
+        StaticXmlProviderPrivate * const d_ptr;
+        StaticXmlProvider(StaticXmlProviderPrivate &dd);
+    private:
+        Q_DECLARE_PRIVATE(StaticXmlProvider)
     };
 
 }

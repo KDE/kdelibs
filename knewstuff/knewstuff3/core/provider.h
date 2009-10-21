@@ -29,7 +29,8 @@
 
 namespace KNS3
 {
-
+    class ProviderPrivate;
+    
     /**
      * @short KNewStuff Base Provider class.
      *
@@ -72,19 +73,19 @@ namespace KNS3
          *
          * @return provider name
          */
-        virtual KTranslatable name() const = 0;
+        virtual KTranslatable name() const;
 
         /**
          * Retrieves the icon URL for this provider.
          *
          * @return icon URL
          */
-        virtual KUrl icon() const = 0; // FIXME use KIcon or pixmap?
+        virtual KUrl icon() const; // FIXME use KIcon or pixmap?
 
         virtual bool hasFeeds() const { return true; }
         virtual QStringList availableFeeds() const = 0;
         
-        /*
+        /**
          * load the given feed and given page
          * @param feedname String name of the feed to load, as returned from availableFeeds()
          * @param page     page number to load
@@ -95,18 +96,18 @@ namespace KNS3
 
         virtual bool hasSearch() const { return false; }
 
-        /*
+        /**
          * load the given search and return given page
          * @param searchstring string to search with
          * @param page         page number to load
          *
          * Note: the engine connects to searchResults() signal to get the result
          */
-        virtual void loadSearch(const QString & searchstring, int page = 0) {}
+        virtual void loadSearch(const QString & searchstring, int page = 0) { Q_UNUSED(searchstring) Q_UNUSED(page) }
 
         virtual bool hasCommenting() const { return false; }
-        virtual void getComments(Entry *, int page = 0) {}
-        virtual void addComment(Entry*, const QString & comment) {}
+        virtual void getComments(Entry *, int page = 0) { Q_UNUSED(page) }
+        virtual void addComment(Entry*, const QString & comment) { Q_UNUSED(comment) }
 
         virtual bool hasRatings() const { return false; }
         virtual void getRating(Entry*) {}
@@ -123,10 +124,12 @@ namespace KNS3
         void entryRating(Entry*, int rating);
         void ratingSet(Entry*);
         void ratingSetFailed(Entry *);
-
+        
     protected:
-        // in case we want to introduce a d-ptr later
-        class ProviderPrivate *d;
+        ProviderPrivate * const d_ptr;
+        Provider(ProviderPrivate &dd);
+    private:
+        Q_DECLARE_PRIVATE(Provider)
     };
 
 }

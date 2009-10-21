@@ -22,6 +22,7 @@
 
 #include "xmlloader.h"
 #include "core/feed.h"
+#include "knewstuff3/core/provider_p.h"
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -30,17 +31,16 @@
 namespace KNS3
 {
 
-class StaticXmlProviderPrivate
+class StaticXmlProviderPrivate :public ProviderPrivate
 {
 public:
     StaticXmlProviderPrivate() {}
 
-    KTranslatable mName;
     // map of download urls to their feed name
     QMap<QString, KUrl> mDownloadUrls;
     KUrl mUploadUrl;
     KUrl mNoUploadUrl;
-    KUrl mIcon;
+    
     // cache of all entries known from this provider so far, mapped by their id
     QMap<QString, Entry*> mEntries;
     QMap<QString, Feed*> mFeeds;
@@ -48,17 +48,18 @@ public:
 };
 
 StaticXmlProvider::StaticXmlProvider()
-        : d(new StaticXmlProviderPrivate)
+    : d_ptr(new StaticXmlProviderPrivate)
 {
 }
 
 StaticXmlProvider::~StaticXmlProvider()
 {
-    delete d;
+    // d_ptr is deleted in base class!
 }
 
 bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
 {
+    Q_D(StaticXmlProvider);
     kDebug(550) << "setting provider xml";
 
     if (xmldata.tagName() != "provider")
@@ -133,6 +134,7 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
 
 QDomElement StaticXmlProvider::providerXML() const
 {
+    Q_D(const StaticXmlProvider);
     QDomDocument doc;
 
     QDomElement el = doc.createElement("provider");
@@ -171,23 +173,17 @@ QDomElement StaticXmlProvider::providerXML() const
     return el;
 }
 
-KTranslatable StaticXmlProvider::name() const
-{
-    return d->mName;
-}
-
-KUrl StaticXmlProvider::icon() const
-{
-    return d->mIcon;
-}
-
 QStringList StaticXmlProvider::availableFeeds() const
 {
+    Q_D(const StaticXmlProvider);
     return d->mFeeds.keys();
 }
 
 void StaticXmlProvider::loadFeed(const QString & feedname, int page)
 {
+    // FIXME
+    Q_UNUSED(feedname)
+    Q_UNUSED(page)
 }
 
 }
