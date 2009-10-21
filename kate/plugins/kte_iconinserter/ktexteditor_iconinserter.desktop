@@ -1,0 +1,20 @@
+[Desktop Entry]
+Type=Service
+Comment=Select an icon and use it as a KIcon in your source-code
+Name=IconInserter
+GenericName=Insert Code for KIcon-Creation
+Icon=kcoloredit
+ServiceTypes=KTextEditor/Plugin
+X-KDE-ServiceTypes=KTextEditor/Plugin
+X-KDE-Library=ktexteditor_iconinserter
+X-KDE-PluginKeyword=ktexteditor_iconinserter
+X-KDE-PluginInfo-Name=kdeviconinserter
+X-KDE-PluginInfo-Author=Jonathan Schmidt-Dominé (The User)
+X-KDE-PluginInfo-Email=devel@the-user.org
+X-KDE-PluginInfo-Website=the-user.org
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-Category=Editor
+X-KDE-ParentApp=kate
+X-KDE-Version=4.0
