@@ -25,6 +25,9 @@
 #include <klocale.h>
 #include <kio/job.h>
 
+#include <attica/providermanager.h>
+#include <attica/provider.h>
+
 namespace KNS3
 {
 
@@ -32,7 +35,9 @@ class AtticaProviderPrivate :public ProviderPrivate
 {
 public:
     AtticaProviderPrivate()
-    {}
+    {    
+    }
+    
 };
 
 AtticaProvider::AtticaProvider()
@@ -66,6 +71,8 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
 
     if (xmldata.tagName() != "provider")
         return false;
+    
+    
 
     return true;
 }
