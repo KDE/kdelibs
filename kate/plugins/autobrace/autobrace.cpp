@@ -75,7 +75,6 @@ void AutoBracePlugin::removeView(KTextEditor::View *view)
     }
 }
 
-
 AutoBracePluginDocument::AutoBracePluginDocument(KTextEditor::Document *document)
   : QObject(document), m_insertionLine(0)
 {
@@ -164,9 +163,6 @@ void AutoBracePluginDocument::slotTextInserted(KTextEditor::Document *document,
     }
 }
 
-/**
- *
- */
 bool AutoBracePluginDocument::isInsertionCandidate(KTextEditor::Document *document, int openingBraceLine) {
     QString line = document->line(openingBraceLine);
     if (line.isEmpty() || !line.endsWith('{')) {
