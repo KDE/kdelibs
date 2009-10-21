@@ -62,6 +62,8 @@ install(FILES
   core/category.h
   core/ktranslatable.h
   core/installation.h
+  core/provider.h
+  core/entry.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/core COMPONENT Devel
 )
 
@@ -74,6 +76,7 @@ install(FILES
 
 install(FILES
   client.h
+  engine.h
   knewstuff_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )

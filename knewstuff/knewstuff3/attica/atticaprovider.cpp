@@ -39,7 +39,6 @@ public:
     }
 
     Attica::ProviderManager m_providerManager;
-    
 };
 
 AtticaProvider::AtticaProvider()
@@ -65,7 +64,9 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
     if (xmldata.tagName() != "provider")
         return false;
     
-    
+    QDomDocument doc;
+    doc.appendChild(xmldata);
+    d->m_providerManager.addProviderFromXml(doc.toString());
 
     return true;
 }
