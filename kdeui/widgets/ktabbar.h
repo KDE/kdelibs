@@ -135,18 +135,33 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
     int selectTab( const QPoint &position ) const;
 
   Q_SIGNALS:
-    /** Emitted when the user right-clicks a tab. */
-    void contextMenu( int, const QPoint& );
-    /** Emitted when the user right-clicks the empty area on the tab bar. */
-    void emptyAreaContextMenu( const QPoint& );
+    /**
+     * A right mouse button click was performed over the tab with the @param index.
+     * The signal is emitted on the press of the mouse button.
+     */
+    void contextMenu( int index, const QPoint& globalPos );
+    /**
+     * A right mouse button click was performed over the empty area on the tab bar.
+     * The signal is emitted on the press of the mouse button.
+     */
+    void emptyAreaContextMenu( const QPoint& globalPos );
     /** @deprecated use tabDoubleClicked(int) and newTabRequest() instead. */
     QT_MOC_COMPAT void mouseDoubleClick( int );
-    /** Emitted when a tab has been double-clicked. */
-    void tabDoubleClicked( int );
-    /** Emitted when the user double-clicks the empty area on the tab bar. */
+    /**
+     * A double left mouse button click was performed over the tab with the @param index.
+     * The signal is emitted on the second press of the mouse button, before the release.
+     */
+    void tabDoubleClicked( int index );
+    /**
+     * A double left mouse button click was performed over the empty area on the tab bar.
+     * The signal is emitted on the second press of the mouse button, before the release.
+     */
     void newTabRequest();
-    /** Emitted when a tab has been middle-clicked. */
-    void mouseMiddleClick( int );
+    /**
+     * A double middle mouse button click was performed over the tab with the @param index.
+     * The signal is emitted on the release of the mouse button.
+     */
+    void mouseMiddleClick( int index );
     void initiateDrag( int );
     void testCanDecode( const QDragMoveEvent*, bool& );
     void receivedDropEvent( int, QDropEvent* );
