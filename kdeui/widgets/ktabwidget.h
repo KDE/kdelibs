@@ -325,6 +325,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
   protected:
     virtual void mouseDoubleClickEvent( QMouseEvent* );
     virtual void mousePressEvent( QMouseEvent* );
+    virtual void mouseReleaseEvent( QMouseEvent* );
     virtual void dragEnterEvent( QDragEnterEvent* );
     virtual void dragMoveEvent( QDragMoveEvent* );
     virtual void dropEvent( QDropEvent* );
