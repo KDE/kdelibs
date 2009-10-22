@@ -843,9 +843,9 @@ KTimeZone KTimeZone::utc()
 
 QDateTime KTimeZone::fromTime_t(time_t t)
 {
-    const int secondsADay = 86400;
-    static QDate epochDate(1970,1,1);
-    static QTime epochTime(0,0,0);
+    static const int secondsADay = 86400;
+    static const QDate epochDate(1970,1,1);
+    static const QTime epochTime(0,0,0);
     int days = t / secondsADay;
     int secs;
     if (t >= 0)
@@ -860,8 +860,8 @@ QDateTime KTimeZone::fromTime_t(time_t t)
 
 time_t KTimeZone::toTime_t(const QDateTime &utcDateTime)
 {
-    static QDate epochDate(1970,1,1);
-    static QTime epochTime(0,0,0);
+    static const QDate epochDate(1970,1,1);
+    static const QTime epochTime(0,0,0);
     if (utcDateTime.timeSpec() != Qt::UTC)
         return InvalidTime_t;
     qint64 days = epochDate.daysTo(utcDateTime.date());

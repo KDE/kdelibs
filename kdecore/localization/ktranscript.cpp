@@ -1226,8 +1226,8 @@ JSValue *Scriptface::setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, 
 
 static QString toCaseFirst (const QString &qstr, int qnalt, bool toupper)
 {
-    static QString head("~@");
-    static int hlen = head.length();
+    static const QString head("~@");
+    static const int hlen = head.length();
 
     // If the first letter is found within an alternatives directive,
     // change case of the first letter in each of the alternatives.
