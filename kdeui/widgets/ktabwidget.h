@@ -298,21 +298,25 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
 
     /**
      * A double left mouse button click was performed over empty space besides tabbar.
+     * The signal is emitted on the second press of the mouse button, before the release.
      */
     void mouseDoubleClick();
 
     /**
      * A double left mouse button click was performed over the widget.
+     * The signal is emitted on the second press of the mouse button, before the release.
      */
     void mouseDoubleClick( QWidget * );
 
     /**
      * A middle mouse button click was performed over empty space besides tabbar.
+     * The signal is emitted on the release of the mouse button.
      */
     void mouseMiddleClick();
 
     /**
      * A middle mouse button click was performed over the widget.
+     * The signal is emitted on the release of the mouse button.
      */
     void mouseMiddleClick( QWidget * );
 
