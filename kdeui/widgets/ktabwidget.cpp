@@ -504,14 +504,21 @@ void KTabWidget::mousePressEvent( QMouseEvent *event )
       emit( contextMenu( mapToGlobal( event->pos() ) ) );
       return;
     }
-  } else if ( event->button() == Qt::MidButton ) {
+  }
+
+  QTabWidget::mousePressEvent( event );
+}
+
+void KTabWidget::mouseReleaseEvent( QMouseEvent *event )
+{
+  if ( event->button() == Qt::MidButton ) {
     if ( d->isEmptyTabbarSpace( event->pos() ) ) {
       emit( mouseMiddleClick() );
       return;
     }
   }
 
-  QTabWidget::mousePressEvent( event );
+  QTabWidget::mouseReleaseEvent( event );
 }
 
 void KTabWidget::receivedDropEvent( int index, QDropEvent *event )
