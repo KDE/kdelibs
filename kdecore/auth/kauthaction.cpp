@@ -52,8 +52,7 @@ Action::Action()
 Action::Action(const Action &action)
         : d(new Private())
 {
-    setName(action.d->name);
-    d->args = action.d->args;
+    *this = action;
 }
 
 Action::Action(const QString &name)

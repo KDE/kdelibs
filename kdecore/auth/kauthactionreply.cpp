@@ -48,10 +48,7 @@ const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusErr
 ActionReply::ActionReply(const ActionReply &reply)
         : d(new Private())
 {
-    d->data = reply.d->data;
-    d->errorCode = reply.d->errorCode;
-    d->errorDescription = reply.d->errorDescription;
-    d->type = reply.d->type;
+    *this = reply;
 }
 
 ActionReply::ActionReply()
