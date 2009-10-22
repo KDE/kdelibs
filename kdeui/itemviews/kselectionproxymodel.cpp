@@ -256,10 +256,8 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
-#if QT_VERSION >= 0x040600
   Q_Q(KSelectionProxyModel);
   q->beginResetModel();
-#endif
 }
 
 void KSelectionProxyModelPrivate::sourceModelReset()
@@ -277,11 +275,7 @@ void KSelectionProxyModelPrivate::sourceModelReset()
     emit q->rootIndexAboutToBeRemoved(*it);
     it = m_rootIndexList.erase(it);
   }
-#if QT_VERSION >= 0x040600
   q->endResetModel();
-#else
-  q->reset();
-#endif
 }
 
 QPair<int, int> KSelectionProxyModelPrivate::getRootRange(const QModelIndex &sourceParent, int start, int end) const
