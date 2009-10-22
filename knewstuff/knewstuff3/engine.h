@@ -37,6 +37,7 @@ namespace KNS3
 {
 
 class Installation;
+class EnginePrivate;
 
 /**
  * KNewStuff engine.
@@ -260,7 +261,7 @@ Q_SIGNALS:
 protected:
     //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
-    void slotProvidersLoaded(const QDomDocument& doc);
+    void slotProviderFileLoaded(const QDomDocument& doc);
     void slotProvidersFailed();
 
     void slotEntriesLoaded(KNS3::Entry::List list);
@@ -277,7 +278,13 @@ private Q_SLOTS:
 
     void slotInstallationVerification(int result);
 
+protected:
+    EnginePrivate * const d_ptr;
+    Engine(EnginePrivate &dd);
+        
 private:
+    Q_DECLARE_PRIVATE(Engine);
+    
     /*
      * load providers from the providersurl in the knsrc file
      * creates providers based on their type and adds them to the list of providers
@@ -317,8 +324,6 @@ private:
     QString id(Entry *e);
     QString pid(const Provider *p);
 
-    QList<Provider*> m_provider_cache;
-
     // holds all the entries
     QList<Entry*> m_entry_cache;
 
@@ -331,7 +336,6 @@ private:
     Entry *m_uploadedentry;
     Provider *m_uploadprovider;
 
-    QString m_providersurl;
 
     // the name of the app that uses hot new stuff
     QString m_applicationName;

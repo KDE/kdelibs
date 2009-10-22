@@ -105,6 +105,8 @@ namespace KNS3
         virtual void setRating(Entry*, int) {}
 
     signals:
+        void providerAvailable(KNS3::Provider*);
+            
         void loadingFinished(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
 
         void comments(Entry *, int page, int pageSize, int totalpages);

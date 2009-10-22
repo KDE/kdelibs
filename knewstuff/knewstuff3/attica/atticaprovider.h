@@ -62,9 +62,10 @@ namespace KNS3
 
         virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
 
-
     private Q_SLOTS:
         void categoryContentsLoaded(Attica::BaseJob* job);
+        void providerLoaded();
+
         
     private:
         Attica::Provider::SortMode sortModeFromString(const QString& sortString);

@@ -55,21 +55,36 @@
 #include "attica/atticaprovider.h"
 #include "staticxml/staticxmlprovider.h"
 
+class KNS3::EnginePrivate {
+    public:
+        QList<Provider*> m_providers;
+        QString m_providerFileUrl;
+        
+};
+
 using namespace KNS3;
 
 Engine::Engine(QObject* parent)
-        : QObject(parent), m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
+        : QObject(parent), d_ptr(new EnginePrivate)
+        , m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
         m_initialized(false), m_cachepolicy(CacheNever)
+{
+}
+
+Engine::Engine(EnginePrivate &dd)
+: d_ptr(&dd)
 {
 }
 
 Engine::~Engine()
 {
     shutdown();
+    delete d_ptr;
 }
 
 bool Engine::init(const QString &configfile)
 {
+    Q_D(Engine);
     kDebug() << "Initializing KNS::Engine from '" << configfile << "'";
 
     KConfig conf(configfile);
@@ -92,7 +107,7 @@ bool Engine::init(const QString &configfile)
     }
 
     KConfigGroup group = conf.group("KNewStuff2");
-    m_providersurl = group.readEntry("ProvidersUrl", QString());
+    d->m_providerFileUrl = group.readEntry("ProvidersUrl", QString());
     //m_componentname = group.readEntry("ComponentName", QString());
     m_applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
 
@@ -209,16 +224,16 @@ QString Engine::componentName() const
     return m_applicationName;
 }
 
-
 void Engine::loadProviders()
 {
-    kDebug(550) << "loading providers from " << m_providersurl;
+    Q_D(Engine);
+    kDebug(550) << "loading providers from " << d->m_providerFileUrl;
 
     XmlLoader * loader = new XmlLoader(this);
-    connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProvidersLoaded(const QDomDocument&)));
+    connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProviderFileLoaded(const QDomDocument&)));
     connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
-    loader->load(KUrl(m_providersurl));
+    loader->load(KUrl(d->m_providerFileUrl));
 }
 
 //void Engine::loadEntries(Provider *provider)
@@ -363,8 +378,9 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
     return true;
 }
 
-void Engine::slotProvidersLoaded(const QDomDocument& doc)
+void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 {
+    Q_D(Engine);
     kDebug() << "slotProvidersLoaded";
 
     // get each provider element, and create a provider object from it
@@ -382,15 +398,16 @@ void Engine::slotProvidersLoaded(const QDomDocument& doc)
         QDomElement p = n.toElement();
 
         if (p.tagName() == "provider") {
+            kDebug() << "Provider attributes: " << p.attribute("type");
             if (p.attribute("type") == "rest") {
                 AtticaProvider *provider = new AtticaProvider;
                 if (provider->setProviderXML(p)) {
-                    m_provider_cache.append(provider);
+                    d->m_providers.append(provider);
                 }
             } else {
                 StaticXmlProvider * provider = new StaticXmlProvider;
                 if (provider->setProviderXML(p)) {
-                    m_provider_cache.append(provider);
+                    d->m_providers.append(provider);
                 }
             }
         }
@@ -942,20 +959,22 @@ void Engine::loadEntriesCache()
 
 void Engine::shutdown()
 {
+    Q_D(Engine);
     m_entry_index.clear();
     m_provider_index.clear();
 
     qDeleteAll(m_entry_cache);
-    qDeleteAll(m_provider_cache);
+    qDeleteAll(d->m_providers);
 
     m_entry_cache.clear();
-    m_provider_cache.clear();
+    d->m_providers.clear();
 
     delete m_installation;
 }
 
 bool Engine::providerCached(Provider *provider)
 {
+    Q_D(Engine);
     if (m_cachepolicy == CacheNever) return false;
 
     if (m_provider_index.contains(pid(provider)))
@@ -965,6 +984,7 @@ bool Engine::providerCached(Provider *provider)
 
 bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
 {
+    Q_D(Engine);
     QStringList oldfeeds = oldprovider->availableSortingCriteria();
     QStringList feeds = provider->availableSortingCriteria();
     if (oldfeeds.count() != feeds.count())
@@ -982,6 +1002,7 @@ bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
 
 void Engine::mergeProviders(Provider::List providers)
 {
+    Q_D(Engine);
     for (Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it) {
         Provider *p = (*it);
 
@@ -1010,7 +1031,7 @@ void Engine::mergeProviders(Provider::List providers)
             //}
         }
 
-        m_provider_cache.append(p);
+        d->m_providers.append(p);
         m_provider_index[pid(p)] = p;
     }
 
@@ -1019,6 +1040,7 @@ void Engine::mergeProviders(Provider::List providers)
 
 bool Engine::entryCached(Entry *entry)
 {
+    Q_D(Engine);
     if (m_cachepolicy == CacheNever) return false;
 
     // Direct cache lookup first
@@ -1051,6 +1073,7 @@ bool Engine::entryCached(Entry *entry)
 
 bool Engine::entryChanged(Entry *oldentry, Entry *entry)
 {
+    Q_D(Engine);
     // possibly return true if the status changed? depends on when this is called
     if ((!oldentry) || (entry->releaseDate() > oldentry->releaseDate())
             || (entry->version() > oldentry->version()))
@@ -1156,11 +1179,12 @@ bool Engine::entryChanged(Entry *oldentry, Entry *entry)
 
 void Engine::cacheProvider(Provider *provider)
 {
-    KStandardDirs d;
+    Q_D(Engine);
+    KStandardDirs dirs;
 
     kDebug() << "Caching provider.";
 
-    QString cachedir = d.saveLocation("cache");
+    QString cachedir = dirs.saveLocation("cache");
     QString cachefile = cachedir + m_applicationName + "kns2providers.cache.xml";
 
     kDebug() << " + Save to file '" + cachefile + "'.";
@@ -1168,7 +1192,7 @@ void Engine::cacheProvider(Provider *provider)
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsproviders");
 
-    for (Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); ++it) {
+    for (Provider::List::Iterator it = d->m_providers.begin(); it != d->m_providers.end(); ++it) {
         Provider *p = (*it);
         QDomElement pxml = p->providerXML();
         root.appendChild(pxml);

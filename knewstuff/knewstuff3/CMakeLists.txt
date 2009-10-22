@@ -5,15 +5,14 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set(knewstuff3_core_SRCS
-   core/ktranslatable.cpp
    core/author.cpp
    core/category.cpp
    core/entry.cpp
-   core/provider.cpp
    core/feed.cpp
    core/installation.cpp
-   core/security.cpp
+   core/ktranslatable.cpp
    core/provider.cpp
+   core/security.cpp
    staticxml/staticxmlprovider.cpp
    attica/atticaprovider.cpp
 )

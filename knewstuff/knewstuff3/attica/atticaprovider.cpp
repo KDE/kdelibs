@@ -77,6 +77,8 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
     doc.appendChild(xmldata);
     d->m_providerManager.addProviderFromXml(doc.toString());
 
+    kDebug() << "base url of attica provider:" << d->m_providerManager.providers().first().baseUrl().toString();
+    
     return true;
 }
 
@@ -90,9 +92,11 @@ QDomElement AtticaProvider::providerXML() const
     return el;
 }
 
-void providerLoaded()
+void AtticaProvider::providerLoaded()
 {
-
+    Q_D(AtticaProvider);
+    kDebug() << "Attica provider initialized: " << d->mName.representation();
+    emit providerAvailable(this);
 }
 
 QStringList AtticaProvider::availableSortingCriteria() const
@@ -100,7 +104,6 @@ QStringList AtticaProvider::availableSortingCriteria() const
     // URL Arguments: sortmode - The sortmode of the list. Possible values are: "new" - newest first , "alpha" - alphabetical, "high" - highest rated, "down" - most downloads
     return QStringList() << I18N_NOOP("Date") << I18N_NOOP("Alphabetical") << I18N_NOOP("Highest Rating") << I18N_NOOP("Most Downloads");
 }
-
 
 void AtticaProvider::loadEntries(const QString& sortMode, const QString& searchString, int page, int pageSize)
 {
@@ -130,7 +133,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry->setName(content.name());
         entry->setRating(content.rating());
         entry->setUniqueId(content.id());
-        entry->setProviderId(d->m_provider.id());
+        entry->setProviderId(d->m_provider.baseUrl().toString());
         entries.append(entry);
     }
 
