@@ -1641,7 +1641,12 @@ KTextEditor::Range KateDocument::searchText (const KTextEditor::Range & inputRan
         }
         else
         {
-          hayLinesWindow[hayLinesZeroIndex] = m_buffer->plainLine(j + numNeedleLines);
+          KateTextLine::Ptr textLine = m_document->plainKateTextLine(j + numNeedleLines);
+
+          if (!textLine)
+            return KTextEditor::Range::invalid();
+
+          hayLinesWindow[hayLinesZeroIndex] = textLine;
           FAST_DEBUG("searchText | filling slot " << hayLinesZeroIndex << " with line "
             << j + numNeedleLines << ": " << hayLinesWindow[hayLinesZeroIndex]->string());
           hayLinesZeroIndex = (hayLinesZeroIndex + 1) % numNeedleLines;
