@@ -1,9 +1,10 @@
-<ui version="4.0" >
- <author>Zack Rusin &lt;zack@kde.org></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>Zack Rusin &lt;zack@kde.org&gt;</author>
  <comment>Licensed under GNU LGPL</comment>
  <class>SonnetConfigUI</class>
- <widget class="QWidget" name="SonnetConfigUI" >
-  <property name="geometry" >
+ <widget class="QWidget" name="SonnetConfigUI">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -11,43 +12,50 @@
     <height>441</height>
    </rect>
   </property>
-  <layout class="QGridLayout" >
-   <property name="margin" >
+  <layout class="QGridLayout">
+   <property name="margin">
     <number>0</number>
    </property>
-   <item row="0" column="1" >
-    <widget class="Sonnet::DictionaryComboBox" name="m_langCombo" />
+   <item row="0" column="1">
+    <widget class="Sonnet::DictionaryComboBox" name="m_langCombo">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
-   <item row="1" column="0" colspan="2" >
-    <widget class="QGroupBox" name="groupBox1" >
-     <property name="title" >
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox1">
+     <property name="title">
       <string>Options</string>
      </property>
-     <layout class="QGridLayout" >
-      <item row="0" column="0" >
-       <widget class="QCheckBox" name="m_bgSpellCB" >
-        <property name="text" >
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="m_bgSpellCB">
+        <property name="text">
          <string>Enable &amp;background spellchecking</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" >
+      <item row="1" column="0">
        <widget class="QCheckBox" name="m_checkerEnabledByDefaultCB">
         <property name="text">
          <string>&amp;Auto spell check enabled by default</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" >
-       <widget class="QCheckBox" name="m_skipUpperCB" >
-        <property name="text" >
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="m_skipUpperCB">
+        <property name="text">
          <string>Skip all &amp;uppercase words</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0" >
-       <widget class="QCheckBox" name="m_skipRunTogetherCB" >
-        <property name="text" >
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="m_skipRunTogetherCB">
+        <property name="text">
          <string>S&amp;kip run-together words</string>
         </property>
        </widget>
@@ -55,32 +63,36 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="0" >
-    <widget class="QLabel" name="textLabel1" >
-     <property name="text" >
+   <item row="0" column="0">
+    <widget class="QLabel" name="textLabel1">
+     <property name="text">
       <string>Default language:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2" >
-    <widget class="KEditListBox" name="m_ignoreListBox" />
+   <item row="2" column="0" colspan="2">
+    <widget class="KEditListBox" name="m_ignoreListBox"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Sonnet::DictionaryComboBox</class>
-   <extends>QComboBox</extends>
-   <header>dictionarycombobox.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
    <class>KEditListBox</class>
    <extends>QGroupBox</extends>
    <header>keditlistbox.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>Sonnet::DictionaryComboBox</class>
+   <extends>KComboBox</extends>
+   <header>sonnet/dictionarycombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
