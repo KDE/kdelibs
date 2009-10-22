@@ -843,15 +843,16 @@ KTimeZone KTimeZone::utc()
 
 QDateTime KTimeZone::fromTime_t(time_t t)
 {
+    const int secondsADay = 86400;
     static QDate epochDate(1970,1,1);
     static QTime epochTime(0,0,0);
-    int days = t / 86400;
+    int days = t / secondsADay;
     int secs;
     if (t >= 0)
-        secs = t % 86400;
+        secs = t % secondsADay;
     else
     {
-        secs = 86400 - (-t % 86400);
+        secs = secondsADay - (-t % secondsADay);
         --days;
     }
     return QDateTime(epochDate.addDays(days), epochTime.addSecs(secs), Qt::UTC);
