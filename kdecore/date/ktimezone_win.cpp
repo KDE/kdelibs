@@ -235,7 +235,7 @@ static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& st
     return str.toStdWString();
 }
 #else
-static inline QString tchar_to_qstring( const TCHAR * ustr ) {
+static inline QString tchar_to_qstring( const TCHAR * str ) {
     return QString::fromLocal8Bit( str );
 }
 static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
