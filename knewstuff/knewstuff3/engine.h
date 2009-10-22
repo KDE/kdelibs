@@ -250,8 +250,7 @@ Q_SIGNALS:
 
     void signalProvidersFinished();
     void signalEntriesFinished();
-    //void signalEntriesFeedFinished(const KNS::Feed *feed);
-
+    
     void signalInstallationFinished();
     void signalInstallationFailed();
 
@@ -261,8 +260,13 @@ Q_SIGNALS:
 protected:
     //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
+    // the .knsrc file was loaded
     void slotProviderFileLoaded(const QDomDocument& doc);
+    // loading the .knsrc file failed
     void slotProvidersFailed();
+    
+    // called when a provider is ready to work
+    void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(KNS3::Entry::List list);
     void slotEntriesFailed();
@@ -321,8 +325,8 @@ private:
 
     static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
 
-    QString id(Entry *e);
-    QString pid(const Provider *p);
+    QString entryId(Entry *e);
+    QString providerId(const Provider *p);
 
     // holds all the entries
     QList<Entry*> m_entry_cache;

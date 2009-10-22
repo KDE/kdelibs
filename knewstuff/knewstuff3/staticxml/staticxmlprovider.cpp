@@ -129,6 +129,7 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
         return false;
     }
 
+    emit providerInitialized(this);
     return true;
 }
 

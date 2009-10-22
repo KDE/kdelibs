@@ -77,8 +77,13 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
     doc.appendChild(xmldata);
     d->m_providerManager.addProviderFromXml(doc.toString());
 
-    kDebug() << "base url of attica provider:" << d->m_providerManager.providers().first().baseUrl().toString();
+    if (!d->m_providerManager.providers().isEmpty()) {
+        kDebug() << "base url of attica provider:" << d->m_providerManager.providers().first().baseUrl().toString();
+    }
     
+    if (d->m_providerManager.providers().isEmpty()) {
+        return false;
+    }
     return true;
 }
 
@@ -96,7 +101,7 @@ void AtticaProvider::providerLoaded()
 {
     Q_D(AtticaProvider);
     kDebug() << "Attica provider initialized: " << d->mName.representation();
-    emit providerAvailable(this);
+    emit providerInitialized(this);
 }
 
 QStringList AtticaProvider::availableSortingCriteria() const

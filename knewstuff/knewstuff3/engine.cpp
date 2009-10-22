@@ -244,7 +244,7 @@ void Engine::loadProviders()
 //        return;
 //    }
 
-    //if (provider != m_provider_index[pid(provider)]) {
+    //if (provider != m_provider_index[providerId(provider)]) {
     //    // this is the cached provider, and a new provider has been loaded from the internet
     //    // also, this provider's feeds have already been loaded including it's entries
     //    m_provider_cache.removeAll(provider); // just in case it's still in there
@@ -399,16 +399,15 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
         if (p.tagName() == "provider") {
             kDebug() << "Provider attributes: " << p.attribute("type");
+            Provider* provider;
             if (p.attribute("type") == "rest") {
-                AtticaProvider *provider = new AtticaProvider;
-                if (provider->setProviderXML(p)) {
-                    d->m_providers.append(provider);
-                }
+                provider = new AtticaProvider;
             } else {
-                StaticXmlProvider * provider = new StaticXmlProvider;
-                if (provider->setProviderXML(p)) {
-                    d->m_providers.append(provider);
-                }
+                provider = new StaticXmlProvider;
+            }
+            connect(provider, SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
+            if (provider->setProviderXML(p)) {
+                d->m_providers.append(provider);
             }
         }
     }
@@ -427,6 +426,11 @@ void Engine::slotProvidersFailed()
     //delete loader;
 
     emit signalProvidersFailed();
+}
+
+void Engine::providerInitialized(Provider* p)
+{
+    emit signalProviderLoaded(p);
 }
 
 void Engine::slotEntriesLoaded(KNS3::Entry::List list)
@@ -687,7 +691,7 @@ void Engine::loadRegistry()
 
             e->setStatus(Entry::Installed);
             e->setSource(Entry::Registry);
-            m_entry_registry.insert(id(e), e);
+            m_entry_registry.insert(entryId(e), e);
             //QString thisid = id(e);
 
             // we must overwrite cache entries with registered entries
@@ -761,7 +765,7 @@ void Engine::loadProvidersCache()
 
         //Provider *p = handler.providerptr();
         //m_provider_cache.append(p);
-        //m_provider_index[pid(p)] = p;
+        //m_provider_index[providerId(p)] = p;
 
         //emit signalProviderLoaded(p);
 
@@ -807,7 +811,7 @@ void Engine::loadFeedCache(Provider *provider)
         //Feed *feed = provider->downloadUrlFeed(feeds.at(i));
         //QString feedname = feeds.at(i);
 
-        //QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
+        //QString idbase64 = QString(providerId(provider).toUtf8().toBase64() + '-' + feedname);
         //QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
         //kDebug() << "  + Load from file: " + cachefile;
@@ -907,7 +911,7 @@ KNS3::Entry *Engine::loadEntryCache(const QString& filepath)
 
     e->setStatus(Entry::Downloadable);
     m_entry_cache.append(e);
-    m_entry_index[id(e)] = e;
+    m_entry_index[entryId(e)] = e;
 
     if (root.hasAttribute("previewfile")) {
         m_previewfiles[e] = root.attribute("previewfile");
@@ -977,7 +981,7 @@ bool Engine::providerCached(Provider *provider)
     Q_D(Engine);
     if (m_cachepolicy == CacheNever) return false;
 
-    if (m_provider_index.contains(pid(provider)))
+    if (m_provider_index.contains(providerId(provider)))
         return true;
     return false;
 }
@@ -1008,7 +1012,7 @@ void Engine::mergeProviders(Provider::List providers)
 
         if (providerCached(p)) {
             kDebug() << "CACHE: hit provider " << p->name().representation();
-            Provider *oldprovider = m_provider_index[pid(p)];
+            Provider *oldprovider = m_provider_index[providerId(p)];
             if (providerChanged(oldprovider, p)) {
                 kDebug() << "CACHE: update provider";
                 cacheProvider(p);
@@ -1032,7 +1036,7 @@ void Engine::mergeProviders(Provider::List providers)
         }
 
         d->m_providers.append(p);
-        m_provider_index[pid(p)] = p;
+        m_provider_index[providerId(p)] = p;
     }
 
     emit signalProvidersFinished();
@@ -1045,7 +1049,7 @@ bool Engine::entryCached(Entry *entry)
 
     // Direct cache lookup first
     // FIXME: probably better use URL (changes less frequently) and do iteration
-    if (m_entry_index.contains(id(entry)) && m_entry_index[id(entry)]->source() == Entry::Cache) {
+    if (m_entry_index.contains(entryId(entry)) && m_entry_index[entryId(entry)]->source() == Entry::Cache) {
         return true;
     }
 
@@ -1060,7 +1064,7 @@ bool Engine::entryCached(Entry *entry)
 
     for (int i = 0; i < m_entry_cache.count(); i++) {
         Entry *oldentry = m_entry_cache.at(i);
-        if (id(entry) == id(oldentry)) return true;
+        if (entryId(entry) == entryId(oldentry)) return true;
         //QString lang = id(oldentry).section(":", 0, 0);
         //QString oldname = oldentry->name().translated(lang);
         //QString name = entry->name().translated(lang);
@@ -1227,7 +1231,7 @@ void Engine::cacheProvider(Provider *provider)
 
 //    QString cachedir = d.saveLocation("cache", m_componentname + "kns2feeds.cache");
 
-//    QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
+//    QString idbase64 = QString(providerId(provider).toUtf8().toBase64() + '-' + feedname);
 //    QString cachefile = idbase64 + ".xml";
 
 //    kDebug() << "Caching feed to file '" + cachefile + "'.";
@@ -1263,7 +1267,7 @@ void Engine::cacheEntry(Entry *entry)
 
     //FIXME: this must be deterministic, but it could also be an OOB random string
     //which gets stored into <ghnscache> just like preview...
-    QString idbase64 = QString(id(entry).toUtf8().toBase64());
+    QString idbase64 = QString(entryId(entry).toUtf8().toBase64());
     QString cachefile = idbase64 + ".meta";
 
     kDebug() << "Caching to file '" + cachefile + "'.";
@@ -1297,7 +1301,7 @@ void Engine::cacheEntry(Entry *entry)
 
 void Engine::registerEntry(Entry *entry)
 {
-    m_entry_registry.insert(id(entry), entry);
+    m_entry_registry.insert(entryId(entry), entry);
     KStandardDirs d;
 
     //kDebug() << "Registering entry.";
@@ -1308,7 +1312,7 @@ void Engine::registerEntry(Entry *entry)
     //kDebug() << " + Save to directory '" + registrydir + "'.";
 
     // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(id(entry).toUtf8().toBase64()) + ".meta";
+    QString registryfile = QString(entryId(entry).toUtf8().toBase64()) + ".meta";
 
     //kDebug() << " + Save to file '" + registryfile + "'.";
 
@@ -1344,15 +1348,15 @@ void KNS3::Engine::unregisterEntry(Entry * entry)
     QString registrydir = d.saveLocation("data", "knewstuff2-entries.registry");
 
     // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(id(entry).toUtf8().toBase64()) + ".meta";
+    QString registryfile = QString(entryId(entry).toUtf8().toBase64()) + ".meta";
 
     QFile::remove(registrydir + registryfile);
 
     // remove the entry from m_entry_registry
-    m_entry_registry.remove(id(entry));
+    m_entry_registry.remove(entryId(entry));
 }
 
-QString Engine::id(Entry *e)
+QString Engine::entryId(Entry *e)
 {
     // This is the primary key of an entry:
     // A lookup on the name, which must exist but might be translated
@@ -1360,7 +1364,7 @@ QString Engine::id(Entry *e)
     return m_applicationName + e->name().language() + ':' + e->name().representation();
 }
 
-QString Engine::pid(const Provider *p)
+QString Engine::providerId(const Provider *p)
 {
     // This is the primary key of a provider:
     // The download URL, which is never translated
