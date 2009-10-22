@@ -1,5 +1,5 @@
 /***************************************************************************
-*   This file is part of the KDevelop-Icon-Inserter-Plugin                *
+*   This file is part of the KTextEditor-Icon-Inserter-Plugin             *
 *   Copyright 2009 Jonathan Schmidt-Dominé <devel@the-user.org>           *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or         *
