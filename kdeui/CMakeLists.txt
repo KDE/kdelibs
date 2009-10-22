@@ -273,10 +273,6 @@ if (Q_WS_QWS)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
 endif (Q_WS_QWS)
 
-if(MINGW)
-add_definitions(-D_WIN32_WINNT=0x0500 -DWINVER=0x0500)
-endif(MINGW)
-
 set( kdeui_UI
    dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
