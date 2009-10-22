@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 # else
         // gdb does not support win32 jit debug support, so implement it by ourself
         QByteArray buf(1024,0);
-        GetModuleFileName(NULL,buf.data(),buf.size());
+        GetModuleFileNameA(NULL,buf.data(),buf.size());
         QStringList params;
         params << buf;
         params << QString::number(GetCurrentProcessId());
