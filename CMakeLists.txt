@@ -89,9 +89,6 @@ add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 # needed to access QString::toStdWString()
 remove_definitions(-DQT_NO_STL)
-# used by Qt during the build, needed to match the symbols in QtCore
-add_definitions(/Zc:wchar_t-)
-
 
 ################# setup the include directories #################
 
