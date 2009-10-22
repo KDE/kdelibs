@@ -43,7 +43,6 @@
 #include "knewstuff3/core/author.h"
 
 #include <kconfiggroup.h>
-#include <staticxml/entry.h>
 
 using namespace KNS3;
 
@@ -114,14 +113,13 @@ void UploadDialog::slotOk()
     KTranslatable name;
     name.addString(language, mNameEdit->text());
 
-    // FIXME use the right sub class of entry
-    m_entry = new StaticXmlEntry;
-    //m_entry->setName(name);
-    //m_entry->setAuthor(author);
-    //m_entry->setVersion(mVersionEdit->text());
-    //m_entry->setLicense(mLicenseCombo->currentText());
-    //m_entry->setPreview(previewurl);
-    //m_entry->setSummary(summary);
+    m_entry = new Entry;
+    m_entry->setName(name);
+    m_entry->setAuthor(author);
+    m_entry->setVersion(mVersionEdit->text());
+    m_entry->setLicense(mLicenseCombo->currentText());
+    m_entry->setPreview(previewurl);
+    m_entry->setSummary(summary);
 
     if (mPayloadUrl.isValid()) {
         KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));

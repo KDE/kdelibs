@@ -13,7 +13,6 @@ set(knewstuff3_core_SRCS
    core/feed.cpp
    core/installation.cpp
    core/security.cpp
-   staticxml/entry.cpp
    core/provider.cpp
    staticxml/staticxmlprovider.cpp
    attica/atticaprovider.cpp

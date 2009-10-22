@@ -18,6 +18,10 @@
 #define KNEWSTUFF3_ATTICA_PROVIDER_H
 
 #include "core/provider.h"
+#include <attica/provider.h>
+
+namespace Attica {
+class BaseJob;}
 
 namespace KNS3
 {
@@ -44,7 +48,7 @@ namespace KNS3
 
         ~AtticaProvider();
 
-        virtual QStringList availableFeeds() const;
+        virtual QStringList availableSortingCriteria() const;
 
         /**
          * set the provider data xml, to initialize the provider
@@ -56,14 +60,19 @@ namespace KNS3
          */
         virtual QDomElement providerXML() const;
 
-        
-        virtual void loadFeed(const QString& feedname, int page = 0) {}
+        virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
 
-        protected:
-            AtticaProviderPrivate * const d_ptr;
-            AtticaProvider(AtticaProviderPrivate &dd);
-        private:
-            Q_DECLARE_PRIVATE(AtticaProvider)
+
+    private Q_SLOTS:
+        void categoryContentsLoaded(Attica::BaseJob* job);
+        
+    private:
+        Attica::Provider::SortMode sortModeFromString(const QString& sortString);
+        
+        AtticaProviderPrivate * const d_ptr;
+        AtticaProvider(AtticaProviderPrivate &dd);
+
+        Q_DECLARE_PRIVATE(AtticaProvider)
     };
 
 }

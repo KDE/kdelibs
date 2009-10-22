@@ -22,7 +22,7 @@
 #define KNEWSTUFF3_ENGINE_H
 
 #include <knewstuff3/core/provider.h>
-#include <knewstuff3/staticxml/entry.h>
+#include <knewstuff3/core/entry.h>
 
 #include <knewstuff3/knewstuff_export.h>
 

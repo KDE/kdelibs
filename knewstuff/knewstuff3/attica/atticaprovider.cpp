@@ -27,6 +27,10 @@
 
 #include <attica/providermanager.h>
 #include <attica/provider.h>
+#include <attica/listjob.h>
+#include <attica/content.h>
+
+using namespace Attica;
 
 namespace KNS3
 {
@@ -35,10 +39,15 @@ class AtticaProviderPrivate :public ProviderPrivate
 {
 public:
     AtticaProviderPrivate()
-    {    
+    {
+        // FIXME maybe we want something that is not in the category Wallpaper 640 by 480 at some point
+        // the categories can be gotten from the provider
+        m_categories = QLatin1String("1");
     }
 
+    QString m_categories;
     Attica::ProviderManager m_providerManager;
+    Attica::Provider m_provider;
 };
 
 AtticaProvider::AtticaProvider()
@@ -86,11 +95,63 @@ void providerLoaded()
 
 }
 
-QStringList AtticaProvider::availableFeeds() const
+QStringList AtticaProvider::availableSortingCriteria() const
 {
-    // FIXME
-    return QStringList();
+    // URL Arguments: sortmode - The sortmode of the list. Possible values are: "new" - newest first , "alpha" - alphabetical, "high" - highest rated, "down" - most downloads
+    return QStringList() << I18N_NOOP("Date") << I18N_NOOP("Alphabetical") << I18N_NOOP("Highest Rating") << I18N_NOOP("Most Downloads");
 }
+
+
+void AtticaProvider::loadEntries(const QString& sortMode, const QString& searchString, int page, int pageSize)
+{
+    Q_D(AtticaProvider);
+
+    Attica::Provider::SortMode sorting = sortModeFromString(sortMode);
+    Attica::Category::List cats;
+    Attica::Category cat;
+    cat.setId(d->m_categories);
+    cats.append(cat);
+    ListJob<Content>* job = d->m_provider.searchContents(cats, searchString, sorting, page, pageSize);
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
+    job->start();
+}
+
+void AtticaProvider::categoryContentsLoaded(BaseJob* job)
+{
+    Q_D(AtticaProvider);
+
+    ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
+    Content::List contents = listJob->itemList();
+
+    Entry::List entries;
+    
+    Q_FOREACH(Content content, contents) {
+        Entry* entry = new Entry;
+        entry->setName(content.name());
+        entry->setRating(content.rating());
+        entry->setUniqueId(content.id());
+        entry->setProviderId(d->m_provider.id());
+        entries.append(entry);
+    }
+
+    // FIXME page number and strings
+    emit loadingFinished("", "", 0, entries.count(), 10, entries);
+}
+
+Attica::Provider::SortMode AtticaProvider::sortModeFromString(const QString& sortString)
+{
+    if (sortString == "Date") {
+        return Attica::Provider::Newest;
+    }
+    if (sortString == "Alphabetical") {
+        return Attica::Provider::Alphabetical;
+    }
+    if (sortString == "Most Downloads") {
+        return Attica::Provider::Downloads;
+    }
+    return Attica::Provider::Rating;
+}
+
 
 }
 

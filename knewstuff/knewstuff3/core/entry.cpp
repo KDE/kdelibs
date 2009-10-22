@@ -54,6 +54,12 @@ KTranslatable Entry::name() const
     return d->mName;
 }
 
+void Entry::setName(const KNS3::KTranslatable& name)
+{
+    Q_D(Entry);
+    d->mName = name;
+}
+
 QString Entry::uniqueId() const
 {
     Q_D(const Entry);
@@ -84,10 +90,23 @@ QString Entry::category() const
     return d->mCategory;
 }
 
+void Entry::setCategory(const QString& category)
+{
+    Q_D(Entry);
+    d->mCategory = category;
+
+}
+
 Author Entry::author() const
 {
     Q_D(const Entry);
     return d->mAuthor;
+}
+
+void Entry::setAuthor(const KNS3::Author& author)
+{
+    Q_D(Entry);
+    d->mAuthor = author;
 }
 
 QString Entry::license() const
@@ -96,10 +115,22 @@ QString Entry::license() const
     return d->mLicense;
 }
 
+void Entry::setLicense(const QString& license)
+{
+    Q_D(Entry);
+    d->mLicense = license;
+}
+
 KTranslatable Entry::summary() const
 {
     Q_D(const Entry);
     return d->mSummary;
+}
+
+void Entry::setSummary(const KNS3::KTranslatable& summary)
+{
+    Q_D(Entry);
+    d->mSummary = summary;
 }
 
 QString Entry::version() const
@@ -108,10 +139,22 @@ QString Entry::version() const
     return d->mVersion;
 }
 
+void Entry::setVersion(const QString& version)
+{
+    Q_D(Entry);
+    d->mVersion = version;
+}
+
 QDate Entry::releaseDate() const
 {
     Q_D(const Entry);
     return d->mReleaseDate;
+}
+
+void Entry::setReleaseDate(const QDate& releasedate)
+{
+    Q_D(Entry);
+    d->mReleaseDate = releasedate;
 }
 
 KTranslatable Entry::payload() const
@@ -120,10 +163,22 @@ KTranslatable Entry::payload() const
     return d->mPayload;
 }
 
+void Entry::setPayload(const KNS3::KTranslatable& url)
+{
+    Q_D(Entry);
+    d->mPayload = url;
+}
+
 KTranslatable Entry::preview() const
 {
     Q_D(const Entry);
     return d->mPreview;
+}
+
+void Entry::setPreview(const KNS3::KTranslatable& url)
+{
+    Q_D(Entry);
+    d->mPreview = url;
 }
 
 int Entry::rating() const
@@ -132,10 +187,22 @@ int Entry::rating() const
     return d->mRating;
 }
 
+void Entry::setRating(int rating)
+{
+    Q_D(Entry);
+    d->mRating = rating;
+}
+
 int Entry::downloads() const
 {
     Q_D(const Entry);
     return d->mDownloads;
+}
+
+void Entry::setDownloads(int downloads)
+{
+    Q_D(Entry);
+    d->mDownloads = downloads;
 }
 
 /*
@@ -199,3 +266,156 @@ QStringList KNS3::Entry::uninstalledFiles() const
     Q_D(const Entry);
     return d->mUnInstalledFiles;
 }
+
+bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
+{
+    Q_D(Entry);
+    if (xmldata.tagName() != "stuff")
+        return false;
+
+    d->mCategory = xmldata.attribute("category");
+
+    QDomNode n;
+    for (n = xmldata.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        QDomElement e = n.toElement();
+        if (e.tagName() == "name") {
+            QString lang = e.attribute("lang");
+            d->mName.addString(lang, e.text().trimmed());
+        } else if (e.tagName() == "author") {
+            Author author;
+            QString email = e.attribute("email");
+            QString jabber = e.attribute("im");
+            QString homepage = e.attribute("homepage");
+            author.setName(e.text().trimmed());
+            author.setEmail(email);
+            author.setJabber(jabber);
+            author.setHomepage(homepage);
+            d->mAuthor = author;
+        } else if (e.tagName() == "licence") { // krazy:exclude=spelling
+            d->mLicense = e.text().trimmed();
+        } else if (e.tagName() == "summary") {
+            QString lang = e.attribute("lang");
+            //kDebug() << "adding " << e.tagName() << " to summary as language " << lang;
+            d->mSummary.addString(lang, e.text().trimmed());
+        } else if (e.tagName() == "version") {
+            d->mVersion = e.text().trimmed();
+        } else if (e.tagName() == "releasedate") {
+            d->mReleaseDate = QDate::fromString(e.text().trimmed(), Qt::ISODate);
+        } else if (e.tagName() == "preview") {
+            QString lang = e.attribute("lang");
+            d->mPreview.addString(lang, e.text().trimmed());
+        } else if (e.tagName() == "payload") {
+            QString lang = e.attribute("lang");
+            d->mPayload.addString(lang, e.text().trimmed());
+        } else if (e.tagName() == "rating") {
+            d->mRating = e.text().toInt();
+        } else if (e.tagName() == "downloads") {
+            d->mDownloads = e.text().toInt();
+        } else if (e.tagName() == "category") {
+            d->mCategory = e.text();
+        } else if (e.tagName() == "signature") {
+            d->mSignature = e.text();
+        } else if (e.tagName() == "checksum") {
+            d->mChecksum = e.text();
+        } else if (e.tagName() == "installedfile") {
+            d->mInstalledFiles << e.text();
+        } else if (e.tagName() == "id") {
+            d->mUniqueId = e.text();
+            //kDebug() << "got id number: " << idNumber;
+        }
+    }
+
+    // Validation
+
+    if (d->mName.isEmpty()) {
+        kWarning(550) << "Entry: no name given";
+        return false;
+    }
+
+    if (d->mPayload.isEmpty()) {
+        kWarning(550) << "Entry: no payload URL given";
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * get the xml string for the entry
+ */
+QDomElement KNS3::Entry::entryXML() const
+{
+    Q_D(const Entry);
+    QDomDocument doc;
+
+    QDomElement el = doc.createElement("stuff");
+    el.setAttribute("category", d->mCategory);
+
+    KTranslatable name = d->mName;
+
+    QStringList::ConstIterator it;
+    QDomElement e;
+    QStringList langs;
+
+    langs = name.languages();
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
+        e = addElement(doc, el, "name", name.translated(*it));
+        e.setAttribute("lang", *it);
+    }
+
+    QDomElement author = addElement(doc, el, "author", d->mAuthor.name());
+    if (!d->mAuthor.email().isEmpty())
+        author.setAttribute("email", d->mAuthor.email());
+    if (!d->mAuthor.homepage().isEmpty())
+        author.setAttribute("homepage", d->mAuthor.homepage());
+    if (!d->mAuthor.jabber().isEmpty())
+        author.setAttribute("im", d->mAuthor.jabber());
+    // FIXME: 'jabber' or 'im'? consult with kopete guys...
+
+    (void)addElement(doc, el, "licence", d->mLicense); // krazy:exclude=spelling
+    (void)addElement(doc, el, "version", d->mVersion);
+    if ((d->mRating > 0) || (d->mDownloads > 0)) {
+        (void)addElement(doc, el, "rating", QString::number(d->mRating));
+        (void)addElement(doc, el, "downloads", QString::number(d->mDownloads));
+    }
+    if (!d->mSignature.isEmpty()) {
+        (void)addElement(doc, el, "signature", d->mSignature);
+    }
+    if (!d->mChecksum.isEmpty()) {
+        (void)addElement(doc, el, "checksum", d->mChecksum);
+    }
+    foreach(const QString &file, d->mInstalledFiles) {
+        (void)addElement(doc, el, "installedfile", file);
+    }
+    if (!d->mUniqueId.isEmpty()) {
+        addElement(doc, el, "id", d->mUniqueId);
+    }
+
+    (void)addElement(doc, el, "releasedate",
+                     d->mReleaseDate.toString(Qt::ISODate));
+
+    KTranslatable summary = d->mSummary;
+    KTranslatable preview = d->mPreview;
+    KTranslatable payload = d->mPayload;
+
+    langs = summary.languages();
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
+        e = addElement(doc, el, "summary", summary.translated(*it));
+        e.setAttribute("lang", *it);
+    }
+
+    langs = preview.languages();
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
+        e = addElement(doc, el, "preview", KUrl(preview.translated(*it)).fileName());
+        e.setAttribute("lang", *it);
+    }
+
+    langs = payload.languages();
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
+        e = addElement(doc, el, "payload", KUrl(payload.translated(*it)).fileName());
+        e.setAttribute("lang", *it);
+    }
+
+    return el;
+}
+

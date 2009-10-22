@@ -82,46 +82,35 @@ namespace KNS3
          */
         virtual KUrl icon() const; // FIXME use KIcon or pixmap?
 
-        virtual bool hasFeeds() const { return true; }
-        virtual QStringList availableFeeds() const = 0;
+        virtual bool hasServerSideSorting() const { return true; }
+        virtual QStringList availableSortingCriteria() const = 0;
         
-        /**
-         * load the given feed and given page
-         * @param feedname String name of the feed to load, as returned from availableFeeds()
-         * @param page     page number to load
-         *
-         * Note: the engine connects to feedLoaded() signal to get the result
-         */
-        virtual void loadFeed(const QString & feedname, int page = 0) = 0;
-
         virtual bool hasSearch() const { return false; }
 
         /**
          * load the given search and return given page
+         * @param sortMode string to select the order in which the results are presented
          * @param searchstring string to search with
          * @param page         page number to load
          *
-         * Note: the engine connects to searchResults() signal to get the result
+         * Note: the engine connects to loadingFinished() signal to get the result
          */
-        virtual void loadSearch(const QString & searchstring, int page = 0) { Q_UNUSED(searchstring) Q_UNUSED(page) }
+        virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100) = 0;
 
         virtual bool hasCommenting() const { return false; }
         virtual void getComments(Entry *, int page = 0) { Q_UNUSED(page) }
         virtual void addComment(Entry*, const QString & comment) { Q_UNUSED(comment) }
 
         virtual bool hasRatings() const { return false; }
-        virtual void getRating(Entry*) {}
         virtual void setRating(Entry*, int) {}
 
     signals:
-        void feedLoaded(QString feedname, int page, int totalpages, Entry::List);
-        void searchResults(QString searchstring, int page, int totalpages, Entry::List);
+        void loadingFinished(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
 
-        void comments(Entry *, int page, int totalpages);
+        void comments(Entry *, int page, int pageSize, int totalpages);
         void commentAdded(Entry *);
         void commentAddFailed(Entry *);
 
-        void entryRating(Entry*, int rating);
         void ratingSet(Entry*);
         void ratingSetFailed(Entry *);
         

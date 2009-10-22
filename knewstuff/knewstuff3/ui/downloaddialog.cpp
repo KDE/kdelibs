@@ -482,7 +482,7 @@ void DownloadDialog::populateSortCombo(const Provider * provider)
     //    m_providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
     //}
 
-    QStringList feeds = provider->availableFeeds();
+    QStringList feeds = provider->availableSortingCriteria();
     m_sortCombo->clear();
     for (int i = 0; i < feeds.size(); ++i) {
         //QString feedName = provider->downloadUrlFeed(feeds[i])->name().representation();

@@ -173,18 +173,18 @@ QDomElement StaticXmlProvider::providerXML() const
     return el;
 }
 
-QStringList StaticXmlProvider::availableFeeds() const
+QStringList StaticXmlProvider::availableSortingCriteria() const
 {
     Q_D(const StaticXmlProvider);
     return d->mFeeds.keys();
 }
 
-void StaticXmlProvider::loadFeed(const QString & feedname, int page)
+void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& searchstring, int page, int pageSize)
 {
-    // FIXME
-    Q_UNUSED(feedname)
-    Q_UNUSED(page)
+    // TODO first get the entries, then filter with searchString, finally emit the finished signal...
+    
 }
+
 
 }
 

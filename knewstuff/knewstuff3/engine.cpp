@@ -661,7 +661,7 @@ void Engine::loadRegistry()
             }
             
             // FIXME use the right sub class of entry
-            Entry * e = new StaticXmlEntry;
+            Entry * e = new Entry;
             e->setEntryXML(stuff);
             //if (!e->isValid()) {
             //    kWarning() << "Invalid GHNS installation metadata.";
@@ -785,7 +785,7 @@ void Engine::loadFeedCache(Provider *provider)
 
     kDebug() << "Load from directory: " + cachedir;
 
-    QStringList feeds = provider->availableFeeds();
+    QStringList feeds = provider->availableSortingCriteria();
     for (int i = 0; i < feeds.count(); i++) {
         //Feed *feed = provider->downloadUrlFeed(feeds.at(i));
         //QString feedname = feeds.at(i);
@@ -881,7 +881,7 @@ KNS3::Entry *Engine::loadEntryCache(const QString& filepath)
     }
     
     // FIXME use the right sub class of entry
-    Entry *e = new StaticXmlEntry;
+    Entry *e = new Entry;
 	e->setEntryXML(stuff);
     //if (!handler.isValid()) {
     //    kWarning() << "Invalid GHNS installation metadata.";
@@ -965,8 +965,8 @@ bool Engine::providerCached(Provider *provider)
 
 bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
 {
-    QStringList oldfeeds = oldprovider->availableFeeds();
-    QStringList feeds = provider->availableFeeds();
+    QStringList oldfeeds = oldprovider->availableSortingCriteria();
+    QStringList feeds = provider->availableSortingCriteria();
     if (oldfeeds.count() != feeds.count())
         return true;
     for (int i = 0; i < feeds.count(); i++) {
@@ -1343,7 +1343,7 @@ QString Engine::pid(const Provider *p)
     // If no download URL exists, a feed or web service URL must exist
     // if (p->downloadUrl().isValid())
     // return p->downloadUrl().url();
-    QStringList feeds = p->availableFeeds();
+    QStringList feeds = p->availableSortingCriteria();
     for (int i = 0; i < feeds.count(); i++) {
         QString feedtype = feeds.at(i);
         //Feed *f = p->downloadUrlFeed(feedtype);

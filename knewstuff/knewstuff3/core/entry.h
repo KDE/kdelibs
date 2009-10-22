@@ -168,6 +168,7 @@ public:
      */
     void setPreview(const KTranslatable& url);
     // FIXME I'd prefer pixmap or icon here, any good reason for ktranslatable?
+    // Acutally url also would be fine I guess ?
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
@@ -246,12 +247,12 @@ public:
      *
      * @returns whether or not setting the values was successful
      */
-    virtual bool setEntryXML(const QDomElement & xmldata) = 0;
+    virtual bool setEntryXML(const QDomElement & xmldata);
 
     /**
     * get the xml string for the entry
     */
-    virtual QDomElement entryXML() const = 0;
+    virtual QDomElement entryXML() const;
 
     /**
      * Source of the entry, A entry's data is coming from either cache, or an online provider

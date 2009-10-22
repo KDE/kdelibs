@@ -62,17 +62,10 @@ namespace KNS3
          */
         virtual QDomElement providerXML() const;
 
-        virtual bool hasFeeds() const { return true; }
-        virtual QStringList availableFeeds() const;
+        virtual bool hasServerSideSorting() const { return true; }
+        virtual QStringList availableSortingCriteria() const;
         
-        /**
-         * load the given feed and given page
-         * @param feedname String name of the feed to load, as returned from availableFeeds()
-         * @param page     page number to load
-         *
-         * Note: the engine connects to feedLoaded() signal to get the result
-         */
-        virtual void loadFeed(const QString & feedname, int page = 0);
+        virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
 
     protected:
         StaticXmlProviderPrivate * const d_ptr;
