@@ -229,9 +229,9 @@ add_subdirectory( security )
 add_subdirectory( plasma )
 add_subdirectory( includes )
 
-if(Soprano_FOUND)
-  add_subdirectory(nepomuk)
-endif(Soprano_FOUND)
+#if(Soprano_FOUND)
+#  add_subdirectory(nepomuk)
+#endif(Soprano_FOUND)
 
 macro_optional_add_subdirectory( doc  )
 
