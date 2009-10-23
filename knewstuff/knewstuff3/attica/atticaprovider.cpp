@@ -51,7 +51,7 @@ public:
 };
 
 AtticaProvider::AtticaProvider()
-    : d_ptr(new AtticaProviderPrivate)
+    : Provider(*new AtticaProviderPrivate)
 {
     // TODO
     Q_D(AtticaProvider);

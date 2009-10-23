@@ -46,9 +46,7 @@ namespace KNS3
          * Constructor.
          */
         StaticXmlProvider();
-        
-        StaticXmlProvider(const StaticXmlProvider& other);
-        
+
         /**
          * Destructor.
          */
@@ -70,7 +68,6 @@ namespace KNS3
         virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
 
     protected:
-        StaticXmlProviderPrivate * const d_ptr;
         StaticXmlProvider(StaticXmlProviderPrivate &dd);
     private:
         Q_DECLARE_PRIVATE(StaticXmlProvider)

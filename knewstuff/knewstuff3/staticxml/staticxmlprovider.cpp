@@ -47,20 +47,14 @@ public:
 
 };
 
-StaticXmlProvider::StaticXmlProvider()
-    : d_ptr(new StaticXmlProviderPrivate)
+StaticXmlProvider::StaticXmlProvider(   )
+    : Provider(*new StaticXmlProviderPrivate)
 {
 }
 
 StaticXmlProvider::~StaticXmlProvider()
 {
     // d_ptr is deleted in base class!
-}
-
-StaticXmlProvider::StaticXmlProvider(const StaticXmlProvider &other)
-: d_ptr(other.d_ptr)
-{
-    kDebug() << "copy provider other";
 }
 
 bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
@@ -118,9 +112,9 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
     for (n = xmldata.firstChild(); !n.isNull(); n = n.nextSibling()) {
         QDomElement e = n.toElement();
         if (e.tagName() == "title") {
-            QString lang = e.attribute("lang");
-            d->mName.addString(lang, e.text().trimmed());
-            kDebug() << "add name for provider: " << e.tagName() << e.text() << d->mName.representation();
+            //QString lang = e.attribute("lang");
+            d->mName = e.text().trimmed();
+            kDebug() << "add name for provider ("<< this << "): " << e.text();
         }
     }
 

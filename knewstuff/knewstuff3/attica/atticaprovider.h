@@ -66,13 +66,11 @@ namespace KNS3
         void categoryContentsLoaded(Attica::BaseJob* job);
         void providerLoaded();
 
-        
-    private:
-        Attica::Provider::SortMode sortModeFromString(const QString& sortString);
-        
-        AtticaProviderPrivate * const d_ptr;
+    protected:
         AtticaProvider(AtticaProviderPrivate &dd);
 
+    private:
+        Attica::Provider::SortMode sortModeFromString(const QString& sortString);
         Q_DECLARE_PRIVATE(AtticaProvider)
     };
 
