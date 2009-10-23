@@ -1641,7 +1641,7 @@ KTextEditor::Range KateDocument::searchText (const KTextEditor::Range & inputRan
         }
         else
         {
-          KateTextLine::Ptr textLine = m_document->plainKateTextLine(j + numNeedleLines);
+          KateTextLine::Ptr textLine = m_buffer->plainLine(j + numNeedleLines);
 
           if (!textLine)
             return KTextEditor::Range::invalid();
