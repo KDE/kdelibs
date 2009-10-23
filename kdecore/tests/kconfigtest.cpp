@@ -890,11 +890,11 @@ void KConfigTest::testSubGroup()
     QVERIFY(negsub1.exists());
 
     // But it doesn't exist if it has no content
-    QEXPECT_FAIL("", "Currently groups without content do no exist!", Continue);
+    QEXPECT_FAIL("", "Currently groups without content do not exist!", Continue);
     QVERIFY(negsub2.exists());
 
     // A subgroup does not qualify as content if it is also empty!
-    QEXPECT_FAIL("", "Currently groups without content do no exist!", Continue);
+    QEXPECT_FAIL("", "Currently groups without content do not exist!", Continue);
     QVERIFY(negsub3.exists());
 
     // A subgroup with content is ok
