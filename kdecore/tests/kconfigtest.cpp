@@ -1204,6 +1204,7 @@ void KConfigTest::testSharedConfig()
 
 void KConfigTest::testLocaleConfig()
 {
+    // Initialize the testdata
     QDir dir;
     QString subdir = QDir::home().canonicalPath() + "/.kde-unit-test/";
     dir.mkpath(subdir);
@@ -1212,23 +1213,44 @@ void KConfigTest::testLocaleConfig()
     QFile f(file);
     QVERIFY(f.open(QIODevice::WriteOnly));
     QTextStream ts(&f);
-    ts << "[Test]\n";
+    ts << "[Test_Wrong]\n";
     ts << "foo[ca]=5\n";
     ts << "foostring[ca]=nice\n";
     ts << "foobool[ca]=true\n";
+    ts << "[Test_Right]\n";
+    ts << "foo=5\n";
+    ts << "foo[ca]=5\n";
+    ts << "foostring=primary\n";
+    ts << "foostring[ca]=nice\n";
+    ts << "foobool=primary\n";
+    ts << "foobool[ca]=true\n";
     f.close();
+
+    // Load the testdata
     QVERIFY(QFile::exists(file));
     KConfig config(file);
     config.setLocale("ca");
-    KConfigGroup cg(&config, "Test");
-    QCOMPARE(cg.readEntry("foo"), QString("5"));
-    QCOMPARE(cg.readEntry("foo", 3), 5);
-    QCOMPARE(cg.readEntry("foostring"), QString("nice"));
-    QCOMPARE(cg.readEntry("foostring", "ugly"), QString("nice"));
-    QCOMPARE(cg.readEntry("foobool"), QString("true"));
-    QCOMPARE(cg.readEntry("foobool", false), true);
 
-    // Cleanup
+    // This group has only localized values. That is not supported. The values
+    // should be dropped on loading.
+    KConfigGroup cg(&config, "Test_Wrong");
+    QEXPECT_FAIL("", "The localized values are not dropped", Continue);
+    QVERIFY(!cg.hasKey("foo"));
+    QEXPECT_FAIL("", "The localized values are not dropped", Continue);
+    QVERIFY(!cg.hasKey("foostring"));
+    QEXPECT_FAIL("", "The localized values are not dropped", Continue);
+    QVERIFY(!cg.hasKey("foobool"));
+
+    // Now check the correct config group
+    KConfigGroup cg2(&config, "Test_Right");
+    QCOMPARE(cg2.readEntry("foo"), QString("5"));
+    QCOMPARE(cg2.readEntry("foo", 3), 5);
+    QCOMPARE(cg2.readEntry("foostring"), QString("nice"));
+    QCOMPARE(cg2.readEntry("foostring", "ugly"), QString("nice"));
+    QCOMPARE(cg2.readEntry("foobool"), QString("true"));
+    QCOMPARE(cg2.readEntry("foobool", false), true);
+
+    // Clean up after the testcase
     QFile::remove(file);
 }
 
