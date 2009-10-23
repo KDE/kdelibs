@@ -226,6 +226,7 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 
 	delete [] p->name;
 	delete [] p->visible_name;
+	delete [] p->window_role;
 	delete [] p->icon_name;
 	delete [] p->visible_icon_name;
 	delete [] p->startup_id;
