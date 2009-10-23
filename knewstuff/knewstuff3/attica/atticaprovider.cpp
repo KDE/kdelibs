@@ -73,7 +73,8 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
     if (xmldata.tagName() != "provider")
         return false;
     
-    QDomDocument doc;
+    // FIXME this is quite ugly, repackaging the xml into a string
+    QDomDocument doc("temp");
     doc.appendChild(xmldata);
     d->m_providerManager.addProviderFromXml(doc.toString());
 
@@ -93,7 +94,7 @@ QDomElement AtticaProvider::providerXML() const
     QDomDocument doc;
 
     QDomElement el = doc.createElement("provider");
-
+    // TODO
     return el;
 }
 
