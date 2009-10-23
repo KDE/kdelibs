@@ -43,8 +43,16 @@ Provider::~Provider()
 Provider::Provider(ProviderPrivate &dd)
     : d_ptr(&dd)
 {
+    kDebug() << "copy provider dd";
 }
-    
+
+Provider::Provider(const Provider &other)
+: QObject(),  d_ptr(other.d_ptr)
+{
+    kDebug() << "copy provider other";
+}
+
+
 KTranslatable Provider::name() const
 {
     Q_D(const Provider);

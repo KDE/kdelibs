@@ -57,6 +57,12 @@ StaticXmlProvider::~StaticXmlProvider()
     // d_ptr is deleted in base class!
 }
 
+StaticXmlProvider::StaticXmlProvider(const StaticXmlProvider &other)
+: d_ptr(other.d_ptr)
+{
+    kDebug() << "copy provider other";
+}
+
 bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
 {
     Q_D(StaticXmlProvider);
@@ -114,6 +120,7 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
         if (e.tagName() == "title") {
             QString lang = e.attribute("lang");
             d->mName.addString(lang, e.text().trimmed());
+            kDebug() << "add name for provider: " << e.tagName() << e.text() << d->mName.representation();
         }
     }
 

@@ -52,7 +52,8 @@ namespace KNS3
          * Constructor.
          */
         Provider();
-
+        Provider(const Provider &other);
+        
         /**
          * Destructor.
          */

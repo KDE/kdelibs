@@ -46,7 +46,9 @@ namespace KNS3
          * Constructor.
          */
         StaticXmlProvider();
-
+        
+        StaticXmlProvider(const StaticXmlProvider& other);
+        
         /**
          * Destructor.
          */

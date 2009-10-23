@@ -406,6 +406,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
                 provider = new StaticXmlProvider;
             }
             connect(provider, SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
+            
             if (provider->setProviderXML(p)) {
                 d->m_providers.append(provider);
             }
@@ -430,6 +431,7 @@ void Engine::slotProvidersFailed()
 
 void Engine::providerInitialized(Provider* p)
 {
+    kDebug() << "providerInitialized" << p->name().representation();
     emit signalProviderLoaded(p);
 }
 

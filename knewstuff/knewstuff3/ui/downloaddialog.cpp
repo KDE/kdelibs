@@ -49,10 +49,12 @@ using namespace KNS3;
 
 DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
         : KDialog(_parent)
+        , m_engine(_engine)
 {
-    setButtons(0);
+    setButtons(KDialog::None);
 
-    m_engine = _engine;
+    connect(m_engine, SIGNAL(signalProviderLoaded(KNS3::Provider*)), SLOT(slotProviderLoaded(KNS3::Provider*)));
+    
     connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
     connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)), SLOT(slotEntryChanged(KNS3::Entry*)));
     connect(m_engine, SIGNAL(signalPayloadFailed(KNS3::Entry*)), SLOT(slotPayloadFailed(KNS3::Entry*)));
@@ -104,7 +106,7 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     // FIXME KDE4PORT: if we use a left bar image, find a better way
 
 
-    connect(m_sourceCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotLoadProviderDXS()));
+    connect(m_sourceCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSwitchProvider()));
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
@@ -149,6 +151,8 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
 
     m_collaborationButton->setMenu(collabMenu);
     connect(m_collaborationButton, SIGNAL(triggered(QAction*)), this, SLOT(slotCollabAction(QAction*)));
+    
+    refresh();
 }
 
 DownloadDialog::~DownloadDialog()
@@ -157,10 +161,17 @@ DownloadDialog::~DownloadDialog()
     saveDialogSize(group, KConfigBase::Persistent);
 }
 
+void DownloadDialog::slotProviderLoaded(KNS3::Provider* provider)
+{
+    kDebug() << "slotProviderLoaded: " << provider->name().representation();
+    m_providers.append(provider);
+    refresh();
+}
+
 void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry)
 {
     kDebug(551) << "perform action: " << action;
-    const Provider * provider = m_providers.contains(entry) ? m_providers[entry] : NULL;
+    const Provider * provider = m_entryToProviders.contains(entry) ? m_entryToProviders[entry] : NULL;
     //Dxs * dxs = m_engine->dxsObject(provider);
     switch (action) {
     case kViewInfo:
@@ -321,9 +332,7 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 }
 
 
-///////////////// DXS ////////////////////
-
-void DownloadDialog::slotLoadProviderDXS()
+void DownloadDialog::slotSwitchProvider()
 {
     kDebug(551) << "slotLoadProviderDXS called";
     //QString category = m_sourceCombo->currentText();
@@ -357,10 +366,6 @@ void DownloadDialog::slotUpdateSearch()
     m_filteredModel->invalidate();
 }
 
-void DownloadDialog::slotLoadProvidersListDXS()
-{
-}
-
 void DownloadDialog::slotSearchTextChanged()
 {
     m_searchTimer->start();
@@ -383,7 +388,7 @@ void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
 
     //m_sourceCombo->setEnabled(true);
 
-    slotLoadProviderDXS();
+    slotSwitchProvider();
 }
 
 void DownloadDialog::slotEntries(QList<KNS3::Entry*> _entries)
@@ -413,7 +418,7 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
     m_entriesByProvider[provider].append(entry);
 
     // FIXME: what if entry belongs to more than one provider at once?
-    m_providers[entry] = provider;
+    m_entryToProviders[entry] = provider;
 
     mMutex.lock();
 
@@ -447,21 +452,14 @@ void DownloadDialog::refresh()
 {
     m_sourceCombo->clear();
 
-    Q_ASSERT(m_entriesByProvider.keys().size() > 0);
-
-    for (int i = 0; i < m_entriesByProvider.keys().count(); i++) {
-        const Provider *provider = m_entriesByProvider.keys().at(i);
-        if (!provider) {
-            //kDebug(551) << "INVALID FEED?!";
-            continue;
-        }
+    foreach(Provider* provider, m_providers) {
         //QPixmap icon = DesktopIcon(QString(), 16);
         //d->m_typeCombo->addItem(icon, feed->name().representation());
         m_sourceCombo->addItem(provider->name().representation());
         // FIXME: see DXS categories
     }
 
-    slotLoadProviderDXS();
+    slotSwitchProvider();
 
     //// get the current provider
     //const Provider * selectedProvider = m_entriesByProvider.keys()[0];
@@ -484,10 +482,10 @@ void DownloadDialog::populateSortCombo(const Provider * provider)
 
     QStringList feeds = provider->availableSortingCriteria();
     m_sortCombo->clear();
-    for (int i = 0; i < feeds.size(); ++i) {
+    foreach (const QString& feed, feeds) {
         //QString feedName = provider->downloadUrlFeed(feeds[i])->name().representation();
-        //kDebug(551) << "adding feed " << feeds[i] << " to combobox";
-        //m_sortCombo->addItem(feedName, feeds[i]); // put in the name for the text, and feeds[i] for the userData
+        kDebug(551) << "adding feed " << feed << " to combobox";
+        m_sortCombo->addItem(feed); // put in the name for the text, and feeds[i] for the userData
     }
 }
 

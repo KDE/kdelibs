@@ -66,12 +66,17 @@ QString KTranslatable::representation() const
     if (m_strings.isEmpty()) return QString();
 
     const QStringList langs = KGlobal::locale()->languageList();
-    for (QStringList::ConstIterator it = langs.begin(); it != langs.end(); ++it)
-        if (m_strings.contains(*it)) return m_strings[*it];
+    for (QStringList::ConstIterator it = langs.begin(); it != langs.end(); ++it) {
+        if (m_strings.contains(*it)) {
+            return m_strings[*it];
+        }
+    }
 
-    if (m_strings.contains(QString())) return m_strings[QString()];
-    // NOTE: this could be the source of crashes I've seen occasionally
-    else return *(m_strings.begin());
+    if (m_strings.contains(QString())) {
+        return m_strings[QString()];
+    } else {
+        return QString();
+    }
 }
 
 QString KTranslatable::language() const

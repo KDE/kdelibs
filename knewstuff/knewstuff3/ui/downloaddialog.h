@@ -103,6 +103,10 @@ public:
     void removeItem(Entry * entry);
 
 private Q_SLOTS:
+    // provider
+    void slotProviderLoaded(KNS3::Provider*);
+    void slotProvidersFailed();
+    
     /** slot to add an entry (connected to the engine's signalEntryAdded */
     void slotEntryLoaded(KNS3::Entry *entry, const KNS3::Feed *feed, const KNS3::Provider *provider);
     void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
@@ -118,9 +122,8 @@ private Q_SLOTS:
 
     void slotInfo(QString provider, QString server, QString version);
     void slotComments(QStringList comments);
-    // DXS
-    void slotLoadProvidersListDXS();
-    void slotLoadProviderDXS();
+    
+    void slotSwitchProvider();
     void slotCategories(QList<Category*> categories);
     void slotEntries(QList<Entry*> entries);
     void slotFault();
@@ -131,7 +134,6 @@ private Q_SLOTS:
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
     void slotProgress(const QString & text, int percentage);
-    void slotProvidersFailed();
 
     void slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry);
     void slotCollabAction(QAction * action);
@@ -162,7 +164,9 @@ private:
     //QList<Entry*> m_entries;
     QMap<const Feed*, Entry::List> entries;
     QMap<const Provider*, Entry::List> m_entriesByProvider;
-    QMap<Entry*, const Provider*> m_providers;
+    QMap<Entry*, const Provider*> m_entryToProviders;
+    
+    Provider::List m_providers;
 
     QMutex mMutex;
     bool m_hasDxs;
