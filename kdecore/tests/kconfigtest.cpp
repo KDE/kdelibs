@@ -1176,6 +1176,10 @@ void KConfigTest::testCreateDir()
     desktopFile.desktopGroup().writeEntry("key", "value");
     desktopFile.sync();
     QVERIFY(QFile::exists(file));
+
+    // Cleanup
+    QFile::remove(file);
+    QDir().rmdir(subdir);
 }
 
 void KConfigTest::testSyncOnExit()
@@ -1223,6 +1227,9 @@ void KConfigTest::testLocaleConfig()
     QCOMPARE(cg.readEntry("foostring", "ugly"), QString("nice"));
     QCOMPARE(cg.readEntry("foobool"), QString("true"));
     QCOMPARE(cg.readEntry("foobool", false), true);
+
+    // Cleanup
+    QFile::remove(file);
 }
 
 void KConfigTest::testKdeGlobals()
