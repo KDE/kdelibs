@@ -36,7 +36,7 @@
 #include <Soprano/Vocabulary/NAO>
 
 #include "ontology/class.h"
-#include "ontology/entity_p.h" // for qHash(QUrl)
+//#include "ontology/entity_p.h" // for qHash(QUrl)
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
