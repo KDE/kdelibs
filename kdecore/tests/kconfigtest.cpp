@@ -1254,6 +1254,59 @@ void KConfigTest::testLocaleConfig()
     QFile::remove(file);
 }
 
+
+void KConfigTest::testDeleteWhenLocalized()
+{
+    // Initialize the testdata
+    QDir dir;
+    QString subdir = QDir::home().canonicalPath() + "/.kde-unit-test/";
+    dir.mkpath(subdir);
+    QString file = subdir + "/localized_delete.test";
+    QFile::remove(file);
+    QFile f(file);
+    QVERIFY(f.open(QIODevice::WriteOnly));
+    QTextStream ts(&f);
+    ts << "[Test]\n";
+    ts << "foo=3\n";
+    ts << "foo[ca]=5\n";
+    ts << "foo[de]=7\n";
+    ts << "foostring=ugly\n";
+    ts << "foostring[ca]=nice\n";
+    ts << "foostring[de]=schön\n";
+    ts << "foobool=false\n";
+    ts << "foobool[ca]=true\n";
+    ts << "foobool[de]=wahr\n";
+    f.close();
+
+    // Load the testdata
+    QVERIFY(QFile::exists(file));
+    KConfig config(file);
+    config.setLocale("ca");
+    KConfigGroup cg(&config, "Test");
+
+    // Delete a value and check if all localizations are gone.
+    cg.deleteEntry("foostring");
+    cg.deleteEntry("foobool");
+    config.sync();
+
+    // The current state is (Comment out the deletion below and look at
+    // ~/.kde-unit-test/localized_delete.test).
+    // [...]
+    // foostring[ca]=nice
+    // foostring[$d]
+    // foostring[de]=schÃ¶n
+    // [...]
+    config.setLocale("de");
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foostring"));
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foobool"));
+
+    // Cleanup
+    QFile::remove(file);
+}
+
+
 void KConfigTest::testKdeGlobals()
 {
     {

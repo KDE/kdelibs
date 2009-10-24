@@ -46,6 +46,7 @@ private Q_SLOTS:
     void testEntryMap();
     void testInvalid();
     void testDelete();
+    void testDeleteWhenLocalized();
     void testDefaultGroup();
     void testEmptyGroup();
     void testMerge();
