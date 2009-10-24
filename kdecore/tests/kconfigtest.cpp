@@ -1266,41 +1266,119 @@ void KConfigTest::testDeleteWhenLocalized()
     QFile f(file);
     QVERIFY(f.open(QIODevice::WriteOnly));
     QTextStream ts(&f);
-    ts << "[Test]\n";
+    ts << "[Test4711]\n";
     ts << "foo=3\n";
     ts << "foo[ca]=5\n";
     ts << "foo[de]=7\n";
     ts << "foostring=ugly\n";
     ts << "foostring[ca]=nice\n";
-    ts << "foostring[de]=schön\n";
+    ts << "foostring[de]=schoen\n";
     ts << "foobool=false\n";
     ts << "foobool[ca]=true\n";
-    ts << "foobool[de]=wahr\n";
+    ts << "foobool[de]=true\n";
     f.close();
 
-    // Load the testdata
+    // Load the testdata. We start in locale "ca".
     QVERIFY(QFile::exists(file));
     KConfig config(file);
     config.setLocale("ca");
-    KConfigGroup cg(&config, "Test");
+    KConfigGroup cg(&config, "Test4711");
 
-    // Delete a value and check if all localizations are gone.
-    cg.deleteEntry("foostring");
+    // Delete a value. Once with localized, once with Normal
+    cg.deleteEntry("foostring", KConfigBase::Persistent | KConfigBase::Localized);
     cg.deleteEntry("foobool");
     config.sync();
 
-    // The current state is (Comment out the deletion below and look at
-    // ~/.kde-unit-test/localized_delete.test).
+    // The value is now gone. The others are still there. Everything correct
+    // here.
+    QVERIFY(!cg.hasKey("foostring"));
+    QVERIFY(!cg.hasKey("foobool"));
+    QVERIFY(cg.hasKey("foo"));
+
+    // The current state is: (Just return before this comment.)
     // [...]
-    // foostring[ca]=nice
-    // foostring[$d]
-    // foostring[de]=schÃ¶n
+    // foobool[ca]=true
+    // foobool[$d]
+    // foobool[de]=wahr
+    // foostring[ca][$d]
+    // foostring=ugly
+    // foostring[de]=schoen
     // [...]
+
+    // Now switch the locale to "de" and repeat the checks. Results should be
+    // the same. But they currently are not. The localized value are
+    // independent of each other. All values are still there in "de".
     config.setLocale("de");
     QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
     QVERIFY(!cg.hasKey("foostring"));
     QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
     QVERIFY(!cg.hasKey("foobool"));
+    QVERIFY(cg.hasKey("foo"));
+    // Check where the wrong values come from.
+    // We get the "de" value.
+    QCOMPARE(cg.readEntry("foostring", "nothing"), QString("schoen"));
+    // We get the "de" value.
+    QCOMPARE(cg.readEntry("foobool", false), true);
+
+    // Now switch the locale back "ca" and repeat the checks. Results are
+    // again different.
+    config.setLocale("ca");
+    // This line worked above. But now it fails.
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foostring"));
+    // This line worked above too.
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foobool"));
+    QVERIFY(cg.hasKey("foo"));
+    // Check where the wrong values come from.
+    // We get the primary value because the "ca" value was deleted.
+    QCOMPARE(cg.readEntry("foostring", "nothing"), QString("ugly"));
+    // We get the "ca" value.
+    QCOMPARE(cg.readEntry("foobool", false), true);
+
+    // Now test the deletion of a group.
+    cg.deleteGroup();
+    config.sync();
+
+    // Current state: The same as above [$d] for all values.
+
+    // The group still exists but the values are all gone.
+    QVERIFY(cg.exists());
+    QVERIFY(!cg.hasKey("foo"));
+    QVERIFY(!cg.hasKey("foostring"));
+    QVERIFY(!cg.hasKey("foobool"));
+
+    // Now switch the locale to "de" and repeat the checks. All values
+    // still here because only the primary values are deleted.
+    config.setLocale("de");
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foo"));
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foostring"));
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foobool"));
+    // Check where the wrong values come from.
+    // We get the "de" value.
+    QCOMPARE(cg.readEntry("foostring", "nothing"), QString("schoen"));
+    // We get the "de" value.
+    QCOMPARE(cg.readEntry("foobool", false), true);
+    // We get the "de" value.
+    QCOMPARE(cg.readEntry("foo", 0), 7);
+
+    // Now switch the locale to "ca" and repeat the checks
+    // "foostring" is now really gone because both the primary value and the
+    // "ca" value are deleted.
+    config.setLocale("ca");
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foo"));
+    QVERIFY(!cg.hasKey("foostring"));
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
+    QVERIFY(!cg.hasKey("foobool"));
+    // Check where the wrong values come from.
+    // We get the "ca" value.
+    QCOMPARE(cg.readEntry("foobool", false), true);
+    // We get the "ca" value.
+    QCOMPARE(cg.readEntry("foo", 0), 5);
 
     // Cleanup
     QFile::remove(file);
