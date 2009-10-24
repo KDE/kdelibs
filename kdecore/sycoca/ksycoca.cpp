@@ -138,7 +138,7 @@ bool KSycocaPrivate::tryMmap()
         return false;
     } else {
 #ifdef HAVE_MADVISE
-        (void) posix_madvise((void*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
+        (void) posix_madvise((void*)sycoca_mmap, sycoca_size, POSIX_MADV_WILLNEED);
 #endif // HAVE_MADVISE
         return true;
     }
