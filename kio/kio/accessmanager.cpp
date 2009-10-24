@@ -22,15 +22,21 @@
  */
 
 #include "accessmanager.h"
-
 #include "accessmanagerreply_p.h"
-
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
 
 #include <kdebug.h>
 #include <kio/job.h>
 #include <kio/scheduler.h>
+#include <kconfiggroup.h>
+#include <ksharedconfig.h>
+
+#include <QtCore/QUrl>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusReply>
+
 
 namespace KIO {
 
@@ -41,6 +47,19 @@ public:
     bool externalContentAllowed;
     static KIO::MetaData metaDataForRequest(QNetworkRequest request);
 };
+
+namespace Integration {
+
+class CookieJar::CookieJarPrivate
+{
+public:
+  CookieJarPrivate(): windowId(-1), enabled(true) {}
+
+  qlonglong windowId;
+  bool enabled;
+};
+
+}
 
 }
 
@@ -162,5 +181,67 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
 
     return metaData;
 }
+
+
+using namespace KIO::Integration;
+
+CookieJar::CookieJar(QObject* parent)
+          :QNetworkCookieJar(parent), d(new CookieJar::CookieJarPrivate) {
+    reparseConfiguration();
+}
+
+CookieJar::~CookieJar() {
+    delete d;
+}
+
+qlonglong CookieJar::windowId() const {
+    return d->windowId;
+}
+
+QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
+    QList<QNetworkCookie> cookieList;
+
+    if (d->enabled) {
+        QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
+        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), d->windowId);
+
+        if (reply.isValid()) {
+            cookieList << reply.value().toUtf8();
+            //kDebug() << url.host() << reply.value();
+        } else {
+            kWarning() << "Unable to communicate with the cookiejar!";
+        }
+    }
+
+    return cookieList;
+}
+
+bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url) {
+    if (d->enabled) {
+        QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
+
+        QByteArray cookieHeader;
+        Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
+            cookieHeader = "Set-Cookie: ";
+            cookieHeader += cookie.toRawForm();
+            kcookiejar.call("addCookies", url.toString(), cookieHeader, d->windowId);
+            //kDebug() << "[" << d->windowId << "] Got Cookie: " << cookieHeader << " from " << url;
+        }
+
+        return !kcookiejar.lastError().isValid();
+    }
+
+    return false;
+}
+
+void CookieJar::setWindowId(qlonglong id) {
+    d->windowId = id;
+}
+
+void CookieJar::reparseConfiguration() {
+    KConfigGroup cfg = KSharedConfig::openConfig("kcookiejarrc", KConfig::NoGlobals)->group("Cookie Policy");
+    d->enabled = cfg.readEntry("Cookies", true);
+}
+
 
 #include "accessmanager.moc"
