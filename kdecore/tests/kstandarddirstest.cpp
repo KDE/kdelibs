@@ -319,12 +319,12 @@ void KStandarddirsTest::testRestrictedResources()
     // Check unrestricted results first
     const QStringList appsDirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
     const QString kdeDataApps = KStandardDirs::realPath(KDEDIR "/share/applications/");
+    QCOMPARE(appsDirs.first(), localAppsDir);
     QVERIFY(appsDirs.contains(kdeDataApps));
-    QVERIFY(appsDirs.contains(localAppsDir));
     const QStringList dataDirs = KGlobal::dirs()->findDirs("data", "qttest");
-    QVERIFY(dataDirs.contains(localDataDir));
+    QCOMPARE(dataDirs.first(), localDataDir);
     const QStringList otherDataDirs = KGlobal::dirs()->findDirs("data", "other");
-    QVERIFY(otherDataDirs.contains(localOtherDataDir));
+    QCOMPARE(otherDataDirs.first(), localOtherDataDir);
 
     // Initialize restrictions.
     // Need a new componentdata to trigger restricted-resource initialization
