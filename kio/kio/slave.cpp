@@ -20,8 +20,6 @@
 
 #include "slave.h"
 
-#include <config.h>
-
 #include <time.h>
 #include <errno.h>
 #include <unistd.h>

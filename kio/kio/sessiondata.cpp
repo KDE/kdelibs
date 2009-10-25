@@ -21,8 +21,6 @@
 #include "sessiondata.h"
 #include "sessiondata.moc"
 
-#include <config.h>
-
 #include <QtCore/QList>
 #include <QtCore/QTextCodec>
 
