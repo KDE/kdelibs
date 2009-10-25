@@ -40,13 +40,14 @@ using namespace KNS3;
 class KNS3::ClientPrivate
 {
 public:
-    ClientPrivate(QWidget * parent)
+    ClientPrivate(QWidget * parent, Client * client)
         : m_command(ClientPrivate::command_none),
         m_uploaddialog(NULL),
         m_downloaddialog(NULL),
         m_uploadedEntry(NULL),
         m_modal(false),
 		m_parent(parent),
+		p(client),
         m_loop(0),
         m_engine(new Engine(parent))
     {
@@ -73,6 +74,7 @@ public:
     KNS3::Provider::List m_providers;
     bool m_modal;
 	QWidget * m_parent;
+	Client * p;
     QSet<KNS3::Entry*> m_changedEntries;
     QEventLoop* m_loop;
     KNS3::Engine * m_engine;
@@ -155,7 +157,7 @@ void ClientPrivate::workflow()
         //connect(m_downloaddialog,
         //        SIGNAL(destroyed(QObject*)),
         //        SLOT(slotDownloadDialogDestroyed()));
-        QObject::connect(m_downloaddialog, SIGNAL(finished()), m_parent, SLOT(slotDownloadDialogClosed()));
+        QObject::connect(m_downloaddialog, SIGNAL(finished()), p, SLOT(slotDownloadDialogClosed()));
         //kDebug() << "done adding!";
 
         m_downloaddialog->show();
