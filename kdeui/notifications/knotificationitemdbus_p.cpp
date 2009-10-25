@@ -153,7 +153,7 @@ KNotificationItemDBus::KNotificationItemDBus(KNotificationItem *parent)
     m_dbus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, m_service))
 {
    new NotificationItemAdaptor(this);
-   kDebug() << "service is" << m_service;
+   kDebug(299) << "service is" << m_service;
    m_dbus.registerService(m_service);
    m_dbus.registerObject("/NotificationItem", this);
 }
