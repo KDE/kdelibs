@@ -29,7 +29,6 @@
 // Local
 #include "kwebview.h"
 #include "networkaccessmanager_p.h"
-#include "networkcookiejar_p.h"
 #include "kwebpluginfactory.h"
 
 // KDE
@@ -74,7 +73,7 @@ KWebPage::KWebPage(QObject *parent)
 
     // KDE Cookiejar (KCookieJar) integration...
     qlonglong windowId = view()->window()->winId();
-    KDEPrivate::NetworkCookieJar *cookiejar = new KDEPrivate::NetworkCookieJar;
+    KIO::Integration::CookieJar *cookiejar = new KIO::Integration::CookieJar;
     cookiejar->setWindowId(windowId);
     networkAccessManager()->setCookieJar(cookiejar);
     setSessionMetaData(QL1("window-id"), QString::number(windowId));

@@ -32,7 +32,7 @@ namespace KDEPrivate {
   *
   * @author Dawit Alemayehu <adawit @ kde.org>
   */
-class NetworkAccessManager : public KIO::AccessManager
+class NetworkAccessManager : public KIO::Integration::AccessManager
 {
   Q_OBJECT
 

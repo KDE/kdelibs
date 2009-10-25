@@ -59,7 +59,7 @@ class NetworkAccessManager::NetworkAccessManagerPrivate
 };
 
 NetworkAccessManager::NetworkAccessManager(QObject *parent)
-                                 :KIO::AccessManager(parent),
+                                 :KIO::Integration::AccessManager(parent),
                                   d(new KDEPrivate::NetworkAccessManager::NetworkAccessManagerPrivate)
 {
 }

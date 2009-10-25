@@ -15,7 +15,6 @@ set(kdewebkit_LIB_SRCS
     kwebpage.cpp
     kwebview.cpp
     kwebpluginfactory.cpp
-    networkcookiejar_p.cpp
     networkaccessmanager_p.cpp
 )
 
@@ -28,8 +27,7 @@ target_link_libraries(kdewebkit
     ${QT_QTXML_LIBRARY}
 )
 
-#set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}) ### for kdelibs
-set_target_properties(kdewebkit PROPERTIES VERSION 1.0.0 SOVERSION 1) # for the moment keep something low...
+set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
 #install(TARGETS kdewebkit EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS}) ### for kdelibs
 install(TARGETS kdewebkit ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -39,5 +37,4 @@ install(FILES
     kwebpluginfactory.h
     kwebpage.h
     kwebview.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/kdewebkit/ COMPONENT Devel)
-#     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel) ### for kdelibs
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
