@@ -116,7 +116,7 @@ if (KAUTH_BACKEND STREQUAL "POLKITQT")
     )
 
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
-elseif (KAUTH_BACKEND STREQUAL "APPLE")
+elseif (KAUTH_BACKEND STREQUAL "OSX")
     message(STATUS "Building Apple KAuth backend")
 
     set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -367,7 +367,7 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 set(kauth_policy_gen_SRCS
     auth/policy-gen/policy-gen.cpp )
 
-if(KAUTH_BACKEND STREQUAL "APPLE")
+if(KAUTH_BACKEND STREQUAL "OSX")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/mac/kauth-policy-gen-mac.cpp )
 elseif(KAUTH_BACKEND STREQUAL "POLKITQT")
