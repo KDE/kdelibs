@@ -72,7 +72,7 @@ Loader::Loader()
 
 Loader::~Loader()
 {
-    kDebug()<<"Removing loader : "<< this;
+    //kDebug()<<"Removing loader : "<< this;
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
@@ -288,7 +288,7 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
                 d->languageClients[*itr].prepend(client);
         }
 
-        kDebug() << "Successfully loaded plugin:" << service->entryPath();
+        //kDebug() << "Successfully loaded plugin:" << service->entryPath();
     } else {
         kDebug() << error;
     }
