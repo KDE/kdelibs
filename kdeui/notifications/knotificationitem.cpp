@@ -72,7 +72,7 @@ KNotificationItem::~KNotificationItem()
 
 QString KNotificationItem::id() const
 {
-    //kDebug() << "id requested" << d->id;
+    //kDebug(299) << "id requested" << d->id;
     return d->id;
 }
 
@@ -641,7 +641,7 @@ void KNotificationItemPrivate::init(const QString &extraId)
 
 void KNotificationItemPrivate::registerToDaemon()
 {
-    kDebug() << "Registering a client interface to the system tray daemon";
+    kDebug(299) << "Registering a client interface to the system tray daemon";
     if (!notificationItemWatcher) {
         QString interface("org.kde.NotificationItemWatcher");
         notificationItemWatcher = new org::kde::NotificationItemWatcher(interface, "/NotificationItemWatcher",
@@ -652,13 +652,13 @@ void KNotificationItemPrivate::registerToDaemon()
         notificationItemWatcher->ProtocolVersion() == s_protocolVersion) {
 
         if (notificationItemWatcher->IsNotificationHostRegistered()) {
-            kDebug() << "service is" << notificationItemDbus->service();
+            kDebug(299) << "service is" << notificationItemDbus->service();
             notificationItemWatcher->RegisterService(notificationItemDbus->service());
             setLegacySystemTrayEnabled(false);
             QObject::disconnect(notificationItemWatcher, SIGNAL(NotificationHostRegistered()), q, SLOT(registerToDaemon()));
         }
     } else {
-        kDebug()<<"System tray daemon not reachable or no registered system trays";
+        kDebug(299)<<"System tray daemon not reachable or no registered system trays";
         setLegacySystemTrayEnabled(true);
     }
 }
@@ -669,7 +669,7 @@ void KNotificationItemPrivate::serviceChange(const QString& name, const QString&
     if (name == "org.kde.NotificationItemWatcher") {
         if (newOwner.isEmpty()) {
             //unregistered
-            kDebug() << "Connection to the systemtray daemon lost";
+            kDebug(299) << "Connection to the systemtray daemon lost";
             legacy = true;
         } else if (oldOwner.isEmpty()) {
             //registered
@@ -688,7 +688,7 @@ void KNotificationItemPrivate::serviceChange(const QString& name, const QString&
         return;
     }
 
-    kDebug() << "Service " << name << "status change, old owner:" << oldOwner << "new:" << newOwner;
+    kDebug(299) << "Service " << name << "status change, old owner:" << oldOwner << "new:" << newOwner;
 
     if (legacy == (systemTrayIcon != 0)) {
         return;
@@ -696,7 +696,7 @@ void KNotificationItemPrivate::serviceChange(const QString& name, const QString&
 
     if (legacy) {
         //unregistered
-        kDebug()<<"Connection to the systemtray daemon lost";
+        kDebug(299)<<"Connection to the systemtray daemon lost";
         setLegacySystemTrayEnabled(true);
     } else {
         //registered
