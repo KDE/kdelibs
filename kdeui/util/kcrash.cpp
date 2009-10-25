@@ -259,7 +259,7 @@ KCrash::defaultCrashHandler (int sig)
             return;
         }
 
-          const char * argv[24]; // don't forget to update this
+          const char * argv[25]; // don't forget to update this
           int i = 0;
 
           // argument 0 has to be drkonqi
@@ -329,6 +329,9 @@ KCrash::defaultCrashHandler (int sig)
 
           if ( s_flags & SaferDialog )
             argv[i++] = "--safer";
+
+          if ((s_flags & AutoRestart) && s_autoRestartCommand)
+            argv[i++] = "--restarted"; //tell drkonqi if the app has been restarted
 
           // NULL terminated list
           argv[i] = NULL;
