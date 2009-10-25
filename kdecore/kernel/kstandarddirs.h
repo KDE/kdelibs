@@ -365,10 +365,12 @@ public:
 
     /**
      * Tries to find all directories whose names consist of the
-     * specified type and a relative path. So would
-     * findDirs("apps", "Settings") return
-     * @li /opt/kde/share/applnk/Settings/
+     * specified type and a relative path. So
+     * findDirs("apps", "Settings") would return
      * @li /home/joe/.kde/share/applnk/Settings/
+     * @li /opt/kde/share/applnk/Settings/
+     *
+     * (from the most local to the most global)
      *
      * Note that it appends @c / to the end of the directories,
      * so you can use this right away as directory names.
