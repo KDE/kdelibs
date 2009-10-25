@@ -34,21 +34,13 @@
 #include <windows.h>
 #include <windowsx.h>
 
-//functions to register us as taskmanager
-typedef bool (WINAPI *PtrSetTaskmanWindow)(HWND);
-typedef bool (WINAPI *PtrRegisterShellHookWindow)(HWND);
-typedef bool (WINAPI *PtrDeregisterShellHookWindow)(HWND);
 
-
+//function to register us as taskmanager
 #define RSH_UNREGISTER  0
 #define RSH_REGISTER    1
 #define RSH_TASKMGR     3
 typedef bool (WINAPI *PtrRegisterShellHook)(HWND hWnd, DWORD method);
 
-
-static PtrSetTaskmanWindow pSetTaskmanWindow = 0;
-static PtrRegisterShellHookWindow pRegisterShellHookWindow = 0;
-static PtrDeregisterShellHookWindow pDeregisterShellHookWindow = 0;
 static PtrRegisterShellHook pRegisterShellHook = 0;
 static int WM_SHELLHOOK = -1;
 
@@ -96,6 +88,7 @@ class KWindowSystemPrivate : public QWidget
         bool winEvent ( MSG * message, long * result );
 
     private:
+	    bool activated; 
         int what;
         WId fakeHwnd;
         QList<WId> stackingOrder;
@@ -154,7 +147,7 @@ static QPixmap HIcon2QPixmap( HICON hIcon )
     return pix;
 }
 
-KWindowSystemPrivate::KWindowSystemPrivate(int what) : QWidget(0)
+KWindowSystemPrivate::KWindowSystemPrivate(int what) : QWidget(0),activated(false)
 {
     //i think there is no difference in windows we always load everything
     what = KWindowSystem::INFO_WINDOWS;
@@ -163,30 +156,24 @@ KWindowSystemPrivate::KWindowSystemPrivate(int what) : QWidget(0)
 
 void KWindowSystemPrivate::activate ( )
 {
+	//prevent us from doing the same over and over again
+	if(activated)
+		return;
+	activated = true;
+	
     //resolve winapi stuff
-    if(!pSetTaskmanWindow) pSetTaskmanWindow = (PtrSetTaskmanWindow)QLibrary::resolve("user32","SetTaskmanWindow");
-    if(!pRegisterShellHookWindow) pRegisterShellHookWindow = (PtrRegisterShellHookWindow)QLibrary::resolve("user32","RegisterShellHookWindow");
-    if(!pDeregisterShellHookWindow) pDeregisterShellHookWindow = (PtrDeregisterShellHookWindow)QLibrary::resolve("user32","DeregisterShellHookWindow");
     if(!pRegisterShellHook) pRegisterShellHook = (PtrRegisterShellHook)QLibrary::resolve("shell32",(LPCSTR)0xb5);
 
     //get the id for the shellhook message
     if(WM_SHELLHOOK==-1) {
         WM_SHELLHOOK = RegisterWindowMessage(TEXT("SHELLHOOK"));
-//         kDebug() << "WM_SHELLHOOK:" << WM_SHELLHOOK << winId();
+        //kDebug() << "WM_SHELLHOOK:" << WM_SHELLHOOK << winId();
     }
 
     bool shellHookRegistered = false;
-    if(pRegisterShellHook) {
+    if(pRegisterShellHook)
         shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
-    } else {
-        //i'm not sure if i have to do this, and what happens if some other process uses KWindowSystem
-        //if(pSetTaskmanWindow)
-        //    pSetTaskmanWindow(winId());
-
-        if(pRegisterShellHookWindow)
-            shellHookRegistered = pRegisterShellHookWindow(winId());
-    }
-
+ 
     if(!shellHookRegistered)
         //use a timer and poll the windows ?
           kDebug() << "Could not create shellhook to receive WindowManager Events";
@@ -197,12 +184,8 @@ void KWindowSystemPrivate::activate ( )
 
 KWindowSystemPrivate::~KWindowSystemPrivate()
 {
-    if(pRegisterShellHook){
-        pRegisterShellHook(winId(),RSH_UNREGISTER);
-    }else{
-        if(pDeregisterShellHookWindow)
-            pDeregisterShellHookWindow(winId());
-    }
+    if(pRegisterShellHook)
+        pRegisterShellHook(winId(),RSH_UNREGISTER);		
 }
 
 /**
@@ -320,9 +303,9 @@ void KWindowSystemPrivate::windowAdded     (WId wid)
 void KWindowSystemPrivate::windowRemoved   (WId wid)
 {
 //     kDebug() << "window removed!";
+    KWindowSystem::s_d_func()->reloadStackList();
     emit KWindowSystem::self()->windowRemoved(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
-    KWindowSystem::s_d_func()->reloadStackList();
 }
 
 void KWindowSystemPrivate::windowActivated (WId wid)
