@@ -102,7 +102,7 @@ private:
 QHash<QString, QPointer<KDialog> > KNS3::ClientPrivate::s_dialogs;
 
 Client::Client(QWidget* parent)
-        : d(new ClientPrivate(parent))
+        : d(new ClientPrivate(parent,this))
 {
 }
 
