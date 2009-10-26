@@ -27,7 +27,7 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY kmenu	"Menú <guimenu>K</guimenu>">
-<!ENTITY BER	"botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
+<!ENTITY BER	"botó <mousebutton>esquerre</mousebutton> del ratolí"><!-- English: &LMB; -->
 <!ENTITY BMR	"botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
 <!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
 <!ENTITY BDR	"botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
@@ -44,9 +44,12 @@
 <!ENTITY revisor.Pep.Roca		'<othercredit role="reviewer"><firstname>Pep</firstname><surname>Roca</surname><affiliation><address><email>pep.roca@gmail.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 <!ENTITY traductor.Rafael.Carreras	'<othercredit role="translator"><firstname>Rafael</firstname><surname>Carreras</surname><affiliation><address><email>rcarreras@caliu.cat</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
 <!ENTITY revisor.Rafael.Carreras	'<othercredit role="reviewer"><firstname>Rafael</firstname><surname>Carreras</surname><affiliation><address><email>rcarreras@caliu.cat</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
+<!ENTITY traductor.Manuel.Tortosa	'<othercredit role="translator"><firstname>Manuel</firstname><surname>Tortosa</surname><affiliation><address><email>manutortosa@gmail.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
+<!ENTITY revisor.Manuel.Tortosa		'<othercredit role="reviewer"><firstname>Manuel</firstname><surname>Tortosa</surname><affiliation><address><email>manutortosa@gmail.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 
 <!-- CREDITS FOR TRANSLATORS -->
 <!-- Seguir el següent format '<para>Traductor/Revisor de la documentació: &credits.Nom.Cognom;</para>' -->
 <!ENTITY credits.Antoni.Bella		'Antoni Bella <email>bella5@teleline.es</email>'>
 <!ENTITY credits.Pep.Roca		'Pep Roca <email>pep.roca@gmail.com</email>'>
 <!ENTITY credits.Rafael.Carreras	'Rafael Carreras <email>rcarreras@caliu.cat</email>'>
+<!ENTITY credits.Manuel.Tortosa		'Manuel Tortosa <email>manutortosa@gmail.com</email>'>
