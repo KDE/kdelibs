@@ -22,7 +22,6 @@
 
 #include "knewstuff3/core/entry.h"
 #include "knewstuff3/core/installation.h"
-#include "knewstuff3/core/feed.h"
 #include "knewstuff3/core/security.h"
 
 #include "knewstuff3/xmlloader.h"

@@ -18,7 +18,6 @@
 #include "atticaprovider.h"
 
 #include "xmlloader.h"
-#include "core/feed.h"
 #include "core/provider_p.h"
 
 #include <kdebug.h>

@@ -28,7 +28,6 @@
 #include <ktitlewidget.h>
 
 #include <knewstuff3/engine.h>
-#include <knewstuff3/core/feed.h>
 #include <knewstuff3/core/category.h>
 
 #include "ui_DownloadDialog.h"
@@ -108,8 +107,8 @@ private Q_SLOTS:
     void slotProvidersFailed();
     
     /** slot to add an entry (connected to the engine's signalEntryAdded */
-    void slotEntryLoaded(KNS3::Entry *entry, const KNS3::Feed *feed, const KNS3::Provider *provider);
-    void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
+    //void slotEntryLoaded(KNS3::Entry *entry, const KNS3::Feed *feed, const KNS3::Provider *provider);
+    //void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
     void slotEntriesFailed();
     void slotPayloadFailed(KNS3::Entry * entry);
     void slotPayloadLoaded(KUrl url);
@@ -156,12 +155,12 @@ private:
 
     Engine *m_engine;
     QMap<QString, QString> categorymap;
-    QMap<const Feed*, KNS3::ItemsModel*> m_models;
+    QMap<const QString, KNS3::ItemsModel*> m_models;
     QSortFilterProxyModel * m_filteredModel;
     ItemsViewDelegate * mDelegate;
 
     //QList<Entry*> m_entries;
-    QMap<const Feed*, Entry::List> entries;
+    QMap<const QString, Entry::List> entries;
     QMap<const Provider*, Entry::List> m_entriesByProvider;
     QMap<Entry*, const Provider*> m_entryToProviders;
     

@@ -376,48 +376,48 @@ void DownloadDialog::slotEntriesFailed()
 }
 // FIXME: below here, those are for traditional GHNS
 
-void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provider *provider)
-{
-    Entry::List e = entries[feed];
-    e.append(entry);
-    entries[feed] = e;
+//void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provider *provider)
+//{
+//    Entry::List e = entries[feed];
+//    e.append(entry);
+//    entries[feed] = e;
 
-    if (!m_entriesByProvider.contains(provider)) {
-        kDebug(551) << "adding provider " << provider->name().representation() << " to combobox";
-        //m_sourceCombo->addItem(provider->name().representation());
-    }
-    m_entriesByProvider[provider].append(entry);
+//    if (!m_entriesByProvider.contains(provider)) {
+//        kDebug(551) << "adding provider " << provider->name().representation() << " to combobox";
+//        //m_sourceCombo->addItem(provider->name().representation());
+//    }
+//    m_entriesByProvider[provider].append(entry);
 
-    // FIXME: what if entry belongs to more than one provider at once?
-    m_entryToProviders[entry] = provider;
+//    // FIXME: what if entry belongs to more than one provider at once?
+//    m_entryToProviders[entry] = provider;
 
-    mMutex.lock();
+//    mMutex.lock();
 
-    if (!m_models.value(feed)) {
-        // new feed
-        kDebug(551) << "making a new model for this feed" << feed;
-        //m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
-        connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)),
-                m_models[feed], SLOT(slotEntryChanged(KNS3::Entry*)));
-        //if (provider->name().representation() == m_sourceCombo->currentText()) {
-            // this provider is selected, so refresh the feed combobox
-            //populateSortCombo(provider);
-        //}
-    }
-    mMutex.unlock();
+//    if (!m_models.value(feed)) {
+//        // new feed
+//        kDebug(551) << "making a new model for this feed" << feed;
+//        //m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
+//        connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)),
+//                m_models[feed], SLOT(slotEntryChanged(KNS3::Entry*)));
+//        //if (provider->name().representation() == m_sourceCombo->currentText()) {
+//            // this provider is selected, so refresh the feed combobox
+//            //populateSortCombo(provider);
+//        //}
+//    }
+//    mMutex.unlock();
 
-    KNS3::ItemsModel* thisModel = m_models.value(feed);
+//    KNS3::ItemsModel* thisModel = m_models.value(feed);
 
-    Q_ASSERT(thisModel != NULL);
-    thisModel->addEntry(entry);
-}
+//    Q_ASSERT(thisModel != NULL);
+//    thisModel->addEntry(entry);
+//}
 
-void DownloadDialog::slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed)
-{
-    Q_ASSERT(m_models[feed] != NULL);
+//void DownloadDialog::slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed)
+//{
+//    Q_ASSERT(m_models[feed] != NULL);
 
-    m_models[feed]->removeEntry(entry);
-}
+//    m_models[feed]->removeEntry(entry);
+//}
 
 void DownloadDialog::refresh()
 {

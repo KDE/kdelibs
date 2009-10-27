@@ -22,7 +22,6 @@
 #include "knewstuff3/core/provider_p.h"
 
 #include "xmlloader.h"
-#include "core/feed.h"
 
 #include <kdebug.h>
 #include <klocale.h>
