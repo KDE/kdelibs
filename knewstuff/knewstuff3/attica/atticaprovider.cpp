@@ -37,16 +37,16 @@ namespace KNS3
 class AtticaProviderPrivate :public ProviderPrivate
 {
 public:
+    QString m_categories;
+    Attica::ProviderManager m_providerManager;
+    Attica::Provider m_provider;
+    
     AtticaProviderPrivate()
     {
         // FIXME maybe we want something that is not in the category Wallpaper 640 by 480 at some point
         // the categories can be gotten from the provider
-        m_categories = QLatin1String("1");
+        m_categories = QLatin1String("175");
     }
-
-    QString m_categories;
-    Attica::ProviderManager m_providerManager;
-    Attica::Provider m_provider;
 };
 
 AtticaProvider::AtticaProvider()
@@ -93,14 +93,17 @@ QDomElement AtticaProvider::providerXML() const
     QDomDocument doc;
 
     QDomElement el = doc.createElement("provider");
-    // TODO
+    // FIXME if needed, create xml
     return el;
 }
 
 void AtticaProvider::providerLoaded()
 {
     Q_D(AtticaProvider);
-    kDebug() << "Attica provider initialized: " << d->mName.representation();
+    if (d->m_providerManager.providers().isEmpty()) {
+        return;
+    }
+    d->m_provider = d->m_providerManager.providers().first();
     emit providerInitialized(this);
 }
 
@@ -127,7 +130,6 @@ void AtticaProvider::loadEntries(const QString& sortMode, const QString& searchS
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
     Q_D(AtticaProvider);
-
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 

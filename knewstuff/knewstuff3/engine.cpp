@@ -440,9 +440,6 @@ void Engine::providerInitialized(Provider* p)
 
 void Engine::slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
 {
-    kDebug() << "Loaded entries: " << entries.size();
-    kDebug() << "Name: " << entries.first()->name().representation();
-
     emit signalEntriesLoaded(entries);
     
     //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
