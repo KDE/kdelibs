@@ -61,17 +61,16 @@ namespace KNS3
             emit signalFailed();
             return;
         }
-
+/*
         kDebug(550) << "--Xml Loader-START--";
         kDebug(550) << QString::fromUtf8(m_jobdata);
         kDebug(550) << "--Xml Loader-END--";
-
+*/
         QDomDocument doc;
         if (!doc.setContent(m_jobdata)) {
             emit signalFailed();
             return;
         }
-
         emit signalLoaded(doc);
     }
 

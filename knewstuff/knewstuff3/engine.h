@@ -234,7 +234,10 @@ Q_SIGNALS:
     void signalProviderChanged(KNS3::Provider *provider);
     void signalProvidersFailed();
 
-    //void signalEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+
+    //void signalEntryLoaded(KNS3::Entry *entry);
+    void signalEntriesLoaded(KNS3::Entry::List entries);
+
     //void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
     void signalEntryChanged(KNS3::Entry *entry);
     void signalEntriesFailed();
@@ -268,7 +271,8 @@ private Q_SLOTS:
     // called when a provider is ready to work
     void providerInitialized(KNS3::Provider*);
 
-    void slotEntriesLoaded(KNS3::Entry::List list);
+    void slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
+    
     void slotEntriesFailed();
 
     void slotPayloadResult(KJob *job);
@@ -355,6 +359,7 @@ private:
 
     bool m_initialized;
     CachePolicy m_cachepolicy;
+    public slots:
 };
 
 }

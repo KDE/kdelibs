@@ -90,6 +90,10 @@ public:
 
 public slots:
     void slotEntryChanged(KNS3::Entry * entry);
+
+
+    void slotEntriesLoaded(KNS3::Entry::List entries);
+    
 private slots:
     void slotEntryPreviewLoaded(const QString &url, const QImage & pix);
 private:

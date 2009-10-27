@@ -432,10 +432,19 @@ void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name().representation();
     emit signalProviderLoaded(p);
+
+    connect(p, SIGNAL(loadingFinished(QString,QString,int,int,int,Entry::List)), SLOT(slotEntriesLoaded(QString,QString,int,int,int,Entry::List)));
+    // TODO parameters according to search string etc
+    p->loadEntries();
 }
 
-void Engine::slotEntriesLoaded(KNS3::Entry::List list)
+void Engine::slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
 {
+    kDebug() << "Loaded entries: " << entries.size();
+    kDebug() << "Name: " << entries.first()->name().representation();
+
+    emit signalEntriesLoaded(entries);
+    
     //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
     //if (!loader) return;
     //const Provider *provider = loader->provider();

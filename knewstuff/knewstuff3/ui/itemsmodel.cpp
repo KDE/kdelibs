@@ -19,6 +19,8 @@
 #include "itemsmodel.h"
 
 #include <kdebug.h>
+#include <core/entry.h>
+
 #include "qasyncimage_p.h"
 
 namespace KNS3
@@ -108,6 +110,13 @@ KNS3::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
         return 0;
     else
         return m_entries[index.row()];
+}
+
+void ItemsModel::slotEntriesLoaded(Entry::List entries)
+{
+    foreach(KNS3::Entry* entry, entries) {
+        addEntry(entry);
+    }
 }
 
 void ItemsModel::addEntry(Entry * entry)

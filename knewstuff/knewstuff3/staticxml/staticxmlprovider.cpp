@@ -179,13 +179,12 @@ void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& sear
             d->mFeedLoaders.insert(sortMode, loader);
 
             loader->load(d->mDownloadUrls.value(sortMode));
-        }
-        else {
+            kDebug() << "Loader: " << loader;
+        } else {
             // static providers only ever have one page of data
             emit loadingFinished(sortMode, searchstring, page, 0, 1, Entry::List());
         }
-    }
-    else {
+    } else {
         emit loadingFailed(sortMode, searchstring, page);
     }
 }
@@ -193,12 +192,14 @@ void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& sear
 void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 {
     Q_D(StaticXmlProvider);
-    XmlLoader * loader = qobject_cast<XmlLoader*>(sender());
+    XmlLoader * loader = qobject_cast<KNS3::XmlLoader*>(sender());
     if (!loader)
     {
+        kWarning() << "Loader not found!";
         emit loadingFailed(QString(), QString(), 0);
         return;
     }
+
 
     // we have a loader, so see which sortmode it was used for
     QStringList::ConstIterator it;
@@ -211,10 +212,20 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         }
     }
 
+
     // load all the entries from the domdocument given
     Entry::List entries;
-    QDomNode n;
-    for (n = doc.firstChild(); !n.isNull(); n = n.nextSibling()) {
+    QDomElement element;
+
+    element = doc.documentElement();
+    kDebug() << "Document Element" << element.tagName();
+    kDebug() << "  First Child" << element.firstChildElement().tagName();
+
+    
+    QDomElement n;
+
+    for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
+        
         Entry * entry = new Entry;
         entry->setEntryXML(n.toElement());
         // check to see if we already have this entry

@@ -53,8 +53,6 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
 {
     setButtons(KDialog::None);
 
-    connect(m_engine, SIGNAL(signalProviderLoaded(KNS3::Provider*)), SLOT(slotProviderLoaded(KNS3::Provider*)));
-    
     connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
     connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)), SLOT(slotEntryChanged(KNS3::Entry*)));
     connect(m_engine, SIGNAL(signalPayloadFailed(KNS3::Entry*)), SLOT(slotPayloadFailed(KNS3::Entry*)));
@@ -62,6 +60,10 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
     connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
 
+    m_model = new ItemsModel(this);
+    connect(m_engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), m_model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
+
+    
     connect(m_engine, SIGNAL(signalEntryLoaded(KNS3::Entry*, const KNS3::Feed*, const KNS3::Provider*)),
             this, SLOT(slotEntryLoaded(KNS3::Entry*, const KNS3::Feed*, const KNS3::Provider*)));
     connect(m_engine, SIGNAL(signalEntryRemoved(KNS3::Entry*, const KNS3::Feed*)),
@@ -98,6 +100,10 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     m_listView->setModel(m_filteredModel);
     connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
             this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
+
+
+    m_filteredModel->setSourceModel(m_model);
+    
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
@@ -158,13 +164,6 @@ DownloadDialog::~DownloadDialog()
 {
     KConfigGroup group(KGlobal::config(), ConfigGroup);
     saveDialogSize(group, KConfigBase::Persistent);
-}
-
-void DownloadDialog::slotProviderLoaded(KNS3::Provider* provider)
-{
-    kDebug() << "slotProviderLoaded: " << provider->name().representation();
-    m_providers.append(provider);
-    refresh();
 }
 
 void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry)
@@ -510,13 +509,6 @@ void DownloadDialog::slotProgress(const QString & text, int percentage)
     m_progress->addProgress(text, percentage);
 }
 
-void DownloadDialog::slotProvidersFailed()
-{
-    kDebug(551) << "slotProvidersFailed";
-    KMessageBox::error(this,
-                       i18n("There was an error loading data providers."),
-                       i18n("Get Hot New Stuff"));
-}
 
 /*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )
 {

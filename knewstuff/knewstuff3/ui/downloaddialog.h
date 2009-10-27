@@ -102,13 +102,11 @@ public:
     void removeItem(Entry * entry);
 
 private Q_SLOTS:
-    // provider
-    void slotProviderLoaded(KNS3::Provider*);
-    void slotProvidersFailed();
-    
+
     /** slot to add an entry (connected to the engine's signalEntryAdded */
     //void slotEntryLoaded(KNS3::Entry *entry, const KNS3::Feed *feed, const KNS3::Provider *provider);
     //void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
+    
     void slotEntriesFailed();
     void slotPayloadFailed(KNS3::Entry * entry);
     void slotPayloadLoaded(KUrl url);
@@ -155,7 +153,10 @@ private:
 
     Engine *m_engine;
     QMap<QString, QString> categorymap;
-    QMap<const QString, KNS3::ItemsModel*> m_models;
+    //QMap<const QString, KNS3::ItemsModel*> m_models;
+
+    KNS3::ItemsModel* m_model;
+    
     QSortFilterProxyModel * m_filteredModel;
     ItemsViewDelegate * mDelegate;
 

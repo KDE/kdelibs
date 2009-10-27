@@ -270,9 +270,11 @@ QStringList KNS3::Entry::uninstalledFiles() const
 bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
 {
     Q_D(Entry);
-    if (xmldata.tagName() != "stuff")
+    if (xmldata.tagName() != "stuff") {
+        kWarning() << "Parsing Entry from invalid XML";
         return false;
-
+    }
+    
     d->mCategory = xmldata.attribute("category");
 
     QDomNode n;
