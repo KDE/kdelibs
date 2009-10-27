@@ -123,7 +123,6 @@ private Q_SLOTS:
     void slotInfo(QString provider, QString server, QString version);
     void slotComments(QStringList comments);
     
-    void slotSwitchProvider();
     void slotCategories(QList<Category*> categories);
     void slotEntries(QList<Entry*> entries);
     void slotFault();

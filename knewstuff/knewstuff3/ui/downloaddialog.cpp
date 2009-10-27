@@ -106,7 +106,6 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     // FIXME KDE4PORT: if we use a left bar image, find a better way
 
 
-    connect(m_sourceCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSwitchProvider()));
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
@@ -331,34 +330,6 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
     }
 }
 
-
-void DownloadDialog::slotSwitchProvider()
-{
-    kDebug(551) << "slotLoadProviderDXS called";
-    //QString category = m_sourceCombo->currentText();
-    //QString categoryname = categorymap[category];
-    QString providerName = m_sourceCombo->currentText();
-
-    QList<const Provider*> providers = m_entriesByProvider.keys();
-    const Provider * provider = 0;
-
-    for (int i = 0; i < providers.size(); ++i) {
-        if (providers[i]->name().representation() == providerName) {
-            provider = providers[i];
-            // update the sortCombo with this provider's feeds
-            populateSortCombo(providers[i]);
-
-            //Feed * selectedFeed = providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString());
-            //m_filteredModel->setSourceModel(m_models.value(selectedFeed));
-            //m_list->setProvider(providers[i],
-            //    providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString()));
-            break;
-        }
-    }
-    //m_hasDxs = (provider && m_engine->dxsObject(provider) != NULL);
-    //m_collaborationButton->setEnabled(m_hasDxs);
-}
-
 void DownloadDialog::slotUpdateSearch()
 {
     m_searchTimer->stop();
@@ -380,7 +351,7 @@ void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
         //kDebug(551) << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
         // FIXME: use icon from remote URLs (see non-DXS providers as well)
-        m_sourceCombo->addItem(icon, category->name().representation());
+        //m_sourceCombo->addItem(icon, category->name().representation());
         categorymap[category->name().representation()] = category->id();
         // FIXME: better use global id, since names are not guaranteed
         //        to be unique
@@ -388,7 +359,7 @@ void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
 
     //m_sourceCombo->setEnabled(true);
 
-    slotSwitchProvider();
+    //slotSwitchProvider();
 }
 
 void DownloadDialog::slotEntries(QList<KNS3::Entry*> _entries)
@@ -413,7 +384,7 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
 
     if (!m_entriesByProvider.contains(provider)) {
         kDebug(551) << "adding provider " << provider->name().representation() << " to combobox";
-        m_sourceCombo->addItem(provider->name().representation());
+        //m_sourceCombo->addItem(provider->name().representation());
     }
     m_entriesByProvider[provider].append(entry);
 
@@ -428,10 +399,10 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
         //m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
         connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)),
                 m_models[feed], SLOT(slotEntryChanged(KNS3::Entry*)));
-        if (provider->name().representation() == m_sourceCombo->currentText()) {
+        //if (provider->name().representation() == m_sourceCombo->currentText()) {
             // this provider is selected, so refresh the feed combobox
-            populateSortCombo(provider);
-        }
+            //populateSortCombo(provider);
+        //}
     }
     mMutex.unlock();
 
@@ -450,16 +421,16 @@ void DownloadDialog::slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed
 
 void DownloadDialog::refresh()
 {
-    m_sourceCombo->clear();
+    //m_sourceCombo->clear();
 
     foreach(Provider* provider, m_providers) {
         //QPixmap icon = DesktopIcon(QString(), 16);
         //d->m_typeCombo->addItem(icon, feed->name().representation());
-        m_sourceCombo->addItem(provider->name().representation());
+        //m_sourceCombo->addItem(provider->name().representation());
         // FIXME: see DXS categories
     }
 
-    slotSwitchProvider();
+    //slotSwitchProvider();
 
     //// get the current provider
     //const Provider * selectedProvider = m_entriesByProvider.keys()[0];
