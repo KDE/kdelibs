@@ -56,6 +56,19 @@ QString _k_resolveSymLink(const QString &filename)
     return resolved;
 }
 
+bool _k_isNetworkFileSystem(const QString &fstype, const QString &devName)
+{
+    if (fstype == "nfs"
+     || fstype == "nfs4"
+     || fstype == "smbfs"
+     || fstype == "cifs"
+     || devName.startsWith("//")) {
+        return true;
+    }
+    return false;
+}
+
+
 void _k_updateMountPointsCache()
 {
     static bool firstCall = true;
@@ -81,10 +94,12 @@ void _k_updateMountPointsCache()
 
     struct mntent *fe;
     while ((fe = getmntent(fstab)) != 0) {
-        const QString device = _k_resolveSymLink(QFile::decodeName(fe->mnt_fsname));
-        const QString mountpoint = _k_resolveSymLink(QFile::decodeName(fe->mnt_dir));
+        if (!_k_isNetworkFileSystem(fe->mnt_type, fe->mnt_fsname)) {
+            const QString device = _k_resolveSymLink(QFile::decodeName(fe->mnt_fsname));
+            const QString mountpoint = _k_resolveSymLink(QFile::decodeName(fe->mnt_dir));
 
-        globalMountPointsCache->insert(device, mountpoint);
+            globalMountPointsCache->insert(device, mountpoint);
+        }
     }
 
     endmntent(fstab);
@@ -117,14 +132,16 @@ void _k_updateMountPointsCache()
             continue;
         }
 #endif
+        //prevent accessing a blocking directory
+        if (!_k_isNetworkFileSystem(items.at(2), items.at(0))) {
+            const QString device = _k_resolveSymLink(items.at(0));
+            const QString mountpoint = _k_resolveSymLink(items.at(1));
 
-        const QString device = _k_resolveSymLink(items.at(0));
-        const QString mountpoint = _k_resolveSymLink(items.at(1));
+            globalMountPointsCache->insert(device, mountpoint);
+        }
+    }
 
-        globalMountPointsCache->insert(device, mountpoint);
-   }
-
-   fstab.close();
+    fstab.close();
 #endif
 }
 
