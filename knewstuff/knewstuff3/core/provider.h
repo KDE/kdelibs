@@ -109,7 +109,8 @@ namespace KNS3
         void providerInitialized(KNS3::Provider*);
             
         void loadingFinished(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
-
+		void loadingFailed(const QString& sortMode, const QString& searchstring, int page);
+		
         void comments(Entry *, int page, int pageSize, int totalpages);
         void commentAdded(Entry *);
         void commentAddFailed(Entry *);

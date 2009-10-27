@@ -778,7 +778,7 @@ void Engine::loadProvidersCache()
         ////    loadEntries(p);
         ////}
 
-        //provider = provider.nextSiblingElement("provider");
+        provider = provider.nextSiblingElement("provider");
     }
 
     if (m_cachepolicy == CacheOnly) {

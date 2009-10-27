@@ -69,6 +69,9 @@ namespace KNS3
 
     protected:
         StaticXmlProvider(StaticXmlProviderPrivate &dd);
+	private Q_SLOTS:
+		void slotFeedFileLoaded(const QDomDocument&);
+		void slotFeedFailed();
     private:
         Q_DECLARE_PRIVATE(StaticXmlProvider)
     };

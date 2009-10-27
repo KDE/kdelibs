@@ -46,8 +46,8 @@ public:
         m_downloaddialog(NULL),
         m_uploadedEntry(NULL),
         m_modal(false),
-		m_parent(parent),
-		p(client),
+	m_parent(parent),
+	p(client),
         m_loop(0),
         m_engine(new Engine(parent))
     {
@@ -73,8 +73,8 @@ public:
     KNS3::Entry *m_uploadedEntry;
     KNS3::Provider::List m_providers;
     bool m_modal;
-	QWidget * m_parent;
-	Client * p;
+    QWidget * m_parent;
+    Client * p;
     QSet<KNS3::Entry*> m_changedEntries;
     QEventLoop* m_loop;
     KNS3::Engine * m_engine;

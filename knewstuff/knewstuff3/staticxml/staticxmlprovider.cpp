@@ -21,7 +21,6 @@
 #include "staticxmlprovider.h"
 
 #include "xmlloader.h"
-#include "core/feed.h"
 #include "knewstuff3/core/provider_p.h"
 
 #include <kdebug.h>
@@ -43,8 +42,8 @@ public:
     
     // cache of all entries known from this provider so far, mapped by their id
     QMap<QString, Entry*> mEntries;
-    QMap<QString, Feed*> mFeeds;
-
+    QMap<QString, QStringList> mFeedEntries;
+	QMap<QString, XmlLoader*> mFeedLoaders;
 };
 
 StaticXmlProvider::StaticXmlProvider(   )
@@ -68,36 +67,24 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
     d->mUploadUrl = xmldata.attribute("uploadurl");
     d->mNoUploadUrl = xmldata.attribute("nouploadurl");
 
-    QString downloadurl = xmldata.attribute("downloadurl");
-    QString downloadlatest = xmldata.attribute("downloadurl-latest");
-    QString downloadscore = xmldata.attribute("downloadurl-score");
-    QString downloaddownloads = xmldata.attribute("downloadurl-downloads");
+    QString url = xmldata.attribute("downloadurl");
+    if (!url.isEmpty()) {
+        d->mDownloadUrls.insert(QString(), KUrl(url));
+    }
 
-    if (!downloadlatest.isEmpty()) {
-        Feed *feedlatest = new Feed();
-        feedlatest->setName(i18nc("describes the feed of the latest posted entries", "Latest"));
-        feedlatest->setFeedUrl(downloadlatest);
-        d->mFeeds.insert("latest", feedlatest);
+    url = xmldata.attribute("downloadurl-latest");
+    if (!url.isEmpty()) {
+        d->mDownloadUrls.insert("latest", KUrl(url));
     }
-    if (!downloadscore.isEmpty()) {
-        Feed *feedscore = new Feed();
-        feedscore->setName(i18n("Highest Rated"));
-        feedscore->setFeedUrl(downloadscore);
-        d->mFeeds.insert("score", feedscore);
+
+    url = xmldata.attribute("downloadurl-score");
+    if (!url.isEmpty()) {
+        d->mDownloadUrls.insert("score", KUrl(url));
     }
-    if (!downloaddownloads.isEmpty()) {
-        Feed *feeddownloads = new Feed();
-        feeddownloads->setName(i18n("Most Downloads"));
-        feeddownloads->setFeedUrl(downloaddownloads);
-        d->mFeeds.insert("downloads", feeddownloads);
-    }
-    if (!downloadurl.isEmpty()) {
-        Feed *feedgeneric = new Feed();
-        // feedgeneric->setName(i18n("Unsorted"));
-        // Currently this is used for latest
-        feedgeneric->setName(i18nc("describes the feed of the latest posted entries", "Latest"));
-        feedgeneric->setFeedUrl(downloadurl);
-        d->mFeeds.insert(QString(), feedgeneric);
+
+    url = xmldata.attribute("downloadurl-downloads");
+    if (!url.isEmpty()) {
+        d->mDownloadUrls.insert("downloads", KUrl(url));
     }
 
     // FIXME: what exactly is the following condition supposed to do?
@@ -121,12 +108,12 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
     // Validation
 
     if ((d->mNoUploadUrl.isValid()) && (d->mUploadUrl.isValid())) {
-        kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given";
+        kWarning(550) << "StaticXmlProvider: both uploadurl and nouploadurl given";
         return false;
     }
 
     if ((!d->mNoUploadUrl.isValid()) && (!d->mUploadUrl.isValid())) {
-        kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl given";
+        kWarning(550) << "StaticXmlProvider: neither uploadurl nor nouploadurl given";
         return false;
     }
 
@@ -163,13 +150,12 @@ QDomElement StaticXmlProvider::providerXML() const
         el.setAttribute("icon", d->mIcon.url());
     }
 
-    const QStringList feeds = d->mFeeds.keys();
+    const QStringList feeds = d->mDownloadUrls.keys();
     for (QStringList::ConstIterator it = feeds.begin(); it != feeds.end(); ++it) {
-        Feed *feed = d->mFeeds.value((*it));
         if ((*it).isEmpty())
-            el.setAttribute("downloadurl", feed->feedUrl().url());
+            el.setAttribute("downloadurl", d->mDownloadUrls.value((*it)).url());
         else
-            el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
+            el.setAttribute("downloadurl-" + (*it), d->mDownloadUrls.value((*it)).url());
     }
 
     return el;
@@ -178,15 +164,82 @@ QDomElement StaticXmlProvider::providerXML() const
 QStringList StaticXmlProvider::availableSortingCriteria() const
 {
     Q_D(const StaticXmlProvider);
-    return d->mFeeds.keys();
+    return d->mDownloadUrls.keys();
 }
 
 void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& searchstring, int page, int pageSize)
 {
-    // TODO first get the entries, then filter with searchString, finally emit the finished signal...
-    
+    Q_D(StaticXmlProvider);
+    if (d->mDownloadUrls.contains(sortMode)) {
+        if (page == 0) {
+            // TODO first get the entries, then filter with searchString, finally emit the finished signal...
+            XmlLoader * loader = new XmlLoader(this);
+            connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
+            connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
+            d->mFeedLoaders.insert(sortMode, loader);
+
+            loader->load(d->mDownloadUrls.value(sortMode));
+        }
+        else {
+            // static providers only ever have one page of data
+            emit loadingFinished(sortMode, searchstring, page, 0, 1, Entry::List());
+        }
+    }
+    else {
+        emit loadingFailed(sortMode, searchstring, page);
+    }
 }
 
+void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
+{
+    Q_D(StaticXmlProvider);
+    XmlLoader * loader = qobject_cast<XmlLoader*>(sender());
+    if (!loader)
+    {
+        emit loadingFailed(QString(), QString(), 0);
+        return;
+    }
+
+    // we have a loader, so see which sortmode it was used for
+    QStringList::ConstIterator it;
+    QString mode;
+    const QStringList modes = d->mFeedLoaders.keys();
+    for (it = modes.begin(); it != modes.end(); ++it) {
+        if (loader == d->mFeedLoaders.value(*it))
+        {
+            mode = *it;
+        }
+    }
+
+    // load all the entries from the domdocument given
+    Entry::List entries;
+    QDomNode n;
+    for (n = doc.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        Entry * entry = new Entry;
+        entry->setEntryXML(n.toElement());
+        // check to see if we already have this entry
+        if (d->mEntries.contains(entry->uniqueId())) {
+            // if so, merge the two together
+            
+        }
+        else {
+            // add it to the list otherwise
+            d->mEntries.insert(entry->uniqueId(), entry);
+            entries << entry;
+        }
+        d->mFeedEntries[mode].append(entry->uniqueId());
+        // TODO: ask the engine if it knows about any cached/installed data, so we can merge that in too
+    }
+    
+    // emit a the entry list
+    emit loadingFinished(mode, QString(), 0, entries.count(), 1, entries);
+}
+
+void StaticXmlProvider::slotFeedFailed()
+{
+	// TODO: get the sortmode, searchstring and page from the loader somehow so we can pass them on
+	//emit loadingFailed();
+}
 
 }
 
