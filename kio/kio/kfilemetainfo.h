@@ -97,6 +97,7 @@ public:
     /**
      * @brief Construct a KFileMetaInfo that contains metainformation about
      * the resource pointed to by @p url.
+     * @note that c'tor is not thread-safe
      **/
     KFileMetaInfo(const KUrl& url);
     /**

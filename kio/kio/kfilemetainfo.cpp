@@ -194,7 +194,7 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     StreamAnalyzer& indexer = PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream strigiStream(stream);
-    kDebug() << url;
+    kDebug(7033) << url;
     AnalysisResult idx(url.url().toUtf8().constData(), mtime, writer, indexer);
 
     idx.setWriterData(&items);
