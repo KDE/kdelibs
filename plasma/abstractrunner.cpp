@@ -71,8 +71,6 @@ public:
                              << runnerDescription.name() << "Runner.";
                     delete package;
                     package = 0;
-                } else {
-                    QTimer::singleShot(0, runner, SLOT(init()));
                 }
             }
         }

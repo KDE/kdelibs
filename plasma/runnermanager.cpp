@@ -154,6 +154,7 @@ public:
                         }
                         */
 
+                        QMetaObject::invokeMethod(runner, "init");
                         runners.insert(runnerName, runner);
                     } else {
                         kDebug() << "failed to load runner:" << service->name()
