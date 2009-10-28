@@ -32,12 +32,6 @@
 
 class KUrl;
 
-namespace KParts
-{
-    class OpenUrlArguments;
-    class BrowserArguments;
-}
-
 /**
  * @short A re-implementation of QWebView to provide KDE integration.
  *
