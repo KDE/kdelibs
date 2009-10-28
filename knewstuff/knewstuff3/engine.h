@@ -54,8 +54,13 @@ public:
     /**
      * Constructor.
      */
-    Engine(QObject* parent);
+    Engine(QObject* parent = 0);
 
+    /**
+     * Copy c'tor
+     */
+    Engine(const Engine& other);
+    
     /**
      * Destructor. Frees up all the memory again which might be taken
      * by cached entries and providers.
@@ -286,14 +291,8 @@ private Q_SLOTS:
 
     void slotInstallationVerification(int result);
 
-protected:
-    EnginePrivate * const d_ptr;
-    Engine(EnginePrivate &dd);
-        
 private:
-    Q_DECLARE_PRIVATE(Engine);
-    
-    /*
+    /**
      * load providers from the providersurl in the knsrc file
      * creates providers based on their type and adds them to the list of providers
      */
@@ -332,34 +331,9 @@ private:
     QString entryId(const Entry& e);
     QString providerId(const Provider *p);
 
-    // holds all the entries
-    QList<Entry> m_entry_cache;
+    class Private;
+    Private* const d;
 
-    // holds the registered entries mapped by their id
-    QList<Entry> m_entry_registry;
-
-    QMap<QString, Provider*> m_provider_index;
-    QMap<QString, Entry> m_entry_index;
-
-    Entry m_uploadedentry;
-    Provider *m_uploadprovider;
-
-
-    // the name of the app that uses hot new stuff
-    QString m_applicationName;
-
-    QMap<Entry, QString> m_previewfiles;
-    QMap<Entry, QString> m_payloadfiles;
-
-    QMap<KJob*, Entry> m_entry_jobs;
-
-    Installation *m_installation;
-
-    int m_activefeeds;
-
-    bool m_initialized;
-    CachePolicy m_cachepolicy;
-    public slots:
 };
 
 }
