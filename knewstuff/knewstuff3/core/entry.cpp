@@ -35,6 +35,14 @@ class Entry::Private : public QSharedData{
         , mSource(Entry::Online)
         {}
 
+        bool operator==(const Private& other) const
+        {
+            return mUniqueId == other.mUniqueId;
+        }
+
+        QString mUniqueId;
+        KTranslatable mName;
+        
         QString mCategory;
         QString mLicense;
         QString mVersion;
@@ -42,12 +50,10 @@ class Entry::Private : public QSharedData{
         Author mAuthor;
         int mRating;
         int mDownloads;
-        KTranslatable mName;
         KTranslatable mSummary;
         KTranslatable mPayload;
         KTranslatable mPreview;
         QStringList mInstalledFiles;
-        QString mUniqueId;
         QString mProviderId;
         QStringList mUnInstalledFiles;
 
@@ -71,6 +77,11 @@ Entry& Entry::operator=(const Entry & other)
 {
     d = other.d;
     return *this;
+}
+
+bool Entry::operator==(const KNS3::Entry& other) const
+{
+    return d==other.d;
 }
 
 Entry::~Entry()
