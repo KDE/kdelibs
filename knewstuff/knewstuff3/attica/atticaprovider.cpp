@@ -133,6 +133,8 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
+kDebug() << "error code: " <<  listJob->statusString();
+    
     Entry::List entries;
     
     Q_FOREACH(Content content, contents) {

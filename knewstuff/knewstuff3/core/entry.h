@@ -32,8 +32,6 @@
 namespace KNS3
 {
 
-class EntryPrivate;
-
 /**
  * @short KNewStuff data entry container.
  *
@@ -336,11 +334,10 @@ public:
 
     //void setIdNumber(int number);
     //int idNumber() const;
-protected:
-    EntryPrivate* const d_ptr;
-    Entry(EntryPrivate &dd);
+
 private:
-    Q_DECLARE_PRIVATE(Entry);
+    class Private;
+    QSharedDataPointer<Private> d;
 };
 
 }

@@ -18,7 +18,6 @@
 */
 
 #include "entry.h"
-#include "knewstuff3/core/entry_p.h"
 
 #include "xmlloader.h"
 
@@ -26,250 +25,244 @@
 
 using namespace KNS3;
 
+class Entry::Private : public QSharedData{
+    public:
+        Private()
+        : mReleaseDate(QDate::currentDate())
+        , mRating(0)
+        , mDownloads(0)
+        , mStatus(Entry::Invalid)
+        , mSource(Entry::Online)
+        {}
+
+        QString mCategory;
+        QString mLicense;
+        QString mVersion;
+        QDate mReleaseDate;
+        Author mAuthor;
+        int mRating;
+        int mDownloads;
+        KTranslatable mName;
+        KTranslatable mSummary;
+        KTranslatable mPayload;
+        KTranslatable mPreview;
+        QStringList mInstalledFiles;
+        QString mUniqueId;
+        QString mProviderId;
+        QStringList mUnInstalledFiles;
+
+        QString mChecksum;
+        QString mSignature;
+        Entry::Status mStatus;
+        Entry::Source mSource;
+};
 
 Entry::Entry()
-    : d_ptr(new EntryPrivate)
+    : d(new Private)
 {
 }
 
 Entry::Entry(const Entry& other)
-    : d_ptr(new EntryPrivate(*other.d_ptr))
+    : d(other.d)
 {
 }
 
 Entry& Entry::operator=(const Entry & other)
 {
-    *d_ptr = *other.d_ptr;
+    d = other.d;
     return *this;
 }
 
 Entry::~Entry()
 {
-    delete d_ptr;
 }
 
 KTranslatable Entry::name() const
 {
-    Q_D(const Entry);
     return d->mName;
 }
 
 void Entry::setName(const KNS3::KTranslatable& name)
 {
-    Q_D(Entry);
     d->mName = name;
 }
 
 QString Entry::uniqueId() const
 {
-    Q_D(const Entry);
     return d->mUniqueId;
 }
 
 void Entry::setUniqueId(const QString& id)
 {
-    Q_D(Entry);
     d->mUniqueId = id;
 }
 
 QString Entry::providerId() const
 {
-    Q_D(const Entry);
     return d->mProviderId;
 }
 
 void Entry::setProviderId(const QString& id)
 {
-    Q_D(Entry);
     d->mProviderId = id;
 }
 
 QString Entry::category() const
 {
-    Q_D(const Entry);
     return d->mCategory;
 }
 
 void Entry::setCategory(const QString& category)
 {
-    Q_D(Entry);
     d->mCategory = category;
-
 }
 
 Author Entry::author() const
 {
-    Q_D(const Entry);
     return d->mAuthor;
 }
 
 void Entry::setAuthor(const KNS3::Author& author)
 {
-    Q_D(Entry);
     d->mAuthor = author;
 }
 
 QString Entry::license() const
 {
-    Q_D(const Entry);
     return d->mLicense;
 }
 
 void Entry::setLicense(const QString& license)
 {
-    Q_D(Entry);
     d->mLicense = license;
 }
 
 KTranslatable Entry::summary() const
 {
-    Q_D(const Entry);
     return d->mSummary;
 }
 
 void Entry::setSummary(const KNS3::KTranslatable& summary)
 {
-    Q_D(Entry);
     d->mSummary = summary;
 }
 
 QString Entry::version() const
 {
-    Q_D(const Entry);
     return d->mVersion;
 }
 
 void Entry::setVersion(const QString& version)
 {
-    Q_D(Entry);
     d->mVersion = version;
 }
 
 QDate Entry::releaseDate() const
 {
-    Q_D(const Entry);
     return d->mReleaseDate;
 }
 
 void Entry::setReleaseDate(const QDate& releasedate)
 {
-    Q_D(Entry);
     d->mReleaseDate = releasedate;
 }
 
 KTranslatable Entry::payload() const
 {
-    Q_D(const Entry);
     return d->mPayload;
 }
 
 void Entry::setPayload(const KNS3::KTranslatable& url)
 {
-    Q_D(Entry);
     d->mPayload = url;
 }
 
 KTranslatable Entry::preview() const
 {
-    Q_D(const Entry);
     return d->mPreview;
 }
 
 void Entry::setPreview(const KNS3::KTranslatable& url)
 {
-    Q_D(Entry);
     d->mPreview = url;
 }
 
 int Entry::rating() const
 {
-    Q_D(const Entry);
     return d->mRating;
 }
 
 void Entry::setRating(int rating)
 {
-    Q_D(Entry);
     d->mRating = rating;
 }
 
 int Entry::downloads() const
 {
-    Q_D(const Entry);
     return d->mDownloads;
 }
 
 void Entry::setDownloads(int downloads)
 {
-    Q_D(Entry);
     d->mDownloads = downloads;
 }
 
 /*
 QString Entry::checksum() const
 {
-    Q_D(const Entry);
+
     return d->mChecksum;
 }
 
 QString Entry::signature() const
 {
-    Q_D(const Entry);
+
     return d->mSignature;
 }
 */
 
 Entry::Source Entry::source() const
 {
-    Q_D(const Entry);
     return d->mSource;
 }
 
 void Entry::setSource(Source source)
 {
-    Q_D(Entry);
     d->mSource = source;
 }
 
 Entry::Status Entry::status() const
 {
-    Q_D(const Entry);
     return d->mStatus;
 }
 
 void Entry::setStatus(Status status)
 {
-    Q_D(Entry);
     d->mStatus = status;
 }
 
 void KNS3::Entry::setInstalledFiles(const QStringList & files)
 {
-    Q_D(Entry);
     d->mInstalledFiles = files;
 }
 
 QStringList KNS3::Entry::installedFiles() const
 {
-    Q_D(const Entry);
     return d->mInstalledFiles;
 }
 
 void KNS3::Entry::setUnInstalledFiles(const QStringList & files)
 {
-    Q_D(Entry);
     d->mUnInstalledFiles = files;
 }
 
 QStringList KNS3::Entry::uninstalledFiles() const
 {
-    Q_D(const Entry);
     return d->mUnInstalledFiles;
 }
 
 bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
 {
-    Q_D(Entry);
     if (xmldata.tagName() != "stuff") {
         kWarning() << "Parsing Entry from invalid XML";
         return false;
@@ -347,7 +340,6 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
  */
 QDomElement KNS3::Entry::entryXML() const
 {
-    Q_D(const Entry);
     QDomDocument doc;
 
     QDomElement el = doc.createElement("stuff");
