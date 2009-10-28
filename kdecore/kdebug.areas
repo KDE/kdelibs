@@ -328,9 +328,10 @@
 8104        kompare (list view)
 8105        kompare (nav view)
 8106        kompare (connect widget)
-8107        kbabel
-8108        kbabel (search)
-8109        catalogmanager
+8110        lokalize
+8111        lokalize (TM)
+8112        lokalize (Gettext)
+8113        lokalize (XLIFF)
 8050        cervisia
 8051        cervisia (cvsservice)
 8060        umbrello
