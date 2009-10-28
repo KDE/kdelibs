@@ -133,16 +133,24 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
-kDebug() << "error code: " <<  listJob->statusString();
-    
     Entry::List entries;
     
     Q_FOREACH(Content content, contents) {
         Entry* entry = new Entry;
         entry->setName(content.name());
-        entry->setRating(content.rating());
         entry->setUniqueId(content.id());
         entry->setProviderId(d->m_provider.baseUrl().toString());
+        entry->setRating(content.rating());
+        entry->setDownloads(content.downloads());
+        entry->setReleaseDate(content.updated().date());
+        entry->setPreview(content.previewPicture("1"));
+        entry->setLicense(content.license());
+        //entry->setAuthor(content.author());
+        entry->setSource(KNS3::Entry::Online);
+        entry->setStatus(KNS3::Entry::Downloadable);
+        entry->setSummary(content.description());
+        entry->setVersion(content.version());
+        
         entries.append(entry);
     }
 
