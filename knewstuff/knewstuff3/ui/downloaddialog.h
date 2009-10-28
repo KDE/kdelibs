@@ -96,10 +96,10 @@ public:
                         int timeOutMs = 0);
 
     // begin installing that item
-    void installItem(Entry * entry);
+    void installItem(const Entry& entry);
 
     // remove an already installed item
-    void removeItem(Entry * entry);
+    void removeItem(const Entry& entry);
 
 private Q_SLOTS:
 
@@ -108,7 +108,7 @@ private Q_SLOTS:
     //void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
     
     void slotEntriesFailed();
-    void slotPayloadFailed(KNS3::Entry * entry);
+    void slotPayloadFailed(const Entry& entry);
     void slotPayloadLoaded(KUrl url);
 
     void slotResetMessage();
@@ -121,17 +121,17 @@ private Q_SLOTS:
     void slotComments(QStringList comments);
     
     void slotCategories(QList<Category*> categories);
-    void slotEntries(QList<Entry*> entries);
+    void slotEntries(QList<Entry> entries);
     void slotFault();
     void slotError();
     // file downloading
-    void slotEntryChanged(KNS3::Entry *);
+    void slotEntryChanged(const Entry& entry);
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
     void slotProgress(const QString & text, int percentage);
 
-    void slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry);
+    void slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry entry);
     void slotCollabAction(QAction * action);
 
     void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
@@ -160,6 +160,8 @@ private:
     QSortFilterProxyModel * m_filteredModel;
     ItemsViewDelegate * mDelegate;
 
+
+    // FIXME remove all of the lists above
     //QList<Entry*> m_entries;
     QMap<const QString, Entry::List> entries;
     QMap<const Provider*, Entry::List> m_entriesByProvider;

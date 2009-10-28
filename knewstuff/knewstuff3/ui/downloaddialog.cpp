@@ -54,8 +54,8 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     setButtons(KDialog::None);
 
     connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
-    connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)), SLOT(slotEntryChanged(KNS3::Entry*)));
-    connect(m_engine, SIGNAL(signalPayloadFailed(KNS3::Entry*)), SLOT(slotPayloadFailed(KNS3::Entry*)));
+    connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry)), SLOT(slotEntryChanged(KNS3::Entry)));
+    connect(m_engine, SIGNAL(signalPayloadFailed(KNS3::Entry)), SLOT(slotPayloadFailed(KNS3::Entry)));
     connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
     connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
     connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
@@ -64,10 +64,10 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     connect(m_engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), m_model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
 
     
-    connect(m_engine, SIGNAL(signalEntryLoaded(KNS3::Entry*, const KNS3::Feed*, const KNS3::Provider*)),
-            this, SLOT(slotEntryLoaded(KNS3::Entry*, const KNS3::Feed*, const KNS3::Provider*)));
-    connect(m_engine, SIGNAL(signalEntryRemoved(KNS3::Entry*, const KNS3::Feed*)),
-            this, SLOT(slotEntryRemoved(KNS3::Entry *, const KNS3::Feed *)));
+    connect(m_engine, SIGNAL(signalEntryLoaded(KNS3::Entry, const KNS3::Feed*, const KNS3::Provider*)),
+            this, SLOT(slotEntryLoaded(KNS3::Entry, const KNS3::Feed*, const KNS3::Provider*)));
+    connect(m_engine, SIGNAL(signalEntryRemoved(KNS3::Entry, const KNS3::Feed*)),
+            this, SLOT(slotEntryRemoved(KNS3::Entry, const KNS3::Feed *)));
 
     // initialize the private classes
     messageTimer = new QTimer(this);
@@ -166,10 +166,10 @@ DownloadDialog::~DownloadDialog()
     saveDialogSize(group, KConfigBase::Persistent);
 }
 
-void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry * entry)
+void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry entry)
 {
     kDebug(551) << "perform action: " << action;
-    const Provider * provider = m_entryToProviders.contains(entry) ? m_entryToProviders[entry] : NULL;
+    
     //Dxs * dxs = m_engine->dxsObject(provider);
     switch (action) {
     case kViewInfo:
@@ -195,7 +195,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS3:
         break;
     case kContactEmail:
         // invoke mail with the address of the author
-        KToolInvocation::invokeMailer(entry->author().email(), i18n("Re: %1", entry->name().representation()));
+        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name().representation()));
         break;
     case kContactJabber:
         // start jabber with author's info
@@ -253,7 +253,7 @@ void DownloadDialog::slotCollabAction(QAction * action)
     QModelIndex currentIndex = m_listView->currentIndex();
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(m_filteredModel->sourceModel());
     QModelIndex index = m_filteredModel->mapToSource(currentIndex);
-    KNS3::Entry * entry = realmodel->entryForIndex(index);
+    Entry entry = realmodel->entryForIndex(index);
     slotPerformAction(entryAction, entry);
 }
 
@@ -286,7 +286,7 @@ void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageTy
     }
 }
 
-void DownloadDialog::installItem(Entry *entry)
+void DownloadDialog::installItem(const Entry& entry)
 {
     // safety check
 //    if ( item->url().isEmpty() || item->destinationPath().isEmpty() )
@@ -299,7 +299,7 @@ void DownloadDialog::installItem(Entry *entry)
     slotEntryChanged(entry);
 }
 
-void DownloadDialog::removeItem(Entry *entry)
+void DownloadDialog::removeItem(const Entry& entry)
 {
     Q_UNUSED(entry);
 //    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
@@ -361,7 +361,7 @@ void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
     //slotSwitchProvider();
 }
 
-void DownloadDialog::slotEntries(QList<KNS3::Entry*> _entries)
+void DownloadDialog::slotEntries(QList<KNS3::Entry> _entries)
 {
     Q_UNUSED(_entries);
 
@@ -485,16 +485,16 @@ void DownloadDialog::slotComments(QStringList comments)
 
 ///////////////// DXS ////////////////////
 
-void DownloadDialog::slotEntryChanged(KNS3::Entry * entry)
+void DownloadDialog::slotEntryChanged(const Entry& entry)
 {
     Q_UNUSED(entry)
     setCursor(Qt::ArrowCursor);
 }
 
-void DownloadDialog::slotPayloadFailed(KNS3::Entry * entry)
+void DownloadDialog::slotPayloadFailed(const Entry& entry)
 {
     setCursor(Qt::ArrowCursor);
-    KMessageBox::error(this, i18n("Could not install %1", entry->name().representation()),
+    KMessageBox::error(this, i18n("Could not install %1", entry.name().representation()),
                        i18n("Get Hot New Stuff!"));
 }
 

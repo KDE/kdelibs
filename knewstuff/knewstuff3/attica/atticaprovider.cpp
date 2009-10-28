@@ -136,20 +136,20 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     Entry::List entries;
     
     Q_FOREACH(Content content, contents) {
-        Entry* entry = new Entry;
-        entry->setName(content.name());
-        entry->setUniqueId(content.id());
-        entry->setProviderId(d->m_provider.baseUrl().toString());
-        entry->setRating(content.rating());
-        entry->setDownloads(content.downloads());
-        entry->setReleaseDate(content.updated().date());
-        entry->setPreview(content.previewPicture("1"));
-        entry->setLicense(content.license());
-        //entry->setAuthor(content.author());
-        entry->setSource(KNS3::Entry::Online);
-        entry->setStatus(KNS3::Entry::Downloadable);
-        entry->setSummary(content.description());
-        entry->setVersion(content.version());
+        Entry entry;
+        entry.setName(content.name());
+        entry.setUniqueId(content.id());
+        entry.setProviderId(d->m_provider.baseUrl().toString());
+        entry.setRating(content.rating());
+        entry.setDownloads(content.downloads());
+        entry.setReleaseDate(content.updated().date());
+        entry.setPreview(content.previewPicture("1"));
+        entry.setLicense(content.license());
+        //entry.setAuthor(content.author());
+        entry.setSource(KNS3::Entry::Online);
+        entry.setStatus(KNS3::Entry::Downloadable);
+        entry.setSummary(content.description());
+        entry.setVersion(content.version());
         
         entries.append(entry);
     }

@@ -57,11 +57,7 @@ public:
     virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 signals:
-
-    void performAction(DownloadDialog::EntryAction action, KNS3::Entry * entry);
-
-    //protected:
-    //virtual bool eventFilter(QObject *watched, QEvent *event);
+    void performAction(DownloadDialog::EntryAction action, KNS3::Entry entry);
 
 private slots:
 

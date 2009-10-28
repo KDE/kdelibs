@@ -41,92 +41,92 @@ int ItemsModel::rowCount(const QModelIndex & /*parent*/) const
 
 QVariant ItemsModel::data(const QModelIndex & index, int role) const
 {
-    Entry * entry = m_entries[index.row()];
+    Entry entry = m_entries[index.row()];
     switch (role) {
     case Qt::DisplayRole:
     case kNameRole:
-        return entry->name().representation();
+        return entry.name().representation();
         break;
     case kCategory:
-        return entry->category();
+        return entry.category();
         break;
     case kAuthorName:
-        return entry->author().name();
+        return entry.author().name();
         break;
     case kAuthorEmail:
-        return entry->author().email();
+        return entry.author().email();
         break;
     case kAuthorJabber:
-        return entry->author().jabber();
+        return entry.author().jabber();
         break;
     case kAuthorHomepage:
-        return entry->author().homepage();
+        return entry.author().homepage();
         break;
     case kLicense:
-        return entry->license();
+        return entry.license();
         break;
         //case Qt::ToolTipRole:
     case kSummary:
-        return entry->summary().representation();
+        return entry.summary().representation();
         break;
     case kVersion:
-        return entry->version();
+        return entry.version();
         break;
     case kReleaseDate:
-        return entry->releaseDate();
+        return entry.releaseDate();
         break;
     case kPayload:
-        return entry->payload().representation();
+        return entry.payload().representation();
         break;
     case kPreview:
-        return entry->preview().representation();
+        return entry.preview().representation();
         break;
     case kPreviewPixmap:
-        if (m_previewImages.contains(entry->preview().representation())) {
-            return m_previewImages[entry->preview().representation()];
+        if (m_previewImages.contains(entry.preview().representation())) {
+            return m_previewImages[entry.preview().representation()];
         }
         break;
     case kLargePreviewPixmap:
-        if (m_largePreviewImages.contains(entry->preview().representation())) {
-            return m_largePreviewImages[entry->preview().representation()];
+        if (m_largePreviewImages.contains(entry.preview().representation())) {
+            return m_largePreviewImages[entry.preview().representation()];
         }
         break;
     case kRating:
-        return entry->rating();
+        return entry.rating();
         break;
     case kDownloads:
-        return entry->downloads();
+        return entry.downloads();
         break;
     case kStatus:
-        return entry->status();
+        return entry.status();
         break;
     }
     return QVariant();
 }
 
-KNS3::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
+KNS3::Entry ItemsModel::entryForIndex(const QModelIndex & index) const
 {
     if (index.row() < 0)
-        return 0;
+        return Entry();
     else
         return m_entries[index.row()];
 }
 
 void ItemsModel::slotEntriesLoaded(Entry::List entries)
 {
-    foreach(KNS3::Entry* entry, entries) {
+    foreach(KNS3::Entry entry, entries) {
         addEntry(entry);
     }
 }
 
-void ItemsModel::addEntry(Entry * entry)
+void ItemsModel::addEntry(const Entry& entry)
 {
-    QString preview = entry->preview().representation();
+    QString preview = entry.preview().representation();
     if (!preview.isEmpty()) {
         m_hasPreviewImages = true;
     }
 
-    //kDebug(551) << "adding entry " << entry->name().representation() << " to the model";
+    //kDebug(551) << "adding entry " << entry.name().representation() << " to the model";
     beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
     m_entries.append(entry);
     endInsertRows();
@@ -139,9 +139,9 @@ void ItemsModel::addEntry(Entry * entry)
     }
 }
 
-void ItemsModel::removeEntry(Entry * entry)
+void ItemsModel::removeEntry(const Entry& entry)
 {
-    kDebug(551) << "removing entry " << entry->name().representation() << " from the model";
+    kDebug(551) << "removing entry " << entry.name().representation() << " from the model";
     int index = m_entries.indexOf(entry);
     if (index > -1) {
         beginRemoveRows(QModelIndex(), index, index);
@@ -150,7 +150,7 @@ void ItemsModel::removeEntry(Entry * entry)
     }
 }
 
-void ItemsModel::slotEntryChanged(Entry * entry)
+void ItemsModel::slotEntryChanged(const Entry& entry)
 {
     int i = m_entries.indexOf(entry);
     QModelIndex entryIndex = index(i, 0);

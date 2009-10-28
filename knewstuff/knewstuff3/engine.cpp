@@ -65,7 +65,7 @@ using namespace KNS3;
 
 Engine::Engine(QObject* parent)
         : QObject(parent), d_ptr(new EnginePrivate)
-        , m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
+        , m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
         m_initialized(false), m_cachepolicy(CacheNever)
 {
 }
@@ -282,7 +282,7 @@ void Engine::loadProviders()
 //        return;
 //    }
 
-//    KUrl source = KUrl(entry->preview().representation());
+//    KUrl source = KUrl(entry.preview().representation());
 
 //    if (!source.isValid()) {
 //        kError() << "The entry doesn't have a preview." << endl;
@@ -304,13 +304,13 @@ void Engine::loadProviders()
 //    m_entry_jobs[job] = entry;
 //}
 
-void Engine::downloadPayload(Entry *entry)
+void Engine::downloadPayload(Entry entry)
 {
-    if(!entry) {
+    if(!entry.isValid()) {
         emit signalPayloadFailed(entry);
         return;
     }
-    KUrl source = KUrl(entry->payload().representation());
+    KUrl source = KUrl(entry.payload().representation());
 
     if (!source.isValid()) {
         kError() << "The entry doesn't have a payload." << endl;
@@ -321,8 +321,8 @@ void Engine::downloadPayload(Entry *entry)
     if (m_installation->isRemote()) {
         // Remote resource
         //kDebug() << "Relaying remote payload '" << source << "'";
-        entry->setStatus(Entry::Installed);
-        m_payloadfiles[entry] = entry->payload().representation();
+        entry.setStatus(Entry::Installed);
+        m_payloadfiles[entry] = entry.payload().representation();
         install(source.pathOrUrl());
         emit signalPayloadLoaded(source);
         // FIXME: we still need registration for eventual deletion
@@ -344,9 +344,9 @@ void Engine::downloadPayload(Entry *entry)
     m_entry_jobs[job] = entry;
 }
 
-bool Engine::uploadEntry(Provider *provider, Entry *entry)
+bool Engine::uploadEntry(Provider *provider, const Entry& entry)
 {
-    //kDebug() << "Uploading " << entry->name().representation() << "...";
+    //kDebug() << "Uploading " << entry.name().representation() << "...";
 
     //if (m_uploadedentry) {
     //    kError() << "Another upload is in progress!" << endl;
@@ -364,7 +364,7 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
     //m_uploadprovider = provider;
     //m_uploadedentry = entry;
 
-    //KUrl sourcepayload = KUrl(entry->payload().representation());
+    //KUrl sourcepayload = KUrl(entry.payload().representation());
     //KUrl destfolder = provider->uploadUrl();
 
     //destfolder.setFileName(sourcepayload.fileName());
@@ -485,7 +485,7 @@ void Engine::slotPayloadResult(KJob *job)
 {
     // for some reason this slot is getting called 3 times on one job error
     if (m_entry_jobs.contains(job)) {
-        Entry *entry = m_entry_jobs[job];
+        Entry entry = m_entry_jobs[job];
         m_entry_jobs.remove(job);
 
         if (job->error()) {
@@ -518,7 +518,7 @@ void Engine::slotPreviewResult(KJob *job)
 
         if (m_entry_jobs.contains(job)) {
             // now, assign temporary filename to entry and update entry cache
-            Entry *entry = m_entry_jobs[job];
+            Entry entry = m_entry_jobs[job];
             m_entry_jobs.remove(job);
             m_previewfiles[entry] = fcjob->destUrl().path();
             cacheEntry(entry);
@@ -542,13 +542,13 @@ void Engine::slotUploadPayloadResult(KJob *job)
     //    return;
     //}
 
-    //if (m_uploadedentry->preview().representation().isEmpty()) {
+    //if (m_uploadedentry.preview().representation().isEmpty()) {
     //    // FIXME: we abuse 'job' here for the shortcut if there's no preview
     //    slotUploadPreviewResult(job);
     //    return;
     //}
 
-    //KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
+    //KUrl sourcepreview = KUrl(m_uploadedentry.preview().representation());
     //KUrl destfolder = m_uploadprovider->uploadUrl();
 
     //destfolder.setFileName(sourcepreview.fileName());
@@ -614,13 +614,13 @@ void Engine::slotUploadMetaResult(KJob *job)
         kError() << "Cannot upload meta file." << endl;
         kError() << job->errorString() << endl;
 
-        m_uploadedentry = NULL;
+        m_uploadedentry = Entry();
         m_uploadprovider = NULL;
 
         emit signalEntryFailed();
         return;
     } else {
-        m_uploadedentry = NULL;
+        m_uploadedentry = Entry();
         m_uploadprovider = NULL;
 
         //KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
@@ -688,17 +688,16 @@ void Engine::loadRegistry()
                 continue;
             }
             
-            // FIXME use the right sub class of entry
-            Entry * e = new Entry;
-            e->setEntryXML(stuff);
+            Entry e;
+            e.setEntryXML(stuff);
             //if (!e->isValid()) {
             //    kWarning() << "Invalid GHNS installation metadata.";
             //    continue;
             //}
 
-            e->setStatus(Entry::Installed);
-            e->setSource(Entry::Registry);
-            m_entry_registry.insert(entryId(e), e);
+            e.setStatus(Entry::Installed);
+            e.setSource(Entry::Registry);
+            m_entry_registry.append(e);
             //QString thisid = id(e);
 
             // we must overwrite cache entries with registered entries
@@ -865,12 +864,12 @@ void Engine::loadFeedCache(Provider *provider)
 
         //        if (m_entry_registry.contains(entryid)) {
         //            Entry * registryEntry = m_entry_registry.value(entryid);
-        //            entry->setStatus(registryEntry->status());
-        //            entry->setInstalledFiles(registryEntry->installedFiles());
+        //            entry.setStatus(registryEntry->status());
+        //            entry.setInstalledFiles(registryEntry->installedFiles());
         //        }
 
         //        feed->addEntry(entry);
-        //        //kDebug() << "entry " << entry->name().representation() << " loaded from cache";
+        //        //kDebug() << "entry " << entry.name().representation() << " loaded from cache";
         //        emit signalEntryLoaded(entry, feed, provider);
         //    }
 
@@ -879,44 +878,44 @@ void Engine::loadFeedCache(Provider *provider)
     }
 }
 
-KNS3::Entry *Engine::loadEntryCache(const QString& filepath)
+KNS3::Entry Engine::loadEntryCache(const QString& filepath)
 {
     bool ret;
     QFile f(filepath);
     ret = f.open(QIODevice::ReadOnly);
     if (!ret) {
         kWarning() << "The file " << filepath << " could not be opened.";
-        return NULL;
+        return Entry();
     }
 
     QDomDocument doc;
     ret = doc.setContent(&f);
     if (!ret) {
         kWarning() << "The file could not be parsed.";
-        return NULL;
+        return Entry();
     }
 
     QDomElement root = doc.documentElement();
     if (root.tagName() != "ghnscache") {
         kWarning() << "The file doesn't seem to be of interest.";
-        return NULL;
+        return Entry();
     }
 
     QDomElement stuff = root.firstChildElement("stuff");
     if (stuff.isNull()) {
         kWarning() << "Missing GHNS cache metadata.";
-        return NULL;
+        return Entry();
     }
     
     // FIXME use the right sub class of entry
-    Entry *e = new Entry;
-	e->setEntryXML(stuff);
+    Entry e;
+	e.setEntryXML(stuff);
     //if (!handler.isValid()) {
     //    kWarning() << "Invalid GHNS installation metadata.";
     //    return NULL;
     //}
 
-    e->setStatus(Entry::Downloadable);
+    e.setStatus(Entry::Downloadable);
     m_entry_cache.append(e);
     m_entry_index[entryId(e)] = e;
 
@@ -930,7 +929,7 @@ KNS3::Entry *Engine::loadEntryCache(const QString& filepath)
         // FIXME: check here for a [ -f payloadfile ]
     }
 
-    e->setSource(Entry::Cache);
+    e.setSource(Entry::Cache);
 
     return e;
 }
@@ -974,7 +973,6 @@ void Engine::shutdown()
     m_entry_index.clear();
     m_provider_index.clear();
 
-    qDeleteAll(m_entry_cache);
     qDeleteAll(d->m_providers);
 
     m_entry_cache.clear();
@@ -1049,14 +1047,14 @@ void Engine::mergeProviders(Provider::List providers)
     emit signalProvidersFinished();
 }
 
-bool Engine::entryCached(Entry *entry)
+bool Engine::entryCached(const Entry& entry)
 {
     Q_D(Engine);
     if (m_cachepolicy == CacheNever) return false;
 
     // Direct cache lookup first
     // FIXME: probably better use URL (changes less frequently) and do iteration
-    if (m_entry_index.contains(entryId(entry)) && m_entry_index[entryId(entry)]->source() == Entry::Cache) {
+    if (m_entry_index.contains(entry.uniqueId()) && m_entry_index[entry.uniqueId()].source() == Entry::Cache) {
         return true;
     }
 
@@ -1070,11 +1068,11 @@ bool Engine::entryCached(Entry *entry)
     // id(entry) will not work, as it uses the current locale to get the id
 
     for (int i = 0; i < m_entry_cache.count(); i++) {
-        Entry *oldentry = m_entry_cache.at(i);
+        Entry oldentry = m_entry_cache.at(i);
         if (entryId(entry) == entryId(oldentry)) return true;
         //QString lang = id(oldentry).section(":", 0, 0);
-        //QString oldname = oldentry->name().translated(lang);
-        //QString name = entry->name().translated(lang);
+        //QString oldname = oldentry.name().translated(lang);
+        //QString name = entry.name().translated(lang);
         ////kDebug() << "CACHE: compare entry names " << oldname << '/' << name;
         //if (name == oldname) return true;
     }
@@ -1082,12 +1080,12 @@ bool Engine::entryCached(Entry *entry)
     return false;
 }
 
-bool Engine::entryChanged(Entry *oldentry, Entry *entry)
+bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
 {
     Q_D(Engine);
     // possibly return true if the status changed? depends on when this is called
-    if ((!oldentry) || (entry->releaseDate() > oldentry->releaseDate())
-            || (entry->version() > oldentry->version()))
+    if ((!oldentry.isValid()) || (entry.releaseDate() > oldentry.releaseDate())
+            || (entry.version() > oldentry.version()))
         return true;
     return false;
 }
@@ -1104,14 +1102,14 @@ bool Engine::entryChanged(Entry *oldentry, Entry *entry)
 //        if (m_entry_registry.contains(thisId)) {
 //            // see if the one online is newer (higher version, release, or release date)
 //            Entry *registryentry = m_entry_registry[thisId];
-//            e->setInstalledFiles(registryentry->installedFiles());
+//            e->setInstalledFiles(registryentry.installedFiles());
 
 //            if (entryChanged(registryentry, e)) {
 //                e->setStatus(Entry::Updateable);
 //                emit signalEntryChanged(e);
 //            } else {
 //                // it hasn't changed, so set the status to that of the registry entry
-//                e->setStatus(registryentry->status());
+//                e->setStatus(registryentry.status());
 //            }
 
 //            if (entryCached(e)) {
@@ -1119,7 +1117,7 @@ bool Engine::entryChanged(Entry *oldentry, Entry *entry)
 //                Entry * cachedentry = m_entry_index[thisId];
 //                if (entryChanged(cachedentry, e)) {
 //                    //kDebug() << "CACHE: update entry";
-//                    cachedentry->setStatus(Entry::Updateable);
+//                    cachedentry.setStatus(Entry::Updateable);
 //                    // entry has changed
 //                    if (m_cachepolicy != CacheNever) {
 //                        cacheEntry(e);
@@ -1264,7 +1262,7 @@ void Engine::cacheProvider(Provider *provider)
 //    f.close();
 //}
 
-void Engine::cacheEntry(Entry *entry)
+void Engine::cacheEntry(const Entry& entry)
 {
     KStandardDirs d;
 
@@ -1282,7 +1280,7 @@ void Engine::cacheEntry(Entry *entry)
     // FIXME: adhere to meta naming rules as discussed
     // FIXME: maybe related filename to base64-encoded id(), or the reverse?
 
-    QDomElement exml = entry->entryXML();
+    QDomElement exml = entry.entryXML();
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnscache");
@@ -1306,9 +1304,9 @@ void Engine::cacheEntry(Entry *entry)
     f.close();
 }
 
-void Engine::registerEntry(Entry *entry)
+void Engine::registerEntry(const Entry& entry)
 {
-    m_entry_registry.insert(entryId(entry), entry);
+    m_entry_registry.append(entry);
     KStandardDirs d;
 
     //kDebug() << "Registering entry.";
@@ -1325,7 +1323,7 @@ void Engine::registerEntry(Entry *entry)
 
 // TODO: serialization of entries
 /*
-    QDomElement exml = entry->entryXML();
+    QDomElement exml = entry.entryXML();
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsinstall");
@@ -1347,7 +1345,7 @@ void Engine::registerEntry(Entry *entry)
 */
 }
 
-void KNS3::Engine::unregisterEntry(Entry * entry)
+void KNS3::Engine::unregisterEntry(const Entry& entry)
 {
     KStandardDirs d;
 
@@ -1360,15 +1358,15 @@ void KNS3::Engine::unregisterEntry(Entry * entry)
     QFile::remove(registrydir + registryfile);
 
     // remove the entry from m_entry_registry
-    m_entry_registry.remove(entryId(entry));
+    m_entry_registry.removeAll(entry);
 }
 
-QString Engine::entryId(Entry *e)
+QString Engine::entryId(const Entry& e)
 {
     // This is the primary key of an entry:
     // A lookup on the name, which must exist but might be translated
     // This requires some care for comparison since translations might be added
-    return m_applicationName + e->name().language() + ':' + e->name().representation();
+    return m_applicationName + e.name().language() + ':' + e.name().representation();
 }
 
 QString Engine::providerId(const Provider *p)
@@ -1392,24 +1390,24 @@ QString Engine::providerId(const Provider *p)
 
 bool Engine::install(const QString &payloadfile)
 {
-    QList<Entry*> entries = m_payloadfiles.keys(payloadfile);
+    Entry::List entries = m_payloadfiles.keys(payloadfile);
     if (entries.size() != 1) {
         // FIXME: shouldn't ever happen - make this an assertion?
         kError() << "ASSERT: payloadfile is not associated" << endl;
         return false;
     }
-    Entry *entry = entries.first();
+    Entry entry = entries.first();
 
-    bool update = (entry->status() == Entry::Updateable);
+    bool update = (entry.status() == Entry::Updateable);
     // FIXME: this is only so exposing the KUrl suffices for downloaded entries
-    entry->setStatus(Entry::Installed);
+    entry.setStatus(Entry::Installed);
 
     // FIXME: first of all, do the security stuff here
     // this means check sum comparison and signature verification
     // signature verification might take a long time - make async?!
     /*
     if (m_installation->checksumPolicy() != Installation::CheckNever) {
-        if (entry->checksum().isEmpty()) {
+        if (entry.checksum().isEmpty()) {
             if (m_installation->checksumPolicy() == Installation::CheckIfPossible) {
                 //kDebug() << "Skip checksum verification";
             } else {
@@ -1421,7 +1419,7 @@ bool Engine::install(const QString &payloadfile)
         }
     }
     if (m_installation->signaturePolicy() != Installation::CheckNever) {
-        if (entry->signature().isEmpty()) {
+        if (entry.signature().isEmpty()) {
             if (m_installation->signaturePolicy() == Installation::CheckIfPossible) {
                 //kDebug() << "Skip signature verification";
             } else {
@@ -1551,13 +1549,13 @@ bool Engine::install(const QString &payloadfile)
 
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
             // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
-            KUrl source = KUrl(entry->payload().representation());
+            KUrl source = KUrl(entry.payload().representation());
             kDebug() << "installing non-archive from " << source.url();
             QString installfile;
             QString ext = source.fileName().section('.', -1);
             if (m_installation->customName()) {
-                installfile = entry->name().representation();
-                installfile += '-' + entry->version();
+                installfile = entry.name().representation();
+                installfile += '-' + entry.version();
                 if (!ext.isEmpty()) installfile += '.' + ext;
             } else {
                 installfile = source.fileName();
@@ -1588,7 +1586,7 @@ bool Engine::install(const QString &payloadfile)
         }
     }
 
-    entry->setInstalledFiles(installedFiles);
+    entry.setInstalledFiles(installedFiles);
 
     if (!m_installation->command().isEmpty()) {
         KProcess process;
@@ -1631,13 +1629,13 @@ bool Engine::install(const QString &payloadfile)
     return true;
 }
 
-bool Engine::uninstall(KNS3::Entry *entry)
+bool Engine::uninstall(Entry entry)
 {
-    entry->setStatus(Entry::Deleted);
+    entry.setStatus(Entry::Deleted);
 
     if (!m_installation->uninstallCommand().isEmpty()) {
         KProcess process;
-        foreach (const QString& file, entry->installedFiles()) {
+        foreach (const QString& file, entry.installedFiles()) {
             QFileInfo info(file);
             if (info.isFile()) {
                 QString fileArg(KShell::quoteArg(file));
@@ -1656,7 +1654,7 @@ bool Engine::uninstall(KNS3::Entry *entry)
         }
     }
 
-    foreach(const QString &file, entry->installedFiles()) {
+    foreach(const QString &file, entry.installedFiles()) {
         if (file.endsWith('/')) {
             QDir dir;
             bool worked = dir.rmdir(file);
@@ -1676,8 +1674,8 @@ bool Engine::uninstall(KNS3::Entry *entry)
             }
         }
     }
-    entry->setUnInstalledFiles(entry->installedFiles());
-    entry->setInstalledFiles(QStringList());
+    entry.setUnInstalledFiles(entry.installedFiles());
+    entry.setInstalledFiles(QStringList());
     unregisterEntry(entry);
 
     emit signalEntryChanged(entry);

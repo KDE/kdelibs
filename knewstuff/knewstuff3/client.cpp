@@ -62,7 +62,7 @@ public:
 	bool init(const QString & config);
 
     void workflow();
-    KNS3::Entry* upload(const QString& file);
+    KNS3::Entry upload(const QString& file);
 
     static QHash<QString, QPointer<KDialog> > s_dialogs;
 
@@ -75,7 +75,7 @@ public:
     bool m_modal;
     QWidget * m_parent;
     Client * p;
-    QSet<KNS3::Entry*> m_changedEntries;
+    QSet<KNS3::Entry> m_changedEntries;
     QEventLoop* m_loop;
     KNS3::Engine * m_engine;
 
@@ -90,7 +90,7 @@ private:
 
     /** slot for when entries are changed, so we can return a list
      * of them from the static methods */
-    void slotEntryChanged(KNS3::Entry *entry);
+    void slotEntryChanged(KNS3::Entry entry);
 
     void slotHandleUpload();
     void slotEntriesFinished();
@@ -220,7 +220,7 @@ KNS3::Entry::List Client::downloadDialogModal(QWidget* parent)
         existingDialog->show();
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
-        return QList<KNS3::Entry*>(); // return an empty list, there's already a dialog showing
+        return Entry::List(); // return an empty list, there's already a dialog showing
     }
 
     d->m_command = ClientPrivate::command_download;
@@ -228,7 +228,7 @@ KNS3::Entry::List Client::downloadDialogModal(QWidget* parent)
 
     d->workflow();
 
-    return QList<KNS3::Entry*>::fromSet(d->m_changedEntries);
+    return Entry::List::fromSet(d->m_changedEntries);
 }
 
 void Client::downloadDialog(QWidget * parent)
@@ -404,10 +404,11 @@ void ClientPrivate::slotHandleUpload()
     //m_uploadedEntry=entry;
 }
 
-void ClientPrivate::slotEntryChanged(KNS3::Entry * entry)
+void ClientPrivate::slotEntryChanged(KNS3::Entry entry)
 {
     //kDebug() << "adding entries to list of changed entries";
-    m_changedEntries << entry;
+    
+    m_changedEntries.insert(entry);
 }
 
 // BIGFIXME: make this method go away when we are using goya
@@ -444,5 +445,6 @@ void ClientPrivate::slotDownloadDialogClosed()
     stopLoop();
     //emit signalDownloadDialogDone(QList<KNS::Entry*>::fromSet(m_changedEntries));
 }
+
 
 #include "client.moc"

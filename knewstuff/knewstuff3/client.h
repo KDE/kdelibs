@@ -115,9 +115,9 @@ public:
 
 private Q_SLOTS:
 
-	void slotDownloadDialogClosed();
-	void slotUploadDialogClosed();
-	
+    void slotDownloadDialogClosed();
+    void slotUploadDialogClosed();
+
 private:
 
     friend class ClientPrivate;

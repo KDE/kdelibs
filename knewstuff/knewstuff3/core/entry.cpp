@@ -25,7 +25,8 @@
 
 using namespace KNS3;
 
-class Entry::Private : public QSharedData{
+class Entry::Private : public QSharedData
+{
     public:
         Private()
         : mReleaseDate(QDate::currentDate())
@@ -73,10 +74,15 @@ Entry::Entry(const Entry& other)
 {
 }
 
-Entry& Entry::operator=(const Entry & other)
+Entry& Entry::operator=(const Entry& other)
 {
     d = other.d;
     return *this;
+}
+
+bool Entry::operator<(const KNS3::Entry& other) const
+{
+    return d->mUniqueId < other.d->mUniqueId;
 }
 
 bool Entry::operator==(const KNS3::Entry& other) const
@@ -86,6 +92,11 @@ bool Entry::operator==(const KNS3::Entry& other) const
 
 Entry::~Entry()
 {
+}
+
+bool Entry::isValid() const
+{
+    return !d->mUniqueId.isEmpty();
 }
 
 KTranslatable Entry::name() const
@@ -423,4 +434,5 @@ QDomElement KNS3::Entry::entryXML() const
 
     return el;
 }
+
 

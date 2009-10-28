@@ -29,6 +29,7 @@
 #include <QtXml/QDomElement>
 #include <QtCore/QString>
 
+
 namespace KNS3
 {
 
@@ -46,7 +47,7 @@ namespace KNS3
 class KNEWSTUFF_EXPORT Entry
 {
 public:
-    typedef QList<Entry*> List;
+    typedef QList<Entry> List;
 
     /**
      * Constructor.
@@ -56,11 +57,16 @@ public:
     Entry(const Entry& other);
     Entry& operator=(const Entry& other);
 
+    bool operator==(const Entry& other) const;
+    bool operator<(const Entry& other) const;
+
     /**
      * Destructor.
      */
     virtual ~Entry();
 
+    bool isValid() const;
+    
     /**
      * Sets the name for this data object.
      */
@@ -335,10 +341,20 @@ public:
     //void setIdNumber(int number);
     //int idNumber() const;
 
+
+    QHash<Entry, QString> test;
+    
+    
 private:
     class Private;
-    QSharedDataPointer<Private> d;
+    QExplicitlySharedDataPointer<Private> d;
 };
+
+
+inline uint qHash(const KNS3::Entry& entry) {
+    return qHash(entry.uniqueId());
+}
+
 
 }
 

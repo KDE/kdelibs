@@ -164,7 +164,7 @@ public:
      * @see signalPayloadLoaded
      * @see signalPayloadFailed
      */
-    void downloadPayload(Entry *entry);
+    void downloadPayload(Entry entry);
 
     /**
      * Uploads a complete entry, including its payload and preview files
@@ -181,7 +181,7 @@ public:
      * @see signalEntryUploaded
      * @see signalEntryFailed
      */
-    bool uploadEntry(Provider *provider, Entry *entry);
+    bool uploadEntry(Provider *provider, const Entry& entry);
 
     /**
      * Installs an entry's payload file. This includes verification, if
@@ -211,7 +211,7 @@ public:
      *
      * @note FIXME: I don't believe this works yet :)
      */
-    bool uninstall(KNS3::Entry *entry);
+    bool uninstall(Entry entry);
 
     /**
      * @return the component name the engine is using, or an empty string if not
@@ -239,14 +239,14 @@ Q_SIGNALS:
     void signalEntriesLoaded(KNS3::Entry::List entries);
 
     //void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
-    void signalEntryChanged(KNS3::Entry *entry);
+    void signalEntryChanged(const KNS3::Entry& entry);
     void signalEntriesFailed();
 
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
 
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
-    void signalPayloadFailed(KNS3::Entry *entry);
+    void signalPayloadFailed(const KNS3::Entry& entry);
 
     void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
     void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
@@ -301,13 +301,13 @@ private:
     
     void loadRegistry();
     void loadProvidersCache();
-    KNS3::Entry *loadEntryCache(const QString& filepath);
+    KNS3::Entry loadEntryCache(const QString& filepath);
 #if 0
     void loadEntriesCache();
 #endif
     void loadFeedCache(Provider *provider);
     void cacheProvider(Provider *provider);
-    void cacheEntry(Entry *entry);
+    void cacheEntry(const Entry& entry);
 
     /** generate a cache file for the given feed
       feed cache file is a list of entry-id's that are part of this feed
@@ -317,41 +317,41 @@ private:
       @param entries entries to cache in the feed file
     */
     //void cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries);
-    void registerEntry(Entry *entry);
-    void unregisterEntry(Entry *entry);
+    void registerEntry(const Entry& entry);
+    void unregisterEntry(const Entry& entry);
     void mergeProviders(Provider::List providers);
     void shutdown();
 
-    bool entryCached(Entry *entry);
-    bool entryChanged(Entry *oldentry, Entry *entry);
+    bool entryCached(const Entry& entry);
+    bool entryChanged(const Entry& oldentry, const Entry& entry);
     bool providerCached(Provider *provider);
     bool providerChanged(Provider *oldprovider, Provider *provider);
 
     static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
 
-    QString entryId(Entry *e);
+    QString entryId(const Entry& e);
     QString providerId(const Provider *p);
 
     // holds all the entries
-    QList<Entry*> m_entry_cache;
+    QList<Entry> m_entry_cache;
 
     // holds the registered entries mapped by their id
-    QMap<QString, Entry*> m_entry_registry;
+    QList<Entry> m_entry_registry;
 
     QMap<QString, Provider*> m_provider_index;
-    QMap<QString, Entry*> m_entry_index;
+    QMap<QString, Entry> m_entry_index;
 
-    Entry *m_uploadedentry;
+    Entry m_uploadedentry;
     Provider *m_uploadprovider;
 
 
     // the name of the app that uses hot new stuff
     QString m_applicationName;
 
-    QMap<Entry*, QString> m_previewfiles;
-    QMap<Entry*, QString> m_payloadfiles;
+    QMap<Entry, QString> m_previewfiles;
+    QMap<Entry, QString> m_payloadfiles;
 
-    QMap<KJob*, Entry*> m_entry_jobs;
+    QMap<KJob*, Entry> m_entry_jobs;
 
     Installation *m_installation;
 

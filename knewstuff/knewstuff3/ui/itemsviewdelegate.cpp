@@ -299,7 +299,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
 
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS3::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(DownloadDialog::kContactEmail, entry);
 }
 
@@ -310,7 +310,7 @@ void ItemsViewDelegate::slotActionTriggered(QAction *action)
 
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS3::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(DownloadDialog::EntryAction(action->data().toInt()), entry);
 }
 
@@ -321,11 +321,11 @@ void ItemsViewDelegate::slotInstallClicked()
     if (index.isValid()) {
         const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS3::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
-        if ( !entry )
+        KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
+        if ( !entry.isValid() )
             return;
 
-        if (entry->status() == Entry::Installed) {
+        if (entry.status() == Entry::Installed) {
             emit performAction(DownloadDialog::kUninstall, entry);
         } else {
             emit performAction(DownloadDialog::kInstall, entry);

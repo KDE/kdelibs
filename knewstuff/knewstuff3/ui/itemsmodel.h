@@ -78,18 +78,18 @@ public:
 
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
-    void addEntry(Entry * entry);
+    void addEntry(const Entry& entry);
 
-    void removeEntry(Entry * entry);
+    void removeEntry(const Entry& entry);
 
-    KNS3::Entry* entryForIndex(const QModelIndex & index) const;
+    Entry entryForIndex(const QModelIndex & index) const;
 
     bool hasPreviewImages() const;
 
     bool hasWebService() const;
 
 public slots:
-    void slotEntryChanged(KNS3::Entry * entry);
+    void slotEntryChanged(const Entry& entry);
 
 
     void slotEntriesLoaded(KNS3::Entry::List entries);
@@ -99,7 +99,7 @@ private slots:
 private:
 
     // the list of entries
-    QList<Entry *> m_entries;
+    QList<Entry> m_entries;
     QMap<QString, QImage> m_previewImages;
     QMap<QString, QImage> m_largePreviewImages;
     QMap<QString, QModelIndex> m_imageIndexes;

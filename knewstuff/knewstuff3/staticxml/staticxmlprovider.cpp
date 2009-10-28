@@ -41,7 +41,7 @@ public:
     KUrl mNoUploadUrl;
     
     // cache of all entries known from this provider so far, mapped by their id
-    QMap<QString, Entry*> mEntries;
+    Entry::List mEntries;
     QMap<QString, QStringList> mFeedEntries;
 	QMap<QString, XmlLoader*> mFeedLoaders;
 };
@@ -226,19 +226,19 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
         
-        Entry * entry = new Entry;
-        entry->setEntryXML(n.toElement());
+        Entry entry;
+        entry.setEntryXML(n.toElement());
         // check to see if we already have this entry
-        if (d->mEntries.contains(entry->uniqueId())) {
+        if (d->mEntries.contains(entry)) {
             // if so, merge the two together
             
         }
         else {
             // add it to the list otherwise
-            d->mEntries.insert(entry->uniqueId(), entry);
+            d->mEntries.append(entry);
             entries << entry;
         }
-        d->mFeedEntries[mode].append(entry->uniqueId());
+        d->mFeedEntries[mode].append(entry.uniqueId());
         // TODO: ask the engine if it knows about any cached/installed data, so we can merge that in too
     }
     
