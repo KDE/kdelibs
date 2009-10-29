@@ -900,4 +900,10 @@ QModelIndexList KDescendantsProxyModel::match(const QModelIndex& start, int role
   return proxyList.mid(0, hits);
 }
 
+Qt::DropActions KDescendantsProxyModel::supportedDropActions() const
+{
+  Q_ASSERT(sourceModel());
+  return sourceModel()->supportedDropActions();
+}
+
 #include "moc_kdescendantsproxymodel.cpp"

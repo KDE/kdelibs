@@ -173,6 +173,7 @@ class KDEUI_EXPORT KDescendantsProxyModel : public QAbstractProxyModel
     virtual QModelIndex parent(const QModelIndex&) const;
     virtual int columnCount(const QModelIndex& index = QModelIndex()) const;
 
+    virtual Qt::DropActions supportedDropActions() const;
 
     /**
     Reimplemented to match all descendants.
