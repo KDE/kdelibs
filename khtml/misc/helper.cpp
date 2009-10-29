@@ -30,6 +30,7 @@
 #include <kconfig.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
+#include <kglobalsettings.h>
 #include <QtGui/QToolTip>
 #include "css/cssvalues.h"
 
@@ -112,77 +113,46 @@ static const colorMap cmap[] = {
 
 struct uiColors {
     int css_value;
-    const char * configGroup;
-    const char * configEntry;
-QPalette::ColorGroup group;
-QPalette::ColorRole role;
+    QPalette::ColorGroup group;
+    QPalette::ColorRole role;
 };
 
-const char * const wmgroup = "WM";
-const char * const generalgroup = "General";
-
-/* Mapping system settings to CSS 2
-* Tried hard to get an appropriate mapping - schlpbch
-*/
+// CSS 2.1 system color mapping
 static const uiColors uimap[] = {
-	// Active window border.
-    { CSS_VAL_ACTIVEBORDER, wmgroup, "background", QPalette::Active, QPalette::Light },
-	// Active window caption.
-    { CSS_VAL_ACTIVECAPTION, wmgroup, "background", QPalette::Active, QPalette::Text },
-        // Text in caption, size box, and scrollbar arrow box.
-    { CSS_VAL_CAPTIONTEXT, wmgroup, "activeForeground", QPalette::Active, QPalette::Text },
-	// Face color for three-dimensional display elements.
-    { CSS_VAL_BUTTONFACE, wmgroup, 0, QPalette::Inactive, QPalette::Button },
-	// Dark shadow for three-dimensional display elements (for edges facing away from the light source).
-    { CSS_VAL_BUTTONHIGHLIGHT, wmgroup, 0, QPalette::Inactive, QPalette::Light },
-	// Shadow color for three-dimensional display elements.
-    { CSS_VAL_BUTTONSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Shadow },
-	// Text on push buttons.
-    { CSS_VAL_BUTTONTEXT, wmgroup, "buttonForeground", QPalette::Inactive, QPalette::ButtonText },
-	// Dark shadow for three-dimensional display elements.
-    { CSS_VAL_THREEDDARKSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Dark },
-	// Face color for three-dimensional display elements.
-    { CSS_VAL_THREEDFACE, wmgroup, 0, QPalette::Inactive, QPalette::Button },
-	// Highlight color for three-dimensional display elements.
-    { CSS_VAL_THREEDHIGHLIGHT, wmgroup, 0, QPalette::Inactive, QPalette::Light },
-	// Light color for three-dimensional display elements (for edges facing the light source).
-    { CSS_VAL_THREEDLIGHTSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Midlight },
-	// Dark shadow for three-dimensional display elements.
-    { CSS_VAL_THREEDSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Shadow },
-
-    // Inactive window border.
-    { CSS_VAL_INACTIVEBORDER, wmgroup, "background", QPalette::Disabled, QPalette::Background },
-    // Inactive window caption.
-    { CSS_VAL_INACTIVECAPTION, wmgroup, "inactiveBackground", QPalette::Disabled, QPalette::Background },
-    // Color of text in an inactive caption.
-    { CSS_VAL_INACTIVECAPTIONTEXT, wmgroup, "inactiveForeground", QPalette::Disabled, QPalette::Text },
-    { CSS_VAL_GRAYTEXT, wmgroup, 0, QPalette::Disabled, QPalette::Text },
-
-	// Menu background
-    { CSS_VAL_MENU, generalgroup, "background", QPalette::Inactive, QPalette::Background },
-	// Text in menus
-    { CSS_VAL_MENUTEXT, generalgroup, "foreground", QPalette::Inactive, QPalette::Background },
-
-        // Text of item(s) selected in a control.
-    { CSS_VAL_HIGHLIGHT, generalgroup, "selectBackground", QPalette::Inactive, QPalette::Background },
-
-    // Text of item(s) selected in a control.
-    { CSS_VAL_HIGHLIGHTTEXT, generalgroup, "selectForeground", QPalette::Inactive, QPalette::Background },
-
-	// Background color of multiple document interface.
-    { CSS_VAL_APPWORKSPACE, generalgroup, "background", QPalette::Inactive, QPalette::Text },
-
-	// Scroll bar gray area.
-    { CSS_VAL_SCROLLBAR, generalgroup, "background", QPalette::Inactive, QPalette::Background },
-
-	// Window background.
-    { CSS_VAL_WINDOW, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Base },
-	// Window frame.
-    { CSS_VAL_WINDOWFRAME, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Background },
-        // WindowText
-    { CSS_VAL_WINDOWTEXT, generalgroup, "windowForeground", QPalette::Inactive, QPalette::Text },
-    { CSS_VAL_TEXT, generalgroup, 0, QPalette::Inactive, QPalette::Text },
-    { 0, 0, 0, QPalette::NColorGroups, QPalette::NColorRoles }
+    // MDI background color
+    { CSS_VAL_APPWORKSPACE, QPalette::Normal, QPalette::Mid },
+    // Button colors
+    { CSS_VAL_BUTTONFACE, QPalette::Normal, QPalette::Button },
+    { CSS_VAL_BUTTONHIGHLIGHT, QPalette::Normal, QPalette::Light },
+    { CSS_VAL_BUTTONSHADOW, QPalette::Normal, QPalette::Dark },
+    { CSS_VAL_BUTTONTEXT, QPalette::Normal, QPalette::ButtonText },
+    // Disabled text
+    { CSS_VAL_GRAYTEXT, QPalette::Disabled, QPalette::Text },
+    // Selected items
+    { CSS_VAL_HIGHLIGHTTEXT, QPalette::Normal, QPalette::HighlightedText },
+    { CSS_VAL_HIGHLIGHT, QPalette::Normal, QPalette::Highlight },
+    // Tooltips
+    { CSS_VAL_INFOBACKGROUND, QPalette::Normal, QPalette::ToolTipBase },
+    { CSS_VAL_INFOTEXT, QPalette::Normal, QPalette::ToolTipText },
+    // Menu colors
+    { CSS_VAL_MENU, QPalette::Normal, QPalette::Background },
+    { CSS_VAL_MENUTEXT, QPalette::Normal, QPalette::Text },
+    // Scroll bar color
+    { CSS_VAL_SCROLLBAR, QPalette::Normal, QPalette::Background },
+    // 3D elements 
+    { CSS_VAL_THREEDDARKSHADOW, QPalette::Normal, QPalette::Dark },
+    { CSS_VAL_THREEDFACE, QPalette::Normal, QPalette::Button },
+    { CSS_VAL_THREEDHIGHLIGHT, QPalette::Normal, QPalette::Light },
+    { CSS_VAL_THREEDLIGHTSHADOW, QPalette::Normal, QPalette::Midlight },
+    { CSS_VAL_THREEDSHADOW, QPalette::Normal, QPalette::Mid },
+    // Window background
+    { CSS_VAL_WINDOW, QPalette::Normal, QPalette::Base },
+    // Window frame
+    { CSS_VAL_WINDOWFRAME, QPalette::Normal, QPalette::Background },
+    // WindowText
+    { CSS_VAL_WINDOWTEXT, QPalette::Normal, QPalette::Text },
+    { CSS_VAL_TEXT, QPalette::Normal, QPalette::Text },
+    { 0, QPalette::NColorGroups, QPalette::NColorRoles }
 };
 
 QColor khtml::colorForCSSValue( int css_value )
@@ -201,29 +171,29 @@ QColor khtml::colorForCSSValue( int css_value )
 	++uicol;
 #ifndef APPLE_CHANGES
     if ( !uicol->css_value ) {
-	if ( css_value == CSS_VAL_INFOBACKGROUND )
-	    return QToolTip::palette().color( QPalette::Inactive, QPalette::Background );
-	else if ( css_value == CSS_VAL_INFOTEXT )
-	    return QToolTip::palette().color( QPalette::Inactive, QPalette::Foreground );
-	else if ( css_value == CSS_VAL_BACKGROUND ) {
-	    KConfig bckgrConfig("kdesktoprc", KConfig::NoGlobals);
-	    // Desktop background.
-	    return bckgrConfig.group( "Desktop0" ).readEntry("Color1", qApp->palette().color( QPalette::Disabled, QPalette::Background ) );
-	}
-	return QColor();
+        switch ( css_value ) {
+            case CSS_VAL_ACTIVEBORDER:
+                return qApp->palette().color(QPalette::Normal, QPalette::Background);
+            case CSS_VAL_ACTIVECAPTION:
+                return KGlobalSettings::activeTitleColor();
+            case CSS_VAL_CAPTIONTEXT:
+                return KGlobalSettings::activeTextColor();
+            case CSS_VAL_INACTIVEBORDER:
+                return qApp->palette().color(QPalette::Inactive, QPalette::Background);
+            case CSS_VAL_INACTIVECAPTION:
+                return KGlobalSettings::inactiveTitleColor();
+            case CSS_VAL_INACTIVECAPTIONTEXT:
+                return KGlobalSettings::inactiveTextColor();
+            case CSS_VAL_BACKGROUND: // Desktop background - no way to get this information from Plasma
+                return qApp->palette().color(QPalette::Normal, QPalette::Highlight);
+            default:
+	        return QColor();
+        }
     }
 #endif
 
     const QPalette &pal = qApp->palette();
-    QColor c = pal.color( uicol->group, uicol->role );
-#ifndef APPLE_CHANGES
-    if ( uicol->configEntry ) {
-	KSharedConfig::Ptr globalConfig = KGlobal::config();
-	c = globalConfig->group( uicol->configGroup ).readEntry( uicol->configEntry, c );
-    }
-#endif
-
-    return c;
+    return pal.color( uicol->group, uicol->role );
 }
 
 
