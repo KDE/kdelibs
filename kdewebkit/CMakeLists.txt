@@ -12,6 +12,7 @@ add_subdirectory(includes)
 add_subdirectory(cmake)
 
 set(kdewebkit_LIB_SRCS
+    kgraphicswebview.cpp
     kwebpage.cpp
     kwebview.cpp
     kwebpluginfactory.cpp
@@ -34,6 +35,7 @@ install(TARGETS kdewebkit ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kdewebkit_export.h
+    kgraphicswebview.h
     kwebpluginfactory.h
     kwebpage.h
     kwebview.h

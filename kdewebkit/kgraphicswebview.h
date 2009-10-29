@@ -23,18 +23,18 @@
  * Boston, MA 02110-1301, USA.
  *
  */
-#ifndef KWEBVIEW_H
-#define KWEBVIEW_H
+#ifndef KGRAPHICSWEBVIEW_H
+#define KGRAPHICSWEBVIEW_H
 
 #include <kdewebkit_export.h>
 
-#include <QtWebKit/QWebView>
+#include <QtWebKit/QGraphicsWebView>
 
 class KUrl;
 template<class T> class KWebViewPrivate;
 
 /**
- * @short A re-implementation of QWebView to provide KDE integration.
+ * @short A re-implementation of QGraphicsWebView to provide KDE integration.
  *
  * This is a convenience class that provides an implementation of QWebView with
  * full integration with KDE technologies for networking (KIO), cookie handling
@@ -43,19 +43,19 @@ template<class T> class KWebViewPrivate;
  * @author Urs Wolfer <uwolfer @ kde.org>
  * @since 4.4
  */
-class KDEWEBKIT_EXPORT KWebView : public QWebView
+class KDEWEBKIT_EXPORT KGraphicsWebView : public QGraphicsWebView
 {
     Q_OBJECT
 public:
     /**
      * Constructs an empty KWebView with parent @p parent.
      */
-    explicit KWebView(QWidget *parent = 0);
+    explicit KGraphicsWebView(QGraphicsItem *parent = 0);
 
     /**
      * Destroys the KWebView.
      */
-    ~KWebView();
+    ~KGraphicsWebView();
 
     /**
      * Returns true if access to remote content is allowed.
@@ -105,7 +105,7 @@ protected:
      * @see QWidget::wheelEvent
      * @internal
      */
-    void wheelEvent(QWheelEvent *event);
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
 
     /**
      * Reimplemented for internal reasons, the API is not affected.
@@ -113,7 +113,7 @@ protected:
      * @see QWidget::mousePressEvent
      * @internal
      */
-    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     /**
      * Reimplemented for internal reasons, the API is not affected.
@@ -121,11 +121,11 @@ protected:
      * @see QWidget::mouseReleaseEvent
      * @internal
      */
-    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    friend class KWebViewPrivate<KWebView>;
-    KWebViewPrivate<KWebView> * const d;
+    friend class KWebViewPrivate<KGraphicsWebView>;
+    KWebViewPrivate<KGraphicsWebView> * const d;
 };
 
 #endif // KWEBVIEW_H

@@ -24,7 +24,7 @@
  *
  */
 
-#include "kwebview.h"
+#include "kgraphicswebview.h"
 #include "kwebpage.h"
 #include "kwebviewprivate_p.h"
 
@@ -36,59 +36,62 @@
 #include <kdeversion.h>
 
 #include <QtGui/QApplication>
+#include <QtGui/QGraphicsSceneWheelEvent>
+#include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QMouseEvent>
 #include <QtNetwork/QNetworkRequest>
 
 
-KWebView::KWebView(QWidget *parent)
-         :QWebView(parent), d(new KWebViewPrivate<KWebView>(this))
+KGraphicsWebView::KGraphicsWebView(QGraphicsItem *parent)
+         : QGraphicsWebView(parent),
+           d(new KWebViewPrivate<KGraphicsWebView>(this))
 {
     setPage(new KWebPage(this));
 }
 
-KWebView::~KWebView()
+KGraphicsWebView::~KGraphicsWebView()
 {
     delete d;
 }
 
-bool KWebView::isExternalContentAllowed() const
+bool KGraphicsWebView::isExternalContentAllowed() const
 {
     return d->isExternalContentAllowed();
 }
 
-void KWebView::setAllowExternalContent(bool allow)
+void KGraphicsWebView::setAllowExternalContent(bool allow)
 {
     d->setAllowExternalContent(allow);
 }
 
-void KWebView::wheelEvent(QWheelEvent *event)
+void KGraphicsWebView::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
     if (d->wheelEvent(event->delta())) {
         event->accept();
     } else {
-        QWebView::wheelEvent(event);
+        QGraphicsWebView::wheelEvent(event);
     }
 }
 
 
-void KWebView::mousePressEvent(QMouseEvent *event)
+void KGraphicsWebView::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     d->pressedButtons = event->buttons();
     d->keyboardModifiers = event->modifiers();
-    QWebView::mousePressEvent(event);
+    QGraphicsWebView::mousePressEvent(event);
 }
 
-void KWebView::mouseReleaseEvent(QMouseEvent *event)
+void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (d->mouseReleased(event->pos())) {
+    if (d->mouseReleased(event->pos().toPoint())) {
         return;
     }
 
-    QWebView::mouseReleaseEvent(event);
+    QGraphicsWebView::mouseReleaseEvent(event);
 
     // just leave if the site has not modified by the user (for example pasted text with mouse middle click)
     d->postMouseReleaseHandling();
 }
 
-#include "kwebview.moc"
+#include "kgraphicswebview.moc"
 
