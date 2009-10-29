@@ -64,16 +64,17 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     QString mimeType (_mimeType.trimmed());
 
     /*
-       HACK: This is a big time hack to determine the mime-type from the url
-       when no mime-type is provided. Since we do not want to make async calls,
-       (e.g. KIO::mimeType) here, we resort to the hack below to determine the
-       mime-type it from the request's filename.
+       HACK: Determine the mime-type from the url when _mimeType is blank.
+       We take this approach instead of doing things properly by using the
+       appropriate APIs like KIO::mimeType because we do not want to make an
+       expensive async network request at this point. Hence we resort to the
+       hack below. 
 
-       NOTE: This hack is not full proof and might not always work. See the
-       KMimeType::findByPath docs for details. It is however the best option
-       to properly handle documents, images, and other resources embedded
-       into html content with the <embed> tag when they lack the "type"
-       attribute that specifies their mime-type.
+       NOTE: This hack might not always work! See the KMimeType::findByPath
+       docs for details. It is however the best option to properly handle 
+       documents, images, and other resources embedded into html content with 
+       the <embed> tag when they lack the "type" attribute that specifies their
+       mime-type.
 
        See the sample file "embed_tag_test.html" in the tests folder.
     */
