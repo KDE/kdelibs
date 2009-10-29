@@ -245,7 +245,7 @@ void Editor::applyStyle(CSSStyleDeclarationImpl *style)
 
 static void updateState(CSSStyleDeclarationImpl *desiredStyle, CSSStyleDeclarationImpl *computedStyle, bool &atStart, Editor::TriState &state)
 {
-  QListIterator<CSSProperty*> it(*desiredStyle->values()); 
+  QListIterator<CSSProperty*> it(*desiredStyle->values());
   while (it.hasNext()) {
     int propertyID = it.next()->id();
     DOMString desiredProperty = desiredStyle->getPropertyValue(propertyID);
@@ -521,9 +521,23 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
       // FIXME implement me
       handled = true;
       break;
-    
+
     default:
 // handle_input:
+      if (m_part->caret().state() != Selection::CARET) {
+        // We didn't get a chance to grab the caret, likely because
+        // a script messed with contentEditable in the middle of events
+        // acquire it now if there isn't a selection
+        kDebug(6200) << "Editable node w/o caret!";
+        DOM::NodeImpl* focus = m_part->xmlDocImpl()->focusNode();
+        if (m_part->caret().state() == Selection::NONE) {
+            if (focus)
+                m_part->setCaret(Position(focus, focus->caretMinOffset()));
+            else
+                break;
+        }
+      }
+
       if (!_ke->text().isEmpty()) {
         TypingCommand::insertText(m_part->xmlDocImpl(), _ke->text());
         handled = true;
