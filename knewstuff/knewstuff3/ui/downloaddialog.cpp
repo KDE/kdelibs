@@ -49,9 +49,8 @@ using namespace KNS3;
 
 class DownloadDialog::Private {
 public:
-    QTimer * searchTimer;
-    QTimer * messageTimer;
-    QTimer * networkTimer;
+    QTimer* searchTimer;
+    QTimer* messageTimer;
 
     Engine *engine;
     QMap<QString, QString> categorymap;
@@ -74,12 +73,23 @@ public:
     bool hasDxs;
 
     Private(Engine* _engine)
-        : engine(_engine), model(new ItemsModel)
+        : engine(_engine), model(new ItemsModel), filteredModel(new QSortFilterProxyModel)
+        , messageTimer(new QTimer), searchTimer(new QTimer)
     {
+        messageTimer->setSingleShot(true);
+        searchTimer->setSingleShot(true);
+        searchTimer->setInterval(1000);
+
+        filteredModel->setFilterRole(ItemsModel::kNameRole);
+        filteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        filteredModel->setSourceModel(model);
     }
     
     ~Private() {
+        delete messageTimer;
+        delete searchTimer;
         delete mDelegate;
+        delete filteredModel;
         delete model;
     }
 };
@@ -88,9 +98,10 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
         : KDialog(parent)
         , d(new Private(engine))
 {
-    
-    
     setButtons(KDialog::None);
+    QWidget* _mainWidget = new QWidget(this);
+    setMainWidget(_mainWidget);
+    setupUi(_mainWidget);
 
     // Entries have been fetched and should be shown:
     connect(d->engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), d->model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
@@ -101,42 +112,17 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     // FIXME show download progress
     connect(d->engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
     
-
-    // initialize the private classes
-    d->messageTimer = new QTimer(this);
-    d->messageTimer->setSingleShot(true);
     connect(d->messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
-
-    d->networkTimer = new QTimer(this);
-    connect(d->networkTimer, SIGNAL(timeout()), SLOT(slotNetworkTimeout()));
-
-    d->searchTimer = new QTimer(this);
-    d->searchTimer->setSingleShot(true);
-    d->searchTimer->setInterval(1000);   // timeout after 30 seconds
     connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotUpdateSearch()));
-
-    // popuplate dialog with stuff
-    QWidget* _mainWidget = new QWidget(this);
-    setMainWidget(_mainWidget);
-    setupUi(_mainWidget);
-
 
     d->mDelegate = new ItemsViewDelegate(m_listView);
     m_listView->setItemDelegate(d->mDelegate);
     connect(d->mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
             SLOT(slotPerformAction(DownloadDialog::EntryAction, const KNS3::Entry&)));
 
-    // create the filter model
-    d->filteredModel = new QSortFilterProxyModel(this);
-    d->filteredModel->setFilterRole(ItemsModel::kNameRole);
-    d->filteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_listView->setModel(d->filteredModel);
     connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
             this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
-
-
-    d->filteredModel->setSourceModel(d->model);
-    
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
@@ -144,27 +130,9 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     //   horLay->addWidget( new ExtendImageWidget( p, this ) );
     // FIXME KDE4PORT: if we use a left bar image, find a better way
 
-
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
-
-    // FIXME: not sure if this is better, or setting openExternalLinks
-    //connect( d->providerLinkLabel, SIGNAL( linkActivated(const QString &)),
-    //        KToolInvocation::self(), SLOT(invokeBrowser(const QString &)));
-
-    // load the last size from config
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
-    restoreDialogSize(group);
-    setMinimumSize(700, 400);
-
-    setCaption(i18n("Get Hot New Stuff"));
-    m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
-                                 "%1 Add-On Installer",
-                                 KGlobal::activeComponent().aboutData()->programName()));
-    m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
-
-    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(accept()));
 
     KMenu * collabMenu = new KMenu(m_collaborationButton);
     QAction * action_collabrating = collabMenu->addAction(i18n("Add Rating"));
@@ -189,7 +157,21 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
 
     m_collaborationButton->setMenu(collabMenu);
     connect(m_collaborationButton, SIGNAL(triggered(QAction*)), this, SLOT(slotCollabAction(QAction*)));
-    
+
+
+    // load the last size from config
+    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    restoreDialogSize(group);
+    setMinimumSize(700, 400);
+
+    setCaption(i18n("Get Hot New Stuff"));
+    m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
+                                 "%1 Add-On Installer",
+                                 KGlobal::activeComponent().aboutData()->programName()));
+    m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
+
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(accept()));
+
     refresh();
 }
 
@@ -395,13 +377,6 @@ void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
     //slotSwitchProvider();
 }
 
-void DownloadDialog::slotEntries(QList<KNS3::Entry> _entries)
-{
-    Q_UNUSED(_entries);
-
-    //d->itemsView->setItems( entries );
-    // FIXME: old API here
-}
 
 
 // FIXME: below here, those are for traditional GHNS

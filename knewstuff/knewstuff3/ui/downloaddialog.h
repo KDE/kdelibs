@@ -117,7 +117,6 @@ private Q_SLOTS:
     void slotComments(QStringList comments);
     
     void slotCategories(QList<Category*> categories);
-    void slotEntries(QList<Entry> entries);
     void slotFault();
     void slotError();
 
