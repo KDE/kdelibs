@@ -67,11 +67,7 @@ public:
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             const int numDegrees = delta / 8;
             const int numSteps = numDegrees / 15;
-#if QT_VERSION < 0x040500
-            q->setTextSizeMultiplier(q->textSizeMultiplier() + numSteps * 0.1);
-#else
             q->setZoomFactor(q->zoomFactor() + numSteps * 0.1);
-#endif
             return true;
         }
 
