@@ -47,62 +47,95 @@ const char * ConfigGroup = "DownloadDialog Settings";
 
 using namespace KNS3;
 
-DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
-        : KDialog(_parent)
-        , m_engine(_engine)
+class DownloadDialog::Private {
+public:
+    QTimer * searchTimer;
+    QTimer * messageTimer;
+    QTimer * networkTimer;
+
+    Engine *engine;
+    QMap<QString, QString> categorymap;
+    //QMap<const QString, KNS3::ItemsModel*> models;
+
+    KNS3::ItemsModel* model;
+
+    QSortFilterProxyModel * filteredModel;
+    ItemsViewDelegate * mDelegate;
+
+    // FIXME remove all of the lists above
+    //QList<Entry*> entries;
+    QMap<const QString, Entry::List> entries;
+    QMap<const Provider*, Entry::List> entriesByProvider;
+    QMap<Entry*, const Provider*> entryToProviders;
+
+    Provider::List providers;
+
+    QMutex mMutex;
+    bool hasDxs;
+
+    Private(Engine* _engine)
+        : engine(_engine), model(new ItemsModel)
+    {
+    }
+    
+    ~Private() {
+        delete mDelegate;
+        delete model;
+    }
+};
+
+DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
+        : KDialog(parent)
+        , d(new Private(engine))
 {
+    
+    
     setButtons(KDialog::None);
 
-    connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
-    connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry)), SLOT(slotEntryChanged(KNS3::Entry)));
-    connect(m_engine, SIGNAL(signalPayloadFailed(KNS3::Entry)), SLOT(slotPayloadFailed(KNS3::Entry)));
-    connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
-    connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
-    connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
+    // Entries have been fetched and should be shown:
+    connect(d->engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), d->model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
 
-    m_model = new ItemsModel(this);
-    connect(m_engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), m_model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
+    // An entry has changes - eg because it was installed
+    connect(d->engine, SIGNAL(signalEntryChanged(KNS3::Entry)), SLOT(slotEntryChanged(KNS3::Entry)));
 
+    // FIXME show download progress
+    connect(d->engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
     
-    connect(m_engine, SIGNAL(signalEntryLoaded(KNS3::Entry, const KNS3::Feed*, const KNS3::Provider*)),
-            this, SLOT(slotEntryLoaded(KNS3::Entry, const KNS3::Feed*, const KNS3::Provider*)));
-    connect(m_engine, SIGNAL(signalEntryRemoved(KNS3::Entry, const KNS3::Feed*)),
-            this, SLOT(slotEntryRemoved(KNS3::Entry, const KNS3::Feed *)));
 
     // initialize the private classes
-    messageTimer = new QTimer(this);
-    messageTimer->setSingleShot(true);
-    connect(messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
+    d->messageTimer = new QTimer(this);
+    d->messageTimer->setSingleShot(true);
+    connect(d->messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
 
-    networkTimer = new QTimer(this);
-    connect(networkTimer, SIGNAL(timeout()), SLOT(slotNetworkTimeout()));
+    d->networkTimer = new QTimer(this);
+    connect(d->networkTimer, SIGNAL(timeout()), SLOT(slotNetworkTimeout()));
 
-    m_searchTimer = new QTimer(this);
-    m_searchTimer->setSingleShot(true);
-    m_searchTimer->setInterval(1000);   // timeout after 30 seconds
-    connect(m_searchTimer, SIGNAL(timeout()), SLOT(slotUpdateSearch()));
+    d->searchTimer = new QTimer(this);
+    d->searchTimer->setSingleShot(true);
+    d->searchTimer->setInterval(1000);   // timeout after 30 seconds
+    connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotUpdateSearch()));
 
     // popuplate dialog with stuff
     QWidget* _mainWidget = new QWidget(this);
     setMainWidget(_mainWidget);
     setupUi(_mainWidget);
 
-    // create the delegate
-    mDelegate = new ItemsViewDelegate(m_listView, this);
-    m_listView->setItemDelegate(mDelegate);
-    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
+
+    d->mDelegate = new ItemsViewDelegate(m_listView);
+    m_listView->setItemDelegate(d->mDelegate);
+    connect(d->mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
             SLOT(slotPerformAction(DownloadDialog::EntryAction, const KNS3::Entry&)));
 
     // create the filter model
-    m_filteredModel = new QSortFilterProxyModel(this);
-    m_filteredModel->setFilterRole(ItemsModel::kNameRole);
-    m_filteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_listView->setModel(m_filteredModel);
+    d->filteredModel = new QSortFilterProxyModel(this);
+    d->filteredModel->setFilterRole(ItemsModel::kNameRole);
+    d->filteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_listView->setModel(d->filteredModel);
     connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
             this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
 
 
-    m_filteredModel->setSourceModel(m_model);
+    d->filteredModel->setSourceModel(d->model);
     
 
     // create left picture widget (if picture found)
@@ -117,7 +150,7 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
     // FIXME: not sure if this is better, or setting openExternalLinks
-    //connect( m_providerLinkLabel, SIGNAL( linkActivated(const QString &)),
+    //connect( d->providerLinkLabel, SIGNAL( linkActivated(const QString &)),
     //        KToolInvocation::self(), SLOT(invokeBrowser(const QString &)));
 
     // load the last size from config
@@ -164,13 +197,14 @@ DownloadDialog::~DownloadDialog()
 {
     KConfigGroup group(KGlobal::config(), ConfigGroup);
     saveDialogSize(group, KConfigBase::Persistent);
+    delete d;
 }
 
 void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry entry)
 {
     kDebug(551) << "perform action: " << action;
     
-    //Dxs * dxs = m_engine->dxsObject(provider);
+    //Dxs * dxs = d->engine->dxsObject(provider);
     switch (action) {
     case kViewInfo:
         //if (provider && dxs) {
@@ -212,13 +246,13 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry
     case kUninstall:
         // uninstall
         setCursor(Qt::WaitCursor);
-        m_engine->uninstall(entry);
+        d->engine->uninstall(entry);
         setCursor(Qt::ArrowCursor);
         break;
     case kInstall:
         // install
         setCursor(Qt::WaitCursor);
-        m_engine->install(entry);
+        d->engine->install(entry);
         break;
     case kCollabComment: {
         // open comment dialog
@@ -251,8 +285,8 @@ void DownloadDialog::slotCollabAction(QAction * action)
 {
     DownloadDialog::EntryAction entryAction = (DownloadDialog::EntryAction)action->data().toInt();
     QModelIndex currentIndex = m_listView->currentIndex();
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(m_filteredModel->sourceModel());
-    QModelIndex index = m_filteredModel->mapToSource(currentIndex);
+    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(d->filteredModel->sourceModel());
+    QModelIndex index = d->filteredModel->mapToSource(currentIndex);
     Entry entry = realmodel->entryForIndex(index);
     slotPerformAction(entryAction, entry);
 }
@@ -261,7 +295,7 @@ void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModel
 {
     //kDebug() << "slotListIndexChanged called";
 
-    m_collaborationButton->setEnabled(m_hasDxs && index.isValid());
+    m_collaborationButton->setEnabled(d->hasDxs && index.isValid());
 }
 
 void DownloadDialog::hideEvent(QHideEvent * event)
@@ -274,7 +308,7 @@ void DownloadDialog::hideEvent(QHideEvent * event)
 void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs)
 {
     // stop the pending timer if present
-    messageTimer->stop();
+    d->messageTimer->stop();
 
     // set text to messageLabel
     m_titleWidget->setComment(msg, type);
@@ -282,7 +316,7 @@ void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageTy
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
         //kDebug(551) << "starting the message timer for " << timeOutMs;
-        messageTimer->start(timeOutMs);
+        d->messageTimer->start(timeOutMs);
     }
 }
 
@@ -322,41 +356,41 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
         QString feedName = m_sortCombo->currentText();
         QString feedType = m_sortCombo->itemData(sortType).toString();
 
-        //const Provider * currentProvider = m_entriesByProvider.keys()[m_sourceCombo->currentIndex()];
+        //const Provider * currentProvider = d->entriesByProvider.keys()[d->sourceCombo->currentIndex()];
         //Feed * selectedFeed = currentProvider->downloadUrlFeed(feedType);
-        //m_filteredModel->setSourceModel(m_models.value(selectedFeed));
+        //d->filteredModel->setSourceModel(d->models.value(selectedFeed));
         //m_collaborationButton->setEnabled(false);
     }
 }
 
 void DownloadDialog::slotUpdateSearch()
 {
-    m_searchTimer->stop();
-    m_filteredModel->setFilterFixedString(m_searchEdit->text());
-    m_filteredModel->invalidate();
+    d->searchTimer->stop();
+    d->filteredModel->setFilterFixedString(m_searchEdit->text());
+    d->filteredModel->invalidate();
 }
 
 void DownloadDialog::slotSearchTextChanged()
 {
-    m_searchTimer->start();
+    d->searchTimer->start();
 }
 
 void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
 {
-    categorymap.clear();
+    d->categorymap.clear();
 
     for (QList<KNS3::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
         KNS3::Category *category = (*it);
         //kDebug(551) << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
         // FIXME: use icon from remote URLs (see non-DXS providers as well)
-        //m_sourceCombo->addItem(icon, category->name().representation());
-        categorymap[category->name().representation()] = category->id();
+        //d->sourceCombo->addItem(icon, category->name().representation());
+        d->categorymap[category->name().representation()] = category->id();
         // FIXME: better use global id, since names are not guaranteed
         //        to be unique
     }
 
-    //m_sourceCombo->setEnabled(true);
+    //d->sourceCombo->setEnabled(true);
 
     //slotSwitchProvider();
 }
@@ -369,10 +403,7 @@ void DownloadDialog::slotEntries(QList<KNS3::Entry> _entries)
     // FIXME: old API here
 }
 
-void DownloadDialog::slotEntriesFailed()
-{
-    displayMessage(i18n("Entries failed to load"));
-}
+
 // FIXME: below here, those are for traditional GHNS
 
 //void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provider *provider)
@@ -381,31 +412,31 @@ void DownloadDialog::slotEntriesFailed()
 //    e.append(entry);
 //    entries[feed] = e;
 
-//    if (!m_entriesByProvider.contains(provider)) {
+//    if (!d->entriesByProvider.contains(provider)) {
 //        kDebug(551) << "adding provider " << provider->name().representation() << " to combobox";
-//        //m_sourceCombo->addItem(provider->name().representation());
+//        //d->sourceCombo->addItem(provider->name().representation());
 //    }
-//    m_entriesByProvider[provider].append(entry);
+//    d->entriesByProvider[provider].append(entry);
 
 //    // FIXME: what if entry belongs to more than one provider at once?
-//    m_entryToProviders[entry] = provider;
+//    d->entryToProviders[entry] = provider;
 
 //    mMutex.lock();
 
-//    if (!m_models.value(feed)) {
+//    if (!d->models.value(feed)) {
 //        // new feed
 //        kDebug(551) << "making a new model for this feed" << feed;
-//        //m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
-//        connect(m_engine, SIGNAL(signalEntryChanged(KNS3::Entry*)),
-//                m_models[feed], SLOT(slotEntryChanged(KNS3::Entry*)));
-//        //if (provider->name().representation() == m_sourceCombo->currentText()) {
+//        //d->models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
+//        connect(d->engine, SIGNAL(signalEntryChanged(KNS3::Entry*)),
+//                d->models[feed], SLOT(slotEntryChanged(KNS3::Entry*)));
+//        //if (provider->name().representation() == d->sourceCombo->currentText()) {
 //            // this provider is selected, so refresh the feed combobox
 //            //populateSortCombo(provider);
 //        //}
 //    }
 //    mMutex.unlock();
 
-//    KNS3::ItemsModel* thisModel = m_models.value(feed);
+//    KNS3::ItemsModel* thisModel = d->models.value(feed);
 
 //    Q_ASSERT(thisModel != NULL);
 //    thisModel->addEntry(entry);
@@ -413,30 +444,30 @@ void DownloadDialog::slotEntriesFailed()
 
 //void DownloadDialog::slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed)
 //{
-//    Q_ASSERT(m_models[feed] != NULL);
+//    Q_ASSERT(d->models[feed] != NULL);
 
-//    m_models[feed]->removeEntry(entry);
+//    d->models[feed]->removeEntry(entry);
 //}
 
 void DownloadDialog::refresh()
 {
-    //m_sourceCombo->clear();
+    //d->sourceCombo->clear();
 
-    foreach(Provider* provider, m_providers) {
+    foreach(Provider* provider, d->providers) {
         //QPixmap icon = DesktopIcon(QString(), 16);
-        //d->m_typeCombo->addItem(icon, feed->name().representation());
-        //m_sourceCombo->addItem(provider->name().representation());
+        //d->d->typeCombo->addItem(icon, feed->name().representation());
+        //d->sourceCombo->addItem(provider->name().representation());
         // FIXME: see DXS categories
     }
 
     //slotSwitchProvider();
 
     //// get the current provider
-    //const Provider * selectedProvider = m_entriesByProvider.keys()[0];
+    //const Provider * selectedProvider = d->entriesByProvider.keys()[0];
 
     //populateSortCombo(selectedProvider);
 
-    //m_sourceCombo->setEnabled(true);
+    //d->sourceCombo->setEnabled(true);
     //m_sortCombo->setEnabled(true);
     //m_searchEdit->setEnabled(true);
 }
@@ -445,9 +476,9 @@ void DownloadDialog::populateSortCombo(const Provider * provider)
 {
     //QString url = provider->webAccess().pathOrUrl();
     //if (url.isEmpty()) {
-    //    m_providerLinkLabel->hide();
+    //    d->providerLinkLabel->hide();
     //} else {
-    //    m_providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
+    //    d->providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
     //}
 
     QStringList feeds = provider->availableSortingCriteria();

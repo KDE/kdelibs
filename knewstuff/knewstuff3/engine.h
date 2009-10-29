@@ -221,7 +221,6 @@ Q_SIGNALS:
     void signalProvidersFailed();
 
 
-    //void signalEntryLoaded(KNS3::Entry *entry);
     void signalEntriesLoaded(KNS3::Entry::List entries);
 
     //void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);

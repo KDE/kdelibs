@@ -102,12 +102,8 @@ public:
     void removeItem(const Entry& entry);
 
 private Q_SLOTS:
-
-    /** slot to add an entry (connected to the engine's signalEntryAdded */
-    //void slotEntryLoaded(KNS3::Entry *entry, const KNS3::Feed *feed, const KNS3::Provider *provider);
-    //void slotEntryRemoved(KNS3::Entry *entry, const KNS3::Feed *feed);
+    void slotEntryChanged(const KNS3::Entry& entry);
     
-    void slotEntriesFailed();
     void slotPayloadFailed(const Entry& entry);
     void slotPayloadLoaded(KUrl url);
 
@@ -124,8 +120,8 @@ private Q_SLOTS:
     void slotEntries(QList<Entry> entries);
     void slotFault();
     void slotError();
+
     // file downloading
-    void slotEntryChanged(const Entry& entry);
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
@@ -142,35 +138,8 @@ private:
 
     void populateSortCombo(const Provider * provider);
 
-    // Contents
-    // gui related vars
-    //Ui::DownloadDialog * m_ui;
-
-    // other classes
-    QTimer * m_searchTimer;
-    QTimer * messageTimer;
-    QTimer * networkTimer;
-
-    Engine *m_engine;
-    QMap<QString, QString> categorymap;
-    //QMap<const QString, KNS3::ItemsModel*> m_models;
-
-    KNS3::ItemsModel* m_model;
-    
-    QSortFilterProxyModel * m_filteredModel;
-    ItemsViewDelegate * mDelegate;
-
-
-    // FIXME remove all of the lists above
-    //QList<Entry*> m_entries;
-    QMap<const QString, Entry::List> entries;
-    QMap<const Provider*, Entry::List> m_entriesByProvider;
-    QMap<Entry*, const Provider*> m_entryToProviders;
-    
-    Provider::List m_providers;
-
-    QMutex mMutex;
-    bool m_hasDxs;
+    class Private;
+    Private *const d;
 };
 
 }
