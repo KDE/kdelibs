@@ -183,11 +183,16 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
             kDebug(7000) << "Device" << _url.toLocalFile() << "not found";
             return result;
         }
-        Solid::StorageAccess *access = devList[0].as<Solid::StorageAccess>();
-        if (access->isAccessible()) {
+        Solid::Device device = devList[0];
+        Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
+        Solid::StorageDrive *drive = device.parent().as<Solid::StorageDrive>();
+        bool mounted = access && access->isAccessible();
+
+        if ((mounted || device.is<Solid::OpticalDisc>()) && drive && drive->isRemovable()) {
             offerUnmount = true;
         }
-        else {
+
+        if (!mounted && ((drive && drive->isHotpluggable()) || device.is<Solid::OpticalDisc>())) {
             offerMount = true;
         }
     }
