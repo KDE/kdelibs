@@ -266,9 +266,8 @@ void DownloadDialog::slotCollabAction(QAction * action)
 {
     DownloadDialog::EntryAction entryAction = (DownloadDialog::EntryAction)action->data().toInt();
     QModelIndex currentIndex = m_listView->currentIndex();
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(d->filteredModel->sourceModel());
     QModelIndex index = d->filteredModel->mapToSource(currentIndex);
-    Entry entry = realmodel->entryForIndex(index);
+    Entry entry = d->model->entryForIndex(index);
     slotPerformAction(entryAction, entry);
 }
 
@@ -276,7 +275,12 @@ void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModel
 {
     //kDebug() << "slotListIndexChanged called";
 
-    m_collaborationButton->setEnabled(d->hasDxs && index.isValid());
+    if (!index.isValid()) {
+        m_collaborationButton->setEnabled(false);
+    }
+    
+    Entry entry = d->model->entryForIndex(d->filteredModel->mapToSource(index));
+    m_collaborationButton->setEnabled(d->engine->collaborationFeatures(entry));
 }
 
 void DownloadDialog::hideEvent(QHideEvent * event)

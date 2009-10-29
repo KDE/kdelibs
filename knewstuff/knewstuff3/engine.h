@@ -30,6 +30,7 @@
 #include <QtCore/QString>
 #include <QtCore/QMap>
 
+class C;
 class KJob;
 class KArchiveDirectory;
 
@@ -85,6 +86,13 @@ public:
         /**< Operate on cache files but never update them. */
         CacheOnly
     };
+
+    enum CollaborationFeature {
+        None = 0x0,
+        Ratings = 0x1,
+        Comments = 0x2
+    };
+    Q_DECLARE_FLAGS(CollaborationFeatures, CollaborationFeature)
 
     /**
      * Initializes the engine. This step is application-specific and relies
@@ -205,6 +213,9 @@ public:
      */
     QString componentName() const;
 
+
+    CollaborationFeatures collaborationFeatures(const Entry& entry);
+
 Q_SIGNALS:
     /**
      * Indicates a message to be added to the ui's log, or sent to a messagebox
@@ -314,6 +325,7 @@ private:
 
 };
 
-}
+Q_DECLARE_OPERATORS_FOR_FLAGS(Engine::CollaborationFeatures)
+} 
 
 #endif

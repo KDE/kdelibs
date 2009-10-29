@@ -1393,5 +1393,19 @@ void Engine::slotUninstallFinished(const KNS3::Entry& entry)
     emit signalEntryChanged(entry);
 }
 
+Engine::CollaborationFeatures Engine::collaborationFeatures(const KNS3::Entry& entry)
+{
+    Provider* p = d->provider_index[entry.providerId()];
+    Q_ASSERT(p);
+    CollaborationFeatures features;
+    if (p->hasRatings()) {
+        features |= Ratings;
+    }
+    if (p->hasCommenting()) {
+        features |= Comments;
+    }
+    return features;
+}
+
     
 #include "engine.moc"
