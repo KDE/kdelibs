@@ -226,15 +226,14 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry
         // subscribe to changes
         break;
     case kUninstall:
-        // uninstall
         setCursor(Qt::WaitCursor);
         d->engine->uninstall(entry);
         setCursor(Qt::ArrowCursor);
         break;
     case kInstall:
-        // install
         setCursor(Qt::WaitCursor);
         d->engine->install(entry);
+        setCursor(Qt::ArrowCursor);
         break;
     case kCollabComment: {
         // open comment dialog
