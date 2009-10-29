@@ -156,7 +156,8 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
     if ( !_url.isLocalFile() )
         return result;
 
-    bool mounted;
+    bool offerMount = false;
+    bool offerUnmount = false;
 
     KDesktopFile cfg( _url.toLocalFile() );
     if ( cfg.hasDeviceType() ) {  // url to desktop file
@@ -168,7 +169,12 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
         }
 
         KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );
-        mounted = mp ? true : false;
+        if (mp) {
+            offerUnmount = true;
+        }
+        else {
+            offerMount = true;
+        }
     }
     else { // url to device
         Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", _url.toLocalFile());
@@ -178,14 +184,21 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
             return result;
         }
         Solid::StorageAccess *access = devList[0].as<Solid::StorageAccess>();
-        mounted = access->isAccessible();
+        if (access->isAccessible()) {
+            offerUnmount = true;
+        }
+        else {
+            offerMount = true;
+        }
     }
 
-    if ( !mounted ) { //not mounted
+    if (offerMount) {
         KServiceAction mount("mount", i18n("Mount"), QString(), QString(), false);
         mount.setData(QVariant(ST_MOUNT));
         result.append(mount);
-    } else { // mounted
+    }
+
+    if (offerUnmount) {
         QString text;
 #ifdef HAVE_VOLMGT
          /*
