@@ -90,6 +90,7 @@ void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWebView::mouseReleaseEvent(event);
 
     // just leave if the site has not modified by the user (for example pasted text with mouse middle click)
+    // FIXME: http://mail.kde.org/pipermail/webkit-devel/2009-October/000364.html
     d->postMouseReleaseHandling();
 }
 

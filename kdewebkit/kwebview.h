@@ -34,11 +34,11 @@ class KUrl;
 template<class T> class KWebViewPrivate;
 
 /**
- * @short A re-implementation of QWebView to provide KDE integration.
+ * @short A re-implementation of QWebView that provides KDE integration.
  *
- * This is a convenience class that provides an implementation of QWebView with
- * full integration with KDE technologies for networking (KIO), cookie handling
- * (KCookieJar) and embeded non-html content (&lt;embed&gt;) handling (KPart apps).
+ * This convenience class provides full integration with KDE technologies such as
+ * KIO for network request handling, KCookiejar for cookie handling and
+ * KWebPluginFactory for embeded non-html content handling using KDE KParts.
  *
  * @author Urs Wolfer <uwolfer @ kde.org>
  * @since 4.4
