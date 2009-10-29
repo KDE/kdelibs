@@ -90,8 +90,8 @@ DownloadDialog::DownloadDialog(Engine* _engine, QWidget * _parent)
     // create the delegate
     mDelegate = new ItemsViewDelegate(m_listView, this);
     m_listView->setItemDelegate(mDelegate);
-    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, KNS3::Entry *)),
-            SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS3::Entry *)));
+    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
+            SLOT(slotPerformAction(DownloadDialog::EntryAction, const KNS3::Entry&)));
 
     // create the filter model
     m_filteredModel = new QSortFilterProxyModel(this);
@@ -218,7 +218,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry
     case kInstall:
         // install
         setCursor(Qt::WaitCursor);
-        m_engine->downloadPayload(entry);
+        m_engine->install(entry);
         break;
     case kCollabComment: {
         // open comment dialog

@@ -18,6 +18,25 @@
 
 #include "installation.h"
 
+#include <QDir>
+#include <QFile>
+
+#include <KStandardDirs>
+#include <KMimeType>
+#include <KArchive>
+#include <KZip>
+#include <KTar>
+#include <KProcess>
+#include <KIO/Job>
+#include <KRandom>
+#include <KShell>
+#include <KMessageBox>
+#include <KLocalizedString>
+#include <KDebug>
+
+#include "knewstuff3/core/security.h"
+
+
 struct KNS3::InstallationPrivate {
     InstallationPrivate() {
         m_checksumpolicy = Installation::CheckIfPossible;
@@ -37,12 +56,17 @@ struct KNS3::InstallationPrivate {
     Installation::Policy m_signaturepolicy;
     Installation::Scope m_scope;
     bool m_customname;
+
+    QMap<Entry, QString> payloadfiles; // why not in entry?
+
+    QMap<KJob*, Entry> entry_jobs;
+
 };
 
 using namespace KNS3;
 
-Installation::Installation()
-        : d(new InstallationPrivate)
+Installation::Installation(QObject* parent)
+        : QObject(parent), d(new InstallationPrivate)
 {
 }
 
@@ -170,3 +194,408 @@ Installation::Scope Installation::scope() const
     return d->m_scope;
 }
 
+void Installation::install(Entry entry)
+{
+    downloadPayload(entry);
+}
+
+void Installation::downloadPayload(Entry entry)
+{
+    if(!entry.isValid()) {
+        emit signalPayloadFailed(entry);
+        return;
+    }
+    KUrl source = KUrl(entry.payload().representation());
+
+    if (!source.isValid()) {
+        kError() << "The entry doesn't have a payload." << endl;
+        emit signalPayloadFailed(entry);
+        return;
+    }
+
+// FIXME no clue what this is supposed to do
+    if (isRemote()) {
+        // Remote resource
+        //kDebug() << "Relaying remote payload '" << source << "'";
+        d->payloadfiles[entry] = entry.payload().representation();
+        install(entry, source.pathOrUrl());
+        emit signalPayloadLoaded(source);
+        // FIXME: we still need registration for eventual deletion
+        return;
+    }
+
+    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
+    kDebug() << "Downloading payload '" << source << "' to '" << destination << "'";
+
+    // FIXME: check for validity
+    KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
+    connect(job,
+            SIGNAL(result(KJob*)),
+            SLOT(slotPayloadResult(KJob*)));
+    connect(job,
+            SIGNAL(percent(KJob*, unsigned long)),
+            SLOT(slotProgress(KJob*, unsigned long)));
+
+    d->entry_jobs[job] = entry;
+}
+
+
+void Installation::slotPayloadResult(KJob *job)
+{
+    // for some reason this slot is getting called 3 times on one job error
+    if (d->entry_jobs.contains(job)) {
+        Entry entry = d->entry_jobs[job];
+        d->entry_jobs.remove(job);
+
+        if (job->error()) {
+            kError() << "Cannot load payload file." << endl;
+            kError() << job->errorString() << endl;
+
+            emit signalPayloadFailed(entry);
+        } else {
+            KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+            d->payloadfiles[entry] = fcjob->destUrl().path();
+
+            install(entry, fcjob->destUrl().pathOrUrl());
+
+            emit signalPayloadLoaded(fcjob->destUrl());
+        }
+    }
+}
+
+
+void Installation::install(Entry entry, const QString& downloadedFile)
+{
+    kDebug() << "Install: " << entry.name().representation() << " from " << downloadedFile;
+    
+    if (entry.payload().isEmpty()) {
+        kDebug() << "No payload associated with: " << entry.name().representation();
+        return;
+        // attica needs to get the downloadlink :(
+        // fix attica?
+        //Provider* provider = d->provider_index.value(entry.providerId());
+    }
+
+    QString payloadfile = downloadedFile; //entry.payload().representation();
+
+    bool update = (entry.status() == Entry::Updateable);
+    // FIXME: this is only so exposing the KUrl suffices for downloaded entries
+
+
+    // FIXME: first of all, do the security stuff here
+    // this means check sum comparison and signature verification
+    // signature verification might take a long time - make async?!
+    /*
+    if (checksumPolicy() != Installation::CheckNever) {
+        if (entry.checksum().isEmpty()) {
+            if (checksumPolicy() == Installation::CheckIfPossible) {
+                //kDebug() << "Skip checksum verification";
+            } else {
+                kError() << "Checksum verification not possible" << endl;
+                return false;
+            }
+        } else {
+            //kDebug() << "Verify checksum...";
+        }
+    }
+    if (signaturePolicy() != Installation::CheckNever) {
+        if (entry.signature().isEmpty()) {
+            if (signaturePolicy() == Installation::CheckIfPossible) {
+                //kDebug() << "Skip signature verification";
+            } else {
+                kError() << "Signature verification not possible" << endl;
+                return false;
+            }
+        } else {
+            //kDebug() << "Verify signature...";
+        }
+    }
+    */
+
+    //kDebug() << "INSTALL resourceDir " << standardResourceDir();
+    //kDebug() << "INSTALL targetDir " << targetDir();
+    //kDebug() << "INSTALL installPath " << installPath();
+    //kDebug() << "INSTALL + scope " << scope();
+    //kDebug() << "INSTALL + customName" << customName();
+    //kDebug() << "INSTALL + uncompression " << uncompression();
+    //kDebug() << "INSTALL + command " << command();
+
+    // Collect all files that were installed
+    QStringList installedFiles;
+    QString installpath(payloadfile);
+    if (!isRemote()) {
+        // installdir is the target directory
+        QString installdir;
+        // installpath also contains the file name if it's a single file, otherwise equal to installdir
+        int pathcounter = 0;
+        if (!standardResourceDir().isEmpty()) {
+            if (scope() == Installation::ScopeUser) {
+                installdir = KStandardDirs::locateLocal(standardResourceDir().toUtf8(), "/");
+            } else { // system scope
+                installdir = KStandardDirs::installPath(standardResourceDir().toUtf8());
+            }
+            pathcounter++;
+        }
+        if (!targetDir().isEmpty()) {
+            if (scope() == Installation::ScopeUser) {
+                installdir = KStandardDirs::locateLocal("data", targetDir() + '/');
+            } else { // system scope
+                installdir = KStandardDirs::installPath("data") + targetDir() + '/';
+            }
+            pathcounter++;
+        }
+        if (!installPath().isEmpty()) {
+#if defined(Q_WS_WIN)
+            WCHAR wPath[MAX_PATH+1];
+            if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
+                installdir = QString::fromUtf16((const ushort *) wPath) + QLatin1Char('/') + installPath() + QLatin1Char('/');
+            } else {
+                installdir =  QDir::home().path() + QLatin1Char('/') + installPath() + QLatin1Char('/');
+            }
+#else
+            installdir = QDir::home().path() + '/' + installPath() + '/';
+#endif
+            pathcounter++;
+        }
+        if (!absoluteInstallPath().isEmpty()) {
+            installdir = absoluteInstallPath() + '/';
+            pathcounter++;
+        }
+        if (pathcounter != 1) {
+            kError() << "Wrong number of installation directories given." << endl;
+            return;
+        }
+
+        kDebug() << "installdir: " << installdir;
+        bool isarchive = true;
+
+        // respect the uncompress flag in the knsrc
+        if (uncompression() == "always" || uncompression() == "archive") {
+            // this is weird but a decompression is not a single name, so take the path instead
+            installpath = installdir;
+            KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
+            //kDebug() << "Postinstallation: uncompress the file";
+
+            // FIXME: check for overwriting, malicious archive entries (../foo) etc.
+            // FIXME: KArchive should provide "safe mode" for this!
+            KArchive *archive = 0;
+
+            if (mimeType->name() == "application/zip") {
+                archive = new KZip(payloadfile);
+            } else if (mimeType->name() == "application/tar"
+                       || mimeType->name() == "application/x-gzip"
+                       || mimeType->name() == "application/x-bzip"
+                       || mimeType->name() == "application/x-lzma"
+                       || mimeType->name() == "application/x-xz") {
+                archive = new KTar(payloadfile);
+            } else {
+                delete archive;
+                kError() << "Could not determine type of archive file '" << payloadfile << "'";
+                if (uncompression() == "always") {
+                    return;
+                }
+                isarchive = false;
+            }
+
+            if (isarchive) {
+                bool success = archive->open(QIODevice::ReadOnly);
+                if (!success) {
+                    kError() << "Cannot open archive file '" << payloadfile << "'";
+                    if (uncompression() == "always") {
+                        return;
+                    }
+                    // otherwise, just copy the file
+                    isarchive = false;
+                }
+
+                if (isarchive) {
+                    const KArchiveDirectory *dir = archive->directory();
+                    dir->copyTo(installdir);
+
+                    installedFiles << archiveEntries(installdir, dir);
+                    installedFiles << installdir + '/';
+
+                    archive->close();
+                    QFile::remove(payloadfile);
+                    delete archive;
+                }
+            }
+        }
+
+        kDebug() << "isarchive: " << isarchive;
+
+        if (uncompression() == "never" || (uncompression() == "archive" && !isarchive)) {
+            // no decompress but move to target
+
+            /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
+            // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
+            KUrl source = KUrl(entry.payload().representation());
+            kDebug() << "installing non-archive from " << source.url();
+            QString installfile;
+            QString ext = source.fileName().section('.', -1);
+            if (customName()) {
+                installfile = entry.name().representation();
+                installfile += '-' + entry.version();
+                if (!ext.isEmpty()) installfile += '.' + ext;
+            } else {
+                installfile = source.fileName();
+            }
+            installpath = installdir + '/' + installfile;
+
+            //kDebug() << "Install to file " << installpath;
+            // FIXME: copy goes here (including overwrite checking)
+            // FIXME: what must be done now is to update the cache *again*
+            //        in order to set the new payload filename (on root tag only)
+            //        - this might or might not need to take uncompression into account
+            // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
+            QFile file(payloadfile);
+            bool success = true;
+
+            if (QFile::exists(installpath)) {
+                if (!update) {
+                    if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File:")) == KMessageBox::Cancel) {
+                        return;
+                    }
+                }
+                success = QFile::remove(installpath);
+            }
+            if (success) {
+                success = file.rename(QUrl(installpath).toLocalFile());
+                
+                kDebug() << "move: " << file.fileName() << " to " << installpath
+                    << QUrl(installpath).toLocalFile() << QUrl(installpath).toString() << QUrl(installpath).isValid();
+            }
+            if (!success) {
+                kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
+                return;
+            }
+            installedFiles << installpath;
+            installedFiles << installdir + '/';
+        }
+    }
+
+    entry.setInstalledFiles(installedFiles);
+
+    if (!command().isEmpty()) {
+        KProcess process;
+        QString command(d->m_command);
+        QString fileArg(KShell::quoteArg(installpath));
+        command.replace("%f", fileArg);
+
+        //kDebug() << "Postinstallation: execute command";
+        //kDebug() << "Command is: " << command;
+
+        process.setShellCommand(command);
+        int exitcode = process.execute();
+
+        if (exitcode) {
+            kError() << "Command failed" << endl;
+        } else {
+            //kDebug() << "Command executed successfully";
+        }
+    }
+
+    // ==== FIXME: security code below must go above, when async handling is complete ====
+
+    // FIXME: security object lifecycle - it is a singleton!
+    Security *sec = Security::ref();
+
+    connect(sec,
+            SIGNAL(validityResult(int)),
+            SLOT(slotInstallationVerification(int)));
+
+    // FIXME: change to accept filename + signature
+    sec->checkValidity(QString());
+
+    d->payloadfiles[entry] = installpath;
+
+    entry.setStatus(Entry::Installed);
+    emit signalInstallationFinished(entry);
+}
+
+void Installation::uninstall(Entry entry)
+{
+    entry.setStatus(Entry::Deleted);
+
+    if (!uninstallCommand().isEmpty()) {
+        KProcess process;
+        foreach (const QString& file, entry.installedFiles()) {
+            QFileInfo info(file);
+            if (info.isFile()) {
+                QString fileArg(KShell::quoteArg(file));
+                QString command(uninstallCommand());
+                command.replace("%f", fileArg);
+
+                process.setShellCommand(command);
+                int exitcode = process.execute();
+
+                if (exitcode) {
+                    kError() << "Command failed" << endl;
+                } else {
+                    //kDebug() << "Command executed successfully";
+                }
+            }
+        }
+    }
+
+    foreach(const QString &file, entry.installedFiles()) {
+        if (file.endsWith('/')) {
+            QDir dir;
+            bool worked = dir.rmdir(file);
+            if (!worked) {
+                // Maybe directory contains user created files, ignore it
+                continue;
+            }
+        } else {
+            if (QFile::exists(file)) {
+                bool worked = QFile::remove(file);
+                if (!worked) {
+                    kWarning() << "unable to delete file " << file;
+                    return;
+                }
+            } else {
+                kWarning() << "unable to delete file " << file << ". file does not exist.";
+            }
+        }
+    }
+    entry.setUnInstalledFiles(entry.installedFiles());
+    entry.setInstalledFiles(QStringList());
+
+    emit signalUninstallFinished(entry);
+}
+
+
+void Installation::slotInstallationVerification(int result)
+{
+    //kDebug() << "SECURITY result " << result;
+
+    //FIXME do something here ??? and get the right entry again
+    Entry entry;
+    
+    if (result & Security::SIGNED_OK)
+        emit signalInstallationFinished(entry);
+    else
+        emit signalInstallationFailed(entry);
+}
+
+
+QStringList Installation::archiveEntries(const QString& path, const KArchiveDirectory * dir)
+{
+    QStringList files;
+    foreach(const QString &entry, dir->entries()) {
+        QString childPath = path + '/' + entry;
+        if (dir->entry(entry)->isFile()) {
+            files << childPath;
+        }
+
+        if (dir->entry(entry)->isDirectory()) {
+            const KArchiveDirectory* childDir = static_cast<const KArchiveDirectory*>(dir->entry(entry));
+            files << archiveEntries(childPath, childDir);
+            files << childPath + '/';
+        }
+    }
+    return files;
+}
+
+
+#include "installation.moc"

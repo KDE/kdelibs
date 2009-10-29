@@ -57,11 +57,6 @@ public:
     Engine(QObject* parent = 0);
 
     /**
-     * Copy c'tor
-     */
-    Engine(const Engine& other);
-    
-    /**
      * Destructor. Frees up all the memory again which might be taken
      * by cached entries and providers.
      */
@@ -159,18 +154,33 @@ public:
     //void downloadPreview(Entry *entry);
 
     /**
-     * Downloads a payload file. The payload file matching most closely
-     * the current user language preferences will be downloaded.
-     * The file will not be installed set, for this \ref install must
-     * be called.
+     * Installs an entry's payload file. This includes verification, if
+     * necessary, as well as decompression and other steps according to the
+     * application's *.knsrc file.
+     * Note that this method is asynchronous and thus the return value will
+     * only report the successful start of the installation.
      *
-     * @param entry Entry to download payload file for
+     * @param entry Entry to be installed
      *
-     * @see signalPayloadLoaded
-     * @see signalPayloadFailed
+     * @return Whether or not installation was started successfully
+     *
+     * @see signalInstallationFinished
+     * @see signalInstallationFailed
      */
-    void downloadPayload(Entry entry);
+    bool install(const Entry& entry);
 
+    /**
+     * Uninstalls an entry. It reverses the steps which were performed
+     * during the installation.
+     *
+     * @param entry The entry to deinstall
+     *
+     * @return Whether or not deinstallation was successful
+     *
+     * @note FIXME: I don't believe this works yet :)
+     */
+    bool uninstall(const Entry& entry);
+    
     /**
      * Uploads a complete entry, including its payload and preview files
      * (if present) and all associated meta information.
@@ -188,35 +198,6 @@ public:
      */
     bool uploadEntry(Provider *provider, const Entry& entry);
 
-    /**
-     * Installs an entry's payload file. This includes verification, if
-     * necessary, as well as decompression and other steps according to the
-     * application's *.knsrc file.
-     * Note that this method is asynchronous and thus the return value will
-     * only report the successful start of the installation.
-     *
-     * @param payloadfile Path to file to install
-     *
-     * @return Whether or not installation was started successfully
-     *
-     * @see signalInstallationFinished
-     * @see signalInstallationFailed
-     *
-     * @note FIXME: use Entry as parameter
-     */
-    bool install(const QString& payloadfile);
-
-    /**
-     * Uninstalls an entry. It reverses the steps which were performed
-     * during the installation.
-     *
-     * @param entry The entry to deinstall
-     *
-     * @return Whether or not deinstallation was successful
-     *
-     * @note FIXME: I don't believe this works yet :)
-     */
-    bool uninstall(Entry entry);
 
     /**
      * @return the component name the engine is using, or an empty string if not
@@ -250,8 +231,6 @@ Q_SIGNALS:
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
 
-    void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
-    void signalPayloadFailed(const KNS3::Entry& entry);
 
     void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
     void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
@@ -259,9 +238,6 @@ Q_SIGNALS:
     void signalProvidersFinished();
     void signalEntriesFinished();
     
-    void signalInstallationFinished();
-    void signalInstallationFailed();
-
     void signalProgress(const QString & message, int percentage);
 
     void signalDownloadDialogDone(KNS3::Entry::List);
@@ -280,7 +256,6 @@ private Q_SLOTS:
     
     void slotEntriesFailed();
 
-    void slotPayloadResult(KJob *job);
     void slotPreviewResult(KJob *job);
 
     void slotUploadPayloadResult(KJob *job);
@@ -288,9 +263,10 @@ private Q_SLOTS:
     void slotUploadMetaResult(KJob *job);
 
     void slotProgress(KJob *job, unsigned long percent);
-
-    void slotInstallationVerification(int result);
-
+    
+    void slotInstallationFinished(const Entry& entry);
+    void slotInstallationFailed(const Entry& entry);
+    void slotUninstallFinished(const Entry& entry);
 private:
     /**
      * load providers from the providersurl in the knsrc file
@@ -326,11 +302,14 @@ private:
     bool providerCached(Provider *provider);
     bool providerChanged(Provider *oldprovider, Provider *provider);
 
-    static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
-
     QString entryId(const Entry& e);
     QString providerId(const Provider *p);
 
+    
+    /**
+     * Private copy constructor
+     */
+    Engine(const Engine& other);
     class Private;
     Private* const d;
 
