@@ -1048,6 +1048,7 @@ install(FILES
   Plasma/View
   Plasma/Version
   Plasma/Wallpaper
+  Plasma/WallpaperScript
   Plasma/WebView
   Plasma/WindowEffects
   Plasma/VideoWidget
