@@ -92,7 +92,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         if ( e && e->button() == 1 )
             utarget = "_blank";
 
-        if ( evt->target()->id() == ID_IMG ) {
+        if ( static_cast<NodeImpl*>(evt->target())->id() == ID_IMG ) {
             HTMLImageElementImpl* img = static_cast<HTMLImageElementImpl*>( evt->target() );
             if ( img && img->isServerMap() )
             {
