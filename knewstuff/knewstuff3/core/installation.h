@@ -160,8 +160,11 @@ Q_SIGNALS:
     void signalPayloadFailed(const KNS3::Entry& entry);
 
 private:
-
     void install(Entry entry, const QString& downloadedFile);
+
+    QString targetInstallationPath(const QString& payloadfile);
+    QStringList installDownloadedFileAndUncompress(Entry entry, const QString& payloadfile, const QString installdir);
+    void runPostInstallationCommand(const QString& installPath);
     
     static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
 

@@ -57,8 +57,6 @@ struct KNS3::InstallationPrivate {
     Installation::Scope m_scope;
     bool m_customname;
 
-    QMap<Entry, QString> payloadfiles; // why not in entry?
-
     QMap<KJob*, Entry> entry_jobs;
 
 };
@@ -217,7 +215,6 @@ void Installation::downloadPayload(Entry entry)
     if (isRemote()) {
         // Remote resource
         //kDebug() << "Relaying remote payload '" << source << "'";
-        d->payloadfiles[entry] = entry.payload().representation();
         install(entry, source.pathOrUrl());
         emit signalPayloadLoaded(source);
         // FIXME: we still need registration for eventual deletion
@@ -254,7 +251,6 @@ void Installation::slotPayloadResult(KJob *job)
             emit signalPayloadFailed(entry);
         } else {
             KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-            d->payloadfiles[entry] = fcjob->destUrl().path();
 
             install(entry, fcjob->destUrl().pathOrUrl());
 
@@ -276,9 +272,7 @@ void Installation::install(Entry entry, const QString& downloadedFile)
         //Provider* provider = d->provider_index.value(entry.providerId());
     }
 
-    QString payloadfile = downloadedFile; //entry.payload().representation();
 
-    bool update = (entry.status() == Entry::Updateable);
     // FIXME: this is only so exposing the KUrl suffices for downloaded entries
 
 
@@ -311,21 +305,51 @@ void Installation::install(Entry entry, const QString& downloadedFile)
         }
     }
     */
+    
 
-    //kDebug() << "INSTALL resourceDir " << standardResourceDir();
-    //kDebug() << "INSTALL targetDir " << targetDir();
-    //kDebug() << "INSTALL installPath " << installPath();
-    //kDebug() << "INSTALL + scope " << scope();
-    //kDebug() << "INSTALL + customName" << customName();
-    //kDebug() << "INSTALL + uncompression " << uncompression();
-    //kDebug() << "INSTALL + command " << command();
+    QString targetPath = targetInstallationPath(downloadedFile);
+    QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
 
-    // Collect all files that were installed
-    QStringList installedFiles;
+    if (installedFiles.isEmpty()) {
+        emit signalInstallationFailed(entry);
+        return;
+    }
+    
+    entry.setInstalledFiles(installedFiles);
+
+    if (!d->m_command.isEmpty()) {
+        QString target;
+        if (installedFiles.size() == 1) {
+            runPostInstallationCommand(installedFiles.first());
+        } else {
+            runPostInstallationCommand(targetPath);
+        }
+    }
+
+    // ==== FIXME: security code below must go above, when async handling is complete ====
+
+    // FIXME: security object lifecycle - it is a singleton!
+    Security *sec = Security::ref();
+
+    connect(sec,
+            SIGNAL(validityResult(int)),
+            SLOT(slotInstallationVerification(int)));
+
+    // FIXME: change to accept filename + signature
+    sec->checkValidity(QString());
+
+    entry.setStatus(Entry::Installed);
+    emit signalInstallationFinished(entry);
+}
+
+QString Installation::targetInstallationPath(const QString& payloadfile)
+{
     QString installpath(payloadfile);
+    QString installdir;
+    
     if (!isRemote()) {
         // installdir is the target directory
-        QString installdir;
+
         // installpath also contains the file name if it's a single file, otherwise equal to installdir
         int pathcounter = 0;
         if (!standardResourceDir().isEmpty()) {
@@ -363,12 +387,25 @@ void Installation::install(Entry entry, const QString& downloadedFile)
         }
         if (pathcounter != 1) {
             kError() << "Wrong number of installation directories given." << endl;
-            return;
+            return QString();
         }
 
         kDebug() << "installdir: " << installdir;
-        bool isarchive = true;
 
+    }
+    
+    return installdir;
+}
+
+QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const QString& payloadfile, const QString installdir)
+{
+    QString installpath(payloadfile);
+    // Collect all files that were installed
+    QStringList installedFiles;
+
+    if (!isRemote()) {
+        bool isarchive = true;
+        
         // respect the uncompress flag in the knsrc
         if (uncompression() == "always" || uncompression() == "archive") {
             // this is weird but a decompression is not a single name, so take the path instead
@@ -392,7 +429,7 @@ void Installation::install(Entry entry, const QString& downloadedFile)
                 delete archive;
                 kError() << "Could not determine type of archive file '" << payloadfile << "'";
                 if (uncompression() == "always") {
-                    return;
+                    return QStringList();
                 }
                 isarchive = false;
             }
@@ -402,7 +439,7 @@ void Installation::install(Entry entry, const QString& downloadedFile)
                 if (!success) {
                     kError() << "Cannot open archive file '" << payloadfile << "'";
                     if (uncompression() == "always") {
-                        return;
+                        return QStringList();
                     }
                     // otherwise, just copy the file
                     isarchive = false;
@@ -450,68 +487,51 @@ void Installation::install(Entry entry, const QString& downloadedFile)
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
             bool success = true;
-
+            bool update = (entry.status() == Entry::Updateable);
+            
             if (QFile::exists(installpath)) {
                 if (!update) {
                     if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File:")) == KMessageBox::Cancel) {
-                        return;
+                        return QStringList();
                     }
                 }
                 success = QFile::remove(installpath);
             }
             if (success) {
                 success = file.rename(QUrl(installpath).toLocalFile());
-                
+
                 kDebug() << "move: " << file.fileName() << " to " << installpath
                     << QUrl(installpath).toLocalFile() << QUrl(installpath).toString() << QUrl(installpath).isValid();
             }
             if (!success) {
                 kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
-                return;
+                return QStringList();
             }
             installedFiles << installpath;
             installedFiles << installdir + '/';
         }
     }
-
-    entry.setInstalledFiles(installedFiles);
-
-    if (!command().isEmpty()) {
-        KProcess process;
-        QString command(d->m_command);
-        QString fileArg(KShell::quoteArg(installpath));
-        command.replace("%f", fileArg);
-
-        //kDebug() << "Postinstallation: execute command";
-        //kDebug() << "Command is: " << command;
-
-        process.setShellCommand(command);
-        int exitcode = process.execute();
-
-        if (exitcode) {
-            kError() << "Command failed" << endl;
-        } else {
-            //kDebug() << "Command executed successfully";
-        }
-    }
-
-    // ==== FIXME: security code below must go above, when async handling is complete ====
-
-    // FIXME: security object lifecycle - it is a singleton!
-    Security *sec = Security::ref();
-
-    connect(sec,
-            SIGNAL(validityResult(int)),
-            SLOT(slotInstallationVerification(int)));
-
-    // FIXME: change to accept filename + signature
-    sec->checkValidity(QString());
-
-    d->payloadfiles[entry] = installpath;
-
-    entry.setStatus(Entry::Installed);
-    emit signalInstallationFinished(entry);
+    return installedFiles;
 }
+
+void Installation::runPostInstallationCommand(const QString& installPath)
+{
+    KProcess process;
+    QString command(d->m_command);
+    QString fileArg(KShell::quoteArg(installPath));
+    command.replace("%f", fileArg);
+
+    //kDebug() << "Postinstallation: execute command";
+    //kDebug() << "Command is: " << command;
+
+    process.setShellCommand(command);
+    int exitcode = process.execute();
+
+    if (exitcode) {
+        kError() << "Command failed" << endl;
+    }
+}
+
 
 void Installation::uninstall(Entry entry)
 {
