@@ -490,9 +490,8 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &
   int c = descendedRow(parent);
   int d = descendedRow(destParent);
 
-#if QT_VERSION >= 0x040600
-  q->beginMoveRows(QModelIndex(), c+1+start, c+1+end, QModelIndex(), d+1+destRow);
-#endif
+  bool allowMove = q->beginMoveRows(QModelIndex(), c+1+start, c+1+end, QModelIndex(), d+1+destRow);
+  Q_ASSERT(allowMove);
 }
 
 void KDescendantsProxyModelPrivate::sourceRowsMoved(const QModelIndex &sourceParentIndex, int start, int end, const QModelIndex &destParentIndex, int destRow)
@@ -506,9 +505,7 @@ void KDescendantsProxyModelPrivate::sourceRowsMoved(const QModelIndex &sourcePar
 
   m_descendantsCount.clear();
 
-#if QT_VERSION >= 0x040600
   q->endMoveRows();
-#endif
 }
 
 
@@ -531,9 +528,7 @@ void KDescendantsProxyModelPrivate::sourceRowsRemoved(const QModelIndex &sourceP
 void KDescendantsProxyModelPrivate::sourceModelAboutToBeReset()
 {
   Q_Q(KDescendantsProxyModel);
-
-  // TODO: Uncomment for Qt 4.6
-//   q->beginResetModel();
+  q->beginResetModel();
 }
 
 void KDescendantsProxyModelPrivate::sourceModelReset()
@@ -541,9 +536,7 @@ void KDescendantsProxyModelPrivate::sourceModelReset()
   Q_Q(KDescendantsProxyModel);
 
   m_descendantsCount.clear();
-  // TODO: Uncomment for Qt 4.6
-//   q->endResetModel();
-  q->reset();
+  q->endResetModel();
 }
 
 void KDescendantsProxyModelPrivate::sourceLayoutAboutToBeChanged()
