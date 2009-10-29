@@ -189,6 +189,13 @@ void KCategoryDrawer::setRightMargin(int rightMargin)
     d->rightMargin = rightMargin;
 }
 
+KCategoryDrawer &KCategoryDrawer::operator=(const KCategoryDrawer &cd)
+{
+    d->leftMargin = cd.d->leftMargin;
+    d->rightMargin = cd.d->rightMargin;
+    return *this;
+}
+
 KCategoryDrawerV2::KCategoryDrawerV2(QObject *parent)
     : QObject(parent)
     , KCategoryDrawer()

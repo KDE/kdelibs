@@ -78,6 +78,8 @@ public:
       */
     void setRightMargin(int rightMargin);
 
+    KCategoryDrawer &operator=(const KCategoryDrawer &cd);
+
 private:
     class Private;
     Private *const d;
