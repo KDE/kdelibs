@@ -33,6 +33,7 @@
 #include <QtGui/QPainter>
 #include <limits.h>
 #include <kdebug.h>
+#include <config.h> //For endian
 
 namespace khtmlImLoad {
 
@@ -321,17 +322,24 @@ void Image::notifyScanline(uchar version, uchar* data)
         //Premultiply. Note that this is assuming that any combination
         //Will not actually look at the pixel.
         QRgb* dst = reinterpret_cast<QRgb*>(plane->image.scanLine(loaderScanline));
-        QRgb* src = reinterpret_cast<QRgb*>(data);
+        uchar* src = data;
         int planeImageWidth = plane->image.width();
         for (int x = 0; x < planeImageWidth; ++x)
         {
-            QRgb col = src[x];
-            unsigned a = qAlpha(col);
-            unsigned r = qRed(col);
-            unsigned g = qGreen(col);
-            unsigned b = qBlue(col);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN || defined(__BIG_ENDIAN__)
+            unsigned a = src[0];
+            unsigned r = src[1];
+            unsigned g = src[2];
+            unsigned b = src[3];
+#else
+            unsigned a = src[3];
+            unsigned r = src[2];
+            unsigned g = src[1];
+            unsigned b = src[0];
+#endif
             dst[x]  = qRgba(premulComponent(r, a), premulComponent(g, a),
-                            premulComponent(b, a), a);
+                              premulComponent(b, a), a);
+            src += 4;
         }
     }
 
