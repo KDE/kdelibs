@@ -86,7 +86,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     // Check whether handler is a function or an object with handleEvent method
     if (listener == compareListenerImp) {
       // Set "this" to the event's current target
-      thisObj = getDOMNode(exec,evt.currentTarget().handle())->getObject();
+      thisObj = getEventTarget(exec,evt.handle()->currentTarget())->getObject();
     } else {
       thisObj = compareListenerImp;
     }
@@ -290,9 +290,9 @@ JSValue *DOMEvent::getValueProperty(ExecState *exec, int token) const
     return jsString(event.type());
   case Target:
   case SrcElement: /*MSIE extension - "the object that fired the event"*/
-    return getDOMNode(exec,event.target());
+    return getEventTarget(exec,event.target());
   case CurrentTarget:
-    return getDOMNode(exec,event.currentTarget());
+    return getEventTarget(exec,event.currentTarget());
   case EventPhase:
     return jsNumber((unsigned int)event.eventPhase());
   case Bubbles:
@@ -612,7 +612,10 @@ JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   case OffsetX:
   case OffsetY: // MSIE extension
   {
-    DOM::Node node = event.target();
+    if (event.target()->eventTargetType() != EventTargetImpl::DOM_NODE)
+        return jsUndefined();
+    
+    DOM::Node node = static_cast<NodeImpl*>(event.target());
     khtml::RenderObject *rend = 0;
     if (node.handle()) {
         node.handle()->document()->updateRendering();
@@ -658,16 +661,16 @@ JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   case ToElement:
     // MSIE extension - "the object toward which the user is moving the mouse pointer"
     if (event.id() == DOM::EventImpl::MOUSEOUT_EVENT)
-      return getDOMNode(exec,event.relatedTarget());
-    return getDOMNode(exec,event.target());
+      return getEventTarget(exec,event.relatedTarget());
+    return getEventTarget(exec,event.target());
   case FromElement:
     // MSIE extension - "object from which activation
     // or the mouse pointer is exiting during the event" (huh?)
     if (event.id() == DOM::EventImpl::MOUSEOUT_EVENT)
-      return getDOMNode(exec,event.target());
+      return getEventTarget(exec,event.target());
     /* fall through */
   case RelatedTarget:
-    return getDOMNode(exec,event.relatedTarget());
+    return getEventTarget(exec,event.relatedTarget());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token;
     return 0;

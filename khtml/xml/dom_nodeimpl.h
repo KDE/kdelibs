@@ -81,7 +81,18 @@ private:
     bool isHTMLEventListener(EventListener* listener);
 };
 
-class NodeImpl : public khtml::TreeShared<NodeImpl>
+class EventTargetImpl : public khtml::TreeShared<EventTargetImpl>
+{
+public:
+    enum Type {
+        DOM_NODE,
+        XML_HTTP_REQUEST
+    };
+
+    virtual Type eventTargetType() const = 0;
+};
+
+class NodeImpl : public EventTargetImpl
 {
     friend class DocumentImpl;
 public:
@@ -91,12 +102,17 @@ public:
     //stuff for WebCore DOM & SVG
     virtual bool hasTagName(const QualifiedName& /*name*/) const { return false; }
 
+    // EventTarget
+    virtual Type eventTargetType() const { return DOM_NODE; }
+    // covariant override
+    NodeImpl* parent() const { return parentNode(); }
+
     // DOM methods & attributes for Node
     virtual DOMString nodeName() const;
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
     virtual unsigned short nodeType() const;
-    NodeImpl *parentNode() const { return m_parent; }
+    NodeImpl *parentNode() const { return static_cast<NodeImpl*>(m_parent); }
     NodeImpl *previousSibling() const { return m_previous; }
     NodeImpl *nextSibling() const { return m_next; }
     virtual NodeListImpl *childNodes();
@@ -208,12 +224,6 @@ public:
     //                 the lower 16 bit identify the local part of the
     //                 qualified element name.
     virtual Id id() const { return 0; }
-
-    enum IdType {
-        AttributeId,
-        ElementId,
-        NamespaceId
-    };
 
     enum MouseEventType {
         MousePress,

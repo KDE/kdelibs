@@ -98,10 +98,10 @@ public:
     DOMString type() const { return m_eventName.toString(); }
     EventName name() const { return m_eventName; }
 
-    NodeImpl *target() const { return m_target; }
-    void setTarget(NodeImpl *_target);
-    NodeImpl *currentTarget() const { return m_currentTarget; }
-    void setCurrentTarget(NodeImpl *_currentTarget) { m_currentTarget = _currentTarget; }
+    EventTargetImpl *target() const { return m_target; }
+    void setTarget(EventTargetImpl *_target);
+    EventTargetImpl *currentTarget() const { return m_currentTarget; }
+    void setCurrentTarget(EventTargetImpl *_currentTarget) { m_currentTarget = _currentTarget; }
     unsigned short eventPhase() const { return m_eventPhase; }
     void setEventPhase(unsigned short _eventPhase) { m_eventPhase = _eventPhase; }
     bool bubbles() const { return m_canBubble; }
@@ -145,8 +145,8 @@ protected:
     bool m_defaultPrevented   : 1;
     bool m_defaultHandled     : 1;
     unsigned short m_eventPhase : 2;
-    NodeImpl *m_currentTarget; // ref > 0 maintained externally
-    NodeImpl *m_target;
+    EventTargetImpl *m_currentTarget; // ref > 0 maintained externally
+    EventTargetImpl *m_target;
     QDateTime m_createTime;
     DOMString m_message;
 };

@@ -281,6 +281,7 @@ namespace KJS {
   };
 
   bool checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n);
+  JSValue* getEventTarget(ExecState* exec, DOM::EventTargetImpl* t);
   JSValue* getDOMNode(ExecState *exec, DOM::NodeImpl* n);
   JSValue* getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m);
   JSValue* getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l);

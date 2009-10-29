@@ -75,7 +75,7 @@ EventImpl::~EventImpl()
         m_target->deref();
 }
 
-void EventImpl::setTarget(NodeImpl *_target)
+void EventImpl::setTarget(EventTargetImpl *_target)
 {
     if (m_target)
         m_target->deref();

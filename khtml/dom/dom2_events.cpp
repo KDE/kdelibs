@@ -91,7 +91,9 @@ Node Event::target() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->target();
+    if (impl->target()->eventTargetType() == EventTargetImpl::DOM_NODE)
+        return static_cast<DOM::NodeImpl*>(impl->target());
+    return 0;
 }
 
 Node Event::currentTarget() const
@@ -99,7 +101,9 @@ Node Event::currentTarget() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->currentTarget();
+    if (impl->currentTarget()->eventTargetType() == EventTargetImpl::DOM_NODE)
+        return static_cast<DOM::NodeImpl*>(impl->currentTarget());
+    return 0;
 }
 
 unsigned short Event::eventPhase() const

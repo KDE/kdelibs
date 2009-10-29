@@ -28,6 +28,8 @@
 #include <QtCore/QPointer>
 #include <QtCore/QHash>
 
+#include "xml/dom_nodeimpl.h"
+
 namespace KJS {
 
   class JSEventListener;
@@ -77,10 +79,12 @@ namespace KJS {
     SharedPtr<DOM::DocumentImpl> doc;
   };
 
-  class XMLHttpRequest : public DOMObject {
+  class XMLHttpRequest : public DOMObject, public DOM::EventTargetImpl {
   public:
     XMLHttpRequest(ExecState *, DOM::DocumentImpl* d);
     ~XMLHttpRequest();
+
+    virtual Type eventTargetType() const { return XML_HTTP_REQUEST; }
 
     bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue *getValueProperty(ExecState *exec, int token) const;

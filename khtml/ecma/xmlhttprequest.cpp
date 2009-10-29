@@ -321,6 +321,7 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
     createdDocument(false),
     aborted(false)
 {
+  ref(); // we're a GC point, so refcount pin.
   setPrototype(XMLHttpRequestProto::self(exec));
 }
 
@@ -345,12 +346,16 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
     if (onReadyStateChangeListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
       ev.initEvent("readystatechange", true, true);
+      ev.handle()->setTarget(this);
+      ev.handle()->setCurrentTarget(this);
       onReadyStateChangeListener->handleEvent(ev);
     }
 
     if (m_state == XHRS_Loaded && onLoadListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
       ev.initEvent("load", true, true);
+      ev.handle()->setTarget(this);
+      ev.handle()->setCurrentTarget(this);
       onLoadListener->handleEvent(ev);
     }
   }

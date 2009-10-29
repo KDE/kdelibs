@@ -48,6 +48,7 @@
 #include "kjs_events.h"
 #include "kjs_views.h"
 #include "kjs_window.h"
+#include "xmlhttprequest.h"
 #include <kjs/PropertyNameArray.h>
 #include <dom/dom_exception.h>
 #include <dom/html_document.h>
@@ -1744,6 +1745,16 @@ static DOMObject* create##name##Wrapper(ExecState* exec, DOM::NodeImpl* n) \
 
 CREATE_WRAPPER_FUNCTION(Audio)
 CREATE_WRAPPER_FUNCTION(Video)
+
+JSValue* KJS::getEventTarget(ExecState* exec, DOM::EventTargetImpl* t)
+{
+    if (!t)
+        return jsNull();
+    if (t->eventTargetType() == EventTargetImpl::DOM_NODE)
+        return getDOMNode(exec, static_cast<DOM::NodeImpl*>(t));
+    else
+        return static_cast<XMLHttpRequest*>(t); //static
+}
 
 JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
 {

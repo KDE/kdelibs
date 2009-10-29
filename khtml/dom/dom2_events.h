@@ -252,8 +252,8 @@ public:
     EventImpl *handle() const;
     bool isNull() const;
 
-protected:
     Event(EventImpl *i);
+protected:
     EventImpl *impl;
 };
 

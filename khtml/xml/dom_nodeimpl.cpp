@@ -342,7 +342,7 @@ kDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << "
 
 bool NodeImpl::isContentEditable() const
 {
-    return m_parent ? m_parent->isContentEditable() : false;
+    return parentNode() ? parentNode()->isContentEditable() : false;
 }
 
 QRect NodeImpl::getRect() const
