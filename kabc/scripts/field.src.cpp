@@ -36,7 +36,7 @@ class Field::FieldImpl
                const QString &app = QString::null )
       : mFieldId( fieldId ), mCategory( category ), mLabel( label ),
         mKey( key ), mApp( app ) {}
-  
+
     enum FieldId
     {
       CustomField,
@@ -45,11 +45,11 @@ class Field::FieldImpl
 
     int fieldId() { return mFieldId; }
     int category() { return mCategory; }
-    
+
     QString label() { return mLabel; }
     QString key() { return mKey; }
     QString app() { return mApp; }
-    
+
   private:
     int mFieldId;
     int mCategory;
@@ -184,6 +184,8 @@ QString Field::value( const KABC::Addressee &a )
       return a.phoneNumber( PhoneNumber::Pager ).number();
     case FieldImpl::HomeAddressStreet:
       return a.address( Address::Home ).street();
+    case FieldImpl::HomeAddressPostOfficeBox:
+      return a.address( Address::Home ).postOfficeBox();
     case FieldImpl::HomeAddressLocality:
       return a.address( Address::Home ).locality();
     case FieldImpl::HomeAddressRegion:
@@ -196,6 +198,8 @@ QString Field::value( const KABC::Addressee &a )
       return a.address( Address::Home ).label();
     case FieldImpl::BusinessAddressStreet:
       return a.address( Address::Work ).street();
+    case FieldImpl::BusinessAddressPostOfficeBox:
+      return a.address( Address::Work ).postOfficeBox();
     case FieldImpl::BusinessAddressLocality:
       return a.address( Address::Work ).locality();
     case FieldImpl::BusinessAddressRegion:
@@ -266,6 +270,13 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
         a.insertAddress( address );
         return true;
       }
+    case FieldImpl::HomeAddressPostOfficeBox:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setPostOfficeBox( value );
+        a.insertAddress( address );
+        return true;
+      }
     case FieldImpl::HomeAddressLocality:
       {
         KABC::Address address = a.address( Address::Home );
@@ -305,6 +316,13 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
       {
         KABC::Address address = a.address( Address::Work );
         address.setStreet( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressPostOfficeBox:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setPostOfficeBox( value );
         a.insertAddress( address );
         return true;
       }
@@ -438,7 +456,7 @@ void Field::saveFields( KConfig *cfg, const QString &identifier,
                         const Field::List &fields )
 {
   QValueList<int> fieldIds;
-  
+
   int custom = 0;
   Field::List::ConstIterator it;
   for( it = fields.begin(); it != fields.end(); ++it ) {
@@ -452,7 +470,7 @@ void Field::saveFields( KConfig *cfg, const QString &identifier,
                        QString::number( custom++ ), customEntry );
     }
   }
-  
+
   cfg->writeEntry( identifier, fieldIds );
 }
 
@@ -460,7 +478,7 @@ Field::List Field::restoreFields( const QString &identifier )
 {
   KConfig *cfg = KGlobal::config();
   KConfigGroupSaver( cfg, "KABCFields" );
- 
+
   return restoreFields( cfg, identifier );
 }
 
@@ -485,7 +503,7 @@ Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
     }
     fields.append( new Field( f ) );
   }
-  
+
   return fields;
 }
 
@@ -496,7 +514,7 @@ bool Field::equals( Field *field )
   if ( !sameId ) return false;
 
   if ( mImpl->fieldId() != FieldImpl::CustomField ) return true;
-  
+
   return mImpl->key() == field->mImpl->key();
 }
 
