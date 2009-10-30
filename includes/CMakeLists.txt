@@ -274,7 +274,6 @@ install( FILES
   KNSBookmarkImporterImpl
   KNTLM
   KNotification
-  KNotificationItem
   KNotificationRestrictions
   KNotifyConfigWidget
   KNumInput
@@ -361,6 +360,7 @@ install( FILES
   KStartupInfoData
   KStartupInfoId
   KStatusBar
+  KStatusNotifierItem
   KStringHandler
   KStringListValidator
   KStyle
