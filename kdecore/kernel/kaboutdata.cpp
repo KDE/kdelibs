@@ -811,6 +811,10 @@ KAboutData::translators() const
     
     KLocale *tmpLocale = NULL;
     if (KGlobal::locale()) {
+        // There could be many catalogs loaded into the global locale,
+        // e.g. in systemsettings. The tmp locale is needed to make sure we
+        // use the translators name from this aboutdata's catalog, rather than
+        // from any other loaded catalog.
         tmpLocale = new KLocale(*KGlobal::locale());
         tmpLocale->setActiveCatalog(catalogName());
     }
