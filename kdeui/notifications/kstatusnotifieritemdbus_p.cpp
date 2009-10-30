@@ -20,7 +20,7 @@
 
 #include "kstatusnotifieritemdbus_p.h"
 #include "kstatusnotifieritemprivate_p.h"
-#include "knotificationitem.h"
+#include "kstatusnotifieritem.h"
 
 #include <QDBusConnection>
 #include <QPixmap>
