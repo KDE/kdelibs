@@ -324,12 +324,12 @@ qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
 
-set(notificationitemwatcher_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.NotificationItemWatcher.xml)
-qt4_add_dbus_interface(kdeui_LIB_SRCS ${notificationitemwatcher_xml} notificationwatcher_interface)
+set(statusnotifierwatcher_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierWatcher.xml)
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${statusnotifierwatcher_xml} statusnotifierwatcher_interface)
 set(notifications_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.freedesktop.Notifications.xml)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${notifications_xml} notifications_interface)
 
-qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.NotificationItem.xml
+qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierItem.xml
                      ${CMAKE_CURRENT_SOURCE_DIR}/notifications/knotificationitemdbus_p.h KNotificationItemDBus)
 
 set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
@@ -618,8 +618,8 @@ install( FILES
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install(FILES
-    notifications/org.kde.NotificationItem.xml
-    notifications/org.kde.NotificationItemWatcher.xml
+    notifications/org.kde.StatusNotifierItem.xml
+    notifications/org.kde.StatusNotifierWatcher.xml
     DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 if (NOT Q_WS_X11)

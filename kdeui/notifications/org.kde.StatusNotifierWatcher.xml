@@ -1,6 +1,6 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
-  <interface name="org.kde.NotificationItemWatcher">
+  <interface name="org.kde.StatusNotifierWatcher">
 
     <method name="RegisterService">
        <arg name="service" type="s" direction="in"/>
@@ -15,11 +15,11 @@
         <arg type="i" direction="out"/>
     </method>
 
-    <method name="RegisterNotificationHost">
+    <method name="RegisterStatusNotifierHost">
        <arg name="service" type="s" direction="in"/>
     </method>
 
-    <method name="IsNotificationHostRegistered">
+    <method name="IsStatusNotifierHostRegistered">
        <arg name="service" type="b" direction="out"/>
     </method>
 
@@ -31,7 +31,7 @@
         <arg type="s"/>
     </signal>
 
-    <signal name="NotificationHostRegistered">
+    <signal name="StatusNotifierHostRegistered">
     </signal>
   </interface>
 </node>

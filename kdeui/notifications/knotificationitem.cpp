@@ -43,7 +43,7 @@
 
 #include <netinet/in.h>
 
-#include "notificationitemadaptor.h"
+#include "statusnotifieritemadaptor.h"
 
 KNotificationItem::KNotificationItem(QObject *parent)
       : QObject(parent),
@@ -62,7 +62,7 @@ KNotificationItem::KNotificationItem(const QString &id, QObject *parent)
 
 KNotificationItem::~KNotificationItem()
 {
-    delete d->notificationItemWatcher;
+    delete d->statusNotifierWatcher;
     delete d->notificationsClient;
     delete d->systemTrayIcon;
     delete d->menu;
@@ -596,7 +596,7 @@ KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
       movie(0),
       menu(0),
       titleAction(0),
-      notificationItemWatcher(0),
+      statusNotifierWatcher(0),
       notificationsClient(0),
       systemTrayIcon(0),
       hasQuit(false),
@@ -642,20 +642,20 @@ void KNotificationItemPrivate::init(const QString &extraId)
 void KNotificationItemPrivate::registerToDaemon()
 {
     kDebug(299) << "Registering a client interface to the system tray daemon";
-    if (!notificationItemWatcher) {
-        QString interface("org.kde.NotificationItemWatcher");
-        notificationItemWatcher = new org::kde::NotificationItemWatcher(interface, "/NotificationItemWatcher",
+    if (!statusNotifierWatcher) {
+        QString interface("org.kde.StatusNotifierWatcher");
+        statusNotifierWatcher = new org::kde::StatusNotifierWatcher(interface, "/StatusNotifierWatcher",
                                                                         QDBusConnection::sessionBus());
     }
 
-    if (notificationItemWatcher->isValid() &&
-        notificationItemWatcher->ProtocolVersion() == s_protocolVersion) {
+    if (statusNotifierWatcher->isValid() &&
+        statusNotifierWatcher->ProtocolVersion() == s_protocolVersion) {
 
-        if (notificationItemWatcher->IsNotificationHostRegistered()) {
+        if (statusNotifierWatcher->IsStatusNotifierHostRegistered()) {
             kDebug(299) << "service is" << notificationItemDbus->service();
-            notificationItemWatcher->RegisterService(notificationItemDbus->service());
+            statusNotifierWatcher->RegisterService(notificationItemDbus->service());
             setLegacySystemTrayEnabled(false);
-            QObject::disconnect(notificationItemWatcher, SIGNAL(NotificationHostRegistered()), q, SLOT(registerToDaemon()));
+            QObject::disconnect(statusNotifierWatcher, SIGNAL(StatusNotifierHostRegistered()), q, SLOT(registerToDaemon()));
         }
     } else {
         kDebug(299)<<"System tray daemon not reachable or no registered system trays";
@@ -666,7 +666,7 @@ void KNotificationItemPrivate::registerToDaemon()
 void KNotificationItemPrivate::serviceChange(const QString& name, const QString& oldOwner, const QString& newOwner)
 {
     bool legacy = false;
-    if (name == "org.kde.NotificationItemWatcher") {
+    if (name == "org.kde.StatusNotifierWatcher") {
         if (newOwner.isEmpty()) {
             //unregistered
             kDebug(299) << "Connection to the systemtray daemon lost";
@@ -676,8 +676,8 @@ void KNotificationItemPrivate::serviceChange(const QString& name, const QString&
             legacy = false;
         }
     } else if (name.startsWith(QLatin1String("org.kde.Notification-"))) {
-        if (newOwner.isEmpty() && (!notificationItemWatcher ||
-                                   !notificationItemWatcher->IsNotificationHostRegistered())) {
+        if (newOwner.isEmpty() && (!statusNotifierWatcher ||
+                                   !statusNotifierWatcher->IsStatusNotifierHostRegistered())) {
             //unregistered
             legacy = true;
         } else if (oldOwner.isEmpty()) {
@@ -720,8 +720,8 @@ void KNotificationItemPrivate::legacyActivated(QSystemTrayIcon::ActivationReason
 void KNotificationItemPrivate::setLegacySystemTrayEnabled(bool enabled)
 {
     if (enabled) {
-        delete notificationItemWatcher;
-        notificationItemWatcher = 0;
+        delete statusNotifierWatcher;
+        statusNotifierWatcher = 0;
 
         if (!systemTrayIcon) {
             systemTrayIcon = new KNotificationLegacyIcon(associatedWidget);

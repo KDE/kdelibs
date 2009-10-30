@@ -40,10 +40,10 @@
 #include <kmessagebox.h>
 #include <kactioncollection.h>
 
-#include "notificationwatcher_interface.h"
+#include "statusnotifierwatcher_interface.h"
 
 
-#include "notificationitemadaptor.h"
+#include "statusnotifieritemadaptor.h"
 
 // Marshall the ImageStruct data into a D-BUS argument
 const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusImageStruct &icon)
@@ -152,7 +152,7 @@ KNotificationItemDBus::KNotificationItemDBus(KNotificationItem *parent)
                       .arg(++s_serviceCount)),
     m_dbus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, m_service))
 {
-   new NotificationItemAdaptor(this);
+   new StatusNotifierItemAdaptor(this);
    kDebug(299) << "service is" << m_service;
    m_dbus.registerService(m_service);
    m_dbus.registerObject("/NotificationItem", this);
