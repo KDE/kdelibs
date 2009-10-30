@@ -61,14 +61,6 @@ public:
     QSortFilterProxyModel * filteredModel;
     ItemsViewDelegate * mDelegate;
 
-    // FIXME remove all of the lists above
-    //QList<Entry*> entries;
-    QMap<const QString, Entry::List> entries;
-    QMap<const Provider*, Entry::List> entriesByProvider;
-    QMap<Entry*, const Provider*> entryToProviders;
-
-    Provider::List providers;
-
     QMutex mMutex;
     bool hasDxs;
 
@@ -431,12 +423,12 @@ void DownloadDialog::refresh()
 {
     //d->sourceCombo->clear();
 
-    foreach(Provider* provider, d->providers) {
+    //foreach(Provider* provider, d->providers) {
         //QPixmap icon = DesktopIcon(QString(), 16);
         //d->d->typeCombo->addItem(icon, feed->name().representation());
         //d->sourceCombo->addItem(provider->name().representation());
         // FIXME: see DXS categories
-    }
+    //}
 
     //slotSwitchProvider();
 
