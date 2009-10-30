@@ -275,9 +275,9 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
         return true;
     }
     QString search = d->searchTerm;
-    if (entry.name().representation().contains(search) ||
-        entry.summary().representation().contains(search) ||
-        entry.author().name().contains(search)
+    if (entry.name().representation().contains(search, Qt::CaseInsensitive) ||
+        entry.summary().representation().contains(search, Qt::CaseInsensitive) ||
+        entry.author().name().contains(search, Qt::CaseInsensitive)
         ) {
         return true;
     }
