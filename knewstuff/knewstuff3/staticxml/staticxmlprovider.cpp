@@ -44,9 +44,8 @@ public:
     
     // cache of all entries known from this provider so far, mapped by their id
     Entry::List mEntries;
-    QMap<QString, QStringList> mFeedEntries;
-	QMap<QString, XmlLoader*> mFeedLoaders;
-    
+    QMap<QString, XmlLoader*> mFeedLoaders;
+    QString searchTerm;
     bool mInitialized;
 };
 
@@ -182,6 +181,7 @@ QStringList StaticXmlProvider::availableSortingCriteria() const
 void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& searchstring, int page, int pageSize)
 {
     Q_D(StaticXmlProvider);
+    d->searchTerm = searchstring;
     if (d->mDownloadUrls.contains(sortMode)) {
         if (page == 0) {
             // TODO first get the entries, then filter with searchString, finally emit the finished signal...
@@ -243,14 +243,15 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         // check to see if we already have this entry
         if (d->mEntries.contains(entry)) {
             // if so, merge the two together
-            
         }
         else {
             // add it to the list otherwise
             d->mEntries.append(entry);
-            entries << entry;
+
+            if (searchIncludesEntry(entry)) {
+                entries << entry;
+            }
         }
-        d->mFeedEntries[mode].append(entry.uniqueId());
         // TODO: ask the engine if it knows about any cached/installed data, so we can merge that in too
     }
     
@@ -262,6 +263,25 @@ void StaticXmlProvider::slotFeedFailed()
 {
 	// TODO: get the sortmode, searchstring and page from the loader somehow so we can pass them on
 	//emit loadingFailed();
+}
+
+bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
+{
+    Q_D(const StaticXmlProvider);
+
+    kDebug() << "serach: " << d->searchTerm;
+    
+    if (d->searchTerm.isEmpty()) {
+        return true;
+    }
+    QString search = d->searchTerm;
+    if (entry.name().representation().contains(search) ||
+        entry.summary().representation().contains(search) ||
+        entry.author().name().contains(search)
+        ) {
+        return true;
+    }
+    return false;
 }
 
 }

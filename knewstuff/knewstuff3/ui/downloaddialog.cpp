@@ -58,12 +58,11 @@ public:
 
     KNS3::ItemsModel* model;
 
+    // sort items according to sort combo
     QSortFilterProxyModel * filteredModel;
     ItemsViewDelegate * mDelegate;
-
-    QMutex mMutex;
-    bool hasDxs;
-
+    QString searchTerm;
+    
     Private(Engine* _engine)
         : engine(_engine), model(new ItemsModel), filteredModel(new QSortFilterProxyModel)
         , messageTimer(new QTimer), searchTimer(new QTimer)
@@ -346,18 +345,17 @@ void DownloadDialog::slotUpdateSearch()
 {
     // FIXME clear all Entries and repopulate from engine with new search settings
     d->searchTimer->stop();
-    
-    // FIXME
-    d->model->clearEntries();
-    kDebug() << "Search term entered: " << m_searchEdit->text();
-    d->engine->setSearchTerm(m_searchEdit->text());
-    d->engine->reloadEntries();
-    
-    // FIXME Filter in providers that don't support real search
-    /*
-    d->filteredModel->setFilterFixedString(m_searchEdit->text());
-    d->filteredModel->invalidate();
-    */
+
+    if (m_searchEdit->text() != d->searchTerm) {
+        d->searchTerm = m_searchEdit->text();
+
+        d->filteredModel->clear();
+        
+        d->model->clearEntries();
+        kDebug() << "Search term entered: " << m_searchEdit->text();
+        d->engine->setSearchTerm(m_searchEdit->text());
+        d->engine->reloadEntries();
+    }
 }
 
 void DownloadDialog::slotSearchTextChanged()

@@ -947,7 +947,6 @@ void Engine::loadEntriesCache()
 
 void Engine::shutdown()
 {
-    
     d->entry_index.clear();
     d->provider_index.clear();
 
@@ -1387,7 +1386,6 @@ void Engine::slotInstallationFailed(const KNS3::Entry& entry)
     kDebug() << "Installation failed: " << entry.name().representation();
     // FIXME implement warning?
 }
-
 
 void Engine::slotUninstallFinished(const KNS3::Entry& entry)
 {

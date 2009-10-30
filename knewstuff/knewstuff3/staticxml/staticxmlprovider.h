@@ -69,11 +69,14 @@ namespace KNS3
         
         virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
 
+    private:
+        bool searchIncludesEntry(const Entry& entry) const;
+        
     protected:
         StaticXmlProvider(StaticXmlProviderPrivate &dd);
-	private Q_SLOTS:
-		void slotFeedFileLoaded(const QDomDocument&);
-		void slotFeedFailed();
+    private Q_SLOTS:
+        void slotFeedFileLoaded(const QDomDocument&);
+        void slotFeedFailed();
     private:
         Q_DECLARE_PRIVATE(StaticXmlProvider)
     };
