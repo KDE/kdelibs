@@ -6,6 +6,7 @@
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
+include(CheckCXXSymbolExists)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckPrototypeExists)
@@ -26,6 +27,8 @@ macro_bool_to_01(BZIP2_FOUND HAVE_BZIP2_SUPPORT)        # kdecore
 if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
    set(NEED_BZ2_PREFIX 1)
 endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
+
+macro_bool_to_01(LIBLZMA_FOUND HAVE_XZ_SUPPORT)         # kdecore
 
 macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
@@ -77,6 +80,7 @@ check_include_files(valgrind/memcheck.h   HAVE_VALGRIND_MEMCHECK_H)    # khtml
 check_include_files(crtdbg.h      HAVE_CRTDBG_H)                       # kjs
 check_include_files(langinfo.h    HAVE_LANGINFO_H)                     # kdecore
 
+check_include_files(arpa/nameser_compat.h HAVE_ARPA_NAMESER_COMPAT_H) # kio
 check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 
 macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                                   # kdecore
@@ -96,15 +100,15 @@ check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)    
 check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)     # kioslave
 check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
 check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
-
+check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
 
 check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
 check_function_exists(fdatasync        HAVE_FDATASYNC)                # kdecore
-check_function_exists(madvise         HAVE_MADVISE)                   # kdecore
-check_function_exists(mmap            HAVE_MMAP)                      # kdecore, khtml
+check_function_exists(mmap             HAVE_MMAP)                     # kdecore, khtml
+
 if(NOT WIN32)
   # we don't have it on windows but need to export it to be backward compatible
   # can be removed when 4.1 is out
@@ -115,6 +119,7 @@ check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
+check_function_exists(getgrouplist    HAVE_GETGROUPLIST)              # kio
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
 
@@ -230,7 +235,15 @@ check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore/fakes.c
 check_function_exists(random     HAVE_RANDOM)            # kdecore/fakes.c
 check_function_exists(strlcpy    HAVE_STRLCPY)           # kdecore/fakes.c
 check_function_exists(strlcat    HAVE_STRLCAT)           # kdecore/fakes.c
-check_function_exists(strcasestr HAVE_STRCASESTR)        # kdecore/fakes.c
+check_cxx_symbol_exists(__CORRECT_ISO_CPP_STRING_H_PROTO "string.h" HAVE_STRCASESTR_OVERLOAD) # glibc-2.9 strangeness
+if (HAVE_STRCASESTR_OVERLOAD)
+  message(STATUS "string.h defines __CORRECT_ISO_CPP_STRING_H_PROTO")
+  set(HAVE_STRCASESTR 1)
+  set(HAVE_STRCASESTR_PROTO 1)
+else()
+  check_function_exists(strcasestr HAVE_STRCASESTR)        # kdecore/fakes.c
+  check_prototype_exists(strcasestr string.h          HAVE_STRCASESTR_PROTO)
+endif()
 check_function_exists(setenv     HAVE_SETENV)            # kdecore/fakes.c
 check_function_exists(seteuid    HAVE_SETEUID)           # kdecore/fakes.c
 check_function_exists(setmntent  HAVE_SETMNTENT)         # solid, kio, kdecore
@@ -243,7 +256,6 @@ check_prototype_exists(mkstemps "stdlib.h;unistd.h" HAVE_MKSTEMPS_PROTO)
 check_prototype_exists(mkdtemp "stdlib.h;unistd.h"  HAVE_MKDTEMP_PROTO)
 check_prototype_exists(mkstemp "stdlib.h;unistd.h"  HAVE_MKSTEMP_PROTO)
 check_prototype_exists(strlcat string.h             HAVE_STRLCAT_PROTO)
-check_prototype_exists(strcasestr string.h          HAVE_STRCASESTR_PROTO)
 check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
 check_prototype_exists(random stdlib.h              HAVE_RANDOM_PROTO)
 check_prototype_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT_PROTO)
