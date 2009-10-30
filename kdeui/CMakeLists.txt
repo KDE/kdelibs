@@ -132,7 +132,7 @@ set(kdeui_LIB_SRCS
  kernel/kstartupinfo.cpp
  kernel/kglobalsettings.cpp
  notifications/knotificationitem.cpp
- notifications/knotificationitemdbus_p.cpp
+ notifications/kstatusnotifieritemdbus_p.cpp
  notifications/ksystemtrayicon.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
@@ -330,7 +330,7 @@ set(notifications_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.freedesktop.
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${notifications_xml} notifications_interface)
 
 qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierItem.xml
-                     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/knotificationitemdbus_p.h KNotificationItemDBus)
+                     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
 
 set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
 set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")

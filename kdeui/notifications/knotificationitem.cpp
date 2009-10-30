@@ -19,8 +19,8 @@
 */
 
 #include "knotificationitem.h"
-#include "knotificationitemprivate_p.h"
-#include "knotificationitemdbus_p.h"
+#include "kstatusnotifieritemprivate_p.h"
+#include "kstatusnotifieritemdbus_p.h"
 
 #include <QDBusConnection>
 #include <QPixmap>
@@ -47,7 +47,7 @@
 
 KNotificationItem::KNotificationItem(QObject *parent)
       : QObject(parent),
-        d(new KNotificationItemPrivate(this))
+        d(new KStatusNotifierItemPrivate(this))
 {
     d->init(QString());
 }
@@ -55,7 +55,7 @@ KNotificationItem::KNotificationItem(QObject *parent)
 
 KNotificationItem::KNotificationItem(const QString &id, QObject *parent)
       : QObject(parent),
-        d(new KNotificationItemPrivate(this))
+        d(new KStatusNotifierItemPrivate(this))
 {
     d->init(id);
 }
@@ -99,7 +99,7 @@ void KNotificationItem::setTitle(const QString &title)
 void KNotificationItem::setStatus(const ItemStatus status)
 {
     d->status = status;
-    emit d->notificationItemDbus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
+    emit d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
 
     if (d->systemTrayIcon) {
         d->syncLegacySystemTrayIcon();
@@ -114,7 +114,7 @@ void KNotificationItem::setIconByName(const QString &name)
 {
     d->serializedIcon = KDbusImageVector();
     d->iconName = name;
-    emit d->notificationItemDbus->NewIcon();
+    emit d->statusNotifierItemDBus->NewIcon();
     if (d->systemTrayIcon) {
         d->systemTrayIcon->setIcon(KIcon(name));
     }
@@ -129,7 +129,7 @@ void KNotificationItem::setIconByPixmap(const QIcon &icon)
 {
     d->iconName.clear();
     d->serializedIcon = d->iconToVector(icon);
-    emit d->notificationItemDbus->NewIcon();
+    emit d->statusNotifierItemDBus->NewIcon();
 
     d->icon = icon;
     if (d->systemTrayIcon) {
@@ -145,7 +145,7 @@ QIcon KNotificationItem::iconPixmap() const
 void KNotificationItem::setOverlayIconByName(const QString &name)
 {
     d->overlayIconName = name;
-    emit d->notificationItemDbus->NewOverlayIcon();
+    emit d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
         QPixmap iconPixmap = KIcon(d->iconName).pixmap(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium);
         if (!name.isEmpty()) {
@@ -166,7 +166,7 @@ QString KNotificationItem::overlayIconName() const
 void KNotificationItem::setOverlayIconByPixmap(const QIcon &icon)
 {
     d->serializedOverlayIcon = d->iconToVector(icon);
-    emit d->notificationItemDbus->NewOverlayIcon();
+    emit d->statusNotifierItemDBus->NewOverlayIcon();
 
     d->overlayIcon = icon;
     if (d->systemTrayIcon) {
@@ -191,7 +191,7 @@ void KNotificationItem::setAttentionIconByName(const QString &name)
 {
     d->serializedAttentionIcon = KDbusImageVector();
     d->attentionIconName = name;
-    emit d->notificationItemDbus->NewAttentionIcon();
+    emit d->statusNotifierItemDBus->NewAttentionIcon();
 }
 
 QString KNotificationItem::attentionIconName() const
@@ -204,7 +204,7 @@ void KNotificationItem::setAttentionIconByPixmap(const QIcon &icon)
     d->attentionIconName.clear();
     d->serializedAttentionIcon = d->iconToVector(icon);
     d->attentionIcon = icon;
-    emit d->notificationItemDbus->NewAttentionIcon();
+    emit d->statusNotifierItemDBus->NewAttentionIcon();
 }
 
 QIcon KNotificationItem::attentionIconPixmap() const
@@ -229,7 +229,7 @@ void KNotificationItem::setAttentionMovie(QMovie *movie)
 
     d->movie = movie;
 
-    emit d->notificationItemDbus->NewAttentionIcon();
+    emit d->statusNotifierItemDBus->NewAttentionIcon();
 
     if (d->systemTrayIcon) {
         d->systemTrayIcon->setMovie(movie);
@@ -243,7 +243,7 @@ void KNotificationItem::setAttentionMovie(const QVector<QPixmap> &movie)
         d->movieVector.append(d->imageToStruct(movie[i].toImage()));
     }
 
-    emit d->notificationItemDbus->NewAttentionIcon();
+    emit d->statusNotifierItemDBus->NewAttentionIcon();
     //FIXME?: movie on the legacy systemtray icon is not supported here
 }
 
@@ -254,7 +254,7 @@ void KNotificationItem::setAttentionMovie(const QVector<QImage> &movie)
         d->movieVector.append(d->imageToStruct(movie[i]));
     }
 
-    emit d->notificationItemDbus->NewAttentionIcon();
+    emit d->statusNotifierItemDBus->NewAttentionIcon();
 }
 
 
@@ -270,7 +270,7 @@ void KNotificationItem::setToolTip(const QString &iconName, const QString &title
     setToolTipIconByName(iconName);
     setToolTipTitle(title);
     setToolTipSubTitle(subTitle);
-    emit d->notificationItemDbus->NewToolTip();
+    emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 void KNotificationItem::setToolTip(const QIcon &icon, const QString &title, const QString &subTitle)
@@ -278,14 +278,14 @@ void KNotificationItem::setToolTip(const QIcon &icon, const QString &title, cons
     setToolTipIconByPixmap(icon);
     setToolTipTitle(title);
     setToolTipSubTitle(subTitle);
-    emit d->notificationItemDbus->NewToolTip();
+    emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 void KNotificationItem::setToolTipIconByName(const QString &name)
 {
     d->serializedToolTipIcon = KDbusImageVector();
     d->toolTipIconName = name;
-    emit d->notificationItemDbus->NewToolTip();
+    emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 QString KNotificationItem::toolTipIconName() const
@@ -298,7 +298,7 @@ void KNotificationItem::setToolTipIconByPixmap(const QIcon &icon)
     d->toolTipIconName.clear();
     d->serializedToolTipIcon = d->iconToVector(icon);
     d->toolTipIcon = icon;
-    emit d->notificationItemDbus->NewToolTip();
+    emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 QIcon KNotificationItem::toolTipIconPixmap() const
@@ -309,7 +309,7 @@ QIcon KNotificationItem::toolTipIconPixmap() const
 void KNotificationItem::setToolTipTitle(const QString &title)
 {
     d->toolTipTitle = title;
-    emit d->notificationItemDbus->NewToolTip();
+    emit d->statusNotifierItemDBus->NewToolTip();
     if (d->systemTrayIcon) {
         d->systemTrayIcon->setToolTip(title);
     }
@@ -323,7 +323,7 @@ QString KNotificationItem::toolTipTitle() const
 void KNotificationItem::setToolTipSubTitle(const QString &subTitle)
 {
     d->toolTipSubTitle = subTitle;
-    emit d->notificationItemDbus->NewToolTip();
+    emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 QString KNotificationItem::toolTipSubTitle() const
@@ -460,7 +460,7 @@ void KNotificationItem::activate(const QPoint &pos)
     //FIXME: always true?
     if (d->status == NeedsAttention) {
         d->status = Active;
-        emit d->notificationItemDbus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
+        emit d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
     }
 
     if (d->menu->isVisible()) {
@@ -475,7 +475,7 @@ void KNotificationItem::activate(const QPoint &pos)
     d->checkVisibility(pos);
 }
 
-bool KNotificationItemPrivate::checkVisibility(QPoint pos, bool perform)
+bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
 {
 #ifdef Q_WS_WIN
 #if 0
@@ -585,11 +585,11 @@ bool KNotificationItem::eventFilter(QObject *watched, QEvent *event)
 }
 
 
-//KNotificationItemPrivate
+//KStatusNotifierItemPrivate
 
-const int KNotificationItemPrivate::s_protocolVersion = 0;
+const int KStatusNotifierItemPrivate::s_protocolVersion = 0;
 
-KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
+KStatusNotifierItemPrivate::KStatusNotifierItemPrivate(KNotificationItem *item)
     : q(item),
       category(KNotificationItem::ApplicationStatus),
       status(KNotificationItem::Passive),
@@ -605,7 +605,7 @@ KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
 {
 }
 
-void KNotificationItemPrivate::init(const QString &extraId)
+void KStatusNotifierItemPrivate::init(const QString &extraId)
 {
     // Ensure that closing the last KMainWindow doesn't exit the application
     // if a system tray icon is still present.
@@ -616,7 +616,7 @@ void KNotificationItemPrivate::init(const QString &extraId)
     qDBusRegisterMetaType<KDbusToolTipStruct>();
 
     actionCollection = new KActionCollection(q);
-    notificationItemDbus = new KNotificationItemDBus(q);
+    statusNotifierItemDBus = new KStatusNotifierItemDBus(q);
     q->setAssociatedWidget(qobject_cast<QWidget*>(q->parent()));
 
     QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
@@ -639,7 +639,7 @@ void KNotificationItemPrivate::init(const QString &extraId)
     registerToDaemon();
 }
 
-void KNotificationItemPrivate::registerToDaemon()
+void KStatusNotifierItemPrivate::registerToDaemon()
 {
     kDebug(299) << "Registering a client interface to the system tray daemon";
     if (!statusNotifierWatcher) {
@@ -652,8 +652,8 @@ void KNotificationItemPrivate::registerToDaemon()
         statusNotifierWatcher->ProtocolVersion() == s_protocolVersion) {
 
         if (statusNotifierWatcher->IsStatusNotifierHostRegistered()) {
-            kDebug(299) << "service is" << notificationItemDbus->service();
-            statusNotifierWatcher->RegisterService(notificationItemDbus->service());
+            kDebug(299) << "service is" << statusNotifierItemDBus->service();
+            statusNotifierWatcher->RegisterService(statusNotifierItemDBus->service());
             setLegacySystemTrayEnabled(false);
             QObject::disconnect(statusNotifierWatcher, SIGNAL(StatusNotifierHostRegistered()), q, SLOT(registerToDaemon()));
         }
@@ -663,7 +663,7 @@ void KNotificationItemPrivate::registerToDaemon()
     }
 }
 
-void KNotificationItemPrivate::serviceChange(const QString& name, const QString& oldOwner, const QString& newOwner)
+void KStatusNotifierItemPrivate::serviceChange(const QString& name, const QString& oldOwner, const QString& newOwner)
 {
     bool legacy = false;
     if (name == "org.kde.StatusNotifierWatcher") {
@@ -705,26 +705,26 @@ void KNotificationItemPrivate::serviceChange(const QString& name, const QString&
     }
 }
 
-void KNotificationItemPrivate::legacyWheelEvent(int delta)
+void KStatusNotifierItemPrivate::legacyWheelEvent(int delta)
 {
-    notificationItemDbus->Scroll(delta, "vertical");
+    statusNotifierItemDBus->Scroll(delta, "vertical");
 }
 
-void KNotificationItemPrivate::legacyActivated(QSystemTrayIcon::ActivationReason reason)
+void KStatusNotifierItemPrivate::legacyActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::MiddleClick) {
         emit q->secondaryActivateRequested(systemTrayIcon->geometry().topLeft());
     }
 }
 
-void KNotificationItemPrivate::setLegacySystemTrayEnabled(bool enabled)
+void KStatusNotifierItemPrivate::setLegacySystemTrayEnabled(bool enabled)
 {
     if (enabled) {
         delete statusNotifierWatcher;
         statusNotifierWatcher = 0;
 
         if (!systemTrayIcon) {
-            systemTrayIcon = new KNotificationLegacyIcon(associatedWidget);
+            systemTrayIcon = new KStatusNotifierLegacyIcon(associatedWidget);
             systemTrayIcon->setContextMenu(menu);
             syncLegacySystemTrayIcon();
             systemTrayIcon->setToolTip(toolTipTitle);
@@ -746,7 +746,7 @@ void KNotificationItemPrivate::setLegacySystemTrayEnabled(bool enabled)
     }
 }
 
-void KNotificationItemPrivate::syncLegacySystemTrayIcon()
+void KStatusNotifierItemPrivate::syncLegacySystemTrayIcon()
 {
     if (status == KNotificationItem::NeedsAttention) {
         if (movie) {
@@ -767,7 +767,7 @@ void KNotificationItemPrivate::syncLegacySystemTrayIcon()
     systemTrayIcon->setToolTip(toolTipTitle);
 }
 
-void KNotificationItemPrivate::contextMenuAboutToShow()
+void KStatusNotifierItemPrivate::contextMenuAboutToShow()
 {
     if (!hasQuit && standardActionsEnabled) {
         // we need to add the actions to the menu afterwards so that these items
@@ -800,7 +800,7 @@ void KNotificationItemPrivate::contextMenuAboutToShow()
     }
 }
 
-void KNotificationItemPrivate::maybeQuit()
+void KStatusNotifierItemPrivate::maybeQuit()
 {
     QString caption = KGlobal::caption();
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>", caption);
@@ -816,17 +816,17 @@ void KNotificationItemPrivate::maybeQuit()
 
 }
 
-void KNotificationItemPrivate::minimizeRestore()
+void KStatusNotifierItemPrivate::minimizeRestore()
 {
     q->activate(QPoint(0, 0));
 }
 
-void KNotificationItemPrivate::hideMenu()
+void KStatusNotifierItemPrivate::hideMenu()
 {
     menu->hide();
 }
 
-void KNotificationItemPrivate::minimizeRestore(bool show)
+void KStatusNotifierItemPrivate::minimizeRestore(bool show)
 {
 #ifdef Q_WS_X11
     KWindowInfo info = KWindowSystem::windowInfo(associatedWidget->winId(), NET::WMDesktop | NET::WMFrameExtents);
@@ -857,7 +857,7 @@ void KNotificationItemPrivate::minimizeRestore(bool show)
 #endif
 }
 
-KDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImage &image)
+KDbusImageStruct KStatusNotifierItemPrivate::imageToStruct(const QImage &image)
 {
     KDbusImageStruct icon;
     icon.width = image.size().width();
@@ -881,7 +881,7 @@ KDbusImageStruct KNotificationItemPrivate::imageToStruct(const QImage &image)
     return icon;
 }
 
-KDbusImageVector KNotificationItemPrivate::iconToVector(const QIcon &icon)
+KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
 {
     KDbusImageVector iconVector;
 
@@ -910,4 +910,4 @@ KDbusImageVector KNotificationItemPrivate::iconToVector(const QIcon &icon)
 }
 
 #include "knotificationitem.moc"
-#include "knotificationitemprivate_p.moc"
+#include "kstatusnotifieritemprivate_p.moc"

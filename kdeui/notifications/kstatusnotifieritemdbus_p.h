@@ -47,7 +47,7 @@ struct KDbusToolTipStruct {
 
 class KNotificationItem;
 
-class KNotificationItemDBus : public QObject
+class KStatusNotifierItemDBus : public QObject
 {
     Q_OBJECT
 
@@ -67,8 +67,8 @@ class KNotificationItemDBus : public QObject
 
     friend class KNotificationItem;
 public:
-    KNotificationItemDBus(KNotificationItem *parent);
-    ~KNotificationItemDBus();
+    KStatusNotifierItemDBus(KNotificationItem *parent);
+    ~KStatusNotifierItemDBus();
 
     /**
      * @return the service this object is registered on the bus under

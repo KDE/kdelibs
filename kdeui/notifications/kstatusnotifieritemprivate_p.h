@@ -31,7 +31,7 @@
 #include <ksystemtrayicon.h>
 
 #include "knotificationitem.h"
-#include "knotificationitemdbus_p.h"
+#include "kstatusnotifieritemdbus_p.h"
 
 #include "statusnotifierwatcher_interface.h"
 #include "notifications_interface.h"
@@ -46,12 +46,12 @@ class QAction;
 // this class is needed because we can't just put an event filter on it:
 // the events that are passed to QSystemTrayIcon are done so in a way that
 // bypasses the usual event filtering mechanisms *sigh*
-class KNotificationLegacyIcon : public KSystemTrayIcon
+class KStatusNotifierLegacyIcon : public KSystemTrayIcon
 {
     Q_OBJECT
 
 public:
-    KNotificationLegacyIcon(QWidget *parent)
+    KStatusNotifierLegacyIcon(QWidget *parent)
         : KSystemTrayIcon(parent)
     {
     }
@@ -70,10 +70,10 @@ signals:
     void wheel(int);
 };
 
-class KNotificationItemPrivate
+class KStatusNotifierItemPrivate
 {
 public:
-    KNotificationItemPrivate(KNotificationItem *item);
+    KStatusNotifierItemPrivate(KNotificationItem *item);
 
     void init(const QString &extraId);
     void registerToDaemon();
@@ -129,7 +129,7 @@ public:
     org::freedesktop::Notifications *notificationsClient;
 
     KSystemTrayIcon *systemTrayIcon;
-    KNotificationItemDBus *notificationItemDbus;
+    KStatusNotifierItemDBus *statusNotifierItemDBus;
 
     bool hasQuit : 1;
     bool onAllDesktops : 1;

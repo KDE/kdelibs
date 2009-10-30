@@ -33,7 +33,7 @@ class KMenu;
 class QMovie;
 
 
-class KNotificationItemPrivate;
+class KStatusNotifierItemPrivate;
 
 /**
  * \brief %KDE Notification icon protocol implementation
@@ -70,8 +70,8 @@ class KDEUI_EXPORT KNotificationItem : public QObject
     Q_PROPERTY( QString toolTipTitle READ toolTipTitle WRITE setToolTipTitle )
     Q_PROPERTY( QString toolTipSubTitle READ toolTipSubTitle WRITE setToolTipSubTitle )
 
-    friend class KNotificationItemDBus;
-    friend class KNotificationItemPrivate;
+    friend class KStatusNotifierItemDBus;
+    friend class KStatusNotifierItemPrivate;
 public:
     /**
      * All the possible status this icon can have, depending on the
@@ -448,7 +448,7 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event);
 
 private:
-    KNotificationItemPrivate *const d;
+    KStatusNotifierItemPrivate *const d;
 
     Q_PRIVATE_SLOT(d, void serviceChange(const QString& name,
                                          const QString& oldOwner,
