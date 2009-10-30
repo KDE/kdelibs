@@ -46,9 +46,9 @@ class QMovie;
  * right mouse button, she gets a popupmenu with application specific
  * commands, including "Minimize/Restore" and "Quit".
  *
- * Please note that this class is being phased out in favor of the KNotificationItem
+ * Please note that this class is being phased out in favor of the KStatusNotifierItem
  * class, you should consider to use it instead if you are writing a new application
- * or consider porting the code that uses this class to the KNotificationItem API.
+ * or consider porting the code that uses this class to the KStatusNotifierItem API.
  *
  * Also, QSystemTrayIcon::showMessage(..) should not be
  * used for KDE application because the popup message has no KDE standard

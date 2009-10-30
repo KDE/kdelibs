@@ -36,9 +36,9 @@ class QMovie;
 class KStatusNotifierItemPrivate;
 
 /**
- * \brief %KDE Notification icon protocol implementation
+ * \brief %KDE Status notifier Item protocol implementation
  *
- * This class implements the Notification icon Dbus specification.
+ * This class implements the Status notifier Item Dbus specification.
  * It provides an icon similar to the classical systemtray icons,
  * with some key differences:
  *  the actual representation is done by the systemtray 
@@ -108,7 +108,7 @@ public:
     };
 
     /**
-     * Construct a new notification icon
+     * Construct a new status notifier item
      *
      * @param parent the parent object for this object. If the object passed in as
      * a parent is also a QWidget, it will  be used as the main application window
@@ -118,14 +118,14 @@ public:
     explicit KStatusNotifierItem(QObject *parent = 0);
 
     /**
-     * Construct a new notification icon with a unique identifier.
-     * If your application has more than one notification item and the user
+     * Construct a new status notifier item with a unique identifier.
+     * If your application has more than one status notifier item and the user
      * should be able to manipulate them separately (e.g. mark them for hiding
      * in a user interface), the id can be used to differentiate between them.
      *
      * The id should remain consistent even between application restarts.
-     * Notification items without ids default to the application's name for the id.
-     * This id may be used, for instance, by hosts displaying notification items to 
+     * Status notifier items without ids default to the application's name for the id.
+     * This id may be used, for instance, by hosts displaying status notifier items to 
      * associate configuration information with this item in a way that can persist
      * between sessions or application restarts.
      *
@@ -300,7 +300,7 @@ public:
     void setToolTip(const QString &iconName, const QString &title, const QString &subTitle);
 
     /**
-     * Sets a new toolTip or this notification icon.
+     * Sets a new toolTip or this status notifier item.
      * This is an overloaded member provided for convenience
      */
     void setToolTip(const QIcon &icon, const QString &title, const QString &subTitle);
@@ -352,7 +352,7 @@ public:
     QString toolTipSubTitle() const;
 
     /**
-     * Sets a new context menu for this NotificationIcon.
+     * Sets a new context menu for this StatusNotifierItem.
      * the menu will be shown with a contextMenu(int,int)
      * call by the systemtray over dbus
      * usually you don't need to call this unless you want to use
@@ -361,19 +361,19 @@ public:
     void setContextMenu(KMenu *menu);
 
     /**
-     * Access the context menu associated to this notification icon
+     * Access the context menu associated to this status notifier item
      */
     KMenu *contextMenu() const;
 
     /**
-     * Sets the main widget associated with this NotificationIcon
+     * Sets the main widget associated with this StatusNotifierItem
      * @param parent the new main widget: must be a top level window,
      *               if it's not parent->window() will be used instead.
      */
     void setAssociatedWidget(QWidget *parent);
 
     /**
-     * Access the main widget associated with this NotificationIcon
+     * Access the main widget associated with this StatusNotifierItem
      */
     QWidget *associatedWidget() const;
 
