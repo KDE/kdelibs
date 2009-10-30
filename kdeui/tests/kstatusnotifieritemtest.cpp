@@ -18,9 +18,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "knotificationitemtest.h"
+#include "kstatusnotifieritemtest.h"
 
-#include "notifications/knotificationitem.h"
+#include "notifications/kstatusnotifieritem.h"
 #include <QDateTime>
 #include <QtGui/QLabel>
 #include <QMovie>
@@ -33,7 +33,7 @@
 #include <kmenu.h>
 #include <kicon.h>
 
-KNotificationItemTest::KNotificationItemTest(QObject *parent, KNotificationItem *tray)
+KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray)
   : QObject(parent)
 {
     KMenu *menu = tray->contextMenu();
@@ -52,33 +52,33 @@ KNotificationItemTest::KNotificationItemTest(QObject *parent, KNotificationItem 
     connect(passive, SIGNAL(triggered()), this, SLOT(setPassive()));
 }
 
-void KNotificationItemTest::setNeedsAttention()
+void KStatusNotifierItemTest::setNeedsAttention()
 {
     kDebug()<<"Asking for attention";
-    m_tray->setStatus(KNotificationItem::NeedsAttention);
+    m_tray->setStatus(KStatusNotifierItem::NeedsAttention);
 }
 
-void KNotificationItemTest::setActive()
+void KStatusNotifierItemTest::setActive()
 {
     kDebug()<<"Systray icon in active state";
-    m_tray->setStatus(KNotificationItem::Active);
+    m_tray->setStatus(KStatusNotifierItem::Active);
 }
 
-void KNotificationItemTest::setPassive()
+void KStatusNotifierItemTest::setPassive()
 {
     kDebug()<<"Systray icon in passive state";
-    m_tray->setStatus(KNotificationItem::Passive);
+    m_tray->setStatus(KStatusNotifierItem::Passive);
 }
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData( "KNotificationItemtest", 0 , ki18n("KNotificationItemtest"), "1.0" );
+    KAboutData aboutData( "KStatusNotifierItemtest", 0 , ki18n("KStatusNotifierItemtest"), "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
     QLabel *l = new QLabel("System Tray Main Window", 0L);
-    KNotificationItem *tray = new KNotificationItem(l);
+    KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
-    KNotificationItemTest *trayTest = new KNotificationItemTest(0, tray);
+    KStatusNotifierItemTest *trayTest = new KStatusNotifierItemTest(0, tray);
 
 
     tray->setTitle("DBus System tray test");
@@ -101,4 +101,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include <knotificationitemtest.moc>
+#include <kstatusnotifieritemtest.moc>

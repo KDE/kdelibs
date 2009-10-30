@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KNOTIFICATIONITEN_H
-#define KNOTIFICATIONITEN_H
+#ifndef KSTATUSNOTIFIERITEM_H
+#define KSTATUSNOTIFIERITEM_H
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -54,7 +54,7 @@ class KStatusNotifierItemPrivate;
  *  @author Marco Martin <notmart@gmail.com>
  *  @since 4.4
  */
-class KDEUI_EXPORT KNotificationItem : public QObject
+class KDEUI_EXPORT KStatusNotifierItem : public QObject
 {
     Q_OBJECT
 
@@ -115,7 +115,7 @@ public:
      * represented by this icon and will be shown/hidden when an activation is requested.
      * @see associatedWidget
      **/
-    explicit KNotificationItem(QObject *parent = 0);
+    explicit KStatusNotifierItem(QObject *parent = 0);
 
     /**
      * Construct a new notification icon with a unique identifier.
@@ -135,9 +135,9 @@ public:
      * represented by this icon and will be shown/hidden when an activation is requested.
      * @see associatedWidget
      **/
-    explicit KNotificationItem(const QString &id, QObject *parent = 0);
+    explicit KStatusNotifierItem(const QString &id, QObject *parent = 0);
 
-    ~KNotificationItem();
+    ~KStatusNotifierItem();
 
     /**
      * @return The id which was specified in the constructor. This should be

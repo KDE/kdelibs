@@ -30,7 +30,7 @@
 
 #include <ksystemtrayicon.h>
 
-#include "knotificationitem.h"
+#include "kstatusnotifieritem.h"
 #include "kstatusnotifieritemdbus_p.h"
 
 #include "statusnotifierwatcher_interface.h"
@@ -73,7 +73,7 @@ signals:
 class KStatusNotifierItemPrivate
 {
 public:
-    KStatusNotifierItemPrivate(KNotificationItem *item);
+    KStatusNotifierItemPrivate(KStatusNotifierItem *item);
 
     void init(const QString &extraId);
     void registerToDaemon();
@@ -94,12 +94,12 @@ public:
 
     static const int s_protocolVersion;
 
-    KNotificationItem *q;
+    KStatusNotifierItem *q;
 
-    KNotificationItem::ItemCategory category;
+    KStatusNotifierItem::ItemCategory category;
     QString id;
     QString title;
-    KNotificationItem::ItemStatus status;
+    KStatusNotifierItem::ItemStatus status;
 
     QString iconName;
     KDbusImageVector serializedIcon;

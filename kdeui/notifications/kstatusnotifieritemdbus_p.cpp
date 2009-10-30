@@ -144,7 +144,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, KDbusToolTipStruc
 
 int KStatusNotifierItemDBus::s_serviceCount = 0;
 
-KStatusNotifierItemDBus::KStatusNotifierItemDBus(KNotificationItem *parent)
+KStatusNotifierItemDBus::KStatusNotifierItemDBus(KStatusNotifierItem *parent)
   : QObject(parent),
     m_notificationItem(parent),
     m_service(QString("org.kde.NotificationItem-%1-%2")

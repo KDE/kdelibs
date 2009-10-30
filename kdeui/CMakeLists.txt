@@ -131,7 +131,7 @@ set(kdeui_LIB_SRCS
  kernel/kstyle.cpp
  kernel/kstartupinfo.cpp
  kernel/kglobalsettings.cpp
- notifications/knotificationitem.cpp
+ notifications/kstatusnotifieritem.cpp
  notifications/kstatusnotifieritemdbus_p.cpp
  notifications/ksystemtrayicon.cpp
  notifications/knotification.cpp
@@ -491,7 +491,7 @@ install( FILES
  kernel/kstyle.h
  kernel/kstartupinfo.h
  kernel/kglobalsettings.h
- notifications/knotificationitem.h
+ notifications/kstatusnotifieritem.h
  notifications/ksystemtrayicon.h
  notifications/knotification.h
  notifications/knotificationrestrictions.h

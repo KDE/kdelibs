@@ -18,27 +18,27 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KNOTIFICATIONITEMTEST_H
-#define KNOTIFICATIONITEMTEST_H
+#ifndef KSTATUSNOTIFIERITEMTEST_H
+#define KSTATUSNOTIFIERITEMTEST_H
 
 #include <QObject>
 
-class KNotificationItem;
+class KStatusNotifierItem;
 
-class KNotificationItemTest : public QObject
+class KStatusNotifierItemTest : public QObject
 {
   Q_OBJECT
 
 public:
-    KNotificationItemTest(QObject *parent, KNotificationItem *tray);
-    //~KNotificationItemTest();
+    KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray);
+    //~KStatusNotifierItemTest();
 
 public Q_SLOTS:
     void setNeedsAttention();
     void setActive();
     void setPassive();
 private:
-    KNotificationItem *m_tray;
+    KStatusNotifierItem *m_tray;
 };
 
 #endif

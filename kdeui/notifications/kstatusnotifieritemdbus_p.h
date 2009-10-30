@@ -45,7 +45,7 @@ struct KDbusToolTipStruct {
     QString subTitle;
 };
 
-class KNotificationItem;
+class KStatusNotifierItem;
 
 class KStatusNotifierItemDBus : public QObject
 {
@@ -65,9 +65,9 @@ class KStatusNotifierItemDBus : public QObject
     Q_PROPERTY(KDbusImageVector AttentionMovie READ AttentionMovie)
     Q_PROPERTY(KDbusToolTipStruct ToolTip READ ToolTip)
 
-    friend class KNotificationItem;
+    friend class KStatusNotifierItem;
 public:
-    KStatusNotifierItemDBus(KNotificationItem *parent);
+    KStatusNotifierItemDBus(KStatusNotifierItem *parent);
     ~KStatusNotifierItemDBus();
 
     /**
@@ -201,7 +201,7 @@ Q_SIGNALS:
     void NewStatus(const QString &status);
 
 private:
-    KNotificationItem *m_notificationItem;
+    KStatusNotifierItem *m_notificationItem;
     QString m_service;
     QDBusConnection m_dbus;
     static int s_serviceCount;
