@@ -33,7 +33,9 @@ namespace KNS3
 class StaticXmlProviderPrivate :public ProviderPrivate
 {
 public:
-    StaticXmlProviderPrivate() {}
+    StaticXmlProviderPrivate()
+        :mInitialized(false)
+    {}
 
     // map of download urls to their feed name
     QMap<QString, KUrl> mDownloadUrls;
@@ -44,6 +46,8 @@ public:
     Entry::List mEntries;
     QMap<QString, QStringList> mFeedEntries;
 	QMap<QString, XmlLoader*> mFeedLoaders;
+    
+    bool mInitialized;
 };
 
 StaticXmlProvider::StaticXmlProvider(   )
@@ -116,7 +120,9 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
         kWarning(550) << "StaticXmlProvider: neither uploadurl nor nouploadurl given";
         return false;
     }
-
+    
+    d->mInitialized = true;
+    
     emit providerInitialized(this);
     return true;
 }
@@ -159,6 +165,12 @@ QDomElement StaticXmlProvider::providerXML() const
     }
 
     return el;
+}
+
+bool StaticXmlProvider::isInitialized() const
+{
+    Q_D(const StaticXmlProvider);
+    return d->mInitialized;
 }
 
 QStringList StaticXmlProvider::availableSortingCriteria() const

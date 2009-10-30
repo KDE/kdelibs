@@ -157,6 +157,12 @@ void ItemsModel::slotEntryChanged(const Entry& entry)
     emit dataChanged(entryIndex, entryIndex);
 }
 
+void ItemsModel::clearEntries()
+{
+    m_entries.clear();
+    reset();
+}
+
 void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
 {
     if( pix.isNull())

@@ -216,12 +216,16 @@ public:
 
     CollaborationFeatures collaborationFeatures(const Entry& entry);
 
+    void setSearchTerm(const QString& searchString);
+    void reloadEntries();
+    
 Q_SIGNALS:
     /**
      * Indicates a message to be added to the ui's log, or sent to a messagebox
      */
     void signalMessage(const QString& message);
 
+    // FIXME I think all of the methods below can be removed - no one should care about providers (?)
     /**
      * Indicates that the list of providers has been successfully loaded.
      * This signal might occur twice, for the local cache and for updated provider
@@ -230,7 +234,7 @@ Q_SIGNALS:
     void signalProviderLoaded(KNS3::Provider *provider);
     void signalProviderChanged(KNS3::Provider *provider);
     void signalProvidersFailed();
-
+    
 
     void signalEntriesLoaded(KNS3::Entry::List entries);
 

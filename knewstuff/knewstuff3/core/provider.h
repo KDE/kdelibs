@@ -69,6 +69,8 @@ namespace KNS3
          */
         virtual QDomElement providerXML() const = 0;
 
+        virtual bool isInitialized() const = 0;
+        
         /**
          * Retrieves the common name of the provider.
          *

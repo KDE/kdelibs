@@ -122,6 +122,8 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     //   horLay->addWidget( new ExtendImageWidget( p, this ) );
     // FIXME KDE4PORT: if we use a left bar image, find a better way
 
+    // FIXME set sorting options in m_sortCombo, make the sortFilterProxyModel use the sorting
+    // maybe also clear the list of entries and ask providers to refetch them (either from cache or dynamically)
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
@@ -342,9 +344,20 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 
 void DownloadDialog::slotUpdateSearch()
 {
+    // FIXME clear all Entries and repopulate from engine with new search settings
     d->searchTimer->stop();
+    
+    // FIXME
+    d->model->clearEntries();
+    kDebug() << "Search term entered: " << m_searchEdit->text();
+    d->engine->setSearchTerm(m_searchEdit->text());
+    d->engine->reloadEntries();
+    
+    // FIXME Filter in providers that don't support real search
+    /*
     d->filteredModel->setFilterFixedString(m_searchEdit->text());
     d->filteredModel->invalidate();
+    */
 }
 
 void DownloadDialog::slotSearchTextChanged()
@@ -440,24 +453,6 @@ void DownloadDialog::refresh()
     //d->sourceCombo->setEnabled(true);
     //m_sortCombo->setEnabled(true);
     //m_searchEdit->setEnabled(true);
-}
-
-void DownloadDialog::populateSortCombo(const Provider * provider)
-{
-    //QString url = provider->webAccess().pathOrUrl();
-    //if (url.isEmpty()) {
-    //    d->providerLinkLabel->hide();
-    //} else {
-    //    d->providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
-    //}
-
-    QStringList feeds = provider->availableSortingCriteria();
-    m_sortCombo->clear();
-    foreach (const QString& feed, feeds) {
-        //QString feedName = provider->downloadUrlFeed(feeds[i])->name().representation();
-        kDebug(551) << "adding feed " << feed << " to combobox";
-        m_sortCombo->addItem(feed); // put in the name for the text, and feeds[i] for the userData
-    }
 }
 
 void DownloadDialog::slotInfo(QString provider, QString server, QString version)

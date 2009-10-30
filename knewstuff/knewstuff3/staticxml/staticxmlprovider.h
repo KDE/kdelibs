@@ -62,6 +62,8 @@ namespace KNS3
          */
         virtual QDomElement providerXML() const;
 
+        virtual bool isInitialized() const;
+        
         virtual bool hasServerSideSorting() const { return true; }
         virtual QStringList availableSortingCriteria() const;
         

@@ -84,7 +84,8 @@ class KNS3::Engine::Private {
         Installation *installation;
 
          // what is this? kill it?
-        int activefeeds;
+        //int activefeeds;
+        QString searchTerm;
 
         bool initialized;
         CachePolicy cachepolicy;
@@ -92,7 +93,7 @@ class KNS3::Engine::Private {
         QMap<KJob*, Entry> entry_jobs;
 
         Private()
-            : uploadprovider(NULL), installation(NULL), activefeeds(0),
+            : uploadprovider(NULL), installation(NULL),
                 initialized(false), cachepolicy(CacheNever)
         {
         }
@@ -434,26 +435,12 @@ void Engine::providerInitialized(Provider* p)
 
     connect(p, SIGNAL(loadingFinished(QString,QString,int,int,int,Entry::List)), SLOT(slotEntriesLoaded(QString,QString,int,int,int,Entry::List)));
     // TODO parameters according to search string etc
-    p->loadEntries();
+    p->loadEntries(QString(), d->searchTerm);
 }
 
 void Engine::slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
 {
     emit signalEntriesLoaded(entries);
-    
-    //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
-    //if (!loader) return;
-    //const Provider *provider = loader->provider();
-    //Feed *feed = loader->feed();
-    //delete loader;
-    //d->activefeeds--;
-    //kDebug() << "entriesloaded d->activefeeds: " << d->activefeeds;
-
-    //kDebug() << "Provider source " << provider->name().representation();
-    //kDebug() << "Feed source " << feed->name().representation();
-    //kDebug() << "Feed data: " << feed;
-
-    //mergeEntries(list, feed, provider);
 }
 
 void Engine::slotEntriesFailed()
@@ -463,6 +450,21 @@ void Engine::slotEntriesFailed()
     //d->activefeeds--;
 
     //emit signalEntriesFailed();
+}
+
+void Engine::reloadEntries()
+{
+    foreach (Provider* p, d->providers) {
+        if (p->isInitialized()) {
+            // FIXME: other parameters
+            p->loadEntries(QString(), d->searchTerm);
+        }
+    }
+}
+
+void Engine::setSearchTerm(const QString& searchString)
+{
+    d->searchTerm = searchString;
 }
 
 void Engine::slotProgress(KJob *job, unsigned long percent)
@@ -1395,6 +1397,7 @@ void Engine::slotUninstallFinished(const KNS3::Entry& entry)
 
 Engine::CollaborationFeatures Engine::collaborationFeatures(const KNS3::Entry& entry)
 {
+    /* FIXME the strings in provider_index need to match the entry.providerId() if we go with this
     Provider* p = d->provider_index[entry.providerId()];
     Q_ASSERT(p);
     CollaborationFeatures features;
@@ -1404,6 +1407,9 @@ Engine::CollaborationFeatures Engine::collaborationFeatures(const KNS3::Entry& e
     if (p->hasCommenting()) {
         features |= Comments;
     }
+    */
+    
+    CollaborationFeatures features;
     return features;
 }
 

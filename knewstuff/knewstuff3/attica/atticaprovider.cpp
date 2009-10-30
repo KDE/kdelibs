@@ -107,6 +107,12 @@ void AtticaProvider::providerLoaded()
     emit providerInitialized(this);
 }
 
+bool AtticaProvider::isInitialized() const
+{
+    Q_D(const AtticaProvider);
+    return !d->m_providerManager.providers().isEmpty();
+}
+
 QStringList AtticaProvider::availableSortingCriteria() const
 {
     // URL Arguments: sortmode - The sortmode of the list. Possible values are: "new" - newest first , "alpha" - alphabetical, "high" - highest rated, "down" - most downloads
