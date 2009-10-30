@@ -649,11 +649,11 @@ void KStatusNotifierItemPrivate::registerToDaemon()
     }
 
     if (statusNotifierWatcher->isValid() &&
-        statusNotifierWatcher->ProtocolVersion() == s_protocolVersion) {
+        statusNotifierWatcher->property("ProtocolVersion").toInt() == s_protocolVersion) {
 
-        if (statusNotifierWatcher->IsStatusNotifierHostRegistered()) {
+        if (statusNotifierWatcher->property("HasStatusNotifierHostRegistered").toBool()) {
             kDebug(299) << "service is" << statusNotifierItemDBus->service();
-            statusNotifierWatcher->RegisterService(statusNotifierItemDBus->service());
+            statusNotifierWatcher->RegisterStatusNotifierItem(statusNotifierItemDBus->service());
             setLegacySystemTrayEnabled(false);
             QObject::disconnect(statusNotifierWatcher, SIGNAL(StatusNotifierHostRegistered()), q, SLOT(registerToDaemon()));
         }
@@ -677,7 +677,7 @@ void KStatusNotifierItemPrivate::serviceChange(const QString& name, const QStrin
         }
     } else if (name.startsWith(QLatin1String("org.kde.Notification-"))) {
         if (newOwner.isEmpty() && (!statusNotifierWatcher ||
-                                   !statusNotifierWatcher->IsStatusNotifierHostRegistered())) {
+                                   !statusNotifierWatcher->property("HasStatusNotifierHostRegistered").toBool())) {
             //unregistered
             legacy = true;
         } else if (oldOwner.isEmpty()) {

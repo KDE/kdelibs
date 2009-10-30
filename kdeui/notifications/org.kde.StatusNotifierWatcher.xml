@@ -2,32 +2,34 @@
 <node>
   <interface name="org.kde.StatusNotifierWatcher">
 
-    <method name="RegisterService">
+    <!-- methods -->
+    <method name="RegisterStatusNotifierItem">
        <arg name="service" type="s" direction="in"/>
-    </method>
-
-    <method name="RegisteredServices">
-        <arg type="as" direction="out"/>
-        <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QStringList"/>
-    </method>
-
-    <method name="ProtocolVersion">
-        <arg type="i" direction="out"/>
     </method>
 
     <method name="RegisterStatusNotifierHost">
        <arg name="service" type="s" direction="in"/>
     </method>
 
-    <method name="IsStatusNotifierHostRegistered">
-       <arg name="service" type="b" direction="out"/>
-    </method>
 
-    <signal name="ServiceRegistered">
+    <!-- properties -->
+
+    <property name="RegisteredStatusNotifierItems" type="as" access="read">
+       <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QStringList"/>
+    </property>
+
+    <property name="HasStatusNotifierHostRegistered" type="b" access="read"/>
+
+    <property name="ProtocolVersion" type="i" access="read"/>
+
+
+    <!-- signals -->
+
+    <signal name="StatusNotifierItemRegistered">
         <arg type="s"/>
     </signal>
 
-    <signal name="ServiceUnregistered">
+    <signal name="StatusNotifierItemUnregistered">
         <arg type="s"/>
     </signal>
 
