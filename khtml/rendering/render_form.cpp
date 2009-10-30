@@ -127,13 +127,13 @@ using namespace DOM;
         {
             // Make sure we give combo popup's enough room to display contents;
             // Qt doesn't do this by default
-            
+
             if (cc == QStyle::CC_ComboBox && sc == SC_ComboBoxListBoxPopup) {
                 const QComboBox* cb = qobject_cast<const QComboBox*>(widget);
                 const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
-                
+
                 QFontMetrics fm = cb->fontMetrics();
-                
+
                 if (cb && cbOpt) {
                     // Compute content width; Qt uses the usual +4 magic number for icon/text margin
                     int maxW = 0;
@@ -143,19 +143,19 @@ using namespace DOM;
                             iw += 4 + cb->iconSize().width();
                         maxW = qMax(maxW, iw);
                     }
-                    
+
                     // Now let sizeFromContent add in extra stuff.
                     maxW = proxy()->sizeFromContents(QStyle::CT_ComboBox, opt, QSize(maxW, 1), widget).width();
-                    
+
                     // How much more room do we need for the text?
                     int extraW = maxW > cbOpt->rect.width() ? maxW - cbOpt->rect.width() : 0;
-                    
+
                     QRect r = proxy()->subControlRect(cc, opt, sc, widget);
                     r.setWidth(r.width() + extraW);
                     return r;
                 }
             }
-            
+
             return proxy()->subControlRect(cc, opt, sc, widget);
         }
 
@@ -194,7 +194,7 @@ void RenderFormElement::calcMinMaxWidth()
 {
     // Some form widgets apply the padding internally (i.e. as if they were
     // some kind of inline-block). Thus we only want to expose that padding
-    // while layouting (so that width/height calculations are correct), and 
+    // while layouting (so that width/height calculations are correct), and
     // then pretend it does not exist, as it is beyond the replaced edge and
     // thus should not affect other calculations.
     m_exposeInternalPadding = true;
@@ -510,7 +510,7 @@ QString RenderSubmitButton::rawText()
 
 bool RenderSubmitButton::canHaveBorder() const
 {
-    // ### TODO would be nice to be able to 
+    // ### TODO would be nice to be able to
     // return style()->hasBackgroundImage() here,
     // depending on a config option (e.g. 'favour usability/integration over aspect')
     // so that only buttons with both a custom border
@@ -748,7 +748,7 @@ bool WebShortcutCreator::createWebShortcut(QString query)
                         }
                         if ( s == t ) {
                             KMessageBox::sorry( 0, i18n( "%1 is already assigned to %2", s, provider->name() ), i18n( "Error" ) );
-                            isOk = false; 
+                            isOk = false;
                         }
                     }
                 }
@@ -833,7 +833,7 @@ void LineEditWidget::slotCreateWebShortcut()
     for( unsigned long i = 0; ( node = form->elements()->item( i ) ); i++ ) {
         inputNode = dynamic_cast<HTMLInputElementImpl*>( node );
         if ( inputNode ) {
-            if ( ( !inputNode->name().string().size() ) || 
+            if ( ( !inputNode->name().string().size() ) ||
                  (inputNode->name().string() == queryName) ) {
                 continue;
             } else {
@@ -910,7 +910,7 @@ void LineEditWidget::paintEvent( QPaintEvent *pe )
         QPainter p(this);
         p.fillRect(pe->rect(), palette().brush(QPalette::Base));
         p.end();
-    }   
+    }
     KLineEdit::paintEvent( pe );
 }
 
@@ -1794,7 +1794,7 @@ void RenderSelect::layout( )
         // FIXME BASELINE: the 3 lines below could be removed.
         int lhs = m_widget->style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
         if (lhs>0)
-           width += lhs;        
+           width += lhs;
         height = size*height + vfw;
 
         assert( includesPadding() );
@@ -2108,15 +2108,14 @@ void RenderTextArea::calcMinMaxWidth()
 
     QSize size( qMax(element()->cols(), 1L)*m.width('x') + hfw + llm+lrm +
                 w->verticalScrollBar()->sizeHint().width()+lhs,
-                qMax(element()->rows(), 1L)*m.lineSpacing() + 2*vfw + lbm+ltm +
+                qMax(element()->rows(), 1L)*m.lineSpacing() + vfw + lbm+ltm +
                 (w->lineWrapMode() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height()+lvs : 0)
         );
 
     assert( includesPadding() );
     size.rwidth() -= RenderWidget::paddingLeft() + RenderWidget::paddingRight();
-    // ### FIXME BASELINE: would like to remove that 2* (and the 2* in '2*vfw' above).
-    size.rheight() -= 2*(RenderWidget::paddingTop() + RenderWidget::paddingBottom());
+    size.rheight() -= RenderWidget::paddingTop() + RenderWidget::paddingBottom();
 
     setIntrinsicWidth( size.width() );
     setIntrinsicHeight( size.height() );
@@ -2154,6 +2153,18 @@ void RenderTextArea::layout()
     }
 }
 
+short RenderTextArea::scrollWidth() const
+{
+    return RenderObject::scrollWidth();
+}
+
+int RenderTextArea::scrollHeight() const
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int contentHeight = qRound(w->document()->size().height());
+    return qMax(contentHeight, RenderObject::clientHeight());
+}
+
 void RenderTextArea::setText(const QString& newText)
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
@@ -2177,7 +2188,7 @@ void RenderTextArea::setText(const QString& newText)
             tc.setPosition( ex, QTextCursor::MoveAnchor );
             tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
             tc.insertText(newText.right( newText.length()-ex ));
-        } else {                            
+        } else {
             w->setPlainText( newText );
         }
         w->setTextCursor(tc);

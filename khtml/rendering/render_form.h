@@ -517,6 +517,9 @@ public:
     virtual void layout();
     virtual void setStyle(RenderStyle *style);
 
+    virtual short scrollWidth() const;
+    virtual int scrollHeight() const;
+
     virtual void updateFromElement();
 
     // don't even think about making this method virtual!

@@ -157,8 +157,8 @@ public:
     virtual RenderObject *firstChild() const { return 0; }
     virtual RenderObject *lastChild() const { return 0; }
 
-    RenderObject *nextRenderer() const; 
-    RenderObject *previousRenderer() const; 
+    RenderObject *nextRenderer() const;
+    RenderObject *previousRenderer() const;
 
     RenderObject *nextEditable() const;
     RenderObject *previousEditable() const;
@@ -348,7 +348,7 @@ public:
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
     DOM::NodeImpl* node() const { return m_node; }
-    
+
     virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
    /**
@@ -647,12 +647,12 @@ public:
     // how much goes over the left hand side (0 or a negative number)
     virtual int overflowTop() const { return 0; }
     virtual int overflowLeft() const { return 0; }
-    
+
     /**
      * Returns the height that is effectively considered when contemplating the
      * object as a whole -- usually the overflow height, or the height if clipped.
      */
-    int effectiveHeight() const { return hasOverflowClip() ? height() + borderTopExtra() + borderBottomExtra() : 
+    int effectiveHeight() const { return hasOverflowClip() ? height() + borderTopExtra() + borderBottomExtra() :
                                          qMax(overflowHeight() - overflowTop(),  height() + borderTopExtra() + borderBottomExtra()); }
     /**
      * Returns the width that is effectively considered when contemplating the
@@ -670,8 +670,8 @@ public:
     int clientTop() const;
     short clientWidth() const;
     int clientHeight() const;
-    short scrollWidth() const;
-    int scrollHeight() const;
+    virtual short scrollWidth() const;
+    virtual int scrollHeight() const;
 
     virtual bool isSelfCollapsingBlock() const { return false; }
     short collapsedMarginTop() const { return maxTopMargin(true)-maxTopMargin(false);  }
@@ -810,7 +810,7 @@ public:
     virtual void detach( );
 
     bool documentBeingDestroyed() const { return !document()->renderer(); }
-    
+
     void setDoNotDelete(bool b) { m_doNotDelete = b; }
     bool doNotDelete() const { return m_doNotDelete; }
 
@@ -895,7 +895,7 @@ private:
 
     bool m_needsPageClear            : 1;
     bool m_containsPageBreak         : 1;
-    
+
     bool m_hasOverflowClip           : 1;
     bool m_inPosObjectList           : 1;
 
