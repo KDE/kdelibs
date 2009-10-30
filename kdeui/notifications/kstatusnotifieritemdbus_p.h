@@ -201,7 +201,7 @@ Q_SIGNALS:
     void NewStatus(const QString &status);
 
 private:
-    KStatusNotifierItem *m_notificationItem;
+    KStatusNotifierItem *m_statusNotifierItem;
     QString m_service;
     QDBusConnection m_dbus;
     static int s_serviceCount;

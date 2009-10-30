@@ -146,8 +146,8 @@ int KStatusNotifierItemDBus::s_serviceCount = 0;
 
 KStatusNotifierItemDBus::KStatusNotifierItemDBus(KStatusNotifierItem *parent)
   : QObject(parent),
-    m_notificationItem(parent),
-    m_service(QString("org.kde.NotificationItem-%1-%2")
+    m_statusNotifierItem(parent),
+    m_service(QString("org.kde.StatusNotifierItem-%1-%2")
                       .arg(QCoreApplication::applicationPid())
                       .arg(++s_serviceCount)),
     m_dbus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, m_service))
@@ -155,7 +155,7 @@ KStatusNotifierItemDBus::KStatusNotifierItemDBus(KStatusNotifierItem *parent)
    new StatusNotifierItemAdaptor(this);
    kDebug(299) << "service is" << m_service;
    m_dbus.registerService(m_service);
-   m_dbus.registerObject("/NotificationItem", this);
+   m_dbus.registerObject("/StatusNotifierItem", this);
 }
 
 KStatusNotifierItemDBus::~KStatusNotifierItemDBus()
@@ -172,28 +172,28 @@ QString KStatusNotifierItemDBus::service() const
 
 QString KStatusNotifierItemDBus::Category() const
 {
-    return m_notificationItem->metaObject()->enumerator(m_notificationItem->metaObject()->indexOfEnumerator("ItemCategory")).valueToKey(m_notificationItem->category());
+    return m_statusNotifierItem->metaObject()->enumerator(m_statusNotifierItem->metaObject()->indexOfEnumerator("ItemCategory")).valueToKey(m_statusNotifierItem->category());
 }
 
 QString KStatusNotifierItemDBus::Title() const
 {
-    return m_notificationItem->title();
+    return m_statusNotifierItem->title();
 }
 
 QString KStatusNotifierItemDBus::Id() const
 {
-    return m_notificationItem->id();
+    return m_statusNotifierItem->id();
 }
 
 QString KStatusNotifierItemDBus::Status() const
  {
-    return m_notificationItem->metaObject()->enumerator(m_notificationItem->metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(m_notificationItem->status());
+    return m_statusNotifierItem->metaObject()->enumerator(m_statusNotifierItem->metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(m_statusNotifierItem->status());
 }
 
 int KStatusNotifierItemDBus::WindowId() const
 {
-    if (m_notificationItem->d->associatedWidget) {
-        return (int)m_notificationItem->d->associatedWidget->winId();
+    if (m_statusNotifierItem->d->associatedWidget) {
+        return (int)m_statusNotifierItem->d->associatedWidget->winId();
     } else {
         return 0;
     }
@@ -204,39 +204,39 @@ int KStatusNotifierItemDBus::WindowId() const
 
 QString KStatusNotifierItemDBus::IconName() const
 {
-    return m_notificationItem->iconName();
+    return m_statusNotifierItem->iconName();
 }
 
 KDbusImageVector KStatusNotifierItemDBus::IconPixmap() const
 {
-    return m_notificationItem->d->serializedIcon;
+    return m_statusNotifierItem->d->serializedIcon;
 }
 
 QString KStatusNotifierItemDBus::OverlayIconName() const
 {
-    return m_notificationItem->overlayIconName();
+    return m_statusNotifierItem->overlayIconName();
 }
 
 KDbusImageVector KStatusNotifierItemDBus::OverlayIconPixmap() const
 {
-    return m_notificationItem->d->serializedOverlayIcon;
+    return m_statusNotifierItem->d->serializedOverlayIcon;
 }
 
 //Requesting attention icon and movie
 
 QString KStatusNotifierItemDBus::AttentionIconName() const
 {
-    return m_notificationItem->attentionIconName();
+    return m_statusNotifierItem->attentionIconName();
 }
 
 KDbusImageVector KStatusNotifierItemDBus::AttentionIconPixmap() const
 {
-    return m_notificationItem->d->serializedAttentionIcon;
+    return m_statusNotifierItem->d->serializedAttentionIcon;
 }
 
 KDbusImageVector KStatusNotifierItemDBus::AttentionMovie() const
 {
-    return m_notificationItem->d->movieVector;
+    return m_statusNotifierItem->d->movieVector;
 }
 
 
@@ -245,10 +245,10 @@ KDbusImageVector KStatusNotifierItemDBus::AttentionMovie() const
 KDbusToolTipStruct KStatusNotifierItemDBus::ToolTip() const
 {
     KDbusToolTipStruct toolTip;
-    toolTip.icon = m_notificationItem->toolTipIconName();
-    toolTip.image = m_notificationItem->d->serializedToolTipIcon;
-    toolTip.title = m_notificationItem->toolTipTitle();
-    toolTip.subTitle = m_notificationItem->toolTipSubTitle();
+    toolTip.icon = m_statusNotifierItem->toolTipIconName();
+    toolTip.image = m_statusNotifierItem->d->serializedToolTipIcon;
+    toolTip.title = m_statusNotifierItem->toolTipTitle();
+    toolTip.subTitle = m_statusNotifierItem->toolTipSubTitle();
 
     return toolTip;
 }
@@ -257,40 +257,40 @@ KDbusToolTipStruct KStatusNotifierItemDBus::ToolTip() const
 
 void KStatusNotifierItemDBus::ContextMenu(int x, int y)
 {
-    if (!m_notificationItem->d->menu) {
+    if (!m_statusNotifierItem->d->menu) {
         return;
     }
 
     //TODO: nicer placement, possible?
-    if (!m_notificationItem->d->menu->isVisible()) {
-        m_notificationItem->d->menu->setWindowFlags(Qt::Window|Qt::FramelessWindowHint);
-        m_notificationItem->d->menu->popup(QPoint(x,y));
-        KWindowSystem::setState(m_notificationItem->d->menu->winId(), NET::SkipTaskbar|NET::SkipPager|NET::KeepAbove);
-        KWindowSystem::setType(m_notificationItem->d->menu->winId(), NET::PopupMenu);
-        KWindowSystem::forceActiveWindow(m_notificationItem->d->menu->winId());
+    if (!m_statusNotifierItem->d->menu->isVisible()) {
+        m_statusNotifierItem->d->menu->setWindowFlags(Qt::Window|Qt::FramelessWindowHint);
+        m_statusNotifierItem->d->menu->popup(QPoint(x,y));
+        KWindowSystem::setState(m_statusNotifierItem->d->menu->winId(), NET::SkipTaskbar|NET::SkipPager|NET::KeepAbove);
+        KWindowSystem::setType(m_statusNotifierItem->d->menu->winId(), NET::PopupMenu);
+        KWindowSystem::forceActiveWindow(m_statusNotifierItem->d->menu->winId());
     } else {
-        m_notificationItem->d->menu->hide();
+        m_statusNotifierItem->d->menu->hide();
     }
 }
 
 void KStatusNotifierItemDBus::Activate(int x, int y)
 {
-    if (m_notificationItem->d->associatedWidget == m_notificationItem->d->menu) {
+    if (m_statusNotifierItem->d->associatedWidget == m_statusNotifierItem->d->menu) {
         ContextMenu(x, y);
     } else {
-        m_notificationItem->activate(QPoint(x,y));
+        m_statusNotifierItem->activate(QPoint(x,y));
     }
 }
 
 void KStatusNotifierItemDBus::SecondaryActivate(int x, int y)
 {
-    emit m_notificationItem->secondaryActivateRequested(QPoint(x,y));
+    emit m_statusNotifierItem->secondaryActivateRequested(QPoint(x,y));
 }
 
 void KStatusNotifierItemDBus::Scroll(int delta, const QString &orientation)
 {
     Qt::Orientation dir = (orientation.toLower() == "horizontal" ? Qt::Horizontal : Qt::Vertical);
-    emit m_notificationItem->scrollRequested(delta, dir);
+    emit m_statusNotifierItem->scrollRequested(delta, dir);
 }
 
 
