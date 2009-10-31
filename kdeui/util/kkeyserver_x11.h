@@ -82,13 +82,6 @@ namespace KKeyServer
 	KDEUI_EXPORT uint modXMeta();
 
 	/**
-	 * Returns the X11 Lock modifier mask/flag.
-	 * @return the X11 Lock modifier mask/flag.
-	 * @see accelModMaskX()
-	 */
-	KDEUI_EXPORT uint modXLock();
-
-	/**
 	 * Returns the X11 NumLock modifier mask/flag.
 	 * @return the X11 NumLock modifier mask/flag.
 	 * @see accelModMaskX()
