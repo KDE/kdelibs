@@ -189,7 +189,7 @@ no longer exist in kdecore.  It is likely these were moved or deleted for KDE4.
 If you know the fate of these files, please move or delete as appropriate.
 
 akasyncio.cpp                   Thiago Macieira <thiago@kde.org>
-kapplication_win.cpp            Jaroslaw Staniek <js@iidea.pl> (copyright)
+kapplication_win.cpp            Jaroslaw Staniek <staniek@kde.org> (copyright)
 kbufferedio.cpp                 Thiago Macieira <thiago@kde.org>
 kcharsets.cpp                   Lars Knoll <knoll@kde.org>
 kcheckaccelerators.cpp          Matthias Kalle Dalheimer (kalle@kde.org) (copyright)
