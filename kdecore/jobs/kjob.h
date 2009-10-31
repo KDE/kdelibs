@@ -141,7 +141,7 @@ public:
      * Starts the job asynchronously. When the job is finished,
      * result() is emitted.
      *
-     * Warning: Never implement any synchronous worload in this method. This method
+     * Warning: Never implement any synchronous workload in this method. This method
      * should just trigger the job startup, not do any work itself. It is expected to
      * be non-blocking.
      *
