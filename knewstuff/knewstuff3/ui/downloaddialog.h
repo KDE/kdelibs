@@ -88,8 +88,6 @@ public:
         kCollabRate
     };
 
-    void refresh();
-
     // show a message in the bottom bar
     void displayMessage(const QString & msg,
                         KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
