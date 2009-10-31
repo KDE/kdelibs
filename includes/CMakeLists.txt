@@ -458,7 +458,6 @@ install( FILES
   KWidgetItemDelegate
   KPixmapSequence
   KPixmapSequenceOverlayPainter
-  KPixmapSequenceOverlayWidget
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 
 if (UNIX)
