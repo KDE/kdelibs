@@ -240,7 +240,6 @@ Q_SIGNALS:
 
     //void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
     void signalEntryChanged(const KNS3::Entry& entry);
-    void signalEntriesFailed();
 
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
@@ -267,8 +266,6 @@ private Q_SLOTS:
     void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
-    
-    void slotEntriesFailed();
 
     void slotPreviewResult(KJob *job);
 
@@ -316,7 +313,6 @@ private:
     bool providerCached(Provider *provider);
     bool providerChanged(Provider *oldprovider, Provider *provider);
 
-    QString entryId(const Entry& e);
     QString providerId(const Provider *p);
 
     

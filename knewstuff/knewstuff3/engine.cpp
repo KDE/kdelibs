@@ -68,9 +68,6 @@ class KNS3::Engine::Private {
         // KILL THIS:
         QMap<QString, Provider*> provider_index;
 
-        // FIXME: die!
-        QMap<QString, Entry> entry_index;
-
         Entry uploadedentry;
 
         //?
@@ -152,7 +149,6 @@ bool Engine::init(const QString &configfile)
 
     // FIXME: add support for several categories later on
     // FIXME: read out only when actually installing as a performance improvement?
-    d->installation = new Installation(this);
     QString uncompresssetting = group.readEntry("Uncompress", QString("never"));
     // support old value of true as equivalent of always
     if (uncompresssetting == "true") {
@@ -274,76 +270,6 @@ void Engine::loadProviders()
     loader->load(KUrl(d->providerFileUrl));
 }
 
-//void Engine::loadEntries(Provider *provider)
-//{
-//    //kDebug() << "loading entries";
-
-//    if (d->cachepolicy == CacheOnly) {
-//        return;
-//    }
-
-    //if (provider != d->provider_index[providerId(provider)]) {
-    //    // this is the cached provider, and a new provider has been loaded from the internet
-    //    // also, this provider's feeds have already been loaded including it's entries
-    //    d->provider_cache.removeAll(provider); // just in case it's still in there
-    //    return;
-    //}
-
-    //QStringList feeds = provider->availableFeeds();
-    //for (int i = 0; i < feeds.count(); i++) {
-    //    Feed *feed = provider->downloadUrlFeed(feeds.at(i));
-    //    if (feed) {
-    //        ++d->activefeeds;
-
-    //        EntryLoader *entry_loader = new EntryLoader(this);
-
-    //        connect(entry_loader,
-    //                SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
-    //                SLOT(slotEntriesLoaded(KNS::Entry::List)));
-    //        connect(entry_loader,
-    //                SIGNAL(signalEntriesFailed()),
-    //                SLOT(slotEntriesFailed()));
-    //        connect(entry_loader,
-    //                SIGNAL(signalProgress(KJob*, unsigned long)),
-    //                SLOT(slotProgress(KJob*, unsigned long)));
-
-    //        entry_loader->load(provider, feed);
-    //    }
-    //}
-//}
-
-//void Engine::downloadPreview(Entry *entry)
-//{
-//    if (d->previewfiles.contains(entry)) {
-//        // FIXME: ensure somewhere else that preview file even exists
-//        //kDebug() << "Reusing preview from '" << d->previewfiles[entry] << "'";
-//        emit signalPreviewLoaded(KUrl::fromPath(d->previewfiles[entry]));
-//        return;
-//    }
-
-//    KUrl source = KUrl(entry.preview().representation());
-
-//    if (!source.isValid()) {
-//        kError() << "The entry doesn't have a preview." << endl;
-//        return;
-//    }
-
-//    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
-//    //kDebug() << "Downloading preview '" << source << "' to '" << destination << "'";
-
-//    // FIXME: check for validity
-//    KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
-//    connect(job,
-//            SIGNAL(result(KJob*)),
-//            SLOT(slotPreviewResult(KJob*)));
-//    connect(job,
-//            SIGNAL(progress(KJob*, unsigned long)),
-//            SLOT(slotProgress(KJob*, unsigned long)));
-
-//    d->entry_jobs[job] = entry;
-//}
-
-
 bool Engine::uploadEntry(Provider *provider, const Entry& entry)
 {
     //kDebug() << "Uploading " << entry.name().representation() << "...";
@@ -411,20 +337,10 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
             }
         }
     }
-
-    // note: this is only called from loading the online providers
-    //ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
-    //delete loader;
-
-    //mergeProviders(list);
 }
 
 void Engine::slotProvidersFailed()
 {
-    //kDebug() << "slotProvidersFailed";
-    //ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
-    //delete loader;
-
     emit signalProvidersFailed();
 }
 
@@ -441,15 +357,6 @@ void Engine::providerInitialized(Provider* p)
 void Engine::slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
 {
     emit signalEntriesLoaded(entries);
-}
-
-void Engine::slotEntriesFailed()
-{
-    //EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
-    //delete loader;
-    //d->activefeeds--;
-
-    //emit signalEntriesFailed();
 }
 
 void Engine::reloadEntries()
@@ -895,7 +802,6 @@ KNS3::Entry Engine::loadEntryCache(const QString& filepath)
 
     e.setStatus(Entry::Downloadable);
     d->entries.append(e);
-    d->entry_index[entryId(e)] = e;
 
     if (root.hasAttribute("previewfile")) {
         d->previewfiles[e] = root.attribute("previewfile");
@@ -947,7 +853,6 @@ void Engine::loadEntriesCache()
 
 void Engine::shutdown()
 {
-    d->entry_index.clear();
     d->provider_index.clear();
 
     qDeleteAll(d->providers);
@@ -985,6 +890,8 @@ bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
     return false;
 }
 
+// FIXME this is never called, and I'm not sure what it's supposed to do...
+// we do need loading of the cache at the beginning though...
 void Engine::mergeProviders(Provider::List providers)
 {
     for (Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it) {
@@ -1026,29 +933,9 @@ bool Engine::entryCached(const Entry& entry)
 {
     if (d->cachepolicy == CacheNever) return false;
 
-    // Direct cache lookup first
-    // FIXME: probably better use URL (changes less frequently) and do iteration
-    if (d->entry_index.contains(entry.uniqueId()) && d->entry_index[entry.uniqueId()].source() == Entry::Cache) {
+    int index = d->entries.indexOf(entry);
+    if (index >= 0 && d->entries.at(index).source() == Entry::Cache) {
         return true;
-    }
-
-    // If entry wasn't found, either
-    // - a translation was added which matches our locale better, or
-    // - our locale preferences changed, or both.
-    // In that case we've got to find the old name in the new entry,
-    // since we assume that translations are always added but never removed.
-
-    // BIGFIXME: the code below is incomplete, if we are looking for a translation
-    // id(entry) will not work, as it uses the current locale to get the id
-
-    for (int i = 0; i < d->entries.count(); i++) {
-        Entry oldentry = d->entries.at(i);
-        if (entryId(entry) == entryId(oldentry)) return true;
-        //QString lang = id(oldentry).section(":", 0, 0);
-        //QString oldname = oldentry.name().translated(lang);
-        //QString name = entry.name().translated(lang);
-        ////kDebug() << "CACHE: compare entry names " << oldname << '/' << name;
-        //if (name == oldname) return true;
     }
 
     return false;
@@ -1062,102 +949,6 @@ bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
         return true;
     return false;
 }
-
-//void Engine::mergeEntries(Entry::List entries, Feed *feed, const Provider *provider)
-//{
-//    for (Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
-//        // TODO: find entry in entrycache, replace if needed
-//        // don't forget marking as 'updateable'
-//        Entry *e = (*it);
-//        QString thisId = id(e);
-//        // set it to Installed if it's in the registry
-
-//        if (d->entry_registry.contains(thisId)) {
-//            // see if the one online is newer (higher version, release, or release date)
-//            Entry *registryentry = d->entry_registry[thisId];
-//            e->setInstalledFiles(registryentry.installedFiles());
-
-//            if (entryChanged(registryentry, e)) {
-//                e->setStatus(Entry::Updateable);
-//                emit signalEntryChanged(e);
-//            } else {
-//                // it hasn't changed, so set the status to that of the registry entry
-//                e->setStatus(registryentry.status());
-//            }
-
-//            if (entryCached(e)) {
-//                // in the registry and the cache, so take the cached one out
-//                Entry * cachedentry = d->entry_index[thisId];
-//                if (entryChanged(cachedentry, e)) {
-//                    //kDebug() << "CACHE: update entry";
-//                    cachedentry.setStatus(Entry::Updateable);
-//                    // entry has changed
-//                    if (d->cachepolicy != CacheNever) {
-//                        cacheEntry(e);
-//                    }
-//                    emit signalEntryChanged(e);
-//                }
-
-//                // take cachedentry out of the feed
-//                feed->removeEntry(cachedentry);
-//                //emit signalEntryRemoved(cachedentry, feed);
-//            } else {
-//                emit signalEntryLoaded(e, feed, provider);
-//            }
-
-//        } else {
-//            e->setStatus(Entry::Downloadable);
-
-//            if (entryCached(e)) {
-//                //kDebug() << "CACHE: hit entry " << e->name().representation();
-//                // FIXME: separate version updates from server-side translation updates?
-//                Entry *cachedentry = d->entry_index[thisId];
-//                if (entryChanged(cachedentry, e)) {
-//                    //kDebug() << "CACHE: update entry";
-//                    e->setStatus(Entry::Updateable);
-//                    // entry has changed
-//                    if (d->cachepolicy != CacheNever) {
-//                        cacheEntry(e);
-//                    }
-//                    emit signalEntryChanged(e);
-//                    // FIXME: cachedentry can now be deleted, but it's still in the list!
-//                    // FIXME: better: assigne all values to 'e', keeps refs intact
-//                }
-//                // take cachedentry out of the feed
-//                feed->removeEntry(cachedentry);
-//                //emit signalEntryRemoved(cachedentry, feed);
-//            } else {
-//                if (d->cachepolicy != CacheNever) {
-//                    //kDebug() << "CACHE: miss entry " << e->name().representation();
-//                    cacheEntry(e);
-//                }
-//                emit signalEntryLoaded(e, feed, provider);
-//            }
-
-//            d->entries.append(e);
-//            d->entry_index[thisId] = e;
-//        }
-//    }
-
-//    if (d->cachepolicy != CacheNever) {
-//        // extra code to get the feedname from the provider, we could use feed->name().representation()
-//        // but would need to remove spaces, and latinize it since it can be any encoding
-//        // besides feeds.size() has a max of 4 currently (unsorted, score, downloads, and latest)
-//        QStringList feeds = provider->feeds();
-//        QString feedname;
-//        for (int i = 0; i < feeds.size(); ++i) {
-//            if (provider->downloadUrlFeed(feeds[i]) == feed) {
-//                feedname = feeds[i];
-//            }
-//        }
-//        cacheFeed(provider, feedname, feed, entries);
-//    }
-
-//    emit signalEntriesFeedFinished(feed);
-//    if (d->activefeeds == 0) {
-//        emit signalEntriesFinished();
-//    }
-//}
 
 void Engine::cacheProvider(Provider *provider)
 {
@@ -1244,7 +1035,7 @@ void Engine::cacheEntry(const Entry& entry)
 
     //FIXME: this must be deterministic, but it could also be an OOB random string
     //which gets stored into <ghnscache> just like preview...
-    QString idbase64 = QString(entryId(entry).toUtf8().toBase64());
+    QString idbase64 = QString(entry.uniqueId().toUtf8().toBase64());
     QString cachefile = idbase64 + ".meta";
 
     kDebug() << "Caching to file '" + cachefile + "'.";
@@ -1289,7 +1080,7 @@ void Engine::registerEntry(const Entry& entry)
     //kDebug() << " + Save to directory '" + registrydir + "'.";
 
     // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(entryId(entry).toUtf8().toBase64()) + ".meta";
+    QString registryfile = QString(entry.uniqueId().toUtf8().toBase64()) + ".meta";
 
     //kDebug() << " + Save to file '" + registryfile + "'.";
 
@@ -1325,20 +1116,12 @@ void KNS3::Engine::unregisterEntry(const Entry& entry)
     QString registrydir = standardDirs.saveLocation("data", "knewstuff2-entries.registry");
 
     // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(entryId(entry).toUtf8().toBase64()) + ".meta";
+    QString registryfile = QString(entry.uniqueId().toUtf8().toBase64()) + ".meta";
 
     QFile::remove(registrydir + registryfile);
 
     // remove the entry from d->entry_registry
     d->entry_registry.removeAll(entry);
-}
-
-QString Engine::entryId(const Entry& e)
-{
-    // This is the primary key of an entry:
-    // A lookup on the name, which must exist but might be translated
-    // This requires some care for comparison since translations might be added
-    return d->applicationName + e.name().language() + ':' + e.name().representation();
 }
 
 QString Engine::providerId(const Provider *p)

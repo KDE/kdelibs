@@ -87,7 +87,7 @@ bool Entry::operator<(const KNS3::Entry& other) const
 
 bool Entry::operator==(const KNS3::Entry& other) const
 {
-    return d==other.d;
+    return d->mUniqueId == other.d->mUniqueId && d->mProviderId == other.d->mProviderId;
 }
 
 Entry::~Entry()

@@ -212,7 +212,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         return;
     }
 
-
     // we have a loader, so see which sortmode it was used for
     QStringList::ConstIterator it;
     QString mode;
@@ -224,7 +223,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         }
     }
 
-
     // load all the entries from the domdocument given
     Entry::List entries;
     QDomElement element;
@@ -233,24 +231,28 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     kDebug() << "Document Element" << element.tagName();
     kDebug() << "  First Child" << element.firstChildElement().tagName();
 
-    
     QDomElement n;
 
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
         
         Entry entry;
         entry.setEntryXML(n.toElement());
+        
+        // the static providers don't send an Id sometimes
+        entry.setUniqueId(entry.name().language() + ':' + entry.name().representation());
+        kDebug() << "entry with id: " << entry.uniqueId();
+        
         // check to see if we already have this entry
         if (d->mEntries.contains(entry)) {
             // if so, merge the two together
-        }
-        else {
+            kDebug() << "Merge";
+        } else {
             // add it to the list otherwise
             d->mEntries.append(entry);
-
-            if (searchIncludesEntry(entry)) {
-                entries << entry;
-            }
+        }
+        
+        if (searchIncludesEntry(entry)) {
+            entries << entry;
         }
         // TODO: ask the engine if it knows about any cached/installed data, so we can merge that in too
     }
