@@ -1423,7 +1423,6 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             // Draw the icon if there is one
             if (!bOpt->icon.isNull())
             {
-                QSize iconSize(pixelMetric(PM_SmallIconSize),pixelMetric(PM_SmallIconSize));
                 IconOption icoOpt;
                 icoOpt.icon   = bOpt->icon;
                 icoOpt.size   = bOpt->iconSize;
@@ -1435,21 +1434,21 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     //Center text + icon w/margin in between..
 
                     //Calculate length of both.
-                    int length = iconSize.width() + margin
+                    int length = bOpt->iconSize.width() + margin
                                   + p->fontMetrics().size(Qt::TextShowMnemonic, bOpt->text).width();
 
                     //Calculate offset.
                     int offset = (w - length)/2;
 
                     //draw icon
-                    QRect rect = QRect(QPoint(x + offset, y + h/2 - iconSize.height()/2), iconSize);
+                    QRect rect = QRect(QPoint(x + offset, y + h/2 - bOpt->iconSize.height()/2), bOpt->iconSize);
                     drawKStylePrimitive(WT_PushButton, Generic::Icon, option,
                                         handleRTL(bOpt, rect),
                                         pal, flags, p, widget, &icoOpt);
 
                     //new bounding rect for the text
-                    x += offset + iconSize.width() + margin;
-                    w =  length - iconSize.width() - margin;
+                    x += offset + bOpt->iconSize.width() + margin;
+                    w =  length - bOpt->iconSize.width() - margin;
                 }
                 else
                 {
