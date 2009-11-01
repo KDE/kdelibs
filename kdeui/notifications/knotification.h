@@ -324,21 +324,21 @@ public:
 	 */
 	QString eventId() const;
 
-    /**
-     * @return the notification title
-     * @see setTitle
-     * @since 4.3
-     */
-    QString title() const;
+	/**
+	 * @return the notification title
+	 * @see setTitle
+	 * @since 4.3
+	 */
+	QString title() const;
 
-    /**
-     * Set the title of the notification popup.
-     * If no title is set, the application name will be used.
-     *
-     * @param title the title
-     * @since 4.3
-     */
-    void setTitle(const QString &title);
+	/**
+	 * Set the title of the notification popup.
+	 * If no title is set, the application name will be used.
+	 *
+	 * @param title the title
+	 * @since 4.3
+	 */
+	void setTitle(const QString &title);
 
 	/**
 	 * @return the notification text
@@ -399,23 +399,23 @@ public:
 	 * @param context_value is the value of the context
 	 */
 	void addContext( const QString & context_key, const QString & context_value );
-    
-    /**
-     * @return the notification flags.
-     */
-    NotificationFlags flags() const;
-    
-    /**
-     * Set the notification flags.
-     * should be called before sendEvent().
-     */
-    void setFlags(const NotificationFlags &flags);
 
-    /**
-     * The componentData is used to determine the location of the config file.  By default, kapp is used
-     * @param componentData the new componentData
-     */
-    void setComponentData(const KComponentData &componentData);
+	/**
+	 * @return the notification flags.
+	 */
+	NotificationFlags flags() const;
+
+	/**
+	 * Set the notification flags.
+	 * should be called before sendEvent().
+	 */
+	void setFlags(const NotificationFlags &flags);
+
+	/**
+	 * The componentData is used to determine the location of the config file.  By default, kapp is used
+	 * @param componentData the new componentData
+	 */
+	void setComponentData(const KComponentData &componentData);
 
    Q_SIGNALS:
 	/**
@@ -427,21 +427,21 @@ public:
 	 * @param action will be 0 is the default aciton was activated, or any action id
 	 */
 	void activated(unsigned int action);
-    
-    /**
-     * Convenience signal that is emitted when the first action is activated.
-     */
-    void action1Activated();
-    
-    /**
-     * \overload
-     */
-    void action2Activated();
 
-    /**
-     * \overload
-     */
-    void action3Activated();
+	/**
+	 * Convenience signal that is emitted when the first action is activated.
+	 */
+	void action1Activated();
+
+	/**
+	 * \overload
+	 */
+	void action2Activated();
+
+	/**
+	 * \overload
+	 */
+	void action3Activated();
 
 	/**
 	 * Emitted when the notification is closed. Both when it is activated or if it is just ignored.
@@ -518,7 +518,7 @@ protected:
 public:
 	/**
 	 * @brief emit an event
-	 * 
+	 *
 	 * This method creates the KNotification, setting every parameter, and fire the event.
 	 * You don't need to call sendEvent
 	 *
@@ -541,31 +541,33 @@ public:
 	 * @param componentData used to determine the location of the config file.  by default, kapp is used
 	 * @since 4.4
 	 */
-        static KNotification *event(const QString &eventId , const QString &title, const QString &text,
-                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
-                const NotificationFlags &flags = CloseOnTimeout,
-                const KComponentData &componentData = KComponentData());
-
-    /**
-     * @brief emit a standard event
-     * @overload
-     *
-     * This will emit a standard event
-     *
-     * @param eventId is the name of the event
-     * @param text is the text of the notification to show in the popup.
-     * @param pixmap is a picture which may be shown in the popup.
-     * @param widget is a widget where the notification reports to
-     * @param flags is a bitmask of NotificationFlag
-     * @param componentData used to determine the location of the config file.  by default, kapp is used
-     */
-        static KNotification *event(const QString &eventId , const QString &text = QString(),
-                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
-                const NotificationFlags &flags = CloseOnTimeout,
-                const KComponentData &componentData = KComponentData());
+	static KNotification *event(const QString &eventId , const QString &title, const QString &text,
+	                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
+	                const NotificationFlags &flags = CloseOnTimeout,
+	                const KComponentData &componentData = KComponentData());
 
 	/**
 	 * @brief emit a standard event
+	 *
+	 * @overload
+	 *
+	 * This will emit a standard event
+	 *
+	 * @param eventId is the name of the event
+	 * @param text is the text of the notification to show in the popup.
+	 * @param pixmap is a picture which may be shown in the popup.
+	 * @param widget is a widget where the notification reports to
+	 * @param flags is a bitmask of NotificationFlag
+	 * @param componentData used to determine the location of the config file.  by default, kapp is used
+	 */
+	static KNotification *event(const QString &eventId , const QString &text = QString(),
+	                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
+	                const NotificationFlags &flags = CloseOnTimeout,
+	                const KComponentData &componentData = KComponentData());
+
+	/**
+	 * @brief emit a standard event
+	 *
 	 * @overload
 	 *
 	 * This will emit a standard event
@@ -580,27 +582,28 @@ public:
 								 const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
 								 const NotificationFlags& flags=CloseOnTimeout);
 
-    /**
-     * @brief emit a standard event
-     * @overload
-     *
-     * This will emit a standard event
-     *
-     * @param eventId is the name of the event
-     * @param title is title of the notification to show in the popup.
-     * @param text is the text of the notification to show in the popup
-     * @param pixmap is a picture which may be shown in the popup
-     * @param widget is a widget where the notification reports to
-     * @param flags is a bitmask of NotificationFlag
-     * @since 4.4
-     */
-    static KNotification *event( StandardEvent eventId , const QString& title, const QString& text,
-                                 const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
-                                 const NotificationFlags& flags=CloseOnTimeout);
+	/**
+	 * @brief emit a standard event
+	 *
+	 * @overload
+	 *
+	 * This will emit a standard event
+	 *
+	 * @param eventId is the name of the event
+	 * @param title is title of the notification to show in the popup.
+	 * @param text is the text of the notification to show in the popup
+	 * @param pixmap is a picture which may be shown in the popup
+	 * @param widget is a widget where the notification reports to
+	 * @param flags is a bitmask of NotificationFlag
+	 * @since 4.4
+	 */
+	static KNotification *event( StandardEvent eventId , const QString& title, const QString& text,
+	                         const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
+	                         const NotificationFlags& flags=CloseOnTimeout);
 
 	/**
 	 * This is a simple substitution for QApplication::beep()
-	 * 
+	 *
 	 * @param reason a short text explaining what has happened (may be empty)
 	 * @param widget the widget the notification refers to
 	 */
