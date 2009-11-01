@@ -142,7 +142,7 @@ typedef KIO::AccessManager AccessManager;
  * @see QNetworkAccessManager::setCookieJar for details.
  *
  * @author Dawit Alemayehu \<adawit @ kde.org\>
- * @since 4.3.3
+ * @since 4.4
  */
 class KIO_EXPORT CookieJar : public QNetworkCookieJar
 {
