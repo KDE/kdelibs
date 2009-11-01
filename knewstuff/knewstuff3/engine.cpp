@@ -120,9 +120,8 @@ Engine::~Engine()
 
 bool Engine::init(const QString &configfile)
 {
-
     kDebug() << "Initializing KNS::Engine from '" << configfile << "'";
-
+    
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
@@ -136,85 +135,22 @@ bool Engine::init(const QString &configfile)
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
-
+    
     if (!conf.hasGroup("KNewStuff2")) {
         kError() << "A knsrc file was found but it doesn't contain a KNewStuff2 section." << endl;
         return false;
     }
-
+    
     KConfigGroup group = conf.group("KNewStuff2");
     d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     //d->componentname = group.readEntry("ComponentName", QString());
     d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
-
-    // FIXME: add support for several categories later on
-    // FIXME: read out only when actually installing as a performance improvement?
-    QString uncompresssetting = group.readEntry("Uncompress", QString("never"));
-    // support old value of true as equivalent of always
-    if (uncompresssetting == "true") {
-        uncompresssetting = "always";
-    }
-    if (uncompresssetting != "always" && uncompresssetting != "archive" && uncompresssetting != "never") {
-        kError() << "invalid Uncompress setting chosen, must be one of: always, archive, or never" << endl;
+    
+    // let installation read install specific config
+    if (!d->installation->readConfig(group)) {
         return false;
     }
-    d->installation->setUncompression(uncompresssetting);
-
-    d->installation->setCommand(group.readEntry("InstallationCommand", QString()));
-    d->installation->setUninstallCommand(group.readEntry("UninstallCommand", QString()));
-    d->installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
-    d->installation->setTargetDir(group.readEntry("TargetDir", QString()));
-    d->installation->setInstallPath(group.readEntry("InstallPath", QString()));
-    d->installation->setAbsoluteInstallPath(group.readEntry("AbsoluteInstallPath", QString()));
-    d->installation->setCustomName(group.readEntry("CustomName", false));
-
-    QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
-    if (!checksumpolicy.isEmpty()) {
-        if (checksumpolicy == "never")
-            d->installation->setChecksumPolicy(Installation::CheckNever);
-        else if (checksumpolicy == "ifpossible")
-            d->installation->setChecksumPolicy(Installation::CheckIfPossible);
-        else if (checksumpolicy == "always")
-            d->installation->setChecksumPolicy(Installation::CheckAlways);
-        else {
-            kError() << "The checksum policy '" + checksumpolicy + "' is unknown." << endl;
-            return false;
-        }
-    }
-
-    QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
-    if (!signaturepolicy.isEmpty()) {
-        if (signaturepolicy == "never")
-            d->installation->setSignaturePolicy(Installation::CheckNever);
-        else if (signaturepolicy == "ifpossible")
-            d->installation->setSignaturePolicy(Installation::CheckIfPossible);
-        else if (signaturepolicy == "always")
-            d->installation->setSignaturePolicy(Installation::CheckAlways);
-        else {
-            kError() << "The signature policy '" + signaturepolicy + "' is unknown." << endl;
-            return false;
-        }
-    }
-
-    QString scope = group.readEntry("Scope", QString());
-    if (!scope.isEmpty()) {
-        if (scope == "user")
-            d->installation->setScope(Installation::ScopeUser);
-        else if (scope == "system")
-            d->installation->setScope(Installation::ScopeSystem);
-        else {
-            kError() << "The scope '" + scope + "' is unknown." << endl;
-            return false;
-        }
-
-        if (d->installation->scope() == Installation::ScopeSystem) {
-            if (!d->installation->installPath().isEmpty()) {
-                kError() << "System installation cannot be mixed with InstallPath." << endl;
-                return false;
-            }
-        }
-    }
-
+    
     QString cachePolicy = group.readEntry("CachePolicy", QString());
     if (!cachePolicy.isEmpty()) {
         if (cachePolicy == "never") {
@@ -230,6 +166,9 @@ bool Engine::init(const QString &configfile)
         }
     }
     kDebug() << "cache policy: " << cachePolicy;
+    
+    
+
 
     d->initialized = true;
 

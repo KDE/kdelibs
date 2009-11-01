@@ -23,6 +23,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
+#include <KConfigGroup>
+
 #include "knewstuff3/core/entry.h"
 
 class KArchiveDirectory;
@@ -71,38 +73,9 @@ public:
         ScopeUser,
         ScopeSystem
     };
-
-    void setUncompression(const QString& uncompression);
-    void setCommand(const QString& command);
-    void setUninstallCommand(const QString& command);
-
-    void setStandardResourceDir(const QString& dir);
-    void setTargetDir(const QString& dir);
-    void setInstallPath(const QString& dir);
-    void setAbsoluteInstallPath(const QString& dir);
-
-    void setScope(Scope scope);
-    void setChecksumPolicy(Policy policy);
-    void setSignaturePolicy(Policy policy);
-
-    void setCustomName(bool customname);
-
-    QString uncompression() const;
-    QString command() const;
-    QString uninstallCommand() const;
-
-    QString standardResourceDir() const;
-    QString targetDir() const;
-    QString installPath() const;
-    QString absoluteInstallPath() const;
+    
+    bool readConfig(const KConfigGroup& group);
     bool isRemote() const;
-
-    Policy checksumPolicy() const;
-    Policy signaturePolicy() const;
-    Scope scope() const;
-
-    bool customName() const;
-
 
 public Q_SLOTS:
     /**
