@@ -32,6 +32,7 @@
 #include <QtWebKit/QWebFrame>
 
 #include <kurl.h>
+#include <kurifilter.h>
 
 template <class T>
 class KWebViewPrivate
@@ -97,16 +98,12 @@ public:
         return false;
     }
 
-    void postMouseReleaseHandling()
+    void handleUrlPasteFromClipboard()
     {
         if (q->page() && !q->page()->isModified() && (pressedButtons & Qt::MidButton)) {
-            const QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection));
-            KUrl url(clipboardText);
-            if (!url.isEmpty() && url.isValid() && clipboardText.contains('.')) { // contains '.' -> domain
-                if (url.scheme().isEmpty()) {
-                    url = "http://" + clipboardText;
-                }
-                emit q->openUrl(url);
+            QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
+            if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
+                emit q->openUrl(KUrl(clipboardText));
             }
         }
     }

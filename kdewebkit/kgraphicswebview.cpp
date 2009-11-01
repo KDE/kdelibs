@@ -43,8 +43,8 @@
 
 
 KGraphicsWebView::KGraphicsWebView(QGraphicsItem *parent)
-         : QGraphicsWebView(parent),
-           d(new KWebViewPrivate<KGraphicsWebView>(this))
+                 :QGraphicsWebView(parent),
+                  d(new KWebViewPrivate<KGraphicsWebView>(this))
 {
     setPage(new KWebPage(this));
 }
@@ -87,11 +87,15 @@ void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
-    QGraphicsWebView::mouseReleaseEvent(event);
+    const bool isAccepted = event->isAccepted();
+    page()->event(event);
 
-    // just leave if the site has not modified by the user (for example pasted text with mouse middle click)
-    // FIXME: http://mail.kde.org/pipermail/webkit-devel/2009-October/000364.html
-    d->postMouseReleaseHandling();
+    if (!event->isAccepted())
+      d->handleUrlPasteFromClipboard();
+
+    event->setAccepted(isAccepted);
+
+    QGraphicsWebView::mouseReleaseEvent(event);
 }
 
 #include "kgraphicswebview.moc"
