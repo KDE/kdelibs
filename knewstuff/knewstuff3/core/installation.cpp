@@ -39,23 +39,34 @@
 
 struct KNS3::InstallationPrivate {
     InstallationPrivate() {
-        m_checksumpolicy = Installation::CheckIfPossible;
-        m_signaturepolicy = Installation::CheckIfPossible;
-        m_scope = Installation::ScopeUser;
-        m_customname = false;
+        checksumPolicy = Installation::CheckIfPossible;
+        signaturePolicy = Installation::CheckIfPossible;
+        scope = Installation::ScopeUser;
+        customName = false;
     }
 
-    QString m_command;
-    QString m_uninstallCommand;
-    QString m_uncompression;
-    QString m_standardresourcedir;
-    QString m_targetdir;
-    QString m_installpath;
-    QString m_absoluteinstallpath;
-    Installation::Policy m_checksumpolicy;
-    Installation::Policy m_signaturepolicy;
-    Installation::Scope m_scope;
-    bool m_customname;
+    // applications can set this if they want the installed files/directories to be piped into a shell command
+    QString postInstallationCommand;
+    // a custom command to run for the uninstall
+    QString uninstallCommand;
+    // compression policy
+    QString uncompression;
+    
+    // only one of the four below can be set, that will be the target install path/file name
+    // FIXME: check this when reading the config and make one path out of it if possible?
+    QString standardResourceDirectory;
+    QString targetDirectory;
+    QString installPath;
+    QString absoluteInstallPath;
+    
+    // policies wether verification needs to be done
+    Installation::Policy checksumPolicy;
+    Installation::Policy signaturePolicy;
+    // scope: install into user or system dirs
+    Installation::Scope scope;
+    
+    // FIXME this throws together a file name from entry name and version - why would anyone want that?
+    bool customName;
 
     QMap<KJob*, Entry> entry_jobs;
 
@@ -86,23 +97,23 @@ bool Installation::readConfig(const KConfigGroup& group)
         kError() << "invalid Uncompress setting chosen, must be one of: always, archive, or never" << endl;
         return false;
     }
-    d->m_uncompression = uncompresssetting;
-    d->m_command = group.readEntry("InstallationCommand", QString());
-    d->m_uninstallCommand = group.readEntry("UninstallCommand", QString());
-    d->m_standardresourcedir = group.readEntry("StandardResource", QString());
-    d->m_targetdir = group.readEntry("TargetDir", QString());
-    d->m_installpath = group.readEntry("InstallPath", QString());
-    d->m_absoluteinstallpath = group.readEntry("AbsoluteInstallPath", QString());
-    d->m_customname = group.readEntry("CustomName", false);
+    d->uncompression = uncompresssetting;
+    d->postInstallationCommand = group.readEntry("InstallationCommand", QString());
+    d->uninstallCommand = group.readEntry("UninstallCommand", QString());
+    d->standardResourceDirectory = group.readEntry("StandardResource", QString());
+    d->targetDirectory = group.readEntry("TargetDir", QString());
+    d->installPath = group.readEntry("InstallPath", QString());
+    d->absoluteInstallPath = group.readEntry("AbsoluteInstallPath", QString());
+    d->customName = group.readEntry("CustomName", false);
     
     QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
     if (!checksumpolicy.isEmpty()) {
         if (checksumpolicy == "never")
-            d->m_checksumpolicy = Installation::CheckNever;
+            d->checksumPolicy = Installation::CheckNever;
         else if (checksumpolicy == "ifpossible")
-            d->m_checksumpolicy = Installation::CheckIfPossible;
+            d->checksumPolicy = Installation::CheckIfPossible;
         else if (checksumpolicy == "always")
-            d->m_checksumpolicy = Installation::CheckAlways;
+            d->checksumPolicy = Installation::CheckAlways;
         else {
             kError() << "The checksum policy '" + checksumpolicy + "' is unknown." << endl;
             return false;
@@ -112,11 +123,11 @@ bool Installation::readConfig(const KConfigGroup& group)
     QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
     if (!signaturepolicy.isEmpty()) {
         if (signaturepolicy == "never")
-            d->m_signaturepolicy = Installation::CheckNever;
+            d->signaturePolicy = Installation::CheckNever;
         else if (signaturepolicy == "ifpossible")
-            d->m_signaturepolicy = Installation::CheckIfPossible;
+            d->signaturePolicy = Installation::CheckIfPossible;
         else if (signaturepolicy == "always")
-            d->m_signaturepolicy = Installation::CheckAlways;
+            d->signaturePolicy = Installation::CheckAlways;
         else {
             kError() << "The signature policy '" + signaturepolicy + "' is unknown." << endl;
             return false;
@@ -126,16 +137,16 @@ bool Installation::readConfig(const KConfigGroup& group)
     QString scope = group.readEntry("Scope", QString());
     if (!scope.isEmpty()) {
         if (scope == "user")
-            d->m_scope = Installation::ScopeUser;
+            d->scope = Installation::ScopeUser;
         else if (scope == "system")
-            d->m_scope = Installation::ScopeSystem;
+            d->scope = Installation::ScopeSystem;
         else {
             kError() << "The scope '" + scope + "' is unknown." << endl;
             return false;
         }
         
-        if (d->m_scope == Installation::ScopeSystem) {
-            if (!d->m_installpath.isEmpty()) {
+        if (d->scope == Installation::ScopeSystem) {
+            if (!d->installPath.isEmpty()) {
                 kError() << "System installation cannot be mixed with InstallPath." << endl;
                 return false;
             }
@@ -146,10 +157,10 @@ bool Installation::readConfig(const KConfigGroup& group)
 
 bool Installation::isRemote() const
 {
-    if (!d->m_installpath.isEmpty()) return false;
-    if (!d->m_targetdir.isEmpty()) return false;
-    if (!d->m_absoluteinstallpath.isEmpty()) return false;
-    if (!d->m_standardresourcedir.isEmpty()) return false;
+    if (!d->installPath.isEmpty()) return false;
+    if (!d->targetDirectory.isEmpty()) return false;
+    if (!d->absoluteInstallPath.isEmpty()) return false;
+    if (!d->standardResourceDirectory.isEmpty()) return false;
     return true;
 }
 
@@ -278,7 +289,7 @@ void Installation::install(Entry entry, const QString& downloadedFile)
     
     entry.setInstalledFiles(installedFiles);
 
-    if (!d->m_command.isEmpty()) {
+    if (!d->postInstallationCommand.isEmpty()) {
         QString target;
         if (installedFiles.size() == 1) {
             runPostInstallationCommand(installedFiles.first());
@@ -313,23 +324,23 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
 
         // installpath also contains the file name if it's a single file, otherwise equal to installdir
         int pathcounter = 0;
-        if (!d->m_standardresourcedir.isEmpty()) {
-            if (d->m_scope == Installation::ScopeUser) {
-                installdir = KStandardDirs::locateLocal(d->m_standardresourcedir.toUtf8(), "/");
+        if (!d->standardResourceDirectory.isEmpty()) {
+            if (d->scope == Installation::ScopeUser) {
+                installdir = KStandardDirs::locateLocal(d->standardResourceDirectory.toUtf8(), "/");
             } else { // system scope
-                installdir = KStandardDirs::installPath(d->m_standardresourcedir.toUtf8());
+                installdir = KStandardDirs::installPath(d->standardResourceDirectory.toUtf8());
             }
             pathcounter++;
         }
-        if (!d->m_targetdir.isEmpty()) {
-            if (d->m_scope == Installation::ScopeUser) {
-                installdir = KStandardDirs::locateLocal("data", d->m_targetdir + '/');
+        if (!d->targetDirectory.isEmpty()) {
+            if (d->scope == Installation::ScopeUser) {
+                installdir = KStandardDirs::locateLocal("data", d->targetDirectory + '/');
             } else { // system scope
-                installdir = KStandardDirs::installPath("data") + d->m_targetdir + '/';
+                installdir = KStandardDirs::installPath("data") + d->targetDirectory + '/';
             }
             pathcounter++;
         }
-        if (!d->m_installpath.isEmpty()) {
+        if (!d->installPath.isEmpty()) {
 #if defined(Q_WS_WIN)
             WCHAR wPath[MAX_PATH+1];
             if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
@@ -338,12 +349,12 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
                 installdir =  QDir::home().path() + QLatin1Char('/') + d->m_installpath + QLatin1Char('/');
             }
 #else
-            installdir = QDir::home().path() + '/' + d->m_installpath + '/';
+            installdir = QDir::home().path() + '/' + d->installPath + '/';
 #endif
             pathcounter++;
         }
-        if (!d->m_absoluteinstallpath.isEmpty()) {
-            installdir = d->m_absoluteinstallpath + '/';
+        if (!d->absoluteInstallPath.isEmpty()) {
+            installdir = d->absoluteInstallPath + '/';
             pathcounter++;
         }
         if (pathcounter != 1) {
@@ -368,7 +379,7 @@ QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const 
         bool isarchive = true;
         
         // respect the uncompress flag in the knsrc
-        if (d->m_uncompression == "always" || d->m_uncompression == "archive") {
+        if (d->uncompression == "always" || d->uncompression == "archive") {
             // this is weird but a decompression is not a single name, so take the path instead
             installpath = installdir;
             KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
@@ -389,7 +400,7 @@ QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const 
             } else {
                 delete archive;
                 kError() << "Could not determine type of archive file '" << payloadfile << "'";
-                if (d->m_uncompression == "always") {
+                if (d->uncompression == "always") {
                     return QStringList();
                 }
                 isarchive = false;
@@ -399,7 +410,7 @@ QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const 
                 bool success = archive->open(QIODevice::ReadOnly);
                 if (!success) {
                     kError() << "Cannot open archive file '" << payloadfile << "'";
-                    if (d->m_uncompression == "always") {
+                    if (d->uncompression == "always") {
                         return QStringList();
                     }
                     // otherwise, just copy the file
@@ -422,7 +433,7 @@ QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const 
 
         kDebug() << "isarchive: " << isarchive;
 
-        if (d->m_uncompression == "never" || (d->m_uncompression == "archive" && !isarchive)) {
+        if (d->uncompression == "never" || (d->uncompression == "archive" && !isarchive)) {
             // no decompress but move to target
 
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
@@ -431,7 +442,7 @@ QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const 
             kDebug() << "installing non-archive from " << source.url();
             QString installfile;
             QString ext = source.fileName().section('.', -1);
-            if (d->m_customname) {
+            if (d->customName) {
                 installfile = entry.name().representation();
                 installfile += '-' + entry.version();
                 if (!ext.isEmpty()) installfile += '.' + ext;
@@ -478,7 +489,7 @@ QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const 
 void Installation::runPostInstallationCommand(const QString& installPath)
 {
     KProcess process;
-    QString command(d->m_command);
+    QString command(d->postInstallationCommand);
     QString fileArg(KShell::quoteArg(installPath));
     command.replace("%f", fileArg);
 
@@ -498,13 +509,13 @@ void Installation::uninstall(Entry entry)
 {
     entry.setStatus(Entry::Deleted);
 
-    if (!d->m_uninstallCommand.isEmpty()) {
+    if (!d->uninstallCommand.isEmpty()) {
         KProcess process;
         foreach (const QString& file, entry.installedFiles()) {
             QFileInfo info(file);
             if (info.isFile()) {
                 QString fileArg(KShell::quoteArg(file));
-                QString command(d->m_uninstallCommand);
+                QString command(d->uninstallCommand);
                 command.replace("%f", fileArg);
 
                 process.setShellCommand(command);
