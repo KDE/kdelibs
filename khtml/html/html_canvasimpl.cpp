@@ -1186,8 +1186,8 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
                         .adjusted(-offset, -offset, offset, offset) &
                         clipRect.adjusted(-offset, -offset, offset, offset);
 
-    const QRect shapeRect = QRect(shapeBounds & clipRect) | shadowRect
-                        .translated(-shadowOffsetX(), -shadowOffsetY()) & shapeBounds;
+    const QRect shapeRect = QRect(shapeBounds & clipRect) |
+                        (shadowRect.translated(-shadowOffsetX(), -shadowOffsetY()) & shapeBounds);
 
     if (!shapeRect.isValid())
         return;
