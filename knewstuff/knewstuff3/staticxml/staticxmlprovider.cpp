@@ -284,8 +284,6 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
 {
     Q_D(const StaticXmlProvider);
 
-    kDebug() << "serach: " << d->searchTerm;
-    
     if (d->searchTerm.isEmpty()) {
         return true;
     }

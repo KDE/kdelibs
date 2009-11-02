@@ -29,6 +29,7 @@
 #include <attica/listjob.h>
 #include <attica/content.h>
 #include <attica/downloaditem.h>
+#include <KMessageBox>
 
 using namespace Attica;
 
@@ -151,9 +152,9 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     
     Q_FOREACH(Content content, contents) {
         Entry entry;
+        entry.setProviderId(id());
         entry.setName(content.name());
         entry.setUniqueId(content.id());
-        entry.setProviderId(id());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
         entry.setReleaseDate(content.updated().date());
@@ -190,16 +191,26 @@ void AtticaProvider::loadPayloadLink(const KNS3::Entry& entry)
 {
     Q_D(AtticaProvider);
     ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
-    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
     d->downloadLinkJobs[job] = entry;
     job->start();
+
+    kDebug() << " link for " << entry.uniqueId();
 }
 
-void AtticaProvider::downloadItemLoaded(BaseJob* job)
+void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
 {
     Q_D(AtticaProvider);
-    ItemJob<DownloadItem>* itemJob = static_cast<ItemJob<DownloadItem>*>(itemJob);
+
+    ItemJob<DownloadItem>* job = static_cast<ItemJob<DownloadItem>*>(baseJob);
+    DownloadItem item = job->result();
+    if (job->metadata().statusCode != 100) {
+        KMessageBox::error(0, "Could not get download link");
+        return;
+    }
+
     Entry entry = d->downloadLinkJobs.take(job);
+    entry.setPayload(KTranslatable(item.url().toString()));
     emit payloadLinkLoaded(entry);
 }
 
