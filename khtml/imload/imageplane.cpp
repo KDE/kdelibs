@@ -53,7 +53,7 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
                    unsigned char* versions)
 {
     //Determine the range which needs pushing.
-    unsigned int first = 0xFFFF, last = 0;
+    int first = 0xFFFF, last = 0;
     if (!tile->pixmap)
     {
         //### this can be wasteful if we do conversion
