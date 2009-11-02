@@ -449,7 +449,6 @@ bool KCalendarSystemJulian::julianDayToDate( int jd, int &year, int &month, int 
     // NOTE: Coded from scratch from mathematical formulas, not copied from
     // the Boost licensed source code
 
-    int a = 0;
     int b = 0;
     int c = jd + 32082;
     int d = ( ( 4 * c ) + 3 ) / 1461;
