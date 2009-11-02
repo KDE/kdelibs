@@ -75,6 +75,13 @@ public:
    */
   void setTextElideMode( Qt::TextElideMode mode );
 
+  /**
+   * Get the full text set via setText.
+   *
+   * @since 4.4
+   */
+  QString fullText() const;
+
 public Q_SLOTS:
   /**
    * Sets the text. Note that this is not technically a reimplementation of QLabel::setText(),

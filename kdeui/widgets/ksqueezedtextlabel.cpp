@@ -139,6 +139,11 @@ void KSqueezedTextLabel::setTextElideMode(Qt::TextElideMode mode)
   squeezeTextToLabel();
 }
 
+QString KSqueezedTextLabel::fullText() const
+{
+  return d->fullText;
+}
+
 void KSqueezedTextLabel::contextMenuEvent(QContextMenuEvent* ev)
 {
     // We want to reimplement "Copy" to include the elided text.
