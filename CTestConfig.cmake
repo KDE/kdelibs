@@ -14,4 +14,7 @@ set(CTEST_DROP_SITE_CDASH TRUE)
 
 set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 10000)
 set(CTEST_CUSTOM_WARNING_EXCEPTION "kdecore/network/k3socket[a-z]+\\.h"
-                                   "kdecore/network/k3clientsocketbase\\.h" )
+                                   "kdecore/network/k3clientsocketbase\\.h"
+                                   "Warning: No relevant classes found. No output generated."  # moc didn't find anything to do
+                                   "yy" "YY"                                                   # ignore the warnings in generated code
+   )
