@@ -91,8 +91,6 @@ void KWebView::mouseReleaseEvent(QMouseEvent *event)
       d->handleUrlPasteFromClipboard();
 
     event->setAccepted(isAccepted);
-
-    QWebView::mouseReleaseEvent(event);
 }
 
 #include "kwebview.moc"

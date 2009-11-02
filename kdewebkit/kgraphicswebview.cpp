@@ -94,8 +94,6 @@ void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
       d->handleUrlPasteFromClipboard();
 
     event->setAccepted(isAccepted);
-
-    QGraphicsWebView::mouseReleaseEvent(event);
 }
 
 #include "kgraphicswebview.moc"
