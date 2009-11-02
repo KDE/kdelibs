@@ -36,7 +36,7 @@ using namespace std;
 static unsigned neededBits(unsigned vals)
 {
     unsigned bits = 1;
-    while ((1 << bits) < vals)
+    while ((1U << bits) < vals)
         ++bits;
     return bits;
 }
