@@ -25,6 +25,7 @@ namespace KNS3
 {
 
 class ClientPrivate;
+class Provider;
 
 /**
  * @brief The KNewStuff3 client is the top-level class to handle GHNS in applications.
@@ -114,12 +115,26 @@ public:
     void uploadDialog(const QString& file, QWidget *parent = 0);
 
 private Q_SLOTS:
-
     void slotDownloadDialogClosed();
     void slotUploadDialogClosed();
+    
+    /** slot for when entries are changed, so we can return a list
+     * of them from the static methods */
+    void slotEntryChanged(const KNS3::Entry& entry);
 
 private:
+    void slotDownloadDialogDestroyed();
 
+    /** stop the event loop */
+    void stopLoop();
+
+    void slotProviderLoaded(KNS3::Provider* provider);
+
+    void slotHandleUpload();
+    void slotEntriesFinished();
+
+    void workflow();
+    
     friend class ClientPrivate;
     ClientPrivate* const d;
     Q_DISABLE_COPY(Client)

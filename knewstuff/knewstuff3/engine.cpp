@@ -91,7 +91,7 @@ class KNS3::Engine::Private {
 
         Private()
             : uploadprovider(NULL), installation(NULL),
-                initialized(false), cachepolicy(CacheNever)
+            initialized(false), cachepolicy(CacheNever)
         {
         }
         
@@ -152,7 +152,7 @@ bool Engine::init(const QString &configfile)
         return false;
     }
     
-
+    connect(d->installation, SIGNAL(signalInstallationFinished(Entry)), SLOT(slotInstallationFinished(Entry)));
 
     QString cachePolicy = group.readEntry("CachePolicy", QString());
     if (!cachePolicy.isEmpty()) {
@@ -1092,6 +1092,7 @@ void Engine::slotInstallationFinished(const KNS3::Entry& entry)
     registerEntry(entry);
     // FIXME: hm, do we need to update the cache really?
     // only registration is probably needed here
+    emit signalEntryChanged(entry);
 }
 
 void Engine::slotInstallationFailed(const KNS3::Entry& entry)
