@@ -134,7 +134,7 @@ namespace khtml {
 		} else
 		    return false;
 	    }
-	    if ( row > 0x2d && row < 0xfb || row == 0x11 ) {
+	    if ( (row > 0x2d && row < 0xfb) || row == 0x11 ) {
                 /* asian line breaking. */
                 if ( pos == 0 )
                     return false; // never break before first character
