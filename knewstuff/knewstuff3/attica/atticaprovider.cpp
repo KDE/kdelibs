@@ -28,6 +28,7 @@
 #include <attica/provider.h>
 #include <attica/listjob.h>
 #include <attica/content.h>
+#include <attica/downloaditem.h>
 
 using namespace Attica;
 
@@ -40,6 +41,8 @@ public:
     QString m_categories;
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
+
+    QMap<BaseJob*, Entry> downloadLinkJobs;
     
     AtticaProviderPrivate()
     {
@@ -62,6 +65,12 @@ AtticaProvider::AtticaProvider()
 AtticaProvider::~AtticaProvider()
 {
     // d_ptr is deleted in base class!
+}
+
+QString AtticaProvider::id() const
+{
+    Q_D(const AtticaProvider);
+    return d->m_provider.baseUrl().toString();
 }
 
 bool AtticaProvider::setProviderXML(QDomElement & xmldata)
@@ -122,7 +131,6 @@ QStringList AtticaProvider::availableSortingCriteria() const
 void AtticaProvider::loadEntries(const QString& sortMode, const QString& searchString, int page, int pageSize)
 {
     Q_D(AtticaProvider);
-
     Attica::Provider::SortMode sorting = sortModeFromString(sortMode);
     Attica::Category::List cats;
     Attica::Category cat;
@@ -135,7 +143,7 @@ void AtticaProvider::loadEntries(const QString& sortMode, const QString& searchS
 
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
-    Q_D(AtticaProvider);
+    Q_D(const AtticaProvider);
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
@@ -145,7 +153,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         Entry entry;
         entry.setName(content.name());
         entry.setUniqueId(content.id());
-        entry.setProviderId(d->m_provider.baseUrl().toString());
+        entry.setProviderId(id());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
         entry.setReleaseDate(content.updated().date());
@@ -156,7 +164,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setStatus(KNS3::Entry::Downloadable);
         entry.setSummary(content.description());
         entry.setVersion(content.version());
-        
+
         entries.append(entry);
     }
 
@@ -178,6 +186,22 @@ Attica::Provider::SortMode AtticaProvider::sortModeFromString(const QString& sor
     return Attica::Provider::Rating;
 }
 
+void AtticaProvider::loadPayloadLink(const KNS3::Entry& entry)
+{
+    Q_D(AtticaProvider);
+    ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
+    d->downloadLinkJobs[job] = entry;
+    job->start();
+}
+
+void AtticaProvider::downloadItemLoaded(BaseJob* job)
+{
+    Q_D(AtticaProvider);
+    ItemJob<DownloadItem>* itemJob = static_cast<ItemJob<DownloadItem>*>(itemJob);
+    Entry entry = d->downloadLinkJobs.take(job);
+    emit payloadLinkLoaded(entry);
+}
 
 }
 

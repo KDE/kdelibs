@@ -120,8 +120,9 @@ Engine::~Engine()
 
 bool Engine::init(const QString &configfile)
 {
+
     kDebug() << "Initializing KNS::Engine from '" << configfile << "'";
-    
+
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
@@ -135,12 +136,12 @@ bool Engine::init(const QString &configfile)
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
-    
+
     if (!conf.hasGroup("KNewStuff2")) {
         kError() << "A knsrc file was found but it doesn't contain a KNewStuff2 section." << endl;
         return false;
     }
-    
+
     KConfigGroup group = conf.group("KNewStuff2");
     d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     //d->componentname = group.readEntry("ComponentName", QString());
@@ -151,6 +152,8 @@ bool Engine::init(const QString &configfile)
         return false;
     }
     
+
+
     QString cachePolicy = group.readEntry("CachePolicy", QString());
     if (!cachePolicy.isEmpty()) {
         if (cachePolicy == "never") {
@@ -166,9 +169,6 @@ bool Engine::init(const QString &configfile)
         }
     }
     kDebug() << "cache policy: " << cachePolicy;
-    
-    
-
 
     d->initialized = true;
 
@@ -208,6 +208,7 @@ void Engine::loadProviders()
 
     loader->load(KUrl(d->providerFileUrl));
 }
+
 
 bool Engine::uploadEntry(Provider *provider, const Entry& entry)
 {
@@ -286,9 +287,14 @@ void Engine::slotProvidersFailed()
 void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name().representation();
+
+    d->provider_index[p->id()] = p;
+    
     emit signalProviderLoaded(p);
 
     connect(p, SIGNAL(loadingFinished(QString,QString,int,int,int,Entry::List)), SLOT(slotEntriesLoaded(QString,QString,int,int,int,Entry::List)));
+    connect(p, SIGNAL(payloadLinkLoaded(const Entry&)), SLOT(downloadLinkLoaded(const Entry&)));
+    
     // TODO parameters according to search string etc
     p->loadEntries(QString(), d->searchTerm);
 }
@@ -807,7 +813,7 @@ bool Engine::providerCached(Provider *provider)
 
     if (d->cachepolicy == CacheNever) return false;
 
-    if (d->provider_index.contains(providerId(provider)))
+    if (d->provider_index.contains(provider->id()))
         return true;
     return false;
 }
@@ -829,8 +835,6 @@ bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
     return false;
 }
 
-// FIXME this is never called, and I'm not sure what it's supposed to do...
-// we do need loading of the cache at the beginning though...
 void Engine::mergeProviders(Provider::List providers)
 {
     for (Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it) {
@@ -838,7 +842,7 @@ void Engine::mergeProviders(Provider::List providers)
 
         if (providerCached(p)) {
             kDebug() << "CACHE: hit provider " << p->name().representation();
-            Provider *oldprovider = d->provider_index[providerId(p)];
+            Provider *oldprovider = d->provider_index[p->id()];
             if (providerChanged(oldprovider, p)) {
                 kDebug() << "CACHE: update provider";
                 cacheProvider(p);
@@ -862,7 +866,7 @@ void Engine::mergeProviders(Provider::List providers)
         }
 
         d->providers.append(p);
-        d->provider_index[providerId(p)] = p;
+        d->provider_index[p->id()] = p;
     }
 
     emit signalProvidersFinished();
@@ -871,12 +875,10 @@ void Engine::mergeProviders(Provider::List providers)
 bool Engine::entryCached(const Entry& entry)
 {
     if (d->cachepolicy == CacheNever) return false;
-
     int index = d->entries.indexOf(entry);
     if (index >= 0 && d->entries.at(index).source() == Entry::Cache) {
         return true;
     }
-
     return false;
 }
 
@@ -888,6 +890,7 @@ bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
         return true;
     return false;
 }
+
 
 void Engine::cacheProvider(Provider *provider)
 {
@@ -1063,33 +1066,21 @@ void KNS3::Engine::unregisterEntry(const Entry& entry)
     d->entry_registry.removeAll(entry);
 }
 
-QString Engine::providerId(const Provider *p)
+void Engine::install(const KNS3::Entry& entry)
 {
-    // This is the primary key of a provider:
-    // The download URL, which is never translated
-    // If no download URL exists, a feed or web service URL must exist
-    // if (p->downloadUrl().isValid())
-    // return p->downloadUrl().url();
-    QStringList feeds = p->availableSortingCriteria();
-    for (int i = 0; i < feeds.count(); i++) {
-        QString feedtype = feeds.at(i);
-        //Feed *f = p->downloadUrlFeed(feedtype);
-        //if (f->feedUrl().isValid())
-        //    return d->componentname + f->feedUrl().url();
-    }
-    //if (p->webService().isValid())
-    //    return d->componentname + p->webService().url();
-    return d->applicationName;
+    kDebug() << "Install " << entry.name().representation()
+        << entry.providerId() << d->provider_index.keys();
+    Provider* p = d->provider_index[entry.providerId()];
+
+    p->loadPayloadLink(entry);
 }
 
-
-bool Engine::install(const KNS3::Entry& entry)
+void Engine::downloadLinkLoaded(const Entry& entry)
 {
-    kDebug() << "Install " << entry.name().representation();
     d->installation->install(entry);
 }
 
-bool Engine::uninstall(const KNS3::Entry& entry)
+void Engine::uninstall(const KNS3::Entry& entry)
 {
     d->installation->uninstall(entry);
 }

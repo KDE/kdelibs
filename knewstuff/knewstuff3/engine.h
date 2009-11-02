@@ -165,8 +165,6 @@ public:
      * Installs an entry's payload file. This includes verification, if
      * necessary, as well as decompression and other steps according to the
      * application's *.knsrc file.
-     * Note that this method is asynchronous and thus the return value will
-     * only report the successful start of the installation.
      *
      * @param entry Entry to be installed
      *
@@ -175,7 +173,7 @@ public:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    bool install(const Entry& entry);
+    void install(const Entry& entry);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed
@@ -187,7 +185,7 @@ public:
      *
      * @note FIXME: I don't believe this works yet :)
      */
-    bool uninstall(const Entry& entry);
+    void uninstall(const Entry& entry);
     
     /**
      * Uploads a complete entry, including its payload and preview files
@@ -278,6 +276,8 @@ private Q_SLOTS:
     void slotInstallationFinished(const Entry& entry);
     void slotInstallationFailed(const Entry& entry);
     void slotUninstallFinished(const Entry& entry);
+    void downloadLinkLoaded(const Entry& entry);
+    
 private:
     /**
      * load providers from the providersurl in the knsrc file
@@ -313,9 +313,6 @@ private:
     bool providerCached(Provider *provider);
     bool providerChanged(Provider *oldprovider, Provider *provider);
 
-    QString providerId(const Provider *p);
-
-    
     /**
      * Private copy constructor
      */

@@ -48,6 +48,8 @@ namespace KNS3
 
         ~AtticaProvider();
 
+        virtual QString id() const;
+    
         virtual QStringList availableSortingCriteria() const;
 
         /**
@@ -61,13 +63,14 @@ namespace KNS3
         virtual QDomElement providerXML() const;
 
         virtual bool isInitialized() const;
-    
         virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
-
+        virtual void loadPayloadLink(const Entry& entry);
+        
     private Q_SLOTS:
-        void categoryContentsLoaded(Attica::BaseJob* job);
         void providerLoaded();
-
+        void categoryContentsLoaded(Attica::BaseJob* job);
+        void downloadItemLoaded(Attica::BaseJob* job);
+        
     protected:
         AtticaProvider(AtticaProviderPrivate &dd);
 

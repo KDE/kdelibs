@@ -46,6 +46,7 @@ public:
     Entry::List mEntries;
     QMap<QString, XmlLoader*> mFeedLoaders;
     QString searchTerm;
+    QString mId;
     bool mInitialized;
 };
 
@@ -57,6 +58,13 @@ StaticXmlProvider::StaticXmlProvider(   )
 StaticXmlProvider::~StaticXmlProvider()
 {
     // d_ptr is deleted in base class!
+}
+
+QString StaticXmlProvider::id() const
+{
+    Q_D(const StaticXmlProvider);
+    return d->mId;
+    
 }
 
 bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
@@ -118,6 +126,11 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
     if ((!d->mNoUploadUrl.isValid()) && (!d->mUploadUrl.isValid())) {
         kWarning(550) << "StaticXmlProvider: neither uploadurl nor nouploadurl given";
         return false;
+    }
+
+    d->mId = d->mDownloadUrls[QString()].url();
+    if (d->mId.isEmpty()) {
+        d->mId = d->mDownloadUrls[d->mDownloadUrls.keys().first()].url();
     }
     
     d->mInitialized = true;
@@ -212,6 +225,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         return;
     }
 
+
     // we have a loader, so see which sortmode it was used for
     QStringList::ConstIterator it;
     QString mode;
@@ -223,6 +237,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         }
     }
 
+
     // load all the entries from the domdocument given
     Entry::List entries;
     QDomElement element;
@@ -231,30 +246,28 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     kDebug() << "Document Element" << element.tagName();
     kDebug() << "  First Child" << element.firstChildElement().tagName();
 
+    
     QDomElement n;
 
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
         
         Entry entry;
         entry.setEntryXML(n.toElement());
-        
-        // the static providers don't send an Id sometimes
-        entry.setUniqueId(entry.name().language() + ':' + entry.name().representation());
-        kDebug() << "entry with id: " << entry.uniqueId();
-        
         // check to see if we already have this entry
         if (d->mEntries.contains(entry)) {
             // if so, merge the two together
-            kDebug() << "Merge";
-        } else {
+        }
+        else {
             // add it to the list otherwise
             d->mEntries.append(entry);
-        }
-        
-        if (searchIncludesEntry(entry)) {
-            entries << entry;
+
+            if (searchIncludesEntry(entry)) {
+                entries << entry;
+            }
         }
         // TODO: ask the engine if it knows about any cached/installed data, so we can merge that in too
+
+        entry.setProviderId(d->mId);
     }
     
     // emit a the entry list
@@ -284,6 +297,11 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
         return true;
     }
     return false;
+}
+
+void StaticXmlProvider::loadPayloadLink(const KNS3::Entry& entry)
+{
+    emit payloadLinkLoaded(entry);
 }
 
 }

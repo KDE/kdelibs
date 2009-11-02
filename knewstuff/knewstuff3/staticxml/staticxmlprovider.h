@@ -52,6 +52,8 @@ namespace KNS3
          */
         virtual ~StaticXmlProvider();
 
+        virtual QString id() const;
+        
         /**
          * set the provider data xml, to initialize the provider
          */
@@ -69,6 +71,8 @@ namespace KNS3
         
         virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
 
+        virtual void loadPayloadLink(const KNS3::Entry& entry);
+        
     private:
         bool searchIncludesEntry(const Entry& entry) const;
         

@@ -53,12 +53,18 @@ namespace KNS3
          */
         Provider();
         Provider(const Provider &other);
+
         
         /**
          * Destructor.
          */
         virtual ~Provider();
 
+        /**
+         * A unique Id for this provider (the url in most cases)
+         */
+        virtual QString id() const = 0;
+        
         /**
          * set the provider data xml, to initialize the provider
          */
@@ -99,18 +105,19 @@ namespace KNS3
          * Note: the engine connects to loadingFinished() signal to get the result
          */
         virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100) = 0;
-
+        virtual void loadPayloadLink(const Entry& entry) = 0;
+        
         virtual bool hasCommenting() const { return false; }
         virtual void getComments(Entry *, int page = 0) { Q_UNUSED(page) }
         virtual void addComment(Entry*, const QString & comment) { Q_UNUSED(comment) }
 
         virtual bool hasRatings() const { return false; }
         virtual void setRating(Entry*, int) {}
-
+        
     signals:
         void providerInitialized(KNS3::Provider*);
             
-        void loadingFinished(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
+        void loadingFinished(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List) const;
         void loadingFailed(const QString& sortMode, const QString& searchstring, int page);
 
         void comments(Entry *, int page, int pageSize, int totalpages);
@@ -119,6 +126,8 @@ namespace KNS3
 
         void ratingSet(Entry*);
         void ratingSetFailed(Entry *);
+
+        void payloadLinkLoaded(const Entry& entry);
         
     protected:
         ProviderPrivate * const d_ptr;
