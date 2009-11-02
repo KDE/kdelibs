@@ -85,14 +85,7 @@ KLibrary::~KLibrary()
 {
 }
 
-class FactoryHash : public QHash<QString, QPointer<KPluginFactory> >
-{
-public:
-    ~FactoryHash() {
-        //qDebug() << "deleting" << count() << "kde3 factories";
-        qDeleteAll(*this);
-    }
-};
+typedef QHash<QString, QPointer<KPluginFactory> > FactoryHash;
 
 K_GLOBAL_STATIC(FactoryHash, s_createdKde3Factories)
 
