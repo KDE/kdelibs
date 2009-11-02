@@ -180,7 +180,7 @@ protected:
     void loadError();
 
     //Image state
-    int width, height;
+    unsigned int width, height;
     PixmapPlane* original;
     QMap<QPair<int, int>, PixmapPlane*> scaled;
     KHTMLSettings::KAnimationAdvice animationAdvice;
