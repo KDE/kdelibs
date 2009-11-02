@@ -285,7 +285,7 @@ bool FunctionImp::deleteProperty(ExecState *exec, const Identifier &propertyName
  * it appears associates with it. eg:
  * function f2(x, x): getParameterName(0) --> null
  */
-Identifier FunctionImp::getParameterName(int index)
+Identifier FunctionImp::getParameterName(size_t index)
 {
   if (index >= body->numParams())
     return CommonIdentifiers::shared()->nullIdentifier;
@@ -293,7 +293,7 @@ Identifier FunctionImp::getParameterName(int index)
   Identifier name = body->paramName(index);
 
   // Are there any subsequent parameters with the same name?
-  for (int pos = index + 1; pos < body->numParams(); ++pos)
+  for (size_t pos = index + 1; pos < body->numParams(); ++pos)
     if (body->paramName(pos) == name)
       return CommonIdentifiers::shared()->nullIdentifier;
 
@@ -341,7 +341,7 @@ IndexToNameMap::IndexToNameMap(FunctionImp *func, const List &args)
   _map = new Identifier[args.size()];
   this->size = args.size();
 
-  int i = 0;
+  size_t i = 0;
   ListIterator iterator = args.begin();
   for (; iterator != args.end(); i++, iterator++)
     _map[i] = func->getParameterName(i); // null if there is no corresponding parameter

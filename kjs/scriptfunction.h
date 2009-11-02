@@ -55,7 +55,7 @@ namespace KJS {
 
     // Note: unlike body->paramName, this returns Identifier::null for parameters
     // that will never get set, due to later param having the same name
-    Identifier getParameterName(int index);
+    Identifier getParameterName(size_t index);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
