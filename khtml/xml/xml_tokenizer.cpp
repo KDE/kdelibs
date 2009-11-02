@@ -533,7 +533,7 @@ void XMLTokenizer::finish()
         if ( m_handler.errorLine != -1 ) {
             QString xmlCode = m_source.data();
             QTextStream stream(&xmlCode, QIODevice::ReadOnly);
-            for (unsigned long lineno = 0; lineno < m_handler.errorLine-1; lineno++)
+            for (int lineno = 0; lineno < m_handler.errorLine-1; lineno++)
                 stream.readLine();
             line = stream.readLine();
 
