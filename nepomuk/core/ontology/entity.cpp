@@ -262,13 +262,13 @@ bool Nepomuk::Types::Entity::operator==( const Entity& other ) const
 {
     // since we use one instace cache we can improve comparation operations
     // intensly by not comparing URLs but pointers.
-    return( d && other.d && d == other.d );
+    return( d.constData() == other.d.constData() );
 }
 
 
 bool Nepomuk::Types::Entity::operator!=( const Entity& other ) const
 {
-    return !d || !other.d || d != other.d;
+    return( d.constData() != other.d.constData() );
 }
 
 
