@@ -291,7 +291,7 @@ void Image::notifyQImage(uchar version, const QImage *image)
     plane->image = *image;
 
     //Set the versions.
-    for(int i=0; i<plane->height;i++) {
+    for(unsigned int i=0; i<plane->height;i++) {
         plane->versions[i] = version;
     }
 
