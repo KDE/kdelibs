@@ -37,4 +37,4 @@ install(FILES
     kwebpluginfactory.h
     kwebpage.h
     kwebview.h
-    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+    DESTINATION ${INCLUDE_INSTALL_DIR}/kdewebkit COMPONENT Devel)
