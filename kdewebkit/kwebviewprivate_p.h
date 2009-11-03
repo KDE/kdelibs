@@ -77,8 +77,8 @@ public:
 
     bool mouseReleased(const QPoint &pos)
     {
-        const QWebHitTestResult result = q->page()->mainFrame()->hitTestContent(pos);
-        const QUrl url = result.linkUrl();
+        hitTest = q->page()->mainFrame()->hitTestContent(pos);
+        const QUrl url = hitTest.linkUrl();
 
         if (url.isEmpty()) {
             return false;
@@ -100,6 +100,15 @@ public:
 
     void handleUrlPasteFromClipboard()
     {
+        if (hitTest.isContentEditable()) {
+#if QT_VERSION >= 0x040600
+            QString text (hitTest.element().toPlainText());
+            text += QApplication::clipboard()->text(QClipboard::Selection).trimmed();
+            hitTest.element().setPlainText(text);
+#endif
+            return;
+        }
+
         if (q->page() && !q->page()->isModified() && (pressedButtons & Qt::MidButton)) {
             QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
             if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
@@ -111,6 +120,7 @@ public:
     T *q;
     Qt::KeyboardModifiers keyboardModifiers;
     Qt::MouseButtons pressedButtons;
+    QWebHitTestResult hitTest;
 };
 
 #endif
