@@ -125,39 +125,39 @@ bool Job::removeSubjob( KJob *jobBase )
 void JobPrivate::emitMoving(KIO::Job * job, const KUrl &src, const KUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Moving"),
-                          qMakePair(i18nc("The source of a file operation", "Source"), src.prettyUrl()),
-                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.prettyUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), src.pathOrUrl()),
+                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.pathOrUrl()));
 }
 
 void JobPrivate::emitCopying(KIO::Job * job, const KUrl &src, const KUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Copying"),
-                          qMakePair(i18nc("The source of a file operation", "Source"), src.prettyUrl()),
-                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.prettyUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), src.pathOrUrl()),
+                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.pathOrUrl()));
 }
 
 void JobPrivate::emitCreatingDir(KIO::Job * job, const KUrl &dir)
 {
     emit job->description(job, i18nc("@title job","Creating directory"),
-                          qMakePair(i18n("Directory"), dir.prettyUrl()));
+                          qMakePair(i18n("Directory"), dir.pathOrUrl()));
 }
 
 void JobPrivate::emitDeleting(KIO::Job *job, const KUrl &url)
 {
     emit job->description(job, i18nc("@title job","Deleting"),
-                          qMakePair(i18n("File"), url.prettyUrl()));
+                          qMakePair(i18n("File"), url.pathOrUrl()));
 }
 
 void JobPrivate::emitStating(KIO::Job *job, const KUrl &url)
 {
     emit job->description(job, i18nc("@title job","Examining"),
-                          qMakePair(i18n("File"), url.prettyUrl()));
+                          qMakePair(i18n("File"), url.pathOrUrl()));
 }
 
 void JobPrivate::emitTransferring(KIO::Job *job, const KUrl &url)
 {
     emit job->description(job, i18nc("@title job","Transferring"),
-                          qMakePair(i18nc("The source of a file operation", "Source"), url.prettyUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), url.pathOrUrl()));
 }
 
 void JobPrivate::emitMounting(KIO::Job * job, const QString &dev, const QString &point)
@@ -590,7 +590,7 @@ void MkdirJobPrivate::slotRedirection( const KUrl &url)
      {
          kWarning(7007) << "Redirection from" << m_url << "to" << url << "REJECTED!";
          q->setError( ERR_ACCESS_DENIED );
-         q->setErrorText( url.prettyUrl() );
+         q->setErrorText( url.pathOrUrl() );
          return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -813,7 +813,7 @@ void StatJobPrivate::slotRedirection( const KUrl &url)
      {
        kWarning(7007) << "Redirection from " << m_url << " to " << url << " REJECTED!";
        q->setError( ERR_ACCESS_DENIED );
-       q->setErrorText( url.prettyUrl() );
+       q->setErrorText( url.pathOrUrl() );
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -953,7 +953,7 @@ void TransferJob::slotRedirection( const KUrl &url)
     {
        kDebug(7007) << "CYCLIC REDIRECTION!";
        setError( ERR_CYCLIC_LINK );
-       setErrorText( d->m_url.prettyUrl() );
+       setErrorText( d->m_url.pathOrUrl() );
     }
     else
     {
@@ -1414,7 +1414,7 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& p
     if (_error)
     {
         KIO_ARGS << (int)1 << url;
-        PostErrorJob * job = new PostErrorJob(_error, url.prettyUrl(), packedArgs, postData);
+        PostErrorJob * job = new PostErrorJob(_error, url.pathOrUrl(), packedArgs, postData);
         job->setUiDelegate(new JobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
