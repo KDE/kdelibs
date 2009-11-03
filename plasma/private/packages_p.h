@@ -72,6 +72,7 @@ private Q_SLOTS:
 
 private:
     Wallpaper *m_paper;
+    bool m_fullPackage;
 };
 
 PackageStructure::Ptr defaultPackageStructure(ComponentType type);
