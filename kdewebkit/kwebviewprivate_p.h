@@ -30,7 +30,9 @@
 #include <QtGui/QClipboard>
 #include <QtGui/QApplication>
 #include <QtWebKit/QWebFrame>
-
+#if QT_VERSION >= 0x040600
+#include <QtWebKit/QWebElement>
+#endif
 #include <kurl.h>
 #include <kurifilter.h>
 
