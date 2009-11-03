@@ -18,9 +18,9 @@ set(nepomuk_rcgen_SRCS
 qt4_add_resources(nepomuk_rcgen_SRCS templates.qrc)
 kde4_add_executable(nepomuk-rcgen ${nepomuk_rcgen_SRCS})
 target_link_libraries(nepomuk-rcgen
-  ${SOPRANO_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
+  ${SOPRANO_LIBRARIES}
 )
 
 install(TARGETS nepomuk-rcgen ${INSTALL_TARGETS_DEFAULT_ARGS} )
