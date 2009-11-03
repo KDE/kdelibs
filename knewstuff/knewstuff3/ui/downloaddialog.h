@@ -93,12 +93,6 @@ public:
                         KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
                         int timeOutMs = 0);
 
-    // begin installing that item
-    void installItem(const Entry& entry);
-
-    // remove an already installed item
-    void removeItem(const Entry& entry);
-
 private Q_SLOTS:
     void slotEntryChanged(const KNS3::Entry& entry);
     

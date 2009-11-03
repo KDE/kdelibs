@@ -295,25 +295,6 @@ void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageTy
     }
 }
 
-void DownloadDialog::installItem(const Entry& entry)
-{
-    // safety check
-//    if ( item->url().isEmpty() || item->destinationPath().isEmpty() )
-//    {
-//        displayMessage( i18n("I don't know how to install this. Sorry, my fault."), Info );
-//        return;
-//    }
-
-    //TODO check for AvailableItem deletion! (avoid broken pointers) -> cancel old jobs
-    slotEntryChanged(entry);
-}
-
-void DownloadDialog::removeItem(const Entry& entry)
-{
-    Q_UNUSED(entry);
-//    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
-}
-
 void DownloadDialog::slotResetMessage() // SLOT
 {
     m_titleWidget->setComment(QString());
@@ -377,7 +358,6 @@ void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
 }
 
 
-
 // FIXME: below here, those are for traditional GHNS
 
 
@@ -411,6 +391,7 @@ void DownloadDialog::slotEntryChanged(const Entry& entry)
 {
     Q_UNUSED(entry)
     setCursor(Qt::ArrowCursor);
+    d->model->slotEntryChanged(entry);
 }
 
 void DownloadDialog::slotPayloadFailed(const Entry& entry)
