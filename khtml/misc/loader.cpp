@@ -1212,7 +1212,7 @@ void DocLoader::printPreloadStats()
     KUrl fullURL (m_doc->completeURL( url.string() )); \
     if ( !fullURL.isValid() || \
          ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
-         doRedirectCheck && (m_doc && !KAuthorized::authorizeUrlAction("redirect", m_doc->URL(), fullURL))) \
+         ( doRedirectCheck && (m_doc && !KAuthorized::authorizeUrlAction("redirect", m_doc->URL(), fullURL)))) \
          return 0L;
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
