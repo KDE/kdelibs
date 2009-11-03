@@ -43,15 +43,12 @@ namespace KNS3
     {
         Q_OBJECT
     public:
-        
         AtticaProvider();
 
         ~AtticaProvider();
 
         virtual QString id() const;
     
-        virtual QStringList availableSortingCriteria() const;
-
         /**
          * set the provider data xml, to initialize the provider
          */
@@ -63,7 +60,7 @@ namespace KNS3
         virtual QDomElement providerXML() const;
 
         virtual bool isInitialized() const;
-        virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
+        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 100);
         virtual void loadPayloadLink(const Entry& entry);
         
     private Q_SLOTS:
@@ -75,7 +72,7 @@ namespace KNS3
         AtticaProvider(AtticaProviderPrivate &dd);
 
     private:
-        Attica::Provider::SortMode sortModeFromString(const QString& sortString);
+        Attica::Provider::SortMode atticaSortMode(const SortMode& sortMode);
         Q_DECLARE_PRIVATE(AtticaProvider)
     };
 

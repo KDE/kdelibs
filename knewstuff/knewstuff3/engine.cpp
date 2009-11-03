@@ -83,6 +83,7 @@ class KNS3::Engine::Private {
          // what is this? kill it?
         //int activefeeds;
         QString searchTerm;
+        Provider::SortMode sortMode;
 
         bool initialized;
         CachePolicy cachepolicy;
@@ -91,7 +92,7 @@ class KNS3::Engine::Private {
 
         Private()
             : uploadprovider(NULL), installation(NULL),
-            initialized(false), cachepolicy(CacheNever)
+            initialized(false), cachepolicy(CacheNever), sortMode(Provider::Rating)
         {
         }
         
@@ -152,7 +153,8 @@ bool Engine::init(const QString &configfile)
         return false;
     }
     
-    connect(d->installation, SIGNAL(signalInstallationFinished(Entry)), SLOT(slotInstallationFinished(Entry)));
+    connect(d->installation, SIGNAL(signalInstallationFinished(Entry)), SLOT(slotEntryChanged(Entry)));
+    connect(d->installation, SIGNAL(signalUninstallFinished(Entry)), SLOT(slotEntryChanged(Entry)));
 
     QString cachePolicy = group.readEntry("CachePolicy", QString());
     if (!cachePolicy.isEmpty()) {
@@ -292,14 +294,14 @@ void Engine::providerInitialized(Provider* p)
     
     emit signalProviderLoaded(p);
 
-    connect(p, SIGNAL(loadingFinished(QString,QString,int,int,int,Entry::List)), SLOT(slotEntriesLoaded(QString,QString,int,int,int,Entry::List)));
+    connect(p, SIGNAL(loadingFinished(KNS3::Provider::SortMode,QString,int,int,int,Entry::List)), SLOT(slotEntriesLoaded(KNS3::Provider::SortMode,QString,int,int,int,Entry::List)));
     connect(p, SIGNAL(payloadLinkLoaded(const Entry&)), SLOT(downloadLinkLoaded(const Entry&)));
     
     // TODO parameters according to search string etc
-    p->loadEntries(QString(), d->searchTerm);
+    p->loadEntries(d->sortMode, d->searchTerm);
 }
 
-void Engine::slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
+void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
 {
     emit signalEntriesLoaded(entries);
 }
@@ -309,9 +311,14 @@ void Engine::reloadEntries()
     foreach (Provider* p, d->providers) {
         if (p->isInitialized()) {
             // FIXME: other parameters
-            p->loadEntries(QString(), d->searchTerm);
+            p->loadEntries(d->sortMode, d->searchTerm);
         }
     }
+}
+
+void Engine::setSortMode(Provider::SortMode mode)
+{
+    d->sortMode = mode;
 }
 
 void Engine::setSearchTerm(const QString& searchString)
@@ -641,71 +648,6 @@ void Engine::loadFeedCache(Provider *provider)
     QString entrycachedir = entrycachedirs.first();
 
     kDebug() << "Load from directory: " + cachedir;
-
-    QStringList feeds = provider->availableSortingCriteria();
-    for (int i = 0; i < feeds.count(); i++) {
-        //Feed *feed = provider->downloadUrlFeed(feeds.at(i));
-        //QString feedname = feeds.at(i);
-
-        //QString idbase64 = QString(providerId(provider).toUtf8().toBase64() + '-' + feedname);
-        //QString cachefile = cachedir + '/' + idbase64 + ".xml";
-
-        //kDebug() << "  + Load from file: " + cachefile;
-
-        //bool ret;
-        //QFile f(cachefile);
-        //ret = f.open(QIODevice::ReadOnly);
-        //if (!ret) {
-        //    kWarning() << "The file could not be opened.";
-        //    return;
-        //}
-
-        //QDomDocument doc;
-        //ret = doc.setContent(&f);
-        //if (!ret) {
-        //    kWarning() << "The file could not be parsed.";
-        //    return;
-        //}
-
-        //QDomElement root = doc.documentElement();
-        //if (root.tagName() != "ghnsfeeds") {
-        //    kWarning() << "The file doesn't seem to be of interest.";
-        //    return;
-        //}
-
-        //QDomElement entryel = root.firstChildElement("entry-id");
-        //if (entryel.isNull()) {
-        //    kWarning() << "Missing entries in the cache.";
-        //    return;
-        //}
-
-        //while (!entryel.isNull()) {
-        //    QString idbase64 = entryel.text();
-        //    //kDebug() << "loading cache for entry: " << QByteArray::fromBase64(idbase64.toUtf8());
-
-        //    QString filepath = entrycachedir + '/' + idbase64 + ".meta";
-
-        //    //kDebug() << "from file '" + filepath + "'.";
-
-        //    // FIXME: pass feed and make loadEntryCache return void for consistency?
-        //    Entry *entry = loadEntryCache(filepath);
-        //    if (entry) {
-        //        QString entryid = id(entry);
-
-        //        if (d->entry_registry.contains(entryid)) {
-        //            Entry * registryEntry = d->entry_registry.value(entryid);
-        //            entry.setStatus(registryEntry->status());
-        //            entry.setInstalledFiles(registryEntry->installedFiles());
-        //        }
-
-        //        feed->addEntry(entry);
-        //        //kDebug() << "entry " << entry.name().representation() << " loaded from cache";
-        //        emit signalEntryLoaded(entry, feed, provider);
-        //    }
-
-        //    entryel = entryel.nextSiblingElement("entry-id");
-        //}
-    }
 }
 
 KNS3::Entry Engine::loadEntryCache(const QString& filepath)
@@ -818,59 +760,6 @@ bool Engine::providerCached(Provider *provider)
     return false;
 }
 
-bool Engine::providerChanged(Provider *oldprovider, Provider *provider)
-{
-    QStringList oldfeeds = oldprovider->availableSortingCriteria();
-    QStringList feeds = provider->availableSortingCriteria();
-    if (oldfeeds.count() != feeds.count())
-        return true;
-    for (int i = 0; i < feeds.count(); i++) {
-        //Feed *oldfeed = oldprovider->downloadUrlFeed(feeds.at(i));
-        //Feed *feed = provider->downloadUrlFeed(feeds.at(i));
-        //if (!oldfeed)
-        //    return true;
-        //if (feed->feedUrl() != oldfeed->feedUrl())
-        //    return true;
-    }
-    return false;
-}
-
-void Engine::mergeProviders(Provider::List providers)
-{
-    for (Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it) {
-        Provider *p = (*it);
-
-        if (providerCached(p)) {
-            kDebug() << "CACHE: hit provider " << p->name().representation();
-            Provider *oldprovider = d->provider_index[p->id()];
-            if (providerChanged(oldprovider, p)) {
-                kDebug() << "CACHE: update provider";
-                cacheProvider(p);
-                emit signalProviderChanged(p);
-            }
-            // oldprovider can now be deleted, see entry hit case
-            // also take it out of d->provider_cache and d->provider_index
-            //d->provider_cache.removeAll(oldprovider);
-            //delete oldprovider;
-        } else {
-            if (d->cachepolicy != CacheNever) {
-                kDebug() << "CACHE: miss provider " << p->name().representation();
-                cacheProvider(p);
-            }
-            emit signalProviderLoaded(p);
-
-            // no longer needed, because slotProviderLoaded calls loadEntries()
-            //if (d->automationpolicy == AutomationOn) {
-            //    loadEntries(p);
-            //}
-        }
-
-        d->providers.append(p);
-        d->provider_index[p->id()] = p;
-    }
-
-    emit signalProvidersFinished();
-}
 
 bool Engine::entryCached(const Entry& entry)
 {
@@ -1085,13 +974,8 @@ void Engine::uninstall(const KNS3::Entry& entry)
     d->installation->uninstall(entry);
 }
 
-// maybe just have one method to update according to internal state of entry and emit signalEntryChanged
-void Engine::slotInstallationFinished(const KNS3::Entry& entry)
+void Engine::slotEntryChanged(const KNS3::Entry& entry)
 {
-    kDebug() << "Installation finished: " << entry.name().representation();
-    registerEntry(entry);
-    // FIXME: hm, do we need to update the cache really?
-    // only registration is probably needed here
     emit signalEntryChanged(entry);
 }
 
@@ -1099,12 +983,6 @@ void Engine::slotInstallationFailed(const KNS3::Entry& entry)
 {
     kDebug() << "Installation failed: " << entry.name().representation();
     // FIXME implement warning?
-}
-
-void Engine::slotUninstallFinished(const KNS3::Entry& entry)
-{
-    unregisterEntry(entry);
-    emit signalEntryChanged(entry);
 }
 
 Engine::CollaborationFeatures Engine::collaborationFeatures(const KNS3::Entry& entry)

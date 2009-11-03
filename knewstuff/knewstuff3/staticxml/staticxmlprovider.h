@@ -63,18 +63,14 @@ namespace KNS3
          * get the xml for the provider
          */
         virtual QDomElement providerXML() const;
-
         virtual bool isInitialized() const;
         
-        virtual bool hasServerSideSorting() const { return true; }
-        virtual QStringList availableSortingCriteria() const;
-        
-        virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100);
-
+        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 100);
         virtual void loadPayloadLink(const KNS3::Entry& entry);
         
     private:
         bool searchIncludesEntry(const Entry& entry) const;
+        KUrl downloadUrl(SortMode mode) const;
         
     protected:
         StaticXmlProvider(StaticXmlProviderPrivate &dd);

@@ -48,6 +48,14 @@ namespace KNS3
         Q_OBJECT
     public:
         typedef QList<Provider*> List;
+
+        enum SortMode {
+            Newest,
+            Alphabetical,
+            Rating,
+            Downloads
+        };
+    
         /**
          * Constructor.
          */
@@ -91,11 +99,6 @@ namespace KNS3
          */
         virtual KUrl icon() const; // FIXME use KIcon or pixmap?
 
-        virtual bool hasServerSideSorting() const { return true; }
-        virtual QStringList availableSortingCriteria() const = 0;
-        
-        virtual bool hasSearch() const { return false; }
-
         /**
          * load the given search and return given page
          * @param sortMode string to select the order in which the results are presented
@@ -104,9 +107,9 @@ namespace KNS3
          *
          * Note: the engine connects to loadingFinished() signal to get the result
          */
-        virtual void loadEntries(const QString & sortMode = QString(), const QString & searchstring = QString(), int page = 0, int pageSize = 100) = 0;
+        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 100) = 0;
         virtual void loadPayloadLink(const Entry& entry) = 0;
-        
+
         virtual bool hasCommenting() const { return false; }
         virtual void getComments(Entry *, int page = 0) { Q_UNUSED(page) }
         virtual void addComment(Entry*, const QString & comment) { Q_UNUSED(comment) }
@@ -117,8 +120,8 @@ namespace KNS3
     signals:
         void providerInitialized(KNS3::Provider*);
             
-        void loadingFinished(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List) const;
-        void loadingFailed(const QString& sortMode, const QString& searchstring, int page);
+        void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List) const;
+        void loadingFailed(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page);
 
         void comments(Entry *, int page, int pageSize, int totalpages);
         void commentAdded(Entry *);

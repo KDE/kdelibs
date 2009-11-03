@@ -44,7 +44,7 @@ public:
     
     // cache of all entries known from this provider so far, mapped by their id
     Entry::List mEntries;
-    QMap<QString, XmlLoader*> mFeedLoaders;
+    QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
     QString searchTerm;
     QString mId;
     bool mInitialized;
@@ -185,17 +185,13 @@ bool StaticXmlProvider::isInitialized() const
     return d->mInitialized;
 }
 
-QStringList StaticXmlProvider::availableSortingCriteria() const
-{
-    Q_D(const StaticXmlProvider);
-    return d->mDownloadUrls.keys();
-}
-
-void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& searchstring, int page, int pageSize)
+void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, int page, int pageSize)
 {
     Q_D(StaticXmlProvider);
     d->searchTerm = searchstring;
-    if (d->mDownloadUrls.contains(sortMode)) {
+    
+    KUrl url = downloadUrl(sortMode);
+    if (!url.isEmpty()) {
         if (page == 0) {
             // TODO first get the entries, then filter with searchString, finally emit the finished signal...
             XmlLoader * loader = new XmlLoader(this);
@@ -203,7 +199,7 @@ void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& sear
             connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
             d->mFeedLoaders.insert(sortMode, loader);
 
-            loader->load(d->mDownloadUrls.value(sortMode));
+            loader->load(url);
             kDebug() << "Loader: " << loader;
         } else {
             // static providers only ever have one page of data
@@ -214,6 +210,30 @@ void StaticXmlProvider::loadEntries(const QString& sortMode, const QString& sear
     }
 }
 
+KUrl StaticXmlProvider::downloadUrl(SortMode mode) const
+{
+    Q_D(const StaticXmlProvider);
+    KUrl url;
+    switch (mode) {
+        case Rating:
+            url = d->mDownloadUrls.value("score");
+            break;
+        case Alphabetical:
+            url = d->mDownloadUrls.value(QString());
+            break;
+        case Newest:
+            url = d->mDownloadUrls.value("latest");
+            break;
+        case Downloads:
+            url = d->mDownloadUrls.value("downloads");
+            break;
+    }
+    if (url.isEmpty()) {
+        url = d->mDownloadUrls.value(QString());
+    }
+    return url;
+}
+
 void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 {
     Q_D(StaticXmlProvider);
@@ -221,22 +241,22 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     if (!loader)
     {
         kWarning() << "Loader not found!";
-        emit loadingFailed(QString(), QString(), 0);
+        // FIXME emit something useful maybe? is this used?
+        emit loadingFailed(Rating, QString(), 0);
         return;
     }
 
-
     // we have a loader, so see which sortmode it was used for
     QStringList::ConstIterator it;
-    QString mode;
-    const QStringList modes = d->mFeedLoaders.keys();
-    for (it = modes.begin(); it != modes.end(); ++it) {
-        if (loader == d->mFeedLoaders.value(*it))
+    SortMode mode;
+    
+    foreach(SortMode sortMode, d->mFeedLoaders.keys()){
+        if (loader == d->mFeedLoaders.value(sortMode))
         {
-            mode = *it;
+            mode = sortMode;
+            break;
         }
     }
-
 
     // load all the entries from the domdocument given
     Entry::List entries;

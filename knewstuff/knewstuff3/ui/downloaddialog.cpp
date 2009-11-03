@@ -122,6 +122,11 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
 
     // FIXME set sorting options in m_sortCombo, make the sortFilterProxyModel use the sorting
     // maybe also clear the list of entries and ask providers to refetch them (either from cache or dynamically)
+    m_sortCombo->insertItem(Provider::Rating, i18nc("Sorting order of the list of items in get hot new stuff", "Rating"));
+    m_sortCombo->insertItem(Provider::Newest, i18nc("Sorting order of the list of items in get hot new stuff", "Newest"));
+    m_sortCombo->insertItem(Provider::Downloads, i18nc("Sorting order of the list of items in get hot new stuff", "Most Downloads"));
+    m_sortCombo->insertItem(Provider::Alphabetical, i18nc("Sorting order of the list of items in get hot new stuff", "Alphabetical"));
+    
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
@@ -307,16 +312,9 @@ void DownloadDialog::slotNetworkTimeout() // SLOT
 
 void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 {
-    if (sortType >= 0) {
-        //kDebug(551) << "sorting Selected, setting the sourcemodel for the view";
-        QString feedName = m_sortCombo->currentText();
-        QString feedType = m_sortCombo->itemData(sortType).toString();
-
-        //const Provider * currentProvider = d->entriesByProvider.keys()[d->sourceCombo->currentIndex()];
-        //Feed * selectedFeed = currentProvider->downloadUrlFeed(feedType);
-        //d->filteredModel->setSourceModel(d->models.value(selectedFeed));
-        //m_collaborationButton->setEnabled(false);
-    }
+    d->model->clearEntries();
+    d->engine->setSortMode((Provider::SortMode)sortType);
+    d->engine->reloadEntries();
 }
 
 void DownloadDialog::slotUpdateSearch()

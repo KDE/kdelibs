@@ -30,9 +30,7 @@
 #include <QtCore/QString>
 #include <QtCore/QMap>
 
-class C;
 class KJob;
-class KArchiveDirectory;
 
 namespace KNS3
 {
@@ -93,6 +91,9 @@ public:
         Comments = 0x2
     };
     Q_DECLARE_FLAGS(CollaborationFeatures, CollaborationFeature)
+
+
+
 
     /**
      * Initializes the engine. This step is application-specific and relies
@@ -214,6 +215,7 @@ public:
 
     CollaborationFeatures collaborationFeatures(const Entry& entry);
 
+    void setSortMode(Provider::SortMode mode);
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
     
@@ -232,7 +234,6 @@ Q_SIGNALS:
     void signalProviderLoaded(KNS3::Provider *provider);
     void signalProviderChanged(KNS3::Provider *provider);
     void signalProvidersFailed();
-    
 
     void signalEntriesLoaded(KNS3::Entry::List entries);
 
@@ -241,7 +242,6 @@ Q_SIGNALS:
 
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
-
 
     void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
     void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
@@ -263,7 +263,7 @@ private Q_SLOTS:
     // called when a provider is ready to work
     void providerInitialized(KNS3::Provider*);
 
-    void slotEntriesLoaded(const QString& sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
+    void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
 
     void slotPreviewResult(KJob *job);
 
@@ -273,9 +273,8 @@ private Q_SLOTS:
 
     void slotProgress(KJob *job, unsigned long percent);
     
-    void slotInstallationFinished(const Entry& entry);
+    void slotEntryChanged(const Entry& entry);
     void slotInstallationFailed(const Entry& entry);
-    void slotUninstallFinished(const Entry& entry);
     void downloadLinkLoaded(const Entry& entry);
     
 private:
@@ -305,13 +304,11 @@ private:
     //void cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries);
     void registerEntry(const Entry& entry);
     void unregisterEntry(const Entry& entry);
-    void mergeProviders(Provider::List providers);
     void shutdown();
 
     bool entryCached(const Entry& entry);
     bool entryChanged(const Entry& oldentry, const Entry& entry);
     bool providerCached(Provider *provider);
-    bool providerChanged(Provider *oldprovider, Provider *provider);
 
     /**
      * Private copy constructor
