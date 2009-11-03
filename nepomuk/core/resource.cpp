@@ -472,6 +472,12 @@ bool Nepomuk::Resource::operator==( const Resource& other ) const
 }
 
 
+bool Nepomuk::Resource::operator!=( const Resource& other ) const
+{
+    return !operator==( other );
+}
+
+
 QString Nepomuk::errorString( ErrorCode code )
 {
     switch( code ) {
