@@ -4,7 +4,8 @@ find_package(Attica REQUIRED)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${ATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+link_directories(${ATTICA_LIBRARY_DIRS})
 
 set(knewstuff3_core_SRCS
    core/author.cpp
