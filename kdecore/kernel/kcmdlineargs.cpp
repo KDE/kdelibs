@@ -172,6 +172,7 @@ class KCmdLineArgsStatic {
 
     int argc; // The original argc
     char **argv; // The original argv
+    char *appName;
     bool parsed : 1; // Whether we have parsed the arguments since calling init
     bool ignoreUnknown : 1; // Ignore unknown options and arguments
     QByteArray mCwd; // Current working directory. Important for KUnqiueApp!
@@ -259,6 +260,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     argsList = 0;
     argc = 0;
     argv = 0;
+    appName = 0;
     mCwd.clear();
     about = 0;
     parsed = false;
@@ -465,9 +467,11 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLine
 
    // Strip path from argv[0]
    if (s->argc) {
-     char *p = strrchr( s->argv[0], '/');
+     char *p = strrchr(s->argv[0], QDir::separator().toAscii());
      if (p)
-       s->argv[0] = p+1;
+       s->appName = p+1;
+     else
+       s->appName = s->argv[0];
    }
 
    s->about = _about;
@@ -483,8 +487,8 @@ QString KCmdLineArgs::cwd()
 
 QString KCmdLineArgs::appName()
 {
-   if (!s->argc) return QString();
-   return s->decodeInput(s->argv[0]);
+   if (!s->appName) return QString();
+   return s->decodeInput(s->appName);
 }
 
 /**
@@ -1071,11 +1075,11 @@ KCmdLineArgs::usageError(const QString &error)
     QByteArray localError = s->encodeOutput(error);
     if (localError.endsWith('\n'))
         localError.chop(1);
-    fprintf(stderr, "%s: %s\n", s->argv[0], localError.data());
+    fprintf(stderr, "%s: %s\n", s->appName, localError.data());
 
     QString tmp = i18n("Use --help to get a list of available command line options.");
     localError = s->encodeOutput(tmp);
-    fprintf(stderr, "%s: %s\n", s->argv[0], localError.data());
+    fprintf(stderr, "%s: %s\n", s->appName, localError.data());
     exit(254);
 }
 
@@ -1124,7 +1128,7 @@ KCmdLineArgs::usage(const QByteArray &id)
      }
    }
 
-   s->printQ(i18n("Usage: %1 %2\n", QString::fromLocal8Bit(s->argv[0]), KuitSemantics::escape(usage)));
+   s->printQ(i18n("Usage: %1 %2\n", QString::fromLocal8Bit(s->appName), KuitSemantics::escape(usage)));
    s->printQ(QLatin1Char('\n')+s->about->shortDescription()+QLatin1Char('\n'));
 
    s->printQ(i18n("\nGeneric options:\n"));
