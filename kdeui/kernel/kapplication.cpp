@@ -844,6 +844,9 @@ void KApplicationPrivate::parseCommandLine( )
     }
     // Always set the app name, can be usefuls for apps that call setEmergencySaveFunction or enable AutoRestart
     KCrash::setApplicationName(args->appName());
+    if (!QCoreApplication::applicationDirPath().isEmpty()) {
+        KCrash::setApplicationPath(QCoreApplication::applicationDirPath());
+    }
 
 #ifdef Q_WS_X11
     if ( args->isSet( "waitforwm" ) ) {
