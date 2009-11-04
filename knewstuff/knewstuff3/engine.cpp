@@ -250,11 +250,14 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
     kDebug() << "slotProvidersLoaded";
 
+    bool isAtticaProviderFile = false;
+    
     // get each provider element, and create a provider object from it
     QDomElement providers = doc.documentElement();
 
-    if (providers.tagName() != "ghnsproviders" &&
-            providers.tagName() != "knewstuffproviders") {
+    if (providers.tagName() == "providers") {
+        isAtticaProviderFile = true;
+    } else if (providers.tagName() != "ghnsproviders" && providers.tagName() != "knewstuffproviders") {
         kWarning(550) << "No document in providers.xml.";
         emit signalError(i18n("Could not load get hot new stuff providers from file: %1", d->providerFileUrl));
         return;
@@ -267,7 +270,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         if (p.tagName() == "provider") {
             kDebug() << "Provider attributes: " << p.attribute("type");
             Provider* provider;
-            if (p.attribute("type") == "rest") {
+            if (isAtticaProviderFile || p.attribute("type") == "rest") {
                 provider = new AtticaProvider;
             } else {
                 provider = new StaticXmlProvider;
