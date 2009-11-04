@@ -256,7 +256,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
     if (providers.tagName() != "ghnsproviders" &&
             providers.tagName() != "knewstuffproviders") {
         kWarning(550) << "No document in providers.xml.";
-        emit signalProvidersFailed();
+        emit signalError(i18n("Could not load get hot new stuff providers from file: %1", d->providerFileUrl));
         return;
     }
 
@@ -283,7 +283,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
 void Engine::slotProvidersFailed()
 {
-    emit signalProvidersFailed();
+    emit signalError(i18n("Loading of providers from file: %1 failed", d->providerFileUrl));
 }
 
 void Engine::providerInitialized(Provider* p)

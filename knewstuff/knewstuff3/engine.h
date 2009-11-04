@@ -233,7 +233,6 @@ Q_SIGNALS:
      */
     void signalProviderLoaded(KNS3::Provider *provider);
     void signalProviderChanged(KNS3::Provider *provider);
-    void signalProvidersFailed();
 
     void signalEntriesLoaded(KNS3::Entry::List entries);
 
@@ -252,6 +251,9 @@ Q_SIGNALS:
     void signalProgress(const QString & message, int percentage);
 
     void signalDownloadDialogDone(KNS3::Entry::List);
+
+    void signalError(const QString& errorMessage);
+    
 protected:
     //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:

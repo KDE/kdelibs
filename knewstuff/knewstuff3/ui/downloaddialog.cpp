@@ -95,6 +95,8 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
 
     // Entries have been fetched and should be shown:
     connect(d->engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), d->model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
+    
+    connect(d->engine, SIGNAL(signalError(const QString&)), SLOT(slotError(const QString&)));
 
     // An entry has changes - eg because it was installed
     connect(d->engine, SIGNAL(signalEntryChanged(KNS3::Entry)), SLOT(slotEntryChanged(KNS3::Entry)));
@@ -432,21 +434,10 @@ void DownloadDialog::slotItemResult( KJob * job )
     d->itemsView->updateItem( item );
 
 }*/
-//END File(s) Transferring
 
-// fault/error from kdxsbutton
-void DownloadDialog::slotFault()
+void DownloadDialog::slotError(const QString& message)
 {
-    KMessageBox::error(this,
-                       i18n("A protocol fault has occurred. The request has failed."),
-                       i18n("Desktop Exchange Service"));
-}
-
-void DownloadDialog::slotError()
-{
-    KMessageBox::error(this,
-                       i18n("A network error has occurred. The request has failed."),
-                       i18n("Desktop Exchange Service"));
+    KMessageBox::error(this, message, i18n("Get Hot New Stuff"));
 }
 
 #include "downloaddialog.moc"

@@ -109,8 +109,8 @@ private Q_SLOTS:
     void slotComments(QStringList comments);
     
     void slotCategories(QList<Category*> categories);
-    void slotFault();
-    void slotError();
+
+    void slotError(const QString& message);
 
     // file downloading
     //void slotItemMessage( KJob *, const QString & );
