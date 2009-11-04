@@ -107,6 +107,18 @@ namespace KIO {
     */
    KIO_EXPORT DavJob* davSearch( const KUrl &url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags = DefaultFlags );
 
+   /**
+    * Creates a new DavJob that issues a REPORT command.
+    *
+    * @param url the URL of the resource
+    * @param report a REPORT document that describes the request to make
+    * @param depth the depth of the request. Can be "0", "1" or "infinity"
+    * @param flags: We support HideProgressInfo here
+    * @return the new DavJob
+    * @since 4.4
+    */
+   KIO_EXPORT DavJob* davReport( const KUrl& url, const QString& report, const QString &depth, JobFlags flags = DefaultFlags );
+
 }
 
 #endif

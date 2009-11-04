@@ -269,6 +269,8 @@ static QString methodString(HTTP_METHOD m)
         return "UNSUBSCRIBE ";
     case DAV_POLL:
         return "POLL ";
+    case DAV_REPORT:
+        return "REPORT ";
     default:
         Q_ASSERT(false);
         return QString();
@@ -1540,6 +1542,9 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
     case HTTP_GET:
       action = i18nc( "request type", "retrieve the contents of the specified file or folder" );
       break;
+    case DAV_REPORT:
+      action = i18nc( "request type", "run a report in the specified folder" );
+      break;
     case HTTP_PUT:
     case HTTP_POST:
     case HTTP_HEAD:
@@ -2231,6 +2236,7 @@ bool HTTPProtocol::sendQuery()
         davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
         break;
     case DAV_SEARCH:
+    case DAV_REPORT:
         hasDavData = true;
         /* fall through */
     case DAV_SUBSCRIBE:

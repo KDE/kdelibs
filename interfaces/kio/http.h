@@ -28,6 +28,7 @@ namespace KIO {
                     HTTP_OPTIONS, DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL,
                     DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH,
                     DAV_SUBSCRIBE, DAV_UNSUBSCRIBE, DAV_POLL, DAV_NOTIFY,
+                    DAV_REPORT,
                     HTTP_UNKNOWN = -1};
 
 }

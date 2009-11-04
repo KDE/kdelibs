@@ -162,4 +162,11 @@ DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qN
   return DavJobPrivate::newJob(url, KIO::DAV_SEARCH, doc.toString(), flags);
 }
 
+DavJob* KIO::davReport( const KUrl& url, const QString& report, const QString &depth, JobFlags flags )
+{
+    DavJob *job = DavJobPrivate::newJob(url, (int) KIO::DAV_REPORT, report, flags);
+    job->addMetaData( "davDepth", depth );
+    return job;
+}
+
 #include "davjob.moc"
