@@ -43,7 +43,7 @@ namespace KNS3
     {
         Q_OBJECT
     public:
-        AtticaProvider();
+        AtticaProvider(const QStringList& categories);
 
         ~AtticaProvider();
 
@@ -65,6 +65,7 @@ namespace KNS3
         
     private Q_SLOTS:
         void providerLoaded();
+        void listOfCategoriesLoaded(Attica::BaseJob*);
         void categoryContentsLoaded(Attica::BaseJob* job);
         void downloadItemLoaded(Attica::BaseJob* job);
         

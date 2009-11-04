@@ -39,7 +39,11 @@ namespace KNS3
 class AtticaProviderPrivate :public ProviderPrivate
 {
 public:
-    QString m_categories;
+    // List of categories that have to match exactly with those on the server
+    QStringList categoryNameList;
+    // the IDs of the categories as one string
+    Attica::Category::List categoryList;
+    
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
 
@@ -47,18 +51,15 @@ public:
     
     AtticaProviderPrivate()
     {
-        // FIXME maybe we want something that is not in the category Wallpaper 640 by 480 at some point
-        // the categories can be gotten from the provider
-        m_categories = QLatin1String("175");
     }
 };
 
-AtticaProvider::AtticaProvider()
+AtticaProvider::AtticaProvider(const QStringList& categories)
     : Provider(*new AtticaProviderPrivate)
 {
-    // TODO
     Q_D(AtticaProvider);
     d->mName = KTranslatable("Attica");
+    d->categoryNameList = categories;
 
     connect(&d->m_providerManager, SIGNAL(providersChanged()), SLOT(providerLoaded()));
 }
@@ -114,6 +115,26 @@ void AtticaProvider::providerLoaded()
         return;
     }
     d->m_provider = d->m_providerManager.providers().first();
+
+    Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
+    job->start();
+}
+
+void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
+{
+    Q_D(AtticaProvider);
+    kDebug() << "loading categories...";
+    
+    Attica::ListJob<Attica::Category>* job = static_cast<Attica::ListJob<Attica::Category>*>(listJob);
+    Category::List categoryList = job->itemList();
+
+    foreach(const Category& category, categoryList) {
+        if (d->categoryNameList.contains(category.name())) {
+            kDebug() << "Adding category: " << category.name();
+            d->categoryList.append(category);
+        }
+    }
     emit providerInitialized(this);
 }
 
@@ -127,11 +148,7 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
 {
     Q_D(AtticaProvider);
     Attica::Provider::SortMode sorting = atticaSortMode(sortMode);
-    Attica::Category::List cats;
-    Attica::Category cat;
-    cat.setId(d->m_categories);
-    cats.append(cat);
-    ListJob<Content>* job = d->m_provider.searchContents(cats, searchString, sorting, page, pageSize);
+    ListJob<Content>* job = d->m_provider.searchContents(d->categoryList, searchString, sorting, page, pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
     job->start();
 }

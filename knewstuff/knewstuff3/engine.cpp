@@ -56,7 +56,11 @@
 class KNS3::Engine::Private {
     public:
         QList<Provider*> providers;
+
+        // The url of the file containg information about content providers
         QString providerFileUrl;
+        // Categories to search in
+        QStringList categories;
 
         // holds all the entries
         QList<Entry> entries;
@@ -145,6 +149,10 @@ bool Engine::init(const QString &configfile)
 
     KConfigGroup group = conf.group("KNewStuff2");
     d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
+    d->categories = group.readEntry("Categories", QStringList());
+
+    kDebug() << "Categories: " << d->categories;
+    
     //d->componentname = group.readEntry("ComponentName", QString());
     d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
     
@@ -271,7 +279,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
             kDebug() << "Provider attributes: " << p.attribute("type");
             Provider* provider;
             if (isAtticaProviderFile || p.attribute("type") == "rest") {
-                provider = new AtticaProvider;
+                provider = new AtticaProvider(d->categories);
             } else {
                 provider = new StaticXmlProvider;
             }
