@@ -1,5 +1,7 @@
 project(knewstuff3)
 
+find_package(Attica REQUIRED)
+
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
@@ -45,7 +47,7 @@ kde4_add_ui_files(knewstuff3_ui_SRCS ui/DownloadDialog.ui ui/UploadDialog.ui)
 
 kde4_add_library(knewstuff3 SHARED ${knewstuff3_core_SRCS} ${knewstuff3_ui_SRCS} ${knewstuff3_SRCS})
 
-target_link_libraries(knewstuff3 ${KDE4_KIO_LIBS} ${QT_QTNETWORK_LIBRARY} attica )
+target_link_libraries(knewstuff3 ${KDE4_KIO_LIBS} ${QT_QTNETWORK_LIBRARY} ${ATTICA_LIBRARIES} )
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(knewstuff3 PROPERTIES
