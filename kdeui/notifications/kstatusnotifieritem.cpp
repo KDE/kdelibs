@@ -890,22 +890,14 @@ KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
     iconVector.append(imageToStruct(iconPixmap.toImage()));
 
     //if an icon exactly that size wasn't found don't add it to the vector
-    iconPixmap = icon.pixmap(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium);
-    if (iconPixmap.width() == KIconLoader::SizeSmallMedium) {
-        iconVector.append(imageToStruct(iconPixmap.toImage()));
+    foreach (QSize size, icon.availableSizes()) {
+        //hopefully huge and enormous not necessary right now, since it's quite costly
+        if (size.width() <= KIconLoader::SizeLarge) {
+            iconPixmap = icon.pixmap(size);
+            iconVector.append(imageToStruct(iconPixmap.toImage()));
+        }
     }
 
-    iconPixmap = icon.pixmap(KIconLoader::SizeMedium, KIconLoader::SizeMedium);
-    if (iconPixmap.width() == KIconLoader::SizeMedium) {
-        iconVector.append(imageToStruct(iconPixmap.toImage()));
-    }
-
-    iconPixmap = icon.pixmap(KIconLoader::SizeLarge, KIconLoader::SizeLarge);
-    if (iconPixmap.width() == KIconLoader::SizeLarge) {
-        iconVector.append(imageToStruct(iconPixmap.toImage()));
-    }
-
-    //hopefully huge and enormous not necessary right now, since it's quite costly
     return iconVector;
 }
 
