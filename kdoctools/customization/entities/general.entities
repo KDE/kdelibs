@@ -122,6 +122,7 @@
 <!ENTITY blinken	"<application>Blinken</application>">
 <!ENTITY bovo	"<application>Bovo</application>">
 <!ENTITY BSD "<trademark>BSD</trademark>">
+<!ENTITY cantor "<application>Cantor</application>">
 <!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
@@ -408,6 +409,7 @@
 <!ENTITY RealVideo '<trademark class="registered">RealVideo</trademark>'>
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY reslisa	"<application>ResLisa</application>">
+<!ENTITY rocs "<application>Rocs</application>">
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
