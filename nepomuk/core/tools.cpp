@@ -42,8 +42,7 @@ void Nepomuk::setDefaultRepository( const QString& )
 
 QString Nepomuk::defaultGraph()
 {
-    static QString s = "main";
-    return s;
+    return QLatin1String("main");
 }
 
 
