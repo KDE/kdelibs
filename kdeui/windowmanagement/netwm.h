@@ -118,7 +118,8 @@ public:
        displays, the screen number may be explicitly defined. If this argument is
        omitted, the default screen will be used.
 
-       @param doActivate true to activate the window
+       @param doActivate true to call activate() to do an initial data read/update
+       of the query information.
     **/
     NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
