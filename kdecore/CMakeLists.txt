@@ -175,6 +175,8 @@ set(kdecore_LIB_SRCS
    config/ksharedconfig.cpp
    config/kcoreconfigskeleton.cpp
    date/kcalendarsystem.cpp
+   date/kcalendarsystemcoptic.cpp
+   date/kcalendarsystemethiopian.cpp
    date/kcalendarsystemgregorian.cpp
    date/kcalendarsystemgregorianproleptic.cpp
    date/kcalendarsystemhijri.cpp
