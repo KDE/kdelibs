@@ -1886,8 +1886,7 @@ void CSSStyleSelector::setupDefaultRootStyle(DOM::DocumentImpl *d)
            settings = part->settings();
     }
     parentNode = 0;
-    if (m_rootDefaultStyle)
-        delete m_rootDefaultStyle;
+    delete m_rootDefaultStyle;
     m_rootDefaultStyle = style = new RenderStyle();
     CSSInitialValueImpl i(true);
     applyRule( CSS_PROP_FONT_SIZE, &i );

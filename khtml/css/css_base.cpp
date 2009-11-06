@@ -97,7 +97,7 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
 
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propId;
-    prop->setValue((CSSValueImpl *) parsedValue);
+    prop->setValue(const_cast<CSSValueImpl *>(parsedValue));
     prop->m_important = important;
 
     propList->append(prop);

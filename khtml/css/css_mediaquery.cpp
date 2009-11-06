@@ -373,9 +373,11 @@ static bool color_indexMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTML
     }
     if (numColors == INT_MAX)
         numColors = UINT_MAX;
-    float number;
     if (value)
+    {
+        float number = 0;
         return numberValue(value, number) && compareValue(numColors, static_cast<unsigned int>(number), op);
+    }
 
     return numColors;
 }
@@ -397,9 +399,11 @@ static bool colorMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* 
         if (QColormap::instance(sn).mode() != QColormap::Gray )
             bitsPerComponent = QApplication::desktop()->screen(sn)->depth()/3;
     }
-    float number;
     if (value && bitsPerComponent)
+    {
+        float number = 0;
         return numberValue(value, number) && compareValue(bitsPerComponent, static_cast<int>(number), op);
+    }
     return bitsPerComponent;
 }
 
@@ -422,9 +426,11 @@ static bool monochromeMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLP
         else if (QColormap::instance(sn).mode() == QColormap::Gray)
             depth = QApplication::desktop()->screen(sn)->depth();
     }
-    float number;
     if (value)
+    {
+        float number = 0;
         return numberValue(value, number) && compareValue(depth, static_cast<int>(number), op);
+    }
     return depth;
 }
 
