@@ -26,6 +26,8 @@
 #include <QtCore/QDateTime>
 
 #include "kdatetime.h"
+#include "kcalendarsystemcoptic.h"
+#include "kcalendarsystemethiopian.h"
 #include "kcalendarsystemgregorian.h"
 #include "kcalendarsystemgregorianproleptic.h"
 #include "kcalendarsystemhebrew.h"
@@ -36,6 +38,14 @@
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {
+    if ( calendarType == "coptic" ) {
+        return new KCalendarSystemCoptic( locale );
+    }
+
+    if ( calendarType == "ethiopian" ) {
+        return new KCalendarSystemEthiopian( locale );
+    }
+
     if ( calendarType == "gregorian" ) {
         return new KCalendarSystemGregorian( locale );
     }
@@ -72,6 +82,8 @@ QStringList KCalendarSystem::calendarSystems()
 {
     QStringList lst;
 
+    lst.append( "coptic" );
+    lst.append( "ethiopian" );
     lst.append( "gregorian" );
     //Do not return in list as we don't want used unless the client absolutely knows what they are doing
     //This is to prevent interop issues with the "gregorian" being a hybrid Julian/Gregorian, and to prevent
@@ -88,6 +100,14 @@ QStringList KCalendarSystem::calendarSystems()
 
 QString KCalendarSystem::calendarLabel( const QString &calendarType )
 {
+    if ( calendarType == "coptic" ) {
+        return ki18nc( "@item Calendar system", "Coptic" ).toString( KGlobal::locale() );
+    }
+
+    if ( calendarType == "ethiopian" ) {
+        return ki18nc( "@item Calendar system", "Ethiopian" ).toString( KGlobal::locale() );
+    }
+
     if ( calendarType == "gregorian" ) {
         return ki18nc( "@item Calendar system", "Gregorian" ).toString( KGlobal::locale() );
     }
