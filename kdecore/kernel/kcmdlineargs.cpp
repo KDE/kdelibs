@@ -319,7 +319,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     kde_options.add("waitforwm",           ki18n("Waits for a WM_NET compatible windowmanager"));
 #endif
     kde_options.add("style <style>",       ki18n("sets the application GUI style"));
-    kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format"));
+    kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format (usually WidthxHeight+XPos+YPos)"));
 #ifndef Q_WS_WIN
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
 #endif
