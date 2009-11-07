@@ -25,6 +25,7 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtCore/QMutex>
+#include <QtCore/QAtomicInt>
 
 #include "variant.h"
 #include "thing.h"
@@ -52,12 +53,12 @@ namespace Nepomuk {
          */
         void deleteData();
 
-        inline int ref() {
-            return ++m_ref;
+        inline bool ref() {
+            return m_ref.ref();
         }
 
-        inline int deref() {
-            return --m_ref;
+        inline bool deref() {
+            return m_ref.deref();
         }
 
         inline int cnt() const {
@@ -187,9 +188,10 @@ namespace Nepomuk {
         QUrl m_mainType;
         QList<QUrl> m_types;
 
-        int m_ref;
+        QAtomicInt m_ref;
 
-        QMutex m_modificationMutex;
+        QMutex m_determineUriMutex;
+        mutable QMutex m_modificationMutex;
 
         /**
          * Used to virtually merge two data objects representing the same

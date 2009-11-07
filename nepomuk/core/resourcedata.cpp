@@ -42,6 +42,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QDateTime>
+#include <QtCore/QMutexLocker>
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -69,7 +70,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
     : m_kickoffUriOrId( uriOrId ),
       m_uri( uri ),
       m_mainType( type ),
-      m_ref(0),
+      m_modificationMutex(QMutex::Recursive),
       m_proxyData(0),
       m_cacheDirty(true),
       m_pimoThing(0),
@@ -154,6 +155,8 @@ void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
         m_proxyData->setTypes( types );
     }
     else if ( store() ) {
+        QMutexLocker lock(&m_modificationMutex);
+
         // reset types
         m_types.clear();
         m_mainType = Soprano::Vocabulary::RDFS::Resource();
@@ -226,6 +229,9 @@ bool Nepomuk::ResourceData::hasType( const QUrl& uri )
 
 bool Nepomuk::ResourceData::constHasType( const QUrl& uri ) const
 {
+    // we need to protect the reading, too. setTypes may be triggered from another thread
+    QMutexLocker lock(&m_modificationMutex);
+
     Types::Class requestedType( uri );
     for ( QList<QUrl>::const_iterator it = m_types.constBegin();
           it != m_types.constEnd(); ++it ) {
@@ -245,6 +251,10 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
         return m_proxyData->property( uri );
 
     if ( load() ) {
+        // we need to protect the reading, too. load my be triggered from another thread's
+        // connection to a Soprano statement signal
+        QMutexLocker lock(&m_modificationMutex);
+
         QHash<QUrl, Variant>::const_iterator it = m_cache.constFind( uri );
         if ( it == m_cache.constEnd() ) {
             return Variant();
@@ -275,12 +285,12 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
 
 bool Nepomuk::ResourceData::store()
 {
+    QMutexLocker lock(&m_modificationMutex);
+
     if ( !determineUri() ) {
         // create a random URI and add us to the initialized data, i.e. make us "valid"
-        m_modificationMutex.lock();
         m_uri = m_rm->m_manager->generateUniqueUri( QString() );
         m_rm->m_initializedData.insert( m_uri.toString(), this );
-        m_modificationMutex.unlock();
     }
 
     QList<Statement> statements;
@@ -288,7 +298,7 @@ bool Nepomuk::ResourceData::store()
     // save type (There should be no need to save all the types since there is only one way
     // that m_types contains more than one element: if we loaded them)
     // The first type, however, can be set at creation time to any value
-    // FIXME: save all unsaved types here and do not directly save tem above in setTypes
+    // FIXME: save all unsaved types here and do not directly save them above in setTypes
     if ( !m_initialTypeSaved ) {
         statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
     }
@@ -369,22 +379,27 @@ void Nepomuk::ResourceData::loadType( const QUrl& storedType )
 
 bool Nepomuk::ResourceData::load()
 {
+    QMutexLocker lock(&m_modificationMutex);
+
     if ( m_cacheDirty ) {
         m_cache.clear();
 
         if ( determineUri() ) {
-            Soprano::StatementIterator it = MAINMODEL->listStatements( Soprano::Statement( m_uri, Soprano::Node(), Soprano::Node() ) );
-
+            Soprano::QueryResultIterator it = MAINMODEL->executeQuery(QString("select distinct ?p ?o where { "
+                                                                              "%1 ?p ?o . "
+                                                                              "}").arg(Soprano::Node::resourceToN3(m_uri)),
+                                                                      Soprano::Query::QueryLanguageSparql);
             while ( it.next() ) {
-                Statement statement = *it;
-                if ( statement.predicate().uri() == Soprano::Vocabulary::RDF::type() ) {
-                    if ( statement.object().isResource() ) {
-                        QUrl storedType = statement.object().uri();
+                QUrl p = it["p"].uri();
+                Soprano::Node o = it["o"];
+                if ( p == Soprano::Vocabulary::RDF::type() ) {
+                    if ( o.isResource() ) {
+                        QUrl storedType = o.uri();
                         loadType( storedType );
                     }
                 }
                 else {
-                    m_cache[statement.predicate().uri()].append( nodeToVariant( statement.object() ) );
+                    m_cache[p].append( nodeToVariant( o ) );
                 }
             }
 
@@ -427,6 +442,8 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 
     // step 0: make sure this resource is in the store
     if ( store() ) {
+        QMutexLocker lock(&m_modificationMutex);
+
         QList<Node> valueNodes;
 
         // make sure resource values are in the store
@@ -478,6 +495,8 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
     if( m_proxyData )
         return m_proxyData->removeProperty( uri );
 
+    QMutexLocker lock(&m_modificationMutex);
+
     if ( determineUri() ) {
         MAINMODEL->removeProperty( m_uri, uri );
     }
@@ -488,6 +507,8 @@ void Nepomuk::ResourceData::remove( bool recursive )
 {
     if( m_proxyData )
         return m_proxyData->remove( recursive );
+
+    QMutexLocker lock(&m_modificationMutex);
 
     if ( determineUri() ) {
         MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
@@ -536,122 +557,123 @@ bool Nepomuk::ResourceData::determineUri()
     if( m_proxyData )
         return m_proxyData->determineUri();
 
-    else if( m_uri.isEmpty() && !m_kickoffUriOrId.isEmpty() ) {
-        m_modificationMutex.lock();
+    else {
+        QMutexLocker lock(&m_determineUriMutex);
 
-        Soprano::Model* model = MAINMODEL;
+        if( m_uri.isEmpty() && !m_kickoffUriOrId.isEmpty() ) {
 
-        // kickoffUriOrId() cannot be a URI without a slash (ugly hack for a tiny speed gain)
-        if( kickoffUriOrId().contains('/') &&
-            model->containsAnyStatement( Statement( QUrl( kickoffUriOrId() ), Node(), Node() ) ) ) {
-            //
-            // The kickoffUriOrId is actually a URI
-            //
-            m_uri = kickoffUriOrId();
+            Soprano::Model* model = MAINMODEL;
+
+            // kickoffUriOrId() cannot be a URI without a slash (ugly hack for a tiny speed gain)
+            if( kickoffUriOrId().contains('/') &&
+                model->containsAnyStatement( Statement( QUrl( kickoffUriOrId() ), Node(), Node() ) ) ) {
+                //
+                // The kickoffUriOrId is actually a URI
+                //
+                m_uri = kickoffUriOrId();
 //            kDebug() << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
-        }
-        else {
-            //
-            // Check if the kickoffUriOrId is a resource identifier
-            //
-            StatementIterator it = model->listStatements( Statement( Node(),
-                                                                     Node(QUrl( Resource::identifierUri() )),
-                                                                     LiteralValue( kickoffUriOrId() ) ) );
-
-            //
-            // The kickoffUriOrId is an identifier
-            //
-            // Identifiers are not unique!
-            // Thus, we do the following:
-            // - If we have Ontology support, i.e. we know the classes:
-            //   We reuse a resource if its type is derived from the
-            //   current type of the other way around (example: an ImageFile
-            //   is a File and if we open an ImageFile as File we do want it to
-            //   keep its ImageFile type)
-            // - If we do not have Ontology support:
-            //   Fallback to the default behaviour of always reusing existing
-            //   data.
-            //
-            // TODO: basically it is perfectly valid to store both types in the first case
-            //
-            Q_ASSERT( !m_mainType.isEmpty() );
-            if ( it.next() ) {
-                // At this point we only have one type since without a uri we could not have loaded other types
-                // than the one used on construction
-                Types::Class wantedType( m_mainType );
-
-                if ( m_mainType != Soprano::Vocabulary::RDFS::Resource() && wantedType.isAvailable() ) {
-                    do {
-                        // get the type of the stored resource
-                        StatementIterator resourceSl = model->listStatements( Statement( it.current().subject(),
-                                                                                         Soprano::Vocabulary::RDF::type(),
-                                                                                         Node() ) );
-                        while ( resourceSl.next() ) {
-                            if ( resourceSl.current().object().isResource() ) {
-                                Types::Class storedType = resourceSl.current().object().uri();
-                                if ( storedType == wantedType ||
-                                     wantedType.isSubClassOf( storedType ) ||
-                                     storedType.isSubClassOf( wantedType ) ) {
-                                    // in load() The type will be updated properly
-                                    m_uri = it.current().subject().uri();
-                                    break;
-                                }
-                            }
-                        }
-                    } while ( it.next() && m_uri.isEmpty() );
-                }
-                else {
-                    m_uri = it.current().subject().uri();
-//                    kDebug() << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
-                }
-            }
-
-            it.close();
-
-            if ( m_uri.isEmpty() ) {
-                //
-                // The resource does not exist, create a new one:
-                // If the kickoffUriOrId is a valid URI we use it as such, otherwise we create a new URI
-                // Special case: files: paths are always converted to URIs (but we only allow absolute paths,
-                // otherwise there can be false positives when for example a tag has the same name as a folder)
-                //
-                QUrl uri( kickoffUriOrId() );
-                if ( uri.isValid() && !uri.scheme().isEmpty() ) {
-                    m_uri = uri;
-                }
-                else if ( kickoffUriOrId()[0] == '/' &&
-                          QFile::exists( kickoffUriOrId() ) ) {
-                    // KURL defaults to schema "file:"
-                    m_uri = KUrl::fromPath( kickoffUriOrId() );
-                }
-                else {
-                    m_kickoffIdentifier = kickoffUriOrId();
-                    m_cache.insert( Soprano::Vocabulary::NAO::identifier(), m_kickoffIdentifier );
-                    m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffIdentifier );
-                }
-
-//                kDebug() << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
-            }
-        }
-
-        //
-        // Move us to the final data hash now that the URI is known
-        //
-        if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
-            QString s = uri().toString();
-            if( !m_rm->m_initializedData.contains( s ) ) {
-                m_rm->m_initializedData.insert( s, this );
             }
             else {
-                m_proxyData = m_rm->m_initializedData.value( s );
-                m_proxyData->ref();
+                //
+                // Check if the kickoffUriOrId is a resource identifier
+                //
+                StatementIterator it = model->listStatements( Statement( Node(),
+                                                                         Node(QUrl( Resource::identifierUri() )),
+                                                                         LiteralValue( kickoffUriOrId() ) ) );
+
+                //
+                // The kickoffUriOrId is an identifier
+                //
+                // Identifiers are not unique!
+                // Thus, we do the following:
+                // - If we have Ontology support, i.e. we know the classes:
+                //   We reuse a resource if its type is derived from the
+                //   current type of the other way around (example: an ImageFile
+                //   is a File and if we open an ImageFile as File we do want it to
+                //   keep its ImageFile type)
+                // - If we do not have Ontology support:
+                //   Fallback to the default behaviour of always reusing existing
+                //   data.
+                //
+                // TODO: basically it is perfectly valid to store both types in the first case
+                //
+                Q_ASSERT( !m_mainType.isEmpty() );
+                if ( it.next() ) {
+                    // At this point we only have one type since without a uri we could not have loaded other types
+                    // than the one used on construction
+                    Types::Class wantedType( m_mainType );
+
+                    if ( m_mainType != Soprano::Vocabulary::RDFS::Resource() && wantedType.isAvailable() ) {
+                        do {
+                            // get the type of the stored resource
+                            StatementIterator resourceSl = model->listStatements( Statement( it.current().subject(),
+                                                                                             Soprano::Vocabulary::RDF::type(),
+                                                                                             Node() ) );
+                            while ( resourceSl.next() ) {
+                                if ( resourceSl.current().object().isResource() ) {
+                                    Types::Class storedType = resourceSl.current().object().uri();
+                                    if ( storedType == wantedType ||
+                                         wantedType.isSubClassOf( storedType ) ||
+                                         storedType.isSubClassOf( wantedType ) ) {
+                                        // in load() The type will be updated properly
+                                        m_uri = it.current().subject().uri();
+                                        break;
+                                    }
+                                }
+                            }
+                        } while ( it.next() && m_uri.isEmpty() );
+                    }
+                    else {
+                        m_uri = it.current().subject().uri();
+//                    kDebug() << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
+                    }
+                }
+
+                it.close();
+
+                if ( m_uri.isEmpty() ) {
+                    //
+                    // The resource does not exist, create a new one:
+                    // If the kickoffUriOrId is a valid URI we use it as such, otherwise we create a new URI
+                    // Special case: files: paths are always converted to URIs (but we only allow absolute paths,
+                    // otherwise there can be false positives when for example a tag has the same name as a folder)
+                    //
+                    QUrl uri( kickoffUriOrId() );
+                    if ( uri.isValid() && !uri.scheme().isEmpty() ) {
+                        m_uri = uri;
+                    }
+                    else if ( kickoffUriOrId()[0] == '/' &&
+                              QFile::exists( kickoffUriOrId() ) ) {
+                        // KURL defaults to schema "file:"
+                        m_uri = KUrl::fromPath( kickoffUriOrId() );
+                    }
+                    else {
+                        m_kickoffIdentifier = kickoffUriOrId();
+                        m_cache.insert( Soprano::Vocabulary::NAO::identifier(), m_kickoffIdentifier );
+                        m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffIdentifier );
+                    }
+
+//                kDebug() << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
+                }
+            }
+
+            //
+            // Move us to the final data hash now that the URI is known
+            //
+            if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
+                QString s = uri().toString();
+                if( !m_rm->m_initializedData.contains( s ) ) {
+                    m_rm->m_initializedData.insert( s, this );
+                }
+                else {
+                    m_proxyData = m_rm->m_initializedData.value( s );
+                    m_proxyData->ref();
+                }
             }
         }
 
-        m_modificationMutex.unlock();
+        return !m_uri.isEmpty();
     }
-
-    return !m_uri.isEmpty();
 }
 
 

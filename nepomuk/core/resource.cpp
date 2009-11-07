@@ -27,6 +27,7 @@
 #include "pimo.h"
 #include "thing.h"
 #include "nfo.h"
+#include "nie.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -112,7 +113,7 @@ Nepomuk::Resource::~Resource()
 {
     // FIXME: ResourceData instances having a proxy also need to be deleted, maybe extend deref
     if( m_data &&
-        m_data->deref() == 0 &&
+        !m_data->deref() &&
         ( !m_data->isValid() || m_data->rm()->dataCacheFull() ) ) {
         m_data->deleteData();
     }
@@ -122,7 +123,7 @@ Nepomuk::Resource::~Resource()
 Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        if ( m_data && m_data->deref() == 0 && !m_data->isValid() ) {
+        if ( m_data && !m_data->deref() && !m_data->isValid() ) {
             m_data->deleteData();
         }
         m_data = res.m_data;
@@ -358,7 +359,7 @@ QString Nepomuk::Resource::genericLabel() const
                     label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
 
                     if ( label.isEmpty() ) {
-                        label = property( Soprano::Vocabulary::Xesam::url() ).toString().section( '/', -1 );
+                        label = KUrl(property( Nepomuk::Vocabulary::NIE::url() ).toUrl()).fileName();
 
                         if ( label.isEmpty() ) {
                             QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
