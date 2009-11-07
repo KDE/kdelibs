@@ -158,6 +158,19 @@ namespace Nepomuk {
         QList<Resource> occurrences() const;
 
         /**
+         * Add a grounding occurrence for this Thing.
+         * Grounding resources are physical representations
+         * of the Thing.
+         *
+         * An example is an mp3 file which represents an audio track
+         * or a website which represents a company or a person. Or the
+         * addressbook entry for an abstract person thing.
+         *
+         * \sa pimo:groundingResource
+         */
+        void addGroundingOccurrence( const Resource &res );
+
+        /**
          * Merges two Things that represent the same real-world
          * entity.
          *

@@ -116,6 +116,12 @@ QList<Nepomuk::Resource> Nepomuk::Thing::occurrences() const
 }
 
 
+void Nepomuk::Thing::addGroundingOccurrence( const Nepomuk::Resource &res )
+{
+    addProperty(Nepomuk::Vocabulary::PIMO::groundingOccurrence(), res);
+}
+
+
 // void Nepomuk::Thing::merge( Thing other )
 // {
 // }
