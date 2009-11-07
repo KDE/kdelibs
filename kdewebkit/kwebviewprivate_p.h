@@ -88,12 +88,12 @@ public:
 
         if ((pressedButtons & Qt::MidButton) ||
             ((pressedButtons & Qt::LeftButton) && (keyboardModifiers & Qt::ControlModifier))) {
-            emit q->openUrlInNewWindow(url);
+            emit q->linkMiddleOrCtrlClicked(url);
             return true;
         }
 
         if ((pressedButtons & Qt::LeftButton) && (keyboardModifiers & Qt::ShiftModifier)) {
-            emit q->saveUrl(url);
+            emit q->linkShiftClicked(url);
             return true;
         }
 
@@ -114,7 +114,7 @@ public:
         if (q->page() && !q->page()->isModified() && (pressedButtons & Qt::MidButton)) {
             QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
             if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
-                emit q->openUrl(KUrl(clipboardText));
+                emit q->selectionClipboardUrlPasted(KUrl(clipboardText));
             }
         }
     }

@@ -40,10 +40,11 @@
 #include <QtNetwork/QNetworkRequest>
 
 
-KWebView::KWebView(QWidget *parent)
+KWebView::KWebView(QWidget *parent, bool createCustomPage)
          :QWebView(parent), d(new KWebViewPrivate<KWebView>(this))
 {
-    setPage(new KWebPage(this));
+    if (createCustomPage)
+        setPage(new KWebPage(this));
 }
 
 KWebView::~KWebView()
