@@ -30,9 +30,16 @@
 #include <QtWebKit/QWebPage>
 
 /**
- * @short An enhanced QWebPage with integration into the KDE environment.
+ * @short An enhanced QWebPage that provides integration into the KDE environment.
+ *
+ * This is a convenience class that provides full integration with KDE
+ * technologies such as KIO for network request handling, KCookiejar for cookie
+ * handling and KWebPluginFactory for embeded non-html content handling using
+ * KDE KParts.
  *
  * @author Urs Wolfer <uwolfer @ kde.org>
+ * @author Dawit Alemayehu <adawit @ kde.org>
+ *
  * @since 4.4
  */
 

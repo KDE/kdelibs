@@ -2,6 +2,7 @@
  * This file is part of the KDE project.
  *
  * Copyright (C) 2008 Michael Howell <mhowell123@gmail.com>
+ * Copyright (C) 2009 Dawit Alemayehu <adawit@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,9 +31,10 @@
  * @short An enhanced QWebPluginFactory with integration into the KDE environment.
  *
  * @author Michael Howell <mhowell123@gmail.com>
+ * @author Dawit Alemayehu <adawit@kde.org>
+ *
  * @since 4.4
  */
-
 class KDEWEBKIT_EXPORT KWebPluginFactory : public QWebPluginFactory
 {
     Q_OBJECT
