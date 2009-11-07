@@ -78,6 +78,8 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
         }
     }
 
+    QMutexLocker lock( &mutex );
+
     ResourceDataHash::iterator it = m_initializedData.find( url.toString() );
 
     //
@@ -112,6 +114,8 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
     if ( QFile::exists(uriOrId) ) {
         return data( QUrl::fromLocalFile (uriOrId), type );
     }
+
+    QMutexLocker lock( &mutex );
 
     ResourceDataHash::iterator it = m_initializedData.find( uriOrId );
 
@@ -219,6 +223,8 @@ bool Nepomuk::ResourceManagerPrivate::dataCacheFull()
 
 void Nepomuk::ResourceManagerPrivate::cleanupCache()
 {
+    QMutexLocker lock( &mutex );
+
     if ( dataCnt >= 1000 ) {
         for( ResourceDataHash::iterator rdIt = m_initializedData.begin();
              rdIt != m_initializedData.end(); ++rdIt ) {
@@ -287,6 +293,7 @@ int Nepomuk::ResourceManager::init()
 
 bool Nepomuk::ResourceManager::initialized() const
 {
+    QMutexLocker lock( &d->mutex );
     return d->mainModel && d->mainModel->isValid();
 }
 
@@ -317,6 +324,8 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUrl& type )
 {
+    QMutexLocker lock( &d->mutex );
+
     QList<Resource> l;
 
     if( !type.isEmpty() ) {
@@ -354,6 +363,8 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QUrl& uri, const Variant& v )
 {
+    QMutexLocker lock( &d->mutex );
+
     QList<Resource> l;
 
     if( v.isList() ) {
