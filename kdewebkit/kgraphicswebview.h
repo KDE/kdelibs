@@ -36,21 +36,33 @@ template<class T> class KWebViewPrivate;
 /**
  * @short A re-implementation of QGraphicsWebView that provides KDE integration.
  *
- * This convenience class provides full integration with KDE technologies such as
- * KIO for network request handling, KCookiejar for cookie handling and 
- * KWebPluginFactory for embeded non-html content handling using KDE KParts.
+ * This is a drop-in replacement for QGraphicsWebView that provides full KDE
+ * integration through the use of @ref KWebPage. It also provides signals that
+ * capture middle/shift/ctrl mouse clicks on links and url pasting from the
+ * selection clipboard.
  *
  * @author Urs Wolfer <uwolfer @ kde.org>
+ * @author Dawit Alemayehu <adawit @ kde.org>
+ *
  * @since 4.4
  */
 class KDEWEBKIT_EXPORT KGraphicsWebView : public QGraphicsWebView
 {
     Q_OBJECT
+
 public:
     /**
-     * Constructs an empty KWebView with parent @p parent.
+     * Constructs a KGraphicsWebView object with parent @p parent.
+     *
+     * The @p createCustomPage flag allows you to prevent the creation of a
+     * custom KWebPage object that is used to provide KDE integration. If you
+     * are going to use your own implementation of KWebPage, you should set
+     * this flag to false to avoid unnecessary creation and deletion of objects.
+     *
+     * @param parent            the parent object.
+     * @param createCustomPage  if true, the default, creates a custom KWebPage object.
      */
-    explicit KGraphicsWebView(QGraphicsItem *parent = 0);
+    explicit KGraphicsWebView(QGraphicsItem *parent = 0, bool createCustomPage = true);
 
     /**
      * Destroys the KWebView.
@@ -81,25 +93,28 @@ public:
 
 Q_SIGNALS:
     /**
-     * This signal is emitted when the user wants to navigate to @p url.
+     * This signal is emitted when a url from the selection clipboard is pasted
+     * on this view.
+     *
+     * @param url   the url of the clicked link.
      */
-    void openUrl(const KUrl &url);
+    void selectionClipboardUrlPasted(const KUrl &url);
 
     /**
-     * This signal is emitted when the user wants to save @p url.
+     * This signal is emitted when a link is shift clicked with the left mouse
+     * button.
      *
-     * It is activated as a result of a shift-click on a link with the left
-     * mouse button.
+     * @param url   the url of the clicked link.
      */
-    void saveUrl(const KUrl &url);
+    void linkShiftClicked(const KUrl &url);
 
     /**
-     * This signal is emitted when the user wants to open @p url in a new window.
+     * This signal is emitted when a link is either clicked with middle mouse
+     * button or ctrl-clicked with the left moust button.
      *
-     * It is activated as a result of a click on a link with the middle mouse
-     * button or a ctrl-click with the left mouse button.
+     * @param url   the url of the clicked link.
      */
-    void openUrlInNewWindow(const KUrl &url);
+    void linkMiddleOrCtrlClicked(const KUrl &url);
 
 protected:
     /**

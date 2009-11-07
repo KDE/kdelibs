@@ -36,9 +36,10 @@ template<class T> class KWebViewPrivate;
 /**
  * @short A re-implementation of QWebView that provides KDE integration.
  *
- * This convenience class provides full integration with KDE technologies such as
- * KIO for network request handling, KCookiejar for cookie handling and
- * KWebPluginFactory for embeded non-html content handling using KDE KParts.
+ * This is a drop-in replacement for QWebView that provides full KDE integration
+ * through the use of @ref KWebPage. It also provides signals that capture
+ * middle/shift/ctrl mouse clicks on links and url pasting from the selection
+ * clipboard.
  *
  * @author Urs Wolfer <uwolfer @ kde.org>
  * @author Dawit Alemayehu <adawit @ kde.org>

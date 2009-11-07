@@ -42,11 +42,12 @@
 #include <QtNetwork/QNetworkRequest>
 
 
-KGraphicsWebView::KGraphicsWebView(QGraphicsItem *parent)
+KGraphicsWebView::KGraphicsWebView(QGraphicsItem *parent, bool createCustomPage)
                  :QGraphicsWebView(parent),
                   d(new KWebViewPrivate<KGraphicsWebView>(this))
 {
-    setPage(new KWebPage(this));
+    if (createCustomPage)
+        setPage(new KWebPage(this));
 }
 
 KGraphicsWebView::~KGraphicsWebView()
@@ -97,4 +98,3 @@ void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 #include "kgraphicswebview.moc"
-
