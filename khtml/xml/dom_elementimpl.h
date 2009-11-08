@@ -234,6 +234,9 @@ public:
     virtual DOMString namespaceURI() const;
     inline const PrefixName& prefixName() const { return m_prefix; }
 
+    virtual short tabIndex() const;
+    void setTabIndex(short _tabIndex);
+
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const;
     virtual DOMString localName() const;    

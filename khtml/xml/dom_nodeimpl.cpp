@@ -70,7 +70,6 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_previous(0),
       m_next(0),
       m_render(0),
-      m_tabIndex( 0 ),
       m_hasId( false ),
       m_attached(false),
       m_closed(false),

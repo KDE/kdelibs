@@ -366,7 +366,11 @@ class ElementRareDataImpl {
 public:
     ElementRareDataImpl();
     void resetComputedStyle();
+    short tabIndex() const { return m_tabIndex; }
+    void setTabIndex(short _tabIndex) { m_tabIndex = _tabIndex; }
+
     RenderStyle* m_computedStyle;
+    signed short m_tabIndex;
 };
 
 typedef WTF::HashMap<const ElementImpl*, ElementRareDataImpl*> ElementRareDataMap;
@@ -383,7 +387,7 @@ static ElementRareDataImpl* rareDataFromMap(const ElementImpl* element)
 }
 
 inline ElementRareDataImpl::ElementRareDataImpl()
-    : m_computedStyle(0)
+    : m_computedStyle(0), m_tabIndex(0)
 {}
 
 void ElementRareDataImpl::resetComputedStyle()
@@ -794,6 +798,16 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
     if (exceptioncode)
         return;
     m_prefix = PrefixName::fromString(_prefix);
+}
+
+short ElementImpl::tabIndex() const 
+{ 
+    return m_elementHasRareData ? rareData()->tabIndex() : 0;
+}
+
+void ElementImpl::setTabIndex(short _tabIndex)
+{
+    createRareData()->setTabIndex(_tabIndex);
 }
 
 void ElementImpl::defaultEventHandler(EventImpl *e)

@@ -290,9 +290,8 @@ public:
     // for descending restyle when ID or CLASS changes
     bool changedAscendentAttribute() const { return m_changedAscendentAttribute; }
     void setChangedAscendentAttribute(bool b) { m_changedAscendentAttribute = b; }
-
-    short tabIndex() const { return m_tabIndex; }
-    void setTabIndex(short _tabIndex) { m_tabIndex = _tabIndex; }
+ 
+    virtual short tabIndex() const { return 0; }
 
     virtual bool isFocusable() const { return false; }
     virtual bool isMouseFocusable() const { return isFocusable(); }
@@ -520,8 +519,6 @@ protected:
     khtml::RenderObject *m_render;
     RegisteredListenerList m_regdListeners;
 
-    signed m_tabIndex : 15; // ### needs one bit more
-
     bool m_hasId : 1;
     bool m_attached : 1;
     bool m_closed : 1;
@@ -540,6 +537,8 @@ protected:
     bool m_hasClass : 1;   // true if element has a class property, as relevant to CSS
     bool m_hasCombinedStyle : 1; // true if element has inline styles and presentational styles
     bool m_hasHoverDependency : 1; // true if element has hover dependency on itself
+
+    // 15 bits left
 };
 
 // this is the full Node Implementation with parents and children.
