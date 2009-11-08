@@ -629,9 +629,9 @@ int main(int argc, char *argv[])
     options.add("html", ki18n("Only run .html tests"));
     options.add("noxvfb", ki18n("Do not use Xvfb"));
     options.add("o");
-    options.add("output <directory>", ki18n("Put output in <directory> instead of <base_dir>/output"));
+    options.add("output <directory>", ki18n("Put output in &lt;directory&gt; instead of &lt;base_dir&gt;/output"));
     options.add("r");
-    options.add("reference <directory>", ki18n("Use <directory> as reference instead of <base_dir>/baseline"));
+    options.add("reference <directory>", ki18n("Use &lt;directory&gt; as reference instead of &lt;base_dir&gt;/baseline"));
     options.add("+[base_dir]", ki18n("Directory containing tests, basedir and output directories. Only regarded if -b is not specified."));
     options.add("+[testcases]", ki18n("Relative path to testcase, or directory of testcases to be run (equivalent to -t)."));
 
