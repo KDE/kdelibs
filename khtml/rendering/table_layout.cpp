@@ -93,7 +93,6 @@ int FixedTableLayout::calcWidthArray()
 
     // iterate over all <col> elements
     RenderObject *child = table->firstChild();
-    int cCol = 0;
     int nEffCols = table->numEffCols();
     width.resize( nEffCols );
     width.fill( Length( Auto ) );
@@ -103,11 +102,11 @@ int FixedTableLayout::calcWidthArray()
     qDebug("    col elements:");
 #endif
 
+    int currentEffectiveColumn = 0;
     Length grpWidth;
     while ( child ) {
 	if ( child->isTableCol() ) {
 	    RenderTableCol *col = static_cast<RenderTableCol *>(child);
-	    int span = col->span();
 	    if ( col->firstChild() ) {
 		grpWidth = col->style()->width();
 	    } else {
@@ -123,28 +122,33 @@ int FixedTableLayout::calcWidthArray()
 		qDebug("    col element: effCol=%d, span=%d: %d w=%d type=%d",
                        cCol, span, effWidth,  w.rawValue(), w.type());
 #endif
-		int usedSpan = 0;
-		int i = 0;
-		while ( usedSpan < span ) {
-		    if( cCol + i >= nEffCols ) {
-			table->appendColumn( span - usedSpan );
+                int span = col->span();
+                while (span) {
+                    int spanInCurrentEffectiveColumn;
+                    if (currentEffectiveColumn >= nEffCols) {
+                        table->appendColumn(span);
 			nEffCols++;
-			width.resize( nEffCols );
-			width[nEffCols-1] = Length();
+                        width.append(Length());
+                        spanInCurrentEffectiveColumn = span;
+                    } else {
+                        if (span < table->spanOfEffCol(currentEffectiveColumn)) {
+                            table->splitColumn(currentEffectiveColumn, span);
+                            nEffCols++;
+                            width.append(Length());
+                        }
+                        spanInCurrentEffectiveColumn = table->spanOfEffCol(currentEffectiveColumn);
 		    }
-		    int eSpan = table->spanOfEffCol( cCol+i );
 		    if ( (w.isFixed() || w.isPercent()) && w.isPositive()) {
-		        width[cCol+i].setRawValue(w.type(), w.rawValue() * eSpan);
-			usedWidth += effWidth * eSpan;
+                        width[currentEffectiveColumn].setRawValue(w.type(), w.rawValue() * spanInCurrentEffectiveColumn);
+                        usedWidth += effWidth * spanInCurrentEffectiveColumn;
 #ifdef DEBUG_LAYOUT
 			qDebug("    setting effCol %d (span=%d) to width %d(type=%d)",
                                cCol+i, eSpan, width[cCol+i].rawValue(), width[cCol+i].type() );
 #endif
 		    }
-		    usedSpan += eSpan;
-		    i++;
+                    span -= spanInCurrentEffectiveColumn;
+                    currentEffectiveColumn++;
 		}
-		cCol += i;
 	    }
 	} else {
 	    break;
@@ -170,7 +174,7 @@ int FixedTableLayout::calcWidthArray()
     if ( !section )
 	section = table->foot;
     if ( section && section->firstChild() ) {
-	cCol = 0;
+	int cCol = 0;
 	// get the first cell in the first row
 	child = section->firstChild()->firstChild();
 	while ( child ) {
