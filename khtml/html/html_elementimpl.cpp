@@ -156,11 +156,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         setContentEditable(attr);
         break;
     case ATTR_STYLE:
-        if (inlineStyleDecls())
-	    inlineStyleDecls()->clear();
-	else
-	    createInlineDecl();
-        inlineStyleDecls()->setProperty(attr->value());
+        getInlineStyleDecls()->updateFromAttribute(attr->value());
         setChanged();
         break;
     case ATTR_TABINDEX:

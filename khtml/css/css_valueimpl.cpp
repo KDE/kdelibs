@@ -684,9 +684,6 @@ void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned len
 void CSSStyleDeclarationImpl::setChanged()
 {
     if (m_node) {
-        if (m_node->nodeType() == Node::ELEMENT_NODE && (static_cast<ElementImpl*>(m_node)->inlineStyleDecls() == this)) {
-            m_node->setNeedsStyleAttributeUpdate();
-        }
         m_node->setChanged();
         return;
     }
@@ -877,6 +874,26 @@ bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
     // ###
 }
 
+// --------------------------------------------------------------------------------------
+
+void CSSInlineStyleDeclarationImpl::setChanged()
+{
+    if (m_node)
+        m_node->setNeedsStyleAttributeUpdate();
+    CSSStyleDeclarationImpl::setChanged();
+}
+
+void CSSInlineStyleDeclarationImpl::updateFromAttribute(const DOMString &value)
+{
+    if(!m_lstValues) {
+	m_lstValues = new QList<CSSProperty*>;
+    } else {
+        clear();
+    }
+    CSSParser parser( strictParsing );
+    parser.parseDeclaration( this, value );
+    CSSStyleDeclarationImpl::setChanged();
+}
 
 // --------------------------------------------------------------------------------------
 

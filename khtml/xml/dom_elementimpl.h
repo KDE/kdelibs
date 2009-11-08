@@ -48,6 +48,7 @@ class ElementImpl;
 class DocumentImpl;
 class NamedAttrMapImpl;
 class ElementRareDataImpl;
+class CSSInlineStyleDeclarationImpl;
 
 // Attr can have Text and EntityReference children
 // therefore it has to be a fullblown Node. The plan
@@ -160,7 +161,7 @@ struct AttributeImpl
 
 struct CombinedStyleDecl
 {
-    DOM::CSSStyleDeclarationImpl *inlineDecls;
+    DOM::CSSInlineStyleDeclarationImpl *inlineDecls;
     DOM::CSSStyleDeclarationImpl *nonCSSDecls;
 };
 
@@ -178,7 +179,7 @@ public:
     // stuff for WebCore DOM & SVG api compatibility
     virtual bool hasTagName(const QualifiedName& name) const { return qualifiedName() == name;/*should be matches here*/ }
     QualifiedName qualifiedName() const { return QualifiedName(id(), m_prefix); }
-    CSSStyleDeclarationImpl* style() { return getInlineStyleDecls(); }
+    CSSInlineStyleDeclarationImpl* style() { return getInlineStyleDecls(); }
     void setAttribute(const QualifiedName& name, const DOMString& value) {
         setAttribute(name.id(), value); /* is it enough for SVG or should the full setAttribute() be called? */
     }
@@ -313,9 +314,9 @@ public:
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
-    DOM::CSSStyleDeclarationImpl *inlineStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->inlineDecls : m_style.inlineDecls; }
+    DOM::CSSInlineStyleDeclarationImpl *inlineStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->inlineDecls : m_style.inlineDecls; }
     DOM::CSSStyleDeclarationImpl *nonCSSStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->nonCSSDecls : 0; }
-    DOM::CSSStyleDeclarationImpl *getInlineStyleDecls();
+    DOM::CSSInlineStyleDeclarationImpl *getInlineStyleDecls();
 
     void dispatchAttrRemovalEvent(NodeImpl::Id id, DOMStringImpl *value);
     void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);
@@ -371,7 +372,7 @@ protected: // member variables
     mutable NamedAttrMapImpl *namedAttrMap;
 
     union {
-        DOM::CSSStyleDeclarationImpl *inlineDecls;
+        DOM::CSSInlineStyleDeclarationImpl *inlineDecls;
         CombinedStyleDecl *combinedDecls;
     } m_style;
     PrefixName m_prefix;
@@ -540,9 +541,10 @@ inline void splitPrefixLocalName(const DOMString& qualifiedName, PrefixName& pre
     }
 }
 
-// methods that could be very hot they are need to be inlined
+// methods that could be very hot and therefore need to be inlined
 inline DOMStringImpl* ElementImpl::getAttributeImpl(NodeImpl::Id id, const PrefixName& prefix, bool nsAware) const
 {
+    if (m_needsStyleAttributeUpdate && (id == ATTR_STYLE)) synchronizeStyleAttribute();
     return namedAttrMap ? namedAttrMap->getValue(id, prefix, nsAware) : 0;
 }
 

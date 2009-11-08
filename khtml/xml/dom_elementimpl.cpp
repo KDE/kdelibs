@@ -1098,7 +1098,7 @@ void ElementImpl::scrollIntoView(bool /*alignToTop*/)
 void ElementImpl::createNonCSSDecl()
 {
     assert(!m_hasCombinedStyle);
-    CSSStyleDeclarationImpl *ild = m_style.inlineDecls;
+    CSSInlineStyleDeclarationImpl *ild = m_style.inlineDecls;
     m_style.combinedDecls = new CombinedStyleDecl;
     m_style.combinedDecls->inlineDecls = ild;
     CSSStyleDeclarationImpl *ncd = new CSSStyleDeclarationImpl(0);
@@ -1110,7 +1110,7 @@ void ElementImpl::createNonCSSDecl()
     m_hasCombinedStyle = true;
 }
 
-CSSStyleDeclarationImpl *ElementImpl::getInlineStyleDecls()
+CSSInlineStyleDeclarationImpl *ElementImpl::getInlineStyleDecls()
 {
     if (!inlineStyleDecls()) createInlineDecl();
         return inlineStyleDecls();
@@ -1120,7 +1120,7 @@ void ElementImpl::createInlineDecl( )
 {
     assert( !m_style.inlineDecls || (m_hasCombinedStyle && !m_style.combinedDecls->inlineDecls) );
 
-    CSSStyleDeclarationImpl *dcl = new CSSStyleDeclarationImpl(0);
+    CSSInlineStyleDeclarationImpl *dcl = new CSSInlineStyleDeclarationImpl(0);
     dcl->ref();
     dcl->setParent(document()->elementSheet());
     dcl->setNode(this);

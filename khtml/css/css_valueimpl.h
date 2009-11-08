@@ -91,7 +91,7 @@ public:
     QList<CSSProperty*> *values() const { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
 
-    void setChanged();
+    virtual void setChanged();
 
     void removeCSSHints();
 
@@ -107,6 +107,14 @@ protected:
 private:
     // currently not needed - make sure it is not used
     CSSStyleDeclarationImpl(const CSSStyleDeclarationImpl& o);
+};
+
+class CSSInlineStyleDeclarationImpl : public CSSStyleDeclarationImpl
+{
+public:
+    CSSInlineStyleDeclarationImpl(CSSRuleImpl *parentRule): CSSStyleDeclarationImpl(parentRule) {}
+    virtual void setChanged();
+    void updateFromAttribute(const DOMString &value);
 };
 
 class CSSValueImpl : public StyleBaseImpl
