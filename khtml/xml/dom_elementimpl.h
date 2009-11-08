@@ -260,6 +260,7 @@ public:
 
     NamedAttrMapImpl* attributes(bool readonly = false) const
     {
+        if (m_needsStyleAttributeUpdate) synchronizeStyleAttribute();
         if (!readonly && !namedAttrMap) createAttributeMap();
         return namedAttrMap;
     }
@@ -349,7 +350,7 @@ public:
     virtual void addId   (const DOMString& id);
 
     // Synchronize style attribute after it was changed via CSSOM
-    void synchronizeStyleAttribute();
+    void synchronizeStyleAttribute() const;
 
 protected:
     void createAttributeMap() const;

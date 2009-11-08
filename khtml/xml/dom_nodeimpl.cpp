@@ -78,7 +78,6 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_changedAscendentAttribute( false ),
       m_inDocument( false ),
       m_hasAnchor( false ),
-      m_elementHasRareData( false ),
       m_hovered( false ),
       m_focused( false ),
       m_active( false ),
@@ -86,7 +85,9 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_htmlCompat( false ),
       m_hasClass( false ),
       m_hasCombinedStyle( false ),
-      m_hasHoverDependency(false)
+      m_hasHoverDependency( false ),
+      m_elementHasRareData( false ),
+      m_needsStyleAttributeUpdate( false )
 {
 }
 

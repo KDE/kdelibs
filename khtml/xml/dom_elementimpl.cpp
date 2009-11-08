@@ -587,7 +587,9 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
 {
     // clone attributes
     if (namedAttrMap)
-	clone->attributes()->copyAttributes(namedAttrMap);
+	clone->attributes()->copyAttributes(attributes(true));
+
+    assert( !m_needsStyleAttributeUpdate ); // ensured by previous line
 
     // clone individual style rules
     if (m_style.inlineDecls) {
@@ -1368,9 +1370,11 @@ void ElementImpl::focus()
     document()->setFocusNode(this);
 }
 
-void ElementImpl::synchronizeStyleAttribute()
+void ElementImpl::synchronizeStyleAttribute() const
 {
-    DOMString value = getInlineStyleDecls()->cssText();
+    assert(inlineStyleDecls() && m_needsStyleAttributeUpdate);
+    m_needsStyleAttributeUpdate = false;
+    DOMString value = inlineStyleDecls()->cssText();
     attributes()->setValueWithoutElementUpdate(ATTR_STYLE, value.implementation());
 }
 

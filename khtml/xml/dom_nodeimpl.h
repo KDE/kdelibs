@@ -280,6 +280,7 @@ public:
     void setHTMLCompat(bool b) { m_htmlCompat = b; }
     bool hasHoverDependency() { return m_hasHoverDependency; }
     void setHasHoverDependency(bool b = true) { m_hasHoverDependency = b; }
+    void setNeedsStyleAttributeUpdate(bool b = true) { m_needsStyleAttributeUpdate = b; }
     virtual void setFocus(bool b=true) { m_focused = b; }
     virtual void setActive(bool b=true) { m_active = b; }
     virtual void setHovered(bool b=true) { m_hovered = b; }
@@ -527,7 +528,6 @@ protected:
     bool m_changedAscendentAttribute : 1;
     bool m_inDocument : 1;
     bool m_hasAnchor : 1;
-    bool m_elementHasRareData : 1;
 
     bool m_hovered : 1;
     bool m_focused : 1;
@@ -538,7 +538,10 @@ protected:
     bool m_hasCombinedStyle : 1; // true if element has inline styles and presentational styles
     bool m_hasHoverDependency : 1; // true if element has hover dependency on itself
 
-    // 15 bits left
+    bool m_elementHasRareData : 1;
+    mutable bool m_needsStyleAttributeUpdate : 1; // true if |style| attribute is out of sync (i.e. CSSOM modified our inline styles)
+
+    // 14 bits left
 };
 
 // this is the full Node Implementation with parents and children.
