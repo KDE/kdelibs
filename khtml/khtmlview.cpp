@@ -3909,6 +3909,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         }
     }
 
+    if ( underMouse() && QToolTip::isVisible() )
+        QToolTip::hideText();
+
     if (!d->scrollingSelf) {
         d->scrollBarMoved = true;
         d->contentsMoving = true;
