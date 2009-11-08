@@ -458,6 +458,10 @@ install( FILES
   KWidgetItemDelegate
   KPixmapSequence
   KPixmapSequenceOverlayPainter
+  KGraphicsWebView
+  KWebPage
+  KWebView
+  KWebPluginFactory
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 
 if (UNIX)

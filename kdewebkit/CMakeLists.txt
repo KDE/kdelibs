@@ -1,15 +1,10 @@
 project(kdewebkit)
 
-# search packages used by KDE
-find_package(KDE4 REQUIRED)
-include(KDE4Defaults)
-include(MacroLibrary)
-
-include_directories(${KDE4_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/kdewebkit)
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-
-add_subdirectory(includes)
-add_subdirectory(cmake)
+include_directories(
+ ${KDE4_KDECORE_INCLUDES}
+ ${KDE4_KDEUI_INCLUDES}
+ ${KDE4_KIO_INCLUDES}
+)
 
 set(kdewebkit_LIB_SRCS
     kgraphicswebview.cpp
@@ -28,8 +23,7 @@ target_link_libraries(kdewebkit
 
 set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
-#install(TARGETS kdewebkit EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS}) ### for kdelibs
-install(TARGETS kdewebkit ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdewebkit EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kdewebkit_export.h
@@ -37,4 +31,4 @@ install(FILES
     kwebpluginfactory.h
     kwebpage.h
     kwebview.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/kdewebkit COMPONENT Devel)
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
