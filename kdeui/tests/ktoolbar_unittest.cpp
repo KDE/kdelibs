@@ -27,6 +27,7 @@
 #include <kconfiggroup.h>
 #include <kiconloader.h>
 #include <QDomElement>
+#include <QToolButton>
 #include "testxmlguiwindow.h"
 #include "testguiclient.h"
 
@@ -53,6 +54,8 @@ private slots:
     void testToolButtonStyleXmlGui();
     void testToolBarPosition();
     void testXmlGuiSwitching();
+    void testClickingToolButton_data();
+    void testClickingToolButton();
 
 protected:
     bool eventFilter(QObject * watched, QEvent * event);
@@ -100,6 +103,9 @@ void tst_KToolBar::initTestCase()
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "</gui>\n";
+
+    qRegisterMetaType<Qt::MouseButtons>("Qt::MouseButtons");
+    qRegisterMetaType<Qt::KeyboardModifiers>("Qt::KeyboardModifiers");
 }
 
 // This will be called after the last test function is executed.
@@ -569,6 +575,98 @@ void tst_KToolBar::testXmlGuiSwitching()
         QCOMPARE(secondHiddenToolBar->isHidden(), true);
         QVERIFY(!m_showWasCalled);
     }
+}
+
+// We use the data types below in a QVariant, so Q_DECLARE_METATYPE is needed for them.
+Q_DECLARE_METATYPE(Qt::MouseButton)
+Q_DECLARE_METATYPE(Qt::MouseButtons)
+Q_DECLARE_METATYPE(Qt::KeyboardModifiers)
+
+void tst_KToolBar::testClickingToolButton_data() {
+    QTest::addColumn<Qt::MouseButton>("button");
+    QTest::addColumn<Qt::KeyboardModifiers>("modifiers");
+
+    // Note that Qt::NoModifier, Qt::ShiftModifier, etc. are of the type Qt::KeyboardModifier.
+    // If they are not combined with other modifiers, they must be cast explicitly to
+    // Qt::KeyboardModifiers to make the test work.
+
+    QTest::newRow("LMB") << Qt::LeftButton << Qt::KeyboardModifiers(Qt::NoModifier);
+    QTest::newRow("Shift+LMB") << Qt::LeftButton << Qt::KeyboardModifiers(Qt::ShiftModifier);
+    QTest::newRow("Ctrl+LMB") << Qt::LeftButton << Qt::KeyboardModifiers(Qt::ControlModifier);
+    QTest::newRow("Alt+LMB") << Qt::LeftButton << Qt::KeyboardModifiers(Qt::AltModifier);
+    QTest::newRow("Shift+Control+LMB") << Qt::LeftButton << (Qt::ShiftModifier | Qt::ControlModifier);
+    QTest::newRow("Shift+Alt+LMB") << Qt::LeftButton << (Qt::ShiftModifier | Qt::AltModifier);
+    QTest::newRow("Control+Alt+LMB") << Qt::LeftButton << (Qt::ControlModifier | Qt::AltModifier);
+    QTest::newRow("Shift+Control+Alt+LMB") << Qt::LeftButton << (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier);
+
+    QTest::newRow("MMB") << Qt::MidButton << Qt::KeyboardModifiers(Qt::NoModifier);
+    QTest::newRow("Shift+MMB") << Qt::MidButton << Qt::KeyboardModifiers(Qt::ShiftModifier);
+    QTest::newRow("Ctrl+MMB") << Qt::MidButton << Qt::KeyboardModifiers(Qt::ControlModifier);
+    QTest::newRow("Alt+MMB") << Qt::MidButton << Qt::KeyboardModifiers(Qt::AltModifier);
+    QTest::newRow("Shift+Control+MMB") << Qt::MidButton << (Qt::ShiftModifier | Qt::ControlModifier);
+    QTest::newRow("Shift+Alt+MMB") << Qt::MidButton << (Qt::ShiftModifier | Qt::AltModifier);
+    QTest::newRow("Control+Alt+MMB") << Qt::MidButton << (Qt::ControlModifier | Qt::AltModifier);
+    QTest::newRow("Shift+Control+Alt+MMB") << Qt::MidButton << (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier);
+}
+
+void tst_KToolBar::testClickingToolButton() {
+    KMainWindow mainWindow;
+    KToolBar toolBar(&mainWindow);
+    KAction* testAction = new KAction("test", &toolBar);
+    QSignalSpy spy(testAction, SIGNAL(triggered()));
+    QSignalSpy spyButtonsModifiers(testAction, SIGNAL(triggered(Qt::MouseButtons, Qt::KeyboardModifiers)));
+    toolBar.addAction(testAction);
+    QToolButton* testToolButton = qobject_cast<QToolButton*>(toolBar.widgetForAction(testAction));
+    QVERIFY(testToolButton);
+
+    QFETCH(Qt::MouseButton, button);
+    QFETCH(Qt::KeyboardModifiers, modifiers);
+
+    // Must convert button (which is of the type Qt::MouseButton) to Qt::MouseButtons to make the tests below work
+    Qt::MouseButtons pressedButtons = button;
+
+    // Click the button in the toolbar
+    QTest::mouseClick(testToolButton, button, modifiers);
+    QCOMPARE(spyButtonsModifiers.count(), 1);
+    QList<QVariant> arguments = spyButtonsModifiers.takeFirst();
+    if(button != Qt::LeftButton) {
+        // Only check the "buttons" argument of KAction's triggered(Qt::MouseButtons, Qt::KeyboardModifiers)
+        // signal if the middle mouse button is pressed. If the left button is pressed, "buttons" is
+        // Qt::NoButton, i.e., incorrect. The reason is that it is determined in KActionPrivate::slotTriggered()
+        // using QApplication::mouseButtons() _after_ the button has been released.
+        QCOMPARE(arguments.at(0).value<Qt::MouseButtons>(), pressedButtons);
+    }
+    QCOMPARE(arguments.at(1).value<Qt::KeyboardModifiers>(), modifiers);
+
+    if(button == Qt::LeftButton) {
+        // Also the action's triggered() signal without arguments should have been emitted in this case
+        QCOMPARE(spy.count(), 1);
+        spy.takeFirst();
+    }
+    else {
+        QCOMPARE(spy.count(), 0);
+    }
+
+    // Disable the action, press and release the button again.
+    // Verify that the button is not "down" and that the signals are not emitted.
+    testAction->setEnabled(false);
+    QTest::mousePress(testToolButton, button, modifiers);
+    QVERIFY(!testToolButton->isDown());
+    QTest::mouseRelease(testToolButton, button, modifiers);
+    QCOMPARE(spyButtonsModifiers.count(), 0);
+    QCOMPARE(spy.count(), 0);
+
+    // Check that it also works fine if the action is disabled while the button is "down":
+    // Enable the action, press the button, disable the action and release.
+    // Verify that the "down" state is as expected and that the signals are not emitted.
+    testAction->setEnabled(true);
+    QTest::mousePress(testToolButton, button, modifiers);
+    QVERIFY(testToolButton->isDown());
+    testAction->setEnabled(false);
+    QTest::mouseRelease(testToolButton, button, modifiers);
+    QVERIFY(!testToolButton->isDown());
+    QCOMPARE(spyButtonsModifiers.count(), 0); 
+    QCOMPARE(spy.count(), 0);
 }
 
 bool tst_KToolBar::eventFilter(QObject * watched, QEvent * event)

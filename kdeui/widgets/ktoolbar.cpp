@@ -1181,12 +1181,14 @@ bool KToolBar::eventFilter(QObject * watched, QEvent * event)
             if (me->button() == Qt::MidButton /*&&
                                                  act->receivers(SIGNAL(triggered(Qt::MouseButtons,Qt::KeyboardModifiers)))*/) {
                 if (me->type() == QEvent::MouseButtonPress)
-                    tb->setDown(true);
+                    tb->setDown(act->isEnabled());
                 else {
                     tb->setDown(false);
-                    QMetaObject::invokeMethod(act, "triggered", Qt::DirectConnection,
-                                              Q_ARG(Qt::MouseButtons, me->button()),
-                                              Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers()));
+                    if (act->isEnabled()) {
+                        QMetaObject::invokeMethod(act, "triggered", Qt::DirectConnection,
+                                                  Q_ARG(Qt::MouseButtons, me->button()),
+                                                  Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers()));
+                    }
                 }
             }
         }
