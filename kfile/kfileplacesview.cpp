@@ -149,19 +149,6 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     }
     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter);
     const KFilePlacesModel *placesModel = static_cast<const KFilePlacesModel*>(index.model());
-    bool isRemovableDevice = false;
-    Solid::Device device;
-    if (placesModel->isDevice(index)) {
-        device = placesModel->deviceForIndex(index);
-        if (((device.is<Solid::StorageAccess>() && device.as<Solid::StorageAccess>()->isAccessible()) ||
-             (device.parent().is<Solid::StorageAccess>() && device.parent().as<Solid::StorageAccess>()->isAccessible())) &&
-            ((device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->isRemovable()) ||
-             (device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->isRemovable())) &&
-            ((device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive) ||
-             (device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive))) {
-            isRemovableDevice = true;
-        }
-    }
 
     bool isLTR = option.direction == Qt::LeftToRight;
 
@@ -176,7 +163,14 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     }
 
     QRect rectText;
-    if (isRemovableDevice && contentsOpacity(index) > 0) {
+
+    QString mountPointPath = placesModel->url(index).toLocalFile();
+    KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo(mountPointPath);
+    bool drawCapacityBar = info.size() != 0 &&
+            placesModel->data(index, KFilePlacesModel::CapacityBarRecommendedRole).toBool();
+
+    if (drawCapacityBar && contentsOpacity(index) > 0)
+    {
         painter->save();
         painter->setOpacity(painter->opacity() * contentsOpacity(index));
 
@@ -185,13 +179,9 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
                                : 0, option.rect.top() + (option.rect.height() / 2 - height / 2), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.fontMetrics.height());
         painter->drawText(rectText, Qt::AlignLeft | Qt::AlignTop, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
         QRect capacityRect(isLTR ? rectText.x() : LATERAL_MARGIN, rectText.bottom() - 1, rectText.width() - LATERAL_MARGIN, CAPACITYBAR_HEIGHT);
-        Solid::StorageAccess *storage = device.as<Solid::StorageAccess>();
-        KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo(storage->filePath());
-        if (info.size()) {
-            KCapacityBar capacityBar(KCapacityBar::DrawTextInline);
-            capacityBar.setValue((info.used() * 100) / info.size());
-            capacityBar.drawCapacityBar(painter, capacityRect);
-        }
+        KCapacityBar capacityBar(KCapacityBar::DrawTextInline);
+        capacityBar.setValue((info.used() * 100) / info.size());
+        capacityBar.drawCapacityBar(painter, capacityRect);
 
         painter->restore();
 
@@ -203,7 +193,7 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
                            : 0, option.rect.top(), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.rect.height());
     painter->drawText(rectText, Qt::AlignLeft | Qt::AlignVCenter, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
 
-    if (isRemovableDevice && contentsOpacity(index) > 0) {
+    if (drawCapacityBar && contentsOpacity(index) > 0) {
         painter->restore();
     }
 

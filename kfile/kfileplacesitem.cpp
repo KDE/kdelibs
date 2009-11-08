@@ -29,6 +29,7 @@
 #include <solid/opticaldisc.h>
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
+#include <solid/storagedrive.h>
 
 
 KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
@@ -183,6 +184,33 @@ QVariant KFilePlacesItem::deviceData(int role) const
             } else {
                 return QVariant();
             }
+
+        case KFilePlacesModel::FixedDeviceRole:
+            {
+                Solid::StorageDrive *drive = 0;
+                Solid::Device parentDevice = m_device;
+                while (parentDevice.isValid() && !drive) {
+                    drive = parentDevice.as<Solid::StorageDrive>();
+                    parentDevice = parentDevice.parent();
+                }
+                if (drive!=0) {
+                    return !drive->isHotpluggable() && !drive->isRemovable();
+                }
+                return true;
+            }
+
+        case KFilePlacesModel::CapacityBarRecommendedRole:
+        {
+            bool accessible = m_access && m_access->isAccessible();
+            bool isCdrom =
+                ((m_device.is<Solid::StorageDrive>()
+                        && m_device.as<Solid::StorageDrive>()->driveType() == Solid::StorageDrive::CdromDrive)
+                || (m_device.parent().is<Solid::StorageDrive>()
+                        && m_device.parent().as<Solid::StorageDrive>()->driveType() == Solid::StorageDrive::CdromDrive));
+
+            return accessible && !isCdrom;
+        }
+
         default:
             return QVariant();
         }

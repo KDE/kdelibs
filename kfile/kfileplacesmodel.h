@@ -44,7 +44,9 @@ public:
     enum AdditionalRoles {
         UrlRole = 0x069CD12B,
         HiddenRole = 0x0741CAAC,
-        SetupNeededRole = 0x059A935D
+        SetupNeededRole = 0x059A935D,
+        FixedDeviceRole = 0x332896C1,
+        CapacityBarRecommendedRole = 0x1548C5C4
     };
 
     KFilePlacesModel(QObject *parent=0);
