@@ -1083,11 +1083,23 @@ void RenderBox::relativePositionOffset(int &tx, int &ty) const
         tx -= style()->right().width(containingBlockWidth());
     if(!style()->top().isAuto())
     {
-        ty += style()->top().width(containingBlockHeight());
+        if (style()->top().isPercent()) {
+            int ph = calcPercentageHeight(style()->top());
+            if (ph != -1)
+                ty += ph;
+        } else {
+            ty += style()->top().width(containingBlockHeight());
+        }
     }
     else if(!style()->bottom().isAuto())
     {
-        ty -= style()->bottom().width(containingBlockHeight());
+        if (style()->top().isPercent()) {
+            int ph = calcPercentageHeight(style()->top());
+            if (ph != -1)
+                ty -= ph;
+        } else {
+            ty -= style()->bottom().width(containingBlockHeight());
+        }
     }
 }
 
