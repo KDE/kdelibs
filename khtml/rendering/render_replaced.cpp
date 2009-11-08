@@ -480,7 +480,7 @@ void RenderWidget::updateFromElement()
         }
 
         // Border:
-        if (shouldPaintBorder())
+        if (shouldPaintBorder() || (!shouldPaintBackgroundOrBorder() && canHaveBorder()))
         {
             if (QFrame* frame = qobject_cast<QFrame*>(m_widget))
                 frame->setFrameShape(QFrame::NoFrame);
