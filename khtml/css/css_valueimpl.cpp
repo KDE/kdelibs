@@ -684,8 +684,10 @@ void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned len
 void CSSStyleDeclarationImpl::setChanged()
 {
     if (m_node) {
-        if (m_node->nodeType() == Node::ELEMENT_NODE)
-            static_cast<ElementImpl*>(m_node)->synchronizeStyleAttribute(cssText());
+        if (m_node->nodeType() == Node::ELEMENT_NODE && (static_cast<ElementImpl*>(m_node)->inlineStyleDecls() == this)) {
+            // FIXME: potentially costly...
+            static_cast<ElementImpl*>(m_node)->synchronizeStyleAttribute();
+        }
         m_node->setChanged();
         return;
     }

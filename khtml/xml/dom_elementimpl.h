@@ -345,8 +345,8 @@ public:
     //Called when mapping from id to this node in document should be added
     virtual void addId   (const DOMString& id);
 
-    // Synchronize style attribute after it was changed via CSS DOM (html5)
-    void synchronizeStyleAttribute(const DOMString& value);
+    // Synchronize style attribute after it was changed via CSSOM
+    void synchronizeStyleAttribute();
 
 protected:
     void createAttributeMap() const;

@@ -1354,8 +1354,9 @@ void ElementImpl::focus()
     document()->setFocusNode(this);
 }
 
-void ElementImpl::synchronizeStyleAttribute(const DOMString& value)
+void ElementImpl::synchronizeStyleAttribute()
 {
+    DOMString value = getInlineStyleDecls()->cssText();
     attributes()->setValueWithoutElementUpdate(ATTR_STYLE, value.implementation());
 }
 
