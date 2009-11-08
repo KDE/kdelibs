@@ -924,7 +924,13 @@ DOM::DOMString CSSValueListImpl::cssText() const
     DOMString result = "";
 
     for (QListIterator<CSSValueImpl*> iterator(m_values); iterator.hasNext();) {
-	result += iterator.next()->cssText();
+        if (!result.isEmpty()) {
+            if (m_separator == Comma)
+                result += ", ";
+            else if (m_separator == Space)
+                result += " ";
+        }
+        result += iterator.next()->cssText();
     }
 
     return result;

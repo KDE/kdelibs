@@ -318,7 +318,7 @@ void SVGFontFaceElement::rebuildFontFace()
     if (describesParentFont) {
         m_fontElement = static_cast<SVGFontElement*>(parentNode());
 
-        list = new CSSValueList;
+        list = new CSSValueList; // ### CSSValueListImpl(CSSValueListImpl::Comma);
         list->append(new CSSFontFaceSrcValue(fontFamily(), true));
     } else if (srcElement)
         list = srcElement->srcValue();

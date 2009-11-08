@@ -348,7 +348,7 @@ CSSStyleDeclarationImpl *CSSParser::createFontFaceStyleDeclaration( CSSFontFaceR
             // change those to a list of values containing a single value, so that we may always cast to a list in the CSSFontSelector.
             CSSValueImpl* value = property->value();
             value->ref();
-            property->setValue( new CSSValueListImpl ); // ### createCommaSeparated();
+            property->setValue( new CSSValueListImpl(CSSValueListImpl::Comma) );
             static_cast<CSSValueListImpl*>(property->value())->append(value);
             value->deref();
         }
@@ -1489,7 +1489,7 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
 // [ <string> | attr(X) | open-quote | close-quote | no-open-quote | no-close-quote ]+ | inherit
 bool CSSParser::parseContent( int propId, bool important )
 {
-    CSSValueListImpl* values = new CSSValueListImpl();
+    CSSValueListImpl* values = new CSSValueListImpl(CSSValueListImpl::Comma);
 
     bool isValid = true;
     Value *val;
@@ -2116,7 +2116,7 @@ bool CSSParser::parseFont( bool important )
 CSSValueListImpl *CSSParser::parseFontFamily()
 {
 //     kDebug( 6080 ) << "CSSParser::parseFontFamily current=" << valueList->currentValue;
-    CSSValueListImpl *list = new CSSValueListImpl;
+    CSSValueListImpl *list = new CSSValueListImpl(CSSValueListImpl::Comma);
     Value *value = valueList->current();
     QString currFace;
 
@@ -2202,7 +2202,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 
 bool CSSParser::parseFontFaceSrc()
 {
-    CSSValueListImpl* values = new CSSValueListImpl; // ### CSSValueList::createCommaSeparated()
+    CSSValueListImpl* values = new CSSValueListImpl(CSSValueListImpl::Comma);
     Value* val;
     bool expectComma = false;
     bool allowFormat = false;
@@ -2479,7 +2479,7 @@ struct ShadowParseContext {
         // Handle the ,, case gracefully by doing nothing.
         if (x || y || blur || color) {
             if (!values)
-                values = new CSSValueListImpl();
+                values = new CSSValueListImpl(CSSValueListImpl::Comma);
 
             // Construct the current shadow value and add it to the list.
             values->append(new ShadowValueImpl(x, y, blur, color));

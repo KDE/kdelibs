@@ -303,7 +303,7 @@ bool CSSParser::parseSVGValue(int propId, bool important)
 
 CSSValueImpl* CSSParser::parseSVGStrokeDasharray()
 {
-    CSSValueListImpl* ret = new CSSValueListImpl;
+    CSSValueListImpl* ret = new CSSValueListImpl(CSSValueListImpl::Comma);
     Value* value = valueList->current();
     bool valid_primitive = true;
     while (value) {

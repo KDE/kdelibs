@@ -372,7 +372,7 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
     if (CSSValueImpl* fontStyle = style->getPropertyCSSValue(CSS_PROP_FONT_STYLE)) {
 
         if (fontStyle->isPrimitiveValue()) {
-            CSSValueListImpl* list = new CSSValueListImpl();// ### CSSValueListImpl::createCommaSeparated();
+            CSSValueListImpl* list = new CSSValueListImpl(CSSValueListImpl::Comma);
             list->append(fontStyle);
             fontStyle = list;
         } else if (!fontStyle->isValueList())
@@ -404,7 +404,7 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
 
     if (CSSValueImpl* fontWeight = style->getPropertyCSSValue(CSS_PROP_FONT_WEIGHT)) {
         if (fontWeight->isPrimitiveValue()) {
-            CSSValueListImpl* list = new CSSValueListImpl();// ### CSSValueListImpl::createCommaSeparated();
+            CSSValueListImpl* list = new CSSValueListImpl(CSSValueListImpl::Comma);
             list->append(fontWeight);
             fontWeight = list;
         } else if (!fontWeight->isValueList())
@@ -460,7 +460,7 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
 
     if (CSSValueImpl* fontVariant = style->getPropertyCSSValue(CSS_PROP_FONT_VARIANT)) {
         if (fontVariant->isPrimitiveValue()) {
-            CSSValueListImpl* list = new CSSValueListImpl();// ### CSSValueListImpl::createCommaSeparated();
+            CSSValueListImpl* list = new CSSValueListImpl(CSSValueListImpl::Comma);
             list->append(fontVariant);
             fontVariant = list;
         } else if (!fontVariant->isValueList())

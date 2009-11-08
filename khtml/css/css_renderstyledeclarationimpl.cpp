@@ -304,7 +304,7 @@ static CSSValueImpl* valueForShadow(const ShadowData *shadow)
 {
     if (!shadow)
         return new CSSPrimitiveValueImpl(CSS_VAL_NONE);
-    CSSValueListImpl *list = new CSSValueListImpl;
+    CSSValueListImpl *list = new CSSValueListImpl(CSSValueListImpl::Comma);
     for (const ShadowData *s = shadow; s; s = s->next) {
         CSSPrimitiveValueImpl *x = new CSSPrimitiveValueImpl(s->x, CSSPrimitiveValue::CSS_PX);
         CSSPrimitiveValueImpl *y = new CSSPrimitiveValueImpl(s->y, CSSPrimitiveValue::CSS_PX);

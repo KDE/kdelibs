@@ -152,7 +152,13 @@ private:
 class CSSValueListImpl : public CSSValueImpl
 {
 public:
-    CSSValueListImpl() : CSSValueImpl() {}
+    enum Separator {
+        Space,
+        Comma
+    };
+
+    CSSValueListImpl() : CSSValueImpl(), m_separator(Space) {}
+    CSSValueListImpl(Separator sep) : CSSValueImpl(), m_separator(sep) {}
 
     virtual ~CSSValueListImpl();
 
@@ -167,6 +173,7 @@ public:
     virtual DOM::DOMString cssText() const;
 
 protected:
+    KDE_BF_ENUM(Separator) m_separator: 1;
     QList<CSSValueImpl*> m_values;
 };
 
