@@ -872,20 +872,14 @@ const char *RenderInline::renderName() const
 
 bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
 {
-/*
-    if ( hitTestAction != HitTestSelfOnly ) {
-        for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->layer() && !child->isFloating() && child->nodeAtPoint(info, _x, _y, _tx, _ty, HitTestAll))
-                inside = true;
-    }
-*/
+
     // Check our line boxes if we're still not inside.
-    if (/*hitTestAction != HitTestChildrenOnly &&*/ !inside && style()->visibility() != HIDDEN) {
+    if (!inside) {
         // See if we're inside one of our line boxes.
         inside = hitTestLines(info, _x, _y, _tx, _ty, hitTestAction);
     }
 
-    if (inside && element()) {
+    if (inside && element() && style()->visibility() != HIDDEN) {
         if (info.innerNode() && info.innerNode()->renderer() &&
             !info.innerNode()->renderer()->isInline()) {
             // Within the same layer, inlines are ALWAYS fully above blocks.  Change inner node.
