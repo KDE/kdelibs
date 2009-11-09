@@ -84,6 +84,8 @@ void KButtonGroup::setSelected( int id )
       return;
     }
   }
+  // button not found, it might still show up though, eg. because of premature polishing above 
+  d->wantToBeId = id;
 }
 
 int KButtonGroup::selected() const
