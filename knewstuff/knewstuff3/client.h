@@ -101,7 +101,7 @@ public:
      *
      * @return Uploaded entry, or \b null in case of failures
      */
-    KNS3::Entry *uploadDialogModal(const QString& file, QWidget *parent = 0);
+    KNS3::Entry uploadDialogModal(const QString& file, QWidget *parent = 0);
 
     /**
      * @brief Asynchronous way of starting the upload workflow.

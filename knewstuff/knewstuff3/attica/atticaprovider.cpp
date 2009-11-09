@@ -124,7 +124,7 @@ void AtticaProvider::providerLoaded()
 void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
     Q_D(AtticaProvider);
-    kDebug() << "loading categories...";
+    kDebug() << "loading categories: " << d->categoryNameList;
     
     Attica::ListJob<Attica::Category>* job = static_cast<Attica::ListJob<Attica::Category>*>(listJob);
     Category::List categoryList = job->itemList();

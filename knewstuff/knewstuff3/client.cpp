@@ -40,17 +40,21 @@ using namespace KNS3;
 class KNS3::ClientPrivate
 {
 public:
-    ClientPrivate(QWidget * parent, Client * client)
-        : command(ClientPrivate::command_none),
-        uploaddialog(NULL),
-        downloaddialog(NULL),
-        uploadedEntry(NULL),
-        modal(false),
-        parent(parent),
+    ClientPrivate(QWidget* parent_, Client* client)
+        : parent(parent_),
         p(client),
+        command(ClientPrivate::command_none),
+        uploaddialog(0),
+        downloaddialog(0),
+        modal(false),
         loop(0),
-        engine(new Engine(parent))
+        engine(new Engine)
     {
+    }
+
+    ~ClientPrivate()
+    {
+        delete engine;
     }
 
     enum Command {
@@ -59,32 +63,33 @@ public:
         command_download
     };
 
+    Command command;
+    
     bool init(const QString & config);
 
     void workflow();
-    KNS3::Entry upload(const QString& file);
+    Entry upload(const QString& file);
 
     static QHash<QString, QPointer<KDialog> > s_dialogs;
 
-    Command command;
+    QWidget* parent;
     QPointer<UploadDialog> uploaddialog;
     QPointer<DownloadDialog> downloaddialog;
     QString m_uploadfile;
-    KNS3::Entry *uploadedEntry;
-    KNS3::Provider::List providers;
+    Entry uploadedEntry;
+    Provider::List providers;
     bool modal;
-    QWidget * parent;
-    Client * p;
-    QSet<KNS3::Entry> changedEntries;
+    Client* p;
+    QSet<Entry> changedEntries;
     QEventLoop* loop;
-    KNS3::Engine * engine;
+    Engine* engine;
 };
 
 
 QHash<QString, QPointer<KDialog> > KNS3::ClientPrivate::s_dialogs;
 
 Client::Client(QWidget* parent)
-        : d(new ClientPrivate(parent,this))
+        : QObject(parent), d(new ClientPrivate(parent,this))
 {
 }
 
@@ -265,7 +270,7 @@ void Client::downloadDialog(QWidget * parent)
 //    return 0;
 //}
 
-KNS3::Entry *Client::uploadDialogModal(const QString& file, QWidget * parent)
+KNS3::Entry Client::uploadDialogModal(const QString& file, QWidget * parent)
 {
     //kDebug() << "Client: uploadDialogModal";
 

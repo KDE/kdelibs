@@ -50,7 +50,10 @@
 #define _WIN32_IE 0x0500
 #include <shlobj.h>
 #endif
+
 #include "attica/atticaprovider.h"
+
+#include "core/cache.h"
 #include "staticxml/staticxmlprovider.h"
 
 class KNS3::Engine::Private {
@@ -82,22 +85,31 @@ class KNS3::Engine::Private {
 
         QMap<Entry, QString> previewfiles; // why not in entry?
 
-        Installation *installation;
-
-         // what is this? kill it?
-        //int activefeeds;
+        // handle installation of entries
+        Installation* installation;
+        // read/write cache of entries
+        Cache* cache;
+        
         QString searchTerm;
         Provider::SortMode sortMode;
 
         bool initialized;
-        CachePolicy cachepolicy;
 
         QMap<KJob*, Entry> entry_jobs;
 
         Private()
-            : uploadprovider(NULL), installation(NULL),
-            initialized(false), cachepolicy(CacheNever), sortMode(Provider::Rating)
+            : uploadprovider(NULL)
+            , initialized(false)
+            , sortMode(Provider::Rating)
+            , installation(new Installation)
+            , cache(new Cache)
         {
+        }
+        
+        ~Private()
+        {
+            delete installation;
+            delete cache;
         }
         
 };
@@ -107,7 +119,6 @@ using namespace KNS3;
 Engine::Engine(QObject* parent)
         : QObject(parent), d(new Engine::Private)
 {
-    d->installation = new Installation(this);
 }
 
 /* maybe better to disable copying alltogether?
@@ -119,7 +130,12 @@ Engine::Engine(const KNS3::Engine& other)
 
 Engine::~Engine()
 {
-    shutdown();
+    d->cache->writeCache();
+
+    d->provider_index.clear();
+    qDeleteAll(d->providers);
+    d->providers.clear();
+
     delete d;
 }
 
@@ -164,35 +180,42 @@ bool Engine::init(const QString &configfile)
     connect(d->installation, SIGNAL(signalInstallationFinished(Entry)), SLOT(slotEntryChanged(Entry)));
     connect(d->installation, SIGNAL(signalUninstallFinished(Entry)), SLOT(slotEntryChanged(Entry)));
 
-    QString cachePolicy = group.readEntry("CachePolicy", QString());
-    if (!cachePolicy.isEmpty()) {
-        if (cachePolicy == "never") {
-            d->cachepolicy = CacheNever;
-        } else if (cachePolicy == "replaceable") {
-            d->cachepolicy = CacheReplaceable;
-        } else if (cachePolicy == "resident") {
-            d->cachepolicy = CacheResident;
-        } else if (cachePolicy == "only") {
-            d->cachepolicy = CacheOnly;
+    CachePolicy cachePolicy;
+    QString cachePolicyString = group.readEntry("CachePolicy", QString());
+    if (!cachePolicyString.isEmpty()) {
+        if (cachePolicyString == "never") {
+            cachePolicy = CacheNever;
+        } else if (cachePolicyString == "replaceable") {
+            cachePolicy = CacheReplaceable;
+        } else if (cachePolicyString == "resident") {
+            cachePolicy = CacheResident;
+        } else if (cachePolicyString == "only") {
+            cachePolicy = CacheOnly;
         } else {
-            kError() << "Cache policy '" + cachePolicy + "' is unknown." << endl;
+            kError() << "Cache policy '" + cachePolicyString + "' is unknown." << endl;
         }
     }
-    kDebug() << "cache policy: " << cachePolicy;
+    kDebug() << "cache policy: " << cachePolicyString;
 
+    d->cache->setPolicy(cachePolicy);
+    d->cache->readCache();
+    
     d->initialized = true;
 
+
+    /*
     // load the registry first, so we know which entries are installed
     loadRegistry();
+    */
     
     // initialize providers at this point
     // then load the providersCache if caching is enabled
-    if (d->cachepolicy != CacheNever) {
+    if (d->cache->policy() != CacheNever) {
         loadProvidersCache();
     }
 
     // load the providers
-    if (d->cachepolicy != CacheOnly) {
+    if (d->cache->policy() != CacheOnly) {
         loadProviders();
     }
 
@@ -284,7 +307,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
                 provider = new StaticXmlProvider;
             }
             connect(provider, SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
-            
+
             if (provider->setProviderXML(p)) {
                 d->providers.append(provider);
             }
@@ -301,6 +324,8 @@ void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name().representation();
 
+    // TODO provider->setCachedEntries(cacheForProvider(provider->id()));
+    
     d->provider_index[p->id()] = p;
     
     emit signalProviderLoaded(p);
@@ -476,94 +501,6 @@ void Engine::slotUploadMetaResult(KJob *job)
     }
 }
 
-void Engine::loadRegistry()
-{
-    KStandardDirs standardDirs;
-
-    kDebug() << "Loading registry of files for the component: " << d->applicationName;
-
-    QString realAppName = d->applicationName.split(':')[0];
-
-    // this must be same as in registerEntry()
-    const QStringList dirs = standardDirs.findDirs("data", "knewstuff2-entries.registry");
-    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it) {
-        //kDebug() << " + Load from directory '" + (*it) + "'.";
-        QDir dir((*it));
-        const QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-        for (QStringList::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
-            QString filepath = (*it) + '/' + (*fit);
-            //kDebug() << "  + Load from file '" + filepath + "'.";
-
-            bool ret;
-            QFileInfo info(filepath);
-            QFile f(filepath);
-
-            // first see if this file is even for this app
-            // because the registry contains entries for all apps
-            // FIXMEE: should be able to do this with a filter on the entryList above probably
-            QString thisAppName = QString::fromUtf8(QByteArray::fromBase64(info.baseName().toUtf8()));
-
-            // NOTE: the ":" needs to always coincide with the separator character used in
-            // the id(Entry*) method
-            thisAppName = thisAppName.split(':')[0];
-
-            if (thisAppName != realAppName) {
-                continue;
-            }
-
-            ret = f.open(QIODevice::ReadOnly);
-            if (!ret) {
-                kWarning() << "The file could not be opened.";
-                continue;
-            }
-
-            QDomDocument doc;
-            ret = doc.setContent(&f);
-            if (!ret) {
-                kWarning() << "The file could not be parsed.";
-                continue;
-            }
-
-            QDomElement root = doc.documentElement();
-            if (root.tagName() != "ghnsinstall") {
-                kWarning() << "The file doesn't seem to be of interest.";
-                continue;
-            }
-
-            QDomElement stuff = root.firstChildElement("stuff");
-            if (stuff.isNull()) {
-                kWarning() << "Missing GHNS installation metadata.";
-                continue;
-            }
-            
-            Entry e;
-            e.setEntryXML(stuff);
-            //if (!e->isValid()) {
-            //    kWarning() << "Invalid GHNS installation metadata.";
-            //    continue;
-            //}
-
-            e.setStatus(Entry::Installed);
-            e.setSource(Entry::Registry);
-            d->entry_registry.append(e);
-            //QString thisid = id(e);
-
-            // we must overwrite cache entries with registered entries
-            // and not just append the latter ones
-            //if (entryCached(e)) {
-            //    // it's in the cache, so replace the cache entry with the registered entry
-            //    Entry * oldEntry = d->entry_index[thisid];
-            //    int index = d->entries.indexOf(oldEntry);
-            //    d->entries[index] = e;
-            //    //delete oldEntry;
-            //}
-            //else {
-            //    d->entries.append(e);
-            //}
-            //d->entry_index[thisid] = e;
-        }
-    }
-}
 
 void Engine::loadProvidersCache()
 {
@@ -633,11 +570,12 @@ void Engine::loadProvidersCache()
         provider = provider.nextSiblingElement("provider");
     }
 
-    if (d->cachepolicy == CacheOnly) {
+    if (d->cache->policy() == CacheOnly) {
         emit signalEntriesFinished();
     }
 }
 
+/* FIXME: decide what to do with this
 void Engine::loadFeedCache(Provider *provider)
 {
     KStandardDirs standardDirs;
@@ -660,111 +598,13 @@ void Engine::loadFeedCache(Provider *provider)
 
     kDebug() << "Load from directory: " + cachedir;
 }
+*/
 
-KNS3::Entry Engine::loadEntryCache(const QString& filepath)
-{
-    bool ret;
-    QFile f(filepath);
-    ret = f.open(QIODevice::ReadOnly);
-    if (!ret) {
-        kWarning() << "The file " << filepath << " could not be opened.";
-        return Entry();
-    }
-
-    QDomDocument doc;
-    ret = doc.setContent(&f);
-    if (!ret) {
-        kWarning() << "The file could not be parsed.";
-        return Entry();
-    }
-
-    QDomElement root = doc.documentElement();
-    if (root.tagName() != "ghnscache") {
-        kWarning() << "The file doesn't seem to be of interest.";
-        return Entry();
-    }
-
-    QDomElement stuff = root.firstChildElement("stuff");
-    if (stuff.isNull()) {
-        kWarning() << "Missing GHNS cache metadata.";
-        return Entry();
-    }
-    
-    // FIXME use the right sub class of entry
-    Entry e;
-	e.setEntryXML(stuff);
-    //if (!handler.isValid()) {
-    //    kWarning() << "Invalid GHNS installation metadata.";
-    //    return NULL;
-    //}
-
-    e.setStatus(Entry::Downloadable);
-    d->entries.append(e);
-
-    if (root.hasAttribute("previewfile")) {
-        d->previewfiles[e] = root.attribute("previewfile");
-        // FIXME: check here for a [ -f previewfile ]
-    }
-
-    if (root.hasAttribute("payloadfile")) {
-        // FIXME d->payloadfiles[e] = root.attribute("payloadfile");
-        // FIXME: check here for a [ -f payloadfile ]
-    }
-
-    e.setSource(Entry::Cache);
-
-    return e;
-}
-
-// FIXME: not needed anymore?
-#if 0
-void Engine::loadEntriesCache()
-{
-    KStandardDirs d;
-
-    //kDebug() << "Loading entry cache.";
-
-    QStringList cachedirs = d.findDirs("cache", "knewstuff2-entries.cache/" + d->componentname);
-    if (cachedirs.size() == 0) {
-        //kDebug() << "Cache directory not present, skip loading.";
-        return;
-    }
-    QString cachedir = cachedirs.first();
-
-    //kDebug() << " + Load from directory '" + cachedir + "'.";
-
-    QDir dir(cachedir);
-    QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-    for (QStringList::iterator fit = files.begin(); fit != files.end(); ++fit) {
-        QString filepath = cachedir + '/' + (*fit);
-        //kDebug() << "  + Load from file '" + filepath + "'.";
-
-        Entry *e = loadEntryCache(filepath);
-
-        if (e) {
-            // FIXME: load provider/feed information first
-            emit signalEntryLoaded(e, NULL, NULL);
-        }
-    }
-}
-#endif
-
-void Engine::shutdown()
-{
-    d->provider_index.clear();
-
-    qDeleteAll(d->providers);
-
-    d->entries.clear();
-    d->providers.clear();
-
-    delete d->installation;
-}
 
 bool Engine::providerCached(Provider *provider)
 {
 
-    if (d->cachepolicy == CacheNever) return false;
+    if (d->cache->policy() == CacheNever) return false;
 
     if (d->provider_index.contains(provider->id()))
         return true;
@@ -774,7 +614,7 @@ bool Engine::providerCached(Provider *provider)
 
 bool Engine::entryCached(const Entry& entry)
 {
-    if (d->cachepolicy == CacheNever) return false;
+    if (d->cache->policy() == CacheNever) return false;
     int index = d->entries.indexOf(entry);
     if (index >= 0 && d->entries.at(index).source() == Entry::Cache) {
         return true;
@@ -791,7 +631,7 @@ bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
     return false;
 }
 
-
+/* FIXME: decide what to do with this
 void Engine::cacheProvider(Provider *provider)
 {
     KStandardDirs dirs;
@@ -830,8 +670,10 @@ void Engine::cacheProvider(Provider *provider)
         Feed *feed = p->downloadUrlFeed(feeds.at(i));
         cacheFeed(p, feeds.at(i), feed);
     }*/
+    /*
 }
-
+*/
+    
 //void Engine::cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries)
 //{
 //    // feed cache file is a list of entry-id's that are part of this feed

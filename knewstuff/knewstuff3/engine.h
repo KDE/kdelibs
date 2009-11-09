@@ -61,6 +61,8 @@ public:
      */
     ~Engine();
 
+
+    // FIXME move into Cache
     /**
      * Policy on how to cache the data received from the network. While
      * CacheNever completely switches off all caching, the other two settings
@@ -91,7 +93,6 @@ public:
         Comments = 0x2
     };
     Q_DECLARE_FLAGS(CollaborationFeatures, CollaborationFeature)
-
 
 
 
@@ -285,15 +286,19 @@ private:
      * creates providers based on their type and adds them to the list of providers
      */
     void loadProviders();
-    
+
+    /// REMOVE THESE
     void loadRegistry();
     void loadProvidersCache();
     KNS3::Entry loadEntryCache(const QString& filepath);
-#if 0
-    void loadEntriesCache();
-#endif
-    void loadFeedCache(Provider *provider);
-    void cacheProvider(Provider *provider);
+
+    void loadCache(CachePolicy policy);
+    
+    // if at all: move into staticprovider:
+    //void loadFeedCache(Provider *provider);
+    //void cacheProvider(Provider *provider);
+
+    // all entries should be cached, depending on policy on exit:
     void cacheEntry(const Entry& entry);
 
     /** generate a cache file for the given feed

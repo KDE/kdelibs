@@ -9,6 +9,7 @@ link_directories(${ATTICA_LIBRARY_DIRS})
 
 set(knewstuff3_core_SRCS
    core/author.cpp
+   core/cache.cpp
    core/category.cpp
    core/entry.cpp
    core/installation.cpp
