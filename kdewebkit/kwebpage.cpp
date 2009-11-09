@@ -78,7 +78,7 @@ KWebPage::KWebPage(QObject *parent, qlonglong windowId)
     if (!windowId) {
         QWidget *widget = qobject_cast<QWidget*>(parent);
         if (widget)
-            windowId = widget->window()->winId();
+            windowId = (qlonglong)widget->window()->winId();
     }
 
     if (windowId) {
