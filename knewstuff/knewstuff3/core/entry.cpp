@@ -443,8 +443,9 @@ QDomElement KNS3::Entry::entryXML() const
     if (d->mStatus == Installed) {
         (void)addElement(doc, el, "status", "installed");
     }
-    // FIXME upgradeable etc
-    // FIXME source
+    if (d->mStatus == Updateable) {
+        (void)addElement(doc, el, "status", "updateable");
+    }
 
     return el;
 }

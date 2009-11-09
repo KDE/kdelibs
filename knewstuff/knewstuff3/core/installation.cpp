@@ -105,6 +105,14 @@ bool Installation::readConfig(const KConfigGroup& group)
     d->installPath = group.readEntry("InstallPath", QString());
     d->absoluteInstallPath = group.readEntry("AbsoluteInstallPath", QString());
     d->customName = group.readEntry("CustomName", false);
+
+    if (d->standardResourceDirectory.isEmpty() &&
+            d->targetDirectory.isEmpty() &&
+            d->installPath.isEmpty() &&
+            d->absoluteInstallPath.isEmpty()) {
+        kError() << "No installation target set";
+        return false;
+    }
     
     QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
     if (!checksumpolicy.isEmpty()) {
