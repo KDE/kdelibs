@@ -29,17 +29,19 @@ class Cache : public QObject
     Q_OBJECT
 public:
     Cache(QObject* parent = 0);
+    void setCacheFileName(const QString& file);
     void setPolicy(Engine::CachePolicy policy);
     Engine::CachePolicy policy() const;
     
     void readCache();
 
-    void writeCache();
+    void writeCache(const Entry::List& entries);
 
     Entry::List entriesForProvider(const QString& providerId);
     
 private:
     Engine::CachePolicy cachePolicy;
+    QString cacheFile;
     
 };
 

@@ -61,8 +61,6 @@ public:
      */
     ~Engine();
 
-
-    // FIXME move into Cache
     /**
      * Policy on how to cache the data received from the network. While
      * CacheNever completely switches off all caching, the other two settings
@@ -270,10 +268,12 @@ private Q_SLOTS:
 
     void slotPreviewResult(KJob *job);
 
+    /*
     void slotUploadPayloadResult(KJob *job);
     void slotUploadPreviewResult(KJob *job);
     void slotUploadMetaResult(KJob *job);
-
+    */
+    
     void slotProgress(KJob *job, unsigned long percent);
     
     void slotEntryChanged(const Entry& entry);
@@ -299,7 +299,7 @@ private:
     //void cacheProvider(Provider *provider);
 
     // all entries should be cached, depending on policy on exit:
-    void cacheEntry(const Entry& entry);
+//    void cacheEntry(const Entry& entry);
 
     /** generate a cache file for the given feed
       feed cache file is a list of entry-id's that are part of this feed
@@ -309,11 +309,10 @@ private:
       @param entries entries to cache in the feed file
     */
     //void cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries);
-    void registerEntry(const Entry& entry);
-    void unregisterEntry(const Entry& entry);
-    void shutdown();
+    //void registerEntry(const Entry& entry);
+  //  void unregisterEntry(const Entry& entry);
 
-    bool entryCached(const Entry& entry);
+ //   bool entryCached(const Entry& entry);
     bool entryChanged(const Entry& oldentry, const Entry& entry);
     bool providerCached(Provider *provider);
 

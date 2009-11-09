@@ -66,19 +66,15 @@ class KNS3::Engine::Private {
         QStringList categories;
 
         // holds all the entries
-        QList<Entry> entries;
-
-        // FIXME: die!
-        // holds the registered entries mapped by their id
-        QList<Entry> entry_registry;
+        Entry::List entries;
 
         // KILL THIS:
         QMap<QString, Provider*> provider_index;
 
-        Entry uploadedentry;
 
         //?
-        Provider *uploadprovider;
+        //Provider* uploadprovider;
+        //Entry uploadedentry;
 
         // the name of the app that uses hot new stuff
         QString applicationName;
@@ -98,8 +94,7 @@ class KNS3::Engine::Private {
         QMap<KJob*, Entry> entry_jobs;
 
         Private()
-            : uploadprovider(NULL)
-            , initialized(false)
+            : initialized(false)
             , sortMode(Provider::Rating)
             , installation(new Installation)
             , cache(new Cache)
@@ -111,7 +106,6 @@ class KNS3::Engine::Private {
             delete installation;
             delete cache;
         }
-        
 };
 
 using namespace KNS3;
@@ -130,7 +124,7 @@ Engine::Engine(const KNS3::Engine& other)
 
 Engine::~Engine()
 {
-    d->cache->writeCache();
+    d->cache->writeCache(d->entries);
 
     d->provider_index.clear();
     qDeleteAll(d->providers);
@@ -141,7 +135,6 @@ Engine::~Engine()
 
 bool Engine::init(const QString &configfile)
 {
-
     kDebug() << "Initializing KNS::Engine from '" << configfile << "'";
 
     KConfig conf(configfile);
@@ -197,6 +190,7 @@ bool Engine::init(const QString &configfile)
     }
     kDebug() << "cache policy: " << cachePolicyString;
 
+    d->cache->setCacheFileName(d->applicationName.split(':')[0]);
     d->cache->setPolicy(cachePolicy);
     d->cache->readCache();
     
@@ -339,6 +333,7 @@ void Engine::providerInitialized(Provider* p)
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
 {
+    d->entries.append(entries);
     emit signalEntriesLoaded(entries);
 }
 
@@ -378,6 +373,7 @@ void Engine::slotProgress(KJob *job, unsigned long percent)
 }
 
 // FIXME: this should be handled more internally to return a (cached) preview image
+// kio caches images already (?) but running jobs should be stopped if no longer neeeded...
 void Engine::slotPreviewResult(KJob *job)
 {
     if (job->error()) {
@@ -394,7 +390,6 @@ void Engine::slotPreviewResult(KJob *job)
             Entry entry = d->entry_jobs[job];
             d->entry_jobs.remove(job);
             d->previewfiles[entry] = fcjob->destUrl().path();
-            cacheEntry(entry);
         }
         // FIXME: ignore if not? shouldn't happen...
 
@@ -402,6 +397,7 @@ void Engine::slotPreviewResult(KJob *job)
     }
 }
 
+/*
 void Engine::slotUploadPayloadResult(KJob *job)
 {
     //if (job->error()) {
@@ -480,7 +476,9 @@ void Engine::slotUploadPreviewResult(KJob *job)
     //        SIGNAL(result(KJob*)),
     //        SLOT(slotUploadMetaResult(KJob*)));
 }
+*/
 
+/*
 void Engine::slotUploadMetaResult(KJob *job)
 {
     if (job->error()) {
@@ -500,7 +498,7 @@ void Engine::slotUploadMetaResult(KJob *job)
         emit signalEntryUploaded();
     }
 }
-
+*/
 
 void Engine::loadProvidersCache()
 {
@@ -562,11 +560,6 @@ void Engine::loadProvidersCache()
 
         //loadFeedCache(p);
 
-        //// no longer needed because EnginePrivate::slotProviderLoaded calls loadEntries
-        ////if (d->automationpolicy == AutomationOn) {
-        ////    loadEntries(p);
-        ////}
-
         provider = provider.nextSiblingElement("provider");
     }
 
@@ -608,17 +601,6 @@ bool Engine::providerCached(Provider *provider)
 
     if (d->provider_index.contains(provider->id()))
         return true;
-    return false;
-}
-
-
-bool Engine::entryCached(const Entry& entry)
-{
-    if (d->cache->policy() == CacheNever) return false;
-    int index = d->entries.indexOf(entry);
-    if (index >= 0 && d->entries.at(index).source() == Entry::Cache) {
-        return true;
-    }
     return false;
 }
 
@@ -708,105 +690,6 @@ void Engine::cacheProvider(Provider *provider)
 //    metastream << root;
 //    f.close();
 //}
-
-void Engine::cacheEntry(const Entry& entry)
-{
-    KStandardDirs standardDirs;
-
-    QString cachedir = standardDirs.saveLocation("cache", "knewstuff2-entries.cache/");
-
-    kDebug() << "Caching entry in directory '" + cachedir + "'.";
-
-    //FIXME: this must be deterministic, but it could also be an OOB random string
-    //which gets stored into <ghnscache> just like preview...
-    QString idbase64 = QString(entry.uniqueId().toUtf8().toBase64());
-    QString cachefile = idbase64 + ".meta";
-
-    kDebug() << "Caching to file '" + cachefile + "'.";
-
-    // FIXME: adhere to meta naming rules as discussed
-    // FIXME: maybe related filename to base64-encoded id(), or the reverse?
-
-    QDomElement exml = entry.entryXML();
-
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnscache");
-    root.appendChild(exml);
-
-    if (d->previewfiles.contains(entry)) {
-        root.setAttribute("previewfile", d->previewfiles[entry]);
-    }
-    /*if (d->payloadfiles.contains(entry)) {
-        root.setAttribute("payloadfile", d->payloadfiles[entry]);
-    }*/
-
-    QFile f(cachedir + cachefile);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kError() << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
-        // FIXME: ignore?
-        return;
-    }
-    QTextStream metastream(&f);
-    metastream << root;
-    f.close();
-}
-
-void Engine::registerEntry(const Entry& entry)
-{
-    d->entry_registry.append(entry);
-    KStandardDirs standardDirs;
-
-    //kDebug() << "Registering entry.";
-
-    // NOTE: this directory must match loadRegistry
-    QString registrydir = standardDirs.saveLocation("data", "knewstuff2-entries.registry");
-
-    //kDebug() << " + Save to directory '" + registrydir + "'.";
-
-    // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(entry.uniqueId().toUtf8().toBase64()) + ".meta";
-
-    //kDebug() << " + Save to file '" + registryfile + "'.";
-
-// TODO: serialization of entries
-/*
-    QDomElement exml = entry.entryXML();
-
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnsinstall");
-    root.appendChild(exml);
-
-    if (d->payloadfiles.contains(entry)) {
-        root.setAttribute("payloadfile", d->payloadfiles[entry]);
-    }
-
-    QFile f(registrydir + registryfile);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kError() << "Cannot write meta information to '" << registrydir + registryfile << "'." << endl;
-        // FIXME: ignore?
-        return;
-    }
-    QTextStream metastream(&f);
-    metastream << root;
-    f.close();
-*/
-}
-
-void KNS3::Engine::unregisterEntry(const Entry& entry)
-{
-    KStandardDirs standardDirs;
-
-    // NOTE: this directory must match loadRegistry
-    QString registrydir = standardDirs.saveLocation("data", "knewstuff2-entries.registry");
-
-    // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(entry.uniqueId().toUtf8().toBase64()) + ".meta";
-
-    QFile::remove(registrydir + registryfile);
-
-    // remove the entry from d->entry_registry
-    d->entry_registry.removeAll(entry);
-}
 
 void Engine::install(const KNS3::Entry& entry)
 {

@@ -338,6 +338,14 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
             d->mInstalledFiles << e.text();
         } else if (e.tagName() == "id") {
             d->mUniqueId = e.text();
+
+            // FIXME
+            /*
+        } else if (e.tagName() == "status") {
+            d->mSource = e.text();
+        } else if (e.tagName() == "source") {
+            d->mStatus = e.text();
+        */
             //kDebug() << "got id number: " << idNumber;
         }
     }
@@ -351,7 +359,7 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
 
     if (d->mPayload.isEmpty()) {
         kWarning(550) << "Entry: no payload URL given";
-        return false;
+        //return false;
     }
 
     return true;
@@ -431,6 +439,12 @@ QDomElement KNS3::Entry::entryXML() const
         e = addElement(doc, el, "payload", KUrl(payload.translated(*it)).fileName());
         e.setAttribute("lang", *it);
     }
+
+    if (d->mStatus == Installed) {
+        (void)addElement(doc, el, "status", "installed");
+    }
+    // FIXME upgradeable etc
+    // FIXME source
 
     return el;
 }

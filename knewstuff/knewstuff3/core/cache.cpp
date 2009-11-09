@@ -17,13 +17,21 @@
 
 #include "cache.h"
 
+#include <QtCore/QFile>
+#include <KStandardDirs>
 #include <KDebug>
 
 using namespace KNS3;
 
 Cache::Cache(QObject* parent): QObject(parent)
 {
-    cachePolicy = Engine::CacheNever;
+    cachePolicy = Engine::CacheReplaceable;
+}
+
+void Cache::setCacheFileName(const QString& file)
+{
+    cacheFile = KStandardDirs::locateLocal("data", "knewstuff3/" + file + ".knscache");
+    kDebug() << "Using Cache file: " << cacheFile;
 }
 
 void Cache::setPolicy(Engine::CachePolicy policy)
@@ -38,27 +46,78 @@ Engine::CachePolicy Cache::policy() const
 
 void Cache::readCache()
 {
-    kDebug() << "Read Cache";
+    kDebug() << "Reading Cache...";
 
+    bool ret;
+    QFile f(cacheFile);
+    ret = f.open(QIODevice::ReadOnly);
+    if (!ret) {
+        kWarning() << "The file " << cacheFile << " could not be opened.";
+        return;
+    }
 
+    QDomDocument doc;
+    ret = doc.setContent(&f);
+    if (!ret) {
+        kWarning() << "The file could not be parsed.";
+        return;
+    }
+
+    QDomElement root = doc.documentElement();
+    if (root.tagName() != "ghnscache") {
+        kWarning() << "The file doesn't seem to be of interest.";
+        return;
+    }
+
+    QDomElement stuff = root.firstChildElement("stuff");
+    if (stuff.isNull()) {
+        kWarning() << "Missing GHNS cache metadata.";
+        return;
+    }
+
+    // FIXME use the right sub class of entry
+    Entry e;
+    e.setEntryXML(stuff);
+    //if (!handler.isValid()) {
+    //    kWarning() << "Invalid GHNS installation metadata.";
+    //    return NULL;
+    //}
+
+/* FIXME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    e.setStatus(Entry::Installed);
+    e.setSource(Entry::Registry);
+    e.setStatus(Entry::Downloadable);
+    */
+
+    e.setSource(Entry::Cache);
     
+    Entry::List entries;
+    entries.append(e);
+
+    /*
+    if (root.hasAttribute("previewfile")) {
+        d->previewfiles[e] = root.attribute("previewfile");
+        // FIXME: check here for a [ -f previewfile ]
+    }
+    */
+
+    if (root.hasAttribute("payloadfile")) {
+        // FIXME d->payloadfiles[e] = root.attribute("payloadfile");
+        // FIXME: check here for a [ -f payloadfile ]
+    }
+
+    kDebug() << "Reading Cache..." << entries.size();
 }
 
-void Cache::writeCache()
-{
-    kDebug() << "Write Cache";
-}
 
 
 
 
 
-
-
-
-
-// da old stuff
 /*
+
+
+
 void Engine::loadRegistry()
 {
     KStandardDirs standardDirs;
@@ -147,63 +206,67 @@ void Engine::loadRegistry()
         }
     }
 }
+*/
 
 
-KNS3::Entry Engine::loadEntryCache(const QString& filepath)
+void Cache::writeCache(const Entry::List& entries)
 {
-    bool ret;
-    QFile f(filepath);
-    ret = f.open(QIODevice::ReadOnly);
-    if (!ret) {
-        kWarning() << "The file " << filepath << " could not be opened.";
-        return Entry();
-    }
+    kDebug() << "Write Cache";
 
+    QFile f(cacheFile);
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        kWarning() << "Cannot write meta information to '" << cacheFile << "'." << endl;
+        return;
+    }
+    
     QDomDocument doc;
-    ret = doc.setContent(&f);
-    if (!ret) {
-        kWarning() << "The file could not be parsed.";
-        return Entry();
+    QDomElement root = doc.createElement("ghnsinstall");
+
+    foreach (const Entry& entry, entries) {
+        QDomElement exml = entry.entryXML();
+        root.appendChild(exml);
     }
 
-    QDomElement root = doc.documentElement();
-    if (root.tagName() != "ghnscache") {
-        kWarning() << "The file doesn't seem to be of interest.";
-        return Entry();
-    }
+    QTextStream metastream(&f);
+    metastream << root;
 
-    QDomElement stuff = root.firstChildElement("stuff");
-    if (stuff.isNull()) {
-        kWarning() << "Missing GHNS cache metadata.";
-        return Entry();
-    }
-
-    // FIXME use the right sub class of entry
-    Entry e;
-    e.setEntryXML(stuff);
-    //if (!handler.isValid()) {
-    //    kWarning() << "Invalid GHNS installation metadata.";
-    //    return NULL;
-    //}
-
-    e.setStatus(Entry::Downloadable);
-    d->entries.append(e);
-
-    if (root.hasAttribute("previewfile")) {
-        d->previewfiles[e] = root.attribute("previewfile");
-        // FIXME: check here for a [ -f previewfile ]
-    }
-
-    if (root.hasAttribute("payloadfile")) {
-        // FIXME d->payloadfiles[e] = root.attribute("payloadfile");
-        // FIXME: check here for a [ -f payloadfile ]
-    }
-
-    e.setSource(Entry::Cache);
-
-    return e;
+    kDebug() << doc.toString();
+    
+    f.close();
 }
 
+/*
+void Engine::cacheEntry(const Entry& entry)
+{
+
+
+    kDebug() << "Caching to file '" + cachefile + "'.";
+
+    // FIXME: adhere to meta naming rules as discussed
+    // FIXME: maybe related filename to base64-encoded id(), or the reverse?
+
+    QDomElement exml = entry.entryXML();
+
+    QDomDocument doc;
+    QDomElement root = doc.createElement("ghnscache");
+    root.appendChild(exml);
+
+    if (d->previewfiles.contains(entry)) {
+        root.setAttribute("previewfile", d->previewfiles[entry]);
+    }
+    //if (d->payloadfiles.contains(entry)) {
+    //    root.setAttribute("payloadfile", d->payloadfiles[entry]);
+    //}
+
+
+}   
+}
+*/
+
+
+/*
+// da old stuff
+/*
 // FIXME: not needed anymore?
 #if 0
 void Engine::loadEntriesCache()
@@ -238,5 +301,69 @@ void Engine::loadEntriesCache()
 #endif
 */
 
+/*
+void Engine::cacheEntry(const Entry& entry)
+{
+    KStandardDirs standardDirs;
+
+    QString cachedir = standardDirs.saveLocation("cache", "knewstuff2-entries.cache/");
+
+    kDebug() << "Caching entry in directory '" + cachedir + "'.";
+
+    //FIXME: this must be deterministic, but it could also be an OOB random string
+    //which gets stored into <ghnscache> just like preview...
+    QString idbase64 = QString(entry.uniqueId().toUtf8().toBase64());
+    QString cachefile = idbase64 + ".meta";
+
+    kDebug() << "Caching to file '" + cachefile + "'.";
+
+    // FIXME: adhere to meta naming rules as discussed
+    // FIXME: maybe related filename to base64-encoded id(), or the reverse?
+
+    QDomElement exml = entry.entryXML();
+
+    QDomDocument doc;
+    QDomElement root = doc.createElement("ghnscache");
+    root.appendChild(exml);
+
+    if (d->previewfiles.contains(entry)) {
+        root.setAttribute("previewfile", d->previewfiles[entry]);
+    }
+    //if (d->payloadfiles.contains(entry)) {
+    //    root.setAttribute("payloadfile", d->payloadfiles[entry]);
+    //}
+
+    QFile f(cachedir + cachefile);
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        kError() << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
+        // FIXME: ignore?
+        return;
+    }
+    QTextStream metastream(&f);
+    metastream << root;
+    f.close();
+}
+*/
+
+
+
+
+/* imho this can just be removed
+void KNS3::Engine::unregisterEntry(const Entry& entry)
+{
+    KStandardDirs standardDirs;
+
+    // NOTE: this directory must match loadRegistry
+    QString registrydir = standardDirs.saveLocation("data", "knewstuff2-entries.registry");
+
+    // FIXME: see cacheEntry() for naming-related discussion
+    QString registryfile = QString(entry.uniqueId().toUtf8().toBase64()) + ".meta";
+
+    QFile::remove(registrydir + registryfile);
+
+    // remove the entry from d->entry_registry
+    d->entry_registry.removeAll(entry);
+}
+*/
 
 #include "cache.moc"
