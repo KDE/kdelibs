@@ -198,7 +198,7 @@ class KTranslitSerbianPrivate
 {
     public:
     QHash<QString, bool> latinNames;
-    QHash<QString, bool> yekavianNames;
+    QHash<QString, bool> ijekavianNames;
     QHash<QChar, QString> dictC2L;
     QHash<QString, QString> dictI2E;
     int maxReflexLen;
@@ -218,16 +218,16 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_NAME_ENTRY(d->latinNames, "ijekavianlatin");
     SR_NAME_ENTRY(d->latinNames, "yekavianlatin");
     SR_NAME_ENTRY(d->latinNames, "iyekavianlatin");
-    SR_NAME_ENTRY(d->yekavianNames, "ije");
-    SR_NAME_ENTRY(d->yekavianNames, "ijelatin");
-    SR_NAME_ENTRY(d->yekavianNames, "jekavian");
-    SR_NAME_ENTRY(d->yekavianNames, "jekavianlatin");
-    SR_NAME_ENTRY(d->yekavianNames, "ijekavian");
-    SR_NAME_ENTRY(d->yekavianNames, "ijekavianlatin");
-    SR_NAME_ENTRY(d->yekavianNames, "yekavian");
-    SR_NAME_ENTRY(d->yekavianNames, "yekavianlatin");
-    SR_NAME_ENTRY(d->yekavianNames, "iyekavian");
-    SR_NAME_ENTRY(d->yekavianNames, "iyekavianlatin");
+    SR_NAME_ENTRY(d->ijekavianNames, "ije");
+    SR_NAME_ENTRY(d->ijekavianNames, "ijelatin");
+    SR_NAME_ENTRY(d->ijekavianNames, "jekavian");
+    SR_NAME_ENTRY(d->ijekavianNames, "jekavianlatin");
+    SR_NAME_ENTRY(d->ijekavianNames, "ijekavian");
+    SR_NAME_ENTRY(d->ijekavianNames, "ijekavianlatin");
+    SR_NAME_ENTRY(d->ijekavianNames, "yekavian");
+    SR_NAME_ENTRY(d->ijekavianNames, "yekavianlatin");
+    SR_NAME_ENTRY(d->ijekavianNames, "iyekavian");
+    SR_NAME_ENTRY(d->ijekavianNames, "iyekavianlatin");
 
     #define SR_DICTC2L_ENTRY(a, b) do { \
         d->dictC2L[QString::fromUtf8(a)[0]] = QString::fromUtf8(b); \
@@ -306,33 +306,82 @@ KTranslitSerbian::KTranslitSerbian ()
     #define SR_DICTI2E_ENTRY(a, b) do { \
         d->dictI2E[QString::fromUtf8(a)] = QString::fromUtf8(b); \
     } while (0)
-    // basic
+    // basic, Cyrillic
     SR_DICTI2E_ENTRY("ије", "е");
+    SR_DICTI2E_ENTRY("Ије", "Е");
     SR_DICTI2E_ENTRY("ИЈЕ", "Е");
     SR_DICTI2E_ENTRY("иј", "е");
+    SR_DICTI2E_ENTRY("Иј", "Е");
     SR_DICTI2E_ENTRY("ИЈ", "Е");
     SR_DICTI2E_ENTRY("је", "е");
+    SR_DICTI2E_ENTRY("Је", "Е");
     SR_DICTI2E_ENTRY("ЈЕ", "Е");
     SR_DICTI2E_ENTRY("ље", "ле");
+    SR_DICTI2E_ENTRY("Ље", "Ле");
     SR_DICTI2E_ENTRY("ЉЕ", "ЛЕ");
     SR_DICTI2E_ENTRY("ње", "не");
+    SR_DICTI2E_ENTRY("Ње", "Не");
     SR_DICTI2E_ENTRY("ЊЕ", "НЕ");
     SR_DICTI2E_ENTRY("ио", "ео");
+    SR_DICTI2E_ENTRY("Ио", "Ео");
     SR_DICTI2E_ENTRY("ИО", "ЕО");
     SR_DICTI2E_ENTRY("иљ", "ел");
+    SR_DICTI2E_ENTRY("Иљ", "Ел");
     SR_DICTI2E_ENTRY("ИЉ", "ЕЛ");
-    // special cases (include one prev. letter)
+    // basic, Latin
+    SR_DICTI2E_ENTRY("ije", "e");
+    SR_DICTI2E_ENTRY("Ije", "E");
+    SR_DICTI2E_ENTRY("IJE", "E");
+    SR_DICTI2E_ENTRY("ij", "e");
+    SR_DICTI2E_ENTRY("Ij", "E");
+    SR_DICTI2E_ENTRY("IJ", "E");
+    SR_DICTI2E_ENTRY("je", "e");
+    SR_DICTI2E_ENTRY("Je", "E");
+    SR_DICTI2E_ENTRY("JE", "E");
+    SR_DICTI2E_ENTRY("lje", "le");
+    SR_DICTI2E_ENTRY("Lje", "Le");
+    SR_DICTI2E_ENTRY("LJE", "LE");
+    SR_DICTI2E_ENTRY("nje", "ne");
+    SR_DICTI2E_ENTRY("Nje", "Ne");
+    SR_DICTI2E_ENTRY("NJE", "NE");
+    SR_DICTI2E_ENTRY("io", "eo");
+    SR_DICTI2E_ENTRY("Io", "Eo");
+    SR_DICTI2E_ENTRY("IO", "EO");
+    SR_DICTI2E_ENTRY("ilj", "el");
+    SR_DICTI2E_ENTRY("Ilj", "El");
+    SR_DICTI2E_ENTRY("ILJ", "EL");
+    // special cases, Cyrillic
     SR_DICTI2E_ENTRY("лије", "ли");
+    SR_DICTI2E_ENTRY("Лије", "Ли");
     SR_DICTI2E_ENTRY("ЛИЈЕ", "ЛИ");
     SR_DICTI2E_ENTRY("лијен", "лењ");
     SR_DICTI2E_ENTRY("Лијен", "Лењ");
     SR_DICTI2E_ENTRY("ЛИЈЕН", "ЛЕЊ");
     SR_DICTI2E_ENTRY("мија", "меја");
+    SR_DICTI2E_ENTRY("Мија", "Меја");
     SR_DICTI2E_ENTRY("МИЈА", "МЕЈА");
     SR_DICTI2E_ENTRY("мије", "мејe");
+    SR_DICTI2E_ENTRY("Мије", "Мејe");
     SR_DICTI2E_ENTRY("МИЈЕ", "МЕЈE");
     SR_DICTI2E_ENTRY("није", "ни");
+    SR_DICTI2E_ENTRY("Није", "Ни");
     SR_DICTI2E_ENTRY("НИЈЕ", "НИ");
+    // special cases, Latin
+    SR_DICTI2E_ENTRY("lije", "li");
+    SR_DICTI2E_ENTRY("Lije", "Li");
+    SR_DICTI2E_ENTRY("LIJE", "LI");
+    SR_DICTI2E_ENTRY("lijen", "lenj");
+    SR_DICTI2E_ENTRY("Lijen", "Lenj");
+    SR_DICTI2E_ENTRY("LIJEN", "LENJ");
+    SR_DICTI2E_ENTRY("mija", "meja");
+    SR_DICTI2E_ENTRY("Mija", "Meja");
+    SR_DICTI2E_ENTRY("MIJA", "MEJA");
+    SR_DICTI2E_ENTRY("mije", "meje");
+    SR_DICTI2E_ENTRY("Mije", "Meje");
+    SR_DICTI2E_ENTRY("MIJE", "MEJE");
+    SR_DICTI2E_ENTRY("nije", "ni");
+    SR_DICTI2E_ENTRY("Nije", "Ni");
+    SR_DICTI2E_ENTRY("NIJE", "NI");
 
     d->maxReflexLen = 0;
     foreach (const QString &reflex, d->dictI2E.keys()) {
@@ -355,8 +404,8 @@ QString KTranslitSerbian::transliterate (const QString &str_,
 
     QString str = str_;
 
-    // Resolve Ekavian/Yekavian (must come before Cyrillic/Latin).
-    if (d->yekavianNames.contains(script)) {
+    // Resolve Ekavian/Ijekavian.
+    if (d->ijekavianNames.contains(script)) {
         // Just remove reflex marks.
         str.remove(d->reflexMark);
         str = resolveInserts(str, 2, 1, insHeadIje);
