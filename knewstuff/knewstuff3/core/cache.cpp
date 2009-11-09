@@ -90,6 +90,8 @@ void Cache::readCache()
     */
 
     e.setSource(Entry::Cache);
+
+
     
     Entry::List entries;
     entries.append(e);
@@ -220,51 +222,24 @@ void Cache::writeCache(const Entry::List& entries)
     }
     
     QDomDocument doc;
-    QDomElement root = doc.createElement("ghnsinstall");
+    QDomElement root = doc.createElement("hotnewstuffregistry");
 
     foreach (const Entry& entry, entries) {
-        QDomElement exml = entry.entryXML();
-        root.appendChild(exml);
+        // Write the entry, unless the policy is CacheNever and the entry is not installed.
+        if (cachePolicy != Engine::CacheNever || (entry.status() == Entry::Installed || entry.status() == Entry::Updateable)) {
+            QDomElement exml = entry.entryXML();
+            root.appendChild(exml);
+        }
     }
 
     QTextStream metastream(&f);
     metastream << root;
-
-    kDebug() << doc.toString();
-    
     f.close();
 }
 
-/*
-void Engine::cacheEntry(const Entry& entry)
-{
 
 
-    kDebug() << "Caching to file '" + cachefile + "'.";
 
-    // FIXME: adhere to meta naming rules as discussed
-    // FIXME: maybe related filename to base64-encoded id(), or the reverse?
-
-    QDomElement exml = entry.entryXML();
-
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnscache");
-    root.appendChild(exml);
-
-    if (d->previewfiles.contains(entry)) {
-        root.setAttribute("previewfile", d->previewfiles[entry]);
-    }
-    //if (d->payloadfiles.contains(entry)) {
-    //    root.setAttribute("payloadfile", d->payloadfiles[entry]);
-    //}
-
-
-}   
-}
-*/
-
-
-/*
 // da old stuff
 /*
 // FIXME: not needed anymore?
@@ -346,24 +321,5 @@ void Engine::cacheEntry(const Entry& entry)
 */
 
 
-
-
-/* imho this can just be removed
-void KNS3::Engine::unregisterEntry(const Entry& entry)
-{
-    KStandardDirs standardDirs;
-
-    // NOTE: this directory must match loadRegistry
-    QString registrydir = standardDirs.saveLocation("data", "knewstuff2-entries.registry");
-
-    // FIXME: see cacheEntry() for naming-related discussion
-    QString registryfile = QString(entry.uniqueId().toUtf8().toBase64()) + ".meta";
-
-    QFile::remove(registrydir + registryfile);
-
-    // remove the entry from d->entry_registry
-    d->entry_registry.removeAll(entry);
-}
-*/
 
 #include "cache.moc"
