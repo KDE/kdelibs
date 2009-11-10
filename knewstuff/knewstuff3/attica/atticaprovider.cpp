@@ -194,6 +194,8 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
                 cacheEntry.setStatus(Entry::Updateable);
             }
             entry = cacheEntry;
+        } else {
+            d->cachedEntries.append(entry);
         }
 
         entry.setName(content.name());
