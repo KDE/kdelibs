@@ -173,7 +173,7 @@ public:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    void install(const KNS3::Entry& entry);
+    void install(KNS3::Entry entry);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed
@@ -185,7 +185,7 @@ public:
      *
      * @note FIXME: I don't believe this works yet :)
      */
-    void uninstall(const KNS3::Entry& entry);
+    void uninstall(KNS3::Entry entry);
     
     /**
      * Uploads a complete entry, including its payload and preview files
@@ -204,13 +204,11 @@ public:
      */
     bool uploadEntry(Provider *provider, const KNS3::Entry& entry);
 
-
     /**
      * @return the component name the engine is using, or an empty string if not
      * initialized yet
      */
     QString componentName() const;
-
 
     CollaborationFeatures collaborationFeatures(const KNS3::Entry& entry);
 

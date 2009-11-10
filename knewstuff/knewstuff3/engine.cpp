@@ -685,8 +685,11 @@ void Engine::cacheProvider(Provider *provider)
 //    f.close();
 //}
 
-void Engine::install(const KNS3::Entry& entry)
+void Engine::install(KNS3::Entry entry)
 {
+    entry.setStatus(Entry::Installing);
+    emit signalEntryChanged(entry);
+    
     kDebug() << "Install " << entry.name().representation()
         << entry.providerId() << d->provider_index.keys();
     Provider* p = d->provider_index[entry.providerId()];
@@ -699,8 +702,11 @@ void Engine::downloadLinkLoaded(const KNS3::Entry& entry)
     d->installation->install(entry);
 }
 
-void Engine::uninstall(const KNS3::Entry& entry)
+void Engine::uninstall(KNS3::Entry entry)
 {
+    // FIXME: change the status?
+    entry.setStatus(Entry::Installing);
+    emit signalEntryChanged(entry);
     d->installation->uninstall(entry);
 }
 

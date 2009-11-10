@@ -287,8 +287,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         int index = d->mEntries.indexOf(entry);
         if (index >= 0) {
             Entry cacheEntry = d->mEntries.takeAt(index);
-
-            cacheEntry.deb();
             
             // check if updateable
             if ((cacheEntry.status() == Entry::Installed) &&

@@ -95,8 +95,6 @@ public:
     virtual ~Entry();
 
     bool isValid() const;
-
-void deb() const { kDebug() << uniqueId() << d; }
     
     /**
      * Sets the name for this data object.

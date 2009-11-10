@@ -47,7 +47,7 @@ public:
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
 
-    KNS3::Entry::List installedEntries;
+    KNS3::Entry::List cachedEntries;
 
     QMap<BaseJob*, Entry> downloadLinkJobs;
     
@@ -112,8 +112,7 @@ QDomElement AtticaProvider::providerXML() const
 void AtticaProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
 {
     Q_D(AtticaProvider);
-    //d->
-    
+    d->cachedEntries = cachedEntries;
 }
 
 void AtticaProvider::providerLoaded()
@@ -163,6 +162,8 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
 
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
+    Q_D(AtticaProvider);
+    
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
@@ -171,8 +172,25 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     Q_FOREACH(Content content, contents) {
         Entry entry;
         entry.setProviderId(id());
-        entry.setName(content.name());
         entry.setUniqueId(content.id());
+        entry.setStatus(KNS3::Entry::Downloadable);
+        entry.setVersion(content.version());
+        
+        int index = d->cachedEntries.indexOf(entry);
+        
+        if (index >= 0) {
+            Entry cacheEntry = d->cachedEntries.at(index);
+
+            // check if updateable
+            if ((cacheEntry.status() == Entry::Installed) &&
+                (cacheEntry.version() != entry.version())) {
+                kDebug() << "Versions: " << cacheEntry.version() << entry.version();
+                cacheEntry.setStatus(Entry::Updateable);
+            }
+            entry = cacheEntry;
+        }
+
+        entry.setName(content.name());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
         entry.setReleaseDate(content.updated().date());
@@ -180,9 +198,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setLicense(content.license());
         //entry.setAuthor(content.author());
         entry.setSource(KNS3::Entry::Online);
-        entry.setStatus(KNS3::Entry::Downloadable);
         entry.setSummary(content.description());
-        entry.setVersion(content.version());
 
         entries.append(entry);
     }
