@@ -346,6 +346,9 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
         if ( cinfo.jpeg_color_space == JCS_YCbCr )
             cinfo.out_color_space = JCS_RGB;
         
+        if ( cinfo.jpeg_color_space == JCS_YCCK )
+            cinfo.out_color_space = JCS_CMYK;
+
         cinfo.do_fancy_upsampling = true;
         cinfo.do_block_smoothing = false;
         cinfo.quantize_colors = false;
@@ -431,6 +434,16 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
                 {
                     in-=3;
                     out[i] = qRgb(in[0], in[1], in[2]);
+                }
+            } else if ( cinfo.out_color_space == JCS_CMYK ) {
+                uchar *in = scanline + cinfo.output_width * 4;
+                QRgb *out = (QRgb *) scanline;
+
+                for (uint i = cinfo.output_width; i--; )
+                {
+                    in -= 4;
+                    int k = in[3];
+                    out[i] = qRgb(k * in[0] / 255, k * in[1] / 255, k * in[2] / 255);
                 }
             }
             
