@@ -52,8 +52,9 @@ void QueryParserTest::testQueryParser_data()
     QTest::newRow( "literal with spaces query" ) << QString( "'Hello World'" ) << Query( LiteralTerm( "Hello World" ) );
 
     // comparison queries
+#ifdef MAKE_OR_QUERIES_WITH_PROPERTIES_IN_THEM
     QTest::newRow( "simple field query" )    << QString( "hastag:nepomuk" )
-                                             << Query( ComparisonTerm( "hastag", LiteralTerm( "nepomuk" ) ) );
+                                             << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( "nepomuk" ) ) );
     QTest::newRow( "simple property query" ) << QString( "%1:nepomuk" ).arg( Soprano::Node::resourceToN3( Soprano::Vocabulary::NAO::hasTag() ) )
                                              << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( "nepomuk" ) ) );
 #ifdef QUERY_PARSER_SUPPORTS_RESOURCE_VALUES
@@ -61,12 +62,16 @@ void QueryParserTest::testQueryParser_data()
                                              << Query( ComparisonTerm( "hastag", ResourceTerm( QUrl( "nepomuk:/Nepomuk" ) ) ) );
 #endif
     QTest::newRow( "nested resource query" ) << QString( "hastag:(label:nepomuk)" )
+                                             << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( "nepomuk" ) ) );
                                              << Query( ComparisonTerm( "hastag", ComparisonTerm( "label", LiteralTerm( "nepomuk" ) ) ) );
+#endif
 
 
     // negation
     QTest::newRow( "simple negation" ) << QString( "-Hello" ) << Query( NegationTerm::negateTerm( LiteralTerm( "Hello" ) ) );
+#ifdef MAKE_OR_QUERIES_WITH_PROPERTIES_IN_THEM
     QTest::newRow( "field negation" ) << QString( "-hastag:nepomuk" ) << Query( NegationTerm::negateTerm( ComparisonTerm( "hastag", LiteralTerm( "nepomuk" ) ) ) );
+#endif
 
     // and query
     QTest::newRow( "and: two literals" )          << QString( "Hello World" ) << Query( AndTerm( QList<Term>() << LiteralTerm( "Hello" ) << LiteralTerm( "World" ) ) );

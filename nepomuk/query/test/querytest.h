@@ -29,8 +29,6 @@ class QueryTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    /// Needs Nepomuk storage service to be running!
-    void testResolveProperties();
 };
 
 #endif

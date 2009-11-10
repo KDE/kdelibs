@@ -44,29 +44,6 @@ Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 
 using namespace Nepomuk::Query;
 
-void QueryTest::testResolveProperties()
-{
-    Query query( ComparisonTerm( "hastag", LiteralTerm( "nepomuk" ) ) );
-    Query resolved = query.resolveProperties();
-    QVERIFY( query.term().isComparisonTerm() ||
-             query.term().isOrTerm() );
-    QList<ComparisonTerm> cterms;
-    if ( resolved.term().isComparisonTerm() ) {
-        cterms << resolved.term().toComparisonTerm();
-    }
-    else {
-        foreach( const Term& t, resolved.term().toOrTerm().subTerms() ) {
-            QVERIFY( t.isComparisonTerm() );
-            cterms << t.toComparisonTerm();
-        }
-    }
-
-    foreach( const ComparisonTerm& ct, cterms ) {
-        kDebug() << ct.property().uri();
-        QVERIFY( ct.property().uri() == Soprano::Vocabulary::NAO::hasTag() ||
-                 ct.property().uri() == Nepomuk::Vocabulary::PIMO::hasTag() );
-    }
-}
 
 
 QTEST_MAIN( QueryTest )
