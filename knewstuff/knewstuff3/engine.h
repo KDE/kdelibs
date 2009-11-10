@@ -93,7 +93,6 @@ public:
     Q_DECLARE_FLAGS(CollaborationFeatures, CollaborationFeature)
 
 
-
     /**
      * Initializes the engine. This step is application-specific and relies
      * on an external configuration file, which determines all the details
@@ -103,63 +102,6 @@ public:
      * @return \b true if any valid configuration was found, \b false otherwise
      */
     bool init(const QString &configfile);
-
-    /**
-     * Starts the engine. This method reports all cached and registered
-     * providers to the application. Depending on the cache policy,
-     * the engine will then try to synchronize the cache by updating
-     * all information about the providers.
-     *
-     * If engine automation is activated, this method will proceed to
-     * synchronize all feeds, entries and preview images.
-     * For each provider, all feeds are considered. The synchronization is
-     * complete if \ref signalEntriesFinished is emitted, but applications
-     * should continue watching \ref signalEntryChanged.
-     *
-     * @see signalProviderLoaded
-     * @see signalProviderChanged
-     * @see signalProvidersFailed
-     * @see signalProvidersFinished
-     * @see signalEntryLoaded
-     * @see signalEntryChanged
-     * @see signalEntriesFailed
-     * @see signalEntriesFinished
-     * @see signalEntriesFeedFinished
-     * @see signalPreviewLoaded
-     * @see signalPreviewFailed
-     */
-    //void start();
-
-    /**
-     * Loads all entries of all the feeds from a provider. This means that
-     * meta information about those entries is retrieved from the cache and/or
-     * from the network, depending on the cache policy.
-     *
-     * This method should not be called if automation is activated.
-     *
-     * @param provider Provider from where to load the entries
-     *
-     * @see signalEntryLoaded
-     * @see signalEntryChanged
-     * @see signalEntriesFailed
-     * @see signalEntriesFinished
-     * @see signalEntriesFeedFinished
-     */
-    //void loadEntries(Provider *provider);
-    //void loadProvider(); // FIXME: for consistency?
-
-    /**
-     * Downloads a preview file. The preview file matching most closely
-     * the current user language preferences will be downloaded.
-     *
-     * This method should not be called if automation is activated.
-     *
-     * @param entry Entry to download preview image for
-     *
-     * @see signalPreviewLoaded
-     * @see signalPreviewFailed
-     */
-    //void downloadPreview(Entry *entry);
 
     /**
      * Installs an entry's payload file. This includes verification, if
@@ -222,18 +164,7 @@ Q_SIGNALS:
      */
     void signalMessage(const QString& message);
 
-    // FIXME I think all of the methods below can be removed - no one should care about providers (?)
-    /**
-     * Indicates that the list of providers has been successfully loaded.
-     * This signal might occur twice, for the local cache and for updated provider
-     * information from the ProvidersUrl.
-     */
-    void signalProviderLoaded(KNS3::Provider *provider);
-    void signalProviderChanged(KNS3::Provider *provider);
-
-    void signalEntriesLoaded(KNS3::Entry::List entries);
-
-    //void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
+    void signalEntriesLoaded(const KNS3::Entry::List& entries);
     void signalEntryChanged(const KNS3::Entry& entry);
 
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry

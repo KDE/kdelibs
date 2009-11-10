@@ -315,8 +315,6 @@ void Engine::providerInitialized(Provider* p)
     
     d->provider_index[p->id()] = p;
     
-    emit signalProviderLoaded(p);
-
     connect(p, SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)),
                SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)));
     connect(p, SIGNAL(payloadLinkLoaded(const KNS3::Entry&)), SLOT(downloadLinkLoaded(const KNS3::Entry&)));
@@ -549,8 +547,6 @@ void Engine::loadProvidersCache()
         //Provider *p = handler.providerptr();
         //d->provider_cache.append(p);
         //d->provider_index[providerId(p)] = p;
-
-        //emit signalProviderLoaded(p);
 
         //loadFeedCache(p);
 

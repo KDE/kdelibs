@@ -110,12 +110,6 @@ bool Client::init(const QString& config)
 
 void Client::workflow()
 {
-//    //disconnect(this, 0, this, 0);
-//    if ((d->command == command_upload) || (d->command == command_download)) {
-//        //connect(this,
-//        //        SIGNAL(signalProviderLoaded(KNS::Provider*)),
-//        //        SLOT(slotProviderLoaded(KNS::Provider*)));
-//    }
 
 //    if (d->command == command_upload) {
 //        //connect(this,
