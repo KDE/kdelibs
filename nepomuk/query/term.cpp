@@ -36,7 +36,7 @@
 #include <QtCore/QList>
 #include <QtCore/QDebug>
 
-#include <nepomuk/property.h>
+#include "property.h"
 
 
 Nepomuk::Query::Term::Term()

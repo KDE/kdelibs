@@ -27,7 +27,7 @@
 
 #include <kurl.h>
 
-#include <nepomuk/property.h>
+#include "property.h"
 
 #include "nepomukquery_export.h"
 

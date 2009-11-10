@@ -21,8 +21,8 @@
 
 #include <QtCore/QSharedData>
 
-#include <nepomuk/resource.h>
-#include <nepomuk/property.h>
+#include "resource.h"
+#include "property.h"
 
 #include <Soprano/Node> // for qHash( QUrl() )
 

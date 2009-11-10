@@ -41,10 +41,10 @@
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
 
-#include <nepomuk/resourcemanager.h>
-#include <nepomuk/literal.h>
-#include <nepomuk/property.h>
-#include <nepomuk/class.h>
+#include "resourcemanager.h"
+#include "literal.h"
+#include "property.h"
+#include "class.h"
 
 #include <kdebug.h>
 

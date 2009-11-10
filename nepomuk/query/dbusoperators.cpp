@@ -22,8 +22,8 @@
 
 #include <QtDBus/QDBusMetaType>
 
-#include <nepomuk/resource.h>
-#include <nepomuk/property.h>
+#include "resource.h"
+#include "property.h"
 
 #include <Soprano/Node>
 

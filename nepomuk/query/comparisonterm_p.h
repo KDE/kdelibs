@@ -25,7 +25,7 @@
 #include "simpleterm_p.h"
 #include "comparisonterm.h"
 
-#include <nepomuk/property.h>
+#include "property.h"
 
 namespace Nepomuk {
     namespace Query {

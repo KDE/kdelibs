@@ -34,8 +34,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <nepomuk/resourcemanager.h>
-#include <nepomuk/property.h>
+#include "resourcemanager.h"
+#include "property.h"
 
 #include <Soprano/Node>
 #include <Soprano/Model>

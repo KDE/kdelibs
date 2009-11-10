@@ -29,7 +29,7 @@
 #include <Soprano/Node>
 #include <Soprano/Vocabulary/RDFS>
 
-#include <nepomuk/literal.h>
+#include "literal.h"
 
 #include <kdebug.h>
 

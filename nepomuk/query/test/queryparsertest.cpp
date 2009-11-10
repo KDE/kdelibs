@@ -35,7 +35,7 @@
 #include <Soprano/Node>
 #include <Soprano/Vocabulary/NAO>
 
-#include <nepomuk/property.h>
+#include "property.h"
 
 
 Q_DECLARE_METATYPE( Nepomuk::Query::Query )
