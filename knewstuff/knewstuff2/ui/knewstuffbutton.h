@@ -34,7 +34,7 @@ class Engine;
  * more convenient by encapsulating most of the details involved in
  * using KHotNewStuff in the button itself.
  */
-class Button : public KPushButton
+KNEWSTUFF_EXPORT class Button : public KPushButton
 {
     Q_OBJECT
 
