@@ -166,6 +166,8 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOfType( const QUrl& type )
 {
+    QMutexLocker lock( &d->mutex );
+
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
@@ -183,6 +185,8 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWithProperty( const QUrl& uri, const Variant& v )
 {
+    QMutexLocker lock( &d->mutex );
+
     QList<ResourceData*> l;
 
     for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
@@ -322,8 +326,6 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUrl& type )
 {
-    QMutexLocker lock( &d->mutex );
-
     QList<Resource> l;
 
     if( !type.isEmpty() ) {
@@ -361,8 +363,6 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QUrl& uri, const Variant& v )
 {
-    QMutexLocker lock( &d->mutex );
-
     QList<Resource> l;
 
     if( v.isList() ) {
@@ -443,7 +443,8 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 
 void Nepomuk::ResourceManager::slotStoreChanged()
 {
-//    kDebug();
+    QMutexLocker lock( &d->mutex );
+
     Q_FOREACH( ResourceData* data, d->allResourceData()) {
         data->invalidateCache();
     }
