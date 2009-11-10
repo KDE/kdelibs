@@ -37,7 +37,7 @@ Button::Button(const QString& what,
         m_type(resourceType),
         m_engine(0)
 {
-    setButtonText(what);
+    setText(what);
     init();
 }
 
@@ -46,7 +46,7 @@ Button::Button(QWidget* parent)
         d(0),
         m_engine(0)
 {
-    setButtonText(i18n("Download New Stuff"));
+    setButtonText(i18n("Download New Stuff..."));
     init();
 }
 
@@ -58,7 +58,7 @@ void Button::init()
 
 void Button::setButtonText(const QString& what)
 {
-    setText(i18n("Download New %1", what));
+    setText(what);
 }
 
 void Button::setProviderList(const QString& providerList)
