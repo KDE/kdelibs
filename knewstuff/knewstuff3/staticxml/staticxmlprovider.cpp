@@ -43,7 +43,7 @@ public:
     KUrl mNoUploadUrl;
     
     // cache of all entries known from this provider so far, mapped by their id
-    Entry::List mEntries;
+    Entry::List cachedEntries;
     QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
     QString searchTerm;
     QString mId;
@@ -189,13 +189,19 @@ void StaticXmlProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
 {
     Q_D(StaticXmlProvider);
     kDebug() << "Set cached entries " << cachedEntries.size();
-    d->mEntries.append(cachedEntries);
+    d->cachedEntries.append(cachedEntries);
 }
 
 void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, int page, int pageSize)
 {
     Q_D(StaticXmlProvider);
     d->searchTerm = searchstring;
+
+    if (sortMode == Installed) {
+        kDebug() << installedEntries().size();
+        emit loadingFinished(sortMode, searchstring, 0, 1, 1, installedEntries());
+        return;
+    }
     
     KUrl url = downloadUrl(sortMode);
     if (!url.isEmpty()) {
@@ -284,9 +290,9 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         // check to see if we already have this entry
         kDebug() << "Check: " << entry.providerId() << entry.uniqueId();
 
-        int index = d->mEntries.indexOf(entry);
+        int index = d->cachedEntries.indexOf(entry);
         if (index >= 0) {
-            Entry cacheEntry = d->mEntries.takeAt(index);
+            Entry cacheEntry = d->cachedEntries.takeAt(index);
             
             // check if updateable
             if ((cacheEntry.status() == Entry::Installed) &&
@@ -299,7 +305,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             entries << cacheEntry;
             
         } else {
-            d->mEntries.append(entry);
+            d->cachedEntries.append(entry);
             if (searchIncludesEntry(entry)) {
                 entries << entry;
             }
@@ -337,6 +343,20 @@ void StaticXmlProvider::loadPayloadLink(const KNS3::Entry& entry)
 {
     emit payloadLinkLoaded(entry);
 }
+
+
+Entry::List StaticXmlProvider::installedEntries() const
+{
+    Q_D(const StaticXmlProvider);
+    Entry::List entries;
+    foreach (const Entry& entry, d->cachedEntries) {
+        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
+            entries.append(entry);
+        }
+    }
+    return entries;
+}
+
 
 }
 

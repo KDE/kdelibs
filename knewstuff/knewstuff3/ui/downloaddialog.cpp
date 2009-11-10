@@ -128,6 +128,7 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     m_sortCombo->insertItem(Provider::Newest, i18nc("Sorting order of the list of items in get hot new stuff", "Newest"));
     m_sortCombo->insertItem(Provider::Downloads, i18nc("Sorting order of the list of items in get hot new stuff", "Most Downloads"));
     m_sortCombo->insertItem(Provider::Alphabetical, i18nc("Sorting order of the list of items in get hot new stuff", "Alphabetical"));
+    m_sortCombo->insertItem(Provider::Installed, i18nc("Sorting order of the list of items in get hot new stuff", "Installed only"));
     
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));

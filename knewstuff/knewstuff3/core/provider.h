@@ -53,7 +53,8 @@ namespace KNS3
             Newest,
             Alphabetical,
             Rating,
-            Downloads
+            Downloads,
+            Installed // only installed items
         };
     
         /**

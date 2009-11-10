@@ -74,6 +74,7 @@ namespace KNS3
         AtticaProvider(AtticaProviderPrivate &dd);
 
     private:
+        Entry::List installedEntries() const;
         Attica::Provider::SortMode atticaSortMode(const SortMode& sortMode);
         Q_DECLARE_PRIVATE(AtticaProvider)
     };

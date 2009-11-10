@@ -73,6 +73,7 @@ namespace KNS3
     private:
         bool searchIncludesEntry(const Entry& entry) const;
         KUrl downloadUrl(SortMode mode) const;
+        Entry::List installedEntries() const;
         
     protected:
         StaticXmlProvider(StaticXmlProviderPrivate &dd);

@@ -154,6 +154,12 @@ bool AtticaProvider::isInitialized() const
 void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString, int page, int pageSize)
 {
     Q_D(AtticaProvider);
+
+    if (sortMode == Installed) {
+        emit loadingFinished(sortMode, searchString, 0, 1, 1, installedEntries());
+        return;
+    }
+    
     Attica::Provider::SortMode sorting = atticaSortMode(sortMode);
     ListJob<Content>* job = d->m_provider.searchContents(d->categoryList, searchString, sorting, page, pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
@@ -246,6 +252,19 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
     Entry entry = d->downloadLinkJobs.take(job);
     entry.setPayload(KTranslatable(item.url().toString()));
     emit payloadLinkLoaded(entry);
+}
+
+
+Entry::List AtticaProvider::installedEntries() const
+{
+    Q_D(const AtticaProvider);
+    Entry::List entries;
+    foreach (const Entry& entry, d->cachedEntries) {
+        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
+            entries.append(entry);
+        }
+    }
+    return entries;
 }
 
 }
