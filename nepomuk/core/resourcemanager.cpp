@@ -277,7 +277,7 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 
 int Nepomuk::ResourceManager::init()
 {
-    QMutexLocker lock( &d->mutex );
+    QMutexLocker lock( &d->initMutex );
 
     if( !d->mainModel ) {
         d->mainModel = new MainModel( this );
@@ -291,7 +291,7 @@ int Nepomuk::ResourceManager::init()
 
 bool Nepomuk::ResourceManager::initialized() const
 {
-    QMutexLocker lock( &d->mutex );
+    QMutexLocker lock( &d->initMutex );
     return d->mainModel && d->mainModel->isValid();
 }
 

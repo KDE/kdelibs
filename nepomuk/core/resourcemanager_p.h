@@ -57,6 +57,7 @@ namespace Nepomuk {
         ResourceFilterModel* resourceFilterModel;
         Soprano::Model* overrideModel;
 
+        QMutex initMutex;
         QMutex mutex;
 
         ResourceDataHash m_initializedData;
