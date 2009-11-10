@@ -166,7 +166,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOfType( const QUrl& type )
 {
-    QMutexLocker lock( &d->mutex );
+    QMutexLocker lock( &mutex );
 
     QList<ResourceData*> l;
 
@@ -185,7 +185,7 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWithProperty( const QUrl& uri, const Variant& v )
 {
-    QMutexLocker lock( &d->mutex );
+    QMutexLocker lock( &mutex );
 
     QList<ResourceData*> l;
 
