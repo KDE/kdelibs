@@ -46,7 +46,7 @@
 #include <nepomuk/property.h>
 #include <nepomuk/class.h>
 
-#include <KDebug>
+#include <kdebug.h>
 
 
 

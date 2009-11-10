@@ -33,8 +33,8 @@
 #include <QtCore/QEventLoop>
 #include <QtCore/QTimer>
 
-#include <KDebug>
-#include <KGlobal>
+#include <kdebug.h>
+#include <kglobal.h>
 
 
 namespace {

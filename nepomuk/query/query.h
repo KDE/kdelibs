@@ -25,7 +25,7 @@
 #include <QtCore/QPair>
 #include <QtCore/QDebug>
 
-#include <KUrl>
+#include <kurl.h>
 
 #include <nepomuk/property.h>
 

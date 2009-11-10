@@ -23,7 +23,7 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QList>
 
-#include <KUrl>
+#include <kurl.h>
 
 #include "term.h"
 #include "query.h"

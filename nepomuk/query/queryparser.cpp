@@ -31,8 +31,8 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QSet>
 
-#include <KDebug>
-#include <KLocale>
+#include <kdebug.h>
+#include <klocale.h>
 
 #include <nepomuk/resourcemanager.h>
 #include <nepomuk/property.h>

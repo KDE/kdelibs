@@ -21,7 +21,7 @@
 
 #include "dateparser_p.h"
 
-#include <KDebug>
+#include <kdebug.h>
 
 #include <QtCore/QLocale>
 #include <QtCore/QString>
