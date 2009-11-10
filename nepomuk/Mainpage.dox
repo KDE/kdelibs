@@ -349,6 +349,7 @@ target_link_libraries(foobar
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/core
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/ui
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/ontology
+// DOXYGEN_SET_INPUT += @topdir@/nepomuk/query
 // DOXYGEN_SET_EXCLUDE = @topdir@/nepomuk/core/resourcedata.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nepomukmainmodel.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/resourcefiltermodel.h
@@ -357,5 +358,6 @@ target_link_libraries(foobar
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/nepomukmassupdatejob.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kautoscrollarea.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kblocklayout.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/query/*_p.h
 // DOXYGEN_SET_PROJECT_NAME = Nepomuk
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
