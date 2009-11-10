@@ -32,6 +32,8 @@ set(nepomukquery_SRC
   dbusoperators.cpp
 )
 
+include(SopranoAddOntology)
+
 soprano_add_ontology(nepomukquery_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/nie.trig
   "NIE"
