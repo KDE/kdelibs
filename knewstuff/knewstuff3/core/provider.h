@@ -111,26 +111,31 @@ namespace KNS3
         virtual void loadPayloadLink(const Entry& entry) = 0;
 
         virtual bool hasCommenting() const { return false; }
+
+        /* FIXME don't use pointer, cleanup this stuff
         virtual void getComments(Entry *, int page = 0) { Q_UNUSED(page) }
         virtual void addComment(Entry*, const QString & comment) { Q_UNUSED(comment) }
 
         virtual bool hasRatings() const { return false; }
         virtual void setRating(Entry*, int) {}
+        */
         
     signals:
         void providerInitialized(KNS3::Provider*);
             
-        void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List) const;
+        void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, const KNS3::Entry::List&) const;
         void loadingFailed(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page);
 
+        /* FIXME don't use pointer, cleanup this stuff
         void comments(Entry *, int page, int pageSize, int totalpages);
         void commentAdded(Entry *);
         void commentAddFailed(Entry *);
 
         void ratingSet(Entry*);
         void ratingSetFailed(Entry *);
-
-        void payloadLinkLoaded(const Entry& entry);
+        */
+        
+        void payloadLinkLoaded(const KNS3::Entry& entry);
         
     protected:
         ProviderPrivate * const d_ptr;

@@ -174,10 +174,12 @@ bool Installation::isRemote() const
 
 void Installation::install(Entry entry)
 {
+    entry.setStatus(Entry::Installing);
+    emit signalEntryChanged(entry);
     downloadPayload(entry);
 }
 
-void Installation::downloadPayload(Entry entry)
+void Installation::downloadPayload(const KNS3::Entry& entry)
 {
     if(!entry.isValid()) {
         emit signalPayloadFailed(entry);
@@ -240,17 +242,21 @@ void Installation::slotPayloadResult(KJob *job)
 }
 
 
-void Installation::install(Entry entry, const QString& downloadedFile)
+void Installation::install(KNS3::Entry entry, const QString& downloadedFile)
 {
     kDebug() << "Install: " << entry.name().representation() << " from " << downloadedFile;
     
     if (entry.payload().isEmpty()) {
         kDebug() << "No payload associated with: " << entry.name().representation();
-        // TODO is this a good status to use?
-        entry.setStatus(Entry::Invalid);
-        emit signalEntryChanged(entry);
         return;
+        // attica needs to get the downloadlink :(
+        // fix attica?
+        //Provider* provider = d->provider_index.value(entry.providerId());
     }
+
+
+    // FIXME: this is only so exposing the KUrl suffices for downloaded entries
+
 
     // FIXME: first of all, do the security stuff here
     // this means check sum comparison and signature verification
@@ -282,11 +288,11 @@ void Installation::install(Entry entry, const QString& downloadedFile)
     }
     */
     
+
     QString targetPath = targetInstallationPath(downloadedFile);
     QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
 
     if (installedFiles.isEmpty()) {
-        entry.setStatus(Entry::Invalid);
         emit signalEntryChanged(entry);
         return;
     }
@@ -367,12 +373,13 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
         }
 
         kDebug() << "installdir: " << installdir;
+
     }
     
     return installdir;
 }
 
-QStringList Installation::installDownloadedFileAndUncompress(Entry entry, const QString& payloadfile, const QString installdir)
+QStringList Installation::installDownloadedFileAndUncompress(const KNS3::Entry&  entry, const QString& payloadfile, const QString installdir)
 {
     QString installpath(payloadfile);
     // Collect all files that were installed
@@ -510,6 +517,8 @@ void Installation::runPostInstallationCommand(const QString& installPath)
 
 void Installation::uninstall(Entry entry)
 {
+    entry.setStatus(Entry::Deleted);
+
     if (!d->uninstallCommand.isEmpty()) {
         KProcess process;
         foreach (const QString& file, entry.installedFiles()) {
@@ -553,8 +562,7 @@ void Installation::uninstall(Entry entry)
     }
     entry.setUnInstalledFiles(entry.installedFiles());
     entry.setInstalledFiles(QStringList());
-    
-    entry.setStatus(Entry::Deleted);
+
     emit signalEntryChanged(entry);
 }
 
@@ -564,15 +572,12 @@ void Installation::slotInstallationVerification(int result)
     //kDebug() << "SECURITY result " << result;
 
     //FIXME do something here ??? and get the right entry again
-    
-    /*
     Entry entry;
     
     if (result & Security::SIGNED_OK)
         emit signalEntryChanged(entry);
     else
         emit signalEntryChanged(entry);
-    */
 }
 
 

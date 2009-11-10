@@ -44,58 +44,36 @@ Engine::CachePolicy Cache::policy() const
     return cachePolicy;
 }
 
-void Cache::readCache()
+Entry::List Cache::readCache()
 {
-    kDebug() << "Reading Cache...";
-
-    bool ret;
     QFile f(cacheFile);
-    ret = f.open(QIODevice::ReadOnly);
-    if (!ret) {
+    if (!f.open(QIODevice::ReadOnly)) {
         kWarning() << "The file " << cacheFile << " could not be opened.";
-        return;
+        return Entry::List();
     }
 
     QDomDocument doc;
-    ret = doc.setContent(&f);
-    if (!ret) {
+    if (!doc.setContent(&f)) {
         kWarning() << "The file could not be parsed.";
-        return;
+        return Entry::List();
     }
 
     QDomElement root = doc.documentElement();
-    if (root.tagName() != "ghnscache") {
+    if (root.tagName() != "hotnewstuffregistry") {
         kWarning() << "The file doesn't seem to be of interest.";
-        return;
+        return Entry::List();
     }
+
+    Entry::List entries;
 
     QDomElement stuff = root.firstChildElement("stuff");
-    if (stuff.isNull()) {
-        kWarning() << "Missing GHNS cache metadata.";
-        return;
+    while (!stuff.isNull()) {
+        Entry e;
+        e.setEntryXML(stuff);
+        e.setSource(Entry::Cache);
+        entries.append(e);
+        stuff = stuff.nextSiblingElement("stuff");
     }
-
-    // FIXME use the right sub class of entry
-    Entry e;
-    e.setEntryXML(stuff);
-    //if (!handler.isValid()) {
-    //    kWarning() << "Invalid GHNS installation metadata.";
-    //    return NULL;
-    //}
-
-/* FIXME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    e.setStatus(Entry::Installed);
-    e.setSource(Entry::Registry);
-    e.setStatus(Entry::Downloadable);
-    */
-
-    e.setSource(Entry::Cache);
-
-
-    
-    Entry::List entries;
-    entries.append(e);
-
     /*
     if (root.hasAttribute("previewfile")) {
         d->previewfiles[e] = root.attribute("previewfile");
@@ -108,7 +86,8 @@ void Cache::readCache()
         // FIXME: check here for a [ -f payloadfile ]
     }
 
-    kDebug() << "Reading Cache..." << entries.size();
+    kDebug() << "Cache read... entries: " << entries.size();
+    return entries;
 }
 
 

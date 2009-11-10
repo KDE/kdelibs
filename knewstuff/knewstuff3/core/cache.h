@@ -29,15 +29,17 @@ class Cache : public QObject
     Q_OBJECT
 public:
     Cache(QObject* parent = 0);
+    /// The file name of the cache - this is usally the application name
     void setCacheFileName(const QString& file);
+    /// The cache policy (what to save)
     void setPolicy(Engine::CachePolicy policy);
+    /// The cache policy (what to save)
     Engine::CachePolicy policy() const;
-    
-    void readCache();
 
+    /// Read the cache file (e.g. on startup)
+    Entry::List readCache();
+    /// Save the list of entries to the cache
     void writeCache(const Entry::List& entries);
-
-    Entry::List entriesForProvider(const QString& providerId);
     
 private:
     Engine::CachePolicy cachePolicy;

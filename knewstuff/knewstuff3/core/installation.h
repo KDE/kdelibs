@@ -89,7 +89,7 @@ public Q_SLOTS:
      * @see signalPayloadLoaded
      * @see signalPayloadFailed
      */
-    void downloadPayload(Entry entry);
+    void downloadPayload(const KNS3::Entry& entry);
 
     /**
      * Installs an entry's payload file. This includes verification, if
@@ -105,7 +105,7 @@ public Q_SLOTS:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    void install(Entry entry);
+    void install(KNS3::Entry entry);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed
@@ -117,23 +117,22 @@ public Q_SLOTS:
      *
      * @note FIXME: I don't believe this works yet :)
      */
-    void uninstall(Entry entry);
+    void uninstall(KNS3::Entry entry);
     
-
     void slotInstallationVerification(int result);
     void slotPayloadResult(KJob *job);
 
 Q_SIGNALS:
-    void signalEntryChanged(const Entry& entry);
+    void signalEntryChanged(const KNS3::Entry& entry);
     
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
     void signalPayloadFailed(const KNS3::Entry& entry);
 
 private:
-    void install(Entry entry, const QString& downloadedFile);
+    void install(KNS3::Entry entry, const QString& downloadedFile);
 
     QString targetInstallationPath(const QString& payloadfile);
-    QStringList installDownloadedFileAndUncompress(Entry entry, const QString& payloadfile, const QString installdir);
+    QStringList installDownloadedFileAndUncompress(const KNS3::Entry&  entry, const QString& payloadfile, const QString installdir);
     void runPostInstallationCommand(const QString& installPath);
     
     static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);

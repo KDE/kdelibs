@@ -173,7 +173,7 @@ public:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    void install(Entry entry);
+    void install(const KNS3::Entry& entry);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed
@@ -185,7 +185,7 @@ public:
      *
      * @note FIXME: I don't believe this works yet :)
      */
-    void uninstall(const Entry& entry);
+    void uninstall(const KNS3::Entry& entry);
     
     /**
      * Uploads a complete entry, including its payload and preview files
@@ -202,7 +202,7 @@ public:
      * @see signalEntryUploaded
      * @see signalEntryFailed
      */
-    bool uploadEntry(Provider *provider, const Entry& entry);
+    bool uploadEntry(Provider *provider, const KNS3::Entry& entry);
 
 
     /**
@@ -212,7 +212,7 @@ public:
     QString componentName() const;
 
 
-    CollaborationFeatures collaborationFeatures(const Entry& entry);
+    CollaborationFeatures collaborationFeatures(const KNS3::Entry& entry);
 
     void setSortMode(Provider::SortMode mode);
     void setSearchTerm(const QString& searchString);
@@ -241,8 +241,8 @@ Q_SIGNALS:
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
 
-    void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
-    void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
+    void signalEntryUploadFinished();
+    void signalEntryUploadFailed();
 
     void signalProvidersFinished();
     void signalEntriesFinished();
@@ -264,7 +264,7 @@ private Q_SLOTS:
     // called when a provider is ready to work
     void providerInitialized(KNS3::Provider*);
 
-    void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List);
+    void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List);
 
     void slotPreviewResult(KJob *job);
 
@@ -276,9 +276,9 @@ private Q_SLOTS:
     
     void slotProgress(KJob *job, unsigned long percent);
     
-    void slotEntryChanged(const Entry& entry);
-    void slotInstallationFailed(const Entry& entry);
-    void downloadLinkLoaded(const Entry& entry);
+    void slotEntryChanged(const KNS3::Entry& entry);
+    void slotInstallationFailed(const KNS3::Entry& entry);
+    void downloadLinkLoaded(const KNS3::Entry& entry);
     
 private:
     /**

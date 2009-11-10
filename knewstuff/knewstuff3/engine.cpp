@@ -170,8 +170,7 @@ bool Engine::init(const QString &configfile)
         return false;
     }
     
-    connect(d->installation, SIGNAL(signalEntryChanged(Entry)), SLOT(slotEntryChanged(Entry)));
-    connect(d->installation, SIGNAL(signalUninstallFinished(Entry)), SLOT(slotEntryChanged(Entry)));
+    connect(d->installation, SIGNAL(signalEntryChanged(const KNS3::Entry&)), SLOT(slotEntryChanged(const KNS3::Entry&)));
 
     CachePolicy cachePolicy;
     QString cachePolicyString = group.readEntry("CachePolicy", QString());
@@ -192,12 +191,14 @@ bool Engine::init(const QString &configfile)
 
     d->cache->setCacheFileName(d->applicationName.split(':')[0]);
     d->cache->setPolicy(cachePolicy);
-    d->cache->readCache();
+    d->entries = d->cache->readCache();
     
     d->initialized = true;
 
-    // FIXME this probably doesn't do anything right now (?)
-    // what is the providers cache supposed to do?
+    /*
+    // load the registry first, so we know which entries are installed
+    loadRegistry();
+    */
     
     // initialize providers at this point
     // then load the providersCache if caching is enabled
@@ -315,20 +316,28 @@ void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name().representation();
 
-    // TODO provider->setCachedEntries(cacheForProvider(provider->id()));
+    Entry::List cachedEntries;
+    foreach (const Entry& e, d->entries) {
+        if (e.providerId() == p->id()) {
+            cachedEntries.append(e);
+        }
+    }
+    
+    //provider->setCachedEntries(cacheForProvider(provider->id()));
     
     d->provider_index[p->id()] = p;
     
     emit signalProviderLoaded(p);
 
-    connect(p, SIGNAL(loadingFinished(KNS3::Provider::SortMode,QString,int,int,int,Entry::List)), SLOT(slotEntriesLoaded(KNS3::Provider::SortMode,QString,int,int,int,Entry::List)));
-    connect(p, SIGNAL(payloadLinkLoaded(const Entry&)), SLOT(downloadLinkLoaded(const Entry&)));
+    connect(p, SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)),
+               SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)));
+    connect(p, SIGNAL(payloadLinkLoaded(const KNS3::Entry&)), SLOT(downloadLinkLoaded(const KNS3::Entry&)));
     
     // TODO parameters according to search string etc
     p->loadEntries(d->sortMode, d->searchTerm);
 }
 
-void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, Entry::List entries)
+void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
 {
     d->entries.append(entries);
     emit signalEntriesLoaded(entries);
@@ -688,17 +697,16 @@ void Engine::cacheProvider(Provider *provider)
 //    f.close();
 //}
 
-void Engine::install(KNS3::Entry entry)
+void Engine::install(const KNS3::Entry& entry)
 {
     kDebug() << "Install " << entry.name().representation()
         << entry.providerId() << d->provider_index.keys();
     Provider* p = d->provider_index[entry.providerId()];
-    entry.setStatus(Entry::Installing);
-    emit signalEntryChanged(entry);
+
     p->loadPayloadLink(entry);
 }
 
-void Engine::downloadLinkLoaded(const Entry& entry)
+void Engine::downloadLinkLoaded(const KNS3::Entry& entry)
 {
     d->installation->install(entry);
 }
