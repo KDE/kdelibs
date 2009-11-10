@@ -124,10 +124,7 @@ public Q_SLOTS:
     void slotPayloadResult(KJob *job);
 
 Q_SIGNALS:
-    void signalInstallationFinished(const Entry& entry);
-    void signalInstallationFailed(const Entry& entry);
-    
-    void signalUninstallFinished(const Entry& entry);
+    void signalEntryChanged(const Entry& entry);
     
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
     void signalPayloadFailed(const KNS3::Entry& entry);

@@ -170,7 +170,7 @@ bool Engine::init(const QString &configfile)
         return false;
     }
     
-    connect(d->installation, SIGNAL(signalInstallationFinished(Entry)), SLOT(slotEntryChanged(Entry)));
+    connect(d->installation, SIGNAL(signalEntryChanged(Entry)), SLOT(slotEntryChanged(Entry)));
     connect(d->installation, SIGNAL(signalUninstallFinished(Entry)), SLOT(slotEntryChanged(Entry)));
 
     CachePolicy cachePolicy;

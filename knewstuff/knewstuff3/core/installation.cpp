@@ -246,15 +246,11 @@ void Installation::install(Entry entry, const QString& downloadedFile)
     
     if (entry.payload().isEmpty()) {
         kDebug() << "No payload associated with: " << entry.name().representation();
+        // TODO is this a good status to use?
+        entry.setStatus(Entry::Invalid);
+        emit signalEntryChanged(entry);
         return;
-        // attica needs to get the downloadlink :(
-        // fix attica?
-        //Provider* provider = d->provider_index.value(entry.providerId());
     }
-
-
-    // FIXME: this is only so exposing the KUrl suffices for downloaded entries
-
 
     // FIXME: first of all, do the security stuff here
     // this means check sum comparison and signature verification
@@ -286,12 +282,12 @@ void Installation::install(Entry entry, const QString& downloadedFile)
     }
     */
     
-
     QString targetPath = targetInstallationPath(downloadedFile);
     QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
 
     if (installedFiles.isEmpty()) {
-        emit signalInstallationFailed(entry);
+        entry.setStatus(Entry::Invalid);
+        emit signalEntryChanged(entry);
         return;
     }
     
@@ -319,7 +315,7 @@ void Installation::install(Entry entry, const QString& downloadedFile)
     sec->checkValidity(QString());
 
     entry.setStatus(Entry::Installed);
-    emit signalInstallationFinished(entry);
+    emit signalEntryChanged(entry);
 }
 
 QString Installation::targetInstallationPath(const QString& payloadfile)
@@ -371,7 +367,6 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
         }
 
         kDebug() << "installdir: " << installdir;
-
     }
     
     return installdir;
@@ -515,8 +510,6 @@ void Installation::runPostInstallationCommand(const QString& installPath)
 
 void Installation::uninstall(Entry entry)
 {
-    entry.setStatus(Entry::Deleted);
-
     if (!d->uninstallCommand.isEmpty()) {
         KProcess process;
         foreach (const QString& file, entry.installedFiles()) {
@@ -560,8 +553,9 @@ void Installation::uninstall(Entry entry)
     }
     entry.setUnInstalledFiles(entry.installedFiles());
     entry.setInstalledFiles(QStringList());
-
-    emit signalUninstallFinished(entry);
+    
+    entry.setStatus(Entry::Deleted);
+    emit signalEntryChanged(entry);
 }
 
 
@@ -570,12 +564,15 @@ void Installation::slotInstallationVerification(int result)
     //kDebug() << "SECURITY result " << result;
 
     //FIXME do something here ??? and get the right entry again
+    
+    /*
     Entry entry;
     
     if (result & Security::SIGNED_OK)
-        emit signalInstallationFinished(entry);
+        emit signalEntryChanged(entry);
     else
-        emit signalInstallationFailed(entry);
+        emit signalEntryChanged(entry);
+    */
 }
 
 
