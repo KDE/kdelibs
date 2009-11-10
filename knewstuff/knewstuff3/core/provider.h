@@ -84,6 +84,8 @@ namespace KNS3
         virtual QDomElement providerXML() const = 0;
 
         virtual bool isInitialized() const = 0;
+
+        virtual void setCachedEntries(const KNS3::Entry::List& cachedEntries) = 0;
         
         /**
          * Retrieves the common name of the provider.

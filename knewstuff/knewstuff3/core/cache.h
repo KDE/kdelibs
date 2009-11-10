@@ -37,13 +37,20 @@ public:
     Engine::CachePolicy policy() const;
 
     /// Read the cache file (e.g. on startup)
-    Entry::List readCache();
+    void readCache();
+    Entry::List cacheForProvider(const QString& providerId);
+
     /// Save the list of entries to the cache
-    void writeCache(const Entry::List& entries);
+    void writeCache();
+
+    void insert(const QList<Entry>& entries);
+    
     
 private:
     Engine::CachePolicy cachePolicy;
     QString cacheFile;
+
+    QSet<Entry> cache;
     
 };
 

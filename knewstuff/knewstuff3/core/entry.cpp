@@ -308,6 +308,8 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
             author.setJabber(jabber);
             author.setHomepage(homepage);
             d->mAuthor = author;
+        } else if (e.tagName() == "providerid") {
+            d->mProviderId = e.text();
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {
@@ -338,14 +340,14 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
             d->mInstalledFiles << e.text();
         } else if (e.tagName() == "id") {
             d->mUniqueId = e.text();
-
-            // FIXME
-            /*
         } else if (e.tagName() == "status") {
-            d->mSource = e.text();
-        } else if (e.tagName() == "source") {
-            d->mStatus = e.text();
-        */
+            QString statusText = e.text();
+            if (statusText == "installed") {
+                kDebug() << "Found an installed entry in registry";
+                d->mStatus = Entry::Installed;
+            } else if (statusText == "updateable") {
+                d->mStatus = Entry::Updateable;
+            }
             //kDebug() << "got id number: " << idNumber;
         }
     }
@@ -361,7 +363,6 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
         kWarning(550) << "Entry: no payload URL given";
         //return false;
     }
-
     return true;
 }
 
@@ -370,6 +371,9 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
  */
 QDomElement KNS3::Entry::entryXML() const
 {
+    Q_ASSERT(!d->mUniqueId.isEmpty());
+    Q_ASSERT(!d->mProviderId.isEmpty());
+    
     QDomDocument doc;
 
     QDomElement el = doc.createElement("stuff");
@@ -386,6 +390,8 @@ QDomElement KNS3::Entry::entryXML() const
         e = addElement(doc, el, "name", name.translated(*it));
         e.setAttribute("lang", *it);
     }
+
+    (void)addElement(doc, el, "providerid", d->mProviderId);
 
     QDomElement author = addElement(doc, el, "author", d->mAuthor.name());
     if (!d->mAuthor.email().isEmpty())

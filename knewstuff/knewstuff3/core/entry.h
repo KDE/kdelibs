@@ -20,15 +20,15 @@
 #ifndef KNEWSTUFF3_ENTRY_H
 #define KNEWSTUFF3_ENTRY_H
 
-#include <knewstuff3/core/author.h>
-#include <knewstuff3/core/ktranslatable.h>
-
-#include <kurl.h>
-
 #include <QtCore/QDate>
 #include <QtXml/QDomElement>
 #include <QtCore/QString>
 
+#include <KUrl>
+#include <KDebug>
+
+#include <knewstuff3/core/author.h>
+#include <knewstuff3/core/ktranslatable.h>
 
 namespace KNS3
 {
@@ -95,6 +95,8 @@ public:
     virtual ~Entry();
 
     bool isValid() const;
+
+void deb() const { kDebug() << uniqueId() << d; }
     
     /**
      * Sets the name for this data object.

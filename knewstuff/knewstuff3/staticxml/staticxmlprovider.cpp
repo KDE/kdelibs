@@ -185,6 +185,13 @@ bool StaticXmlProvider::isInitialized() const
     return d->mInitialized;
 }
 
+void StaticXmlProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
+{
+    Q_D(StaticXmlProvider);
+    kDebug() << "Set cached entries " << cachedEntries.size();
+    d->mEntries.append(cachedEntries);
+}
+
 void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, int page, int pageSize)
 {
     Q_D(StaticXmlProvider);
@@ -268,28 +275,39 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 
     
     QDomElement n;
-
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
         
         Entry entry;
         entry.setEntryXML(n.toElement());
+        entry.setProviderId(d->mId);
+        
         // check to see if we already have this entry
-        if (d->mEntries.contains(entry)) {
-            // if so, merge the two together
-        }
-        else {
-            // add it to the list otherwise
-            d->mEntries.append(entry);
+        kDebug() << "Check: " << entry.providerId() << entry.uniqueId();
 
+        int index = d->mEntries.indexOf(entry);
+        if (index >= 0) {
+            Entry cacheEntry = d->mEntries.takeAt(index);
+
+            cacheEntry.deb();
+            
+            // check if updateable
+            if ((cacheEntry.status() == Entry::Installed) &&
+                (cacheEntry.version() != entry.version())) {
+                    entry.setStatus(Entry::Updateable);
+            } else {
+                entry.setStatus(cacheEntry.status());
+            }
+            cacheEntry = entry;
+            entries << cacheEntry;
+            
+        } else {
+            d->mEntries.append(entry);
             if (searchIncludesEntry(entry)) {
                 entries << entry;
             }
         }
-        // TODO: ask the engine if it knows about any cached/installed data, so we can merge that in too
-
-        entry.setProviderId(d->mId);
     }
-    
+
     // emit a the entry list
     emit loadingFinished(mode, QString(), 0, entries.count(), 1, entries);
 }

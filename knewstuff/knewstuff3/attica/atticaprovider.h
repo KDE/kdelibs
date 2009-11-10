@@ -60,6 +60,7 @@ namespace KNS3
         virtual QDomElement providerXML() const;
 
         virtual bool isInitialized() const;
+        virtual void setCachedEntries(const KNS3::Entry::List& cachedEntries);
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20);
         virtual void loadPayloadLink(const Entry& entry);
         

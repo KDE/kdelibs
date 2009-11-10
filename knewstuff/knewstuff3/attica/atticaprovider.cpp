@@ -41,11 +41,13 @@ class AtticaProviderPrivate :public ProviderPrivate
 public:
     // List of categories that have to match exactly with those on the server
     QStringList categoryNameList;
-    // the IDs of the categories as one string
+    // the attica categories we are interested in (e.g. Wallpaper, Application, Vocabulary File...)
     Attica::Category::List categoryList;
     
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
+
+    KNS3::Entry::List installedEntries;
 
     QMap<BaseJob*, Entry> downloadLinkJobs;
     
@@ -100,12 +102,18 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
 
 QDomElement AtticaProvider::providerXML() const
 {
-    Q_D(const AtticaProvider);
     QDomDocument doc;
 
     QDomElement el = doc.createElement("provider");
     // FIXME if needed, create xml
     return el;
+}
+
+void AtticaProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
+{
+    Q_D(AtticaProvider);
+    //d->
+    
 }
 
 void AtticaProvider::providerLoaded()
@@ -155,7 +163,6 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
 
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
-    Q_D(const AtticaProvider);
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 

@@ -44,34 +44,32 @@ Engine::CachePolicy Cache::policy() const
     return cachePolicy;
 }
 
-Entry::List Cache::readCache()
+void Cache::readCache()
 {
     QFile f(cacheFile);
     if (!f.open(QIODevice::ReadOnly)) {
         kWarning() << "The file " << cacheFile << " could not be opened.";
-        return Entry::List();
+        return;
     }
 
     QDomDocument doc;
     if (!doc.setContent(&f)) {
         kWarning() << "The file could not be parsed.";
-        return Entry::List();
+        return;
     }
 
     QDomElement root = doc.documentElement();
     if (root.tagName() != "hotnewstuffregistry") {
         kWarning() << "The file doesn't seem to be of interest.";
-        return Entry::List();
+        return;
     }
-
-    Entry::List entries;
 
     QDomElement stuff = root.firstChildElement("stuff");
     while (!stuff.isNull()) {
         Entry e;
         e.setEntryXML(stuff);
         e.setSource(Entry::Cache);
-        entries.append(e);
+        cache.insert(e);
         stuff = stuff.nextSiblingElement("stuff");
     }
     /*
@@ -86,111 +84,23 @@ Entry::List Cache::readCache()
         // FIXME: check here for a [ -f payloadfile ]
     }
 
-    kDebug() << "Cache read... entries: " << entries.size();
+    kDebug() << "Cache read... entries: " << cache.size();
+}
+
+
+Entry::List Cache::cacheForProvider(const QString& providerId)
+{
+    Entry::List entries;
+    foreach (const Entry& e, cache) {
+        if (e.providerId() == providerId) {
+            entries.append(e);
+        }
+    }
     return entries;
 }
 
 
-
-
-
-
-/*
-
-
-
-void Engine::loadRegistry()
-{
-    KStandardDirs standardDirs;
-
-    kDebug() << "Loading registry of files for the component: " << d->applicationName;
-
-    QString realAppName = d->applicationName.split(':')[0];
-
-    // this must be same as in registerEntry()
-    const QStringList dirs = standardDirs.findDirs("data", "knewstuff2-entries.registry");
-    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it) {
-        //kDebug() << " + Load from directory '" + (*it) + "'.";
-        QDir dir((*it));
-        const QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-        for (QStringList::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
-            QString filepath = (*it) + '/' + (*fit);
-            //kDebug() << "  + Load from file '" + filepath + "'.";
-
-            bool ret;
-            QFileInfo info(filepath);
-            QFile f(filepath);
-
-            // first see if this file is even for this app
-            // because the registry contains entries for all apps
-            // FIXMEE: should be able to do this with a filter on the entryList above probably
-            QString thisAppName = QString::fromUtf8(QByteArray::fromBase64(info.baseName().toUtf8()));
-
-            // NOTE: the ":" needs to always coincide with the separator character used in
-            // the id(Entry*) method
-            thisAppName = thisAppName.split(':')[0];
-
-            if (thisAppName != realAppName) {
-                continue;
-            }
-
-            ret = f.open(QIODevice::ReadOnly);
-            if (!ret) {
-                kWarning() << "The file could not be opened.";
-                continue;
-            }
-
-            QDomDocument doc;
-            ret = doc.setContent(&f);
-            if (!ret) {
-                kWarning() << "The file could not be parsed.";
-                continue;
-            }
-
-            QDomElement root = doc.documentElement();
-            if (root.tagName() != "ghnsinstall") {
-                kWarning() << "The file doesn't seem to be of interest.";
-                continue;
-            }
-
-            QDomElement stuff = root.firstChildElement("stuff");
-            if (stuff.isNull()) {
-                kWarning() << "Missing GHNS installation metadata.";
-                continue;
-            }
-
-            Entry e;
-            e.setEntryXML(stuff);
-            //if (!e->isValid()) {
-            //    kWarning() << "Invalid GHNS installation metadata.";
-            //    continue;
-            //}
-
-            e.setStatus(Entry::Installed);
-            e.setSource(Entry::Registry);
-            d->entry_registry.append(e);
-            //QString thisid = id(e);
-
-            // we must overwrite cache entries with registered entries
-            // and not just append the latter ones
-            //if (entryCached(e)) {
-            //    // it's in the cache, so replace the cache entry with the registered entry
-            //    Entry * oldEntry = d->entry_index[thisid];
-            //    int index = d->entries.indexOf(oldEntry);
-            //    d->entries[index] = e;
-            //    //delete oldEntry;
-            //}
-            //else {
-            //    d->entries.append(e);
-            //}
-            //d->entry_index[thisid] = e;
-        }
-    }
-}
-*/
-
-
-void Cache::writeCache(const Entry::List& entries)
+void Cache::writeCache()
 {
     kDebug() << "Write Cache";
 
@@ -203,7 +113,7 @@ void Cache::writeCache(const Entry::List& entries)
     QDomDocument doc;
     QDomElement root = doc.createElement("hotnewstuffregistry");
 
-    foreach (const Entry& entry, entries) {
+    foreach (const Entry& entry, cache) {
         // Write the entry, unless the policy is CacheNever and the entry is not installed.
         if (cachePolicy != Engine::CacheNever || (entry.status() == Entry::Installed || entry.status() == Entry::Updateable)) {
             QDomElement exml = entry.entryXML();
@@ -216,89 +126,15 @@ void Cache::writeCache(const Entry::List& entries)
     f.close();
 }
 
-
-
-
-// da old stuff
-/*
-// FIXME: not needed anymore?
-#if 0
-void Engine::loadEntriesCache()
+void Cache::insert(const QList< Entry >& entries)
 {
-    KStandardDirs d;
-
-    //kDebug() << "Loading entry cache.";
-
-    QStringList cachedirs = d.findDirs("cache", "knewstuff2-entries.cache/" + d->componentname);
-    if (cachedirs.size() == 0) {
-        //kDebug() << "Cache directory not present, skip loading.";
-        return;
-    }
-    QString cachedir = cachedirs.first();
-
-    //kDebug() << " + Load from directory '" + cachedir + "'.";
-
-    QDir dir(cachedir);
-    QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-    for (QStringList::iterator fit = files.begin(); fit != files.end(); ++fit) {
-        QString filepath = cachedir + '/' + (*fit);
-        //kDebug() << "  + Load from file '" + filepath + "'.";
-
-        Entry *e = loadEntryCache(filepath);
-
-        if (e) {
-            // FIXME: load provider/feed information first
-            emit signalEntryLoaded(e, NULL, NULL);
-        }
+    foreach(const Entry& e, entries) {
+        // if we don't remove the old entry, we cannot make sure it's up to date
+        kDebug() << "update cache " << e.name().representation();
+        cache.remove(e);
+        cache.insert(e);
     }
 }
-#endif
-*/
-
-/*
-void Engine::cacheEntry(const Entry& entry)
-{
-    KStandardDirs standardDirs;
-
-    QString cachedir = standardDirs.saveLocation("cache", "knewstuff2-entries.cache/");
-
-    kDebug() << "Caching entry in directory '" + cachedir + "'.";
-
-    //FIXME: this must be deterministic, but it could also be an OOB random string
-    //which gets stored into <ghnscache> just like preview...
-    QString idbase64 = QString(entry.uniqueId().toUtf8().toBase64());
-    QString cachefile = idbase64 + ".meta";
-
-    kDebug() << "Caching to file '" + cachefile + "'.";
-
-    // FIXME: adhere to meta naming rules as discussed
-    // FIXME: maybe related filename to base64-encoded id(), or the reverse?
-
-    QDomElement exml = entry.entryXML();
-
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnscache");
-    root.appendChild(exml);
-
-    if (d->previewfiles.contains(entry)) {
-        root.setAttribute("previewfile", d->previewfiles[entry]);
-    }
-    //if (d->payloadfiles.contains(entry)) {
-    //    root.setAttribute("payloadfile", d->payloadfiles[entry]);
-    //}
-
-    QFile f(cachedir + cachefile);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kError() << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
-        // FIXME: ignore?
-        return;
-    }
-    QTextStream metastream(&f);
-    metastream << root;
-    f.close();
-}
-*/
-
 
 
 #include "cache.moc"

@@ -65,12 +65,8 @@ class KNS3::Engine::Private {
         // Categories to search in
         QStringList categories;
 
-        // holds all the entries
-        Entry::List entries;
-
         // KILL THIS:
         QMap<QString, Provider*> provider_index;
-
 
         //?
         //Provider* uploadprovider;
@@ -124,7 +120,7 @@ Engine::Engine(const KNS3::Engine& other)
 
 Engine::~Engine()
 {
-    d->cache->writeCache(d->entries);
+    d->cache->writeCache();
 
     d->provider_index.clear();
     qDeleteAll(d->providers);
@@ -191,7 +187,7 @@ bool Engine::init(const QString &configfile)
 
     d->cache->setCacheFileName(d->applicationName.split(':')[0]);
     d->cache->setPolicy(cachePolicy);
-    d->entries = d->cache->readCache();
+    d->cache->readCache();
     
     d->initialized = true;
 
@@ -315,15 +311,7 @@ void Engine::slotProvidersFailed()
 void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name().representation();
-
-    Entry::List cachedEntries;
-    foreach (const Entry& e, d->entries) {
-        if (e.providerId() == p->id()) {
-            cachedEntries.append(e);
-        }
-    }
-    
-    //provider->setCachedEntries(cacheForProvider(provider->id()));
+    p->setCachedEntries(d->cache->cacheForProvider(p->id()));
     
     d->provider_index[p->id()] = p;
     
@@ -339,7 +327,7 @@ void Engine::providerInitialized(Provider* p)
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
 {
-    d->entries.append(entries);
+    d->cache->insert(entries);
     emit signalEntriesLoaded(entries);
 }
 
