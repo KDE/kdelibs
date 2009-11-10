@@ -975,6 +975,24 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types COMPONENT Devel)
 
 
 install(FILES
+  Nepomuk/Query/AndTerm
+  Nepomuk/Query/ComparisonTerm
+  Nepomuk/Query/GroupTerm
+  Nepomuk/Query/LiteralTerm
+  Nepomuk/Query/NegationTerm
+  Nepomuk/Query/OrTerm
+  Nepomuk/Query/Query
+  Nepomuk/Query/FileQuery
+  Nepomuk/Query/QueryParser
+  Nepomuk/Query/QueryServiceClient
+  Nepomuk/Query/ResourceTerm
+  Nepomuk/Query/Result
+  Nepomuk/Query/SimpleTerm
+  Nepomuk/Query/Term
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
+
+
+install(FILES
   Plasma/AbstractAnimation
   Plasma/AbstractRunner
   Plasma/AbstractToolBox

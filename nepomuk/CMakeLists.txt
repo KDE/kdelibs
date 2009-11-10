@@ -7,4 +7,5 @@ install(FILES
 
 add_subdirectory(rcgen)
 add_subdirectory(core)
+add_subdirectory(query)
 add_subdirectory(cmake/modules)
