@@ -223,8 +223,6 @@ bool Nepomuk::ResourceManagerPrivate::dataCacheFull()
 
 void Nepomuk::ResourceManagerPrivate::cleanupCache()
 {
-    QMutexLocker lock( &mutex );
-
     if ( dataCnt >= 1000 ) {
         for( ResourceDataHash::iterator rdIt = m_initializedData.begin();
              rdIt != m_initializedData.end(); ++rdIt ) {
