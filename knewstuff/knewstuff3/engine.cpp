@@ -196,11 +196,8 @@ bool Engine::init(const QString &configfile)
     
     d->initialized = true;
 
-
-    /*
-    // load the registry first, so we know which entries are installed
-    loadRegistry();
-    */
+    // FIXME this probably doesn't do anything right now (?)
+    // what is the providers cache supposed to do?
     
     // initialize providers at this point
     // then load the providersCache if caching is enabled
@@ -691,12 +688,13 @@ void Engine::cacheProvider(Provider *provider)
 //    f.close();
 //}
 
-void Engine::install(const KNS3::Entry& entry)
+void Engine::install(KNS3::Entry entry)
 {
     kDebug() << "Install " << entry.name().representation()
         << entry.providerId() << d->provider_index.keys();
     Provider* p = d->provider_index[entry.providerId()];
-
+    entry.setStatus(Entry::Installing);
+    emit signalEntryChanged(entry);
     p->loadPayloadLink(entry);
 }
 

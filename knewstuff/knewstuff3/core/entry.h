@@ -48,7 +48,36 @@ class KNEWSTUFF_EXPORT Entry
 {
 public:
     typedef QList<Entry> List;
-
+    
+    /**
+    * Source of the entry, A entry's data is coming from either cache, or an online provider
+    * this helps the engine know which data to use when merging cached entries with online
+    * entry data
+    */
+    enum Source {
+        Cache,
+        Online,
+        Registry
+    };
+    
+    /**
+    * Status of the entry. An entry will be downloadable from the provider's
+    * site prior to the download. Once downloaded and installed, it will
+    * be either installed or updateable, implying an out-of-date
+    * installation. Finally, the entry can be deleted and hence show up as
+    * downloadable again.
+    * Entries not taking part in this cycle, for example those in upload,
+    * have an invalid status.
+    */
+    enum Status {
+        Invalid,
+        Downloadable,
+        Installed,
+        Updateable,
+        Deleted,
+        Installing  // this item is being installed right now
+    };
+    
     /**
      * Constructor.
      */
@@ -258,16 +287,6 @@ public:
     */
     virtual QDomElement entryXML() const;
 
-    /**
-     * Source of the entry, A entry's data is coming from either cache, or an online provider
-     * this helps the engine know which data to use when merging cached entries with online
-     * entry data
-     */
-    enum Source {
-        Cache,
-        Online,
-        Registry
-    };
 
     void setSource(Source source);
     Source source() const;
@@ -305,23 +324,7 @@ public:
      * @ref signature Signature for the entry
      */
     //void setSignature(const QString& signature);
-    
-    /**
-     * Status of the entry. An entry will be downloadable from the provider's
-     * site prior to the download. Once downloaded and installed, it will
-     * be either installed or updateable, implying an out-of-date
-     * installation. Finally, the entry can be deleted and hence show up as
-     * downloadable again.
-     * Entries not taking part in this cycle, for example those in upload,
-     * have an invalid status.
-     */
-    enum Status {
-        Invalid,
-        Downloadable,
-        Installed,
-        Updateable,
-        Deleted
-    };
+
 
     /**
      * Sets the entry's status. If no status is set, the default will be

@@ -173,7 +173,7 @@ public:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    void install(const Entry& entry);
+    void install(Entry entry);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed

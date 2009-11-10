@@ -264,6 +264,9 @@ void EntryView::buildContents()
     case Entry::Installed:
         statusIcon = "<img src='" + loader->iconPath("dialog-ok", -KIconLoader::SizeSmall) + "' />";
         break;
+    case Entry::Installing:
+        statusIcon = "<img src='" + loader->iconPath("dolphin", -KIconLoader::SizeSmall) + "' />";
+        break;
     case Entry::Updateable:
         statusIcon = "<img src='" + loader->iconPath("software-update-available", -KIconLoader::SizeSmall) + "' />";
         break;

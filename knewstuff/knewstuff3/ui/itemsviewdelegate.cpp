@@ -181,6 +181,9 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         // get the two actions
         //QAction * action_install = button->menu()->actions()[0];
         //QAction * action_uninstall = button->menu()->actions()[1];
+        
+        button->setEnabled(true);
+        
         switch (status) {
         case Entry::Installed:
             button->setText(i18n("Uninstall"));
@@ -197,13 +200,17 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             break;
         case Entry::Deleted:
-            /// @todo Set different button text when string freeze is over? "Install again"
-            button->setText(i18n("Install"));
+            button->setText(i18n("Install again"));
             //action_uninstall->setVisible(false);
             //action_install->setText(i18n("Install"));
             //action_install->setVisible(true);
             //action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
+            break;
+        case Entry::Installing:
+            button->setText(i18n("Installing"));
+            button->setEnabled(false);
+            button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             break;
         default:
             button->setText(i18n("Install"));
