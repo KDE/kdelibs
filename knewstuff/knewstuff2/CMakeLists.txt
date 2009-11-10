@@ -75,6 +75,7 @@ install(FILES
 
 install(FILES
   ui/knewstuffaction.h
+  ui/knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui COMPONENT Devel
 )
 
