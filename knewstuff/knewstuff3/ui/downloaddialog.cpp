@@ -316,6 +316,11 @@ void DownloadDialog::slotNetworkTimeout() // SLOT
 void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 {
     d->model->clearEntries();
+    if (sortType == Provider::Installed) {
+        m_searchEdit->clear();
+    }
+    m_searchEdit->setEnabled(sortType != Provider::Installed);
+    
     d->engine->setSortMode((Provider::SortMode)sortType);
     d->engine->reloadEntries();
 }
