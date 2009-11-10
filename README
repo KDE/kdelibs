@@ -130,9 +130,6 @@ And here is an alphabetical list of all further parts of kdelibs:
 * kinit
     Process launcher (kdeinit), used for fast KDE startup and to launch kioslaves.
 
-* kmetadata
-    Meta data handling, part of Nepomuk.
-
 * licenses
     Contains texts of all used licenses.
 
