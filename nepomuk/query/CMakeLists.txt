@@ -78,6 +78,7 @@ install(FILES
   filequery.h
   result.h
   queryserviceclient.h
+  queryparser.h
   nepomukquery_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
