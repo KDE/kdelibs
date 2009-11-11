@@ -94,7 +94,7 @@ namespace
           return m_toolBarActions;
         }
 
-        KActionMenu *menuAction = new KActionMenu(i18n( "Toolbars" ), m_actionCollection);
+        KActionMenu *menuAction = new KActionMenu(i18n( "Toolbars Shown" ), m_actionCollection);
         m_actionCollection->addAction("toolbars_submenu_action", menuAction);
 
         foreach ( QAction* action, m_toolBarActions )
