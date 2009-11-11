@@ -189,7 +189,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 
             // check if updateable
             if ((cacheEntry.status() == Entry::Installed) &&
-                (cacheEntry.version() != entry.version())) {
+                ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
                 kDebug() << "Versions: " << cacheEntry.version() << entry.version();
                 cacheEntry.setStatus(Entry::Updateable);
             }

@@ -296,7 +296,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             
             // check if updateable
             if ((cacheEntry.status() == Entry::Installed) &&
-                (cacheEntry.version() != entry.version())) {
+                 ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
                     entry.setStatus(Entry::Updateable);
             } else {
                 entry.setStatus(cacheEntry.status());
