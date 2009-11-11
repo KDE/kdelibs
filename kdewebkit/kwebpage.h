@@ -53,7 +53,7 @@ public:
      * @param parent    the parent object.
      * @param windowId  the id of the window that contains this object.
      *
-     * @see KIO::Intergation::CookieJar
+     * @see KIO::Integration::CookieJar
      */
     explicit KWebPage(QObject *parent = 0, qlonglong windowId = 0);
 
