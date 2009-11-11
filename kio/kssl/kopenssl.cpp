@@ -622,7 +622,7 @@ KOpenSSLProxy::KOpenSSLProxy()
       K_SSL_set_session = (int (*)(SSL*,SSL_SESSION*)) d->sslLib->resolveFunction("SSL_set_session");
       K_d2i_SSL_SESSION = (SSL_SESSION* (*)(SSL_SESSION**,unsigned char**, long)) d->sslLib->resolveFunction("d2i_SSL_SESSION");
       K_i2d_SSL_SESSION = (int (*)(SSL_SESSION*,unsigned char**)) d->sslLib->resolveFunction("i2d_SSL_SESSION");
-      K_SSL_get_ciphers = (STACK *(*)(const SSL*)) d->sslLib->resolveFunction("SSL_get_ciphers");
+      K_SSL_get_ciphers = (STACK_OF(SSL_CIPHER) *(*)(const SSL*)) d->sslLib->resolveFunction("SSL_get_ciphers");
 #endif
 
 

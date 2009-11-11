@@ -44,6 +44,14 @@ class KOpenSSLProxyPrivate;
 #include <openssl/stack.h>
 #include <openssl/bn.h>
 #undef crypt
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+#define STACK _STACK
+#define OSSL_SKVALUE_RTYPE void
+#define OSSL_MORECONST const
+#else
+#define OSSL_SKVALUE_RTYPE char
+#define OSSL_MORECONST
+#endif
 #endif
 
 /**
@@ -505,6 +513,9 @@ public:
     */
    void sk_free(STACK *s);
 
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+   void sk_free(void *s) { return sk_free(reinterpret_cast<STACK*>(s)); }
+#endif
 
    /*
     *  Number of elements in the stack
@@ -517,6 +528,9 @@ public:
     */
    char *sk_value(STACK *s, int n);
 
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+   char *sk_value(void *s, int n) { return sk_value(reinterpret_cast<STACK*>(s), n); }
+#endif
 
    /*
     *  Create a new stack
@@ -528,6 +542,10 @@ public:
     *  Add an element to the stack
     */
    int sk_push(STACK *s, char *d);
+
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+   int sk_push(void *s, void *d) { return sk_push(reinterpret_cast<STACK*>(s), reinterpret_cast<char*>(d)); }
+#endif
 
 
    /*
