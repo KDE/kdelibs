@@ -23,7 +23,7 @@
 #include "core/entry.h"
 
 namespace KNS3 {
-    
+
 class Cache : public QObject
 {
     Q_OBJECT

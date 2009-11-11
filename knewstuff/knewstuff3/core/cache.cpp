@@ -91,7 +91,7 @@ Entry::List Cache::registryForProvider(const QString& providerId)
 
 void Cache::writeRegistry()
 {
-    kDebug() << "Write Cache";
+    kDebug() << "Write registry";
 
     QFile f(registryFile);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -118,8 +118,6 @@ void Cache::writeRegistry()
 
 void Cache::registerChangedEntry(const KNS3::Entry& entry)
 {
-    // TODO: check if remove is needed
-    cache.remove(entry);
     cache.insert(entry);
 }
 
