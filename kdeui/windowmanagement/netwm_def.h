@@ -593,11 +593,15 @@ public:
        @li WMWindowType
        @li WMState
        @li WMStrut  (obsoleted by WM2ExtendedStrut)
+       @li WMGeometry
+       @li WMFrameExtents
        @li WMIconGeometry
        @li WMIcon
-       @li WMPid
-       @li WMVisibleIconName
        @li WMIconName
+       @li WMVisibleIconName
+       @li WMHandledIcons
+       @li WMPid
+       @li WMPing
 
        ICCCM properties (provided for convenience):
 
