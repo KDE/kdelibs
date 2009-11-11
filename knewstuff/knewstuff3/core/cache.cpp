@@ -115,17 +115,13 @@ void Cache::writeRegistry()
     f.close();
 }
 
-/*
-void Cache::insertEntries(const QList< Entry >& entries)
+
+void Cache::registerChangedEntry(const KNS3::Entry& entry)
 {
-    foreach(const Entry& e, entries) {
-        // if we don't remove the old entry, we cannot make sure it's up to date
-        kDebug() << "update cache " << e.name().representation();
-        cache.remove(e);
-        cache.insert(e);
-    }
+    // TODO: check if remove is needed
+    cache.remove(entry);
+    cache.insert(entry);
 }
-*/
 
 void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::Entry::List& entries)
 {

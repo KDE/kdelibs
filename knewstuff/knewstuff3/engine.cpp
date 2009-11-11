@@ -117,6 +117,7 @@ Engine::Engine(QObject* parent)
         : QObject(parent), d(new Engine::Private)
 {
     connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
+    connect(this, SIGNAL(signalEntryChanged(const KNS3::Entry&)), d->cache, SLOT(registerChangedEntry(const KNS3::Entry&)));
 }
 
 /* maybe better to disable copying alltogether?

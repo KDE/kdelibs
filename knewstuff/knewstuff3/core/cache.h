@@ -40,9 +40,11 @@ public:
     /// Save the list of installed entries
     void writeRegistry();
 
-    //void insertEntries(const QList<Entry>& entries);
     void insertRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::Entry::List& entries);
     Entry::List requestFromCache(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
+
+public Q_SLOTS:
+    void registerChangedEntry(const KNS3::Entry& entry);
     
 private:
     QString hashForRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
