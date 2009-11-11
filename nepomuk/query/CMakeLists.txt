@@ -2,14 +2,14 @@ project(nepomukquery)
 
 include_directories(
   ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
+  ${KDE4_KDECORE_INCLUDES}
   ${CMAKE_SOURCE_DIR}
   ${SOPRANO_INCLUDE_DIR}
   ${NEPOMUK_INCLUDE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_SOURCE_DIR}/../core
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/ontology
-  )
+)
 
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 
