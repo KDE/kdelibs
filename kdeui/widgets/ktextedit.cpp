@@ -619,31 +619,24 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
         }
     }
     else {
-        QMenu suggestions; //don't use KMenu here we don't want auto management accelerator
         QMenu menu; //don't use KMenu here we don't want auto management accelerator
 
-        //Add the suggestions to the popup menu
+        //Add the suggestions to the menu
         const QStringList reps = highlighter()->suggestionsForWord(selectedWord);
-        if (!reps.isEmpty()) {
-            for (QStringList::const_iterator it = reps.constBegin(); it != reps.constEnd(); ++it) {
-                suggestions.addAction(*it);
-            }
-
+        if (reps.isEmpty()) {
+            QAction *suggestionsAction = menu.addAction(i18n("No suggestions for %1", selectedWord));
+            suggestionsAction->setEnabled(false);
         }
-        suggestions.setTitle(i18n("Suggestions for %1", selectedWord));
+        else {
+            for (QStringList::const_iterator it = reps.constBegin(); it != reps.constEnd(); ++it) {
+                menu.addAction(*it);
+            }
+        }
+
+        menu.addSeparator();
 
         QAction *ignoreAction = menu.addAction(i18n("Ignore"));
         QAction *addToDictAction = menu.addAction(i18n("Add to Dictionary"));
-        if (reps.count() == 0) {
-	    QAction *suggestionsAction = menu.addAction(i18n("No suggestions for %1", selectedWord));
-            suggestionsAction->setEnabled(false);
-	    suggestions.setTitle(i18n("No suggestions for %1", selectedWord));
-        }
-	else {
-	    menu.addMenu(&suggestions);
-	    suggestions.setTitle(i18n("Suggestions for %1", selectedWord));
-
-	}
         //Execute the popup inline
         const QAction *selectedAction = menu.exec(event->globalPos());
 
