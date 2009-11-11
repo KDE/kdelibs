@@ -25,30 +25,19 @@ using namespace KNS3;
 
 Cache::Cache(QObject* parent): QObject(parent)
 {
-    cachePolicy = Engine::CacheReplaceable;
 }
 
-void Cache::setCacheFileName(const QString& file)
+void Cache::setRegistryFileName(const QString& file)
 {
-    cacheFile = KStandardDirs::locateLocal("data", "knewstuff3/" + file + ".knscache");
-    kDebug() << "Using Cache file: " << cacheFile;
+    registryFile = KStandardDirs::locateLocal("data", "knewstuff3/" + file + ".knsregistry");
+    kDebug() << "Using registry file: " << registryFile;
 }
 
-void Cache::setPolicy(Engine::CachePolicy policy)
+void Cache::readRegistry()
 {
-    cachePolicy = policy;
-}
-
-Engine::CachePolicy Cache::policy() const
-{
-    return cachePolicy;
-}
-
-void Cache::readCache()
-{
-    QFile f(cacheFile);
+    QFile f(registryFile);
     if (!f.open(QIODevice::ReadOnly)) {
-        kWarning() << "The file " << cacheFile << " could not be opened.";
+        kWarning() << "The file " << registryFile << " could not be opened.";
         return;
     }
 
@@ -88,7 +77,7 @@ void Cache::readCache()
 }
 
 
-Entry::List Cache::cacheForProvider(const QString& providerId)
+Entry::List Cache::registryForProvider(const QString& providerId)
 {
     Entry::List entries;
     foreach (const Entry& e, cache) {
@@ -100,13 +89,13 @@ Entry::List Cache::cacheForProvider(const QString& providerId)
 }
 
 
-void Cache::writeCache()
+void Cache::writeRegistry()
 {
     kDebug() << "Write Cache";
 
-    QFile f(cacheFile);
+    QFile f(registryFile);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kWarning() << "Cannot write meta information to '" << cacheFile << "'." << endl;
+        kWarning() << "Cannot write meta information to '" << registryFile << "'." << endl;
         return;
     }
     
@@ -115,7 +104,7 @@ void Cache::writeCache()
 
     foreach (const Entry& entry, cache) {
         // Write the entry, unless the policy is CacheNever and the entry is not installed.
-        if (cachePolicy != Engine::CacheNever || (entry.status() == Entry::Installed || entry.status() == Entry::Updateable)) {
+        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
             QDomElement exml = entry.entryXML();
             root.appendChild(exml);
         }
@@ -126,7 +115,8 @@ void Cache::writeCache()
     f.close();
 }
 
-void Cache::insert(const QList< Entry >& entries)
+/*
+void Cache::insertEntries(const QList< Entry >& entries)
 {
     foreach(const Entry& e, entries) {
         // if we don't remove the old entry, we cannot make sure it's up to date
@@ -135,6 +125,23 @@ void Cache::insert(const QList< Entry >& entries)
         cache.insert(e);
     }
 }
+*/
 
+void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::Entry::List& entries)
+{
+    requestCache[hashForRequest(sortMode, searchstring, page, pageSize)] = entries;
+    kDebug() << hashForRequest(sortMode, searchstring, page, pageSize) << " keys: " << requestCache.keys();
+}
+
+Entry::List Cache::requestFromCache(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize)
+{
+    kDebug() << hashForRequest(sortMode, searchstring, page, pageSize);
+    return requestCache.value(hashForRequest(sortMode, searchstring, page, pageSize));
+}
+
+QString Cache::hashForRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize)
+{
+    return QString(QString::number((int)sortMode) + ',' + searchstring + ',' + QString::number(page) + ',' + QString::number(pageSize));
+}
 
 #include "cache.moc"

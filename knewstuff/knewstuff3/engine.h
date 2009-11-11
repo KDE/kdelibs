@@ -144,7 +144,7 @@ public:
      * @see signalEntryUploaded
      * @see signalEntryFailed
      */
-    bool uploadEntry(Provider *provider, const KNS3::Entry& entry);
+    //bool uploadEntry(Provider *provider, KNS3::Entry entry);
 
     /**
      * @return the component name the engine is using, or an empty string if not
@@ -167,6 +167,9 @@ Q_SIGNALS:
     void signalEntriesLoaded(const KNS3::Entry::List& entries);
     void signalEntryChanged(const KNS3::Entry& entry);
 
+    // a new search result is there, clear the list of items
+    void signalResetView();
+    
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
 
@@ -182,8 +185,6 @@ Q_SIGNALS:
 
     void signalError(const QString& errorMessage);
     
-protected:
-    //void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
     // the .knsrc file was loaded
     void slotProviderFileLoaded(const QDomDocument& doc);
@@ -197,12 +198,8 @@ private Q_SLOTS:
 
     void slotPreviewResult(KJob *job);
 
-    /*
-    void slotUploadPayloadResult(KJob *job);
-    void slotUploadPreviewResult(KJob *job);
-    void slotUploadMetaResult(KJob *job);
-    */
-    
+    void slotSearchTimerExpired();
+
     void slotProgress(KJob *job, unsigned long percent);
     
     void slotEntryChanged(const KNS3::Entry& entry);

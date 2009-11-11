@@ -49,7 +49,6 @@ using namespace KNS3;
 
 class DownloadDialog::Private {
 public:
-    QTimer* searchTimer;
     QTimer* messageTimer;
 
     Engine *engine;
@@ -64,11 +63,9 @@ public:
     
     Private(Engine* _engine)
         : engine(_engine), model(new ItemsModel), sortingProxyModel(new QSortFilterProxyModel)
-        , messageTimer(new QTimer), searchTimer(new QTimer)
+        , messageTimer(new QTimer)
     {
         messageTimer->setSingleShot(true);
-        searchTimer->setSingleShot(true);
-        searchTimer->setInterval(1000);
 
         sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
         sortingProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -77,7 +74,6 @@ public:
     
     ~Private() {
         delete messageTimer;
-        delete searchTimer;
         delete mDelegate;
         delete sortingProxyModel;
         delete model;
@@ -101,11 +97,12 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     // An entry has changes - eg because it was installed
     connect(d->engine, SIGNAL(signalEntryChanged(KNS3::Entry)), SLOT(slotEntryChanged(KNS3::Entry)));
 
+    connect(d->engine, SIGNAL(signalResetView()), d->model, SLOT(clearEntries()));
+    
     // FIXME show download progress
     connect(d->engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
     
     connect(d->messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
-    connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotUpdateSearch()));
 
     d->mDelegate = new ItemsViewDelegate(m_listView);
     m_listView->setItemDelegate(d->mDelegate);
@@ -327,22 +324,19 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 
 void DownloadDialog::slotUpdateSearch()
 {
-    d->searchTimer->stop();
-    
     if (d->searchTerm == m_searchEdit->text().trimmed()) {
         return;
     }
     d->searchTerm = m_searchEdit->text().trimmed();
-    
-    d->model->clearEntries();
-    kDebug() << "Search term entered: " << m_searchEdit->text();
-    d->engine->setSearchTerm(m_searchEdit->text().trimmed());
-    d->engine->reloadEntries();
 }
 
 void DownloadDialog::slotSearchTextChanged()
 {
-    d->searchTimer->start();
+    if (d->searchTerm == m_searchEdit->text().trimmed()) {
+        return;
+    }
+    d->searchTerm = m_searchEdit->text().trimmed();
+    d->engine->setSearchTerm(m_searchEdit->text().trimmed());
 }
 
 void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)

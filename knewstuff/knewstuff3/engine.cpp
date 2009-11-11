@@ -41,6 +41,7 @@
 #include <krandom.h>
 
 
+#include <QtCore/QTimer>
 #include <QtCore/QDir>
 #include <QtXml/qdom.h>
 #include <QtCore/Q_PID>
@@ -83,6 +84,8 @@ class KNS3::Engine::Private {
         Cache* cache;
         
         QString searchTerm;
+        QTimer* searchTimer;
+        
         Provider::SortMode sortMode;
 
         bool initialized;
@@ -94,11 +97,15 @@ class KNS3::Engine::Private {
             , sortMode(Provider::Rating)
             , installation(new Installation)
             , cache(new Cache)
+            , searchTimer(new QTimer)
         {
+            searchTimer->setSingleShot(true);
+            searchTimer->setInterval(1000);
         }
         
         ~Private()
         {
+            delete searchTimer;
             delete installation;
             delete cache;
         }
@@ -109,6 +116,7 @@ using namespace KNS3;
 Engine::Engine(QObject* parent)
         : QObject(parent), d(new Engine::Private)
 {
+    connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
 }
 
 /* maybe better to disable copying alltogether?
@@ -120,7 +128,7 @@ Engine::Engine(const KNS3::Engine& other)
 
 Engine::~Engine()
 {
-    d->cache->writeCache();
+    d->cache->writeRegistry();
 
     d->provider_index.clear();
     qDeleteAll(d->providers);
@@ -168,44 +176,17 @@ bool Engine::init(const QString &configfile)
     
     connect(d->installation, SIGNAL(signalEntryChanged(const KNS3::Entry&)), SLOT(slotEntryChanged(const KNS3::Entry&)));
 
-    CachePolicy cachePolicy;
-    QString cachePolicyString = group.readEntry("CachePolicy", QString());
-    if (!cachePolicyString.isEmpty()) {
-        if (cachePolicyString == "never") {
-            cachePolicy = CacheNever;
-        } else if (cachePolicyString == "replaceable") {
-            cachePolicy = CacheReplaceable;
-        } else if (cachePolicyString == "resident") {
-            cachePolicy = CacheResident;
-        } else if (cachePolicyString == "only") {
-            cachePolicy = CacheOnly;
-        } else {
-            kError() << "Cache policy '" + cachePolicyString + "' is unknown." << endl;
-        }
-    }
-    kDebug() << "cache policy: " << cachePolicyString;
-
-    d->cache->setCacheFileName(d->applicationName.split(':')[0]);
-    d->cache->setPolicy(cachePolicy);
-    d->cache->readCache();
+    d->cache->setRegistryFileName(d->applicationName.split(':')[0]);
+    d->cache->readRegistry();
     
     d->initialized = true;
 
-    /*
-    // load the registry first, so we know which entries are installed
-    loadRegistry();
-    */
-    
     // initialize providers at this point
     // then load the providersCache if caching is enabled
-    if (d->cache->policy() != CacheNever) {
-        loadProvidersCache();
-    }
+    loadProvidersCache();  // FIXME  do we really do anything useful here?
 
     // load the providers
-    if (d->cache->policy() != CacheOnly) {
-        loadProviders();
-    }
+    loadProviders();
 
     return true;
 }
@@ -231,38 +212,6 @@ void Engine::loadProviders()
 }
 
 
-bool Engine::uploadEntry(Provider *provider, const Entry& entry)
-{
-    //kDebug() << "Uploading " << entry.name().representation() << "...";
-
-    //if (d->uploadedentry) {
-    //    kError() << "Another upload is in progress!" << endl;
-    //    return false;
-    //}
-
-    //if (!provider->uploadUrl().isValid()) {
-    //    kError() << "The provider doesn't support uploads." << endl;
-    //    return false;
-
-    //    // FIXME: support for <noupload> will go here (file bundle creation etc.)
-    //}
-
-    //// FIXME: validate files etc.
-    //d->uploadprovider = provider;
-    //d->uploadedentry = entry;
-
-    //KUrl sourcepayload = KUrl(entry.payload().representation());
-    //KUrl destfolder = provider->uploadUrl();
-
-    //destfolder.setFileName(sourcepayload.fileName());
-
-    //KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    //connect(fcjob,
-    //        SIGNAL(result(KJob*)),
-    //        SLOT(slotUploadPayloadResult(KJob*)));
-
-    return true;
-}
 
 void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 {
@@ -311,7 +260,7 @@ void Engine::slotProvidersFailed()
 void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name().representation();
-    p->setCachedEntries(d->cache->cacheForProvider(p->id()));
+    p->setCachedEntries(d->cache->registryForProvider(p->id()));
     
     d->provider_index[p->id()] = p;
     
@@ -325,16 +274,26 @@ void Engine::providerInitialized(Provider* p)
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
 {
-    d->cache->insert(entries);
+    //d->cache->insertEntries(entries);
+    d->cache->insertRequest(d->sortMode, d->searchTerm, 0, 20, entries);
     emit signalEntriesLoaded(entries);
 }
 
 void Engine::reloadEntries()
 {
+    emit signalResetView();
     foreach (Provider* p, d->providers) {
         if (p->isInitialized()) {
             // FIXME: other parameters
-            p->loadEntries(d->sortMode, d->searchTerm);
+            // FIXME use cache, if this request was sent already, take it from the cache
+            Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
+            if (!cache.isEmpty()) {
+                kDebug() << "From cache";
+                emit signalEntriesLoaded(cache);
+            } else {
+                kDebug() << "From provider";
+                p->loadEntries(d->sortMode, d->searchTerm);
+            }
         }
     }
 }
@@ -346,7 +305,20 @@ void Engine::setSortMode(Provider::SortMode mode)
 
 void Engine::setSearchTerm(const QString& searchString)
 {
+    d->searchTimer->stop();
     d->searchTerm = searchString;
+    Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
+    if (!cache.isEmpty()) {
+        emit signalResetView();
+        emit signalEntriesLoaded(cache);
+    } else {
+        d->searchTimer->start();
+    }
+}
+
+void Engine::slotSearchTimerExpired()
+{
+    reloadEntries();
 }
 
 void Engine::slotProgress(KJob *job, unsigned long percent)
@@ -388,109 +360,6 @@ void Engine::slotPreviewResult(KJob *job)
         emit signalPreviewLoaded(fcjob->destUrl());
     }
 }
-
-/*
-void Engine::slotUploadPayloadResult(KJob *job)
-{
-    //if (job->error()) {
-    //    kError() << "Cannot upload payload file." << endl;
-    //    kError() << job->errorString() << endl;
-
-    //    d->uploadedentry = NULL;
-    //    d->uploadprovider = NULL;
-
-    //    emit signalEntryFailed();
-    //    return;
-    //}
-
-    //if (d->uploadedentry.preview().representation().isEmpty()) {
-    //    // FIXME: we abuse 'job' here for the shortcut if there's no preview
-    //    slotUploadPreviewResult(job);
-    //    return;
-    //}
-
-    //KUrl sourcepreview = KUrl(d->uploadedentry.preview().representation());
-    //KUrl destfolder = d->uploadprovider->uploadUrl();
-
-    //destfolder.setFileName(sourcepreview.fileName());
-
-    //KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    //connect(fcjob,
-    //        SIGNAL(result(KJob*)),
-    //        SLOT(slotUploadPreviewResult(KJob*)));
-}
-
-void Engine::slotUploadPreviewResult(KJob *job)
-{
-    //if (job->error()) {
-    //    kError() << "Cannot upload preview file." << endl;
-    //    kError() << job->errorString() << endl;
-
-    //    d->uploadedentry = NULL;
-    //    d->uploadprovider = NULL;
-
-    //    emit signalEntryFailed();
-    //    return;
-    //}
-
-    //// FIXME: the following save code is also in cacheEntry()
-    //// when we upload, the entry should probably be cached!
-
-    //// FIXME: adhere to meta naming rules as discussed
-    //KUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
-    //KUrl destfolder = d->uploadprovider->uploadUrl();
-
-    //destfolder.setFileName(sourcemeta.fileName());
-
-    //EntryHandler eh(*d->uploadedentry);
-    //QDomElement exml = eh.entryXML();
-
-    //QDomDocument doc;
-    //QDomElement root = doc.createElement("ghnsupload");
-    //root.appendChild(exml);
-
-    //QFile f(sourcemeta.path());
-    //if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    //    kError() << "Cannot write meta information to '" << sourcemeta << "'." << endl;
-
-    //    d->uploadedentry = NULL;
-    //    d->uploadprovider = NULL;
-
-    //    emit signalEntryFailed();
-    //    return;
-    //}
-    //QTextStream metastream(&f);
-    //metastream << root;
-    //f.close();
-
-    //KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
-    //connect(fcjob,
-    //        SIGNAL(result(KJob*)),
-    //        SLOT(slotUploadMetaResult(KJob*)));
-}
-*/
-
-/*
-void Engine::slotUploadMetaResult(KJob *job)
-{
-    if (job->error()) {
-        kError() << "Cannot upload meta file." << endl;
-        kError() << job->errorString() << endl;
-
-        d->uploadedentry = Entry();
-        d->uploadprovider = NULL;
-
-        emit signalEntryFailed();
-        return;
-    } else {
-        d->uploadedentry = Entry();
-        d->uploadprovider = NULL;
-
-        //KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-        emit signalEntryUploaded();
-    }
-}
-*/
 
 void Engine::loadProvidersCache()
 {
@@ -552,10 +421,6 @@ void Engine::loadProvidersCache()
 
         provider = provider.nextSiblingElement("provider");
     }
-
-    if (d->cache->policy() == CacheOnly) {
-        emit signalEntriesFinished();
-    }
 }
 
 /* FIXME: decide what to do with this
@@ -586,9 +451,6 @@ void Engine::loadFeedCache(Provider *provider)
 
 bool Engine::providerCached(Provider *provider)
 {
-
-    if (d->cache->policy() == CacheNever) return false;
-
     if (d->provider_index.contains(provider->id()))
         return true;
     return false;
@@ -645,7 +507,7 @@ void Engine::cacheProvider(Provider *provider)
     /*
 }
 */
-    
+
 //void Engine::cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries)
 //{
 //    // feed cache file is a list of entry-id's that are part of this feed

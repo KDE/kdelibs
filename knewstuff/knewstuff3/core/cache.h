@@ -29,29 +29,27 @@ class Cache : public QObject
     Q_OBJECT
 public:
     Cache(QObject* parent = 0);
-    /// The file name of the cache - this is usally the application name
-    void setCacheFileName(const QString& file);
-    /// The cache policy (what to save)
-    void setPolicy(Engine::CachePolicy policy);
-    /// The cache policy (what to save)
-    Engine::CachePolicy policy() const;
-
-    /// Read the cache file (e.g. on startup)
-    void readCache();
-    Entry::List cacheForProvider(const QString& providerId);
-
-    /// Save the list of entries to the cache
-    void writeCache();
-
-    void insert(const QList<Entry>& entries);
+    /// The file name of the registry - this is usally the application name, it will be stored in "apps/knewstuff3/appname.knsregistry"
+    void setRegistryFileName(const QString& appName);
     
+    /// Read the installed entries (on startup)
+    void readRegistry();
+    /// All entries that have been installed by a certain provider
+    Entry::List registryForProvider(const QString& providerId);
+
+    /// Save the list of installed entries
+    void writeRegistry();
+
+    //void insertEntries(const QList<Entry>& entries);
+    void insertRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::Entry::List& entries);
+    Entry::List requestFromCache(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
     
 private:
-    Engine::CachePolicy cachePolicy;
-    QString cacheFile;
+    QString hashForRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
+    QString registryFile;
 
     QSet<Entry> cache;
-    
+    QHash<QString, Entry::List> requestCache;
 };
 
 }
