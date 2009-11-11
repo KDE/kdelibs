@@ -608,13 +608,12 @@ bool KSelectionProxyModelPrivate::isDescendantOf(const QModelIndex &ancestor, co
 
 QModelIndex KSelectionProxyModelPrivate::childOfParent(const QModelIndex& ancestor, const QModelIndex& descendant) const
 {
-//   if (ancestor = )
-  QModelIndex parent = descendant.parent();
-  while (parent != ancestor)
+  QModelIndex child = descendant;
+  while (child.isValid() && child.parent() != ancestor)
   {
-    parent = parent.parent();
+    child = child.parent();
   }
-  return parent;
+  return child;
 }
 
 
