@@ -147,16 +147,45 @@ namespace Nepomuk {
              */
             class RequestProperty {
             public:
+                /**
+                 * Create a new request property.
+                 * \param property The requested %property.
+                 * \param optional if \p true the requested property will
+                 * be %optional, ie. marked as OPTIONAL in SPARQL queries.
+                 */
                 RequestProperty( const Nepomuk::Types::Property& property,
                                  bool optional = true );
+
+                /**
+                 * Copy constructor.
+                 */
                 RequestProperty( const RequestProperty& );
+
+                /**
+                 * Destructor.
+                 */
                 ~RequestProperty();
 
+                /**
+                 * Copy operator.
+                 */
                 RequestProperty& operator=( const RequestProperty& );
 
+                /**
+                 * Comparison operator. Two RequestProperty instances
+                 * are equal if their property() and value of optional()
+                 * are equal.
+                 */
                 bool operator==( const RequestProperty& other ) const;
 
+                /**
+                 * \return The property set in the constructor.
+                 */
                 Nepomuk::Types::Property property() const;
+
+                /**
+                 * \return The optional value set in the constructor.
+                 */
                 bool optional() const;
 
             private:
@@ -221,9 +250,11 @@ namespace Nepomuk {
             bool operator==( const Query& query ) const;
 
         protected:
+            /** \cond protected_error_members */
             QSharedDataPointer<QueryPrivate> d;
 
             friend class QueryParser;
+            /** \endcond */
         };
 
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Query& );

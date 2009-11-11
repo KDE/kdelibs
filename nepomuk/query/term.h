@@ -282,6 +282,7 @@ namespace Nepomuk {
             // FIXME: the compiler does not find this operator!
             QDebug operator<<( QDebug ) const;
 
+            /** \cond protected_error_members */
         protected:
             Term( TermPrivate* );
 
@@ -294,6 +295,7 @@ namespace Nepomuk {
             friend class ComparisonTermPrivate;
             friend class NegationTermPrivate;
             friend class Query;
+            /** \endcond */
         };
 
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Term& );

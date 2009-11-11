@@ -44,9 +44,11 @@ namespace Nepomuk {
             Term subTerm() const;
             void setSubTerm( const Term& term );
 
+            /** \cond protected_error_members */
         protected:
             SimpleTerm( const Term& term );
             SimpleTerm( TermPrivate* );
+            /** \endcond */
         };
     }
 }

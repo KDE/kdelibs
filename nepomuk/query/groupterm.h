@@ -46,6 +46,7 @@ namespace Nepomuk {
             void addSubTerm( const Term& term );
 
         protected:
+            /** \cond protected_error_members */
             GroupTerm( const Term& term );
             GroupTerm( TermPrivate* );
             GroupTerm( TermPrivate*,
@@ -55,6 +56,7 @@ namespace Nepomuk {
                        const Term& term4 = Term(),
                        const Term& term5 = Term(),
                        const Term& term6 = Term() );
+            /** \endcond */
         };
     }
 }
