@@ -324,7 +324,7 @@ void Engine::reloadEntries()
             }
             if (page == 0) {
                 kDebug() << "From provider";
-                p.provider->loadEntries(d->sortMode, d->searchTerm);
+                p.provider->loadEntries(d->sortMode, d->searchTerm, 0, d->pageSize);
             }
         }
     }
@@ -344,8 +344,7 @@ void Engine::setSearchTerm(const QString& searchString)
     d->searchTerm = searchString;
     Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
     if (!cache.isEmpty()) {
-        emit signalResetView();
-        emit signalEntriesLoaded(cache);
+        reloadEntries();
     } else {
         d->searchTimer->start();
     }
