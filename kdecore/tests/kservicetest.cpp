@@ -307,6 +307,12 @@ void KServiceTest::testWriteServiceTypeProfile()
     services.append(KService::serviceByDesktopPath("katepart.desktop"));
     disabledServices.append(KService::serviceByDesktopPath("khtml.desktop"));
 
+    KService::List::ConstIterator servit = services.begin();
+    for( ; servit != services.end(); ++servit) {
+        QVERIFY(!servit->isNull());
+    }
+
+
     KServiceTypeProfile::writeServiceTypeProfile( serviceType, services, disabledServices );
 
     // Check that the file got written
