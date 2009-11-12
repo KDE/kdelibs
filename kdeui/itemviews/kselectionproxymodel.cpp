@@ -330,7 +330,8 @@ int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) c
     int rows = q->sourceModel()->rowCount(parentAbove);
     if ( rows > 0 )
     {
-      QModelIndex proxyChildAbove = q->mapFromSource(q->sourceModel()->index(rows, 0, parentAbove));
+      QModelIndex proxyChildAbove = q->mapFromSource(q->sourceModel()->index(rows - 1, 0, parentAbove));
+      Q_ASSERT(proxyChildAbove.isValid());
       return proxyChildAbove.row() + 1;
     }
   }
