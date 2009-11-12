@@ -19,8 +19,11 @@
 
 #include "kselectionproxymodel.h"
 
+#include <QtCore/QStack>
 #include <QtCore/QStringList>
 #include <QtGui/QItemSelectionRange>
+
+#include "kdebug.h"
 
 class KSelectionProxyModelPrivate
 {
@@ -155,6 +158,14 @@ public:
   bool m_omitDescendants;
   bool m_includeAllSelected;
   bool m_rowsRemoved;
+
+  struct PendingMove
+  {
+    bool srcInModel;
+    bool destInModel;
+  };
+
+  QStack<PendingMove> m_pendingMoves;
 
   KSelectionProxyModel::FilterBehavior m_filterBehavior;
 
@@ -538,17 +549,34 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
 {
   Q_Q(KSelectionProxyModel);
 
-  if (isInModel(srcParent))
+  bool srcInModel = (!m_startWithChildTrees && isInModel(srcParent)) || (m_startWithChildTrees && m_rootIndexList.contains(srcParent));
+  bool destInModel = (!m_startWithChildTrees && isInModel(destParent)) || (m_startWithChildTrees && m_rootIndexList.contains(destParent));
+
+  if (srcInModel)
   {
-    if (isInModel(destParent))
+    if (destInModel)
     {
       // The easy case.
-#if QT_VERSION >= 0x040600
-      q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
-#endif
-      return;
+      bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
+      Q_ASSERT( allowMove );
+    } else {
+      // source is in the proxy, but dest isn't.
+      // Emit a remove
+      q->beginRemoveRows(srcParent, srcStart, srcEnd);
+    }
+  } else {
+    if (destInModel)
+    {
+      // dest is in proxy, but source is not.
+      // Emit an insert
+      q->beginInsertRows(destParent, destRow, destRow + (srcEnd - srcStart));
     }
   }
+
+  PendingMove pendingMove;
+  pendingMove.srcInModel = srcInModel;
+  pendingMove.destInModel = destInModel;
+  m_pendingMoves.push(pendingMove);
 }
 
 void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
@@ -558,16 +586,20 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
   Q_UNUSED(srcEnd);
   Q_UNUSED(destRow);
 
-  if (isInModel(srcParent))
+  PendingMove pendingMove = m_pendingMoves.pop();
+
+  if (pendingMove.srcInModel)
   {
-    if (isInModel(destParent))
+    if (pendingMove.destInModel)
     {
       // The easy case.
-#if QT_VERSION >= 0x040600
       q->endMoveRows();
-#endif
       return;
+    } else {
+      q->endRemoveRows();
     }
+  } else if (pendingMove.destInModel) {
+    q->endInsertRows();
   }
 }
 
@@ -1202,13 +1234,10 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           this, SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
   disconnect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
           this, SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
-
-#if QT_VERSION >= 0x040600
   disconnect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
          this, SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
   disconnect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
           this, SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-#endif
   disconnect(sourceModel, SIGNAL(modelAboutToBeReset()),
           this, SLOT(sourceModelAboutToBeReset()));
   disconnect(sourceModel, SIGNAL(modelReset()),
@@ -1232,12 +1261,10 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
   connect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
           SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
-#if QT_VERSION >= 0x040600
   connect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
           SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
   connect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
           SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-#endif
   connect(sourceModel, SIGNAL(modelAboutToBeReset()),
           SLOT(sourceModelAboutToBeReset()));
   connect(sourceModel, SIGNAL(modelReset()),
