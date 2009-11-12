@@ -81,13 +81,9 @@ KLocaleStaticData::KLocaleStaticData ()
 {
     // Languages using non-Western Arabic digit sets.
     // FIXME: Temporary until full language-sensitivity implemented.
-    #define SET_LANGS_FOR_DS(ds, langs) do { \
-        languagesUsingDigitSet[KLocale::ds] = QStringList(); \
-        languagesUsingDigitSet[KLocale::ds] << langs; \
-    } while (0)
-    SET_LANGS_FOR_DS(ArabicIndicDigits, "ar" << "ps");
-    SET_LANGS_FOR_DS(EasternArabicIndicDigits, "fa" << "ur");
-    SET_LANGS_FOR_DS(DevenagariDigits, "hi" << "ne");
+    languagesUsingDigitSet.insert(KLocale::ArabicIndicDigits, QStringList() << "ar" << "ps");
+    languagesUsingDigitSet.insert(KLocale::EasternArabicIndicDigits, QStringList() << "fa" << "ur");
+    languagesUsingDigitSet.insert(KLocale::DevenagariDigits, QStringList() << "hi" << "ne");
 }
 
 K_GLOBAL_STATIC(KLocaleStaticData, staticData)
