@@ -195,6 +195,7 @@ KDescendantsProxyModel::~KDescendantsProxyModel()
 {
   Q_D(KDescendantsProxyModel);
   d->m_descendantsCount.clear();
+  delete d_ptr;
 }
 
 QModelIndex KDescendantsProxyModelPrivate::findSourceIndexForRow( int row, QModelIndex idx ) const
@@ -242,12 +243,10 @@ void KDescendantsProxyModel::setSourceModel(QAbstractItemModel * sourceModel)
           this, SLOT(sourceRowsRemoved(const QModelIndex, int, int)) );
   disconnect( sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)),
           this, SLOT(sourceRowsAboutToBeRemoved(const QModelIndex, int, int)) );
-#if QT_VERSION >= 0x040600
   disconnect( sourceModel, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)),
           this, SLOT(sourceRowsMoved(const QModelIndex, int, int, const QModelIndex, int)) );
   disconnect( sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)),
           this, SLOT(sourceRowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int) ) );
-#endif
 
   QAbstractProxyModel::setSourceModel( sourceModel );
   connect( sourceModel, SIGNAL(modelReset()), SLOT( sourceModelReset() ) );
@@ -264,12 +263,10 @@ void KDescendantsProxyModel::setSourceModel(QAbstractItemModel * sourceModel)
           SLOT(sourceRowsRemoved(const QModelIndex, int, int)) );
   connect( sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)),
           SLOT(sourceRowsAboutToBeRemoved(const QModelIndex, int, int)) );
-#if QT_VERSION >= 0x040600
   connect( sourceModel, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)),
           SLOT(sourceRowsMoved(const QModelIndex, int, int, const QModelIndex, int)) );
   connect( sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)),
           SLOT(sourceRowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int) ) );
-#endif
 
   d->m_descendantsCount.clear();
   reset();
