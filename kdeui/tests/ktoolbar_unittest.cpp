@@ -327,7 +327,8 @@ void tst_KToolBar::testToolButtonStyleNoXmlGui_data()
 void tst_KToolBar::testToolButtonStyleNoXmlGui()
 {
     QFETCH(Qt::ToolButtonStyle, toolButtonStyle);
-    const bool selectedDefaultForMainToolbar = toolButtonStyle == Qt::ToolButtonTextUnderIcon;
+    const Qt::ToolButtonStyle mainToolBarDefaultStyle = Qt::ToolButtonTextBesideIcon; // was TextUnderIcon before KDE-4.4.0
+    const bool selectedDefaultForMainToolbar = toolButtonStyle == mainToolBarDefaultStyle;
     const bool selectedDefaultForOtherToolbar = toolButtonStyle == Qt::ToolButtonTextBesideIcon;
 
     KConfig config("tst_KToolBar");
@@ -338,7 +339,7 @@ void tst_KToolBar::testToolButtonStyleNoXmlGui()
         KToolBar* otherToolBar = kmw.toolBar("otherToolBar");
 
         // Default settings (applied by applyAppearanceSettings)
-        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextUnderIcon);
+        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)mainToolBarDefaultStyle);
         QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextBesideIcon); // see r883541
         QCOMPARE(kmw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
 
@@ -360,7 +361,7 @@ void tst_KToolBar::testToolButtonStyleNoXmlGui()
         KMainWindow kmw;
         KToolBar* mainToolBar = kmw.toolBar("mainToolBar");
         KToolBar* otherToolBar = kmw.toolBar("otherToolBar");
-        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextUnderIcon);
+        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)mainToolBarDefaultStyle);
         kmw.applyMainWindowSettings(group);
         QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)toolButtonStyle);
         QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)toolButtonStyle);
@@ -383,15 +384,15 @@ void tst_KToolBar::testToolButtonStyleNoXmlGui()
 void tst_KToolBar::testToolButtonStyleXmlGui_data()
 {
     QTest::addColumn<Qt::ToolButtonStyle>("toolButtonStyle");
-    // Expected style after KDE-global is changed to IconOnly/TextOnly
+    // Expected style after KDE-global is changed to main=IconOnly/other=TextOnly
     QTest::addColumn<Qt::ToolButtonStyle>("expectedStyleMainToolbar");
     QTest::addColumn<Qt::ToolButtonStyle>("expectedStyleOtherToolbar"); // xml says text-under-icons, user-selected should always win
     QTest::addColumn<Qt::ToolButtonStyle>("expectedStyleCleanToolbar"); // should always follow kde-global -> always textonly.
 
     QTest::newRow("Qt::ToolButtonTextUnderIcon") << Qt::ToolButtonTextUnderIcon <<
-        Qt::ToolButtonIconOnly /* was default -> using kde global */ << Qt::ToolButtonTextUnderIcon << Qt::ToolButtonTextOnly;
+        Qt::ToolButtonTextUnderIcon << Qt::ToolButtonTextUnderIcon << Qt::ToolButtonTextOnly;
     QTest::newRow("Qt::ToolButtonTextBesideIcon") << Qt::ToolButtonTextBesideIcon <<
-        Qt::ToolButtonTextBesideIcon << Qt::ToolButtonTextBesideIcon << Qt::ToolButtonTextOnly;
+        Qt::ToolButtonIconOnly /* was default -> using kde global */ << Qt::ToolButtonTextBesideIcon << Qt::ToolButtonTextOnly;
     QTest::newRow("Qt::ToolButtonIconOnly") << Qt::ToolButtonIconOnly <<
         Qt::ToolButtonIconOnly << Qt::ToolButtonIconOnly << Qt::ToolButtonTextOnly;
     QTest::newRow("Qt::ToolButtonTextOnly") << Qt::ToolButtonTextOnly <<
@@ -404,6 +405,7 @@ void tst_KToolBar::testToolButtonStyleXmlGui()
     QFETCH(Qt::ToolButtonStyle, expectedStyleMainToolbar);
     QFETCH(Qt::ToolButtonStyle, expectedStyleOtherToolbar);
     QFETCH(Qt::ToolButtonStyle, expectedStyleCleanToolbar);
+    const Qt::ToolButtonStyle mainToolBarDefaultStyle = Qt::ToolButtonTextBesideIcon; // was TextUnderIcon before KDE-4.4.0
     KConfig config("tst_KToolBar");
     KConfigGroup group(&config, "group");
     {
@@ -414,7 +416,7 @@ void tst_KToolBar::testToolButtonStyleXmlGui()
         KToolBar* otherToolBar = kmw.toolBarByName("otherToolBar");
         KToolBar* cleanToolBar = kmw.toolBarByName("cleanToolBar");
 
-        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextUnderIcon);
+        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)mainToolBarDefaultStyle);
         QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextUnderIcon); // from xml
         QCOMPARE((int)cleanToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextBesideIcon);
 
@@ -665,12 +667,13 @@ void tst_KToolBar::testClickingToolButton() {
     testAction->setEnabled(false);
     QTest::mouseRelease(testToolButton, button, modifiers);
     QVERIFY(!testToolButton->isDown());
-    QCOMPARE(spyButtonsModifiers.count(), 0); 
+    QCOMPARE(spyButtonsModifiers.count(), 0);
     QCOMPARE(spy.count(), 0);
 }
 
 bool tst_KToolBar::eventFilter(QObject * watched, QEvent * event)
 {
+    Q_UNUSED(watched);
     if (event->type() == QEvent::Show) {
         m_showWasCalled = true;
         return true;
