@@ -69,6 +69,7 @@ private Q_SLOTS:
     void testEncodeString();
     void testIdn();
     void testUriMode();
+    void testToLocalFile();
 };
 
 #endif

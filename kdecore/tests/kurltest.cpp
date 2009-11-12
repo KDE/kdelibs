@@ -1903,3 +1903,14 @@ void KUrlTest::testUriMode()
   url1 = "mailto:User@Host.COM?subject=Hello";
   QCOMPARE( url1.path(), QString("User@Host.COM") ); // KDE3: "User@host.com". Does it matter?
 }
+
+void KUrlTest::testToLocalFile()
+{
+  const QString localFile( "/tmp/print.pdf" );
+
+  const KUrl urlWithHost( "file://localhost/tmp/print.pdf" );
+  const KUrl urlWithoutHost( "file:///tmp/print.pdf" );
+
+  QCOMPARE( urlWithHost.toLocalFile(), localFile );
+  QCOMPARE( urlWithoutHost.toLocalFile(), localFile );
+}

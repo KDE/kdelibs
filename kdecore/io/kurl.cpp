@@ -848,7 +848,12 @@ QString KUrl::path( AdjustPathOption trailing ) const
 
 QString KUrl::toLocalFile( AdjustPathOption trailing ) const
 {
-  return trailingSlash( trailing, QUrl::toLocalFile() );
+    if (hasHost() && isLocalFile()) {
+        KUrl urlWithoutHost(*this);
+        urlWithoutHost.setHost(QString());
+        return trailingSlash(trailing, urlWithoutHost.toLocalFile());
+    }
+    return trailingSlash(trailing, QUrl::toLocalFile());
 }
 
 inline static bool hasSubUrl( const QUrl& url );
