@@ -463,6 +463,10 @@ void KStatusNotifierItem::activate(const QPoint &pos)
         emit d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
     }
 
+    if (d->associatedWidget == d->menu) {
+        d->statusNotifierItemDBus->ContextMenu(pos.x(), pos.y());
+        return;
+    }
     if (d->menu->isVisible()) {
         d->menu->hide();
     }
