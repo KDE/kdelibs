@@ -109,6 +109,7 @@ class KNS3::Engine::Private {
         int pageSize;
         // the current page that has been requested from providers
         int currentPage;
+        int requestedPage;
         
         Private()
             : initialized(false)
@@ -117,6 +118,7 @@ class KNS3::Engine::Private {
             , cache(new Cache)
             , searchTimer(new QTimer)
             , currentPage(0)
+            , requestedPage(0)
             , pageSize(20)
         {
             searchTimer->setSingleShot(true);
@@ -288,24 +290,39 @@ void Engine::providerInitialized(Provider* p)
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
 {
+    kDebug() << "loaded " << page;
+    d->currentPage = qMax<int>(page, d->currentPage);
+    kDebug() << "current page" << d->currentPage;
+    
     //d->cache->insertEntries(entries);
-    d->cache->insertRequest(d->sortMode, d->searchTerm, 0, 20, entries);
+    d->cache->insertRequest(d->sortMode, d->searchTerm, d->currentPage, d->pageSize, entries);
     emit signalEntriesLoaded(entries);
 }
 
 void Engine::reloadEntries()
 {
     emit signalResetView();
-    d->currentPage = -1;
+    d->currentPage = 0;
+    d->requestedPage = 0;
     foreach (ProviderInformation p, d->providers) {
         if (p.provider->isInitialized()) {
             // FIXME: other parameters
             // FIXME use cache, if this request was sent already, take it from the cache
-            Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
-            if (!cache.isEmpty()) {
-                kDebug() << "From cache";
-                emit signalEntriesLoaded(cache);
-            } else {
+
+            int page = 0;
+            while (true) {
+                Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, page, d->pageSize);
+                if (!cache.isEmpty()) {
+                    kDebug() << "From cache";
+                    emit signalEntriesLoaded(cache);
+                    d->currentPage = page;
+                    d->requestedPage = page;
+                    ++page;
+                } else {
+                    break;
+                }
+            }
+            if (page == 0) {
                 kDebug() << "From provider";
                 p.provider->loadEntries(d->sortMode, d->searchTerm);
             }
@@ -341,7 +358,28 @@ void Engine::slotSearchTimerExpired()
 
 void Engine::slotRequestMoreData()
 {
-    kDebug() << "Get more data!";
+    kDebug() << "Get more data! cur "  << d->currentPage << " req " << d->requestedPage;
+
+    if (d->currentPage < d->requestedPage) {
+        return;
+    }
+
+    d->requestedPage++;
+
+    foreach (ProviderInformation p, d->providers) {
+        if (p.provider->isInitialized()) {
+            // FIXME: other parameters
+            // FIXME use cache, if this request was sent already, take it from the cache
+            Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->requestedPage, 20);
+            if (!cache.isEmpty()) {
+                kDebug() << "From cache";
+                emit signalEntriesLoaded(cache);
+            } else {
+                kDebug() << "From provider";
+                p.provider->loadEntries(d->sortMode, d->searchTerm, d->requestedPage, d->pageSize);
+            }
+        }
+    }
 }
 
 void Engine::slotProgress(KJob *job, unsigned long percent)

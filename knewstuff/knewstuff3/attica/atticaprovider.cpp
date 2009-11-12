@@ -49,7 +49,10 @@ public:
 
     KNS3::Entry::List cachedEntries;
 
-    QMap<BaseJob*, Entry> downloadLinkJobs;
+    QHash<BaseJob*, Entry> downloadLinkJobs;
+
+    // keep track of the pages we requested
+    QHash<BaseJob*, int> entryJobs;
     
     AtticaProviderPrivate()
     {
@@ -157,13 +160,16 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
     Q_D(AtticaProvider);
 
     if (sortMode == Installed) {
-        emit loadingFinished(sortMode, searchString, 0, 1, 1, installedEntries());
+        emit loadingFinished(sortMode, searchString, 0, 1, 10000, installedEntries());
         return;
     }
     
     Attica::Provider::SortMode sorting = atticaSortMode(sortMode);
     ListJob<Content>* job = d->m_provider.searchContents(d->categoryList, searchString, sorting, page, pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
+
+    d->entryJobs[job] = page;
+    
     job->start();
 }
 
@@ -211,7 +217,9 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     }
 
     // FIXME page number and strings
-    emit loadingFinished(Rating, "", 0, entries.count(), 10, entries);
+    emit loadingFinished(Rating, "", d->entryJobs.value(job), entries.count(), 20, entries);
+    kDebug() << "loading finished page " << d->entryJobs.value(job);
+    d->entryJobs.remove(job);
 }
 
 Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMode)

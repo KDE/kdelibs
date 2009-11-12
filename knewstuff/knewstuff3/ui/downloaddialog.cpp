@@ -26,6 +26,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QPixmap>
 #include <QtGui/QSortFilterProxyModel>
+#include <QtGui/QScrollBar>
 
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
@@ -168,6 +169,10 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(accept()));
+
+
+    connect(m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbar(int)));
+    connect(this, SIGNAL(signalRequestMoreData()), d->engine, SLOT(slotRequestMoreData()));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -439,5 +444,15 @@ void DownloadDialog::slotError(const QString& message)
 {
     KMessageBox::error(this, message, i18n("Get Hot New Stuff"));
 }
+
+
+void DownloadDialog::scrollbar(int value)
+{
+    kDebug() << "value" << value;
+    if ((double)value/m_listView->verticalScrollBar()->maximum() > 0.7) {
+        emit signalRequestMoreData();
+    }
+}
+
 
 #include "downloaddialog.moc"

@@ -122,6 +122,11 @@ private Q_SLOTS:
     void slotCollabAction(QAction * action);
 
     void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
+
+    void scrollbar(int value);
+Q_SIGNALS:
+    void signalRequestMoreData();
+    
 protected:
     virtual void hideEvent(QHideEvent * event);
 
