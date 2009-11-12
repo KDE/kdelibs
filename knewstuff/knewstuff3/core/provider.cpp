@@ -36,7 +36,7 @@ Provider::Provider()
 
 Provider::~Provider()
 {
-    delete d_ptr;
+    //delete d_ptr;
 }
 
 Provider::Provider(ProviderPrivate &dd)

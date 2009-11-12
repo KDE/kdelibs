@@ -57,17 +57,30 @@
 #include "core/cache.h"
 #include "staticxml/staticxmlprovider.h"
 
+class KNS3::Engine::ProviderInformation {
+public:
+    QSharedPointer<Provider>  provider;
+    int pagesInCurrentRequest;
+
+    ProviderInformation()
+        :provider(0)
+    {}
+    
+    ProviderInformation(QSharedPointer<Provider>  p)
+        :provider(p)
+    {
+        pagesInCurrentRequest = -1;
+    }
+};
+
 class KNS3::Engine::Private {
     public:
-        QList<Provider*> providers;
-
         // The url of the file containg information about content providers
         QString providerFileUrl;
         // Categories to search in
         QStringList categories;
 
-        // KILL THIS:
-        QMap<QString, Provider*> provider_index;
+        QHash<QString, ProviderInformation> providers;
 
         //?
         //Provider* uploadprovider;
@@ -92,12 +105,19 @@ class KNS3::Engine::Private {
 
         QMap<KJob*, Entry> entry_jobs;
 
+        // when requesting entries from a provider, how many to ask for
+        int pageSize;
+        // the current page that has been requested from providers
+        int currentPage;
+        
         Private()
             : initialized(false)
             , sortMode(Provider::Rating)
             , installation(new Installation)
             , cache(new Cache)
             , searchTimer(new QTimer)
+            , currentPage(0)
+            , pageSize(20)
         {
             searchTimer->setSingleShot(true);
             searchTimer->setInterval(1000);
@@ -130,11 +150,6 @@ Engine::Engine(const KNS3::Engine& other)
 Engine::~Engine()
 {
     d->cache->writeRegistry();
-
-    d->provider_index.clear();
-    qDeleteAll(d->providers);
-    d->providers.clear();
-
     delete d;
 }
 
@@ -216,7 +231,6 @@ void Engine::loadProviders()
 
 void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 {
-
     kDebug() << "slotProvidersLoaded";
 
     bool isAtticaProviderFile = false;
@@ -238,16 +252,21 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
         if (p.tagName() == "provider") {
             kDebug() << "Provider attributes: " << p.attribute("type");
-            Provider* provider;
+            QSharedPointer<KNS3::Provider> provider;
             if (isAtticaProviderFile || p.attribute("type") == "rest") {
-                provider = new AtticaProvider(d->categories);
+                provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
             } else {
-                provider = new StaticXmlProvider;
+                provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
             }
-            connect(provider, SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
 
+            connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
+            connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)),
+                SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)));
+            connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::Entry&)), SLOT(downloadLinkLoaded(const KNS3::Entry&)));
+            
             if (provider->setProviderXML(p)) {
-                d->providers.append(provider);
+                ProviderInformation providerInfo(provider);
+                d->providers.insert(provider->id(), providerInfo);
             }
         }
     }
@@ -263,14 +282,8 @@ void Engine::providerInitialized(Provider* p)
     kDebug() << "providerInitialized" << p->name().representation();
     p->setCachedEntries(d->cache->registryForProvider(p->id()));
     
-    d->provider_index[p->id()] = p;
-    
-    connect(p, SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)),
-               SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)));
-    connect(p, SIGNAL(payloadLinkLoaded(const KNS3::Entry&)), SLOT(downloadLinkLoaded(const KNS3::Entry&)));
-    
     // TODO parameters according to search string etc
-    p->loadEntries(d->sortMode, d->searchTerm);
+    p->loadEntries(d->sortMode, d->searchTerm, 0, d->pageSize);
 }
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
@@ -283,8 +296,9 @@ void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString&
 void Engine::reloadEntries()
 {
     emit signalResetView();
-    foreach (Provider* p, d->providers) {
-        if (p->isInitialized()) {
+    d->currentPage = -1;
+    foreach (ProviderInformation p, d->providers) {
+        if (p.provider->isInitialized()) {
             // FIXME: other parameters
             // FIXME use cache, if this request was sent already, take it from the cache
             Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
@@ -293,7 +307,7 @@ void Engine::reloadEntries()
                 emit signalEntriesLoaded(cache);
             } else {
                 kDebug() << "From provider";
-                p->loadEntries(d->sortMode, d->searchTerm);
+                p.provider->loadEntries(d->sortMode, d->searchTerm);
             }
         }
     }
@@ -301,6 +315,9 @@ void Engine::reloadEntries()
 
 void Engine::setSortMode(Provider::SortMode mode)
 {
+    if (d->sortMode != mode) {
+        d->currentPage = -1;
+    }
     d->sortMode = mode;
 }
 
@@ -320,6 +337,11 @@ void Engine::setSearchTerm(const QString& searchString)
 void Engine::slotSearchTimerExpired()
 {
     reloadEntries();
+}
+
+void Engine::slotRequestMoreData()
+{
+    kDebug() << "Get more data!";
 }
 
 void Engine::slotProgress(KJob *job, unsigned long percent)
@@ -452,7 +474,7 @@ void Engine::loadFeedCache(Provider *provider)
 
 bool Engine::providerCached(Provider *provider)
 {
-    if (d->provider_index.contains(provider->id()))
+    if (d->providers.contains(provider->id()))
         return true;
     return false;
 }
@@ -546,14 +568,19 @@ void Engine::cacheProvider(Provider *provider)
 
 void Engine::install(KNS3::Entry entry)
 {
-    entry.setStatus(Entry::Installing);
+    if (entry.status() == Entry::Updateable) {
+        entry.setStatus(Entry::Updating);
+    } else  {
+        entry.setStatus(Entry::Installing);
+    }
     emit signalEntryChanged(entry);
     
     kDebug() << "Install " << entry.name().representation()
-        << entry.providerId() << d->provider_index.keys();
-    Provider* p = d->provider_index[entry.providerId()];
-
-    p->loadPayloadLink(entry);
+        << " from: " << entry.providerId();
+    ProviderInformation i = d->providers.value(entry.providerId());
+    if (i.provider) {
+        i.provider->loadPayloadLink(entry);
+    }
 }
 
 void Engine::downloadLinkLoaded(const KNS3::Entry& entry)

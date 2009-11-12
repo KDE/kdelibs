@@ -90,8 +90,9 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
     doc.appendChild(xmldata);
     d->m_providerManager.addProviderFromXml(doc.toString());
 
+    // FIXME I don't think the last is a good idea...
     if (!d->m_providerManager.providers().isEmpty()) {
-        kDebug() << "base url of attica provider:" << d->m_providerManager.providers().first().baseUrl().toString();
+        kDebug() << "base url of attica provider:" << d->m_providerManager.providers().last().baseUrl().toString();
     }
     
     if (d->m_providerManager.providers().isEmpty()) {
@@ -181,16 +182,15 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setUniqueId(content.id());
         entry.setStatus(KNS3::Entry::Downloadable);
         entry.setVersion(content.version());
-        
+        entry.setReleaseDate(content.updated().date());
+
         int index = d->cachedEntries.indexOf(entry);
         
         if (index >= 0) {
             Entry cacheEntry = d->cachedEntries.at(index);
-
             // check if updateable
             if ((cacheEntry.status() == Entry::Installed) &&
                 ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
-                kDebug() << "Versions: " << cacheEntry.version() << entry.version();
                 cacheEntry.setStatus(Entry::Updateable);
             }
             entry = cacheEntry;
@@ -201,7 +201,6 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setName(content.name());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
-        entry.setReleaseDate(content.updated().date());
         entry.setPreview(content.previewPicture("1"));
         entry.setLicense(content.license());
         //entry.setAuthor(content.author());

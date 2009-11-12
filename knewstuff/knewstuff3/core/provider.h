@@ -75,7 +75,8 @@ namespace KNS3
         virtual QString id() const = 0;
         
         /**
-         * set the provider data xml, to initialize the provider
+         * Set the provider data xml, to initialize the provider.
+         * The Provider needs to have it's ID set in this function and cannot change it from there on.
          */
         virtual bool setProviderXML(QDomElement & xmldata) = 0;
 
@@ -141,7 +142,7 @@ namespace KNS3
         void payloadLinkLoaded(const KNS3::Entry& entry);
         
     protected:
-        ProviderPrivate * const d_ptr;
+        QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;
         Provider(ProviderPrivate &dd);
     private:
         Q_DECLARE_PRIVATE(Provider)

@@ -195,7 +195,8 @@ private Q_SLOTS:
     void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List);
-
+    void slotRequestMoreData();
+    
     void slotPreviewResult(KJob *job);
 
     void slotSearchTimerExpired();
@@ -249,6 +250,7 @@ private:
     class Private;
     Private* const d;
 
+    class ProviderInformation;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Engine::CollaborationFeatures)

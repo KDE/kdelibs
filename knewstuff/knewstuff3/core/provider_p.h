@@ -17,7 +17,7 @@
 
 namespace KNS3
 {
-    class ProviderPrivate
+    class ProviderPrivate :public QSharedData
     {
         public:
             ProviderPrivate() {}

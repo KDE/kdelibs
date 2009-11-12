@@ -174,8 +174,6 @@ bool Installation::isRemote() const
 
 void Installation::install(Entry entry)
 {
-    entry.setStatus(Entry::Installing);
-    emit signalEntryChanged(entry);
     downloadPayload(entry);
 }
 
@@ -293,6 +291,11 @@ void Installation::install(KNS3::Entry entry, const QString& downloadedFile)
     QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
 
     if (installedFiles.isEmpty()) {
+        if (entry.status() == Entry::Installing) {
+            entry.setStatus(Entry::Downloadable);
+        } else if (entry.status() == Entry::Updating) {
+            entry.setStatus(Entry::Updateable);
+        }
         emit signalEntryChanged(entry);
         return;
     }

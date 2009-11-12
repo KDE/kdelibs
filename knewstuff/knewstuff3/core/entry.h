@@ -75,7 +75,8 @@ public:
         Installed,
         Updateable,
         Deleted,
-        Installing  // this item is being installed right now
+        Installing,  // this item is being installed right now
+        Updating
     };
     
     /**

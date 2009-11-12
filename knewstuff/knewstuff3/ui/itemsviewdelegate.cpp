@@ -212,6 +212,11 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             button->setEnabled(false);
             button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             break;
+        case Entry::Updating:
+            button->setText(i18n("Updating"));
+            button->setEnabled(false);
+            button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
+            break;
         default:
             button->setText(i18n("Install"));
             //action_uninstall->setVisible(false);
@@ -220,7 +225,6 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
         }
     }
-
     QLabel * ratingLabel = qobject_cast<QLabel*>(widgets.at(kRating));
     if (ratingLabel != NULL) {
         ratingLabel->setText(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
