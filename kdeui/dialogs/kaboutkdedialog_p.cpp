@@ -43,7 +43,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     setButtons(KDialog::Close);
 
     KTitleWidget *titleWidget = new KTitleWidget(this);
-    titleWidget->setText(i18n("<html><font size=\"5\">K Desktop Environment</font><br /><b>Version %1</b></html>",
+    titleWidget->setText(i18n("<html><font size=\"5\">KDE - Be Free!</font><br /><b>Platform Version %1</b></html>",
                          QString(KDE_VERSION_STRING)));
     titleWidget->setPixmap(KIcon("kde").pixmap(48), KTitleWidget::ImageLeft);
 
@@ -54,13 +54,15 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     about->setOpenExternalLinks(true);
     about->setTextInteractionFlags(Qt::TextBrowserInteraction);
     about->setText(i18n("<html>"
-        "The <b>K Desktop Environment</b> is written and maintained by the "
-        "KDE Team, a world-wide network of software engineers committed to "
-        "<a href=\"http://www.gnu.org/philosophy/free-sw.html\">Free Software</a> development.<br /><br />"
-        "No single group, company or organization controls the KDE source "
-        "code. Everyone is welcome to contribute to KDE.<br /><br />"
+        "<b>KDE</b> is a world-wide network of software engineers, artists, writers, translators and facilitators "
+        "who are committed to <a href=\"http://www.gnu.org/philosophy/free-sw.html\">Free Software</a> development. "
+        "This community has created hundreds of Free Software titles as part of the KDE "
+        "Development Platform and KDE Software Distribution.<br /><br />"
+        "KDE is a cooperative enterprise where no single entity controls the "
+        "efforts or products of KDE to the exclusion of others. Everyone is welcome to join and "
+        "contribute to KDE, including you.<br /><br />"
         "Visit <a href=\"http://www.kde.org/\">http://www.kde.org</a> for "
-        "more information on the KDE project.</html>"));
+        "more information about the KDE community and the software we produce.</html>"));
 
     QLabel *report = new QLabel;
     report->setMargin(10);
@@ -69,10 +71,10 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     report->setOpenExternalLinks(true);
     report->setTextInteractionFlags(Qt::TextBrowserInteraction);
     report->setText(i18n("<html>"
-        "Software can always be improved, and the KDE Team is ready to "
+        "Software can always be improved, and the KDE team is ready to "
         "do so. However, you - the user - must tell us when "
         "something does not work as expected or could be done better.<br /><br />"
-        "The K Desktop Environment has a bug tracking system. Visit "
+        "KDE has a bug tracking system. Visit "
         "<a href=\"http://bugs.kde.org/\">http://bugs.kde.org</a> or "
         "use the \"Report Bug...\" dialog from the \"Help\" menu to report bugs.<br /><br />"
         "If you have a suggestion for improvement then you are welcome to use "
@@ -106,14 +108,14 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     support->setOpenExternalLinks(true);
     support->setTextInteractionFlags(Qt::TextBrowserInteraction);
     support->setText(i18n("<html>"
-        "KDE is available free of charge, but making it is not free.<br /><br />"
-        "Thus, the KDE team formed the KDE e.V., a non-profit organization"
-        " legally founded in Tuebingen, Germany. The KDE e.V. represents"
-        " the KDE project in legal and financial matters."
+        "KDE is available free of charge, but costs are incurred and assets formed in its creation.<br /><br />"
+        "Thus, the KDE community formed KDE e.V., a non-profit organization"
+        " legally founded in Tuebingen, Germany. KDE e.V. represents"
+        " the KDE community in legal and financial matters."
         " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org</a>"
-        " for information on the KDE e.V.<br /><br />"
-        "The KDE team does need financial support. Most of the money is used to "
-        "reimburse members and others on expenses they experienced when "
+        " for information on KDE e.V.<br /><br />"
+        "KDE benefits from financial support. Most of the funds raised are used to "
+        "reimburse members and others for expenses they incur when "
         "contributing to KDE. You are encouraged to support KDE through a financial "
         "donation, using one of the ways described at "
         "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
@@ -123,7 +125,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     tabWidget->setUsesScrollButtons(false);
     tabWidget->addTab(about, i18nc("About KDE","&About"));
     tabWidget->addTab(report, i18n("&Report Bugs or Wishes"));
-    tabWidget->addTab(join, i18n("&Join the KDE Team"));
+    tabWidget->addTab(join, i18n("&Join KDE"));
     tabWidget->addTab(support, i18n("&Support KDE"));
 
     QLabel *image = new QLabel;
