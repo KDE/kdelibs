@@ -359,8 +359,7 @@ KMenu *KToolBar::Private::contextMenu()
       unlockedMovable = false;
 
     delete contextLockAction;
-    contextLockAction = new KToggleAction(KIcon("system-lock-screen"),
-            (q->toolBarsLocked())?i18n("Unlock Toolbar Positions"):i18n("Lock Toolbar Positions"), q);
+    contextLockAction = new KToggleAction(KIcon("system-lock-screen"), i18n("Lock Toolbar Positions"), q);
     contextLockAction->setChecked(q->toolBarsLocked());
     connect(contextLockAction, SIGNAL(toggled(bool)), q, SLOT(slotLockToolBars(bool)));
 
@@ -1287,33 +1286,32 @@ void KToolBar::actionEvent(QActionEvent * event)
 
 bool KToolBar::toolBarsEditable()
 {
-  return KToolBar::Private::s_editable;
+    return KToolBar::Private::s_editable;
 }
 
 void KToolBar::setToolBarsEditable(bool editable)
 {
-  if (KToolBar::Private::s_editable != editable)
-    KToolBar::Private::s_editable = editable;
+    if (KToolBar::Private::s_editable != editable) {
+        KToolBar::Private::s_editable = editable;
+    }
 }
 
 void KToolBar::setToolBarsLocked(bool locked)
 {
-  if (KToolBar::Private::s_locked != locked) {
-    KToolBar::Private::s_locked = locked;
+    if (KToolBar::Private::s_locked != locked) {
+        KToolBar::Private::s_locked = locked;
 
-    foreach (KMainWindow* mw, KMainWindow::memberList())
-      foreach (KToolBar* toolbar, mw->findChildren<KToolBar*>()) {
-        toolbar->d->setLocked(locked);
-        if (toolbar->d->contextLockAction)
-            toolbar->d->contextLockAction->setText(locked ? i18n("Unlock Toolbar Positions") : i18n("Lock Toolbar Positions"));
-      }
-
-  }
+        foreach (KMainWindow* mw, KMainWindow::memberList()) {
+            foreach (KToolBar* toolbar, mw->findChildren<KToolBar*>()) {
+                toolbar->d->setLocked(locked);
+            }
+        }
+    }
 }
 
 bool KToolBar::toolBarsLocked()
 {
-  return KToolBar::Private::s_locked;
+    return KToolBar::Private::s_locked;
 }
 
 #include "ktoolbar.moc"
