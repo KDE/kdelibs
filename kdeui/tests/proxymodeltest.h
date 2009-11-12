@@ -77,6 +77,13 @@ protected:
   virtual void doCleanupTestCase();
 
   void testEmptyModel();
+  void doTestMappings(const QModelIndex &parent);
+
+protected slots:
+  void testMappings();
+  void verifyModel(const QModelIndex &parent, int start, int end);
+  void verifyModel(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int dest);
+  void verifyModel(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
 private slots:
   void init();

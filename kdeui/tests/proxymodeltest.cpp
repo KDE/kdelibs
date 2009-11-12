@@ -181,11 +181,102 @@ void ProxyModelTest::testEmptyModel()
   QVERIFY(!m_proxyModel->mapFromSource(QModelIndex()).isValid());
 }
 
+void ProxyModelTest::doTestMappings(const QModelIndex &parent)
+{
+  QModelIndex idx;
+  QModelIndex srcIdx;
+  for (int column = 0; column < m_proxyModel->columnCount(parent); ++column)
+  {
+    for (int row = 0; row < m_proxyModel->rowCount(parent); ++row)
+    {
+      idx = m_proxyModel->index(row, column, parent);
+      QVERIFY(idx.isValid());
+      QVERIFY(idx.model() == m_proxyModel);
+      srcIdx = m_proxyModel->mapToSource(idx);
+      QVERIFY(srcIdx.isValid());
+      QVERIFY(srcIdx.model() == m_proxyModel->sourceModel());
+      QVERIFY(idx.data() == srcIdx.data());
+      QVERIFY(m_proxyModel->mapFromSource(srcIdx) == idx);
+      doTestMappings(idx);
+    }
+  }
+}
+
+void ProxyModelTest::testMappings()
+{
+  doTestMappings(QModelIndex());
+}
+
+void ProxyModelTest::verifyModel(const QModelIndex& parent, int start, int end)
+{
+  QVERIFY(parent.model() == m_proxyModel || !parent.isValid());
+}
+
+void ProxyModelTest::verifyModel(const QModelIndex& parent, int start, int end, const QModelIndex& destParent, int dest)
+{
+  QVERIFY(parent.model() == m_proxyModel || !parent.isValid());
+  QVERIFY(destParent.model() == m_proxyModel || !destParent.isValid());
+}
+
+void ProxyModelTest::verifyModel(const QModelIndex& topLeft, const QModelIndex& bottomRight)
+{
+  QVERIFY(topLeft.model() == m_proxyModel || !topLeft.isValid());
+  QVERIFY(bottomRight.model() == m_proxyModel || !bottomRight.isValid());
+}
+
 void ProxyModelTest::setProxyModel(QAbstractProxyModel *proxyModel)
 {
   m_proxyModel = proxyModel;
   testEmptyModel();
   m_proxyModel->setSourceModel(m_model);
+
+  connect(m_proxyModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(layoutAboutToBeChanged()),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(layoutChanged()),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          SLOT(testMappings()));
+  connect(m_proxyModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+          SLOT(testMappings()));
+
+  connect(m_proxyModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(m_proxyModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(m_proxyModel, SIGNAL(columnsAboutToBeInserted(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(columnsInserted(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(columnsAboutToBeRemoved(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(columnsRemoved(const QModelIndex &, int, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int)));
+  connect(m_proxyModel, SIGNAL(columnsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(m_proxyModel, SIGNAL(columnsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          SLOT(verifyModel(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(m_proxyModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+          SLOT(verifyModel(const QModelIndex &, const QModelIndex &)));
+
+  testMappings();
   m_modelSpy->setModel(m_proxyModel);
 }
 
