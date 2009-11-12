@@ -40,7 +40,8 @@ void ProxyModelTest::doInitTestCase()
 
 void ProxyModelTest::doCleanupTestCase()
 {
-  QVERIFY( m_commandNames.isEmpty() );
+  if (qApp->arguments().isEmpty())
+    QVERIFY( m_commandNames.isEmpty() );
 }
 
 void ProxyModelTest::init()
