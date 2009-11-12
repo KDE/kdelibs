@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-find . -type d | fgrep -v '.svn' | sed -e 's,$,/,' > dirs
+find . -type d | fgrep -v '.svn' | fgrep -v '.pc' | sed -e 's,$,/,' > dirs
 msh=`find . -name Messages.sh`
 for dir in $msh; do
   dir=`dirname $dir`
