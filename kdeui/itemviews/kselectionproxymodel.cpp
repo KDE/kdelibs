@@ -1281,7 +1281,7 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
 {
   Q_D(const KSelectionProxyModel);
 
-  if (!proxyIndex.isValid())
+  if (!proxyIndex.isValid() || !sourceModel())
     return QModelIndex();
 
   QModelIndex idx = d->m_map.value(proxyIndex.internalPointer());
@@ -1344,6 +1344,9 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 {
   Q_D(const KSelectionProxyModel);
 
+  if (!sourceModel())
+    return 0;
+
   if (!index.isValid())
   {
     if ( !d->m_startWithChildTrees )
@@ -1379,7 +1382,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
   Q_D(const KSelectionProxyModel);
-  if (!hasIndex(row, column, parent))
+  if (!hasIndex(row, column, parent) || !sourceModel())
     return QModelIndex();
 
   if (!parent.isValid())
@@ -1416,6 +1419,9 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
 {
   Q_D(const KSelectionProxyModel);
 
+  if (!sourceModel())
+    return QModelIndex();
+
   QModelIndex sourceIndex = mapToSource(index);
   if (d->m_rootIndexList.contains(sourceIndex.parent()) && ( d->m_startWithChildTrees || d->m_omitChildren ) )
   {
@@ -1440,6 +1446,9 @@ Qt::ItemFlags KSelectionProxyModel::flags( const QModelIndex &index ) const
 
 QVariant KSelectionProxyModel::data( const QModelIndex & index, int role ) const
 {
+  if (!sourceModel())
+    return QVariant();
+
   if (index.isValid())
   {
     QModelIndex idx = mapToSource(index);
@@ -1481,6 +1490,9 @@ bool KSelectionProxyModel::hasChildren ( const QModelIndex & parent) const
 
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
+  if (!sourceModel())
+    return 0;
+
   return sourceModel()->columnCount(mapToSource(index));
 }
 

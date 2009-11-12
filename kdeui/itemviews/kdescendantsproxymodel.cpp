@@ -592,6 +592,9 @@ QVariant KDescendantsProxyModel::data(const QModelIndex & index, int role) const
 {
   Q_D(const KDescendantsProxyModel );
 
+  if (!sourceModel())
+    return QVariant();
+
   if (!index.isValid())
     return sourceModel()->data(index, role);
 
@@ -642,7 +645,7 @@ int KDescendantsProxyModel::rowCount(const QModelIndex & proxyIndex) const
 {
   Q_D(const KDescendantsProxyModel );
 
-  if (proxyIndex.column() > 0)
+  if (!sourceModel() || proxyIndex.column() > 0)
     return 0;
 
   QModelIndex sourceIndex = mapToSource(proxyIndex);
@@ -716,6 +719,10 @@ QModelIndex KDescendantsProxyModel::index(int r, int c, const QModelIndex& paren
 {
   Q_D(const KDescendantsProxyModel );
 
+  if (!sourceModel())
+    return QModelIndex();
+
+
   if ( (r < 0) || (c < 0) || (c >= sourceModel()->columnCount() ) )
     return QModelIndex();
 
@@ -738,6 +745,9 @@ QModelIndex KDescendantsProxyModel::parent(const QModelIndex& proxyIndex) const
 
 int KDescendantsProxyModel::columnCount(const QModelIndex &index) const
 {
+  if (!sourceModel())
+    return 0;
+
   return sourceModel()->columnCount();
 }
 

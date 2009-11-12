@@ -76,6 +76,8 @@ protected:
   virtual void testData();
   virtual void doCleanupTestCase();
 
+  void testEmptyModel();
+
 private slots:
   void init();
 

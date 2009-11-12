@@ -170,9 +170,21 @@ QVariantList ProxyModelTest::getResultSignal()
   return m_modelSpy->takeAt(0);
 }
 
+void ProxyModelTest::testEmptyModel()
+{
+  QCOMPARE(m_proxyModel->rowCount(), 0);
+  QCOMPARE(m_proxyModel->columnCount(), 0);
+  QVERIFY(!m_proxyModel->index(0,0).isValid());
+  QVERIFY(!m_proxyModel->data(QModelIndex()).isValid());
+  QVERIFY(!m_proxyModel->parent(QModelIndex()).isValid());
+  QVERIFY(!m_proxyModel->mapToSource(QModelIndex()).isValid());
+  QVERIFY(!m_proxyModel->mapFromSource(QModelIndex()).isValid());
+}
+
 void ProxyModelTest::setProxyModel(QAbstractProxyModel *proxyModel)
 {
   m_proxyModel = proxyModel;
+  testEmptyModel();
   m_proxyModel->setSourceModel(m_model);
   m_modelSpy->setModel(m_proxyModel);
 }
