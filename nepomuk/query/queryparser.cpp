@@ -204,7 +204,9 @@ namespace {
         }
     }
 
+#ifndef Q_CC_MSVC
 #warning Make the parser handle different data, time, and datetime encodings as well as suffixes like MB or GB
+#endif
 #if 0
     QDateTime parseDateTime( const Soprano::LiteralValue& literal )
     {
