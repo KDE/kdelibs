@@ -195,13 +195,13 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
     config.writeEntry( "NumberOfEntries", count + disabledServices.count() );
     KService::List::ConstIterator servit = services.begin();
     int i = 0;
-    for( ; servit != services.end(); ++servit, ++i ) {
+    for( ; servit != services.end() && !servit->isNull(); ++servit, ++i ) {
         const QString num = QString::number(i);
         config.writeEntry( "Entry" + num + "_Service", (*servit)->storageId() );
         config.writeEntry( "Entry" + num + "_Preference", count - i );
     }
     servit = disabledServices.begin();
-    for( ; servit != disabledServices.end(); ++servit, ++i ) {
+    for( ; servit != disabledServices.end() && !servit->isNull(); ++servit, ++i ) {
         const QString num = QString::number(i);
         config.writeEntry( "Entry" + num + "_Service", (*servit)->storageId() );
         config.writeEntry( "Entry" + num + "_Preference", 0 );
