@@ -32,7 +32,10 @@ extern int servicesDebugArea();
 K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceFactory>, kServiceFactoryInstance)
 
 KServiceFactory::KServiceFactory()
-    : KSycocaFactory( KST_KServiceFactory )
+    : KSycocaFactory( KST_KServiceFactory ),
+    m_nameDict(0),
+    m_relNameDict(0),
+    m_menuIdDict(0)
 {
     kServiceFactoryInstance->instanceCreated(this);
     m_offerListOffset = 0;
@@ -41,6 +44,9 @@ KServiceFactory::KServiceFactory()
     m_menuIdDictOffset = 0;
     if (!KSycoca::self()->isBuilding()) {
         QDataStream* str = stream();
+        Q_ASSERT(str);
+        if (!str) 
+            return;
         // Read Header
         qint32 i;
         (*str) >> i;
