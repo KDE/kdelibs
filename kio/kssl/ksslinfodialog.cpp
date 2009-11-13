@@ -227,6 +227,7 @@ void KSslInfoDialog::displayFromChain(int i)
 
     d->ui.serial->setText(cert.serialNumber());
     d->ui.digest->setText(cert.digest().toHex());
+    d->ui.sha1Digest->setText(cert.digest(QCryptographicHash::Sha1).toHex());
 
     d->subject->setCertificate(cert, KSslCertificateBox::Subject);
     d->issuer->setCertificate(cert, KSslCertificateBox::Issuer);

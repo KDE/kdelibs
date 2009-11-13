@@ -202,6 +202,22 @@
    <item row="11" column="1" >
     <widget class="QLabel" name="digest" >
      <property name="text" >
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0" >
+    <widget class="QLabel" name="sha1DigestTag" >
+     <property name="text" >
+      <string>SHA1 digest:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1" >
+    <widget class="QLabel" name="sha1Digest" >
+     <property name="text" >
       <string comment="KDE::DoNotExtract" >B4:DB:00:2E</string>
      </property>
     </widget>
