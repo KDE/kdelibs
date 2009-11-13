@@ -91,8 +91,9 @@ class KToolBar;
  * windows have unsaved data on close or logout, reimplement
  * queryClose() and/or queryExit().
  *
+ * You have to implement session restoring also in your main() function.
  * There are also kRestoreMainWindows convenience functions which
- * can restore all your windows on next login.
+ * can do this for you and restore all your windows on next login.
  *
  * Note that KMainWindow uses KGlobal::ref() and KGlobal::deref() so that closing
  * the last mainwindow will quit the application unless there is still something
@@ -208,9 +209,25 @@ public:
     KMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
-     * <b>Session Management</b>
+     * If the session did contain so high a number, @p true is returned,
+     * else @p false.
+     * @see restore()
+     **/
+    static bool canBeRestored( int number );
+
+    /**
+     * Returns the className() of the @p number of the toplevel window which
+     * should be restored.
      *
-     * Try to restore the toplevel widget as defined by the number (1..X).
+     * This is only useful if your application uses
+     * different kinds of toplevel windows.
+     */
+    static const QString classNameOfToplevel( int number );
+
+    /**
+     * Try to restore the toplevel widget as defined by @p number (1..X).
+     *
+     * You should call canBeRestored() first.
      *
      * If the session did not contain so high a number, the configuration
      * is not changed and @p false returned.
@@ -227,7 +244,8 @@ public:
      *   // create default application as usual
      * }
      * \endcode
-     * Note that QWidget::show() is called implicitly in restore.
+     * Note that if @p show is true (default), QWidget::show() is called
+     * implicitly in restore.
      *
      * With this you can easily restore all toplevel windows of your
      * application.
@@ -237,60 +255,12 @@ public:
      * to determine the exact type before calling the childMW
      * constructor in the example from above.
      *
-     * If your client has only one kind of toplevel widgets (which
-     * should be pretty usual) then you should use the RESTORE-macro
-     * for backwards compatibility with 3.1 and 3.0 branches:
-     *
-     * \code
-     * if (qApp->isSessionRestored())
-     *   RESTORE(childMW)
-     * else {
-     *   // create default application as usual
-     * }
-     * \endcode
-     *
-     * The macro expands to the term above but is easier to use and
-     * less code to write.
-     *
-     * For new code or if you have more than one kind of toplevel
-     * widget (each derived from KMainWindow, of course), you can
-     * use the templated kRestoreMainWindows global functions:
-     *
-     * \code
-     * if (qApp->isSessionRestored())
-     *   kRestoreMainWindows< childMW1, childMW2, childMW3 >();
-     * else {
-     *   // create default application as usual
-     * }
-     * \endcode
-     *
-     * Currently, these functions are provided for up to three
-     * template arguments. If you need more, tell us. To help you in
-     * deciding whether or not you can use kRestoreMainWindows, a
-     * define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS is provided.
-     *
-     * @see restore()
-     * @see classNameOfToplevel()
-     *
-     **/
-    static bool canBeRestored( int number );
-
-    /**
-     * Returns the className() of the @p number of the toplevel window which
-     * should be restored.
-     *
-     * This is only useful if your application uses
-     * different kinds of toplevel windows.
-     */
-    static const QString classNameOfToplevel( int number );
-
-    /**
-     * Restore the session specified by @p number.
-     *
-     * Returns @p false if this
-     * fails, otherwise returns @p true and shows the window.
-     * You should call canBeRestored() first.
-     * If @p show is true (default), this widget will be shown automatically.
+     * <i>Note that you don't need to deal with this function. Use the
+     * kRestoreMainWindows() convenience template function instead!</i>
+     * @see kRestoreMainWindows()
+     * @see #RESTORE
+     * @see readProperties()
+     * @see canBeRestored()
      */
     bool restore( int number, bool show = true );
 
@@ -616,6 +586,8 @@ protected:
 
    /**
     * Read your instance-specific properties.
+    *
+    * Is called indirectly by restore().
     */
     virtual void readProperties( const KConfigGroup & ) {}
 
@@ -723,19 +695,77 @@ private:
     Q_PRIVATE_SLOT(k_func(), void _k_slotSaveAutoSaveSize())
 };
 
+/**
+ * Restores the last session. (To be used in your main function).
+ *
+ * If your client has only one kind of toplevel widgets (which
+ * should be pretty usual) then you can use this macro,
+ * which is provided for backwards compatibility with 3.1 and 3.0
+ * branches:
+ *
+ * \code
+ * if (qApp->isSessionRestored())
+ *   RESTORE(childMW)
+ * else {
+ *   // create default application as usual
+ * }
+ * \endcode
+ *
+ * The macro expects the type of your toplevel widget as argument.
+ *
+ * Since KDE4, you can also use kRestoreMainWindows(), which
+ * supports also clients with more than one kind of toplevel
+ * widgets.
+ *
+ * @see KMainWindow::restore()
+ * @see kRestoreMainWindows()
+ **/
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
       (new type)->restore(n);\
       n++;}}
 
+/**
+ * Returns the maximal number of arguments that are actually
+ * supported by kRestoreMainWindows().
+ **/
 #define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS 3
 
 /**
- *  These global convenience functions (that come with a varying
- *  number of template arguments) are a replacement for the RESTORE
- *  macro provided in earlier versions of KDE. The old RESTORE macro
- *  is still provided for backwards compatibility. See
- *  KMainWindow documentation for more.
+ * Restores the last session. (To be used in your main function).
+ *
+ * These functions work also if you have more than one kind of toplevel
+ * widget (each derived from KMainWindow, of course).
+ *
+ * Imagine you have three kinds of toplevel widgets: the classes childMW1,
+ * childMW2 and childMW3. Than you can just do:
+ *
+ * \code
+ * if (qApp->isSessionRestored())
+ *   kRestoreMainWindows< childMW1, childMW2, childMW3 >();
+ * else {
+ *   // create default application as usual
+ * }
+ * \endcode
+ *
+ * kRestoreMainWindows<>() will create (on the heap) as many instances
+ * of your main windows as have existed in the last session and
+ * call KMainWindow::restore() with the correct arguments. Note that
+ * also QWidget::show() is called implicitly.
+ *
+ * Currently, these functions are provided for up to three
+ * template arguments. If you need more, tell us. To help you in
+ * deciding whether or not you can use kRestoreMainWindows, a
+ * define #KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS is provided.
+ *
+ * These global convenience functions (that come with a varying
+ * number of template arguments) are a replacement for the #RESTORE
+ * macro provided in earlier versions of KDE. The old #RESTORE macro
+ * is still provided for backwards compatibility.
+ *
+ * @see KMainWindow::restore()
+ * @see #RESTORE
+ * @see KMainWindow::classNameOfToplevel()
  **/
 template <typename T>
 inline void kRestoreMainWindows() {
