@@ -333,6 +333,9 @@ void FileProtocol::listDir( const KUrl& url)
     //kDebug(7101) << "========= LIST " << url << "details=" << details << " =========";
     UDSEntry entry;
 
+#ifndef HAVE_DIRENT_D_TYPE
+    KDE_struct_stat st;
+#endif
     // Don't make this a QStringList. The locale file name we get here
     // should be passed intact to createUDSEntry to avoid problems with
     // files where QFile::encodeName(QFile::decodeName(a)) != a.
@@ -344,9 +347,20 @@ void FileProtocol::listDir( const KUrl& url)
         while ( ( ep = KDE_readdir( dp ) ) != 0 ) {
             entry.clear();
             entry.insert(KIO::UDSEntry::UDS_NAME, QFile::decodeName(ep->d_name));
+#ifdef HAVE_DIRENT_D_TYPE
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
                          (ep->d_type & DT_DIR) ? S_IFDIR : S_IFREG );
-            if (ep->d_type & DT_LNK) {
+            const bool isSymLink = (ep->d_type & DT_LNK);
+#else
+            // oops, no fast way, we need to stat (e.g. on Solaris)
+            if (KDE_lstat(ep->d_name, &st) == -1) {
+                continue; // how can stat fail?
+            }
+            entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
+                          (S_ISDIR(st.st_mode)) ? S_IFDIR : S_IFREG );
+            const bool isSymLink = S_ISLNK(st.st_mode);
+#endif
+            if (isSymLink) {
                 // for symlinks obey the UDSEntry contract and provide UDS_LINK_DEST
                 // even if we don't know the link dest (and DeleteJob doesn't care...)
                 entry.insert(KIO::UDSEntry::UDS_LINK_DEST, QLatin1String("Dummy Link Target"));
