@@ -202,28 +202,26 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
     }
 
     // get stale files
-    QStringList files = KGlobal::dirs()->findAllResources("stale", appName + QLatin1String("/*"));
+    const QStringList files = KGlobal::dirs()->findAllResources("stale", appName + QLatin1String("/*"));
 
     QList<KAutoSaveFile *> list;
-    QString file, sep;
-    KUrl name;
-    KAutoSaveFile * asFile;
 
     // contruct a KAutoSaveFile for each stale file
-    foreach(file, files) {
+    foreach(QString file, files) { // krazy:exclude=foreach (no const& because modified below)
         if (file.endsWith(".lock"))
             continue;
-        sep = file.right(3);
+        const QString sep = file.right(3);
         file.chop(KAutoSaveFilePrivate::padding);
 
         int sepPos = file.indexOf(sep);
         int pathPos = file.indexOf(QChar::fromLatin1('_'), sepPos);
+        KUrl name;
         name.setProtocol(file.mid(sepPos + 3, pathPos - sep.size() - 3));
         name.setPath(KUrl::fromPercentEncoding(file.right(pathPos - 1).toLatin1()));
         name.addPath(KUrl::fromPercentEncoding(file.left(sepPos).toLatin1()));
 
         // sets managedFile
-        asFile = new KAutoSaveFile(name);
+        KAutoSaveFile* asFile = new KAutoSaveFile(name);
         asFile->setFileName(file);
         // flags the name, so it isn't regenerated
         asFile->d->managedFileNameChanged = false;
