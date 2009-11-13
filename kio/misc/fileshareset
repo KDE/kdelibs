@@ -140,7 +140,7 @@ package authorisation;
 sub read_conf {
     my ($exclusive_lock) = @_;
     open F_lock, $authorisation_file; # don't care if it's missing
-    flock(F_lock, $exclusive_lock ? 2 : 1) or die "can't lock";
+    flock(F_lock, $exclusive_lock ? 2 : 1) or die "can't lock $authorisation_file";
     my %conf;
     foreach (<F_lock>) {
 	s/#.*//; # remove comments
