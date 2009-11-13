@@ -640,6 +640,7 @@ void KFileWidget::setFilter(const QString& filter)
     d->ops->clearFilter();
     d->filterWidget->setFilter(copy);
     d->ops->setNameFilter(d->filterWidget->currentFilter());
+    d->ops->updateDir();
     d->hasDefaultFilter = false;
     d->filterWidget->setEditable( true );
 
