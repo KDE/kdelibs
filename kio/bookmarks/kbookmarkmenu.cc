@@ -54,11 +54,11 @@ public:
         addAddBookmark(0),
         bookmarksToFolder(0)
     {
-    }    
+    }
 
-    QAction *newBookmarkFolder;
-    QAction *addAddBookmark;
-    QAction *bookmarksToFolder;
+    KAction *newBookmarkFolder;
+    KAction *addAddBookmark;
+    KAction *bookmarksToFolder;
 };
 
 
@@ -139,7 +139,7 @@ KBookmarkMenu::~KBookmarkMenu()
 {
     qDeleteAll( m_lstSubMenus );
     qDeleteAll( m_actions );
-    delete d;   
+    delete d;
 }
 
 void KBookmarkMenu::ensureUpToDate()
@@ -170,24 +170,24 @@ void KBookmarkMenu::slotCustomContextMenu( const QPoint & pos)
 }
 
 KMenu * KBookmarkMenu::contextMenu( QAction * action )
-{ 
+{
     KBookmarkActionInterface* act = dynamic_cast<KBookmarkActionInterface *>(action);
     if (!act)
         return 0;
     return new KBookmarkContextMenu(act->bookmark(), m_pManager, m_pOwner);
 }
 
-bool KBookmarkMenu::isRoot() const 
+bool KBookmarkMenu::isRoot() const
 {
     return m_bIsRoot;
 }
 
-bool KBookmarkMenu::isDirty() const 
+bool KBookmarkMenu::isDirty() const
 {
     return m_bDirty;
 }
 
-QString KBookmarkMenu::parentAddress() const 
+QString KBookmarkMenu::parentAddress() const
 {
     return m_parentAddress;
 }
@@ -197,12 +197,12 @@ KBookmarkManager * KBookmarkMenu::manager() const
     return m_pManager;
 }
 
-KBookmarkOwner * KBookmarkMenu::owner() const 
+KBookmarkOwner * KBookmarkMenu::owner() const
 {
     return m_pOwner;
 }
 
-KMenu * KBookmarkMenu::parentMenu() const 
+KMenu * KBookmarkMenu::parentMenu() const
 {
     return m_parentMenu;
 }
@@ -455,7 +455,7 @@ void KBookmarkMenu::addOpenInTabs()
 
     KAction * paOpenFolderInTabs = new KAction( title, this );
     paOpenFolderInTabs->setIcon( KIcon("tab-new") );
-    paOpenFolderInTabs->setToolTip( i18n( "Open all bookmarks in this folder as a new tab." ) );
+    paOpenFolderInTabs->setHelpText( i18n( "Open all bookmarks in this folder as a new tab." ) );
     connect( paOpenFolderInTabs, SIGNAL( triggered( bool ) ), this, SLOT( slotOpenFolderInTabs() ) );
 
     m_parentMenu->addAction(paOpenFolderInTabs);
@@ -472,10 +472,10 @@ void KBookmarkMenu::addAddBookmarksList()
         d->bookmarksToFolder = new KAction( title, this );
         m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, d->bookmarksToFolder);
         d->bookmarksToFolder->setIcon( KIcon( "bookmark-new-list" ) );
-        d->bookmarksToFolder->setToolTip( i18n( "Add a folder of bookmarks for all open tabs." ) );
+        d->bookmarksToFolder->setHelpText( i18n( "Add a folder of bookmarks for all open tabs." ) );
         connect( d->bookmarksToFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
     }
-    
+
     m_parentMenu->addAction(d->bookmarksToFolder);
 }
 
@@ -502,21 +502,21 @@ void KBookmarkMenu::addEditBookmarks()
   if( ( m_pOwner && !m_pOwner->enableOption(KBookmarkOwner::ShowEditBookmark) ) || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
-  QAction * m_paEditBookmarks = m_actionCollection->addAction( KStandardAction::EditBookmarks, "edit_bookmarks",
-                                                               m_pManager, SLOT( slotEditBookmarks() ) );
+  KAction * m_paEditBookmarks = m_actionCollection->addAction(KStandardAction::EditBookmarks, "edit_bookmarks",
+                                                              m_pManager, SLOT(slotEditBookmarks()));
   m_parentMenu->addAction(m_paEditBookmarks);
-  m_paEditBookmarks->setToolTip( i18n( "Edit your bookmark collection in a separate window" ) );
+  m_paEditBookmarks->setHelpText( i18n( "Edit your bookmark collection in a separate window" ) );
 }
 
 void KBookmarkMenu::addNewFolder()
 {
     if( !m_pOwner || !m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark) || !KAuthorized::authorizeKAction("bookmarks"))
         return;
-    
+
     if (d->newBookmarkFolder == 0) {
         d->newBookmarkFolder = new KAction( i18n( "New Bookmark Folder..." ), this );
         d->newBookmarkFolder->setIcon( KIcon( "folder-new" ) );
-        d->newBookmarkFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
+        d->newBookmarkFolder->setHelpText( i18n( "Create a new bookmark folder in this menu" ) );
         connect( d->newBookmarkFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
     }
 
@@ -596,7 +596,7 @@ void KBookmarkMenu::slotAddBookmark()
       parentBookmark.addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()));
       m_pManager->emitChanged( parentBookmark );
   }
-      
+
 }
 
 void KBookmarkMenu::slotOpenFolderInTabs()
@@ -725,7 +725,7 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
     m_pOwner(owner)
 {
   setIcon(KIcon(bookmark().icon()));
-  setToolTip( bookmark().url().pathOrUrl() );
+  setHelpText( bookmark().url().pathOrUrl() );
   connect(this, SIGNAL( triggered(Qt::MouseButtons, Qt::KeyboardModifiers) ),
      SLOT( slotSelected(Qt::MouseButtons, Qt::KeyboardModifiers) ));
 }
