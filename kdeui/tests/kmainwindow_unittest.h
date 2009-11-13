@@ -34,6 +34,7 @@ private Q_SLOTS:
     void testSaveWindowSize();
     void testAutoSaveSettings();
     void testNoAutoSave();
+    void testWidgetWithStatusBar();
 
     void testDeleteOnClose();
 };

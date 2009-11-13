@@ -81,7 +81,14 @@ static KMenuBar *internalMenuBar(KMainWindow *mw)
 
 static KStatusBar *internalStatusBar(KMainWindow *mw)
 {
-    return qFindChild<KStatusBar *>(mw);
+    const QObjectList &children = mw->children();
+    for (int i = 0; i < children.size(); ++i) {
+        KStatusBar* sb = qobject_cast<KStatusBar *>(children.at(i));
+        if (sb) {
+            return sb;
+        }
+    }
+    return 0;
 }
 
 /**
