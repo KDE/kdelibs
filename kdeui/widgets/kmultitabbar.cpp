@@ -41,9 +41,9 @@
 
 /**
  A bit of an overview about what's going on here:
- There are two sorts of things that can be in the tab bar: tabs and regular 
- buttons. The former are managed by KMultiTabBarInternal, the later 
- by the KMultiTabBar itself. 
+ There are two sorts of things that can be in the tab bar: tabs and regular
+ buttons. The former are managed by KMultiTabBarInternal, the later
+ by the KMultiTabBar itself.
 */
 
 class KMultiTabBarPrivate
@@ -164,7 +164,7 @@ void KMultiTabBarButton::slotClicked()
 	emit clicked(m_id);
 }
 
-int KMultiTabBarButton::id() const 
+int KMultiTabBarButton::id() const
 {
 	return m_id;
 }
@@ -191,7 +191,7 @@ KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
 	: KMultiTabBarButton(pic, text, id, parent), m_style(style), d(0)
 {
 	m_position=pos;
-	setToolTip(text);	
+	setToolTip(text);
 	setCheckable(true);
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	 // shrink down to icon only, but prefer to show text if it's there
@@ -222,23 +222,23 @@ QPixmap KMultiTabBarTab::iconPixmap() const
 void KMultiTabBarTab::initStyleOption(QStyleOptionToolButton* opt) const
 {
 	opt->initFrom(this);
-	
+
 	// Setup icon..
 	if (!icon().isNull()) {
 		opt->iconSize = iconPixmap().size();
 		opt->icon     = icon();
 	}
-		
+
 	// Should we draw text?
 	if (shouldDrawText())
 		opt->text = text();
-		
+
 	if (underMouse())
 		opt->state |= QStyle::State_AutoRaise | QStyle::State_MouseOver | QStyle::State_Raised;
-		
+
 	if (isChecked())
 		opt->state |= QStyle::State_Sunken | QStyle::State_On;
-	
+
 	opt->font = font();
 	opt->toolButtonStyle = shouldDrawText() ? Qt::ToolButtonTextBesideIcon : Qt::ToolButtonIconOnly;
 	opt->subControls = QStyle::SC_ToolButton;
@@ -256,7 +256,7 @@ QSize KMultiTabBarTab::minimumSizeHint() const
 
 void KMultiTabBarTab::computeMargins(int* hMargin, int* vMargin) const
 {
-	// Unfortunately, QStyle does not give us enough information to figure out 
+	// Unfortunately, QStyle does not give us enough information to figure out
 	// where to place things, so we try to reverse-engineer it
 	QStyleOptionToolButton opt;
 	initStyleOption(&opt);
@@ -264,33 +264,33 @@ void KMultiTabBarTab::computeMargins(int* hMargin, int* vMargin) const
 	QPixmap iconPix = iconPixmap();
 	QSize trialSize = iconPix.size();
 	QSize expandSize = style()->sizeFromContents(QStyle::CT_ToolButton, &opt, trialSize, this);
-	
+
 	*hMargin = (expandSize.width()  - trialSize.width())/2;
 	*vMargin = (expandSize.height() - trialSize.height())/2;
 }
 
 QSize KMultiTabBarTab::computeSizeHint(bool withText) const
 {
-	// Compute as horizontal first, then flip around if need be.	
+	// Compute as horizontal first, then flip around if need be.
 	QStyleOptionToolButton opt;
 	initStyleOption(&opt);
-	
+
 	int hMargin, vMargin;
 	computeMargins(&hMargin, &vMargin);
-	
+
 	// Compute interior size, starting from pixmap..
 	QPixmap iconPix = iconPixmap();
 	QSize size = iconPix.size();
-	
+
 	// Always include text height in computation, to avoid resizing the minor direction
 	// when expanding text..
 	QSize textSize = fontMetrics().size(Qt::TextShowMnemonic, text());
 	size.setHeight(qMax(size.height(), textSize.height()));
-	
+
 	// Pick margins for major/minor direction, depending on orientation
 	int majorMargin = isVertical() ? vMargin : hMargin;
 	int minorMargin = isVertical() ? hMargin : vMargin;
-	
+
 	size.setWidth (size.width()  + 2*majorMargin);
 	size.setHeight(size.height() + 2*minorMargin);
 
@@ -334,24 +334,24 @@ bool KMultiTabBarTab::isVertical() const
 
 void KMultiTabBarTab::paintEvent(QPaintEvent*) {
 	QPainter painter(this);
-	
+
 	QStyleOptionToolButton opt;
 	initStyleOption(&opt);
-	
+
 	// Paint bevel..
 	if (underMouse() || isChecked())
 		style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, &painter);
-		
+
 	int hMargin, vMargin;
 	computeMargins(&hMargin, &vMargin);
-		
-	// We first figure out how much room we have for the text, based on 
+
+	// We first figure out how much room we have for the text, based on
 	// icon size and margin, try to fit in by eliding, and perhaps
 	// give up on drawing the text entirely if we're too short on room
 	QPixmap icon = iconPixmap();
 	int textRoom = 0;
 	int iconRoom = 0;
-	
+
 	QString t;
 	if (shouldDrawText()) {
 		if (isVertical()) {
@@ -361,17 +361,17 @@ void KMultiTabBarTab::paintEvent(QPaintEvent*) {
 			iconRoom = icon.width() + 2*hMargin;
 			textRoom = width() - iconRoom - hMargin;
 		}
-		
+
 		t = painter.fontMetrics().elidedText(text(), Qt::ElideRight, textRoom);
-		
-		// See whether anything is left. Qt will return either 
+
+		// See whether anything is left. Qt will return either
 		// ... or the ellipsis unicode character, 0x2026
 		if (t == QLatin1String("...") || t == QChar(0x2026))
 			t.clear();
 	}
-	
+
 	opt.text = t;
-	
+
 	// Label time.... Simple case: no text, so just plop down the icon right in the center
 	// We only do this when the button never draws the text, to avoid jumps in icon position
 	// when resizing
@@ -380,10 +380,10 @@ void KMultiTabBarTab::paintEvent(QPaintEvent*) {
  		return;
  	}
 
-	// Now where the icon/text goes depends on text direction and tab position	
+	// Now where the icon/text goes depends on text direction and tab position
 	QRect iconArea;
 	QRect labelArea;
-	
+
 	bool bottomIcon = false;
 	bool rtl = layoutDirection() == Qt::RightToLeft;
 	if (isVertical()) {
@@ -412,21 +412,21 @@ void KMultiTabBarTab::paintEvent(QPaintEvent*) {
 			iconArea  = QRect(0, 0, iconRoom, height());
 		}
 	}
-	
+
 	style()->drawItemPixmap(&painter, iconArea, Qt::AlignCenter | Qt::AlignVCenter, icon);
-	
+
 	if (t.isEmpty())
 		return;
 
 	QRect labelPaintArea = labelArea;
 
 	if (isVertical()) {
-		// If we're vertical, we paint to a simple 0,0 origin rect, 
+		// If we're vertical, we paint to a simple 0,0 origin rect,
 		// and get the transformations to get us in the right place
 		labelPaintArea = QRect(0, 0, labelArea.height(), labelArea.width());
 
 		QTransform tr;
-		
+
 		if (bottomIcon) {
 			tr.translate(labelArea.x(), labelPaintArea.width() + labelArea.y());
 			tr.rotate(-90);
@@ -436,7 +436,7 @@ void KMultiTabBarTab::paintEvent(QPaintEvent*) {
 		}
 		painter.setTransform(tr);
 	}
-	
+
 	style()->drawItemText(&painter, labelPaintArea, Qt::AlignLeading | Qt::AlignVCenter,
 	                      palette(), true, t, QPalette::ButtonText);
 }
@@ -503,7 +503,7 @@ void KMultiTabBar::updateSeparator() {
 	}
 	if (hideSep)
 		d->m_btnTabSep->hide();
-	else 
+	else
 		d->m_btnTabSep->show();
 }
 
@@ -521,7 +521,7 @@ KMultiTabBarButton* KMultiTabBar::button(int id) const
 		if ( button->id() == id )
 			return button;
 	}
-	
+
 	return 0;
 }
 
@@ -540,7 +540,7 @@ void KMultiTabBar::removeButton(int id)
 			break;
 		}
 	}
-	
+
 	if (d->m_buttons.count()==0)
 		d->m_btnTabSep->hide();
 }
