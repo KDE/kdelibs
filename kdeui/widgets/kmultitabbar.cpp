@@ -147,6 +147,11 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic, const QString& text,
 {
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
 	setFlat(true);
+
+        // we can't see the focus, so don't take focus. #45557
+        // If keyboard navigation is wanted, then only the bar should take focus,
+        // and arrows could change the focused button; but generally, tabbars don't take focus anyway.
+        setFocusPolicy(Qt::NoFocus);
 }
 
 KMultiTabBarButton::~KMultiTabBarButton()
