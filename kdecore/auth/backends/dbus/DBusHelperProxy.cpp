@@ -1,5 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
+*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +27,8 @@
 #include <QDebug>
 #include <QTimer>
 
+#include <klocalizedstring.h>
+
 #include <syslog.h>
 
 #include "BackendsManager.h"
@@ -49,7 +52,7 @@ void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
     args << action;
     message.setArguments(args);
 
-    QDBusConnection::systemBus().call(message, QDBus::NoBlock);
+    QDBusConnection::systemBus().asyncCall(message);
 }
 
 bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID)
@@ -59,12 +62,9 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
     stream << list;
 
-    qDebug() << "Executing" << helperID;
-
     QDBusConnection::systemBus().interface()->startService(helperID);
 
     if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
-        qDebug() << "Fuck";
         return false;
     }
 
@@ -75,9 +75,8 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
     args << blob << BackendsManager::authBackend()->callerID();
     message.setArguments(args);
 
-    QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::NoBlock); // This is a NO_REPLY method
-    if (reply.type() == QDBusMessage::ErrorMessage) {
-        qDebug() << "blah";
+    QDBusPendingCall reply = QDBusConnection::systemBus().asyncCall(message); // This is a NO_REPLY method
+    if (reply.reply().type() == QDBusMessage::ErrorMessage) {
         return false;
     }
 
@@ -94,9 +93,14 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     QDataStream stream(&blob, QIODevice::WriteOnly);
 
     stream << arguments;
+    
+    QDBusConnection::systemBus().interface()->startService(helperID);
 
     if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
-        return ActionReply::DBusErrorReply;
+        ActionReply errorReply = ActionReply::DBusErrorReply;
+        errorReply.setErrorDescription(i18n("DBus Backend error: connection to helper failed. %1", 
+                                            QDBusConnection::systemBus().lastError().message()));
+        return errorReply;
     }
 
     QDBusMessage message;
@@ -108,17 +112,29 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     m_actionsInProgress.push_back(action);
 
-    QDBusMessage reply = QDBusConnection::systemBus().call(message, QDBus::BlockWithGui);
+    QEventLoop e;
+    QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
+    QDBusPendingCallWatcher watcher(pendingCall, this);
+    connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
+    e.exec();
+    
+    QDBusMessage reply = pendingCall.reply();
+    
     if (reply.type() == QDBusMessage::ErrorMessage) {
         ActionReply r = ActionReply::DBusErrorReply;
-        r.setErrorDescription(reply.errorMessage());
+        r.setErrorDescription(i18n("DBus Backend error: could not contact the helper. "
+                                   "Connection error: %1. Message error: %2", QDBusConnection::systemBus().lastError().message(),
+                                   reply.errorMessage()));
         qDebug() << reply.errorMessage();
 
         return r;
     }
 
     if (reply.arguments().size() != 1) {
-        return ActionReply::DBusErrorReply;
+        ActionReply errorReply = ActionReply::DBusErrorReply;
+        errorReply.setErrorDescription(i18n("DBus Backend error: received corrupt data from helper %1 %2",
+                                            reply.arguments().size(), QDBusConnection::systemBus().lastError().message()));
+        return errorReply;
     }
 
     return ActionReply::deserialize(reply.arguments().first().toByteArray());
