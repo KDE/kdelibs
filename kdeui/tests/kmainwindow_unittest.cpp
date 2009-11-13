@@ -21,6 +21,7 @@
 #include "kmainwindow_unittest.h"
 #include "kmainwindow_unittest.moc"
 #include <kmainwindow.h>
+#include <kstatusbar.h>
 #include <kglobal.h>
 #include <QResizeEvent>
 #include <ktoolbar.h>
@@ -187,4 +188,14 @@ void KMainWindow_UnitTest::testNoAutoSave()
     mw2.setAutoSaveSettings(group, false);
     // NOT 750, 550! (the 800,600 comes from testAutoSaveSettings)
     QCOMPARE(mw2.size(), QSize(800, 600));
+}
+
+void KMainWindow_UnitTest::testWidgetWithStatusBar()
+{
+    // KMainWindow::statusBar() should not find any indirect KStatusBar child
+    // (e.g. in a case like konqueror, with one statusbar per frame)
+    MyMainWindow mw;
+    QWidget* frame1 = new QWidget(&mw);
+    KStatusBar* frameStatusBar = new KStatusBar(frame1);
+    QVERIFY(mw.statusBar() != frameStatusBar);
 }

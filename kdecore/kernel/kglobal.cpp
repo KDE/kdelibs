@@ -300,3 +300,19 @@ void KGlobal::setAllowQuit(bool allowQuit)
 }
 
 #undef PRIVATE_DATA
+
+QObject* KGlobal::findDirectChild_helper(const QObject* parent, const QMetaObject& mo)
+{
+    if (!parent)
+        return 0;
+
+    const QObjectList &children = parent->children();
+    for (int i = 0; i < children.size(); ++i) {
+        QObject* obj = children.at(i);
+        if (mo.cast(obj)) {
+            return obj;
+        }
+    }
+    return 0;
+
+}

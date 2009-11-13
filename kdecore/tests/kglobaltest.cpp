@@ -38,6 +38,14 @@ private Q_SLOTS:
         QCOMPARE(testMethod(), QString::fromLatin1("application/octet-stream"));
     }
 
+    void testFindDirectChild()
+    {
+        QTimer child(this);
+        QCOMPARE(KGlobal::findDirectChild<QTimer *>(this), &child);
+        QCOMPARE(KGlobal::findDirectChild<QTimer *>(&child), (QObject*)0);
+        QCOMPARE(KGlobal::findDirectChild<QEventLoop *>(this), (QObject*)0);
+    }
+
     // The former implementation of QTest::kWaitForSignal would return
     // false even if the signal was emitted, when the timeout fired too
     // (e.g. due to a breakpoint in gdb).

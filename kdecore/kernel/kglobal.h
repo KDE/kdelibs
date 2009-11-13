@@ -22,7 +22,7 @@
 #include <kdecore_export.h>
 #include <QtCore/QAtomicPointer>
 #include <sys/types.h>
-
+#include <QtCore/QObject>
 
 //
 // WARNING!!
@@ -469,6 +469,19 @@ namespace KGlobal
      * @return the text for the window caption
      */
     KDECORE_EXPORT QString caption();
+
+    /// @internal
+    KDECORE_EXPORT QObject* findDirectChild_helper(const QObject* parent, const QMetaObject& mo);
+
+    /**
+     * Returns the child of the given object that can be cast into type T, or 0 if there is no such object.
+     * Unlike QObject::findChild, the search is NOT performed recursively.
+     * @since 4.4
+     */
+    template<typename T>
+    inline T findDirectChild(const QObject* object) {
+        return static_cast<T>(findDirectChild_helper(object, ((T)0)->staticMetaObject));
+    }
 
     /**
      * For setLocale

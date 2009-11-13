@@ -76,12 +76,14 @@ static bool no_query_exit = false;
 
 static KMenuBar *internalMenuBar(KMainWindow *mw)
 {
-    return qFindChild<KMenuBar *>(mw);
+    return KGlobal::findDirectChild<KMenuBar *>(mw);
 }
 
 static KStatusBar *internalStatusBar(KMainWindow *mw)
 {
-    return qFindChild<KStatusBar *>(mw);
+    // Don't use qFindChild here, it's recursive!
+    // (== slow, but also finds konqueror's per-view statusbars)
+    return KGlobal::findDirectChild<KStatusBar *>(mw);
 }
 
 /**

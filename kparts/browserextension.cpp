@@ -734,7 +734,7 @@ BrowserExtension::ActionSlotMap * BrowserExtension::actionSlotMapPtr()
 
 BrowserExtension *BrowserExtension::childObject( QObject *obj )
 {
-    return obj ? obj->findChild<KParts::BrowserExtension *>() : 0;
+    return KGlobal::findDirectChild<KParts::BrowserExtension *>(obj);
 }
 
 namespace KParts
@@ -785,18 +785,7 @@ bool BrowserHostExtension::openUrlInFrame( const KUrl &,
 
 BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 {
-    if ( !obj )
-        return 0;
-
-    // we try to do it on our own, in hope that we are faster than
-    // queryList, which looks kind of big :-)
-    foreach ( QObject * child, obj->children() ) {
-        KParts::BrowserHostExtension* ext = qobject_cast<KParts::BrowserHostExtension *>(child);
-        if (ext)
-            return ext;
-    }
-
-    return 0;
+    return KGlobal::findDirectChild<KParts::BrowserHostExtension *>(obj);
 }
 
 BrowserHostExtension *
@@ -828,17 +817,7 @@ void LiveConnectExtension::unregister( const unsigned long ) {}
 
 LiveConnectExtension *LiveConnectExtension::childObject( QObject *obj )
 {
-    if ( !obj )
-        return 0;
-
-    // we try to do it on our own, in hope that we are faster than
-    // queryList, which looks kind of big :-)
-    foreach ( QObject * child, obj->children() ) {
-        KParts::LiveConnectExtension* ext = qobject_cast<KParts::LiveConnectExtension *>( child );
-        if (ext)
-            return ext;
-    }
-    return 0;
+    return KGlobal::findDirectChild<KParts::LiveConnectExtension *>(obj);
 }
 
 #include "browserextension.moc"
