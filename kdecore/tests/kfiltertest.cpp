@@ -223,6 +223,7 @@ void KFilterTest::test_readall(const QString & fileName, const QString& mimeType
 {
     QFile file(fileName);
     QIODevice *flt = KFilterDev::device(&file, mimeType, false);
+    QVERIFY(flt);
     bool ok = flt->open( QIODevice::ReadOnly );
     QVERIFY(ok);
     const QByteArray read = flt->readAll();
