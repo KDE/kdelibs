@@ -273,7 +273,7 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
     QStringList lst = l->languages();
     QMap<QString, QString> langs;
 
-    foreach(QString tag, lst) {
+    foreach(QString tag, lst) { // krazy:exclude=foreach (no const& because tag is modified below)
         tag = tag.mid(0, tag.indexOf('-'));
         int underscorePos = tag.indexOf('_');
         QString cIsoName, lIsoName;

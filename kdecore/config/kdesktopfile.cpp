@@ -57,7 +57,6 @@ KDesktopFile::KDesktopFile(const char * resourceType, const QString &fileName)
     Q_D(KDesktopFile);
     reparseConfiguration();
     d->desktopGroup = KConfigGroup(this, "Desktop Entry");
-//    setGroup("Desktop Entry"); // for backwards compat
 }
 
 KDesktopFile::KDesktopFile(const QString &fileName)
@@ -65,9 +64,7 @@ KDesktopFile::KDesktopFile(const QString &fileName)
 {
     Q_D(KDesktopFile);
     reparseConfiguration();
-
     d->desktopGroup = KConfigGroup(this, "Desktop Entry");
-//    setGroup("Desktop Entry"); // for backwards compat
 }
 
 KDesktopFile::~KDesktopFile()
