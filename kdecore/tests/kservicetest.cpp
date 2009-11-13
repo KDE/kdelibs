@@ -307,8 +307,8 @@ void KServiceTest::testWriteServiceTypeProfile()
     services.append(KService::serviceByDesktopPath("katepart.desktop"));
     disabledServices.append(KService::serviceByDesktopPath("khtml.desktop"));
 
-    KService::List::ConstIterator servit = services.begin();
-    for( ; servit != services.end(); ++servit) {
+    KService::List::ConstIterator servit = services.constBegin();
+    for( ; servit != services.constEnd(); ++servit) {
         QVERIFY(!servit->isNull());
     }
 
