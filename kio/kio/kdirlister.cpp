@@ -95,7 +95,6 @@ KDirListerCache::~KDirListerCache()
 bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
                                bool _keep, bool _reload )
 {
-  // like this we don't have to worry about trailing slashes any further
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
 
@@ -108,7 +107,14 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
           emit lister->redirection(_url);
   }
 
+  // like this we don't have to worry about trailing slashes any further
   _url.adjustPath(KUrl::RemoveTrailingSlash);
+
+  if (_url.isLocalFile()) {
+      // Resolve symlinks (#213799)
+      const QString local = QFileInfo(_url.toLocalFile()).canonicalFilePath();
+      _url.setPath(local);
+  }
   const QString urlStr = _url.url();
 
   if (!validUrl(lister, _url)) {
