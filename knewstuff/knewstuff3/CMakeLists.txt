@@ -10,7 +10,6 @@ link_directories(${ATTICA_LIBRARY_DIRS})
 set(knewstuff3_core_SRCS
    core/author.cpp
    core/cache.cpp
-   core/category.cpp
    core/entry.cpp
    core/installation.cpp
    core/ktranslatable.cpp
@@ -60,15 +59,11 @@ install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAUL
 
 install(FILES
   core/author.h
-  core/category.h
   core/ktranslatable.h
   core/installation.h
-  core/provider.h
   core/entry.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/core COMPONENT Devel
 )
-
-#install(FILES dxs/dxsengine.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/dxs)
 
 install(FILES
   ui/knewstuffaction.h
@@ -77,9 +72,7 @@ install(FILES
 
 install(FILES
   client.h
-  engine.h
   knewstuff_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )
-
 

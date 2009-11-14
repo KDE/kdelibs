@@ -62,38 +62,6 @@ public:
     ~Engine();
 
     /**
-     * Policy on how to cache the data received from the network. While
-     * CacheNever completely switches off all caching, the other two settings
-     * CacheReplaceable and CacheResident will optimize the network traffic
-     * needed for all workflows.
-     * CacheOnly will never download from the network at all and can be used
-     * to inspect the local cache.
-     *
-     * Provider files, feeds, entries and preview images are subject to this
-     * policy.
-     *
-     * The default cache policy is CacheNever.
-     */
-    enum CachePolicy {
-        /**< Do not use any cache. (default) */
-        CacheNever,
-        /**< Use the cache first, but then update from the network. */
-        CacheReplaceable,
-        /**< Like CacheReplaceable, but only update if necessary. */
-        CacheResident,
-        /**< Operate on cache files but never update them. */
-        CacheOnly
-    };
-
-    enum CollaborationFeature {
-        None = 0x0,
-        Ratings = 0x1,
-        Comments = 0x2
-    };
-    Q_DECLARE_FLAGS(CollaborationFeatures, CollaborationFeature)
-
-
-    /**
      * Initializes the engine. This step is application-specific and relies
      * on an external configuration file, which determines all the details
      * about the initialization.
@@ -122,41 +90,19 @@ public:
      * during the installation.
      *
      * @param entry The entry to deinstall
-     *
-     * @return Whether or not deinstallation was successful
-     *
-     * @note FIXME: I don't believe this works yet :)
      */
     void uninstall(KNS3::Entry entry);
     
-    /**
-     * Uploads a complete entry, including its payload and preview files
-     * (if present) and all associated meta information.
-     * Note that this method is asynchronous and thus the return value will
-     * not report the final success of all upload steps. It will merely check
-     * that the provider supports upload and so forth.
-     *
-     * @param provider Provider to use for upload
-     * @param entry Entry to upload with associated files
-     *
-     * @return Whether or not upload was started successfully
-     *
-     * @see signalEntryUploaded
-     * @see signalEntryFailed
-     */
-    //bool uploadEntry(Provider *provider, KNS3::Entry entry);
-
     /**
      * @return the component name the engine is using, or an empty string if not
      * initialized yet
      */
     QString componentName() const;
 
-    CollaborationFeatures collaborationFeatures(const KNS3::Entry& entry);
-
     void setSortMode(Provider::SortMode mode);
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
+    void slotRequestMoreData();
     
 Q_SIGNALS:
     /**
@@ -197,7 +143,6 @@ private Q_SLOTS:
     void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List);
-    void slotRequestMoreData();
     
     void slotPreviewResult(KJob *job);
 
@@ -220,8 +165,6 @@ private:
     void loadRegistry();
     void loadProvidersCache();
     KNS3::Entry loadEntryCache(const QString& filepath);
-
-    void loadCache(CachePolicy policy);
     
     // if at all: move into staticprovider:
     //void loadFeedCache(Provider *provider);
@@ -255,7 +198,6 @@ private:
     class ProviderInformation;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Engine::CollaborationFeatures)
 } 
 
 #endif

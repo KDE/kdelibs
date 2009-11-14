@@ -173,8 +173,7 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
                                  KGlobal::activeComponent().aboutData()->programName()));
     m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    connect(m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbar(int)));
-    connect(this, SIGNAL(signalRequestMoreData()), d->engine, SLOT(slotRequestMoreData()));
+    connect(m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
     
     // FIXME connect(d->engine, SIGNAL(signalJobStarted(KJob*)), progressIndicator, SLOT(addJob(KJob*)));
     connect(d->model, SIGNAL(jobStarted(KJob*, const QString&)), progressIndicator, SLOT(addJob(KJob*, const QString&)));
@@ -350,28 +349,6 @@ void DownloadDialog::slotSearchTextChanged()
     d->engine->setSearchTerm(m_searchEdit->text().trimmed());
 }
 
-void DownloadDialog::slotCategories(QList<KNS3::Category*> categories)
-{
-    d->categorymap.clear();
-
-    for (QList<KNS3::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
-        KNS3::Category *category = (*it);
-        //kDebug(551) << "Category: " << category->name().representation();
-        QPixmap icon = DesktopIcon(category->icon().url(), 16);
-        // FIXME: use icon from remote URLs (see non-DXS providers as well)
-        //d->sourceCombo->addItem(icon, category->name().representation());
-        d->categorymap[category->name().representation()] = category->id();
-        // FIXME: better use global id, since names are not guaranteed
-        //        to be unique
-    }
-
-    //d->sourceCombo->setEnabled(true);
-}
-
-
-// FIXME: below here, those are for traditional GHNS
-
-
 void DownloadDialog::slotInfo(QString provider, QString server, QString version)
 {
     QString link = QString("<a href=\"%1\">%1</a>").arg(server);
@@ -384,23 +361,8 @@ void DownloadDialog::slotInfo(QString provider, QString server, QString version)
                              i18n("Provider information"));
 }
 
-void DownloadDialog::slotComments(QStringList comments)
-{
-    //QPointer<KDXSComments> commentsdlg = new KDXSComments(this);
-
-    //for (QStringList::const_iterator it = comments.constBegin(); it != comments.constEnd(); ++it) {
-    //    //kDebug() << "Comment: " << (*it);
-    //    commentsdlg->addComment("foo", (*it));
-    //}
-
-    //commentsdlg->exec();
-}
-
-///////////////// DXS ////////////////////
-
 void DownloadDialog::slotEntryChanged(const Entry& entry)
 {
-    Q_UNUSED(entry)
     setCursor(Qt::ArrowCursor);
     d->model->slotEntryChanged(entry);
 }
@@ -418,44 +380,15 @@ void DownloadDialog::slotPayloadLoaded(KUrl url)
     setCursor(Qt::ArrowCursor);
 }
 
-void DownloadDialog::slotProgress(const QString & text, int percentage)
-{
-//     m_progress->addProgress(text, percentage);
-}
-
-
-/*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )
-{
-    AvailableItem * item = d->transferJobs[ job ].item;
-    kDebug(551) << "Name: " << item->name().representation() << " msg: '" << message << "'.";
-    d->itemsView->updateItem( item );
-}
-
-void DownloadDialog::slotItemPercentage( KJob * job, unsigned long percent )
-{
-    AvailableItem * item = d->transferJobs[ job ].item;
-    item->setProgress( (float)percent / 100.0 );
-    d->itemsView->updateItem( item );
-}
-
-void DownloadDialog::slotItemResult( KJob * job )
-{
-    item->setState( AvailableItem::Normal );
-    item->setProgress( 100.0 );
-    d->itemsView->updateItem( item );
-
-}*/
-
 void DownloadDialog::slotError(const QString& message)
 {
     KMessageBox::error(this, message, i18n("Get Hot New Stuff"));
 }
 
-
-void DownloadDialog::scrollbar(int value)
+void DownloadDialog::scrollbarValueChanged(int value)
 {
-    if ((double)value/m_listView->verticalScrollBar()->maximum() > 0.7) {
-        emit signalRequestMoreData();
+    if ((double)value/m_listView->verticalScrollBar()->maximum() > 0.9) {
+        d->engine->slotRequestMoreData();
     }
 }
 

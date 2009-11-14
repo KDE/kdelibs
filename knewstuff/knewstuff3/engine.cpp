@@ -643,24 +643,5 @@ void Engine::slotInstallationFailed(const KNS3::Entry& entry)
     kDebug() << "Installation failed: " << entry.name().representation();
     // FIXME implement warning?
 }
-
-Engine::CollaborationFeatures Engine::collaborationFeatures(const KNS3::Entry& entry)
-{
-    /* FIXME the strings in provider_index need to match the entry.providerId() if we go with this
-    Provider* p = d->provider_index[entry.providerId()];
-    Q_ASSERT(p);
-    CollaborationFeatures features;
-    if (p->hasRatings()) {
-        features |= Ratings;
-    }
-    if (p->hasCommenting()) {
-        features |= Comments;
-    }
-    */
-    
-    CollaborationFeatures features;
-    return features;
-}
-
     
 #include "engine.moc"

@@ -106,24 +106,15 @@ private Q_SLOTS:
     void slotUpdateSearch();
 
     void slotInfo(QString provider, QString server, QString version);
-    void slotComments(QStringList comments);
-    
-    void slotCategories(QList<Category*> categories);
-
     void slotError(const QString& message);
-
-    // file downloading
-    //void slotItemMessage( KJob *, const QString & );
-    //void slotItemPercentage( KJob *, unsigned long );
-    //void slotItemResult( KJob * );
-    void slotProgress(const QString & text, int percentage);
 
     void slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry entry);
     void slotCollabAction(QAction * action);
 
     void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
 
-    void scrollbar(int value);
+    void scrollbarValueChanged(int value);
+    
 Q_SIGNALS:
     void signalRequestMoreData();
     
@@ -131,7 +122,6 @@ protected:
     virtual void hideEvent(QHideEvent * event);
 
 private:
-
     void populateSortCombo(const Provider * provider);
 
     class Private;
