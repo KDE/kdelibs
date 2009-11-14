@@ -394,13 +394,13 @@ static const KFontData DefaultFontData[KGlobalSettingsData::FontTypesCount] =
     { GeneralId, "toolBarFont", DefaultMacFont, 11, -1, QFont::SansSerif },
     { GeneralId, "menuFont",    DefaultMacFont, 13, -1, QFont::SansSerif },
 #else
-    { GeneralId, "font",        DefaultFont, 10, -1, QFont::SansSerif },
-    { GeneralId, "fixed",       "Monospace", 10, -1, QFont::TypeWriter },
+    { GeneralId, "font",        DefaultFont, 9, -1, QFont::SansSerif },
+    { GeneralId, "fixed",       "Monospace", 9, -1, QFont::TypeWriter },
     { GeneralId, "toolBarFont", DefaultFont,  8, -1, QFont::SansSerif },
-    { GeneralId, "menuFont",    DefaultFont, 10, -1, QFont::SansSerif },
+    { GeneralId, "menuFont",    DefaultFont, 9, -1, QFont::SansSerif },
 #endif
-    { "WM",      "activeFont",           DefaultFont,  9, QFont::Bold, QFont::SansSerif },// inconsistency
-    { GeneralId, "taskbarFont",          DefaultFont, 10, -1, QFont::SansSerif },
+    { "WM",      "activeFont",           DefaultFont,  8, -1, QFont::SansSerif }
+    { GeneralId, "taskbarFont",          DefaultFont, 9, -1, QFont::SansSerif },
     { GeneralId, "smallestReadableFont", DefaultFont,  8, -1, QFont::SansSerif }
 };
 
