@@ -29,10 +29,10 @@ set(knewstuff3_ui_SRCS
   ui/downloaddialog.cpp
   ui/itemsmodel.cpp
   ui/itemsviewdelegate.cpp
-  ui/qasyncimage.cpp
+  ui/imageloader.cpp
   ui/qstarframe.cpp
   ui/qnowtooltip.cpp
-  ui/qprogressindicator.cpp
+  ui/progressindicator.cpp
   ui/uploaddialog.cpp
   ui/providerdialog.cpp
   ui/knewstuffbutton.cpp

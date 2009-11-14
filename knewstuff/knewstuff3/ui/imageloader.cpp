@@ -16,7 +16,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "qasyncimage_p.h"
+#include "imageloader.h"
 
 #include <kio/job.h>
 #include <kio/scheduler.h>
@@ -27,28 +27,33 @@
 
 #include <QtCore/QFile>
 
-QAsyncImage::QAsyncImage(const QString& url, QObject* parent)
+using namespace KNS3;
+
+ImageLoader::ImageLoader(const QString& url, QObject* parent)
         : QObject(parent), QImage(), m_url(url)
 {
     if (!m_url.isEmpty()) {
-        KIO::TransferJob *job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
-        KIO::Scheduler::scheduleJob(job);
-        connect(job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
-        connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotData(KIO::Job*, const QByteArray&)));
+        m_job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
+        connect(m_job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
+        connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotData(KIO::Job*, const QByteArray&)));
+        KIO::Scheduler::scheduleJob(m_job);
     }
 }
 
-void QAsyncImage::slotData(KIO::Job *job, const QByteArray& buf)
+KJob* ImageLoader::job()
+{
+    return m_job;
+}
+
+void ImageLoader::slotData(KIO::Job *job, const QByteArray& buf)
 {
     Q_UNUSED(job);
     m_buffer.append(buf);
 }
 
-void QAsyncImage::slotDownload(KJob *job)
+void ImageLoader::slotDownload(KJob *job)
 {
-    //kDebug(550) << "DOWNLOAD";
     if (job->error()) {
-        // XXX ???
         m_buffer.clear();
         return;
     }
@@ -57,4 +62,4 @@ void QAsyncImage::slotDownload(KJob *job)
     emit signalLoaded(m_url, *this);
 }
 
-#include "qasyncimage_p.moc"
+#include "imageloader.moc"

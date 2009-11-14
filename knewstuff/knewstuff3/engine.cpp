@@ -103,7 +103,7 @@ class KNS3::Engine::Private {
 
         bool initialized;
 
-        QMap<KJob*, Entry> entry_jobs;
+        QMap<KJob*, Entry> previewPictureJobs;
 
         // when requesting entries from a provider, how many to ask for
         int pageSize;
@@ -404,15 +404,15 @@ void Engine::slotPreviewResult(KJob *job)
         kError() << "Cannot load preview file." << endl;
         kError() << job->errorString() << endl;
 
-        d->entry_jobs.remove(job);
+        d->previewPictureJobs.remove(job);
         emit signalPreviewFailed();
     } else {
         KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
 
-        if (d->entry_jobs.contains(job)) {
+        if (d->previewPictureJobs.contains(job)) {
             // now, assign temporary filename to entry and update entry cache
-            Entry entry = d->entry_jobs[job];
-            d->entry_jobs.remove(job);
+            Entry entry = d->previewPictureJobs[job];
+            d->previewPictureJobs.remove(job);
             d->previewfiles[entry] = fcjob->destUrl().path();
         }
         // FIXME: ignore if not? shouldn't happen...

@@ -18,10 +18,12 @@
 
 #include "itemsmodel.h"
 
-#include <kdebug.h>
+#include <KDebug>
+#include <KLocalizedString>
+
 #include <core/entry.h>
 
-#include "qasyncimage_p.h"
+#include "imageloader.h"
 
 namespace KNS3
 {
@@ -133,7 +135,8 @@ void ItemsModel::addEntry(const Entry& entry)
 
     if (!preview.isEmpty()) {
         m_imageIndexes.insert(preview, index(m_entries.count() - 1, 0));
-        QAsyncImage *pix = new QAsyncImage(preview, this);
+        ImageLoader *pix = new ImageLoader(preview, this);
+        emit jobStarted(pix->job(), i18n("Loading preview..."));
         connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
                 this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
     }
@@ -169,13 +172,13 @@ void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
         return;
     QImage image = pix;
     m_largePreviewImages.insert(url, image);
-    if (image.width() > kPreviewWidth || image.height() > kPreviewHeight) {
+    if (image.width() > PreviewWidth || image.height() > PreviewHeight) {
         // if the preview is really big, first scale fast to a smaller size, then smooth to desired size
-        if (image.width() > 4 * kPreviewWidth || image.height() > 4 * kPreviewHeight) {
-            image = image.scaled(2 * kPreviewWidth, 2 * kPreviewHeight, Qt::KeepAspectRatio, Qt::FastTransformation);
+        if (image.width() > 4 * PreviewWidth || image.height() > 4 * PreviewHeight) {
+            image = image.scaled(2 * PreviewWidth, 2 * PreviewHeight, Qt::KeepAspectRatio, Qt::FastTransformation);
         }
-        m_previewImages.insert(url, image.scaled(kPreviewWidth, kPreviewHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    } else if (image.width() <= kPreviewWidth / 2 && image.height() <= kPreviewHeight / 2) {
+        m_previewImages.insert(url, image.scaled(PreviewWidth, PreviewHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    } else if (image.width() <= PreviewWidth / 2 && image.height() <= PreviewHeight / 2) {
         // upscale tiny previews to double size
         m_previewImages.insert(url, image.scaled(2 * image.width(), 2 * image.height()));
     } else {

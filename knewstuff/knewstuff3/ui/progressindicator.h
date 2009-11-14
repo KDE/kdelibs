@@ -2,6 +2,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (c) 2009 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -17,17 +18,19 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_UI_QPROGRESSINDICATOR_H
-#define KNEWSTUFF2_UI_QPROGRESSINDICATOR_H
+#ifndef KNEWSTUFF3_UI_PROGRESSINDICATOR_H
+#define KNEWSTUFF3_UI_PROGRESSINDICATOR_H
 
 #include <QtGui/QFrame>
 #include <QtCore/QHash>
-
 #include <QtCore/QString>
 
+class KJob;
 class QVBoxLayout;
 class QProgressBar;
 class QPushButton;
+
+namespace KNS3 {
 
 /**
  * Embedded progress indicator for the download dialog.
@@ -37,26 +40,29 @@ class QPushButton;
  *
  * @internal
  */
-class QProgressIndicator : public QFrame
+class ProgressIndicator : public QFrame
 {
     Q_OBJECT
 public:
-    QProgressIndicator(QWidget *parent);
-    void addProgress(const QString & message, int percentage);
-    void removeProgress(const QString & message);
+    ProgressIndicator(QWidget *parent);
+    
 public Q_SLOTS:
-    void slotClicked();
-signals:
-    void signalJobCanceled(const QString & message);
+     void addJob(KJob*, const QString& label);
+    
+private Q_SLOTS:
+    void jobFinished(KJob*);
+
 private:
     void calculateAverage();
 
-    QHash<QString, int> m_progress;
-    QHash<QString, QProgressBar*> m_progresswidgets;
-    QWidget *m_details;
+    QHash<KJob*, QString> m_jobs;
+    
     QVBoxLayout *m_detailsvbox;
     QProgressBar *m_pb;
-    QPushButton *m_pbdetails;
+    
+    uint m_finished;
+    uint m_total;
 };
+}
 
 #endif

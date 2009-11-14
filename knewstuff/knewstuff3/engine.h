@@ -185,6 +185,8 @@ Q_SIGNALS:
 
     void signalError(const QString& errorMessage);
     
+    void signalJobStarted(KJob*);
+    
 private Q_SLOTS:
     // the .knsrc file was loaded
     void slotProviderFileLoaded(const QDomDocument& doc);

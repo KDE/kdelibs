@@ -37,7 +37,7 @@ class KLineEdit;
 class QComboBox;
 class QHideEvent;
 class QLabel;
-class QProgressIndicator;
+class ProgressIndicator;
 class QSortFilterProxyModel;
 
 namespace KNS3

@@ -90,6 +90,9 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     setMainWidget(_mainWidget);
     setupUi(_mainWidget);
 
+    closeButton->setGuiItem(KStandardGuiItem::Close);
+    connect(closeButton, SIGNAL(clicked()), SLOT(accept()));
+    
     // Entries have been fetched and should be shown:
     connect(d->engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), d->model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
     
@@ -132,6 +135,7 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
+    /*
     KMenu * collabMenu = new KMenu(m_collaborationButton);
     QAction * action_collabrating = collabMenu->addAction(i18n("Add Rating"));
     action_collabrating->setData(DownloadDialog::kCollabRate);
@@ -141,6 +145,7 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
 
     QAction * action_comment = collabMenu->addAction(SmallIcon("help-about"), i18n("View Comments"));
     action_comment->setData(DownloadDialog::kComments);
+    */
 
 /* TODO: Re-enable when implemented
     QAction * action_collabtranslation = collabMenu->addAction(i18n("Translate"));
@@ -152,10 +157,10 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     QAction * action_collabremoval = collabMenu->addAction(i18n("Report bad entry"));
     action_collabremoval->setData(DownloadDialog::kCollabRemoval);
 */
-
+/*
     m_collaborationButton->setMenu(collabMenu);
     connect(m_collaborationButton, SIGNAL(triggered(QAction*)), this, SLOT(slotCollabAction(QAction*)));
-
+*/
 
     // load the last size from config
     KConfigGroup group(KGlobal::config(), ConfigGroup);
@@ -168,11 +173,11 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
                                  KGlobal::activeComponent().aboutData()->programName()));
     m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(accept()));
-
-
     connect(m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbar(int)));
     connect(this, SIGNAL(signalRequestMoreData()), d->engine, SLOT(slotRequestMoreData()));
+    
+    // FIXME connect(d->engine, SIGNAL(signalJobStarted(KJob*)), progressIndicator, SLOT(addJob(KJob*)));
+    connect(d->model, SIGNAL(jobStarted(KJob*, const QString&)), progressIndicator, SLOT(addJob(KJob*, const QString&)));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -274,13 +279,14 @@ void DownloadDialog::slotCollabAction(QAction * action)
 void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModelIndex &/*old */)
 {
     //kDebug() << "slotListIndexChanged called";
-
+/*
     if (!index.isValid()) {
         m_collaborationButton->setEnabled(false);
     }
     
     Entry entry = d->model->entryForIndex(d->sortingProxyModel->mapToSource(index));
     m_collaborationButton->setEnabled(d->engine->collaborationFeatures(entry));
+    */
 }
 
 void DownloadDialog::hideEvent(QHideEvent * event)
@@ -414,7 +420,7 @@ void DownloadDialog::slotPayloadLoaded(KUrl url)
 
 void DownloadDialog::slotProgress(const QString & text, int percentage)
 {
-    m_progress->addProgress(text, percentage);
+//     m_progress->addProgress(text, percentage);
 }
 
 
@@ -448,7 +454,6 @@ void DownloadDialog::slotError(const QString& message)
 
 void DownloadDialog::scrollbar(int value)
 {
-    kDebug() << "value" << value;
     if ((double)value/m_listView->verticalScrollBar()->maximum() > 0.7) {
         emit signalRequestMoreData();
     }

@@ -26,8 +26,11 @@
 class KJob;
 namespace KIO
 {
-class Job;
+    class Job;
+    class TransferJob;
 }
+
+namespace KNS3 {
 
 /**
  * Convenience class for images with remote sources.
@@ -41,12 +44,18 @@ class Job;
  *
  * @internal
  */
-class QAsyncImage : public QObject, public QImage
+class ImageLoader : public QObject, public QImage
 {
     Q_OBJECT
 public:
-    QAsyncImage(const QString& url, QObject* parent);
-
+    ImageLoader(const QString& url, QObject* parent);
+    
+    /**
+     * Get the job doing the image loading in the background (to have progress information available)
+     * @return the job
+     */
+    KJob* job();
+    
 Q_SIGNALS:
     void signalLoaded(const QString & url, const QImage& pix);
 
@@ -57,7 +66,8 @@ private Q_SLOTS:
 private:
     QString m_url;
     QByteArray m_buffer;
+    KIO::TransferJob *m_job;
 };
-
+}
 #endif
 

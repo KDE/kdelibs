@@ -120,8 +120,8 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     if (infoLabel != NULL) {
         if (realmodel->hasPreviewImages()) {
             // move the text right by kPreviewWidth + margin pixels to fit the preview
-            infoLabel->move(kPreviewWidth + margin * 2, 0);
-            infoLabel->resize(QSize(option.rect.width() - kPreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
+            infoLabel->move(PreviewWidth + margin * 2, 0);
+            infoLabel->resize(QSize(option.rect.width() - PreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
         } else {
             infoLabel->move(margin, 0);
             infoLabel->resize(QSize(option.rect.width() - (margin * 4) - size.width(), option.fontMetrics.height() * 7));
@@ -258,10 +258,10 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     if (realmodel->hasPreviewImages()) {
 
         int height = option.rect.height();
-        QPoint point(option.rect.left() + margin, option.rect.top() + ((height - kPreviewHeight) / 2));
+        QPoint point(option.rect.left() + margin, option.rect.top() + ((height - PreviewHeight) / 2));
 
         if (index.data(ItemsModel::kPreview).toString().isEmpty()) {
-            QRect rect(point, QSize(kPreviewWidth, kPreviewHeight));
+            QRect rect(point, QSize(PreviewWidth, PreviewHeight));
             painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("No Preview"));
         } else {
             QImage image = index.data(ItemsModel::kPreviewPixmap).value<QImage>();
@@ -271,7 +271,7 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
                 QPoint framePoint(point.x() - 5, point.y() - 5);
                 painter->drawImage(framePoint, m_frameImage.scaled(image.width() + 10, image.height() + 10));
             } else {
-                QRect rect(point, QSize(kPreviewWidth, kPreviewHeight));
+                QRect rect(point, QSize(PreviewWidth, PreviewHeight));
                 painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("Loading Preview"));
             }
         }
@@ -297,7 +297,7 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
     QSize size;
 
     size.setWidth(option.fontMetrics.height() * 4);
-    size.setHeight(qMax(option.fontMetrics.height() * 7, kPreviewHeight)); // up to 6 lines of text, and two margins
+    size.setHeight(qMax(option.fontMetrics.height() * 7, PreviewHeight)); // up to 6 lines of text, and two margins
 
     return size;
 }

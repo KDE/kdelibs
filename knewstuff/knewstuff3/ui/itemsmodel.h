@@ -24,10 +24,12 @@
 
 #include <knewstuff3/core/entry.h>
 
+class KJob;
+
 namespace KNS3
 {
-static const int kPreviewWidth = 96;
-static const int kPreviewHeight = 72;
+static const int PreviewWidth = 96;
+static const int PreviewHeight = 72;
 
 
 class ItemsModel: public QAbstractListModel
@@ -88,6 +90,9 @@ public:
 
     bool hasWebService() const;
 
+Q_SIGNALS:
+    void jobStarted(KJob*, const QString& label);
+    
 public slots:
     void slotEntryChanged(const Entry& entry);
     void slotEntriesLoaded(KNS3::Entry::List entries);

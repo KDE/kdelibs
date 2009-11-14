@@ -276,13 +276,8 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     QDomElement element;
 
     element = doc.documentElement();
-    kDebug() << "Document Element" << element.tagName();
-    kDebug() << "  First Child" << element.firstChildElement().tagName();
-
-    
     QDomElement n;
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
-        
         Entry entry;
         entry.setEntryXML(n.toElement());
         entry.setProviderId(d->mId);
@@ -303,7 +298,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             }
             cacheEntry = entry;
             entries << cacheEntry;
-            
         } else {
             d->cachedEntries.append(entry);
             if (searchIncludesEntry(entry)) {
@@ -311,8 +305,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             }
         }
     }
-
-    // emit a the entry list
     emit loadingFinished(mode, QString(), 0, entries.count(), 1, entries);
 }
 
