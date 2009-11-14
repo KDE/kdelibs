@@ -47,7 +47,6 @@ class KTabBar::Private
         mDragSwitchTab( -1 ),
         mActivateDragSwitchTabTimer( 0 ),
         mTabReorderingEnabled( false ),
-        mTabCloseActivatePrevious( false ),
         mMiddleMouseTabMoveInProgress( false)
     {
     }
@@ -59,7 +58,6 @@ class KTabBar::Private
     QTimer *mActivateDragSwitchTabTimer;
 
     bool mTabReorderingEnabled : 1;
-    bool mTabCloseActivatePrevious : 1;
     bool mMiddleMouseTabMoveInProgress : 1;
 
 };
@@ -336,12 +334,12 @@ void KTabBar::setTabReorderingEnabled( bool on )
 
 bool KTabBar::tabCloseActivatePrevious() const
 {
-  return d->mTabCloseActivatePrevious;
+  return selectionBehaviorOnRemove() == QTabBar::SelectPreviousTab;
 }
 
 void KTabBar::setTabCloseActivatePrevious( bool on )
 {
-  d->mTabCloseActivatePrevious = on;
+  setSelectionBehaviorOnRemove(on ? QTabBar::SelectPreviousTab : QTabBar::SelectRightTab);
 }
 
 

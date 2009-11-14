@@ -341,6 +341,10 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
     virtual void tabInserted( int );
     virtual void tabRemoved ( int );
 
+    /**
+     * @deprecated  This method has no effect and should not be called 
+     */
+    KDE_DEPRECATED void currentChanged( int );
 
   protected Q_SLOTS:
     virtual void receivedDropEvent( int, QDropEvent* );
@@ -349,7 +353,6 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
     virtual void mouseDoubleClick( int );
     virtual void mouseMiddleClick( int );
     virtual void closeRequest( int );
-    void currentChanged( int );
 #ifndef QT_NO_WHEELEVENT
     virtual void wheelDelta( int );
 #endif
