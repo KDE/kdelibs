@@ -215,7 +215,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry
         break;
     case kContactEmail:
         // invoke mail with the address of the author
-        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name().representation()));
+        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name()));
         break;
     case kContactJabber:
         // start jabber with author's info
@@ -370,7 +370,7 @@ void DownloadDialog::slotEntryChanged(const Entry& entry)
 void DownloadDialog::slotPayloadFailed(const Entry& entry)
 {
     setCursor(Qt::ArrowCursor);
-    KMessageBox::error(this, i18n("Could not install %1", entry.name().representation()),
+    KMessageBox::error(this, i18n("Could not install %1", entry.name()),
                        i18n("Get Hot New Stuff!"));
 }
 

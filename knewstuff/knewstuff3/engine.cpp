@@ -281,7 +281,7 @@ void Engine::slotProvidersFailed()
 
 void Engine::providerInitialized(Provider* p)
 {
-    kDebug() << "providerInitialized" << p->name().representation();
+    kDebug() << "providerInitialized" << p->name();
     p->setCachedEntries(d->cache->registryForProvider(p->id()));
     
     // TODO parameters according to search string etc
@@ -612,7 +612,7 @@ void Engine::install(KNS3::Entry entry)
     }
     emit signalEntryChanged(entry);
     
-    kDebug() << "Install " << entry.name().representation()
+    kDebug() << "Install " << entry.name()
         << " from: " << entry.providerId();
     ProviderInformation i = d->providers.value(entry.providerId());
     if (i.provider) {
@@ -640,8 +640,8 @@ void Engine::slotEntryChanged(const KNS3::Entry& entry)
 
 void Engine::slotInstallationFailed(const KNS3::Entry& entry)
 {
-    kDebug() << "Installation failed: " << entry.name().representation();
+    kDebug() << "Installation failed: " << entry.name();
     // FIXME implement warning?
 }
-    
+
 #include "engine.moc"

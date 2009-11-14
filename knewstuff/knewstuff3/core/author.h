@@ -25,8 +25,7 @@
 
 namespace KNS3
 {
-
-struct AuthorPrivate;
+    struct AuthorPrivate;
 
 /**
  * @short KNewStuff author information.

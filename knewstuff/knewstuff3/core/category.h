@@ -18,8 +18,6 @@
 #ifndef KNEWSTUFF3_CATEGORY_H
 #define KNEWSTUFF3_CATEGORY_H
 
-#include <knewstuff3/core/ktranslatable.h>
-
 #include <kurl.h>
 
 namespace KNS3
@@ -60,26 +58,26 @@ public:
     /**
      * Sets the name for this category.
      */
-    void setName(const KTranslatable& name);
+    void setName(const QString& name);
 
     /**
      * Retrieve the name of the category.
      *
      * @return category name (potentially translated)
      */
-    KTranslatable name() const;
+    QString name() const;
 
     /**
      * Sets the category description.
      */
-    void setDescription(const KTranslatable& type);
+    void setDescription(const QString& type);
 
     /**
      * Retrieve the description of the category.
      *
      * @return category description
      */
-    KTranslatable description() const;
+    QString description() const;
 
     /**
      * Sets the icon.

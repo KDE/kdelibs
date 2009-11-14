@@ -22,7 +22,7 @@ namespace KNS3
         public:
             ProviderPrivate() {}
             
-            KTranslatable mName;
+            QString mName;
             KUrl mIcon;
     };
 }

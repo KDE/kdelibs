@@ -101,17 +101,13 @@ void UploadDialog::slotOk()
     author.setName(mAuthorEdit->text());
     author.setEmail(mEmailEdit->text());
 
-    KTranslatable previewurl;
-    KUrl purl = mPreviewUrl->url();
-    //purl.setFileName(QString());
     // FIXME: what does this do?
-    previewurl.addString(language, purl.url());
+    KUrl purl = mPreviewUrl->url();
+    QString previewurl = purl.url();
 
-    KTranslatable summary;
-    summary.addString(language, mSummaryEdit->toPlainText());
+    QString summary = mSummaryEdit->toPlainText();
 
-    KTranslatable name;
-    name.addString(language, mNameEdit->text());
+    QString name = mNameEdit->text();
 
     m_entry = new Entry;
     m_entry->setName(name);

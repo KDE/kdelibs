@@ -19,9 +19,11 @@
 
 #include "entry.h"
 
+#include <QStringList>
+#include <KDebug>
+
 #include "xmlloader.h"
 
-#include <kdebug.h>
 
 using namespace KNS3;
 
@@ -42,7 +44,7 @@ class Entry::Private : public QSharedData
         }
 
         QString mUniqueId;
-        KTranslatable mName;
+        QString mName;
         
         QString mCategory;
         QString mLicense;
@@ -51,9 +53,9 @@ class Entry::Private : public QSharedData
         Author mAuthor;
         int mRating;
         int mDownloads;
-        KTranslatable mSummary;
-        KTranslatable mPayload;
-        KTranslatable mPreview;
+        QString mSummary;
+        QString mPayload;
+        QString mPreview;
         QStringList mInstalledFiles;
         QString mProviderId;
         QStringList mUnInstalledFiles;
@@ -99,12 +101,12 @@ bool Entry::isValid() const
     return !d->mUniqueId.isEmpty();
 }
 
-KTranslatable Entry::name() const
+QString Entry::name() const
 {
     return d->mName;
 }
 
-void Entry::setName(const KNS3::KTranslatable& name)
+void Entry::setName(const QString& name)
 {
     d->mName = name;
 }
@@ -159,12 +161,12 @@ void Entry::setLicense(const QString& license)
     d->mLicense = license;
 }
 
-KTranslatable Entry::summary() const
+QString Entry::summary() const
 {
     return d->mSummary;
 }
 
-void Entry::setSummary(const KNS3::KTranslatable& summary)
+void Entry::setSummary(const QString& summary)
 {
     d->mSummary = summary;
 }
@@ -189,22 +191,22 @@ void Entry::setReleaseDate(const QDate& releasedate)
     d->mReleaseDate = releasedate;
 }
 
-KTranslatable Entry::payload() const
+QString Entry::payload() const
 {
     return d->mPayload;
 }
 
-void Entry::setPayload(const KNS3::KTranslatable& url)
+void Entry::setPayload(const QString& url)
 {
     d->mPayload = url;
 }
 
-KTranslatable Entry::preview() const
+QString Entry::preview() const
 {
     return d->mPreview;
 }
 
-void Entry::setPreview(const KNS3::KTranslatable& url)
+void Entry::setPreview(const QString& url)
 {
     d->mPreview = url;
 }
@@ -296,8 +298,8 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
     for (n = xmldata.firstChild(); !n.isNull(); n = n.nextSibling()) {
         QDomElement e = n.toElement();
         if (e.tagName() == "name") {
-            QString lang = e.attribute("lang");
-            d->mName.addString(lang, e.text().trimmed());
+            // TODO maybe do something with the language attribute? QString lang = e.attribute("lang");
+            d->mName = e.text().trimmed();
         } else if (e.tagName() == "author") {
             Author author;
             QString email = e.attribute("email");
@@ -313,19 +315,19 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {
-            QString lang = e.attribute("lang");
+            //QString lang = e.attribute("lang");
             //kDebug() << "adding " << e.tagName() << " to summary as language " << lang;
-            d->mSummary.addString(lang, e.text().trimmed());
+            d->mSummary = e.text().trimmed();
         } else if (e.tagName() == "version") {
             d->mVersion = e.text().trimmed();
         } else if (e.tagName() == "releasedate") {
             d->mReleaseDate = QDate::fromString(e.text().trimmed(), Qt::ISODate);
         } else if (e.tagName() == "preview") {
-            QString lang = e.attribute("lang");
-            d->mPreview.addString(lang, e.text().trimmed());
+            //QString lang = e.attribute("lang");
+            d->mPreview = e.text().trimmed();
         } else if (e.tagName() == "payload") {
-            QString lang = e.attribute("lang");
-            d->mPayload.addString(lang, e.text().trimmed());
+            //QString lang = e.attribute("lang");
+            d->mPayload = e.text().trimmed();
         } else if (e.tagName() == "rating") {
             d->mRating = e.text().toInt();
         } else if (e.tagName() == "downloads") {
@@ -337,7 +339,7 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "checksum") {
             d->mChecksum = e.text();
         } else if (e.tagName() == "installedfile") {
-            d->mInstalledFiles << e.text();
+            d->mInstalledFiles.append(e.text());
         } else if (e.tagName() == "id") {
             d->mUniqueId = e.text();
         } else if (e.tagName() == "status") {
@@ -379,18 +381,11 @@ QDomElement KNS3::Entry::entryXML() const
     QDomElement el = doc.createElement("stuff");
     el.setAttribute("category", d->mCategory);
 
-    KTranslatable name = d->mName;
+    QString name = d->mName;
 
-    QStringList::ConstIterator it;
     QDomElement e;
-    QStringList langs;
-
-    langs = name.languages();
-    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "name", name.translated(*it));
-        e.setAttribute("lang", *it);
-    }
-
+    e = addElement(doc, el, "name", name);
+    // todo: add language attribute
     (void)addElement(doc, el, "providerid", d->mProviderId);
 
     QDomElement author = addElement(doc, el, "author", d->mAuthor.name());
@@ -424,27 +419,13 @@ QDomElement KNS3::Entry::entryXML() const
     (void)addElement(doc, el, "releasedate",
                      d->mReleaseDate.toString(Qt::ISODate));
 
-    KTranslatable summary = d->mSummary;
-    KTranslatable preview = d->mPreview;
-    KTranslatable payload = d->mPayload;
+    QString summary = d->mSummary;
+    QString preview = d->mPreview;
+    QString payload = d->mPayload;
 
-    langs = summary.languages();
-    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "summary", summary.translated(*it));
-        e.setAttribute("lang", *it);
-    }
-
-    langs = preview.languages();
-    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "preview", KUrl(preview.translated(*it)).fileName());
-        e.setAttribute("lang", *it);
-    }
-
-    langs = payload.languages();
-    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
-        e = addElement(doc, el, "payload", KUrl(payload.translated(*it)).fileName());
-        e.setAttribute("lang", *it);
-    }
+    e = addElement(doc, el, "summary", summary);
+    e = addElement(doc, el, "preview", KUrl(preview).fileName());
+    e = addElement(doc, el, "payload", KUrl(payload).fileName());
 
     if (d->mStatus == Installed) {
         (void)addElement(doc, el, "status", "installed");

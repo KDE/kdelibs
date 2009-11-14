@@ -47,7 +47,7 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
     switch (role) {
     case Qt::DisplayRole:
     case kNameRole:
-        return entry.name().representation();
+        return entry.name();
         break;
     case kCategory:
         return entry.category();
@@ -69,7 +69,7 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
         break;
         //case Qt::ToolTipRole:
     case kSummary:
-        return entry.summary().representation();
+        return entry.summary();
         break;
     case kVersion:
         return entry.version();
@@ -78,19 +78,19 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
         return entry.releaseDate();
         break;
     case kPayload:
-        return entry.payload().representation();
+        return entry.payload();
         break;
     case kPreview:
-        return entry.preview().representation();
+        return entry.preview();
         break;
     case kPreviewPixmap:
-        if (m_previewImages.contains(entry.preview().representation())) {
-            return m_previewImages[entry.preview().representation()];
+        if (m_previewImages.contains(entry.preview())) {
+            return m_previewImages[entry.preview()];
         }
         break;
     case kLargePreviewPixmap:
-        if (m_largePreviewImages.contains(entry.preview().representation())) {
-            return m_largePreviewImages[entry.preview().representation()];
+        if (m_largePreviewImages.contains(entry.preview())) {
+            return m_largePreviewImages[entry.preview()];
         }
         break;
     case kRating:
@@ -123,12 +123,12 @@ void ItemsModel::slotEntriesLoaded(Entry::List entries)
 
 void ItemsModel::addEntry(const Entry& entry)
 {
-    QString preview = entry.preview().representation();
+    QString preview = entry.preview();
     if (!preview.isEmpty()) {
         m_hasPreviewImages = true;
     }
 
-    //kDebug(551) << "adding entry " << entry.name().representation() << " to the model";
+    //kDebug(551) << "adding entry " << entry.name() << " to the model";
     beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
     m_entries.append(entry);
     endInsertRows();
@@ -144,7 +144,7 @@ void ItemsModel::addEntry(const Entry& entry)
 
 void ItemsModel::removeEntry(const Entry& entry)
 {
-    kDebug(551) << "removing entry " << entry.name().representation() << " from the model";
+    kDebug(551) << "removing entry " << entry.name() << " from the model";
     int index = m_entries.indexOf(entry);
     if (index > -1) {
         beginRemoveRows(QModelIndex(), index, index);

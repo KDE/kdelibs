@@ -52,7 +52,7 @@ Provider::Provider(const Provider &other)
 }
 
 
-KTranslatable Provider::name() const
+QString Provider::name() const
 {
     Q_D(const Provider);
     return d->mName;

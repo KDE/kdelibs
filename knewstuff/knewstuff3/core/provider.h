@@ -19,13 +19,13 @@
 #ifndef KNEWSTUFF3_PROVIDER_H
 #define KNEWSTUFF3_PROVIDER_H
 
-#include "knewstuff3/core/entry.h"
-#include "knewstuff3/core/ktranslatable.h"
-
-#include <kurl.h>
-
 #include <QtCore/QList>
 #include <QtCore/QString>
+
+#include <KUrl>
+
+#include "knewstuff3/core/entry.h"
+
 
 namespace KNS3
 {
@@ -94,7 +94,7 @@ namespace KNS3
          *
          * @return provider name
          */
-        virtual KTranslatable name() const;
+        virtual QString name() const;
 
         /**
          * Retrieves the icon URL for this provider.

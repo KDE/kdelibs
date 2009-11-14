@@ -12,7 +12,6 @@ set(knewstuff3_core_SRCS
    core/cache.cpp
    core/entry.cpp
    core/installation.cpp
-   core/ktranslatable.cpp
    core/provider.cpp
    core/security.cpp
    staticxml/staticxmlprovider.cpp
@@ -59,7 +58,6 @@ install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAUL
 
 install(FILES
   core/author.h
-  core/ktranslatable.h
   core/installation.h
   core/entry.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/core COMPONENT Devel

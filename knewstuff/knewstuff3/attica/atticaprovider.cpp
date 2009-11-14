@@ -63,7 +63,7 @@ AtticaProvider::AtticaProvider(const QStringList& categories)
     : Provider(*new AtticaProviderPrivate)
 {
     Q_D(AtticaProvider);
-    d->mName = KTranslatable("Attica");
+    d->mName = QString("Attica");
     d->categoryNameList = categories;
 
     connect(&d->m_providerManager, SIGNAL(providersChanged()), SLOT(providerLoaded()));
@@ -259,7 +259,7 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
     }
 
     Entry entry = d->downloadLinkJobs.take(job);
-    entry.setPayload(KTranslatable(item.url().toString()));
+    entry.setPayload(QString(item.url().toString()));
     emit payloadLinkLoaded(entry);
 }
 

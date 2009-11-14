@@ -21,8 +21,8 @@
 using namespace KNS3;
 
 struct KNS3::CategoryPrivate {
-    KTranslatable mName;
-    KTranslatable mDescription;
+    QString mName;
+    QString mDescription;
     KUrl mIcon;
     QString mId;
 };
@@ -47,22 +47,22 @@ QString Category::id() const
     return d->mId;
 }
 
-void Category::setName(const KTranslatable& name)
+void Category::setName(const QString& name)
 {
     d->mName = name;
 }
 
-KTranslatable Category::name() const
+QString Category::name() const
 {
     return d->mName;
 }
 
-void Category::setDescription(const KTranslatable &description)
+void Category::setDescription(const QString &description)
 {
     d->mDescription = description;
 }
 
-KTranslatable Category::description() const
+QString Category::description() const
 {
     return d->mDescription;
 }

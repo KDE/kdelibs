@@ -35,7 +35,7 @@ public:
     ProviderItem(QTreeWidget *parent, Provider *provider) :
             QTreeWidgetItem(parent), mProvider(provider)
     {
-        setText(0, provider->name().representation());
+        setText(0, provider->name());
     }
 
     Provider *provider()

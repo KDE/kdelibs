@@ -183,7 +183,7 @@ void Installation::downloadPayload(const KNS3::Entry& entry)
         emit signalPayloadFailed(entry);
         return;
     }
-    KUrl source = KUrl(entry.payload().representation());
+    KUrl source = KUrl(entry.payload());
 
     if (!source.isValid()) {
         kError() << "The entry doesn't have a payload." << endl;
@@ -191,7 +191,7 @@ void Installation::downloadPayload(const KNS3::Entry& entry)
         return;
     }
 
-// FIXME no clue what this is supposed to do
+    // FIXME no clue what this is supposed to do
     if (isRemote()) {
         // Remote resource
         //kDebug() << "Relaying remote payload '" << source << "'";
@@ -242,10 +242,10 @@ void Installation::slotPayloadResult(KJob *job)
 
 void Installation::install(KNS3::Entry entry, const QString& downloadedFile)
 {
-    kDebug() << "Install: " << entry.name().representation() << " from " << downloadedFile;
+    kDebug() << "Install: " << entry.name() << " from " << downloadedFile;
     
     if (entry.payload().isEmpty()) {
-        kDebug() << "No payload associated with: " << entry.name().representation();
+        kDebug() << "No payload associated with: " << entry.name();
         return;
         // attica needs to get the downloadlink :(
         // fix attica?
@@ -451,12 +451,12 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::Entry& 
 
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
             // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
-            KUrl source = KUrl(entry.payload().representation());
+            KUrl source = KUrl(entry.payload());
             kDebug() << "installing non-archive from " << source.url();
             QString installfile;
             QString ext = source.fileName().section('.', -1);
             if (d->customName) {
-                installfile = entry.name().representation();
+                installfile = entry.name();
                 installfile += '-' + entry.version();
                 if (!ext.isEmpty()) installfile += '.' + ext;
             } else {

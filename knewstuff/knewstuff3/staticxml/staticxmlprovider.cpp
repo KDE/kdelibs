@@ -146,13 +146,9 @@ QDomElement StaticXmlProvider::providerXML() const
 
     QDomElement el = doc.createElement("provider");
 
-    QStringList::ConstIterator it;
     QDomElement e;
-    const QStringList langs = d->mName.languages();
-    for (it = langs.begin(); it != langs.end(); ++it) {
-        e = addElement(doc, el, "title", d->mName.translated(*it));
-        e.setAttribute("lang", *it);
-    }
+    e = addElement(doc, el, "title", d->mName);
+
 
     /*if(provider.downloadUrl().isValid())
     {
@@ -322,8 +318,8 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
         return true;
     }
     QString search = d->searchTerm;
-    if (entry.name().representation().contains(search, Qt::CaseInsensitive) ||
-        entry.summary().representation().contains(search, Qt::CaseInsensitive) ||
+    if (entry.name().contains(search, Qt::CaseInsensitive) ||
+        entry.summary().contains(search, Qt::CaseInsensitive) ||
         entry.author().name().contains(search, Qt::CaseInsensitive)
         ) {
         return true;

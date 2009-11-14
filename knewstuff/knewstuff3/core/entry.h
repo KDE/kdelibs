@@ -17,6 +17,7 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #ifndef KNEWSTUFF3_ENTRY_H
 #define KNEWSTUFF3_ENTRY_H
 
@@ -28,7 +29,6 @@
 #include <KDebug>
 
 #include <knewstuff3/core/author.h>
-#include <knewstuff3/core/ktranslatable.h>
 
 namespace KNS3
 {
@@ -100,14 +100,14 @@ public:
     /**
      * Sets the name for this data object.
      */
-    void setName(const KTranslatable& name);
+    void setName(const QString& name);
 
     /**
      * Retrieve the name of the data object.
      *
      * @return object name (potentially translated)
      */
-    KTranslatable name() const;
+    QString name() const;
 
     void setUniqueId(const QString& id);
     QString uniqueId() const;
@@ -151,14 +151,14 @@ public:
     /**
      * Sets a short description on what the object is all about.
      */
-    void setSummary(const KTranslatable& summary);
+    void setSummary(const QString& summary);
 
     /**
      * Retrieve a short description about the object.
      *
      * @return object description
      */
-    KTranslatable summary() const;
+    QString summary() const;
 
     /**
      * Sets the version number.
@@ -187,20 +187,20 @@ public:
     /**
      * Sets the object's file.
      */
-    void setPayload(const KTranslatable& url);
+    void setPayload(const QString& url);
 
     /**
      * Retrieve the file name of the object.
      *
      * @return object filename
      */
-    KTranslatable payload() const;
+    QString payload() const;
 
     /**
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    void setPreview(const KTranslatable& url);
+    void setPreview(const QString& url);
     // FIXME I'd prefer pixmap or icon here, any good reason for ktranslatable?
     // Acutally url also would be fine I guess ?
 
@@ -209,7 +209,7 @@ public:
      *
      * @return object preview filename
      */
-    KTranslatable preview() const;
+    QString preview() const;
 
     /**
      * Set the files that have been installed by the install command.
