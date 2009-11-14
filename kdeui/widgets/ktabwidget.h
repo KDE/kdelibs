@@ -115,7 +115,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * Returns true if closing the current tab activates the previous
      * actice tab instead of the one to the right.
      *
-     * @deprecated Use QTabBar::selectionBehaviorOnRemove() instead.
+     * @deprecated Use tabBar()->selectionBehaviorOnRemove() instead.
      */
     KDE_DEPRECATED bool tabCloseActivatePrevious() const;
 
@@ -245,7 +245,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * If \a previous is true, closing the current tab activates the
      * previous active tab instead of the one to the right.
      *
-     * @deprecated Use QTabWidget::setSelectionBehaviorOnRemove() instead.
+     * @deprecated Use tabBar()->setSelectionBehaviorOnRemove() instead.
      */
     QT_MOC_COMPAT void setTabCloseActivatePrevious( bool previous );
 
