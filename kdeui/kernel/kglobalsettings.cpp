@@ -399,7 +399,7 @@ static const KFontData DefaultFontData[KGlobalSettingsData::FontTypesCount] =
     { GeneralId, "toolBarFont", DefaultFont,  8, -1, QFont::SansSerif },
     { GeneralId, "menuFont",    DefaultFont, 9, -1, QFont::SansSerif },
 #endif
-    { "WM",      "activeFont",           DefaultFont,  8, -1, QFont::SansSerif }
+    { "WM",      "activeFont",           DefaultFont,  8, -1, QFont::SansSerif },
     { GeneralId, "taskbarFont",          DefaultFont, 9, -1, QFont::SansSerif },
     { GeneralId, "smallestReadableFont", DefaultFont,  8, -1, QFont::SansSerif }
 };
