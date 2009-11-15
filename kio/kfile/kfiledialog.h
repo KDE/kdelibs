@@ -86,6 +86,7 @@ public:
 
     /**
      * Defines the options to use when calling getSave* functions.
+     * @since 4.4
      */
     enum Option {
         ConfirmOverwrite  = 0x01,   /**< Confirm whether to overwrite file to save. */
