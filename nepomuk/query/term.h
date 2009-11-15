@@ -303,7 +303,7 @@ namespace Nepomuk {
 }
 
 #ifdef Q_CC_MSVC
-// there is a handwritten instantiation of clone()
+// there is a hand written instantiation of clone()
 template<> Nepomuk::Query::TermPrivate* QSharedDataPointer<Nepomuk::Query::TermPrivate>::clone();
 #endif
 
