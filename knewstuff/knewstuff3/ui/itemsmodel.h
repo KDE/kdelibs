@@ -22,7 +22,7 @@
 #include <QAbstractListModel>
 #include <QtGui/QImage>
 
-#include <knewstuff3/core/entry.h>
+#include "entry.h"
 
 class KJob;
 

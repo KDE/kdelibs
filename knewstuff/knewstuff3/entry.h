@@ -28,7 +28,7 @@
 #include <KUrl>
 #include <KDebug>
 
-#include <knewstuff3/core/author.h>
+#include <knewstuff3/author.h>
 
 namespace KNS3
 {

@@ -24,7 +24,7 @@
 
 #include <KUrl>
 
-#include "knewstuff3/core/entry.h"
+#include "entry.h"
 
 
 namespace KNS3

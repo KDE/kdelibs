@@ -7,40 +7,27 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 include_directories(${ATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 link_directories(${ATTICA_LIBRARY_DIRS})
 
-set(knewstuff3_core_SRCS
-   core/author.cpp
-   core/cache.cpp
-   core/entry.cpp
-   core/installation.cpp
-   core/provider.cpp
-   core/security.cpp
-   staticxml/staticxmlprovider.cpp
-   attica/atticaprovider.cpp
-)
-
-set(knewstuff3_ui_SRCS
-  ui/kdxsrating.cpp
-  ui/kdxscomment.cpp
-  ui/kdxscomments.cpp
-  ui/kdxschanges.cpp
-  ui/kdxstranslation.cpp
-  ui/downloaddialog.cpp
-  ui/itemsmodel.cpp
-  ui/itemsviewdelegate.cpp
-  ui/imageloader.cpp
-  ui/qstarframe.cpp
-  ui/qnowtooltip.cpp
-  ui/progressindicator.cpp
-  ui/uploaddialog.cpp
-  ui/providerdialog.cpp
-  ui/knewstuffbutton.cpp
-  ui/knewstuffaction.cpp
-)
-
 set(knewstuff3_SRCS
-  client.cpp
-  engine.cpp
-  xmlloader.cpp
+    author.cpp
+    client.cpp
+    entry.cpp
+    core/cache.cpp
+    core/engine.cpp
+    core/installation.cpp
+    core/provider.cpp
+    core/security.cpp
+    core/xmlloader.cpp
+    staticxml/staticxmlprovider.cpp
+    attica/atticaprovider.cpp
+    ui/downloaddialog.cpp
+    ui/itemsmodel.cpp
+    ui/itemsviewdelegate.cpp
+    ui/imageloader.cpp
+    ui/progressindicator.cpp
+    ui/uploaddialog.cpp
+    #ui/providerdialog.cpp
+    ui/knewstuffbutton.cpp
+    ui/knewstuffaction.cpp
 )
 
 kde4_add_ui_files(knewstuff3_ui_SRCS ui/DownloadDialog.ui ui/UploadDialog.ui)
@@ -57,19 +44,14 @@ set_target_properties(knewstuff3 PROPERTIES
 install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-  core/author.h
-  core/installation.h
-  core/entry.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/core COMPONENT Devel
-)
-
-install(FILES
   ui/knewstuffaction.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/ui COMPONENT Devel
 )
 
 install(FILES
+  author.h
   client.h
+  entry.h
   knewstuff_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )

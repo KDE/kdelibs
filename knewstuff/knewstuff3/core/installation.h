@@ -18,14 +18,14 @@
 #ifndef KNEWSTUFF3_INSTALLATION_H
 #define KNEWSTUFF3_INSTALLATION_H
 
-#include <knewstuff3/knewstuff_export.h>
+#include "knewstuff_export.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
 #include <KConfigGroup>
 
-#include "knewstuff3/core/entry.h"
+#include "entry.h"
 
 class KArchiveDirectory;
 class KJob;

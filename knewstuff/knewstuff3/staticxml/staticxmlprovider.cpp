@@ -20,8 +20,8 @@
 
 #include "staticxmlprovider.h"
 
-#include "xmlloader.h"
-#include "knewstuff3/core/provider_p.h"
+#include "core/xmlloader.h"
+#include "core/provider_p.h"
 
 #include <kdebug.h>
 #include <klocale.h>

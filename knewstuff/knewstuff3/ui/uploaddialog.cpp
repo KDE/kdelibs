@@ -39,8 +39,8 @@
 #include <kdebug.h>
 
 //#include "engine.h"
-#include "knewstuff3/core/entry.h"
-#include "knewstuff3/core/author.h"
+#include "entry.h"
+#include "author.h"
 
 #include <kconfiggroup.h>
 

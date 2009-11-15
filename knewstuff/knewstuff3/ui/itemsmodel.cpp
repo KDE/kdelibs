@@ -21,7 +21,7 @@
 #include <KDebug>
 #include <KLocalizedString>
 
-#include <core/entry.h>
+#include "entry.h"
 
 #include "imageloader.h"
 

@@ -18,11 +18,10 @@
 */
 #include "client.h"
 
-#include "engine.h"
-
-#include "knewstuff3/ui/downloaddialog.h"
-#include "knewstuff3/ui/uploaddialog.h"
-#include "knewstuff3/ui/providerdialog.h"
+#include "core/engine.h"
+#include "ui/downloaddialog.h"
+#include "ui/uploaddialog.h"
+#include "ui/providerdialog.h"
 
 #include <kcomponentdata.h>
 #include <kdebug.h>

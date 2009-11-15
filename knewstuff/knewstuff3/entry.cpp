@@ -22,7 +22,7 @@
 #include <QStringList>
 #include <KDebug>
 
-#include "xmlloader.h"
+#include "core/xmlloader.h"
 
 
 using namespace KNS3;

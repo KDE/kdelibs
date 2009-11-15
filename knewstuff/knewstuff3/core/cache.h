@@ -20,7 +20,7 @@
 
 #include <QtCore/QObject>
 #include "engine.h"
-#include "core/entry.h"
+#include "entry.h"
 
 namespace KNS3 {
 

@@ -17,7 +17,7 @@
 
 #include "atticaprovider.h"
 
-#include "xmlloader.h"
+#include "core/xmlloader.h"
 #include "core/provider_p.h"
 
 #include <kdebug.h>

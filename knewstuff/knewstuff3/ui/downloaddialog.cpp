@@ -253,14 +253,6 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry
     break;
     case kCollabRate: {
         // prompt for rating, and send to provider
-        QPointer<KDXSRating> ratingDialog = new KDXSRating(this);
-        int ret = ratingDialog->exec();
-        if (ret == QDialog::Accepted) {
-            int rating = ratingDialog->rating();
-            //if (dxs) {
-            //    dxs->call_rating(entry->idNumber(), rating);
-            //}
-        }
     }
     break;
     }

@@ -18,7 +18,7 @@
 #ifndef KNEWSTUFF3_CATEGORY_H
 #define KNEWSTUFF3_CATEGORY_H
 
-#include <kurl.h>
+#include <KUrl>
 
 namespace KNS3
 {

@@ -21,10 +21,9 @@
 #ifndef KNEWSTUFF3_ENGINE_H
 #define KNEWSTUFF3_ENGINE_H
 
-#include <knewstuff3/core/provider.h>
-#include <knewstuff3/core/entry.h>
-
-#include <knewstuff3/knewstuff_export.h>
+#include "provider.h"
+#include "entry.h"
+#include "knewstuff_export.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QString>

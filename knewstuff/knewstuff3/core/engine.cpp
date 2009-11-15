@@ -20,10 +20,10 @@
 
 #include "engine.h"
 
-#include "knewstuff3/core/entry.h"
-#include "knewstuff3/core/installation.h"
+#include "entry.h"
+#include "core/installation.h"
 
-#include "knewstuff3/xmlloader.h"
+#include "core/xmlloader.h"
 
 
 #include <kaboutdata.h>
