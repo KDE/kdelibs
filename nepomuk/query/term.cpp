@@ -263,7 +263,7 @@ uint Nepomuk::Query::qHash( const Nepomuk::Query::Term& term )
 
 /// We need to overload QSharedDataPointer::clone to make sure the correct subclasses are created
 /// when detaching. The default implementation would always call TermPrivate( const TermPrivate& )
-/*template<> Nepomuk::Query::TermPrivate* QSharedDataPointer<Nepomuk::Query::TermPrivate>::clone()
+template<> Nepomuk::Query::TermPrivate* QSharedDataPointer<Nepomuk::Query::TermPrivate>::clone()
 {
     return d->clone();
-}*/
+}
