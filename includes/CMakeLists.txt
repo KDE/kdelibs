@@ -861,6 +861,7 @@ install( FILES
   KTextEditor/Range
   KTextEditor/SearchInterface
   KTextEditor/SessionConfigInterface
+  KTextEditor/ParameterizedSessionConfigInterface
   KTextEditor/SmartCursor
   KTextEditor/SmartCursorNotifier
   KTextEditor/SmartCursorWatcher
