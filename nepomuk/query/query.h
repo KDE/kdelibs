@@ -145,7 +145,7 @@ namespace Nepomuk {
              *
              * \sa addRequestProperty, setRequestProperties
              */
-            class RequestProperty {
+            class NEPOMUKQUERY_EXPORT RequestProperty {
             public:
                 /**
                  * Create a new request property.
