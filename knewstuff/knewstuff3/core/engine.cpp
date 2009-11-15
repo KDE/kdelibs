@@ -22,7 +22,6 @@
 
 #include "entry.h"
 #include "core/installation.h"
-
 #include "core/xmlloader.h"
 
 

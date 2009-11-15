@@ -125,7 +125,7 @@ void AtticaProvider::providerLoaded()
     if (d->m_providerManager.providers().isEmpty()) {
         return;
     }
-    d->m_provider = d->m_providerManager.providers().first();
+    d->m_provider = d->m_providerManager.providers().last();
 
     Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
@@ -207,7 +207,8 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setName(content.name());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
-        entry.setPreview(content.previewPicture("1"));
+        //entry.setPreview(content.previewPicture("1"));
+        entry.setPreview(content.smallPreviewPicture("1"));
         entry.setLicense(content.license());
         //entry.setAuthor(content.author());
         entry.setSource(KNS3::Entry::Online);
