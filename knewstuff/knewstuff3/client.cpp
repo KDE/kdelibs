@@ -24,8 +24,6 @@
 #include "knewstuff3/ui/uploaddialog.h"
 #include "knewstuff3/ui/providerdialog.h"
 
-//#include "knewstuff3/core/entryhandler.h" // tmp
-
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -110,36 +108,11 @@ bool Client::init(const QString& config)
 
 void Client::workflow()
 {
-
-//    if (d->command == command_upload) {
-//        //connect(this,
-//        //        SIGNAL(signalProvidersFinished()),
-//        //        SLOT(slotHandleUpload()));
-//        //connect(this,
-//        //        SIGNAL(signalProvidersFailed()),
-//        //        SLOT(stopLoop()));
-
-//        m_uploadedEntry = NULL;
-//    }
-
     if (d->command == ClientPrivate::command_download) {
         d->downloaddialog = new DownloadDialog(d->engine, d->parent);
-        //kDebug() << "adding!";
-        //s_dialogs.insert(componentName(), d->downloaddialog);
-
-        //connect(this, SIGNAL(signalEntriesFinished()),
-        //        SLOT(slotEntriesFinished()));
         connect(d->engine, SIGNAL(signalEntryChanged(const KNS3::Entry&)),
                this, SLOT(slotEntryChanged(KNS3::Entry))); 
-        //connect(this,
-        //        SIGNAL(signalProvidersFailed()),
-        //        SLOT(slotDownloadDialogClosed()));
-        //connect(d->downloaddialog,
-        //        SIGNAL(destroyed(QObject*)),
-        //        SLOT(slotDownloadDialogDestroyed()));
         QObject::connect(d->downloaddialog, SIGNAL(finished()), this, SLOT(slotDownloadDialogClosed()));
-        //kDebug() << "done adding!";
-
         d->downloaddialog->show();
     }
 
@@ -164,32 +137,6 @@ void Client::stopLoop()
     }
 }
 
-//KNS::Entry::List Client::download()
-//{
-//    KNS::Entry::List entries;
-
-//    Client *client = new Client(0);
-
-//    KComponentData component = KGlobal::activeComponent();
-//    QString name = component.componentName();
-
-//    bool ret = client->init(name + ".knsrc");
-//    if (!ret) {
-//        delete client;
-//        return entries;
-//    }
-
-//    KNS::Entry::List tempList = client->downloadDialogModal(0);
-
-//    // copy the list since the entries will be deleted when we delete the client
-//    foreach(Entry * entry, tempList) {
-//        entries << new Entry(*entry);
-//    }
-//    delete client;
-
-//    return entries;
-//}
-
 KNS3::Entry::List Client::downloadDialogModal(QWidget* parent)
 {
     kDebug() << "Client: downloadDialogModal";
@@ -211,10 +158,8 @@ KNS3::Entry::List Client::downloadDialogModal(QWidget* parent)
 
 void Client::downloadDialog(QWidget * parent)
 {
-    //kDebug() << "Client: downloadDialog";
     KDialog *existingDialog = ClientPrivate::s_dialogs.value(d->engine->componentName());
     if (existingDialog) {
-        //kDebug() << "got an existing dialog";
         existingDialog->show();
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
@@ -232,156 +177,11 @@ void Client::downloadDialog(QWidget * parent)
     workflow();
 }
 
-//KNS::Entry *ClientPrivate::upload(const QString& file, QWidget * parent = 0)
-//{
-//    KNS::Entry *entry = NULL;
-
-//    Client client(0);
-
-//    KComponentData component = KGlobal::activeComponent();
-//    QString name = component.componentName();
-
-//    bool ret = client.init(name + ".knsrc");
-//    if (!ret) return entry;
-
-//    entry = client.uploadDialogModal(file);
-
-//    // FIXME: refcounting?
-//    return entry;
-//}
-
-//KNS::Entry *Client::upload(const QString& file)
-//{
-//#ifdef __GNUC__
-//#warning KNS::Client::upload() not implemented!
-//#endif
-//#if 0
-//    return d->upload(file);
-//#else
-//    Q_UNUSED(file);
-//#endif
-//    Q_ASSERT(false);
-//    return 0;
-//}
-
-KNS3::Entry Client::uploadDialogModal(const QString& file, QWidget * parent)
-{
-    //kDebug() << "Client: uploadDialogModal";
-
-    d->command = ClientPrivate::command_upload;
-    d->modal = true;
-    d->m_uploadfile = file;
-
-    workflow();
-
-    return d->uploadedEntry;
-}
-
-void Client::uploadDialog(const QString& file, QWidget * parent)
-{
-    //kDebug() << "Client: uploadDialog";
-
-    if (d->command != ClientPrivate::command_none) {
-        kError() << "Client: asynchronous workflow already going on" << endl;
-        return;
-    }
-
-    d->command = ClientPrivate::command_upload;
-    d->modal = false;
-    d->m_uploadfile = file;
-
-    workflow();
-}
-
-void Client::slotUploadDialogClosed()
-{
-    d->uploaddialog->deleteLater();
-    stopLoop();
-}
-
-//void ClientPrivate::slotProviderLoaded(KNS::Provider *provider)
-//{
-//    if (d->command == command_download) {
-//        loadEntries(provider);
-//    } else if (d->command == command_upload) {
-//        // FIXME: inject into upload dialog
-//        // FIXME: dialog could do this by itself!
-
-//        // FIXME: for the modal dialog, do nothing here
-//        // ... and wait for slotProvidersFinished()
-//        m_providers.append(provider);
-//    } else {
-//        kError() << "Client: invalid command" << endl;
-//    }
-//}
-
-void Client::slotHandleUpload()
-{
-    // NOTE: this is only connected when we are doing an upload
-    //kDebug() << "Client: slotProvidersFinished";
-
-    //Provider *fakeprovider = new Provider();
-    //fakeprovider->setName(QString("Fake Provider"));
-    //fakeprovider->setUploadUrl(KUrl("http://localhost/dav/"));
-    //fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
-    
-    
-    // let the user select the provider
-    //QPointer<ProviderDialog> provdialog = new ProviderDialog(NULL);
-    //for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); ++it) {
-    //    Provider *provider = (*it);
-    //    provdialog->addProvider(provider);
-    //}
-    ////provdialog.addProvider(fakeprovider);
-    //if (provdialog->exec() == QDialog::Rejected) {
-    //    stopLoop();
-    //    return;
-    //}
-
-    //KNS::Provider *provider = provdialog->provider();
-
-    //// fill in the details of the upload (name, author...)
-    //QPointer<UploadDialog> uploaddialog = new UploadDialog(NULL);
-    //uploaddialog->setPayloadFile(KUrl(m_uploadfile));
-    //if (uploaddialog->exec() == QDialog::Rejected) {
-    //    stopLoop();
-    //    return;
-    //}
-
-    //Entry *entry = uploaddialog->entry();
-    //if (!entry) {
-    //    stopLoop();
-    //    return;
-    //}
-    
-    //KTranslatable payload;
-    //// add all the translations to the payload
-    //QStringList langs = entry->name().languages();
-    //for (QStringList::const_iterator it = langs.constBegin(); it != langs.constEnd(); ++it) {
-    //    payload.addString(*it, m_uploadfile);
-    //}
-    //entry->setPayload(payload);
-
-    //EntryHandler eh(*entry);
-    //QDomElement xml = eh.entryXML();
-    //QByteArray ar;
-    //QTextStream txt(&ar);
-    //txt << xml;
-    ////kDebug() << "Upload: " << QString(ar);
-
-    //connect(this, SIGNAL(signalEntryUploaded()), SLOT(stopLoop()));
-    //connect(this, SIGNAL(signalEntryFailed()), SLOT(stopLoop()));
-
-    //uploadEntry(provider, entry);
-    //m_uploadedEntry=entry;
-}
-
 void Client::slotEntryChanged(const KNS3::Entry& entry)
 {
     //kDebug() << "adding entries to list of changed entries";
     d->changedEntries.insert(entry);
 }
-
 
 void Client::slotDownloadDialogDestroyed()
 {
@@ -397,8 +197,6 @@ void Client::slotDownloadDialogDestroyed()
             ++it;
         }
     }
-
-    //kDebug() << s_dialogs.count() << s_dialogs.keys();
 }
 
 void Client::slotDownloadDialogClosed()

@@ -92,47 +92,18 @@ public:
      */
     void downloadDialog(QWidget* parent = 0);
 
-    /**
-     * @brief Synchronous way of starting the upload workflow.
-     *
-     * Starts the upload workflow. This workflow will offer provider
-     * selection and afterwards upload all files associated with an entry.
-     * This method is a modal one. It will return the uploaded entry.
-     *
-     * @return Uploaded entry, or \b null in case of failures
-     */
-    KNS3::Entry uploadDialogModal(const QString& file, QWidget *parent = 0);
-
-    /**
-     * @brief Asynchronous way of starting the upload workflow.
-     *
-     * This method should be used whenever a blocking application with a
-     * non-blocking GUI during GHNS operations is not suitable.
-     * The affected entry will be reported by signals.
-     *
-     * @see uploadDialogModal()
-     */
-    void uploadDialog(const QString& file, QWidget *parent = 0);
-
 private Q_SLOTS:
-    void slotDownloadDialogClosed();
-    void slotUploadDialogClosed();
-    
     /** slot for when entries are changed, so we can return a list
      * of them from the static methods */
     void slotEntryChanged(const KNS3::Entry& entry);
-
+    void slotDownloadDialogClosed();
+    
 private:
     void slotDownloadDialogDestroyed();
 
     /** stop the event loop */
     void stopLoop();
-
     void slotProviderLoaded(KNS3::Provider* provider);
-
-    void slotHandleUpload();
-    void slotEntriesFinished();
-
     void workflow();
     
     friend class ClientPrivate;
