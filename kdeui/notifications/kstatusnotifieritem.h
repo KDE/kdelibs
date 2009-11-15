@@ -436,7 +436,7 @@ Q_SIGNALS:
 
     /**
      * Alternate activate action,
-     * for instance left mouse click, but this is not guaranteed since
+     * for instance right mouse click, but this is not guaranteed since
      * it's dependent from the visualization
      *
      * @param pos the position in the screen where the user clicked to
