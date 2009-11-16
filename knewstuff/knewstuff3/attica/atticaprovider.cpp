@@ -23,6 +23,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kio/job.h>
+#include <KCMultiDialog>
 
 #include <attica/providermanager.h>
 #include <attica/provider.h>
@@ -67,6 +68,8 @@ AtticaProvider::AtticaProvider(const QStringList& categories)
     d->categoryNameList = categories;
 
     connect(&d->m_providerManager, SIGNAL(providersChanged()), SLOT(providerLoaded()));
+    connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)), 
+            SLOT(authenticationCredentialsMissing(const Provider&)));
 }
 
 AtticaProvider::~AtticaProvider()
@@ -78,6 +81,17 @@ QString AtticaProvider::id() const
 {
     Q_D(const AtticaProvider);
     return d->m_provider.baseUrl().toString();
+}
+
+void AtticaProvider::authenticationCredentialsMissing(const KNS3::Provider& )
+{
+    kDebug() << "Authentication missing!";
+
+    KCMultiDialog* KCM = new KCMultiDialog();
+    KCM->setWindowTitle( i18n( "Open Collaboration Providers" ) );
+    KCM->addModule( "attica" );
+    KCM->exec();
+    KCM->deleteLater();
 }
 
 bool AtticaProvider::setProviderXML(QDomElement & xmldata)

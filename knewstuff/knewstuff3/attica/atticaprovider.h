@@ -69,6 +69,7 @@ namespace KNS3
         void listOfCategoriesLoaded(Attica::BaseJob*);
         void categoryContentsLoaded(Attica::BaseJob* job);
         void downloadItemLoaded(Attica::BaseJob* job);
+        void authenticationCredentialsMissing(const Provider&);
         
     protected:
         AtticaProvider(AtticaProviderPrivate &dd);
