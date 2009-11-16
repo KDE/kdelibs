@@ -546,6 +546,9 @@ void KUrlTest::testPathAndQuery()
 
   KUrl maelcum(QString::fromUtf8("http://a.b.c/äöu"));
   QCOMPARE(maelcum.encodedPathAndQuery(), QString("/%C3%A4%C3%B6u"));
+
+  KUrl gof("file:%2Ftmp%2Fkde-ogoffart%2Fkmail"); // weird URL, but well ;)
+  QCOMPARE(gof.path(), QString("/tmp/kde-ogoffart/kmail"));
 }
 
 void KUrlTest::testUpUrl()
