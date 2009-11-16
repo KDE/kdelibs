@@ -61,10 +61,6 @@ private slots:
     int poll();
     void reloadAlarms();
 
-signals:
-    void resumingFromIdle();
-    void timeoutReached(int msec);
-
 #ifdef HAVE_XSYNC
 private:
     void setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter counter,

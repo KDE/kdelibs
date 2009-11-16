@@ -50,10 +50,6 @@ public slots:
 private slots:
     int poll();
 
-signals:
-    void resumingFromIdle();
-    void timeoutReached(int msec);
-
 private:
     QList<int> m_timeouts;
     EventLoopTimerRef m_timerRef;

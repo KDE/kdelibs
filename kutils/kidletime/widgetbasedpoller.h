@@ -57,10 +57,6 @@ private slots:
 private:
     virtual bool additionalSetUp() = 0;
 
-signals:
-    void resumingFromIdle();
-    void timeoutReached(int msec);
-
 private:
     QTimer * m_pollTimer;
     QWidget * m_grabber;
