@@ -11,6 +11,9 @@ set(knewstuff3_SRCS
     author.cpp
     client.cpp
     entry.cpp
+    knewstuffbutton.cpp
+    knewstuffaction.cpp
+    attica/atticaprovider.cpp
     core/cache.cpp
     core/engine.cpp
     core/installation.cpp
@@ -18,21 +21,21 @@ set(knewstuff3_SRCS
     core/security.cpp
     core/xmlloader.cpp
     staticxml/staticxmlprovider.cpp
-    attica/atticaprovider.cpp
     ui/downloaddialog.cpp
+    ui/imageloader.cpp
     ui/itemsmodel.cpp
     ui/itemsviewdelegate.cpp
-    ui/imageloader.cpp
     ui/progressindicator.cpp
     ui/uploaddialog.cpp
     #ui/providerdialog.cpp
-    ui/knewstuffbutton.cpp
-    ui/knewstuffaction.cpp
 )
 
-kde4_add_ui_files(knewstuff3_ui_SRCS ui/DownloadDialog.ui ui/UploadDialog.ui)
+kde4_add_ui_files(knewstuff3_SRCS
+    ui/DownloadDialog.ui
+    ui/UploadDialog.ui
+)
 
-kde4_add_library(knewstuff3 SHARED ${knewstuff3_core_SRCS} ${knewstuff3_ui_SRCS} ${knewstuff3_SRCS})
+kde4_add_library(knewstuff3 SHARED ${knewstuff3_SRCS} )
 
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
@@ -47,18 +50,16 @@ set_target_properties(knewstuff3 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
-install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-install(FILES
-  ui/knewstuffaction.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3/ui COMPONENT Devel
-)
+install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   author.h
   client.h
   entry.h
   knewstuff_export.h
+  knewstuffaction.h
+  knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )
 
