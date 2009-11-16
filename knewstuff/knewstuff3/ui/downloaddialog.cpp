@@ -42,7 +42,6 @@
 
 #include "itemsmodel.h"
 #include "itemsviewdelegate.h"
-#include "kdxsrating.h"
 
 const char * ConfigGroup = "DownloadDialog Settings";
 
@@ -190,7 +189,6 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry
 {
     kDebug(551) << "perform action: " << action;
     
-    //Dxs * dxs = d->engine->dxsObject(provider);
     switch (action) {
     case kViewInfo:
         //if (provider && dxs) {
