@@ -40,6 +40,8 @@ const char dent[] = "   ";
 
 void output(QList<Action> actions, QHash<QString, QString> domain)
 {
+    Q_UNUSED(domain)
+
     QTextStream out(stdout);
 
     out << header;
