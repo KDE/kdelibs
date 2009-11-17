@@ -29,6 +29,11 @@
  * a file. If your thumbnail plugin can create a thumbnail sequence, you should base it
  * on ThumbSequenceCreator instead of ThumbCreator, and should use sequenceIndex()
  * to decide what thumbnail you generate.
+ * 
+ * You also need to set the following key in the thumbcreator .desktop file
+ * \code
+ * HandleSequences=true;
+ * \endcode
  *
  * @since 4.3
  */

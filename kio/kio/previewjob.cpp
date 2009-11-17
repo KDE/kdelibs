@@ -354,7 +354,9 @@ void PreviewJob::slotResult( KJob *job )
                 return;
             }
 
-            if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool()  || d->sequenceIndex )
+            bool pluginHandlesSequences = d->currentItem.plugin->property("HandleSequences", QVariant::Bool).toBool();
+
+            if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool()  || (d->sequenceIndex && pluginHandlesSequences) )
             {
                 // This preview will not be cached, no need to look for a saved thumbnail
                 // Just create it, and be done
