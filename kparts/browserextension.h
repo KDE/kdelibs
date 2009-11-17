@@ -154,7 +154,22 @@ struct KPARTS_EXPORT BrowserArguments
   void setRedirectedRequest(bool redirected);
 
   /**
-   * Set whether the URL specifies to be opened in a new window
+   * Set whether the URL specifies to be opened in a new window.
+   *
+   * When openUrlRequest is emitted:
+   * <ul>
+   *  <li>normally the url would be opened in the current view.</li>
+   *  <li>setForcesNewWindow(true) specifies that a new window or tab should be used:
+   *  setNewTab(true) requests a tab specifically, otherwise the user-preference is followed.
+   *  This is typically used for target="_blank" in web browsers.</li>
+   * </ul>
+   *
+   * When createNewWindow is emitted:
+   * <ul>
+   *  <li>if setNewTab(true) was called, a tab is created.</li>
+   *  <li>otherwise, if setForcesNewWindow(true) was called, a window is created.</li>
+   *  <li>otherwise the user preference is followed.</li>
+   * </ul>
    */
   void setForcesNewWindow( bool forcesNewWindow );
 
