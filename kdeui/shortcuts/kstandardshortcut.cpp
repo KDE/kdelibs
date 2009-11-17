@@ -71,6 +71,7 @@ struct KStandardShortcutInfo
 #define SHIFT(x) Qt::SHIFT+Qt::Key_##x
 #define CTRLSHIFT(x) Qt::CTRL+Qt::SHIFT+Qt::Key_##x
 #define ALT(x) Qt::ALT+Qt::Key_##x
+#define ALTSHIFT(x) Qt::ALT+Qt::SHIFT+Qt::Key_##x
 
 /** Array of predefined KStandardShortcutInfo objects, which cover all
     the "standard" accelerators. Each enum value from StandardShortcut
@@ -160,8 +161,8 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
     { Zoom                     , "Zoom"                     , I18N_NOOP2("@action", "Zoom")                     , 0           , 0, KShortcut(), false },
     { Goto                     , "Goto"                     , I18N_NOOP2("@action", "Goto")                     , 0           , 0, KShortcut(), false },
     { GotoPage                 , "GotoPage"                 , I18N_NOOP2("@action", "Goto Page")                 , 0           , 0, KShortcut(), false },
-    { DocumentBack             , "DocumentBack"             , I18N_NOOP2("@action", "Document Back")             , 0           , 0, KShortcut(), false },
-    { DocumentForward          , "DocumentForward"          , I18N_NOOP2("@action", "Document Forward")          , 0           , 0, KShortcut(), false },
+    { DocumentBack             , "DocumentBack"             , I18N_NOOP2("@action", "Document Back")             , ALTSHIFT(Left), 0, KShortcut(), false },
+    { DocumentForward          , "DocumentForward"          , I18N_NOOP2("@action", "Document Forward")          , ALTSHIFT(Right), 0, KShortcut(), false },
     { EditBookmarks            , "EditBookmarks"            , I18N_NOOP2("@action", "Edit Bookmarks")            , 0           , 0, KShortcut(), false },
     { Spelling                 , "Spelling"                 , I18N_NOOP2("@action", "Spelling")                 , 0           , 0, KShortcut(), false },
     { ShowToolbar              , "ShowToolbar"              , I18N_NOOP2("@action", "Show Toolbar")              , 0           , 0, KShortcut(), false },
