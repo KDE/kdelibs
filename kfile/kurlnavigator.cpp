@@ -171,13 +171,13 @@ public:
 
     /**
      * Updates all buttons to have one button for each part of the
-     * path \a path. Existing buttons, which are available by m_navButtons,
-     * are reused if possible. If the path is longer, new buttons will be
-     * created, if the path is shorter, the remaining buttons will be deleted.
-     * @param startIndex    Start index of path part (/), where the buttons
+     * current URL. Existing buttons, which are available by m_navButtons,
+     * are reused if possible. If the URL is longer, new buttons will be
+     * created, if the URL is shorter, the remaining buttons will be deleted.
+     * @param startIndex    Start index of URL part (/), where the buttons
      *                      should be created for each following part.
      */
-    void updateButtons(const QString& path, int startIndex);
+    void updateButtons(int startIndex);
 
     /**
      * Updates the visibility state of all buttons describing the URL. If the
@@ -409,7 +409,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
         return;
     }
 
-    const KUrl firstVisibleUrl = q->url(m_navButtons.first()->index());
+    const KUrl firstVisibleUrl = m_navButtons.first()->url();
 
     QString spacer;
     KMenu* popup = new KMenu(q);
@@ -547,22 +547,30 @@ void KUrlNavigator::Private::updateContent()
         if (!isVisible && !hasPlaceItem && hostText.isEmpty()) {
             --startIndex;
         }
-        updateButtons(path, startIndex);
+
+        updateButtons(startIndex);
     }
 }
 
-void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
+void KUrlNavigator::Private::updateButtons(int startIndex)
 {
+    KUrl currentUrl = q->url();
+    if (currentUrl.protocol() == "nepomuksearch") {
+        // hide the Nepomuk search URL from the user
+        currentUrl = KUrl("nepomuksearch:/");
+        startIndex = -1;
+    }
+
+    const QString path = currentUrl.pathOrUrl();
+
     QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.begin();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
     bool createButton = false;
-    const KUrl currentUrl = q->url();
 
     int idx = startIndex;
     bool hasNext = true;
     do {
         createButton = (it == itEnd);
-
         const QString dirName = path.section('/', idx, idx);
         const bool isFirstButton = (idx == startIndex);
         hasNext = isFirstButton || !dirName.isEmpty();
@@ -590,14 +598,15 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             }
 
             KUrlNavigatorButton* button = 0;
+            const KUrl buttonUrl = q->url(idx);
             if (createButton) {
-                button = new KUrlNavigatorButton(idx, q);
+                button = new KUrlNavigatorButton(buttonUrl, q);
                 connect(button, SIGNAL(urlsDropped(const KUrl&, QDropEvent*)),
                         q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
                 appendWidget(button);
             } else {
                 button = *it;
-                button->setIndex(idx);
+                button->setUrl(buttonUrl);
             }
 
             if (isFirstButton) {
@@ -697,10 +706,14 @@ void KUrlNavigator::Private::updateButtonVisibility()
         button->show();
     }
 
-    const int startIndex = retrievePlacePath().count('/');
-    const bool showDropDownButton = hasHiddenButtons ||
-                                    (!hasHiddenButtons && (m_navButtons.front()->index() > startIndex));
-    m_dropDownButton->setVisible(showDropDownButton);
+    if (hasHiddenButtons) {
+        m_dropDownButton->show();
+    } else {
+        // Check whether going upwards is possible. If this is the case, show the drop-down button.
+        const KUrl url = m_navButtons.front()->url();
+        const bool visible = (url != url.upUrl()) && (url.protocol() != "nepomuksearch");
+        m_dropDownButton->setVisible(visible);
+    }
 }
 
 void KUrlNavigator::Private::switchToBreadcrumbMode()
@@ -752,7 +765,7 @@ void KUrlNavigator::Private::removeTrailingSlash(QString& url) const
 {
     const int length = url.length();
     if ((length > 0) && (url.at(length - 1) == QChar('/'))) {
-        url.remove(length -1, 1);
+        url.remove(length - 1, 1);
     }
 }
 

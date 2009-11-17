@@ -52,11 +52,12 @@ class KUrlNavigatorButton : public KUrlButton
     Q_OBJECT
 
 public:
-    explicit KUrlNavigatorButton(int index, KUrlNavigator* parent);
+    // TODO KDE 4.5: get rid of KUrlNavigator dependency
+    explicit KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent);
     virtual ~KUrlNavigatorButton();
 
-    void setIndex(int index);
-    int index() const;
+    void setUrl(const KUrl& url);
+    KUrl url() const;
 
     void setActive(bool active);
     bool isActive() const;
@@ -107,18 +108,13 @@ private:
     void updateMinimumWidth();
 
 private:
-    int m_index;
     bool m_hoverArrow;
+    KUrl m_url;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     QStringList m_subdirs;
 
     static QPointer<KUrlNavigatorMenu> m_dirsMenu;
 };
-
-inline int KUrlNavigatorButton::index() const
-{
-    return m_index;
-}
 
 #endif

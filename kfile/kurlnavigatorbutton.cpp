@@ -26,6 +26,7 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobalsettings.h>
+#include <klocale.h>
 #include <kstringhandler.h>
 
 #include <QtCore/QTimer>
@@ -35,15 +36,15 @@
 
 QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_dirsMenu;
 
-KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
+KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent) :
     KUrlButton(parent),
-    m_index(-1),
     m_hoverArrow(false),
+    m_url(url),
     m_popupDelay(0),
     m_listJob(0)
 {
     setAcceptDrops(true);
-    setIndex(index);
+    setUrl(url);
     setMouseTracking(true);
     connect(this, SIGNAL(clicked()), this, SLOT(updateNavigatorUrl()));
 
@@ -57,11 +58,24 @@ KUrlNavigatorButton::~KUrlNavigatorButton()
 {
 }
 
-void KUrlNavigatorButton::setIndex(int index)
+void KUrlNavigatorButton::setUrl(const KUrl& url)
 {
-    m_index = index;
-    const QString path = urlNavigator()->url().pathOrUrl();
-    setText(path.section('/', index, index));
+    m_url = url;
+    QString text = url.fileName();
+    if (text.isEmpty()) {
+        const QString protocol = url.protocol();
+        if (protocol == "nepomuksearch") {
+            text = i18nc("@action:button", "Query Results");
+        } else {
+            text = protocol;
+        }
+    }
+    setText(text);
+}
+
+KUrl KUrlNavigatorButton::url() const
+{
+    return m_url;
 }
 
 void KUrlNavigatorButton::setActive(bool active)
@@ -209,18 +223,11 @@ void KUrlNavigatorButton::leaveEvent(QEvent* event)
 
 void KUrlNavigatorButton::dropEvent(QDropEvent* event)
 {
-    if (m_index < 0) {
-        return;
-    }
-
     const KUrl::List urls = KUrl::List::fromMimeData(event->mimeData());
     if (!urls.isEmpty()) {
         setDisplayHintEnabled(DraggedHint, true);
 
-        QString path = urlNavigator()->url().prettyUrl();
-        path = path.section('/', 0, m_index + 2);
-
-        emit urlsDropped(KUrl(path), event);
+        emit urlsDropped(m_url, event);
 
         setDisplayHintEnabled(DraggedHint, false);
         update();
@@ -305,22 +312,16 @@ void KUrlNavigatorButton::mouseMoveEvent(QMouseEvent* event)
 
 void KUrlNavigatorButton::updateNavigatorUrl()
 {
+    // TODO KDE 4.5: emit signal
     stopPopupDelay();
-
-    if (m_index < 0) {
-        return;
-    }
-
-    urlNavigator()->setUrl(urlNavigator()->url(m_index));
+    urlNavigator()->setUrl(m_url);
 }
 
 void KUrlNavigatorButton::startPopupDelay()
 {
-    if (m_popupDelay->isActive() || (m_listJob != 0) || (m_index < 0)) {
-        return;
+    if (!m_popupDelay->isActive() && (m_listJob == 0)) {
+        m_popupDelay->start(300);
     }
-
-    m_popupDelay->start(300);
 }
 
 void KUrlNavigatorButton::stopPopupDelay()
@@ -338,8 +339,7 @@ void KUrlNavigatorButton::startListJob()
         return;
     }
 
-    const KUrl& url = urlNavigator()->url(m_index);
-    m_listJob = KIO::listDir(url, KIO::HideProgressInfo, false /*no hidden files*/);
+    m_listJob = KIO::listDir(m_url, KIO::HideProgressInfo, false /*no hidden files*/);
     m_subdirs.clear(); // just to be ++safe
 
     connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
@@ -355,7 +355,10 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
 
     foreach (const KIO::UDSEntry& entry, entries) {
         if (entry.isDir()) {
-            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+            if (name.isEmpty()) {
+                name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            }
             if ((name != ".") && (name != "..")) {
                 m_subdirs.append(name);
             }
@@ -366,7 +369,7 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
 void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 {
     const int result = action->data().toInt();
-    KUrl url = urlNavigator()->url(m_index);
+    KUrl url = m_url;
     url.addPath(m_subdirs.at(result));
     urlsDropped(url, event);
 }
@@ -406,8 +409,11 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
             this, SLOT(urlsDropped(QAction*, QDropEvent*)));
 
     m_dirsMenu->setLayoutDirection(Qt::LeftToRight);
+
+    const QString relativeUrl = KUrl::relativeUrl(m_url, urlNavigator()->url());
+    const QString selectedSubdir = relativeUrl.section('/', 1, 1);
+
     int i = 0;
-    const QString selectedSubdir = urlNavigator()->url(m_index + 1).fileName();
     foreach (const QString& subdir, m_subdirs) {
         QString text = KStringHandler::csqueeze(subdir, 60);
         text.replace('&', "&&");
@@ -440,7 +446,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     const QAction* action = m_dirsMenu->exec(popupPos);
     if (action != 0) {
         const int result = action->data().toInt();
-        KUrl url = urlNavigator()->url(m_index);
+        KUrl url = m_url;
         url.addPath(m_subdirs[result]);
         urlNavigator()->setUrl(url);
     }
