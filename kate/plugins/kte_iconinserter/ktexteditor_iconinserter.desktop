@@ -2,6 +2,7 @@
 Type=Service
 Comment=Select an icon and use it as a KIcon in your source-code
 Comment[en_GB]=Select an icon and use it as a KIcon in your source-code
+Comment[es]=Seleccionar un icono y usarlo como KIcon en el código fuente
 Comment[pt]=Seleccione um ícone e use-o como um KIcon no seu código-fonte
 Comment[sv]=Välj en ikon och använd den som en KIcon i källkoden
 Comment[uk]=Оберіть піктограму і використайте її як KIcon у коді вашої програми
