@@ -55,6 +55,7 @@ KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifie
 void KStatusNotifierItemTest::setNeedsAttention()
 {
     kDebug()<<"Asking for attention";
+    m_tray->showMessage("message test", "Test of the new systemtray notifications wrapper", "konqueror", 3000);
     m_tray->setStatus(KStatusNotifierItem::NeedsAttention);
 }
 
