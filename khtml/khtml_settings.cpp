@@ -69,7 +69,6 @@ class KHTMLSettingsPrivate
 public:
     bool m_bChangeCursor : 1;
     bool m_bOpenMiddleClick : 1;
-    bool m_bBackRightClick : 1;
     bool m_underlineLink : 1;
     bool m_hoverLink : 1;
     bool m_bEnableJavaScriptDebug : 1;
@@ -311,9 +310,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   {
     if ( reset || cg.hasKey( "OpenMiddleClick" ) )
         d->m_bOpenMiddleClick = cg.readEntry( "OpenMiddleClick", true );
-
-    if ( reset || cg.hasKey( "BackRightClick" ) )
-        d->m_bBackRightClick = cg.readEntry( "BackRightClick", false );
   }
 
   KConfigGroup cgAccess(config,"Access Keys" );
@@ -712,7 +708,7 @@ bool KHTMLSettings::isOpenMiddleClickEnabled()
 
 bool KHTMLSettings::isBackRightClickEnabled()
 {
-  return d->m_bBackRightClick;
+  return false; // ## the feature moved to konqueror
 }
 
 bool KHTMLSettings::accessKeysEnabled() const

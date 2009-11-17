@@ -492,7 +492,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   // set the default java(script) flags according to the current host.
   d->m_bOpenMiddleClick = d->m_settings->isOpenMiddleClickEnabled();
-  d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
   setDebugScript( d->m_settings->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = d->m_settings->isJavaEnabled();
@@ -5850,7 +5849,6 @@ void KHTMLPart::reparseConfiguration()
      d->m_doc->docLoader()->setShowAnimations( settings->showAnimations() );
 
   d->m_bOpenMiddleClick = settings->isOpenMiddleClickEnabled();
-  d->m_bBackRightClick = settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(url().host());
   setDebugScript( settings->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = settings->isJavaEnabled(url().host());
@@ -6180,10 +6178,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #endif
   }
 
-  if ( _mouse->button() == Qt::RightButton && parentPart() != 0 && d->m_bBackRightClick )
-  {
-    d->m_bRightMousePressed = true;
-  } else if ( _mouse->button() == Qt::RightButton )
+  if ( _mouse->button() == Qt::RightButton )
   {
     popupMenu( d->m_strSelectedURL );
     // might be deleted, don't touch "this"
@@ -6426,14 +6421,6 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   d->m_bMousePressed = false;
 
   QMouseEvent *_mouse = event->qmouseEvent();
-  if ( _mouse->button() == Qt::RightButton && parentPart() != 0 && d->m_bBackRightClick )
-  {
-    d->m_bRightMousePressed = false;
-    KParts::BrowserInterface *tmp_iface = d->m_extension->browserInterface();
-    if( tmp_iface ) {
-      tmp_iface->callMethod( "goHistory", -1 );
-    }
-  }
 #ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == Qt::MidButton) && (event->url().isNull())) {
     kDebug( 6050 ) << "MMB shouldOpen=" << d->m_bOpenMiddleClick;

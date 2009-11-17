@@ -298,7 +298,6 @@ public:
 #endif
   int m_runningScripts;
   bool m_bOpenMiddleClick;
-  bool m_bBackRightClick;
   bool m_bJScriptEnabled;
   bool m_bJScriptDebugEnabled;
   bool m_bJavaEnabled;

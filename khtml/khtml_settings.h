@@ -176,6 +176,7 @@ public:
     bool unfinishedImageFrame() const;
 
     bool isOpenMiddleClickEnabled();
+    /// @deprecated do not use, feature was moved to be only in konqueror
     bool isBackRightClickEnabled();
 
     // Java and JavaScript
