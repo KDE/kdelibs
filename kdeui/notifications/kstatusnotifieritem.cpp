@@ -645,7 +645,7 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
 
 void KStatusNotifierItemPrivate::registerToDaemon()
 {
-    kDebug(299) << "Registering a client interface to the system tray daemon";
+    kDebug(299) << "Registering a client interface to the KStatusNotifierWatcher";
     if (!statusNotifierWatcher) {
         QString interface("org.kde.StatusNotifierWatcher");
         statusNotifierWatcher = new org::kde::StatusNotifierWatcher(interface, "/StatusNotifierWatcher",
@@ -655,14 +655,10 @@ void KStatusNotifierItemPrivate::registerToDaemon()
     if (statusNotifierWatcher->isValid() &&
         statusNotifierWatcher->property("ProtocolVersion").toInt() == s_protocolVersion) {
 
-        if (statusNotifierWatcher->property("IsStatusNotifierHostRegistered").toBool()) {
-            kDebug(299) << "service is" << statusNotifierItemDBus->service();
-            statusNotifierWatcher->RegisterStatusNotifierItem(statusNotifierItemDBus->service());
+        statusNotifierWatcher->RegisterStatusNotifierItem(statusNotifierItemDBus->service());
             setLegacySystemTrayEnabled(false);
-            QObject::disconnect(statusNotifierWatcher, SIGNAL(StatusNotifierHostRegistered()), q, SLOT(registerToDaemon()));
-        }
     } else {
-        kDebug(299)<<"System tray daemon not reachable or no registered system trays";
+        kDebug(299)<<"KStatusNotifierWatcher not reachable";
         setLegacySystemTrayEnabled(true);
     }
 }
@@ -673,19 +669,19 @@ void KStatusNotifierItemPrivate::serviceChange(const QString& name, const QStrin
     if (name == "org.kde.StatusNotifierWatcher") {
         if (newOwner.isEmpty()) {
             //unregistered
-            kDebug(299) << "Connection to the systemtray daemon lost";
+            kDebug(299) << "Connection to the KStatusNotifierWatcher lost";
             legacy = true;
         } else if (oldOwner.isEmpty()) {
             //registered
             legacy = false;
         }
-    } else if (name.startsWith(QLatin1String("org.kde.Notification-"))) {
+    } else if (name.startsWith(QLatin1String("org.kde.StatusNotifierHost-"))) {
         if (newOwner.isEmpty() && (!statusNotifierWatcher ||
                                    !statusNotifierWatcher->property("IsStatusNotifierHostRegistered").toBool())) {
-            //unregistered
+            kDebug(299)<<"Connection to the last KStatusNotifierHost lost";
             legacy = true;
         } else if (oldOwner.isEmpty()) {
-            //registered
+            kDebug(299)<<"New KStatusNotifierHost";
             legacy = false;
         }
     } else {
@@ -700,7 +696,6 @@ void KStatusNotifierItemPrivate::serviceChange(const QString& name, const QStrin
 
     if (legacy) {
         //unregistered
-        kDebug(299)<<"Connection to the systemtray daemon lost";
         setLegacySystemTrayEnabled(true);
     } else {
         //registered
