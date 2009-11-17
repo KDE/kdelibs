@@ -1,3 +1,6 @@
+#ifndef DATEPARSER_P_H
+#define DATEPARSER_P_H
+
 /*
 * This file is part of the Nepomuk KDE project.
 * Copyright (c) 2009 Adam Kidder <thekidder@gmail.com>
@@ -29,17 +32,17 @@ namespace Nepomuk {
           * times qualified using a specified date
           * dates qualified with a specified time
         */
-        class DateTimeParser 
+        class DateTimeParser
         {
         public:
             DateTimeParser(const QString& dateTimeString);
-            
-            
+
+
         private:
             const QString& text;
         };
-        
-        
+
+
         class DateParser
         {
         public:
@@ -49,12 +52,12 @@ namespace Nepomuk {
 
             DateParser(const QString& dateString, unsigned int flags = AbsoluteDates | RelativeDates);
             ~DateParser();
-            
+
             //true if another date has been found
             bool hasDate();
             //advances to the next date
             void next();
-            
+
             //next 3 functions only valid if hasDate()
             QDate getDate();
             //position of current extracted date
@@ -65,14 +68,14 @@ namespace Nepomuk {
             class Private;
             Private* const d;
         };
-        
+
         //FIXME: code duplication in DateParser and TimeParser
         class TimeParser
         {
         public:
             TimeParser(const QString& timeString);
             ~TimeParser();
-            
+
             bool hasTime();
             QTime next();
         private:
@@ -81,3 +84,4 @@ namespace Nepomuk {
         };
     }
 }
+#endif
