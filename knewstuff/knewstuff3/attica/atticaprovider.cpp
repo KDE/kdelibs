@@ -268,8 +268,9 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
 
     ItemJob<DownloadItem>* job = static_cast<ItemJob<DownloadItem>*>(baseJob);
     DownloadItem item = job->result();
-    if (job->metadata().statusCode() != 100) {
-        KMessageBox::error(0, "Could not get download link");
+    if (job->metadata().error() != Metadata::NoError) {
+        kDebug() << job->metadata().error() << job->metadata().statusCode();
+        KMessageBox::error(0, "Could not get download link.");
         return;
     }
 
