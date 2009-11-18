@@ -320,7 +320,9 @@ QString KBookmark::fullText() const
     if (isSeparator())
         return i18n("--- separator ---");
 
-    return element.namedItem("title").toElement().text();
+    QString text = element.namedItem("title").toElement().text();
+    text.replace('\n', ' '); // #140673
+    return text;
 }
 
 void KBookmark::setFullText(const QString &fullText)
