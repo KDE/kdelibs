@@ -19,9 +19,9 @@
 #ifndef KNEWSTUFF3_AUTHOR_H
 #define KNEWSTUFF3_AUTHOR_H
 
-#include <knewstuff3/knewstuff_export.h>
-
 #include <QtCore/QString>
+
+#include <knewstuff3/knewstuff_export.h>
 
 namespace KNS3
 {

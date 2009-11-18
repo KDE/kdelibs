@@ -22,8 +22,6 @@
 #include <klocale.h>
 #include <kicon.h>
 
-#include "knewstuff3/client.h"
-
 namespace KNS3
 {
 

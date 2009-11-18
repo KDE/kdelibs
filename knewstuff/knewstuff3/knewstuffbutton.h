@@ -19,9 +19,9 @@
 #ifndef KNEWSTUFF3BUTTON_H
 #define KNEWSTUFF3BUTTON_H
 
-#include <knewstuff3/knewstuff_export.h>
+#include <KPushButton>
 
-#include <kpushbutton.h>
+#include <knewstuff3/knewstuff_export.h>
 
 namespace KNS3
 {
