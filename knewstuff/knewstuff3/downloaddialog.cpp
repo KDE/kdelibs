@@ -51,6 +51,7 @@ public:
     ItemsViewDelegate * delegate;
     
     QString searchTerm;
+    QSet<Entry> changedEntries;
     
     Private(const QString& configFile)
         : engine(new Engine), model(new ItemsModel), sortingProxyModel(new QSortFilterProxyModel)
@@ -251,7 +252,7 @@ void DownloadDialog::slotInfo(QString provider, QString server, QString version)
 
 void DownloadDialog::slotEntryChanged(const Entry& entry)
 {
-    setCursor(Qt::ArrowCursor);
+    d->changedEntries.insert(entry);
     d->model->slotEntryChanged(entry);
 }
 
@@ -278,6 +279,22 @@ void DownloadDialog::scrollbarValueChanged(int value)
     if ((double)value/d->ui.m_listView->verticalScrollBar()->maximum() > 0.9) {
         d->engine->slotRequestMoreData();
     }
+}
+
+Entry::List DownloadDialog::changedEntries()
+{
+    return d->changedEntries.toList();
+}
+
+Entry::List DownloadDialog::installedEntries()
+{
+    QList<Entry> entries;
+    foreach (Entry e, d->changedEntries) {
+        if (e.status() == Entry::Installed) {
+            entries.append(e);
+        }
+    }
+    return entries;
 }
 
 
