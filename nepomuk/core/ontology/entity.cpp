@@ -20,7 +20,6 @@
 #include "entity.h"
 #include "entity_p.h"
 #include "resourcemanager.h"
-#include "nrdo.h"
 
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
