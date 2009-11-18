@@ -64,8 +64,8 @@ KMenu * ItemsViewDelegate::InstallMenu(const QToolButton* button, Entry::Status 
     KMenu * installMenu = new KMenu(NULL);
     QAction * action_install = installMenu->addAction(m_statusicons[Entry::Installed], i18n("Install"));
     QAction * action_uninstall = installMenu->addAction(m_statusicons[Entry::Deleted], i18n("Uninstall"));
-    action_install->setData(DownloadDialog::kInstall);
-    action_uninstall->setData(DownloadDialog::kUninstall);
+    action_install->setData(Engine::Install);
+    action_uninstall->setData(Engine::Uninstall);
 
     action_install->setVisible(status != Entry::Installed);
     action_uninstall->setVisible(status == Entry::Installed);
@@ -311,7 +311,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
     KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
-    emit performAction(DownloadDialog::kContactEmail, entry);
+    emit performAction(Engine::ContactEmail, entry);
 }
 
 void ItemsViewDelegate::slotActionTriggered(QAction *action)
@@ -322,7 +322,7 @@ void ItemsViewDelegate::slotActionTriggered(QAction *action)
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
     KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
-    emit performAction(DownloadDialog::EntryAction(action->data().toInt()), entry);
+    emit performAction(Engine::EntryAction(action->data().toInt()), entry);
 }
 
 void ItemsViewDelegate::slotInstallClicked()
@@ -337,9 +337,9 @@ void ItemsViewDelegate::slotInstallClicked()
             return;
 
         if (entry.status() == Entry::Installed) {
-            emit performAction(DownloadDialog::kUninstall, entry);
+            emit performAction(Engine::Uninstall, entry);
         } else {
-            emit performAction(DownloadDialog::kInstall, entry);
+            emit performAction(Engine::Install, entry);
         }
     }
 }

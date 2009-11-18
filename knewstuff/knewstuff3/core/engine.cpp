@@ -39,7 +39,7 @@
 #include <kio/job.h>
 #include <kmimetype.h>
 #include <krandom.h>
-
+#include <ktoolinvocation.h>
 
 #include <QtCore/QTimer>
 #include <QtCore/QDir>
@@ -385,6 +385,73 @@ void Engine::slotRequestMoreData()
                 p.provider->loadEntries(d->sortMode, d->searchTerm, d->requestedPage, d->pageSize);
             }
         }
+    }
+}
+
+void Engine::slotPerformAction(KNS3::Engine::EntryAction action, Entry entry)
+{
+    kDebug(551) << "perform action: " << action;
+
+    switch (action) {
+    case ViewInfo:
+        //if (provider && dxs) {
+            //if (provider->webService().isValid()) {
+            //    dxs->call_info();
+            //} else {
+                //slotInfo(provider->name().representation(),
+                //         provider->webAccess().pathOrUrl(),
+                //         QString());
+            //}
+        //}
+        break;
+    case Comments:
+        // show the entry's comments
+        //if (provider && dxs) {
+        //    connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
+        //    dxs->call_comments(entry->idNumber());
+        //}
+        break;
+    case Changes:
+        // show the entry's changelog
+        break;
+    case ContactEmail:
+        // invoke mail with the address of the author
+        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name()));
+        break;
+    case ContactJabber:
+        // start jabber with author's info
+        break;
+    case CollabTranslate:
+        // open translation dialog
+        break;
+    case CollabRemoval:
+        // verify removal, maybe authenticate?
+        break;
+    case CollabSubscribe:
+        // subscribe to changes
+        break;
+    case Uninstall:
+        uninstall(entry);
+        break;
+    case Install:
+        install(entry);
+        break;
+    case AddComment: {
+        // open comment dialog
+        //QPointer<KDXSComment> commentDialog = new KDXSComment(this);
+        //int ret = commentDialog->exec();
+        //if (ret == QDialog::Accepted) {
+        //    QString s = commentDialog->comment();
+            //if (dxs && !s.isEmpty()) {
+            //    dxs->call_comment(entry->idNumber(), s);
+            //}
+        //}
+    }
+    break;
+    case Rate: {
+        // prompt for rating, and send to provider
+    }
+    break;
     }
 }
 

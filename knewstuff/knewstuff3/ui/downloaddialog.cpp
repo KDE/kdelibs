@@ -31,7 +31,6 @@
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kmessagebox.h>
-#include <ktoolinvocation.h>
 
 #include <kdebug.h>
 
@@ -52,12 +51,11 @@ public:
     QTimer* messageTimer;
 
     Engine *engine;
-    QMap<QString, QString> categorymap;
 
     KNS3::ItemsModel* model;
     // sort items according to sort combo
     QSortFilterProxyModel * sortingProxyModel;
-    ItemsViewDelegate * mDelegate;
+    ItemsViewDelegate * delegate;
     
     QString searchTerm;
     
@@ -74,7 +72,7 @@ public:
     
     ~Private() {
         delete messageTimer;
-        delete mDelegate;
+        delete delegate;
         delete sortingProxyModel;
         delete model;
     }
@@ -107,10 +105,10 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     
     connect(d->messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
 
-    d->mDelegate = new ItemsViewDelegate(m_listView);
-    m_listView->setItemDelegate(d->mDelegate);
-    connect(d->mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
-            SLOT(slotPerformAction(DownloadDialog::EntryAction, const KNS3::Entry&)));
+    d->delegate = new ItemsViewDelegate(m_listView);
+    m_listView->setItemDelegate(d->delegate);
+    connect(d->delegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
+            d->engine, SLOT(slotPerformAction(DownloadDialog::EntryAction, const KNS3::Entry&)));
 
     m_listView->setModel(d->sortingProxyModel);
     connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
@@ -183,99 +181,6 @@ DownloadDialog::~DownloadDialog()
     KConfigGroup group(KGlobal::config(), ConfigGroup);
     saveDialogSize(group, KConfigBase::Persistent);
     delete d;
-}
-
-void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, Entry entry)
-{
-    kDebug(551) << "perform action: " << action;
-    
-    switch (action) {
-    case kViewInfo:
-        //if (provider && dxs) {
-            //if (provider->webService().isValid()) {
-            //    dxs->call_info();
-            //} else {
-                //slotInfo(provider->name().representation(),
-                //         provider->webAccess().pathOrUrl(),
-                //         QString());
-            //}
-        //}
-        break;
-    case kComments:
-        // show the entry's comments
-        //if (provider && dxs) {
-        //    connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
-        //    dxs->call_comments(entry->idNumber());
-        //}
-        break;
-    case kChanges:
-        // show the entry's changelog
-        break;
-    case kContactEmail:
-        // invoke mail with the address of the author
-        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name()));
-        break;
-    case kContactJabber:
-        // start jabber with author's info
-        break;
-    case kCollabTranslate:
-        // open translation dialog
-        break;
-    case kCollabRemoval:
-        // verify removal, maybe authenticate?
-        break;
-    case kCollabSubscribe:
-        // subscribe to changes
-        break;
-    case kUninstall:
-        setCursor(Qt::WaitCursor);
-        d->engine->uninstall(entry);
-        setCursor(Qt::ArrowCursor);
-        break;
-    case kInstall:
-        setCursor(Qt::WaitCursor);
-        d->engine->install(entry);
-        setCursor(Qt::ArrowCursor);
-        break;
-    case kCollabComment: {
-        // open comment dialog
-        //QPointer<KDXSComment> commentDialog = new KDXSComment(this);
-        //int ret = commentDialog->exec();
-        //if (ret == QDialog::Accepted) {
-        //    QString s = commentDialog->comment();
-            //if (dxs && !s.isEmpty()) {
-            //    dxs->call_comment(entry->idNumber(), s);
-            //}
-        //}
-    }
-    break;
-    case kCollabRate: {
-        // prompt for rating, and send to provider
-    }
-    break;
-    }
-}
-
-void DownloadDialog::slotCollabAction(QAction * action)
-{
-    DownloadDialog::EntryAction entryAction = (DownloadDialog::EntryAction)action->data().toInt();
-    QModelIndex currentIndex = m_listView->currentIndex();
-    QModelIndex index = d->sortingProxyModel->mapToSource(currentIndex);
-    Entry entry = d->model->entryForIndex(index);
-    slotPerformAction(entryAction, entry);
-}
-
-void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModelIndex &/*old */)
-{
-    //kDebug() << "slotListIndexChanged called";
-/*
-    if (!index.isValid()) {
-        m_collaborationButton->setEnabled(false);
-    }
-    
-    Entry entry = d->model->entryForIndex(d->sortingProxyModel->mapToSource(index));
-    m_collaborationButton->setEnabled(d->engine->collaborationFeatures(entry));
-    */
 }
 
 void DownloadDialog::hideEvent(QHideEvent * event)

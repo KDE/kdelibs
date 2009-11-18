@@ -49,6 +49,21 @@ class Engine : public QObject
 {
     Q_OBJECT
 public:
+    enum EntryAction {
+        ViewInfo,
+        Comments,
+        Changes,
+        ContactEmail,
+        ContactJabber,
+        CollabTranslate,
+        CollabRemoval,
+        CollabSubscribe,
+        Uninstall,
+        Install,
+        AddComment,
+        Rate
+    };
+    
     /**
      * Constructor.
      */
@@ -102,6 +117,9 @@ public:
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
     void slotRequestMoreData();
+
+public Q_SLOTS:
+    void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::Entry entry);
     
 Q_SIGNALS:
     /**

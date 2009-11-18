@@ -22,8 +22,6 @@
 #ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 
-#include <QMutex>
-
 #include <kdialog.h>
 #include <ktitlewidget.h>
 
@@ -32,17 +30,8 @@
 
 #include "ui_DownloadDialog.h"
 
-class KJob;
-class KLineEdit;
-class QComboBox;
-class QHideEvent;
-class QLabel;
-class ProgressIndicator;
-class QSortFilterProxyModel;
-
 namespace KNS3
 {
-
 class DownloadDialog;
 class ItemsModel;
 class ItemsViewDelegate;
@@ -73,21 +62,6 @@ public:
     DownloadDialog(Engine* engine, QWidget * parent);
     ~DownloadDialog();
 
-    enum EntryAction {
-        kViewInfo,
-        kComments,
-        kChanges,
-        kContactEmail,
-        kContactJabber,
-        kCollabTranslate,
-        kCollabRemoval,
-        kCollabSubscribe,
-        kUninstall,
-        kInstall,
-        kCollabComment,
-        kCollabRate
-    };
-
     // show a message in the bottom bar
     void displayMessage(const QString & msg,
                         KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
@@ -107,11 +81,6 @@ private Q_SLOTS:
 
     void slotInfo(QString provider, QString server, QString version);
     void slotError(const QString& message);
-
-    void slotPerformAction(DownloadDialog::EntryAction action, KNS3::Entry entry);
-    void slotCollabAction(QAction * action);
-
-    void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
 
     void scrollbarValueChanged(int value);
     
