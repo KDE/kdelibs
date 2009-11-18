@@ -99,12 +99,10 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
 
     d->delegate = new ItemsViewDelegate(m_listView);
     m_listView->setItemDelegate(d->delegate);
-    connect(d->delegate, SIGNAL(performAction(DownloadDialog::EntryAction, const KNS3::Entry&)),
-            d->engine, SLOT(slotPerformAction(DownloadDialog::EntryAction, const KNS3::Entry&)));
+    connect(d->delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::Entry&)),
+            d->engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::Entry&)));
 
     m_listView->setModel(d->sortingProxyModel);
-    connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-            this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
