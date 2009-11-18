@@ -22,25 +22,17 @@
 // own include
 #include "downloaddialog.h"
 
-// qt/kde includes
-#include <QtCore/QTimer>
-#include <QtGui/QPixmap>
 #include <QtGui/QSortFilterProxyModel>
+#include <QtCore/QTimer>
 #include <QtGui/QScrollBar>
 
-#include <kaboutdata.h>
-#include <kcomponentdata.h>
-#include <kmessagebox.h>
-
-#include <kdebug.h>
-
-#include "knewstuff3/core/category.h"
-
-// local includes
-#include "ui_DownloadDialog.h"
+#include <KMessageBox>
+#include <KComponentData>
+#include <KAboutData>
 
 #include "itemsmodel.h"
 #include "itemsviewdelegate.h"
+#include "ui_DownloadDialog.h"
 
 const char * ConfigGroup = "DownloadDialog Settings";
 

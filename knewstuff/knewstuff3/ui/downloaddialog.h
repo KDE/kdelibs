@@ -26,7 +26,6 @@
 #include <ktitlewidget.h>
 
 #include <knewstuff3/core/engine.h>
-#include <knewstuff3/core/category.h>
 
 #include "ui_DownloadDialog.h"
 
