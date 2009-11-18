@@ -985,7 +985,7 @@ void KFileWidget::slotOk()
             }
             filesInList = true;
         } else {
-            KMessageBox::sorry(this, i18n("The file %1 could not be found", url.url()), i18n("Cannot open file"));
+            KMessageBox::sorry(this, i18n("The file \"%1\" could not be found", url.pathOrUrl()), i18n("Cannot open file"));
             return; // do not emit accepted() if we had ExistingOnly flag and stat failed
         }
         ++it;
@@ -2683,7 +2683,7 @@ void KFileWidget::readConfig( KConfigGroup& group )
 
 QString KFileWidgetPrivate::locationEditCurrentText() const
 {
-    return QDir::fromNativeSeparators(locationEdit->currentText().trimmed());
+    return QDir::fromNativeSeparators(locationEdit->currentText());
 }
 
 KUrl KFileWidgetPrivate::mostLocalUrl(const KUrl &url)
