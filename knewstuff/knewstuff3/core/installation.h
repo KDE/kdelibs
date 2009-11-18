@@ -49,7 +49,7 @@ struct InstallationPrivate;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT Installation :public QObject
+class Installation :public QObject
 {
     Q_OBJECT
 public:

@@ -49,7 +49,7 @@ class Entry;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT UploadDialog : public KDialog, public Ui::UploadDialog
+class UploadDialog : public KDialog, public Ui::UploadDialog
 {
     Q_OBJECT
 public:

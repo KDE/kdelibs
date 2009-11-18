@@ -37,7 +37,7 @@ namespace KNS3
      *
      * @internal
      */
-    class KNEWSTUFF_EXPORT StaticXmlProvider: public Provider
+    class StaticXmlProvider: public Provider
     {
         Q_OBJECT
     public:

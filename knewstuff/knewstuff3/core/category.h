@@ -30,7 +30,7 @@ struct CategoryPrivate;
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class KNEWSTUFF_EXPORT Category
+class Category
 {
 public:
     /**

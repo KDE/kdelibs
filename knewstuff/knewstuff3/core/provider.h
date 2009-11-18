@@ -43,7 +43,7 @@ namespace KNS3
      *
      * @internal
      */
-    class KNEWSTUFF_EXPORT Provider: public QObject
+    class Provider: public QObject
     {
         Q_OBJECT
     public:

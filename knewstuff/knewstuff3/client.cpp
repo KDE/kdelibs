@@ -40,7 +40,6 @@ public:
         : parent(parent_),
         p(client),
         command(ClientPrivate::command_none),
-        uploaddialog(0),
         downloaddialog(0),
         modal(false),
         loop(0),
@@ -59,12 +58,9 @@ public:
         command_download
     };
 
-    
     bool init(const QString & config);
 
     void workflow();
-    Entry upload(const QString& file);
-
     static QHash<QString, QPointer<KDialog> > s_dialogs;
 
     QWidget* parent;
@@ -72,15 +68,12 @@ public:
     Command command;
     QPointer<UploadDialog> uploaddialog;
     QPointer<DownloadDialog> downloaddialog;
-    QString m_uploadfile;
-    Entry uploadedEntry;
     Provider::List providers;
     bool modal;
     QSet<Entry> changedEntries;
     QEventLoop* loop;
     Engine* engine;
 };
-
 
 QHash<QString, QPointer<KDialog> > KNS3::ClientPrivate::s_dialogs;
 
@@ -91,11 +84,9 @@ Client::Client(QWidget* parent)
 
 Client::~Client()
 {
-    //kDebug() << d->downloaddialog;
     if (d->downloaddialog) {
         slotDownloadDialogDestroyed();
     }
-
     delete d;
 }
 
@@ -177,17 +168,14 @@ void Client::downloadDialog(QWidget * parent)
 
 void Client::slotEntryChanged(const KNS3::Entry& entry)
 {
-    //kDebug() << "adding entries to list of changed entries";
     d->changedEntries.insert(entry);
 }
 
 void Client::slotDownloadDialogDestroyed()
 {
-    //kDebug() << d->downloaddialog << "is destroyed!" << s_dialogs.count() << s_dialogs.keys();
     QHash<QString, QPointer<KDialog> >::iterator it = d->s_dialogs.begin();
     while (it != d->s_dialogs.end()) {
         if (it.value() == d->downloaddialog) {
-            //kDebug() << "found it!";
             it = d->s_dialogs.erase(it);
         }
 
@@ -199,14 +187,9 @@ void Client::slotDownloadDialogDestroyed()
 
 void Client::slotDownloadDialogClosed()
 {
-    //kDebug() << sender() << d->downloaddialog;
-    //disconnect(d->downloaddialog, SIGNAL(destroyed(QObject*)),
-    //           this, SLOT(slotDownloadDialogDestroyed()));
     slotDownloadDialogDestroyed();
     d->downloaddialog->deleteLater();
     stopLoop();
-    //emit signalDownloadDialogDone(QList<KNS::Entry*>::fromSet(m_changedEntries));
 }
-
 
 #include "client.moc"

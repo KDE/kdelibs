@@ -39,7 +39,7 @@ namespace KNS3
      *
      * @internal
      */
-    class KNEWSTUFF_EXPORT AtticaProvider: public Provider
+    class AtticaProvider: public Provider
     {
         Q_OBJECT
     public:

@@ -45,7 +45,7 @@ class EnginePrivate;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT Engine : public QObject
+class Engine : public QObject
 {
     Q_OBJECT
 public:

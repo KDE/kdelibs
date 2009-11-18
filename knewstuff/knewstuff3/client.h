@@ -23,7 +23,6 @@
 
 namespace KNS3
 {
-
 class ClientPrivate;
 class Provider;
 
