@@ -728,23 +728,47 @@ void KDirOperator::Private::_k_slotToggleIgnoreCase()
     d->sorting = d->fileView->sorting();*/
 }
 
+// Duplicated in libkonq's KonqOperations
+static bool confirmCreatingHiddenDir(const QString& name, QWidget* parent)
+{
+    KGuiItem continueGuiItem(KStandardGuiItem::cont());
+    continueGuiItem.setText(i18nc("@action:button", "Create directory"));
+    KGuiItem cancelGuiItem(KStandardGuiItem::cancel());
+    cancelGuiItem.setText(i18nc("@action:button", "Enter a different name"));
+    return KMessageBox::warningContinueCancel(
+        parent,
+        i18n("The name \"%1\" starts with a dot and will therefore the directory will be hidden by default.", name),
+        i18n("Create hidden directory?"),
+        continueGuiItem,
+        cancelGuiItem,
+        "confirm_create_hidden_dir") == KMessageBox::Continue;
+}
+
 void KDirOperator::mkdir()
 {
     bool ok;
     QString where = url().pathOrUrl();
     QString name = i18n("New Folder");
-#ifdef Q_WS_WIN
-    if (url().isLocalFile() && QFileInfo(url().toLocalFile() + name).exists())
-#else
-    if (url().isLocalFile() && QFileInfo(url().path(KUrl::AddTrailingSlash) + name).exists())
-#endif
+    if (url().isLocalFile() && QFileInfo(url().toLocalFile(KUrl::AddTrailingSlash) + name).exists())
         name = KIO::RenameDialog::suggestName(url(), name);
 
-    QString folder = KInputDialog::getText(i18n("New Folder"),
-                                           i18n("Create new folder in:\n%1" ,  where),
-                                           name, &ok, this);
-    if (ok)
-        KDirOperator::mkdir(KIO::encodeFileName(folder), true);
+    bool askAgain;
+    do {
+        askAgain = false;
+        name = KInputDialog::getText(i18n("New Folder"),
+                                     i18n("Create new folder in:\n%1" ,  where),
+                                     name, &ok, this);
+        if (ok) {
+            if (name.startsWith('.') && !showHiddenFiles()) {
+                if (!confirmCreatingHiddenDir(name, this)) {
+                    askAgain = true;
+                    continue;
+                }
+            }
+            KDirOperator::mkdir(KIO::encodeFileName(name), true);
+            break;
+        }
+    } while (askAgain);
 }
 
 bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
