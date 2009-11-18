@@ -5,7 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
-  *          (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
+ *           (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
  *           (C) 2005, 2008 Maksim Orlovich (maksim@kde.org)  
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
@@ -586,7 +586,7 @@ WTF::PassRefPtr<NodeImpl> ElementImpl::cloneNode(bool deep)
 void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
 {
     // clone attributes
-    if (namedAttrMap)
+    if (namedAttrMap || m_needsStyleAttributeUpdate)
 	clone->attributes()->copyAttributes(attributes(true));
 
     assert( !m_needsStyleAttributeUpdate ); // ensured by previous line
