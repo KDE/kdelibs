@@ -28,8 +28,9 @@
 #include <QtGui/QLabel>
 #include <QtGui/QToolButton>
 
+#include "core/engine.h"
 #include "entry.h"
-#include "ui/downloaddialog.h"
+#include "downloaddialog.h"
 
 #include <kicon.h>
 #include <kmenu.h>

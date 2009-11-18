@@ -19,7 +19,7 @@
 */
 
 #include "provider.h"
-#include "knewstuff3/core/provider_p.h"
+#include "core/provider_p.h"
 
 #include "xmlloader.h"
 

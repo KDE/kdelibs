@@ -19,7 +19,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// own include
 #include "downloaddialog.h"
 
 #include <QtGui/QSortFilterProxyModel>
@@ -29,10 +28,12 @@
 #include <KMessageBox>
 #include <KComponentData>
 #include <KAboutData>
+#include <ktitlewidget.h>
 
-#include "itemsmodel.h"
-#include "itemsviewdelegate.h"
-#include "ui_DownloadDialog.h"
+#include "ui/itemsmodel.h"
+#include "ui/itemsviewdelegate.h"
+
+#include "ui_downloaddialog.h"
 
 const char * ConfigGroup = "DownloadDialog Settings";
 
@@ -40,8 +41,8 @@ using namespace KNS3;
 
 class DownloadDialog::Private {
 public:
+    Ui::DownloadDialog ui;
     QTimer* messageTimer;
-
     Engine *engine;
 
     KNS3::ItemsModel* model;
@@ -51,10 +52,11 @@ public:
     
     QString searchTerm;
     
-    Private(Engine* _engine)
-        : engine(_engine), model(new ItemsModel), sortingProxyModel(new QSortFilterProxyModel)
+    Private(const QString& configFile)
+        : engine(new Engine), model(new ItemsModel), sortingProxyModel(new QSortFilterProxyModel)
         , messageTimer(new QTimer)
     {
+        engine->init(configFile);
         messageTimer->setSingleShot(true);
 
         sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
@@ -67,20 +69,21 @@ public:
         delete delegate;
         delete sortingProxyModel;
         delete model;
+        delete engine;
     }
 };
 
-DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
+DownloadDialog::DownloadDialog(const QString& configFile, QWidget * parent)
         : KDialog(parent)
-        , d(new Private(engine))
+        , d(new Private(configFile))
 {
     setButtons(KDialog::None);
     QWidget* _mainWidget = new QWidget(this);
     setMainWidget(_mainWidget);
-    setupUi(_mainWidget);
+    d->ui.setupUi(_mainWidget);
 
-    closeButton->setGuiItem(KStandardGuiItem::Close);
-    connect(closeButton, SIGNAL(clicked()), SLOT(accept()));
+    d->ui.closeButton->setGuiItem(KStandardGuiItem::Close);
+    connect(d->ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
     
     // Entries have been fetched and should be shown:
     connect(d->engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), d->model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
@@ -97,12 +100,12 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     
     connect(d->messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
 
-    d->delegate = new ItemsViewDelegate(m_listView);
-    m_listView->setItemDelegate(d->delegate);
+    d->delegate = new ItemsViewDelegate(d->ui.m_listView);
+    d->ui.m_listView->setItemDelegate(d->delegate);
     connect(d->delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::Entry&)),
             d->engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::Entry&)));
 
-    m_listView->setModel(d->sortingProxyModel);
+    d->ui.m_listView->setModel(d->sortingProxyModel);
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
@@ -112,15 +115,15 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
 
     // FIXME set sorting options in m_sortCombo, make the sortFilterProxyModel use the sorting
     // maybe also clear the list of entries and ask providers to refetch them (either from cache or dynamically)
-    m_sortCombo->insertItem(Provider::Rating, i18nc("Sorting order of the list of items in get hot new stuff", "Rating"));
-    m_sortCombo->insertItem(Provider::Newest, i18nc("Sorting order of the list of items in get hot new stuff", "Newest"));
-    m_sortCombo->insertItem(Provider::Downloads, i18nc("Sorting order of the list of items in get hot new stuff", "Most Downloads"));
-    m_sortCombo->insertItem(Provider::Alphabetical, i18nc("Sorting order of the list of items in get hot new stuff", "Alphabetical"));
-    m_sortCombo->insertItem(Provider::Installed, i18nc("Sorting order of the list of items in get hot new stuff", "Installed only"));
+    d->ui.m_sortCombo->insertItem(Provider::Rating, i18nc("Sorting order of the list of items in get hot new stuff", "Rating"));
+    d->ui.m_sortCombo->insertItem(Provider::Newest, i18nc("Sorting order of the list of items in get hot new stuff", "Newest"));
+    d->ui.m_sortCombo->insertItem(Provider::Downloads, i18nc("Sorting order of the list of items in get hot new stuff", "Most Downloads"));
+    d->ui.m_sortCombo->insertItem(Provider::Alphabetical, i18nc("Sorting order of the list of items in get hot new stuff", "Alphabetical"));
+    d->ui.m_sortCombo->insertItem(Provider::Installed, i18nc("Sorting order of the list of items in get hot new stuff", "Installed only"));
     
-    connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
-    connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
-    connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
+    connect(d->ui.m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
+    connect(d->ui.m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
+    connect(d->ui.m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
     /*
     KMenu * collabMenu = new KMenu(m_collaborationButton);
@@ -155,15 +158,15 @@ DownloadDialog::DownloadDialog(Engine* engine, QWidget * parent)
     setMinimumSize(700, 400);
 
     setCaption(i18n("Get Hot New Stuff"));
-    m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
+    d->ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
                                  "%1 Add-On Installer",
                                  KGlobal::activeComponent().aboutData()->programName()));
-    m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
+    d->ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    connect(m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
+    connect(d->ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
     
-    // FIXME connect(d->engine, SIGNAL(signalJobStarted(KJob*)), progressIndicator, SLOT(addJob(KJob*)));
-    connect(d->model, SIGNAL(jobStarted(KJob*, const QString&)), progressIndicator, SLOT(addJob(KJob*, const QString&)));
+    // FIXME connect(d->engine, SIGNAL(signalJobStarted(KJob*)), d->ui.progressIndicator, SLOT(addJob(KJob*)));
+    connect(d->model, SIGNAL(jobStarted(KJob*, const QString&)), d->ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -186,7 +189,7 @@ void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageTy
     d->messageTimer->stop();
 
     // set text to messageLabel
-    m_titleWidget->setComment(msg, type);
+    d->ui.m_titleWidget->setComment(msg, type);
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
@@ -197,7 +200,7 @@ void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageTy
 
 void DownloadDialog::slotResetMessage() // SLOT
 {
-    m_titleWidget->setComment(QString());
+    d->ui.m_titleWidget->setComment(QString());
 }
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
@@ -209,9 +212,9 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 {
     d->model->clearEntries();
     if (sortType == Provider::Installed) {
-        m_searchEdit->clear();
+        d->ui.m_searchEdit->clear();
     }
-    m_searchEdit->setEnabled(sortType != Provider::Installed);
+    d->ui.m_searchEdit->setEnabled(sortType != Provider::Installed);
     
     d->engine->setSortMode((Provider::SortMode)sortType);
     d->engine->reloadEntries();
@@ -219,19 +222,19 @@ void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 
 void DownloadDialog::slotUpdateSearch()
 {
-    if (d->searchTerm == m_searchEdit->text().trimmed()) {
+    if (d->searchTerm == d->ui.m_searchEdit->text().trimmed()) {
         return;
     }
-    d->searchTerm = m_searchEdit->text().trimmed();
+    d->searchTerm = d->ui.m_searchEdit->text().trimmed();
 }
 
 void DownloadDialog::slotSearchTextChanged()
 {
-    if (d->searchTerm == m_searchEdit->text().trimmed()) {
+    if (d->searchTerm == d->ui.m_searchEdit->text().trimmed()) {
         return;
     }
-    d->searchTerm = m_searchEdit->text().trimmed();
-    d->engine->setSearchTerm(m_searchEdit->text().trimmed());
+    d->searchTerm = d->ui.m_searchEdit->text().trimmed();
+    d->engine->setSearchTerm(d->ui.m_searchEdit->text().trimmed());
 }
 
 void DownloadDialog::slotInfo(QString provider, QString server, QString version)
@@ -272,7 +275,7 @@ void DownloadDialog::slotError(const QString& message)
 
 void DownloadDialog::scrollbarValueChanged(int value)
 {
-    if ((double)value/m_listView->verticalScrollBar()->maximum() > 0.9) {
+    if ((double)value/d->ui.m_listView->verticalScrollBar()->maximum() > 0.9) {
         d->engine->slotRequestMoreData();
     }
 }

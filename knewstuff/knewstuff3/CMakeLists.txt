@@ -11,12 +11,12 @@ configure_file(
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${LIBATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${LIBATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${LIBATTICA_LIBRARY_DIRS})
 
 set(knewstuff3_SRCS
     author.cpp
-    client.cpp
+    downloaddialog.cpp
     entry.cpp
     knewstuffbutton.cpp
     knewstuffaction.cpp
@@ -27,7 +27,6 @@ set(knewstuff3_SRCS
     core/security.cpp
     core/xmlloader.cpp
     staticxml/staticxmlprovider.cpp
-    ui/downloaddialog.cpp
     ui/imageloader.cpp
     ui/itemsmodel.cpp
     ui/itemsviewdelegate.cpp
@@ -40,7 +39,7 @@ if(LIBATTICA_FOUND)
 endif(LIBATTICA_FOUND)
 
 kde4_add_ui_files(knewstuff3_SRCS
-    ui/DownloadDialog.ui
+    downloaddialog.ui
     ui/UploadDialog.ui
 )
 
@@ -64,7 +63,7 @@ install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAUL
 
 install(FILES
   author.h
-  client.h
+  downloaddialog.h
   entry.h
   knewstuff_export.h
   knewstuffaction.h

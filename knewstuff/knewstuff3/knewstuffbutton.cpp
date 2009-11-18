@@ -75,18 +75,7 @@ void Button::showDialog()
 {
     emit aboutToShowDialog();
 
-    /*if (!m_engine)
-    {
-        m_engine = new Engine();
-    }*/
-
-    //m_downloadDialog->setCategory(m_type);
-    //m_downloadDialog->load(m_providerList);
-
-    //m_downloadDialog->exec(); // TODO: make non-modal?
-
-    KNS3::Client *client(new KNS3::Client);
-	client->downloadDialog(this);
+    // FIXME
 
     emit dialogFinished();
 }

@@ -21,6 +21,7 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QSortFilterProxyModel>
+#include <QtGui/QApplication>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

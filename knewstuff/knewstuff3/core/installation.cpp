@@ -34,7 +34,7 @@
 #include <KLocalizedString>
 #include <KDebug>
 
-#include "knewstuff3/core/security.h"
+#include "core/security.h"
 
 
 struct KNS3::InstallationPrivate {

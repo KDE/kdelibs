@@ -279,7 +279,6 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
     emit payloadLinkLoaded(entry);
 }
 
-
 Entry::List AtticaProvider::installedEntries() const
 {
     Q_D(const AtticaProvider);

@@ -22,16 +22,13 @@
 #ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 
-#include <kdialog.h>
-#include <ktitlewidget.h>
+#include <KDialog>
 
-#include <knewstuff3/core/engine.h>
-
-#include "ui_DownloadDialog.h"
+#include <knewstuff3/entry.h>
+#include <KTitleWidget>
 
 namespace KNS3
 {
-class DownloadDialog;
 class ItemsModel;
 class ItemsViewDelegate;
 
@@ -53,14 +50,28 @@ class ItemsViewDelegate;
  *
  * @internal
  */
-class DownloadDialog : public KDialog, public Ui::DownloadDialog
+class KNEWSTUFF_EXPORT DownloadDialog :public KDialog
 {
     Q_OBJECT
 
 public:
-    DownloadDialog(Engine* engine, QWidget * parent);
+    DownloadDialog(const QString& configFile, QWidget * parent = 0);
     ~DownloadDialog();
 
+    /**
+     * The list of entries with changed status (installed/uninstalled)
+     * @return the list of entries
+     */
+    KNS3::Entry::List changedEntries();
+    
+    /**
+     * The list of entries that have been newly installed
+     * @return the list of entries
+     */
+    KNS3::Entry::List installedEntries();
+    
+    
+    
     // show a message in the bottom bar
     void displayMessage(const QString & msg,
                         KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
@@ -80,7 +91,6 @@ private Q_SLOTS:
 
     void slotInfo(QString provider, QString server, QString version);
     void slotError(const QString& message);
-
     void scrollbarValueChanged(int value);
     
 Q_SIGNALS:
@@ -90,8 +100,6 @@ protected:
     virtual void hideEvent(QHideEvent * event);
 
 private:
-    void populateSortCombo(const Provider * provider);
-
     class Private;
     Private *const d;
 };
