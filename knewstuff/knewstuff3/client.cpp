@@ -21,7 +21,6 @@
 #include "core/engine.h"
 #include "ui/downloaddialog.h"
 #include "ui/uploaddialog.h"
-#include "ui/providerdialog.h"
 
 #include <kcomponentdata.h>
 #include <kdebug.h>
@@ -60,7 +59,6 @@ public:
         command_download
     };
 
-    Command command;
     
     bool init(const QString & config);
 
@@ -70,13 +68,14 @@ public:
     static QHash<QString, QPointer<KDialog> > s_dialogs;
 
     QWidget* parent;
+    Client* p;
+    Command command;
     QPointer<UploadDialog> uploaddialog;
     QPointer<DownloadDialog> downloaddialog;
     QString m_uploadfile;
     Entry uploadedEntry;
     Provider::List providers;
     bool modal;
-    Client* p;
     QSet<Entry> changedEntries;
     QEventLoop* loop;
     Engine* engine;

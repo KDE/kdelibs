@@ -1,11 +1,18 @@
 project(knewstuff3)
 
-find_package(Attica REQUIRED)
+# Try to find Attica
+macro_optional_find_package(LibAttica)
+macro_bool_to_01(LIBATTICA_FOUND HAVE_LIBATTICA)
+macro_log_feature(LIBATTICA_FOUND "libattica" "A library to access Open Collaboration Service providers" "http://kde.org" FALSE "" "Required to access OSC providers in get hot new stuff.")
+configure_file(
+   ${CMAKE_CURRENT_SOURCE_DIR}/config-knewstuff3.h.cmake
+   ${CMAKE_CURRENT_BINARY_DIR}/config-knewstuff3.h
+)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${ATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
-link_directories(${ATTICA_LIBRARY_DIRS})
+include_directories(${LIBATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+link_directories(${LIBATTICA_LIBRARY_DIRS})
 
 set(knewstuff3_SRCS
     author.cpp
@@ -13,7 +20,6 @@ set(knewstuff3_SRCS
     entry.cpp
     knewstuffbutton.cpp
     knewstuffaction.cpp
-    attica/atticaprovider.cpp
     core/cache.cpp
     core/engine.cpp
     core/installation.cpp
@@ -27,8 +33,11 @@ set(knewstuff3_SRCS
     ui/itemsviewdelegate.cpp
     ui/progressindicator.cpp
     ui/uploaddialog.cpp
-    #ui/providerdialog.cpp
 )
+
+if(LIBATTICA_FOUND)
+    set(knewstuff3_SRCS ${knewstuff3_SRCS} attica/atticaprovider.cpp)
+endif(LIBATTICA_FOUND)
 
 kde4_add_ui_files(knewstuff3_SRCS
     ui/DownloadDialog.ui
@@ -41,7 +50,7 @@ target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
     ${KDE4_KUTILS_LIBS}
-    ${ATTICA_LIBRARIES}
+    ${LIBATTICA_LIBRARIES}
 )
 
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY} )
