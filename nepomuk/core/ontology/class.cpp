@@ -313,6 +313,12 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Class::rangeOf()
 }
 
 
+QList<Nepomuk::Types::Property> Nepomuk::Types::Class::rangeOf() const
+{
+    return const_cast<Class*>(this)->rangeOf();
+}
+
+
 QList<Nepomuk::Types::Property> Nepomuk::Types::Class::domainOf()
 {
     if ( d ) {
@@ -322,6 +328,12 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Class::domainOf()
     else {
         return QList<Nepomuk::Types::Property>();
     }
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Class::domainOf() const
+{
+    return const_cast<Class*>(this)->domainOf();
 }
 
 
@@ -342,6 +354,12 @@ Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByName( const QStrin
 }
 
 
+Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByName( const QString& name ) const
+{
+    return const_cast<Class*>(this)->findPropertyByName(name);
+}
+
+
 Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByLabel( const QString& label, const QString& language )
 {
     if ( d ) {
@@ -359,6 +377,12 @@ Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByLabel( const QStri
 }
 
 
+Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByLabel( const QString& label, const QString& language ) const
+{
+    return const_cast<Class*>(this)->findPropertyByLabel( label, language );
+}
+
+
 QList<Nepomuk::Types::Class> Nepomuk::Types::Class::parentClasses()
 {
     if ( d ) {
@@ -368,6 +392,12 @@ QList<Nepomuk::Types::Class> Nepomuk::Types::Class::parentClasses()
     else {
         return QList<Nepomuk::Types::Class>();
     }
+}
+
+
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::parentClasses() const
+{
+    return const_cast<Class*>(this)->parentClasses();
 }
 
 
@@ -383,6 +413,12 @@ QList<Nepomuk::Types::Class> Nepomuk::Types::Class::subClasses()
 }
 
 
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::subClasses() const
+{
+    return const_cast<Class*>(this)->subClasses();
+}
+
+
 QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allParentClasses()
 {
     if ( d ) {
@@ -395,6 +431,12 @@ QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allParentClasses()
 }
 
 
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allParentClasses() const
+{
+    return const_cast<Class*>(this)->allParentClasses();
+}
+
+
 QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allSubClasses()
 {
     if ( d ) {
@@ -404,6 +446,12 @@ QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allSubClasses()
     else {
         return QList<Nepomuk::Types::Class>();
     }
+}
+
+
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allSubClasses() const
+{
+    return const_cast<Class*>(this)->allSubClasses();
 }
 
 
@@ -429,6 +477,12 @@ bool Nepomuk::Types::Class::isParentOf( const Class& other )
 }
 
 
+bool Nepomuk::Types::Class::isParentOf( const Class& other ) const
+{
+    return const_cast<Class*>(this)->isParentOf( other );
+}
+
+
 bool Nepomuk::Types::Class::isSubClassOf( const Class& other )
 {
     if ( d ) {
@@ -449,6 +503,13 @@ bool Nepomuk::Types::Class::isSubClassOf( const Class& other )
 
     return false;
 }
+
+
+bool Nepomuk::Types::Class::isSubClassOf( const Class& other ) const
+{
+    return const_cast<Class*>(this)->isSubClassOf( other );
+}
+
 
 
 

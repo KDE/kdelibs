@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-   Copyright (c) 2007 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2007-2009 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -92,6 +92,23 @@ namespace Nepomuk {
             QString label( const QString& language = KGlobal::locale()->language() );
 
             /**
+             * Retrieve the label of the entity (rdfs:label)
+             *
+             * \param language The code of the language to use. Defaults to the session
+             *                 language configured in KDE. As of KDE 4.3 only the currently
+             *                 configured language is loaded to save memory.
+             *
+             * \return The label translated into \p language or the default fallback label
+             * if no translation is available or the name() if no label could be found
+             * at all.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            QString label( const QString& language = KGlobal::locale()->language() ) const;
+
+            /**
              * Retrieve the comment of the entity (rdfs:comment)
              *
              * \param language The code of the language to use. Defaults to the session
@@ -105,6 +122,23 @@ namespace Nepomuk {
             QString comment( const QString& language = KGlobal::locale()->language() );
 
             /**
+             * Retrieve the comment of the entity (rdfs:comment)
+             *
+             * \param language The code of the language to use. Defaults to the session
+             *                 language configured in KDE. As of KDE 4.3 only the currently
+             *                 configured language is loaded to save memory.
+             *
+             * \return The comment translated into \p language or the default fallback comment
+             * if no translation is available or an empty string if no comment could be found
+             * at all.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            QString comment( const QString& language = KGlobal::locale()->language() ) const;
+
+            /**
              * Retrieve the icon stored for the entity (nao:hasSymbol)
              *
              * If no symbol is defined for the entity a null icon will be returned.
@@ -112,6 +146,17 @@ namespace Nepomuk {
              * \since 4.1
              */
             QIcon icon();
+
+            /**
+             * Retrieve the icon stored for the entity (nao:hasSymbol)
+             *
+             * If no symbol is defined for the entity a null icon will be returned.
+             *
+             * Const version.
+             *
+             * \since 4.4
+             */
+            QIcon icon() const;
 
             /**
              * Is this a valid Entity, i.e. has it a valid URI.
@@ -127,6 +172,16 @@ namespace Nepomuk {
              * be loaded from the Nepomuk store.
              */
             bool isAvailable();
+
+            /**
+             * Is this Entity available locally, i.e. could its properties
+             * be loaded from the Nepomuk store.
+             *
+             * Const version.
+             *
+             * \since 4.4
+             */
+            bool isAvailable() const;
 
             /**
              * The Types classes are optimized for performance under the
@@ -169,7 +224,7 @@ namespace Nepomuk {
 
         inline uint qHash( const Entity& c )
         {
-            return qHash( c.uri().toString() );
+            return qHash( c.uri() );
         }
     }
 }

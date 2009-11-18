@@ -20,6 +20,7 @@
 #include "entity.h"
 #include "entity_p.h"
 #include "resourcemanager.h"
+#include "nrdo.h"
 
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
@@ -202,6 +203,12 @@ QString Nepomuk::Types::Entity::label( const QString& language )
 }
 
 
+QString Nepomuk::Types::Entity::label( const QString& language ) const
+{
+    return const_cast<Entity*>(this)->label( language );
+}
+
+
 QString Nepomuk::Types::Entity::comment( const QString& language )
 {
     if ( d ) {
@@ -221,6 +228,12 @@ QString Nepomuk::Types::Entity::comment( const QString& language )
 }
 
 
+QString Nepomuk::Types::Entity::comment( const QString& language ) const
+{
+    return const_cast<Entity*>(this)->comment( language );
+}
+
+
 QIcon Nepomuk::Types::Entity::icon()
 {
     if ( d ) {
@@ -231,6 +244,12 @@ QIcon Nepomuk::Types::Entity::icon()
     else {
         return QIcon();
     }
+}
+
+
+QIcon Nepomuk::Types::Entity::icon() const
+{
+    return const_cast<Entity*>(this)->icon();
 }
 
 
@@ -249,6 +268,12 @@ bool Nepomuk::Types::Entity::isAvailable()
     else {
         return false;
     }
+}
+
+
+bool Nepomuk::Types::Entity::isAvailable() const
+{
+    return const_cast<Entity*>(this)->isAvailable();
 }
 
 

@@ -48,7 +48,7 @@ namespace Nepomuk {
          * to be static and never changed during their lifetime.
          *
          * \author Sebastian Trueg <trueg@kde.org>
-         */ 
+         */
         class NEPOMUK_EXPORT Property : public Entity
         {
         public:
@@ -92,12 +92,36 @@ namespace Nepomuk {
             QList<Property> parentProperties();
 
             /**
+             * Each property can have multiple parent properties.
+             * \return A list of all parent properties of this property.
+             * If the list is emppty it means that the property has no direct
+             * parents, i.e. it is derived from rdf:Resource.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            QList<Property> parentProperties() const;
+
+            /**
              * \return A list of all properties that have this property as a parent.
              * Be aware that this list can never be final since other ontologies
              * that have not been loaded yet may contain properties that are derived
              * from this property.
              */
             QList<Property> subProperties();
+
+            /**
+             * \return A list of all properties that have this property as a parent.
+             * Be aware that this list can never be final since other ontologies
+             * that have not been loaded yet may contain properties that are derived
+             * from this property.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            QList<Property> subProperties() const;
 
             /**
              * The inverse property (nrl:inverseProperty).
@@ -107,12 +131,35 @@ namespace Nepomuk {
             Property inverseProperty();
 
             /**
+             * The inverse property (nrl:inverseProperty).
+             * \return A Property instance representing the inverse property of this one
+             * or 0 if none was specified in the ontology.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            Property inverseProperty() const;
+
+            /**
              * The range of the property.
              * \return The range of the property or an invalid Class in case
              * the range of this poperty is a literal.
              * \sa literalRange
              */
             Class range();
+
+            /**
+             * The range of the property.
+             * \return The range of the property or an invalid Class in case
+             * the range of this poperty is a literal.
+             * \sa literalRange
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            Class range() const;
 
             /**
              * If the rage of this property is a literal (i.e. range returns an invalid Class)
@@ -126,9 +173,33 @@ namespace Nepomuk {
             Literal literalRangeType();
 
             /**
+             * If the rage of this property is a literal (i.e. range returns an invalid Class)
+             * this method provides the literal type.
+             *
+             * \returns the literal type of this property or an empty, invalid Literal
+             * if the range is a Class.
+             *
+             * \sa range
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            Literal literalRangeType() const;
+
+            /**
              * The domain of the property.
              */
             Class domain();
+
+            /**
+             * The domain of the property.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            Class domain() const;
 
             /**
              * The cardinality of this property as specified by nrl:cardinality.
@@ -138,6 +209,17 @@ namespace Nepomuk {
             int cardinality();
 
             /**
+             * The cardinality of this property as specified by nrl:cardinality.
+             *
+             * \return the cardinality of the property or -1 if none was set.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            int cardinality() const;
+
+            /**
              * The minimum cardinality of this property as specified by nrl:minCardinality.
              *
              * \return the minimum cardinality of the property or -1 if none was set.
@@ -145,11 +227,33 @@ namespace Nepomuk {
             int minCardinality();
 
             /**
+             * The minimum cardinality of this property as specified by nrl:minCardinality.
+             *
+             * \return the minimum cardinality of the property or -1 if none was set.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            int minCardinality() const;
+
+            /**
              * The maximum cardinality of this property as specified by nrl:maxCardinality.
              *
              * \return the maximum cardinality of the property or -1 if none was set.
              */
             int maxCardinality();
+
+            /**
+             * The maximum cardinality of this property as specified by nrl:maxCardinality.
+             *
+             * \return the maximum cardinality of the property or -1 if none was set.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            int maxCardinality() const;
 
             /**
              * Check if a property inherits this property. This is a recursive method which
@@ -160,12 +264,36 @@ namespace Nepomuk {
             bool isParentOf( const Property& other );
 
             /**
+             * Check if a property inherits this property. This is a recursive method which
+             * does not only check direct child propertyes.
+             *
+             * \return true if other is derived from this property, false otherwise.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            bool isParentOf( const Property& other ) const;
+
+            /**
              * Check if this property is derived from another property. This is a recursive method which
              * does not only check direct child propertyes.
              *
              * \return true if this property is derived from other, false otherwise.
              */
             bool isSubPropertyOf( const Property& other );
+
+            /**
+             * Check if this property is derived from another property. This is a recursive method which
+             * does not only check direct child propertyes.
+             *
+             * \return true if this property is derived from other, false otherwise.
+             *
+             * Const version
+             *
+             * \since 4.4
+             */
+            bool isSubPropertyOf( const Property& other ) const;
         };
     }
 }
@@ -184,7 +312,7 @@ namespace Nepomuk {
      * with a range. The latter one can be a literal in addition to a Class.
      *
      * \deprecated in favor of Nepomuk::Types::Property
-     */ 
+     */
     class KDE_DEPRECATED NEPOMUK_EXPORT Property : public Entity
     {
     public:

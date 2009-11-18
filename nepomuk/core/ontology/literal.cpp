@@ -25,30 +25,41 @@
 
 #include <Soprano/Vocabulary/RDFS>
 
+#include <kglobal.h>
+
 
 namespace {
-QHash<QString, QVariant::Type> s_xmlSchemaTypes;
+typedef QHash<QString, QVariant::Type> XmlSchemaMap;
+
+K_GLOBAL_STATIC(XmlSchemaMap, s_xmlSchemaTypes)
 
 void initXmlSchemaTypes() {
-    if( s_xmlSchemaTypes.isEmpty() ) {
-        s_xmlSchemaTypes.insert( "int", QVariant::Int );
-        s_xmlSchemaTypes.insert( "integer", QVariant::Int );
-        s_xmlSchemaTypes.insert( "negativeInteger", QVariant::Int );
-        s_xmlSchemaTypes.insert( "decimal", QVariant::Int );
-        s_xmlSchemaTypes.insert( "short", QVariant::Int );
-        s_xmlSchemaTypes.insert( "long", QVariant::LongLong );
-        s_xmlSchemaTypes.insert( "unsignedInt", QVariant::UInt );
-        s_xmlSchemaTypes.insert( "unsignedShort", QVariant::UInt );
-        s_xmlSchemaTypes.insert( "unsignedLong", QVariant::ULongLong );
-        s_xmlSchemaTypes.insert( "boolean", QVariant::Bool );
-        s_xmlSchemaTypes.insert( "double", QVariant::Double );
-        s_xmlSchemaTypes.insert( "float", QVariant::Double );
-        s_xmlSchemaTypes.insert( "string", QVariant::String );
-        s_xmlSchemaTypes.insert( "date", QVariant::Date );
-        s_xmlSchemaTypes.insert( "time", QVariant::Time );
-        s_xmlSchemaTypes.insert( "dateTime", QVariant::DateTime );
-        //    s_xmlSchemaTypes.insert( "", QVariant::Url );
+    if( s_xmlSchemaTypes->isEmpty() ) {
+        s_xmlSchemaTypes->insert( "int", QVariant::Int );
+        s_xmlSchemaTypes->insert( "integer", QVariant::Int );
+        s_xmlSchemaTypes->insert( "negativeInteger", QVariant::Int );
+        s_xmlSchemaTypes->insert( "decimal", QVariant::Int );
+        s_xmlSchemaTypes->insert( "short", QVariant::Int );
+        s_xmlSchemaTypes->insert( "long", QVariant::LongLong );
+        s_xmlSchemaTypes->insert( "unsignedInt", QVariant::UInt );
+        s_xmlSchemaTypes->insert( "unsignedShort", QVariant::UInt );
+        s_xmlSchemaTypes->insert( "unsignedLong", QVariant::ULongLong );
+        s_xmlSchemaTypes->insert( "boolean", QVariant::Bool );
+        s_xmlSchemaTypes->insert( "double", QVariant::Double );
+        s_xmlSchemaTypes->insert( "float", QVariant::Double );
+        s_xmlSchemaTypes->insert( "string", QVariant::String );
+        s_xmlSchemaTypes->insert( "date", QVariant::Date );
+        s_xmlSchemaTypes->insert( "time", QVariant::Time );
+        s_xmlSchemaTypes->insert( "dateTime", QVariant::DateTime );
+        //    s_xmlSchemaTypes->insert( "", QVariant::Url );
     }
+}
+
+const XmlSchemaMap& xmlSchemaTypes()
+{
+    if(s_xmlSchemaTypes->isEmpty())
+        initXmlSchemaTypes();
+    return *s_xmlSchemaTypes;
 }
 }
 
@@ -78,8 +89,8 @@ Nepomuk::Types::Literal::Literal( const QUrl& dataType )
         d->dataType = QVariant::String;
     }
     else {
-        QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.constFind( dataType.fragment() );
-        if ( it != s_xmlSchemaTypes.constEnd() ) {
+        QHash<QString, QVariant::Type>::const_iterator it = xmlSchemaTypes().constFind( dataType.fragment() );
+        if ( it != xmlSchemaTypes().constEnd() ) {
             d->dataType = it.value();
         }
     }
@@ -139,8 +150,8 @@ Nepomuk::Literal::Literal( const QUrl& dataType )
     initXmlSchemaTypes();
 
     // check if it is a known type, otherwise leave it as QVariant::Invalid
-    QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.constFind( dataType.fragment() );
-    if ( it != s_xmlSchemaTypes.constEnd() ) {
+    QHash<QString, QVariant::Type>::const_iterator it = xmlSchemaTypes().constFind( dataType.fragment() );
+    if ( it != xmlSchemaTypes().constEnd() ) {
         d->dataType = it.value();
     }
 }

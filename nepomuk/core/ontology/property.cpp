@@ -182,6 +182,12 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentProperties()
 }
 
 
+QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentProperties() const
+{
+    return const_cast<Property*>(this)->parentProperties();
+}
+
+
 QList<Nepomuk::Types::Property> Nepomuk::Types::Property::subProperties()
 {
     if ( d ) {
@@ -191,6 +197,12 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Property::subProperties()
     else {
         return QList<Nepomuk::Types::Property>();
     }
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Property::subProperties() const
+{
+    return const_cast<Property*>(this)->subProperties();
 }
 
 
@@ -204,6 +216,12 @@ Nepomuk::Types::Property Nepomuk::Types::Property::inverseProperty()
     else {
         return Property();
     }
+}
+
+
+Nepomuk::Types::Property Nepomuk::Types::Property::inverseProperty() const
+{
+    return const_cast<Property*>(this)->inverseProperty();
 }
 
 
@@ -239,6 +257,12 @@ Nepomuk::Types::Class Nepomuk::Types::Property::range()
 }
 
 
+Nepomuk::Types::Class Nepomuk::Types::Property::range() const
+{
+    return const_cast<Property*>(this)->range();
+}
+
+
 Nepomuk::Types::Literal Nepomuk::Types::Property::literalRangeType()
 {
     if ( d ) {
@@ -269,6 +293,12 @@ Nepomuk::Types::Literal Nepomuk::Types::Property::literalRangeType()
 }
 
 
+Nepomuk::Types::Literal Nepomuk::Types::Property::literalRangeType() const
+{
+    return const_cast<Property*>(this)->literalRangeType();
+}
+
+
 Nepomuk::Types::Class Nepomuk::Types::Property::domain()
 {
     if ( d ) {
@@ -296,6 +326,12 @@ Nepomuk::Types::Class Nepomuk::Types::Property::domain()
 }
 
 
+Nepomuk::Types::Class Nepomuk::Types::Property::domain() const
+{
+    return const_cast<Property*>(this)->domain();
+}
+
+
 int Nepomuk::Types::Property::cardinality()
 {
     if ( d ) {
@@ -305,6 +341,12 @@ int Nepomuk::Types::Property::cardinality()
     else {
         return -1;
     }
+}
+
+
+int Nepomuk::Types::Property::cardinality() const
+{
+    return const_cast<Property*>(this)->cardinality();
 }
 
 
@@ -325,6 +367,12 @@ int Nepomuk::Types::Property::minCardinality()
 }
 
 
+int Nepomuk::Types::Property::minCardinality() const
+{
+    return const_cast<Property*>(this)->minCardinality();
+}
+
+
 int Nepomuk::Types::Property::maxCardinality()
 {
     if ( d ) {
@@ -339,6 +387,12 @@ int Nepomuk::Types::Property::maxCardinality()
     else {
         return -1;
     }
+}
+
+
+int Nepomuk::Types::Property::maxCardinality() const
+{
+    return const_cast<Property*>(this)->maxCardinality();
 }
 
 
@@ -364,6 +418,12 @@ bool Nepomuk::Types::Property::isParentOf( const Property& other )
 }
 
 
+bool Nepomuk::Types::Property::isParentOf( const Property& other ) const
+{
+    return const_cast<Property*>(this)->isParentOf( other );
+}
+
+
 bool Nepomuk::Types::Property::isSubPropertyOf( const Property& other )
 {
     if ( d ) {
@@ -385,6 +445,11 @@ bool Nepomuk::Types::Property::isSubPropertyOf( const Property& other )
     return false;
 }
 
+
+bool Nepomuk::Types::Property::isSubPropertyOf( const Property& other ) const
+{
+    return const_cast<Property*>(this)->isSubPropertyOf( other );
+}
 
 
 
