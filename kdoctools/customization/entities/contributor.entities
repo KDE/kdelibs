@@ -272,6 +272,8 @@
 <!ENTITY Erwan.Loisant.mail '<email>erwan@loisant.org</email>'>
 <!ENTITY Neil.Lucock '<personname><firstname>Neil</firstname><surname>Lucock</surname></personname>'>
 <!ENTITY Neil.Lucock.mail '<email>neil@nlucock.freeserve.co.uk</email>'>
+<!ENTITY Burkhard.Lueck '<personname><firstname>Burkhard</firstname><surname>Lück</surname></personname>'>
+<!ENTITY Burkhard.Lueck.mail '<email>lueck@hube-lueck.de</email>'>
 <!ENTITY Anders.Lund '<personname><firstname>Anders</firstname><surname>Lund</surname></personname>'>
 <!ENTITY Anders.Lund.mail '<email>anders@alweb.dk</email>'>
 
