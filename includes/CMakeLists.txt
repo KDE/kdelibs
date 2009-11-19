@@ -855,6 +855,7 @@ install( FILES
   KTextEditor/Editor
   KTextEditor/EditorChooser
   KTextEditor/Factory
+  KTextEditor/HighlightInterface
   KTextEditor/MarkInterface
   KTextEditor/ModificationInterface
   KTextEditor/Plugin
