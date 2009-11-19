@@ -23,9 +23,9 @@
 
 #include "accessmanagerreply_p.h"
 #include "accessmanager.h"
+#include "job.h"
 
 #include <kdebug.h>
-#include <job.h>
 #include <klocale.h>
 
 #include <QSslConfiguration>
@@ -38,15 +38,11 @@ class AccessManagerReply::AccessManagerReplyPrivate
 {
 public:
     AccessManagerReplyPrivate(AccessManagerReply *qq)
-    : q(qq)
-    , m_kioJob(0)
-    , m_data()
-    , m_metaDataRead(false)
-    {}
+    : q(qq),
+      m_metaDataRead(false) {}
 
     void _k_redirection(KIO::Job *job, const KUrl &url);
     void _k_percent(KJob *job, unsigned long percent);
-    void _k_permanentRedirection(KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl);
 
     AccessManagerReply *q;
 
@@ -56,7 +52,7 @@ public:
 };
 
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::Job *kioJob, QObject *parent)
-    : QNetworkReply(parent), d(new AccessManagerReply::AccessManagerReplyPrivate(this))
+                   :QNetworkReply(parent), d(new AccessManagerReply::AccessManagerReplyPrivate(this))
 
 {
     d->m_kioJob = kioJob;
@@ -75,8 +71,6 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
         QTimer::singleShot(0, this, SIGNAL(finished()));
     } else {
         connect(kioJob, SIGNAL(redirection(KIO::Job*, const KUrl&)), SLOT(_k_redirection(KIO::Job*, const KUrl&)));
-        connect(kioJob, SIGNAL(permanentRedirection(KIO::Job*, const KUrl&, const KUrl&)),
-            SLOT(_k_permanentRedirection(KIO::Job*, const KUrl&, const KUrl&)));
         connect(kioJob, SIGNAL(percent(KJob*, unsigned long)), SLOT(_k_percent(KJob*, unsigned long)));
         connect(kioJob, SIGNAL(data(KIO::Job *, const QByteArray &)),
             SLOT(appendData(KIO::Job *, const QByteArray &)));
@@ -106,7 +100,6 @@ qint64 AccessManagerReply::bytesAvailable() const
 
 qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 {
-//     kDebug();
     const qint64 length = qMin(qint64(d->m_data.length()), maxSize);
     if (length) {
         qMemCopy(data, d->m_data.constData(), length);
@@ -118,8 +111,6 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 
 void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
 {
-//     kDebug();
-
     if (!d->m_metaDataRead) {
         const QString responseCode = kioJob->queryMetaData("responsecode");
         if (!responseCode.isEmpty()) 
@@ -127,16 +118,11 @@ void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
 
         const QString headers = kioJob->queryMetaData("HTTP-Headers");
         if (!headers.isEmpty()) {
-            QStringList headerList = headers.split('\n');
-            Q_FOREACH(const QString &header, headerList) {
-                if (header.startsWith(QLatin1String("set-cookie"), Qt::CaseInsensitive)) {
-                    //kDebug() << "Ignored header: " << header;
-                    continue;
-                }
-                const QStringList headerPair = header.split(": ");
+            QStringListIterator it (headers.split('\n'));
+            while (it.hasNext()) {
+                const QStringList headerPair = it.next().split(QLatin1String(":"));
                 if (headerPair.size() == 2) {
-                    //kDebug() << headerPair.at(0) << headerPair.at(1);
-                    setRawHeader(headerPair.at(0).toUtf8(), headerPair.at(1).toUtf8());
+                    setRawHeader(headerPair.at(0).trimmed().toUtf8(), headerPair.at(1).trimmed().toUtf8());
                 }
             }
         }
@@ -153,8 +139,6 @@ void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
 void AccessManagerReply::setMimeType(KIO::Job *kioJob, const QString &mimeType)
 {
     Q_UNUSED(kioJob);
-
-//     kDebug() << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
 }
 
@@ -241,14 +225,6 @@ void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsign
 {
     qulonglong bytes = job->totalAmount(KJob::Bytes);
     emit q->downloadProgress(bytes * ((double)percent / 100), bytes);
-}
-
-void AccessManagerReply::AccessManagerReplyPrivate::_k_permanentRedirection(KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl)
-{
-    Q_UNUSED(fromUrl);
-    if (q->attribute(QNetworkRequest::HttpStatusCodeAttribute).isNull())
-        q->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 301);
-    _k_redirection(job, toUrl);
 }
 
 }
