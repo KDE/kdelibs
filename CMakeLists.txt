@@ -92,7 +92,8 @@ macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactiv
 set(SOPRANO_MIN_VERSION "2.3.67")
 macro_optional_find_package(Soprano)
 macro_log_feature(Soprano_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
-macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is necessary to build the Nepomuk semantic desktop system.")
+macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is required to build the Nepomuk semantic desktop system.")
+macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
 
 macro_optional_find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma remote widgets functionality.")
@@ -221,10 +222,10 @@ check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 
-if(Soprano_FOUND AND SOPRANO_PLUGIN_RAPTORPARSER_FOUND)
+if(Soprano_FOUND AND SOPRANO_PLUGIN_RAPTORPARSER_FOUND AND SOPRANO_PLUGIN_REDLANDBACKEND_FOUND)
   set(HAVE_NEPOMUK true)
   add_subdirectory(nepomuk)
-endif(Soprano_FOUND AND SOPRANO_PLUGIN_RAPTORPARSER_FOUND)
+endif(Soprano_FOUND AND SOPRANO_PLUGIN_RAPTORPARSER_FOUND AND SOPRANO_PLUGIN_REDLANDBACKEND_FOUND)
 
 ################# list the subdirectories #################
 
