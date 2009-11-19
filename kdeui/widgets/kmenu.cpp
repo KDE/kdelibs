@@ -41,6 +41,8 @@
 #include <klocale.h>
 #include <kacceleratormanager.h>
 
+static const char *KMENU_TITLE = "kmenu_title";
+
 class KMenu::KMenuPrivate
 {
 public:
@@ -50,6 +52,7 @@ public:
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
     void showCtxMenu(const QPoint &pos);
+    void skipTitles(QKeyEvent *event);
 
     KMenu *parent;
 
@@ -189,6 +192,7 @@ QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before
     buttonAction->setIcon(icon);
 
     QWidgetAction *action = new QWidgetAction(this);
+    action->setObjectName(KMENU_TITLE);
     QToolButton *titleButton = new QToolButton(this);
     titleButton->installEventFilter(d->eventSniffer); // prevent clicks on the title of the menu
     titleButton->setDefaultAction(buttonAction);
@@ -228,6 +232,11 @@ void KMenu::keyPressEvent(QKeyEvent* e)
     if (!d->shortcuts) {
         d->keyboardModifiers = e->modifiers();
         QMenu::keyPressEvent(e);
+
+        if (e->key() == Qt::Key_Up || e->key() == Qt::Key_Down) {
+            d->skipTitles(e);
+        }
+
         return;
     }
 
@@ -247,6 +256,10 @@ void KMenu::keyPressEvent(QKeyEvent* e)
         //e->ignore();
         d->keyboardModifiers = e->modifiers();
         QMenu::keyPressEvent(e);
+
+        if (key == Qt::Key_Up || key == Qt::Key_Down) {
+            d->skipTitles(e);
+        }
         return;
     } else if ( key == Qt::Key_Shift || key == Qt::Key_Control || key == Qt::Key_Alt || key == Qt::Key_Meta )
         return QMenu::keyPressEvent(e);
@@ -517,6 +530,21 @@ void KMenu::KMenuPrivate::showCtxMenu(const QPoint &pos)
 
 
     ctxMenu->popup(parent->mapToGlobal(pos));
+}
+
+void KMenu::KMenuPrivate::skipTitles(QKeyEvent *event)
+{
+    QWidgetAction *action = qobject_cast<QWidgetAction*>(parent->activeAction());
+    QWidgetAction *firstAction = action;
+    while (action && action->objectName() == KMENU_TITLE)
+    {
+        parent->keyPressEvent(event);
+        action = qobject_cast<QWidgetAction*>(parent->activeAction());
+        if (firstAction == action) { // we looped and only found titles
+            parent->setActiveAction(0);
+            break;
+        }
+    }
 }
 
 KMenu * KMenu::contextMenuFocus( )
