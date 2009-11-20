@@ -14,8 +14,10 @@ configure_file(
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${LIBATTICA_INCLUDE_DIRS} ${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
-link_directories(${LIBATTICA_LIBRARY_DIRS})
+include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
+if(LIBATTICA_FOUND)
+    include_directories(${LIBATTICA_INCLUDE_DIRS})
+endif(LIBATTICA_FOUND)
 
 set(knewstuff3_SRCS
     author.cpp
@@ -55,6 +57,9 @@ target_link_libraries(knewstuff3
     ${LIBATTICA_LIBRARIES}
     nepomuk
 )
+if(LIBATTICA_FOUND)
+    target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES})
+endif(LIBATTICA_FOUND)
 
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
