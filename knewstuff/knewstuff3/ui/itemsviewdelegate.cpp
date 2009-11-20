@@ -158,9 +158,8 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
         KUrl link = qvariant_cast<KUrl>(index.data(ItemsModel::kHomepage));
         if (!link.isEmpty()) {
-            text += "<p><a href=\"" + link.url() + "\">" + i18nc("Link giving a detailed description for a Hot New Stuff item", "Details") + "</a></p>\n";
+            text += "<p><a href=\"" + link.url() + "\">" + i18nc("Link giving a detailed description for a Hot New Stuff item", "Visit Homepage") + "</a></p>\n";
         }
-        
 
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
         if (downloads > 0) {
