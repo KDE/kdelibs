@@ -299,8 +299,7 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
     QSize size;
 
     size.setWidth(option.fontMetrics.height() * 4);
-    //size.setHeight(qMax(option.fontMetrics.height() * 7, PreviewHeight)); // up to 6 lines of text, and two margins
-    size.setHeight(PreviewHeight);
+    size.setHeight(qMax(option.fontMetrics.height() * 7, PreviewHeight)); // up to 6 lines of text, and two margins
     return size;
 }
 
