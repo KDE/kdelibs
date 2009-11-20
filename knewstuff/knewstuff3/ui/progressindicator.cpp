@@ -25,8 +25,8 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
-#include <KJob>
-#include <KDebug>
+#include "kjob.h"
+#include "kdebug.h"
 
 #include <kiconloader.h>
 

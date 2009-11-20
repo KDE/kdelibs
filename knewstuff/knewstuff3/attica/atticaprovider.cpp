@@ -23,14 +23,14 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kio/job.h>
-#include <KCMultiDialog>
+#include <kmessagebox.h>
+//#include "kutils/kcmultidialog.h"
 
 #include <attica/providermanager.h>
 #include <attica/provider.h>
 #include <attica/listjob.h>
 #include <attica/content.h>
 #include <attica/downloaditem.h>
-#include <KMessageBox>
 
 using namespace Attica;
 
@@ -86,12 +86,14 @@ QString AtticaProvider::id() const
 void AtticaProvider::authenticationCredentialsMissing(const KNS3::Provider& )
 {
     kDebug() << "Authentication missing!";
-
+// FIXME Show autentication dialog
+    /*
     KCMultiDialog* KCM = new KCMultiDialog();
     KCM->setWindowTitle( i18n( "Open Collaboration Providers" ) );
     KCM->addModule( "attica" );
     KCM->exec();
     KCM->deleteLater();
+    */
 }
 
 bool AtticaProvider::setProviderXML(QDomElement & xmldata)
