@@ -143,19 +143,20 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             "</style></head><body><p><b>" +
             index.data(ItemsModel::kNameRole).toString() + "</b></p>\n";
 
-        QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
-            Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
-        text += summary;
-
         QString authorName = index.data(ItemsModel::kAuthorName).toString();
         QString email = index.data(ItemsModel::kAuthorEmail).toString();
         if (!authorName.isEmpty()) {
             if (email.isEmpty()) {
-                text += "<p><i>" + authorName + "</i></p>\n";
+                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + "</p>\n";
             } else {
-                text += "<p><i>" + authorName + "</i> <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
+                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + " <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
             }
         }
+        
+        QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
+            Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
+        text += summary;
+
         KUrl link = qvariant_cast<KUrl>(index.data(ItemsModel::kHomepage));
         if (!link.isEmpty()) {
             text += "<p><a href=\"" + link.url() + "\">" + i18nc("Link giving a detailed description for a Hot New Stuff item", "Visit Homepage") + "</a></p>\n";
