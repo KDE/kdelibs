@@ -35,26 +35,52 @@ class ItemsViewDelegate;
 /**
  * KNewStuff download dialog.
  *
- * The download dialog will present several categories of items to the user
+ * \section Introduction
+ *
+ * The download dialog will present items to the user
  * for installation, uninstallation and updates.
  * Preview images as well as other meta information can be seen.
- * If the GHNS provider supports DXS, then the dialog will offer an extended
- * popup menu with collaborative interactions such as ratings, removal
- * requests, comments and translation suggestions.
  *
- * Please remember when changing this class that it has to render
- * untrusted data. Do not let scripts run, make sure that data is properly escaped etc.
+ * \section knsrc knsrc Files
+ * The Dialog is configured by a .knsrc file containing the KHotNewStuff configuration.
+ * Your application should install a file called: <em>$KDEDIR/share/config/appname.knsrc</em>
+ * 
+ * The file could look like this for wallpapers:
+ * <pre>
+   [KNewStuff3]
+   ProvidersUrl=http://download.kde.org/ocs/providers.xml
+   Categories=KDE Wallpaper 1920x1200,KDE Wallpaper 1600x1200
+   StandardResource=wallpaper
+   Uncompress=archive
+ * </pre>
+ * 
+ * Uncompress can be one of: always, never or archive:
+ * <ol>
+ * <li>always: assume all downloaded files are archives and need to be extracted</li>
+ * <li>never: never try to extract the file</li>
+ * <li>archive: if the file is an archive, uncompress it, otherwise just pass it on</li>
+ * <ol>
  *
- * This class is used internally by the Engine class as part of the download
- * workflow.
- *
- * @internal
+ * You have different options to set the target install directory:
+ *   <ol><li>StandardResource: standard ressouce dir, such as <em>.kde/share/wallpapers</em>.
+ *           This is what KStandardDirs::locateLocal(name) will return.</li>
+ *       <li>TargetDir: a directory in the share/apps section, such as <em>.kde/share/apps/wallpapers</em>.
+ *           This is what KStandardDirs::locateLocal("data", name) will return.</li>
+ *   </ol>
  */
 class KNEWSTUFF_EXPORT DownloadDialog :public KDialog
 {
     Q_OBJECT
 
 public:
+    /**
+     * Create a DownloadDialog that lets the user install, update and uninstall
+     * contents. It needs the name of a .knsrc file where it can find the 
+     * KHotNewStuff configuration.
+     *
+     * @param configFile the name of the configuration file
+     * @param parent the parent of the dialog
+     */
     DownloadDialog(const QString& configFile, QWidget * parent = 0);
     ~DownloadDialog();
 
