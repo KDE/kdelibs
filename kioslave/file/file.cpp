@@ -119,7 +119,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   KComponentData componentData( "kio_file", "kdelibs4" );
   ( void ) KGlobal::locale();
 
-  kDebug(7101) << "Starting " << getpid();
+  kDebug(7101) << "Starting" << getpid();
 
   if (argc != 4)
   {
@@ -171,7 +171,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
         acl = acl_from_text( ACLString.toLatin1() );
         if ( acl_valid( acl ) == 0 ) { // let's be safe
             ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
-            kDebug(7101) << "Set ACL on: " << path << " to: " << aclToText(acl);
+            kDebug(7101) << "Set ACL on:" << path << "to:" << aclToText(acl);
         }
         acl_free( acl );
         if ( ret != 0 ) return ret; // better stop trying right away
@@ -185,7 +185,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             acl_t acl = acl_from_text( defaultACLString.toLatin1() );
             if ( acl_valid( acl ) == 0 ) { // let's be safe
                 ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
-                kDebug(7101) << "Set Default ACL on: " << path << " to: " << aclToText(acl);
+                kDebug(7101) << "Set Default ACL on:" << path << "to:" << aclToText(acl);
             }
             acl_free( acl );
         }
@@ -251,7 +251,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
     const QString path(url.toLocalFile());
 
-    kDebug(7101) << "mkdir(): " << path << ", permission = " << permissions;
+    kDebug(7101) << path << "permission=" << permissions;
 
     // Remove existing file or symlink, if requested (#151851)
     if (metaData(QLatin1String("overwrite")) == QLatin1String("true"))
@@ -350,7 +350,7 @@ void FileProtocol::get( const KUrl& url )
             {
                 canResume ();
                 processed_size = offset;
-                kDebug( 7101 ) << "Resume offset: " << KIO::number(offset);
+                kDebug(7101) << "Resume offset:" << KIO::number(offset);
             }
         }
     }
@@ -379,7 +379,7 @@ void FileProtocol::get( const KUrl& url )
        processed_size += n;
        processedSize( processed_size );
 
-       //kDebug( 7101 ) << "Processed: " << KIO::number (processed_size);
+       //kDebug(7101) << "Processed: " << KIO::number (processed_size);
     }
 
     data( QByteArray() );
@@ -409,7 +409,7 @@ int write_all(int fd, const char *buf, size_t len)
 
 void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 {
-    kDebug(7101) << "FileProtocol::open " << url.url();
+    kDebug(7101) << url;
 
     openPath = url.toLocalFile();
     KDE_struct_stat buff;
@@ -474,7 +474,7 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 
 void FileProtocol::read(KIO::filesize_t bytes)
 {
-    kDebug( 7101 ) << "File::open -- read";
+    kDebug(7101) << "File::open -- read";
     Q_ASSERT(openFd != -1);
 
     QVarLengthArray<char> buffer(bytes);
@@ -503,7 +503,7 @@ void FileProtocol::read(KIO::filesize_t bytes)
 
 void FileProtocol::write(const QByteArray &data)
 {
-    kDebug( 7101 ) << "File::open -- write";
+    kDebug(7101) << "File::open -- write";
     Q_ASSERT(openFd != -1);
 
     if (write_all(openFd, data.constData(), data.size())) {
@@ -522,7 +522,7 @@ void FileProtocol::write(const QByteArray &data)
 
 void FileProtocol::seek(KIO::filesize_t offset)
 {
-    kDebug( 7101 ) << "File::open -- seek";
+    kDebug(7101) << "File::open -- seek";
     Q_ASSERT(openFd != -1);
 
     int res = KDE_lseek(openFd, offset, SEEK_SET);
@@ -536,7 +536,7 @@ void FileProtocol::seek(KIO::filesize_t offset)
 
 void FileProtocol::close()
 {
-    kDebug( 7101 ) << "File::open -- close ";
+    kDebug(7101) << "File::open -- close ";
     Q_ASSERT(openFd != -1);
 
     ::close( openFd );
@@ -550,7 +550,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 {
     const QString dest_orig = url.toLocalFile();
 
-    kDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode;
+    kDebug(7101) << dest_orig << "mode=" << _mode;
 
     QString dest_part(dest_orig + QLatin1String(".part"));
 
@@ -566,15 +566,14 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 
         if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
-            kDebug(7101) << "FileProtocol::put : calling canResume with "
-                          << KIO::number(buff_part.st_size);
+            kDebug(7101) << "calling canResume with" << KIO::number(buff_part.st_size);
 
             // Maybe we can use this partial file for resuming
             // Tell about the size we have, and the app will tell us
             // if it's ok to resume or not.
             _flags |= canResume( buff_part.st_size ) ? KIO::Resume : KIO::DefaultFlags;
 
-            kDebug(7101) << "FileProtocol::put got answer " << (_flags & KIO::Resume);
+            kDebug(7101) << "got answer" << (_flags & KIO::Resume);
         }
     }
 
@@ -606,11 +605,11 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
             {
                 if (bMarkPartial)
                 {
-                    kDebug(7101) << "Appending .part extension to " << dest_orig;
+                    kDebug(7101) << "Appending .part extension to" << dest_orig;
                     dest = dest_part;
                     if ( bPartExists && !(_flags & KIO::Resume) )
                     {
-                        kDebug(7101) << "Deleting partial file " << dest_part;
+                        kDebug(7101) << "Deleting partial file" << dest_part;
                         QFile::remove( dest_part );
                         // Catch errors when we try to open the file.
                     }
@@ -620,7 +619,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                     dest = dest_orig;
                     if ( bOrigExists && !(_flags & KIO::Resume) )
                     {
-                        kDebug(7101) << "Deleting destination file " << dest_orig;
+                        kDebug(7101) << "Deleting destination file" << dest_orig;
                         QFile::remove( dest_orig );
                         // Catch errors when we try to open the file.
                     }
@@ -646,7 +645,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 
                 if ( fd < 0 )
                 {
-                    kDebug(7101) << "####################### COULD NOT WRITE " << dest << " _mode=" << _mode;
+                    kDebug(7101) << "####################### COULD NOT WRITE" << dest << "_mode=" << _mode;
                     kDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")";
                     if ( errno == EACCES )
                         error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
@@ -904,7 +903,7 @@ void FileProtocol::special( const QByteArray &data)
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
-    kDebug(7101) << "FileProtocol::mount _fstype=" << _fstype;
+    kDebug(7101) << "fstype=" << _fstype;
 
 #ifdef HAVE_VOLMGT
 	/*
@@ -1008,7 +1007,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             // Is the device mounted ?
             if ( mp && mount_ret == 0)
             {
-                kDebug(7101) << "mount got a warning: " << err;
+                kDebug(7101) << "mount got a warning:" << err;
                 warning( err );
                 finished();
                 return;
@@ -1284,19 +1283,19 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
         defaultAcl = acl_get_file( path.data(), ACL_TYPE_DEFAULT );
     }
     if ( acl || defaultAcl ) {
-      kDebug(7101) << path.data() << " has extended ACL entries ";
+      kDebug(7101) << path.constData() << "has extended ACL entries";
       entry.insert( KIO::UDSEntry::UDS_EXTENDED_ACL, 1 );
     }
     if ( withACL ) {
         if ( acl ) {
             const QString str = aclToText(acl);
             entry.insert( KIO::UDSEntry::UDS_ACL_STRING, str );
-            kDebug(7101) << path.data() << "ACL: " << str;
+            kDebug(7101) << path.constData() << "ACL:" << str;
         }
         if ( defaultAcl ) {
             const QString str = aclToText(defaultAcl);
             entry.insert( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING, str );
-            kDebug(7101) << path.data() << "DEFAULT ACL: " << str;
+            kDebug(7101) << path.constData() << "DEFAULT ACL:" << str;
         }
     }
     if ( acl ) acl_free( acl );
