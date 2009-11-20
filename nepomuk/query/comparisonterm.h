@@ -35,7 +35,23 @@ namespace Nepomuk {
         /**
          * \class ComparisonTerm comparisonterm.h Nepomuk/Query/ComparisonTerm
          *
-         * \brief ComparisonTerm
+         * \brief A term matching the value of a property.
+         *
+         * The %ComparisonTerm is the most important term in the query API. It can be
+         * used to match the values of properties. As such it consists of a property(),
+         * a comparator() and a subTerm().
+         *
+         * The latter can be any other term including AndTerm and OrTerm. The matching
+         * is done in one of two ways:
+         *
+         * \li A LiteralTerm as subTerm() is directly matched to the value of a literal
+         * property (see also Nepomuk::Types::Property::literalRangeType()) or to the
+         * labels of related resources in case of a property that has a resource range.
+         * \li Any other term type will be used as a sort of subquery to match the
+         * related resources. This means that the property() needs to have a resource
+         * range.
+         *
+         * For more details see the Comparator enumeration.
          *
          * \author Sebastian Trueg <trueg@kde.org>
          */
