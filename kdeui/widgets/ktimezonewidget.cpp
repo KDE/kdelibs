@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2005, S.R.Haque <srhaque@iee.org>.
+    Copyright (C) 2009, David Faure <faure@kde.org>
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -31,6 +32,8 @@
 class KTimeZoneWidget::Private
 {
 public:
+    Private() : itemsCheckable(false), singleSelection(true) {}
+
     enum Columns
     {
         CityColumn = 0,
@@ -42,6 +45,9 @@ public:
     {
         ZoneRole = Qt::UserRole + 0xF3A3CB1
     };
+
+    bool itemsCheckable;
+    bool singleSelection;
 };
 
 #ifndef KDE_USE_FINAL
@@ -53,7 +59,7 @@ static bool localeLessThan (const QString &a, const QString &b)
 
 KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   : QTreeWidget( parent ),
-    d( 0 )
+    d(new KTimeZoneWidget::Private)
 {
   // If the user did not provide a timezone database, we'll use the system default.
   setRootIsDecorated(false);
@@ -116,7 +122,23 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 
 KTimeZoneWidget::~KTimeZoneWidget()
 {
-  delete d;
+    delete d;
+}
+
+void KTimeZoneWidget::setItemsCheckable(bool enable)
+{
+    d->itemsCheckable = enable;
+    const int count = topLevelItemCount();
+    for (int row = 0; row < count; ++row) {
+        QTreeWidgetItem* listItem = topLevelItem(row);
+        listItem->setCheckState(Private::CityColumn, Qt::Unchecked);
+    }
+    QTreeWidget::setSelectionMode(QAbstractItemView::NoSelection);
+}
+
+bool KTimeZoneWidget::itemsCheckable() const
+{
+    return d->itemsCheckable;
 }
 
 QString KTimeZoneWidget::displayName( const KTimeZone &zone )
@@ -132,7 +154,7 @@ QStringList KTimeZoneWidget::selection() const
     // Do not use selectedItems() because it skips hidden items, making it
     // impossible to use a KTreeWidgetSearchLine.
     // There is no QTreeWidgetItemConstIterator, hence the const_cast :/
-    QTreeWidgetItemIterator it(const_cast<KTimeZoneWidget*>(this), QTreeWidgetItemIterator::Selected);
+    QTreeWidgetItemIterator it(const_cast<KTimeZoneWidget*>(this), d->itemsCheckable ? QTreeWidgetItemIterator::Checked : QTreeWidgetItemIterator::Selected);
     for (; *it; ++it) {
         selection.append( (*it)->data( Private::CityColumn, Private::ZoneRole ).toString() );
     }
@@ -148,28 +170,35 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
     // previously, but the underlying model only has 3 columns, the "hidden" column
     // wasn't available in there.
 
-    // Check for SingleSelection mode.
-    const bool singleSelection = (selectionMode() == SingleSelection);
+    if (!d->itemsCheckable) {
+        // Runtime compatibility for < 4.3 apps, which don't call the setMultiSelection reimplementation.
+        d->singleSelection = (QTreeWidget::selectionMode() == QAbstractItemView::SingleSelection);
+    }
 
     // Loop through all entries.
     const int rowCount = model()->rowCount(QModelIndex());
     for (int row = 0; row < rowCount; ++row) {
-        const QModelIndex index = model()->index(row, Private::CityColumn );
+        const QModelIndex index = model()->index(row, Private::CityColumn);
         const QString tzName = index.data(Private::ZoneRole).toString();
         if (tzName == zone) {
-            
-            if (singleSelection && selected) {
+
+            if (d->singleSelection && selected) {
                 clearSelection();
             }
 
-            selectionModel()->select(index, selected ? (QItemSelectionModel::Select | QItemSelectionModel::Rows) : (QItemSelectionModel::Deselect | QItemSelectionModel::Rows));
+            if (d->itemsCheckable) {
+                QTreeWidgetItem* listItem = itemFromIndex(index);
+                listItem->setCheckState(Private::CityColumn, selected ? Qt::Checked : Qt::Unchecked);
+            } else {
+                selectionModel()->select(index, selected ? (QItemSelectionModel::Select | QItemSelectionModel::Rows) : (QItemSelectionModel::Deselect | QItemSelectionModel::Rows));
+            }
 
             // Ensure the selected item is visible as appropriate.
             scrollTo( index );
 
             found = true;
 
-            if (singleSelection && selected) {
+            if (d->singleSelection && selected) {
                 break;
             }
         }
@@ -177,6 +206,38 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
 
     if ( !found )
         kDebug() << "No such zone: " << zone;
+}
+
+void KTimeZoneWidget::clearSelection()
+{
+    if (d->itemsCheckable) {
+        // Un-select all items
+        const int rowCount = model()->rowCount(QModelIndex());
+        for (int row = 0; row < rowCount; ++row) {
+            const QModelIndex index = model()->index(row, 0);
+            QTreeWidgetItem* listItem = itemFromIndex(index);
+            listItem->setCheckState(Private::CityColumn, Qt::Unchecked);
+        }
+    } else {
+        QTreeWidget::clearSelection();
+    }
+}
+
+void KTimeZoneWidget::setSelectionMode(QAbstractItemView::SelectionMode mode)
+{
+    d->singleSelection = (mode == QAbstractItemView::SingleSelection);
+    if (!d->itemsCheckable) {
+        QTreeWidget::setSelectionMode(mode);
+    }
+}
+
+QAbstractItemView::SelectionMode KTimeZoneWidget::selectionMode() const
+{
+    if (d->itemsCheckable) {
+        return d->singleSelection ? QTreeWidget::SingleSelection : QTreeWidget::MultiSelection;
+    } else {
+        return QTreeWidget::selectionMode();
+    }
 }
 
 #include "ktimezonewidget.moc"

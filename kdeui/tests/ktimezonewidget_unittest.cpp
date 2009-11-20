@@ -58,6 +58,34 @@ private Q_SLOTS:
         QCOMPARE(tzw.selection(), QStringList() << "America/New_York" << "Europe/Paris");
     }
 
+    void testCheckableItems()
+    {
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+            QSKIP("kded not running", SkipSingle);
+        }
+
+        KTimeZoneWidget tzw;
+        tzw.setItemsCheckable(true);
+        QVERIFY(tzw.topLevelItemCount() > 0);
+        QVERIFY(tzw.selectedItems().isEmpty());
+        QVERIFY(tzw.selection().isEmpty());
+
+        // Single selection mode (default)
+        QVERIFY(tzw.selectionMode() == KTimeZoneWidget::SingleSelection);
+        tzw.setSelected("Europe/Zurich", true);
+        QCOMPARE(tzw.selectedItems().count(), 0); // it got checked, not selected
+        QCOMPARE(tzw.selection(), QStringList() << "Europe/Zurich");
+        tzw.setSelected("Africa/Cairo", true);
+        QCOMPARE(tzw.selection(), QStringList() << "Africa/Cairo");
+
+        // Multiple selections explicitly allowed
+        tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
+        tzw.clearSelection();
+        tzw.setSelected("Europe/Paris", true);
+        QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
+        tzw.setSelected("America/New_York", true);
+        QCOMPARE(tzw.selection(), QStringList() << "America/New_York" << "Europe/Paris");
+    }
 };
 
 // Tricky problem. The kded module writes out a config file, but unit tests have
@@ -78,6 +106,9 @@ int main(int argc, char *argv[])
 
 #if 0
     KTimeZoneWidget tzw;
+    tzw.setItemsCheckable(true);
+    tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
+    tzw.setSelected("Europe/Paris", true);
     tzw.show();
     return app.exec();
 #else

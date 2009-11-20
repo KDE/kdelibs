@@ -59,6 +59,8 @@ class KTimeZones;
 class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool itemsCheckable READ itemsCheckable WRITE setItemsCheckable)
+    Q_PROPERTY(bool multiSelection READ multiSelection WRITE setMultiSelection)
 
   public:
     /**
@@ -76,6 +78,38 @@ class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
     virtual ~KTimeZoneWidget();
 
     /**
+     * Makes all items show a checkbox, so that the user can select multiple
+     * timezones by means of checking checkboxes, rather than via multi-selection.
+     *
+     * In "items checkable" mode, the selection(), setSelected() and clearSelection()
+     * methods work on the check states rather than on selecting/unselecting.
+     *
+     * @since 4.4
+     */
+    void setItemsCheckable(bool enable);
+    /**
+     * @return true if setItemsCheckable(true) was called.
+     * @since 4.4
+     */
+    bool itemsCheckable() const;
+
+    /**
+     * Allows to select multiple timezones. This is the same as
+     * setSelectionMode(KTimeZoneWidget::MultiSelection) normally,
+     * but in "items checkable" mode, this is rather about allowing to
+     * check multiple items. In that case, the actual QTreeWidget selection
+     * mode remains unchanged.
+     * @since 4.4
+     */
+    void setSelectionMode(QAbstractItemView::SelectionMode mode);
+
+    /**
+     * @return the selection mode set by setSelectionMode().
+     * @since 4.4
+     */
+    QAbstractItemView::SelectionMode selectionMode() const;
+
+    /**
      * Returns the currently selected time zones. See QTreeView::selectionChanged().
      *
      * @return a list of time zone names, in the format used by the database
@@ -90,6 +124,14 @@ class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
      * @param selected The new selection state.
      */
     void setSelected( const QString &zone, bool selected );
+
+    /**
+     * Unselect all timezones.
+     * This is the same as QTreeWidget::clearSelection, except in checkable items mode,
+     * where items are all unchecked.
+     * The overload is @since 4.4.
+     */
+    void clearSelection();
 
     /**
      * Format a time zone name in a standardised manner. The returned value is
