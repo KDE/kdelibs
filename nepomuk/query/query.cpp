@@ -291,14 +291,22 @@ QString Nepomuk::Query::Query::toSparqlQuery() const
 {
     QueryBuilderData qbd;
     Term term = optimizeTerm( d->m_term );
-    QString query = QString( "select distinct ?r %1 where { %2 %3 %4 }" )
+    QString query = QString::fromLatin1( "select distinct ?r %1 where { %2 %3 %4 }" )
                     .arg( d->buildRequestPropertyVariableList() )
                     .arg( term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd ) )
                     .arg( d->createFolderFilter( QLatin1String( "?r" ), &qbd ) )
                     .arg( d->buildRequestPropertyPatterns() );
     if ( d->m_limit > 0 )
-        query += QString( " LIMIT %1" ).arg( d->m_limit );
+        query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
     return query;
+}
+
+
+KUrl Nepomuk::Query::Query::toSearchUrl() const
+{
+    KUrl url( QLatin1String("nepomuksearch:/") );
+    url.addQueryItem( QLatin1String("sparql"), toSparqlQuery() );
+    return url;
 }
 
 

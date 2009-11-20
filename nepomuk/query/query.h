@@ -55,7 +55,8 @@ namespace Nepomuk {
          * Additionally setRequestProperties() allows to retrieve additional information
          * about the results.
          *
-         * Queries can be easily converted to SPARQL via the toSparqlQuery() method.
+         * Queries can be easily converted to SPARQL via the toSparqlQuery() method or to
+         * search URLs ready for KIO::DirLister using toSearchUrl().
          *
          * The typical usage of a Query instance would be QueryServiceClient::query().
          * However one can also use toSparqlQuery() to convert it into a SPARQL query
@@ -230,9 +231,24 @@ namespace Nepomuk {
              * \return The SPARQL representation of this query or an empty string
              * if the query could not be converted (invalid query.)
              *
-             * \sa resolveProperties
+             * \sa toSerachUrl()
              */
             QString toSparqlQuery() const;
+
+            /**
+             * Convert the query into a URL which can be listed using KIO::DirLister.
+             * The URL will use the \p nepomuksearch:/ KIO protocol to handle the listing
+             * of search results.
+             *
+             * This is the perfect method for listing results in file managers or file
+             * dialogs.
+             *
+             * \return A URL which will list a virtual folder containing all search results
+             * from this query or an invalid URL in case this query is invalid.
+             *
+             * \sa toSparqlQuery()
+             */
+            KUrl toSearchUrl() const;
 
             /**
              * Build a request property map as used in QueryServiceClient::sparqlQuery()
