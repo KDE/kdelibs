@@ -29,12 +29,9 @@ class Upload : public QObject
 {
     Q_OBJECT
 public:
-        /*
     void slotUploadPayloadResult(KJob *job);
     void slotUploadPreviewResult(KJob *job);
-    void slotUploadMetaResult(KJob *job);
-    */
-    
+    void slotUploadMetaResult(KJob *job);   
 };
 }
 */

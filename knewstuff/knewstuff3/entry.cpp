@@ -46,7 +46,7 @@ class Entry::Private : public QSharedData
 
         QString mUniqueId;
         QString mName;
-        
+        KUrl mHomepage;
         QString mCategory;
         QString mLicense;
         QString mVersion;
@@ -141,6 +141,16 @@ QString Entry::category() const
 void Entry::setCategory(const QString& category)
 {
     d->mCategory = category;
+}
+
+KUrl Entry::homepage() const
+{
+    return d->mHomepage;
+}
+
+void Entry::setHomepage(const KUrl& page)
+{
+    d->mHomepage = page;
 }
 
 Author Entry::author() const
@@ -324,6 +334,8 @@ bool KNS3::Entry::setEntryXML(const QDomElement & xmldata)
             d->mAuthor = author;
         } else if (e.tagName() == "providerid") {
             d->mProviderId = e.text();
+        } else if (e.tagName() == "homepage") {
+            d->mHomepage = e.text();
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {
@@ -408,7 +420,7 @@ QDomElement KNS3::Entry::entryXML() const
     if (!d->mAuthor.jabber().isEmpty())
         author.setAttribute("im", d->mAuthor.jabber());
     // FIXME: 'jabber' or 'im'? consult with kopete guys...
-
+    addElement(doc, el, "homepage", d->mHomepage.url());
     (void)addElement(doc, el, "licence", d->mLicense); // krazy:exclude=spelling
     (void)addElement(doc, el, "version", d->mVersion);
     if ((d->mRating > 0) || (d->mDownloads > 0)) {

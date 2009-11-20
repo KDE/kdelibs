@@ -156,6 +156,11 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
                 text += "<p><i>" + authorName + "</i> <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
             }
         }
+        KUrl link = index.data(ItemsModel::kHomepage).toUrl();
+        if (!link.isEmpty()) {
+            text += "<p><a href=\"" + link.url() + "\">" + i18nc("Link giving a detailed description for a Hot New Stuff item", "Details") + "</a></p>\n";
+        }
+        
 
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
         text += downloads == 0 ? i18n("<p>No Downloads</p>") : i18n("<p>Downloads: %1</p>\n", downloads);

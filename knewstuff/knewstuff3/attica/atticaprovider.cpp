@@ -219,6 +219,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         }
 
         entry.setName(content.name());
+        entry.setHomepage(content.detailpage());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
         //entry.setPreview(content.previewPicture("1"));

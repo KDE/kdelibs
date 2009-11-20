@@ -43,6 +43,8 @@ public:
         kNameRole = Qt::UserRole,
         /** the category of the entry */
         kCategory,
+        /** homepage of the entry */
+        kHomepage,
         /** the name of the author of the entry */
         kAuthorName,
         /** the e-mail address of the author */

@@ -124,6 +124,9 @@ public:
      */
     QString category() const;
 
+    void setHomepage(const KUrl& page);
+    KUrl homepage() const;
+    
     /**
      * Sets the author of the object.
      */
