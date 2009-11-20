@@ -88,13 +88,6 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
             return m_previewImages[entry.previewSmall()];
         }
         break;
-    case Qt::ToolTipRole:
-        
-        kDebug() << "tool tip role" << entry.previewBig();
-        kDebug() << QLatin1String("Hello: ") + entry.previewBig() + "<img src=\"" + entry.previewBig() + "\"/>";
-        return QLatin1String("Hello: ") + entry.previewBig() + "<img src=\"/home/frederik/fellow.png\"/>";
-        
-        break;
     case kLargePreviewPixmap:
         if (m_largePreviewImages.contains(entry.previewBig())) {
             return m_largePreviewImages[entry.previewBig()];

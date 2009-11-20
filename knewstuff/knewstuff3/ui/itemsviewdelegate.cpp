@@ -31,7 +31,7 @@
 #include <krun.h>
 
 #include <Nepomuk/KRatingWidget>
-#include "imageloader.h"
+#include <Nepomuk/KRatingPainter>
 
 namespace KNS3
 {
@@ -56,7 +56,6 @@ ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * pare
     m_statusicons << KIcon("system-software-update");
     //Deleted
     m_statusicons << KIcon("edit-delete");
-    
 }
 
 ItemsViewDelegate::~ItemsViewDelegate()
@@ -94,13 +93,13 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
-    
+
     KRatingWidget* rating = new KRatingWidget();
     rating->setMaxRating(10);
     rating->setHalfStepsEnabled(true);
-    rating->setEditable(false);
+    //rating->setEditable(false);
     list << rating;
-
+    
     return list;
 }
 
@@ -221,6 +220,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
     }
 
+    
     KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
         rating->setToolTip(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
@@ -230,6 +230,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         rating->move(right - button->width() - margin, option.rect.height() / 2 + button->height()/2);
         rating->resize(size);
     }
+    
 }
 
 // draw the entry based on what
@@ -272,7 +273,9 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
             }
         }
     }
-
+    
+    // TODO: get the right rect and use the painter? QRect rect(100, 100, 200, 120);
+    //KRatingPainter::paintRating(painter, rect, Qt::AlignLeft, index.data(ItemsModel::kRating).toInt());
     painter->restore();
 }
 
