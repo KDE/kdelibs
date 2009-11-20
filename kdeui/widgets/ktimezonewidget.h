@@ -60,7 +60,7 @@ class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool itemsCheckable READ itemsCheckable WRITE setItemsCheckable)
-    Q_PROPERTY(bool multiSelection READ multiSelection WRITE setMultiSelection)
+    Q_PROPERTY(QAbstractItemView::SelectionMode selectionMode READ selectionMode WRITE setSelectionMode)
 
   public:
     /**
