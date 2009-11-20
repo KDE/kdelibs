@@ -18,8 +18,8 @@
 
 #include "itemsmodel.h"
 
-#include <KDebug>
-#include <KLocalizedString>
+#include "kdebug.h"
+#include "klocalizedstring.h"
 
 #include "entry.h"
 

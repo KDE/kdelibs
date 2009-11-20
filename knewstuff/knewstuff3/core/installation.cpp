@@ -22,18 +22,18 @@
 #include <QDir>
 #include <QFile>
 
-#include <KStandardDirs>
-#include <KMimeType>
-#include <KArchive>
-#include <KZip>
-#include <KTar>
-#include <KProcess>
-#include <KIO/Job>
-#include <KRandom>
-#include <KShell>
-#include <KMessageBox>
-#include <KLocalizedString>
-#include <KDebug>
+#include "kstandarddirs.h"
+#include "kmimetype.h"
+#include "karchive.h"
+#include "kzip.h"
+#include "ktar.h"
+#include "kprocess.h"
+#include "kio/job.h"
+#include "krandom.h"
+#include "kshell.h"
+#include "kmessagebox.h"
+#include "klocalizedstring.h"
+#include "kdebug.h"
 
 #include "core/security.h"
 

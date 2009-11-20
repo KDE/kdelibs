@@ -30,8 +30,8 @@
 #include <kmenu.h>
 #include <krun.h>
 
-#include <Nepomuk/KRatingWidget>
-#include <Nepomuk/KRatingPainter>
+#include "nepomuk/core/ui/kratingwidget.h"
+#include "nepomuk/core/ui/kratingpainter.h"
 
 namespace KNS3
 {
