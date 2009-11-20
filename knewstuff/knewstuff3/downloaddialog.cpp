@@ -43,23 +43,24 @@ using namespace KNS3;
 class DownloadDialog::Private {
 public:
     Ui::DownloadDialog ui;
-    QTimer* messageTimer;
+    // The engine that does all the work
     Engine *engine;
-
+    // Model to show the entries
     KNS3::ItemsModel* model;
     // sort items according to sort combo
     QSortFilterProxyModel * sortingProxyModel;
+    // Timeout for messge display
+    QTimer* messageTimer;
+    
     ItemsViewDelegate * delegate;
     
     QString searchTerm;
     QSet<Entry> changedEntries;
     
     Private()
-        : engine(new Engine), model(new ItemsModel), sortingProxyModel(new QSortFilterProxyModel)
-        , messageTimer(new QTimer)
+        : engine(new Engine), model(new ItemsModel)
+       , sortingProxyModel(new QSortFilterProxyModel) , messageTimer(0)
     {
-        messageTimer->setSingleShot(true);
-        
         sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
         sortingProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
         sortingProxyModel->setSourceModel(model);
@@ -80,6 +81,10 @@ public:
 
     void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0)
     {
+        if (!messageTimer) {
+            messageTimer = new QTimer;
+            messageTimer->setSingleShot(true);
+        }
         // stop the pending timer if present
         messageTimer->stop();
 
