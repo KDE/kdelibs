@@ -1,7 +1,7 @@
 /*
     knewstuff3/engine.cpp
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
-    Copyright (c) 2007 Frederik Gladhorn <frederik.gladhorn@kdemail.net>
+    Copyright (C) 2007-2009 Frederik Gladhorn <gladhorn@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or

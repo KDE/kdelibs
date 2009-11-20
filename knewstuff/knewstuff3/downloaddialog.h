@@ -4,6 +4,7 @@
     Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -35,10 +36,8 @@ class ItemsViewDelegate;
 /**
  * KNewStuff download dialog.
  *
- * \section Introduction
- *
  * The download dialog will present items to the user
- * for installation, uninstallation and updates.
+ * for installation, updates and removal.
  * Preview images as well as other meta information can be seen.
  *
  * \section knsrc knsrc Files
@@ -59,7 +58,7 @@ class ItemsViewDelegate;
  * <li>always: assume all downloaded files are archives and need to be extracted</li>
  * <li>never: never try to extract the file</li>
  * <li>archive: if the file is an archive, uncompress it, otherwise just pass it on</li>
- * <ol>
+ * </ol>
  *
  * You have different options to set the target install directory:
  *   <ol><li>StandardResource: standard ressouce dir, such as <em>.kde/share/wallpapers</em>.

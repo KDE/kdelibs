@@ -3,7 +3,8 @@
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
-
+    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -38,7 +39,6 @@ namespace KNS3
  *
  * This class provides accessor methods to the data objects
  * as used by KNewStuff.
- * It should probably not be used directly by the application.
  *
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
