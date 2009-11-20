@@ -54,7 +54,7 @@ target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
     ${KDE4_KUTILS_LIBS}
-    nepomuk
+    ${NEPOMUK_LIBRARIES}
 )
 if(LIBATTICA_FOUND)
     target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES})
