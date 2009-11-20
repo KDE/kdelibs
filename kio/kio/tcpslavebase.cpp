@@ -896,7 +896,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                     }
                 }
             } else if (cp == KSSLCertificateCache::Reject) {      // fail
-                messageBox(Information, i18n("SSL certificate is being rejected as requested. You can disable this in the KDE Control Center."),
+                messageBox(Information, i18n("SSL certificate is being rejected as requested. You can disable this in the KDE System Settings."),
                            i18n("Server Authentication"));
                 rc = -1;
                 setMetaData("ssl_action", "reject");

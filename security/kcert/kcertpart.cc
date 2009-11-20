@@ -750,7 +750,7 @@ void KCertPart::slotImport() {
 		cg.writeEntry("Password", "");
 		cg.sync();
 		if (!_silentImport)
-			KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
+			KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE System Settings."), i18n("Certificate Import"));
 	} else if (_ca) {
 		KConfig cfg("ksslcalist", KConfig::NoGlobals);
 		if (cfg.hasGroup(_ca->getSubject())) {
@@ -768,7 +768,7 @@ void KCertPart::slotImport() {
 			_signers->regenerate();
 
 		if (!_silentImport)
-			KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
+			KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE System Settings."), i18n("Certificate Import"));
 	}
 }
 
@@ -878,7 +878,7 @@ void KCertPart::slotImportAll() {
 	_p12 = p12Save;
 	_ca = caSave;
 	_curName = curNameSave;
-	KMessageBox::information(_frame, i18n("Certificates have been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
+	KMessageBox::information(_frame, i18n("Certificates have been successfully imported into KDE.\nYou can manage your certificate settings from the KDE System Settings."), i18n("Certificate Import"));
 }
 
 

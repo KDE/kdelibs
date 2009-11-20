@@ -131,7 +131,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 #ifndef QT_NO_WHATSTHIS
     m_onlyCookies->setWhatsThis(i18n("Select this option to accept/reject only this cookie. "
                               "You will be prompted if another cookie is received. "
-                              "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
+                              "<em>(see WebBrowsing/Cookies in the System Settings)</em>." ) );
 #endif
     m_allCookiesDomain = new QRadioButton( i18n("All cookies from this do&main"), m_btnGrp );
     vbox->addWidget(m_allCookiesDomain);
@@ -139,16 +139,16 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     m_allCookiesDomain->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
                               "the site this cookie originated from. This policy will be "
-                              "permanent until you manually change it from the Control Center "
-                              "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
+                              "permanent until you manually change it from the System Settings "
+                              "<em>(see WebBrowsing/Cookies in the System Settings)</em>.") );
 #endif
     m_allCookies = new QRadioButton( i18n("All &cookies"), m_btnGrp);
     vbox->addWidget(m_allCookies);
 #ifndef QT_NO_WHATSTHIS
     m_allCookies->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
                               "anywhere. Choosing this option will change the global "
-                              "cookie policy set in the Control Center for all cookies "
-                              "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
+                              "cookie policy set in the System Settings for all cookies "
+                              "<em>(see WebBrowsing/Cookies in the System Settings)</em>.") );
 #endif
     m_btnGrp->setLayout(vbox);
     if (defaultButton == KCookieJar::ApplyToShownCookiesOnly )
