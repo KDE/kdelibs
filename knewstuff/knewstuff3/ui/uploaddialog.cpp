@@ -114,7 +114,7 @@ void UploadDialog::slotOk()
     m_entry->setAuthor(author);
     m_entry->setVersion(mVersionEdit->text());
     m_entry->setLicense(mLicenseCombo->currentText());
-    m_entry->setPreview(previewurl);
+    m_entry->setPreviewSmall(previewurl);
     m_entry->setSummary(summary);
 
     if (mPayloadUrl.isValid()) {

@@ -81,16 +81,23 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
         return entry.payload();
         break;
     case kPreview:
-        return entry.preview();
+        return entry.previewSmall();
         break;
     case kPreviewPixmap:
-        if (m_previewImages.contains(entry.preview())) {
-            return m_previewImages[entry.preview()];
+        if (m_previewImages.contains(entry.previewSmall())) {
+            return m_previewImages[entry.previewSmall()];
         }
         break;
+    case Qt::ToolTipRole:
+        
+        kDebug() << "tool tip role" << entry.previewBig();
+        kDebug() << QLatin1String("Hello: ") + entry.previewBig() + "<img src=\"" + entry.previewBig() + "\"/>";
+        return QLatin1String("Hello: ") + entry.previewBig() + "<img src=\"/home/frederik/fellow.png\"/>";
+        
+        break;
     case kLargePreviewPixmap:
-        if (m_largePreviewImages.contains(entry.preview())) {
-            return m_largePreviewImages[entry.preview()];
+        if (m_largePreviewImages.contains(entry.previewBig())) {
+            return m_largePreviewImages[entry.previewBig()];
         }
         break;
     case kRating:
@@ -123,7 +130,7 @@ void ItemsModel::slotEntriesLoaded(Entry::List entries)
 
 void ItemsModel::addEntry(const Entry& entry)
 {
-    QString preview = entry.preview();
+    QString preview = entry.previewSmall();
     if (!preview.isEmpty()) {
         m_hasPreviewImages = true;
     }

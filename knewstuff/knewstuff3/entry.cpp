@@ -56,6 +56,7 @@ class Entry::Private : public QSharedData
         QString mSummary;
         QString mPayload;
         QString mPreview;
+        QString mPreviewBig;
         QStringList mInstalledFiles;
         QString mProviderId;
         QStringList mUnInstalledFiles;
@@ -201,14 +202,24 @@ void Entry::setPayload(const QString& url)
     d->mPayload = url;
 }
 
-QString Entry::preview() const
+QString Entry::previewSmall() const
 {
     return d->mPreview;
 }
 
-void Entry::setPreview(const QString& url)
+void Entry::setPreviewSmall(const QString& url)
 {
     d->mPreview = url;
+}
+
+QString Entry::previewBig() const
+{
+    return d->mPreviewBig;
+}
+
+void Entry::setPreviewBig(const QString& url)
+{
+    d->mPreviewBig = url;
 }
 
 int Entry::rating() const

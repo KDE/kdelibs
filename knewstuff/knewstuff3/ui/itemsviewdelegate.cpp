@@ -30,12 +30,15 @@
 #include <kmenu.h>
 #include <krun.h>
 
-static const int kLabel = 0;
-static const int kInstall = 1;
-static const int kRating = 2;
+#include <Nepomuk/KRatingWidget>
+#include "imageloader.h"
 
 namespace KNS3
 {
+    static const int DelegateLabel = 0;
+    static const int DelegateInstallButton = 1;
+    static const int DelegateRatingWidget = 2;
+    
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
 {
@@ -53,6 +56,7 @@ ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * pare
     m_statusicons << KIcon("system-software-update");
     //Deleted
     m_statusicons << KIcon("edit-delete");
+    
 }
 
 ItemsViewDelegate::~ItemsViewDelegate()
@@ -79,6 +83,9 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
 
     QLabel * infoLabel = new QLabel();
     infoLabel->setOpenExternalLinks(true);
+    // not so nice - work around constness to install the event filter
+    ItemsViewDelegate* delegate = const_cast<ItemsViewDelegate*>(this);
+    infoLabel->installEventFilter(delegate);
     list << infoLabel;
 
     QToolButton * installButton = new QToolButton();
@@ -87,9 +94,12 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
-
-    QLabel * ratingLabel = new QLabel();
-    list << ratingLabel;
+    
+    KRatingWidget* rating = new KRatingWidget();
+    rating->setMaxRating(10);
+    rating->setHalfStepsEnabled(true);
+    rating->setEditable(false);
+    list << rating;
 
     return list;
 }
@@ -114,27 +124,28 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     int right = option.rect.width();
     //int bottom = option.rect.height();
 
-    QSize size(option.fontMetrics.height() * 7, widgets.at(kInstall)->sizeHint().height());
+    QSize size(option.fontMetrics.height() * 7, widgets.at(DelegateInstallButton)->sizeHint().height());
 
-    QLabel * infoLabel = qobject_cast<QLabel*>(widgets.at(kLabel));
-	infoLabel->setWordWrap(true);
+    QLabel * infoLabel = qobject_cast<QLabel*>(widgets.at(DelegateLabel));
+    infoLabel->setWordWrap(true);
     if (infoLabel != NULL) {
         if (realmodel->hasPreviewImages()) {
             // move the text right by kPreviewWidth + margin pixels to fit the preview
             infoLabel->move(PreviewWidth + margin * 2, 0);
             infoLabel->resize(QSize(option.rect.width() - PreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
+            
         } else {
             infoLabel->move(margin, 0);
             infoLabel->resize(QSize(option.rect.width() - (margin * 4) - size.width(), option.fontMetrics.height() * 7));
         }
 
         QString text = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-			"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
-			"</style></head><body><p><b>" +
-			index.data(ItemsModel::kNameRole).toString() + "</b></p>\n";
+            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
+            "</style></head><body><p><b>" +
+            index.data(ItemsModel::kNameRole).toString() + "</b></p>\n";
 
         QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
-		  Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
+            Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
         text += summary;
 
         QString authorName = index.data(ItemsModel::kAuthorName).toString();
@@ -163,7 +174,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         infoLabel->setText(text.simplified());
     }
 
-    QToolButton * button = qobject_cast<QToolButton*>(widgets.at(kInstall));
+    QToolButton * button = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
     if (button != NULL) {
         Entry::Status status = Entry::Status(model->data(index, ItemsModel::kStatus).toUInt());
         //if (!button->menu()) {
@@ -179,33 +190,19 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         //Q_ASSERT(button->menu());
         //Q_ASSERT(button->menu()->actions().count() == 2);
 
-        // get the two actions
-        //QAction * action_install = button->menu()->actions()[0];
-        //QAction * action_uninstall = button->menu()->actions()[1];
-        
         button->setEnabled(true);
         
         switch (status) {
         case Entry::Installed:
             button->setText(i18n("Uninstall"));
-            //action_install->setVisible(false);
-            //action_uninstall->setVisible(true);
             button->setIcon(QIcon(m_statusicons[Entry::Deleted]));
             break;
         case Entry::Updateable:
             button->setText(i18n("Update"));
-            //action_uninstall->setVisible(false);
-            //action_install->setText(i18n("Update"));
-            //action_install->setVisible(true);
-            //action_install->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             break;
         case Entry::Deleted:
             button->setText(i18n("Install again"));
-            //action_uninstall->setVisible(false);
-            //action_install->setText(i18n("Install"));
-            //action_install->setVisible(true);
-            //action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
             break;
         case Entry::Installing:
@@ -220,19 +217,18 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             break;
         default:
             button->setText(i18n("Install"));
-            //action_uninstall->setVisible(false);
-            //action_install->setVisible(true);
-            //action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
         }
     }
-    QLabel * ratingLabel = qobject_cast<QLabel*>(widgets.at(kRating));
-    if (ratingLabel != NULL) {
-        ratingLabel->setText(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
 
+    KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateRatingWidget));
+    if (rating) {
+        rating->setToolTip(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
+        // assume all entries come with rating 0..100 but most are in the range 20 - 80, so 20 is 0 stars, 80 is 5 stars
+        rating->setRating((model->data(index, ItemsModel::kRating).toInt()-20)*10/60);
         // put the rating label below the install button
-        ratingLabel->move(right - button->width() - margin, option.rect.height() / 2 + button->height()/2);
-        ratingLabel->resize(size);
+        rating->move(right - button->width() - margin, option.rect.height() / 2 + button->height()/2);
+        rating->resize(size);
     }
 }
 
@@ -257,7 +253,6 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
 
     if (realmodel->hasPreviewImages()) {
-
         int height = option.rect.height();
         QPoint point(option.rect.left() + margin, option.rect.top() + ((height - PreviewHeight) / 2));
 
@@ -281,14 +276,20 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     painter->restore();
 }
 
-//bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
-//{
-//    if (event->type() == QEvent::ToolTip) {
-//
-//    }
+bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
+{
+   if (event->type() == QEvent::ToolTip) {
+        QModelIndex index = focusedIndex();
+        Q_ASSERT(index.isValid());
 
-//    return KWidgetItemDelegate::eventFilter(watched, event);
-//}
+        const QSortFilterProxyModel* model = qobject_cast<const QSortFilterProxyModel*>(index.model());
+        const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
+        KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
+        kDebug() << entry.name() << entry.previewBig();        
+   }
+
+   return KWidgetItemDelegate::eventFilter(watched, event);
+}
 
 QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
@@ -298,8 +299,8 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
     QSize size;
 
     size.setWidth(option.fontMetrics.height() * 4);
-    size.setHeight(qMax(option.fontMetrics.height() * 7, PreviewHeight)); // up to 6 lines of text, and two margins
-
+    //size.setHeight(qMax(option.fontMetrics.height() * 7, PreviewHeight)); // up to 6 lines of text, and two margins
+    size.setHeight(PreviewHeight);
     return size;
 }
 

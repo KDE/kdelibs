@@ -1,5 +1,8 @@
 project(knewstuff3)
 
+# For the Rating Widget
+find_package(Nepomuk REQUIRED)
+
 # Try to find Attica
 macro_optional_find_package(LibAttica)
 macro_bool_to_01(LIBATTICA_FOUND HAVE_LIBATTICA)
@@ -50,9 +53,10 @@ target_link_libraries(knewstuff3
     ${KDE4_KDECORE_LIBS}
     ${KDE4_KUTILS_LIBS}
     ${LIBATTICA_LIBRARIES}
+    nepomuk
 )
 
-target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY} )
+target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
 set_target_properties(knewstuff3 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

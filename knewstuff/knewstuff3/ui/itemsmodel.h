@@ -28,9 +28,8 @@ class KJob;
 
 namespace KNS3
 {
-static const int PreviewWidth = 96;
-static const int PreviewHeight = 72;
-
+    static const int PreviewWidth = 96;
+    static const int PreviewHeight = 72;
 
 class ItemsModel: public QAbstractListModel
 {

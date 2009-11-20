@@ -200,16 +200,27 @@ public:
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    void setPreview(const QString& url);
-    // FIXME I'd prefer pixmap or icon here, any good reason for ktranslatable?
-    // Acutally url also would be fine I guess ?
+    void setPreviewSmall(const QString& url);
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
      *
      * @return object preview filename
      */
-    QString preview() const;
+    QString previewSmall() const;
+    
+    /**
+    * Sets the object's preview file, if available. This should be a
+    * picture file.
+    */
+    void setPreviewBig(const QString& url);
+    
+    /**
+    * Retrieve the file name of an image containing a preview of the object.
+    *
+    * @return object preview filename
+    */
+    QString previewBig() const;
 
     /**
      * Set the files that have been installed by the install command.

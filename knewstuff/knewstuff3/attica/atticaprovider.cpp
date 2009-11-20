@@ -222,7 +222,8 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
         //entry.setPreview(content.previewPicture("1"));
-        entry.setPreview(content.smallPreviewPicture("1"));
+        entry.setPreviewSmall(content.smallPreviewPicture("1"));
+        entry.setPreviewBig(content.previewPicture("1"));
         entry.setLicense(content.license());
         //entry.setAuthor(content.author());
         entry.setSource(KNS3::Entry::Online);

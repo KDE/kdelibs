@@ -61,7 +61,7 @@ signals:
     void performAction(KNS3::Engine::EntryAction action, KNS3::Entry entry);
 
 private slots:
-
+    bool eventFilter(QObject *watched, QEvent *event);
     void slotActionTriggered(QAction *action);
     void slotInstallClicked();
     void slotLinkClicked(const QString & url);
