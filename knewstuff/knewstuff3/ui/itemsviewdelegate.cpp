@@ -156,16 +156,18 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
                 text += "<p><i>" + authorName + "</i> <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
             }
         }
-        KUrl link = index.data(ItemsModel::kHomepage).toUrl();
+        KUrl link = qvariant_cast<KUrl>(index.data(ItemsModel::kHomepage));
         if (!link.isEmpty()) {
             text += "<p><a href=\"" + link.url() + "\">" + i18nc("Link giving a detailed description for a Hot New Stuff item", "Details") + "</a></p>\n";
         }
         
 
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
-        text += downloads == 0 ? i18n("<p>No Downloads</p>") : i18n("<p>Downloads: %1</p>\n", downloads);
-
-		text += "</body></html>";
+        if (downloads > 0) {
+            text += i18n("<p>Downloads: %1</p>\n", downloads);
+        }
+        
+        text += "</body></html>";
         text.replace("[b]", "<b>");
         text.replace("[/b]", "</b>");
         text.replace("[i]", "<i>");
@@ -230,7 +232,11 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     if (rating) {
         rating->setToolTip(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
         // assume all entries come with rating 0..100 but most are in the range 20 - 80, so 20 is 0 stars, 80 is 5 stars
-        rating->setRating((model->data(index, ItemsModel::kRating).toInt()-20)*10/60);
+        int ratingValue = model->data(index, ItemsModel::kRating).toInt();
+        if (ratingValue <= 0) {
+            rating->setVisible(false);
+        }
+        rating->setRating((ratingValue-20)*10/60);
         // put the rating label below the install button
         rating->move(right - button->width() - margin, option.rect.height() / 2 + button->height()/2);
         rating->resize(size);

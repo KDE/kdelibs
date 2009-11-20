@@ -53,8 +53,7 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
         return entry.category();
         break;
     case kHomepage:
-        kDebug() << "HP: " << entry.homepage().url();
-        return QUrl(entry.homepage());
+        return entry.homepage();
         break;
     case kAuthorName:
         return entry.author().name();

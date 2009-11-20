@@ -72,15 +72,26 @@ class KNEWSTUFF_EXPORT DownloadDialog :public KDialog
     Q_OBJECT
 
 public:
+
     /**
      * Create a DownloadDialog that lets the user install, update and uninstall
-     * contents. It needs the name of a .knsrc file where it can find the 
-     * KHotNewStuff configuration.
+     * contents. It will try to find a appname.knsrc file with the configuration.
+     * Appname is the name of your application as provided in the about data->
+     *
+     * @param parent the parent of the dialog
+     */
+    explicit DownloadDialog(QWidget * parent = 0);
+
+    /**
+     * Create a DownloadDialog that lets the user install, update and uninstall
+     * contents. Manually specify the name of a .knsrc file where the
+     * KHotNewStuff configuration can be found.
      *
      * @param configFile the name of the configuration file
      * @param parent the parent of the dialog
      */
-    DownloadDialog(const QString& configFile, QWidget * parent = 0);
+    explicit DownloadDialog(const QString& configFile, QWidget * parent = 0);
+    
     ~DownloadDialog();
 
     /**
@@ -125,6 +136,8 @@ protected:
     virtual void hideEvent(QHideEvent * event);
 
 private:
+    void init(const QString& configFile);
+    
     class Private;
     Private *const d;
 };

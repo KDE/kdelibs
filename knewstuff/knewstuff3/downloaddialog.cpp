@@ -54,13 +54,12 @@ public:
     QString searchTerm;
     QSet<Entry> changedEntries;
     
-    Private(const QString& configFile)
+    Private()
         : engine(new Engine), model(new ItemsModel), sortingProxyModel(new QSortFilterProxyModel)
         , messageTimer(new QTimer)
     {
-        engine->init(configFile);
         messageTimer->setSingleShot(true);
-
+        
         sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
         sortingProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
         sortingProxyModel->setSourceModel(model);
@@ -73,12 +72,34 @@ public:
         delete model;
         delete engine;
     }
+
+    void init(const QString& configFile)
+    {
+        engine->init(configFile);
+    }
 };
+
+
+DownloadDialog::DownloadDialog(QWidget* parent)
+    : KDialog(parent)
+    , d(new Private)
+{
+    KComponentData component = KGlobal::activeComponent();
+    QString name = component.componentName();
+    init(name + ".knsrc");
+}
 
 DownloadDialog::DownloadDialog(const QString& configFile, QWidget * parent)
         : KDialog(parent)
-        , d(new Private(configFile))
+        , d(new Private)
 {
+    init(configFile);
+}
+
+void DownloadDialog::init(const QString& configFile)
+{
+    d->init(configFile);
+    
     setButtons(KDialog::None);
     QWidget* _mainWidget = new QWidget(this);
     setMainWidget(_mainWidget);
