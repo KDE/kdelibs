@@ -77,6 +77,15 @@ public:
 
 class KNS3::Engine::Private {
     public:
+        // If the provider is ready to be used
+        bool initialized;
+        Provider::SortMode sortMode;
+        // handle installation of entries
+        Installation* installation;
+        // read/write cache of entries
+        Cache* cache;
+        QTimer* searchTimer;
+        QString searchTerm;
         // The url of the file containg information about content providers
         QString providerFileUrl;
         // Categories to search in
@@ -84,34 +93,20 @@ class KNS3::Engine::Private {
 
         QHash<QString, ProviderInformation> providers;
 
-        //?
-        //Provider* uploadprovider;
-        //Entry uploadedentry;
-
         // the name of the app that uses hot new stuff
         QString applicationName;
 
         QMap<Entry, QString> previewfiles; // why not in entry?
 
-        // handle installation of entries
-        Installation* installation;
-        // read/write cache of entries
-        Cache* cache;
-        
-        QString searchTerm;
-        QTimer* searchTimer;
-        
-        Provider::SortMode sortMode;
-
-        bool initialized;
 
         QMap<KJob*, Entry> previewPictureJobs;
 
-        // when requesting entries from a provider, how many to ask for
-        int pageSize;
         // the current page that has been requested from providers
         int currentPage;
+        // the page that was last requested, so it is not requested repeatedly
         int requestedPage;
+        // when requesting entries from a provider, how many to ask for
+        int pageSize;
         
         Private()
             : initialized(false)
@@ -211,15 +206,6 @@ bool Engine::init(const QString &configfile)
     return true;
 }
 
-QString Engine::componentName() const
-{
-    if (!d->initialized) {
-        return QString();
-    }
-
-    return d->applicationName;
-}
-
 void Engine::loadProviders()
 {
     kDebug(550) << "loading providers from " << d->providerFileUrl;
@@ -230,8 +216,6 @@ void Engine::loadProviders()
 
     loader->load(KUrl(d->providerFileUrl));
 }
-
-
 
 void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 {
@@ -297,6 +281,11 @@ void Engine::providerInitialized(Provider* p)
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
 {
+    Q_UNUSED(sortMode)
+    Q_UNUSED(searchstring)
+    Q_UNUSED(page)
+    Q_UNUSED(pageSize)
+    Q_UNUSED(totalpages)
     kDebug() << "loaded " << page;
     d->currentPage = qMax<int>(page, d->currentPage);
     kDebug() << "current page" << d->currentPage;
@@ -632,13 +621,6 @@ void Engine::cacheProvider(Provider *provider)
     //QTextStream metastream(&f);
     //metastream << root;
     //f.close();
-
-    /*QStringList feeds = p->feeds();
-    for(int i = 0; i < feeds.count(); i++) {
-        Feed *feed = p->downloadUrlFeed(feeds.at(i));
-        cacheFeed(p, feeds.at(i), feed);
-    }*/
-    /*
 }
 */
 

@@ -105,12 +105,6 @@ public:
      * @param entry The entry to deinstall
      */
     void uninstall(KNS3::Entry entry);
-    
-    /**
-     * @return the component name the engine is using, or an empty string if not
-     * initialized yet
-     */
-    QString componentName() const;
 
     void setSortMode(Provider::SortMode mode);
     void setSearchTerm(const QString& searchString);

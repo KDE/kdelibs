@@ -126,7 +126,7 @@ void Security::slotFinished(int exitCode, QProcess::ExitStatus exitStatus)
     delete m_process;
     m_process = 0;
 
-    Q_UNUSED(exitCode);
+    Q_UNUSED(exitCode)
 }
 
 void Security::slotReadyReadStandardOutput()

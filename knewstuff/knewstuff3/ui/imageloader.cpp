@@ -47,7 +47,7 @@ KJob* ImageLoader::job()
 
 void ImageLoader::slotData(KIO::Job *job, const QByteArray& buf)
 {
-    Q_UNUSED(job);
+    Q_UNUSED(job)
     m_buffer.append(buf);
 }
 

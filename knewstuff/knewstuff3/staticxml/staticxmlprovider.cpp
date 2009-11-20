@@ -192,6 +192,7 @@ void StaticXmlProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
 void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, int page, int pageSize)
 {
     Q_D(StaticXmlProvider);
+    Q_UNUSED(pageSize); // here we just get that one page, no matter what
     d->searchTerm = searchstring;
 
     if (sortMode == Installed) {
@@ -225,6 +226,7 @@ KUrl StaticXmlProvider::downloadUrl(SortMode mode) const
     Q_D(const StaticXmlProvider);
     KUrl url;
     switch (mode) {
+        case Installed: // should just query the registry and not end up here
         case Rating:
             url = d->mDownloadUrls.value("score");
             break;
