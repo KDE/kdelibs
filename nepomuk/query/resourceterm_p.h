@@ -23,6 +23,7 @@
 #define _NEPOMUK_QUERY_RESOURCE_TERM_P_H_
 
 #include "term_p.h"
+#include "resource.h"
 
 #include <QtCore/QUrl>
 
@@ -42,7 +43,7 @@ namespace Nepomuk {
             QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
             QString toString() const;
 
-            QUrl m_resource;
+            Resource m_resource;
         };
     }
 }

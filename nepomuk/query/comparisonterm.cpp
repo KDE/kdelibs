@@ -24,6 +24,7 @@
 #include "querybuilderdata_p.h"
 #include "literalterm.h"
 #include "resourceterm.h"
+#include "resource.h"
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Node>
@@ -175,7 +176,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             return QString( "%1 %2 %3 . " )
                 .arg( resourceVarName )
                 .arg( Soprano::Node::resourceToN3( m_property.uri() ) )
-                .arg( Soprano::Node::resourceToN3( m_subTerm.toResourceTerm().resource() ) );
+                .arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
         }
         else {
             QString v = qbd->uniqueVarName();

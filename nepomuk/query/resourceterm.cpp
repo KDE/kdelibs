@@ -39,13 +39,13 @@ bool Nepomuk::Query::ResourceTermPrivate::equals( const TermPrivate* other ) con
 
 QString Nepomuk::Query::ResourceTermPrivate::toSparqlGraphPattern( const QString&, QueryBuilderData* ) const
 {
-    return Soprano::Node::resourceToN3( m_resource );
+    return Soprano::Node::resourceToN3( m_resource.resourceUri() );
 }
 
 
 QString Nepomuk::Query::ResourceTermPrivate::toString() const
 {
-    return QString( "[Resource %1]" ).arg( Soprano::Node::resourceToN3( m_resource ) );
+    return QString( "[Resource %1]" ).arg( Soprano::Node::resourceToN3( m_resource.resourceUri() ) );
 }
 
 
@@ -55,7 +55,7 @@ Nepomuk::Query::ResourceTerm::ResourceTerm( const Term& term )
 }
 
 
-Nepomuk::Query::ResourceTerm::ResourceTerm( const QUrl& resource )
+Nepomuk::Query::ResourceTerm::ResourceTerm( const Nepomuk::Resource& resource )
     : Term( new ResourceTermPrivate() )
 {
     setResource( resource );
@@ -74,14 +74,14 @@ Nepomuk::Query::ResourceTerm& Nepomuk::Query::ResourceTerm::operator=( const Res
 }
 
 
-QUrl Nepomuk::Query::ResourceTerm::resource() const
+Nepomuk::Resource Nepomuk::Query::ResourceTerm::resource() const
 {
     N_D_CONST( ResourceTerm );
     return d->m_resource;
 }
 
 
-void Nepomuk::Query::ResourceTerm::setResource( const QUrl& resource )
+void Nepomuk::Query::ResourceTerm::setResource( const Nepomuk::Resource& resource )
 {
     N_D( ResourceTerm );
     d->m_resource = resource;

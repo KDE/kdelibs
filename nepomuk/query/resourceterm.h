@@ -23,6 +23,7 @@
 #define _NEPOMUK_QUERY_RESOURCE_TERM_H_
 
 #include "term.h"
+#include "resource.h"
 
 #include <QtCore/QUrl>
 
@@ -41,13 +42,13 @@ namespace Nepomuk {
         {
         public:
             ResourceTerm( const Term& term );
-            ResourceTerm( const QUrl& resource = QUrl() );
+            ResourceTerm( const Nepomuk::Resource& resource = Nepomuk::Resource() );
             ~ResourceTerm();
 
             ResourceTerm& operator=( const ResourceTerm& term );
 
-            QUrl resource() const;
-            void setResource( const QUrl& resource );
+            Nepomuk::Resource resource() const;
+            void setResource( const Nepomuk::Resource& resource );
         };
     }
 }
