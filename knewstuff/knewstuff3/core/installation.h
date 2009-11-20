@@ -19,12 +19,10 @@
 #ifndef KNEWSTUFF3_INSTALLATION_H
 #define KNEWSTUFF3_INSTALLATION_H
 
-#include "knewstuff_export.h"
-
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <KConfigGroup>
+#include <kconfiggroup.h>
 
 #include "entry.h"
 

@@ -26,9 +26,9 @@
 #include <QtXml/QDomElement>
 #include <QtCore/QString>
 
-#include <KUrl>
-#include <KDebug>
+#include <kurl.h>
 
+#include <knewstuff3/knewstuff_export.h>
 #include <knewstuff3/author.h>
 
 namespace KNS3

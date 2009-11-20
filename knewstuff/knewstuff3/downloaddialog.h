@@ -23,10 +23,10 @@
 #ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 
-#include <KDialog>
+#include <kdialog.h>
 
+#include <knewstuff3/knewstuff_export.h>
 #include <knewstuff3/entry.h>
-#include <KTitleWidget>
 
 namespace KNS3
 {
@@ -105,13 +105,6 @@ public:
      * @return the list of entries
      */
     KNS3::Entry::List installedEntries();
-    
-    
-    
-    // show a message in the bottom bar
-    void displayMessage(const QString & msg,
-                        KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
-                        int timeOutMs = 0);
 
 private Q_SLOTS:
     void slotEntryChanged(const KNS3::Entry& entry);
@@ -132,9 +125,6 @@ private Q_SLOTS:
 Q_SIGNALS:
     void signalRequestMoreData();
     
-protected:
-    virtual void hideEvent(QHideEvent * event);
-
 private:
     void init(const QString& configFile);
     

@@ -20,8 +20,8 @@
 
 #include "entry.h"
 
-#include <QStringList>
-#include <KDebug>
+#include <QtCore/QStringList>
+#include <kdebug.h>
 
 #include "core/xmlloader.h"
 

@@ -18,8 +18,8 @@
 #include "cache.h"
 
 #include <QtCore/QFile>
-#include <KStandardDirs>
-#include <KDebug>
+#include <kstandarddirs.h>
+#include <kdebug.h>
 
 using namespace KNS3;
 

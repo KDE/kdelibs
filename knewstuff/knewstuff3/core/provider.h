@@ -23,7 +23,7 @@
 #include <QtCore/QList>
 #include <QtCore/QString>
 
-#include <KUrl>
+#include <kurl.h>
 
 #include "entry.h"
 

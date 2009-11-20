@@ -21,7 +21,8 @@
 #include <attica/provider.h>
 
 namespace Attica {
-class BaseJob;}
+    class BaseJob;
+}
 
 namespace KNS3
 {

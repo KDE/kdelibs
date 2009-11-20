@@ -26,9 +26,9 @@
 #include <QtCore/QTimer>
 #include <QtGui/QScrollBar>
 
-#include <KMessageBox>
-#include <KComponentData>
-#include <KAboutData>
+#include <kmessagebox.h>
+#include <kcomponentdata.h>
+#include <kaboutdata.h>
 #include <ktitlewidget.h>
 
 #include "ui/itemsmodel.h"
@@ -76,6 +76,21 @@ public:
     void init(const QString& configFile)
     {
         engine->init(configFile);
+    }
+
+    void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0)
+    {
+        // stop the pending timer if present
+        messageTimer->stop();
+
+        // set text to messageLabel
+        ui.m_titleWidget->setComment(msg, type);
+
+        // single shot the resetColors timer (and create it if null)
+        if (timeOutMs > 0) {
+            //kDebug(551) << "starting the message timer for " << timeOutMs;
+            messageTimer->start(timeOutMs);
+        }
     }
 };
 
@@ -199,28 +214,6 @@ DownloadDialog::~DownloadDialog()
     delete d;
 }
 
-void DownloadDialog::hideEvent(QHideEvent * event)
-{
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
-    saveDialogSize(group, KConfigBase::Persistent);
-    KDialog::hideEvent(event);
-}
-
-void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs)
-{
-    // stop the pending timer if present
-    d->messageTimer->stop();
-
-    // set text to messageLabel
-    d->ui.m_titleWidget->setComment(msg, type);
-
-    // single shot the resetColors timer (and create it if null)
-    if (timeOutMs > 0) {
-        //kDebug(551) << "starting the message timer for " << timeOutMs;
-        d->messageTimer->start(timeOutMs);
-    }
-}
-
 void DownloadDialog::slotResetMessage() // SLOT
 {
     d->ui.m_titleWidget->setComment(QString());
@@ -228,7 +221,7 @@ void DownloadDialog::slotResetMessage() // SLOT
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
 {
-    displayMessage(i18n("Timeout. Check Internet connection!"), KTitleWidget::ErrorMessage);
+    d->displayMessage(i18n("Timeout. Check Internet connection!"), KTitleWidget::ErrorMessage);
 }
 
 void DownloadDialog::slotSortingSelected(int sortType)   // SLOT

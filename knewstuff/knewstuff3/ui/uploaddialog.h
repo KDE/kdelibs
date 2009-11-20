@@ -22,7 +22,6 @@
 
 #include <kdialog.h>
 #include <kurl.h>
-#include <knewstuff3/knewstuff_export.h>
 
 #include "ui_UploadDialog.h"
 

@@ -14,7 +14,7 @@ configure_file(
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${LIBATTICA_INCLUDE_DIRS} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${LIBATTICA_INCLUDE_DIRS} ${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
 link_directories(${LIBATTICA_LIBRARY_DIRS})
 
 set(knewstuff3_SRCS

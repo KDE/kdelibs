@@ -19,6 +19,8 @@
 #define CACHE_H
 
 #include <QtCore/QObject>
+#include <QtCore/QSet>
+
 #include "engine.h"
 #include "entry.h"
 

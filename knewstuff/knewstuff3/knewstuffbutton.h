@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF3BUTTON_H
 #define KNEWSTUFF3BUTTON_H
 
-#include <KPushButton>
+#include <kpushbutton.h>
 
 #include <knewstuff3/knewstuff_export.h>
 
@@ -28,7 +28,6 @@ namespace KNS3
 
 class Engine;
 
-// FIXME: port properly to KNS2, less accessors for apps, more *.knsrc usage
 /**
  * KHotNewStuff push button that makes using KHNS in an application
  * more convenient by encapsulating most of the details involved in

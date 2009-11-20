@@ -21,13 +21,12 @@
 #ifndef KNEWSTUFF3_ENGINE_H
 #define KNEWSTUFF3_ENGINE_H
 
-#include "provider.h"
-#include "entry.h"
-#include "knewstuff_export.h"
-
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QMap>
+
+#include "provider.h"
+#include "entry.h"
 
 class KJob;
 
