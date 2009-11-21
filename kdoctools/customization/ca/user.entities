@@ -35,6 +35,7 @@
 <!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
 <!ENTITY Tab	"<keycap>Tabulador</keycap>">
 <!ENTITY IGU	"<acronym>IGU</acronym>"><!-- English: &GUI; -->
+<!ENTITY partman "<application>Gestor de particions del KDE</application>"> <!-- English: &partman; (KDE Partition Manager)-->
 <!ENTITY systemsettings	"<application>Arranjament del sistema</application>"> <!-- English: &systemsettings; -->
 
 <!-- ROLES OF TRANSLATORS -->
@@ -46,6 +47,8 @@
 <!ENTITY revisor.Rafael.Carreras	'<othercredit role="reviewer"><firstname>Rafael</firstname><surname>Carreras</surname><affiliation><address><email>rcarreras@caliu.cat</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 <!ENTITY traductor.Manuel.Tortosa	'<othercredit role="translator"><firstname>Manuel</firstname><surname>Tortosa</surname><affiliation><address><email>manutortosa@gmail.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
 <!ENTITY revisor.Manuel.Tortosa		'<othercredit role="reviewer"><firstname>Manuel</firstname><surname>Tortosa</surname><affiliation><address><email>manutortosa@gmail.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
+<!ENTITY traductor.JosepMa.Ferrer	'<othercredit role="translator"><firstname>Josep Ma.</firstname><surname>Ferrer</surname><affiliation><address><email>txemaq@gmail.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
+<!ENTITY revisor.JosepMa.Ferrer		'<othercredit role="reviewer"><firstname>Josep Ma.</firstname><surname>Ferrer</surname><affiliation><address><email>txemaq@gmail.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 
 <!-- CREDITS FOR TRANSLATORS -->
 <!-- Seguir el següent format '<para>Traductor/Revisor de la documentació: &credits.Nom.Cognom;</para>' -->
@@ -53,3 +56,4 @@
 <!ENTITY credits.Pep.Roca		'Pep Roca <email>pep.roca@gmail.com</email>'>
 <!ENTITY credits.Rafael.Carreras	'Rafael Carreras <email>rcarreras@caliu.cat</email>'>
 <!ENTITY credits.Manuel.Tortosa		'Manuel Tortosa <email>manutortosa@gmail.com</email>'>
+<!ENTITY credits.JosepMa.Ferrer		'Josep Ma. Ferrer <email>txemaq@gmail.com</email>'>
