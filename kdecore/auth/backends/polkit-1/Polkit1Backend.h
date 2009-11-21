@@ -1,5 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
+*   Copyright (C) 2009 Radek Novacek <rnovacek@redhat.com>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -28,18 +29,21 @@ class QByteArray;
 namespace KAuth
 {
 
-class PolicyKitBackend : public AuthBackend
+class Polkit1Backend : public AuthBackend
 {
     Q_OBJECT
     Q_INTERFACES(KAuth::AuthBackend)
 
 public:
-    PolicyKitBackend();
+    Polkit1Backend();
     virtual void setupAction(const QString&);
     virtual Action::AuthStatus authorizeAction(const QString&);
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
+
+Q_SIGNALS:
+    void actionStatusChanged(const QString &action, Action::AuthStatus status);
 
 private Q_SLOTS:
     void checkForResultChanged();

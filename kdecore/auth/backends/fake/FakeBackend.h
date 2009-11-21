@@ -40,9 +40,6 @@ public:
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
-
-Q_SIGNALS:
-    void actionStatusChanged(const QString &action, Action::AuthStatus status);
 };
 
 } // namespace Auth

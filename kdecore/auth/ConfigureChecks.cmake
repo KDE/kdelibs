@@ -17,7 +17,14 @@ if(NOT KAUTH_BACKEND)
         if (POLKITQT_FOUND)
             set (KAUTH_BACKEND "PolkitQt")
         else (POLKITQT_FOUND)
-            set (KAUTH_BACKEND "Fake")
+            macro_optional_find_package(PolkitQt1)
+            macro_log_feature(POLKITQT1_FOUND "PolkitQt1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
+                          FALSE "" "Using PolkitQt1")# TODO: some comment
+            if (POLKITQT1_FOUND)
+                set (KAUTH_BACKEND "PolkitQt1")
+            else (POLKITQT1_FOUND)
+                set (KAUTH_BACKEND "Fake")
+            endif (POLKITQT1_FOUND)
         endif (POLKITQT_FOUND)
     else(UNIX)
         set (KAUTH_BACKEND "Fake")
@@ -30,10 +37,10 @@ else(NOT KAUTH_BACKEND)
     string(TOUPPER ${KAUTH_BACKEND} KAUTH_BACKEND)
     
     # Check if the specified backend is valid. If it is not, we fall back to the Fake one
-    if (NOT KAUTH_BACKEND STREQUAL "OSX" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT" AND NOT KAUTH_BACKEND STREQUAL "FAKE")
+    if (NOT KAUTH_BACKEND STREQUAL "OSX" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT1" AND NOT KAUTH_BACKEND STREQUAL "FAKE")
         message ("WARNING: The KAuth Backend ${KAUTH_BACKEND} you specified does not exist. Falling back to Fake backend")
         set (KAUTH_BACKEND "Fake")
-    endif (NOT KAUTH_BACKEND STREQUAL "OSX" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT" AND NOT KAUTH_BACKEND STREQUAL "FAKE")
+    endif (NOT KAUTH_BACKEND STREQUAL "OSX" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT1" AND NOT KAUTH_BACKEND STREQUAL "FAKE")
 
     # Check requirements for each backend. If not, fall back to the fake one
     if (KAUTH_BACKEND STREQUAL "OSX" AND NOT APPLE)
@@ -51,6 +58,17 @@ else(NOT KAUTH_BACKEND)
             set (KAUTH_BACKEND "FAKE")
         endif (NOT POLKITQT_FOUND)
     endif (KAUTH_BACKEND STREQUAL "POLKITQT")
+    if (KAUTH_BACKEND STREQUAL "POLKITQT1")
+        macro_optional_find_package(PolkitQt1)
+        macro_log_feature(POLKITQT1_FOUND "PolkitQt1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
+                          FALSE "" "Using PolkitQt1")# TODO: some comment
+
+        if (NOT POLKITQT1_FOUND)
+            message ("WARNING: You chose the PolkitQt-1 KAuth backend but you don't have PolkitQt-1 installed.
+                      Falling back to Fake backend")
+            set (KAUTH_BACKEND "FAKE")
+        endif (NOT POLKITQT1_FOUND)
+    endif (KAUTH_BACKEND STREQUAL "POLKITQT1")
 endif(NOT KAUTH_BACKEND)
 
 # Add the correct libraries depending on the backend
@@ -59,4 +77,6 @@ if(KAUTH_BACKEND STREQUAL "OSX")
     find_library(SECURITY_LIBRARY Security)
 elseif(KAUTH_BACKEND STREQUAL "POLKITQT")
     include_directories(${POLKITQT_INCLUDE_DIR})
+elseif(KAUTH_BACKEND STREQUAL "POLKITQT1")
+    include_directories(${POLKITQT1_INCLUDE_DIR})
 endif()

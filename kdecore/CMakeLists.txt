@@ -116,6 +116,14 @@ if (KAUTH_BACKEND STREQUAL "POLKITQT")
     )
 
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
+elseif (KAUTH_BACKEND STREQUAL "POLKITQT1")
+    message(STATUS "Building PolkitQt1 KAuth backend")
+
+    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+       auth/backends/polkit-1/Polkit1Backend.cpp
+    )
+
+    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT1_CORE_LIBRARY})
 elseif (KAUTH_BACKEND STREQUAL "OSX")
     message(STATUS "Building Apple KAuth backend")
 
@@ -330,6 +338,7 @@ set(kdecore_LIB_SRCS
 )
 
 set_source_files_properties( auth/backends/policykit/PolicyKitBackend.cpp
+                             auth/backends/polkit-1/Polkit1Backend.cpp
                              auth/backends/fake/FakeBackend.cpp
                              auth/backends/mac/AuthServicesBackend.cpp
                              auth/backends/dbus/DBusHelperProxy.cpp
@@ -375,6 +384,9 @@ if(KAUTH_BACKEND STREQUAL "OSX")
 elseif(KAUTH_BACKEND STREQUAL "POLKITQT")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/policykit/kauth-policy-gen-polkit.cpp )
+elseif(KAUTH_BACKEND STREQUAL "POLKITQT1")
+  set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
+      auth/backends/polkit-1/kauth-policy-gen-polkit1.cpp )
 else()
     set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/fake/kauth-policy-gen-polkit.cpp )
@@ -400,7 +412,7 @@ configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @
 
 kde4_add_executable(kde4-config NOGUI kde-config.cpp )
 
-target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS})
 
 install(TARGETS kde4-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
