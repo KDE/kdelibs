@@ -14,7 +14,7 @@ configure_file(
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. ${NEPOMUK_SOURCE_DIR})
+include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/../../nepomuk)
 if(LIBATTICA_FOUND)
     include_directories(${LIBATTICA_INCLUDE_DIRS})
 endif(LIBATTICA_FOUND)
