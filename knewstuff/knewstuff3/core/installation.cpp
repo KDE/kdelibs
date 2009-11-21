@@ -36,6 +36,10 @@
 #include "kdebug.h"
 
 #include "core/security.h"
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <shlobj.h>
+#endif
 
 
 struct KNS3::InstallationPrivate {
@@ -358,9 +362,9 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
 #if defined(Q_WS_WIN)
             WCHAR wPath[MAX_PATH+1];
             if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
-                installdir = QString::fromUtf16((const ushort *) wPath) + QLatin1Char('/') + installPath() + QLatin1Char('/');
+                installdir = QString::fromUtf16((const ushort *) wPath) + QLatin1Char('/') + installpath + QLatin1Char('/');
             } else {
-                installdir =  QDir::home().path() + QLatin1Char('/') + d->m_installpath + QLatin1Char('/');
+                installdir =  QDir::home().path() + QLatin1Char('/') + d->installPath + QLatin1Char('/');
             }
 #else
             installdir = QDir::home().path() + '/' + d->installPath + '/';
