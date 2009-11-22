@@ -1,8 +1,5 @@
 project(knewstuff3)
 
-# For the Rating Widget
-find_package(Nepomuk REQUIRED)
-
 # Try to find Attica
 macro_optional_find_package(LibAttica)
 macro_bool_to_01(LIBATTICA_FOUND HAVE_LIBATTICA)
@@ -14,7 +11,7 @@ configure_file(
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/../../nepomuk)
+include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
 if(LIBATTICA_FOUND)
     include_directories(${LIBATTICA_INCLUDE_DIR})
 endif(LIBATTICA_FOUND)
@@ -37,6 +34,8 @@ set(knewstuff3_SRCS
     ui/itemsviewdelegate.cpp
     ui/progressindicator.cpp
     ui/uploaddialog.cpp
+    ui/ratingpainter.cpp
+    ui/ratingwidget.cpp
 )
 
 if(LIBATTICA_FOUND)
@@ -54,8 +53,8 @@ target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
     ${KDE4_KUTILS_LIBS}
-    nepomuk
 )
+
 if(LIBATTICA_FOUND)
     target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES})
 endif(LIBATTICA_FOUND)

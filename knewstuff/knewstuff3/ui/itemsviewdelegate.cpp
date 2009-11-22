@@ -17,7 +17,6 @@
 */
 
 #include "itemsviewdelegate.h"
-#include "itemsmodel.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QSortFilterProxyModel>
@@ -30,8 +29,9 @@
 #include <kmenu.h>
 #include <krun.h>
 
-#include "nepomuk/core/ui/kratingwidget.h"
-#include "nepomuk/core/ui/kratingpainter.h"
+#include "itemsmodel.h"
+#include "ratingwidget.h"
+#include "ratingpainter.h"
 
 namespace KNS3
 {
@@ -94,10 +94,10 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
 
-    KRatingWidget* rating = new KRatingWidget();
+    RatingWidget* rating = new RatingWidget();
     rating->setMaxRating(10);
     rating->setHalfStepsEnabled(true);
-    //rating->setEditable(false);
+    rating->setEditable(false);
     list << rating;
     
     return list;
@@ -227,10 +227,9 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
     }
 
-    
-    KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateRatingWidget));
+    RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
-        rating->setToolTip(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
+        rating->setToolTip(i18n("Rating: %1%", model->data(index, ItemsModel::kRating).toString()));
         // assume all entries come with rating 0..100 but most are in the range 20 - 80, so 20 is 0 stars, 80 is 5 stars
         int ratingValue = model->data(index, ItemsModel::kRating).toInt();
         if (ratingValue <= 0) {
