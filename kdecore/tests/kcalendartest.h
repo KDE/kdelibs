@@ -27,13 +27,27 @@ protected:
     void testCompare( const KCalendarSystem *calendar, int year, int month, int day );
     void testQDateYMD( const KCalendarSystem *calendar, int y, int m, int d );
 
+    void testStrings( KLocale::DigitSet testDigitSet );
+    QDate setDayOfYearDate( const KCalendarSystem * calendar, int year, int dayOfYear );
+    QDate setIsoWeekDate( const KCalendarSystem * calendar, int year, int isoWeek, int dayOfWeek );
+
 private Q_SLOTS:
     void testTypes();
     void testLocale();
+    void testFormatDate();
+    void testReadDate();
+    void testStringForms();
+    void testIsoWeekDate();
+    void testDayOfYearDate();
     void testGregorian();
+    void testHebrew();
     void testHijri();
+    void testIndianNational();
     void testGregorianBasic();
     void testGregorianYmd();
+    void testHebrewBasic();
+    void testHebrewYmd();
+    void testHebrewCompare();
     void testHijriBasic();
     void testHijriYmd();
     void testJalaliBasic();

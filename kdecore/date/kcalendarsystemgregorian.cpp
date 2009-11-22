@@ -50,7 +50,9 @@ QDate KCalendarSystemGregorian::epoch() const
 
 QDate KCalendarSystemGregorian::earliestValidDate() const
 {
-    return QDate::fromJulianDay( 1 );
+    // 1 Jan 4712 BC, no year zero, cant be 4713BC due to error in QDate that day 0 is not valid
+    // and we really need the first in each year to be valid for the date maths
+    return QDate::fromJulianDay( 366 );
 }
 
 QDate KCalendarSystemGregorian::latestValidDate() const

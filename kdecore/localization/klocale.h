@@ -633,19 +633,22 @@ public:
    */
    bool nounDeclension() const;
 
-  /**
-   * Format for date string.
-   */
-  enum DateFormat {
-    ShortDate,      /**< Short (numeric) date format, e.g. 08-04-2007 */
-    LongDate,       /**< Long (text) date format, e.g. Sunday 08 April 2007 */
-    FancyShortDate, /**< Same as ShortDate for dates a week or more ago. For more
-                         recent dates, it is represented as Today, Yesterday, or
-                         the weekday name. */
-    FancyLongDate   /**< Same as LongDate for dates a week or more ago. For more
-                         recent dates, it is represented as Today, Yesterday, or
-                         the weekday name. */
-  };
+    /**
+     * Format for date string.
+     */
+    enum DateFormat {
+        ShortDate,        /**< Locale Short date format, e.g. 08-04-2007 */
+        LongDate,         /**< Locale Long date format, e.g. Sunday 08 April 2007 */
+        FancyShortDate,   /**< Same as ShortDate for dates a week or more ago. For more
+                               recent dates, it is represented as Today, Yesterday, or
+                               the weekday name. */
+        FancyLongDate,    /**< Same as LongDate for dates a week or more ago. For more
+                               recent dates, it is represented as Today, Yesterday, or
+                               the weekday name. */
+        IsoDate,          /**< ISO-8601 Date format YYYY-MM-DD, e.g. 2009-12-31 */
+        IsoWeekDate,      /**< ISO-8601 Week Date format YYYY-Www-D, e.g. 2009-W01-1 */
+        IsoOrdinalDate,   /**< ISO-8601 Ordinal Date format YYYY-DDD, e.g. 2009-001 */
+    };
 
   /**
    * Returns a string formatted to the current locale's conventions
@@ -739,7 +742,7 @@ public:
                                     ///< This automatically implies @c TimeWithoutAmPm.
     };
     Q_DECLARE_FLAGS(TimeFormatOptions, TimeFormatOption)
-                     
+
     /**
      * @since 4.4
      *
@@ -752,7 +755,7 @@ public:
      */
     QString formatLocaleTime(const QTime &pTime,
                              TimeFormatOptions options = KLocale::TimeDefault) const;
-                     
+
   /**
    * @since 4.3
    *
@@ -849,7 +852,9 @@ public:
   double readNumber(const QString &numStr, bool * ok = 0) const;
 
   /**
-   * Converts a localized date string to a QDate.
+   * Converts a localized date string to a QDate.  This method will try all
+   * ReadDateFlag formats in preferred order to read a valid date.
+   *
    * The bool pointed by ok will be invalid if the date entered was not valid.
    *
    * @param str the string we want to convert.
@@ -857,34 +862,40 @@ public:
    *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QDate
+   * @see KCalendarSystem::readDate()
    */
   QDate readDate(const QString &str, bool* ok = 0) const;
 
   /**
    * Converts a localized date string to a QDate, using the specified format.
    * You will usually not want to use this method.
+   * @see KCalendarSystem::readDate()
    */
   QDate readDate( const QString &intstr, const QString &fmt, bool* ok = 0) const;
 
-  /**
-   * Flags for readDate()
-   */
-  enum ReadDateFlags {
-      NormalFormat = 1,  ///< Only accept a date string in normal (long) format
-      ShortFormat = 2    ///< Only accept a date string in short format
-  };
+    /**
+     * Flags for readDate()
+     */
+    enum ReadDateFlags {
+        NormalFormat          =    1, /**< Only accept a date string in the locale LongDate format */
+        ShortFormat           =    2, /**< Only accept a date string in the locale ShortDate format */
+        IsoFormat             =    4, /**< Only accept a date string in ISO date formay (YYYY-MM-DD) */
+        IsoWeekFormat         =    8, /**< Only accept a date string in ISO Week date formay (YYYY-Www-D) */
+        IsoOrdinalFormat      =   16, /**< Only accept a date string in ISO Week date formay (YYYY-DDD) */
+    };
 
   /**
    * Converts a localized date string to a QDate.
-   * This method is stricter than readDate(str,&ok): it will either accept
-   * a date in full format or a date in short format, depending on @p flags.
+   * This method is stricter than readDate(str,&ok): it will only accept
+   * a date in a specific format, depending on @p flags.
    *
    * @param str the string we want to convert.
-   * @param flags whether the date string is to be in full format or in short format.
+   * @param flags what format the the date string will be in
    * @param ok the boolean that is set to false if it's not a valid date.
    *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QDate
+   * @see KCalendarSystem::readDate()
    */
   QDate readDate(const QString &str, ReadDateFlags flags, bool *ok = 0) const;
 
@@ -1092,6 +1103,7 @@ public:
    * @param format The new short date format
    */
   void setDateFormatShort(const QString & format);
+
   /**
    * Changes the form of month name used in dates.
    *
@@ -1174,6 +1186,7 @@ public:
    * @see setDateFormatShort()
    */
   QString dateFormatShort() const;
+
   /**
    * Returns the currently selected time format.
    *

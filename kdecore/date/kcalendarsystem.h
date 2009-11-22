@@ -163,6 +163,31 @@ public:
      */
     virtual bool isValid( int year, int month, int day ) const = 0;
 
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns whether a given date is valid in this calendar system.
+     *
+     * @param year the year portion of the date to check
+     * @param day the day of year portion of the date to check
+     * @return @c true if the date is valid, @c false otherwise
+     */
+    bool isValid( int year, int dayOfYear ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns whether a given date is valid in this calendar system.
+     *
+     * @param year the year portion of the date to check
+     * @param isoWeekNumber the ISO week portion of the date to check
+     * @param dayOfIsoWeek the day of week portion of the date to check
+     * @return @c true if the date is valid, @c false otherwise
+     */
+    bool isValidIsoWeekDate( int year, int isoWeekNumber, int dayOfIsoWeek ) const;
+
     /**
      * Returns whether a given date is valid in this calendar system.
      *
@@ -184,6 +209,33 @@ public:
      * @return @c true if the date is valid, @c false otherwise
      */
     virtual bool setDate( QDate &date, int year, int month, int day ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Set a date using the year number and day of year number only.
+     *
+     * @param date date to change
+     * @param year year
+     * @param dayOfYear day of year
+     * @return @c true if the date is valid, @c false otherwise
+     */
+    bool setDate( QDate &date, int year, int dayOfYear ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Set a date using the year number, ISO week number and day of week number.
+     *
+     * @param date date to change
+     * @param year year
+     * @param isoWeekNumber ISO week of year
+     * @param dayOfIsoWeek day of week Mon..Sun (1..7)
+     * @return @c true if the date is valid, @c false otherwise
+     */
+    bool setDateIsoWeek( QDate &date, int year, int isoWeekNumber, int dayOfIsoWeek ) const;
 
     /**
      * @deprecated
@@ -407,6 +459,7 @@ public:
      * @param date date to convert
      * @param format format to return, either short or long
      * @return year literal of the date, empty string if any error
+     * @see year()
      */
     virtual QString yearString( const QDate &date, StringFormat format = LongFormat ) const;
 
@@ -416,6 +469,7 @@ public:
      * @param pDate The date to convert
      * @param format The format to return, either short or long
      * @return The month literal of the date, empty string if any error
+     * @see month()
      */
     virtual QString monthString( const QDate &pDate, StringFormat format = LongFormat ) const;
 
@@ -425,10 +479,117 @@ public:
      * @param pDate The date to convert
      * @param format The format to return, either short or long
      * @return The day literal of the date, empty string if any error
+     * @see day()
      */
     virtual QString dayString( const QDate &pDate, StringFormat format = LongFormat ) const;
 
+    //KDE5 make virtual?
     /**
+     * @since 4.4
+     *
+     * Converts a date into a day of year literal
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The day of year literal of the date, empty string if any error
+     * @see dayOfYear()
+     */
+    QString dayOfYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Converts a date into a day of week literal
+     *
+     * @param pDate The date to convert
+     * @return The day of week literal of the date, empty string if any error
+     * @see dayOfWeek()
+     */
+    QString dayOfWeekString( const QDate &pDate ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Converts a date into a week number literal
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The day literal of the date, empty string if any error
+     * @see weekNumber()
+     */
+    QString weekNumberString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns the months in year for a date as a numeric string
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The months in year literal of the date, empty string if any error
+     * @see monthsInYear()
+     */
+    QString monthsInYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns the weeks in year for a date as a numeric string
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The weeks in year literal of the date, empty string if any error
+     * @see weeksInYear()
+     */
+    QString weeksInYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns the days in year for a date as a numeric string
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The days in year literal of the date, empty string if any error
+     * @see daysInYear()
+     */
+    QString daysInYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns the days in month for a date as a numeric string
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The days in month literal of the date, empty string if any error
+     * @see daysInMonth()
+     */
+    QString daysInMonthString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.4
+     *
+     * Returns the days in week for a date as a numeric string
+     *
+     * @param pDate The date to convert
+     * @param format The format to return, either short or long
+     * @return The days in week literal of the date, empty string if any error
+     * @see daysInMonth()
+     */
+    QString daysInWeekString( const QDate &pDate ) const;
+
+    //KDE5 remove?
+    /**
+     * @deprecated
+     *
      * Converts a year literal of a part of a string into a integer starting at the beginning of the string
      *
      * @param sNum The string to parse
@@ -437,7 +598,10 @@ public:
      */
     virtual int yearStringToInteger( const QString &sNum, int &iLength ) const;
 
+    //KDE5 remove?
     /**
+     * @deprecated
+     *
      * Converts a month literal of a part of a string into a integer starting at the beginning of the string
      *
      * @param sNum The string to parse
@@ -446,7 +610,10 @@ public:
      */
     virtual int monthStringToInteger( const QString &sNum, int &iLength ) const;
 
+    //KDE5 remove?
     /**
+     * @deprecated
+     *
      * Converts a day literal of a part of a string into a integer starting at the beginning of the string
      *
      * @param sNum The string to parse
@@ -471,43 +638,110 @@ public:
      *
      * @return The date as a string
      */
-    virtual QString formatDate( const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate ) const;  //KDE5 Remove? Use KLocale?
+    virtual QString formatDate( const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate ) const;
 
+    //KDE5 Make virtual
     /**
      * @since 4.4
      *
-     * Returns a string formatted to the given format
+     * Returns a string formatted to the given format and localised to the
+     * correct language and digit set.
      *
-     * Only use in situations where you specifically don't want to use the
-     * the current locale's default format
+     *        *** WITH GREAT POWER COMES GREAT RESPONSIBILITY ***
+     * Please use with care and only in situations where the DateFormat enum
+     * or locale formats or individual string methods do not provide what you
+     * need.  You should almost always translate your format string as
+     * documented.  Using the standard DateFormat options instead would take
+     * care of the translation for you.
      *
-     * The format of the date is a string which contains variables that will
-     * be replaced:
-     * @li %Y with the whole year (e.g. "1984" for "1984")
-     * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
-     * @li %n with the month (January="1", December="12")
-     * @li %m with the month with two digits (January="01", December="12")
-     * @li %e with the day of the month (e.g. "1" on the first of march)
-     * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
-     * @li %b with the short form of the month (e.g. "Jan" for January)
-     * @li %B with the long form of the month (e.g. "January")
-     * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
-     * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
+     * Warning: The %n element differs from the GNU/POSIX standard where it is
+     * defined as a newline.  KDE currently uses this for short day number.  It
+     * is recommended for compatability purposes to use %-m instead.
      *
-     * Everything else in the format string will be taken as is.
-     * For example, March 20th 1989 with the format "%y:%m:%d" results
-     * in "89:03:20".
-     *
-     * Format string is a good candidate to be made translatable,
+     * The toFormat parameter is a good candidate to be made translatable,
      * so that translators can adapt it to their language's convention.
-     * There should also be a context stating format's purpose,
-     * and kdedt-format keyword (for automatic validation of translations):
+     * There should also be a context using the "kdedt-format" keyword (for
+     * automatic validation of translations) and stating the format's purpose:
      * \code
-     *   QString reportMonthFmt = KGlobal::locale()->calendar()->formatDate(
-     *     QDate(aYear, aMonth, 1),
-     *     i18nc("(kdedt-format) month and year in the monthly report header",
-     *           "%B %Y"));
+     * QDate reportDate;
+     * KGlobal::locale()->calendar()->setDate(reportDate, reportYear, reportMonth, 1);
+     * dateFormat = i18nc("(kdedt-format) Report month and year in report header", "%B %Y"));
+     * dateString = KGlobal::locale()->calendar()->formatDate(reportDate, dateFormat);
      * \endcode
+     *
+     * The date format string closely follows the C / POSIX / UC / GNU standards
+     * but with some exceptions.
+     *
+     * Date format strings are made up of date componants and string literals.
+     * Date componants are prefixed by a % escape character and are made up of
+     * optional padding and case modifier flags, an optional width value, and a
+     * compulsary code for the actual date componant:
+     *   %[Flags][Width][Componant]
+     * e.g. %_^5Y
+     * No spaces are allowed.
+     *
+     * The Flags can modify the padding character and/or case of the Date Componant.
+     * The Flags are optional and may be combined and/or repeated in any order,
+     * in which case the last Padding Flag and last Case Flag will be the
+     * ones used.  The Flags must be immediately after the % and before any Width.
+     *
+     * The Width can modify how wide the date Componant is padded to.  The Width
+     * is an optional interger value and must be after any Flags but before the
+     * Componant.  If the Width is less than the minimum defined for a Componant
+     * then the default minimum will be used instead.
+     *
+     * By default most numeric Date Componants are right-aligned with leading 0's.
+     *
+     * By default all string name fields are capital case and unpadded.
+     *
+     * The following Flags may be specified:
+     * @li - (hyphen) no padding (e.g. 1 Jan and "%-j" = "1")
+     * @li _ (underscore) pad with spaces (e.g. 1 Jan and "%-j" = "  1")
+     * @li 0 (zero) pad with 0's  (e.g. 1 Jan and "%0j" = "001")
+     * @li ^ (caret) make uppercase (e.g. 1 Jan and "%^B" = "JANUARY")
+     * @li # (hash) invert case (e.g. 1 Jan and "%#B" = "???")
+     *
+     * The following Date Componants can be specified:
+     * @li %Y the year to 4 digits (e.g. "1984" for 1984, "0584" for 584, "0084" for 84)
+     * @li %C the 'century' portion of the year to 2 digits (e.g. "19" for 1984, "05" for 584, "00" for 84)
+     * @li %y the lower 2 digits of the year to 2 digits (e.g. "84" for 1984, "05" for 2005)
+     * @li %m the month number to 2 digits (January="01", December="12")
+     * @li %n the month number to 1 digit (January="1", December="12"), see notes!
+     * @li %d the day number of the month to 2 digits (e.g. "01" on the first of March)
+     * @li %e the day number of the month to 1 digit (e.g. "1" on the first of March)
+     * @li %B the month name long form (e.g. "January")
+     * @li %b the month name short form (e.g. "Jan" for January)
+     * @li %h the month name short form (e.g. "Jan" for January)
+     * @li %A the weekday name long form (e.g. "Wednesday" for Wednesday)
+     * @li %a the weekday name short form (e.g. "Wed" for Wednesday)
+     * @li %j the day of the year number to 3 digits (e.g. "001"  for 1 Jan)
+     * @li %V the ISO week of the year number to 2 digits (e.g. "01"  for ISO Week 1)
+     * @li %G the year number in long form of the ISO week of the year to 4 digits (e.g. "2004"  for 1 Jan 2005)
+     * @li %g the year number in short form of the ISO week of the year to 2 digits (e.g. "04"  for 1 Jan 2005)
+     * @li %u the day of the week number to 1 digit (e.g. "1"  for Monday)
+     * @li %D the US short date format (e.g. "%m/%d/%y")
+     * @li %F the ISO short date format (e.g. "%Y-%m-%d")
+     * @li %x the KDE locale short date format
+     * @li %% the literal "%"
+     * @li %t a tab character
+     *
+     * Everything else in the format string will be taken as literal text.
+     *
+     * Examples:
+     * "%Y-%m-%d" = "2009-01-01"
+     * "%Y-%-m-%_4d" = "2009-1-   1"
+     *
+     * The Date Componants are mostly equivalent to the C, GNU and POSIX standard
+     * but with some notable differences:
+     * @li %e in GNU/POSIX is space padded to 2 digits, in KDE is not padded
+     * @li %n in GNU/POSIX is newline, in KDE is short month number
+     * @li %U in GNU/POSIX is US week number, in KDE is not supported
+     * @li %w in GNU/POSIX is US day of week, in KDE is not supported
+     * @li %W in GNU/POSIX is US week number, in KDE is not supported
+     * @li %E in GNU/POSIX is locale's alternative representation, in KDE is not supported
+     * @li %O in GNU/POSIX is locale's alternative numeric symbols, in KDE is not supported
+     *
+     * %0 is not supported as the returned result is always in the locale's chosen numeric symbol digit set.
      *
      * @see KLocale::formatDate
      *
@@ -516,7 +750,7 @@ public:
      *
      * @return The date as a string
      */
-    QString formatDate( const QDate &fromDate, const QString &toFormat ) const;  //KDE5 Make virtual
+    QString formatDate( const QDate &fromDate, const QString &toFormat ) const;
 
     /**
      * Converts a localized date string to a QDate.
@@ -537,14 +771,6 @@ public:
     virtual QDate readDate( const QString &str, bool *ok = 0 ) const;
 
     /**
-     * Converts a localized date string to a QDate, using the specified @p format.
-     * You will usually not want to use this method.
-     *
-     * @see KLocale::readDate
-     */
-    virtual QDate readDate( const QString &intstr, const QString &format, bool *ok = 0 ) const;
-
-    /**
      * Converts a localized date string to a QDate.
      * This method is stricter than readDate(str,&ok): it will either accept
      * a date in full format or a date in short format, depending on @p flags.
@@ -563,6 +789,63 @@ public:
      * @return the string converted to a QDate
      */
     virtual QDate readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0 ) const;
+
+    /**
+     * Converts a localized date string to a QDate, using the specified @p format.
+     * You will usually not want to use this method.
+     *
+     * You must supply a format and string containg at least one of the following combinations to
+     * create a valid date:
+     * @li a month and day of month
+     * @li a day of year
+     * @li a ISO week number and day of week
+     *
+     * If a year number is not supplied then the current year will be assumed.
+     *
+     * All date componants must be separated by a non-numeric character.
+     *
+     * The format is not applied strictly to the input string:
+     * @li extra whitespace is ignored
+     * @li leading 0's on numbers are ignored
+     * @li capitalisation of literals is ignored
+     *
+     * The allowed format componants are almost the same as the formatDate() function.
+     * The following date componants will be read:
+     * @li %Y the whole year (e.g. "1984" for 1984)
+     * @li %y the lower 2 digits of the year (e.g. "84" for 1984)
+     * @li %m the month number to two digits (January="01", December="12")
+     * @li %n the month number (January="1", December="12")
+     * @li %d the day number of the month to two digits (e.g. "01" on the first of March)
+     * @li %e the day number of the month (e.g. "1" on the first of March)
+     * @li %B the month name long form (e.g. "January")
+     * @li %b the month name short form (e.g. "Jan" for January)
+     * @li %h the month name short form (e.g. "Jan" for January)
+     * @li %A the weekday name long form (e.g. "Wednesday" for Wednesday)
+     * @li %a the weekday name short form (e.g. "Wed" for Wednesday)
+     * @li %j the day of the year number to three digits (e.g. "001"  for 1 Jan)
+     * @li %V the ISO week of the year number to two digits (e.g. "01"  for ISO Week 1)
+     * @li %u the day of the week number (e.g. "1"  for Monday)
+     *
+     * The following date componants are NOT supported:
+     * @li %C the 'century' portion of the year (e.g. "19" for 1984, "5" for 584, "" for 84)
+     * @li %G the year number in long form of the ISO week of the year (e.g. "2004"  for 1 Jan 2005)
+     * @li %g the year number in short form of the ISO week of the year (e.g. "04"  for 1 Jan 2005)
+     * @li %D the US short date format (e.g. "%m/%d/%y")
+     * @li %F the ISO short date format (e.g. "%Y-%m-%d")
+     * @li %x the KDE locale short date format
+     * @li %% the literal "%"
+     * @li %t a tab character
+     *
+     * @param str the string to convert
+     * @param format the date format to use
+     * @param ok if non-null, will be set to @c true if the date is valid, @c false if invalid
+     *
+     * @return the string converted to a QDate
+     *
+     * @see formatDate
+     * @see KLocale::readDate
+     */
+    virtual QDate readDate( const QString &intstr, const QString &format, bool *ok = 0 ) const;
 
     /**
      * Use this to determine which day is the first day of the week.
@@ -699,10 +982,12 @@ protected:
     void setMaxDaysInWeek( int maxDays );
 
     /**
-    * Sets if Calendar System has Year 0 or not
-    *
-    * Only for internal calendar system use
-    */
+     * @since 4.4
+     *
+     * Sets if Calendar System has Year 0 or not
+     *
+     * Only for internal calendar system use
+     */
     void setHasYear0( bool hasYear0 );
 
 private:
