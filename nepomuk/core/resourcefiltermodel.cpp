@@ -20,6 +20,7 @@
 
 #include "resourcefiltermodel.h"
 #include "graphwrapper_p.h"
+#include "resourcemanager.h"
 
 #include <Soprano/Node>
 #include <Soprano/Statement>
@@ -47,11 +48,11 @@ public:
     GraphWrapper graphWrapper;
 };
 
-Nepomuk::ResourceFilterModel::ResourceFilterModel( Soprano::Model* model )
-    : FilterModel( model ),
+Nepomuk::ResourceFilterModel::ResourceFilterModel( ResourceManager* manager )
+    : FilterModel( 0 ),
       d(new Private())
 {
-    d->graphWrapper.setModel( this );
+    d->graphWrapper.setManager( manager );
 }
 
 

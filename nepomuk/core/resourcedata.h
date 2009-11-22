@@ -30,6 +30,8 @@
 #include "variant.h"
 #include "thing.h"
 
+#include <kurl.h>
+
 #include <soprano/statement.h>
 
 
@@ -89,7 +91,6 @@ namespace Nepomuk {
          * \return The main type of the resource. ResourceData tries hard to make this the
          * most important type, i.e. that which is furthest down the hierachy.
          */
-        // FIXME: return Nepomuk::Class here
         QUrl type();
 
         QList<QUrl> allTypes();
@@ -185,6 +186,8 @@ namespace Nepomuk {
          * yet this value is empty. Otherwise it equals m_kickoffUriOrId
          */
         QString m_kickoffIdentifier;
+        // For files that are not stored in Nepomuk yet we remember the file url for later use
+        KUrl m_fileUrl;
         QUrl m_mainType;
         QList<QUrl> m_types;
 

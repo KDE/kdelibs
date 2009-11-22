@@ -25,6 +25,7 @@
 #include "nepomukmainmodel.h"
 #include "resource.h"
 #include "resourcefiltermodel.h"
+#include "nie.h"
 
 #include "ontology/class.h"
 
@@ -41,6 +42,9 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QUuid>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusConnectionInterface>
 
 using namespace Soprano;
 
@@ -48,6 +52,7 @@ using namespace Soprano;
 Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manager )
     : mainModel( 0 ),
       overrideModel( 0 ),
+      mutex(QMutex::Recursive),
       dataCnt( 0 ),
       m_manager( manager )
 {
@@ -70,37 +75,10 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
 
     // if scheme is file, try to follow a symlink
     if ( url.scheme() == "file" ) {
-        QFileInfo fileInfo( url.toLocalFile() );
-        QString linkTarget = fileInfo.canonicalFilePath();
-        // linkTarget is empty for dangling symlinks
-        if ( !linkTarget.isEmpty() ) {
-            url = QUrl::fromLocalFile( linkTarget );
-        }
+        return localFileData( url, type );
     }
 
-    QMutexLocker lock( &mutex );
-
-    ResourceDataHash::iterator it = m_initializedData.find( url.toString() );
-
-    //
-    // The uriOrId has no local representation yet -> create one
-    //
-    if( it == m_initializedData.end() ) {
-//        kDebug() << "No existing ResourceData instance found for uri " << url;
-        //
-        // The actual URI is already known here
-        //
-        ResourceData* d = new ResourceData( url, QString(), type, this );
-        m_initializedData.insert( url.toString(), d );
-
-        return d;
-    }
-    else {
-        //
-        // Reuse the already existing ResourceData object
-        //
-        return it.value();
-    }
+    return findData( url, type );
 }
 
 
@@ -108,11 +86,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
 {
     if ( uriOrId.isEmpty() ) {
         return new ResourceData( QUrl(), QString(), type, this );
-    }
-
-    // special case: local files
-    if ( QFile::exists(uriOrId) ) {
-        return data( QUrl::fromLocalFile (uriOrId), type );
     }
 
     QMutexLocker lock( &mutex );
@@ -126,20 +99,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
     //
     if( it == m_initializedData.end() ) {
         it = m_kickoffData.find( uriOrId );
-
-        // check if the type matches (see determineUri for details)
-        if ( !type.isEmpty() && type != Soprano::Vocabulary::RDFS::Resource() ) {
-            Types::Class wantedType = type;
-            while ( it != m_kickoffData.end() &&
-                    it.key() == uriOrId ) {
-                if ( it.value()->hasType( type ) ) {
-                    break;
-                }
-                ++it;
-            }
-        }
-
-        resFound = ( it != m_kickoffData.end() && it.key() == uriOrId );
+        resFound = ( it != m_kickoffData.end() );
     }
 
     //
@@ -152,6 +112,75 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
         //
         ResourceData* d = new ResourceData( QUrl(), uriOrId, type, this );
         m_kickoffData.insert( uriOrId, d );
+
+        return d;
+    }
+    else {
+        //
+        // Reuse the already existing ResourceData object
+        //
+        return it.value();
+    }
+}
+
+
+Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::localFileData( const KUrl& file, const QUrl& type )
+{
+    KUrl url(file);
+
+    //
+    // resolve symlinks
+    //
+    QFileInfo fileInfo( url.toLocalFile() );
+    QString linkTarget = fileInfo.canonicalFilePath();
+    // linkTarget is empty for dangling symlinks
+    if ( !linkTarget.isEmpty() ) {
+        url = linkTarget;
+    }
+
+    QUrl resourceUri;
+
+    //
+    // Starting with KDE 4.4 file URLs are no longer used as resource URIs. Instead all resources have
+    // "unique" UUID based URIs following the nepomuk:/res/<uuid> scheme
+    //
+    Soprano::QueryResultIterator it = m_manager->mainModel()->executeQuery( QString("select ?r where { ?r %1 %2 . }")
+                                                                            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NIE::url()))
+                                                                            .arg(Soprano::Node::resourceToN3(url)),
+                                                                            Soprano::Query::QueryLanguageSparql );
+    if( it.next() ) {
+        resourceUri = it["r"].uri();
+    }
+    it.close();
+
+    //
+    // If we have a resource uri everything is fine. We can just use it to create the ResourceData instance.
+    // If not, however, we need to create a new instance while remembering the original path.
+    //
+    if( !resourceUri.isEmpty() ) {
+        return findData( resourceUri, type );
+    }
+    else {
+        // let ResourceData::determineUri() do the rest
+        return data( url.url(), type );
+    }
+}
+
+
+Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::findData( const QUrl& url, const QUrl& type )
+{
+    ResourceDataHash::iterator it = m_initializedData.find( url.toString() );
+
+    //
+    // The uriOrId has no local representation yet -> create one
+    //
+    if( it == m_initializedData.end() ) {
+//        kDebug() << "No existing ResourceData instance found for uri " << url;
+        //
+        // The actual URI is already known here
+        //
+        ResourceData* d = new ResourceData( url, QString(), type, this );
+        m_initializedData.insert( url.toString(), d );
 
         return d;
     }
@@ -240,15 +269,50 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache()
 }
 
 
+void Nepomuk::ResourceManagerPrivate::_k_storageServiceInitialized( bool success )
+{
+    if( success ) {
+        kDebug() << "Nepomuk Storage service up and initialized.";
+        emit m_manager->nepomukSystemStarted();
+    }
+}
+
+
+void Nepomuk::ResourceManagerPrivate::_k_dbusServiceOwnerChanged( const QString& name, const QString&, const QString& newOwner )
+{
+    if( name == QLatin1String("org.kde.NepomukStorage") &&
+        newOwner.isEmpty() ) {
+        kDebug() << "Nepomuk Storage service went down.";
+        emit m_manager->nepomukSystemStopped();
+    }
+}
+
+
 Nepomuk::ResourceManager::ResourceManager()
     : QObject(),
       d( new ResourceManagerPrivate( this ) )
 {
-    d->resourceFilterModel = new ResourceFilterModel();
+    d->resourceFilterModel = new ResourceFilterModel( this );
     connect( d->resourceFilterModel, SIGNAL(statementsAdded()),
              this, SLOT(slotStoreChanged()) );
     connect( d->resourceFilterModel, SIGNAL(statementsRemoved()),
              this, SLOT(slotStoreChanged()) );
+
+    // connect to the storage service's initialized signal to be able to emit
+    // the nepomukSystemStarted signal
+    QDBusConnection::sessionBus().connect( QLatin1String("org.kde.NepomukStorage"),
+                                           QLatin1String("/servicecontrol"),
+                                           QLatin1String("org.kde.nepomuk.ServiceControl"),
+                                           QLatin1String("serviceInitialized"),
+                                           this,
+                                           SLOT(_k_storageServiceInitialized(bool)) );
+
+    // connect to the ownerChanged signal to be able to connect the nepomukSystemStopped
+    // signal once the storage service goes away
+    connect( QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString, QString, QString)),
+             this, SLOT(_k_dbusServiceOwnerChanged(QString, QString, QString)) );
+
+    init();
 }
 
 
@@ -408,24 +472,24 @@ QString Nepomuk::ResourceManager::generateUniqueUri()
 
 QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
 {
+    // default to res URIs
+    QString type = QLatin1String("res");
+
+    // ctx is the only used value for name
+    if(name == QLatin1String("ctx")) {
+        type = name;
+    }
+
     Soprano::Model* model = mainModel();
 
-    QUrl uri;
-    QString normalizedName( name );
-    normalizedName.remove( QRegExp( "[^\\w\\.\\-_:]" ) );
-    if ( !normalizedName.isEmpty() ) {
-        uri = "nepomuk:/" + normalizedName;
-    }
-    else {
-        uri = "nepomuk:/" + KRandom::randomString( 20 );
-    }
-
     while( 1 ) {
-        if ( !model->executeQuery( QString("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
+        QString uuid = QUuid::createUuid().toString();
+        uuid = uuid.mid(1, uuid.length()-2);
+        QUrl uri = QUrl( QLatin1String("nepomuk:/") + type + QLatin1String("/") + uuid );
+        if ( !model->executeQuery( QString::fromLatin1("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
                                    .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
             return uri;
         }
-        uri = "nepomuk:/" + normalizedName + '_' +  KRandom::randomString( 20 );
     }
 }
 

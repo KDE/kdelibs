@@ -30,6 +30,9 @@ namespace Soprano {
 }
 
 namespace Nepomuk {
+
+    class ResourceManager;
+
     /**
      * Creates a new graph whenever the event loop is entered.
      * This way we do not create a new graph for each statement
@@ -42,8 +45,8 @@ namespace Nepomuk {
      *       At the same time we do not want to create one graph for each created statement as we do in KDE 4.1
      *       A timeout is a bad idea, too, since some batch operations may take longer than our timeout which
      *       would lead to different graphs for the same batch.
-     *       Thus, why not using the event loop? Just use a timer whenever statements are added to 
-     *       trigger the creation of a new graph on the next adding. Long batch operations as done in the 
+     *       Thus, why not using the event loop? Just use a timer whenever statements are added to
+     *       trigger the creation of a new graph on the next adding. Long batch operations as done in the
      *       Akonadi feeders would result in a single graph while separate user actions in a GUI would always
      *       lead to separate graphs.
      */
@@ -66,7 +69,7 @@ namespace Nepomuk {
          */
         QUrl currentGraph();
 
-        void setModel( Soprano::Model* model );
+        void setManager( ResourceManager* manager );
 
     private Q_SLOTS:
         void slotTimeout();
@@ -79,7 +82,7 @@ namespace Nepomuk {
         bool m_currentGraphStored;
         QTimer m_timer;
 
-        Soprano::Model* m_model;
+        ResourceManager* m_manager;
     };
 }
 

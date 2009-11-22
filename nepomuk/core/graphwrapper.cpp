@@ -19,6 +19,7 @@
  */
 
 #include "graphwrapper_p.h"
+#include "resourcemanager.h"
 
 #include <Soprano/Model>
 #include <Soprano/Node>
@@ -31,27 +32,11 @@
 #include <QtCore/QUuid>
 #include <QtCore/QRegExp>
 
-namespace {
-    QUrl createGraphUri() {
-        return QUrl( "urn:nepomuk:local:" + QUuid::createUuid().toString().remove( QRegExp( "[\\{\\}]" ) ) );
-    }
-
-    QUrl createUniqueGraphUri( Soprano::Model* model ) {
-        while( 1 ) {
-            QUrl uri = createGraphUri();
-            if ( !model->executeQuery( QString("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
-                                       .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
-                return uri;
-            }
-        }
-    }
-}
-
 
 Nepomuk::GraphWrapper::GraphWrapper( QObject* parent )
     : QObject( parent ),
       m_currentGraphStored( true ),
-      m_model( 0 )
+      m_manager( 0 )
 {
     connect( &m_timer, SIGNAL(timeout()),
              this, SLOT(slotTimeout()) );
@@ -64,10 +49,10 @@ Nepomuk::GraphWrapper::~GraphWrapper()
 }
 
 
-void Nepomuk::GraphWrapper::setModel( Soprano::Model* model )
+void Nepomuk::GraphWrapper::setManager( ResourceManager* manager )
 {
-    if( m_model != model ) {
-        m_model = model;
+    if( m_manager != manager ) {
+        m_manager = manager;
         m_currentGraph = QUrl();
     }
 }
@@ -104,31 +89,31 @@ void Nepomuk::GraphWrapper::slotTimeout()
 
 void Nepomuk::GraphWrapper::createNewGraph()
 {
-    m_currentGraph = createUniqueGraphUri( m_model );
+    m_currentGraph = m_manager->generateUniqueUri( QLatin1String("ctx") );
     m_currentGraphStored = false;
 }
 
 
 void Nepomuk::GraphWrapper::storeGraph( const QUrl& graph )
 {
-    QUrl metadataGraph = createUniqueGraphUri( m_model );
+    QUrl metadataGraph = m_manager->generateUniqueUri( QLatin1String("ctx") );
 
-    m_model->addStatement( graph,
-                           Soprano::Vocabulary::RDF::type(),
-                           Soprano::Vocabulary::NRL::InstanceBase(),
-                           metadataGraph );
-    m_model->addStatement( graph,
-                           Soprano::Vocabulary::NAO::created(),
-                           Soprano::LiteralValue( QDateTime::currentDateTime() ),
-                           metadataGraph );
-    m_model->addStatement( metadataGraph,
-                           Soprano::Vocabulary::RDF::type(),
-                           Soprano::Vocabulary::NRL::GraphMetadata(),
-                           metadataGraph );
-    m_model->addStatement( metadataGraph,
-                           Soprano::Vocabulary::NRL::coreGraphMetadataFor(),
-                           graph,
-                           metadataGraph );
+    m_manager->mainModel()->addStatement( graph,
+                                          Soprano::Vocabulary::RDF::type(),
+                                          Soprano::Vocabulary::NRL::InstanceBase(),
+                                          metadataGraph );
+    m_manager->mainModel()->addStatement( graph,
+                                          Soprano::Vocabulary::NAO::created(),
+                                          Soprano::LiteralValue( QDateTime::currentDateTime() ),
+                                          metadataGraph );
+    m_manager->mainModel()->addStatement( metadataGraph,
+                                          Soprano::Vocabulary::RDF::type(),
+                                          Soprano::Vocabulary::NRL::GraphMetadata(),
+                                          metadataGraph );
+    m_manager->mainModel()->addStatement( metadataGraph,
+                                          Soprano::Vocabulary::NRL::coreGraphMetadataFor(),
+                                          graph,
+                                          metadataGraph );
 
     //
     // We update the graph every 200 mseconds but only when entering

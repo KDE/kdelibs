@@ -1,4 +1,4 @@
-/* 
+/*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -161,13 +161,13 @@ namespace Nepomuk {
         /**
          * \deprecated Use generateUniqueUri(const QString&)
          *
-         * Generates a unique URI that is not used in the store yet. This method ca be used to 
+         * Generates a unique URI that is not used in the store yet. This method ca be used to
          * generate URIs for virtual types such as Tag.
          */
         KDE_DEPRECATED QString generateUniqueUri();
 
         /**
-         * Generates a unique URI that is not used in the store yet. This method ca be used to 
+         * Generates a unique URI that is not used in the store yet. This method can be used to
          * generate URIs for virtual types such as Tag.
          *
          * \param label A label that the algorithm should use to try to create a more readable URI.
@@ -177,6 +177,20 @@ namespace Nepomuk {
          * \since 4.2
          */
         QUrl generateUniqueUri( const QString& label );
+
+        /**
+         * Generates a unique URI that is not used in the store yet. This method can be used to
+         * generate URIs for virtual types such as Tag.
+         *
+         * \param category An optional category for the URI. The only purpose is to increase usability
+         * for debugging.
+         * \param label A label that the algorithm should use to try to create a more readable URI.
+         *
+         * \return A new unique URI which can be used to define a new resource.
+         *
+         * \since 4.4
+         */
+        QUrl generateUniqueUri( const QString& category, const QString& label );
 
         /**
          * \internal Non-public API. Used by Resource to signalize errors.
@@ -208,7 +222,7 @@ namespace Nepomuk {
         void resourceModified( const QString& uri );
 
         /**
-         * Whenever a problem occurs (like for example failed resource syncing) this 
+         * Whenever a problem occurs (like for example failed resource syncing) this
          * signal is emitted.
          *
          * \param uri The resource related to the error.
@@ -216,16 +230,39 @@ namespace Nepomuk {
          */
         void error( const QString& uri, int errorCode );
 
+        /**
+         * Emitted once the Nepomuk system is up and can be used.
+         *
+         * \warning This signal will not be emitted if the Nepomuk
+         * system is running when the ResourceManager is created.
+         * Use initialized() to check the status.
+         *
+         * \since 4.4
+         */
+        void nepomukSystemStarted();
+
+        /**
+         * Emitted once the Nepomuk system goes down.
+         *
+         * \since 4.4
+         */
+        void nepomukSystemStopped();
+
     private Q_SLOTS:
         void slotStoreChanged();
 
     private:
         friend class Nepomuk::ResourceManagerHelper;
         friend class Nepomuk::Resource;
+        friend class Nepomuk::ResourceManagerPrivate;
+
         ResourceManager();
         ~ResourceManager();
 
         ResourceManagerPrivate* const d;
+
+        Q_PRIVATE_SLOT( d, void _k_storageServiceInitialized(bool) )
+        Q_PRIVATE_SLOT( d, void _k_dbusServiceOwnerChanged(QString, QString, QString) )
     };
 }
 

@@ -103,6 +103,7 @@ public:
                 delete localSocketModel;
                 localSocketModel = 0;
                 QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
+                kDebug() << "Connecting to local socket" << socketName;
                 if ( localSocketClient.connect( socketName ) ) {
                     localSocketModel = localSocketClient.createModel( "main" );
                 }

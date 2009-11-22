@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,12 +13,14 @@
  */
 
 #include "resourcetest.h"
+#include "nie.h"
 
 #include "../resource.h"
 #include "../variant.h"
 #include "../resourcemanager.h"
 
 #include <kdebug.h>
+#include <ktemporaryfile.h>
 #include <qtest_kde.h>
 
 #include <Soprano/Soprano>
@@ -259,6 +261,65 @@ void ResourceTest::testResourceManager()
     }
 }
 
+
+void ResourceTest::testLocalFileUrls()
+{
+    // create a testfile
+    KTemporaryFile tmpFile1;
+    QVERIFY( tmpFile1.open() );
+
+    QUrl tmpFile1ResUri;
+    // create a new file resource. Resource should automatically save the nie:url property
+    {
+        Resource fileRes( KUrl(tmpFile1.fileName()) );
+        fileRes.setRating( 4 );
+
+        // make sure the nie:url is saved
+        QVERIFY( ResourceManager::instance()->mainModel()->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile1.fileName()) ) );
+
+        // make sure a proper nepomuk:/ uri has been created
+        QVERIFY( fileRes.resourceUri().scheme() == QLatin1String("nepomuk") );
+
+        // make sure the local resource is reused with the file URL
+        Resource fileRes2( KUrl(tmpFile1.fileName()) );
+        QCOMPARE( fileRes.resourceUri(), fileRes2.resourceUri() );
+
+        // make sure the local resource is reused with the resource URI
+        Resource fileRes3( fileRes.resourceUri() );
+        QCOMPARE( fileRes.resourceUri(), fileRes3.resourceUri() );
+
+        tmpFile1ResUri = fileRes.resourceUri();
+    }
+
+    // verify that the resource in question is found again
+    Resource fileRes1( KUrl(tmpFile1.fileName()) );
+    QCOMPARE( tmpFile1ResUri, fileRes1.resourceUri() );
+
+    // make sure the local resource is reused with the resource URI
+    Resource fileRes2( tmpFile1ResUri );
+    QCOMPARE( tmpFile1ResUri, fileRes2.resourceUri() );
+
+    // create a second test file
+    KTemporaryFile tmpFile2;
+    QVERIFY( tmpFile2.open() );
+
+    // make sure the file:/ URL is reused as resource URI
+    ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile2.fileName()), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) );
+
+    Resource fileRes3( KUrl(tmpFile2.fileName()) );
+    fileRes3.setRating( 4 );
+    QCOMPARE( KUrl(fileRes3.resourceUri()), KUrl(tmpFile2.fileName()) );
+
+    // create a third test file
+    KTemporaryFile tmpFile3;
+    QVERIFY( tmpFile3.open() );
+
+    // add a random bit of information about it
+    ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile3.fileName()), Soprano::Vocabulary::NAO::rating(), Soprano::LiteralValue(4) );
+
+    Resource fileRes4( KUrl(tmpFile3.fileName()) );
+    QCOMPARE( KUrl(fileRes4.resourceUri()), KUrl(tmpFile3.fileName()) );
+}
 
 QTEST_KDEMAIN(ResourceTest, NoGUI)
 
