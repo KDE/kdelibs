@@ -226,7 +226,7 @@ void DownloadDialog::slotResetMessage() // SLOT
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
 {
-    d->displayMessage(i18n("Timeout. Check Internet connection!"), KTitleWidget::ErrorMessage);
+    d->displayMessage(i18n("Timeout. Check Internet connection."), KTitleWidget::ErrorMessage);
 }
 
 void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
