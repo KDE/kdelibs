@@ -409,7 +409,10 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
 
     if ( types.size() <= idx )
     {
-        errorText = i18n("The slot asked for %1 arguments but there are only %2 arguments available.", idx, types.size());
+        const QString firstPart = i18np("The slot asked for %1 argument", "The slot asked for %1 arguments", idx);
+        const QString secondPart = i18np("but there is only %1 available", "but there are only %1 available", types.size());
+        errorText = i18nc("%1 is 'the slot asked for foo arguments', %2 is 'but there are only bar available'", "%1, %2.");
+
         return 0;
     }
 
