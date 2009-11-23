@@ -1373,6 +1373,7 @@ QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flag
     } else if ( flags & KLocale::IsoOrdinalFormat ) {
         return readDate( str, "%Y-%j", ok );
     }
+    return QDate();
 }
 
 int KCalendarSystem::weekStartDay() const
