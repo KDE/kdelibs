@@ -916,15 +916,15 @@ QString KCalendarSystem::formatDate( const QDate &fromDate,
         formatString = locale()->dateFormat();
     }
 
-    if ( toFormat = KLocale::IsoDate ) {
+    if ( toFormat == KLocale::IsoDate ) {
         formatString = "%Y-%m-%d";
     }
 
-    if ( toFormat = KLocale::IsoWeekDate ) {
+    if ( toFormat == KLocale::IsoWeekDate ) {
         formatString = "%Y-W%V-%u";
     }
 
-    if ( toFormat = KLocale::IsoOrdinalDate ) {
+    if ( toFormat == KLocale::IsoOrdinalDate ) {
         formatString = "%Y-%j";
     }
 
