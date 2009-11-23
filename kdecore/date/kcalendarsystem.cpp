@@ -909,26 +909,22 @@ QString KCalendarSystem::formatDate( const QDate &fromDate,
         }
     }
 
-    // Default format to the locale short format
-    QString formatString = locale()->dateFormatShort();
-
-    if ( toFormat == KLocale::LongDate || toFormat == KLocale::FancyLongDate ) {
-        formatString = locale()->dateFormat();
+    switch ( toFormat ) {
+    case KLocale::LongDate:
+    case KLocale::FancyLongDate:
+        return formatDate( fromDate, locale()->dateFormat() );
+    case KLocale::IsoDate:
+        return formatDate( fromDate, "%Y-%m-%d" );
+    case KLocale::IsoWeekDate:
+        return formatDate( fromDate, "%Y-W%V-%u" );
+    case KLocale::IsoOrdinalDate:
+        return formatDate( fromDate, "%Y-%j" );
+    case KLocale::ShortDate:
+    case KLocale::FancyShortDate:
+    default:
+        return formatDate( fromDate, locale()->dateFormatShort() );
     }
 
-    if ( toFormat == KLocale::IsoDate ) {
-        formatString = "%Y-%m-%d";
-    }
-
-    if ( toFormat == KLocale::IsoWeekDate ) {
-        formatString = "%Y-W%V-%u";
-    }
-
-    if ( toFormat == KLocale::IsoOrdinalDate ) {
-        formatString = "%Y-%j";
-    }
-
-    return formatDate( fromDate, formatString );
 }
 
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat ) const
@@ -1373,7 +1369,7 @@ QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flag
     } else if ( flags & KLocale::IsoOrdinalFormat ) {
         return readDate( str, "%Y-%j", ok );
     }
-    return QDate();
+    return d->invalidDate();
 }
 
 int KCalendarSystem::weekStartDay() const
