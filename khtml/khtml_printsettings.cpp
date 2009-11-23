@@ -64,8 +64,8 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 		"If this checkbox is disabled, the printout of the HTML document will "
 		"happen in the original color settings as you see in your application. "
 		"This may result in areas of full-page color (or grayscale, if you use "
-		"a black+white printer). Printout will possibly happen slower and will "
-		"certainly use much more toner or ink."
+		"a black+white printer). Printout will possibly happen more slowly and "
+		"will probably use more toner or ink."
 		"</p>"
 						" </qt>" );
 	setWindowTitle(i18n("HTML Settings"));

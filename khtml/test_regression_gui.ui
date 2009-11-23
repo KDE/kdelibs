@@ -141,10 +141,10 @@
                </size>
               </property>
               <property name="toolTip" >
-               <string>You may select a file where the log content is stored, before the regression testing started.</string>
+               <string>You may select a file where the log content is stored, before the regression testing is started.</string>
               </property>
               <property name="whatsThis" >
-               <string>You may select a file where the log content is stored, before the regression testing started.</string>
+               <string>You may select a file where the log content is stored, before the regression testing is started.</string>
               </property>
               <property name="text" >
                <string>Output to File...</string>
