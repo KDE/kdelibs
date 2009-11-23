@@ -571,7 +571,7 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
     if (value == 0)
         return from;
 
-    if (value == 1)
+    if (value == 0xff)
         return to;
 
     QColor color;
