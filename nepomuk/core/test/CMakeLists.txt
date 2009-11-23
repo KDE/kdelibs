@@ -8,6 +8,7 @@ include_directories(
   ${SOPRANO_INCLUDE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   )
+include (SopranoAddOntology)
 
 # The basis of all the tests handling statements
 kde4_add_library(nepomuk_testbase STATIC testbase.cpp)
