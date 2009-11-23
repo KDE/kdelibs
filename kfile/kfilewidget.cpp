@@ -1280,7 +1280,7 @@ void KFileWidgetPrivate::initSpeedbar()
         return;
     }
 
-    placesDock = new QDockWidget(i18n("Places"), q);
+    placesDock = new QDockWidget(i18nc("@title:window", "Places"), q);
     placesDock->setFeatures(QDockWidget::DockWidgetClosable);
 
     placesView = new KFilePlacesView(placesDock);
