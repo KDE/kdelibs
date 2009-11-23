@@ -28,7 +28,7 @@
     <widget class="QLabel" name="textLabel2" >
      <property name="whatsThis" >
       <string>&lt;qt>&lt;p>This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p>
-&lt;p>If the word is not misspelled, you may add it to the dictionary by clicking &lt;b>Add to Dictionary&lt;/b>. If you don't want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b>.&lt;/p>
+&lt;p>If the word is not misspelled, you may add it to the dictionary by clicking &lt;b>Add to Dictionary&lt;/b>. If you do not want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b>.&lt;/p>
 &lt;p>However, if the word is misspelled, you can try to find the correct replacement in the list below. If you cannot find a replacement there, you may type it in the text box below, and click &lt;b>Replace&lt;/b> or &lt;b>Replace All&lt;/b>.&lt;/p>
 &lt;/qt></string>
      </property>
@@ -44,7 +44,7 @@
      </property>
      <property name="whatsThis" >
       <string>&lt;qt>&lt;p>This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p>
-&lt;p>If the word is not misspelled, you may add it to the dictionary by clicking &lt;b>Add to Dictionary&lt;/b>. If you don't want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b>.&lt;/p>
+&lt;p>If the word is not misspelled, you may add it to the dictionary by clicking &lt;b>Add to Dictionary&lt;/b>. If you do not want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b>.&lt;/p>
 &lt;p>However, if the word is misspelled, you can try to find the correct replacement in the list below. If you cannot find a replacement there, you may type it in the text box below, and click &lt;b>Replace&lt;/b> or &lt;b>Replace All&lt;/b>.&lt;/p>
 &lt;/qt></string>
      </property>
@@ -94,7 +94,7 @@
      <property name="whatsThis" >
       <string>&lt;qt>
 &lt;p>The unknown word was detected and considered unknown because it is not included in the dictionary.&lt;br>
-Click here if you consider that the unknown word is not misspelled and you want to avoid wrongly detecting it again in the future. If you want to let it remain as is, but not add it to the dictionary, then click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b> instead.&lt;/p>
+Click here if you consider the unknown word not to be misspelled, and you want to avoid wrongly detecting it again in the future. If you want to let it remain as is, but not add it to the dictionary, then click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b> instead.&lt;/p>
 &lt;/qt></string>
      </property>
      <property name="text" >
