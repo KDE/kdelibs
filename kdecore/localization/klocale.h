@@ -647,7 +647,7 @@ public:
                                the weekday name. */
         IsoDate,          /**< ISO-8601 Date format YYYY-MM-DD, e.g. 2009-12-31 */
         IsoWeekDate,      /**< ISO-8601 Week Date format YYYY-Www-D, e.g. 2009-W01-1 */
-        IsoOrdinalDate,   /**< ISO-8601 Ordinal Date format YYYY-DDD, e.g. 2009-001 */
+        IsoOrdinalDate    /**< ISO-8601 Ordinal Date format YYYY-DDD, e.g. 2009-001 */
     };
 
   /**
@@ -881,7 +881,7 @@ public:
         ShortFormat           =    2, /**< Only accept a date string in the locale ShortDate format */
         IsoFormat             =    4, /**< Only accept a date string in ISO date formay (YYYY-MM-DD) */
         IsoWeekFormat         =    8, /**< Only accept a date string in ISO Week date formay (YYYY-Www-D) */
-        IsoOrdinalFormat      =   16, /**< Only accept a date string in ISO Week date formay (YYYY-DDD) */
+        IsoOrdinalFormat      =   16  /**< Only accept a date string in ISO Week date formay (YYYY-DDD) */
     };
 
   /**
