@@ -199,7 +199,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   if (d->m_aboutData)
       d->m_strVersion = d->m_aboutData->version();
   else
-      d->m_strVersion = i18n("no version set (programmer error!)");
+      d->m_strVersion = i18n("no version set (programmer error)");
   d->kde_version = QString::fromLatin1( KDE_VERSION_STRING );
   d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
   if ( !d->submitBugWeb )
@@ -420,23 +420,23 @@ void KBugReport::accept()
         case 0: // critical
             if ( KMessageBox::questionYesNo( this, i18n(
                 "<p>You chose the severity <b>Critical</b>. "
-                "Please note that this severity is intended only for bugs that</p>"
+                "Please note that this severity is intended only for bugs that:</p>"
                 "<ul><li>break unrelated software on the system (or the whole system)</li>"
                 "<li>cause serious data loss</li>"
                 "<li>introduce a security hole on the system where the affected package is installed</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStandardGuiItem::cont(),KStandardGuiItem::cancel() ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you.</p>" ),QString(),KStandardGuiItem::cont(),KStandardGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
         case 1: // grave
             if ( KMessageBox::questionYesNo( this, i18n(
                 "<p>You chose the severity <b>Grave</b>. "
-                "Please note that this severity is intended only for bugs that</p>"
+                "Please note that this severity is intended only for bugs that:</p>"
                 "<ul><li>make the package in question unusable or mostly so</li>"
                 "<li>cause data loss</li>"
                 "<li>introduce a security hole allowing access to the accounts of users who use the affected package</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStandardGuiItem::cont(),KStandardGuiItem::cancel() ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you.</p>" ),QString(),KStandardGuiItem::cont(),KStandardGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
         default:
@@ -445,7 +445,7 @@ void KBugReport::accept()
     if( !sendBugReport() )
     {
         QString msg = i18n("Unable to send the bug report.\n"
-                           "Please submit a bug report manually...\n"
+                           "Please submit a bug report manually....\n"
                            "See http://bugs.kde.org/ for instructions.");
         KMessageBox::error(this, msg + "\n\n" + d->lastError);
         return;

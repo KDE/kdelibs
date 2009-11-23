@@ -94,7 +94,7 @@
      <property name="whatsThis" >
       <string>&lt;qt>
 &lt;p>The unknown word was detected and considered unknown because it is not included in the dictionary.&lt;br>
-Click here if you consider that the unknown word is not misspelled and you want to avoid wrongly detecting it again in the future. If you want to let it remain as is, but not add it to the dictionary, then click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b> instead.&lt;/p>
+Click here if you consider the unknown word not to be misspelled, and you want to avoid wrongly detecting it again in the future. If you want to let it remain as is, but not add it to the dictionary, then click &lt;b>Ignore&lt;/b> or &lt;b>Ignore All&lt;/b> instead.&lt;/p>
 &lt;/qt></string>
      </property>
      <property name="text" >
