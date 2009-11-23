@@ -2272,7 +2272,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 {
   // check if destination is ok ...
   KDE_struct_stat buff;
-  bool bDestExists = (KDE::stat( sCopyFile, &buff ) != -1);
+  const bool bDestExists = (KDE::stat( sCopyFile, &buff ) != -1);
   if(bDestExists)
   { if(S_ISDIR(buff.st_mode))
     {
@@ -2289,9 +2289,10 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   // do we have a ".part" file?
   const QString sPart = sCopyFile + QLatin1String(".part");
   bool bResume = false;
-  bool bPartExists = (KDE::stat( sPart, &buff ) != -1);
-  bool bMarkPartial = config()->readEntry("MarkPartial", true);
-  if(bMarkPartial && bPartExists && buff.st_size > 0)
+  const bool bPartExists = (KDE::stat( sPart, &buff ) != -1);
+  const bool bMarkPartial = config()->readEntry("MarkPartial", true);
+  const QString dest = bMarkPartial ? sPart : sCopyFile;
+  if (bMarkPartial && bPartExists && buff.st_size > 0)
   { // must not be a folder! please fix a similar bug in kio_file!!
     if(S_ISDIR(buff.st_mode))
     {
@@ -2306,12 +2307,10 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 #endif
   }
 
-  if(bPartExists && !bResume)                  // get rid of an unwanted ".part" file
+  if (bPartExists && !bResume)                  // get rid of an unwanted ".part" file
     QFile::remove(sPart);
 
-  // JPF: in kio_file overwrite disables ".part" operations. I do not believe
-  // JPF: that this is a good behaviour!
-  if(bDestExists)                             // must delete for overwrite
+  if (bDestExists)                             // must delete for overwrite
     QFile::remove(sCopyFile);
 
   // WABA: Make sure that we keep writing permissions ourselves,
@@ -2324,8 +2323,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 
   // open the output file ...
   KIO::fileoffset_t hCopyOffset = 0;
-  if(bResume)
-  {
+  if (bResume) {
     iCopyFile = KDE::open( sPart, O_RDWR );  // append if resuming
     hCopyOffset = KDE_lseek(iCopyFile, 0, SEEK_END);
     if(hCopyOffset < 0)
@@ -2335,8 +2333,9 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     }
     kDebug(7102) << "copy: resuming at " << hCopyOffset;
   }
-  else
-    iCopyFile = KDE::open(sPart, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+  else {
+    iCopyFile = KDE::open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+  }
 
   if(iCopyFile == -1)
   {
@@ -2376,3 +2375,4 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   }
   return iRes;
 }
+
