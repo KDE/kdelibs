@@ -170,11 +170,16 @@ public:
             }
         }
 
-        QString message = i18n("The shortcut '%1' conflicts with the following key combinations:\n",
-                sequence.toString());
+        const int hashSize = shortcuts.size();
+
+        QString message = i18ncp("%1 is the number of conflicts (hidden), %2 is the key sequence of the shortcut that is problematic",
+                                 "The shortcut '%2' conflicts with the following key combination:\n",
+                                 "The shortcut '%2' conflicts with the following key combinations:\n",
+                                 hashSize, sequence.toString());
         message+=clashingKeys;
 
-        QString title = i18n("Conflict With Registered Global Shortcut(s)");
+        QString title = i18ncp("%1 is the number of shortcuts with which there is a conflict",
+                               "Conflict with Registered Global Shortcut", "Conflict with Registered Global Shortcuts", hashSize);
 
         return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
                == KMessageBox::Continue;
@@ -243,18 +248,25 @@ bool KKeySequenceWidgetPrivate::stealShortcuts(
         const QList<KAction *> &actions,
         const QKeySequence &seq)
 {
-    QString title = i18n("Shortcut Conflict(s)");
+
+    const int listSize = actions.size();
+
+    QString title = i18ncp("%1 is the number of conflicts", "Shortcut Conflict", "Shortcut Conflicts", listSize);
 
     QString conflictingShortcuts;
     Q_FOREACH(const KAction *action, actions) {
-        conflictingShortcuts += i18n("Shortcut(s) '%1' for action '%2'\n",
+        conflictingShortcuts += i18n("Shortcut '%1' for action '%2'\n",
                 action->shortcut().toString(QKeySequence::NativeText),
                 KGlobal::locale()->removeAcceleratorMarker(action->text()));
     }
-    QString message = i18n(
-            "The \"%1\" shortcut is ambiguous with the following shortcuts.\n"
+    QString message = i18ncp("%1 is the number of ambigious shortcut clashes (hidden)",
+            "The \"%2\" shortcut is ambiguous with the following shortcut.\n"
+            "Do you want to assign an empty shortcut to this action?\n"
+            "%3",
+            "The \"%2\" shortcut is ambiguous with the following shortcuts.\n"
             "Do you want to assign an empty shortcut to these actions?\n"
-            "%2",
+            "%3",
+            listSize,
             seq.toString(QKeySequence::NativeText),
             conflictingShortcuts);
 
