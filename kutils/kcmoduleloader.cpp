@@ -73,7 +73,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
   if ( !mod.service() )
     return reportError( report,
         i18n("The module %1 could not be found.",
-          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br />The desktop file %1 could not be found.</p></qt>", mod.fileName()), parent );
+          mod.moduleName() ), i18n("<qt><p>The diagnosis is:<br />The desktop file %1 could not be found.</p></qt>", mod.fileName()), parent );
   if( mod.service()->noDisplay() )
     return reportError( report, i18n( "The module %1 is disabled.", mod.moduleName() ),
         i18n( "<qt><p>Either the hardware/software the module configures is not available or the module has been disabled by the administrator.</p></qt>" ),
@@ -130,7 +130,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
    */
   return reportError( report,
       i18n("The module %1 is not a valid configuration module.", mod.moduleName() ),
-      i18n("<qt>The diagnostics is:<br />The desktop file %1 does not specify a library.</qt>", mod.fileName()), parent );
+      i18n("<qt>The diagnosis is:<br />The desktop file %1 does not specify a library.</qt>", mod.fileName()), parent );
 }
 
 
@@ -149,7 +149,7 @@ void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
 void KCModuleLoader::showLastLoaderError(QWidget *parent)
 {
   KMessageBox::detailedError(parent,
-      i18n("There was an error loading the module."),i18n("<qt>The diagnostics is:<br />%1"
+      i18n("There was an error loading the module."),i18n("<qt>The diagnosis is:<br />%1"
         "<p>Possible reasons:</p><ul><li>An error occurred during your last "
         "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
         "modules lying around.</li></ul><p>Check these points carefully and try to remove "
