@@ -692,20 +692,27 @@ void
 KColorTable::KColorTablePrivate::slotShowNamedColorReadError(void)
 {
     if (mNamedColorList->count() == 0) {
-        QString msg = i18n(""
-                           "Unable to read X11 RGB color strings. The following "
-                           "file location(s) were examined:\n");
+        QString pathMsg;
+        int pathCount = 0;
 
         const char * const *path = namedColorFilePath();
-        for (int i = 0; path[i]; i += 2) {
+        for (int i = 0; path[i]; i += 2, ++pathCount) {
             if (path[i + 1]) {
-                msg += QLatin1String(path[i + 1]) + ", " + QString::fromLatin1(path[i]);
+                pathMsg += QLatin1String(path[i + 1]) + ", " + QString::fromLatin1(path[i]);
             } else {
-                msg += QLatin1String(path[i]);
+                pathMsg += QLatin1String(path[i]);
             }
-            msg += '\n';
+            pathMsg += '\n';
         }
-        KMessageBox::sorry(q, msg);
+
+        QString finalMsg  = i18ncp("%1 is the number of paths, %2 is the list of paths (with newlines between them)",
+                                   "Unable to read X11 RGB color strings. The following "
+                                   "file location was examined:\n%2",
+                                   "Unable to read X11 RGB color strings. The following "
+                                   "file locations were examined:\n%2",
+                                   pathCount, pathMsg );
+
+        KMessageBox::sorry(q, finalMsg);
     }
 }
 
