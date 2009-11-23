@@ -91,6 +91,8 @@ public:
     /**
      * @brief Construct a KFileMetaInfo that contains metainformation about
      * the resource pointed to by @p path.
+     *
+     * When w is not Everything, a limit of 64kbytes is imposed on the file size.
      **/
     explicit KFileMetaInfo(const QString& path, const QString& mimetype = QString(),
         WhatFlags w = Everything);

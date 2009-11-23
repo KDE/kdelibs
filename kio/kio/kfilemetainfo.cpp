@@ -20,6 +20,7 @@
 */
 #include "kfilemetainfo_p.h"
 #include <strigi/bufferedstream.h>
+#include <strigi/analyzerconfiguration.h>
 #include <strigi/indexwriter.h>
 #include <strigi/analysisresult.h>
 #include <strigi/fieldtypes.h>
@@ -177,7 +178,7 @@ public:
     KUrl kurl;
 
     //Private() :QSharedData() {qDebug() <<"ok: " << this;}
-    void init(QIODevice& stream, const KUrl& url, time_t mtime);
+    void init(QIODevice& stream, const KUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w=KFileMetaInfo::Everything);
     void initWriters(const KUrl& /*file*/);
     void operator=(const KFileMetaInfoPrivate& k) {
         items = k.items;
@@ -186,12 +187,20 @@ public:
 };
 static const KFileMetaInfoItem nullitem;
 
+//used to override 64k limit of PredicatePropertyProvider's indexer.
+//this is important for getting gettext po files statistics, for example
+class ComprehensiveAnalysisConfiguration : public Strigi::AnalyzerConfiguration {
+     int64_t maximalStreamReadLength(const Strigi::AnalysisResult& ar) {return (ar.depth() == 0) ?-1:0;} 
+};
+
 //const KFileMetaInfoItem KFileMetaInfoPrivate::null;
 void
-KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
+KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w) {
     // get data from Strigi
     kurl = url;
-    StreamAnalyzer& indexer = PredicatePropertyProvider::self()->indexer();
+    ComprehensiveAnalysisConfiguration c;
+    StreamAnalyzer comprehensiveIndexer(c);
+    StreamAnalyzer& indexer = (w==KFileMetaInfo::Everything)?comprehensiveIndexer:PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream strigiStream(stream);
     kDebug(7033) << url;
@@ -215,7 +224,7 @@ KFileMetaInfoPrivate::initWriters(const KUrl& file) {
     }
 }
 KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
-                             KFileMetaInfo::WhatFlags /*w*/)
+                             KFileMetaInfo::WhatFlags w)
     : p(new KFileMetaInfoPrivate())
 {
     QFileInfo fileinfo(path);
@@ -225,7 +234,7 @@ KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
     if ((fileinfo.isFile() || fileinfo.isDir() || fileinfo.isSymLink())
             && file.open(QIODevice::ReadOnly)) {
         KUrl u(path);
-        p->init(file, u, fileinfo.lastModified().toTime_t());
+        p->init(file, u, fileinfo.lastModified().toTime_t(), w);
         if (fileinfo.isWritable()) {
             p->initWriters(u);
         }
