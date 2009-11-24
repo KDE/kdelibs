@@ -203,11 +203,10 @@ bool Solid::Predicate::matches(const Device &device) const
 
         if (iface!=0)
         {
-            QVariant value = iface->property(d->property.toLatin1());
-            QVariant expected = d->value;
-
-            int index = iface->metaObject()->indexOfProperty(d->property.toLatin1());
+            const int index = iface->metaObject()->indexOfProperty(d->property.toLatin1());
             QMetaProperty metaProp = iface->metaObject()->property(index);
+            QVariant value = metaProp.isReadable() ? metaProp.read(iface) : QVariant();
+            QVariant expected = d->value;
 
             if (metaProp.isEnumType() && expected.type()==QVariant::String) {
                 QMetaEnum metaEnum = metaProp.enumerator();
