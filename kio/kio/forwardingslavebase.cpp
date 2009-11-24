@@ -178,6 +178,10 @@ void ForwardingSlaveBase::get(const KUrl &url)
 
         d->eventLoop.exec();
     }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+    }
 }
 
 void ForwardingSlaveBase::put(const KUrl &url, int permissions,
@@ -194,6 +198,10 @@ void ForwardingSlaveBase::put(const KUrl &url, int permissions,
 
         d->eventLoop.exec();
     }
+    else
+    {
+        error( KIO::ERR_MALFORMED_URL, url.prettyUrl() );
+    }
 }
 
 void ForwardingSlaveBase::stat(const KUrl &url)
@@ -207,6 +215,10 @@ void ForwardingSlaveBase::stat(const KUrl &url)
         d->connectSimpleJob(job);
 
         d->eventLoop.exec();
+    }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
     }
 }
 
@@ -222,6 +234,10 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
 
         d->eventLoop.exec();
     }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+    }
 }
 
 void ForwardingSlaveBase::listDir(const KUrl &url)
@@ -235,6 +251,10 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
         d->connectListJob(job);
 
         d->eventLoop.exec();
+    }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
     }
 }
 
@@ -250,6 +270,10 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
 
         d->eventLoop.exec();
     }
+    else
+    {
+        error( KIO::ERR_MALFORMED_URL, url.prettyUrl() );
+    }
 }
 
 void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
@@ -258,12 +282,20 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
     kDebug() << src << "," << dest;
 
     KUrl new_src, new_dest;
-    if ( d->internalRewriteUrl(src, new_src) && d->internalRewriteUrl(dest, new_dest) )
+    if( !d->internalRewriteUrl(src, new_src) )
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, src.prettyUrl());
+    }
+    else if ( d->internalRewriteUrl(dest, new_dest) )
     {
         KIO::Job *job = KIO::rename(new_src, new_dest, flags);
         d->connectJob(job);
 
         d->eventLoop.exec();
+    }
+    else
+    {
+        error( KIO::ERR_MALFORMED_URL, dest.prettyUrl() );
     }
 }
 
@@ -280,6 +312,10 @@ void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
 
         d->eventLoop.exec();
     }
+    else
+    {
+        error( KIO::ERR_MALFORMED_URL, dest.prettyUrl() );
+    }
 }
 
 void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
@@ -293,6 +329,10 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
         d->connectSimpleJob(job);
 
         d->eventLoop.exec();
+    }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
     }
 }
 
@@ -308,6 +348,10 @@ void ForwardingSlaveBase::setModificationTime(const KUrl& url, const QDateTime& 
 
         d->eventLoop.exec();
     }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+    }
 }
 
 void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
@@ -316,7 +360,11 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
     kDebug() << src << "," << dest;
 
     KUrl new_src, new_dest;
-    if ( d->internalRewriteUrl(src, new_src) && d->internalRewriteUrl(dest, new_dest) )
+    if ( !d->internalRewriteUrl(src, new_src) )
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, src.prettyUrl());
+    }
+    else if( d->internalRewriteUrl(dest, new_dest) )
     {
       // Are you sure you want to display here a ProgressInfo ???
         KIO::Job *job = KIO::file_copy(new_src, new_dest, permissions,
@@ -324,6 +372,10 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
         d->connectJob(job);
 
         d->eventLoop.exec();
+    }
+    else
+    {
+        error( KIO::ERR_MALFORMED_URL, dest.prettyUrl() );
     }
 }
 
@@ -346,6 +398,10 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
         }
 
         d->eventLoop.exec();
+    }
+    else
+    {
+        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
     }
 }
 
