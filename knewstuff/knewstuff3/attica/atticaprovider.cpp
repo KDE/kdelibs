@@ -24,7 +24,6 @@
 #include <klocale.h>
 #include <kio/job.h>
 #include <kmessagebox.h>
-//#include "kutils/kcmultidialog.h"
 
 #include <attica/providermanager.h>
 #include <attica/provider.h>
@@ -72,7 +71,7 @@ AtticaProvider::AtticaProvider(const QStringList& categories, const QStringList&
     d->categoryNameList = categories;
     d->categoryPatternList = categoriesPatterns;
 
-    connect(&d->m_providerManager, SIGNAL(providersChanged()), SLOT(providerLoaded()));
+    connect(&d->m_providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerLoaded(const Attica::Provider&)));
     connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)), 
             SLOT(authenticationCredentialsMissing(const Provider&)));
 }
@@ -92,13 +91,7 @@ void AtticaProvider::authenticationCredentialsMissing(const KNS3::Provider& )
 {
     kDebug() << "Authentication missing!";
 // FIXME Show autentication dialog
-    /*
-    KCMultiDialog* KCM = new KCMultiDialog();
-    KCM->setWindowTitle( i18n( "Open Collaboration Providers" ) );
-    KCM->addModule( "attica" );
-    KCM->exec();
-    KCM->deleteLater();
-    */
+
 }
 
 bool AtticaProvider::setProviderXML(QDomElement & xmldata)
@@ -140,14 +133,16 @@ void AtticaProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
     d->cachedEntries = cachedEntries;
 }
 
-void AtticaProvider::providerLoaded()
+void AtticaProvider::providerLoaded(const Attica::Provider& provider)
 {
     Q_D(AtticaProvider);
-    if (d->m_providerManager.providers().isEmpty()) {
-        kDebug() << "No valid provider found!";
+    // TODO: check if this still works with multiple providers
+    // for now only use opendesktop
+    if (provider.baseUrl() != QUrl("https://api.opendesktop.org/v1/")) {
         return;
     }
-    d->m_provider = d->m_providerManager.providers().last();
+
+    d->m_provider = provider;
 
     Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));

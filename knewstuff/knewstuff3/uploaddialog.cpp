@@ -1,7 +1,8 @@
 /*
     knewstuff3/ui/uploaddialog.cpp.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-	Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
+    Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
+    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -96,29 +97,32 @@ void UploadDialog::setUploadFile(const KUrl& payloadFile)
 
 bool UploadDialog::init(const QString &configfile)
 {
-    connect(&d->providerManager, SIGNAL(providersChanged()), SLOT(providersChanged()));
+    // popuplate dialog with stuff
+    QWidget* _mainWidget = new QWidget(this);
+    setMainWidget(_mainWidget);
+    d->ui.setupUi(_mainWidget);
+    connect(d->ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), SLOT(previewChanged(const KUrl&)));
+
+    connect(&d->providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerAdded(const Attica::Provider&)));
     d->providerManager.loadDefaultProviders();
 
     d->wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet(), 0);
     d->wallet->createFolder("Attica");
     d->wallet->setFolder("Attica");
 
-    // popuplate dialog with stuff
-    QWidget* _mainWidget = new QWidget(this);
-    setMainWidget(_mainWidget);
-    d->ui.setupUi(_mainWidget);
-
     setCaption(i18n("Share Hot New Stuff"));
     setButtons(Ok | Cancel);
-    setDefaultButton(Cancel);
-    setModal(false);
     showButtonSeparator(true);
+
+    setButtonText(Ok, i18n("Upload..."));
+    button(Ok)->setEnabled(false);
 
     d->ui.mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
                                  "%1 Add-On Uploader",
                                  KGlobal::activeComponent().aboutData()->programName()));
     d->ui.mTitleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
-
+    d->ui.mProgress->setVisible(false);
+    d->ui.mProgressLabel->setText(i18n("Fetching provider information..."));
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -153,23 +157,18 @@ bool UploadDialog::init(const QString &configfile)
     return true;
 }
 
-void UploadDialog::providersChanged()
+void UploadDialog::providerAdded(const Attica::Provider& provider)
 {
-    d->provider = d->providerManager.providerByUrl(QUrl("https://api.opendesktop.org/v1/"));
+    // we only care about opendesktop for now
+    if (provider.baseUrl() != QUrl("https://api.opendesktop.org/v1/")) {
+        return;
+    }
+    d->provider = provider;
     Attica::ListJob<Attica::Category>* job = d->provider.requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoriesLoaded(Attica::BaseJob*)));
     job->start();
 
     d->ui.mServerNameLabel->setText(d->provider.name());
-    d->ui.mUserName->setEnabled(true);
-    d->ui.mPassword->setEnabled(true);
-
-    QMap<QString, QString> details;
-    d->wallet->readMap(d->provider.baseUrl().toString(), details);
-    d->ui.mUserName->setText(details.value("user"));
-    d->ui.mPassword->setText(details.value("password"));
-
-
 }
 
 void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
@@ -185,6 +184,8 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
             kDebug() << "found category: " << category.name();
         }
     }
+    button(Ok)->setEnabled(true);
+    d->ui.mProgressLabel->clear();
 }
 
 void UploadDialog::accept()
@@ -199,69 +200,75 @@ void UploadDialog::accept()
         return;
     }
 
+    d->ui.mProgress->setVisible(true);
+    d->ui.mProgress->setMinimum(0);
+    d->ui.mProgress->setMaximum(0);
+    d->ui.mProgressLabel->setText(i18n("Creating Content on Server..."));
+    d->ui.uploadGroup->setEnabled(false);
+
     // fill in the content object
     Attica::Content content;
-
     content.setName(d->ui.mNameEdit->text());
-
     QString summary = d->ui.mSummaryEdit->toPlainText();
-
     content.addAttribute("description", summary);
-    //content.addAttribute("changelog", ui.changelog->text());
     content.addAttribute("version", d->ui.mVersionEdit->text());
-    /*
-    content.addAttribute("downloadlink1", ui.link1->text());
-    content.addAttribute("downloadlink2", ui.link2->text());
-    content.addAttribute("homepage1", ui.homepage->text());
-    content.addAttribute("blog1", ui.blog->text());
-    */
     content.addAttribute("license", d->ui.mLicenseCombo->currentText());
 
     Attica::ItemPostJob<Attica::Content>* job = d->provider.addNewContent(d->categories.first(), content);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(contentAdded(Attica::BaseJob*)));
     job->start();
 
-/*
-
-    if (mPayloadUrl.isValid()) {
-        KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
-        cg.writeEntry("name", mNameEdit->text());
-        cg.writeEntry("author", mAuthorEdit->text());
-        cg.writeEntry("author-email", mEmailEdit->text());
-        cg.writeEntry("version", mVersionEdit->text());
-        cg.writeEntry("license", mLicenseCombo->currentText());
-        cg.writeEntry("preview", mPreviewUrl->url().url());
-        cg.writeEntry("summary", mSummaryEdit->toPlainText());
-        cg.writeEntry("language", mLanguageCombo->currentText());
-        KGlobal::config()->sync();
-    }
-*/
     /*
     details.insert("user", m_settingsWidget.userEdit->text());
     details.insert("password", m_settingsWidget.passwordEdit->text());
     m_wallet->writeMap(m_provider.baseUrl().toString(), details);
     */
+}
 
-    // TODO when all is done... QDialog::accept();
+void UploadDialog::previewChanged(const KUrl& url)
+{
+    d->previewFile = url;
+    QPixmap img(url.toLocalFile());
+    d->ui.mImagePreview->setPixmap(img.scaled(d->ui.mImagePreview->size(), Qt::KeepAspectRatio));
 }
 
 void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
 {
+    if (baseJob->metadata().error()) {
+        if (baseJob->metadata().error() == Attica::Metadata::NetworkError) {
+            KMessageBox::error(this, i18n("There was a network error."), i18n("Uploading Failed"));
+            return;
+        }
+        if (baseJob->metadata().error() == Attica::Metadata::OcsError) {
+            if (baseJob->metadata().statusCode() == 102)
+            KMessageBox::error(this, i18n("Authentication error."), i18n("Uploading Failed"));
+        }
+        return;
+    }
+
+
+    d->ui.mProgressLabel->setText(i18n("Uploading preview and content..."));
+
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
     QMessageBox::information(0, "Content Added", id);
 
     d->contentId = id;
 
+    d->ui.mProgressLabel->setText(i18n("Uploading content..."));
     doUpload(QString(), d->uploadFile.toLocalFile());
-    // TODO doUpload("1", d->uploadPreview.toLocalFile());
+
+    if (!d->previewFile.isEmpty()) {
+        d->ui.mProgressLabel->setText(i18n("Uploading preview image and content..."));
+        doUpload("1", d->previewFile.toLocalFile());
+    }
 }
 
 void UploadDialog::doUpload(const QString& index, const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(this, "Upload", QString("File not found: %1").arg(d->uploadFile.url()));
+        KMessageBox::information(this, "Upload", QString("File not found: %1").arg(d->uploadFile.url()));
         return;
     }
 
@@ -274,17 +281,20 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
     Attica::PostJob* job;
     if (index.isEmpty()) {
         job = d->provider.setDownloadFile(d->contentId, fileName, fileContents);
+        connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(fileUploadFinished(Attica::BaseJob*)));
     } else {
         job = d->provider.setPreviewImage(d->contentId, index, fileName, fileContents);
+        connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(previewUploadFinished(Attica::BaseJob*)));
     }
-    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(fileUploadFinished(Attica::BaseJob*)));
-    job->start();
 
+    job->start();
 }
 
 void UploadDialog::fileUploadFinished(Attica::BaseJob* )
 {
-    QMessageBox::information(0, "Content Added", "File Uploaded");
+    KMessageBox::information(0, "Content Added", "File Uploaded");
+    d->ui.mProgress->setVisible(false);
+
 }
 
 

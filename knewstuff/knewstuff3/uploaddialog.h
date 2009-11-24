@@ -25,6 +25,7 @@
 #include <kurl.h>
 
 #include <knewstuff3/knewstuff_export.h>
+#include <attica/provider.h>
 
 class KComboBox;
 class KLineEdit;
@@ -88,8 +89,10 @@ private Q_SLOTS:
 
     void doUpload(const QString& index, const QString& filePath);
 
-    void providersChanged();
+    void providerAdded(const Attica::Provider& provider);
     void categoriesLoaded(Attica::BaseJob* job);
+
+    void previewChanged(const KUrl&);
 
 private:
     bool init(const QString &configfile);

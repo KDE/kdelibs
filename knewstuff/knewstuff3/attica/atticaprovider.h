@@ -66,7 +66,7 @@ namespace KNS3
         virtual void loadPayloadLink(const Entry& entry);
         
     private Q_SLOTS:
-        void providerLoaded();
+        void providerLoaded(const Attica::Provider& provider);
         void listOfCategoriesLoaded(Attica::BaseJob*);
         void categoryContentsLoaded(Attica::BaseJob* job);
         void downloadItemLoaded(Attica::BaseJob* job);
