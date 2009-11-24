@@ -179,7 +179,7 @@ bool Engine::init(const QString &configfile)
         kDebug() << "Loading KNewStuff2 config: " << configfile;
         group = conf.group("KNewStuff2");
     } else {
-        kError() << "A knsrc file was found but it doesn't contain a KNewStuff2 section." << endl;
+        kError() << "A knsrc file was found but it doesn't contain a KNewStuff3 section." << endl;
         return false;
     }
 

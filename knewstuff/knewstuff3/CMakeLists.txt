@@ -12,6 +12,7 @@ configure_file(
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
 include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
 if(LIBATTICA_FOUND)
     include_directories(${LIBATTICA_INCLUDE_DIR})
 endif(LIBATTICA_FOUND)
@@ -33,18 +34,20 @@ set(knewstuff3_SRCS
     ui/itemsmodel.cpp
     ui/itemsviewdelegate.cpp
     ui/progressindicator.cpp
-    ui/uploaddialog.cpp
     ui/ratingpainter.cpp
     ui/ratingwidget.cpp
 )
 
 if(LIBATTICA_FOUND)
-    set(knewstuff3_SRCS ${knewstuff3_SRCS} attica/atticaprovider.cpp)
+    set(knewstuff3_SRCS ${knewstuff3_SRCS}
+        attica/atticaprovider.cpp
+        uploaddialog.cpp
+    )
 endif(LIBATTICA_FOUND)
 
 kde4_add_ui_files(knewstuff3_SRCS
     downloaddialog.ui
-    ui/UploadDialog.ui
+    uploaddialog.ui
 )
 
 kde4_add_library(knewstuff3 SHARED ${knewstuff3_SRCS} )
@@ -77,4 +80,8 @@ install(FILES
   knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )
+
+if(LIBATTICA_FOUND)
+    install(FILES uploaddialog.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel)
+endif(LIBATTICA_FOUND)
 

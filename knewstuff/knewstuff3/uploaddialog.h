@@ -3,6 +3,7 @@
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (C) 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2009 Jeremy Whiting <jpwhiting@kde.org>
+    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -23,24 +24,23 @@
 #include <kdialog.h>
 #include <kurl.h>
 
-#include "ui_UploadDialog.h"
+#include <knewstuff3/knewstuff_export.h>
 
 class KComboBox;
 class KLineEdit;
 class KUrlRequester;
 class KTextEdit;
 
+namespace Attica {
+    class BaseJob;
+}
+
 namespace KNS3
 {
-
-class Entry;
-
 /**
  * @short KNewStuff file upload dialog.
  *
  * Using this dialog, data can easily be uploaded to the Hotstuff servers.
- * It should however not be used on its own, as an engine will invoke it
- * for the upload workflow.
  *
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
@@ -48,7 +48,7 @@ class Entry;
  *
  * @internal
  */
-class UploadDialog : public KDialog, public Ui::UploadDialog
+class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 {
     Q_OBJECT
 public:
@@ -57,20 +57,13 @@ public:
 
       @param parent the parent window
     */
-    UploadDialog(QWidget *parent);
+    explicit UploadDialog(QWidget *parent = 0);
+    explicit UploadDialog(const QString& configFile, QWidget *parent = 0);
 
     /**
       Destructor.
     */
     ~UploadDialog();
-
-    /**
-      Sets the preview filename.
-      This is only meaningful if the application supports previews.
-
-      @param previewFile the preview image file
-    */
-    void setPreviewFile(const KUrl& previewFile);
 
     /**
       Sets the payload filename.
@@ -79,18 +72,30 @@ public:
 
       @param payloadFile the payload data file
     */
-    void setPayloadFile(const KUrl& payloadFile);
+    void setUploadFile(const KUrl& payloadFile);
 
-    Entry *entry() const;
+public Q_SLOTS:
+    virtual void accept();
 
-protected Q_SLOTS:
-    void slotOk();
+private Q_SLOTS:
+    void contentAdded(Attica::BaseJob*);
+
+    //void submit();
+    //void uploadFile();
+    //void uploadPreview1();
+
+    void fileUploadFinished(Attica::BaseJob*);
+
+    void doUpload(const QString& index, const QString& filePath);
+
+    void providersChanged();
+    void categoriesLoaded(Attica::BaseJob* job);
 
 private:
-    KUrl mPayloadUrl;
+    bool init(const QString &configfile);
 
-    Entry *m_entry;
-    QMap<QString, QString> m_languages;
+    class Private;
+    Private *const d;
 };
 
 }
