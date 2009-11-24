@@ -41,9 +41,14 @@ ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" )
 include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 include("${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake" OPTIONAL)
 
+# build the tests
+set(KDE4_BUILD_TESTS TRUE)
+
 # if CMAKE_INSTALL_PREFIX and BUILD_experimental were defined on the command line, put them
 # in the initial cache, so cmake gets them
-kde_ctest_write_initial_cache("${CTEST_BINARY_DIRECTORY}" CMAKE_INSTALL_PREFIX BUILD_experimental )
+kde_ctest_write_initial_cache("${CTEST_BINARY_DIRECTORY}" CMAKE_INSTALL_PREFIX 
+                                                          BUILD_experimental 
+                                                          KDE4_BUILD_TESTS)
 
 # configure, build, test, submit
 ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" )
