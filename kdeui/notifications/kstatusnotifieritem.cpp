@@ -225,6 +225,7 @@ void KStatusNotifierItem::setAttentionMovie(QMovie *movie)
             QImage frame = movie->currentImage();
             d->movieVector.append(d->imageToStruct(frame));
         }
+        d->movieVector.pop_back();
     }
 
     d->movie = movie;
