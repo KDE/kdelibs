@@ -81,7 +81,6 @@ if (WIN32)
       util/kshell_win.cpp
       util/kuser_win.cpp
       date/ktimezone_win.cpp
-      auth/backends/fake/FakeBackend.cpp
    )
    if(NOT MSVC)
       LIST(APPEND kdecore_OPTIONAL_SRCS
