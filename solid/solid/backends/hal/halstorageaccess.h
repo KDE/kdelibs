@@ -51,6 +51,7 @@ Q_SIGNALS:
     void accessibilityChanged(bool accessible, const QString &udi);
     void setupDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
     void teardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
+    void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);
@@ -58,13 +59,13 @@ private Q_SLOTS:
     void slotDBusError(const QDBusError &error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
-
 public Q_SLOTS:
     Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString &passphrase);
 
 private:
     bool callHalVolumeMount();
     bool callHalVolumeUnmount();
+    bool callHalVolumeEject();
 
     bool callSystemMount();
     bool callSystemUnmount();
@@ -76,6 +77,7 @@ private:
 private:
     bool m_setupInProgress;
     bool m_teardownInProgress;
+    bool m_ejectInProgress;
     bool m_passphraseRequested;
     QString m_lastReturnObject;
     QProcess *m_process;

@@ -162,7 +162,7 @@ QStringList Solid::Backends::Hal::FstabHandling::possibleMountPoints(const QStri
 }
 
 QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &commandName,
-                                                                 const QString &device,
+                                                                 const QStringList &args,
                                                                  QObject *obj, const char *slot)
 {
     QStringList env = QProcess::systemEnvironment();
@@ -174,7 +174,7 @@ QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &
                      obj, slot);
 
     process->setEnvironment(env);
-    process->start(commandName, QStringList() << device);
+    process->start(commandName, args);
 
     if (process->waitForStarted()) {
         return process;
@@ -182,5 +182,12 @@ QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &
         delete process;
         return 0;
     }
+}
+
+QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &commandName,
+                                                                 const QString &device,
+                                                                 QObject *obj, const char *slot)
+{
+    return callSystemCommand(commandName, QStringList() << device, obj, slot);
 }
 

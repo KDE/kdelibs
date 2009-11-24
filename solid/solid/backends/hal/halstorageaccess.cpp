@@ -40,7 +40,7 @@
 using namespace Solid::Backends::Hal;
 
 StorageAccess::StorageAccess(HalDevice *device)
-    : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false),
+    : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false), m_ejectInProgress(false),
       m_passphraseRequested(false)
 {
     connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
@@ -163,8 +163,13 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
             args << devnode;
 #endif
 
-            QProcess::startDetached(program, args);
+            m_ejectInProgress = true;
+            m_process = FstabHandling::callSystemCommand("eject", args,
+                                                         this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
         }
+    } else if (m_ejectInProgress) {
+        m_ejectInProgress = false;
+        emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
     }
 }
 
@@ -181,6 +186,11 @@ void StorageAccess::slotDBusError(const QDBusError &error)
         emit teardownDone(Solid::UnauthorizedOperation,
                           QString(error.name()+": "+error.message()),
                           m_device->udi());
+    } else if (m_ejectInProgress) {
+        m_ejectInProgress = false;
+        emit ejectDone(Solid::UnauthorizedOperation,
+                       QString(error.name()+": "+error.message()),
+                       m_device->udi());
     }
 }
 
@@ -205,6 +215,13 @@ void Solid::Backends::Hal::StorageAccess::slotProcessFinished(int exitCode, QPro
             emit teardownDone(Solid::UnauthorizedOperation,
                               m_process->readAllStandardError(),
                               m_device->udi());
+        }
+    } else if (m_ejectInProgress) {
+        if (exitCode==0)  {
+            m_ejectInProgress = false;
+            emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
+        } else {
+            callHalVolumeEject();
         }
     }
 
@@ -344,6 +361,22 @@ bool StorageAccess::callHalVolumeUnmount()
     QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
                                                       "org.freedesktop.Hal.Device.Volume",
                                                       "Unmount");
+
+    msg << QStringList();
+
+    return c.callWithCallback(msg, this,
+                              SLOT(slotDBusReply(const QDBusMessage &)),
+                              SLOT(slotDBusError(const QDBusError &)));
+}
+
+bool StorageAccess::callHalVolumeEject()
+{
+    QString udi = m_device->udi();
+    QString interface = "org.freedesktop.Hal.Device.Volume";
+
+    QDBusConnection c = QDBusConnection::systemBus();
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
+                                                      interface, "Eject");
 
     msg << QStringList();
 
