@@ -305,8 +305,13 @@ struct KIEImgEdit
     {
 	if (img.depth() > 8)
         {
-            if(img.format() == QImage::Format_ARGB32_Premultiplied)
+            //Code using data and pixels assumes that the pixels are stored
+            //in 32bit values and that the image is not premultiplied
+            if ((img.format() != QImage::Format_ARGB32) &&
+                (img.format() != QImage::Format_RGB32))
+            {
                 img = img.convertToFormat(QImage::Format_ARGB32);
+            }
             data   = (unsigned int*)img.bits();
 	    pixels = img.width()*img.height();
 	}
