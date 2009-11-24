@@ -19,6 +19,7 @@
 
 #include "halvolume.h"
 #include "halstorageaccess.h"
+#include "../../genericinterface.h"
 
 using namespace Solid::Backends::Hal;
 
@@ -42,20 +43,25 @@ bool Volume::isIgnored() const
         return true;
     }
 
+    const QString mount_point = StorageAccess(m_device).filePath();
+    const bool mounted = m_device->property("volume.is_mounted").toBool();
+    if (!mounted) {
+        return false;
+    } else if (mount_point.startsWith("/media/") || mount_point.startsWith("/mnt/")) {
+        return false;
+    }
+
     /* Now be a bit more aggressive on what we want to ignore,
      * the user generally need to check only what's removable or in /media
      * the volumes mounted to make the system (/, /boot, /var, etc.)
      * are useless to him.
      */
-    HalDevice drive(m_device->property("block.storage_device").toString());
-    QString mount_point = StorageAccess(m_device).filePath();
-    bool mounted = m_device->property("volume.is_mounted").toBool();
-    bool removable = drive.property("storage.removable").toBool();
-    bool hotpluggable = drive.property("storage.hotpluggable").toBool();
+    Solid::Device drive(m_device->property("block.storage_device").toString());
 
-    return !removable && !hotpluggable
-        && mounted && !mount_point.startsWith("/media/")
-        && !mount_point.startsWith("/mnt/");
+    const bool removable = drive.as<Solid::GenericInterface>()->property("storage.removable").toBool();
+    const bool hotpluggable = drive.as<Solid::GenericInterface>()->property("storage.hotpluggable").toBool();
+
+    return !removable && !hotpluggable;
 }
 
 Solid::StorageVolume::UsageType Volume::usage() const
