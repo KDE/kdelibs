@@ -122,7 +122,7 @@ Solid::DeviceInterfacePrivate::~DeviceInterfacePrivate()
 
 QObject *Solid::DeviceInterfacePrivate::backendObject() const
 {
-    return m_backendObject;
+    return m_backendObject.data();
 }
 
 void Solid::DeviceInterfacePrivate::setBackendObject(QObject *object)

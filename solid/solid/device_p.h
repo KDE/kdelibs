@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QSharedData>
-#include <QtCore/QPointer>
+#include <QtCore/QWeakPointer>
 
 namespace Solid
 {
@@ -40,7 +40,7 @@ namespace Solid
 
         QString udi() const { return m_udi; }
 
-        Ifaces::Device *backendObject() const { return m_backendObject; }
+        Ifaces::Device *backendObject() const { return m_backendObject.data(); }
         void setBackendObject(Ifaces::Device *object);
 
         DeviceInterface *interface(const DeviceInterface::Type &type) const;
@@ -51,7 +51,7 @@ namespace Solid
 
     private:
         QString m_udi;
-        QPointer<Ifaces::Device> m_backendObject;
+        QWeakPointer<Ifaces::Device> m_backendObject;
         QMap<DeviceInterface::Type, DeviceInterface *> m_ifaces;
     };
 }

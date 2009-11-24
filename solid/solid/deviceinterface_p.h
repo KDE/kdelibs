@@ -20,7 +20,7 @@
 #ifndef SOLID_DEVICEINTERFACE_P_H
 #define SOLID_DEVICEINTERFACE_P_H
 
-#include <QtCore/QPointer>
+#include <QtCore/QWeakPointer>
 
 namespace Solid
 {
@@ -34,7 +34,7 @@ namespace Solid
         void setBackendObject(QObject *object);
 
     private:
-        QPointer<QObject> m_backendObject;
+        QWeakPointer<QObject> m_backendObject;
     };
 }
 

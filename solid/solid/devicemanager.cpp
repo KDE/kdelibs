@@ -46,8 +46,13 @@ Solid::DeviceManagerPrivate::DeviceManagerPrivate()
 
 Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
 {
-    foreach (DevicePrivate *dev, m_devicesMap) {
-        delete dev;
+    QObject *backend = managerBackend();
+    if (backend) {
+        disconnect(backend, 0, this, 0);
+    }
+
+    foreach (QWeakPointer<DevicePrivate> dev, m_devicesMap) {
+        delete dev.data();
     }
 
     m_devicesMap.clear();
@@ -156,12 +161,12 @@ Solid::DeviceNotifier *Solid::DeviceNotifier::instance()
 void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
 {
     if (m_devicesMap.contains(udi)) {
-        DevicePrivate *dev = m_devicesMap[udi];
+        DevicePrivate *dev = m_devicesMap[udi].data();
 
         // Ok, this one was requested somewhere was invalid
         // and now becomes magically valid!
 
-        if (dev->backendObject() == 0) {
+        if (dev && dev->backendObject() == 0) {
             dev->setBackendObject(createBackendObject(udi));
             Q_ASSERT(dev->backendObject()!=0);
         }
@@ -173,14 +178,16 @@ void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
 void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
 {
     if (m_devicesMap.contains(udi)) {
-        DevicePrivate *dev = m_devicesMap[udi];
+        DevicePrivate *dev = m_devicesMap[udi].data();
 
         // Ok, this one was requested somewhere was valid
         // and now becomes magically invalid!
 
-        Q_ASSERT(dev->backendObject()!=0);
-        delete dev->backendObject();
-        Q_ASSERT(dev->backendObject()==0);
+        if (dev) {
+            Q_ASSERT(dev->backendObject()!=0);
+            delete dev->backendObject();
+            Q_ASSERT(dev->backendObject()==0);
+        }
     }
 
     emit deviceRemoved(udi);
@@ -200,14 +207,15 @@ Solid::DevicePrivate *Solid::DeviceManagerPrivate::findRegisteredDevice(const QS
     if (udi.isEmpty()) {
         return m_nullDevice.data();
     } else if (m_devicesMap.contains(udi)) {
-        return m_devicesMap[udi];
+        return m_devicesMap[udi].data();
     } else {
         Ifaces::Device *iface = createBackendObject(udi);
 
         DevicePrivate *devData = new DevicePrivate(udi);
         devData->setBackendObject(iface);
 
-        m_devicesMap[udi] = devData;
+        QWeakPointer<DevicePrivate> ptr(devData);
+        m_devicesMap[udi] = ptr;
         m_reverseMap[devData] = udi;
 
         connect(devData, SIGNAL(destroyed(QObject *)),
