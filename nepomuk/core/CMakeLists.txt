@@ -87,6 +87,7 @@ install(FILES
   resource.h
   thing.h
   tag.h
+  nie.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 
