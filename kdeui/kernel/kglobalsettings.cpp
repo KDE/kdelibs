@@ -345,14 +345,14 @@ QColor KGlobalSettings::activeTextColor()
 int KGlobalSettings::contrast()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readEntry( "contrast", 7 );
+    return g.readEntry( "contrast", 5 );
 }
 
 qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
 {
     if (config) {
         KConfigGroup g( config, "KDE" );
-        return 0.1 * g.readEntry( "contrast", 7 );
+        return 0.1 * g.readEntry( "contrast", 5 );
     }
     return 0.1 * (qreal)contrast();
 }
