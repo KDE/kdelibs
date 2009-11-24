@@ -31,6 +31,7 @@
 #include <Soprano/Vocabulary/RDFS>
 
 #include "literal.h"
+#include "class.h"
 
 #include <kdebug.h>
 
@@ -87,7 +88,8 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
 
     Nepomuk::Types::Property p( m_property );
     if ( p.literalRangeType().isValid() ) {
-        Q_ASSERT( m_subTerm.isLiteralTerm() );
+        if( !m_subTerm.isLiteralTerm() )
+            kDebug() << "Incompatible subterm type:" << m_subTerm.type();
         if ( m_comparator == ComparisonTerm::Equal ||
              !m_subTerm.toLiteralTerm().value().isString() ) {
             return QString( "%1 %2 %3 . " )
@@ -123,9 +125,10 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     }
 
     else { // resource range
-        Q_ASSERT( m_comparator == ComparisonTerm::Equal ||
-                  m_comparator == ComparisonTerm::Contains ||
-                  m_comparator == ComparisonTerm::Regexp );
+        if( !(m_comparator == ComparisonTerm::Equal ||
+              m_comparator == ComparisonTerm::Contains ||
+              m_comparator == ComparisonTerm::Regexp ))
+            kDebug() << "Incompatible property range:" << p.range().uri();
         if ( m_subTerm.isLiteralTerm() ) {
             if ( m_comparator == ComparisonTerm::Equal ) {
                 QString v1 = qbd->uniqueVarName();
