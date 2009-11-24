@@ -42,9 +42,13 @@ class AtticaProviderPrivate :public ProviderPrivate
 public:
     // List of categories that have to match exactly with those on the server
     QStringList categoryNameList;
+    // List of patterns that are matched against categories
+    // (so that Wallpaper returns KDE Wallpaper 640x480 for example)
+    QStringList categoryPatternList;
+
     // the attica categories we are interested in (e.g. Wallpaper, Application, Vocabulary File...)
     Attica::Category::List categoryList;
-    
+
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
 
@@ -60,12 +64,13 @@ public:
     }
 };
 
-AtticaProvider::AtticaProvider(const QStringList& categories)
+AtticaProvider::AtticaProvider(const QStringList& categories, const QStringList& categoriesPatterns)
     : Provider(*new AtticaProviderPrivate)
 {
     Q_D(AtticaProvider);
     d->mName = QString("Attica");
     d->categoryNameList = categories;
+    d->categoryPatternList = categoriesPatterns;
 
     connect(&d->m_providerManager, SIGNAL(providersChanged()), SLOT(providerLoaded()));
     connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)), 
@@ -139,6 +144,7 @@ void AtticaProvider::providerLoaded()
 {
     Q_D(AtticaProvider);
     if (d->m_providerManager.providers().isEmpty()) {
+        kDebug() << "No valid provider found!";
         return;
     }
     d->m_provider = d->m_providerManager.providers().last();
@@ -160,6 +166,12 @@ void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
         if (d->categoryNameList.contains(category.name())) {
             kDebug() << "Adding category: " << category.name();
             d->categoryList.append(category);
+        }
+        foreach(const QString& pattern, d->categoryPatternList) {
+            if (category.name().contains(pattern)) {
+                kDebug() << "Adding category (pattern): " << category.name();
+                d->categoryList.append(category);
+            }
         }
     }
     emit providerInitialized(this);

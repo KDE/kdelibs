@@ -90,6 +90,7 @@ class KNS3::Engine::Private {
         QString providerFileUrl;
         // Categories to search in
         QStringList categories;
+        QStringList categoriesPattern;
 
         QHash<QString, ProviderInformation> providers;
 
@@ -169,19 +170,23 @@ bool Engine::init(const QString &configfile)
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
-
-    if (!conf.hasGroup("KNewStuff2")) {
+    
+    KConfigGroup group;
+    if (conf.hasGroup("KNewStuff3")) {
+        kDebug() << "Loading KNewStuff3 config: " << configfile;
+        group = conf.group("KNewStuff3");
+    } else if (conf.hasGroup("KNewStuff2")) {
+        kDebug() << "Loading KNewStuff2 config: " << configfile;
+        group = conf.group("KNewStuff2");
+    } else {
         kError() << "A knsrc file was found but it doesn't contain a KNewStuff2 section." << endl;
         return false;
     }
 
-    KConfigGroup group = conf.group("KNewStuff2");
-    d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     d->categories = group.readEntry("Categories", QStringList());
-
-    kDebug() << "Categories: " << d->categories;
-    
-    //d->componentname = group.readEntry("ComponentName", QString());
+    d->categoriesPattern = group.readEntry("CategoryPattern", QStringList());
+    kDebug() << "Categories: " << d->categories << " pattern: " << d->categoriesPattern;
+    d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
     
     // let installation read install specific config
@@ -241,9 +246,9 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         if (p.tagName() == "provider") {
             kDebug() << "Provider attributes: " << p.attribute("type");
             QSharedPointer<KNS3::Provider> provider;
-            if (isAtticaProviderFile || p.attribute("type") == "rest") {
+            if (isAtticaProviderFile || p.attribute("type").toLower() == "rest") {
                 #if defined(HAVE_LIBATTICA)
-                provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
+                provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories, d->categoriesPattern));
                 #else
                 kDebug() << "KHotNewStuff compiled without attica support, could not load provider.";
                 break;
