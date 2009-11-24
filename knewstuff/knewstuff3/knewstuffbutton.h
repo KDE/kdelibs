@@ -22,11 +22,10 @@
 #include <kpushbutton.h>
 
 #include <knewstuff3/knewstuff_export.h>
+#include <knewstuff3/entry.h>
 
 namespace KNS3
 {
-
-class Engine;
 
 /**
  * KHotNewStuff push button that makes using KHNS in an application
@@ -42,19 +41,13 @@ public:
      * Constructor used when the details of the KHotNewStuff
      * download is known when the button is created.
      *
-     * @param what text describing what is being downloaded. will be
-     *        shown on the button as "Download New <what>"
-     * @param providerList the URL to the list of providers; if empty
-     *        we first try the ProvidersUrl from KGlobal::config, then we
-     *        fall back to a hardcoded value
-     * @param resourceType the Hotstuff data type for this downlaod such
-     *        as "korganizer/calendar"
+     * @param text describing what is being downloaded.
+     *        It should be a text beginning with "Download New ..." for consistency
+     * @param configFile the name of the .knsrc file
      * @param parent the parent widget
-     * @param name the name to be used for this widget
      */
-    Button(const QString& what,
-           const QString& providerList,
-           const QString& resourceType,
+    Button(const QString& text,
+           const QString& configFile,
            QWidget* parent);
 
     /**
@@ -65,22 +58,18 @@ public:
      */
     Button(QWidget* parent);
 
-    /**
-     * set the URL to the list of providers for this button to use
-     */
-    void setProviderList(const QString& providerList);
+    ~Button();
 
     /**
-     * the Hotstuff data type for this downlaod such as
-     * "korganizer/calendar"
+     * set the name of the .knsrc file to use
      */
-    void setResourceType(const QString& resourceType);
+    void setConfigFile(const QString& configFile);
 
     /**
      * set the text that should appear on the button. will be prefaced
      * with i18n("Download New")
      */
-    void setButtonText(const QString& what);
+    void setButtonText(const QString& text);
 
 Q_SIGNALS:
     /**
@@ -92,7 +81,7 @@ Q_SIGNALS:
     /**
      * emitted when the Hot New Stuff dialog has been closed
      */
-    void dialogFinished();
+    void dialogFinished(const Entry::List& changedEntries);
 
 protected Q_SLOTS:
     void showDialog();
@@ -100,12 +89,8 @@ protected Q_SLOTS:
 private:
     void init();
 
-    class ButtonPrivate;
-    ButtonPrivate* const d;
-
-    QString m_providerList;
-    QString m_type;
-    Engine * m_engine;
+    class Private;
+    Private* const d;
 };
 
 }

@@ -21,31 +21,37 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kicon.h>
+#include "downloaddialog.h"
 
 namespace KNS3
 {
+    class Button::Private {
+    public:
+        QString configFile;
+    };
 
-Button::Button(const QString& what,
-               const QString& providerList,
-               const QString& resourceType,
+Button::Button(const QString& text,
+               const QString& configFile,
                QWidget* parent)
         : KPushButton(parent),
-        d(0),
-        m_providerList(providerList),
-        m_type(resourceType),
-        m_engine(0)
+        d(new Private)
 {
-    setButtonText(what);
+    setButtonText(text);
+    d->configFile = configFile;
     init();
 }
 
 Button::Button(QWidget* parent)
         : KPushButton(parent),
-        d(0),
-        m_engine(0)
+        d(new Private)
 {
-    setButtonText(i18n("Download New Stuff"));
+    setButtonText(i18n("Download New Stuff..."));
     init();
+}
+
+Button::~Button()
+{
+    delete d;
 }
 
 void Button::init()
@@ -56,26 +62,22 @@ void Button::init()
 
 void Button::setButtonText(const QString& what)
 {
-    setText(i18n("Download New %1", what));
+    setText(what);
 }
 
-void Button::setProviderList(const QString& providerList)
+void Button::setConfigFile(const QString& configFile)
 {
-    m_providerList = providerList;
-}
-
-void Button::setResourceType(const QString& resourceType)
-{
-    m_type = resourceType;
+    d->configFile = configFile;
 }
 
 void Button::showDialog()
 {
     emit aboutToShowDialog();
 
-    // FIXME
+    DownloadDialog dialog(d->configFile, this);
+    dialog.exec();
 
-    emit dialogFinished();
+    emit dialogFinished(dialog.changedEntries());
 }
 
 }
