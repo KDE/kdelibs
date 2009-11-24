@@ -870,7 +870,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         //KGlobalAccel::blockShortcuts(arg);
         emit q->blockShortcuts(arg); // see kwin
         break;
-        
+
     case NaturalSortingChanged:
         emit q->naturalSortingChanged();
         break;
