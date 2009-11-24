@@ -108,6 +108,8 @@ public:
 
     QDBusInterface device;
     QMap<QString,QVariant> cache;
+    QMap<Solid::DeviceInterface::Type, bool> capListCache;
+
     bool cacheSynced;
     HalDevice *parent;
 };
@@ -346,79 +348,33 @@ QString HalDevice::description() const
 
 QVariant HalDevice::property(const QString &key) const
 {
-    if (d->cache.contains(key))
-    {
-        return d->cache[key];
-    }
-    else if (d->cacheSynced)
-    {
-        return QVariant();
-    }
-
-    QDBusMessage reply = d->device.call("GetProperty", key);
-
-    if (reply.type()!=QDBusMessage::ReplyMessage
-      && reply.errorName()!="org.freedesktop.Hal.NoSuchProperty")
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.errorName()
-                   << ", " << reply.arguments().at(0).toString() << endl;
-        return QVariant();
-    }
-
-    if (reply.errorName()=="org.freedesktop.Hal.NoSuchProperty")
-    {
-        d->cache[key] = QVariant();
-    }
-    else
-    {
-        d->cache[key] = reply.arguments().at(0);
-    }
-
-    return d->cache[key];
+    return allProperties().value(key);
 }
 
 QMap<QString, QVariant> HalDevice::allProperties() const
 {
-    if (d->cacheSynced)
+    if (!d->cacheSynced)
     {
-        return d->cache;
+        QDBusReply<QVariantMap> reply = d->device.call("GetAllProperties");
+
+        if (reply.isValid()) {
+            d->cache = reply;
+        } else {
+            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
+                << ", " << reply.error().message() << endl;
+            d->cache = QVariantMap();
+        }
+
+        d->cacheSynced = true;
+        //qDebug( )<< this << udi() << "failure";
     }
 
-    QDBusReply<QVariantMap> reply = d->device.call("GetAllProperties");
-
-    if (!reply.isValid())
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
-                   << ", " << reply.error().message() << endl;
-        return QVariantMap();
-    }
-
-    d->cache = reply;
-    d->cacheSynced = true;
-
-    return reply;
+    return d->cache;
 }
 
 bool HalDevice::propertyExists(const QString &key) const
 {
-    if (d->cache.contains(key))
-    {
-        return d->cache[key].isValid();
-    }
-    else if (d->cacheSynced)
-    {
-        return false;
-    }
-
-    QDBusReply<bool> reply = d->device.call("PropertyExists", key);
-
-    if (!reply.isValid())
-    {
-        qDebug() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    return reply;
+    return allProperties().value(key).isValid();
 }
 
 bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
@@ -433,23 +389,27 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     else if (type==Solid::DeviceInterface::Video) {
         if (!property("video4linux.device").toString().contains("video" ) )
           return false;
+    } else if (d->capListCache.contains(type)) {
+        return d->capListCache.value(type);
     }
 
     QStringList cap_list = DeviceInterface::toStringList(type);
 
-    foreach (const QString &cap, cap_list)
-    {
+    foreach (const QString &cap, cap_list) {
         QDBusReply<bool> reply = d->device.call("QueryCapability", cap);
 
-        if (!reply.isValid())
-        {
+        if (!reply.isValid()) {
             qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
             return false;
         }
 
-        if (reply) return reply;
+        if (reply) {
+            d->capListCache.insert(type, true);
+            return true;
+        }
     }
 
+    d->capListCache.insert(type, false);
     return false;
 }
 
@@ -532,28 +492,24 @@ void HalDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
 {
     QMap<QString,int> result;
 
-    foreach (const ChangeDescription &change, changes)
-    {
+    foreach (const ChangeDescription &change, changes) {
         QString key = change.key;
         bool added = change.added;
         bool removed = change.removed;
 
         Solid::GenericInterface::PropertyChange type = Solid::GenericInterface::PropertyModified;
 
-        if (added)
-        {
+        if (added) {
             type = Solid::GenericInterface::PropertyAdded;
-        }
-        else if (removed)
-        {
+        } else if (removed) {
             type = Solid::GenericInterface::PropertyRemoved;
         }
 
         result[key] = type;
-
-        d->cache.remove(key);
     }
 
+    d->cache.clear();
+    //qDebug() << this << "unsyncing the cache";
     d->cacheSynced = false;
 
     emit propertyChanged(result);
