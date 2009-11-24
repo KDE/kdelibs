@@ -40,7 +40,7 @@
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
-#include <KDE/KWallet/Wallet>
+#include <kwallet.h>
 
 #include <attica/providermanager.h>
 #include <attica/provider.h>
