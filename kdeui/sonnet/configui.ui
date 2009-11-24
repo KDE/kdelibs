@@ -42,7 +42,7 @@
       <item row="1" column="0">
        <widget class="QCheckBox" name="m_checkerEnabledByDefaultCB">
         <property name="text">
-         <string>&amp;Auto spell check enabled by default</string>
+         <string>&amp;Automatic spell checking enabled by default</string>
         </property>
        </widget>
       </item>
