@@ -66,7 +66,7 @@ QString Solid::StorageVolume::label() const
 QString Solid::StorageVolume::uuid() const
 {
     Q_D(const StorageVolume);
-    return_SOLID_CALL(Ifaces::StorageVolume *, d->backendObject(), QString(), uuid());
+    return_SOLID_CALL(Ifaces::StorageVolume *, d->backendObject(), QString(), uuid().toLower());
 }
 
 qulonglong Solid::StorageVolume::size() const
