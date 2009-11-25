@@ -388,12 +388,23 @@ void AtticaProvider::votingFinished(Attica::BaseJob* job)
 void AtticaProvider::becomeFan(const Entry& entry)
 {
     Q_D(AtticaProvider);
-    // TODO
-    KMessageBox::information(0, i18n("Could not make you a fan of %1.", entry.name()));
-    KMessageBox::information(0, i18n("You are now a fan of %1.", entry.name()));
-}
+
+    PostJob * job = d->m_provider.becomeFan(entry.uniqueId());
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(becomeFanFinished(Attica::BaseJob*)));
+    job->start();
 }
 
+void AtticaProvider::becomeFanFinished(Attica::BaseJob* job)
+{
+    if (job->metadata().error() == Attica::Metadata::NoError) {
+        KMessageBox::information(0, i18n("You are now a fan."));
+    } else {
+        KMessageBox::information(0, i18n("Could not make you a fan."));
+    }
+}
+
+
+} // namespace
 
 
 #include "atticaprovider.moc"

@@ -80,6 +80,7 @@ namespace KNS3
         void accountBalanceLoaded(Attica::BaseJob* job);
         void authenticationCredentialsMissing(const Provider&);
         void votingFinished(Attica::BaseJob*);
+        void becomeFanFinished(Attica::BaseJob* job);
 
     protected:
         AtticaProvider(AtticaProviderPrivate &dd);
