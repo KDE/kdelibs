@@ -35,7 +35,8 @@ KJobPrivate::KJobPrivate()
     : q_ptr(0), uiDelegate(0), error(KJob::NoError),
       progressUnit(KJob::Bytes), percentage(0),
       suspended(false), capabilities(KJob::NoCapabilities),
-      speedTimer(0), isAutoDelete(true), isFinished(false)
+      speedTimer(0), isAutoDelete(true), isFinished(false),
+      eventLoop(0)
 {
     if (!_k_kjobUnitEnumRegistered) {
         _k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
@@ -193,13 +194,13 @@ bool KJob::exec()
     // suspend autodeletion and manually do it afterwards.
     const bool wasAutoDelete = isAutoDelete();
     setAutoDelete( false );
-    QEventLoop loop( this );
 
-    connect( this, SIGNAL( result( KJob* ) ),
-             &loop, SLOT( quit() ) );
+    Q_ASSERT( ! d->eventLoop );
+    d->eventLoop = new QEventLoop( this );
+
     start();
     if( !d->isFinished ) {
-        loop.exec(QEventLoop::ExcludeUserInputEvents);
+        d->eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
     }
 
     if ( wasAutoDelete ) {
@@ -298,6 +299,13 @@ void KJob::emitResult()
 {
     Q_D(KJob);
     d->isFinished = true;
+
+    if ( d->eventLoop ) {
+        d->eventLoop->quit();
+        d->eventLoop->deleteLater();
+        d->eventLoop = 0;
+    }
+
     // If we are displaying a progress dialog, remove it first.
     emit finished( this );
 

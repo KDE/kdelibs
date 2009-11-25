@@ -27,6 +27,7 @@
 
 class KJobUiDelegate;
 class QTimer;
+class QEventLoop;
 
 // This is a private class, but it's exported for
 // KIO::Job's usage. Other Job classes in kdelibs may
@@ -50,6 +51,7 @@ public:
     KJob::Capabilities capabilities;
     QTimer *speedTimer;
     bool isAutoDelete;
+    QEventLoop *eventLoop;
 
     void _k_speedTimeout();
 
