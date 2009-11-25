@@ -206,7 +206,7 @@ void KWebPage::setWallet(KWebWallet* wallet)
     d->wallet->setParent(this);
 }
 
-void KWebPage::downloadRequest(const QNetworkRequest &request) const
+void KWebPage::downloadRequest(const QNetworkRequest &request)
 {
   KUrl url (request.url());
   const QString destUrl = KFileDialog::getSaveFileName(url.fileName(), QString(), view());
