@@ -211,7 +211,7 @@ private:
     KWebWalletPrivate * const d;
     
 
-    Q_PRIVATE_SLOT(d, void _k_openWalletDone(bool));
+    Q_PRIVATE_SLOT(d, void _k_openWalletDone(bool))
 };
 
 #endif // KWEBWALLET_H
