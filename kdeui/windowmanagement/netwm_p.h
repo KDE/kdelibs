@@ -137,6 +137,7 @@ struct NETWinInfoPrivate {
     NETExtendedStrut extended_strut;
     NETStrut strut;
     NETStrut frame_strut; // strut?
+    NETStrut frame_overlap;
     NETRArray<NET::WindowType> types;
     char *name, *visible_name, *icon_name, *visible_icon_name;
     int desktop;

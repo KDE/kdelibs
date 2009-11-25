@@ -690,7 +690,8 @@ public:
         WM2Opacity             = 1<<14,
         WM2DesktopLayout       = 1<<15,        
         WM2FullPlacement       = 1<<16,
-        WM2FullscreenMonitors  = 1<<17
+        WM2FullscreenMonitors  = 1<<17,
+        WM2FrameOverlap        = 1<<18  // NOT STANDARD
     };
 
     /**

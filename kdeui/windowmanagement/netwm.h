@@ -1118,6 +1118,27 @@ public:
     NETStrut frameExtents() const;
 
     /**
+       Sets the window frame overlap strut, i.e. how far the window frame extends
+       behind the client area on each side.
+
+       Set the strut values to -1 if you want the window frame to cover the whole
+       client area.
+
+       The default values are 0.
+
+       @since 4.4
+    **/
+    void setFrameOverlap(NETStrut strut);
+
+    /**
+       Returns the frame overlap strut, i.e. how far the window frame extends
+       behind the client area on each side.
+
+       @since 4.4
+    **/ 
+    NETStrut frameOverlap() const;
+
+    /**
        Returns an icon.  If width and height are passed, the icon returned will be
        the closest it can find (the next biggest).  If width and height are omitted,
        then the largest icon in the list is returned.

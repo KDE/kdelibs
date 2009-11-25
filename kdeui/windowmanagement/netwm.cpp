@@ -95,6 +95,7 @@ static Atom net_wm_fullscreen_monitors = 0;
 static Atom kde_net_wm_window_type_override   = 0;
 static Atom kde_net_wm_window_type_topmenu    = 0;
 static Atom kde_net_wm_temporary_rules        = 0;
+static Atom kde_net_wm_frame_overlap          = 0;
 
 // application protocols
 static Atom wm_protocols = 0;
@@ -249,7 +250,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 85;
+static const int netAtomCount = 86;
 static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -341,6 +342,7 @@ static void create_netwm_atoms(Display *d) {
 	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
 	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
             "_KDE_NET_WM_TEMPORARY_RULES",
+            "_KDE_NET_WM_FRAME_OVERLAP",
 
 	    "WM_STATE",
 	    "WM_PROTOCOLS",
@@ -438,6 +440,7 @@ static void create_netwm_atoms(Display *d) {
 	    &kde_net_wm_window_type_override,
 	    &kde_net_wm_window_type_topmenu,
             &kde_net_wm_temporary_rules,
+            &kde_net_wm_frame_overlap,
 
 	    &xa_wm_state,
 	    &wm_protocols,
@@ -1270,6 +1273,10 @@ void NETRootInfo::setSupported() {
 	atoms[pnum++] = kde_net_wm_frame_strut;
     }
 
+    if (p->properties[ PROTOCOLS2 ] & WM2FrameOverlap) {
+	atoms[pnum++] = kde_net_wm_frame_overlap;
+    }
+
     if (p->properties[ PROTOCOLS2 ] & WM2KDETemporaryRules)
 	atoms[pnum++] = kde_net_wm_temporary_rules;
     if (p->properties[ PROTOCOLS2 ] & WM2FullPlacement)
@@ -1502,6 +1509,8 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS ] |= WMFrameExtents;
     else if( atom == kde_net_wm_frame_strut )
         p->properties[ PROTOCOLS ] |= WMFrameExtents;
+    else if( atom == kde_net_wm_frame_overlap )
+        p->properties[ PROTOCOLS2 ] |= WM2FrameOverlap;
 
     else if( atom == kde_net_wm_temporary_rules )
         p->properties[ PROTOCOLS2 ] |= WM2KDETemporaryRules;
@@ -3469,6 +3478,30 @@ NETStrut NETWinInfo::frameExtents() const {
     return p->frame_strut;
 }
 
+void NETWinInfo::setFrameOverlap(NETStrut strut) {
+    if (strut.left != -1 || strut.top != -1 || strut.right != -1 || strut.bottom != -1) {
+        strut.left   = qMax(0, strut.left);
+        strut.top    = qMax(0, strut.top);
+        strut.right  = qMax(0, strut.right);
+        strut.bottom = qMax(0, strut.bottom);
+    }
+
+    p->frame_overlap = strut;
+
+    long d[4];
+    d[0] = strut.left;
+    d[1] = strut.right;
+    d[2] = strut.top;
+    d[3] = strut.bottom;
+
+    XChangeProperty(p->display, p->window, kde_net_wm_frame_overlap, XA_CARDINAL, 32,
+		    PropModeReplace, (unsigned char *) d, 4);
+}
+
+NETStrut NETWinInfo::frameOverlap() const {
+    return p->frame_overlap;
+}
+
 void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
     if (p->win_geom.size.width == 0 || p->win_geom.size.height == 0) {
 	Window unused;
@@ -3731,6 +3764,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMFrameExtents;
 	    else if (pe.xproperty.atom == kde_net_wm_frame_strut)
 		dirty |= WMFrameExtents;
+	    else if (pe.xproperty.atom == kde_net_wm_frame_overlap)
+		dirty2 |= WM2FrameOverlap;
 	    else if (pe.xproperty.atom == net_wm_icon_name)
 		dirty |= WMIconName;
 	    else if (pe.xproperty.atom == net_wm_visible_icon_name)
@@ -4186,6 +4221,26 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	    if ( data_ret )
 		XFree(data_ret);
 	}
+    }
+
+    if (dirty2 & WM2FrameOverlap) {
+        p->frame_overlap = NETStrut();
+        bool ok = false;
+        if (XGetWindowProperty(p->display, p->window, kde_net_wm_frame_overlap,
+                               0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
+                               &nitems_ret, &unused, &data_ret) == Success) {
+            if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
+                ok = true;
+                long *d = (long *) data_ret;
+
+                p->frame_overlap.left   = d[0];
+                p->frame_overlap.right  = d[1];
+                p->frame_overlap.top    = d[2];
+                p->frame_overlap.bottom = d[3];
+            }
+            if ( data_ret )
+                XFree(data_ret);
+        }
     }
 
     if (dirty & WMPid) {
