@@ -31,7 +31,7 @@
 #include <phonon/mediaobject.h>
 #include <rendering/render_media.h>
 #include <phonon/videowidget.h>
-#include <KDE/KIcon>
+#include <kicon.h>
 #include <ktogglefullscreenaction.h>
 #include <kshortcut.h>
 #include <kdebug.h>
