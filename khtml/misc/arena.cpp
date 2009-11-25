@@ -70,7 +70,7 @@ static int i = 0;
 
 #define FREELIST_MAX 50
 #define LARGE_ALLOCATION_CEIL(pool) (pool)->arenasize * 256
-#define MAX_DISCRETE_ALLOCATION(pool) (pool)->arenasize * 32
+#define MAX_DISCRETE_ALLOCATION(pool) (pool)->arenasize * 64
 static Arena *arena_freelist = 0;
 static int freelist_count = 0;
 
@@ -112,7 +112,7 @@ void InitArenaPool(ArenaPool *pool, const char* /*name*/,
      pool->current = &pool->first;
      pool->arenasize = size;
      pool->largealloc = LARGE_ALLOCATION_CEIL(pool);
-     pool->cumul = 0;
+     pool->cumul = freelist_count*size;
 }
 
 
@@ -194,7 +194,10 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
         if (pool->cumul > pool->largealloc) {
             // High memory pressure. Switch to a fractional allocation strategy
             // so that malloc gets a chance to successfully trim us down when it's over.
-            sz = qMin(pool->cumul/25, MAX_DISCRETE_ALLOCATION(pool));
+            sz = qMin(pool->cumul/12, MAX_DISCRETE_ALLOCATION(pool));
+#ifdef DEBUG_ARENA_MALLOC
+            printf("allocating %d bytes (fractional strategy)\n", sz);
+#endif
         } else
 #endif
            sz = pool->arenasize > nb ? pool->arenasize : nb;
@@ -242,6 +245,8 @@ static void FreeArenaList(ArenaPool *pool, Arena *head, bool reallyFree)
         return;
 
 #ifdef DEBUG_ARENA_MALLOC
+    printf("****** Freeing arena pool. Total allocated memory: %d\n", pool->cumul);
+
     do {
         assert(a->base <= a->avail && a->avail <= a->limit);
         a->avail = a->base;
