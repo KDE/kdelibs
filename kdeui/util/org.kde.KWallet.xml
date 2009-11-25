@@ -266,5 +266,11 @@
     <method name="localWallet">
       <arg type="s" direction="out"/>
     </method>
+    <method name="pamOpen">
+      <arg name="wallet" type="s" direction="in"/>
+      <arg name="passwordHash" type="ay" direction="in"/>
+      <arg name="sessionTimeout" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
   </interface>
 </node>
