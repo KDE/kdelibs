@@ -290,9 +290,9 @@ void KCompletionBox::sizeAndPosition()
     int x = currentPos.x(), y = currentPos.y();
     if ( d->m_parent ) {
       if ( !isVisible() ) {
-        QRect screenSize = KGlobalSettings::desktopGeometry(d->m_parent);
-
         QPoint orig = globalPositionHint();
+        QRect screenSize = KGlobalSettings::desktopGeometry(orig);
+
         x = orig.x() + geom.x();
         y = orig.y() + geom.y();
 
