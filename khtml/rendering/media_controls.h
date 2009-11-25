@@ -30,20 +30,26 @@
 #include <phonon/mediaobject.h>
 #include <QWidget>
 #include <QtGui/QPushButton>
+#include <QtGui/QToolButton>
 
 namespace khtml {
+
+class MediaPlayer;
 
 class MediaControls : public QWidget {
 Q_OBJECT
 public:
-    MediaControls(Phonon::MediaObject* mobject, QWidget* parent = 0);
+    MediaControls(MediaPlayer* mediaPlayer, QWidget* parent = 0);
 
 private Q_SLOTS:
     void slotStateChanged(Phonon::State state);
+    void slotToggled(bool);
 
 private:
     QPushButton* m_play;
     QPushButton* m_pause;
+    QToolButton* m_fullscreen;
+    MediaPlayer* m_mediaPlayer;
 };
 
 } //namespace

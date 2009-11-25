@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 Michael Howell <mhowell123@gmail.com>.
+ * Copyright (C) 2009 Germain Garand <germain@ebooksfrance.org>
  * Parts copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +28,21 @@
 #include "media_controls.h"
 #include <QtGui/QHBoxLayout>
 #include <phonon/seekslider.h>
+#include <phonon/mediaobject.h>
+#include <rendering/render_media.h>
+#include <phonon/videowidget.h>
 #include <KDE/KIcon>
+#include <ktogglefullscreenaction.h>
+#include <kshortcut.h>
+#include <kdebug.h>
+#include <klocale.h>
 
 namespace khtml {
 
-MediaControls::MediaControls(Phonon::MediaObject* mediaObject, QWidget* parent) : QWidget(parent)
+MediaControls::MediaControls(MediaPlayer* mediaPlayer, QWidget* parent) : QWidget(parent)
 {
+    m_mediaPlayer = mediaPlayer;
+    Phonon::MediaObject* mediaObject = m_mediaPlayer->mediaObject();
     setLayout(new QHBoxLayout(this));
     m_play = new QPushButton(KIcon("media-playback-start"), i18n("Play"), this);
     connect(m_play, SIGNAL(clicked()), mediaObject, SLOT(play()));
@@ -41,9 +51,27 @@ MediaControls::MediaControls(Phonon::MediaObject* mediaObject, QWidget* parent) 
     connect(m_pause, SIGNAL(clicked()), mediaObject, SLOT(pause()));
     layout()->addWidget(m_pause);
     layout()->addWidget(new Phonon::SeekSlider(mediaObject, this));
+    KAction* fsac = new KToggleFullScreenAction(this);
+    fsac->setObjectName("KHTMLMediaPlayerFullScreenAction"); // needed for global shortcut activation.
+    m_fullscreen = new QToolButton(this);
+    m_fullscreen->setDefaultAction(fsac);
+    m_fullscreen->setCheckable(true);
+    connect(fsac, SIGNAL(toggled(bool)), this, SLOT(slotToggled(bool)));
+    layout()->addWidget(m_fullscreen); 
 
     slotStateChanged(mediaObject->state());
     connect(mediaObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), SLOT(slotStateChanged(Phonon::State)));
+}
+
+void MediaControls::slotToggled(bool t)
+{
+    if (t) {
+        m_mediaPlayer->videoWidget()->enterFullScreen();
+        static_cast<KAction*>(m_fullscreen->defaultAction())->setGlobalShortcut(KShortcut(Qt::Key_Escape));
+    } else {
+        m_mediaPlayer->videoWidget()->exitFullScreen();
+        static_cast<KAction*>(m_fullscreen->defaultAction())->forgetGlobalShortcut();
+    }
 }
 
 void MediaControls::slotStateChanged(Phonon::State state)
