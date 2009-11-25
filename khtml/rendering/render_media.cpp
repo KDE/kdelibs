@@ -57,6 +57,9 @@ void RenderMedia::setPlayer(MediaPlayer* player)
 
 void RenderMedia::layout()
 {
+    calcWidth();
+    calcHeight();
+
     RenderWidget::layout();
 
     if (mediaElement()->controls() && widget()->layout()->count() == 1) {
@@ -67,19 +70,6 @@ void RenderMedia::layout()
 	else
 	    toolbox->show();
     }
-
-    QApplication::processEvents();
-
-    if (mediaElement()->isVideo()) {
-	setIntrinsicWidth(player()->videoWidget()->sizeHint().width());
-	setIntrinsicHeight(player()->videoWidget()->sizeHint().height());
-    } else {
-	setIntrinsicWidth(widget()->sizeHint().width());
-	setIntrinsicHeight(widget()->sizeHint().height());
-	player()->hide();
-    }
-
-    if (intrinsicWidth() != 1 && widget()) widget()->resize(intrinsicWidth(), intrinsicHeight());
 }
 
 bool RenderMedia::eventFilter(QObject* o, QEvent* e)
@@ -115,6 +105,19 @@ void RenderMedia::updateFromElement()
 
 void RenderMedia::slotMetaDataChanged()
 {
+    if (mediaElement()->isVideo()) {
+        if (player()->videoWidget()->sizeHint().isValid()) {
+	    setIntrinsicWidth(player()->videoWidget()->sizeHint().width());
+	    setIntrinsicHeight(player()->videoWidget()->sizeHint().height());
+        }
+    } else {
+        if (widget()->sizeHint().isValid()) {
+	    setIntrinsicWidth(widget()->sizeHint().width());
+	    setIntrinsicHeight(widget()->sizeHint().height());
+        }
+	player()->hide();
+    }
+
     setNeedsLayoutAndMinMaxRecalc();
 }
 
