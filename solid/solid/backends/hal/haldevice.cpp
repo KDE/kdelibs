@@ -105,10 +105,12 @@ public:
                   "org.freedesktop.Hal.Device",
                   QDBusConnection::systemBus()),
           cacheSynced(false), parent(0) { }
+    void checkCache(const QString &key = QString());
 
     QDBusInterface device;
     QMap<QString,QVariant> cache;
     QMap<Solid::DeviceInterface::Type, bool> capListCache;
+    QSet<QString> invalidKeys;
 
     bool cacheSynced;
     HalDevice *parent;
@@ -348,33 +350,47 @@ QString HalDevice::description() const
 
 QVariant HalDevice::property(const QString &key) const
 {
-    return allProperties().value(key);
+    d->checkCache(key);
+    return d->cache.value(key);
+}
+
+void HalDevicePrivate::checkCache(const QString &key)
+{
+    if (cacheSynced) {
+        if (key.isEmpty()) {
+            if (invalidKeys.isEmpty()) {
+                return;
+            }
+        } else if (!invalidKeys.contains(key)) {
+            return;
+        }
+    }
+
+    QDBusReply<QVariantMap> reply = device.call("GetAllProperties");
+
+    if (reply.isValid()) {
+        cache = reply;
+    } else {
+        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
+            << ", " << reply.error().message() << endl;
+        cache = QVariantMap();
+    }
+
+    invalidKeys.clear();
+    cacheSynced = true;
+    //qDebug( )<< q << udi() << "failure";
 }
 
 QMap<QString, QVariant> HalDevice::allProperties() const
 {
-    if (!d->cacheSynced)
-    {
-        QDBusReply<QVariantMap> reply = d->device.call("GetAllProperties");
-
-        if (reply.isValid()) {
-            d->cache = reply;
-        } else {
-            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
-                << ", " << reply.error().message() << endl;
-            d->cache = QVariantMap();
-        }
-
-        d->cacheSynced = true;
-        //qDebug( )<< this << udi() << "failure";
-    }
-
+    d->checkCache();
     return d->cache;
 }
 
 bool HalDevice::propertyExists(const QString &key) const
 {
-    return allProperties().value(key).isValid();
+    d->checkCache(key);
+    return d->cache.value(key).isValid();
 }
 
 bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
@@ -506,12 +522,17 @@ void HalDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
         }
 
         result[key] = type;
+        d->cache.remove(key);
+
+        if (d->cache.isEmpty()) {
+            d->cacheSynced = false;
+            d->invalidKeys.clear();
+        } else {
+            d->invalidKeys.insert(key);
+        }
     }
 
-    d->cache.clear();
     //qDebug() << this << "unsyncing the cache";
-    d->cacheSynced = false;
-
     emit propertyChanged(result);
 }
 
