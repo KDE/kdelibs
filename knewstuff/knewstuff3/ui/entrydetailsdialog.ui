@@ -44,6 +44,9 @@
          <property name="text">
           <string/>
          </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>

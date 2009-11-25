@@ -35,6 +35,9 @@ public:
     EntryDetailsDialog(Engine* engine, const Entry& entry, QWidget * parent = 0);
     ~EntryDetailsDialog();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private Q_SLOTS:
     void slotEntryPreviewLoaded(const QString &, const QImage&);
 

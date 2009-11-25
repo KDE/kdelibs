@@ -76,20 +76,34 @@ void EntryDetailsDialog::init()
     ui.ratingWidget->setEditable(false);
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
 
-    ui.previewBig->setPixmap(m_entry.previewBig());
-    ui.previewSmall1->setPixmap(m_entry.previewSmall());
-    kDebug() << m_entry.previewBig() << m_entry.previewSmall();
+    if(m_entry.previewSmall().isEmpty() && m_entry.previewBig().isEmpty()) {
+        ui.previewBig->setVisible(false);
+    } else {
+        QString url = m_entry.previewBig();
+        if (url.isEmpty()) {
+            url = m_entry.previewSmall();
+        }
+        ui.previewBig->setText(i18n("Loading preview..."));
+        ImageLoader *pix = new ImageLoader(url, this);
+        connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
+                this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
 
-    ui.previewBig->setText(i18n("Loading preview..."));
-    ImageLoader *pix = new ImageLoader(m_entry.previewBig(), this);
-    connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
-            this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
+        ui.previewBig->installEventFilter(this);
+    }
 }
 
 void EntryDetailsDialog::slotEntryPreviewLoaded(const QString &, const QImage& image)
 {
     m_previewBig1 = image;
-    ui.previewBig->setPixmap(QPixmap::fromImage(image.scaled(ui.previewBig->size())));
+    ui.previewBig->setPixmap(QPixmap::fromImage(image.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+}
+
+bool EntryDetailsDialog::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::Resize) {
+        kDebug() << "Resize";
+        ui.previewBig->setPixmap(QPixmap::fromImage(m_previewBig1.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+    }
 }
 
 EntryDetailsDialog::~EntryDetailsDialog()

@@ -305,14 +305,15 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
 
 bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
 {
-   if (event->type() == QEvent::ToolTip) {
+   if (event->type() == QEvent::MouseButtonDblClick) {
         QModelIndex index = focusedIndex();
         Q_ASSERT(index.isValid());
 
         const QSortFilterProxyModel* model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
-        kDebug() << entry.name() << entry.previewBig();        
+        KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));      
+
+        performAction(Engine::ShowDetails, entry);
    }
 
    return KWidgetItemDelegate::eventFilter(watched, event);
