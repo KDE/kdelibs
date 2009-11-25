@@ -4,7 +4,7 @@
  * Copyright (C) 2008 Dirk Mueller <mueller@kde.org>
  * Copyright (C) 2008 Urs Wolfer <uwolfer @ kde.org>
  * Copyright (C) 2008 Michael Howell <mhowell123@gmail.com>
- * Copyright (C) 2009 Dawit Alemayehu <adawit@kde.org>
+ * Copyright (C) 2009 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,6 +28,9 @@
 #include <kdewebkit_export.h>
 
 #include <QtWebKit/QWebPage>
+
+class KWebWallet;
+class KUrl;
 
 /**
  * @short An enhanced QWebPage that provides integration into the KDE environment.
@@ -63,6 +66,18 @@ public:
     ~KWebPage();
 
     /**
+     * Returns true if access to the requested @p url is authorized.
+     *
+     * You should reimplement this function if you want to add features such as
+     * content filtering or ad blocking. The default implementation simply
+     * returns true.
+     *
+     * @param url the url to be authorized.
+     * @return true in this default implementation.
+     */
+    virtual bool authorizedRequest(const QUrl &url) const;
+
+    /**
      * Returns true if access to remote content is allowed.
      *
      * By default access to remote content is allowed.
@@ -71,6 +86,11 @@ public:
      * @see KIO::AccessManager::isExternalContentAllowed()
      */
     bool isExternalContentAllowed() const;
+
+    /**
+     * Returns true KWallet used to store form data.
+     */
+    KWebWallet *wallet() const;
 
     /**
      * Set @p allow to false if you want to prevent access to remote content.
@@ -85,31 +105,35 @@ public:
     void setAllowExternalContent(bool allow);
 
     /**
-     * Downloads the resource requested by @p request.
+     * Sets the @ref KWebWallet that is used to store form data.
      *
-     * This function first prompts the user for the destination
-     * location for the requested resource and then downloads it
-     * using KIO.
+     * NOTE: KWebPage takes ownership of the KWebWallet object.
      *
-     * For example, you can call this function when you receive
-     * @ref QWebPage::downloadRequested signal to download the
-     * the request through KIO.
+     * KWebPage will set the parent of the wallet object passed to itself, so
+     * that the wallet is deleted when this object is deleted as well. If you
+     * do not want that to happen, you should set the wallet's parent to 0 after
+     * calling this function.
      *
-     * @param request the request to download
+     * To disable wallet intgreation simply call this function with NULL.
      */
-    void downloadRequest(const QNetworkRequest &request) const;
+    void setWallet(KWebWallet* wallet);
+
+public Q_SLOTS:
+    /**
+     * Downloads @p request using KIO.
+     *
+     * This slot first prompts the user where to put/save the requested
+     * resource and then downloads using KIO::file_copy.
+     */
+    virtual void downloadRequest(const QNetworkRequest &request);
 
     /**
-     * Returns true if access to the requested @p url is authorized.
+     * Downloads @p url using KIO.
      *
-     * You should reimplement this function if you want to add features such as
-     * content filtering or ad blocking. The default implementation simply
-     * returns true.
-     *
-     * @param url the url to be authorized
-     * @return true in this default implementation
+     * This slot first prompts the user where to put/save the requested
+     * resource and then downloads using KIO::file_copy.
      */
-    virtual bool authorizedRequest(const QUrl &url) const;
+    virtual void downloadUrl(const KUrl &url);
 
 protected:
     /**
