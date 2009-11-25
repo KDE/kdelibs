@@ -90,12 +90,13 @@ macro_optional_find_package(OpenGL)
 macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
 
 set(SOPRANO_MIN_VERSION "2.3.70")
-macro_optional_find_package(Soprano)
-macro_optional_find_package(SharedDesktopOntologies)
-macro_log_feature(DESKTOP_ONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "" "Ontologies necessary for the Nepomuk semantic desktop.")
-macro_log_feature(Soprano_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
+find_package(Soprano  REQUIRED COMPONENTS  PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
+macro_log_feature(SOPRANO_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is required to build the Nepomuk semantic desktop system.")
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
+
+macro_optional_find_package(SharedDesktopOntologies)
+macro_log_feature(DESKTOP_ONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "" "Ontologies necessary for the Nepomuk semantic desktop.")
 
 macro_optional_find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma remote widgets functionality.")
@@ -224,10 +225,12 @@ check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 
-if(Soprano_FOUND AND SOPRANO_PLUGIN_RAPTORPARSER_FOUND AND SOPRANO_PLUGIN_REDLANDBACKEND_FOUND AND DESKTOP_ONTOLOGIES_FOUND)
+# Actually nepomuk is not optional, without it other KDE modules don't build,
+# so this must be fixed. Alex
+if(DESKTOP_ONTOLOGIES_FOUND)
   set(HAVE_NEPOMUK true)
   add_subdirectory(nepomuk)
-endif(Soprano_FOUND AND SOPRANO_PLUGIN_RAPTORPARSER_FOUND AND SOPRANO_PLUGIN_REDLANDBACKEND_FOUND AND DESKTOP_ONTOLOGIES_FOUND)
+endif(DESKTOP_ONTOLOGIES_FOUND)
 
 ################# list the subdirectories #################
 
