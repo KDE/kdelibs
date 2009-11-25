@@ -70,7 +70,6 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
     case kLicense:
         return entry.license();
         break;
-        //case Qt::ToolTipRole:
     case kSummary:
         return entry.summary();
         break;

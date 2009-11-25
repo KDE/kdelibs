@@ -30,6 +30,8 @@
 #include <attica/listjob.h>
 #include <attica/content.h>
 #include <attica/downloaditem.h>
+#include <attica/accountbalance.h>
+#include <attica/person.h>
 
 using namespace Attica;
 
@@ -53,6 +55,11 @@ public:
 
     KNS3::Entry::List cachedEntries;
 
+    QHash<QString, Attica::Content> cachedContent;
+
+    // Associate job and entry, this is needed when fetching
+    // download links or the account balance in order to continue
+    // when the result is there.
     QHash<BaseJob*, Entry> downloadLinkJobs;
 
     // keep track of the pages we requested
@@ -67,7 +74,7 @@ AtticaProvider::AtticaProvider(const QStringList& categories, const QStringList&
     : Provider(*new AtticaProviderPrivate)
 {
     Q_D(AtticaProvider);
-    d->mName = QString("Attica");
+    d->mName = QString("https://api.opendesktop.org/v1/");
     d->categoryNameList = categories;
     d->categoryPatternList = categoriesPatterns;
 
@@ -147,7 +154,9 @@ void AtticaProvider::providerLoaded(const Attica::Provider& provider)
     Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
     job->start();
+
 }
+
 
 void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
@@ -206,6 +215,8 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     Entry::List entries;
     
     Q_FOREACH(Content content, contents) {
+        d->cachedContent.insert(content.id(), content);
+
         Entry entry;
         entry.setProviderId(id());
         entry.setUniqueId(content.id());
@@ -268,12 +279,63 @@ Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMo
 void AtticaProvider::loadPayloadLink(const KNS3::Entry& entry)
 {
     Q_D(AtticaProvider);
-    ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
-    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
-    d->downloadLinkJobs[job] = entry;
-    job->start();
 
-    kDebug() << " link for " << entry.uniqueId();
+    Attica::Content content = d->cachedContent.value(entry.uniqueId());
+    DownloadDescription desc = content.downloadUrlDescription(0);
+
+    if (desc.hasPrice()) {
+        // Ask for balance, then show information...
+        ItemJob<AccountBalance>* job = d->m_provider.requestAccountBalance();
+        connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(accountBalanceLoaded(Attica::BaseJob*)));
+        d->downloadLinkJobs[job] = entry;
+        job->start();
+
+        kDebug() << "get account balance";
+    } else {
+        ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
+        connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
+        d->downloadLinkJobs[job] = entry;
+        job->start();
+
+        kDebug() << " link for " << entry.uniqueId();
+    }
+}
+
+void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
+{
+    Q_D(AtticaProvider);
+
+    ItemJob<AccountBalance>* job = static_cast<ItemJob<AccountBalance>*>(baseJob);
+    AccountBalance item = job->result();
+
+    if (job->metadata().error() != Metadata::NoError) {
+        kDebug() << job->metadata().error() << job->metadata().statusCode();
+        KMessageBox::error(0, i18n("Could not get account balance."));
+        return;
+    }
+
+    Entry entry = d->downloadLinkJobs.take(job);
+    Content content = d->cachedContent.value(entry.uniqueId());
+    // TODO: at some point maybe support more than one download description
+    if (content.downloadUrlDescription(1).priceAmount() < item.balance()) {
+        kDebug() << "Your balance is greather than the price."
+                << content.downloadUrlDescription(0).priceAmount() << " balance: " << item.balance();
+        if (KMessageBox::questionYesNo(0,
+                i18nc("the price of a download item, parameter 1 is the currency, 2 is the price",
+                "This items costs %1 %2.\nDo you want to buy it?")) == KMessageBox::Yes) {
+            ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
+            connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
+            d->downloadLinkJobs[job] = entry;
+            job->start();
+        } else {
+            return;
+        }
+    } else {
+        kDebug() << "You don't have enough money on your account!"
+                << content.downloadUrlDescription(0).priceAmount() << " balance: " << item.balance();
+        KMessageBox::information(0, i18n("Your account balance is too low:\nYour balance: %1\nPrice:%2",
+                                         item.balance(),content.downloadUrlDescription(0).priceAmount()));
+    }
 }
 
 void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
@@ -284,7 +346,7 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
     DownloadItem item = job->result();
     if (job->metadata().error() != Metadata::NoError) {
         kDebug() << job->metadata().error() << job->metadata().statusCode();
-        KMessageBox::error(0, "Could not get download link.");
+        KMessageBox::error(0, i18n("Could not get download link."));
         return;
     }
 

@@ -65,6 +65,7 @@ private slots:
     void slotActionTriggered(QAction *action);
     void slotInstallClicked();
     void slotLinkClicked(const QString & url);
+    void slotDetailsClicked();
 
 private:
     KMenu * InstallMenu(const QToolButton* button, Entry::Status status) const;

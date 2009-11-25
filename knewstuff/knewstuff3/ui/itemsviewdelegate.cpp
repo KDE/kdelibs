@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <kmenu.h>
 #include <krun.h>
+#include <kpushbutton.h>
 
 #include "itemsmodel.h"
 #include "ratingwidget.h"
@@ -37,7 +38,8 @@ namespace KNS3
 {
     static const int DelegateLabel = 0;
     static const int DelegateInstallButton = 1;
-    static const int DelegateRatingWidget = 2;
+    static const int DelegateDetailsButton = 2;
+    static const int DelegateRatingWidget = 3;
     
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
@@ -94,12 +96,18 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
 
+    KPushButton* detailsButton = new KPushButton();
+    list << detailsButton;
+    setBlockedEventTypes(detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
+                         << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+    connect(detailsButton, SIGNAL(clicked()), this, SLOT(slotDetailsClicked()));
+
     RatingWidget* rating = new RatingWidget();
     rating->setMaxRating(10);
     rating->setHalfStepsEnabled(true);
     rating->setEditable(false);
     list << rating;
-    
+
     return list;
 }
 
@@ -188,7 +196,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         //    button->setIconSize(QSize(16, 16));
             button->resize(size);
         //}
-        button->move(right - button->width() - margin, option.rect.height() / 2 - button->height());
+        button->move(right - button->width() - margin, option.rect.height()/2 - button->height()*1.5);
         button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         //button->setPopupMode(QToolButton::MenuButtonPopup);
 
@@ -227,6 +235,13 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
     }
 
+    KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
+    if (detailsButton) {
+        detailsButton->setText(i18n("Details..."));
+        detailsButton->move(right - button->width() - margin, option.rect.height()/2 - button->height()/2);
+        detailsButton->resize(size);
+    }
+
     RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
         rating->setToolTip(i18n("Rating: %1%", model->data(index, ItemsModel::kRating).toString()));
@@ -237,10 +252,9 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
         rating->setRating((ratingValue-20)*10/60);
         // put the rating label below the install button
-        rating->move(right - button->width() - margin, option.rect.height() / 2 + button->height()/2);
+        rating->move(right - button->width() - margin, option.rect.height()/2 + button->height()/2);
         rating->resize(size);
-    }
-    
+    }    
 }
 
 // draw the entry based on what
@@ -342,10 +356,12 @@ void ItemsViewDelegate::slotActionTriggered(QAction *action)
 void ItemsViewDelegate::slotInstallClicked()
 {
     QModelIndex index = focusedIndex();
-
+kDebug() << index;
     if (index.isValid()) {
         const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
+        kDebug() << model;
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
+        kDebug() << realmodel;
         KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
         if ( !entry.isValid() )
             return;
@@ -357,4 +373,24 @@ void ItemsViewDelegate::slotInstallClicked()
         }
     }
 }
+
+void ItemsViewDelegate::slotDetailsClicked()
+{
+    QModelIndex index = focusedIndex();
+    kDebug() << index;
+
+    if (index.isValid()) {
+        //const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
+        //const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
+        const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
+        kDebug() << realmodel;
+        //KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
+        KNS3::Entry entry = realmodel->entryForIndex(index);
+        if ( !entry.isValid() )
+            return;
+
+        emit performAction(Engine::ShowDetails, entry);
+    }
+}
+
 }

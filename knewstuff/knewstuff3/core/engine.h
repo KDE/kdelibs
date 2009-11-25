@@ -60,7 +60,8 @@ public:
         Uninstall,
         Install,
         AddComment,
-        Rate
+        Rate,
+        ShowDetails
     };
     
     /**

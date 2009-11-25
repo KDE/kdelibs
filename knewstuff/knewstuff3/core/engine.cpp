@@ -25,6 +25,7 @@
 #include "entry.h"
 #include "core/installation.h"
 #include "core/xmlloader.h"
+#include "ui/entrydetailsdialog.h"
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -446,6 +447,11 @@ void Engine::slotPerformAction(KNS3::Engine::EntryAction action, Entry entry)
         // prompt for rating, and send to provider
     }
     break;
+    case ShowDetails: {
+        EntryDetailsDialog dialog(this, entry, 0);
+        dialog.exec();
+        break;
+    }
     }
 }
 

@@ -30,6 +30,7 @@ set(knewstuff3_SRCS
     core/security.cpp
     core/xmlloader.cpp
     staticxml/staticxmlprovider.cpp
+    ui/entrydetailsdialog.cpp
     ui/imageloader.cpp
     ui/itemsmodel.cpp
     ui/itemsviewdelegate.cpp
@@ -48,6 +49,7 @@ endif(LIBATTICA_FOUND)
 kde4_add_ui_files(knewstuff3_SRCS
     downloaddialog.ui
     uploaddialog.ui
+    ui/entrydetailsdialog.ui
 )
 
 kde4_add_library(knewstuff3 SHARED ${knewstuff3_SRCS} )
