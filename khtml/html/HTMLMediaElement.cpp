@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2009 Michael Howell <mhowell123@gmail.com>.
+ * Parts copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,9 +29,14 @@
 #include "HTMLMediaElement.h"
 #include "HTMLDocument.h"
 #include <misc/htmlhashes.h>
-#include <rendering/render_object.h>
 #include "MediaError.h"
 #include "TimeRanges.h"
+#include "css/cssstyleselector.h"
+#include "css/cssproperties.h"
+#include "css/cssvalues.h"
+#include "css/csshelper.h"
+#include <phonon/mediaobject.h>
+#include <rendering/render_media.h>
 
 const double doubleMax = 999999999.8; // ### numeric_limits<double>::max()
 const double doubleInf = 999999999.0; // ### numeric_limits<double>::infinity()
@@ -57,12 +63,37 @@ HTMLMediaElement::HTMLMediaElement(Document* doc)
     , m_previousProgressTime(doubleMax)
     , m_sentStalledEvent(false)
     , m_bufferingRate(0)
-    , m_player(0)
+    , m_player(new MediaPlayer())
 {
+}
+
+void HTMLMediaElement::attach()
+{
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+
+    RenderStyle* _style = document()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
+        _style->display() != NONE)
+    {
+        m_render = new (document()->renderArena()) RenderMedia(this);
+        static_cast<RenderMedia*>(m_render)->setPlayer(m_player.data());
+        m_render->setStyle(_style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
+    _style->deref();
+
+    NodeBaseImpl::attach();
+    if (m_render)
+        m_render->updateFromElement();
+    setRenderer(m_render);
 }
 
 HTMLMediaElement::~HTMLMediaElement()
 {
+    if (m_player) m_player->deleteLater();
 }
 
 void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
@@ -75,10 +106,10 @@ void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
         if (inDocument() && m_networkState == EMPTY)
             scheduleLoad();
     } if (attrId == ATTR_CONTROLS) {
-        if (!isVideo() && attached() && (controls() != (renderer() != 0))) {
+        /*if (!isVideo() && attached() && (controls() != (renderer() != 0))) {
             detach();
             attach();
-        }
+        }*/
         if (renderer())
             renderer()->updateFromElement();
     }
@@ -86,7 +117,7 @@ void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
 
 void HTMLMediaElement::scheduleLoad()
 {
-    // ###
+    kDebug() << "not implemented";
 }
 
 String serializeTimeOffset(float time)
@@ -204,7 +235,7 @@ void HTMLMediaElement::setCurrentTime(float time, ExceptionCode& ec)
 
 float HTMLMediaElement::duration() const
 {
-    return m_player ? m_player->duration() : 0;
+    return m_player ? m_player->totalTime() : 0;
 }
 
 bool HTMLMediaElement::paused() const
@@ -231,11 +262,13 @@ void HTMLMediaElement::setDefaultPlaybackRate(float rate, ExceptionCode& ec)
 
 float HTMLMediaElement::playbackRate() const
 {
-    return m_player ? m_player->rate() : 0;
+    return 0; // stub...
 }
 
 void HTMLMediaElement::setPlaybackRate(float rate, ExceptionCode& ec)
 {
+    // stub
+    #if 0
     if (rate == 0.0f) {
         ec = DOMException::NOT_SUPPORTED_ERR;
         return;
@@ -244,6 +277,7 @@ void HTMLMediaElement::setPlaybackRate(float rate, ExceptionCode& ec)
         m_player->setRate(rate);
         // ### dispatchEventAsync(ratechangeEvent);
     }
+    #endif
 }
 
 bool HTMLMediaElement::ended() const
@@ -430,9 +464,12 @@ void HTMLMediaElement::checkIfSeekNeeded()
 PassRefPtr<TimeRanges> HTMLMediaElement::buffered() const
 {
     // FIXME real ranges support
+    #if 0
     if (!m_player || !m_player->maxTimeBuffered())
         return new TimeRanges;
     return new TimeRanges(0, m_player->maxTimeBuffered());
+    #endif
+    return new TimeRanges(0, 0.0f); // stub
 }
 
 PassRefPtr<TimeRanges> HTMLMediaElement::played() const
@@ -443,10 +480,13 @@ PassRefPtr<TimeRanges> HTMLMediaElement::played() const
 
 PassRefPtr<TimeRanges> HTMLMediaElement::seekable() const
 {
+    #if 0
     // FIXME real ranges support
     if (!m_player || !m_player->maxTimeSeekable())
         return new TimeRanges;
     return new TimeRanges(0, m_player->maxTimeSeekable());
+    #endif
+    return new TimeRanges(0, 0.0f); // stub
 }
 
 bool HTMLMediaElement::endedPlayback() const
@@ -454,7 +494,7 @@ bool HTMLMediaElement::endedPlayback() const
 #if 0
     return networkState() >= LOADED_METADATA && currentTime() >= effectiveEnd() && currentLoop() == playCount() - 1;
 #endif
-    return false;
+    return m_player->mediaObject()->remainingTime() == 0;
 }
 
 void HTMLMediaElement::updateVolume()

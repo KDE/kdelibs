@@ -27,6 +27,7 @@
 
 #include "HTMLDocument.h"
 #include <misc/htmlhashes.h>
+#include <rendering/render_media.h>
 
 namespace khtml {
 
@@ -44,14 +45,20 @@ int HTMLVideoElement::videoWidth() const
 {
     if (!m_player)
         return 0;
-    return m_player->naturalSize().width();
+    if (m_player->mediaObject()->hasVideo())
+        return m_player->videoWidget()->sizeHint().width();
+    else
+        return 0;
 }
 
 int HTMLVideoElement::videoHeight() const
 {
     if (!m_player)
         return 0;
-    return m_player->naturalSize().height();
+    if (m_player->mediaObject()->hasVideo())
+        return m_player->videoWidget()->sizeHint().height();
+    else
+        return 0;
 }
 
 int HTMLVideoElement::width() const

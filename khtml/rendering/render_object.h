@@ -296,6 +296,7 @@ public:
     virtual bool isFormElement() const { return false; }
     virtual bool isFrameSet() const { return false; }
     virtual bool isApplet() const { return false; }
+    virtual bool isMedia() const { return false; }
 
     virtual bool isEditable() const;
 

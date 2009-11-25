@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2009 Michael Howell <mhowell123@gmail.com>.
+ * Parts copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,37 +29,28 @@
 
 #include "HTMLElement.h"
 #include "ExceptionCode.h"
-#include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>
+#include <QPointer>
 
 namespace khtml {
 
 class MediaError;
 class TimeRanges;
-
-// dummy
-class MediaPlayer
-{
-public:
-    QRect naturalSize() const { return QRect(); }
-    float duration() const { return 0; }
-    float rate() const { return 0; }
-    void setRate(float) { }
-    void setVolume(float) { }
-    float currentTime() const { return 0; }
-    float maxTimeSeekable() {  return 0; }
-    float maxTimeBuffered() {  return 0; }
-};
+class RenderMedia;
+class MediaPlayer;
 
 class HTMLMediaElement : public HTMLElement {
 public:
     HTMLMediaElement(Document*);
     virtual ~HTMLMediaElement();
 
+    virtual void attach();
+
+//    virtual void parseAttribute(AttributeImpl *token);
     virtual void attributeChanged(NodeImpl::Id attrId);
 
     virtual bool isVideo() const { return false; }
-    
+
     void scheduleLoad();
 
 // DOM API
@@ -160,7 +152,7 @@ protected:
     
     float m_bufferingRate;
 
-    OwnPtr<MediaPlayer> m_player;
+    QPointer<MediaPlayer> m_player;
 };
 
 } //namespace

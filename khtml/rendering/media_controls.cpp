@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2009 Michael Howell <mhowell123@gmail.com>.
+ * Parts copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,36 +24,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef HTMLVideoElement_h
-#define HTMLVideoElement_h
-
-#include <phonon/mediaobject.h>
-#include <phonon/videowidget.h>
-#include "HTMLMediaElement.h"
+#include "media_controls.h"
+#include <QtGui/QHBoxLayout>
+#include <phonon/seekslider.h>
+#include <KDE/KIcon>
 
 namespace khtml {
 
-class HTMLVideoElement : public HTMLMediaElement
+MediaControls::MediaControls(Phonon::MediaObject* mediaObject, QWidget* parent) : QWidget(parent)
 {
-public:
-    HTMLVideoElement(Document*);
+    setLayout(new QHBoxLayout(this));
+    m_play = new QPushButton(KIcon("media-playback-start"), i18n("Play"), this);
+    connect(m_play, SIGNAL(clicked()), mediaObject, SLOT(play()));
+    layout()->addWidget(m_play);
+    m_pause = new QPushButton(KIcon("media-playback-pause"), i18n("Pause"), this);
+    connect(m_pause, SIGNAL(clicked()), mediaObject, SLOT(pause()));
+    layout()->addWidget(m_pause);
+    layout()->addWidget(new Phonon::SeekSlider(mediaObject, this));
 
-    virtual Id id() const;
+    slotStateChanged(mediaObject->state());
+    connect(mediaObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), SLOT(slotStateChanged(Phonon::State)));
+}
 
-    virtual bool isVideo() const { return true; }
+void MediaControls::slotStateChanged(Phonon::State state)
+{
+    if (state == Phonon::PlayingState) {
+        m_play->hide();
+	m_pause->show();
+    } else {
+        m_pause->hide();
+	m_play->show();
+    }
+}
 
-    int width() const;
-    void setWidth(int);
-    int height() const;
-    void setHeight(int);
-    
-    int videoWidth() const;
-    int videoHeight() const;
-    
-    DOMString poster() const;
-    void setPoster(const DOMString&);
-};
+}
 
-} //namespace
-
-#endif

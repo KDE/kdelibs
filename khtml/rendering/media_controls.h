@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2009 Michael Howell <mhowell123@gmail.com>.
+ * Parts copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,34 +24,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef HTMLVideoElement_h
-#define HTMLVideoElement_h
+#ifndef media_controls_h
+#define media_controls_h
 
 #include <phonon/mediaobject.h>
-#include <phonon/videowidget.h>
-#include "HTMLMediaElement.h"
+#include <QWidget>
+#include <QtGui/QPushButton>
 
 namespace khtml {
 
-class HTMLVideoElement : public HTMLMediaElement
-{
+class MediaControls : public QWidget {
+Q_OBJECT
 public:
-    HTMLVideoElement(Document*);
+    MediaControls(Phonon::MediaObject* mobject, QWidget* parent = 0);
 
-    virtual Id id() const;
+private Q_SLOTS:
+    void slotStateChanged(Phonon::State state);
 
-    virtual bool isVideo() const { return true; }
-
-    int width() const;
-    void setWidth(int);
-    int height() const;
-    void setHeight(int);
-    
-    int videoWidth() const;
-    int videoHeight() const;
-    
-    DOMString poster() const;
-    void setPoster(const DOMString&);
+private:
+    QPushButton* m_play;
+    QPushButton* m_pause;
 };
 
 } //namespace

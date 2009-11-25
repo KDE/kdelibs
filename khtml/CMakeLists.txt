@@ -342,6 +342,8 @@ set(khtmlrender_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/rendering/counter_tree.cpp
   ${CMAKE_SOURCE_DIR}/khtml/rendering/render_canvasimage.cpp
   ${CMAKE_SOURCE_DIR}/khtml/rendering/render_position.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/render_media.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/media_controls.cpp
 )
 
 # khtml/css/Makefile.am: khtmlcss
