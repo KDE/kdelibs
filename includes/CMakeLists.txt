@@ -155,6 +155,7 @@ install( FILES
   KDialogButtonBox
   KDirLister
   KDirModel
+  KDirNotify
   KDirOperator
   KDirSortFilterProxyModel
   KDirSelectDialog
