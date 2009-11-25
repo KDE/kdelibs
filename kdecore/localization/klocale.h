@@ -25,6 +25,7 @@
 #include <kdecore_export.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
+#include <kcurrencycode.h>
 
 #include <QtCore/QString>
 #include <QtCore/QList>
@@ -310,6 +311,24 @@ public:
    */
   DigitSet digitSet() const;
 
+    /**
+     * @since 4.4
+     *
+     * Returns the ISO 4217 Currency Code for the current locale
+     *
+     * @return The default ISO Currency Code used by locale.
+    */
+    QString currencyCode() const;
+
+    /**
+     * @since 4.4
+     *
+     * Returns the Currency Code object for the current locale
+     *
+     * @return The default Currency Code object used by locale.
+    */
+    KCurrencyCode *currency() const;
+
   /**
    * Returns what the symbol denoting currency in the current locale
    * as as defined by user settings should look like.
@@ -353,12 +372,31 @@ public:
   QString negativeSign() const;
 
   /**
-   * The number of fractional digits to include in numeric/monetary
-   * values (usually 2).
+   * @deprecated use decimalPlaces() or monetaryDecimalPlaces()
+   *
+   * The number of fractional digits to include in monetary values (usually 2).
    *
    * @return Default number of fractional digits used by locale.
    */
   int fracDigits() const;
+
+    /**
+    * @since 4.4
+    *
+    * The number of decimal places to include in numeric values (usually 2).
+    *
+    * @return Default number of numeric decimal places used by locale.
+    */
+    int decimalPlaces() const;
+
+    /**
+    * @since 4.4
+    *
+    * The number of decimal places to include in monetary values (usually 2).
+    *
+    * @return Default number of monetary decimal places used by locale.
+    */
+    int monetaryDecimalPlaces() const;
 
   /**
    * If and only if the currency symbol precedes a positive value,
@@ -411,32 +449,33 @@ public:
    *
    * e.g. given 123456, return "$ 123,456.00".
    *
+   * If precision isn't specified or is < 0, then the default monetaryDecimalPlaces() is used.
+   *
    * @param num The number we want to format
    * @param currency The currency symbol you want.
-   * @param digits Number of fractional digits, or -1 for the default
-   *               value
+   * @param precision Number of decimal places displayed
    *
    * @return The number of money as a localized string
-   * @see fracDigits()
+   * @see monetaryDecimalPlaces()
    */
-  QString formatMoney(double num,
-		      const QString & currency = QString(),
-		      int digits = -1) const;
+  QString formatMoney(double num, const QString &currency = QString(), int precision = -1) const;
 
   /**
    * Given a double, converts that to a numeric string containing
    * the localized numeric equivalent.
    *
    * e.g. given 123456.78F, return "123,456.78" (for some European country).
-   * If precision isn't specified, 2 is used.
+   *
+   * If precision isn't specified or is < 0, then the default decimalPlaces() is used.
    *
    * This function is a wrapper that is provided for convenience.
    *
    * @param num The number to convert
-   * @param precision Number of fractional digits used.
+   * @param precision Number of decimal places used.
    *
    * @return The number as a localized string
    * @see formatNumber(const QString, bool, int)
+   * @see decimalPlaces()
    */
   QString formatNumber(double num, int precision = -1) const;
 
@@ -446,13 +485,15 @@ public:
    *
    * e.g. given 123456.78F, return "123,456.78" (for some European country).
    *
+   * If precision isn't specified or is < 0, then the default decimalPlaces() is used.
+   *
    * @param numStr The number to format, as a string.
    * @param round Round fractional digits. (default true)
-   * @param precision Number of fractional digits used for rounding. Unused if round=false. (default 2)
+   * @param precision Number of fractional digits used for rounding. Unused if round=false.
    *
    * @return The number as a localized string
    */
-  QString formatNumber(const QString &numStr, bool round=true, int precision=2) const;
+  QString formatNumber(const QString &numStr, bool round=true, int precision=-1) const;
 
   /**
    * Given an integer, converts that to a numeric string containing
@@ -955,7 +996,7 @@ public:
                                    ///< left out when entering a time string.
     };
     Q_DECLARE_FLAGS(TimeProcessingOptions, TimeProcessingOption)
-  
+
     /**
      * @since 4.4
      *
@@ -977,7 +1018,7 @@ public:
     QTime readLocaleTime(const QString &str, bool *ok = 0,
                          TimeFormatOptions options = KLocale::TimeDefault,
                          TimeProcessingOptions processing = ProcessNonStrict) const;
-  
+
   /**
    * Returns the language code used by this object. The domain AND the
    * library translation must be available in this language.
@@ -1017,6 +1058,21 @@ public:
    * @see languageCodeToName
    */
   QStringList languageList() const;
+
+    /**
+     * @since 4.4
+     *
+     * Returns the ISO Currency Codes used in the locale, ordered by decreasing
+     * priority.
+     *
+     * Use KCurrency::currencyCodeToName(currencyCode) to get human readable,
+     * localized language name.
+     *
+     * @return list of ISO Currency Codes
+     *
+     * @see currencyCodeToName
+     */
+    QStringList currencyCodeList() const;
 
   /**
    * Returns the user's preferred encoding.
@@ -1257,12 +1313,34 @@ public:
    * postfixed
    */
   void setNegativePrefixCurrencySymbol(bool prefix);
+
   /**
+   * @deprecated use setDecimalPlaces() or setMonetaryDecimalPlaces()
+   *
    * Changes the number of digits used when formating numbers.
    *
    * @param digits The default number of digits to use.
    */
   void setFracDigits(int digits);
+
+    /**
+     * @since 4.4
+     *
+     * Changes the number of decimal places used when formating numbers.
+     *
+     * @param digits The default number of digits to use.
+     */
+    void setDecimalPlaces(int digits);
+
+    /**
+     * @since 4.4
+     *
+     * Changes the number of decimal places used when formating money.
+     *
+     * @param digits The default number of digits to use.
+     */
+    void setMonetaryDecimalPlaces(int digits);
+
   /**
    * Changes the separator used to group digits when formating monetary values.
    *
@@ -1276,12 +1354,26 @@ public:
    * @param symbol The new decimal symbol.
    */
   void setMonetaryDecimalSymbol(const QString & symbol);
+
+    /**
+     * @since 4.4
+     *
+     * Changes the current ISO Currency Code.
+     *
+     * @param newCurrencyCode The new Currency Code
+     */
+    void setCurrencyCode(const QString &newCurrencyCode);
+
   /**
    * Changes the current currency symbol.
    *
+   * This symbol should be consistant with the selected Currency Code
+   *
    * @param symbol The new currency symbol
+   * @see currencyCode, KCurrency::currencySymbols
    */
   void setCurrencySymbol(const QString & symbol);
+
   /**
    * @since 4.3
    *
@@ -1477,6 +1569,15 @@ public:
    * @return Name of the default country
    */
   static QString defaultCountry();
+
+    /**
+     * @since 4.4
+     *
+     * Returns the ISO Code of the default currency.
+     *
+     * @return ISO Currency Code of the default currency
+     */
+    static QString defaultCurrencyCode();
 
   /**
    * Reports whether evaluation of translation scripts is enabled.

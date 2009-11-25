@@ -139,6 +139,16 @@ public:
    */
   void initFormat(KConfig *config);
 
+    /**
+     * @internal Sets the Currency Code
+     */
+    void setCurrencyCode(const QString &newCurrencyCode);
+
+    /**
+     * @internal Initialises the Currency
+     */
+    void initCurrency();
+
   /**
    * @internal The worker of the same-name KLocale API function.
    */
@@ -216,7 +226,8 @@ public:
   QString positiveSign;
   QString negativeSign;
   KLocale::DigitSet digitSet;
-  int fracDigits;
+  int decimalPlaces;
+  int monetaryDecimalPlaces;
   KLocale::SignPosition positiveMonetarySignPosition;
   KLocale::SignPosition negativeMonetarySignPosition;
   bool positivePrefixCurrencySymbol : 1;
@@ -240,6 +251,11 @@ public:
   // Locale
   QString language;
   QString country;
+
+  // Currency
+  KCurrencyCode *currency;
+  QString currencyCode;
+  QStringList currencyCodeList;
 
   // Handling of translation catalogs
   QStringList languageList;
@@ -276,7 +292,7 @@ KLocalePrivate::KLocalePrivate(const QString& catalog, KConfig *config, const QS
       country(country_),
       useTranscript(false),
       codecForEncoding(0),
-      languages(0), calendar(0),
+      languages(0), calendar(0), currency(0),
       catalogName(catalog)
 {
     initEncoding();
@@ -428,6 +444,19 @@ void KLocalePrivate::initFormat(KConfig *config)
   entryFile.setLocale(language);
   KConfigGroup entry(&entryFile, "KCM Locale");
 
+  //One-time conversion in 4.4 from FracDigits to DecimalPlaces and MonetaryDecimalPlaces
+  //If user has personal setting for FracDigits then use it for both Decimal Places
+  //TODO: Possible to do with kconf_update
+  if (cg.hasKey("FracDigits")) {
+      QString fracDigits = cg.readEntry("FracDigits", "");
+      if (!fracDigits.isEmpty()) {
+          cg.writeEntry("DecimalPlaces", fracDigits);
+          cg.writeEntry("MonetaryDecimalPlaces", fracDigits);
+      }
+      cg.deleteEntry("FracDigits");
+      cg.config()->sync();
+  }
+
   // Numeric
 #define readConfigEntry(key, default, save) \
   save = entry.readEntry(key, default); \
@@ -437,10 +466,12 @@ void KLocalePrivate::initFormat(KConfig *config)
   save = (type)entry.readEntry(key, int(default)); \
   save = (type)cg.readEntry(key, int(save));
 
+  // Numeric formats
+  readConfigNumEntry("DecimalPlaces", 2, decimalPlaces, int);
+
   readConfigEntry("DecimalSymbol", ".", decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", thousandsSeparator);
   thousandsSeparator.remove( QString::fromLatin1("$0") );
-  //kDebug(173) << "thousandsSeparator=" << thousandsSeparator;
 
   readConfigEntry("PositiveSign", "", positiveSign);
   readConfigEntry("NegativeSign", "-", negativeSign);
@@ -451,14 +482,20 @@ void KLocalePrivate::initFormat(KConfig *config)
   readConfigEntry("LanguageSensitiveDigits", true,
                   languageSensitiveDigits);
 
-  // Monetary
-  readConfigEntry("CurrencySymbol", "$", currencySymbol);
+  // Currency
+  readConfigEntry("CurrencyCode", "USD", currencyCode);
+  initCurrency();
+  readConfigEntry("CurrencySymbol", currency->defaultSymbol(), currencySymbol);
+  readConfigEntry("CurrencyCodesInUse", QStringList(currencyCode), currencyCodeList);
+
+  // Monetary formats
+  readConfigNumEntry("MonetaryDecimalPlaces", currency->decimalPlaces(), monetaryDecimalPlaces, int);
+
   readConfigEntry("MonetaryDecimalSymbol", ".", monetaryDecimalSymbol);
   readConfigEntry("MonetaryThousandsSeparator", ",",
 		  monetaryThousandsSeparator);
   monetaryThousandsSeparator.remove(QString::fromLatin1("$0"));
 
-  readConfigNumEntry("FracDigits", 2, fracDigits, int);
   readConfigEntry("PositivePrefixCurrencySymbol", true,
 		      positivePrefixCurrencySymbol);
   readConfigEntry("NegativePrefixCurrencySymbol", true,
@@ -589,6 +626,31 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
   return true; // we found something. Maybe it's only English, but we found something
 }
 
+void KLocalePrivate::initCurrency()
+{
+    if ( currencyCode.isEmpty() || !KCurrencyCode::isValid( currencyCode ) ) {
+        currencyCode = KLocale::defaultCurrencyCode();
+    }
+
+    if ( !currency || currencyCode != currency->isoCurrencyCode() || !currency->isValid() ) {
+        delete currency;
+        currency = new KCurrencyCode( currencyCode, language );
+    }
+}
+
+void KLocalePrivate::setCurrencyCode( const QString &newCurrencyCode )
+{
+    if ( !newCurrencyCode.isEmpty() && newCurrencyCode != currency->isoCurrencyCode() && KCurrencyCode::isValid( newCurrencyCode ) ) {
+        currencyCode = newCurrencyCode;
+        initCurrency();
+    }
+}
+
+void KLocale::setCurrencyCode( const QString &newCurrencyCode )
+{
+    d->setCurrencyCode( newCurrencyCode );
+}
+
 bool KLocale::isApplicationTranslatedInto( const QString & lang)
 {
   return d->isApplicationTranslatedInto( lang );
@@ -673,6 +735,19 @@ QString KLocale::country() const
   return d->country;
 }
 
+KCurrencyCode *KLocale::currency() const
+{
+    if ( !d->currency ) {
+        d->initCurrency();
+    }
+    return d->currency;
+}
+
+QString KLocale::currencyCode() const
+{
+    return d->currencyCode;
+}
+
 void KLocale::insertCatalog( const QString & catalog )
 {
   QMutexLocker lock(kLocaleMutex());
@@ -749,6 +824,7 @@ void KLocale::setActiveCatalog(const QString &catalog)
 
 KLocale::~KLocale()
 {
+    delete d->currency;
     delete d->calendar;
     delete d->languages;
     delete d;
@@ -1038,6 +1114,10 @@ int KLocale::weekDayOfPray() const
   return d->weekDayOfPray;
 }
 
+int KLocale::decimalPlaces() const
+{
+    return d->decimalPlaces;
+}
 
 QString KLocale::decimalSymbol() const
 {
@@ -1076,7 +1156,12 @@ QString KLocale::negativeSign() const
 
 int KLocale::fracDigits() const
 {
-  return d->fracDigits;
+    return d->monetaryDecimalPlaces;
+}
+
+int KLocale::monetaryDecimalPlaces() const
+{
+    return d->monetaryDecimalPlaces;
 }
 
 bool KLocale::positivePrefixCurrencySymbol() const
@@ -1122,15 +1207,16 @@ static void _insertSeparator(QString &str, const QString &separator,
     str.insert(pos, separator);
 }
 
-QString KLocale::formatMoney(double num,
-			     const QString & symbol,
-			     int precision) const
+QString KLocale::formatMoney(double num, const QString & symbol, int precision) const
 {
   // some defaults
-  QString currency = symbol.isNull()
-    ? currencySymbol()
-    : symbol;
-  if (precision < 0) precision = fracDigits();
+  QString currencyString = symbol;
+  if ( symbol.isNull() ) {
+    currencyString = currencySymbol();
+  }
+  if (precision < 0) {
+      precision = monetaryDecimalPlaces();
+  }
 
   // the number itself
   bool neg = num < 0;
@@ -1163,10 +1249,10 @@ QString KLocale::formatMoney(double num,
       res.append(sign);
       break;
     case BeforeMoney:
-      currency.prepend(sign);
+      currencyString.prepend(sign);
       break;
     case AfterMoney:
-      currency.append(sign);
+      currencyString.append(sign);
       break;
     }
 
@@ -1174,10 +1260,10 @@ QString KLocale::formatMoney(double num,
       positivePrefixCurrencySymbol())
     {
       res.prepend(QLatin1Char(' '));
-      res.prepend(currency);
+      res.prepend(currencyString);
     } else {
       res.append (QLatin1Char(' '));
-      res.append (currency);
+      res.append (currencyString);
     }
 
   // Convert to target digit set.
@@ -1189,7 +1275,9 @@ QString KLocale::formatMoney(double num,
 
 QString KLocale::formatNumber(double num, int precision) const
 {
-  if (precision == -1) precision = 2;
+  if (precision < 0) {
+      precision = decimalPlaces();
+  }
   // no need to round since QString::number does this for us
   return formatNumber(QString::number(num, 'f', precision), false, 0);
 }
@@ -1295,12 +1383,13 @@ static void _round(QString &str, int precision)
   str.squeeze();
 }
 
-QString KLocale::formatNumber(const QString &numStr, bool round,
-			      int precision) const
+QString KLocale::formatNumber(const QString &numStr, bool round, int precision) const
 {
   QString tmpString = numStr;
-  if (round && precision < 0)
-    return numStr;
+
+  if (precision < 0) {
+      precision = decimalPlaces();
+  }
 
   // Skip the sign (for now)
   const bool neg = (tmpString[0] == '-');
@@ -2107,6 +2196,11 @@ QStringList KLocale::languageList() const
   return d->languageList;
 }
 
+QStringList KLocale::currencyCodeList() const
+{
+    return d->currencyCodeList;
+}
+
 QString KLocalePrivate::formatDateTime(const KLocale *locale, const QDateTime &dateTime,
                                        KLocale::DateFormat format, bool includeSeconds,
                                        int daysTo, int secsTo)
@@ -2348,6 +2442,11 @@ QString KLocale::timeFormat() const
   return d->timeFormat;
 }
 
+void KLocale::setDecimalPlaces(int digits)
+{
+    d->decimalPlaces = digits;
+}
+
 void KLocale::setDecimalSymbol(const QString & symbol)
 {
   d->decimalSymbol = symbol.trimmed();
@@ -2391,7 +2490,12 @@ void KLocale::setNegativePrefixCurrencySymbol(bool prefix)
 
 void KLocale::setFracDigits(int digits)
 {
-  d->fracDigits = digits;
+    setMonetaryDecimalPlaces( digits );
+}
+
+void KLocale::setMonetaryDecimalPlaces(int digits)
+{
+    d->monetaryDecimalPlaces = digits;
 }
 
 void KLocale::setMonetaryThousandsSeparator(const QString & separator)
@@ -2440,6 +2544,11 @@ QString KLocale::defaultLanguage()
 QString KLocale::defaultCountry()
 {
   return QString::fromLatin1("C");
+}
+
+QString KLocale::defaultCurrencyCode()
+{
+    return QString::fromLatin1("USD");
 }
 
 bool KLocale::useTranscript() const
@@ -2564,6 +2673,7 @@ KLocale::KLocale(const KLocale & rhs) : d(new KLocalePrivate(*rhs.d))
 {
   d->languages = 0; // Don't copy languages
   d->calendar = 0; // Don't copy the calendar
+  d->currency = 0; // Don't copy the currency
 }
 
 KLocale & KLocale::operator=(const KLocale & rhs)
@@ -2572,6 +2682,7 @@ KLocale & KLocale::operator=(const KLocale & rhs)
   *d = *rhs.d;
   d->languages = 0; // Don't copy languages
   d->calendar = 0; // Don't copy the calendar
+  d->currency = 0; // Don't copy the currency
 
   return *this;
 }
