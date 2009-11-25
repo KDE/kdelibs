@@ -202,10 +202,6 @@ bool Engine::init(const QString &configfile)
     
     d->initialized = true;
 
-    // initialize providers at this point
-    // then load the providersCache if caching is enabled
-    loadProvidersCache();  // FIXME  do we really do anything useful here?
-
     // load the providers
     loadProviders();
 
@@ -495,100 +491,6 @@ void Engine::slotPreviewResult(KJob *job)
     }
 }
 
-void Engine::loadProvidersCache()
-{
-    KStandardDirs standardDirs;
-
-    // use the componentname so we get the cache specific to this knsrc (kanagram, wallpaper, etc.)
-    QString cachefile = standardDirs.findResource("cache", d->applicationName + "kns2providers.cache.xml");
-    if (cachefile.isEmpty()) {
-        kDebug() << "Cache not present, skip loading.";
-        return;
-    }
-
-    kDebug() << "Loading provider cache from file '" + cachefile + "'.";
-
-    // make sure we can open and read the file
-    bool ret;
-    QFile f(cachefile);
-    ret = f.open(QIODevice::ReadOnly);
-    if (!ret) {
-        kWarning() << "The file could not be opened.";
-        return;
-    }
-
-    // make sure it's valid xml
-    QDomDocument doc;
-    ret = doc.setContent(&f);
-    if (!ret) {
-        kWarning() << "The file could not be parsed.";
-        return;
-    }
-
-    // make sure there's a root tag
-    QDomElement root = doc.documentElement();
-    if (root.tagName() != "ghnsproviders") {
-        kWarning() << "The file doesn't seem to be of interest.";
-        return;
-    }
-
-    // get the first provider
-    QDomElement provider = root.firstChildElement("provider");
-    if (provider.isNull()) {
-        kWarning() << "Missing provider entries in the cache.";
-        return;
-    }
-
-    // handle each provider
-    while (!provider.isNull()) {
-        //ProviderHandler handler(provider);
-        //if (!handler.isValid()) {
-        //    kWarning() << "Invalid provider metadata.";
-        //    continue;
-        //}
-
-        //Provider *p = handler.providerptr();
-        //d->provider_cache.append(p);
-        //d->provider_index[providerId(p)] = p;
-
-        //loadFeedCache(p);
-
-        provider = provider.nextSiblingElement("provider");
-    }
-}
-
-/* FIXME: decide what to do with this
-void Engine::loadFeedCache(Provider *provider)
-{
-    KStandardDirs standardDirs;
-
-    kDebug() << "Loading feed cache.";
-
-    QStringList cachedirs = standardDirs.findDirs("cache", d->applicationName + "kns2feeds.cache");
-    if (cachedirs.size() == 0) {
-        kDebug() << "Cache directory not present, skip loading.";
-        return;
-    }
-    QString cachedir = cachedirs.first();
-
-    QStringList entrycachedirs = standardDirs.findDirs("cache", "knewstuff2-entries.cache/");
-    if (entrycachedirs.size() == 0) {
-        kDebug() << "Cache directory not present, skip loading.";
-        return;
-    }
-    QString entrycachedir = entrycachedirs.first();
-
-    kDebug() << "Load from directory: " + cachedir;
-}
-*/
-
-
-bool Engine::providerCached(Provider *provider)
-{
-    if (d->providers.contains(provider->id()))
-        return true;
-    return false;
-}
 
 bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
 {
@@ -599,76 +501,6 @@ bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
     return false;
 }
 
-/* FIXME: decide what to do with this
-void Engine::cacheProvider(Provider *provider)
-{
-    KStandardDirs dirs;
-
-    kDebug() << "Caching provider.";
-
-    QString cachedir = dirs.saveLocation("cache");
-    QString cachefile = cachedir + d->applicationName + "kns2providers.cache.xml";
-
-    kDebug() << " + Save to file '" + cachefile + "'.";
-
-    QDomDocument doc;
-    QDomElement root = doc.createElement("ghnsproviders");
-
-    for (Provider::List::Iterator it = d->providers.begin(); it != d->providers.end(); ++it) {
-        Provider *p = (*it);
-        QDomElement pxml = p->providerXML();
-        root.appendChild(pxml);
-    }
-    //ProviderHandler ph(*provider);
-    //QDomElement pxml = ph.providerXML();
-    //root.appendChild(pxml);
-
-    //QFile f(cachefile);
-    //if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    //    kError() << "Cannot write meta information to '" << cachedir << "'." << endl;
-    //    // FIXME: ignore?
-    //    return;
-    //}
-    //QTextStream metastream(&f);
-    //metastream << root;
-    //f.close();
-}
-*/
-
-//void Engine::cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries)
-//{
-//    // feed cache file is a list of entry-id's that are part of this feed
-//    KStandardDirs d;
-
-//    Q_UNUSED(feed);
-
-//    QString cachedir = d.saveLocation("cache", d->componentname + "kns2feeds.cache");
-
-//    QString idbase64 = QString(providerId(provider).toUtf8().toBase64() + '-' + feedname);
-//    QString cachefile = idbase64 + ".xml";
-
-//    kDebug() << "Caching feed to file '" + cachefile + "'.";
-
-//    QDomDocument doc;
-//    QDomElement root = doc.createElement("ghnsfeeds");
-//    for (int i = 0; i < entries.count(); i++) {
-//        QString idbase64 = id(entries.at(i)).toUtf8().toBase64();
-//        QDomElement entryel = doc.createElement("entry-id");
-//        root.appendChild(entryel);
-//        QDomText entrytext = doc.createTextNode(idbase64);
-//        entryel.appendChild(entrytext);
-//    }
-
-//    QFile f(cachedir + cachefile);
-//    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-//        kError() << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
-//        // FIXME: ignore?
-//        return;
-//    }
-//    QTextStream metastream(&f);
-//    metastream << root;
-//    f.close();
-//}
 
 void Engine::install(KNS3::Entry entry)
 {

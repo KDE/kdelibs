@@ -172,32 +172,9 @@ private:
      */
     void loadProviders();
 
-    /// REMOVE THESE
     void loadRegistry();
-    void loadProvidersCache();
-    KNS3::Entry loadEntryCache(const QString& filepath);
-    
-    // if at all: move into staticprovider:
-    //void loadFeedCache(Provider *provider);
-    //void cacheProvider(Provider *provider);
 
-    // all entries should be cached, depending on policy on exit:
-//    void cacheEntry(const Entry& entry);
-
-    /** generate a cache file for the given feed
-      feed cache file is a list of entry-id's that are part of this feed
-      @param provider the provider the feed comes from
-      @param feedname the name of the feed, used for keying the feed cache filename
-      @param feed feed to be cached
-      @param entries entries to cache in the feed file
-    */
-    //void cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries);
-    //void registerEntry(const Entry& entry);
-  //  void unregisterEntry(const Entry& entry);
-
- //   bool entryCached(const Entry& entry);
     bool entryChanged(const Entry& oldentry, const Entry& entry);
-    bool providerCached(Provider *provider);
 
     /**
      * Private copy constructor

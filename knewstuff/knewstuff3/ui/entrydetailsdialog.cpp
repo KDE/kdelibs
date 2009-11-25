@@ -103,7 +103,9 @@ bool EntryDetailsDialog::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::Resize) {
         kDebug() << "Resize";
         ui.previewBig->setPixmap(QPixmap::fromImage(m_previewBig1.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+
     }
+    return KDialog::eventFilter(obj, event);
 }
 
 EntryDetailsDialog::~EntryDetailsDialog()
