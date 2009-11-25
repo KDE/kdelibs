@@ -65,6 +65,13 @@ namespace KNS3
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20);
         virtual void loadPayloadLink(const Entry& entry);
         
+        virtual bool userCanVote() {return true;}
+        virtual void vote(const Entry& entry, bool positiveVote);
+
+        virtual bool userCanBecomeFan() {return true;}
+        virtual void becomeFan(const Entry& entry);
+
+
     private Q_SLOTS:
         void providerLoaded(const Attica::Provider& provider);
         void listOfCategoriesLoaded(Attica::BaseJob*);
@@ -72,6 +79,7 @@ namespace KNS3
         void downloadItemLoaded(Attica::BaseJob* job);
         void accountBalanceLoaded(Attica::BaseJob* job);
         void authenticationCredentialsMissing(const Provider&);
+        void votingFinished(Attica::BaseJob*);
 
     protected:
         AtticaProvider(AtticaProviderPrivate &dd);

@@ -112,6 +112,9 @@ public:
     void reloadEntries();
     void slotRequestMoreData();
 
+    void vote(const Entry& entry, bool positiveVote);
+    void becomeFan(const Entry& entry);
+
 public Q_SLOTS:
     void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::Entry entry);
     

@@ -40,6 +40,9 @@ protected:
 
 private Q_SLOTS:
     void slotEntryPreviewLoaded(const QString &, const QImage&);
+    void voteGood();
+    void voteBad();
+    void becomeFan();
 
 private:    
     void init();

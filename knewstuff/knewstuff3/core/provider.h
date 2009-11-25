@@ -115,16 +115,12 @@ namespace KNS3
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20) = 0;
         virtual void loadPayloadLink(const Entry& entry) = 0;
 
-        virtual bool hasCommenting() const { return false; }
+        virtual bool userCanVote() {return false;}
+        virtual void vote(const Entry& entry, bool positiveVote) { Q_UNUSED(entry) Q_UNUSED(positiveVote) }
 
-        /* FIXME don't use pointer, cleanup this stuff
-        virtual void getComments(Entry *, int page = 0) { Q_UNUSED(page) }
-        virtual void addComment(Entry*, const QString & comment) { Q_UNUSED(comment) }
+        virtual bool userCanBecomeFan() {return false;}
+        virtual void becomeFan(const Entry& entry) { Q_UNUSED(entry) }
 
-        virtual bool hasRatings() const { return false; }
-        virtual void setRating(Entry*, int) {}
-        */
-        
     signals:
         void providerInitialized(KNS3::Provider*);
             

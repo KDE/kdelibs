@@ -44,6 +44,12 @@ EntryDetailsDialog::EntryDetailsDialog(Engine* engine, const Entry& entry, QWidg
     init();
 }
 
+EntryDetailsDialog::~EntryDetailsDialog()
+{
+    KConfigGroup group(KGlobal::config(), EntryDetailsConfigGroup);
+    saveDialogSize(group, KConfigBase::Persistent);
+}
+
 void EntryDetailsDialog::init()
 {
     setButtons(KDialog::None);
@@ -75,6 +81,10 @@ void EntryDetailsDialog::init()
     ui.ratingWidget->setHalfStepsEnabled(true);
     ui.ratingWidget->setEditable(false);
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
+
+    connect(ui.voteGoodButton, SIGNAL(clicked()), this, SLOT(voteGood()));
+    connect(ui.voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
+    connect(ui.becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
 
     if(m_entry.previewSmall().isEmpty() && m_entry.previewBig().isEmpty()) {
         ui.previewBig->setVisible(false);
@@ -108,12 +118,20 @@ bool EntryDetailsDialog::eventFilter(QObject *obj, QEvent *event)
     return KDialog::eventFilter(obj, event);
 }
 
-EntryDetailsDialog::~EntryDetailsDialog()
+void EntryDetailsDialog::voteGood()
 {
-    KConfigGroup group(KGlobal::config(), EntryDetailsConfigGroup);
-    saveDialogSize(group, KConfigBase::Persistent);
+    m_engine->vote(m_entry, true);
 }
 
+void EntryDetailsDialog::voteBad()
+{
+    m_engine->vote(m_entry, false);
+}
+
+void EntryDetailsDialog::becomeFan()
+{
+    m_engine->becomeFan(m_entry);
+}
 
 #include "entrydetailsdialog.moc"
 

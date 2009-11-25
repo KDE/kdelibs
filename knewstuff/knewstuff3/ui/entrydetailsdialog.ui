@@ -204,14 +204,14 @@ then, just resize it</string>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
-                 <widget class="QPushButton" name="pushButton_3">
+                 <widget class="QPushButton" name="voteGoodButton">
                   <property name="text">
                    <string>I like this</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_4">
+                 <widget class="QPushButton" name="voteBadButton">
                   <property name="text">
                    <string>I do not like this</string>
                   </property>
@@ -220,7 +220,7 @@ then, just resize it</string>
                </layout>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="becomeFanButton">
                 <property name="text">
                  <string>Become a Fan</string>
                 </property>
@@ -247,7 +247,10 @@ then, just resize it</string>
         </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="installButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Install</string>
          </property>

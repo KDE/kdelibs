@@ -543,4 +543,16 @@ void Engine::slotInstallationFailed(const KNS3::Entry& entry)
     // FIXME implement warning?
 }
 
+void Engine::vote(const Entry& entry, bool positiveVote)
+{
+    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    p->vote(entry, positiveVote);
+}
+
+void Engine::becomeFan(const Entry& entry)
+{
+    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    p->becomeFan(entry);
+}
+
 #include "engine.moc"

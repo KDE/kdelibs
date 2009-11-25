@@ -367,6 +367,33 @@ Entry::List AtticaProvider::installedEntries() const
     return entries;
 }
 
+void AtticaProvider::vote(const Entry& entry, bool positiveVote)
+{
+    Q_D(AtticaProvider);
+
+    PostJob * job = d->m_provider.voteForContent(entry.uniqueId(), positiveVote);
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(votingFinished(Attica::BaseJob*)));
+    job->start();
 }
+
+void AtticaProvider::votingFinished(Attica::BaseJob* job)
+{
+    if (job->metadata().error() == Attica::Metadata::NoError) {
+        KMessageBox::information(0, i18n("Your vote was successful."));
+    } else {
+        KMessageBox::information(0, i18n("Voting failed."));
+    }
+}
+
+void AtticaProvider::becomeFan(const Entry& entry)
+{
+    Q_D(AtticaProvider);
+    // TODO
+    KMessageBox::information(0, i18n("Could not make you a fan of %1.", entry.name()));
+    KMessageBox::information(0, i18n("You are now a fan of %1.", entry.name()));
+}
+}
+
+
 
 #include "atticaprovider.moc"
