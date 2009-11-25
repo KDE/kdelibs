@@ -48,13 +48,13 @@ set(nepomuk_LIB_SRCS
   ontology/desktopontologyloader.cpp
   ontology/global.cpp
   ontology/entitymanager.cpp
-  nie.cpp
-  nfo.cpp
-  pimo.cpp
   nepomukservice.cpp
   graphwrapper.cpp
 )
 
+soprano_add_ontology(nepomuk_LIB_SRCS "${DESKTOP_ONTOLOGIES_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomuk_LIB_SRCS "${DESKTOP_ONTOLOGIES_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomuk_LIB_SRCS "${DESKTOP_ONTOLOGIES_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig")
 
 kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 
