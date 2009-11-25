@@ -28,4 +28,4 @@ target_link_libraries(resourcetest
   ${QT_QTTEST_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${SOPRANO_LIBRARIES}
-  ${KDE4_KDECORE_LIBS})
+  kdecore)

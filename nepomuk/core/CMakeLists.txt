@@ -66,11 +66,14 @@ target_link_libraries(nepomuk
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
-  ${KDE4_KDECORE_LIBRARY}
+  kdecore
   kdeui
 )
 
-target_link_libraries(nepomuk  LINK_INTERFACE_LIBRARIES  ${KDE4_KDEUI_LIBS} ${SOPRANO_LIBRARIES})
+target_link_libraries(nepomuk
+  LINK_INTERFACE_LIBRARIES
+  kdeui
+  ${SOPRANO_LIBRARIES})
 
 
 set_target_properties(nepomuk PROPERTIES
