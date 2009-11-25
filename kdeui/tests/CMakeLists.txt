@@ -70,7 +70,7 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_PROXYMODEL_TESTS(
-  kdescendantentitiesproxymodeltest
+#  kdescendantentitiesproxymodeltest
   kselectionproxymodeltest-selectedbranches
   kselectionproxymodeltest-onlyselectedchildren
   testmodelqueuedconnections

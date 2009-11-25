@@ -104,7 +104,7 @@ set(kdeui_LIB_SRCS
  icons/kiconloader.cpp
  icons/kicontheme.cpp
  icons/kiconcache.cpp
- itemviews/kdescendantsproxymodel.cpp
+# itemviews/kdescendantsproxymodel.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -467,7 +467,7 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconcache.h
- itemviews/kdescendantsproxymodel.h
+# itemviews/kdescendantsproxymodel.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h

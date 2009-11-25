@@ -25,13 +25,17 @@
 #include <QSplitter>
 
 #include "dynamictreemodel.h"
+#if 0
 #include "kdescendantsproxymodel.h"
+#endif
 #include <QHBoxLayout>
 #include "kselectionproxymodel.h"
 #include <QLineEdit>
 
 DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget(parent)
 {
+  return;
+#if 0
   QHBoxLayout *layout = new QHBoxLayout(this);
   QSplitter *vSplitter = new QSplitter( this );
   layout->addWidget(vSplitter);
@@ -103,13 +107,14 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
   vLayout->addWidget(matchView);
 
   setLayout(layout);
-
+#endif
 
 }
 
 
 void DescendantProxyModelWidget::doMatch(const QString &matchData)
 {
+#if 0
   m_itemSelectionModel->clearSelection();
 
   if (matchData.isEmpty())
@@ -129,6 +134,7 @@ void DescendantProxyModelWidget::doMatch(const QString &matchData)
   {
     m_itemSelectionModel->select(matchingIndex, QItemSelectionModel::Select | QItemSelectionModel::Rows);
   }
+#endif
 }
 
 

@@ -30,7 +30,9 @@
 #include "modelcommander.h"
 #include "dynamictreemodel.h"
 #include "kselectionproxymodel.h"
+#if 0
 #include "kdescendantsproxymodel.h"
+#endif
 
 
 ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): QWidget(parent, f)
@@ -60,11 +62,12 @@ ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): 
   QTreeView *selProxyModelView = new QTreeView(splitter);
   selProxyModelView->setModel(selProxyModel);
 
+#if 0
   KDescendantsProxyModel *descProxyModel = new KDescendantsProxyModel(this);
   descProxyModel->setSourceModel(m_rootModel);
   QTreeView *descProxyModelView = new QTreeView(splitter);
   descProxyModelView ->setModel(descProxyModel);
-
+#endif
   // Your Proxy Here?
 
   layout->addWidget(m_nextCommandButton);
