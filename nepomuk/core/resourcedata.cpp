@@ -598,6 +598,10 @@ bool Nepomuk::ResourceData::determineUri()
                     //
                     if ( QFile::exists( KUrl(kickoffUriOrId()).toLocalFile() ) ) {
                         m_fileUrl = KUrl( kickoffUriOrId() );
+                        if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+                            m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
+                            m_initialTypeSaved = false;
+                        }
                     }
                     else {
                         // save the kickoff identifier as nao:identifier

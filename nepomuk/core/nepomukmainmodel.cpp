@@ -31,7 +31,6 @@
 #include <Soprano/Client/LocalSocketClient>
 #include <Soprano/Query/QueryLanguage>
 #include <Soprano/Util/DummyModel>
-#include <Soprano/Util/MutexModel>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/NRL>
 #include <Soprano/Vocabulary/NAO>
@@ -63,13 +62,11 @@ public:
         : dbusClient( "org.kde.nepomuk.services.nepomukstorage" ),
           dbusModel( 0 ),
           localSocketModel( 0 ),
-          mutexModel( 0 ),
           dummyModel( 0 ),
           m_socketConnectFailed( false ) {
     }
 
     ~GlobalModelContainer() {
-        delete mutexModel;
         delete dbusModel;
         delete localSocketModel;
         delete dummyModel;
@@ -79,27 +76,21 @@ public:
     Soprano::Client::LocalSocketClient localSocketClient;
     Soprano::Client::DBusModel* dbusModel;
     Soprano::Model* localSocketModel;
-    Soprano::Util::MutexModel* mutexModel;
 
     Soprano::Util::DummyModel* dummyModel;
 
     void init() {
         QMutexLocker lock( &m_initMutex );
 
+        // TODO: check if the service is also initialized
         if ( QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.NepomukStorage") ) {
             if ( !dbusModel ) {
                 dbusModel = dbusClient.createModel( "main" );
             }
 
-            if ( !mutexModel ) {
-                mutexModel = new Soprano::Util::MutexModel( Soprano::Util::MutexModel::ReadWriteMultiThreading );
-            }
-
             // we may get disconnected from the server but we don't want to try
             // to connect every time the model is requested
             if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
-                if ( mutexModel->parentModel() == localSocketModel )
-                    mutexModel->setParentModel( 0 );
                 delete localSocketModel;
                 localSocketModel = 0;
                 QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
@@ -125,14 +116,10 @@ public:
 
         // we always prefer the faster local socket client
         if ( localSocketModel ) {
-            if ( mutexModel->parentModel() != localSocketModel ) {
-                mutexModel->setParentModel( localSocketModel );
-            }
+            return localSocketModel;
         }
         else if ( dbusModel ) {
-            if ( mutexModel->parentModel() != dbusModel ) {
-                mutexModel->setParentModel( dbusModel );
-            }
+            return dbusModel;
         }
         else {
             if ( !dummyModel ) {
@@ -140,8 +127,6 @@ public:
             }
             return dummyModel;
         }
-
-        return mutexModel;
     }
 
 private:
