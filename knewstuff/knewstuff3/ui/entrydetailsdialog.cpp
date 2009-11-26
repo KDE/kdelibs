@@ -86,6 +86,17 @@ void EntryDetailsDialog::init()
     connect(ui.voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
     connect(ui.becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
 
+    connect(m_engine, SIGNAL(signalEntryChanged(const KNS3::Entry&)), this, SLOT(entryChanged(const KNS3::Entry&)));
+    updateButtons();
+    connect(ui.installButton, SIGNAL(clicked()), this, SLOT(install()));
+    connect(ui.uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
+    // updating is the same as installing
+    connect(ui.updateButton, SIGNAL(clicked()), this, SLOT(install()));
+    
+    ui.installButton->setIcon(KIcon("dialog-ok"));
+    ui.updateButton->setIcon(KIcon("system-software-update"));
+    ui.uninstallButton->setIcon(KIcon("edit-delete"));
+    
     if(m_entry.previewSmall().isEmpty() && m_entry.previewBig().isEmpty()) {
         ui.previewBig->setVisible(false);
     } else {
@@ -100,6 +111,65 @@ void EntryDetailsDialog::init()
 
         ui.previewBig->installEventFilter(this);
     }
+}
+
+
+void EntryDetailsDialog::entryChanged(const KNS3::Entry& entry)
+{
+    Q_UNUSED(entry);
+    updateButtons();
+}
+
+void EntryDetailsDialog::updateButtons()
+{
+    kDebug() << "update buttons: " << m_entry.status();    
+    ui.installButton->setVisible(false);
+    ui.uninstallButton->setVisible(false);
+    ui.updateButton->setVisible(false);
+    
+    switch (m_entry.status()) {
+        case Entry::Installed:
+            ui.uninstallButton->setVisible(true);
+            ui.uninstallButton->setEnabled(true);
+            break;
+        case Entry::Updateable:
+            ui.updateButton->setVisible(true);
+            ui.updateButton->setEnabled(true);
+            ui.uninstallButton->setVisible(true);
+            ui.uninstallButton->setEnabled(true);
+            break;
+            
+        case Entry::Invalid:
+        case Entry::Downloadable:
+            ui.installButton->setVisible(true);
+            ui.installButton->setEnabled(true);
+            break;
+            
+        case Entry::Installing:
+            ui.installButton->setVisible(true);
+            ui.installButton->setEnabled(false);
+            break;           
+        case Entry::Updating:            
+            ui.updateButton->setVisible(true);
+            ui.updateButton->setEnabled(false);
+            ui.uninstallButton->setVisible(true);
+            ui.uninstallButton->setEnabled(false);
+            break;           
+        case Entry::Deleted:
+            ui.installButton->setVisible(true);
+            ui.installButton->setEnabled(true);            
+            break;
+    }   
+}
+
+void EntryDetailsDialog::install()
+{
+    m_engine->install(m_entry);
+}
+
+void EntryDetailsDialog::uninstall()
+{
+    m_engine->uninstall(m_entry);
 }
 
 void EntryDetailsDialog::slotEntryPreviewLoaded(const QString &, const QImage& image)

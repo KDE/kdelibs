@@ -40,10 +40,15 @@ protected:
 
 private Q_SLOTS:
     void slotEntryPreviewLoaded(const QString &, const QImage&);
+    void install();
+    void uninstall();
+    
     void voteGood();
     void voteBad();
     void becomeFan();
-
+    void entryChanged(const KNS3::Entry& entry);
+    void updateButtons();
+    
 private:    
     void init();
     
