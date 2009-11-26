@@ -213,6 +213,36 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="QCheckBox" name="priceCheckBox">
+        <property name="text">
+         <string>Set a price for this item</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QDoubleSpinBox" name="priceSpinBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Price:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -222,7 +252,7 @@
       <number>0</number>
      </property>
      <property name="value">
-      <number>103748</number>
+      <number>107558</number>
      </property>
     </widget>
    </item>
