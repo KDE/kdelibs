@@ -19,10 +19,14 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QThread>
+#include <QtCore/QThreadPool>
+#include <QtCore/qtconcurrentrun.h>
 
 #include <QtTest/QtTest>
 
 #include <solid/device.h>
+#include <solid/predicate.h>
+#include <solid/storagevolume.h>
 
 
 class SolidMtTest : public QObject
@@ -30,6 +34,7 @@ class SolidMtTest : public QObject
     Q_OBJECT
 private slots:
     void testWorkerThread();
+    void testThreadedPredicate();
 };
 
 class WorkerThread : public QThread
@@ -42,6 +47,19 @@ protected:
     }
 };
 
+static void doPredicates()
+{
+    Solid::Predicate p5 = Solid::Predicate::fromString("[[Processor.maxSpeed == 3201 AND Processor.canChangeFrequency == false] OR StorageVolume.mountPoint == '/media/blup']");
+
+    Solid::Predicate p6 = Solid::Predicate::fromString("StorageVolume.usage == 'Other'");
+    Solid::Predicate p7 = Solid::Predicate::fromString(QString("StorageVolume.usage == %1").arg((int)Solid::StorageVolume::Other));
+
+    Solid::Predicate p8 = Solid::Predicate::fromString("AudioInterface.deviceType == 'AudioInput|AudioOutput'");
+    Solid::Predicate p9 = Solid::Predicate::fromString("AudioInterface.deviceType == 'AudioInput'");
+    Solid::Predicate p10 = Solid::Predicate::fromString("AudioInterface.deviceType  & 'AudioInput'");
+    Solid::Predicate p11 = Solid::Predicate::fromString("AudioInterface.deviceType  & 'foobar'");
+}
+
 QTEST_MAIN(SolidMtTest)
 
 void SolidMtTest::testWorkerThread()
@@ -51,6 +69,23 @@ void SolidMtTest::testWorkerThread()
     wt->start();
     wt->wait();
     delete wt;
+}
+
+void SolidMtTest::testThreadedPredicate()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    futures << QtConcurrent::run(&doPredicates);
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
+    QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
 
 #include "solidmttest.moc"
