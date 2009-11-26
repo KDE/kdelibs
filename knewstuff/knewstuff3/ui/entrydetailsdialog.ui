@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>621</width>
-    <height>518</height>
+    <width>422</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,31 +64,17 @@
           <string>Description</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="0" colspan="2">
+          <item row="2" column="0" colspan="2">
            <widget class="QLabel" name="descriptionLabel">
             <property name="text">
-             <string>Model name unkown.
-rendered and backround touched by me.
-
-2560x1600 its not your screen resolution?
-then, just resize it</string>
+             <string/>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QLabel" name="homepageLabel">
-            <property name="text">
-             <string>&lt;a href=&quot;http://opendesktop.org&quot;&gt;Visit Homepage&lt;/a&gt;</string>
-            </property>
-            <property name="openExternalLinks">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -101,7 +87,17 @@ then, just resize it</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="3" column="0" colspan="2">
+           <widget class="QLabel" name="homepageLabel">
+            <property name="text">
+             <string>&lt;a href=&quot;http://opendesktop.org&quot;&gt;Visit Homepage&lt;/a&gt;</string>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
            <widget class="QLabel" name="authorLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
