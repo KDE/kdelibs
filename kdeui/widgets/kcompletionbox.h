@@ -179,6 +179,7 @@ public Q_SLOTS:
 
     /**
      * Re-implemented for internal reasons.  API is unaffected.
+     * Call it only if you really need it (i.e. the widget was hidden before) to have better performance.
      */
     virtual void setVisible( bool visible );
 
