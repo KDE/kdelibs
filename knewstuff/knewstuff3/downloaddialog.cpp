@@ -168,6 +168,15 @@ void DownloadDialog::init(const QString& configFile)
     connect(d->ui.m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(d->ui.m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
+    d->ui.m_sortCombo->setVisible(false);
+    d->ui.m_providerLabel->setVisible(false);
+    d->ui.m_providerCombo->setVisible(false);
+    d->ui.m_providerCombo->addItem(i18n("All Providers"));
+
+    d->ui.m_categoryLabel->setVisible(false);
+    d->ui.m_categoryCombo->setVisible(false);
+    d->ui.m_categoryCombo->addItem(i18n("All Categories"));
+
     /*
     KMenu * collabMenu = new KMenu(m_collaborationButton);
     QAction * action_collabrating = collabMenu->addAction(i18n("Add Rating"));
