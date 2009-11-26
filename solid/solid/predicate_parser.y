@@ -1,12 +1,19 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
+#include "predicate_parser.h"
 #include "predicateparse.h"
 
+#define YYLTYPE_IS_TRIVIAL 0
+#define YYENABLE_NLS 0
+#define YYLEX_PARAM scanner
+#define YYPARSE_PARAM scanner
+typedef void* yyscan_t;
 void Soliderror(const char *s);
-int Solidlex();
-int Solidlex_destroy();
-void PredicateParse_initLexer( const char *s );
+int Solidlex( YYSTYPE *yylval, yyscan_t scanner );
+int Solidlex_init( yyscan_t *scanner );
+int Solidlex_destroy( yyscan_t *scanner );
+void PredicateParse_initLexer( const char *s, yyscan_t scanner );
 void PredicateParse_mainParse( const char *_code );
 
 %}
@@ -46,6 +53,8 @@ void PredicateParse_mainParse( const char *_code );
 %destructor { PredicateParse_destroy( $$ ); } predicate_or
 %destructor { PredicateParse_destroy( $$ ); } predicate_and
 
+%pure-parser
+
 %%
 
 predicate: predicate_atom { PredicateParse_setResult( $<ptr>1 ); $$ = $<ptr>1; }
@@ -81,8 +90,10 @@ void Soliderror ( const char *s )  /* Called by Solidparse on error */
 
 void PredicateParse_mainParse( const char *_code )
 {
-    PredicateParse_initLexer( _code );
-    Solidparse();
-    Solidlex_destroy();
+    yyscan_t scanner;
+    Solidlex_init( &scanner );
+    PredicateParse_initLexer( _code, scanner );
+    Solidparse( scanner );
+    Solidlex_destroy( scanner );
 }
 

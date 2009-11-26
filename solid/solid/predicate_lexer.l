@@ -5,12 +5,20 @@
 #include <stdlib.h>
 #define YY_NO_UNPUT
 
-int Solidwrap();
-void PredicateParse_initLexer( const char *_code );
+int Solidwrap( yyscan_t _scanner );
+void PredicateParse_initLexer( const char *_code, yyscan_t _scanner );
 char *PredicateParse_putSymbol( char *_name );
 char *PredicateParse_putString( char *_str );
+void PredicateParse_initFlex( const char *_code, yyscan_t _scanner );
 
 %}
+
+%option nomain
+%option never-interactive
+%option noalways-interactive
+%option nostack
+%option reentrant
+%option bison-bridge
 
 DIGIT [0-9]
 
@@ -23,23 +31,23 @@ DIGIT [0-9]
 [oO][rR] { return OR; }
 [iI][sS] { return IS; }
 
-[tT][rR][uU][eE] { Solidlval.valb = 1; return VAL_BOOL; }
-[fF][aA][lL][sS][eE] { Solidlval.valb = 0; return VAL_BOOL; }
+[tT][rR][uU][eE] { yylval->valb = 1; return VAL_BOOL; }
+[fF][aA][lL][sS][eE] { yylval->valb = 0; return VAL_BOOL; }
 
-"'"[^']*"'" { Solidlval.name = PredicateParse_putString( Solidtext ); return VAL_STRING; }
+"'"[^']*"'" { yylval->name = PredicateParse_putString( yytext ); return VAL_STRING; }
 
-"-"{DIGIT}+ { Solidlval.vali = atoi( Solidtext ); return VAL_NUM; }
-{DIGIT}+ { Solidlval.vali = atoi( Solidtext ); return VAL_NUM; }
+"-"{DIGIT}+ { yylval->vali = atoi( yytext ); return VAL_NUM; }
+{DIGIT}+ { yylval->vali = atoi( yytext ); return VAL_NUM; }
 
-{DIGIT}*"\."{DIGIT}+ { Solidlval.vald = atof( Solidtext ); return VAL_FLOAT; }
+{DIGIT}*"\."{DIGIT}+ { yylval->vald = atof( yytext ); return VAL_FLOAT; }
 
-[a-zA-Z][a-zA-Z0-9\-]* { Solidlval.name = PredicateParse_putSymbol( Solidtext ); return VAL_ID; }
+[a-zA-Z][a-zA-Z0-9\-]* { yylval->name = PredicateParse_putSymbol( yytext ); return VAL_ID; }
 
-"{"|"}"|"["|"]"|","|"\." { Solidlval.name = 0; return (int)(*Solidtext); }
+"{"|"}"|"["|"]"|","|"\." { yylval->name = 0; return (int)(*yytext); }
 
 [ \t\n]+ /* eat up whitespace */
 
-. { PredicateLexer_unknownToken(Solidtext); }
+. { PredicateLexer_unknownToken(yytext); }
 
 %%
 
@@ -88,14 +96,15 @@ char *PredicateParse_putString( char *_str )
     return p;
 }
 
-void PredicateParse_initLexer( const char *_code )
+void PredicateParse_initLexer( const char *_code, yyscan_t _scanner )
 {
-    Solid_switch_to_buffer( Solid_scan_string( _code ) );
+    Solid_switch_to_buffer( Solid_scan_string( _code, _scanner ), _scanner );
 }
 
-int Solidwrap()
+int Solidwrap( yyscan_t _scanner )
 {
-    Solid_delete_buffer( YY_CURRENT_BUFFER );
+    struct yyguts_t *yyg = (struct yyguts_t*)_scanner;
+    Solid_delete_buffer( YY_CURRENT_BUFFER, _scanner );
     return 1;
 }
 
