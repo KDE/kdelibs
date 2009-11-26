@@ -15,15 +15,19 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef PROVIDER_P_H
+#define PROVIDER_P_H
+
 namespace KNS3
 {
     class ProviderPrivate :public QSharedData
     {
         public:
             ProviderPrivate() {}
-            
+
             QString mName;
             KUrl mIcon;
     };
 }
 
+#endif
