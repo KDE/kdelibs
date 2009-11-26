@@ -700,7 +700,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	return;
     }
     if (src.format() == QImage::Format_ARGB32_Premultiplied)
-        src.convertToFormat(QImage::Format_ARGB32);
+        src = src.convertToFormat(QImage::Format_ARGB32);
 
     if (overlay.format() == QImage::Format_RGB32)
     {
@@ -708,7 +708,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	return;
     }
     else if (overlay.format() == QImage::Format_ARGB32_Premultiplied)
-        overlay.convertToFormat(QImage::Format_ARGB32);
+        overlay = overlay.convertToFormat(QImage::Format_ARGB32);
 
     int i, j;
 
