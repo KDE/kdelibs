@@ -148,8 +148,16 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
         QString text = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
             "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
-            "</style></head><body><p><b>" +
-            index.data(ItemsModel::kNameRole).toString() + "</b></p>\n";
+            "</style></head><body><p><b>";
+
+        KUrl link = qvariant_cast<KUrl>(index.data(ItemsModel::kHomepage));
+        if (!link.isEmpty()) {
+            text += "<p><a href=\"" + link.url() + "\">" + index.data(ItemsModel::kNameRole).toString() + "</a></p>\n";
+        } else {
+            text += index.data(ItemsModel::kNameRole).toString();
+        }
+
+        text += "</b></p>\n";
 
         QString authorName = index.data(ItemsModel::kAuthorName).toString();
         QString email = index.data(ItemsModel::kAuthorEmail).toString();
@@ -165,10 +173,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
         text += summary;
 
-        KUrl link = qvariant_cast<KUrl>(index.data(ItemsModel::kHomepage));
-        if (!link.isEmpty()) {
-            text += "<p><a href=\"" + link.url() + "\">" + i18nc("Link giving a detailed description for a Hot New Stuff item", "Visit Homepage") + "</a></p>\n";
-        }
+
 
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
         if (downloads > 0) {
