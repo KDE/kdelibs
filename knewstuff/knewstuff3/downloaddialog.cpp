@@ -150,25 +150,14 @@ void DownloadDialog::init(const QString& configFile)
 
     d->ui.m_listView->setModel(d->sortingProxyModel);
 
-    // create left picture widget (if picture found)
-    //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
-    //if ( !p.isNull() )
-    //   horLay->addWidget( new ExtendImageWidget( p, this ) );
-    // FIXME KDE4PORT: if we use a left bar image, find a better way
+    connect(d->ui.newestRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
+    connect(d->ui.ratingRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
+    connect(d->ui.mostDownloadsRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
+    connect(d->ui.installedRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
 
-    // FIXME set sorting options in m_sortCombo, make the sortFilterProxyModel use the sorting
-    // maybe also clear the list of entries and ask providers to refetch them (either from cache or dynamically)
-    d->ui.m_sortCombo->insertItem(Provider::Rating, i18nc("Sorting order of the list of items in get hot new stuff", "Rating"));
-    d->ui.m_sortCombo->insertItem(Provider::Newest, i18nc("Sorting order of the list of items in get hot new stuff", "Newest"));
-    d->ui.m_sortCombo->insertItem(Provider::Downloads, i18nc("Sorting order of the list of items in get hot new stuff", "Most Downloads"));
-    d->ui.m_sortCombo->insertItem(Provider::Alphabetical, i18nc("Sorting order of the list of items in get hot new stuff", "Alphabetical"));
-    d->ui.m_sortCombo->insertItem(Provider::Installed, i18nc("Sorting order of the list of items in get hot new stuff", "Installed only"));
-    
-    connect(d->ui.m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
     connect(d->ui.m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(d->ui.m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
-    d->ui.m_sortCombo->setVisible(false);
     d->ui.m_providerLabel->setVisible(false);
     d->ui.m_providerCombo->setVisible(false);
     d->ui.m_providerCombo->addItem(i18n("All Providers"));
@@ -176,33 +165,6 @@ void DownloadDialog::init(const QString& configFile)
     d->ui.m_categoryLabel->setVisible(false);
     d->ui.m_categoryCombo->setVisible(false);
     d->ui.m_categoryCombo->addItem(i18n("All Categories"));
-
-    /*
-    KMenu * collabMenu = new KMenu(m_collaborationButton);
-    QAction * action_collabrating = collabMenu->addAction(i18n("Add Rating"));
-    action_collabrating->setData(DownloadDialog::kCollabRate);
-
-    QAction * action_collabcomment = collabMenu->addAction(i18n("Add Comment"));
-    action_collabcomment->setData(DownloadDialog::kCollabComment);
-
-    QAction * action_comment = collabMenu->addAction(SmallIcon("help-about"), i18n("View Comments"));
-    action_comment->setData(DownloadDialog::kComments);
-    */
-
-/* TODO: Re-enable when implemented
-    QAction * action_collabtranslation = collabMenu->addAction(i18n("Translate"));
-    action_collabtranslation->setData(DownloadDialog::kCollabTranslate);
-
-    QAction * action_collabsubscribe = collabMenu->addAction(i18n("Subscribe"));
-    action_collabsubscribe->setData(DownloadDialog::kCollabSubscribe);
-
-    QAction * action_collabremoval = collabMenu->addAction(i18n("Report bad entry"));
-    action_collabremoval->setData(DownloadDialog::kCollabRemoval);
-*/
-/*
-    m_collaborationButton->setMenu(collabMenu);
-    connect(m_collaborationButton, SIGNAL(triggered(QAction*)), this, SLOT(slotCollabAction(QAction*)));
-*/
 
     // load the last size from config
     KConfigGroup group(KGlobal::config(), ConfigGroup);
@@ -238,15 +200,24 @@ void DownloadDialog::slotNetworkTimeout() // SLOT
     d->displayMessage(i18n("Timeout. Check Internet connection."), KTitleWidget::ErrorMessage);
 }
 
-void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
+void DownloadDialog::sortingChanged()
 {
+    Provider::SortMode sortMode = Provider::Newest;
+    if (d->ui.ratingRadio->isChecked()) {
+        sortMode = Provider::Rating;
+    } else if (d->ui.mostDownloadsRadio->isChecked()) {
+         sortMode = Provider::Downloads;
+    } else if (d->ui.installedRadio->isChecked()) {
+        sortMode = Provider::Installed;
+    }
+
     d->model->clearEntries();
-    if (sortType == Provider::Installed) {
+    if (sortMode == Provider::Installed) {
         d->ui.m_searchEdit->clear();
     }
-    d->ui.m_searchEdit->setEnabled(sortType != Provider::Installed);
-    
-    d->engine->setSortMode((Provider::SortMode)sortType);
+    d->ui.m_searchEdit->setEnabled(sortMode != Provider::Installed);
+
+    d->engine->setSortMode(sortMode);
     d->engine->reloadEntries();
 }
 

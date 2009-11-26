@@ -81,10 +81,6 @@ public Q_SLOTS:
 private Q_SLOTS:
     void contentAdded(Attica::BaseJob*);
 
-    //void submit();
-    //void uploadFile();
-    //void uploadPreview1();
-
     void fileUploadFinished(Attica::BaseJob*);
 
     void doUpload(const QString& index, const QString& filePath);

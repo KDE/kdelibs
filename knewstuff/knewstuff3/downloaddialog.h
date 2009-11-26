@@ -114,7 +114,7 @@ private Q_SLOTS:
 
     void slotResetMessage();
     void slotNetworkTimeout();
-    void slotSortingSelected(int sortType);
+    void sortingChanged();
     void slotSearchTextChanged();
     void slotUpdateSearch();
 

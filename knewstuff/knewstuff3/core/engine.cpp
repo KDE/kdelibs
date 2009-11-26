@@ -112,7 +112,7 @@ class KNS3::Engine::Private {
         
         Private()
             : initialized(false)
-            , sortMode(Provider::Rating)
+            , sortMode(Provider::Newest)
             , installation(new Installation)
             , cache(new Cache)
             , searchTimer(new QTimer)
