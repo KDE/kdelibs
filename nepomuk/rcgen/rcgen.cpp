@@ -20,7 +20,6 @@
 #include "kaboutdata.h"
 #include "kcmdlineargs.h"
 #include "kcomponentdata.h"
-#include "kdebug.h"
 
 #include "resourceclass.h"
 #include "ontologyparser.h"
@@ -36,10 +35,8 @@ namespace {
  */
 QStringList extractOntologyFileList( const QStringList& args )
 {
-    kDebug() << args;
     QStringList results;
     foreach( const QString& a, args ) {
-        kDebug() << a;
         results << a.split( QRegExp("[\\s\\;]") );
     }
     return results;
