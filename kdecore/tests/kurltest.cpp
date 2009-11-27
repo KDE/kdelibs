@@ -1452,26 +1452,32 @@ void KUrlTest::testMoreBrokenStuff()
   weird = "http://strange<username>@strange<hostname>/";
   QVERIFY( !weird.isValid() );
 
-  weird = "http://strange<username>@ok_hostname/";
+  weird = "http://strange<username>@hostname/";
   QVERIFY( weird.isValid() ); // KDE3: was valid. Fixed by _setEncodedUrl.
-  QCOMPARE( weird.host(), QString("ok_hostname") );
+  QCOMPARE( weird.host(), QString("hostname") );
 
   weird = "http://strange;hostname/";
+#if QT_VERSION < 0x040600
   QVERIFY( weird.isValid() ); // KDE3: was invalid. bah*2.
+#endif
 
   weird = "http://strange;username@strange;hostname/";
+#if QT_VERSION < 0x040600
   QVERIFY( weird.isValid() ); // KDE3: was invalid. bah*3.
+#endif
 
-  weird = "http://strange;username@ok_hostname/";
+  weird = "http://strange;username@hostname/";
   QVERIFY( weird.isValid() );
-  QCOMPARE( weird.host(), QString("ok_hostname") );
+  QCOMPARE( weird.host(), QString("hostname") );
 
   weird = "http://strange;username:password@strange;hostname/";
+#if QT_VERSION < 0x040600
   QVERIFY( weird.isValid() ); // KDE3: was invalid
+#endif
 
-  weird = "http://strange;username:password@ok_hostname/";
+  weird = "http://strange;username:password@hostname/";
   QVERIFY( weird.isValid() );
-  QCOMPARE( weird.host(), QString("ok_hostname") );
+  QCOMPARE( weird.host(), QString("hostname") );
 
   weird = "http://[strange;hostname]/";
   QVERIFY( !weird.isValid() );
@@ -1626,10 +1632,16 @@ void KUrlTest::testOtherProtocols()
   QCOMPARE( leo.path(), QString("text/html,http://www.invalid/" ) );
 
   KUrl ptal( "ptal://mlc:usb@PC_970" ); // User=mlc, password=usb, host=PC_970
+#if QT_VERSION >= 0x040600
+  QCOMPARE(ptal.url(), QString("ptal://mlc:usb@")); // The host "PC_970" is invalid according to STD3 validation
+  KUrl ptalSimpler("ptal://mlc:usb@pc123");
+  QCOMPARE(ptalSimpler.url(), QString("ptal://mlc:usb@pc123"));
+#else
   QVERIFY( ptal.isValid() );
   QCOMPARE( ptal.host(), QString("pc_970") );
   QCOMPARE( ptal.user(), QString("mlc") );
   QCOMPARE( ptal.pass(), QString("usb") );
+#endif
 }
 
 void KUrlTest::testUtf8()
@@ -1868,12 +1880,6 @@ void KUrlTest::testIdn()
   KUrl uwp( "http://%C3%A4.de" );
   QVERIFY( uwp.isValid() );
   QCOMPARE( thiago.url(), QString("http://xn--4ca.de") ); // as above
-
-  // #183720
-  const QByteArray init = ".kde.org";
-  const QString fromAce = QUrl::fromAce(init);
-  QCOMPARE( fromAce, QString(".kde.org"));
-  QCOMPARE( QUrl::toAce(fromAce), init );
 }
 
 void KUrlTest::testUriMode()
