@@ -32,7 +32,9 @@ class Engine;
 /**
  * KHotNewStuff push button that makes using KHNS in an application
  * more convenient by encapsulating most of the details involved in
- * using KHotNewStuff in the button itself.
+ * using KHotNewStuff in the button itself.*
+ *
+ * Deprecated, use knewstuff3!
  */
 class KNEWSTUFF_EXPORT Button : public KPushButton
 {
@@ -53,7 +55,7 @@ public:
      * @param parent the parent widget
      * @param name the name to be used for this widget
      */
-    Button(const QString& what,
+    KDE_DEPRECATED Button(const QString& what,
            const QString& providerList,
            const QString& resourceType,
            QWidget* parent);
@@ -64,24 +66,24 @@ public:
      *
      * @param parent the parent widget
      */
-    Button(QWidget* parent);
+    KDE_DEPRECATED Button(QWidget* parent);
 
     /**
      * set the URL to the list of providers for this button to use
      */
-    void setProviderList(const QString& providerList);
+    void KDE_DEPRECATED setProviderList(const QString& providerList);
 
     /**
      * the Hotstuff data type for this downlaod such as
      * "korganizer/calendar"
      */
-    void setResourceType(const QString& resourceType);
+    void KDE_DEPRECATED setResourceType(const QString& resourceType);
 
     /**
      * set the text that should appear on the button. will be prefaced
      * with i18n("Download New")
      */
-    void setButtonText(const QString& what);
+    void KDE_DEPRECATED setButtonText(const QString& what);
 
 Q_SIGNALS:
     /**

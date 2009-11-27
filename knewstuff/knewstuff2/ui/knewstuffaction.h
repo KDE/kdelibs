@@ -38,8 +38,10 @@ namespace KNS
  * @param slot the slot to connect the triggered(bool) signal to.
  * @param parent the action's parent collection.
  * @param name The name by which the action will be retrieved again from the collection.
+ *
+ * Deprecated, use knewstuff3!
  */
-KNEWSTUFF_EXPORT KAction *standardAction(const QString &what,
+KNEWSTUFF_EXPORT KAction * KDE_DEPRECATED standardAction(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,
