@@ -33,7 +33,7 @@ set(nepomukquery_SRC
 )
 
 include(SopranoAddOntology)
-soprano_add_ontology(nepomukquery_SRC "${DESKTOP_ONTOLOGIES_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
 
 set_source_files_properties(
   org.kde.nepomuk.QueryService.xml

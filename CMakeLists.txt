@@ -96,7 +96,7 @@ macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
 
 macro_optional_find_package(SharedDesktopOntologies)
-macro_log_feature(DESKTOP_ONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "" "Ontologies necessary for the Nepomuk semantic desktop.")
+macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "" "Ontologies necessary for the Nepomuk semantic desktop.")
 
 macro_optional_find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma remote widgets functionality.")
@@ -227,10 +227,10 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 # Actually nepomuk is not optional, without it other KDE modules don't build,
 # so this must be fixed. Alex
-if(DESKTOP_ONTOLOGIES_FOUND)
+if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
   set(HAVE_NEPOMUK true)
   add_subdirectory(nepomuk)
-endif(DESKTOP_ONTOLOGIES_FOUND)
+endif(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
 
 ################# list the subdirectories #################
 

@@ -52,9 +52,9 @@ set(nepomuk_LIB_SRCS
   graphwrapper.cpp
 )
 
-soprano_add_ontology(nepomuk_LIB_SRCS "${DESKTOP_ONTOLOGIES_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomuk_LIB_SRCS "${DESKTOP_ONTOLOGIES_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomuk_LIB_SRCS "${DESKTOP_ONTOLOGIES_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig")
 
 kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 
