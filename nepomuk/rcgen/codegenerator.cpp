@@ -371,7 +371,7 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     if( resourceClass->allParentResources().count() > 1 ) {
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
-            if( rc != resourceClass->parentClass() ) {
+            if( rc->generateClass() && rc != resourceClass->parentClass() ) {
                 ms << m_code->resourcePseudoInheritanceDefinition( resourceClass, rc ) << endl;
                 includes.append( QString("#include \"%1.h\"").arg( rc->name().toLower() ) );
             }
