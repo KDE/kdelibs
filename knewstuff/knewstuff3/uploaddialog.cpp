@@ -87,6 +87,7 @@ UploadDialog::UploadDialog(const QString& configFile, QWidget *parent)
 
 UploadDialog::~UploadDialog()
 {
+    delete d;
 }
 
 void UploadDialog::setUploadFile(const KUrl& payloadFile)
