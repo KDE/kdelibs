@@ -115,14 +115,14 @@ if (KAUTH_BACKEND STREQUAL "POLKITQT")
     )
 
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
-elseif (KAUTH_BACKEND STREQUAL "POLKITQT1")
-    message(STATUS "Building PolkitQt1 KAuth backend")
+elseif (KAUTH_BACKEND STREQUAL "POLKITQT-1")
+    message(STATUS "Building PolkitQt-1 KAuth backend")
 
     set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
        auth/backends/polkit-1/Polkit1Backend.cpp
     )
 
-    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT1_CORE_LIBRARY})
+    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT-1_CORE_LIBRARY})
 elseif (KAUTH_BACKEND STREQUAL "OSX")
     message(STATUS "Building Apple KAuth backend")
 
@@ -384,7 +384,7 @@ if(KAUTH_BACKEND STREQUAL "OSX")
 elseif(KAUTH_BACKEND STREQUAL "POLKITQT")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/policykit/kauth-policy-gen-polkit.cpp )
-elseif(KAUTH_BACKEND STREQUAL "POLKITQT1")
+elseif(KAUTH_BACKEND STREQUAL "POLKITQT-1")
   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
       auth/backends/polkit-1/kauth-policy-gen-polkit1.cpp )
 else()
