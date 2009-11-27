@@ -42,7 +42,7 @@ public:
 
   QStringList commandNames() const;
 
-protected:
+  void clear();
 
   void setCommand(const QString &name, ModelChangeCommandList list);
 

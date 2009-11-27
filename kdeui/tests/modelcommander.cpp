@@ -32,6 +32,12 @@ void ModelCommander::setCommands(QList<QPair<QString, ModelChangeCommandList> > 
   m_commands = commands;
 }
 
+void ModelCommander::clear()
+{
+  m_commands.clear();
+  m_counter = 0;
+}
+
 void ModelCommander::executeUntil(const QString& stopBefore)
 {
   while(hasNextCommand())
@@ -47,6 +53,8 @@ void ModelCommander::executeUntil(const QString& stopBefore)
 
 void ModelCommander::executeNextCommand()
 {
+  if (!hasNextCommand())
+    return;
   QPair<QString, ModelChangeCommandList> nextChangeCommand = nextCommand();
 
   ++m_counter;
