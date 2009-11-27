@@ -25,7 +25,6 @@
 #include <kdecore_export.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
-#include <kcurrencycode.h>
 
 #include <QtCore/QString>
 #include <QtCore/QList>
@@ -38,6 +37,7 @@ class QDateTime;
 
 class KDateTime;
 class KCalendarSystem;
+class KCurrencyCode;
 
 class KLocalePrivate;
 

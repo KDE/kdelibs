@@ -55,6 +55,7 @@
 #include "kdebug.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
+#include "kcurrencycode.h"
 #include "klocalizedstring.h"
 #include "ktranslit_p.h"
 #include "kconfiggroup.h"
