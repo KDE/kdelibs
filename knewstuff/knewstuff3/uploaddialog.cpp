@@ -252,7 +252,7 @@ void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
-    QMessageBox::information(0, "Content Added", id);
+    QMessageBox::information(0, i18n("Content Added"), id);
 
     d->contentId = id;
 
@@ -269,7 +269,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::information(this, "Upload", QString("File not found: %1").arg(d->uploadFile.url()));
+        KMessageBox::information(this, i18n("Upload"), i18n("File not found: %1",d->uploadFile.url()));
         return;
     }
 
@@ -293,7 +293,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 
 void UploadDialog::fileUploadFinished(Attica::BaseJob* )
 {
-    KMessageBox::information(0, "Content Added", "File Uploaded");
+    KMessageBox::information(0, i18n("Content Added"), i18n("File Uploaded"));
     d->ui.mProgress->setVisible(false);
 
 }
