@@ -30,14 +30,13 @@ bool quiet = true;
 
 namespace {
 /**
- * To be backwards-compatible with older versions which used a space-separated list
- * and cmake which uses a ;-separated list we do this ugly splitting here.
+ * To be backwards-compatible with older versions which used a space-separated list.
  */
 QStringList extractOntologyFileList( const QStringList& args )
 {
     QStringList results;
     foreach( const QString& a, args ) {
-        results << a.split( QRegExp("[\\s\\;]") );
+        results << a.split( QRegExp("[\\s]") );
     }
     return results;
 }
@@ -96,7 +95,7 @@ int main( int argc, char** argv )
     quiet = !args->isSet("verbose");
     QStringList ontoFiles = extractOntologyFileList( args->getOptionList("ontologies") ); // backwards comp
     for(int i = 0; i < args->count(); ++i )
-        ontoFiles << extractOntologyFileList( QStringList() << args->arg(i) );
+        ontoFiles << args->arg(i);
     QString targetDir = args->getOption("target");
     QString prefix = args->getOption("prefix");
     QStringList templates = args->getOptionList("templates");
@@ -106,6 +105,12 @@ int main( int argc, char** argv )
     // =====================================================
     // a few checks for valid parameters (not complete!)
     // =====================================================
+    if( ontoFiles.isEmpty() ) {
+        QTextStream s( stderr );
+        s << "No ontology files specified." << endl;
+        return -1;
+    }
+
     foreach( const QString& ontoFile, ontoFiles ) {
         if( !QFile::exists( ontoFile ) ) {
             QTextStream s( stderr );
