@@ -1130,7 +1130,7 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
 
 void JobTest::getInvalidUrl()
 {
-    KUrl url("file://\"\"");
+    KUrl url("http://[strange;hostname]/");
     QVERIFY(!url.isValid());
 
     KIO::SimpleJob* job = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
