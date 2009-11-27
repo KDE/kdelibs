@@ -50,6 +50,8 @@ class IndexFinder
       return (m_rows == other.m_rows && m_model == other.m_model );
     }
 
+    QList<int> rows() { return m_rows; }
+
   private:
     QList<int> m_rows;
     QAbstractItemModel *m_model;
