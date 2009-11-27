@@ -276,14 +276,23 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 
 	if (type == PROP_COLORMAP) {
 		xcf_io >> size;
+                quint32 ncolors;
+                xcf_io >> ncolors;
 
                 if(size > 65535 || size < 4)
                     return false;
 
-		size = 3 * (size - 4) + 4;
+		size = 3 * ncolors + 4;
 		data = new char[size];
 
-		xcf_io.readRawData(data, size);
+                // since we already read "ncolors" from the stream, we put that data back
+                data[0] = 0;
+                data[1] = 0;
+                data[2] = ncolors >> 8;
+                data[3] = ncolors & 255;
+
+                // ... and read the remaining bytes from the stream
+		xcf_io.readRawData(data + 4, size - 4);
 	} else if (type == PROP_USER_UNIT) {
 		// The USER UNIT property size is not correct. I'm not sure why, though.
 		float factor;
