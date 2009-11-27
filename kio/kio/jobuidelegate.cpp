@@ -79,17 +79,19 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                      sizeSrc, sizeDest,
                                                      ctimeSrc, ctimeDest, mtimeSrc,
                                                      mtimeDest);
+    connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
     newDest = dlg.newDestUrl().path();
     return res;
 }
 
-KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *,
+KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *job,
                                               bool multi,
                                               const QString & error_text)
 {
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
     KIO::SkipDialog dlg( window(), multi, error_text );
+    connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     return static_cast<KIO::SkipDialog_Result>(dlg.exec());
 }
 
