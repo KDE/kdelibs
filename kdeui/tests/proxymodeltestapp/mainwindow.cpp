@@ -30,6 +30,7 @@
 #include "selectionpmwidget.h"
 #include "proxymodeltestwidget.h"
 // #include "reparentingpmwidget.h"
+// #include "recursivefilterpmwidget.h"
 
 MainWindow::MainWindow() : KXmlGuiWindow()
 {
@@ -38,10 +39,13 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   DescendantProxyModelWidget *descPMWidget = new DescendantProxyModelWidget();
   SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
 //   ReparentingProxyModelWidget *reparentingProxyModelWidget = new ReparentingProxyModelWidget();
+//   RecursiveFilterProxyWidget *recursive = new RecursiveFilterProxyWidget();
   ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
+
   tabWidget->addTab(descPMWidget, "descendant PM");
   tabWidget->addTab(selProxyWidget, "selection PM");
 //   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");
+//   tabWidget->addTab(recursive, "Recursive Filter");
   tabWidget->addTab(proxyModelTestWidget, "Proxy Model Test");
 
   setCentralWidget( tabWidget );

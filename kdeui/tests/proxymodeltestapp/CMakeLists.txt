@@ -13,6 +13,7 @@ set(proxymodeltestapp_SRCS
     mainwindow.cpp
     ../dynamictreemodel.cpp
     selectionpmwidget.cpp
+#     recursivefilterpmwidget.cpp
     descendantpmwidget.cpp
 #     reparentingpmwidget.cpp
 #     ../../itemviews/kreparentingproxymodel.cpp
