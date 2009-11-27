@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,12 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QRegExp>
 
 #include "kaboutdata.h"
 #include "kcmdlineargs.h"
 #include "kcomponentdata.h"
+#include "kdebug.h"
 
 #include "resourceclass.h"
 #include "ontologyparser.h"
@@ -28,11 +30,17 @@
 bool quiet = true;
 
 namespace {
-QStringList extractSpaceSeparatedLists( const QStringList& args )
+/**
+ * To be backwards-compatible with older versions which used a space-separated list
+ * and cmake which uses a ;-separated list we do this ugly splitting here.
+ */
+QStringList extractOntologyFileList( const QStringList& args )
 {
+    kDebug() << args;
     QStringList results;
     foreach( const QString& a, args ) {
-        results << a.split( ' ' );
+        kDebug() << a;
+        results << a.split( QRegExp("[\\s\\;]") );
     }
     return results;
 }
@@ -89,9 +97,9 @@ int main( int argc, char** argv )
     bool listIncludes = args->isSet("listincludes");
     bool fastMode = args->isSet("fast");
     quiet = !args->isSet("verbose");
-    QStringList ontoFiles = extractSpaceSeparatedLists( args->getOptionList("ontologies") ); // backwards comp
+    QStringList ontoFiles = extractOntologyFileList( args->getOptionList("ontologies") ); // backwards comp
     for(int i = 0; i < args->count(); ++i )
-        ontoFiles << args->arg(i);
+        ontoFiles << extractOntologyFileList( QStringList() << args->arg(i) );
     QString targetDir = args->getOption("target");
     QString prefix = args->getOption("prefix");
     QStringList templates = args->getOptionList("templates");
