@@ -847,6 +847,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      if (QDBusConnection::sessionBus().isConnected()) {
         kDebug() << "Emitting notifyDatabaseChanged" << *g_changeList;
        QDBusConnection::sessionBus().send(signal);
+       qApp->processEvents(); // make sure the dbus signal is sent before we quit.
      }
    }
 
