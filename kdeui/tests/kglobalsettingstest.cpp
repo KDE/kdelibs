@@ -49,6 +49,7 @@ void KGlobalSettingsTest::initTestCase()
 
 #define CREATE_ALL_SPYS \
     KGlobalSettings* settings = KGlobalSettings::self(); \
+    settings->activate();                                                 \
     QSignalSpy palette_spy( settings, SIGNAL(kdisplayPaletteChanged()) ); \
     QSignalSpy font_spy( settings, SIGNAL(kdisplayFontChanged()) ); \
     QSignalSpy style_spy( settings, SIGNAL(kdisplayStyleChanged()) ); \
