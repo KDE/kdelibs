@@ -22,7 +22,7 @@
 
 #include <kdecore_export.h>
 
-#include <QtCore/QSharedData>
+#include <QtCore/QSharedDataPointer>
 #include <QtCore/QString>
 
 class QDate;
@@ -94,6 +94,14 @@ public:
      * Destructor.
      */
     virtual ~KCurrencyCode();
+    
+    /**
+     * Assignment operator
+     *
+     * @param rhs KCurrencyCode to assign
+     *
+     */
+    KCurrencyCode& operator=( const KCurrencyCode &rhs );
 
     /**
      * Return the ISO 4217 Currency Code in Alpha 3 format, e.g. USD

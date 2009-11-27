@@ -37,6 +37,7 @@ class KCurrencyCodePrivate : public QSharedData
 public:
     KCurrencyCodePrivate( const QString &isoCurrencyCode, const QString &language = QString() );
     KCurrencyCodePrivate( const QFileInfo &currencyCodeFile, const QString &language = QString() );
+    KCurrencyCodePrivate( const KCurrencyCodePrivate& other );
     virtual ~KCurrencyCodePrivate();
 
     void loadCurrency( const QFileInfo &currencyCodeFile, const QString &language );
@@ -72,6 +73,31 @@ KCurrencyCodePrivate::KCurrencyCodePrivate( const QString &isoCurrencyCode, cons
 KCurrencyCodePrivate::KCurrencyCodePrivate( const QFileInfo &currencyCodeFile, const QString &language )
 {
     loadCurrency( currencyCodeFile, language );
+}
+
+KCurrencyCodePrivate::KCurrencyCodePrivate( const KCurrencyCodePrivate& other )
+    : QSharedData( other ),
+      m_currencyCodeIsoAlpha3( other.m_currencyCodeIsoAlpha3 ),
+      m_currencyCodeIsoNumeric3( other.m_currencyCodeIsoNumeric3 ),
+      m_currencyNameIso( other.m_currencyNameIso ),
+      m_currencyNameDisplay( other.m_currencyNameDisplay ),
+      m_currencyUnitSymbols( other.m_currencyUnitSymbols ),
+      m_currencyUnitSymbolDefault( other.m_currencyUnitSymbolDefault ),
+      m_currencyUnitSymbolUnambiguous( other.m_currencyUnitSymbolUnambiguous ),
+      m_currencyUnitSingular( other.m_currencyUnitSingular ),
+      m_currencyUnitPlural( other.m_currencyUnitPlural ),
+      m_currencySubunitSymbol( other.m_currencySubunitSymbol ),
+      m_currencySubunitSingular( other.m_currencySubunitSingular ),
+      m_currencySubunitPlural( other.m_currencySubunitPlural ),
+      m_currencyIntroducedDate( other.m_currencyIntroducedDate ),
+      m_currencySuspendedDate( other.m_currencySuspendedDate ),
+      m_currencyWithdrawnDate( other.m_currencyWithdrawnDate ),
+      m_currencySubunits( other.m_currencySubunits ),
+      m_currencySubunitsPerUnit( other.m_currencySubunitsPerUnit ),
+      m_currencySubunitsInCirculation( other.m_currencySubunitsInCirculation ),
+      m_currencyDecimalPlacesDisplay( other.m_currencyDecimalPlacesDisplay ),
+      m_currencyCountriesInUse( other.m_currencyCountriesInUse )
+{
 }
 
 KCurrencyCodePrivate::~KCurrencyCodePrivate()
@@ -125,6 +151,13 @@ KCurrencyCode::KCurrencyCode( const QFileInfo &currencyCodeFile, const QString &
 KCurrencyCode::KCurrencyCode( const KCurrencyCode &rhs )
               :d( rhs.d )
 {
+}
+
+KCurrencyCode& KCurrencyCode::operator=( const KCurrencyCode &rhs )
+{
+    if (&rhs != this)
+        d = rhs.d;
+    return *this;
 }
 
 KCurrencyCode::~KCurrencyCode()
