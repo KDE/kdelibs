@@ -1185,24 +1185,36 @@ QDate KCalendarSystem::readDate( const QString &str, bool *ok ) const
     //Try each standard format in turn, start with the locale ones,
     //then the well defined standards
     QDate date = readDate( str, KLocale::ShortFormat, ok);
-
     if ( !isValid( date ) ) {
         date = readDate( str, KLocale::NormalFormat, ok);
-    }
-
-    if ( !isValid( date )) {
-        date = readDate( str, KLocale::IsoFormat, ok);
-    }
-
-    if ( !isValid( date ) ) {
-        date = readDate( str, KLocale::IsoWeekFormat, ok);
-    }
-
-    if ( !isValid( date ) ) {
-        date = readDate( str, KLocale::IsoOrdinalFormat, ok);
+        if ( !isValid( date )) {
+            date = readDate( str, KLocale::IsoFormat, ok);
+            if ( !isValid( date ) ) {
+                date = readDate( str, KLocale::IsoWeekFormat, ok);
+                if ( !isValid( date ) ) {
+                    date = readDate( str, KLocale::IsoOrdinalFormat, ok);
+                }
+            }
+        }
     }
 
     return date;
+}
+
+QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
+{
+    if ( flags & KLocale::ShortFormat ) {
+        return readDate( str, locale()->dateFormatShort(), ok );
+    } else if ( flags & KLocale::NormalFormat ) {
+        return readDate( str, locale()->dateFormat(), ok );
+    } else if ( flags & KLocale::IsoFormat ) {
+        return readDate( str, "%Y-%m-%d", ok );
+    } else if ( flags & KLocale::IsoWeekFormat ) {
+        return readDate( str, "%Y-W%V-%u", ok );
+    } else if ( flags & KLocale::IsoOrdinalFormat ) {
+        return readDate( str, "%Y-%j", ok );
+    }
+    return d->invalidDate();
 }
 
 QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, bool *ok ) const
@@ -1268,18 +1280,18 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
                 case 'B':
                     error = true;
                     j = 1;
-                    //This may be a problem in calendar systems with variable number of months
-                    //in the year and/or names of months that change depending on the year, e.g
-                    //Hebrew.  We really need to know the correct year first, but we may not have
-                    //read it yet and will be using the current year instead
-                    if ( locale()->dateMonthNamePossessive() ) {
-                        shortName = monthName( j, yy, KCalendarSystem::ShortNamePossessive ).toLower();
-                        longName = monthName( j, yy, KCalendarSystem::LongNamePossessive ).toLower();
-                    } else {
-                        shortName = monthName( j, yy, KCalendarSystem::ShortName ).toLower();
-                        longName = monthName( j, yy, KCalendarSystem::LongName ).toLower();
-                    }
                     while ( error && j <= d->maxMonthsInYear ) {
+                        //This may be a problem in calendar systems with variable number of months
+                        //in the year and/or names of months that change depending on the year, e.g
+                        //Hebrew.  We really need to know the correct year first, but we may not have
+                        //read it yet and will be using the current year instead
+                        if ( locale()->dateMonthNamePossessive() ) {
+                            shortName = monthName( j, yy, KCalendarSystem::ShortNamePossessive ).toLower();
+                            longName = monthName( j, yy, KCalendarSystem::LongNamePossessive ).toLower();
+                        } else {
+                            shortName = monthName( j, yy, KCalendarSystem::ShortName ).toLower();
+                            longName = monthName( j, yy, KCalendarSystem::LongName ).toLower();
+                        }
                         if ( str.mid( strpos, longName.length() ) == longName ) {
                             mm = j;
                             strpos += longName.length();
@@ -1354,22 +1366,6 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
         *ok = resultStatus;
     }
     return resultDate;
-}
-
-QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
-{
-    if ( flags & KLocale::ShortFormat ) {
-        return readDate( str, locale()->dateFormatShort(), ok );
-    } else if ( flags & KLocale::NormalFormat ) {
-        return readDate( str, locale()->dateFormat(), ok );
-    } else if ( flags & KLocale::IsoFormat ) {
-        return readDate( str, "%Y-%m-%d", ok );
-    } else if ( flags & KLocale::IsoWeekFormat ) {
-        return readDate( str, "%Y-W%V-%u", ok );
-    } else if ( flags & KLocale::IsoOrdinalFormat ) {
-        return readDate( str, "%Y-%j", ok );
-    }
-    return d->invalidDate();
 }
 
 int KCalendarSystem::weekStartDay() const
