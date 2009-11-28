@@ -696,6 +696,7 @@ private:
 };
 
 /**
+ * @def RESTORE
  * Restores the last session. (To be used in your main function).
  *
  * If your client has only one kind of toplevel widgets (which
@@ -726,6 +727,7 @@ private:
       n++;}}
 
 /**
+ * @def KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS
  * Returns the maximal number of arguments that are actually
  * supported by kRestoreMainWindows().
  **/
