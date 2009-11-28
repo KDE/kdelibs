@@ -106,6 +106,7 @@ template<> struct PIDType<4> { typedef qint32 PID_t; } ;
 int StubProcess::ConverseStub(int check)
 {
     QByteArray line, tmp;
+
     while (1)
     {
 	line = readLine();
@@ -118,7 +119,17 @@ int StubProcess::ConverseStub(int check)
 	    enableLocalEcho(false);
 	    if (check) writeLine("stop");
 	    else writeLine("ok");
-	} else if (line == "display") {
+	    break;
+	} 
+    }
+
+    while (1)
+    {
+	line = readLine();
+	if (line.isNull())
+	    return -1;
+
+        if (line == "display") {
 	    writeLine(display());
 	} else if (line == "display_auth") {
 #ifdef Q_WS_X11
