@@ -367,18 +367,30 @@ void KCalendarTest::testReadDate()
     QCOMPARE( calendar->readDate( "2000-367", "%Y-%j" ), QDate() );
 
     //Test Weekday and Month names
-    QCOMPARE( calendar->readDate( "Thursday 2004-01-01", "%A %Y-%m-%d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thu 2004-01-01",      "%A %Y-%m-%d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thursday 2004-01-01", "%a %Y-%m-%d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thu 2004-01-01",      "%a %Y-%m-%d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "2004 January 01",     "%Y %B %d" ),    QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "2004 Jan 01",         "%Y %B %d" ),    QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "2004 January 01",     "%Y %b %d" ),    QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "2004 Jan 01",         "%Y %b %d" ),    QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thursday 2004 January 01", "%A %Y %B %d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thu 2004 Jan 01",          "%A %Y %B %d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thursday 2004 January 01", "%a %Y %b %d" ), QDate( 2004,  1,  1 ) );
-    QCOMPARE( calendar->readDate( "Thu 2004 Jan 01",          "%a %Y %b %d" ), QDate( 2004,  1,  1 ) );
+    QCOMPARE( calendar->readDate( "Monday 2004-01-05", "%A %Y-%m-%d" ), QDate( 2004,  1,  5 ) );
+    QCOMPARE( calendar->readDate( "Mon 2004-01-05",    "%A %Y-%m-%d" ), QDate( 2004,  1,  5 ) );
+    QCOMPARE( calendar->readDate( "Monday 2004-01-05", "%a %Y-%m-%d" ), QDate( 2004,  1,  5 ) );
+    QCOMPARE( calendar->readDate( "Mon 2004-01-05",    "%a %Y-%m-%d" ), QDate( 2004,  1,  5 ) );
+
+    QCOMPARE( calendar->readDate( "Sunday 2004-01-11", "%A %Y-%m-%d" ), QDate( 2004,  1, 11 ) );
+    QCOMPARE( calendar->readDate( "Sun 2004-01-11",    "%A %Y-%m-%d" ), QDate( 2004,  1, 11 ) );
+    QCOMPARE( calendar->readDate( "Sunday 2004-01-11", "%a %Y-%m-%d" ), QDate( 2004,  1, 11 ) );
+    QCOMPARE( calendar->readDate( "Sun 2004-01-11",    "%a %Y-%m-%d" ), QDate( 2004,  1, 11 ) );
+
+    QCOMPARE( calendar->readDate( "2004 January 01",  "%Y %B %d" ), QDate( 2004,  1,  1 ) );
+    QCOMPARE( calendar->readDate( "2004 Jan 01",      "%Y %B %d" ), QDate( 2004,  1,  1 ) );
+    QCOMPARE( calendar->readDate( "2004 January 01",  "%Y %b %d" ), QDate( 2004,  1,  1 ) );
+    QCOMPARE( calendar->readDate( "2004 Jan 01",      "%Y %b %d" ), QDate( 2004,  1,  1 ) );
+
+    QCOMPARE( calendar->readDate( "2004 December 01", "%Y %B %d" ), QDate( 2004, 12,  1 ) );
+    QCOMPARE( calendar->readDate( "2004 Dec 01",      "%Y %B %d" ), QDate( 2004, 12,  1 ) );
+    QCOMPARE( calendar->readDate( "2004 December 01", "%Y %b %d" ), QDate( 2004, 12,  1 ) );
+    QCOMPARE( calendar->readDate( "2004 Dec 01",      "%Y %b %d" ), QDate( 2004, 12,  1 ) );
+
+    QCOMPARE( calendar->readDate( "Wednesday 2004 December 01", "%A %Y %B %d" ), QDate( 2004, 12,  1 ) );
+    QCOMPARE( calendar->readDate( "Wed 2004 Dec 01",            "%A %Y %B %d" ), QDate( 2004, 12,  1 ) );
+    QCOMPARE( calendar->readDate( "Wednesday 2004 December 01", "%a %Y %b %d" ), QDate( 2004, 12,  1 ) );
+    QCOMPARE( calendar->readDate( "Wed 2004 Dec 01",            "%a %Y %b %d" ), QDate( 2004, 12,  1 ) );
 
     //Test ISO Week and Day-of-Week
     QCOMPARE( calendar->readDate( "2004-W01-01", "%Y-W%V-%u" ), QDate( 2003, 12, 29 ) );
