@@ -69,6 +69,10 @@ void KDialogPrivate::queuedLayoutUpdate()
 
   Q_Q(KDialog);
 
+    // Don't lose the focus widget when re-creating the layout.
+    // Testcase: KOrganizer's "Select Categories" dialog
+    QPointer<QWidget> focusWidget = mMainWidget ? mMainWidget->focusWidget() : 0;
+
   if (q->layout() && q->layout() != mTopLayout) {
       kWarning(240) << q->metaObject()->className() << "created with a layout; don't do that, KDialog takes care of it, use mainWidget or setMainWidget instead";
       delete q->layout();
@@ -97,6 +101,10 @@ void KDialogPrivate::queuedLayoutUpdate()
     mButtonBox->setOrientation( mButtonOrientation );
     mTopLayout->addWidget( mButtonBox );
   }
+
+    if (focusWidget) {
+        focusWidget->setFocus();
+    }
 }
 
 void KDialogPrivate::setButtonFocus(QPushButton *button, bool isDefault, bool isFocus)
