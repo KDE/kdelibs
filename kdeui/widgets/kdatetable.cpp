@@ -457,15 +457,15 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
             // Background Colour priorities will be (high-to-low):
             // * Selected Day Background Colour
-            // * Customised Day Background Colour
+            // * Customized Day Background Colour
             // * Normal Day Background Colour
 
             // Background Shape priorities will be (high-to-low):
-            // * Customised Day Shape
+            // * Customized Day Shape
             // * Normal Day Shape
 
             // Text Colour priorities will be (high-to-low):
-            // * Customised Day Colour
+            // * Customized Day Colour
             // * Day of Pray Colour (Red letter)
             // * Selected Day Colour
             // * Normal Day Colour
