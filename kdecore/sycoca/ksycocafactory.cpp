@@ -31,7 +31,10 @@
 class KSycocaFactory::Private
 {
 public:
-    Private() {}
+    Private() : mOffset(0),
+                m_sycocaDictOffset(0),
+                m_beginEntryOffset(0),
+                m_endEntryOffset(0) {}
     ~Private()
     {
         delete m_sycocaDict;
