@@ -44,8 +44,11 @@ class AccessManager::AccessManagerPrivate
 {
 public:
     AccessManagerPrivate():externalContentAllowed(true) {}
+    KIO::MetaData metaDataForRequest(QNetworkRequest request);
+
     bool externalContentAllowed;
-    static KIO::MetaData metaDataForRequest(QNetworkRequest request);
+    KIO::MetaData requestMetaData;
+    KIO::MetaData sessionMetaData;
 };
 
 namespace Integration {
@@ -66,8 +69,10 @@ public:
 using namespace KIO;
 
 AccessManager::AccessManager(QObject *parent)
-    : QNetworkAccessManager(parent), d(new AccessManager::AccessManagerPrivate())
+              :QNetworkAccessManager(parent), d(new AccessManager::AccessManagerPrivate())
 {
+    // KDE Cookiejar (KCookieJar) integration...
+    setCookieJar(new KIO::Integration::CookieJar);
 }
 
 AccessManager::~AccessManager()
@@ -83,6 +88,34 @@ void AccessManager::setExternalContentAllowed(bool allowed)
 bool AccessManager::isExternalContentAllowed() const
 {
     return d->externalContentAllowed;
+}
+
+void AccessManager::setCookieJarWindowId(qlonglong id)
+{
+    KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
+    if (jar) {
+        jar->setWindowId(id);
+        d->sessionMetaData.insert(QLatin1String("window-id"), QString::number(id));
+    }
+}
+
+qlonglong AccessManager::cookieJarWindowid() const
+{
+    KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
+    if (jar)
+        return jar->windowId();
+
+    return 0;
+}
+
+KIO::MetaData& AccessManager::requestMetaData()
+{
+    return d->requestMetaData;
+}
+
+KIO::MetaData& AccessManager::sessionMetaData()
+{
+    return d->sessionMetaData;
 }
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
@@ -178,6 +211,17 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
         additionHeaders += headerKey + ": " + value;
     }
     metaData.insert("customHTTPHeader", additionHeaders);
+
+    // Append per request meta data, if any...
+    if (!requestMetaData.isEmpty())
+        metaData += requestMetaData;
+
+    // Append per session meta data, if any...
+    if (!sessionMetaData.isEmpty())
+        metaData += sessionMetaData;
+
+    // Clear per request meta data...
+    requestMetaData.clear();
 
     return metaData;
 }

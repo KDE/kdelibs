@@ -35,7 +35,8 @@ namespace KIO {
  * @short A KDE implementation of QNetworkAccessManager.
  *
  * Use this class instead of QNetworkAccessManager if you want to integrate
- * with KDE's KIO module for network operations.
+ * with KDE's KIO and KCookieJar modules for network operations and cookie
+ * handling respectively.
  *
  * Here is a simple example that shows how to set the QtWebKit module to use KDE's
  * KIO for its network operations:
@@ -94,6 +95,64 @@ public:
      * @see setExternalContentAllowed
      */
     bool isExternalContentAllowed() const;
+
+    /**
+     * Sets the cookiejar's window id to @p id.
+     *
+     * This is a convenience function that allows you to set the cookiejar's
+     * window id. Note that this function does nothing unless the cookiejar in
+     * use is of type KIO::Integration::CookieJar.
+     *
+     * By default the cookiejar's window id is set to false. Make sure you call
+     * this function and set the window id to its proper value when create an
+     * instance of this object. Otherwise, the KDE cookiejar will not be able
+     * to properly manage session based cookies.
+     *
+     * @see KIO::Integration::CookieJar::setWindowId.
+     * @since 4.4
+     */
+    void setCookieJarWindowId(qlonglong id);
+
+    /**
+     * Returns the cookiejar's window id.
+     *
+     * This is a convenience function that returns the window id associated
+     * with the cookiejar. Note that this function will return a 0 if the
+     * cookiejar is not of type KIO::Integration::CookieJar or a window id
+     * has not yet been set.
+     *
+     * @see KIO::Integration::CookieJar::windowId.
+     * @since 4.4
+     */
+    qlonglong cookieJarWindowid() const;
+
+    /**
+     * Returns a reference to the temporary meta data container.
+     *
+     * See kdelibs/kio/DESIGN.metadata for list of supported KIO meta data.
+     *
+     * Use this function when you want to set per request KIO meta data that
+     * will be removed after it has been sent once.
+     *
+     * @since 4.4
+     */
+    KIO::MetaData& requestMetaData();
+
+    /**
+     * Returns a reference to the persistent meta data container.
+     *
+     * See kdelibs/kio/DESIGN.metadata for list of supported KIO meta data.
+     *
+     * Use this function when you want to set per session KIO meta data that
+     * will be sent with every request.
+     *
+     * Unlike @p requestMetaData, the meta data values set using the reference
+     * returned by this function will not be deleted and will be sent with every
+     * request.
+     *
+     * @since 4.4
+     */
+    KIO::MetaData& sessionMetaData();
 
 protected:
     /**
