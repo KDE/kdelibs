@@ -66,6 +66,12 @@ namespace KNS3 {
         QStringList categoryNames;
         QString contentId;
         KWallet::Wallet* wallet;
+        bool finished;
+
+        Private()
+            :finished(false)
+        {
+        }
     };
 }
 
@@ -152,10 +158,15 @@ bool UploadDialog::init(const QString &configfile)
 
     kDebug() << "Categories: " << d->categoryNames;
 
-    //d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
-    //d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
+    connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(priceToggled(bool)));
 
     return true;
+}
+
+void UploadDialog::priceToggled(bool priceEnabled)
+{
+    d->ui.priceLabel->setEnabled(priceEnabled);
+    d->ui.priceSpinBox->setEnabled(priceEnabled);
 }
 
 void UploadDialog::providerAdded(const Attica::Provider& provider)
@@ -191,6 +202,11 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
 
 void UploadDialog::accept()
 {
+    if (d->finished) {
+        KDialog::accept();
+        return;
+    }
+
     if (!d->provider.isValid()) {
         KMessageBox::error(this, i18n("Provider could not be initialized."));
         return;
@@ -215,15 +231,23 @@ void UploadDialog::accept()
     content.addAttribute("version", d->ui.mVersionEdit->text());
     content.addAttribute("license", d->ui.mLicenseCombo->currentText());
 
+    // TODO: add additional attributes
+    //content.addAttribute("changelog", ui.changelog->text());
+    //content.addAttribute("downloadlink1", ui.link1->text());
+    //content.addAttribute("downloadlink2", ui.link2->text());
+    //content.addAttribute("homepage1", ui.homepage->text());
+    //content.addAttribute("blog1", ui.blog->text());
+
+    if (d->ui.priceCheckBox->isChecked()) {
+        content.addAttribute("downloadbuy1", "1");
+        content.addAttribute("downloadbuyprice1", QString::number(d->ui.priceSpinBox->value()));
+        // TODO in the next version:
+        // content.addAttribute("downloadbuyreason1", "the description why is content is not for free");
+    }
+
     Attica::ItemPostJob<Attica::Content>* job = d->provider.addNewContent(d->categories.first(), content);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(contentAdded(Attica::BaseJob*)));
     job->start();
-
-    /*
-    details.insert("user", m_settingsWidget.userEdit->text());
-    details.insert("password", m_settingsWidget.passwordEdit->text());
-    m_wallet->writeMap(m_provider.baseUrl().toString(), details);
-    */
 }
 
 void UploadDialog::previewChanged(const KUrl& url)
@@ -252,7 +276,8 @@ void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
-    QMessageBox::information(0, i18n("Content Added"), id);
+    //QMessageBox::information(0, i18n("Content Added"), id);
+    kDebug() << "content added " << id;
 
     d->contentId = id;
 
@@ -295,7 +320,8 @@ void UploadDialog::fileUploadFinished(Attica::BaseJob* )
 {
     KMessageBox::information(0, i18n("Content Added"), i18n("File Uploaded"));
     d->ui.mProgress->setVisible(false);
-
+    d->finished = true;
+    setButtons(KDialog::Ok);
 }
 
 

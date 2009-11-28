@@ -90,6 +90,8 @@ private Q_SLOTS:
 
     void previewChanged(const KUrl&);
 
+    void priceToggled(bool);
+
 private:
     bool init(const QString &configfile);
 
