@@ -12,7 +12,6 @@ set(kdewebkit_LIB_SRCS
     kwebpage.cpp
     kwebview.cpp
     kwebpluginfactory.cpp
-    networkaccessmanager_p.cpp
 )
 
 qt4_add_resources(kdewebkit_RC_SRCS

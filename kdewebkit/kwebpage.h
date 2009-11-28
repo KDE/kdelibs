@@ -49,33 +49,35 @@ class KUrl;
 class KDEWEBKIT_EXPORT KWebPage : public QWebPage
 {
     Q_OBJECT
+    Q_FLAGS (Integration)
+
 public:
+    enum IntegrationFlags
+    {
+      NoIntegration = 0x01,
+      KIOIntegration = 0x02,
+      KPartsIntegration = 0x04,
+      KWalletIntegration = 0x08
+    };
+    Q_DECLARE_FLAGS(Integration, IntegrationFlags)
+
     /**
-     * Constructs an empty KWebPage with parent @p parent.
+     * Constructs a KWebPage with parent @p parent.
      *
-     * @param parent    the parent object.
-     * @param windowId  the id of the window that contains this object.
+     * By default @p flags is set to zero which means integration with KDE is
+     * completely activated. If you inherit from this class you can use the
+     * flags in @ref IntegrationFlags to control which, if any, integration
+     * should be automatically activated for you.
      *
      * @see KIO::Integration::CookieJar
+     * @see KIO::Integration::AccessManager
      */
-    explicit KWebPage(QObject *parent = 0, qlonglong windowId = 0);
+    explicit KWebPage(QObject *parent = 0, Integration flags = Integration());
 
     /**
      * Destroys the KWebPage.
      */
     ~KWebPage();
-
-    /**
-     * Returns true if access to the requested @p url is authorized.
-     *
-     * You should reimplement this function if you want to add features such as
-     * content filtering or ad blocking. The default implementation simply
-     * returns true.
-     *
-     * @param url the url to be authorized.
-     * @return true in this default implementation.
-     */
-    virtual bool authorizedRequest(const QUrl &url) const;
 
     /**
      * Returns true if access to remote content is allowed.
@@ -89,6 +91,8 @@ public:
 
     /**
      * Returns true KWallet used to store form data.
+     *
+     * @see KWebWallet
      */
     KWebWallet *wallet() const;
 
@@ -107,14 +111,13 @@ public:
     /**
      * Sets the @ref KWebWallet that is used to store form data.
      *
-     * NOTE: KWebPage takes ownership of the KWebWallet object.
+     * This function will set the parent of the KWebWallet object passed to
+     * itself so that the wallet is deleted when this object is deleted. If
+     * you do not want that to happen, you should change the wallet's parent
+     * after calling this function. To disable wallet intgreation, call this
+     * function with its parameter set to NULL.
      *
-     * KWebPage will set the parent of the wallet object passed to itself, so
-     * that the wallet is deleted when this object is deleted as well. If you
-     * do not want that to happen, you should set the wallet's parent to 0 after
-     * calling this function.
-     *
-     * To disable wallet intgreation simply call this function with NULL.
+     * @see KWebWallet
      */
     void setWallet(KWebWallet* wallet);
 
@@ -200,5 +203,7 @@ private:
     class KWebPagePrivate;
     KWebPagePrivate* const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KWebPage::Integration)
 
 #endif // KWEBPAGE_H
