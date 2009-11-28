@@ -999,7 +999,7 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
             int isoWeekYear = yy;
             QDate yearDate;
 
-            //Default settings unless overriden by pad and case flags and width: are 0 pad to 0 width no sign
+            //Default settings unless overridden by pad and case flags and width: are 0 pad to 0 width no sign
             //Names will override 0 pad with no pad unless flagged
             //Numbers will override with correct width unless flagged
             switch ( toFormat.at( format_index ).unicode() ) {

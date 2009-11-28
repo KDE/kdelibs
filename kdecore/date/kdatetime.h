@@ -1575,7 +1575,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *          #endif
      *          \endcode
      *
-     * @param dt the current simulated time, or invalid to cancel simulation
+     * @param newTime the current simulated time, or invalid to cancel simulation
      *
      * @see currentDateTime(), currentLocalDateTime(), currentUtcDateTime(),
      *      currentLocalDate(), currentLocalTime()

@@ -570,9 +570,9 @@ bool KCalendarSystemCoptic::dateToJulianDay( int year, int month, int day, int &
     }
 
     jd = epoch().toJulianDay() - 1    // jd of day before Epoch
-       + ( ( y - 1 ) * 365 )          // Add all normal days in years preceeding
-       + ( y / 4 )                    // Add all leap days in years preceeding
-       + ( ( month - 1 ) * 30 )       // Add days this year in months preceeding
+       + ( ( y - 1 ) * 365 )          // Add all normal days in years preceding
+       + ( y / 4 )                    // Add all leap days in years preceding
+       + ( ( month - 1 ) * 30 )       // Add days this year in months preceding
        + day;                         // Add days in this month
 
     return true;

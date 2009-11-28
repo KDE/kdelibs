@@ -170,7 +170,7 @@ public:
      * Returns whether a given date is valid in this calendar system.
      *
      * @param year the year portion of the date to check
-     * @param day the day of year portion of the date to check
+     * @param dayOfYear the day of year portion of the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
     bool isValid( int year, int dayOfYear ) const;
@@ -579,12 +579,11 @@ public:
      *
      * Returns the days in week for a date as a numeric string
      *
-     * @param pDate The date to convert
-     * @param format The format to return, either short or long
+     * @param date The date to convert
      * @return The days in week literal of the date, empty string if any error
-     * @see daysInMonth()
+     * @see daysInWeek()
      */
-    QString daysInWeekString( const QDate &pDate ) const;
+    QString daysInWeekString( const QDate &date ) const;
 
     //KDE5 remove?
     /**
@@ -633,8 +632,8 @@ public:
      *
      * @see KLocale::formatDate
      *
-     * @param date the date to be formatted
-     * @param format category of date format to use
+     * @param fromDate the date to be formatted
+     * @param toFormat category of date format to use
      *
      * @return The date as a string
      */
@@ -656,7 +655,7 @@ public:
      *
      * Warning: The %n element differs from the GNU/POSIX standard where it is
      * defined as a newline.  KDE currently uses this for short day number.  It
-     * is recommended for compatability purposes to use %-m instead.
+     * is recommended for compatibility purposes to use %-m instead.
      *
      * The toFormat parameter is a good candidate to be made translatable,
      * so that translators can adapt it to their language's convention.
@@ -745,8 +744,8 @@ public:
      *
      * @see KLocale::formatDate
      *
-     * @param date the date to be formatted
-     * @param format the date format to use
+     * @param fromDate the date to be formatted
+     * @param toFormat the date format to use
      *
      * @return The date as a string
      */
@@ -794,7 +793,7 @@ public:
      * Converts a localized date string to a QDate, using the specified @p format.
      * You will usually not want to use this method.
      *
-     * You must supply a format and string containg at least one of the following combinations to
+     * You must supply a format and string containing at least one of the following combinations to
      * create a valid date:
      * @li a month and day of month
      * @li a day of year
@@ -836,8 +835,8 @@ public:
      * @li %% the literal "%"
      * @li %t a tab character
      *
-     * @param str the string to convert
-     * @param format the date format to use
+     * @param dateString the string to convert
+     * @param dateFormat the date format to use
      * @param ok if non-null, will be set to @c true if the date is valid, @c false if invalid
      *
      * @return the string converted to a QDate
@@ -845,7 +844,7 @@ public:
      * @see formatDate
      * @see KLocale::readDate
      */
-    virtual QDate readDate( const QString &intstr, const QString &format, bool *ok = 0 ) const;
+    virtual QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok = 0 ) const;
 
     /**
      * Use this to determine which day is the first day of the week.

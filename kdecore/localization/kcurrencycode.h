@@ -63,11 +63,11 @@ public:
      *
      * If the supplied Currency Code is not known then the KCurrencyCode will return isValid() == false
      *
-     * @param currencyCode the ISO Currency Code to construct, defaults to USD
+     * @param isoCurrencyCode the ISO Currency Code to construct, defaults to USD
      * @param language the language to use for translations, default to the Locale language
      *
      */
-    KCurrencyCode( const QString &isoCurrencyCode, const QString &language = QString() );
+    explicit KCurrencyCode( const QString &isoCurrencyCode, const QString &language = QString() );
 
     /**
      * Constructs a KCurrencyCode for a given config file and Language.
@@ -76,11 +76,11 @@ public:
      *
      * If the supplied config file is not valid then the KCurrencyCode will return isValid() == false
      *
-     * @param currencyCode the ISO Currency Code to construct, defaults to USD
+     * @param currencyCodeFile the ISO Currency Code to construct, defaults to USD
      * @param language the language to use for translations, default to the Locale language
      *
      */
-    KCurrencyCode( const QFileInfo &currencyCodeFile, const QString &language = QString() );
+    explicit KCurrencyCode( const QFileInfo &currencyCodeFile, const QString &language = QString() );
 
     /**
      * Copy Constructor

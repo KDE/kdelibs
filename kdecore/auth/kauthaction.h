@@ -384,9 +384,9 @@ public:
      *
      * @param actions The list of actions to execute
      * @param deniedActions A pointer to a list to fill with the denied actions. Pass NULL if you don't need them.
-     * @param helperID The helper ID to execute the actions on.
+     * @param helperId The helper ID to execute the actions on.
      */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helper_id);
+    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId);
 
     /**
      * @brief Ask the helper to stop executing an action

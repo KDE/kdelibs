@@ -1409,7 +1409,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round, int precision) 
     //kDebug(173)<<"mantString:"<<mantString;
     //kDebug(173)<<"expString:"<<expString;
     if (mantString.isEmpty() || !mantString[0].isDigit()) {// invalid number
-        mantString = "0";
+        mantString = '0';
     }
 
     if (round) {
@@ -1893,7 +1893,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
 }
 
 // remove the first occurrence of the 2-character string
-// strip2char from inout and if found, also remove one preceeding
+// strip2char from inout and if found, also remove one preceding
 // punctuation character and arbitrary number of spaces.
 static void stripStringAndPreceedingSeparator(QString &inout, const QLatin1String &strip2char)
 {
@@ -1924,7 +1924,7 @@ static void stripAmPmFormat(QString &inout)
 {
     // NOTE: this function assumes that %p - if it's present -
     //       is either the first or the last element of the format
-    //       string. Either a succeeding or a preceeding
+    //       string. Either a succeeding or a preceding
     //       punctuation symbol is stripped.
     int length = inout.size();
     int ppos = inout.indexOf(QLatin1String("%p"));

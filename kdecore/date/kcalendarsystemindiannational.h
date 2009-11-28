@@ -93,10 +93,10 @@ public:
     virtual int monthStringToInteger( const QString &sNum, int &iLength ) const;
     virtual int dayStringToInteger( const QString &sNum, int &iLength ) const;
 
-    virtual QString formatDate( const QDate &date, KLocale::DateFormat format = KLocale::LongDate ) const;
+    virtual QString formatDate( const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate ) const;
 
     virtual QDate readDate( const QString &str, bool *ok = 0 ) const;
-    virtual QDate readDate( const QString &intstr, const QString &fmt, bool *ok = 0 ) const;
+    virtual QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok = 0 ) const;
     virtual QDate readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0 ) const;
 
     virtual int weekStartDay() const;

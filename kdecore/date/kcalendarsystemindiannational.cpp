@@ -228,7 +228,7 @@ int KCalendarSystemIndianNational::weekNumber( const QDate &date, int * yearNum 
 
 bool KCalendarSystemIndianNational::isLeapYear( int year ) const
 {
-    //Uses same rule as Gregorian, and is explicitly synchronised to Gregorian
+    //Uses same rule as Gregorian, and is explicitly synchronized to Gregorian
     //so add 78 years to get Gregorian year and call Gregorian implementation
     return d->gregorian->isLeapYear( year + 78 );
 }
@@ -485,7 +485,7 @@ bool KCalendarSystemIndianNational::isProleptic() const
 
 bool KCalendarSystemIndianNational::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
-    // The calendar is closely synchronised to the Gregorian Calendar, always starting on the same day
+    // The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
     // We can use this and the regular sequence of days in months to do a simple conversion by finding
     // what day in the Gregorian year the Julian Day number is, converting this to the day in the
     // Indian year and subtracting off the required number of months and days to get the final date
@@ -500,7 +500,7 @@ bool KCalendarSystemIndianNational::julianDayToDate( int jd, int &year, int &mon
 
     // There is a fixed 78 year difference between year numbers, but the years do not exactly match up,
     // there is a fixed 80 day difference between the first day of the year, if the Gregorian day of
-    // the year is 80 or less then the equivalent Indian day actually falls in the preceeding year
+    // the year is 80 or less then the equivalent Indian day actually falls in the preceding  year
     if ( gregorianDayOfYear > 80 ) {
         year = gregorianYear - 78;
     } else {
@@ -541,7 +541,7 @@ bool KCalendarSystemIndianNational::julianDayToDate( int jd, int &year, int &mon
 
 bool KCalendarSystemIndianNational::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
-    // The calendar is closely synchronised to the Gregorian Calendar, always starting on the same day
+    // The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
     // We can use this and the regular sequence of days in months to do a simple conversion by finding
     // the Julian Day number of the first day of the year and adding on the required number of months
     // and days to get the final Julian Day number

@@ -280,7 +280,7 @@ QStringList KCurrencyCode::allCurrencyCodesList( KCurrencyCode::CurrencyStatusFl
 
     const QStringList paths = KGlobal::dirs()->findAllResources( "locale", "currency/*.desktop" );
 
-    foreach( QString path, paths )
+    foreach( const QString &path, paths )
     {
         QString code = path.mid( path.length()-11, 3 ).toUpper();
 

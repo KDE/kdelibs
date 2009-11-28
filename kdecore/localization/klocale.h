@@ -585,8 +585,10 @@ public:
     QString formatByteSize(double size) const;
 
     /**
+     * @since 4.4
+     *
      * Converts @p size from bytes to the appropriate string representation
-     * using the binary unit dialect @p dialect and the specific units @units.
+     * using the binary unit dialect @p dialect and the specific units @p specificUnit.
      *
      * Example:
      * formatByteSize(1000, unit, KLocale::BinaryUnitKilo) returns:
@@ -604,8 +606,7 @@ public:
      *        DefaultBinarySize to automatically select a unit that will return
      *        a sanely-sized number.
      * @return converted size as a translated string including the units.
-     *        E.g. "1.23 KiB", "2 GB" (JEDEC), "4.2 kB" (Metric).
-     * @since 4.4
+     *         E.g. "1.23 KiB", "2 GB" (JEDEC), "4.2 kB" (Metric).
      */
     QString formatByteSize(double size, int precision,
                            BinaryUnitDialect dialect = KLocale::DefaultBinaryDialect,
@@ -785,7 +786,7 @@ public:
      * regarding times.
      *
      * @param pTime the time to be formatted
-     * @param option format option to use when formatting the time
+     * @param options format option to use when formatting the time
      * @return The time as a string
      */
     QString formatLocaleTime(const QTime &pTime,
@@ -1006,7 +1007,7 @@ public:
      * @param str the string we want to convert
      * @param ok the boolean that is set to false if it's not a valid time.
      *           If @p ok is 0, it will be ignored.
-     * @param option format option to apply when formatting the time
+     * @param options format option to apply when formatting the time
      * @param processing if set to @c ProcessStrict, checking will be strict
      *               and the read time string has to have the exact time format
      *               specified. If set to @c ProcessNonStrict processing the time
