@@ -34,6 +34,7 @@ install(TARGETS kdewebkit EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT
 
 install(FILES
     kdewebkit_export.h
+    kwebwallet.h
     kgraphicswebview.h
     kwebpluginfactory.h
     kwebpage.h
