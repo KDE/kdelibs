@@ -33,7 +33,7 @@ class PublicServicePrivate;
  * @class PublicService publicservice.h DNSSD/PublicService
  * @short Represents a service to be published
  *
- * This class allows you to publish the existance of a network
+ * This class allows you to publish the existence of a network
  * service provided by your application.
  *
  * If you are providing a web server and want to advertise it
