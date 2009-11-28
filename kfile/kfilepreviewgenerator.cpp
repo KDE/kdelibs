@@ -298,6 +298,11 @@ public:
      */
     void delayedIconUpdate();
 
+    /**
+     * Any items that are removed from the model are also removed from m_changedItems.
+     */
+    void rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+
     /** Remembers the pixmap for an item specified by an URL. */
     struct ItemInfo
     {
@@ -443,6 +448,8 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
                 q, SLOT(updateIcons(const QModelIndex&, const QModelIndex&)));
         connect(m_dirModel, SIGNAL(needSequenceIcon(const QModelIndex&,int)),
                q, SLOT(requestSequenceIcon(const QModelIndex&, int)));
+        connect(m_dirModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)),
+                q, SLOT(rowsAboutToBeRemoved(const QModelIndex&, int, int)));
     }
 
     QClipboard* clipboard = QApplication::clipboard();
@@ -1091,10 +1098,30 @@ void KFilePreviewGenerator::Private::delayedIconUpdate()
             itemList.append(item);
         }
         ++it;
-    }    
+    }
     m_changedItems.clear();
 
     updateIcons(itemList);
+}
+
+void KFilePreviewGenerator::Private::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
+{
+    if (m_changedItems.isEmpty()) {
+        return;
+    }
+
+    for (int row = start; row <= end; row++) {
+        const QModelIndex index = m_dirModel->index(row, 0, parent);
+
+        const KFileItem item = m_dirModel->itemForIndex(index);
+        if (!item.isNull()) {
+            m_changedItems.remove(item.url());
+        }
+
+        if (m_dirModel->hasChildren(index)) {
+            rowsAboutToBeRemoved(index, 0, m_dirModel->rowCount(index) - 1);
+        }
+    }
 }
 
 KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent) :
