@@ -490,7 +490,7 @@ void KBuildSycoca::save(QDataStream* str)
          mimeTypeFactory = static_cast<KBuildMimeTypeFactory *>( *factory );
       else if ( aId == KST_KServiceFactory )
          serviceFactory = static_cast<KBuildServiceFactory *>( *factory );
-      aOffset = (*factory)->offset();
+      aOffset = (*factory)->offset(); // not set yet, so always 0
       (*str) << aId;
       (*str) << aOffset;
    }

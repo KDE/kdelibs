@@ -31,15 +31,16 @@ K_GLOBAL_STATIC(KSycocaFactorySingleton<KMimeTypeFactory>, kMimeTypeFactoryInsta
 
 KMimeTypeFactory::KMimeTypeFactory()
     : KSycocaFactory( KST_KMimeTypeFactory ),
+      m_fastPatternOffset(0),
+      m_highWeightPatternOffset(0),
+      m_lowWeightPatternOffset(0),
+      m_parentsMapOffset(0),
       m_highWeightPatternsLoaded(false),
       m_lowWeightPatternsLoaded(false),
       m_parentsMapLoaded(false),
       m_magicFilesParsed(false)
 {
     kMimeTypeFactoryInstance->instanceCreated(this);
-    m_fastPatternOffset = 0;
-    m_highWeightPatternOffset = 0;
-    m_lowWeightPatternOffset = 0;
     if (!KSycoca::self()->isBuilding()) {
         QDataStream* str = stream();
         Q_ASSERT(str);
