@@ -20,6 +20,9 @@
 #ifndef BROWSERRUN_P_H
 #define BROWSERRUN_P_H
 
+#include <kio/copyjob.h>
+#include <kdebug.h>
+
 namespace KParts {
 
 /**

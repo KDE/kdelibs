@@ -17,6 +17,8 @@
  */
 
 #include "browserrun.h"
+#include "browserrun_p.h"
+
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kio/job.h>
@@ -31,7 +33,6 @@
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kstandarddirs.h>
-#include "browserrun_p.h"
 #include "browseropenorsavequestion.h"
 #include <assert.h>
 
@@ -118,7 +119,7 @@ void BrowserRun::scanFile()
   // Let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   // Optimization for http/https, findByURL doesn't trust extensions over http.
-  if ( KRun::url().query().isEmpty() && !KRun::url().protocol().startsWith("http") )
+  if ( KRun::url().query().isEmpty() && !KRun::url().protocol().startsWith(QLatin1String("http")) )
   {
     KMimeType::Ptr mime = KMimeType::findByUrl( KRun::url() );
     assert( mime );
@@ -378,9 +379,9 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
                 // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
                 // Until the shiny new class comes about, send the suggestedFileName
                 // along with the actual URL to download. (DA)
-                cmd += " " + KShell::quoteArg(url.url());
+                cmd += ' ' + KShell::quoteArg(url.url());
                 if ( !suggestedFileName.isEmpty() )
-                    cmd +=" " + KShell::quoteArg(suggestedFileName);
+                    cmd += ' ' + KShell::quoteArg(suggestedFileName);
 
                 kDebug(1000) << "Calling command" << cmd;
                 // slave is already on hold (slotBrowserMimetype())
