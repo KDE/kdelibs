@@ -56,7 +56,7 @@ QStringList HunspellClient::languages() const
     if(dir.exists())
     {
         QStringList lstDic = dir.entryList(QStringList("*.dic"), QDir::Files );
-        foreach(QString tmp, lstDic)
+        foreach(const QString &tmp, lstDic)
         {
             lst<< tmp.remove(".dic");
         }
