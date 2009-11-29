@@ -813,7 +813,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
 START_QOBJECT_METHOD( callParent, QObject )
     //TODO it would be better, if each QObjectBinding remembers it's parent rather then
     //creating a new instance each time. That wouldn't only be more logical, but also
-    //does prevent losing of additional infos like e.g. the access-level.
+    //does prevent losing of additional information like e.g. the access-level.
     if( imp->access() & QObjectBinding::GetParentObject )
     {
         QObject *parent = imp->object<QObject>()->parent();
