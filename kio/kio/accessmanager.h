@@ -53,7 +53,7 @@ namespace KIO {
  *   KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager*>(view->page()->accessManager());
  * @endcode
  *
- * Please note that this class is in the KIO namespace for backward compatiblity.
+ * Please note that this class is in the KIO namespace for backward compatablity.
  * You should use KIO::Integration::AccessManager to access this class in your
  * code.
  *
@@ -226,7 +226,7 @@ public:
      * Sets the window id of the application.
      *
      * This value is used by KDE's cookiejar to manage session cookies, namely
-     * to delete them when the last application refering to such cookies is
+     * to delete them when the last application referring to such cookies is
      * closed by the end user.
      *
      * @see QWidget::window()

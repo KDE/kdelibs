@@ -57,7 +57,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
 
         // first two headers lines contain details about the format
         if (lineno <= 2) {
-            if (line.toLower().startsWith("options:")) {
+            if (line.toLower().startsWith(QLatin1String("options:"))) {
                 foreach(QString ba, line.mid(8).split(',')) {
                     const int pos = ba.indexOf('=');
                     if (pos < 1)
@@ -90,7 +90,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
         } else {
             // data block line
             QString tag;
-            if ( tag = "#", line.startsWith( tag ) )
+            if ( tag = '#', line.startsWith( tag ) )
                 type = line.remove( 0, tag.length() );
             else if ( tag = "NAME=", line.startsWith( tag ) )
                 name = line.remove(0, tag.length());

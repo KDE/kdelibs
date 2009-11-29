@@ -2618,7 +2618,7 @@ void MultiGetJobPrivate::start(Slave *slave)
 
    m_url = entry.url;
 
-   if (!entry.url.protocol().startsWith("http"))
+   if (!entry.url.protocol().startsWith(QLatin1String("http")))
    {
       // Use normal get
       KIO_ARGS << entry.url;

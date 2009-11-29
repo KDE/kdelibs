@@ -182,9 +182,9 @@ QString KACLListViewItem::key() const
 {
     QString key;
     if ( !isDefault )
-        key = "A";
+        key = 'A';
     else
-        key = "B";
+        key = 'B';
     switch ( type )
     {
         case KACLListView::User:

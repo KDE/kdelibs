@@ -22,6 +22,8 @@
 #ifndef KPASSWDSERVER_P_H
 #define KPASSWDSERVER_P_H
 
+#include <qglobal.h>
+
 class QString;
 class OrgKdeKPasswdServerInterface;
 

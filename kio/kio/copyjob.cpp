@@ -811,7 +811,7 @@ void CopyJobPrivate::skip(const KUrl & sourceUrl, bool isDir)
     }
     while (dirsToRemove.removeAll(dir) > 0) {
         // Do not rely on rmdir() on the parent directories aborting.
-        // Exclude the parent dirs explicitely.
+        // Exclude the parent dirs explicitly.
         dir.setPath(dir.directory());
     }
 }

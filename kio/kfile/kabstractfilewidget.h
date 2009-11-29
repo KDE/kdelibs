@@ -166,7 +166,7 @@ public:
      *
      * You can set more
      * filters for the user to select separated by '\n'. Every
-     * filter entry is defined through namefilter|text to diplay.
+     * filter entry is defined through namefilter|text to display.
      * If no | is found in the expression, just the namefilter is
      * shown. Examples:
      *

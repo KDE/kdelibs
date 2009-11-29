@@ -119,7 +119,7 @@ public:
    *
    * Emits canceled() if there was at least one job running.
    * Emits canceled( const KUrl& ) for each stopped job if
-   * there are at least two dirctories being watched by KDirLister.
+   * there are at least two directories being watched by KDirLister.
    */
   virtual void stop();
 

@@ -27,7 +27,7 @@
 class KFileMetaInfoWidgetPrivate;
 
 /*!
- * A widget to display file meta infos (like id3 for mp3)
+ * A widget to display file meta information (like id3 for mp3)
  */
 class KIO_EXPORT KFileMetaInfoWidget: public QWidget
 {
@@ -35,7 +35,7 @@ class KIO_EXPORT KFileMetaInfoWidget: public QWidget
 public:
     enum Mode
     {
-      ReadOnly  = 1,  ///Only display the meta infos, and do not permit the user to edit them
+      ReadOnly  = 1,  ///Only display the meta information, and do not permit the user to edit them
       ReadWrite = 0,  ///Permits user to edit the displayed meta-info
       Reserve = 0xff
     };

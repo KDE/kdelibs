@@ -56,7 +56,6 @@
 #include <kurl.h>
 #include <kglobal.h>
 #include <ktoolinvocation.h>
-#include <kauthorized.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
@@ -599,8 +598,8 @@ bool KRun::checkStartupNotify(const QString& /*binName*/, const KService* servic
     }
     else { // non-compliant app
         if (service) {
-            if (service->isApplication()) {
-                wmclass = "0"; // doesn't have .desktop entries needed, start as non-compliant
+            if (service->isApplication()) { // doesn't have .desktop entries needed, start as non-compliant
+                wmclass = "0"; // krazy:exclude=doublequote_chars
             }
             else {
                 return false; // no startup notification at all
@@ -611,7 +610,7 @@ bool KRun::checkStartupNotify(const QString& /*binName*/, const KService* servic
             // Create startup notification even for apps for which there shouldn't be any,
             // just without any visual feedback. This will ensure they'll be positioned on the proper
             // virtual desktop, and will get user timestamp from the ASN ID.
-            wmclass = "0";
+            wmclass = '0';
             silent = true;
 #else   // That unfortunately doesn't work, when the launched non-compliant application
             // launches another one that is compliant and there is any delay inbetween (bnc:#343359)
@@ -1095,7 +1094,7 @@ void KRun::init()
     }
 
     QString exec;
-    if (d->m_strURL.protocol().startsWith("http")) {
+    if (d->m_strURL.protocol().startsWith(QLatin1String("http"))) {
         exec = d->m_externalBrowser;
     }
 

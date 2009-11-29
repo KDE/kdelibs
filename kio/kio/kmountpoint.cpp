@@ -160,7 +160,7 @@ static QString devNameFromOptions(const QStringList &options)
     // Search options to find the device name
     for ( QStringList::ConstIterator it = options.begin(); it != options.end(); ++it)
     {
-        if( (*it).startsWith("dev="))
+        if( (*it).startsWith(QLatin1String("dev=")))
             return (*it).mid(4);
     }
     return QString("none");
@@ -172,7 +172,7 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
         mountedFrom = devNameFromOptions(mountOptions);
     }
 
-    if (mountedFrom.startsWith("UUID=")) {
+    if (mountedFrom.startsWith(QLatin1String("UUID="))) {
         const QString uuid = mountedFrom.mid(5);
         const QString query = "StorageVolume.uuid == '" + uuid + '\'';
         const QList<Solid::Device> lst = Solid::Device::listFromQuery(query);

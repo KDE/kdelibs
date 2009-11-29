@@ -233,8 +233,8 @@ SessionData::~SessionData()
 void SessionData::configDataFor( MetaData &configData, const QString &proto,
                              const QString & )
 {
-  if ( (proto.startsWith("http", Qt::CaseInsensitive) ) ||
-       (proto.startsWith("webdav", Qt::CaseInsensitive) ) )
+  if ( (proto.startsWith(QLatin1String("http"), Qt::CaseInsensitive) ) ||
+       (proto.startsWith(QLatin1String("webdav"), Qt::CaseInsensitive) ) )
   {
     if (!d->initDone)
         reset();

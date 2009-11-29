@@ -133,7 +133,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 			return true;
 
 		// *.example.com must match example.com also.  Sigh..
-		if (cn.startsWith("*.")) {
+		if (cn.startsWith(QLatin1String("*."))) {
 			QString chopped = cn.mid(2);
 			if (chopped == d->peerHost) {
 				return true;

@@ -96,7 +96,7 @@ public:
      * Used in KParts::BrowserOpenOrSaveQuestion for example.
      *
      * This is basically a KMimeTypeTrader::query, but it also cleans up duplicates,
-     * and honours OnlyShowIn and NotShowIn fields.
+     * and honors OnlyShowIn and NotShowIn fields.
      *
      * Returns the applications associated with all the given mimetypes.
      * @param mimeTypeList the mimetypes

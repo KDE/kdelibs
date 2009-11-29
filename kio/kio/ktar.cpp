@@ -364,7 +364,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
     if ( !dev )
         return false;
 
-    // read dir infos
+    // read dir information
     char buffer[ 0x200 ];
     bool ende = false;
     do

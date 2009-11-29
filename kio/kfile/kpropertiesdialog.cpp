@@ -149,9 +149,9 @@ using namespace KDEPrivate;
 
 static QString nameFromFileName(QString nameStr)
 {
-    if ( nameStr.endsWith(".desktop") )
+    if ( nameStr.endsWith(QLatin1String(".desktop")) )
         nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.endsWith(".kdelnk") )
+    if ( nameStr.endsWith(QLatin1String(".kdelnk")) )
         nameStr.truncate( nameStr.length() - 7 );
     // Make it human-readable (%2F => '/', ...)
     nameStr = KIO::decodeFileName( nameStr );
@@ -1316,7 +1316,8 @@ void KFilePropsPlugin::applyChanges()
             KUrl oldurl = properties->kurl();
 
             QString newFileName = KIO::encodeFileName(n);
-            if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
+            if (d->bDesktopFile && !newFileName.endsWith(QLatin1String(".desktop")) &&
+                !newFileName.endsWith(QLatin1String(".kdelnk")))
                 newFileName += ".desktop";
 
             // Tell properties. Warning, this changes the result of properties->kurl() !

@@ -110,7 +110,7 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( const QString &dirname, const QS
          parseIEBookmarks_dir(fi.absoluteFilePath(), fi.fileName());
 
       } else if (fi.isFile()) {
-         if (fi.fileName().endsWith(".url")) {
+         if (fi.fileName().endsWith(QLatin1String(".url"))) {
             QString name = fi.fileName();
             name.truncate(name.length() - 4); // .url
             parseIEBookmarks_url_file(fi.absoluteFilePath(), name);

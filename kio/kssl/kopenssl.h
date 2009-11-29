@@ -273,13 +273,13 @@ public:
 
 
    /*
-    *   d2i_X509 - Covert a text representation of X509 to an X509 object
+    *   d2i_X509 - Convert a text representation of X509 to an X509 object
     */
    X509 * d2i_X509(X509 **a,unsigned char **pp,long length);
 
 
    /*
-    *   i2d_X509 - Covert an X509 object into a text representation
+    *   i2d_X509 - Convert an X509 object into a text representation
     */
    int i2d_X509(X509 *a,unsigned char **pp);
 

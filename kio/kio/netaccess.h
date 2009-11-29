@@ -298,7 +298,7 @@ public:
      *               as needed. If NULL, authentication information will be
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
-     * @return a local URL corresponding to the same ressource than the
+     * @return a local URL corresponding to the same resource than the
      *         original URL, or the original URL if no local URL can be mapped
      */
     static KUrl mostLocalUrl(const KUrl& url, QWidget* window);

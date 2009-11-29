@@ -19,10 +19,10 @@
  *  License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "kpasswdserverloop_p.h"
+
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
-
-#include "kpasswdserverloop_p.h"
 
 namespace KIO
 {

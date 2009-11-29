@@ -19,12 +19,13 @@
  *  License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "kpasswdserver_p.h"
+
 #include <kio/authinfo.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QEventLoop>
 #include <kdebug.h>
 
-#include "kpasswdserver_p.h"
 #include "kpasswdserverloop_p.h"
 #include "kpasswdserver_interface.h"
 

@@ -256,7 +256,7 @@ QString KProtocolManager::proxyForUrl( const KUrl &url )
               u.setProtocol( p );
             }
 
-            if ( p.startsWith("http") || p == "ftp" || p == "gopher" )
+            if ( p.startsWith(QLatin1String("http")) || p == "ftp" || p == "gopher" )
             {
               QDBusReply<QString> reply =
                   QDBusInterface( "org.kde.kded", "/modules/proxyscout", "org.kde.KPAC.ProxyScout" )

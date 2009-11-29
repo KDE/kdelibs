@@ -101,7 +101,8 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
 //qDebug("#### didn't find anything for: %s", mimeType.toLatin1().constData());
 
     if ( s_tryAudioPreview &&
-         !mimeType.startsWith("text/") && !mimeType.startsWith("image/") )
+        !mimeType.startsWith(QLatin1String("text/")) &&
+        !mimeType.startsWith(QLatin1String("image/")) )
     {
         if ( !haveAudioPreview )
         {
