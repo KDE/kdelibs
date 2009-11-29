@@ -75,7 +75,7 @@ public:
     /**
      * Constructs a KWebWallet with @p parent as its parent.
      */
-    explicit KWebWallet(QObject* parent = 0, qlonglong wid = 0);
+    explicit KWebWallet(QObject* parent = 0, WId wid = 0);
 
     /**
      * Destructor
