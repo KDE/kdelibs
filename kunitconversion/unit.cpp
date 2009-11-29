@@ -17,9 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "unit.h"
+
 #include <klocalizedstring.h>
 
-#include "unit.h"
 #include "unitcategory.h"
 
 namespace KUnitConversion
