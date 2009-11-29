@@ -30,6 +30,7 @@
 #include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtCore/QPair>
+#include <QtGui/QWidget>
 #include <QtGlobal>
 
 class QWebFrame;
