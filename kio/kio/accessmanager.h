@@ -111,7 +111,7 @@ public:
      * @see KIO::Integration::CookieJar::setWindowId.
      * @since 4.4
      */
-    void setCookieJarWindowId(qlonglong id);
+    void setCookieJarWindowId(WId id);
 
     /**
      * Returns the cookiejar's window id.
@@ -124,7 +124,7 @@ public:
      * @see KIO::Integration::CookieJar::windowId.
      * @since 4.4
      */
-    qlonglong cookieJarWindowid() const;
+    WId cookieJarWindowid() const;
 
     /**
      * Returns a reference to the temporary meta data container.
@@ -220,7 +220,7 @@ public:
    /**
     * Returns the currently set window id. The default value is -1.
     */
-    qlonglong windowId() const;
+    WId windowId() const;
 
     /**
      * Sets the window id of the application.
@@ -234,7 +234,7 @@ public:
      *
      * @param id the value of @ref QWidget::winId() from the window that contains your widget.
      */
-    void setWindowId(qlonglong id);
+    void setWindowId(WId id);
 
     /**
      * Reparse the KDE cookiejar configuration file.

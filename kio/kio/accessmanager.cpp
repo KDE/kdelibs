@@ -56,9 +56,9 @@ namespace Integration {
 class CookieJar::CookieJarPrivate
 {
 public:
-  CookieJarPrivate(): windowId(-1), enabled(true) {}
+  CookieJarPrivate(): windowId((WId)-1), enabled(true) {}
 
-  qlonglong windowId;
+  WId windowId;
   bool enabled;
 };
 
@@ -90,16 +90,16 @@ bool AccessManager::isExternalContentAllowed() const
     return d->externalContentAllowed;
 }
 
-void AccessManager::setCookieJarWindowId(qlonglong id)
+void AccessManager::setCookieJarWindowId(WId id)
 {
     KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
     if (jar) {
         jar->setWindowId(id);
-        d->sessionMetaData.insert(QLatin1String("window-id"), QString::number(id));
+        d->sessionMetaData.insert(QLatin1String("window-id"), QString::number((qlonglong)id));
     }
 }
 
-qlonglong AccessManager::cookieJarWindowid() const
+WId AccessManager::cookieJarWindowid() const
 {
     KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
     if (jar)
@@ -238,7 +238,7 @@ CookieJar::~CookieJar() {
     delete d;
 }
 
-qlonglong CookieJar::windowId() const {
+WId CookieJar::windowId() const {
     return d->windowId;
 }
 
@@ -247,7 +247,7 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
 
     if (d->enabled) {
         QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), d->windowId);
+        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), (qlonglong)d->windowId);
 
         if (reply.isValid()) {
             cookieList << reply.value().toUtf8();
@@ -268,7 +268,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
         Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
             cookieHeader = "Set-Cookie: ";
             cookieHeader += cookie.toRawForm();
-            kcookiejar.call("addCookies", url.toString(), cookieHeader, d->windowId);
+            kcookiejar.call("addCookies", url.toString(), cookieHeader, (qlonglong)d->windowId);
             //kDebug() << "[" << d->windowId << "] Got Cookie: " << cookieHeader << " from " << url;
         }
 
@@ -278,7 +278,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
     return false;
 }
 
-void CookieJar::setWindowId(qlonglong id) {
+void CookieJar::setWindowId(WId id) {
     d->windowId = id;
 }
 
