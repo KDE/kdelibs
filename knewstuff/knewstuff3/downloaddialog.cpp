@@ -289,7 +289,7 @@ Entry::List DownloadDialog::changedEntries()
 Entry::List DownloadDialog::installedEntries()
 {
     QList<Entry> entries;
-    foreach (Entry e, d->changedEntries) {
+    foreach (const Entry &e, d->changedEntries) {
         if (e.status() == Entry::Installed) {
             entries.append(e);
         }

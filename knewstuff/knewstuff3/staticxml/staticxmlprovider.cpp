@@ -262,7 +262,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     QStringList::ConstIterator it;
     SortMode mode;
     
-    foreach(SortMode sortMode, d->mFeedLoaders.keys()){
+    foreach(const SortMode &sortMode, d->mFeedLoaders.keys()){
         if (loader == d->mFeedLoaders.value(sortMode))
         {
             mode = sortMode;

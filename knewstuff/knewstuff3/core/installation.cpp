@@ -64,7 +64,7 @@ struct KNS3::InstallationPrivate {
     QString installPath;
     QString absoluteInstallPath;
     
-    // policies wether verification needs to be done
+    // policies whether verification needs to be done
     Installation::Policy checksumPolicy;
     Installation::Policy signaturePolicy;
     // scope: install into user or system dirs

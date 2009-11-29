@@ -214,7 +214,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 
     Entry::List entries;
     
-    Q_FOREACH(Content content, contents) {
+    Q_FOREACH(const Content &content, contents) {
         d->cachedContent.insert(content.id(), content);
 
         Entry entry;

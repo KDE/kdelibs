@@ -87,7 +87,7 @@ class KNS3::Engine::Private {
         Cache* cache;
         QTimer* searchTimer;
         QString searchTerm;
-        // The url of the file containg information about content providers
+        // The url of the file containing information about content providers
         QString providerFileUrl;
         // Categories to search in
         QStringList categories;

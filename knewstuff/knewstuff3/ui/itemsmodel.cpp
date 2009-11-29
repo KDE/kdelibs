@@ -118,7 +118,7 @@ KNS3::Entry ItemsModel::entryForIndex(const QModelIndex & index) const
 
 void ItemsModel::slotEntriesLoaded(Entry::List entries)
 {
-    foreach(KNS3::Entry entry, entries) {
+    foreach(const KNS3::Entry &entry, entries) {
         addEntry(entry);
     }
 }

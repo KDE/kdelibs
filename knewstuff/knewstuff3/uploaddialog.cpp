@@ -190,7 +190,7 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
     Attica::ListJob<Attica::Category>* listJob = static_cast<Attica::ListJob<Attica::Category>*>(job);
     Attica::Category::List categories = listJob->itemList();
 
-    Q_FOREACH(Attica::Category category, categories) {
+    Q_FOREACH(const Attica::Category &category, categories) {
         if (d->categoryNames.contains(category.name())) {
             d->categories.append(category);
             kDebug() << "found category: " << category.name();

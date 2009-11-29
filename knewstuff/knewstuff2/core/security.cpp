@@ -137,9 +137,9 @@ void Security::slotReadyReadStandardOutput()
         switch (m_runMode) {
         case List:
         case ListSecret:
-            if (data.startsWith("pub") || data.startsWith("sec")) {
+            if (data.startsWith(QLatin1String("pub")) || data.startsWith(QLatin1String("sec"))) {
                 KeyStruct key;
-                if (data.startsWith("pub"))
+                if (data.startsWith(QLatin1String("pub")))
                     key.secret = false;
                 else
                     key.secret = true;
@@ -161,7 +161,7 @@ void Security::slotReadyReadStandardOutput()
             break;
         case Verify:
             data = data.section(']', 1, -1).trimmed();
-            if (data.startsWith("GOODSIG")) {
+            if (data.startsWith(QLatin1String("GOODSIG"))) {
                 m_result &= SIGNED_BAD_CLEAR;
                 m_result |= SIGNED_OK;
                 QString id = data.section(' ', 1 , 1).right(8);
@@ -171,11 +171,11 @@ void Security::slotReadyReadStandardOutput()
                     m_signatureKey = m_keys[id];
                 }
             } else
-                if (data.startsWith("NO_PUBKEY")) {
+                if (data.startsWith(QLatin1String("NO_PUBKEY"))) {
                     m_result &= SIGNED_BAD_CLEAR;
                     m_result |= UNKNOWN;
                 } else
-                    if (data.startsWith("BADSIG")) {
+                    if (data.startsWith(QLatin1String("BADSIG"))) {
                         m_result |= SIGNED_BAD;
                         QString id = data.section(' ', 1 , 1).right(8);
                         if (!m_keys.contains(id)) {
@@ -184,7 +184,7 @@ void Security::slotReadyReadStandardOutput()
                             m_signatureKey = m_keys[id];
                         }
                     } else
-                        if (data.startsWith("TRUST_ULTIMATE")) {
+                        if (data.startsWith(QLatin1String("TRUST_ULTIMATE"))) {
                             m_result &= SIGNED_BAD_CLEAR;
                             m_result |= TRUSTED;
                         }

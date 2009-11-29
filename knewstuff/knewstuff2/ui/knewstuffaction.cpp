@@ -16,11 +16,11 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "knewstuffaction.h"
+
 #include <kaction.h>
 #include <klocale.h>
 #include <kactioncollection.h>
-
-#include "knewstuffaction.h"
 
 using namespace KNS;
 

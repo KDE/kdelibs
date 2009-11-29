@@ -31,7 +31,7 @@ class Cache : public QObject
     Q_OBJECT
 public:
     Cache(QObject* parent = 0);
-    /// The file name of the registry - this is usally the application name, it will be stored in "apps/knewstuff3/appname.knsregistry"
+    /// The file name of the registry - this is usually the application name, it will be stored in "apps/knewstuff3/appname.knsregistry"
     void setRegistryFileName(const QString& appName);
     
     /// Read the installed entries (on startup)
