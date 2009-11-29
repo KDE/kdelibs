@@ -174,13 +174,13 @@ void Parser::parseType()
     string nativeName = matchIdentifier();
 
     if (nativeName == "const")
-        nativeName += " " + matchIdentifier();
+        nativeName += " " + matchIdentifier(); // krazy:exclude=doublequote_chars
 
     while (check(Lexer::Scope))
         nativeName += "::" + matchIdentifier();
 
     if (check(Lexer::Star))
-        nativeName += "*";
+        nativeName += "*"; // krazy:exclude=doublequote_chars
 
     const Flag typeFlags[] = {
         {"immediate", Type_HaveImm},

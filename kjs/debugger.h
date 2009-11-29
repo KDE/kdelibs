@@ -46,7 +46,7 @@ namespace KJS {
    * calls.
    *
    * WARNING: This interface is still a work in progress and is not yet
-   * offically publicly available. It is likely to change in binary incompatible
+   * officially publicly available. It is likely to change in binary incompatible
    * (and possibly source incompatible) ways in future versions. It is
    * anticipated that at some stage the interface will be frozen and made
    * available for general use.

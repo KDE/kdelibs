@@ -276,7 +276,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 
     string sig = op.name;
     for (unsigned p = 0; p < numParams; ++p) {
-        sig += "_";
+        sig += "_"; // krazy:exclude=doublequote_chars
         sig += paramIsIm[p] ? "I" : "R";
         sig += op.opParamTypes[p].name;
     }

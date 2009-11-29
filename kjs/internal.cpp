@@ -329,7 +329,7 @@ void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
 
       if ( obj->inherits(&ArrayInstance::info) )
         arrayLength = obj->get(exec, exec->propertyNames().length)->toUInt32(exec);
-      vString = "[object " + name + "]";
+      vString = "[object " + name + "]"; // krazy:exclude=doublequote_chars
       break;
     }
     case GetterSetterType:

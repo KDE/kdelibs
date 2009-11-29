@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
         std::cerr << "Usage: icemaker <path>\n";
     }
 
-    std::string path = std::string(argv[1]) + "/";
+    std::string path = std::string(argv[1]) + "/"; // krazy:exclude=doublequote_chars
 
     ifstream def;
     def.open((path + "codes.def").c_str());

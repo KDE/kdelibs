@@ -1228,7 +1228,7 @@ namespace KJS {
   };
 
   // important: these are also built when compiling things via the Function constructor
-  // (see FunctionObjectImp::construct() and Parser::parseFunctionBody, so the existance
+  // (see FunctionObjectImp::construct() and Parser::parseFunctionBody, so the existence
   // of this class rather than the bare FunctionBodyNode does not care much information.
   class ProgramNode : public FunctionBodyNode {
   public:

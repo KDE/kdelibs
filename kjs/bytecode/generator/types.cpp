@@ -20,6 +20,9 @@
  *  Boston, MA 02110-1301, USA.
  *
  */
+
+#include "types.h"
+
 #include <stdlib.h>
 #include <iostream>
 #include "assert.h"
@@ -27,7 +30,6 @@
 #include <cstdio>
 #include <wtf/ASCIICType.h>
  
-#include "types.h"
 #include "tablebuilder.h"
 
 using namespace std;
@@ -170,7 +172,7 @@ void TypeTable::printConversionInfo(Array& outArr, map<string, map<string, Conve
                         item += "Cost_Checked";
                     else
                         item += CodePrinter::stringFromInt(reg ? inf.cost : 0);
-                    item += "}";
+                    item += "}"; // krazy:exclude=doublequote_chars
                 } else {
                     item = "{Conv_NoConversion, Cost_NoConversion}";
                 }
@@ -213,8 +215,8 @@ void TypeTable::handleConversion(const string& code, int codeLine,
                                  int tileCost, int registerCost)
 {
     // Compute the conversion names. The register one (if any) would also create an operation.
-    string immName = "I" + capitalized(from) + "_" + capitalized(to);
-    string regName = "R" + capitalized(from) + "_" + capitalized(to);
+    string immName = "I" + capitalized(from) + "_" + capitalized(to); // krazy:exclude=doublequote_chars
+    string regName = "R" + capitalized(from) + "_" + capitalized(to); // krazy:exclude=doublequote_chars
 
     // Register immediate conversion
     conversionNames.push_back(immName);
