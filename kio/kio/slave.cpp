@@ -123,6 +123,8 @@ void Slave::accept()
 void Slave::timeout()
 {
     Q_D(Slave);
+   if (d->dead)
+      return;
    if (d->connection->isConnected())
       return;
 
