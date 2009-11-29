@@ -313,7 +313,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const QString& path, const QStringLis
 {
   QString complete = path;
 
-  if ( !path.endsWith( ".desktop" ) )
+  if ( !path.endsWith( QLatin1String(".desktop") ) )
     complete += ".desktop";
 
   KService::Ptr service = KService::serviceByStorageId( complete );

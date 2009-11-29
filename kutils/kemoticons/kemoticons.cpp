@@ -214,7 +214,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
                currentBundleMimeType == "application/x-lzma" ||
 	       currentBundleMimeType == "application/x-xz") {
         archive = new KTar(archiveName);
-    } else if (archiveName.endsWith("jisp") || archiveName.endsWith("zip")) {
+    } else if (archiveName.endsWith(QLatin1String("jisp")) || archiveName.endsWith(QLatin1String("zip"))) {
         archive = new KZip(archiveName);
     } else {
         archive = new KTar(archiveName);
