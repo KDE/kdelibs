@@ -151,7 +151,7 @@ QList<KWebPluginFactory::Plugin> KWebPluginFactory::plugins() const
         KService::Ptr s = services.at(i);
         /*
           NOTE: We skip over the part that handles Adobe Flash (nspluginpart)
-          here because it has issues when embeded into QtWebKit. Hence we defer
+          here because it has issues when embedded into QtWebKit. Hence we defer
           the handling of flash content to QtWebKit's own builtin flash viewer.
         */
         if (s->hasMimeType(KMimeType::mimeType("application/x-shockwave-flash").data()))

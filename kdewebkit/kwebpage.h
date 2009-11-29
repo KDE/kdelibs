@@ -37,7 +37,7 @@ class KUrl;
  *
  * This is a convenience class that provides full integration with KDE
  * technologies such as KIO for network request handling, KCookiejar for cookie
- * handling and KWebPluginFactory for embeded non-html content handling using
+ * handling and KWebPluginFactory for embedded non-html content handling using
  * KDE KParts.
  *
  * @author Urs Wolfer <uwolfer @ kde.org>

@@ -36,7 +36,7 @@
 #define QL1C(x)   QLatin1Char(x)
 
 /**
- * Creates key used to store and retreive form data.
+ * Creates key used to store and retrieve form data.
  *
  */
 static QString walletKey(KWebWallet::WebForm form, bool useIndexOnEmptyName = false)
