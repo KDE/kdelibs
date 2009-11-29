@@ -125,9 +125,10 @@ void Slave::accept()
 void Slave::timeout()
 {
     Q_D(Slave);
+   if (d->dead)
+      return;
    if (d->connection->isConnected())
       return;
-
    kDebug(7002) << "slave failed to connect to application pid=" << d->m_pid << " protocol=" << d->m_protocol;
    if (d->m_pid && (::kill(d->m_pid, 0) == 0))
    {
