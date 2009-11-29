@@ -127,7 +127,7 @@ namespace ThreadWeaver {
         // FIXME (0.7) this seems to be unnecessary
         // some more private Q_SIGNALS: There are situations where other threads
         // call functions of (this). In this case, there may be confusion
-        // about whether to handle th signals synchroneously or not. The
+        // about whether to handle the signals synchronously or not. The
         // following signals are asynchroneoulsy connected to their siblings.
         void asyncThreadSuspended( ThreadWeaver::Thread* );
 
