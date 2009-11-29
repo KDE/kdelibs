@@ -258,30 +258,24 @@ int SuProcess::ConverseSU(const char *password)
             return ( state == HandleStub ? notauthorized : error);
         kDebug(kdesuDebugArea()) << k_lineinfo << "Read line" << line;
 
+        if (line == "kdesu_stub")
+        {
+            unreadLine(line);
+            return ok;
+        }
+
         switch (state)
         {
             //////////////////////////////////////////////////////////////////////////
             case WaitForPrompt:
             {
-                // In case no password is needed.
-                if (line == "kdesu_stub")
+                if (waitMS(fd(),100)>0)
                 {
-                    unreadLine(line);
-                    return ok;
-                }
-
-                while(waitMS(fd(),100)>0)
-                {
-                    // There is more output available, so the previous line
+                    // There is more output available, so this line
                     // couldn't have been a password prompt (the definition
                     // of prompt being that  there's a line of output followed
                     // by a colon, and then the process waits).
-                    QByteArray more = readLine();
-                    if (more.isEmpty())
-                        break;
-
-                    line = more;
-                    kDebug(kdesuDebugArea()) << k_lineinfo << "Read another line" << more;
+                    continue;
                 }
 
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.
@@ -338,14 +332,11 @@ int SuProcess::ConverseSU(const char *password)
             }
             //////////////////////////////////////////////////////////////////////////
             case HandleStub:
-                // Read till we get "kdesu_stub"
-                if (line == "kdesu_stub")
-                {
-                    unreadLine(line);
-                    return ok;
-                } else if (!line.isEmpty ()) {
-                    // if we read anything else, it's probably a
+                if (!line.isEmpty ()) {
+                    // if we read anything but the stub response, we assume it's
                     // sorry, wrong password.
+                    // FIXME in reality, this may be lack of permission to
+                    // execute kdesu_stub via sudo.
                     return notauthorized;
                 }
                 break;
