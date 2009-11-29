@@ -22,6 +22,7 @@
 #ifndef SONNET_FILTER_P_H
 #define SONNET_FILTER_P_H
 
+#include <QtCore/QTextBoundaryFinder>
 #include <QtCore/QString>
 #include <kdecore_export.h>
 
@@ -89,7 +90,6 @@ namespace Sonnet
         void restart();
 
         virtual Word nextWord() const;
-        virtual Word previousWord() const;
         virtual Word wordAtPosition( unsigned int pos ) const;
 
         virtual void setCurrentPosition( int );
@@ -103,13 +103,12 @@ namespace Sonnet
     protected:
         bool trySkipLinks() const;
         bool ignore( const QString& word ) const;
-        QChar skipToLetter( int &fromPosition ) const;
         bool shouldBeSkipped( bool wordWasUppercase, bool wordWasRunTogether,
                               const QString& foundWord ) const;
 
     protected:
-        QString      m_buffer;
-        mutable int m_currentPosition;
+        QString m_buffer;
+        mutable QTextBoundaryFinder m_finder;
 
     private:
         class Private;
