@@ -617,7 +617,7 @@ void Ftp::ftpAutoLoginMacro ()
 
   for(QStringList::const_iterator it = list.begin() ; it != list.end() ; ++it )
   {
-    if ( (*it).startsWith("init") )
+    if ( (*it).startsWith(QLatin1String("init")) )
     {
       const QStringList list2 = macro.split( '\\',QString::SkipEmptyParts);
       it = list2.begin();
@@ -627,7 +627,7 @@ void Ftp::ftpAutoLoginMacro ()
       {
         // TODO: Add support for arbitrary commands
         // besides simply changing directory!!
-        if ( (*it).startsWith( "cwd" ) )
+        if ( (*it).startsWith( QLatin1String("cwd") ) )
           ftpFolder( (*it).mid(4).trimmed(), false );
       }
 
@@ -1405,7 +1405,7 @@ void Ftp::listDir( const KUrl &url )
     if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
         realURL.setPort( m_port );
     if ( m_initialPath.isEmpty() )
-        m_initialPath = "/";
+        m_initialPath = '/';
     realURL.setPath( m_initialPath );
     kDebug(7102) << "REDIRECTION to " << realURL.prettyUrl();
     redirection( realURL );

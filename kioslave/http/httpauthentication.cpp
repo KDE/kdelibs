@@ -114,15 +114,15 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
     foreach (const QByteArray &offer, offers) {
         QByteArray scheme = offer.mid(0, 10).toLower();
 #ifdef HAVE_LIBGSSAPI
-        if (scheme.startsWith("negotiate")) {
+        if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
             negotiateOffer = offer;
         } else
 #endif
-        if (scheme.startsWith("digest")) {
+        if (scheme.startsWith("digest")) { // krazy:exclude=strings
             digestOffer = offer;
-        } else if (scheme.startsWith("ntlm")) {
+        } else if (scheme.startsWith("ntlm")) { // krazy:exclude=strings
             ntlmOffer = offer;
-        } else if (scheme.startsWith("basic")) {
+        } else if (scheme.startsWith("basic")) { // krazy:exclude=strings
             basicOffer = offer;
         }
     }
@@ -142,15 +142,15 @@ KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArr
 {
     QByteArray scheme = offer.mid(0, 10).toLower();
 #ifdef HAVE_LIBGSSAPI
-    if (scheme.startsWith("negotiate")) {
+    if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
         return new KHttpNegotiateAuthentication();
     } else
 #endif
-    if (scheme.startsWith("digest")) {
+    if (scheme.startsWith("digest")) { // krazy:exclude=strings
         return new KHttpDigestAuthentication();
-    } else if (scheme.startsWith("ntlm")) {
+    } else if (scheme.startsWith("ntlm")) { // krazy:exclude=strings
         return new KHttpNtlmAuthentication();
-    } else if (scheme.startsWith("basic")) {
+    } else if (scheme.startsWith("basic")) { // krazy:exclude=strings
         return new KHttpBasicAuthentication();
     }
     return 0;
@@ -445,7 +445,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     // Determine the path of the request url...
     QString requestPath = m_resource.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
     if (requestPath.isEmpty())
-      requestPath = "/";
+      requestPath = '/';
 
     foreach (const KUrl &u, info.digestURIs)
     {
@@ -457,7 +457,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
 
       QString digestPath = u.directory (KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
       if (digestPath.isEmpty())
-        digestPath = "/";
+        digestPath = '/';
 
       send &= (requestPath.startsWith(digestPath));
 

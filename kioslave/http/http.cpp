@@ -159,9 +159,9 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
     QString header = (*it).toLower();
     // Do not allow Request line to be specified and ignore
     // the other HTTP headers.
-    if (!header.contains(':') || header.startsWith("host") ||
-        header.startsWith("proxy-authorization") ||
-        header.startsWith("via"))
+    if (!header.contains(':') || header.startsWith(QLatin1String("host")) ||
+        header.startsWith(QLatin1String("proxy-authorization")) ||
+        header.startsWith(QLatin1String("via")))
       continue;
 
     sanitizedHeaders += (*it);
@@ -436,12 +436,12 @@ void HTTPProtocol::resetSessionSettings()
      if (refUrl.isValid()) {
         // Sanitize
         QString protocol = refUrl.protocol();
-        if (protocol.startsWith("webdav")) {
+        if (protocol.startsWith(QLatin1String("webdav"))) {
            protocol.replace(0, 6, "http");
            refUrl.setProtocol(protocol);
         }
 
-        if (protocol.startsWith("http")) {
+        if (protocol.startsWith(QLatin1String("http"))) {
            m_request.referrer = refUrl.toEncoded(QUrl::RemoveUserInfo | QUrl::RemoveFragment);
         }
      }
@@ -784,7 +784,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
         // base dir of a listDir(): name should be "."
         if ( !stat && thisURL.path(KUrl::AddTrailingSlash).length() == url.path(KUrl::AddTrailingSlash).length() )
-          name = ".";
+          name = '.';
 
         entry.insert( KIO::UDSEntry::UDS_NAME, name.isEmpty() ? href.text() : name );
       }
@@ -1250,7 +1250,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   resetSessionSettings();
 
   // Webdav hosts are capable of observing overwrite == false
-  if (!(flags & KIO::Overwrite) && m_protocol.startsWith("webdav")) {
+  if (!(flags & KIO::Overwrite) && m_protocol.startsWith("webdav")) { // krazy:exclude=strings
     // check to make sure this host supports WebDAV
     if ( !davHostOk() )
       return;
@@ -2486,17 +2486,17 @@ void HTTPProtocol::parseHeaderFromCache()
 
     foreach (const QString &str, m_responseHeaders) {
         QString header = str.trimmed().toLower();
-        if (header.startsWith("content-type: ")) {
+        if (header.startsWith(QLatin1String("content-type: "))) {
             int pos = header.indexOf("charset=");
             if (pos != -1) {
                 QString charset = header.mid(pos+8);
                 m_request.cacheTag.charset = charset;
                 setMetaData("charset", charset);
             }
-        } else if (header.startsWith("content-language: ")) {
+        } else if (header.startsWith(QLatin1String("content-language: "))) {
             QString language = header.mid(18);
             setMetaData("content-language", language);
-        } else if (header.startsWith("content-disposition:")) {
+        } else if (header.startsWith(QLatin1String("content-disposition:"))) {
             parseContentDisposition(header.mid(20));
         }
     }
@@ -2531,10 +2531,10 @@ void HTTPProtocol::fixupResponseMimetype()
 
     // Prefer application/x-compressed-tar or x-gzpostscript over application/x-gzip.
     else if (m_mimeType == "application/x-gzip") {
-        if ((m_request.url.path().endsWith(".tar.gz")) ||
-            (m_request.url.path().endsWith(".tar")))
+        if ((m_request.url.path().endsWith(QLatin1String(".tar.gz"))) ||
+            (m_request.url.path().endsWith(QLatin1String(".tar"))))
             m_mimeType = QString::fromLatin1("application/x-compressed-tar");
-        if ((m_request.url.path().endsWith(".ps.gz")))
+        if ((m_request.url.path().endsWith(QLatin1String(".ps.gz"))))
             m_mimeType = QString::fromLatin1("application/x-gzpostscript");
     }
 
@@ -2877,13 +2877,13 @@ try_again:
     // Note that not receiving "accept-ranges" means that all bets are off
     // wrt the server supporting ranges.
     TokenIterator tIt = tokenizer.iterator("accept-ranges");
-    if (tIt.hasNext() && tIt.next().toLower().startsWith("none")) {
+    if (tIt.hasNext() && tIt.next().toLower().startsWith("none")) { // krazy:exclude=strings
         bCanResume = false;
     }
 
     tIt = tokenizer.iterator("keep-alive");
     while (tIt.hasNext()) {
-        if (tIt.next().startsWith("timeout=")) {
+        if (tIt.next().startsWith("timeout=")) { // krazy:exclude=strings
             m_request.keepAliveTimeout = tIt.current().mid(strlen("timeout=")).trimmed().toInt();
         }
     }
@@ -2972,9 +2972,9 @@ try_again:
     tIt = tokenizer.iterator("proxy-connection");
     if (tIt.hasNext() && isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
         QByteArray pc = tIt.next().toLower();
-        if (pc.startsWith("close")) {
+        if (pc.startsWith("close")) { // krazy:exclude=strings
             m_request.isKeepAlive = false;
-        } else if (pc.startsWith("keep-alive")) {
+        } else if (pc.startsWith("keep-alive")) { // krazy:exclude=strings
             m_request.isKeepAlive = true;
         }
     }
@@ -2985,7 +2985,7 @@ try_again:
         QStringList link = QString::fromLatin1(tIt.next()).split(';', QString::SkipEmptyParts);
         if (link.count() == 2) {
             QString rel = link[1].trimmed();
-            if (rel.startsWith("rel=\"")) {
+            if (rel.startsWith(QLatin1String("rel=\""))) {
                 rel = rel.mid(5, rel.length() - 6);
                 if (rel.toLower() == "pageservices") {
                     //### the remove() part looks fishy!
@@ -3031,13 +3031,13 @@ try_again:
         while (tIt.hasNext()) {
             QByteArray connection = tIt.next().toLower();
             if (!(isHttpProxy(m_request.proxyUrl) && !isAutoSsl())) {
-                if (connection.startsWith("close")) {
+                if (connection.startsWith("close")) { // krazy:exclude=strings
                     m_request.isKeepAlive = false;
-                } else if (connection.startsWith("keep-alive")) {
+                } else if (connection.startsWith("keep-alive")) { // krazy:exclude=strings
                     m_request.isKeepAlive = true;
                 }
             }
-            if (connection.startsWith("upgrade")) {
+            if (connection.startsWith("upgrade")) { // krazy:exclude=strings
                 if (m_request.responseCode == 101) {
                     // Ok, an upgrade was accepted, now we must do it
                     upgradeRequired = true;
@@ -3564,11 +3564,11 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         tIt = tokenizer.iterator("cache-control");
         while (tIt.hasNext()) {
             QByteArray cacheStr = tIt.next().toLower();
-            if (cacheStr.startsWith("no-cache") || cacheStr.startsWith("no-store")) {
+            if (cacheStr.startsWith("no-cache") || cacheStr.startsWith("no-store")) { // krazy:exclude=strings
                 // Don't put in cache
                 mayCache = false;
                 hasCacheDirective = true;
-            } else if (cacheStr.startsWith("max-age=")) {
+            } else if (cacheStr.startsWith("max-age=")) { // krazy:exclude=strings
                 QByteArray ba = cacheStr.mid(strlen("max-age=")).trimmed();
                 bool ok = false;
                 maxAgeHeader = ba.toLongLong(&ok);
@@ -3629,7 +3629,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
     // Cache management (HTTP 1.0)
     tIt = tokenizer.iterator("pragma");
     while (tIt.hasNext()) {
-        if (tIt.next().toLower().startsWith("no-cache")) {
+        if (tIt.next().toLower().startsWith("no-cache")) { // krazy:exclude=strings
             mayCache = false;
             hasCacheDirective = true;
         }
@@ -3643,7 +3643,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
     }
 
     // We don't cache certain text objects
-    if (m_mimeType.startsWith("text/") && (m_mimeType != "text/css") &&
+    if (m_mimeType.startsWith(QLatin1String("text/")) && (m_mimeType != "text/css") &&
         (m_mimeType != "text/x-javascript") && !hasCacheDirective) {
         // Do not cache secure pages or pages
         // originating from password protected sites
