@@ -118,7 +118,6 @@ set(kdeui_LIB_SRCS
  # This requires patches which are not yet in Qt. Disabled for now.
 #  itemviews/kreparentingproxymodel.cpp
  itemviews/kselectionproxymodel.cpp
- itemviews/ksortfilterproxymodel.cpp
  jobs/kdialogjobuidelegate.cpp
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
@@ -479,7 +478,6 @@ install( FILES
  itemviews/kwidgetitemdelegate.h
 #  itemviews/kreparentingproxymodel.h
  itemviews/kselectionproxymodel.h
- itemviews/ksortfilterproxymodel.h
  jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h
