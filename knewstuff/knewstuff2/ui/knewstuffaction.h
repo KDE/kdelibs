@@ -41,7 +41,7 @@ namespace KNS
  *
  * Deprecated, use knewstuff3!
  */
-KNEWSTUFF_EXPORT KAction * KDE_DEPRECATED standardAction(const QString &what,
+KNEWSTUFF_EXPORT_DEPRECATED KAction * standardAction(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,
