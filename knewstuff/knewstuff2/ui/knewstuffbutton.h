@@ -36,7 +36,7 @@ class Engine;
  *
  * Deprecated, use knewstuff3!
  */
-class KNEWSTUFF_EXPORT Button : public KPushButton
+class KNEWSTUFF_EXPORT_DEPRECATED Button : public KPushButton
 {
     Q_OBJECT
 
@@ -55,7 +55,7 @@ public:
      * @param parent the parent widget
      * @param name the name to be used for this widget
      */
-    KDE_DEPRECATED Button(const QString& what,
+    Button(const QString& what,
            const QString& providerList,
            const QString& resourceType,
            QWidget* parent);
@@ -66,24 +66,24 @@ public:
      *
      * @param parent the parent widget
      */
-    KDE_DEPRECATED Button(QWidget* parent);
+    Button(QWidget* parent);
 
     /**
      * set the URL to the list of providers for this button to use
      */
-    void KDE_DEPRECATED setProviderList(const QString& providerList);
+    void setProviderList(const QString& providerList);
 
     /**
      * the Hotstuff data type for this downlaod such as
      * "korganizer/calendar"
      */
-    void KDE_DEPRECATED setResourceType(const QString& resourceType);
+    void setResourceType(const QString& resourceType);
 
     /**
      * set the text that should appear on the button. will be prefaced
      * with i18n("Download New")
      */
-    void KDE_DEPRECATED setButtonText(const QString& what);
+    void setButtonText(const QString& what);
 
 Q_SIGNALS:
     /**
