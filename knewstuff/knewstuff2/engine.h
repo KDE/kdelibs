@@ -40,7 +40,7 @@ class EnginePrivate;
  *
  * Deprecated, use knewstuff3!
  */
-class KNEWSTUFF_EXPORT Engine
+class KNEWSTUFF_EXPORT_DEPRECATED Engine
 {
 public:
     /**
@@ -49,7 +49,7 @@ public:
      * As many engines as needed can be instantiated, although one should use
      * the static methods \ref download() and \ref upload() instead.
      */
-    KDE_DEPRECATED explicit Engine(QWidget* parent = 0);
+    explicit Engine(QWidget* parent = 0);
 
     /**
      * \brief Engine destructor.
@@ -72,7 +72,7 @@ public:
      *
      * @return List of installed or deinstalled entries
      */
-    KNS::Entry::List KDE_DEPRECATED downloadDialogModal(QWidget* parent = 0);
+    KNS::Entry::List downloadDialogModal(QWidget* parent = 0);
 
     /**
      * @brief Recommended download workflow entry point.
@@ -90,7 +90,7 @@ public:
      *
      * @see downloadDialogModal()
      */
-    static KNS::Entry::List KDE_DEPRECATED download();
+    static KNS::Entry::List download();
 
     /**
      * @brief Synchronous way of starting the upload workflow.
@@ -101,7 +101,7 @@ public:
      *
      * @return Uploaded entry, or \b null in case of failures
      */
-    KNS::Entry * KDE_DEPRECATED uploadDialogModal(const QString& file);
+    KNS::Entry * uploadDialogModal(const QString& file);
 
     /**
      * @brief Recommended upload workflow entry point.
@@ -116,7 +116,7 @@ public:
      *
      * @see uploadDialogModal()
      */
-    static KNS::Entry * KDE_DEPRECATED upload(const QString& file);
+    static KNS::Entry * upload(const QString& file);
 
     /**
      * @brief Asynchronous way of starting the download workflow.
@@ -126,7 +126,7 @@ public:
      *
      * @see downloadDialogModal()
      */
-    void KDE_DEPRECATED downloadDialog();
+    void downloadDialog();
 
     /**
      * @brief Asynchronous way of starting the download workflow and getting feedback to a slot when the dialog closes.
@@ -137,7 +137,7 @@ public:
      *
      * @see downloadDialogModal()
      */
-    void KDE_DEPRECATED downloadDialog(QObject * receiver, const char * slot);
+    void downloadDialog(QObject * receiver, const char * slot);
 
     /**
      * @brief Asynchronous way of starting the upload workflow.
@@ -148,9 +148,9 @@ public:
      *
      * @see uploadDialogModal()
      */
-    void KDE_DEPRECATED uploadDialog(const QString& file);
+    void uploadDialog(const QString& file);
 
-    bool KDE_DEPRECATED init(const QString& config);
+    bool init(const QString& config);
 
 private:
 
