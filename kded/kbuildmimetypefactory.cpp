@@ -347,6 +347,11 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
     const KMimeFileParser::AllGlobs& allGlobs = m_parser.mimeTypeGlobs();
     Q_FOREACH(const QString& mimeTypeName, m_parser.allMimeTypes()) {
         const KMimeType::Ptr mimeType = findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
+	if ( ! mimeType )
+	{
+		kDebug() << "MIMETYPE NOT FOUND:" << mimeTypeName ; 
+		continue;
+	}
         const KMimeFileParser::GlobList globs = allGlobs.value(mimeTypeName);
         Q_FOREACH(const KMimeFileParser::Glob& glob, globs) {
             const QString &pattern = glob.pattern;
