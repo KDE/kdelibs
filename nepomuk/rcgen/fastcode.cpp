@@ -53,7 +53,10 @@ QString FastCode::resourceAllResourcesDeclaration( const ResourceClass* rc, cons
 
 QString FastCode::resourcePseudoInheritanceDeclaration( const ResourceClass* baseRc, const ResourceClass* rc, const QString &nameSpace ) const
 {
-    return QString();
+    return QString( "%1 %2to%3() const" )
+        .arg( rc->name( nameSpace ) )
+        .arg( !nameSpace.isEmpty() ? baseRc->name( "NepomukFast" ) + "::" : QString() )
+        .arg( rc->name() );
 }
 
 QString FastCode::propertySetterDefinition( const Property* property, const ResourceClass* rc ) const
@@ -117,5 +120,10 @@ QString FastCode::resourceAllResourcesDefinition( const ResourceClass* rc ) cons
 
 QString FastCode::resourcePseudoInheritanceDefinition( const ResourceClass* baseRc, const ResourceClass* rc ) const
 {
-    return QString();
+    return QString( "%1\n"
+                    "{\n"
+                    "    return %2( uri(), graphUri() );\n"
+                    "}\n" )
+        .arg( resourcePseudoInheritanceDeclaration( baseRc, rc, "NepomukFast" ) )
+        .arg( rc->name( "NepomukFast" ) );
 }

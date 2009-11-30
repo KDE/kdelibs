@@ -256,12 +256,13 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
 
     //
     // Nepomuk does not support multiple inheritance
-    // So we have to use a workaround instead
+    // So we have to use a workaround instead (we even include the one class used as "proper" superclass
+    // since the order of the super classes is not deterministic and may change with a different serialization)
     //
     if( resourceClass->allParentResources().count() > 1 ) {
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
-            if( rc != resourceClass->parentClass(false) ) {
+            if( rc->generateClass() ) {
                 const QString decl = m_code->resourcePseudoInheritanceDeclaration( resourceClass, rc, false );
                 if ( decl.isEmpty() )
                     continue;
@@ -366,12 +367,13 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
 
     //
     // Nepomuk does not support multiple inheritance
-    // So we have to use a workaround instead
+    // So we have to use a workaround instead (we even include the one class used as "proper" superclass
+    // since the order of the super classes is not deterministic and may change with a different serialization)
     //
     if( resourceClass->allParentResources().count() > 1 ) {
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
-            if( rc->generateClass() && rc != resourceClass->parentClass() ) {
+            if( rc->generateClass() ) {
                 ms << m_code->resourcePseudoInheritanceDefinition( resourceClass, rc ) << endl;
                 includes.append( QString("#include \"%1.h\"").arg( rc->name().toLower() ) );
             }

@@ -36,9 +36,8 @@ Resource::Resource( const QUrl& uri, const QUrl& graphUri, const QUrl& type )
 
     if ( m_type.isEmpty() )
         m_type = Soprano::Vocabulary::RDFS::Resource();
-
-    // add the type right away
-    Nepomuk::ResourceManager::instance()->mainModel()->addStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_type, m_graphUri );
+    else // add the type right away
+        Nepomuk::ResourceManager::instance()->mainModel()->addStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_type, m_graphUri );
 }
 
 QUrl Resource::uri() const

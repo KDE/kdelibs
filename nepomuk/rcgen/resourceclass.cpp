@@ -63,7 +63,15 @@ void ResourceClass::setParentResource( ResourceClass* parent )
 ResourceClass* ResourceClass::parentClass( bool considerGenerateClass ) const
 {
     ResourceClass* parent = m_parentClass;
-    if( considerGenerateClass ) {
+    if( considerGenerateClass && !parent->generateClass() ) {
+        // first check for another "top-level" parent class to be generated
+        foreach( ResourceClass* rc, m_allParentResources ) {
+            if( rc->generateClass() &&
+                rc->uri() != Soprano::Vocabulary::RDFS::Resource() ) {
+                return rc;
+            }
+        }
+        // nothing found -> just use the first
         while( !parent->generateClass() &&
                parent->uri() != Soprano::Vocabulary::RDFS::Resource() )
             parent = parent->parentClass();
