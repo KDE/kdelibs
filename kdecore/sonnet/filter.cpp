@@ -236,8 +236,12 @@ QString Filter::context() const
 
 bool Filter::trySkipLinks() const
 {
-    QChar currentChar = m_buffer.at( m_finder.position() );
+    QChar currentChar;
     int currentPosition = m_finder.position();
+
+    if (currentPosition < 0 || currentPosition >= m_buffer.length())
+        return false;
+    currentChar = m_buffer.at( currentPosition );
 
     int length = m_buffer.length();
     //URL - if so skip
