@@ -390,6 +390,9 @@ QAction *KSystemTrayIcon::contextMenuTitle() const
 
 void KSystemTrayIcon::setMovie(QMovie* m)
 {
+    if (d->movie == m) {
+        return;
+    }
     delete d->movie;
     m->setParent(this);
     d->movie = m;
