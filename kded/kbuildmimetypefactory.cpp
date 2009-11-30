@@ -349,7 +349,7 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
         const KMimeType::Ptr mimeType = findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
 	if ( ! mimeType )
 	{
-		kDebug() << "MIMETYPE NOT FOUND:" << mimeTypeName ; 
+		kFatal() << "MIMETYPE NOT FOUND:" << mimeTypeName ; 
 		continue;
 	}
         const KMimeFileParser::GlobList globs = allGlobs.value(mimeTypeName);
