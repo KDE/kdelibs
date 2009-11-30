@@ -90,7 +90,7 @@ QString Filter::buffer() const
 
 bool Filter::atEnd() const
 {
-    return m_finder.position() >= m_buffer.length();
+    return m_finder.position() >= m_buffer.length() || m_finder.position() < 0;
 }
 
 static inline bool
