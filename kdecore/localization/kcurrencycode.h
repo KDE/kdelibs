@@ -321,13 +321,14 @@ public:
      * KCurrencyCode methods.
      *
      * @param currencyCode the ISO Currency Code
+     * @param language the language to use for translations, default to the Locale language
      *
      * @return the human readable and localized form of the Currency name
      *
      * @see currencyCode
      * @see allCurrencyCodesList
      */
-    static QString currencyCodeToName( const QString &currencyCode );
+    static QString currencyCodeToName( const QString &currencyCode, const QString &language = QString() );
 
 
 private:

@@ -292,9 +292,9 @@ QStringList KCurrencyCode::allCurrencyCodesList( KCurrencyCode::CurrencyStatusFl
     return currencyCodes;
 }
 
-QString KCurrencyCode::currencyCodeToName( const QString &isoCurrencyCode )
+QString KCurrencyCode::currencyCodeToName( const QString &isoCurrencyCode, const QString &language )
 {
-    KCurrencyCode temp = KCurrencyCode( isoCurrencyCode );
+    KCurrencyCode temp = KCurrencyCode( isoCurrencyCode, language );
     if ( temp.isValid() ) {
         return temp.name();
     } else {
