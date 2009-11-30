@@ -246,11 +246,11 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
    if (needClipping) {
        p->save();
 
-       int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos, text->isSimpleText(), m_start, m_start + m_len, m_toAdd);
-       int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos, text->isSimpleText(), m_start, m_start + m_len, m_toAdd);
+       int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos, false, m_start, m_start + m_len, m_toAdd);
+       int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos, false, m_start, m_start + m_len, m_toAdd);
        int visualSelectionWidth = visualSelectionEnd - visualSelectionStart;
        if (m_reversed) {
-           visualSelectionStart = f->width(text->str->s, text->str->l, m_start, m_len, text->isSimpleText()) - visualSelectionEnd;
+           visualSelectionStart = f->width(text->str->s, text->str->l, m_start, m_len, false) - visualSelectionEnd;
        }
 
        QRect selectionRect(m_x + tx + visualSelectionStart, m_y + ty, visualSelectionWidth, height());

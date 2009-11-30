@@ -48,6 +48,7 @@
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_position.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "misc/khtml_partaccessor.h"
@@ -3112,13 +3113,15 @@ QString KHTMLPart::selectedText() const
             seenTDTag = false;
           }
           hasNewLine = false;
-          if(n == sel.start().node() && n == sel.end().node())
-            text = str.mid(sel.start().offset(), sel.end().offset() - sel.start().offset());
-          else if(n == sel.start().node())
-            text = str.mid(sel.start().offset());
-          else if(n == sel.end().node())
-            text += str.left(sel.end().offset());
-          else
+          if(n == sel.start().node() && n == sel.end().node()) {
+            int s = khtml::RenderPosition::fromDOMPosition(sel.start()).renderedOffset();
+            int e = khtml::RenderPosition::fromDOMPosition(sel.end()).renderedOffset();
+            text = str.mid(s, e-s);
+          } else if(n == sel.start().node()) {
+            text = str.mid(khtml::RenderPosition::fromDOMPosition(sel.start()).renderedOffset());
+          } else if(n == sel.end().node()) {
+            text += str.left(khtml::RenderPosition::fromDOMPosition(sel.end()).renderedOffset());
+          } else 
             text += str;
         }
       }
