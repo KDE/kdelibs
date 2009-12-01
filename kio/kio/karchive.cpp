@@ -351,7 +351,7 @@ bool KArchive::writeDir( const QString& name, const QString& user, const QString
                          mode_t perm, time_t atime,
                          time_t mtime, time_t ctime )
 {
-    return doWriteDir( name, user, group, perm, atime, mtime, ctime );
+    return doWriteDir( name, user, group, perm | 040000, atime, mtime, ctime );
 }
 
 bool KArchive::writeSymLink(const QString &name, const QString &target,
