@@ -729,7 +729,9 @@ const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
 
 void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
-  Q_ASSERT( !entry->name().isEmpty() );
+  if( entry->name().isEmpty() )
+    return;
+
   if( d->entries.value( entry->name() ) ) {
       kWarning() << "directory " << name()
                   << "has entry" << entry->name() << "already";
