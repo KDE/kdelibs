@@ -1376,7 +1376,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
-  if ( m_protocol.startsWith( "webdav" ) ) {
+  if ( m_protocol.startsWith( "webdav" ) ) { // krazy:exclude=strings
     if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
       davFinished();
     else
@@ -2107,7 +2107,7 @@ QString HTTPProtocol::formatRequestUri() const
         KUrl u;
 
         QString protocol = m_protocol;
-        if (protocol.startsWith("webdav")) {
+        if (protocol.startsWith(QLatin1String("webdav"))) {
             protocol.replace(0, strlen("webdav"), "http");
         }
         u.setProtocol(protocol);
