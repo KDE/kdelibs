@@ -314,14 +314,14 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 	}
 
 	if ( keys.count() == 1 ) {
-		if ( keys.first().startsWith( "XF86" ) ) {
+		if ( keys.first().startsWith( QLatin1String("XF86") ) ) {
 			return QString();
 		}
 		markup += keyAsMarkup( keys.first() );
 	} else {
 		markup += "<keycombo action=\"Simul\">";
 		foreach( const QString &key, keys ) {
-			if ( key.startsWith( "XF86" ) ) {
+			if ( key.startsWith( QLatin1String("XF86") ) ) {
 				continue;
 			}
 			markup += keyAsMarkup( key );

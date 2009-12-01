@@ -89,7 +89,7 @@ QString transform( const QString &pat, const QString& tss,
     xsltFreeStylesheet(style_sheet);
 
     if (parsed.isEmpty())
-	parsed = " "; // avoid error message
+	parsed = ' '; // avoid error message
     return parsed;
 }
 
@@ -270,7 +270,7 @@ static bool readCache( const QString &filename,
 QString lookForCache( const QString &filename )
 {
     kDebug() << "lookForCache " << filename;
-    assert( filename.endsWith( ".docbook" ) );
+    assert( filename.endsWith( QLatin1String(".docbook") ) );
     assert( QDir::isAbsolutePath(filename));
     QString cache = filename.left( filename.length() - 7 );
     QString output;
