@@ -58,7 +58,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
         // first two headers lines contain details about the format
         if (lineno <= 2) {
             if (line.toLower().startsWith(QLatin1String("options:"))) {
-                foreach(QString ba, line.mid(8).split(',')) {
+                foreach(const QString &ba, line.mid(8).split(',')) {
                     const int pos = ba.indexOf('=');
                     if (pos < 1)
                         continue;

@@ -391,7 +391,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
               // The idea behind slave protocols is not applicable to http
               // and webdav protocols.
               QString protocol = url.protocol().toLower();
-              if (protocol.startsWith("http") || protocol.startsWith("webdav"))
+              if (protocol.startsWith(QLatin1String("http")) || protocol.startsWith(QLatin1String("webdav")))
                 d->protocol = protocol;
               else
               {

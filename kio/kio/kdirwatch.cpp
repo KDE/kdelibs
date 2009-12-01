@@ -1363,7 +1363,7 @@ void KDirWatchPrivate::slotRescan()
       // we don't really care about preserving the order of the
       // original changes.
       QList<QString> pendingFileChanges = (*it).m_pendingFileChanges.toSet().toList();
-      Q_FOREACH(QString changedFilename, pendingFileChanges )
+      Q_FOREACH(const QString &changedFilename, pendingFileChanges )
       {
         emitEvent(&(*it), Changed, changedFilename);
       }
