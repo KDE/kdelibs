@@ -150,9 +150,7 @@ protected:
     /// Closes the archive
     virtual bool closeArchive();
 
-    /**
-     * @internal Not needed for zip
-     */
+    /// Reimplemented from KArchive
     virtual bool doWriteDir( const QString& name, const QString& user,
                              const QString& group, mode_t perm, time_t atime,
                              time_t mtime, time_t ctime );
