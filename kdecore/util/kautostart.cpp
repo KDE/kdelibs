@@ -33,7 +33,9 @@
 class KAutostart::Private
 {
     public:
-        Private() : df(0)
+        Private()
+            : df(0),
+              copyIfNeededChecked(false)
         {
         }
 
@@ -42,9 +44,32 @@ class KAutostart::Private
             delete df;
         }
 
+        void copyIfNeeded();
+
         QString name;
         KDesktopFile *df;
+        bool copyIfNeededChecked;
 };
+
+void KAutostart::Private::copyIfNeeded()
+{
+    if (copyIfNeededChecked) {
+        return;
+    }
+
+    const QString local = KGlobal::dirs()->locateLocal("autostart", name);
+
+    if (!QFile::exists(local)) {
+        const QString global = KGlobal::dirs()->locate("autostart", name);
+        if (!global.isEmpty()) {
+            KDesktopFile *newDf = df->copyTo(local);
+            delete df;
+            df = new KDesktopFile("autostart", name);
+        }
+    }
+
+    copyIfNeededChecked = true;
+}
 
 KAutostart::KAutostart(const QString& entryName, QObject* parent)
     : QObject(parent),
@@ -60,7 +85,14 @@ KAutostart::KAutostart(const QString& entryName, QObject* parent)
         d->name.append(".desktop");
     }
 
-    d->df = new KDesktopFile("autostart", d->name);
+    const QString path = KGlobal::dirs()->locate("autostart", d->name);
+    if (path.isEmpty()) {
+        // just a new KDesktopFile, since we have nothing to use
+        d->df = new KDesktopFile("autostart", d->name);
+        d->copyIfNeededChecked = true;
+    } else {
+        d->df = new KDesktopFile("autostart", path);
+    }
 }
 
 KAutostart::~KAutostart()
@@ -70,6 +102,11 @@ KAutostart::~KAutostart()
 
 void KAutostart::setAutostarts(bool autostart)
 {
+    if (d->df->desktopGroup().readEntry("Hidden", false) == autostart) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writeEntry("Hidden", !autostart);
 }
 
@@ -118,7 +155,7 @@ bool KAutostart::checkStartCondition() const
     return cg.readEntry(list[2], defaultValue);
 }
 
-bool KAutostart::checkAllowedEnvironment( const QString& environment ) const
+bool KAutostart::checkAllowedEnvironment(const QString& environment) const
 {
     QStringList allowed = allowedEnvironments();
     if (!allowed.isEmpty()) {
@@ -140,6 +177,11 @@ QString KAutostart::command() const
 
 void KAutostart::setCommand(const QString &command)
 {
+    if (d->df->desktopGroup().readEntry("Exec", QString()) == command) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writeEntry("Exec", command);
 }
 
@@ -150,6 +192,11 @@ QString KAutostart::visibleName() const
 
 void KAutostart::setVisibleName(const QString &name)
 {
+    if (d->df->desktopGroup().readEntry("Name", QString()) == name) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writeEntry("Name", name);
 }
 
@@ -165,6 +212,11 @@ QString KAutostart::commandToCheck() const
 
 void KAutostart::setCommandToCheck(const QString &exec)
 {
+    if (d->df->desktopGroup().readEntry("TryExec", QString()) == exec) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writePathEntry("TryExec", exec);
 }
 
@@ -209,6 +261,11 @@ void KAutostart::setStartPhase(KAutostart::StartPhase phase)
             break;
     }
 
+    if (d->df->desktopGroup().readEntry("X-KDE-autostart-phase", QString()) == data) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writeEntry("X-KDE-autostart-phase", data);
 }
 
@@ -219,6 +276,11 @@ QStringList KAutostart::allowedEnvironments() const
 
 void KAutostart::setAllowedEnvironments(const QStringList& environments)
 {
+    if (d->df->desktopGroup().readEntry("OnlyShowIn", QStringList()) == environments) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writeXdgListEntry("OnlyShowIn", environments);
 }
 
@@ -254,6 +316,11 @@ QStringList KAutostart::excludedEnvironments() const
 
 void KAutostart::setExcludedEnvironments(const QStringList& environments)
 {
+    if (d->df->desktopGroup().readEntry("NotShowIn", QStringList()) == environments) {
+        return;
+    }
+
+    d->copyIfNeeded();
     d->df->desktopGroup().writeXdgListEntry("NotShowIn", environments);
 }
 
