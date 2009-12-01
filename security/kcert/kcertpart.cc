@@ -436,9 +436,9 @@ bool KCertPart::saveFile() {
 			return false;
 
 		QByteArray enc;
-		if (certFile.endsWith("der") || certFile.endsWith("crt")) {
+		if (certFile.endsWith(QLatin1String("der")) || certFile.endsWith(QLatin1String("crt"))) {
 			enc = _ca->toDer();
-		} else if (certFile.endsWith("netscape")) {
+		} else if (certFile.endsWith(QLatin1String("netscape"))) {
 			enc = _ca->toNetscape();
 		} else {
 			enc = _ca->toPem();
