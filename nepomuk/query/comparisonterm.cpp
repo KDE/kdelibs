@@ -107,7 +107,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
             QString v = qbd->uniqueVarName();
-            return QString( "%1 %2 %3 . FILTER(REGEX(STR(%3)), '%4*', 'i') . " )
+            return QString( "%1 %2 %3 . FILTER(REGEX(STR(%3), '%4', 'i')) . " )
                 .arg( resourceVarName )
                 .arg( Soprano::Node::resourceToN3( m_property.uri() ) )
                 .arg( v )
