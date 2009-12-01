@@ -31,7 +31,7 @@
 #include <QtCore/QList>
 #include <QtCore/QPair>
 #include <QtGui/QWidget>
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
 
 class QWebFrame;
 class QWebPage;
