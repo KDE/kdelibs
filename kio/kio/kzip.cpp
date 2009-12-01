@@ -995,9 +995,15 @@ bool KZip::closeArchive()
     return true;
 }
 
-bool KZip::doWriteDir( const QString&, const QString&, const QString&,
-                       mode_t, time_t, time_t, time_t ) {
-        return true;
+bool KZip::doWriteDir( const QString &name, const QString &user, const QString &group,
+                       mode_t perm, time_t atime, time_t mtime, time_t ctime ) {
+    // Zip files have no explicit directories, they are implicitly created during extraction time
+    // when file entries have paths in them.
+    // However, to support empty directories, we must create a dummy file entry which ends with '/'.
+    QString dirName = name;
+    if (!name.endsWith("/"))
+        dirName = dirName.append('/');
+    return writeFile(dirName, user, group, 0, 0, perm, atime, mtime, ctime);
 }
 
 bool KZip::doPrepareWriting(const QString &name, const QString &user,
