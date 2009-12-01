@@ -150,11 +150,13 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 	    }
 
 	    if (document()->part() && !isContentEditable()) {
-	      if (k) 
+	      if (k)
 		click();
-	      else
-		document()->part()->
-		    urlSelected( url, button, state, utarget );
+	      else {
+                KParts::OpenUrlArguments args;
+                args.setActionRequestedByUser(true);
+                document()->part()->urlSelected( url, button, state, utarget, args );
+              }
 	    }
         }
         evt->setDefaultHandled();

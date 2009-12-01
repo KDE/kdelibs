@@ -3718,7 +3718,6 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( state & Qt::ControlModifier )
   {
-    browserArgs.setNewTab(true);
     emit d->m_extension->createNewWindow( cURL, args, browserArgs );
     return true;
   }
