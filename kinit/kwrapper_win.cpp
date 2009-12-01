@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     {
         if (!envPath.contains(a))
             envPath << a;
-        if (!a.endsWith("/lib") && !a.endsWith("/lib/") && !searchPath.contains(a))
+        if (!a.endsWith(QLatin1String("/lib")) && !a.endsWith(QLatin1String("/lib/")) && !searchPath.contains(a))
             searchPath << a;
     }
     

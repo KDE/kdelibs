@@ -559,7 +559,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    else
    {
       requestResult.result = 1;
-      requestResult.dbusName = QString();
+      requestResult.dbusName.clear();
       requestResult.error = i18n("KDEInit could not launch '%1'.", request->name);
       if (!request->errorMsg.isEmpty())
           requestResult.error += QString::fromLatin1(":\n") + request->errorMsg;
@@ -595,7 +595,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
-          requestResult.dbusName = QString();
+          requestResult.dbusName.clear();
       Q_ASSERT( !requestResult.error.isNull() );
       PIDType<sizeof(pid_t)>::PID_t stream_pid = requestResult.pid;
       QDBusConnection::sessionBus().send(request->transaction.createReply(QVariantList() << requestResult.result
@@ -820,7 +820,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
          singleUrl.append(*it);
          QByteArray startup_id2 = startup_id;
          if( !startup_id2.isEmpty() && startup_id2 != "0" )
-             startup_id2 = "0"; // can't use the same startup_id several times
+             startup_id2 = "0"; // can't use the same startup_id several times // krazy:exclude=doublequote_chars
          start_service( service, singleUrl, envs, startup_id2, true, false, msg);
       }
       QString firstURL = *(urls.begin());
@@ -889,7 +889,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     const QStringList &envs )
 {
 #ifdef Q_WS_X11
-    request->startup_id = "0";
+    request->startup_id = "0";// krazy:exclude=doublequote_chars
     if (startup_id == "0")
         return;
     bool silent;
@@ -941,7 +941,7 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QByteArra
 {
 #ifdef Q_WS_X11
     if( request != NULL )
-        request->startup_id = "0";
+        request->startup_id = "0"; // krazy:exclude=doublequote_chars
     if( !startup_id.isEmpty() && startup_id != "0" )
     {
         QString dpy_str;
@@ -1170,7 +1170,7 @@ KLauncher::requestSlave(const QString &protocol,
     request->dbus_startup_type = KService::DBusNone;
     request->pid = 0;
 #ifdef Q_WS_X11
-    request->startup_id = "0";
+    request->startup_id = "0"; // krazy:exclude=doublequote_chars
 #endif
     request->status = KLaunchRequest::Launching;
     requestStart(request);

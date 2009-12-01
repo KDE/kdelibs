@@ -33,7 +33,7 @@
  The start_kdeinit wrapper is setuid, which means some shell variables like LD_LIBRARY_PATH
  get unset before it's launched. However kdeinit is used to launch most of KDE, so such variables
  should not be dropped. Therefore this wrapper for the setuid wrapper read the environment
- and writes it to start_kdeinit's stdin, which after dropping priviledges reads it and uses it
+ and writes it to start_kdeinit's stdin, which after dropping privileges reads it and uses it
  for launching the real kdeinit.
 */
 int main(int argc, char **argv)

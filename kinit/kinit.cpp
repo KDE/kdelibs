@@ -453,7 +453,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char *cwd=0, int envc=0, const char *envs=0,
                     bool reset_env = false,
                     const char *tty=0, bool avoid_loops = false,
-                    const char* startup_id_str = "0" )
+                    const char* startup_id_str = "0" ) // krazy:exclude=doublequote_chars
 {
   QString lib;
   QByteArray name;
@@ -488,7 +488,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
             }
             // Don't confuse the user with "Could not load libkdeinit4_foo.so" if it doesn't exist
             if (!QFile::exists(libpath)) {
-                libpath = QString();
+                libpath.clear();
             }
             execpath = exec;
         }
@@ -1113,7 +1113,7 @@ static bool handle_launcher_request(int sock, const char *who)
       const char *envs = 0;
       const char *tty = 0;
       int avoid_loops = 0;
-      const char *startup_id_str = "0";
+      const char *startup_id_str = "0"; // krazy:exclude=doublequote_chars
 
 #ifndef NDEBUG
      fprintf(stderr, "kdeinit4: Got %s '%s' from %s.\n",
