@@ -150,7 +150,7 @@ void BrowserRun::scanFile()
   }
 
   KIO::TransferJob *job;
-    if ( d->m_browserArgs.doPost() && KRun::url().protocol().startsWith("http")) {
+    if ( d->m_browserArgs.doPost() && KRun::url().protocol().startsWith(QLatin1String("http"))) {
         job = KIO::http_post( KRun::url(), d->m_browserArgs.postData, KIO::HideProgressInfo );
         job->addMetaData( "content-type", d->m_browserArgs.contentType() );
     } else {
