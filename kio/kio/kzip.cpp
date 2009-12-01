@@ -1059,7 +1059,10 @@ bool KZip::writeDir(const QString& name, const QString& user, const QString& gro
     QString dirName = name;
     if (!name.endsWith("/"))
         dirName = dirName.append('/');
-    return writeFile(dirName, user, group, 0, 0);
+
+    mode_t perm = 040755;
+    time_t the_time = time(0);
+    return writeFile(dirName, user, group, 0, perm, the_time, the_time, the_time, 0);
 }
 
 // Doesn't need to be reimplemented anymore. Remove for KDE-4.0
