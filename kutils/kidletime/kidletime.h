@@ -123,7 +123,7 @@ public Q_SLOTS:
      * \link simulateUserActivity is called, the signal \link resumingFromIdle will be triggered. 
      * <p>
      * Please note that this method will trigger the signal just for the very first resume event after the call: 
-     * this means you explicitely have to request to track every single resume event you are interested in.
+     * this means you explicitly have to request to track every single resume event you are interested in.
      *
      * @note This behavior is due to the fact that a resume event happens whenever the user sends an input to the
      *       system. This would lead to a massive amount of signals being delivered when the PC is being used.

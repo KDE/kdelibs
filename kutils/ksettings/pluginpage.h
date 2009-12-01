@@ -34,7 +34,7 @@ namespace KSettings
  *
  * This class makes it very easy to create a plugins configuration page to your
  * program. All you need to do is create a class that is derived from
- * PluginPage and add the appropriate plugin infos to the KPluginSelector.
+ * PluginPage and add the appropriate plugin information to the KPluginSelector.
  * This is done using the pluginSelector() method:
  * \code
  * typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
