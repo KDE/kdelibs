@@ -19,8 +19,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "provider.h"
 #include "core/provider_p.h"
+#include "provider.h"
 
 #include "xmlloader.h"
 

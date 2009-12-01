@@ -18,6 +18,11 @@
 #ifndef PROVIDER_P_H
 #define PROVIDER_P_H
 
+#include <QtCore/QSharedData>
+#include <QtCore/QString>
+
+#include <kurl.h>
+
 namespace KNS3
 {
     class ProviderPrivate :public QSharedData
