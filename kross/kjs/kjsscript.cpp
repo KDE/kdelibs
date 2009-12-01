@@ -277,8 +277,8 @@ void KjsScript::execute()
     }
 
     QByteArray code = action()->code();
-    if(code.startsWith("#!")) // remove optional shebang-line
-        code.remove(0, code.indexOf('\n'));
+    if(code.startsWith("#!")) // krazy:exclude=strings
+        code.remove(0, code.indexOf('\n')); // remove optional shebang-line
 
     QTextCodec *codec = QTextCodec::codecForLocale();
     KJS::UString c = codec ? KJS::UString(codec->toUnicode(code)) : KJS::UString(code.data(), code.size());

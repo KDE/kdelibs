@@ -184,7 +184,7 @@ QString FormFileWidget::selectedFile() const
     } else {
       //kDebug()<<d->filename<<d->filewidget->operationMode();
       if ( d->filename.isEmpty() ) {
-        // make KFileWidget create an url for us (including extension if neccessary)
+        // make KFileWidget create an url for us (including extension if necessary)
         QObject::connect(d->filewidget, SIGNAL(accepted()), d->filewidget, SLOT(accept()));
         d->filewidget->slotOk();
         QObject::disconnect(d->filewidget, SIGNAL(accepted()), d->filewidget, SLOT(accept()));

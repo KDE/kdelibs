@@ -182,7 +182,7 @@ void EcmaScript::execute()
     }
 
     QString scriptCode = action()->code();
-    if( scriptCode.startsWith("#!") ) // remove optional shebang-line
+    if( scriptCode.startsWith(QLatin1String("#!")) ) // remove optional shebang-line
         scriptCode.remove(0, scriptCode.indexOf('\n'));
 
     const QString fileName = action()->file().isEmpty() ? action()->name() : action()->file();
