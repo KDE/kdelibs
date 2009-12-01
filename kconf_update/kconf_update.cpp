@@ -325,36 +325,36 @@ bool KonfUpdate::updateFile(const QString &filename)
       m_lineCount++;
       if (m_line.isEmpty() || (m_line[0] == '#'))
          continue;
-      if (m_line.startsWith("Id="))
+      if (m_line.startsWith(QLatin1String("Id=")))
          gotId(m_line.mid(3));
       else if (skip)
          continue;
-      else if (m_line.startsWith("Options="))
+      else if (m_line.startsWith(QLatin1String("Options=")))
          gotOptions(m_line.mid(8));
-      else if (m_line.startsWith("File="))
+      else if (m_line.startsWith(QLatin1String("File=")))
          gotFile(m_line.mid(5));
       else if(skipFile)
          continue;
-      else if (m_line.startsWith("Group="))
+      else if (m_line.startsWith(QLatin1String("Group=")))
          gotGroup(m_line.mid(6));
-      else if (m_line.startsWith("RemoveGroup="))
+      else if (m_line.startsWith(QLatin1String("RemoveGroup=")))
       {
          gotRemoveGroup(m_line.mid(12));
          resetOptions();
       }
-      else if (m_line.startsWith("Script="))
+      else if (m_line.startsWith(QLatin1String("Script=")))
       {
          gotScript(m_line.mid(7));
          resetOptions();
       }
-      else if (m_line.startsWith("ScriptArguments="))
+      else if (m_line.startsWith(QLatin1String("ScriptArguments=")))
          gotScriptArguments(m_line.mid(16));
-      else if (m_line.startsWith("Key="))
+      else if (m_line.startsWith(QLatin1String("Key=")))
       {
          gotKey(m_line.mid(4));
          resetOptions();
       }
-      else if (m_line.startsWith("RemoveKey="))
+      else if (m_line.startsWith(QLatin1String("RemoveKey=")))
       {
          gotRemoveKey(m_line.mid(10));
          resetOptions();
@@ -874,7 +874,7 @@ void KonfUpdate::gotScript(const QString &_script)
             if (j > 0)
                group = line.mid(1, j-2);
          }
-         else if (line.startsWith("# DELETE "))
+         else if (line.startsWith(QLatin1String("# DELETE ")))
          {
             QString key = line.mid(9);
             if (key[0] == '[')
@@ -893,7 +893,7 @@ void KonfUpdate::gotScript(const QString &_script)
                log() << currentFilename << ": Removing empty group " << oldFile << ":" << group << endl;
 	    } (this should be automatic)*/
          }
-         else if (line.startsWith("# DELETEGROUP"))
+         else if (line.startsWith(QLatin1String("# DELETEGROUP")))
          {
             QString key = line.mid(13).trimmed();
             if (key[0] == '[')
