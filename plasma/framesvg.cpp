@@ -625,8 +625,8 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave)
     }
 
     QSizeF size = frameSize(frame);
-    QString id = QString::fromLatin1("%7_%6_%5_%4_%3_%2_%1_").
-        arg(overlayPos.y()).arg(overlayPos.x()).arg(frame->enabledBorders).arg(size.width()).arg(size.height()).arg(prefixToSave).arg(q->imagePath());
+    QString id = QString::fromLatin1("%5_%4_%3_%2_%1_").
+        arg(frame->enabledBorders).arg(size.width()).arg(size.height()).arg(prefixToSave).arg(q->imagePath());
 
     //kDebug()<<"Saving to cache frame"<<id;
 
