@@ -837,7 +837,7 @@ VFolderMenu::loadMenu(const QString &fileName)
 {
    m_defaultMergeDirs.clear();
 
-   if (!fileName.endsWith(".menu"))
+   if (!fileName.endsWith(QLatin1String(".menu")))
       return;
 
    pushDocInfo(fileName);
@@ -1021,7 +1021,7 @@ VFolderMenu::processKDELegacyDirs()
       if (!m_forcedLegacyLoad && (*it).endsWith(QLatin1String(".directory")))
       {
          QString name = *it;
-         if (!name.endsWith("/.directory"))
+         if (!name.endsWith(QLatin1String("/.directory")))
             continue; // Probably ".directory", skip it.
 
          name = name.left(name.length()-11);

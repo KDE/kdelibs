@@ -30,7 +30,7 @@ class KConfigGroup;
 struct ServiceTypeOffersData {
     QList<KServiceOffer> offers; // service + initial preference + allow as default
     QSet<KService::Ptr> offerSet; // for quick contains() check
-    QSet<KService::Ptr> removedOffers; // remember removed offers explicitely
+    QSet<KService::Ptr> removedOffers; // remember removed offers explicitly
 };
 
 class KOfferHash

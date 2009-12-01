@@ -59,7 +59,7 @@ public:
   ~VFolderMenu();
 
   /**
-   * Parses VFolder menu defintion and generates a menu layout.
+   * Parses VFolder menu definition and generates a menu layout.
    * The newService signals is used as callback to load
    * a specific service description.
    *

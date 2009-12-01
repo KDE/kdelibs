@@ -100,7 +100,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      if (i > 0) {
         parent = parent.left(i+1);
      } else {
-        parent = "/";
+        parent = '/';
      }
 
 

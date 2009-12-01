@@ -89,7 +89,7 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
         name = name.mid(pos+1);
     }
     // Is it a .desktop file?
-    if (name.endsWith(".desktop")) {
+    if (name.endsWith(QLatin1String(".desktop"))) {
         KDesktopFile desktopFile(resource, file);
 
         KService * serv = new KService(&desktopFile);
