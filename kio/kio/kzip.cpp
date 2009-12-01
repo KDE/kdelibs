@@ -1051,6 +1051,17 @@ bool KZip::closeArchive()
     return true;
 }
 
+bool KZip::writeDir(const QString& name, const QString& user, const QString& group)
+{
+    // Zip files have no explicit directories, they are implicitly created during extraction time
+    // when file entries have paths in them.
+    // However, to support empty directories, we must create a dummy file entry which ends with '/'.
+    QString dirName = name;
+    if (!name.endsWith("/"))
+        dirName = dirName.append('/');
+    return writeFile(dirName, user, group, 0, 0);
+}
+
 // Doesn't need to be reimplemented anymore. Remove for KDE-4.0
 bool KZip::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
@@ -1114,7 +1125,7 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     }
 
     // delete entries in the filelist with the same filename as the one we want
-    // to save, so that we don´t have duplicate file entries when viewing the zip
+    // to save, so that we donï¿½t have duplicate file entries when viewing the zip
     // with konqi...
     // CAUTION: the old file itself is still in the zip and won't be removed !!!
     QPtrListIterator<KZipFileEntry> it( d->m_fileList );
