@@ -199,7 +199,7 @@ KNS::Entry::List Engine::download()
     return entries;
 }
 
-KNS::Entry::List Engine::downloadDialogModal(QWidget*)
+KNS::Entry::List Engine::downloadDialogModal(QWidget* parent)
 {
     //kDebug() << "Engine: downloadDialogModal";
     KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
@@ -212,6 +212,9 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 
     d->m_command = EnginePrivate::command_download;
     d->m_modal = true;
+    if (parent) {
+        d->m_parent = parent;
+    }
 
     d->workflow();
 
