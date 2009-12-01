@@ -8,6 +8,9 @@ include(CheckStructMember)
 
 macro_push_required_vars()
   set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDE_DIR}")
+  if (QT_USE_FRAMEWORKS)
+    set(CMAKE_REQUIRED_FLAGS "-F${QT_LIBRARY_DIR} ")
+  endif (QT_USE_FRAMEWORKS)
   check_cxx_source_compiles(
 "#include <QtNetwork/QSslSocket>
 int main()
