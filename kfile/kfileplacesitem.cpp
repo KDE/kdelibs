@@ -91,7 +91,7 @@ void KFilePlacesItem::setBookmark(const KBookmark &bookmark)
     if (bookmark.metaDataItem("isSystemItem") == "true") {
         // This context must stay as it is - the translated system bookmark names
         // are created with 'KFile System Bookmarks' as their context, so this
-        // ensures the right string is picked from the catalogue.
+        // ensures the right string is picked from the catalog.
         // (coles, 13th May 2009)
 
         m_text = i18nc("KFile System Bookmarks", bookmark.text().toUtf8().data());
@@ -229,7 +229,7 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
         return KBookmark();
     QString empty_icon = iconName;
     if (url==KUrl("trash:/")) {
-        if (empty_icon.endsWith("-full")) {
+        if (empty_icon.endsWith(QLatin1String("-full"))) {
             empty_icon.chop(5);
         } else if (empty_icon.isEmpty()) {
             empty_icon = "user-trash";

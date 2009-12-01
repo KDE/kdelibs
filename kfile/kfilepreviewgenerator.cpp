@@ -531,7 +531,7 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
     if (m_internalDataChange > 0) {
         // QAbstractItemModel::setData() has been invoked internally by the KFilePreviewGenerator.
         // The signal dataChanged() is connected with this method, but previews only need
-        // to be generated when an external data change has occured.
+        // to be generated when an external data change has occurred.
         return;
     }
     // dataChanged emitted for the root dir (e.g. permission changes)

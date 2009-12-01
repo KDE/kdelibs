@@ -2082,7 +2082,7 @@ static QString getExtensionFromPatternList(const QStringList &patternList)
         // *.*
         // *.JP*G
         // *.JP?
-        if ((*it).startsWith ("*.") &&
+        if ((*it).startsWith (QLatin1String("*.")) &&
             (*it).length() > 2 &&
             (*it).indexOf('*', 2) < 0 && (*it).indexOf ('?', 2) < 0)
         {
@@ -2534,7 +2534,7 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
             if ( urlDir == "/" )			// '1'..'4' above
             {
                 keyword = urlFile;
-                fileName = QString();
+                fileName.clear();
             }
             else					// '5' or '6' above
             {
