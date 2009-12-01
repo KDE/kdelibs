@@ -224,7 +224,7 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
     }
 }
 
-KWebWallet::KWebWallet(QObject *parent, qlonglong wid)
+KWebWallet::KWebWallet(QObject *parent, WId wid)
            :QObject(parent), d(new KWebWalletPrivate(this))
 {
     if (!wid) {
