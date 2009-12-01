@@ -171,7 +171,7 @@ int StubProcess::ConverseStub(int check)
                     tmp = env.at(i).mid(sizeof(startup_env) - 1);
 	    }
 	    if( tmp.isEmpty())
-		tmp = "0";
+		tmp = "0"; // krazy:exclude=doublequote_chars
 	    writeLine(tmp);
 	} else if (line == "app_start_pid") { // obsolete
 	    // Force the pid_t returned from getpid() into

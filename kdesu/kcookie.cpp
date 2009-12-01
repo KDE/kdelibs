@@ -76,7 +76,7 @@ void KCookie::getXCookie()
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
     QByteArray disp = d->m_Display;
-    if (disp.startsWith("localhost:"))
+    if (disp.startsWith("localhost:")) // krazy:exclude=strings
        disp.remove(0, 9);
 
     QProcess proc;
