@@ -895,7 +895,7 @@ KCmdLineArgsStatic::parseAllArgs()
             s->printQ(i18nc("@info:shell message on appcmd --version; do not translate 'Development Platform'"
                             "%3 application name, other %n version strings",
                             "Qt: %1\n"
-                            "KDE Devlopment Platform: %2\n"
+                            "KDE Development Platform: %2\n"
                             "%3: %4\n",
                             QString::fromLatin1(qVersion()),
                             QString::fromLatin1(KDE_VERSION_STRING),
