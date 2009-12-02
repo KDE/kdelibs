@@ -61,16 +61,14 @@ KUrlNavigatorButton::~KUrlNavigatorButton()
 void KUrlNavigatorButton::setUrl(const KUrl& url)
 {
     m_url = url;
-    QString text = url.fileName();
-    if (text.isEmpty()) {
-        const QString protocol = url.protocol();
-        if (protocol == "nepomuksearch") {
-            text = i18nc("@action:button", "Query Results");
-        } else {
-            text = protocol;
-        }
+
+    if (m_url.isLocalFile()) {
+        setText(m_url.fileName());
+    } else {
+        KIO::StatJob* job = KIO::stat(m_url, KIO::HideProgressInfo);
+        connect(job, SIGNAL(result(KJob*)),
+                this, SLOT(statFinished(KJob*)));
     }
-    setText(text);
 }
 
 KUrl KUrlNavigatorButton::url() const
@@ -99,8 +97,17 @@ bool KUrlNavigatorButton::isActive() const
     return isDisplayHintEnabled(ActivatedHint);
 }
 
-void KUrlNavigatorButton::setText(const QString& text)
+void KUrlNavigatorButton::setText(const QString& text_)
 {
+    QString text(text_);
+    if (text.isEmpty()) {
+        const QString protocol = m_url.protocol();
+        if (protocol == QLatin1String("nepomuksearch")) {
+            text = i18nc("@action:button", "Query Results");
+        } else {
+            text = protocol;
+        }
+    }
     KUrlButton::setText(text);
     updateMinimumWidth();
 }
@@ -355,12 +362,13 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
 
     foreach (const KIO::UDSEntry& entry, entries) {
         if (entry.isDir()) {
-            QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
-            if (name.isEmpty()) {
-                name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            QString displayName = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+            if (displayName.isEmpty()) {
+                displayName = name;
             }
             if ((name != ".") && (name != "..")) {
-                m_subdirs.append(name);
+                m_subdirs.append(qMakePair(name, displayName));
             }
         }
     }
@@ -370,16 +378,27 @@ void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 {
     const int result = action->data().toInt();
     KUrl url = m_url;
-    url.addPath(m_subdirs.at(result));
+    url.addPath(m_subdirs.at(result).first);
     urlsDropped(url, event);
+}
+
+void KUrlNavigatorButton::statFinished(KJob* job)
+{
+    KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
+    QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+    if (!name.isEmpty()) {
+        setText(name);
+    } else {
+        setText(m_url.fileName());
+    }
 }
 
 /**
  * Helper function for listJobFinished
  */
-static bool naturalLessThan(const QString& s1, const QString& s2)
+static bool naturalLessThan(const QPair<QString, QString>& s1, const QPair<QString, QString>& s2)
 {
-    return KStringHandler::naturalCompare(s1, s2, Qt::CaseInsensitive) < 0;
+    return KStringHandler::naturalCompare(s1.first, s2.first, Qt::CaseInsensitive) < 0;
 }
 
 void KUrlNavigatorButton::listJobFinished(KJob* job)
@@ -413,19 +432,19 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     const QString relativeUrl = KUrl::relativeUrl(m_url, urlNavigator()->url());
     const QString selectedSubdir = relativeUrl.section('/', 1, 1);
 
-    int i = 0;
-    foreach (const QString& subdir, m_subdirs) {
-        QString text = KStringHandler::csqueeze(subdir, 60);
+    for (int i = 0; i < m_subdirs.count(); ++i) {
+        const QString subdirName = m_subdirs[i].first;
+        const QString subdirDisplayName = m_subdirs[i].second;
+        QString text = KStringHandler::csqueeze(subdirDisplayName, 60);
         text.replace('&', "&&");
         QAction* action = new QAction(text, this);
-        if (selectedSubdir == subdir) {
+        if (selectedSubdir == subdirName) {
             QFont font(action->font());
             font.setBold(true);
             action->setFont(font);
         }
         action->setData(i);
         m_dirsMenu->addAction(action);
-        ++i;
 
         if (i > 100) {
             // Opening a menu with several 100 items makes no sense from
@@ -447,7 +466,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = m_url;
-        url.addPath(m_subdirs[result]);
+        url.addPath(m_subdirs[result].first);
         urlNavigator()->setUrl(url);
     }
 

@@ -100,6 +100,7 @@ private Q_SLOTS:
     void entriesList(KIO::Job* job, const KIO::UDSEntryList& entries);
     void listJobFinished(KJob* job);
     void urlsDropped(QAction* action, QDropEvent* event);
+    void statFinished(KJob*);
 
 private:
     int arrowWidth() const;
@@ -112,7 +113,8 @@ private:
     KUrl m_url;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
-    QStringList m_subdirs;
+    /// pair of name and display name
+    QList<QPair<QString,QString> > m_subdirs;
 
     static QPointer<KUrlNavigatorMenu> m_dirsMenu;
 };
