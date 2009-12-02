@@ -22,6 +22,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
+#include <QtGlobal>
+
 #include <kio/kio_export.h>
 
 #ifdef Q_OS_UNIX

@@ -106,7 +106,11 @@ check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
+# This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
+# on previous versions so don't do the check on APPLE.
+if(NOT APPLE)
 check_function_exists(fdatasync        HAVE_FDATASYNC)                # kdecore
+endif(NOT APPLE)
 check_function_exists(mmap             HAVE_MMAP)                     # kdecore, khtml
 
 if(NOT WIN32)
