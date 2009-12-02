@@ -91,6 +91,16 @@ class QImage;
  * you can set CacheThumbnail=false to prevent your thumbnails from being cached
  * on disk.
  *
+ * The following optional property can also be added to the .desktop file:
+ * \code
+ * ThumbnailerVersion=N
+ * \endcode
+ * where N is some nonnegative integer. If a cached thumbnail has been created with a
+ * previous version of the thumbnailer, then the cached thumbnail will be discarded and
+ * a new one will be regenerated. Increase (or define) the version number if and only if 
+ * old thumbnails need to be regenerated.
+ * If no version number is provided, then the version is assumed to be <0.
+ *
  * @short Baseclass for thumbnail-generating plugins.
  */
 class KIO_EXPORT ThumbCreator

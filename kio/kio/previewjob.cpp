@@ -413,6 +413,30 @@ bool PreviewJobPrivate::statResultThumbnail()
     if ( thumb.text( "Thumb::URI", 0 ) != origName ||
          thumb.text( "Thumb::MTime", 0 ).toInt() != tOrig ) return false;
 
+    QString thumbnailerVersion = currentItem.plugin->property("ThumbnailerVersion", QVariant::String).toString();
+
+    if (!thumbnailerVersion.isEmpty() && thumb.text("Software", 0).startsWith("KDE Thumbnail Generator")) {
+        //Check if the version matches
+        //The software string should read "KDE Thumbnail Generator pluginName (vX)"
+        QString softwareString = thumb.text("Software", 0).remove("KDE Thumbnail Generator").trimmed();
+        if (softwareString.isEmpty()) {
+            // The thumbnail has been created with an older version, recreating
+            return false;
+        }
+        int versionIndex = softwareString.lastIndexOf("(v");
+        if (versionIndex < 0) {
+            return false;
+        }
+
+        QString cachedVersion = softwareString.remove(0, versionIndex+2);
+        cachedVersion.chop(1);
+        uint thumbnailerMajor = thumbnailerVersion.toInt();
+        uint cachedMajor = cachedVersion.toInt();
+        if (thumbnailerMajor > cachedMajor) {
+            return false;
+        }
+    }
+
     // Found it, use it
     emitPreview( thumb );
     succeeded = true;
@@ -525,7 +549,12 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         thumb.setText("Thumb::MTime", QString::number(tOrig));
         thumb.setText("Thumb::Size", number(currentItem.item.size()));
         thumb.setText("Thumb::Mimetype", currentItem.item.mimetype());
-        thumb.setText("Software", "KDE Thumbnail Generator");
+        QString thumbnailerVersion = currentItem.plugin->property("ThumbnailerVersion", QVariant::String).toString();
+        QString signature = QString("KDE Thumbnail Generator "+currentItem.plugin->name());
+        if (!thumbnailerVersion.isEmpty()) {
+            signature.append(" (v"+thumbnailerVersion+')');
+        }
+        thumb.setText("Software", signature);
         KTemporaryFile temp;
         temp.setPrefix(thumbPath + "kde-tmp-");
         temp.setSuffix(".png");
