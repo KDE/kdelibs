@@ -107,8 +107,9 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
         titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />&nbsp;</html>",
                                   aboutData->programName(), aboutData->version()));
     else
-        titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>",
-                                  aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
+        titleWidget->setText(i18nc("Program name, version and KDE platform version; do not translate 'Development Platform'",
+                                   "<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE Development Platform %3</html>",
+                                   aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
