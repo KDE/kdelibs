@@ -291,11 +291,11 @@ KLocalePrivate::KLocalePrivate(const QString& catalog, KConfig *config, const QS
                                const QString &country_)
                : language(language_),
                  country(country_),
+                 currency(0),
                  useTranscript(false),
                  codecForEncoding(0),
                  languages(0),
                  calendar(0),
-                 currency(0),
                  catalogName(catalog)
 {
     initEncoding();
