@@ -736,23 +736,6 @@ void kClearDebugConfig()
     }
 }
 
-#if 1 // TODO: remove before 4.4 is released
-// static, deprecated
-bool KDebug::hasNullOutput(QtMsgType type, int area)
-{
-    return KDebug::hasNullOutput(type, true, area, true /*enableByDefault*/);
-}
-
-// static, deprecated
-bool KDebug::hasNullOutput(QtMsgType type, bool condition, int area)
-{
-    if (!condition) {
-        return true;
-    }
-    return KDebug::hasNullOutput(type, true, area, true /*enableByDefault*/);
-}
-#endif
-
 // static
 bool KDebug::hasNullOutput(QtMsgType type,
                            bool condition,

@@ -247,15 +247,6 @@ public:
     inline QDebug operator()(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
         { if (cond) return operator()(area); return kDebugDevNull(); }
 
-#if 1 // TODO: remove before 4.4 is released
-    /// @internal
-    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type,
-                                             int area);
-    /// @internal
-    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type, bool condition,
-                                             int area);
-#endif
-
     /// @internal
     static KDECORE_EXPORT bool hasNullOutput(QtMsgType type,
                                              bool condition,
