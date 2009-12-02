@@ -665,10 +665,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
 #ifdef KBUILDSYCOCA_GUI
    KApplication k;
-#else
-   KApplication k(false);
-#endif
    k.disableSessionManagement();
+#else
+   QCoreApplication k(argc, argv);
+   KComponentData mainComponent(d);
+#endif
 
 #ifdef KBUILDSYCOCA_GUI
    silent = args->isSet("silent");
