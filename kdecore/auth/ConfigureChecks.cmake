@@ -20,7 +20,7 @@ if(NOT KAUTH_BACKEND)
             macro_optional_find_package(PolkitQt-1)
             
             if (POLKITQT-1_FOUND)
-                set (KAUTH_BACKEND "PolkitQt1")
+                set (KAUTH_BACKEND "PolkitQt-1")
                 macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
                                   FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using polkit-1), hence to enable some workspace functionalities")
             else (POLKITQT-1_FOUND)
