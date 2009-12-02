@@ -42,11 +42,13 @@ QStringList FakePortableMediaPlayer::supportedProtocols() const
 
 QStringList FakePortableMediaPlayer::supportedDrivers(QString protocol) const
 {
+    Q_UNUSED(protocol);
     return fakeDevice()->property("supportedDrivers").toString().simplified().split(',');
 }
 
 QVariant Solid::Backends::Fake::FakePortableMediaPlayer::driverHandle(const QString &driver) const
 {
+    Q_UNUSED(driver);
     return QVariant();
 }
 

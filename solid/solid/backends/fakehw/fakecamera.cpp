@@ -55,6 +55,7 @@ QStringList FakeCamera::supportedDrivers(QString /*protocol*/) const
 
 QVariant Solid::Backends::Fake::FakeCamera::driverHandle(const QString &driver) const
 {
+    Q_UNUSED(driver);
     return QVariant();
 }
 
