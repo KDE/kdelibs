@@ -100,6 +100,11 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
     QMap<QString, QString> commentsByLanguage;
 
     const QStringList mimeFiles = KGlobal::dirs()->findAllResources(resource, file);
+    if (mimeFiles.isEmpty()) {
+        kWarning() << "No file found for" << file << ", even though the file appeared in a directory listing.";
+        kWarning() << "Either it was just removed, or the directory doesn't have executable permission...";
+        return 0;
+    }
     QListIterator<QString> mimeFilesIter(mimeFiles);
     mimeFilesIter.toBack();
     while (mimeFilesIter.hasPrevious()) { // global first, then local.
@@ -167,7 +172,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         kWarning() << "Missing <comment> field in" << file;
     }
 
-    //kDebug() << "Creating mimetype" << name << "from file" << file << "path" << fullPath;
+    //kDebug() << "Creating mimetype" << name << "from file" << file << mimeFiles;
 
     KMimeType* e;
     if ( name == "inode/directory" )
@@ -347,11 +352,10 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
     const KMimeFileParser::AllGlobs& allGlobs = m_parser.mimeTypeGlobs();
     Q_FOREACH(const QString& mimeTypeName, m_parser.allMimeTypes()) {
         const KMimeType::Ptr mimeType = findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
-	if ( ! mimeType )
-	{
-		kFatal() << "MIMETYPE NOT FOUND:" << mimeTypeName ; 
-		continue;
-	}
+        if (!mimeType) {
+            kDebug() << "globs file refers to unknown mimetype" << mimeTypeName;
+            continue;
+        }
         const KMimeFileParser::GlobList globs = allGlobs.value(mimeTypeName);
         Q_FOREACH(const KMimeFileParser::Glob& glob, globs) {
             const QString &pattern = glob.pattern;
