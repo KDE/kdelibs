@@ -30,7 +30,7 @@ class KCalendarSystemJalaliPrivate;
 /**
  Jalali calendar type implementation
 */
-class KDECORE_EXPORT KCalendarSystemJalali : public KCalendarSystem
+class KCalendarSystemJalali : public KCalendarSystem
 {
 public:
     explicit KCalendarSystemJalali( const KLocale * locale = 0 );

@@ -42,7 +42,7 @@ class KCalendarSystemGregorianPrivate;
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
  */
-class KDECORE_EXPORT KCalendarSystemGregorian: public KCalendarSystem
+class KCalendarSystemGregorian: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemGregorian ( const KLocale *locale = 0 );

@@ -38,7 +38,7 @@ class KCalendarSystemJulianProleptic;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KCalendarSystemJulian: public KCalendarSystem
+class KCalendarSystemJulian: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemJulian( const KLocale *locale = 0 );

@@ -39,7 +39,7 @@ class KCalendarSystemGregorianProlepticPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KCalendarSystemGregorianProleptic: public KCalendarSystem
+class KCalendarSystemGregorianProleptic: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemGregorianProleptic( const KLocale *locale = 0 );

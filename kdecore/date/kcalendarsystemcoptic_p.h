@@ -34,7 +34,7 @@ class KCalendarSystemCopticPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KCalendarSystemCoptic: public KCalendarSystem
+class KCalendarSystemCoptic: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemCoptic( const KLocale *locale = 0 );

@@ -38,7 +38,7 @@ class KCalendarSystemIndianNationalPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KCalendarSystemIndianNational: public KCalendarSystem
+class KCalendarSystemIndianNational: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemIndianNational( const KLocale *locale = 0 );

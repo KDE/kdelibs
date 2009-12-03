@@ -39,7 +39,7 @@ class KCalendarSystemHijriPrivate;
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
  */
-class KDECORE_EXPORT KCalendarSystemHijri : public KCalendarSystem
+class KCalendarSystemHijri : public KCalendarSystem
 {
 public:
     explicit KCalendarSystemHijri( const KLocale *locale = 0 );

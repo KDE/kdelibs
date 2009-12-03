@@ -38,7 +38,7 @@ class KCalendarSystemHebrewPrivate;
  *
  * @author Hans Petter Bieker <bieker@kde.org>
  */
-class KDECORE_EXPORT KCalendarSystemHebrew : public KCalendarSystem
+class KCalendarSystemHebrew : public KCalendarSystem
 {
 public:
     explicit KCalendarSystemHebrew( const KLocale * locale = 0 );

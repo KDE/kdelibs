@@ -35,7 +35,7 @@ class KCalendarSystemEthiopianPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KCalendarSystemEthiopian: public KCalendarSystemCoptic
+class KCalendarSystemEthiopian: public KCalendarSystemCoptic
 {
 public:
     explicit KCalendarSystemEthiopian( const KLocale *locale = 0 );
