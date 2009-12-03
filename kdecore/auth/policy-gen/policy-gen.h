@@ -27,8 +27,8 @@
 struct Action {
     QString name;
 
-    QMap<QString, QString> descriptions;
-    QMap<QString, QString> messages;
+    QHash<QString, QString> descriptions;
+    QHash<QString, QString> messages;
 
     QString policy;
     QString persistence;

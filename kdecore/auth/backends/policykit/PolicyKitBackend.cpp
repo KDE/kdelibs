@@ -88,10 +88,11 @@ bool PolicyKitBackend::isCallerAuthorized(const QString &action, QByteArray call
 
 void PolicyKitBackend::checkForResultChanged()
 {
-    foreach(const QString &action, m_cachedResults.keys()) {
-        if (m_cachedResults[action] != actionStatus(action)) {
-            m_cachedResults[action] = actionStatus(action);
-            emit actionStatusChanged(action, m_cachedResults[action]);
+    QHash<QString, Action::AuthStatus>::iterator i;
+    for (i = m_cachedResults.begin(); i != m_cachedResults.end(); ++i) {
+        if (i.value() != actionStatus(i.key())) {
+            i.value() = actionStatus(i.key());
+            emit actionStatusChanged(i.key(), i.value());
         }
     }
 }
