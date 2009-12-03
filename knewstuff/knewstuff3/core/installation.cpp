@@ -489,16 +489,13 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::Entry& 
             }
             if (success) {
                 success = file.rename(QUrl(installpath).toLocalFile());
-
-                kDebug() << "move: " << file.fileName() << " to " << installpath
-                    << QUrl(installpath).toLocalFile() << QUrl(installpath).toString() << QUrl(installpath).isValid();
+                kDebug() << "move: " << file.fileName() << " to " << installpath;
             }
             if (!success) {
                 kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
                 return QStringList();
             }
             installedFiles << installpath;
-            installedFiles << installdir + '/';
         }
     }
     return installedFiles;
@@ -511,8 +508,7 @@ void Installation::runPostInstallationCommand(const QString& installPath)
     QString fileArg(KShell::quoteArg(installPath));
     command.replace("%f", fileArg);
 
-    //kDebug() << "Postinstallation: execute command";
-    //kDebug() << "Command is: " << command;
+    kDebug() << "Run command: " << command;
 
     process.setShellCommand(command);
     int exitcode = process.execute();
