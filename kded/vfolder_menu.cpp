@@ -1506,6 +1506,7 @@ static QStringList parseLayoutNode(const QDomElement &docElem)
    if ( !optionDefaultLayout.isEmpty() )
        layout.append( optionDefaultLayout );
 
+   bool mergeTagExists = false;
    QDomNode n = docElem.firstChild();
    while( !n.isNull() ) {
       QDomElement e = n.toElement(); // try to convert the node to an element.
@@ -1533,9 +1534,16 @@ static QStringList parseLayoutNode(const QDomElement &docElem)
             layout.append(":M");
          else if (type == "all")
             layout.append(":A");
+         mergeTagExists = true;
       }
 
       n = n.nextSibling();
+   }
+
+   if ( !mergeTagExists ) {
+       layout.append(":M");
+       layout.append(":F");
+       kWarning() << "The menu spec file contains a Layout or DefaultLayout tag without the mandatory Merge tag inside. Please fix your file.";
    }
    return layout;
 }
