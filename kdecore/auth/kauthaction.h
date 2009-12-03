@@ -128,7 +128,7 @@ public:
      *
      * @returns true if the two actions are the same or both invalid
      */
-    bool operator==(const Action &action);
+    bool operator==(const Action &action) const;
 
     /**
     * @brief Negated comparison operator
@@ -137,7 +137,7 @@ public:
     *
     * @returns true if the two actions are different and not both invalid
     */
-    bool operator!=(const Action &action);
+    bool operator!=(const Action &action) const;
 
     /**
      * @brief Gets the action's name.

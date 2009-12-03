@@ -578,14 +578,14 @@ public:
      *
      * Note that you can do it also by compare errorCode() with the relative enumeration value.
      */
-    bool operator==(const ActionReply &reply);
+    bool operator==(const ActionReply &reply) const;
 
     /**
      * @brief Negated comparison operator
      *
      * See the operator==() for an important notice.
      */
-    bool operator!=(const ActionReply &reply);
+    bool operator!=(const ActionReply &reply) const;
 
     /// Output streaming operator for QDataStream
     friend QDataStream &operator<<(QDataStream &, const ActionReply &);

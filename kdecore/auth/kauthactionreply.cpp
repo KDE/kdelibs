@@ -162,12 +162,12 @@ ActionReply &ActionReply::operator=(const ActionReply & reply)
     return *this;
 }
 
-bool ActionReply::operator==(const ActionReply &reply)
+bool ActionReply::operator==(const ActionReply &reply) const
 {
     return (d->type == reply.d->type && d->errorCode == reply.d->errorCode);
 }
 
-bool ActionReply::operator!=(const ActionReply &reply)
+bool ActionReply::operator!=(const ActionReply &reply) const
 {
     return (d->type != reply.d->type || d->errorCode != reply.d->errorCode);
 }

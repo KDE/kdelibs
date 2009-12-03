@@ -84,12 +84,12 @@ Action &Action::operator=(const Action & action)
     return *this;
 }
 
-bool Action::operator==(const Action &action)
+bool Action::operator==(const Action &action) const
 {
     return d->name == action.d->name;
 }
 
-bool Action::operator!=(const Action &action)
+bool Action::operator!=(const Action &action) const
 {
     return d->name != action.d->name;
 }

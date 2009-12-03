@@ -18,8 +18,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#ifndef POLICYKIT_BACKEND_H
-#define POLICYKIT_BACKEND_H
+#ifndef POLKIT1BACKEND_H
+#define POLKIT1BACKEND_H
 
 #include "AuthBackend.h"
 #include <QHash>
