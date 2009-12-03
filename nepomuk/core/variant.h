@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,6 +49,12 @@ namespace Nepomuk {
      *     conversion from the actual type used in the Variant. Thus, if one only
      *     needs to display the value in a Variant toString and toStringList
      *     do the job.
+     * \li Variant comes with direct support for Resource. There is one special
+     *     thing about QUrl Variants though: for both isUrl() and
+     *     isResource() return \p true. However, toUrl() will return different
+     *     values for Resource and for QUrl Variants: in the former case the
+     *     actual Resource::resourceUri() is returned which can be different
+     *     in case of file:/ URLs.
      *
      * \author Sebastian Trueg <trueg@kde.org>
      */
@@ -305,7 +311,8 @@ namespace Nepomuk {
         /**
          * Convert into a Resource value.
          *
-         * Will return the first value of a Resource list.
+         * Will return the first value of a Resource list. Will also convert QUrl
+         * variants.
          */
         Resource toResource() const;
 

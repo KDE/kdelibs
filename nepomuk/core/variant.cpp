@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -671,7 +671,8 @@ bool Nepomuk::Variant::isUrl() const
 
 bool Nepomuk::Variant::isResource() const
 {
-    return( type() == qMetaTypeId<Resource>() );
+    return( type() == qMetaTypeId<Resource>() ||
+            isUrl() );
 }
 
 
@@ -743,7 +744,8 @@ bool Nepomuk::Variant::isUrlList() const
 
 bool Nepomuk::Variant::isResourceList() const
 {
-    return( type() == qMetaTypeId<QList<Resource> >() );
+    return( type() == qMetaTypeId<QList<Resource> >() ||
+            isUrlList() );
 }
 
 
@@ -900,7 +902,7 @@ QUrl Nepomuk::Variant::toUrl() const
         if(!l.isEmpty())
             return l.first();
     }
-    else if(isResource()) {
+    else if(type() == qMetaTypeId<Resource>()) {
         return toResource().resourceUri();
     }
 
@@ -910,11 +912,15 @@ QUrl Nepomuk::Variant::toUrl() const
 
 Nepomuk::Resource Nepomuk::Variant::toResource() const
 {
-    if(isResourceList()) {
+    if(isResourceList() || isUrlList()) {
         QList<Resource> l = toResourceList();
         if(!l.isEmpty())
             return l.first();
     }
+    else if(type() == QVariant::Url) {
+        return Resource(toUrl());
+    }
+
     return d->value.value<Resource>();
 }
 
@@ -1129,12 +1135,13 @@ QList<QDateTime> Nepomuk::Variant::toDateTimeList() const
 
 QList<QUrl> Nepomuk::Variant::toUrlList() const
 {
-    if( isUrl() || isResource() ) {
+    if( type() == qMetaTypeId<Resource>() ||
+        type() == QVariant::Url ) {
         QList<QUrl> l;
         l.append( toUrl() );
         return l;
     }
-    else if( isResourceList() ) {
+    else if( type() == qMetaTypeId<QList<Resource> >() ) {
         QList<QUrl> l;
         QList<Resource> rl = toResourceList();
         foreach(const Resource& r, rl)
@@ -1149,13 +1156,22 @@ QList<QUrl> Nepomuk::Variant::toUrlList() const
 
 QList<Nepomuk::Resource> Nepomuk::Variant::toResourceList() const
 {
-    if( isResource() ) {
+    if( type() == qMetaTypeId<Resource>() ||
+        type() == QVariant::Url ) {
         QList<Resource> l;
         l.append( toResource() );
         return l;
     }
-    else
+    else if( type() == qMetaTypeId<QList<QUrl> >() ) {
+        QList<QUrl> urls = toUrlList();
+        QList<Resource> l;
+        foreach(const QUrl& url, urls)
+            l << Resource(url);
+        return l;
+    }
+    else {
         return d->value.value<QList<Resource> >();
+    }
 }
 
 
