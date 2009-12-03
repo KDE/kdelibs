@@ -58,6 +58,7 @@ soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/
 
 kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 
+# why is this here ? I don#t see where nepomuk depends on nepomuk_rcgen. Alex
 add_dependencies(nepomuk nepomuk-rcgen)
 
 target_link_libraries(nepomuk
