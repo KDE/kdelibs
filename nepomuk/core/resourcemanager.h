@@ -179,20 +179,6 @@ namespace Nepomuk {
         QUrl generateUniqueUri( const QString& label );
 
         /**
-         * Generates a unique URI that is not used in the store yet. This method can be used to
-         * generate URIs for virtual types such as Tag.
-         *
-         * \param category An optional category for the URI. The only purpose is to increase usability
-         * for debugging.
-         * \param label A label that the algorithm should use to try to create a more readable URI.
-         *
-         * \return A new unique URI which can be used to define a new resource.
-         *
-         * \since 4.4
-         */
-        QUrl generateUniqueUri( const QString& category, const QString& label );
-
-        /**
          * \internal Non-public API. Used by Resource to signalize errors.
          */
         void notifyError( const QString& uri, int errorCode );
