@@ -32,7 +32,6 @@ set(nepomukquery_SRC
   dbusoperators.cpp
 )
 
-include(SopranoAddOntology)
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
 
 set_source_files_properties(

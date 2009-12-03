@@ -1,5 +1,7 @@
 project(nepomuk)
 
+include(SopranoAddOntology)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 install(FILES
