@@ -25,6 +25,8 @@
 
 #include <kurl.h>
 
+#include <Soprano/Node> // for qHash(QUrl)
+
 #include "resourcedata.h"
 
 
@@ -39,7 +41,8 @@ namespace Nepomuk {
     class MainModel;
     class ResourceFilterModel;
 
-    typedef QHash<QString, Nepomuk::ResourceData*> ResourceDataHash;
+    typedef QHash<QUrl, Nepomuk::ResourceData*> ResourceDataHash;
+    typedef QHash<QString, Nepomuk::ResourceData*> KickoffDataHash;
 
     class ResourceManagerPrivate
     {
@@ -56,8 +59,16 @@ namespace Nepomuk {
         /// used to protect all data in ResourceManager
         QMutex mutex;
 
+        /// contains all initialized ResourceData object, i.e. all those which
+        /// successfully ran determineUri()
         ResourceDataHash m_initializedData;
-        ResourceDataHash m_kickoffData;
+
+        /// contains all non-initialized ResourceData objects created in data(QUrl)
+        ResourceDataHash m_uriKickoffData;
+
+        /// contains all non-initialized ResourceData objects created in data(QString)
+        KickoffDataHash m_idKickoffData;
+
         int dataCnt;
 
         ResourceManager* m_manager;
@@ -85,20 +96,6 @@ namespace Nepomuk {
          * The Resource constructors use this method in combination with ref()
          */
         ResourceData* data( const QUrl& uri, const QUrl& type );
-
-        /**
-         * Create a ResourceData instance for a local file with URL \p file.
-         * Starting with KDE 4.4 file:/ URLs are no longer used for file resources.
-         * Instead all resources use the nepomuk:/res/<uuid> URI scheme.
-         */
-        ResourceData* localFileData( const KUrl& file, const QUrl& type );
-
-        /**
-         * Look for the resource URI in local caches and optionally create a new ResourceData.
-         *
-         * Called by data() and localData()
-         */
-        ResourceData* findData( const QUrl& url, const QUrl& type );
 
         bool dataCacheFull();
         void cleanupCache();

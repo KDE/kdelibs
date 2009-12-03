@@ -61,24 +61,36 @@ Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manage
 
 Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, const QUrl& type )
 {
-    QUrl url( uri );
-
-    if ( url.isEmpty() ) {
+    if ( uri.isEmpty() ) {
         // return an invalid resource which may be activated by calling setProperty
-        return new ResourceData( url, QString(), type, this );
+        return new ResourceData( QUrl(), QString(), type, this );
     }
+
+    QUrl url( uri );
 
     // default to "file" scheme, i.e. we do not allow an empty scheme
     if ( url.scheme().isEmpty() ) {
         url.setScheme( "file" );
     }
 
-    // if scheme is file, try to follow a symlink
-    if ( url.scheme() == "file" ) {
-        return localFileData( url, type );
+    QMutexLocker lock( &mutex );
+
+    // look for the URI in the initialized and in the URI kickoff data
+    ResourceDataHash::iterator end = m_initializedData.end();
+    ResourceDataHash::iterator it = m_initializedData.find( url );
+    if( it == end ) {
+        end = m_uriKickoffData.end();
+        it = m_uriKickoffData.find( url );
     }
 
-    return findData( url, type );
+    if( it == end ) {
+        ResourceData* d = new ResourceData( url, QString(), type, this );
+        m_uriKickoffData.insert( url, d );
+        return d;
+    }
+    else {
+        return it.value();
+    }
 }
 
 
@@ -87,107 +99,19 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
     if ( uriOrId.isEmpty() ) {
         return new ResourceData( QUrl(), QString(), type, this );
     }
+    else if( QFile::exists( uriOrId ) ) {
+        return data( KUrl(uriOrId), type );
+    }
 
     QMutexLocker lock( &mutex );
 
-    ResourceDataHash::iterator it = m_initializedData.find( uriOrId );
-
-    bool resFound = ( it != m_initializedData.end() );
-
-    //
-    // The uriOrId is not a known local URI. Might be a kickoff value though
-    //
-    if( it == m_initializedData.end() ) {
-        it = m_kickoffData.find( uriOrId );
-        resFound = ( it != m_kickoffData.end() );
-    }
-
-    //
-    // The uriOrId has no local representation yet -> create one
-    //
-    if( !resFound ) {
-//        kDebug() << "No existing ResourceData instance found for uriOrId " << uriOrId;
-        //
-        // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
-        //
+    KickoffDataHash::iterator it = m_idKickoffData.find( uriOrId );
+    if( it == m_idKickoffData.end() ) {
         ResourceData* d = new ResourceData( QUrl(), uriOrId, type, this );
-        m_kickoffData.insert( uriOrId, d );
-
+        m_idKickoffData.insert( uriOrId, d );
         return d;
     }
     else {
-        //
-        // Reuse the already existing ResourceData object
-        //
-        return it.value();
-    }
-}
-
-
-Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::localFileData( const KUrl& file, const QUrl& type )
-{
-    KUrl url(file);
-
-    //
-    // resolve symlinks
-    //
-    QFileInfo fileInfo( url.toLocalFile() );
-    QString linkTarget = fileInfo.canonicalFilePath();
-    // linkTarget is empty for dangling symlinks
-    if ( !linkTarget.isEmpty() ) {
-        url = linkTarget;
-    }
-
-    QUrl resourceUri;
-
-    //
-    // Starting with KDE 4.4 file URLs are no longer used as resource URIs. Instead all resources have
-    // "unique" UUID based URIs following the nepomuk:/res/<uuid> scheme
-    //
-    Soprano::QueryResultIterator it = m_manager->mainModel()->executeQuery( QString("select ?r where { ?r %1 %2 . }")
-                                                                            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NIE::url()))
-                                                                            .arg(Soprano::Node::resourceToN3(url)),
-                                                                            Soprano::Query::QueryLanguageSparql );
-    if( it.next() ) {
-        resourceUri = it["r"].uri();
-    }
-    it.close();
-
-    //
-    // If we have a resource uri everything is fine. We can just use it to create the ResourceData instance.
-    // If not, however, we need to create a new instance while remembering the original path.
-    //
-    if( !resourceUri.isEmpty() ) {
-        return findData( resourceUri, type );
-    }
-    else {
-        // let ResourceData::determineUri() do the rest
-        return data( url.url(), type );
-    }
-}
-
-
-Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::findData( const QUrl& url, const QUrl& type )
-{
-    ResourceDataHash::iterator it = m_initializedData.find( url.toString() );
-
-    //
-    // The uriOrId has no local representation yet -> create one
-    //
-    if( it == m_initializedData.end() ) {
-//        kDebug() << "No existing ResourceData instance found for uri " << url;
-        //
-        // The actual URI is already known here
-        //
-        ResourceData* d = new ResourceData( url, QString(), type, this );
-        m_initializedData.insert( url.toString(), d );
-
-        return d;
-    }
-    else {
-        //
-        // Reuse the already existing ResourceData object
-        //
         return it.value();
     }
 }
@@ -200,8 +124,14 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
-        for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
-             rdIt != m_kickoffData.end(); ++rdIt ) {
+        for( ResourceDataHash::iterator rdIt = m_uriKickoffData.begin();
+             rdIt != m_uriKickoffData.end(); ++rdIt ) {
+            if( rdIt.value()->type() == type ) {
+                l.append( rdIt.value() );
+            }
+        }
+        for( KickoffDataHash::iterator rdIt = m_idKickoffData.begin();
+             rdIt != m_idKickoffData.end(); ++rdIt ) {
             if( rdIt.value()->type() == type ) {
                 l.append( rdIt.value() );
             }
@@ -218,9 +148,15 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWi
 
     QList<ResourceData*> l;
 
-    for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
-         rdIt != m_kickoffData.end(); ++rdIt ) {
-
+    for( ResourceDataHash::iterator rdIt = m_uriKickoffData.begin();
+         rdIt != m_uriKickoffData.end(); ++rdIt ) {
+        if( rdIt.value()->hasProperty( uri ) &&
+            rdIt.value()->property( uri ) == v ) {
+            l.append( rdIt.value() );
+        }
+    }
+    for( KickoffDataHash::iterator rdIt = m_idKickoffData.begin();
+         rdIt != m_idKickoffData.end(); ++rdIt ) {
         if( rdIt.value()->hasProperty( uri ) &&
             rdIt.value()->property( uri ) == v ) {
             l.append( rdIt.value() );
@@ -235,8 +171,12 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceData()
 {
     QList<ResourceData*> l;
 
-    for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
-         rdIt != m_kickoffData.end(); ++rdIt ) {
+    for( ResourceDataHash::iterator rdIt = m_uriKickoffData.begin();
+         rdIt != m_uriKickoffData.end(); ++rdIt ) {
+        l.append( rdIt.value() );
+    }
+    for( KickoffDataHash::iterator rdIt = m_idKickoffData.begin();
+         rdIt != m_idKickoffData.end(); ++rdIt ) {
         l.append( rdIt.value() );
     }
     for( ResourceDataHash::iterator rdIt = m_initializedData.begin();

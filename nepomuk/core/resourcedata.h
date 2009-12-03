@@ -73,15 +73,6 @@ namespace Nepomuk {
         bool isFile();
 
         /**
-         * Until the resource has not been synced or even loaded the actual URI is not known.
-         * It might even be possible that none exists yet. Thus, the identifier used to create
-         * the resource object is stored in the kickoffUriOrId. During the syncing it will be
-         * determined if it is an actual existing URI or an existing identifier or if a new URI
-         * has to be created.
-         */
-        QString kickoffUriOrId() const;
-
-        /**
          * The URI of the resource. This might be empty if the resource was not synced yet.
          * \sa kickoffUriOrId
          */
@@ -150,14 +141,6 @@ namespace Nepomuk {
          */
         bool determineUri();
 
-        /**
-         * Sync the local type with the type stored in the RDF store.
-         * If both are compatible, i.e. both lie on one branch in the type
-         * hierarchy, then the more detailed one is used. Otherwise the type is
-         * not changed.
-         */
-//        void updateType();
-
         void invalidateCache() { m_cacheDirty = true; }
 
         Thing pimoThing();
@@ -173,21 +156,18 @@ namespace Nepomuk {
         bool constHasType( const QUrl& type ) const;
         void loadType( const QUrl& type );
 
-        /**
-         * The kickoff URI or ID is used as long as the resource has not been synced yet
-         * to identify it.
-         */
-        QString m_kickoffUriOrId;
-        QUrl m_uri;
+        /// identifier that was used to construct the resource. Will be used by determineUri
+        /// to check for nao:identifiers or even nie:urls.
+        QString m_kickoffId;
 
-        /**
-         * The kickoffIdentifier is the identifier used to construct the resource object.
-         * If the object has been constructed via a URI or determineUri has not been called
-         * yet this value is empty. Otherwise it equals m_kickoffUriOrId
-         */
-        QString m_kickoffIdentifier;
-        // For files that are not stored in Nepomuk yet we remember the file url for later use
-        KUrl m_fileUrl;
+        /// the URI that was used to construct the resource. Will be used by determineUri
+        /// to find the actual resource URI which is either m_kickoffUri itself or
+        /// a resource URI which relates to m_kickoffUri by nie:url
+        KUrl m_kickoffUri;
+
+        /// final resource URI created by determineUri
+        KUrl m_uri;
+
         QUrl m_mainType;
         QList<QUrl> m_types;
 
@@ -206,9 +186,6 @@ namespace Nepomuk {
 
         QHash<QUrl, Variant> m_cache;
         bool m_cacheDirty;
-
-        // used to prevent countless model operations in store()
-        bool m_initialTypeSaved;
 
         // using a pointer to avoid infinite creation loop
         Thing* m_pimoThing;
