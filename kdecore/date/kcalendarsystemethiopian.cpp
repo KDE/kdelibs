@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcalendarsystemethiopian.h"
+#include "kcalendarsystemethiopian_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"

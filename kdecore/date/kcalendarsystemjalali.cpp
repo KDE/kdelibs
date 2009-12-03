@@ -22,7 +22,7 @@
  */
 
 
-#include "kcalendarsystemjalali.h"
+#include "kcalendarsystemjalali_p.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>

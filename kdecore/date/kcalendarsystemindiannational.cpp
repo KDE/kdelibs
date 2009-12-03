@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcalendarsystemindiannational.h"
-#include "kcalendarsystemgregorianproleptic.h"
+#include "kcalendarsystemindiannational_p.h"
+#include "kcalendarsystemgregorianproleptic_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"

@@ -19,7 +19,7 @@
 
 // Derived gregorian kde calendar class
 
-#include "kcalendarsystemgregorianproleptic.h"
+#include "kcalendarsystemgregorianproleptic_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"

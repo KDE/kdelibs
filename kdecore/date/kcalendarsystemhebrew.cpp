@@ -22,7 +22,7 @@
 
 // Derived hebrew kde calendar class
 
-#include "kcalendarsystemhebrew.h"
+#include "kcalendarsystemhebrew_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"

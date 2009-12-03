@@ -39,7 +39,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
-#include <kcalendarsystemgregorian.h>
+#include "kcalendarsystemgregorian_p.h"
 #include <ksystemtimezone.h>
 #include <kdebug.h>
 

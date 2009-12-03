@@ -20,7 +20,7 @@
 #ifndef KCALENDARSYSTEMETHIOPIAN_H
 #define KCALENDARSYSTEMETHIOPIAN_H
 
-#include "kcalendarsystemcoptic.h"
+#include "kcalendarsystemcoptic_p.h"
 
 class KCalendarSystemEthiopianPrivate;
 

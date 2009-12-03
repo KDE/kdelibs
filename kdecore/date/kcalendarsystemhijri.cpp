@@ -21,7 +21,7 @@
 
 // Derived hijri kde calendar class
 
-#include "kcalendarsystemhijri.h"
+#include "kcalendarsystemhijri_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"

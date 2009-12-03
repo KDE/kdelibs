@@ -27,15 +27,15 @@
 #include <QtCore/QDateTime>
 
 #include "kdatetime.h"
-#include "kcalendarsystemcoptic.h"
-#include "kcalendarsystemethiopian.h"
-#include "kcalendarsystemgregorian.h"
-#include "kcalendarsystemgregorianproleptic.h"
-#include "kcalendarsystemhebrew.h"
-#include "kcalendarsystemhijri.h"
-#include "kcalendarsystemindiannational.h"
-#include "kcalendarsystemjalali.h"
-#include "kcalendarsystemjulian.h"
+#include "kcalendarsystemcoptic_p.h"
+#include "kcalendarsystemethiopian_p.h"
+#include "kcalendarsystemgregorian_p.h"
+#include "kcalendarsystemgregorianproleptic_p.h"
+#include "kcalendarsystemhebrew_p.h"
+#include "kcalendarsystemhijri_p.h"
+#include "kcalendarsystemindiannational_p.h"
+#include "kcalendarsystemjalali_p.h"
+#include "kcalendarsystemjulian_p.h"
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {

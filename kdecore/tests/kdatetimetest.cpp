@@ -22,7 +22,7 @@
 #include <QtCore/QDir>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kcalendarsystemgregorian.h>
+#include <kcalendarsystem.h>
 #include <ksystemtimezone.h>
 #include <kdatetime.h>
 #include <kconfiggroup.h>
@@ -3302,7 +3302,7 @@ void KDateTimeTest::strings_qttextdate()
 
 void KDateTimeTest::strings_format()
 {
-    KCalendarSystem* calendar = new KCalendarSystemGregorian(KGlobal::locale());
+    KCalendarSystem* calendar = KCalendarSystem::create(QString("gregorian"), KGlobal::locale());
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
     KTimeZone paris  = KSystemTimeZones::zone("Europe/Paris");
     KTimeZone berlin = KSystemTimeZones::zone("Europe/Berlin");

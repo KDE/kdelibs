@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcalendarsystemjulian.h"
+#include "kcalendarsystemjulian_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
