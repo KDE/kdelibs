@@ -43,12 +43,12 @@ enum Flags {
     // next item is 16
 };
 
-static void createXmlFile(QFile& file, int version, int flags)
+static void createXmlFile(QFile& file, int version, int flags, const QByteArray& toplevelTag = "gui")
 {
     const QByteArray xml =
         "<?xml version = '1.0'?>\n"
         "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
-        "<gui version=\"" + QByteArray::number(version) + "\" name=\"foo\" >\n"
+        "<" + toplevelTag + " version=\"" + QByteArray::number(version) + "\" name=\"foo\" >\n"
         "<MenuBar>\n";
     file.write(xml);
     if (flags & AddModifiedMenus) {
@@ -89,7 +89,7 @@ static void createXmlFile(QFile& file, int version, int flags)
             "</ActionProperties>\n"
             );
     }
-    file.write("</gui>\n");
+    file.write("</" + toplevelTag + ">\n");
 }
 
 
@@ -104,7 +104,7 @@ void KXmlGui_UnitTest::testFindVersionNumber_data()
         "<gui version=\"3\" name=\"foo\"/>\n" << "3";
     QTest::newRow("two digits") <<
         "<?xml version = '1.0'?>\n"
-        "<gui version=\"42\" name=\"foo\"/>\n" << "42";
+        "<kpartgui version=\"42\" name=\"foo\"/>\n" << "42";
     QTest::newRow("with spaces") << // as found in dirfilterplugin.rc for instance
         "<?xml version = '1.0'?>\n"
         "<gui version = \"1\" name=\"foo\"/>\n" << "1";
@@ -215,7 +215,7 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
 
     KTemporaryFile fileV5;
     QVERIFY(fileV5.open());
-    createXmlFile(fileV5, 5, AddToolBars | AddModifiedMenus);
+    createXmlFile(fileV5, 5, AddToolBars | AddModifiedMenus, "kpartgui");
     fileToVersionMap.insert(fileV5.fileName(), 5);
 
     // The highest version is neither the first nor last one in the list,
@@ -249,6 +249,42 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     QVERIFY(finalDoc.contains("<Action name=\"file_open\""));
     // Check that the toolbars modified by the user were kept
     QVERIFY(finalDoc.contains("<Action name=\"home\""));
+}
+
+void KXmlGui_UnitTest::testVersionHandlerOlderVersion()
+{
+    // This emulates the case where the application was upgraded
+    // so the local file should be discarded.
+
+    // Bug http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=550330
+    // Global file: version 4, using <gui>
+    // Local file: version 3, using <kpartplugin>
+
+    QMap<QString, int> fileToVersionMap; // makes QCOMPARE failures more readable than just temp filenames
+
+    QFile globalFile(KStandardDirs::locateLocal("appdata", "testui.rc"));
+    QVERIFY(globalFile.open(QIODevice::WriteOnly));
+    createXmlFile(globalFile, 4, AddActionProperties | AddModifiedToolBars);
+    fileToVersionMap.insert(globalFile.fileName(), 4);
+
+    KTemporaryFile localFile;
+    QVERIFY(localFile.open());
+    createXmlFile(localFile, 4, AddToolBars | AddModifiedMenus, "kpartpugin");
+    fileToVersionMap.insert(localFile.fileName(), 3);
+
+    QStringList files;
+    files << globalFile.fileName() << localFile.fileName();
+
+    globalFile.close();
+    localFile.close();
+
+    KXmlGuiVersionHandler versionHandler(files);
+    // We selected the global file, so in our map it has version 4.
+    QCOMPARE(fileToVersionMap.value(versionHandler.finalFile()), 4);
+    const QString finalDoc = versionHandler.finalDocument();
+    //kDebug() << finalDoc;
+    QVERIFY(finalDoc.startsWith("<?xml"));
+    QVERIFY(finalDoc.contains("version=\"4\""));
 }
 
 static QStringList collectMenuNames(KXMLGUIFactory& factory)
