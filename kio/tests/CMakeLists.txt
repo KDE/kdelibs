@@ -31,6 +31,7 @@ KIO_UNIT_TESTS(
   kdirlistertest
   kmountpointtest
   fileundomanagertest
+  kdirwatch_unittest
 )
 
 KIO_EXECUTABLE_TESTS(
