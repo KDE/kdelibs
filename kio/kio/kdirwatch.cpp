@@ -64,6 +64,7 @@
 #include "kmountpoint.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 // debug
 #include <sys/ioctl.h>
@@ -248,22 +249,32 @@ void KDirWatchPrivate::inotifyEventReceived()
     return;
 
   int pending = -1;
-  int offset = 0;
-  char buf[4096];
+  int offsetStartRead = 0; // where we read into buffer
+  char buf[8192];
   assert( m_inotify_fd > -1 );
   ioctl( m_inotify_fd, FIONREAD, &pending );
 
   while ( pending > 0 ) {
 
-    if ( pending > (int)sizeof( buf ) )
-      pending = sizeof( buf );
+    const int bytesToRead = qMin( pending, (int)sizeof( buf ) - offsetStartRead );
 
-    pending = read( m_inotify_fd, buf, pending);
+    int bytesAvailable = read( m_inotify_fd, &buf[offsetStartRead], bytesToRead );
+    offsetStartRead = 0;
+    pending -= bytesAvailable;
 
-    while ( pending > 0 ) {
-      struct inotify_event *event = (struct inotify_event *) &buf[offset];
-      pending -= sizeof( struct inotify_event ) + event->len;
-      offset += sizeof( struct inotify_event ) + event->len;
+    int offsetCurrent = 0;
+    while ( bytesAvailable >= (int)sizeof( struct inotify_event ) ) {
+      const struct inotify_event * const event = (struct inotify_event *) &buf[offsetCurrent];
+      const int eventSize = sizeof( struct inotify_event ) + event->len;
+      if ( bytesAvailable < eventSize ) {
+          // copy partial event to beginning of buffer
+          memmove(buf, &buf[offsetCurrent], bytesAvailable);
+          offsetStartRead = bytesAvailable;
+          break;
+      }
+
+      bytesAvailable -= eventSize;
+      offsetCurrent += eventSize;
 
       QString path;
       QByteArray cpath(event->name, event->len);
