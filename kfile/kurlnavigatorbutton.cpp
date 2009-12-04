@@ -39,6 +39,7 @@ QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_dirsMenu;
 KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent) :
     KUrlButton(parent),
     m_hoverArrow(false),
+    m_pendingTextChange(false),
     m_url(url),
     m_popupDelay(0),
     m_listJob(0)
@@ -65,6 +66,7 @@ void KUrlNavigatorButton::setUrl(const KUrl& url)
     if (m_url.isLocalFile()) {
         setText(m_url.fileName());
     } else {
+        m_pendingTextChange = true;
         KIO::StatJob* job = KIO::stat(m_url, KIO::HideProgressInfo);
         connect(job, SIGNAL(result(KJob*)),
                 this, SLOT(statFinished(KJob*)));
@@ -110,6 +112,10 @@ void KUrlNavigatorButton::setText(const QString& text)
     }
     KUrlButton::setText(adjustedText);
     updateMinimumWidth();
+    
+    // assure that statFinished() does not overwrite a text that has been
+    // set by a client of the URL navigator button
+    m_pendingTextChange = false;
 }
 
 QSize KUrlNavigatorButton::sizeHint() const
@@ -384,10 +390,9 @@ void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 
 void KUrlNavigatorButton::statFinished(KJob* job)
 {
-    // The text may only get changed if it has not been changed already from
-    // outside by calling setText() (e. g. from the KUrlNavigator, which might replace
-    // the text by a Places name).
-    if (text().isEmpty()) {
+    if (m_pendingTextChange) {  
+        m_pendingTextChange = false;
+        
         const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
         QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
         if (name.isEmpty()) {

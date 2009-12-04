@@ -110,6 +110,7 @@ private:
 
 private:
     bool m_hoverArrow;
+    bool m_pendingTextChange;
     KUrl m_url;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
