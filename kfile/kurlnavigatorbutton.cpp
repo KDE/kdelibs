@@ -347,7 +347,7 @@ void KUrlNavigatorButton::startListJob()
     }
 
     m_listJob = KIO::listDir(m_url, KIO::HideProgressInfo, false /*no hidden files*/);
-    m_subdirs.clear(); // just to be ++safe
+    m_subDirs.clear(); // just to be ++safe
 
     connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
             this, SLOT(entriesList(KIO::Job*, const KIO::UDSEntryList&)));
@@ -368,7 +368,7 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
                 displayName = name;
             }
             if ((name != ".") && (name != "..")) {
-                m_subdirs.append(qMakePair(name, displayName));
+                m_subDirs.append(qMakePair(name, displayName));
             }
         }
     }
@@ -378,7 +378,7 @@ void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 {
     const int result = action->data().toInt();
     KUrl url = m_url;
-    url.addPath(m_subdirs.at(result).first);
+    url.addPath(m_subDirs.at(result).first);
     urlsDropped(url, event);
 }
 
@@ -412,12 +412,12 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     }
 
     m_listJob = 0;
-    if (job->error() || m_subdirs.isEmpty()) {
+    if (job->error() || m_subDirs.isEmpty()) {
         // clear listing
         return;
     }
 
-    qSort(m_subdirs.begin(), m_subdirs.end(), naturalLessThan);
+    qSort(m_subDirs.begin(), m_subDirs.end(), naturalLessThan);
     setDisplayHintEnabled(PopupActiveHint, true);
     update(); // ensure the button is drawn highlighted
 
@@ -436,14 +436,14 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     const QString relativeUrl = KUrl::relativeUrl(m_url, urlNavigator()->url());
     const QString selectedSubdir = relativeUrl.section('/', 1, 1);
 
-    const int subDirsCount = m_subdirs.count();
+    const int subDirsCount = m_subDirs.count();
     for (int i = 0; i < subDirsCount; ++i) {
-        const QString subdirName = m_subdirs[i].first;
-        const QString subdirDisplayName = m_subdirs[i].second;
-        QString text = KStringHandler::csqueeze(subdirDisplayName, 60);
+        const QString subDirName = m_subDirs[i].first;
+        const QString subDirDisplayName = m_subDirs[i].second;
+        QString text = KStringHandler::csqueeze(subDirDisplayName, 60);
         text.replace('&', "&&");
         QAction* action = new QAction(text, this);
-        if (selectedSubdir == subdirName) {
+        if (selectedSubdir == subDirName) {
             QFont font(action->font());
             font.setBold(true);
             action->setFont(font);
@@ -471,11 +471,11 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = m_url;
-        url.addPath(m_subdirs[result].first);
+        url.addPath(m_subDirs[result].first);
         urlNavigator()->setUrl(url);
     }
 
-    m_subdirs.clear();
+    m_subDirs.clear();
     delete m_dirsMenu;
     m_dirsMenu = 0;
 

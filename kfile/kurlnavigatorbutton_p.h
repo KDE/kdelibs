@@ -114,7 +114,7 @@ private:
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     /// pair of name and display name
-    QList<QPair<QString,QString> > m_subdirs;
+    QList<QPair<QString,QString> > m_subDirs;
 
     static QPointer<KUrlNavigatorMenu> m_dirsMenu;
 };
