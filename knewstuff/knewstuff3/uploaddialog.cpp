@@ -41,8 +41,6 @@
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
-#include <kwallet.h>
-
 #include <attica/providermanager.h>
 #include <attica/provider.h>
 #include <attica/category.h>
@@ -65,7 +63,6 @@ namespace KNS3 {
         KUrl previewFile;
         QStringList categoryNames;
         QString contentId;
-        KWallet::Wallet* wallet;
         bool finished;
 
         Private()
@@ -117,10 +114,6 @@ bool UploadDialog::init(const QString &configfile)
 
     connect(&d->providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerAdded(const Attica::Provider&)));
     d->providerManager.loadDefaultProviders();
-
-    d->wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet(), 0);
-    d->wallet->createFolder("Attica");
-    d->wallet->setFolder("Attica");
 
     setCaption(i18n("Share Hot New Stuff"));
     setButtons(Ok | Cancel);
