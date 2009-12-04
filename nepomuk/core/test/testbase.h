@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -26,6 +26,9 @@ class TestBase : public QObject
     void initTestCase();
     virtual void init();
     virtual void cleanup();
+
+protected:
+    QString backendName() const;
 };
 
 #endif

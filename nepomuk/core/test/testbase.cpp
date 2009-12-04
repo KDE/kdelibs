@@ -36,4 +36,10 @@ void TestBase::cleanup()
 {
 }
 
+
+QString TestBase::backendName() const
+{
+    return Soprano::usedBackend()->pluginName();
+}
+
 #include "testbase.moc"

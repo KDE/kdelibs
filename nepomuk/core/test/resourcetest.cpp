@@ -318,7 +318,10 @@ void ResourceTest::testLocalFileUrls()
     ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile3.fileName()), Soprano::Vocabulary::NAO::rating(), Soprano::LiteralValue(4) );
 
     Resource fileRes4( KUrl(tmpFile3.fileName()) );
-    QCOMPARE( KUrl(fileRes4.resourceUri()), KUrl(tmpFile3.fileName()) );
+    // redland cannot handle UNION queries properly as we use in ResourceData::determineUri
+    if( backendName() == QLatin1String("redland"))
+        QEXPECT_FAIL( "", "The Redland backend is used for the test run. Its query support is rather poor which makes ResourceData::determineUri fail here.", Continue );
+    QCOMPARE( KUrl(fileRes4.resourceUri()).url(), KUrl(tmpFile3.fileName()).url() );
 }
 
 QTEST_KDEMAIN(ResourceTest, NoGUI)

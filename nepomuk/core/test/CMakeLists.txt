@@ -16,7 +16,7 @@ target_link_libraries(nepomuk_testbase nepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_
 
 set(resourcetest_SRCS resourcetest.cpp)
 soprano_add_ontology(resourcetest_SRCS
-  ${CMAKE_CURRENT_SOURCE_DIR}/nie.trig
+  ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig
   "NIE"
   "Nepomuk::Vocabulary"
   "trig")
