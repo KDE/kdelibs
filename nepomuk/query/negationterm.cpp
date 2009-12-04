@@ -27,9 +27,9 @@ QString Nepomuk::Query::NegationTermPrivate::toSparqlGraphPattern( const QString
 {
     QString varName = qbd->uniqueVarName();
     return QString( "OPTIONAL { %1 FILTER(%2=%3) . } . FILTER(!BOUND(%2)) . " )
-        .arg( m_subTerm.d_ptr->toSparqlGraphPattern( varName, qbd ) )
-        .arg( varName )
-        .arg( resourceVarName );
+        .arg( m_subTerm.d_ptr->toSparqlGraphPattern( varName, qbd ),
+              varName,
+              resourceVarName );
 }
 
 

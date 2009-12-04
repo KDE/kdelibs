@@ -48,10 +48,10 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
     QString v1 = qbd->uniqueVarName();
     QString v2 = qbd->uniqueVarName();
     return QString( "%1 %2 %3 . %3 bif:contains \"'%4*'\" . " )
-        .arg( resourceVarName )
-        .arg( v1 )
-        .arg( v2 )
-        .arg( m_value.toString() );
+        .arg( resourceVarName,
+              v1,
+              v2,
+              m_value.toString() );
 }
 
 
