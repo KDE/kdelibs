@@ -97,18 +97,18 @@ bool KUrlNavigatorButton::isActive() const
     return isDisplayHintEnabled(ActivatedHint);
 }
 
-void KUrlNavigatorButton::setText(const QString& text_)
+void KUrlNavigatorButton::setText(const QString& text)
 {
-    QString text(text_);
-    if (text.isEmpty()) {
+    QString adjustedText = text;
+    if (adjustedText.isEmpty()) {
         const QString protocol = m_url.protocol();
         if (protocol == QLatin1String("nepomuksearch")) {
-            text = i18nc("@action:button", "Query Results");
+            adjustedText = i18nc("@action:button", "Query Results");
         } else {
-            text = protocol;
+            adjustedText = protocol;
         }
     }
-    KUrlButton::setText(text);
+    KUrlButton::setText(adjustedText);
     updateMinimumWidth();
 }
 
@@ -384,12 +384,16 @@ void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 
 void KUrlNavigatorButton::statFinished(KJob* job)
 {
-    KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
-    QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
-    if (!name.isEmpty()) {
+    // The text may only get changed if it has not been changed already from
+    // outside by calling setText() (e. g. from the KUrlNavigator, which might replace
+    // the text by a Places name).
+    if (text().isEmpty()) {
+        const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
+        QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+        if (name.isEmpty()) {
+            name = m_url.fileName();
+        }
         setText(name);
-    } else {
-        setText(m_url.fileName());
     }
 }
 
@@ -432,7 +436,8 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     const QString relativeUrl = KUrl::relativeUrl(m_url, urlNavigator()->url());
     const QString selectedSubdir = relativeUrl.section('/', 1, 1);
 
-    for (int i = 0; i < m_subdirs.count(); ++i) {
+    const int subDirsCount = m_subdirs.count();
+    for (int i = 0; i < subDirsCount; ++i) {
         const QString subdirName = m_subdirs[i].first;
         const QString subdirDisplayName = m_subdirs[i].second;
         QString text = KStringHandler::csqueeze(subdirDisplayName, 60);
