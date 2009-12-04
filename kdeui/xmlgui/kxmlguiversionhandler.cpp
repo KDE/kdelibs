@@ -274,11 +274,11 @@ KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
 
             if ( (*local).file.startsWith(KGlobal::dirs()->localkdedir()) ) {
                 // load the local document and extract the action properties
-                QDomDocument document;
-                document.setContent( (*local).data );
+                QDomDocument localDocument;
+                localDocument.setContent( (*local).data );
 
-                const ActionPropertiesMap properties = extractActionProperties(document);
-                const QList<QDomElement> toolbars = extractToolBars(document);
+                const ActionPropertiesMap properties = extractActionProperties(localDocument);
+                const QList<QDomElement> toolbars = extractToolBars(localDocument);
 
                 // in case the document has a ActionProperties section
                 // we must not delete it but copy over the global doc
@@ -290,6 +290,7 @@ KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
                 if ( !properties.isEmpty() || !toolbars.isEmpty() ) {
                     // now load the global one with the higher version number
                     // into memory
+                    QDomDocument document;
                     document.setContent( (*best).data );
                     // and store the properties in there
                     storeActionProperties( document, properties );
