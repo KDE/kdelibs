@@ -1,7 +1,7 @@
 #include <QtCore/QString>
 #include <ksortablelist.h>
 
-int main( int argc, char **argv )
+int main( int /*argc*/, char **/*argv*/ )
 {
     KSortableList<QString> list;
     list.insert( 1,  "FOO           (1)" );

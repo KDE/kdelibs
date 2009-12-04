@@ -89,6 +89,7 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
 
 void KFileMetaInfoWidgetPrivate::init(KFileMetaInfoItem item, KFileMetaInfoWidget::Mode mode)
 {
+    Q_UNUSED(item)
     kDebug(7033) << "*** item "  << m_item.name()
                   << " is a " << m_value.typeName() << endl;
 

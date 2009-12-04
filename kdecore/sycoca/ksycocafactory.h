@@ -191,7 +191,7 @@ public:
     }
     void instanceDestroyed(F* factory) {
         if (m_factories.hasLocalData()) { // could be false on thread exit
-            Q_ASSERT(m_factories.localData()->factory() == factory);
+            Q_ASSERT(m_factories.localData()->factory() == factory); Q_UNUSED(factory)
             m_factories.setLocalData(0);
         }
     }

@@ -729,6 +729,7 @@ void KTcpSocket::setLocalCertificate(const QString &fileName, QSsl::EncodingForm
 //TODO
 void KTcpSocket::setPrivateKey(const KSslKey &key)
 {
+    Q_UNUSED(key)
 }
 
 
@@ -736,6 +737,10 @@ void KTcpSocket::setPrivateKey(const KSslKey &key)
 void KTcpSocket::setPrivateKey(const QString &fileName, KSslKey::Algorithm algorithm,
                                QSsl::EncodingFormat format, const QByteArray &passPhrase)
 {
+    Q_UNUSED(fileName)
+    Q_UNUSED(algorithm)
+    Q_UNUSED(format)
+    Q_UNUSED(passPhrase)
 }
 
 

@@ -583,8 +583,10 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
 void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
   Q_Q(KSelectionProxyModel);
+  Q_UNUSED(srcParent)
   Q_UNUSED(srcStart);
   Q_UNUSED(srcEnd);
+  Q_UNUSED(destParent)
   Q_UNUSED(destRow);
 
   PendingMove pendingMove = m_pendingMoves.pop();

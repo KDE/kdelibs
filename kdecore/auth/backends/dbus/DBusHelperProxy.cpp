@@ -197,6 +197,7 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
 
 void DBusHelperProxy::stopAction(const QString &action)
 {
+    Q_UNUSED(action)
 #ifdef __GNUC__
 #warning FIXME: The stop request should be action-specific rather than global
 #endif

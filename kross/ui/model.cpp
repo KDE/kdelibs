@@ -108,6 +108,7 @@ void ActionCollectionModel::slotCollectionToBeInserted( ActionCollection* child,
 {
     //krossdebug( QString( "ActionCollectionModel::slotCollectionToBeInserted: %1 %2" ).arg( child->name() ).arg( parent->name( ) )  );
     Q_ASSERT( parent );
+    Q_UNUSED( child )
     int row = parent->actions().count() + parent->collections().count(); // we assume child is appended!!
     QModelIndex parIdx = indexForCollection( parent );
     beginInsertRows( parIdx, row, row );
@@ -137,6 +138,7 @@ void ActionCollectionModel::slotActionToBeInserted( Action* child, ActionCollect
 {
     //krossdebug( QString( "ActionCollectionModel::slotActionInserted: %1 %2" ).arg( child->name() ).arg( parent->name() ) );
     Q_ASSERT( parent );
+    Q_UNUSED( child )
     int row = parent->actions().count(); // assume child is appended to actions!!
     QModelIndex parIdx = indexForCollection( parent );
     beginInsertRows( parIdx, row, row );

@@ -58,10 +58,10 @@ protected slots:
     void mouseButtonPressed(Qt::MouseButton button, bool state);
     void latch();
     void lock();
-    void keyAdded(Qt::Key key) {
+    void keyAdded(Qt::Key) {
         kDebug() << "Key added";
     }
-    void keyRemoved(Qt::Key key) {
+    void keyRemoved(Qt::Key) {
         kDebug() << "Key removed";
     }
 

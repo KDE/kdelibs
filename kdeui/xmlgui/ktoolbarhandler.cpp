@@ -145,6 +145,7 @@ class ToolBarHandler::Private
 
     void clientAdded( KXMLGUIClient *client )
     {
+      Q_UNUSED(client)
       parent->setupActions();
     }
 

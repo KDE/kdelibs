@@ -159,6 +159,7 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
 int KCategoryDrawer::categoryHeight(const QModelIndex &index, const QStyleOption &option) const
 {
     Q_UNUSED(index);
+    Q_UNUSED(option)
 
     QFont font(QApplication::font());
     font.setBold(true);
@@ -206,20 +207,24 @@ KCategoryDrawerV2::~KCategoryDrawerV2()
 {
 }
 
-void KCategoryDrawerV2::mouseButtonPressed(const QModelIndex &index, QMouseEvent *event)
+void KCategoryDrawerV2::mouseButtonPressed(const QModelIndex &index, QMouseEvent *)
 {
+    Q_UNUSED(index)
 }
 
-void KCategoryDrawerV2::mouseButtonReleased(const QModelIndex &index, QMouseEvent *event)
+void KCategoryDrawerV2::mouseButtonReleased(const QModelIndex &index, QMouseEvent *)
 {
+    Q_UNUSED(index)
 }
 
-void KCategoryDrawerV2::mouseButtonMoved(const QModelIndex &index, QMouseEvent *event)
+void KCategoryDrawerV2::mouseButtonMoved(const QModelIndex &index, QMouseEvent *)
 {
+    Q_UNUSED(index)
 }
 
-void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event)
+void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *)
 {
+    Q_UNUSED(index)
 }
 
 #include "kcategorydrawer.moc"

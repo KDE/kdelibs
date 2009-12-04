@@ -196,7 +196,7 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
 
 void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 {
-    Q_ASSERT( _job == KRun::job() );
+    Q_ASSERT( _job == KRun::job() ); Q_UNUSED(_job)
     KIO::TransferJob *job = static_cast<KIO::TransferJob *>(KRun::job());
     // Update our URL in case of a redirection
     //kDebug(1000) << "old URL=" << KRun::url();

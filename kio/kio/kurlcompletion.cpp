@@ -1205,7 +1205,7 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
  */
 void KUrlCompletionPrivate::_k_slotIOFinished( KJob * job )
 {
-	assert( job == list_job );
+	assert( job == list_job ); Q_UNUSED(job)
 
 	if ( list_urls.isEmpty() ) {
 

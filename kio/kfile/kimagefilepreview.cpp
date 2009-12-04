@@ -213,6 +213,8 @@ void KImageFilePreview::KImageFilePreviewPrivate::_k_slotResult( KJob *job )
 
 void KImageFilePreview::KImageFilePreviewPrivate::_k_slotStepAnimation( int frame )
 {
+    Q_UNUSED(frame)
+
     QPixmap pm(QSize(qMax(m_pmCurrent.size().width(), m_pmTransition.size().width()),
                      qMax(m_pmCurrent.size().height(), m_pmTransition.size().height())));
     pm.fill(Qt::transparent);

@@ -104,6 +104,7 @@ void HalBasicTest::testSignalHandling()
 
 void HalBasicTest::slotPropertyChanged(const QMap<QString,int> &changes)
 {
+    Q_UNUSED(changes)
 #if 0
     QVERIFY(m_device->isLocked());
     m_signalProcessed = true;

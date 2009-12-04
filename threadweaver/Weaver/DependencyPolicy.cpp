@@ -177,7 +177,7 @@ void DependencyPolicy::free( Job* job )
 
 void DependencyPolicy::release( Job* job )
 {
-    REQUIRE (job != 0);
+    REQUIRE (job != 0); Q_UNUSED(job)
 }
 
 void DependencyPolicy::destructed( Job* job )

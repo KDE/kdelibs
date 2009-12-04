@@ -969,6 +969,7 @@ void KWindowSystem::doNotManage( const QString& title )
 void KWindowSystem::allowExternalProcessWindowActivation( int pid )
 {
     // Normally supported by X11, but may depend on some window managers ?
+    Q_UNUSED(pid)
 }
 
 

@@ -65,6 +65,9 @@ QSet<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepS
 
 void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, const char *member)
 {
+    Q_UNUSED(receiver)
+    Q_UNUSED(member)
+
     if (!globalPowerManager->supportedSleepStates.contains(state)) {
         return;
     }

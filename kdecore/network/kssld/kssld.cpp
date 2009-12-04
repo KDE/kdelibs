@@ -226,6 +226,7 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
 
 void KSSLD::setRootCertificates(const QList<QSslCertificate> &rootCertificates)
 {
+    Q_UNUSED(rootCertificates)
     //TODO
 }
 

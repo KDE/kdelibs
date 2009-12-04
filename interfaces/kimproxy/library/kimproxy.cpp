@@ -617,6 +617,7 @@ OrgKdeKIMInterface * KIMProxy::stubForUid( const QString &uid )
 
 OrgKdeKIMInterface * KIMProxy::stubForProtocol( const QString &protocol)
 {
+    Q_UNUSED(protocol)
 #ifdef __GNUC__
 # warning "KIMProxy::stubForProtocol( const QString &protocol) code disabled: protocols() function doesn't exist. Need to fix it"
 #endif
