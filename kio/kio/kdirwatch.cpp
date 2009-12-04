@@ -259,8 +259,9 @@ void KDirWatchPrivate::inotifyEventReceived()
     const int bytesToRead = qMin( pending, (int)sizeof( buf ) - offsetStartRead );
 
     int bytesAvailable = read( m_inotify_fd, &buf[offsetStartRead], bytesToRead );
-    offsetStartRead = 0;
     pending -= bytesAvailable;
+    bytesAvailable += offsetStartRead;
+    offsetStartRead = 0;
 
     int offsetCurrent = 0;
     while ( bytesAvailable >= (int)sizeof( struct inotify_event ) ) {
