@@ -102,6 +102,11 @@ void UploadDialog::setUploadFile(const KUrl& payloadFile)
     d->ui.mFileNameLabel->setText(i18nc("Label showing the file name of a file that is about to be uploaded", "Uploading: %1", payloadFile.toLocalFile()));
 }
 
+void UploadDialog::setUploadName(const QString& name)
+{
+    d->ui.mNameEdit->setText(name);
+}
+
 bool UploadDialog::init(const QString &configfile)
 {
     // popuplate dialog with stuff
