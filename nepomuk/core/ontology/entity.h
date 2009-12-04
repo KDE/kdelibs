@@ -40,6 +40,8 @@ namespace Nepomuk {
         class EntityPrivate;
 
         /**
+         * \brief Abstract base class for Class and Property;
+         *
          * Base class for static ontology entities Class and Property.
          * It encapsulates the generic labels and comments that both
          * types have.
