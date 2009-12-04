@@ -29,6 +29,8 @@ class QueryTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void testToSparql_data();
+    void testToSparql();
 };
 
 #endif

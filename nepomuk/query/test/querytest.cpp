@@ -28,13 +28,15 @@
 #include "orterm.h"
 #include "negationterm.h"
 #include "comparisonterm.h"
-#include "pimo.h"
+#include "resourcetypeterm.h"
+#include "nie.h"
 
 #include <QtTest>
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Node>
 #include <Soprano/Vocabulary/NAO>
+#include <Soprano/Vocabulary/RDFS>
 
 #include <kdebug.h>
 
@@ -43,6 +45,55 @@ Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 using namespace Nepomuk::Query;
 
 
+// this is a tricky one as we nee to match the variable names and order of the queries exactly.
+void QueryTest::testToSparql_data()
+{
+    QTest::addColumn<Nepomuk::Query::Query>( "query" );
+    QTest::addColumn<QString>( "queryString" );
+
+    QTest::newRow( "simple literal query" )
+        << Query( LiteralTerm( "Hello" ) )
+        << QString::fromLatin1( "select distinct ?r where { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello*'\" . }" );
+
+    QTest::newRow( "type query" )
+        << Query( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) )
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . ?v1 %1 %2 . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()))
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()));
+
+    QDateTime now = QDateTime::currentDateTime();
+    QTest::newRow( "nie:lastModified" )
+        << Query( ComparisonTerm( Nepomuk::Vocabulary::NIE::lastModified(), LiteralTerm( now ), ComparisonTerm::GreaterOrEqual ) )
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1>=%2) . }")
+        .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NIE::lastModified()),
+             Soprano::Node::literalToN3(now));
+
+    QTest::newRow( "hastag with literal term" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( QLatin1String("nepomuk")) ) )
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . ?v3 bif:contains \"'nepomuk*'\" . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()))
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()))
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()));
+
+    QTest::newRow( "hastag with resource" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) ))
+        << QString::fromLatin1("select distinct ?r where { ?r %1 <nepomuk:/res/foobar> . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
+
+    QTest::newRow( "negated hastag with resource" )
+        << Query( NegationTerm::negateTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
+        << QString::fromLatin1("select distinct ?r where { OPTIONAL { ?v1 %1 <nepomuk:/res/foobar> . FILTER(?v1=?r) . } . FILTER(!BOUND(?v1)) . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
+}
+
+
+void QueryTest::testToSparql()
+{
+    QFETCH( Nepomuk::Query::Query, query );
+    QFETCH( QString, queryString );
+
+    QCOMPARE( query.toSparqlQuery().simplified(), queryString );
+}
 
 QTEST_MAIN( QueryTest )
 
