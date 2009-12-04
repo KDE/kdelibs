@@ -122,7 +122,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
         entry.insert( KIO::UDSEntry::UDS_URL, new_url.url() );
         kDebug() << "URL =" << url;
-        kDebug() << "New URL =" << urlStr;
+        kDebug() << "New URL =" << new_url;
     }
 
     if (mimetype.isEmpty())
