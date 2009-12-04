@@ -528,8 +528,7 @@ void JobTest::moveFileNoPermissions()
     // a direct rename(2) was used, or a full copy+del. In the first case
     // there is no destination file created, but in the second case the
     // destination file remains.
-    // In fact we assume /home is a separate partition, in this test, so:
-    QVERIFY( QFile::exists( dest ) );
+    //QVERIFY( QFile::exists( dest ) );
     QVERIFY( QFile::exists( src ) );
 #endif
 }
@@ -560,7 +559,7 @@ void JobTest::moveDirectoryNoPermissions()
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     QVERIFY( !ok );
     QCOMPARE( KIO::NetAccess::lastError(), (int)KIO::ERR_ACCESS_DENIED );
-    QVERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
+    //QVERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
     QVERIFY( QFile::exists( src ) );
 #endif
 }
