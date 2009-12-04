@@ -55,9 +55,9 @@ void Cache::readRegistry()
 
     QDomElement stuff = root.firstChildElement("stuff");
     while (!stuff.isNull()) {
-        Entry e;
+        EntryInternal e;
         e.setEntryXML(stuff);
-        e.setSource(Entry::Cache);
+        e.setSource(EntryInternal::Cache);
         cache.insert(e);
         stuff = stuff.nextSiblingElement("stuff");
     }
@@ -77,10 +77,10 @@ void Cache::readRegistry()
 }
 
 
-Entry::List Cache::registryForProvider(const QString& providerId)
+EntryInternal::List Cache::registryForProvider(const QString& providerId)
 {
-    Entry::List entries;
-    foreach (const Entry& e, cache) {
+    EntryInternal::List entries;
+    foreach (const EntryInternal& e, cache) {
         if (e.providerId() == providerId) {
             entries.append(e);
         }
@@ -102,9 +102,9 @@ void Cache::writeRegistry()
     QDomDocument doc;
     QDomElement root = doc.createElement("hotnewstuffregistry");
 
-    foreach (const Entry& entry, cache) {
+    foreach (const EntryInternal& entry, cache) {
         // Write the entry, unless the policy is CacheNever and the entry is not installed.
-        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
+        if (entry.status() == EntryInternal::Installed || entry.status() == EntryInternal::Updateable) {
             QDomElement exml = entry.entryXML();
             root.appendChild(exml);
         }
@@ -116,18 +116,18 @@ void Cache::writeRegistry()
 }
 
 
-void Cache::registerChangedEntry(const KNS3::Entry& entry)
+void Cache::registerChangedEntry(const KNS3::EntryInternal& entry)
 {
     cache.insert(entry);
 }
 
-void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::Entry::List& entries)
+void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::EntryInternal::List& entries)
 {
     requestCache[hashForRequest(sortMode, searchstring, page, pageSize)] = entries;
     kDebug() << hashForRequest(sortMode, searchstring, page, pageSize) << " keys: " << requestCache.keys();
 }
 
-Entry::List Cache::requestFromCache(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize)
+EntryInternal::List Cache::requestFromCache(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize)
 {
     kDebug() << hashForRequest(sortMode, searchstring, page, pageSize);
     return requestCache.value(hashForRequest(sortMode, searchstring, page, pageSize));

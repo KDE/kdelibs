@@ -64,17 +64,17 @@ ItemsViewDelegate::~ItemsViewDelegate()
 {
 }
 
-KMenu * ItemsViewDelegate::InstallMenu(const QToolButton* button, Entry::Status status) const
+KMenu * ItemsViewDelegate::InstallMenu(const QToolButton* button, EntryInternal::Status status) const
 {
     Q_UNUSED(button)
     KMenu * installMenu = new KMenu(NULL);
-    QAction * action_install = installMenu->addAction(m_statusicons[Entry::Installed], i18n("Install"));
-    QAction * action_uninstall = installMenu->addAction(m_statusicons[Entry::Deleted], i18n("Uninstall"));
+    QAction * action_install = installMenu->addAction(m_statusicons[EntryInternal::Installed], i18n("Install"));
+    QAction * action_uninstall = installMenu->addAction(m_statusicons[EntryInternal::Deleted], i18n("Uninstall"));
     action_install->setData(Engine::Install);
     action_uninstall->setData(Engine::Uninstall);
 
-    action_install->setVisible(status != Entry::Installed);
-    action_uninstall->setVisible(status == Entry::Installed);
+    action_install->setVisible(status != EntryInternal::Installed);
+    action_uninstall->setVisible(status == EntryInternal::Installed);
     return installMenu;
 }
 
@@ -195,7 +195,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
     QToolButton * button = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
     if (button != NULL) {
-        Entry::Status status = Entry::Status(model->data(index, ItemsModel::kStatus).toUInt());
+        EntryInternal::Status status = EntryInternal::Status(model->data(index, ItemsModel::kStatus).toUInt());
         //if (!button->menu()) {
         //    button->setMenu(InstallMenu(button, status));
         //    button->setIconSize(QSize(16, 16));
@@ -212,31 +212,31 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         button->setEnabled(true);
         
         switch (status) {
-        case Entry::Installed:
+            case EntryInternal::Installed:
             button->setText(i18n("Uninstall"));
-            button->setIcon(QIcon(m_statusicons[Entry::Deleted]));
+            button->setIcon(QIcon(m_statusicons[EntryInternal::Deleted]));
             break;
-        case Entry::Updateable:
+        case EntryInternal::Updateable:
             button->setText(i18n("Update"));
-            button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
+            button->setIcon(QIcon(m_statusicons[EntryInternal::Updateable]));
             break;
-        case Entry::Deleted:
+        case EntryInternal::Deleted:
             button->setText(i18n("Install again"));
-            button->setIcon(QIcon(m_statusicons[Entry::Installed]));
+            button->setIcon(QIcon(m_statusicons[EntryInternal::Installed]));
             break;
-        case Entry::Installing:
+        case EntryInternal::Installing:
             button->setText(i18n("Installing"));
             button->setEnabled(false);
-            button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
+            button->setIcon(QIcon(m_statusicons[EntryInternal::Updateable]));
             break;
-        case Entry::Updating:
+        case EntryInternal::Updating:
             button->setText(i18n("Updating"));
             button->setEnabled(false);
-            button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
+            button->setIcon(QIcon(m_statusicons[EntryInternal::Updateable]));
             break;
         default:
             button->setText(i18n("Install"));
-            button->setIcon(QIcon(m_statusicons[Entry::Installed]));
+            button->setIcon(QIcon(m_statusicons[EntryInternal::Installed]));
         }
     }
 
@@ -316,7 +316,7 @@ bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
 
         const QSortFilterProxyModel* model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));      
+        KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));      
 
         performAction(Engine::ShowDetails, entry);
    }
@@ -344,7 +344,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
 
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(Engine::ContactEmail, entry);
 }
 
@@ -355,7 +355,7 @@ void ItemsViewDelegate::slotActionTriggered(QAction *action)
 
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(Engine::EntryAction(action->data().toInt()), entry);
 }
 
@@ -368,11 +368,11 @@ kDebug() << index;
         kDebug() << model;
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
         kDebug() << realmodel;
-        KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
+        KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
         if ( !entry.isValid() )
             return;
 
-        if (entry.status() == Entry::Installed) {
+        if (entry.status() == EntryInternal::Installed) {
             emit performAction(Engine::Uninstall, entry);
         } else {
             emit performAction(Engine::Install, entry);
@@ -390,8 +390,8 @@ void ItemsViewDelegate::slotDetailsClicked()
         //const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
         kDebug() << realmodel;
-        //KNS3::Entry entry = realmodel->entryForIndex(model->mapToSource(index));
-        KNS3::Entry entry = realmodel->entryForIndex(index);
+        //KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
+        KNS3::EntryInternal entry = realmodel->entryForIndex(index);
         if ( !entry.isValid() )
             return;
 

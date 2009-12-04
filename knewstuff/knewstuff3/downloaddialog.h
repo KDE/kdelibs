@@ -32,6 +32,7 @@ namespace KNS3
 {
 class ItemsModel;
 class ItemsViewDelegate;
+class DownloadDialogPrivate;
 
 /**
  * KNewStuff download dialog.
@@ -66,13 +67,14 @@ class ItemsViewDelegate;
  *       <li>TargetDir: a directory in the share/apps section, such as <em>.kde/share/apps/wallpapers</em>.
  *           This is what KStandardDirs::locateLocal("data", name) will return.</li>
  *   </ol>
+ *
+ * @since 4.4
  */
 class KNEWSTUFF_EXPORT DownloadDialog :public KDialog
 {
     Q_OBJECT
 
 public:
-
     /**
      * Create a DownloadDialog that lets the user install, update and uninstall
      * contents. It will try to find a appname.knsrc file with the configuration.
@@ -92,6 +94,9 @@ public:
      */
     explicit DownloadDialog(const QString& configFile, QWidget * parent = 0);
     
+    /**
+     * destructor
+     */
     ~DownloadDialog();
 
     /**
@@ -106,30 +111,10 @@ public:
      */
     KNS3::Entry::List installedEntries();
 
-private Q_SLOTS:
-    void slotEntryChanged(const KNS3::Entry& entry);
-    
-    void slotPayloadFailed(const Entry& entry);
-    void slotPayloadLoaded(KUrl url);
-
-    void slotResetMessage();
-    void slotNetworkTimeout();
-    void sortingChanged();
-    void slotSearchTextChanged();
-    void slotUpdateSearch();
-
-    void slotInfo(QString provider, QString server, QString version);
-    void slotError(const QString& message);
-    void scrollbarValueChanged(int value);
-    
-Q_SIGNALS:
-    void signalRequestMoreData();
-    
 private:
     void init(const QString& configFile);
-    
-    class Private;
-    Private *const d;
+
+    DownloadDialogPrivate *const d;
 };
 
 }

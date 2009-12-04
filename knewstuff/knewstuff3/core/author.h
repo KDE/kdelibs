@@ -21,8 +21,6 @@
 
 #include <QtCore/QString>
 
-#include <knewstuff3/knewstuff_export.h>
-
 namespace KNS3
 {
     struct AuthorPrivate;
@@ -36,7 +34,7 @@ namespace KNS3
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class KNEWSTUFF_EXPORT Author
+class Author
 {
 public:
     /**

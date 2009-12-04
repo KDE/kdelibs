@@ -73,7 +73,7 @@ struct KNS3::InstallationPrivate {
     // FIXME this throws together a file name from entry name and version - why would anyone want that?
     bool customName;
 
-    QMap<KJob*, Entry> entry_jobs;
+    QMap<KJob*, EntryInternal> entry_jobs;
 
 };
 
@@ -177,12 +177,12 @@ bool Installation::isRemote() const
     return true;
 }
 
-void Installation::install(Entry entry)
+void Installation::install(EntryInternal entry)
 {
     downloadPayload(entry);
 }
 
-void Installation::downloadPayload(const KNS3::Entry& entry)
+void Installation::downloadPayload(const KNS3::EntryInternal& entry)
 {
     if(!entry.isValid()) {
         emit signalPayloadFailed(entry);
@@ -226,7 +226,7 @@ void Installation::slotPayloadResult(KJob *job)
 {
     // for some reason this slot is getting called 3 times on one job error
     if (d->entry_jobs.contains(job)) {
-        Entry entry = d->entry_jobs[job];
+        EntryInternal entry = d->entry_jobs[job];
         d->entry_jobs.remove(job);
 
         if (job->error()) {
@@ -245,7 +245,7 @@ void Installation::slotPayloadResult(KJob *job)
 }
 
 
-void Installation::install(KNS3::Entry entry, const QString& downloadedFile)
+void Installation::install(KNS3::EntryInternal entry, const QString& downloadedFile)
 {
     kDebug() << "Install: " << entry.name() << " from " << downloadedFile;
     
@@ -296,10 +296,10 @@ void Installation::install(KNS3::Entry entry, const QString& downloadedFile)
     QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
 
     if (installedFiles.isEmpty()) {
-        if (entry.status() == Entry::Installing) {
-            entry.setStatus(Entry::Downloadable);
-        } else if (entry.status() == Entry::Updating) {
-            entry.setStatus(Entry::Updateable);
+        if (entry.status() == EntryInternal::Installing) {
+            entry.setStatus(EntryInternal::Downloadable);
+        } else if (entry.status() == EntryInternal::Updating) {
+            entry.setStatus(EntryInternal::Updateable);
         }
         emit signalEntryChanged(entry);
         return;
@@ -328,7 +328,7 @@ void Installation::install(KNS3::Entry entry, const QString& downloadedFile)
     // FIXME: change to accept filename + signature
     sec->checkValidity(QString());
 
-    entry.setStatus(Entry::Installed);
+    entry.setStatus(EntryInternal::Installed);
     emit signalEntryChanged(entry);
 }
 
@@ -387,7 +387,7 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
     return installdir;
 }
 
-QStringList Installation::installDownloadedFileAndUncompress(const KNS3::Entry&  entry, const QString& payloadfile, const QString installdir)
+QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryInternal&  entry, const QString& payloadfile, const QString installdir)
 {
     QString installpath(payloadfile);
     // Collect all files that were installed
@@ -477,7 +477,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::Entry& 
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
             bool success = true;
-            bool update = (entry.status() == Entry::Updateable);
+            bool update = (entry.status() == EntryInternal::Updateable);
             
             if (QFile::exists(installpath)) {
                 if (!update) {
@@ -519,9 +519,9 @@ void Installation::runPostInstallationCommand(const QString& installPath)
 }
 
 
-void Installation::uninstall(Entry entry)
+void Installation::uninstall(EntryInternal entry)
 {
-    entry.setStatus(Entry::Deleted);
+    entry.setStatus(EntryInternal::Deleted);
 
     if (!d->uninstallCommand.isEmpty()) {
         KProcess process;
@@ -576,7 +576,7 @@ void Installation::slotInstallationVerification(int result)
     //kDebug() << "SECURITY result " << result;
 
     //FIXME do something here ??? and get the right entry again
-    Entry entry;
+    EntryInternal entry;
     
     if (result & Security::SIGNED_OK)
         emit signalEntryChanged(entry);

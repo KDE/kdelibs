@@ -19,7 +19,7 @@
 #define KNEWSTUFF3_UI_ENTRYDETAILS_H
 
 #include <kdialog.h>
-#include <knewstuff3/entry.h>
+#include <knewstuff3/core/entryinternal.h>
 
 #include "ui_entrydetailsdialog.h"
 
@@ -32,7 +32,7 @@ class EntryDetailsDialog :public KDialog
     Q_OBJECT
 
 public:
-    EntryDetailsDialog(Engine* engine, const Entry& entry, QWidget * parent = 0);
+    EntryDetailsDialog(Engine* engine, const EntryInternal& entry, QWidget * parent = 0);
     ~EntryDetailsDialog();
 
 protected:
@@ -46,7 +46,7 @@ private Q_SLOTS:
     void voteGood();
     void voteBad();
     void becomeFan();
-    void entryChanged(const KNS3::Entry& entry);
+    void entryChanged(const KNS3::EntryInternal& entry);
     void updateButtons();
     
 private:    
@@ -54,7 +54,7 @@ private:
     
     Ui::EntryDetailsDialog ui;
     Engine *m_engine;
-    Entry m_entry;
+    EntryInternal m_entry;
     QImage m_previewBig1;
 };
 

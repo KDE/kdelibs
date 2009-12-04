@@ -22,7 +22,7 @@
 #include <QtCore/QSet>
 
 #include "engine.h"
-#include "entry.h"
+#include "entryinternal.h"
 
 namespace KNS3 {
 
@@ -37,23 +37,23 @@ public:
     /// Read the installed entries (on startup)
     void readRegistry();
     /// All entries that have been installed by a certain provider
-    Entry::List registryForProvider(const QString& providerId);
+    EntryInternal::List registryForProvider(const QString& providerId);
 
     /// Save the list of installed entries
     void writeRegistry();
 
-    void insertRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::Entry::List& entries);
-    Entry::List requestFromCache(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
+    void insertRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::EntryInternal::List& entries);
+    EntryInternal::List requestFromCache(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
 
 public Q_SLOTS:
-    void registerChangedEntry(const KNS3::Entry& entry);
+    void registerChangedEntry(const KNS3::EntryInternal& entry);
     
 private:
     QString hashForRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
     QString registryFile;
 
-    QSet<Entry> cache;
-    QHash<QString, Entry::List> requestCache;
+    QSet<EntryInternal> cache;
+    QHash<QString, EntryInternal::List> requestCache;
 };
 
 }

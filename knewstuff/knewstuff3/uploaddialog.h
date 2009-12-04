@@ -43,11 +43,10 @@ namespace KNS3
  *
  * Using this dialog, data can easily be uploaded to the Hotstuff servers.
  *
- * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
  * Jeremy Whiting (jpwhiting@kde.org)
  *
- * @internal
+ * @since 4.4
  */
 class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 {

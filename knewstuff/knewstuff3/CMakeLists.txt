@@ -18,13 +18,15 @@ if(LIBATTICA_FOUND)
 endif(LIBATTICA_FOUND)
 
 set(knewstuff3_SRCS
-    author.cpp
     downloaddialog.cpp
+    downloaddialog_p.cpp
     entry.cpp
     knewstuffbutton.cpp
     knewstuffaction.cpp
+    core/author.cpp
     core/cache.cpp
     core/engine.cpp
+    core/entryinternal.cpp
     core/installation.cpp
     core/provider.cpp
     core/security.cpp
@@ -74,8 +76,8 @@ set_target_properties(knewstuff3 PROPERTIES
 install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-  author.h
   downloaddialog.h
+  uploaddialog.h
   entry.h
   knewstuff_export.h
   knewstuffaction.h

@@ -61,15 +61,15 @@ namespace KNS3
         virtual QDomElement providerXML() const;
 
         virtual bool isInitialized() const;
-        virtual void setCachedEntries(const KNS3::Entry::List& cachedEntries);
+        virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20);
-        virtual void loadPayloadLink(const Entry& entry);
+        virtual void loadPayloadLink(const EntryInternal& entry);
         
         virtual bool userCanVote() {return true;}
-        virtual void vote(const Entry& entry, bool positiveVote);
+        virtual void vote(const EntryInternal& entry, bool positiveVote);
 
         virtual bool userCanBecomeFan() {return true;}
-        virtual void becomeFan(const Entry& entry);
+        virtual void becomeFan(const EntryInternal& entry);
 
 
     private Q_SLOTS:
@@ -86,7 +86,7 @@ namespace KNS3
         AtticaProvider(AtticaProviderPrivate &dd);
 
     private:
-        Entry::List installedEntries() const;
+        EntryInternal::List installedEntries() const;
         Attica::Provider::SortMode atticaSortMode(const SortMode& sortMode);
         Q_DECLARE_PRIVATE(AtticaProvider)
     };

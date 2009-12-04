@@ -21,7 +21,7 @@
 #include "kdebug.h"
 #include "klocalizedstring.h"
 
-#include "entry.h"
+#include "core/entryinternal.h"
 
 #include "imageloader.h"
 
@@ -43,7 +43,7 @@ int ItemsModel::rowCount(const QModelIndex & /*parent*/) const
 
 QVariant ItemsModel::data(const QModelIndex & index, int role) const
 {
-    Entry entry = m_entries[index.row()];
+    EntryInternal entry = m_entries[index.row()];
     switch (role) {
     case Qt::DisplayRole:
     case kNameRole:
@@ -108,22 +108,22 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
     return QVariant();
 }
 
-KNS3::Entry ItemsModel::entryForIndex(const QModelIndex & index) const
+KNS3::EntryInternal ItemsModel::entryForIndex(const QModelIndex & index) const
 {
     if (index.row() < 0)
-        return Entry();
+        return EntryInternal();
     else
         return m_entries[index.row()];
 }
 
-void ItemsModel::slotEntriesLoaded(Entry::List entries)
+void ItemsModel::slotEntriesLoaded(EntryInternal::List entries)
 {
-    foreach(const KNS3::Entry &entry, entries) {
+    foreach(const KNS3::EntryInternal &entry, entries) {
         addEntry(entry);
     }
 }
 
-void ItemsModel::addEntry(const Entry& entry)
+void ItemsModel::addEntry(const EntryInternal& entry)
 {
     QString preview = entry.previewSmall();
     if (!preview.isEmpty()) {
@@ -144,7 +144,7 @@ void ItemsModel::addEntry(const Entry& entry)
     }
 }
 
-void ItemsModel::removeEntry(const Entry& entry)
+void ItemsModel::removeEntry(const EntryInternal& entry)
 {
     kDebug(551) << "removing entry " << entry.name() << " from the model";
     int index = m_entries.indexOf(entry);
@@ -155,7 +155,7 @@ void ItemsModel::removeEntry(const Entry& entry)
     }
 }
 
-void ItemsModel::slotEntryChanged(const Entry& entry)
+void ItemsModel::slotEntryChanged(const EntryInternal& entry)
 {
     int i = m_entries.indexOf(entry);
     QModelIndex entryIndex = index(i, 0);

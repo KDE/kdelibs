@@ -25,7 +25,7 @@
 
 #include <kurl.h>
 
-#include "entry.h"
+#include "entryinternal.h"
 
 
 namespace KNS3
@@ -88,7 +88,7 @@ namespace KNS3
 
         virtual bool isInitialized() const = 0;
 
-        virtual void setCachedEntries(const KNS3::Entry::List& cachedEntries) = 0;
+        virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries) = 0;
         
         /**
          * Retrieves the common name of the provider.
@@ -113,30 +113,21 @@ namespace KNS3
          * Note: the engine connects to loadingFinished() signal to get the result
          */
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20) = 0;
-        virtual void loadPayloadLink(const Entry& entry) = 0;
+        virtual void loadPayloadLink(const EntryInternal& entry) = 0;
 
         virtual bool userCanVote() {return false;}
-        virtual void vote(const Entry& entry, bool positiveVote) { Q_UNUSED(entry) Q_UNUSED(positiveVote) }
+        virtual void vote(const EntryInternal& entry, bool positiveVote) { Q_UNUSED(entry) Q_UNUSED(positiveVote) }
 
         virtual bool userCanBecomeFan() {return false;}
-        virtual void becomeFan(const Entry& entry) { Q_UNUSED(entry) }
+        virtual void becomeFan(const EntryInternal& entry) { Q_UNUSED(entry) }
 
     signals:
         void providerInitialized(KNS3::Provider*);
             
-        void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, const KNS3::Entry::List&) const;
+        void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, const KNS3::EntryInternal::List&) const;
         void loadingFailed(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page);
-
-        /* FIXME don't use pointer, cleanup this stuff
-        void comments(Entry *, int page, int pageSize, int totalpages);
-        void commentAdded(Entry *);
-        void commentAddFailed(Entry *);
-
-        void ratingSet(Entry*);
-        void ratingSetFailed(Entry *);
-        */
         
-        void payloadLinkLoaded(const KNS3::Entry& entry);
+        void payloadLinkLoaded(const KNS3::EntryInternal& entry);
         
     protected:
         QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;

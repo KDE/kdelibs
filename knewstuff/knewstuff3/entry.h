@@ -1,5 +1,4 @@
 /*
-    knewstuff3/entry.h.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
@@ -19,46 +18,33 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF3_ENTRY_H
-#define KNEWSTUFF3_ENTRY_H
+#ifndef KNEWSTUFF3_KNEWSTUFFENTRY_H
+#define KNEWSTUFF3_KNEWSTUFFENTRY_H
 
-#include <QtCore/QDate>
-#include <QtXml/QDomElement>
-#include <QtCore/QString>
-
+#include <QtCore/QStringList>
+#include <QtCore/QSharedDataPointer>
 #include <kurl.h>
 
 #include <knewstuff3/knewstuff_export.h>
-#include <knewstuff3/author.h>
+
 
 namespace KNS3
 {
 
 /**
- * @short KNewStuff data entry container.
+ * @short KNewStuff information about changed entries
  *
- * This class provides accessor methods to the data objects
- * as used by KNewStuff.
+ * This class provides information about the entries that
+ * have been installed while the new stuff dialog was shown.
+ * It is a minimal version that only gives applications what they need
+ * to know.
  *
- * @author Cornelius Schumacher (schumacher@kde.org)
- * \par Maintainer:
- * Jeremy Whiting (jpwhiting@kde.org)
+ * @since 4.4
  */
 class KNEWSTUFF_EXPORT Entry
 {
 public:
     typedef QList<Entry> List;
-    
-    /**
-    * Source of the entry, A entry's data is coming from either cache, or an online provider
-    * this helps the engine know which data to use when merging cached entries with online
-    * entry data
-    */
-    enum Source {
-        Cache,
-        Online,
-        Registry
-    };
     
     /**
     * Status of the entry. An entry will be downloadable from the provider's
@@ -74,48 +60,19 @@ public:
         Downloadable,
         Installed,
         Updateable,
-        Deleted,
-        Installing,  // this item is being installed right now
-        Updating
+        Deleted
     };
     
-    /**
-     * Constructor.
-     */
-    Entry();
-
+    ~Entry();
     Entry(const Entry& other);
     Entry& operator=(const Entry& other);
-
-    bool operator==(const Entry& other) const;
-    bool operator<(const Entry& other) const;
-
-    /**
-     * Destructor.
-     */
-    virtual ~Entry();
-
-    bool isValid() const;
-    
-    /**
-     * Sets the name for this data object.
-     */
-    void setName(const QString& name);
 
     /**
      * Retrieve the name of the data object.
      *
-     * @return object name (potentially translated)
+     * @return object name
      */
     QString name() const;
-
-    void setUniqueId(const QString& id);
-    QString uniqueId() const;
-    
-    /**
-     * Sets the data category, e.g. 'kdesktop/wallpaper'.
-     */
-    void setCategory(const QString& category);
 
     /**
      * Retrieve the category of the data object.
@@ -124,113 +81,6 @@ public:
      */
     QString category() const;
 
-    void setHomepage(const KUrl& page);
-    KUrl homepage() const;
-    
-    /**
-     * Sets the author of the object.
-     */
-    void setAuthor(const Author& author);
-
-    /**
-     * Retrieve the author of the object.
-     *
-     * @return object author
-     */
-    Author author() const;
-
-    /**
-     * Sets the license (abbreviation) applicable to the object.
-     */
-    void setLicense(const QString& license);
-
-    /**
-     * Retrieve the license name of the object.
-     *
-     * @return object license
-     */
-    QString license() const;
-
-    /**
-     * Sets a short description on what the object is all about.
-     */
-    void setSummary(const QString& summary);
-
-    /**
-     * Retrieve a short description about the object.
-     *
-     * @return object description
-     */
-    QString summary() const;
-
-    /**
-     * Sets the version number.
-     */
-    void setVersion(const QString& version);
-
-    /**
-     * Retrieve the version string of the object.
-     *
-     * @return object version
-     */
-    QString version() const;
-
-    /**
-     * Sets the release date.
-     */
-    void setReleaseDate(const QDate& releasedate);
-
-    /**
-     * Retrieve the date of the object's publication.
-     *
-     * @return object release date
-     */
-    QDate releaseDate() const;
-
-    /**
-     * Sets the object's file.
-     */
-    void setPayload(const QString& url);
-
-    /**
-     * Retrieve the file name of the object.
-     *
-     * @return object filename
-     */
-    QString payload() const;
-
-    /**
-     * Sets the object's preview file, if available. This should be a
-     * picture file.
-     */
-    void setPreviewSmall(const QString& url);
-
-    /**
-     * Retrieve the file name of an image containing a preview of the object.
-     *
-     * @return object preview filename
-     */
-    QString previewSmall() const;
-    
-    /**
-    * Sets the object's preview file, if available. This should be a
-    * picture file.
-    */
-    void setPreviewBig(const QString& url);
-    
-    /**
-    * Retrieve the file name of an image containing a preview of the object.
-    *
-    * @return object preview filename
-    */
-    QString previewBig() const;
-
-    /**
-     * Set the files that have been installed by the install command.
-     * @param files local file names
-     */
-    void setInstalledFiles(const QStringList& files);
-
     /**
      * Retrieve the locally installed files.
      * @return file names
@@ -238,116 +88,10 @@ public:
     QStringList installedFiles() const;
 
     /**
-     * Set the files that have been uninstalled by the uninstall command.
-     * @param files local file names
-     * @since 4.1
-     */
-    void setUnInstalledFiles(const QStringList& files);
-
-    /**
      * Retrieve the locally uninstalled files.
      * @return file names
-     * @since 4.1
      */
     QStringList uninstalledFiles() const;
-
-    /**
-     * Sets the rating between 0 (worst) and 100 (best).
-     *
-     * @internal
-     */
-    void setRating(int rating);
-
-    /**
-     * Retrieve the rating for the object, which has been determined by its
-     * users and thus might change over time.
-     *
-     * @return object rating
-     */
-    int rating() const;
-
-    /**
-     * Sets the number of downloads.
-     *
-     * @internal
-     */
-    void setDownloads(int downloads);
-
-    /**
-     * Retrieve the download count for the object, which has been determined
-     * by its hosting sites and thus might change over time.
-     *
-     * @return object download count
-     */
-    int downloads() const;
-
-    // FIXME: below here, everything under consideration
-
-    QString providerId() const;
-    void setProviderId(const QString& id);
-
-    /**
-     * set the xml for the entry
-     * parses the xml and sets the private members accordingly
-     * used to deserialize data loaded from provider
-     *
-     * @param xmldata string to load xml data from
-     *
-     * @returns whether or not setting the values was successful
-     */
-    virtual bool setEntryXML(const QDomElement & xmldata);
-
-    /**
-    * get the xml string for the entry
-    */
-    virtual QDomElement entryXML() const;
-
-
-    void setSource(Source source);
-    Source source() const;
-
-    /**
-     * Returns the checksum for the entry.
-     *
-     * If an empty string is returned, no checksum was assigned.
-     *
-     * @return Checksum of this entry
-     */
-    //QString checksum() const;
-
-    /**
-     * Sets the checksum of the entry. This will be a string representation
-     * of an MD5 sum of the entry's selected payload file.
-     *
-     * @ref checksum Checksum for the entry
-     */
-    //void setChecksum(const QString& checksum);
-
-    /**
-     * Returns the signature for the entry.
-     *
-     * If an empty string is returned, no signature was assigned.
-     *
-     * @return Signature of this entry
-     */
-    //QString signature() const;
-
-    /**
-     * Sets the signature of the entry. This will be a digital signature
-     * in OpenPGP-compliant format.
-     *
-     * @ref signature Signature for the entry
-     */
-    //void setSignature(const QString& signature);
-
-
-    /**
-     * Sets the entry's status. If no status is set, the default will be
-     * \ref Invalid.
-     *
-     * @param status New status of the entry
-     */
-    void setStatus(Status status);
 
     /**
      * Retrieves the entry's status.
@@ -355,24 +99,36 @@ public:
      * @return Current status of the entry
      */
     Status status() const;
-
-    //void setIdNumber(int number);
-    //int idNumber() const;
-
-
-    QHash<Entry, QString> test;
     
+    /**
+    * Retrieve the license name of the object.
+    *
+    * @return object license
+    */
+    QString license() const;
+    
+    /**
+    * Retrieve a short description about the object.
+    *
+    * @return object description
+    */
+    QString summary() const;
+    
+    /**
+    * Retrieve the version string of the object.
+    *
+    * @return object version
+    */
+    QString version() const;
     
 private:
+    Entry();
+    
     class Private;
     QExplicitlySharedDataPointer<Private> d;
+    
+    friend class EntryInternal;
 };
-
-
-inline uint qHash(const KNS3::Entry& entry) {
-    return qHash(entry.uniqueId());
-}
-
 
 }
 

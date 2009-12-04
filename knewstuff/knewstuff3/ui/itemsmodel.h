@@ -22,7 +22,7 @@
 #include <QAbstractListModel>
 #include <QtGui/QImage>
 
-#include "entry.h"
+#include "core/entryinternal.h"
 
 class KJob;
 
@@ -81,11 +81,11 @@ public:
 
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
-    void addEntry(const Entry& entry);
+    void addEntry(const EntryInternal& entry);
 
-    void removeEntry(const Entry& entry);
+    void removeEntry(const EntryInternal& entry);
 
-    Entry entryForIndex(const QModelIndex & index) const;
+    EntryInternal entryForIndex(const QModelIndex & index) const;
 
     bool hasPreviewImages() const;
 
@@ -95,8 +95,8 @@ Q_SIGNALS:
     void jobStarted(KJob*, const QString& label);
     
 public slots:
-    void slotEntryChanged(const Entry& entry);
-    void slotEntriesLoaded(KNS3::Entry::List entries);
+    void slotEntryChanged(const EntryInternal& entry);
+    void slotEntriesLoaded(KNS3::EntryInternal::List entries);
     void clearEntries();
     
 private slots:
@@ -104,7 +104,7 @@ private slots:
 private:
 
     // the list of entries
-    QList<Entry> m_entries;
+    QList<EntryInternal> m_entries;
     QMap<QString, QImage> m_previewImages;
     QMap<QString, QImage> m_largePreviewImages;
     QMap<QString, QModelIndex> m_imageIndexes;

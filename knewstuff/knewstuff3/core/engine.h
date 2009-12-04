@@ -26,7 +26,7 @@
 #include <QtCore/QMap>
 
 #include "provider.h"
-#include "entry.h"
+#include "entryinternal.h"
 
 class KJob;
 
@@ -97,7 +97,7 @@ public:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    void install(KNS3::Entry entry);
+    void install(KNS3::EntryInternal entry);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed
@@ -105,18 +105,18 @@ public:
      *
      * @param entry The entry to deinstall
      */
-    void uninstall(KNS3::Entry entry);
+    void uninstall(KNS3::EntryInternal entry);
 
     void setSortMode(Provider::SortMode mode);
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
     void slotRequestMoreData();
 
-    void vote(const Entry& entry, bool positiveVote);
-    void becomeFan(const Entry& entry);
+    void vote(const EntryInternal& entry, bool positiveVote);
+    void becomeFan(const EntryInternal& entry);
 
 public Q_SLOTS:
-    void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::Entry entry);
+    void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::EntryInternal entry);
     
 Q_SIGNALS:
     /**
@@ -124,8 +124,8 @@ Q_SIGNALS:
      */
     void signalMessage(const QString& message);
 
-    void signalEntriesLoaded(const KNS3::Entry::List& entries);
-    void signalEntryChanged(const KNS3::Entry& entry);
+    void signalEntriesLoaded(const KNS3::EntryInternal::List& entries);
+    void signalEntryChanged(const KNS3::EntryInternal& entry);
 
     // a new search result is there, clear the list of items
     void signalResetView();
@@ -141,7 +141,7 @@ Q_SIGNALS:
     
     void signalProgress(const QString & message, int percentage);
 
-    void signalDownloadDialogDone(KNS3::Entry::List);
+    void signalDownloadDialogDone(KNS3::EntryInternal::List);
 
     void signalError(const QString& errorMessage);
     
@@ -156,7 +156,7 @@ private Q_SLOTS:
     // called when a provider is ready to work
     void providerInitialized(KNS3::Provider*);
 
-    void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List);
+    void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::EntryInternal::List);
     
     void slotPreviewResult(KJob *job);
 
@@ -164,9 +164,9 @@ private Q_SLOTS:
 
     void slotProgress(KJob *job, unsigned long percent);
     
-    void slotEntryChanged(const KNS3::Entry& entry);
-    void slotInstallationFailed(const KNS3::Entry& entry);
-    void downloadLinkLoaded(const KNS3::Entry& entry);
+    void slotEntryChanged(const KNS3::EntryInternal& entry);
+    void slotInstallationFailed(const KNS3::EntryInternal& entry);
+    void downloadLinkLoaded(const KNS3::EntryInternal& entry);
     
 private:
     /**
@@ -177,7 +177,7 @@ private:
 
     void loadRegistry();
 
-    bool entryChanged(const Entry& oldentry, const Entry& entry);
+    bool entryChanged(const EntryInternal& oldentry, const EntryInternal& entry);
 
     /**
      * Private copy constructor

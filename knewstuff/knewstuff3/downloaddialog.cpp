@@ -21,6 +21,8 @@
 */
 
 #include "downloaddialog.h"
+#include "downloaddialog_p.h"
+
 
 #include <QtGui/QSortFilterProxyModel>
 #include <QtCore/QTimer>
@@ -30,79 +32,22 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <ktitlewidget.h>
+#include <kdebug.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
 
 #include "ui_downloaddialog.h"
 
-const char * ConfigGroup = "DownloadDialog Settings";
 
 using namespace KNS3;
 
-class DownloadDialog::Private {
-public:
-    Ui::DownloadDialog ui;
-    // The engine that does all the work
-    Engine *engine;
-    // Model to show the entries
-    KNS3::ItemsModel* model;
-    // sort items according to sort combo
-    QSortFilterProxyModel * sortingProxyModel;
-    // Timeout for messge display
-    QTimer* messageTimer;
-    
-    ItemsViewDelegate * delegate;
-    
-    QString searchTerm;
-    QSet<Entry> changedEntries;
-    
-    Private()
-        : engine(new Engine), model(new ItemsModel)
-       , sortingProxyModel(new QSortFilterProxyModel) , messageTimer(0)
-    {
-        sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
-        sortingProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-        sortingProxyModel->setSourceModel(model);
-    }
-    
-    ~Private() {
-        delete messageTimer;
-        delete delegate;
-        delete sortingProxyModel;
-        delete model;
-        delete engine;
-    }
-
-    void init(const QString& configFile)
-    {
-        engine->init(configFile);
-    }
-
-    void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0)
-    {
-        if (!messageTimer) {
-            messageTimer = new QTimer;
-            messageTimer->setSingleShot(true);
-        }
-        // stop the pending timer if present
-        messageTimer->stop();
-
-        // set text to messageLabel
-        ui.m_titleWidget->setComment(msg, type);
-
-        // single shot the resetColors timer (and create it if null)
-        if (timeOutMs > 0) {
-            //kDebug(551) << "starting the message timer for " << timeOutMs;
-            messageTimer->start(timeOutMs);
-        }
-    }
-};
+const char * ConfigGroup = "DownloadDialog Settings";
 
 
 DownloadDialog::DownloadDialog(QWidget* parent)
     : KDialog(parent)
-    , d(new Private)
+    , d(new DownloadDialogPrivate)
 {
     KComponentData component = KGlobal::activeComponent();
     QString name = component.componentName();
@@ -111,15 +56,14 @@ DownloadDialog::DownloadDialog(QWidget* parent)
 
 DownloadDialog::DownloadDialog(const QString& configFile, QWidget * parent)
         : KDialog(parent)
-        , d(new Private)
+        , d(new DownloadDialogPrivate)
 {
     init(configFile);
 }
 
+
 void DownloadDialog::init(const QString& configFile)
 {
-    d->init(configFile);
-    
     setButtons(KDialog::None);
     QWidget* _mainWidget = new QWidget(this);
     setMainWidget(_mainWidget);
@@ -127,60 +71,15 @@ void DownloadDialog::init(const QString& configFile)
 
     d->ui.closeButton->setGuiItem(KStandardGuiItem::Close);
     connect(d->ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
+
+    d->init(configFile);
     
-    // Entries have been fetched and should be shown:
-    connect(d->engine, SIGNAL(signalEntriesLoaded(KNS3::Entry::List)), d->model, SLOT(slotEntriesLoaded(KNS3::Entry::List)));
-    
-    connect(d->engine, SIGNAL(signalError(const QString&)), SLOT(slotError(const QString&)));
-
-    // An entry has changes - eg because it was installed
-    connect(d->engine, SIGNAL(signalEntryChanged(KNS3::Entry)), SLOT(slotEntryChanged(KNS3::Entry)));
-
-    connect(d->engine, SIGNAL(signalResetView()), d->model, SLOT(clearEntries()));
-    
-    // FIXME show download progress
-    connect(d->engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
-    
-    connect(d->messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
-
-    d->delegate = new ItemsViewDelegate(d->ui.m_listView);
-    d->ui.m_listView->setItemDelegate(d->delegate);
-    connect(d->delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::Entry&)),
-            d->engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::Entry&)));
-
-    d->ui.m_listView->setModel(d->sortingProxyModel);
-
-    connect(d->ui.newestRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    connect(d->ui.ratingRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    connect(d->ui.mostDownloadsRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    connect(d->ui.installedRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-
-    connect(d->ui.m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
-    connect(d->ui.m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
-
-    d->ui.m_providerLabel->setVisible(false);
-    d->ui.m_providerCombo->setVisible(false);
-    d->ui.m_providerCombo->addItem(i18n("All Providers"));
-
-    d->ui.m_categoryLabel->setVisible(false);
-    d->ui.m_categoryCombo->setVisible(false);
-    d->ui.m_categoryCombo->addItem(i18n("All Categories"));
-
     // load the last size from config
     KConfigGroup group(KGlobal::config(), ConfigGroup);
     restoreDialogSize(group);
     setMinimumSize(700, 400);
-
-    setCaption(i18n("Get Hot New Stuff"));
-    d->ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
-                                 "%1 Add-On Installer",
-                                 KGlobal::activeComponent().aboutData()->programName()));
-    d->ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
-
-    connect(d->ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
     
-    // FIXME connect(d->engine, SIGNAL(signalJobStarted(KJob*)), d->ui.progressIndicator, SLOT(addJob(KJob*)));
-    connect(d->model, SIGNAL(jobStarted(KJob*, const QString&)), d->ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
+    setCaption(i18n("Get Hot New Stuff"));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -190,112 +89,24 @@ DownloadDialog::~DownloadDialog()
     delete d;
 }
 
-void DownloadDialog::slotResetMessage() // SLOT
-{
-    d->ui.m_titleWidget->setComment(QString());
-}
-
-void DownloadDialog::slotNetworkTimeout() // SLOT
-{
-    d->displayMessage(i18n("Timeout. Check Internet connection."), KTitleWidget::ErrorMessage);
-}
-
-void DownloadDialog::sortingChanged()
-{
-    Provider::SortMode sortMode = Provider::Newest;
-    if (d->ui.ratingRadio->isChecked()) {
-        sortMode = Provider::Rating;
-    } else if (d->ui.mostDownloadsRadio->isChecked()) {
-         sortMode = Provider::Downloads;
-    } else if (d->ui.installedRadio->isChecked()) {
-        sortMode = Provider::Installed;
-    }
-
-    d->model->clearEntries();
-    if (sortMode == Provider::Installed) {
-        d->ui.m_searchEdit->clear();
-    }
-    d->ui.m_searchEdit->setEnabled(sortMode != Provider::Installed);
-
-    d->engine->setSortMode(sortMode);
-    d->engine->reloadEntries();
-}
-
-void DownloadDialog::slotUpdateSearch()
-{
-    if (d->searchTerm == d->ui.m_searchEdit->text().trimmed()) {
-        return;
-    }
-    d->searchTerm = d->ui.m_searchEdit->text().trimmed();
-}
-
-void DownloadDialog::slotSearchTextChanged()
-{
-    if (d->searchTerm == d->ui.m_searchEdit->text().trimmed()) {
-        return;
-    }
-    d->searchTerm = d->ui.m_searchEdit->text().trimmed();
-    d->engine->setSearchTerm(d->ui.m_searchEdit->text().trimmed());
-}
-
-void DownloadDialog::slotInfo(QString provider, QString server, QString version)
-{
-    QString link = QString("<a href=\"%1\">%1</a>").arg(server);
-    QString infostring = i18n("Server: %1", link);
-    infostring += i18n("<br />Provider: %1", provider);
-    infostring += i18n("<br />Version: %1", version);
-
-    KMessageBox::information(this,
-                             infostring,
-                             i18n("Provider information"));
-}
-
-void DownloadDialog::slotEntryChanged(const Entry& entry)
-{
-    d->changedEntries.insert(entry);
-    d->model->slotEntryChanged(entry);
-}
-
-void DownloadDialog::slotPayloadFailed(const Entry& entry)
-{
-    setCursor(Qt::ArrowCursor);
-    KMessageBox::error(this, i18n("Could not install %1", entry.name()),
-                       i18n("Get Hot New Stuff!"));
-}
-
-void DownloadDialog::slotPayloadLoaded(KUrl url)
-{
-    Q_UNUSED(url)
-    setCursor(Qt::ArrowCursor);
-}
-
-void DownloadDialog::slotError(const QString& message)
-{
-    KMessageBox::error(this, message, i18n("Get Hot New Stuff"));
-}
-
-void DownloadDialog::scrollbarValueChanged(int value)
-{
-    if ((double)value/d->ui.m_listView->verticalScrollBar()->maximum() > 0.9) {
-        d->engine->slotRequestMoreData();
-    }
-}
-
 Entry::List DownloadDialog::changedEntries()
-{
-    return d->changedEntries.toList();
-}
-
-Entry::List DownloadDialog::installedEntries()
-{
-    QList<Entry> entries;
-    foreach (const Entry &e, d->changedEntries) {
-        if (e.status() == Entry::Installed) {
-            entries.append(e);
-        }
+{    
+    Entry::List entries;
+    foreach (const EntryInternal &e, d->changedEntries) {
+        entries.append(e.toEntry());
     }
     return entries;
 }
 
+Entry::List DownloadDialog::installedEntries()
+{
+    Entry::List entries;
+    foreach (const EntryInternal &e, d->changedEntries) {
+        if (e.status() == EntryInternal::Installed) {
+            entries.append(e.toEntry());
+        }
+    }
+    return entries;
+}
 
 #include "downloaddialog.moc"

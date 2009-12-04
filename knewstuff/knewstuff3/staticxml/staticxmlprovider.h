@@ -66,15 +66,15 @@ namespace KNS3
         virtual QDomElement providerXML() const;
         virtual bool isInitialized() const;
         
-        virtual void setCachedEntries(const KNS3::Entry::List& cachedEntries);
+        virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
     
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 100);
-        virtual void loadPayloadLink(const KNS3::Entry& entry);
+        virtual void loadPayloadLink(const KNS3::EntryInternal& entry);
         
     private:
-        bool searchIncludesEntry(const Entry& entry) const;
+        bool searchIncludesEntry(const EntryInternal& entry) const;
         KUrl downloadUrl(SortMode mode) const;
-        Entry::List installedEntries() const;
+        EntryInternal::List installedEntries() const;
         
     protected:
         StaticXmlProvider(StaticXmlProviderPrivate &dd);

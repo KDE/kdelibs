@@ -44,7 +44,7 @@ public:
     KUrl mNoUploadUrl;
     
     // cache of all entries known from this provider so far, mapped by their id
-    Entry::List cachedEntries;
+    EntryInternal::List cachedEntries;
     QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
     QString searchTerm;
     QString mId;
@@ -182,7 +182,7 @@ bool StaticXmlProvider::isInitialized() const
     return d->mInitialized;
 }
 
-void StaticXmlProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
+void StaticXmlProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEntries)
 {
     Q_D(StaticXmlProvider);
     kDebug() << "Set cached entries " << cachedEntries.size();
@@ -214,7 +214,7 @@ void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstri
             kDebug() << "Loader: " << loader;
         } else {
             // static providers only ever have one page of data
-            emit loadingFinished(sortMode, searchstring, page, 0, 1, Entry::List());
+            emit loadingFinished(sortMode, searchstring, page, 0, 1, EntryInternal::List());
         }
     } else {
         emit loadingFailed(sortMode, searchstring, page);
@@ -271,13 +271,13 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     }
 
     // load all the entries from the domdocument given
-    Entry::List entries;
+    EntryInternal::List entries;
     QDomElement element;
 
     element = doc.documentElement();
     QDomElement n;
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
-        Entry entry;
+        EntryInternal entry;
         entry.setEntryXML(n.toElement());
         entry.setProviderId(d->mId);
         
@@ -286,12 +286,12 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 
         int index = d->cachedEntries.indexOf(entry);
         if (index >= 0) {
-            Entry cacheEntry = d->cachedEntries.takeAt(index);
+            EntryInternal cacheEntry = d->cachedEntries.takeAt(index);
             
             // check if updateable
-            if ((cacheEntry.status() == Entry::Installed) &&
+            if ((cacheEntry.status() == EntryInternal::Installed) &&
                  ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
-                    entry.setStatus(Entry::Updateable);
+                entry.setStatus(EntryInternal::Updateable);
             } else {
                 entry.setStatus(cacheEntry.status());
             }
@@ -313,7 +313,7 @@ void StaticXmlProvider::slotFeedFailed()
 	//emit loadingFailed();
 }
 
-bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
+bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) const
 {
     Q_D(const StaticXmlProvider);
 
@@ -330,18 +330,18 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::Entry& entry) const
     return false;
 }
 
-void StaticXmlProvider::loadPayloadLink(const KNS3::Entry& entry)
+void StaticXmlProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
 {
     emit payloadLinkLoaded(entry);
 }
 
 
-Entry::List StaticXmlProvider::installedEntries() const
+EntryInternal::List StaticXmlProvider::installedEntries() const
 {
     Q_D(const StaticXmlProvider);
-    Entry::List entries;
-    foreach (const Entry& entry, d->cachedEntries) {
-        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
+    EntryInternal::List entries;
+    foreach (const EntryInternal& entry, d->cachedEntries) {
+        if (entry.status() == EntryInternal::Installed || entry.status() == EntryInternal::Updateable) {
             entries.append(entry);
         }
     }

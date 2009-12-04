@@ -38,7 +38,7 @@ using namespace KNS3;
 
 
 
-EntryDetailsDialog::EntryDetailsDialog(Engine* engine, const Entry& entry, QWidget* parent)
+EntryDetailsDialog::EntryDetailsDialog(Engine* engine, const EntryInternal& entry, QWidget* parent)
     : KDialog(parent), m_engine(engine), m_entry(entry)
 {
     init();
@@ -114,7 +114,7 @@ void EntryDetailsDialog::init()
 }
 
 
-void EntryDetailsDialog::entryChanged(const KNS3::Entry& entry)
+void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 {
     Q_UNUSED(entry);
     updateButtons();
@@ -128,34 +128,34 @@ void EntryDetailsDialog::updateButtons()
     ui.updateButton->setVisible(false);
     
     switch (m_entry.status()) {
-        case Entry::Installed:
+        case EntryInternal::Installed:
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(true);
             break;
-        case Entry::Updateable:
+        case EntryInternal::Updateable:
             ui.updateButton->setVisible(true);
             ui.updateButton->setEnabled(true);
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(true);
             break;
             
-        case Entry::Invalid:
-        case Entry::Downloadable:
+        case EntryInternal::Invalid:
+        case EntryInternal::Downloadable:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(true);
             break;
             
-        case Entry::Installing:
+        case EntryInternal::Installing:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(false);
             break;           
-        case Entry::Updating:            
+        case EntryInternal::Updating:            
             ui.updateButton->setVisible(true);
             ui.updateButton->setEnabled(false);
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(false);
             break;           
-        case Entry::Deleted:
+        case EntryInternal::Deleted:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(true);            
             break;

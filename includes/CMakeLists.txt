@@ -748,7 +748,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS COMPONENT Devel)
 
 install( FILES
   KNS3/DownloadDialog
-  KNS3/Author
   KNS3/Entry
   KNS3/KNewStuffAction
   KNS3/KNewStuffButton

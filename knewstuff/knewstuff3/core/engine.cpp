@@ -98,10 +98,10 @@ class KNS3::Engine::Private {
         // the name of the app that uses hot new stuff
         QString applicationName;
 
-        QMap<Entry, QString> previewfiles; // why not in entry?
+        QMap<EntryInternal, QString> previewfiles; // why not in entry?
 
 
-        QMap<KJob*, Entry> previewPictureJobs;
+        QMap<KJob*, EntryInternal> previewPictureJobs;
 
         // the current page that has been requested from providers
         int currentPage;
@@ -138,7 +138,7 @@ Engine::Engine(QObject* parent)
         : QObject(parent), d(new Engine::Private)
 {
     connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
-    connect(this, SIGNAL(signalEntryChanged(const KNS3::Entry&)), d->cache, SLOT(registerChangedEntry(const KNS3::Entry&)));
+    connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), d->cache, SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
 }
 
 /* maybe better to disable copying alltogether?
@@ -195,7 +195,7 @@ bool Engine::init(const QString &configfile)
         return false;
     }
     
-    connect(d->installation, SIGNAL(signalEntryChanged(const KNS3::Entry&)), SLOT(slotEntryChanged(const KNS3::Entry&)));
+    connect(d->installation, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), SLOT(slotEntryChanged(const KNS3::EntryInternal&)));
 
     d->cache->setRegistryFileName(d->applicationName.split(':')[0]);
     d->cache->readRegistry();
@@ -255,9 +255,9 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
             }
 
             connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
-            connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)),
-                SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::Entry::List&)));
-            connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::Entry&)), SLOT(downloadLinkLoaded(const KNS3::Entry&)));
+            connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)),
+                    SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)));
+                    connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
             
             if (provider->setProviderXML(p)) {
                 ProviderInformation providerInfo(provider);
@@ -281,7 +281,7 @@ void Engine::providerInitialized(Provider* p)
     p->loadEntries(d->sortMode, d->searchTerm, 0, d->pageSize);
 }
 
-void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::Entry::List entries)
+void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::EntryInternal::List entries)
 {
     Q_UNUSED(sortMode)
     Q_UNUSED(searchstring)
@@ -309,7 +309,7 @@ void Engine::reloadEntries()
 
             int page = 0;
             while (true) {
-                Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, page, d->pageSize);
+                EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, page, d->pageSize);
                 if (!cache.isEmpty()) {
                     kDebug() << "From cache";
                     emit signalEntriesLoaded(cache);
@@ -340,7 +340,7 @@ void Engine::setSearchTerm(const QString& searchString)
 {
     d->searchTimer->stop();
     d->searchTerm = searchString;
-    Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
+    EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
     if (!cache.isEmpty()) {
         reloadEntries();
     } else {
@@ -367,7 +367,7 @@ void Engine::slotRequestMoreData()
         if (p.provider->isInitialized()) {
             // FIXME: other parameters
             // FIXME use cache, if this request was sent already, take it from the cache
-            Entry::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->requestedPage, 20);
+            EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->requestedPage, 20);
             if (!cache.isEmpty()) {
                 kDebug() << "From cache";
                 emit signalEntriesLoaded(cache);
@@ -379,7 +379,7 @@ void Engine::slotRequestMoreData()
     }
 }
 
-void Engine::slotPerformAction(KNS3::Engine::EntryAction action, Entry entry)
+void Engine::slotPerformAction(KNS3::Engine::EntryAction action, EntryInternal entry)
 {
     kDebug(551) << "perform action: " << action;
 
@@ -481,7 +481,7 @@ void Engine::slotPreviewResult(KJob *job)
 
         if (d->previewPictureJobs.contains(job)) {
             // now, assign temporary filename to entry and update entry cache
-            Entry entry = d->previewPictureJobs[job];
+            EntryInternal entry = d->previewPictureJobs[job];
             d->previewPictureJobs.remove(job);
             d->previewfiles[entry] = fcjob->destUrl().path();
         }
@@ -492,7 +492,7 @@ void Engine::slotPreviewResult(KJob *job)
 }
 
 
-bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
+bool Engine::entryChanged(const EntryInternal& oldentry, const EntryInternal& entry)
 {
     // possibly return true if the status changed? depends on when this is called
     if ((!oldentry.isValid()) || (entry.releaseDate() > oldentry.releaseDate())
@@ -502,12 +502,12 @@ bool Engine::entryChanged(const Entry& oldentry, const Entry& entry)
 }
 
 
-void Engine::install(KNS3::Entry entry)
+void Engine::install(KNS3::EntryInternal entry)
 {
-    if (entry.status() == Entry::Updateable) {
-        entry.setStatus(Entry::Updating);
+    if (entry.status() == EntryInternal::Updateable) {
+        entry.setStatus(EntryInternal::Updating);
     } else  {
-        entry.setStatus(Entry::Installing);
+        entry.setStatus(EntryInternal::Installing);
     }
     emit signalEntryChanged(entry);
     
@@ -519,37 +519,37 @@ void Engine::install(KNS3::Entry entry)
     }
 }
 
-void Engine::downloadLinkLoaded(const KNS3::Entry& entry)
+void Engine::downloadLinkLoaded(const KNS3::EntryInternal& entry)
 {
     d->installation->install(entry);
 }
 
-void Engine::uninstall(KNS3::Entry entry)
+void Engine::uninstall(KNS3::EntryInternal entry)
 {
     // FIXME: change the status?
-    entry.setStatus(Entry::Installing);
+    entry.setStatus(EntryInternal::Installing);
     emit signalEntryChanged(entry);
     d->installation->uninstall(entry);
 }
 
-void Engine::slotEntryChanged(const KNS3::Entry& entry)
+void Engine::slotEntryChanged(const KNS3::EntryInternal& entry)
 {
     emit signalEntryChanged(entry);
 }
 
-void Engine::slotInstallationFailed(const KNS3::Entry& entry)
+void Engine::slotInstallationFailed(const KNS3::EntryInternal& entry)
 {
     kDebug() << "Installation failed: " << entry.name();
     // FIXME implement warning?
 }
 
-void Engine::vote(const Entry& entry, bool positiveVote)
+void Engine::vote(const EntryInternal& entry, bool positiveVote)
 {
     QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
     p->vote(entry, positiveVote);
 }
 
-void Engine::becomeFan(const Entry& entry)
+void Engine::becomeFan(const EntryInternal& entry)
 {
     QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
     p->becomeFan(entry);

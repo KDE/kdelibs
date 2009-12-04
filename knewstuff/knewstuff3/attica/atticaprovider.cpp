@@ -53,14 +53,14 @@ public:
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
 
-    KNS3::Entry::List cachedEntries;
+    KNS3::EntryInternal::List cachedEntries;
 
     QHash<QString, Attica::Content> cachedContent;
 
     // Associate job and entry, this is needed when fetching
     // download links or the account balance in order to continue
     // when the result is there.
-    QHash<BaseJob*, Entry> downloadLinkJobs;
+    QHash<BaseJob*, EntryInternal> downloadLinkJobs;
 
     // keep track of the pages we requested
     QHash<BaseJob*, int> entryJobs;
@@ -134,7 +134,7 @@ QDomElement AtticaProvider::providerXML() const
     return el;
 }
 
-void AtticaProvider::setCachedEntries(const KNS3::Entry::List& cachedEntries)
+void AtticaProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEntries)
 {
     Q_D(AtticaProvider);
     d->cachedEntries = cachedEntries;
@@ -212,26 +212,26 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
-    Entry::List entries;
+    EntryInternal::List entries;
     
     Q_FOREACH(const Content &content, contents) {
         d->cachedContent.insert(content.id(), content);
 
-        Entry entry;
+        EntryInternal entry;
         entry.setProviderId(id());
         entry.setUniqueId(content.id());
-        entry.setStatus(KNS3::Entry::Downloadable);
+        entry.setStatus(KNS3::EntryInternal::Downloadable);
         entry.setVersion(content.version());
         entry.setReleaseDate(content.updated().date());
 
         int index = d->cachedEntries.indexOf(entry);
         
         if (index >= 0) {
-            Entry cacheEntry = d->cachedEntries.at(index);
+            EntryInternal cacheEntry = d->cachedEntries.at(index);
             // check if updateable
-            if ((cacheEntry.status() == Entry::Installed) &&
+            if ((cacheEntry.status() == EntryInternal::Installed) &&
                 ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
-                cacheEntry.setStatus(Entry::Updateable);
+                cacheEntry.setStatus(EntryInternal::Updateable);
             }
             entry = cacheEntry;
         } else {
@@ -250,7 +250,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         author.setName(content.author());
         entry.setAuthor(author);
         
-        entry.setSource(KNS3::Entry::Online);
+        entry.setSource(KNS3::EntryInternal::Online);
         entry.setSummary(content.description());
 
         entries.append(entry);
@@ -276,7 +276,7 @@ Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMo
     return Attica::Provider::Rating;
 }
 
-void AtticaProvider::loadPayloadLink(const KNS3::Entry& entry)
+void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
 {
     Q_D(AtticaProvider);
 
@@ -314,7 +314,7 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
         return;
     }
 
-    Entry entry = d->downloadLinkJobs.take(job);
+    EntryInternal entry = d->downloadLinkJobs.take(job);
     Content content = d->cachedContent.value(entry.uniqueId());
     // TODO: at some point maybe support more than one download description
     if (content.downloadUrlDescription(1).priceAmount() < item.balance()) {
@@ -350,24 +350,24 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
         return;
     }
 
-    Entry entry = d->downloadLinkJobs.take(job);
+    EntryInternal entry = d->downloadLinkJobs.take(job);
     entry.setPayload(QString(item.url().toString()));
     emit payloadLinkLoaded(entry);
 }
 
-Entry::List AtticaProvider::installedEntries() const
+EntryInternal::List AtticaProvider::installedEntries() const
 {
     Q_D(const AtticaProvider);
-    Entry::List entries;
-    foreach (const Entry& entry, d->cachedEntries) {
-        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
+    EntryInternal::List entries;
+    foreach (const EntryInternal& entry, d->cachedEntries) {
+        if (entry.status() == EntryInternal::Installed || entry.status() == EntryInternal::Updateable) {
             entries.append(entry);
         }
     }
     return entries;
 }
 
-void AtticaProvider::vote(const Entry& entry, bool positiveVote)
+void AtticaProvider::vote(const EntryInternal& entry, bool positiveVote)
 {
     Q_D(AtticaProvider);
 
@@ -385,7 +385,7 @@ void AtticaProvider::votingFinished(Attica::BaseJob* job)
     }
 }
 
-void AtticaProvider::becomeFan(const Entry& entry)
+void AtticaProvider::becomeFan(const EntryInternal& entry)
 {
     Q_D(AtticaProvider);
 

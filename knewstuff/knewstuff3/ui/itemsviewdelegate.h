@@ -29,8 +29,7 @@
 #include <QtGui/QToolButton>
 
 #include "core/engine.h"
-#include "entry.h"
-#include "downloaddialog.h"
+#include "core/entryinternal.h"
 
 #include <kicon.h>
 #include <kmenu.h>
@@ -58,7 +57,7 @@ public:
     virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 signals:
-    void performAction(KNS3::Engine::EntryAction action, KNS3::Entry entry);
+    void performAction(KNS3::Engine::EntryAction action, KNS3::EntryInternal entry);
 
 private slots:
     bool eventFilter(QObject *watched, QEvent *event);
@@ -68,7 +67,7 @@ private slots:
     void slotDetailsClicked();
 
 private:
-    KMenu * InstallMenu(const QToolButton* button, Entry::Status status) const;
+    KMenu * InstallMenu(const QToolButton* button, EntryInternal::Status status) const;
 
     QList<KIcon> m_statusicons;
     QImage m_frameImage;
