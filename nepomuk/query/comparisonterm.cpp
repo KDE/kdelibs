@@ -90,8 +90,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     if ( p.literalRangeType().isValid() ) {
         if( !m_subTerm.isLiteralTerm() )
             kDebug() << "Incompatible subterm type:" << m_subTerm.type();
-        if ( m_comparator == ComparisonTerm::Equal ||
-             !m_subTerm.toLiteralTerm().value().isString() ) {
+        if ( m_comparator == ComparisonTerm::Equal ) {
             return QString( "%1 %2 %3 . " )
                 .arg( resourceVarName )
                 .arg( Soprano::Node::resourceToN3( m_property.uri() ) )
@@ -115,12 +114,12 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else {
             QString v = qbd->uniqueVarName();
-            return QString( "%1 %2 %3 . FILTER(%3%4\"%5\") . " )
+            return QString( "%1 %2 %3 . FILTER(%3%4%5) . " )
                 .arg( resourceVarName )
                 .arg( Soprano::Node::resourceToN3( m_property.uri() ) )
-                .arg( comparatorToString( m_comparator ) )
                 .arg( v )
-                .arg( m_subTerm.toLiteralTerm().value().toString() );
+                .arg( comparatorToString( m_comparator ) )
+                .arg( Soprano::Node::literalToN3(m_subTerm.toLiteralTerm().value()) );
         }
     }
 
