@@ -31,17 +31,40 @@ namespace Nepomuk {
         /**
          * \class NegationTerm negationterm.h Nepomuk/Query/NegationTerm
          *
-         * \brief NegationTerm
+         * \brief Negate an arbitrary term.
+         *
+         * %NegationTerm can be used to negate any other term. A typical example
+         * could be to match all resources that do not have a specific tag:
+         *
+         * \code
+         * NegationTerm::negateTerm( ComparisonTerm( Vocabulary::NAO::hasTag(), LiteralTerm("nepomuk") ) );
+         * \endcode
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT NegationTerm : public SimpleTerm
         {
         public:
+            /**
+             * Default constructor: creates an invalid negation term.
+             */
             NegationTerm();
+
+            /**
+             * Copy constructor.
+             */
             NegationTerm( const NegationTerm& term );
+
+            /**
+             * Destructor.
+             */
             ~NegationTerm();
 
+            /**
+             * Assignment operator.
+             */
             NegationTerm& operator=( const NegationTerm& term );
 
             /**

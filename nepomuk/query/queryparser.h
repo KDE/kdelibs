@@ -82,6 +82,8 @@ namespace Nepomuk {
          * \endcode
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT QueryParser
         {

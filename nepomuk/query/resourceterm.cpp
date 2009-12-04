@@ -49,7 +49,7 @@ QString Nepomuk::Query::ResourceTermPrivate::toString() const
 }
 
 
-Nepomuk::Query::ResourceTerm::ResourceTerm( const Term& term )
+Nepomuk::Query::ResourceTerm::ResourceTerm( const ResourceTerm& term )
     : Term( term )
 {
 }

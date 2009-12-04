@@ -35,13 +35,29 @@ namespace Nepomuk {
          * which maintains one sub-term.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT SimpleTerm : public Term
         {
         public:
+            /**
+             * Destructor.
+             */
             ~SimpleTerm();
 
+            /**
+             * The sub term to match against.
+             *
+             * \sa setSubTerm()
+             */
             Term subTerm() const;
+
+            /**
+             * Set the sub term to match against.
+             *
+             * \sa subTerm()
+             */
             void setSubTerm( const Term& term );
 
             /** \cond protected_error_members */

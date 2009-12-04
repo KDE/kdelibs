@@ -49,6 +49,8 @@ namespace Nepomuk {
          * of the persistent query are not necessary.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT QueryServiceClient : public QObject
         {

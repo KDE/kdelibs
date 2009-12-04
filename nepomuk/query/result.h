@@ -42,10 +42,12 @@ namespace Nepomuk {
          *
          * \brief A single search result.
          *
-         * A search returns a set of Result object. A result consists
+         * A search via QueryServiceClient returns a set of Result object. A result consists
          * of a Nepomuk::Resource and an optional score.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT Result
         {

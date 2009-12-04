@@ -34,20 +34,58 @@ namespace Nepomuk {
         /**
          * \class ResourceTerm resourceterm.h Nepomuk/Query/ResourceTerm
          *
-         * \brief ResourceTerm
+         * \brief Matches exactly one resource.
+         *
+         * The ResourceTerm does only make sense as a sub term to ComparisonTerm
+         * to match to a known resource. The typical example would be matching
+         * against a known tag:
+         *
+         * \code
+         * Tag myTag = fancyGetTag();
+         * ComparisonTerm term( Vocabulary::NAO::hasTag(), ResourceTerm(myTag) );
+         * \endcode
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT ResourceTerm : public Term
         {
         public:
-            ResourceTerm( const Term& term );
+            /**
+             * Copy constructor.
+             */
+            ResourceTerm( const ResourceTerm& term );
+
+            /**
+             * Default constructor
+             *
+             * \param resource The resource this term should match against.
+             */
             ResourceTerm( const Nepomuk::Resource& resource = Nepomuk::Resource() );
+
+            /**
+             * Desctructor.
+             */
             ~ResourceTerm();
 
+            /**
+             * Assignment operator.
+             */
             ResourceTerm& operator=( const ResourceTerm& term );
 
+            /**
+             * The resource this term should match against.
+             *
+             * \sa setResource()
+             */
             Nepomuk::Resource resource() const;
+
+            /**
+             * Set the resource this term should match against.
+             *
+             * \sa resource()
+             */
             void setResource( const Nepomuk::Resource& resource );
         };
     }

@@ -36,6 +36,8 @@ namespace Nepomuk {
          * specific folders via setIncludeFolders() and setExcludeFolders().
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT FileQuery : public Query
         {

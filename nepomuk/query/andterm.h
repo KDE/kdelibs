@@ -31,24 +31,52 @@ namespace Nepomuk {
         /**
          * \class AndTerm andterm.h Nepomuk/Query/AndTerm
          *
-         * \brief AndTerm
+         * \brief Match resource that match all sub terms.
+         *
+         * This class - like OrTerm - is derived from GroupTerm which
+         * handles the sub terms.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT AndTerm : public GroupTerm
         {
         public:
+            /**
+             * Default constructor: creates an invalid and-term.
+             */
             AndTerm();
+
+            /**
+             * Copy constructor.
+             */
             AndTerm( const AndTerm& term );
+
+            /**
+             * Convinience constructor which allows
+             * to combine several terms in one line.
+             */
             AndTerm( const Term& term1,
                      const Term& term2,
                      const Term& term3 = Term(),
                      const Term& term4 = Term(),
                      const Term& term5 = Term(),
                      const Term& term6 = Term() );
+
+            /**
+             * Combine \p terms into one and-term.
+             */
             AndTerm( const QList<Term>& terms );
+
+            /**
+             * Destructor.
+             */
             ~AndTerm();
 
+            /**
+             * Assignment operator.
+             */
             AndTerm& operator=( const AndTerm& term );
         };
     }

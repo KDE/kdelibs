@@ -35,14 +35,37 @@ namespace Nepomuk {
          * maintains a list of sub-terms.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT GroupTerm : public Term
         {
         public:
+            /**
+             * Destructor.
+             */
             ~GroupTerm();
 
+            /**
+             * The sub terms that are combined in this group.
+             *
+             * \sa setSubTerms()
+             */
             QList<Term> subTerms() const;
+
+            /**
+             * Set the sub terms that are combined in this group.
+             *
+             * \sa subTerms()
+             */
             void setSubTerms( const QList<Term>& terms );
+
+            /**
+             * Add a sub term to the list of terms
+             * that are combined in this group.
+             *
+             * \sa setSubTerms(), subTerms()
+             */
             void addSubTerm( const Term& term );
 
         protected:

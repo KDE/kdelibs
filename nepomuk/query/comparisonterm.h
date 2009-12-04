@@ -54,10 +54,15 @@ namespace Nepomuk {
          * For more details see the Comparator enumeration.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT ComparisonTerm : public SimpleTerm
         {
         public:
+            /**
+             * %ComparisonTerm supports different ways to compare values.
+             */
             enum Comparator {
                 /**
                  * A LiteralTerm sub-term is matched against string literal values.
@@ -99,11 +104,34 @@ namespace Nepomuk {
                 SmallerOrEqual
             };
 
+            /**
+             * Default constructor: creates an invalid comparison term.
+             */
             ComparisonTerm();
+
+            /**
+             * Copy constructor.
+             */
             ComparisonTerm( const ComparisonTerm& term );
-            ComparisonTerm( const Types::Property& property, const Term& term, Comparator = Contains );
+
+            /**
+             * Default constructor.
+             *
+             * \param property The property that should be matched.
+             * \param term The sub term to match to.
+             * \param comparator The Comparator to use for comparison. Not all Comparators make sense
+             * with all sub term types.
+             */
+            ComparisonTerm( const Types::Property& property, const Term& term, Comparator comparator = Contains );
+
+            /**
+             * Destructor.
+             */
             ~ComparisonTerm();
 
+            /**
+             * Assignment operator.
+             */
             ComparisonTerm& operator=( const ComparisonTerm& term );
 
             /**
