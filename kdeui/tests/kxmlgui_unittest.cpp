@@ -208,11 +208,13 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
 
     QMap<QString, int> fileToVersionMap; // makes QCOMPARE failures more readable than just temp filenames
 
+    // local file
     QFile fileV2(KStandardDirs::locateLocal("appdata", "testui.rc"));
     QVERIFY(fileV2.open(QIODevice::WriteOnly));
     createXmlFile(fileV2, 2, AddActionProperties | AddModifiedToolBars);
     fileToVersionMap.insert(fileV2.fileName(), 2);
 
+    // more-global file
     KTemporaryFile fileV5;
     QVERIFY(fileV5.open());
     createXmlFile(fileV5, 5, AddToolBars | AddModifiedMenus, "kpartgui");
@@ -235,7 +237,7 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     fileV1.close();
 
     KXmlGuiVersionHandler versionHandler(files);
-    // We selected the local file, so in our map it has version 2.
+    // We end up with the local file, so in our map it has version 2.
     // But of course by now it says "version=5" in it :)
     QCOMPARE(fileToVersionMap.value(versionHandler.finalFile()), 2);
     const QString finalDoc = versionHandler.finalDocument();
@@ -249,42 +251,6 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     QVERIFY(finalDoc.contains("<Action name=\"file_open\""));
     // Check that the toolbars modified by the user were kept
     QVERIFY(finalDoc.contains("<Action name=\"home\""));
-}
-
-void KXmlGui_UnitTest::testVersionHandlerOlderVersion()
-{
-    // This emulates the case where the application was upgraded
-    // so the local file should be discarded.
-
-    // Bug http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=550330
-    // Global file: version 4, using <gui>
-    // Local file: version 3, using <kpartplugin>
-
-    QMap<QString, int> fileToVersionMap; // makes QCOMPARE failures more readable than just temp filenames
-
-    QFile globalFile(KStandardDirs::locateLocal("appdata", "testui.rc"));
-    QVERIFY(globalFile.open(QIODevice::WriteOnly));
-    createXmlFile(globalFile, 4, AddActionProperties | AddModifiedToolBars);
-    fileToVersionMap.insert(globalFile.fileName(), 4);
-
-    KTemporaryFile localFile;
-    QVERIFY(localFile.open());
-    createXmlFile(localFile, 4, AddToolBars | AddModifiedMenus, "kpartpugin");
-    fileToVersionMap.insert(localFile.fileName(), 3);
-
-    QStringList files;
-    files << globalFile.fileName() << localFile.fileName();
-
-    globalFile.close();
-    localFile.close();
-
-    KXmlGuiVersionHandler versionHandler(files);
-    // We selected the global file, so in our map it has version 4.
-    QCOMPARE(fileToVersionMap.value(versionHandler.finalFile()), 4);
-    const QString finalDoc = versionHandler.finalDocument();
-    //kDebug() << finalDoc;
-    QVERIFY(finalDoc.startsWith("<?xml"));
-    QVERIFY(finalDoc.contains("version=\"4\""));
 }
 
 static QStringList collectMenuNames(KXMLGUIFactory& factory)
