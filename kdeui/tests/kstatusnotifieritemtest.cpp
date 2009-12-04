@@ -85,9 +85,9 @@ int main(int argc, char **argv)
     tray->setTitle("DBus System tray test");
     tray->setIconByName("konqueror");
     //tray->setImage(KIcon("konqueror"));
-    tray->setAttentionIconByName("kmail");
+    //tray->setAttentionIconByName("kmail");
     tray->setOverlayIconByName("emblem-important");
-    //tray->setAttentionMovie(KIconLoader::global()->loadMovie( QLatin1String( "newmessage" ), KIconLoader::Panel ));
+    tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
     tray->setToolTipIconByName("konqueror");
     tray->setToolTipTitle("DBus System tray test");

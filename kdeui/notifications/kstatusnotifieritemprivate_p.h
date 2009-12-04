@@ -112,8 +112,8 @@ public:
     QString attentionIconName;
     QIcon attentionIcon;
     KDbusImageVector serializedAttentionIcon;
+    QString movieName;
     QMovie *movie;
-    KDbusImageVector movieVector;
 
     QString toolTipIconName;
     KDbusImageVector serializedToolTipIcon;

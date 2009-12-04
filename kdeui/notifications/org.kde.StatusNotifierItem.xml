@@ -33,9 +33,7 @@
       <annotation name="com.trolltech.QtDBus.QtTypeName" value="KDbusImageVector"/>
     </property>
 
-    <property name="AttentionMovie" type="a(iiay)" access="read">
-      <annotation name="com.trolltech.QtDBus.QtTypeName" value="KDbusImageVector"/>
-    </property>
+    <property name="AttentionMovieName" type="s" access="read"/>
 
 
 

@@ -212,56 +212,28 @@ QIcon KStatusNotifierItem::attentionIconPixmap() const
     return d->attentionIcon;
 }
 
-void KStatusNotifierItem::setAttentionMovie(QMovie *movie)
+void KStatusNotifierItem::setAttentionMovieByName(const QString &name)
 {
-    if (movie != 0) {
-        //really ugly, but frameCount just returns 0 usually...
-        for (int i=0; true; ++i) {
-
-            if (!movie->jumpToFrame(i)) {
-                break;
-            }
-
-            QImage frame = movie->currentImage();
-            d->movieVector.append(d->imageToStruct(frame));
-        }
-        d->movieVector.pop_back();
+    if (d->movieName == name) {
+        return;
     }
 
-    d->movie = movie;
+    d->movieName = name;
+
+    delete d->movie;
+    d->movie = 0;
 
     emit d->statusNotifierItemDBus->NewAttentionIcon();
 
     if (d->systemTrayIcon) {
-        d->systemTrayIcon->setMovie(movie);
+        d->movie = new QMovie(d->movieName);
+        d->systemTrayIcon->setMovie(d->movie);
     }
 }
 
-void KStatusNotifierItem::setAttentionMovie(const QVector<QPixmap> &movie)
+QString KStatusNotifierItem::attentionMovieName() const
 {
-    //really ugly, but frameCount just returns 0 usually...
-    for (int i=0; movie.size(); ++i) {
-        d->movieVector.append(d->imageToStruct(movie[i].toImage()));
-    }
-
-    emit d->statusNotifierItemDBus->NewAttentionIcon();
-    //FIXME?: movie on the legacy systemtray icon is not supported here
-}
-
-void KStatusNotifierItem::setAttentionMovie(const QVector<QImage> &movie)
-{
-    //really ugly, but frameCount just returns 0 usually...
-    for (int i=0; movie.size(); ++i) {
-        d->movieVector.append(d->imageToStruct(movie[i]));
-    }
-
-    emit d->statusNotifierItemDBus->NewAttentionIcon();
-}
-
-
-QMovie *KStatusNotifierItem::attentionMovie() const
-{
-    return d->movie;
+    return d->movieName;
 }
 
 //ToolTip
@@ -749,7 +721,10 @@ void KStatusNotifierItemPrivate::setLegacySystemTrayEnabled(bool enabled)
 void KStatusNotifierItemPrivate::syncLegacySystemTrayIcon()
 {
     if (status == KStatusNotifierItem::NeedsAttention) {
-        if (movie) {
+        if (!movieName.isNull()) {
+            if (!movie) {
+                movie = new QMovie(movieName);
+            }
             systemTrayIcon->setMovie(movie);
         } else if (!attentionIconName.isNull()) {
             systemTrayIcon->setIcon(KIcon(attentionIconName));

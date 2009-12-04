@@ -265,27 +265,15 @@ public:
 
     /**
      * Sets a movie as the requesting attention icon.
-     * This overrides anything set in setAttentionIcon() or setAttentionImage()
+     * This overrides anything set in setAttentionIcon()
      */
-    void setAttentionMovie(QMovie *movie);
-
-    //FIXME: these two will die...
-    /**
-     * Sets a movie represented by a vector of QPixmap as frames
-     * This is an overloaded member provided for convenience
-     */
-    void setAttentionMovie(const QVector<QPixmap> &movie);
+    void setAttentionMovieByName(const QString &name);
 
     /**
-     * Sets a movie represented by a vector of QImage as frames
-     * This is an overloaded member provided for convenience
+     * @return the name of the movie to be displayed when the application is
+     * requesting the user attention
      */
-    void setAttentionMovie(const QVector<QImage> &movie);
-
-    /**
-     * @return the movie
-     */
-    QMovie *attentionMovie() const;
+    QString attentionMovieName() const;
 
 
     //ToolTip handling

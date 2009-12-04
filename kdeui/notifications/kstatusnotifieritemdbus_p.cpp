@@ -234,9 +234,9 @@ KDbusImageVector KStatusNotifierItemDBus::AttentionIconPixmap() const
     return m_statusNotifierItem->d->serializedAttentionIcon;
 }
 
-KDbusImageVector KStatusNotifierItemDBus::AttentionMovie() const
+QString KStatusNotifierItemDBus::AttentionMovieName() const
 {
-    return m_statusNotifierItem->d->movieVector;
+    return m_statusNotifierItem->d->movieName;
 }
 
 
