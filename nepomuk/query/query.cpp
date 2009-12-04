@@ -22,6 +22,7 @@
 #include "term.h"
 #include "term_p.h"
 #include "nie.h"
+#include "nfo.h"
 #include "querybuilderdata_p.h"
 #include "literalterm.h"
 #include "resourceterm.h"
@@ -29,6 +30,7 @@
 #include "orterm.h"
 #include "negationterm.h"
 #include "comparisonterm.h"
+#include "resourcetypeterm.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
@@ -289,7 +291,15 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
 
 QString Nepomuk::Query::Query::toSparqlQuery() const
 {
+    // optimize whatever we can
     Term term = optimizeTerm( d->m_term );
+
+    // restrict to files if we are a file query
+    if( d->m_isFileQuery ) {
+        term = AndTerm( term, OrTerm( ResourceTypeTerm( Vocabulary::NFO::FileDataObject() ), ResourceTypeTerm( Vocabulary::NFO::Folder() ) ) );
+    }
+
+    // actually build the SPARQL query string
     QueryBuilderData qbd;
     QString termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
     if( !termGraphPattern.isEmpty() ) {
