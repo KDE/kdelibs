@@ -23,6 +23,7 @@ set(nepomukquery_SRC
   groupterm.cpp
   resourceterm.cpp
   literalterm.cpp
+  resourcetypeterm.cpp
   query.cpp
   filequery.cpp
   queryparser.cpp
@@ -33,6 +34,7 @@ set(nepomukquery_SRC
 )
 
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
 
 set_source_files_properties(
   org.kde.nepomuk.QueryService.xml
@@ -70,6 +72,7 @@ install(FILES
   groupterm.h
   resourceterm.h
   literalterm.h
+  resourcetypeterm.h
   query.h
   filequery.h
   result.h

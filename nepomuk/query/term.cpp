@@ -25,12 +25,14 @@
 #include "orterm.h"
 #include "negationterm.h"
 #include "comparisonterm.h"
+#include "resourcetypeterm.h"
 #include "literalterm_p.h"
 #include "resourceterm_p.h"
 #include "andterm_p.h"
 #include "orterm_p.h"
 #include "negationterm_p.h"
 #include "comparisonterm_p.h"
+#include "resourcetypeterm_p.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QList>
@@ -117,6 +119,12 @@ bool Nepomuk::Query::Term::isComparisonTerm() const
 }
 
 
+bool Nepomuk::Query::Term::isResourceTypeTerm() const
+{
+    return type() == ResourceType;
+}
+
+
 Nepomuk::Query::LiteralTerm Nepomuk::Query::Term::toLiteralTerm() const
 {
     if ( isLiteralTerm() ) {
@@ -172,6 +180,15 @@ Nepomuk::Query::ComparisonTerm Nepomuk::Query::Term::toComparisonTerm() const
 }
 
 
+Nepomuk::Query::ResourceTypeTerm Nepomuk::Query::Term::toResourceTypeTerm() const
+{
+    if ( isResourceTypeTerm() )
+        return *static_cast<const ResourceTypeTerm*>( this );
+    else
+        return ResourceTypeTerm();
+}
+
+
 #define CONVERT_AND_RETURN( Class ) \
     if ( !is##Class() )                                       \
         d_ptr = new Class##Private();                         \
@@ -213,6 +230,12 @@ Nepomuk::Query::ComparisonTerm& Nepomuk::Query::Term::toComparisonTerm()
 }
 
 
+Nepomuk::Query::ResourceTypeTerm& Nepomuk::Query::Term::toResourceTypeTerm()
+{
+    CONVERT_AND_RETURN( ResourceTypeTerm );
+}
+
+
 bool Nepomuk::Query::Term::operator==( const Term& other ) const
 {
     return d_ptr->equals( other.d_ptr );
@@ -244,6 +267,12 @@ uint Nepomuk::Query::qHash( const Nepomuk::Query::Term& term )
 
     case Nepomuk::Query::Term::Negation:
         return 1;
+
+    case Nepomuk::Query::Term::Resource:
+        return qHash( term.toResourceTerm().resource().resourceUri() );
+
+    case Nepomuk::Query::Term::ResourceType:
+        return qHash( term.toResourceTypeTerm().type().uri() );
 
     case Nepomuk::Query::Term::And:
     case Nepomuk::Query::Term::Or: {

@@ -37,6 +37,7 @@ namespace Nepomuk {
         class AndTerm;
         class OrTerm;
         class ComparisonTerm;
+        class ResourceTypeTerm;
 
         class TermPrivate;
 
@@ -49,6 +50,8 @@ namespace Nepomuk {
          * types and subterms. See Term::Type for details on the different Term types.
          *
          * \author Sebastian Trueg <trueg@kde.org>
+         *
+         * \since 4.4
          */
         class NEPOMUKQUERY_EXPORT Term
         {
@@ -100,6 +103,13 @@ namespace Nepomuk {
                  * \sa ComparisonTerm
                  */
                 Comparison,
+
+                /**
+                 * Matches all resources of a specific type.
+                 *
+                 * \sa ResourceTypeTerm
+                 */
+                ResourceType,
 
                 /**
                  * A negation term inverts the meaning of its sub term.
@@ -171,6 +181,11 @@ namespace Nepomuk {
             bool isComparisonTerm() const;
 
             /**
+             * \return \p true if this term is a ResourceTypeTerm.
+             */
+            bool isResourceTypeTerm() const;
+
+            /**
              * Interpret this term as a LiteralTerm.
              *
              * \return A copy of this term if its type
@@ -217,6 +232,14 @@ namespace Nepomuk {
              * is Comparison, a new ComparisonTerm otherwise.
              */
             ComparisonTerm toComparisonTerm() const;
+
+            /**
+             * Interpret this term as a ResourceTypeTerm.
+             *
+             * \return A copy of this term if its type
+             * is ClassType, a new ResourceTypeTerm otherwise.
+             */
+            ResourceTypeTerm toResourceTypeTerm() const;
 
             /**
              * Convert this term into a LiteralTerm.
@@ -271,6 +294,15 @@ namespace Nepomuk {
              * \return A reference to this term as a ComparisonTerm.
              */
             ComparisonTerm& toComparisonTerm();
+
+            /**
+             * Convert this term into a ResourceTypeTerm.
+             * If type is not ClassType it will be changed
+             * and the result is a new ResourceTypeTerm.
+             *
+             * \return A reference to this term as a ResourceTypeTerm.
+             */
+            ResourceTypeTerm& toResourceTypeTerm();
 
             /**
              * Comparison operator.

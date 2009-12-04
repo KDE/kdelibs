@@ -996,6 +996,7 @@ install(FILES
   Nepomuk/Query/QueryParser
   Nepomuk/Query/QueryServiceClient
   Nepomuk/Query/ResourceTerm
+  Nepomuk/Query/ResourceTypeTerm
   Nepomuk/Query/Result
   Nepomuk/Query/SimpleTerm
   Nepomuk/Query/Term
