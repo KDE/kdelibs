@@ -210,7 +210,6 @@ void AccessManagerReply::jobDone(KJob *kJob)
 void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job, const KUrl& url)
 {
     job->kill();
-    m_kioJob = 0;
     
     // unfortunately we don't get HTTP response code for redirection, so for
     // temporary one assume code 302 which is most often used
