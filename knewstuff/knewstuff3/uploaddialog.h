@@ -66,14 +66,12 @@ public:
     ~UploadDialog();
 
     /**
-      Sets the payload filename.
-      This is optional, but necessary if the application wants to support
-      reusing previously filled out form data based on the filename.
-
+      Set the file to be uploaded.
+      
       @param payloadFile the payload data file
     */
     void setUploadFile(const KUrl& payloadFile);
-
+    
 public Q_SLOTS:
     virtual void accept();
 
