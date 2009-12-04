@@ -62,7 +62,6 @@ void KDirWatch_UnitTest::touchOneFile()
         QTest::qWait(200);
     }
 
-    QCOMPARE(spyDirty.count(), 1);
     QCOMPARE(spyDirty[0][0].toString(), m_path + "0");
 }
 
