@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@ Overview |
 \ref nepomuk-rcgen "Resource Generator"
 </b></p>
 
-This is the KDE Meta Data library (not to confuse with KFileMetaData).
+This is the KDE Meta Data library (not to confuse with KFileMetaData). It consists of
+three parts: the main resource handling centered around Nepomuk::Resource, the handling of
+ontologies via classes in the Nepomuk::Types namespace, and the desktop Nepomuk::Query API.
 
 
 \section overview The General Idea
@@ -205,6 +207,8 @@ Examples |
 \ref nepomuk-rcgen "Resource Generator"
 </b></p>
 
+\section examples_resource Resource Handling Examples
+
 Add an annotation (a comment) to a file.
 
 \code
@@ -258,7 +262,56 @@ while( it.hasNext() ) {
   kdDebug() << Nepomuk::Types::Property( it.key() ).label() << ": " << it.value().toString() << endl;
 }
 \endcode
+
+
+\section examples_query Query Examples
+
+Create a query that lists all resources tagged with a specific tag:
+
+\code
+Nepomuk::Tag tag = getFancyTag();
+Nepomuk::Query::ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
+                                     Nepomuk::Query::ResourceTerm( tag ) );
+Nepomuk::Query::Query query( term );
+\endcode
+
+Create a query that lists all \b files tagged with a specific tag:
+
+\code
+Nepomuk::Tag tag = getFancyTag();
+Nepomuk::Query::ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
+                                     Nepomuk::Query::ResourceTerm( tag ) );
+Nepomuk::Query::FileQuery fileQuery( term );
+\endcode
+
+Restrict the search to a specific folder:
+
+\code
+fileQuery.addIncludeFolder( KUrl("/home/foobar/thegoodstuff") );
+\endcode
+
+Restrict the search to files-only (Vocabulary namespace generated via
+<a href="http://api.kde.org/kdesupport-api/kdesupport-apidocs/soprano/html/soprano_devel_tools.html">onto2vocabularyclass</a>
+using \p ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig):
+
+\code
+Nepomuk::Query::Term folderTerm = Nepomuk::Query::ResourceTypeTerm( Vocabulary::NFO::Folder() );
+Nepomuk::Query::Term noFolderTerm = Nepomuk::Query::NegationTerm::negateTerm(folderTerm);
+fileQuery.setTerm( Nepomuk::Query::AndTerm( fileQuery.term(), noFolderTerm ) );
+\endcode
+
+List all query results in a KDirModel:
+
+\code
+KDirModel* model = getFancyDirModel();
+Nepomuk::Query::Query query = buildFancyQuery();
+KUrl searchUrl = query.toSearchUrl();
+model->dirLister()->open( searchUrl );
+\endcode
+
+KIO will use the \p nepomuksearch:/ slave to list search results as file entries.
 */
+
 
 /** \page page_ontology The Desktop Ontologies
 
@@ -342,6 +395,27 @@ target_link_libraries(foobar
 )
 \endcode
 */
+
+/**
+ * \namespace Nepomuk::Types
+ *
+ * \brief The %Types namespace contains all classes used to handle ontology entities such as classes and properties.
+ */
+
+/**
+ * \namespace Nepomuk::Query
+ *
+ * \brief The %Query namespace contains all classes that make up the Nepomuk %Query API.
+ *
+ * Constructing queries consists of creating and combining different types of Term subclasses or using the
+ * QueryParser to parse user queries (see the QueryParser documentation for details on the query syntax).
+ *
+ * The constructed queries can then be executed on the nepomuk query service via the QueryServiceClient,
+ * used directly on a Soprano::Model (for example the %Nepomuk main model which can be retrieved via
+ * ResourceManager::mainModel()), or listed via KIO (see Query::Query::toSearchUrl()).
+ *
+ * \sa \ref examples_query
+ */
 
 // DOXYGEN_SET_RECURSIVE = NO
 // DOXYGEN_SET_FILE_PATTERNS = *.h
