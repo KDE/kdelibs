@@ -267,9 +267,6 @@ void KDirWatchPrivate::inotifyEventReceived()
       const struct inotify_event * const event = (struct inotify_event *) &buf[offsetCurrent];
       const int eventSize = sizeof( struct inotify_event ) + event->len;
       if ( bytesAvailable < eventSize ) {
-          // copy partial event to beginning of buffer
-          memmove(buf, &buf[offsetCurrent], bytesAvailable);
-          offsetStartRead = bytesAvailable;
           break;
       }
 
@@ -397,6 +394,11 @@ void KDirWatchPrivate::inotifyEventReceived()
           break;
         }
       }
+    }
+    if (bytesAvailable > 0) {
+        // copy partial event to beginning of buffer
+        memmove(buf, &buf[offsetCurrent], bytesAvailable);
+        offsetStartRead = bytesAvailable;
     }
   }
 #endif
