@@ -1,7 +1,6 @@
 project(kdeviconinserter)
 
 find_package(KDE4 REQUIRED)
-find_package(KDevPlatform REQUIRED)
 
 include (KDE4Defaults)
 
