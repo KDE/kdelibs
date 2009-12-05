@@ -287,7 +287,7 @@ bool KWebPage::acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest 
 {
     kDebug() << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
 
-    if (d->wallet && type == QWebPage::NavigationTypeFormSubmitted) {
+    if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted) {
         d->wallet->saveFormData(frame);
     }
 
