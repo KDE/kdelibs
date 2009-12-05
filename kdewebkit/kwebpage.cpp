@@ -206,7 +206,8 @@ void KWebPage::downloadRequest(const QNetworkRequest &request)
 
     if (result == KIO::R_OVERWRITE) {
         KIO::Job *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
-        QVariant attr = request.attribute(static_cast<QNetworkRequest::Attribute>(KDEPrivate::NetworkAccessManager::MetaData));
+        //QVariant attr = request.attribute(static_cast<QNetworkRequest::Attribute>(KDEPrivate::NetworkAccessManager::MetaData));
+	QVariant attr;
         if (attr.isValid() && attr.type() == QVariant::Map)
             job->setMetaData(KIO::MetaData(attr.toMap()));
 
