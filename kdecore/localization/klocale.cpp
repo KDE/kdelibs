@@ -344,7 +344,7 @@ void KLocalePrivate::initMainCatalogs()
         catalogNames.append(KCatalogName(catalogName));   // application catalog
 
         // catalogs from which each application can draw translations
-        numberOfSysCatalogs = 5;
+        numberOfSysCatalogs = 6;
         catalogNames.append(KCatalogName("libphonon"));
         catalogNames.append(KCatalogName("kio4"));
         catalogNames.append(KCatalogName("kdelibs4"));
