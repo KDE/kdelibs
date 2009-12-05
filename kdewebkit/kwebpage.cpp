@@ -43,7 +43,7 @@
 #include <klocalizedstring.h>
 #include <kio/accessmanager.h>
 #include <kio/job.h>
-#include <kio/renamedlg.h>
+#include <kio/renamedialog.h>
 
 // Qt
 #include <QtCore/QPointer>
