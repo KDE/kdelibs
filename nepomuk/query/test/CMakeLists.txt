@@ -4,7 +4,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 kde4_add_unit_test(queryparsertest NOGUI queryparsertest.cpp)
 target_link_libraries(queryparsertest nepomukquery
-  ${QT_QTCORE_LIBRARY}
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
@@ -15,9 +14,9 @@ set(querytest_SRC querytest.cpp)
 soprano_add_ontology(querytest_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
 kde4_add_unit_test(querytest NOGUI ${querytest_SRC})
 target_link_libraries(querytest nepomukquery
-  ${QT_QTCORE_LIBRARY}
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
   ${NEPOMUK_LIBRARIES}
+  nepomuk
 )
