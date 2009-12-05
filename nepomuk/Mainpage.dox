@@ -266,6 +266,23 @@ while( it.hasNext() ) {
 
 \section examples_query Query Examples
 
+Perform a simple full text query that looks for any resource containing
+the value 'nepomuk':
+
+\code
+Nepomuk::Query::LiteralTerm nepomukTerm("nepomuk");
+Nepomuk::Query::Query query( nepomukTerm );
+\endcode
+
+Create a query that lists all resources tagged with a tag whose name
+matches 'nepomuk':
+
+\code
+Nepomuk::Query::ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
+                                     Nepomuk::Query::LiteralTerm("nepomuk") );
+Nepomuk::Query::Query query( term );
+\endcode
+
 Create a query that lists all resources tagged with a specific tag:
 
 \code
@@ -274,6 +291,19 @@ Nepomuk::Query::ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
                                      Nepomuk::Query::ResourceTerm( tag ) );
 Nepomuk::Query::Query query( term );
 \endcode
+
+Create a query that lists all resource tagged with both the tags used
+above:
+
+\code
+Nepomuk::Tag tag = getFancyTag();
+Nepomuk::Query::ComparisonTerm fancyTagTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                             Nepomuk::Query::ResourceTerm( tag ) );
+Nepomuk::Query::ComparisonTerm nepomukTagTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                               Nepomuk::Query::LiteralTerm("nepomuk") );
+Nepomuk::Query::Query query( Nepomuk::Query::AndTerm(fancyTagTerm, nepomukTagTerm) );
+\endcode
+
 
 Create a query that lists all \b files tagged with a specific tag:
 
