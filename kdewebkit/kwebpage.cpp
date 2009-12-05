@@ -33,12 +33,9 @@
 // KDE
 #include <kaction.h>
 #include <kfiledialog.h>
-#include <kinputdialog.h>
-#include <kmessagebox.h>
 #include <kprotocolmanager.h>
 #include <kjobuidelegate.h>
 #include <krun.h>
-#include <kshell.h>
 #include <kstandarddirs.h>
 #include <kstandardshortcut.h>
 #include <kurl.h>
@@ -46,18 +43,13 @@
 #include <klocalizedstring.h>
 #include <kio/accessmanager.h>
 #include <kio/job.h>
+#include <kio/renamedlg.h>
 
 // Qt
 #include <QtCore/QPointer>
-#include <QtGui/QTextDocument>
-#include <QtGui/QPaintEngine>
+#include <QtCore/QFileInfo>
 #include <QtWebKit/QWebFrame>
-#include <QtUiTools/QUiLoader>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkCookieJar>
-#include <QtDBus/QDBusInterface>
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusReply>
+
 
 #define QL1(x)  QLatin1String(x)
 
@@ -65,91 +57,91 @@
 class KWebPage::KWebPagePrivate
 {
 public:
-  QPointer<KWebWallet> wallet;
+    QPointer<KWebWallet> wallet;
 };
 
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
 {
-  // KDE KParts integration for <embed> tag...
-  if (!flags || (flags & KPartsIntegration))
-    setPluginFactory(new KWebPluginFactory(this));
+    // KDE KParts integration for <embed> tag...
+    if (!flags || (flags & KPartsIntegration))
+        setPluginFactory(new KWebPluginFactory(this));
 
-  // KDE IO (KIO) integration...
-  if (!flags || (flags & KIOIntegration)) {
-    KIO::Integration::AccessManager *manager = new KIO::Integration::AccessManager(this);
-    QWidget *widget = qobject_cast<QWidget*>(parent);
-    if (widget && widget->window())
-      manager->setCookieJarWindowId(widget->window()->winId());
-    setNetworkAccessManager(manager);
-  }
+    // KDE IO (KIO) integration...
+    if (!flags || (flags & KIOIntegration)) {
+        KIO::Integration::AccessManager *manager = new KIO::Integration::AccessManager(this);
+        QWidget *widget = qobject_cast<QWidget*>(parent);
+        if (widget && widget->window())
+            manager->setCookieJarWindowId(widget->window()->winId());
+        setNetworkAccessManager(manager);
+    }
 
-  // KWallet integration...
-  if (!flags || (flags & KWalletIntegration))
-    setWallet(new KWebWallet);
+    // KWallet integration...
+    if (!flags || (flags & KWalletIntegration))
+        setWallet(new KWebWallet);
 
 #if QT_VERSION >= 0x040600
-  action(Back)->setIcon(QIcon::fromTheme("go-previous"));
-  action(Forward)->setIcon(QIcon::fromTheme("go-next"));
-  action(Reload)->setIcon(QIcon::fromTheme("view-refresh"));
-  action(Stop)->setIcon(QIcon::fromTheme("process-stop"));
-  action(Cut)->setIcon(QIcon::fromTheme("edit-cut"));
-  action(Copy)->setIcon(QIcon::fromTheme("edit-copy"));
-  action(Paste)->setIcon(QIcon::fromTheme("edit-paste"));
-  action(Undo)->setIcon(QIcon::fromTheme("edit-undo"));
-  action(Redo)->setIcon(QIcon::fromTheme("edit-redo"));
-  action(InspectElement)->setIcon(QIcon::fromTheme("view-process-all"));
-  action(OpenLinkInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
-  action(OpenFrameInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
-  action(OpenImageInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
-  action(CopyLinkToClipboard)->setIcon(QIcon::fromTheme("edit-copy"));
-  action(CopyImageToClipboard)->setIcon(QIcon::fromTheme("edit-copy"));
-  action(ToggleBold)->setIcon(QIcon::fromTheme("format-text-bold"));
-  action(ToggleItalic)->setIcon(QIcon::fromTheme("format-text-italic"));
-  action(ToggleUnderline)->setIcon(QIcon::fromTheme("format-text-underline"));
-  action(DownloadLinkToDisk)->setIcon(QIcon::fromTheme("document-save"));
-  action(DownloadImageToDisk)->setIcon(QIcon::fromTheme("document-save"));
+    action(Back)->setIcon(QIcon::fromTheme("go-previous"));
+    action(Forward)->setIcon(QIcon::fromTheme("go-next"));
+    action(Reload)->setIcon(QIcon::fromTheme("view-refresh"));
+    action(Stop)->setIcon(QIcon::fromTheme("process-stop"));
+    action(Cut)->setIcon(QIcon::fromTheme("edit-cut"));
+    action(Copy)->setIcon(QIcon::fromTheme("edit-copy"));
+    action(Paste)->setIcon(QIcon::fromTheme("edit-paste"));
+    action(Undo)->setIcon(QIcon::fromTheme("edit-undo"));
+    action(Redo)->setIcon(QIcon::fromTheme("edit-redo"));
+    action(InspectElement)->setIcon(QIcon::fromTheme("view-process-all"));
+    action(OpenLinkInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
+    action(OpenFrameInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
+    action(OpenImageInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
+    action(CopyLinkToClipboard)->setIcon(QIcon::fromTheme("edit-copy"));
+    action(CopyImageToClipboard)->setIcon(QIcon::fromTheme("edit-copy"));
+    action(ToggleBold)->setIcon(QIcon::fromTheme("format-text-bold"));
+    action(ToggleItalic)->setIcon(QIcon::fromTheme("format-text-italic"));
+    action(ToggleUnderline)->setIcon(QIcon::fromTheme("format-text-underline"));
+    action(DownloadLinkToDisk)->setIcon(QIcon::fromTheme("document-save"));
+    action(DownloadImageToDisk)->setIcon(QIcon::fromTheme("document-save"));
 
-  settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, QIcon::fromTheme("preferences-plugin").pixmap(32, 32));
-  settings()->setWebGraphic(QWebSettings::MissingImageGraphic, QIcon::fromTheme("image-missing").pixmap(32, 32));
-  settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, QIcon::fromTheme("applications-internet").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, QIcon::fromTheme("preferences-plugin").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, QIcon::fromTheme("image-missing").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, QIcon::fromTheme("applications-internet").pixmap(32, 32));
 #else
-  action(Back)->setIcon(KIcon("go-previous"));
-  action(Forward)->setIcon(KIcon("go-next"));
-  action(Reload)->setIcon(KIcon("view-refresh"));
-  action(Stop)->setIcon(KIcon("process-stop"));
-  action(Cut)->setIcon(KIcon("edit-cut"));
-  action(Copy)->setIcon(KIcon("edit-copy"));
-  action(Paste)->setIcon(KIcon("edit-paste"));
-  action(Undo)->setIcon(KIcon("edit-undo"));
-  action(Redo)->setIcon(KIcon("edit-redo"));
-  action(InspectElement)->setIcon(KIcon("view-process-all"));
-  action(OpenLinkInNewWindow)->setIcon(KIcon("window-new"));
-  action(OpenFrameInNewWindow)->setIcon(KIcon("window-new"));
-  action(OpenImageInNewWindow)->setIcon(KIcon("window-new"));
-  action(CopyLinkToClipboard)->setIcon(KIcon("edit-copy"));
-  action(CopyImageToClipboard)->setIcon(KIcon("edit-copy"));
-  action(ToggleBold)->setIcon(KIcon("format-text-bold"));
-  action(ToggleItalic)->setIcon(KIcon("format-text-italic"));
-  action(ToggleUnderline)->setIcon(KIcon("format-text-underline"));
-  action(DownloadLinkToDisk)->setIcon(KIcon("document-save"));
-  action(DownloadImageToDisk)->setIcon(KIcon("document-save"));
+    action(Back)->setIcon(KIcon("go-previous"));
+    action(Forward)->setIcon(KIcon("go-next"));
+    action(Reload)->setIcon(KIcon("view-refresh"));
+    action(Stop)->setIcon(KIcon("process-stop"));
+    action(Cut)->setIcon(KIcon("edit-cut"));
+    action(Copy)->setIcon(KIcon("edit-copy"));
+    action(Paste)->setIcon(KIcon("edit-paste"));
+    action(Undo)->setIcon(KIcon("edit-undo"));
+    action(Redo)->setIcon(KIcon("edit-redo"));
+    action(InspectElement)->setIcon(KIcon("view-process-all"));
+    action(OpenLinkInNewWindow)->setIcon(KIcon("window-new"));
+    action(OpenFrameInNewWindow)->setIcon(KIcon("window-new"));
+    action(OpenImageInNewWindow)->setIcon(KIcon("window-new"));
+    action(CopyLinkToClipboard)->setIcon(KIcon("edit-copy"));
+    action(CopyImageToClipboard)->setIcon(KIcon("edit-copy"));
+    action(ToggleBold)->setIcon(KIcon("format-text-bold"));
+    action(ToggleItalic)->setIcon(KIcon("format-text-italic"));
+    action(ToggleUnderline)->setIcon(KIcon("format-text-underline"));
+    action(DownloadLinkToDisk)->setIcon(KIcon("document-save"));
+    action(DownloadImageToDisk)->setIcon(KIcon("document-save"));
 
-  settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KIcon("preferences-plugin").pixmap(32, 32));
-  settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KIcon("image-missing").pixmap(32, 32));
-  settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KIcon("applications-internet").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KIcon("preferences-plugin").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KIcon("image-missing").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KIcon("applications-internet").pixmap(32, 32));
 #endif
 
-  action(Back)->setShortcut(KStandardShortcut::back().primary());
-  action(Forward)->setShortcut(KStandardShortcut::forward().primary());
-  action(Reload)->setShortcut(KStandardShortcut::reload().primary());
-  action(Stop)->setShortcut(Qt::Key_Escape);
-  action(Cut)->setShortcut(KStandardShortcut::cut().primary());
-  action(Copy)->setShortcut(KStandardShortcut::copy().primary());
-  action(Paste)->setShortcut(KStandardShortcut::paste().primary());
-  action(Undo)->setShortcut(KStandardShortcut::undo().primary());
-  action(Redo)->setShortcut(KStandardShortcut::redo().primary());
+    action(Back)->setShortcut(KStandardShortcut::back().primary());
+    action(Forward)->setShortcut(KStandardShortcut::forward().primary());
+    action(Reload)->setShortcut(KStandardShortcut::reload().primary());
+    action(Stop)->setShortcut(Qt::Key_Escape);
+    action(Cut)->setShortcut(KStandardShortcut::cut().primary());
+    action(Copy)->setShortcut(KStandardShortcut::copy().primary());
+    action(Paste)->setShortcut(KStandardShortcut::paste().primary());
+    action(Undo)->setShortcut(KStandardShortcut::undo().primary());
+    action(Redo)->setShortcut(KStandardShortcut::redo().primary());
 }
 
 KWebPage::~KWebPage()
@@ -159,140 +151,156 @@ KWebPage::~KWebPage()
 
 bool KWebPage::isExternalContentAllowed() const
 {
-  KIO::AccessManager *manager = qobject_cast<KIO::AccessManager*>(networkAccessManager());
-  if (manager)
-    return manager->isExternalContentAllowed();
-  return true;
+    KIO::AccessManager *manager = qobject_cast<KIO::AccessManager*>(networkAccessManager());
+    if (manager)
+        return manager->isExternalContentAllowed();
+    return true;
 }
 
 KWebWallet *KWebPage::wallet() const
 {
-  return d->wallet;
+    return d->wallet;
 }
 
 void KWebPage::setAllowExternalContent(bool allow)
 {
-  KIO::AccessManager *manager = qobject_cast<KIO::AccessManager*>(networkAccessManager());
-  if (manager)
-    manager->setExternalContentAllowed(allow);
+    KIO::AccessManager *manager = qobject_cast<KIO::AccessManager*>(networkAccessManager());
+    if (manager)
+        manager->setExternalContentAllowed(allow);
 }
 
 void KWebPage::setWallet(KWebWallet* wallet)
 {
-  // Delete the current wallet if this object is its parent...
-  if (d->wallet && this == d->wallet->parent())
-    delete d->wallet;
+    // Delete the current wallet if this object is its parent...
+    if (d->wallet && this == d->wallet->parent())
+        delete d->wallet;
 
-  d->wallet = wallet;
+    d->wallet = wallet;
 
-  if (d->wallet)
-    d->wallet->setParent(this);
+    if (d->wallet)
+        d->wallet->setParent(this);
 }
 
 void KWebPage::downloadRequest(const QNetworkRequest &request)
 {
-  KUrl url (request.url());
-  const QString destUrl = KFileDialog::getSaveFileName(url.fileName(), QString(), view());
+    KUrl destUrl;
+    KUrl srcUrl (request.url());
+    int result = KIO::R_OVERWRITE;
 
-  if (destUrl.isEmpty())
-    return;
+    do {
+        destUrl = KFileDialog::getSaveFileName(srcUrl.fileName(), QString(), view());
 
-  KIO::Job *job = KIO::file_copy(url, KUrl(destUrl), -1, KIO::Overwrite);
-  QVariant attr = request.attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData));
-  if (attr.isValid() && attr.type() == QVariant::Map)
-    job->setMetaData(KIO::MetaData(attr.toMap()));
+        if (destUrl.isLocalFile()) {
+            QFileInfo finfo (destUrl.toLocalFile());
+            if (finfo.exists()) {
+                QDateTime now = QDateTime::currentDateTime();
+                KIO::RenameDialog dlg (view(), i18n("Overwrite File?"), srcUrl, destUrl,
+                                       KIO::RenameDialog_Mode(KIO::M_OVERWRITE | KIO::M_SKIP),
+                                       -1, finfo.size(),
+                                       now.toTime_t(), finfo.created().toTime_t(),
+                                       now.toTime_t(), finfo.lastModified().toTime_t());
+                result = dlg.exec();
+            }
+        }
+    } while (result == KIO::R_CANCEL && destUrl.isValid());
 
-  job->addMetaData(QL1("MaxCacheSize"), QL1("0")); // Don't store in http cache.
-  job->addMetaData(QL1("cache"), QL1("cache")); // Use entry from cache if available.
-  job->uiDelegate()->setAutoErrorHandlingEnabled(true);
+    if (result == KIO::R_OVERWRITE) {
+        KIO::Job *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
+        QVariant attr = request.attribute(static_cast<QNetworkRequest::Attribute>(KDEPrivate::NetworkAccessManager::MetaData));
+        if (attr.isValid() && attr.type() == QVariant::Map)
+            job->setMetaData(KIO::MetaData(attr.toMap()));
+
+        job->addMetaData(QL1("MaxCacheSize"), QL1("0")); // Don't store in http cache.
+        job->addMetaData(QL1("cache"), QL1("cache")); // Use entry from cache if available.
+        job->uiDelegate()->setAutoErrorHandlingEnabled(true);
+    }
 }
 
 void KWebPage::downloadUrl(const KUrl &url)
 {
-  QNetworkRequest request (url);
-  downloadRequest(request);
+    QNetworkRequest request (url);
+    downloadRequest(request);
 }
 
 QString KWebPage::sessionMetaData(const QString &key) const
 {
-  QString value;
+    QString value;
 
-  KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
-  if (manager)
-    value = manager->sessionMetaData().value(key);
+    KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
+    if (manager)
+        value = manager->sessionMetaData().value(key);
 
-  return value;
+    return value;
 }
 
 QString KWebPage::requestMetaData(const QString &key) const
 {
-  QString value;
+    QString value;
 
-  KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
-  if (manager)
-    value = manager->requestMetaData().value(key);
+    KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
+    if (manager)
+        value = manager->requestMetaData().value(key);
 
-  return value;
+    return value;
 }
 
 void KWebPage::setSessionMetaData(const QString &key, const QString &value)
 {
-  KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
-  if (manager)
-    manager->sessionMetaData()[key] = value;
+    KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
+    if (manager)
+        manager->sessionMetaData()[key] = value;
 }
 
 void KWebPage::setRequestMetaData(const QString &key, const QString &value)
 {
-  KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
-  if (manager)
-    manager->requestMetaData()[key] = value;
+    KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
+    if (manager)
+        manager->requestMetaData()[key] = value;
 }
 
 void KWebPage::removeSessionMetaData(const QString &key)
 {
-  KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
-  if (manager)
-    manager->sessionMetaData().remove(key);
+    KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
+    if (manager)
+        manager->sessionMetaData().remove(key);
 }
 
 void KWebPage::removeRequestMetaData(const QString &key)
 {
-  KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
-  if (manager)
-    manager->requestMetaData().remove(key);
+    KIO::Integration::AccessManager *manager = qobject_cast<KIO::Integration::AccessManager *>(networkAccessManager());
+    if (manager)
+        manager->requestMetaData().remove(key);
 }
 
 QString KWebPage::userAgentForUrl(const QUrl& _url) const
 {
-  const KUrl url(_url);
-  QString userAgent = KProtocolManager::userAgentForHost((url.isLocalFile() ? "localhost" : url.host()));
+    const KUrl url(_url);
+    QString userAgent = KProtocolManager::userAgentForHost((url.isLocalFile() ? "localhost" : url.host()));
 
-  if (userAgent == KProtocolManager::defaultUserAgent())
-    return QWebPage::userAgentForUrl(_url);
+    if (userAgent == KProtocolManager::defaultUserAgent())
+        return QWebPage::userAgentForUrl(_url);
 
-  return userAgent;
+    return userAgent;
 }
 
 bool KWebPage::acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest & request, NavigationType type)
 {
-  kDebug() << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
+    kDebug() << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
 
 #if 0
-  if (d->wallet && (type == QWebPage::NavigationTypeFormSubmitted ||
-                    type == QWebPage::NavigationTypeFormResubmitted)) {
-    d->wallet->saveFormData(frame);
-  }
+    if (d->wallet && type == QWebPage::NavigationTypeFormSubmitted) {
+        d->wallet->saveFormData(frame);
+    }
 #endif
-  /*
-      If the navigation request is from the main frame, set the cross-domain
-      meta-data value to the current url for proper integration with KCookieJar...
-    */
-  if (frame == mainFrame() && type != QWebPage::NavigationTypeReload) {
-    setSessionMetaData(QL1("cross-domain"), request.url().toString());
-  }
+    /*
+        If the navigation request is from the main frame, set the cross-domain
+        meta-data value to the current url for proper integration with KCookieJar...
+      */
+    if (frame == mainFrame() && type != QWebPage::NavigationTypeReload) {
+        setSessionMetaData(QL1("cross-domain"), request.url().toString());
+    }
 
-  return QWebPage::acceptNavigationRequest(frame, request, type);
+    return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
 #include "kwebpage.moc"
