@@ -88,7 +88,7 @@ namespace Sonnet
 
         /**
          * Controls whether the spell checking is continued after the replacement of a
-         * mispelled word has been performed. By default it is continued.
+         * misspelled word has been performed. By default it is continued.
          *
          * @since 4.4
          */

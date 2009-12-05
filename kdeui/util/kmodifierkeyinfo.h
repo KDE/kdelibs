@@ -39,7 +39,7 @@ class KModifierKeyInfoProvider;
  *     <li><i>latched</i>: the key is temporarily locked but will be unlocked upon
  *                          the next keypress.</li></ul>
  *
- * An application can either query the states synchroneously (@see isKeyLatched,
+ * An application can either query the states synchronously (@see isKeyLatched,
  * @see isKeyLocked) or connect to KModifierKeyInfo's signals to be notified about
  * changes (@see keyLatched, @see keyLocked).
  */
@@ -74,7 +74,7 @@ public:
     const QList<Qt::Key> knownKeys() const;
 
     /**
-     * Synchroneously check if a key is pressed.
+     * Synchronously check if a key is pressed.
      *
      * @param key The key to check
      * @return true if the key is pressed, false if the key is not pressed or unknown.
@@ -83,7 +83,7 @@ public:
     bool isKeyPressed(Qt::Key key) const;
     
     /**
-     * Synchroneously check if a key is latched.
+     * Synchronously check if a key is latched.
      *
      * @param key The key to check
      * @return true if the key is latched, false if the key is not latched or unknown.
@@ -102,7 +102,7 @@ public:
     bool setKeyLatched(Qt::Key key, bool latched);
 
     /**
-     * Synchroneously check if a key is locked.
+     * Synchronously check if a key is locked.
      *
      * @param key The key to check
      * @return true if the key is locked, false if the key is not locked or unknown.
@@ -121,7 +121,7 @@ public:
     bool setKeyLocked(Qt::Key key, bool locked);
 
     /**
-     * Synchroneously check if a mouse button is pressed.
+     * Synchronously check if a mouse button is pressed.
      *
      * @param button The mouse button to check
      * @return true if the mouse button is pressed, false if the mouse button

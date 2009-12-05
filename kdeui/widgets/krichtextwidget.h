@@ -126,7 +126,7 @@ public:
         SupportTextBackgroundColor = 0x80,
 
         /**
-         * A combination of all the falgs above.
+         * A combination of all the flags above.
          * Includes all actions that change the format of the text.
          */
         FullTextFormattingSupport = 0xff,

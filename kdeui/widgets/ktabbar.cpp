@@ -72,7 +72,7 @@ KTabBar::KTabBar( QWidget *parent )
   d->mActivateDragSwitchTabTimer = new QTimer( this );
   d->mActivateDragSwitchTabTimer->setSingleShot( true );
   connect( d->mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
-  connect( this, SIGNAL(tabCloseRequested(int)), this, SIGNAL(closeRequest(int))); // just for backward compatibilty, KDE5 remove
+  connect( this, SIGNAL(tabCloseRequested(int)), this, SIGNAL(closeRequest(int))); // just for backward compatibility, KDE5 remove
 
   //connect( this, SIGNAL( layoutChanged() ), SLOT( onLayoutChange() ) );
 }
@@ -112,7 +112,7 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
     }
     return;
   } else if (QTabBar::isMovable() && event->button() == Qt::MidButton) {
-    // compatibilty feature for old middle mouse tab moving
+    // compatibility feature for old middle mouse tab moving
     event->accept();
     QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
     QCoreApplication::sendEvent(this, &fakedMouseEvent);
@@ -168,7 +168,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
       }
     }
   } else if ( event->button() == Qt::NoButton && event->buttons() == Qt::MidButton && isMovable() ) {
-    // compatibilty feature for old middle mouse tab moving
+    // compatibility feature for old middle mouse tab moving
     d->mMiddleMouseTabMoveInProgress = true;
     event->accept();
     QMouseEvent fakedMouseEvent(event->type(), event->pos(), event->button(), Qt::LeftButton, event->modifiers());
@@ -209,7 +209,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
 
   case Qt::MidButton:
     if (d->mMiddleMouseTabMoveInProgress && QTabBar::isMovable()) {
-      // compatibilty feature for old middle mouse tab moving
+      // compatibility feature for old middle mouse tab moving
       d->mMiddleMouseTabMoveInProgress = false;
       event->accept();
       QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());

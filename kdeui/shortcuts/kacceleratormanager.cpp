@@ -715,7 +715,7 @@ void KAccelString::dump()
 
  TODO:
 
- * The result is always correct, but not neccesarily optimal. Perhaps
+ * The result is always correct, but not necessarily optimal. Perhaps
    it would be a good idea to add another algorithm with higher complexity
    that gets used when this one fails, i.e. leaves widgets without
    accelerators.
@@ -728,7 +728,7 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
 {
   KAccelStringList accel_strings = result;
 
-  // initally remove all accelerators
+  // initially remove all accelerators
   for (KAccelStringList::Iterator it = result.begin(); it != result.end(); ++it) {
     (*it).setAccel(-1);
   }

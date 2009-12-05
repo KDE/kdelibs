@@ -65,7 +65,7 @@ public:
      * a multiple of the frame width; the same is true for the height. If an invalid
      * size is specified the file is considered to be one column of square frames.
      *
-     * \return The sequence loaded from \a path or an invalid sequence if an error occured
+     * \return The sequence loaded from \a path or an invalid sequence if an error occurred
      * (file could not be opened or \a frameSize does not match the file's size)
      */
     explicit KPixmapSequence(const QPixmap &pixmap, const QSize &frameSize = QSize());

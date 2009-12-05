@@ -207,7 +207,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	/**
-	 * Resize colums to width required
+	 * Resize columns to width required
 	 */
 	void resizeColumns();
 

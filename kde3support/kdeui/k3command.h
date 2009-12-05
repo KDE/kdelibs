@@ -137,7 +137,7 @@ public:
 
     /**
      * Appends a command to this macro command.
-     * The ownership is transfered to the macro command.
+     * The ownership is transferred to the macro command.
      */
     void addCommand(K3Command *command);
 

@@ -292,14 +292,14 @@ public:
 
    /**
     * add an arbitrary button to the dockwidget header
-    * NOT PART OF THE PUBLIC API (you don't have access the class defintion anyways, without special
+    * NOT PART OF THE PUBLIC API (you don't have access the class definition anyways, without special
     * header file copying. (don't do it))
     */
     void addButton(K3DockButton_Private*);
 
    /**
     * remove an arbtrary button from the dockwidget header
-    * NOT PART OF THE PUBLIC API (you don't have access the class defintion anyways, without special
+    * NOT PART OF THE PUBLIC API (you don't have access the class definition anyways, without special
     * header file copying. (don't do it))
     */
     void removeButton(K3DockButton_Private*);

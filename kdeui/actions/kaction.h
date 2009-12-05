@@ -447,7 +447,7 @@ public:
     /**
      * Sets the globalShortcutEnabled property to false and sets the global shortcut to an
      * empty shortcut.
-     * This will also wipe out knowlegde about the existence of this action's global shorctut
+     * This will also wipe out knowlegde about the existence of this action's global shortcut
      * so it will not be considered anymore for shortcut conflict resolution. It will also not be
      * visible anymore in the shortcuts KControl module.
      * This method should not be used unless these effects are explicitly desired.
