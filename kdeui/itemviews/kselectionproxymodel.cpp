@@ -688,6 +688,9 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
 {
   Q_Q(KSelectionProxyModel);
 
+  if ( !q->sourceModel() )
+    return;
+
   // Any deselected indexes in the m_rootIndexList are removed. Then, any
   // indexes in the selected range which are not a descendant of one of the already selected indexes
   // are inserted into the model.
@@ -1462,6 +1465,8 @@ QVariant KSelectionProxyModel::data( const QModelIndex & index, int role ) const
 
 QVariant KSelectionProxyModel::headerData( int section, Qt::Orientation orientation, int role  ) const
 {
+  if (!sourceModel())
+    return QVariant();
   return sourceModel()->headerData(section, orientation, role);
 }
 
