@@ -50,6 +50,34 @@ namespace {
     };
 }
 
+// TCHAR can be either uchar, or wchar_t:
+static inline QString tchar_to_qstring( const char * str ) {
+    return QString::fromLocal8Bit( str );
+}
+static inline QString tchar_to_qstring( const wchar_t * str ) {
+    return QString::fromUtf16( reinterpret_cast<const ushort*>( str ) );
+}
+
+// since we can't overload on the return type, we have to pass in a disambiguation token
+
+static inline TCHAR * _qstring_to_tchar( const char* t, const QString&s )
+{
+    return reinterpret_cast<TCHAR*>( s.toLocal8Bit().data() );
+}
+
+static inline TCHAR * _qstring_to_tchar( const wchar_t* t, const QString&s )
+{
+    return reinterpret_cast<TCHAR*>( const_cast<ushort*>( s.utf16()) );
+}
+
+static inline TCHAR* qstring_to_tchar( const QString& s) 
+{
+    TCHAR * t;
+    return _qstring_to_tchar( t, s );
+}
+
+
+
 
 static const TCHAR timeZonesKey[] = TEXT("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones");
 static inline QDateTime systemtime_to_qdatetime( const SYSTEMTIME & st ) {
@@ -272,13 +300,14 @@ KSystemTimeZoneSourceWindows::KSystemTimeZoneSourceWindows()
 {
 }
 
+
 KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
 {
     KSystemTimeZoneDataWindows* data = new KSystemTimeZoneDataWindows();
 
     std::basic_string<TCHAR> path( timeZonesKey );
     path += TEXT( "\\" );
-    path += reinterpret_cast<TCHAR*>( zone.name().toLocal8Bit().data() );
+    path += qstring_to_tchar( zone.name() );
 
     HKEY key;
     if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
@@ -391,14 +420,6 @@ static int offset_at_zone_time( const KTimeZone * caller, const SYSTEMTIME & zon
 
 static const int MAX_KEY_LENGTH = 255;
 
-// TCHAR can be either uchar, or wchar_t:
-static inline QString tchar_to_qstring( TCHAR * ustr ) {
-    const char * str = reinterpret_cast<const char*>( ustr );
-    return QString::fromLocal8Bit( str );
-}
-static inline QString tchar_to_qstring( const wchar_t * str ) {
-    return QString::fromUtf16( reinterpret_cast<const ushort*>( str ) );
-}
 
 static QStringList list_key( HKEY key ) {
 
