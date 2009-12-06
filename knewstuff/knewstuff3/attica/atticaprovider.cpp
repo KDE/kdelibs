@@ -333,7 +333,7 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
     } else {
         kDebug() << "You don't have enough money on your account!"
                 << content.downloadUrlDescription(0).priceAmount() << " balance: " << item.balance();
-        KMessageBox::information(0, i18n("Your account balance is too low:\nYour balance: %1\nPrice:%2",
+        KMessageBox::information(0, i18n("Your account balance is too low:\nYour balance: %1\nPrice: %2",
                                          item.balance(),content.downloadUrlDescription(0).priceAmount()));
     }
 }
