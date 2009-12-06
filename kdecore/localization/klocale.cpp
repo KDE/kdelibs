@@ -666,7 +666,7 @@ bool KLocalePrivate::isApplicationTranslatedInto(const QString & lang)
     }
 
     if (lang == KLocale::defaultLanguage()) {
-        // en_us is always "installed"
+        // default language is always "installed"
         return true;
     }
 
@@ -781,8 +781,8 @@ void KLocalePrivate::updateCatalogs()
     // now iterate over all languages and all wanted catalog names and append or create them in the
     // right order the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs
     // de/kio etc. and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be
-    // in trouble with a language sequende nds,en_US, de. In this case en_US must hide everything
-    // below in the language list.
+    // in trouble with a language sequende nds,<default>,de. In this case <default> must hide
+    // everything after itself in the language list.
     foreach(const QString &lang, languageListFB) {
         foreach(const KCatalogName &name, catalogNames) {
             // create and add catalog for this name and language if it exists
@@ -874,7 +874,7 @@ void KLocalePrivate::translate_priv(const char *msgctxt, const char *msgid,
         *translation = fallback;
     }
 
-    // shortcut evaluation if en_US is main language: do not consult the catalogs
+    // shortcut evaluation if default language is main language: do not consult the catalogs
     if (useDefaultLanguage()) {
         return;
     }
@@ -882,7 +882,7 @@ void KLocalePrivate::translate_priv(const char *msgctxt, const char *msgid,
     QList<KCatalog> catalogList = catalogs;
     for (QList<KCatalog>::ConstIterator it = catalogList.constBegin(); it != catalogList.constEnd();
          ++it) {
-        // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
+        // shortcut evaluation: once we have arrived at default language, we cannot consult
         // the catalog as it will not have an assiciated mo-file. For this default language we can
         // immediately pick the fallback string.
         if ((*it).language() == KLocale::defaultLanguage()) {
@@ -2305,6 +2305,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
     // look up the different languages
     for (int id = localDoc.count() - 1; id >= 0; --id) {
         QStringList langs = KGlobal::locale()->languageList();
+        // FIXME: KDE 4.5, change such that English is not assumed.
         langs.replaceInStrings("en_US", "en");
         langs.append("en");
         Q_FOREACH(const QString &lang, langs)
