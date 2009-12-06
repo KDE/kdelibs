@@ -21,40 +21,93 @@
 
 #include "recursivefilterpmwidget.h"
 
+#include <QLineEdit>
+#include <QPushButton>
 #include <QSplitter>
 #include <QTreeView>
 #include <QHBoxLayout>
-#include "dynamictreemodel.h"
-#include "recursivefilterproxymodel.h"
-#include "ksortfilterproxymodel.h"
 #include <QLabel>
 
-#include "modeltest.h"
+#include "dynamictreemodel.h"
+#include <qstandarditemmodel.h>
 
-
-TestRecursionModel::TestRecursionModel(QObject* parent)
-    : KRecursiveFilterProxyModel(parent)
+RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
+  : QWidget(parent),
+    m_lineEdit(new QLineEdit(this)),
+    m_label(new QLabel(this)),
+    m_pushButton(new QPushButton(this))
 {
+  m_label->setText("Matching filter re: ");
+  m_lineEdit->setText("12|13|37|4");
 
-}
-
-bool TestRecursionModel::acceptRow(int sourceRow, const QModelIndex& sourceParent) const
-{
-  static const int column = 0;
-  return (sourceModel()->index(sourceRow, column, sourceParent).data() == "12"
-       || sourceModel()->index(sourceRow, column, sourceParent).data() == "13"
-       || sourceModel()->index(sourceRow, column, sourceParent).data() == "37"
-       || sourceModel()->index(sourceRow, column, sourceParent).data() == "43");
-}
-
-RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent): QWidget(parent)
-{
-
-  QHBoxLayout *layout = new QHBoxLayout(this);
-  QSplitter *vSplitter = new QSplitter( this );
-  layout->addWidget(vSplitter);
+  QHBoxLayout *hLayout = new QHBoxLayout();
+  QVBoxLayout *vLayout = new QVBoxLayout(this);
+  QSplitter *splitter = new QSplitter(this);
 
   m_rootModel = new DynamicTreeModel(this);
+  m_recursive = new KRecursiveFilterProxyModel(this);
+  m_recursiveSubclass = new KRecursiveFilterProxyModelSubclass(this);
+
+  QStandardItemModel *stdItemModel = new QStandardItemModel(this);
+  QSortFilterProxyModel *qsf = new QSortFilterProxyModel(this);
+  QSortFilterProxyModel *qsf2 = new QSortFilterProxyModel(this);
+
+
+  QTreeView *rootView = new QTreeView(splitter);
+  rootView->setModel(stdItemModel);
+  QTreeView *recursiveView = new QTreeView(splitter);
+  recursiveView->setModel(qsf);
+  QTreeView *recursiveSubclassView = new QTreeView(splitter);
+  recursiveSubclassView->setModel(m_recursiveSubclass);
+
+  hLayout->addWidget(m_label);
+  hLayout->addWidget(m_lineEdit);
+  hLayout->addWidget(m_pushButton);
+
+  vLayout->addLayout(hLayout);
+  vLayout->addWidget(splitter);
+
+  connect(m_lineEdit, SIGNAL(textChanged(QString)), SLOT(reset()));
+  connect(m_pushButton, SIGNAL(clicked(bool)), SLOT(actionClicked()));
+
+
+//   m_recursive->setSourceModel(m_rootModel);
+  qsf2->setSourceModel(m_rootModel);
+//   qsf->setSourceModel(stdItemModel);
+
+  QStandardItem *topLevel = new QStandardItem("r");
+  stdItemModel->appendRow(topLevel);
+  topLevel->appendRow( new QStandardItem("a") );
+
+//   m_recursiveSubclass->setSourceModel(m_rootModel);
+
+//   reset();
+
+  QList<int> ancestorRows;
+  ModelInsertCommand *ins;
+  int max_runs = 2;
+
+  for (int i = 0; i < max_runs; i++)
+  {
+    ins = new ModelInsertCommand(m_rootModel, this);
+    ins->setAncestorRowNumbers(ancestorRows);
+    ins->setStartRow(0);
+    ins->setEndRow(0);
+    ins->doCommand();
+    ancestorRows << 0;
+  }
+
+//   m_rootModel->clear();
+//
+//   ins = new ModelInsertCommand(m_rootModel, this);
+//   ins->setStartRow(0);
+//   ins->setEndRow(4);
+//   ins->doCommand();
+}
+
+void RecursiveFilterProxyWidget::reset()
+{
+  m_rootModel->clear();
 
   QList<int> ancestorRows;
 
@@ -82,25 +135,17 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent): QWidget
     ancestorRows << 3;
   }
 
-  QTreeView *rootView = new QTreeView( vSplitter);
-  rootView->setModel(m_rootModel);
+  m_recursive->setFilterRegExp(m_lineEdit->text());
+//   m_recursiveSubclass->setRegExp(QRegExp(m_lineEdit->text()));
 
-  KSortFilterProxyModel *p = new KSortFilterProxyModel(this);
-  p->setFilterRegExp("12|13|37|43");
-  p->setSourceModel(m_rootModel);
+  m_nextAction = InsertAction;
+  m_pushButton->setText("Insert");
+}
 
-  TestRecursionModel *recursiveFilterModel = new TestRecursionModel(this);
-  recursiveFilterModel->setSourceModel(m_rootModel);
-
-  QTreeView *ksfpmView = new QTreeView(vSplitter);
-  ksfpmView->setModel(p);
-
-  QTreeView *recursivePMView = new QTreeView(vSplitter);
-  recursivePMView->setModel(recursiveFilterModel);
-
-  setLayout(layout);
-
-  ancestorRows.clear();
+void RecursiveFilterProxyWidget::insertRows()
+{
+  QList<int> ancestorRows;
+  ModelInsertCommand *ins;
 
   ancestorRows << 3 << 3 << 2;
   ins = new ModelInsertCommand(m_rootModel, this);
@@ -109,16 +154,65 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent): QWidget
   ins->setEndRow(4);
   ins->doCommand();
 
-  ModelRemoveCommand *rem = new ModelRemoveCommand(m_rootModel, this);
-  rem->setAncestorRowNumbers(ancestorRows);
-  rem->setStartRow(0);
-  rem->setEndRow(4);
-  rem->doCommand();
+  m_nextAction = RemoveAction;
+  m_pushButton->setText("Remove");
+}
 
+void RecursiveFilterProxyWidget::insertRows2()
+{
+  QList<int> ancestorRows;
+  ModelInsertCommand *ins;
+
+  ancestorRows << 4;
   ins = new ModelInsertCommand(m_rootModel, this);
   ins->setAncestorRowNumbers(ancestorRows);
   ins->setStartRow(0);
   ins->setEndRow(4);
   ins->doCommand();
 
+  m_nextAction = ResetAction;
+  m_pushButton->setText("Reset");
 }
+
+void RecursiveFilterProxyWidget::removeRows()
+{
+  QList<int> ancestorRows;
+
+  ancestorRows << 3 << 3 << 2;
+  ModelRemoveCommand *rem = new ModelRemoveCommand(m_rootModel, this);
+  rem->setAncestorRowNumbers(ancestorRows);
+  rem->setStartRow(0);
+  rem->setEndRow(4);
+  rem->doCommand();
+
+  m_nextAction = Insert2Action;
+  m_pushButton->setText("Insert2");
+}
+
+void RecursiveFilterProxyWidget::actionClicked()
+{
+  switch(m_nextAction)
+  {
+  case InsertAction:
+  {
+    insertRows();
+    break;
+  }
+  case Insert2Action:
+  {
+    insertRows2();
+    break;
+  }
+  case RemoveAction:
+  {
+    removeRows();
+    break;
+  }
+  case ResetAction:
+  {
+    reset();
+    break;
+  }
+  }
+}
+

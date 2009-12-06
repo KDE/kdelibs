@@ -23,22 +23,44 @@
 #define RECURSIVE_PM_WIDGET_H
 
 #include <QWidget>
+#include <QRegExp>
 
-#include "recursivefilterproxymodel.h"
+#include "krecursivefilterproxymodel.h"
 
 class QTreeView;
+class QLineEdit;
+class QLabel;
+class QPushButton;
+
 
 class DynamicTreeModel;
 
 
-class TestRecursionModel : public KRecursiveFilterProxyModel
+class KRecursiveFilterProxyModelSubclass : public KRecursiveFilterProxyModel
 {
   Q_OBJECT
 public:
-  TestRecursionModel(QObject* parent = 0);
+  KRecursiveFilterProxyModelSubclass(QObject* parent = 0)
+    : KRecursiveFilterProxyModel(parent)
+  {
 
-  /* reimp */ bool acceptRow(int sourceRow, const QModelIndex &sourceParent) const;
+  }
 
+  /* reimp */ bool acceptRow(int sourceRow, const QModelIndex &parent_index) const
+  {
+    static const int column = 0;
+    QModelIndex srcIndex = sourceModel()->index(sourceRow, column, parent_index);
+    return m_regExp.exactMatch(srcIndex.data().toString());
+  }
+
+  void setRegExp( const QRegExp &re)
+  {
+    m_regExp = re;
+    invalidateFilter();
+  }
+
+private:
+  QRegExp m_regExp;
 };
 
 class RecursiveFilterProxyWidget : public QWidget
@@ -47,8 +69,31 @@ class RecursiveFilterProxyWidget : public QWidget
 public:
   RecursiveFilterProxyWidget(QWidget* parent = 0);
 
+protected slots:
+  void actionClicked();
+  void reset();
+  void insertRows();
+  void insertRows2();
+  void removeRows();
+
 private:
+
+  enum NextAction
+  {
+    ResetAction,
+    InsertAction,
+    Insert2Action,
+    RemoveAction
+  };
+  NextAction m_nextAction;
+
   DynamicTreeModel *m_rootModel;
+  KRecursiveFilterProxyModel *m_recursive;
+  KRecursiveFilterProxyModelSubclass *m_recursiveSubclass;
+
+  QLineEdit *m_lineEdit;
+  QLabel *m_label;
+  QPushButton *m_pushButton;
 
 };
 
