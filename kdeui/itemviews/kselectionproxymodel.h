@@ -33,7 +33,7 @@ class KSelectionProxyModelPrivate;
 
   The KSelectionProxyModel is most useful as a convenience for displaying the selection in one view in
   another view. The selectionModel of the initial view is used to create a proxied model which is filtered
-  based on
+  based on the configuration of this class.
 
   For example, when a user clicks a mail folder in one view in an email application, the contained emails
   should be displayed in another view.
@@ -122,9 +122,9 @@ public:
 
     See kdeui/proxymodeltestapp to try out the different proxy model behaviors.
 
-    The most useful behaviors are ExclusiveRoots, OnlySelected and OnlySelectedChildren.
+    The most useful behaviors are SubTrees, ExactSelection and ChildrenOfExactSelection.
 
-    The default behavior is ExclusiveRoots. This means that this proxy model will contain the roots of the items in the source model.
+    The default behavior is SubTrees. This means that this proxy model will contain the roots of the items in the source model.
     Any descendants which are also selected have no additional effect.
     For example if the source model is like:
 
@@ -144,7 +144,7 @@ public:
         - L
     @endverbatim
 
-    And A, B and D are selected, the proxy will contain:
+    And A, B, C and D are selected, the proxy will contain:
 
     @verbatim
     (root)
@@ -171,7 +171,7 @@ public:
 
     This is the behavior used by KJots when rendering books.
 
-    If the behavior is set to OmitChildren, then the children of selected indexes are not part of the model. If 'A', 'B' and 'D' are selected,
+    If the behavior is set to SubTreeRoots, then the children of selected indexes are not part of the model. If 'A', 'B' and 'D' are selected,
 
     @verbatim
     (root)
@@ -180,21 +180,8 @@ public:
     @endverbatim
 
     Note that although 'D' is selected, it is not part of the proxy model, because its parent 'B' is already selected.
-    In most cases this will be combined with IncludeAllSelected (see below).
 
-    OmitGrandChildren has the effect of showing the children of selected items, but not their grandchildren or further descendants. Again, if 'A', 'B', 'D' and 'E' are selected,
-
-    @verbatim
-    (root)
-      - A
-      - B
-        - C
-        - D
-    @endverbatim
-
-    Note that although 'E' is selected, it has no effect because its ancestor 'B' is also selected. (Keep reading :))
-
-    StartWithChildTrees has the effect of not making the selected items part of the model, but making their children part of the model instead. If 'A', 'B' and 'I' are selected:
+    SubTreesWithoutRoots has the effect of not making the selected items part of the model, but making their children part of the model instead. If 'A', 'B' and 'I' are selected:
 
     @verbatim
     (root)
@@ -208,25 +195,11 @@ public:
       - L
     @endverbatim
 
-    Note that 'A' has no children, so selecting it has no effect on the model. This can be used together with OmitGrandChildren to get the following effect with the same selection:
+    Note that 'A' has no children, so selecting it has no outward effect on the model.
 
-    @verbatim
-    (root)
-      - C
-      - D
-      - J
-      - K
-      - L
-    @endverbatim
-
-    Note that selecting 'E' in this behavior would have no effect because its ancestor 'B' is already in the model. The ChildrenOfSelected behavior is provided for convenience.
-
-    IncludeAllSelected has the effect of including all selected items in the tree even if an ancestor is already in the tree.
-    This behavior can not be used on its own because it would cause duplicates in the proxy.
-    It must be combined with either OmitGrandChildren or ChildrenOfSelected. The OnlySelected and OnlySelectedChildren behaviors are provide for convenience.
-
-    The OnlySelectedChildren has an effect similar to ChilrenOfSelected. The difference is that children of selected items appear in the model even if their children are already
-    part of the model. For example, if 'A', 'B', 'D' and 'I' are selected:
+    ChildrenOfExactSelection causes the proxy model to contain the children of the selected indexes,but further descendants are omitted.
+    Additionally, if descendants of an already selected index are selected, their children are part of the proxy model.
+    For example, if 'A', 'B', 'D' and 'I' are selected:
 
     @verbatim
     (root)
@@ -242,7 +215,7 @@ public:
     This would be useful for example if showing containers (for example maildirs) in one view and their items in another. Sub-maildirs would still appear in the proxy, but
     could be filtered out using a QSortfilterProxyModel.
 
-    The OnlySelected behavior causes the selected items to be part of the proxy model, even if their descendants are already selected, but children of selected items are not included.
+    The ExactSelection behavior causes the selected items to be part of the proxy model, even if their ancestors are already selected, but children of selected items are not included.
 
     Again, if 'A', 'B', 'D' and 'I' are selected:
 
