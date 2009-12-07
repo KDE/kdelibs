@@ -31,6 +31,7 @@ class QueryTest : public QObject
 private Q_SLOTS:
     void testToSparql_data();
     void testToSparql();
+    void testOptimization();
 };
 
 #endif

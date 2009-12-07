@@ -22,6 +22,7 @@
 #include "querytest.h"
 
 #include "query.h"
+#include "query_p.h"
 #include "literalterm.h"
 #include "resourceterm.h"
 #include "andterm.h"
@@ -93,6 +94,31 @@ void QueryTest::testToSparql()
     QFETCH( QString, queryString );
 
     QCOMPARE( query.toSparqlQuery().simplified(), queryString );
+}
+
+
+void QueryTest::testOptimization()
+{
+    LiteralTerm literal("Hello World");
+    AndTerm and1;
+    and1.addSubTerm(literal);
+    Term optimized = QueryPrivate::optimizeTerm(and1);
+    QVERIFY(optimized.isLiteralTerm());
+
+    AndTerm and2;
+    and2.addSubTerm(and1);
+    optimized = QueryPrivate::optimizeTerm(and2);
+    QVERIFY(optimized.isLiteralTerm());
+
+    Term invalidTerm;
+    and2.addSubTerm(invalidTerm);
+    optimized = QueryPrivate::optimizeTerm(and2);
+    QVERIFY(optimized.isLiteralTerm());
+
+    and1.setSubTerms(QList<Term>() << invalidTerm);
+    and2.setSubTerms(QList<Term>() << and1 << literal);
+    optimized = QueryPrivate::optimizeTerm(and2);
+    QVERIFY(optimized.isLiteralTerm());
 }
 
 QTEST_MAIN( QueryTest )
