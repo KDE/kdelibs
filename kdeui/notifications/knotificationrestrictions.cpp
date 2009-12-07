@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kconfiggroup.h>
 
 #include <QtGui/QApplication>
 #include <QtDBus/QDBusConnection>
@@ -106,6 +107,14 @@ void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 void KNotificationRestrictions::Private::startScreenSaverPrevention()
 {
     kDebug(297);
+
+    KConfigGroup config(KSharedConfig::openConfig("kscreensaverrc"), "ScreenSaver");
+    bool screensaverEnabled = config.readEntry("Enabled", true);
+
+    if (!screensaverEnabled) {
+        return;
+    }
+
     QDBusMessage message = QDBusMessage::createMethodCall(
             "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
     message << determineProgramName();
@@ -151,6 +160,14 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
 
 void KNotificationRestrictions::Private::stopScreenSaverPrevention()
 {
+  
+    KConfigGroup config(KSharedConfig::openConfig("kscreensaverrc"), "ScreenSaver");
+    bool screensaverEnabled = config.readEntry("Enabled", true);
+
+    if (!screensaverEnabled) {
+        return;
+    }
+
     if (screenSaverDbusCookie != -1) {
         QDBusMessage message = QDBusMessage::createMethodCall(
                 "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "UnInhibit");
