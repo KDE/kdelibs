@@ -321,7 +321,7 @@ bool StorageAccess::callHalVolumeMount()
         if ( (cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) )
               options << "-L="+QString(cType);
     }
-    else if ( (fstype.startsWith("ntfs") || fstype=="iso9660" || fstype=="udf") && halOptions.contains("-C=") ) {
+    else if ( (fstype.startsWith(QLatin1String("ntfs")) || fstype=="iso9660" || fstype=="udf") && halOptions.contains("-C=") ) {
         if ((cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) )
             options << "-C="+QString(nl_langinfo(CODESET));
     }

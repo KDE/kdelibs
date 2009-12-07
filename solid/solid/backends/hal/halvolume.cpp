@@ -47,7 +47,7 @@ bool Volume::isIgnored() const
     const bool mounted = m_device->property("volume.is_mounted").toBool();
     if (!mounted) {
         return false;
-    } else if (mount_point.startsWith("/media/") || mount_point.startsWith("/mnt/")) {
+    } else if (mount_point.startsWith(QLatin1String("/media/")) || mount_point.startsWith(QLatin1String("/mnt/"))) {
         return false;
     }
 

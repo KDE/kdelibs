@@ -52,7 +52,7 @@ int DvbInterface::deviceAdapter() const
         return -1;
     string = string.mid(pos + 1);
 
-    if (!string.startsWith("adapter"))
+    if (!string.startsWith(QLatin1String("adapter")))
         return -1;
     string = string.mid(7);
 
@@ -94,31 +94,31 @@ bool DvbInterface::parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *in
         return false;
     string = string.mid(pos + 1);
 
-    if (string.startsWith("audio")) {
+    if (string.startsWith(QLatin1String("audio"))) {
         *type = Solid::DvbInterface::DvbAudio;
         string = string.mid(5);
-    } else if (string.startsWith("ca")) {
+    } else if (string.startsWith(QLatin1String("ca"))) {
         *type = Solid::DvbInterface::DvbCa;
         string = string.mid(2);
-    } else if (string.startsWith("demux")) {
+    } else if (string.startsWith(QLatin1String("demux"))) {
         *type = Solid::DvbInterface::DvbDemux;
         string = string.mid(5);
-    } else if (string.startsWith("dvr")) {
+    } else if (string.startsWith(QLatin1String("dvr"))) {
         *type = Solid::DvbInterface::DvbDvr;
         string = string.mid(3);
-    } else if (string.startsWith("frontend")) {
+    } else if (string.startsWith(QLatin1String("frontend"))) {
         *type = Solid::DvbInterface::DvbFrontend;
         string = string.mid(8);
-    } else if (string.startsWith("net")) {
+    } else if (string.startsWith(QLatin1String("net"))) {
         *type = Solid::DvbInterface::DvbNet;
         string = string.mid(3);
-    } else if (string.startsWith("osd")) {
+    } else if (string.startsWith(QLatin1String("osd"))) {
         *type = Solid::DvbInterface::DvbOsd;
         string = string.mid(3);
-    } else if (string.startsWith("sec")) {
+    } else if (string.startsWith(QLatin1String("sec"))) {
         *type = Solid::DvbInterface::DvbSec;
         string = string.mid(3);
-    } else if (string.startsWith("video")) {
+    } else if (string.startsWith(QLatin1String("video"))) {
         *type = Solid::DvbInterface::DvbVideo;
         string = string.mid(5);
     } else

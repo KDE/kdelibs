@@ -290,7 +290,7 @@ QString Solid::Predicate::toString() const
         {
         case QVariant::StringList:
         {
-            value = "{";
+            value = '{';
 
             const QStringList list = d->value.toStringList();
 

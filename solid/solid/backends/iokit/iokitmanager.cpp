@@ -184,7 +184,7 @@ QStringList IOKitManager::devicesFromQuery(const QString &parentUdi,
 
     // return only matches that start with the parent's UDI
     QStringList filtered;
-    foreach (QString udi, result) {
+    foreach (const QString &udi, result) {
         if (udi.startsWith(parentUdi))
             filtered += udi;
     }

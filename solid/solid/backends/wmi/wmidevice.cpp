@@ -17,10 +17,11 @@
 
 */
 
+#include "wmidevice.h"
+
 #include <solid/genericinterface.h>
 
 #include "wmiquery.h"
-#include "wmidevice.h"
 #include "wmideviceinterface.h"
 #include "wmigenericinterface.h"
 #include "wmiprocessor.h"
@@ -74,7 +75,7 @@ public:
 
     WmiQuery::ItemList sendQuery() 
     {
-        QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + "'");
+        QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + '\'');
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list;
     }
@@ -82,7 +83,7 @@ public:
     static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue)
     {
         QString _udi = udi;
-        QStringList x = _udi.remove("/org/kde/solid/wmi/").split("/");
+        QStringList x = _udi.remove("/org/kde/solid/wmi/").split('/');
         if (x.size() != 3) {
             qDebug() << "invalid udi detected" << _udi;
             return false;
@@ -103,7 +104,7 @@ public:
         if (!convertUDItoWMI(udi, wmiTable, wmiProperty, wmiValue))
             return false;
 
-        QString query("SELECT * FROM " + wmiTable + " WHERE " + wmiProperty + "='" + wmiValue + "'");
+        QString query("SELECT * FROM " + wmiTable + " WHERE " + wmiProperty + "='" + wmiValue + '\'');
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list.size() > 0;
     }

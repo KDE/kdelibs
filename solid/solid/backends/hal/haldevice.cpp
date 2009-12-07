@@ -17,6 +17,8 @@
 
 */
 
+#include "haldevice.h"
+
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
@@ -26,7 +28,6 @@
 
 #include <solid/genericinterface.h>
 
-#include "haldevice.h"
 #include "haldeviceinterface.h"
 #include "halgenericinterface.h"
 #include "halprocessor.h"

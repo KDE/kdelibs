@@ -17,9 +17,10 @@
 
 */
 
+#include "wmimanager.h"
+
 #include <QtCore/QDebug>
 
-#include "wmimanager.h"
 #include "wmidevice.h"
 #include "wmideviceinterface.h"
 #include "wmiquery.h"
@@ -60,7 +61,7 @@ QStringList WmiManager::allDevices()
     QStringList deviceUdiList;
 
     QStringList aList = findDeviceByDeviceInterface(Solid::DeviceInterface::OpticalDrive);
-    foreach(QString udi, aList)
+    foreach(const QString &udi, aList)
     {
         if (!deviceUdiList.contains(udi))
             deviceUdiList << udi;

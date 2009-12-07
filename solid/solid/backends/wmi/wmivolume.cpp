@@ -51,8 +51,8 @@ bool Volume::isIgnored() const
 
 
     return !removable && !hotpluggable
-        && mounted && !mount_point.startsWith("/media/")
-        && !mount_point.startsWith("/mnt/");
+        && mounted && !mount_point.startsWith(QLatin1String("/media/"))
+        && !mount_point.startsWith(QLatin1String("/mnt/"));
 }
 
 Solid::StorageVolume::UsageType Volume::usage() const

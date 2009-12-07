@@ -62,7 +62,7 @@ bool _k_isNetworkFileSystem(const QString &fstype, const QString &devName)
      || fstype == "nfs4"
      || fstype == "smbfs"
      || fstype == "cifs"
-     || devName.startsWith("//")) {
+     || devName.startsWith(QLatin1String("//"))) {
         return true;
     }
     return false;
