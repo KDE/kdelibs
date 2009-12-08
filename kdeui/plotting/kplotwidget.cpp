@@ -704,7 +704,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
         }
         //horizontal grid lines
         foreach( double yy, axis(LeftAxis)->majorTickMarks() ) {
-            double py = d->pixRect.height() * (yy - d->dataRect.y()) / d->dataRect.height();
+            double py = d->pixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
             p->drawLine( QPointF( 0.0, py ), QPointF( double(d->pixRect.width()), py ) );
         }
     }
