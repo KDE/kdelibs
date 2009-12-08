@@ -94,7 +94,7 @@ void KJobTest::testProgressTracking()
     testJob->setProcessedSize( 1 );
 
     QCOMPARE( processed_spy.size(), 1 );
-    QCOMPARE( processed_spy.at( 0 ).at( 0 ).value<KJob*>(), job );
+    QCOMPARE( processed_spy.at( 0 ).at( 0 ).value<KJob*>(), static_cast<KJob*>(job) );
     QCOMPARE( processed_spy.at( 0 ).at( 2 ).value<qulonglong>(), ( qulonglong )1 );
     QCOMPARE( total_spy.size(), 0 );
     QCOMPARE( percent_spy.size(), 0 );
