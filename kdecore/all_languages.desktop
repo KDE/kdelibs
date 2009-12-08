@@ -1894,6 +1894,7 @@ Name[zh_HK]=嘉泰羅尼亞語
 Name[zh_TW]=嘉泰羅尼亞語
 [ca@valencia]
 Name=Valencian (southern Catalan)
+Name[ar]=فالنسية (الكتلانية الجنوبية)
 Name[be@latin]=Valenskaja (paŭdniova-katalonskaja)
 Name[bg]=Валенсиански (южен каталонски)
 Name[ca]=Valencià (català meridional)
@@ -4680,7 +4681,7 @@ Name[zh_TW]=瓜拉尼語
 [gu]
 Name=Gujarati
 Name[af]=Gujarati
-Name[ar]=غوجاراتي
+Name[ar]=كوجراتي
 Name[as]=গুজ্ৰাটি
 Name[be]=Гуяраці
 Name[be@latin]=Gujarati
@@ -5129,6 +5130,7 @@ Name[zh_HK]=北印度語
 Name[zh_TW]=北印度語
 [hne]
 Name=Chhattisgarhi
+Name[ar]=تشهتسجريا
 Name[be@latin]=Chhattisgarhi
 Name[bg]=Чхатисгархи
 Name[ca]=Chattisgarbi
@@ -6974,7 +6976,7 @@ Name[zh_TW]=Kalaallisut語
 [km]
 Name=Khmer
 Name[af]=Khmer
-Name[ar]=خميرية
+Name[ar]=خمرية
 Name[as]=খ্‌মেৰ
 Name[be]=Хмерская
 Name[be@latin]=Chmerskaja
@@ -12312,6 +12314,7 @@ Name[zh_HK]=Sango語
 Name[zh_TW]=Sango語
 [si]
 Name=Sinhala
+Name[ar]=صنهالية
 Name[be@latin]=Sinhaleskaja
 Name[bg]=Сингалски
 Name[ca]=Singalès
@@ -13442,7 +13445,7 @@ Name[zh_TW]=瑞典語
 [sw]
 Name=Swahili
 Name[af]=Swahili
-Name[ar]=سواحلية
+Name[ar]=سواحيلية
 Name[as]=ছ্বাহিলি
 Name[be]=Суахілі
 Name[be@latin]=Suahili
