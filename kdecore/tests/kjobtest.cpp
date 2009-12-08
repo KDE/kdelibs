@@ -76,7 +76,8 @@ Q_DECLARE_METATYPE(KJob*)
 
 void KJobTest::testProgressTracking()
 {
-    TestJob *job = new TestJob;
+    TestJob *testJob = new TestJob;
+    KJob *job = testJob;
 
     qRegisterMetaType<KJob*>("KJob*");
     qRegisterMetaType<qulonglong>("qulonglong");
@@ -90,7 +91,7 @@ void KJobTest::testProgressTracking()
      * Total size didn't change.
      * Since the total size is unknown, no percent signal is emitted.
      */
-    job->setProcessedSize( 1 );
+    testJob->setProcessedSize( 1 );
 
     QCOMPARE( processed_spy.size(), 1 );
     QCOMPARE( processed_spy.at( 0 ).at( 0 ).value<KJob*>(), job );
@@ -102,7 +103,7 @@ void KJobTest::testProgressTracking()
     /* Now, we know the total size. It's signaled.
      * The new percentage is signaled too.
      */
-    job->setTotalSize( 10 );
+    testJob->setTotalSize( 10 );
 
     QCOMPARE( processed_spy.size(), 1 );
     QCOMPARE( total_spy.size(), 1 );
@@ -116,7 +117,7 @@ void KJobTest::testProgressTracking()
     /* We announce a new percentage by hand.
      * Total, and processed didn't change, so no signal is emitted for them.
      */
-    job->setPercent( 15 );
+    testJob->setPercent( 15 );
 
     QCOMPARE( processed_spy.size(), 1 );
     QCOMPARE( total_spy.size(), 1 );
@@ -128,7 +129,7 @@ void KJobTest::testProgressTracking()
     /* We make some progress.
      * Processed size and percent are signaled.
      */
-    job->setProcessedSize( 3 );
+    testJob->setProcessedSize( 3 );
 
     QCOMPARE( processed_spy.size(), 2 );
     QCOMPARE( processed_spy.at( 1 ).at( 0 ).value<KJob*>(), job );
@@ -142,7 +143,7 @@ void KJobTest::testProgressTracking()
     /* We set a new total size, but equals to the previous one.
      * No signal is emitted.
      */
-    job->setTotalSize( 10 );
+    testJob->setTotalSize( 10 );
 
     QCOMPARE( processed_spy.size(), 2 );
     QCOMPARE( total_spy.size(), 1 );
@@ -152,7 +153,7 @@ void KJobTest::testProgressTracking()
     /* We 'lost' the previous work done.
      * Signals both percentage and new processed size.
      */
-    job->setProcessedSize( 0 );
+    testJob->setProcessedSize( 0 );
 
     QCOMPARE( processed_spy.size(), 3 );
     QCOMPARE( processed_spy.at( 2 ).at( 0 ).value<KJob*>(), job );
@@ -168,7 +169,7 @@ void KJobTest::testProgressTracking()
      *
      * Might sounds weird, but verify that this case is handled gracefully.
      */
-    job->setProcessedSize( 15 );
+    testJob->setProcessedSize( 15 );
 
     QCOMPARE( processed_spy.size(), 4 );
     QCOMPARE( processed_spy.at( 3 ).at( 0 ).value<KJob*>(), job );
