@@ -103,16 +103,11 @@ void KUrlNavigatorButton::setText(const QString& text)
 {
     QString adjustedText = text;
     if (adjustedText.isEmpty()) {
-        const QString protocol = m_url.protocol();
-        if (protocol == QLatin1String("nepomuksearch")) {
-            adjustedText = i18nc("@action:button", "Query Results");
-        } else {
-            adjustedText = protocol;
-        }
+        adjustedText = m_url.protocol();
     }
     KUrlButton::setText(adjustedText);
     updateMinimumWidth();
-    
+
     // assure that statFinished() does not overwrite a text that has been
     // set by a client of the URL navigator button
     m_pendingTextChange = false;
@@ -390,9 +385,9 @@ void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 
 void KUrlNavigatorButton::statFinished(KJob* job)
 {
-    if (m_pendingTextChange) {  
+    if (m_pendingTextChange) {
         m_pendingTextChange = false;
-        
+
         const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
         QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
         if (name.isEmpty()) {
