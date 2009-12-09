@@ -28,6 +28,7 @@
 #include "thing.h"
 #include "nfo.h"
 #include "nie.h"
+#include "nco.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -343,6 +344,7 @@ bool Nepomuk::Resource::isValid() const
 }
 
 
+// KDE 4.5: cache this one in ResourceData, maybe even use an inference query
 QString Nepomuk::Resource::genericLabel() const
 {
     QString label = this->label();
@@ -353,26 +355,34 @@ QString Nepomuk::Resource::genericLabel() const
             label = property( Soprano::Vocabulary::NAO::identifier() ).toString();
 
             if ( label.isEmpty() ) {
-                label = property( Soprano::Vocabulary::Xesam::name() ).toString();
+                label = property( Nepomuk::Vocabulary::NCO::fullname() ).toString();
 
                 if ( label.isEmpty() ) {
-                    label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
+                    label = property( Nepomuk::Vocabulary::NIE::title() ).toString();
 
                     if ( label.isEmpty() ) {
-                        label = KUrl(property( Nepomuk::Vocabulary::NIE::url() ).toUrl()).fileName();
+                        label = property( Soprano::Vocabulary::Xesam::name() ).toString();
 
                         if ( label.isEmpty() ) {
-                            QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
-                            if( !go.isEmpty() ) {
-                                label = go.first().genericLabel();
-                                if( label == go.first().resourceUri().toString() ) {
-                                    label.clear();
-                                }
-                            }
+                            label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
 
                             if ( label.isEmpty() ) {
-                                // ugly fallback
-                                label = resourceUri().toString();
+                                label = KUrl(property( Nepomuk::Vocabulary::NIE::url() ).toUrl()).fileName();
+
+                                if ( label.isEmpty() ) {
+                                    QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
+                                    if( !go.isEmpty() ) {
+                                        label = go.first().genericLabel();
+                                        if( label == go.first().resourceUri().toString() ) {
+                                            label.clear();
+                                        }
+                                    }
+
+                                    if ( label.isEmpty() ) {
+                                        // ugly fallback
+                                        label = resourceUri().toString();
+                                    }
+                                }
                             }
                         }
                     }
