@@ -308,8 +308,8 @@ bool Nepomuk::ResourceData::store()
         }
 
         // the only situation in which determineUri keeps the kickoff URI is for file URLs.
-        if ( m_kickoffUri.isValid() ) {
-            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_kickoffUri ) );
+        if ( m_fileUrl.isValid() ) {
+            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_fileUrl ) );
         }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method
@@ -391,6 +391,9 @@ bool Nepomuk::ResourceData::load()
                     }
                 }
                 else {
+                    if ( p == Nepomuk::Vocabulary::NIE::url() ) {
+                        m_fileUrl = o.uri();
+                    }
                     m_cache[p].append( nodeToVariant( o ) );
                 }
             }
@@ -450,14 +453,14 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 
         // one-to-one Resource
         if( value.isResource() ) {
-            valueNodes.append( value.toResource().resourceUri() );
+            valueNodes.append( value.toUrl() );
         }
 
         // one-to-many Resource
         else if( value.isResourceList() ) {
-            const QList<Resource>& l = value.toResourceList();
-            for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-                valueNodes.append( (*resIt).resourceUri() );
+            const QList<QUrl>& l = value.toUrlList();
+            for( QList<QUrl>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
+                valueNodes.append( *resIt );
             }
         }
 
@@ -591,7 +594,6 @@ bool Nepomuk::ResourceData::determineUri()
                 KUrl uriFromKickoffId(m_kickoffId);
                 if( model->containsAnyStatement( uriFromKickoffId, Node(), Node() )) {
                     m_uri = uriFromKickoffId;
-                    m_kickoffId.truncate(0);
                 }
 
                 //
@@ -605,7 +607,6 @@ bool Nepomuk::ResourceData::determineUri()
                     if( it.next() ) {
                         m_uri = it["r"].uri();
                         it.close();
-                        m_kickoffId.truncate(0);
                     }
                     else {
                         // save the kickoff identifier as nao:identifier
@@ -613,6 +614,9 @@ bool Nepomuk::ResourceData::determineUri()
                         m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffId );
                     }
                 }
+
+                QMutexLocker lock( &m_rm->mutex );
+                m_rm->m_idKickoffData.remove( m_kickoffId );
             }
 
             else if( !m_kickoffUri.isEmpty() ) {
@@ -630,12 +634,14 @@ bool Nepomuk::ResourceData::determineUri()
                 Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
                 if( it.next() ) {
                     QUrl uri = it["r"].uri();
-                    if( uri.isEmpty() )
+                    if( uri.isEmpty() ) {
                         m_uri = m_kickoffUri;
-                    else
+                    }
+                    else {
                         m_uri = uri;
+                        m_fileUrl = uri;
+                    }
                     it.close();
-                    m_kickoffUri = QUrl();
                 }
                 else if( m_kickoffUri.scheme() == QLatin1String("file") ) {
                     //
@@ -653,7 +659,6 @@ bool Nepomuk::ResourceData::determineUri()
                                                                    m_kickoffUri.url() ) ).value();
                     if( !resourceUri.isEmpty() ) {
                         m_uri = resourceUri;
-                        m_kickoffUri = QUrl();
                     }
                     else {
                         //
@@ -665,12 +670,16 @@ bool Nepomuk::ResourceData::determineUri()
                             m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
                         }
                     }
+
+                    m_fileUrl = m_kickoffUri;
                 }
                 else {
                     // for everything else we simply use the kickoff URI as resource URI
                     m_uri = m_kickoffUri;
-                    m_kickoffUri = QUrl();
                 }
+
+                QMutexLocker lock( &m_rm->mutex );
+                m_rm->m_uriKickoffData.remove( m_kickoffUri );
             }
 
             else {
