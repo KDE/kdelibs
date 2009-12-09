@@ -910,16 +910,9 @@ void KDoubleNumInput::setSliderEnabled(bool enabled)
 {
     K_USING_KNUMINPUT_P(priv);
     if (enabled) {
-        // upcast to base type to get the minimum/maximum in int form:
         QDoubleSpinBox * spin = d->spin;
-        double multiplicator = 1.0;
-        if (spin->maximum() - spin->minimum() < 10.0) { // if the range is to small, the slider would not be usable (see #168022)
-            multiplicator = 10 / (spin->maximum() - spin->minimum());
-        }
-        const int slmax = qRound(spin->maximum() * multiplicator);
-        const int slmin = qRound(spin->minimum() * multiplicator);
-        const int slvalue = qRound(spin->value() * multiplicator);
-        const int slstep = qRound(spin->singleStep() * multiplicator);
+        const double range = spin->maximum() - spin->minimum();
+        const double steps = range * pow(10.0, spin->decimals());
         if (!priv->slider) {
             priv->slider = new QSlider(Qt::Horizontal, this);
             priv->slider->setTickPosition(QSlider::TicksBelow);
@@ -927,16 +920,19 @@ void KDoubleNumInput::setSliderEnabled(bool enabled)
             connect(priv->slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)));
         }
-        priv->slider->setRange(slmin, slmax);
-        priv->slider->setSingleStep(slstep);
-        priv->slider->setValue(slvalue);
-        connect(spin, SIGNAL(valueChanged(double)), SLOT(spinBoxChanged(double)));
-        // calculate ( slmax - slmin ) / 10 without overflowing ints:
-        int major = calcDiffByTen(slmax, slmin);
-        if (!major) {
-            major = slstep;   // ### needed?
+        if (steps > 1000 || d->exponentRatio != 1.0) {
+            priv->slider->setRange(0, 1000);
+            priv->slider->setSingleStep(1);
+            priv->slider->setPageStep(50);
+        } else {
+            const int singleSteps = qRound(steps);
+            priv->slider->setRange(0, singleSteps);
+            priv->slider->setSingleStep(1);
+            const int pageSteps = qBound(1, singleSteps / 20, 10);
+            priv->slider->setPageStep(pageSteps);
         }
-        priv->slider->setTickInterval(major);
+        spinBoxChanged(spin->value());
+        connect(spin, SIGNAL(valueChanged(double)), SLOT(spinBoxChanged(double)));
     } else {
         delete priv->slider;
         priv->slider = 0;
