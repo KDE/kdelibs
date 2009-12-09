@@ -398,6 +398,11 @@ void KEditListBox::typedSomething(const QString& text)
     if ( !d->servNewButton )
         return;
 
+    if ( !d->lineEdit->hasAcceptableInput() ) {
+        d->servNewButton->setEnabled(false);
+        return;
+    }
+
     if (!d->checkAtEntering)
         d->servNewButton->setEnabled(!text.isEmpty());
     else
