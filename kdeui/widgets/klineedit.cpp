@@ -1318,6 +1318,13 @@ bool KLineEdit::event( QEvent* ev )
             if (stopEvent)
                 return true;
         }
+    } else if (ev->type() == QEvent::ApplicationPaletteChange
+               || ev->type() == QEvent::PaletteChange) {
+        // Assume the widget uses the application's palette
+        QPalette p = QApplication::palette();
+        d->previousHighlightedTextColor=p.color(QPalette::Normal,QPalette::HighlightedText);
+        d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
+        setUserSelection(d->userSelection);
     }
     return QLineEdit::event( ev );
 }
