@@ -853,7 +853,7 @@ KStandardDirs::findAllResources( const char *type,
     }
 
     if (filterFile.isEmpty()) {
-        filterFile = "*";
+        filterFile = '*';
     }
 
     QRegExp regExp(filterFile, Qt::CaseSensitive, QRegExp::Wildcard);
@@ -1914,7 +1914,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
                  it2 != entries.end(); ++it2)
             {
                 const QString key = it2.key();
-                if (key.startsWith("dir_")) {
+                if (key.startsWith(QLatin1String("dir_"))) {
                     // generate directory list, there may be more than 1.
                     QStringList dirs = (*it2).split(',');
                     QStringList::Iterator sIt(dirs.begin());

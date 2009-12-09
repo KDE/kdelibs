@@ -138,7 +138,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
     QString to, cc, bcc;
     if (command.isEmpty() || command == QLatin1String("kmail")
-        || command.endsWith("/kmail"))
+        || command.endsWith(QLatin1String("/kmail")))
     {
         command = QLatin1String("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
         if ( !_to.isEmpty() )
@@ -264,7 +264,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     args << url;
     QString error;
 
-    // This method should launch a webbrowser, preferrably without doing a mimetype
+    // This method should launch a webbrowser, preferably without doing a mimetype
     // check first, like KRun (i.e. kde-open) would do.
 
     // In a KDE session, honour BrowserApplication if set, otherwise call kfmclient if present,

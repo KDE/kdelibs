@@ -316,18 +316,18 @@ static void initUrlActionRestrictions()
     QString urlPath = rule[6];
     bool bEnabled   = (rule[7].toLower() == "true");
 
-    if (refPath.startsWith("$HOME"))
+    if (refPath.startsWith(QLatin1String("$HOME")))
        refPath.replace(0, 5, QDir::homePath());
     else if (refPath.startsWith('~'))
        refPath.replace(0, 1, QDir::homePath());
-    if (urlPath.startsWith("$HOME"))
+    if (urlPath.startsWith(QLatin1String("$HOME")))
        urlPath.replace(0, 5, QDir::homePath());
     else if (urlPath.startsWith('~'))
        urlPath.replace(0, 1, QDir::homePath());
 
-    if (refPath.startsWith("$TMP"))
+    if (refPath.startsWith(QLatin1String("$TMP")))
        refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
-    if (urlPath.startsWith("$TMP"))
+    if (urlPath.startsWith(QLatin1String("$TMP")))
        urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
 
     d->urlActionRestrictions.append(

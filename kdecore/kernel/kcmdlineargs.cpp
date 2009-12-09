@@ -672,7 +672,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QByteArray &opt,
          opt_name = opt_name.mid(1);
          result = 4;
       }
-      if (opt_name.startsWith("no"))
+      if (opt_name.startsWith("no")) // krazy:exclude=strings
       {
          opt_name = opt_name.mid(2);
          inverse = true;
@@ -698,7 +698,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QByteArray &opt,
                   nextOption = nextOption.left(p);
                if (nextOption.startsWith('!'))
                   nextOption = nextOption.mid(1);
-               if (nextOption.startsWith("no"))
+               if (nextOption.startsWith("no")) // krazy:exclude=strings
                {
                   nextOption = nextOption.mid(2);
                   enabled = !enabled;
@@ -738,7 +738,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       opt = opt.left(j);
    }
 #ifdef Q_WS_MACX
-   if(opt.startsWith("psn_"))
+   if(opt.startsWith("psn_")) // krazy:exclude=strings
       opt = "psn";
 #endif
 
@@ -759,7 +759,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       int p = 1;
       while (true)
       {
-         QByteArray singleCharOption = " ";
+         QByteArray singleCharOption = " "; // krazy:exclude=doublequote_chars
          singleCharOption[0] = optv[p];
          args = s->argsList->begin();
          while (args != s->argsList->end())
@@ -802,7 +802,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       if (s->ignoreUnknown)
          return;
 #ifdef Q_WS_MACX
-		if (_opt.startsWith("psn_"))
+		if (_opt.startsWith("psn_")) // krazy:exclude=strings
 			return;
 #endif
       KCmdLineArgs::enable_i18n();
@@ -822,7 +822,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (s->ignoreUnknown)
             return;
 #ifdef Q_WS_MACX
-			if (_opt.startsWith("psn_"))
+			if (_opt.startsWith("psn_")) // krazy:exclude=strings
 				return;
 #endif
          KCmdLineArgs::enable_i18n();
@@ -885,7 +885,7 @@ KCmdLineArgsStatic::parseAllArgs()
          {
             KCmdLineArgs::usage();
          }
-         else if (option.startsWith("help-"))
+         else if (option.startsWith("help-")) // krazy:exclude=strings
          {
             KCmdLineArgs::usage(option.mid(5));
          }
@@ -940,7 +940,7 @@ KCmdLineArgsStatic::parseAllArgs()
        }
        exit(0);
          } else {
-           if (option.startsWith("no"))
+           if (option.startsWith("no")) // krazy:exclude=strings
            {
               option = option.mid(2);
               enabled = false;
@@ -1374,7 +1374,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, bool enabled)
    if (isQt)
    {
       // Qt does it own parsing.
-      QByteArray argString = "-";
+      QByteArray argString = "-"; // krazy:exclude=doublequote_chars
       if( !enabled )
           argString += "no";
       argString += opt;
@@ -1385,9 +1385,9 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, bool enabled)
    }
 
    if (enabled)
-      parsedOptionList->insert( opt, "t" );
+      parsedOptionList->insert( opt, "t" ); // krazy:exclude=doublequote_chars
    else
-      parsedOptionList->insert( opt, "f" );
+      parsedOptionList->insert( opt, "f" ); // krazy:exclude=doublequote_chars
 }
 
 void
@@ -1396,7 +1396,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
    if (isQt)
    {
       // Qt does it's own parsing.
-      QByteArray argString = "-";
+      QByteArray argString = "-"; // krazy:exclude=doublequote_chars
       argString += opt;
       addArgument(argString);
       addArgument(value);

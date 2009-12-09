@@ -333,25 +333,25 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
     for (QStringList::ConstIterator it = queries.begin(); it != queries.end(); ++it)
     {
         QString q = (*it).toLower();
-        if (q.startsWith("subject="))
+        if (q.startsWith(QLatin1String("subject=")))
             subject = KUrl::fromPercentEncoding((*it).mid(8).toLatin1());
         else
-            if (q.startsWith("cc="))
+            if (q.startsWith(QLatin1String("cc=")))
                 cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc + ',' + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
             else
-                if (q.startsWith("bcc="))
+                if (q.startsWith(QLatin1String("bcc=")))
                     bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc + ',' + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
                 else
-                    if (q.startsWith("body="))
+                    if (q.startsWith(QLatin1String("body=")))
                         body = KUrl::fromPercentEncoding((*it).mid(5).toLatin1());
                     else
-                        if (allowAttachments && q.startsWith("attach="))
+                        if (allowAttachments && q.startsWith(QLatin1String("attach=")))
                             attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(7).toLatin1()));
                         else
-                            if (allowAttachments && q.startsWith("attachment="))
+                            if (allowAttachments && q.startsWith(QLatin1String("attachment=")))
                                 attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(11).toLatin1()));
                             else
-                                if (q.startsWith("to="))
+                                if (q.startsWith(QLatin1String("to=")))
                                     address = address.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): address + ',' + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
     }
 
