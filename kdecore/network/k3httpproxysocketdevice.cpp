@@ -246,11 +246,11 @@ bool KHttpProxySocketDevice::parseServerReply()
   else
     {
       int state = 0;
-      if (d->reply.endsWith("\r\n\r"))
+      if (d->reply.endsWith("\r\n\r")) // krazy:exclude=strings
 	state = 3;
-      else if (d->reply.endsWith("\r\n"))
+      else if (d->reply.endsWith("\r\n")) // krazy:exclude=strings
 	state = 2;
-      else if (d->reply.endsWith('\r'))
+      else if (d->reply.endsWith('\r'))// krazy:exclude=strings
 	state = 1;
       while (state != 4)
 	{

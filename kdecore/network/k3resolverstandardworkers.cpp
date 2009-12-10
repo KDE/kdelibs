@@ -450,7 +450,7 @@ namespace
 
 	// now we do the blocking processing
 	if (m_node.isEmpty())
-	  m_node = "*";
+	  m_node = "*"; // krazy:exclude=doublequote_chars
 
 	addrinfo *result;
 	int res = getaddrinfo(m_node, m_serv, &hint, &result);

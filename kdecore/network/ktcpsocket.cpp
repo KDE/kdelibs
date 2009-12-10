@@ -986,9 +986,9 @@ QString KSslCipher::digestMethod() const
 {
     //### This is not really backend neutral. It works for OpenSSL and
     //    for RFC compliant names, though.
-    if (d->name.endsWith("SHA"))
+    if (d->name.endsWith(QLatin1String("SHA")))
         return "SHA-1";
-    else if (d->name.endsWith("MD5"))
+    else if (d->name.endsWith(QLatin1String("MD5")))
         return "MD5";
     else
         return "";

@@ -188,7 +188,7 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
     QStringList sl = group.readEntry(key, QStringList());
 
     QString dtString = sl.takeFirst();
-    if (!dtString.startsWith("ExpireUTC "))
+    if (!dtString.startsWith(QLatin1String("ExpireUTC ")))
         return ret;
     dtString.remove(0, 10/* length of "ExpireUTC " */);
 
