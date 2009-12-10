@@ -65,6 +65,23 @@ namespace Nepomuk {
      *
      * \see ResourceManager
      *
+     * \section nepomuk_resource_file_uris Special case: file URLs
+     *
+     * \p file:/ URLs are handled as a special case in Nepomuk. Starting with KDE 4.4
+     * they are no longer used to identify the Nepomuk resource but only stored as
+     * nie:url property. All resources have \p nepomuk:/res/<UUID> URIs. The Resource
+     * constructors handle this automatically. Thus, one can still use file URLs to
+     * construct the objects. But be aware of the following example:
+     *
+     * \code
+     * KUrl fileUrl("file:///home/foobar/example.txt");
+     * Nepomuk::Resource fileRes(fileUrl);
+     * QUrl fileResUri = fileRes.resourceUri();
+     * \endcode
+     *
+     * Here \p fileUrl and \p fileResUri are NOT equal. The latter is the resource URI
+     * of the form \p nepomuk:/res/<UUID>.
+     *
      * \author Sebastian Trueg <trueg@kde.org>
      */
     class NEPOMUK_EXPORT Resource
@@ -106,10 +123,6 @@ namespace Nepomuk {
          * \li A URI which already exist in Nepomuk results in loading of that particular resource.
          * \li A string which already exists as the nao:identifier of a resource results in loading
          * of that particular resource.
-         * \li A URI which does not exist yet is used to create a new resource (Caution: due to
-         * encoding weirdness using KUrl::url or QUrl::toString here might result in unwanted
-         * behaviour. It is recommended to always use the Resource(QUrl,QUrl) constructor if
-         * possible)
          * \li Any other string is used as nao:identifier for a new resource. This resource can
          * later be loaded again by using the same identifier with this constructor.
          *
@@ -154,6 +167,8 @@ namespace Nepomuk {
          * \param uri The URI of the resource. If no resource with this URI exists, a new one is
          * created. Using an empty QUrl will result in a new resource with a random URI being created
          * on the first call to setProperty.
+         *
+         * See the \ref nepomuk_resource_file_uris Special file URL handling.
          *
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
