@@ -218,7 +218,7 @@
  @endcode
 
  First of all, it creates the action object specifying the action id. Then it loads the filename (we want to read a forbidden file) into the arguments() QVariantMap, which will be directly passed to the
- helper in the read() slot's parameter. This example code uses a synchronous call to execute the action and retrieve the reply. If the reply succeded, the reply data is retrieved from the returned QVariantMap
+ helper in the read() slot's parameter. This example code uses a synchronous call to execute the action and retrieve the reply. If the reply succeeded, the reply data is retrieved from the returned QVariantMap
  object. Please note that, although the execute() method will return only when the action is completed, the GUI will remain responsive because an internal event loop is entered. This means you should be
  prepared to receive other events in the meanwhile.
 

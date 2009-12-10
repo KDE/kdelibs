@@ -1214,7 +1214,7 @@ int inet_pton(int af, const char *cp, void *buf)
       memset(addr + start, 0, (8 - n) * sizeof(quint16));
 
       // check the byte order
-      // The compiler should optimise this out in big endian machines
+      // The compiler should optimize this out in big endian machines
       if (htons(0x1234) != 0x1234)
 	for (n = 0; n < 8; ++n)
 	  addr[n] = htons(addr[n]);

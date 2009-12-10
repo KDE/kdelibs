@@ -1590,7 +1590,7 @@ static quint32 bin_read_int (const char *fc, qlonglong len, qlonglong &pos)
     return bin_read_int_nbytes<quint32>(fc, len, pos, 4);
 }
 
-// Read string at position pos of character array fc of lenght n.
+// Read string at position pos of character array fc of length n.
 // String is represented as 32-bit big-endian byte length followed by bytes.
 // Update position to point after the string.
 // In case of error, pos is set to -1.

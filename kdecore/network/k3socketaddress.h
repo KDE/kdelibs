@@ -125,7 +125,7 @@ public:
   /**
    * Destructor. This frees resources associated with this object.
    *
-   * Note: destructor is non-virtual. The compiler will happily optimise it
+   * Note: destructor is non-virtual. The compiler will happily optimize it
    * out of the way.
    */
   inline ~KIpAddress()

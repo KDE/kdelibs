@@ -60,7 +60,7 @@
  * [X-KMyApp-InterfaceVersion] > 4
  * \endcode
  * otherwise it could also be interpreted as
- * Substract the numeric value of the property "KMyApp" and "InterfaceVersion" from the
+ * Subtract the numeric value of the property "KMyApp" and "InterfaceVersion" from the
  * property "X" and make sure it is greater than 4.\n
  * Instead of the other meaning, make sure that the numeric value of "X-KMyApp-InterfaceVersion" is
  * greater than 4.
