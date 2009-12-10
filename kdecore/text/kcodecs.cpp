@@ -698,7 +698,7 @@ QString KCodecs::decodeRFC2047String(const QString &msg)
     QString encodedText;
     QString decodedText;
     int encEnd=0;
-    if(!msg.startsWith("=?") || (encEnd=msg.lastIndexOf("?="))==-1)
+    if(!msg.startsWith(QLatin1String("=?")) || (encEnd=msg.lastIndexOf("?="))==-1)
         return msg;
 
     notEncodedText=msg.mid(encEnd+2);
