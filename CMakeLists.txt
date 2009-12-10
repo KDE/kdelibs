@@ -10,9 +10,9 @@ include(CPack)
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 3)
-set (KDE_VERSION_RELEASE 81)
+set (KDE_VERSION_RELEASE 82)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.3.81 (KDE 4.4 >= 20091204))")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.3.82 (KDE 4.4 >= 20091211))")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -229,6 +229,7 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 # so this must be fixed. Alex
 if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
   set(HAVE_NEPOMUK true)
+  include(SopranoAddOntology)
   add_subdirectory(nepomuk)
 endif(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
 
