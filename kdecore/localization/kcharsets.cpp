@@ -773,11 +773,11 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 
     QByteArray name = n.toLower();
     bool changed = false;
-    if (name.endsWith("_charset")) {
+    if (name.endsWith("_charset")) { // krazy:exclude=strings
        name.chop( 8 );
        changed = true;
     }
-    if ( name.startsWith( "x-" ) ) {
+    if ( name.startsWith( "x-" ) ) { // krazy:exclude=strings
        name.remove( 0, 2 ); // remove x- at start
        changed = true;
     }

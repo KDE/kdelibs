@@ -252,7 +252,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     else
     {
         lang = KLocale::defaultLanguage();
-        ctry = "C";
+        ctry = 'C';
         rawtrans = selectForEnglish();
     }
 
