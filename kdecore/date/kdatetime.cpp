@@ -1715,7 +1715,7 @@ QString KDateTime::toString(TimeFormat format) const
                 return result + QLatin1Char('Z');
             if (d->specType == ClockTime)
                 return result;
-            tzcolon = ":";
+            tzcolon = ":"; // krazy:exclude=doublequote_chars
             break;
         }
             // fall through to QtTextDate
