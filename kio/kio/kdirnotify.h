@@ -21,8 +21,28 @@
 #include <QtDBus/QtDBus>
 #include <kio/kio_export.h>
 
-/*
- * Proxy class for interface org.kde.KDirNotify
+/**
+ * \class OrgKdeKDirNotifyInterface kdirnotify.h KDirNotify
+ *
+ * \brief Proxy class for interface org.kde.KDirNotify.
+ *
+ * KDirNotify can be used to inform KIO about changes in real or virtual file systems.
+ * Classes like KDirModel connect to the signals as in the following example to
+ * be able to keep caches up-to-date.
+ *
+ * \code
+ * kdirnotify = new org::kde::KDirNotify(QString(), QString(), QDBusConnection::sessionBus(), this);
+ * connect(kdirnotify, SIGNAL(FileRenamed(QString,QString)), SLOT(slotFileRenamed(QString,QString)));
+ * connect(kdirnotify, SIGNAL(FilesAdded(QString)), SLOT(slotFilesAdded(QString)));
+ * connect(kdirnotify, SIGNAL(FilesChanged(QStringList)), SLOT(slotFilesChanged(QStringList)));
+ * connect(kdirnotify, SIGNAL(FilesRemoved(QStringList)), SLOT(slotFilesRemoved(QStringList)));
+ * \endcode
+ *
+ * Especially noteworthy are the empty strings for both \p service and \p path. That
+ * way the client will connect to signals emitted by any application.
+ *
+ * The second usage is to actually emit the signals. For that emitFileRenamed() and friends are
+ * to be used.
  */
 class KIO_EXPORT OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
 {
@@ -32,8 +52,21 @@ public:
     { return "org.kde.KDirNotify"; }
 
 public:
+    /**
+     * Create a new KDirNotify interface.
+     *
+     * \param service The service whose signals one wants to listed to. Use an empty
+     * string to connect to all services/applications.
+     * \param path The path to the D-Bus object whose signals one wants to listed to.
+     * Use an empty string to connect to signals from all objects.
+     * \param connection Typically QDBusConnection::sessionBus().
+     * \param parent The parent QObject.
+     */
     OrgKdeKDirNotifyInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
 
+    /**
+     * Destructor.
+     */
     ~OrgKdeKDirNotifyInterface();
 
 public Q_SLOTS: // METHODS
@@ -51,7 +84,7 @@ public:
     static void emitFileMoved(const QString &src, const QString &dst);
     static void emitFilesAdded(const QString &directory);
     static void emitFilesChanged(const QStringList &fileList);
-    static void emitFilesRemoved(const QStringList &fileList);    
+    static void emitFilesRemoved(const QStringList &fileList);
     static void emitEnteredDirectory(const QString &url);
     static void emitLeftDirectory(const QString &url);
 };
