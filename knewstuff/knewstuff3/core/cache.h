@@ -33,7 +33,7 @@ public:
     Cache(QObject* parent = 0);
     /// The file name of the registry - this is usually the application name, it will be stored in "apps/knewstuff3/appname.knsregistry"
     void setRegistryFileName(const QString& appName);
-    
+
     /// Read the installed entries (on startup)
     void readRegistry();
     /// All entries that have been installed by a certain provider
@@ -47,7 +47,7 @@ public:
 
 public Q_SLOTS:
     void registerChangedEntry(const KNS3::EntryInternal& entry);
-    
+
 private:
     QString hashForRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
     QString registryFile;

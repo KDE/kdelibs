@@ -68,7 +68,7 @@ public:
     ProviderInformation()
         :provider(0)
     {}
-    
+
     ProviderInformation(QSharedPointer<Provider>  p)
         :provider(p)
     {
@@ -109,7 +109,7 @@ class KNS3::Engine::Private {
         int requestedPage;
         // when requesting entries from a provider, how many to ask for
         int pageSize;
-        
+
         Private()
             : initialized(false)
             , sortMode(Provider::Newest)
@@ -123,7 +123,7 @@ class KNS3::Engine::Private {
             searchTimer->setSingleShot(true);
             searchTimer->setInterval(1000);
         }
-        
+
         ~Private()
         {
             delete searchTimer;
@@ -171,7 +171,7 @@ bool Engine::init(const QString &configfile)
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
-    
+
     KConfigGroup group;
     if (conf.hasGroup("KNewStuff3")) {
         kDebug() << "Loading KNewStuff3 config: " << configfile;
@@ -189,17 +189,17 @@ bool Engine::init(const QString &configfile)
     kDebug() << "Categories: " << d->categories << " pattern: " << d->categoriesPattern;
     d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
-    
+
     // let installation read install specific config
     if (!d->installation->readConfig(group)) {
         return false;
     }
-    
+
     connect(d->installation, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), SLOT(slotEntryChanged(const KNS3::EntryInternal&)));
 
     d->cache->setRegistryFileName(d->applicationName.split(':')[0]);
     d->cache->readRegistry();
-    
+
     d->initialized = true;
 
     // load the providers
@@ -224,7 +224,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
     kDebug() << "slotProvidersLoaded";
 
     bool isAtticaProviderFile = false;
-    
+
     // get each provider element, and create a provider object from it
     QDomElement providers = doc.documentElement();
 
@@ -258,7 +258,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
             connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)),
                     SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)));
                     connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
-            
+
             if (provider->setProviderXML(p)) {
                 ProviderInformation providerInfo(provider);
                 d->providers.insert(provider->id(), providerInfo);
@@ -276,7 +276,7 @@ void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name();
     p->setCachedEntries(d->cache->registryForProvider(p->id()));
-    
+
     // TODO parameters according to search string etc
     p->loadEntries(d->sortMode, d->searchTerm, 0, d->pageSize);
 }
@@ -291,7 +291,7 @@ void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString&
     kDebug() << "loaded " << page;
     d->currentPage = qMax<int>(page, d->currentPage);
     kDebug() << "current page" << d->currentPage;
-    
+
     //d->cache->insertEntries(entries);
     d->cache->insertRequest(d->sortMode, d->searchTerm, d->currentPage, d->pageSize, entries);
     emit signalEntriesLoaded(entries);
@@ -510,7 +510,7 @@ void Engine::install(KNS3::EntryInternal entry)
         entry.setStatus(EntryInternal::Installing);
     }
     emit signalEntryChanged(entry);
-    
+
     kDebug() << "Install " << entry.name()
         << " from: " << entry.providerId();
     ProviderInformation i = d->providers.value(entry.providerId());

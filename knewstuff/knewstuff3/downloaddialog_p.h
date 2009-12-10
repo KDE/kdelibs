@@ -5,7 +5,7 @@
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jeremy@scitools.com>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -44,9 +44,9 @@
 namespace KNS3 {
 
 class DownloadDialogPrivate :public QObject {
-    
+
     Q_OBJECT
-    
+
 public:
     Ui::DownloadDialog ui;
     // The engine that does all the work
@@ -57,33 +57,33 @@ public:
     QSortFilterProxyModel * sortingProxyModel;
     // Timeout for messge display
     QTimer* messageTimer;
-    
+
     ItemsViewDelegate * delegate;
-    
+
     QString searchTerm;
     QSet<EntryInternal> changedEntries;
-    
-    DownloadDialogPrivate();    
+
+    DownloadDialogPrivate();
     ~DownloadDialogPrivate();
     void init(const QString& configFile);
     void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0);
-    
+
 public Q_SLOTS:
     void slotEntryChanged(const KNS3::EntryInternal& entry);
-    
+
     void slotPayloadFailed(const EntryInternal& entry);
     void slotPayloadLoaded(KUrl url);
-    
+
     void slotResetMessage();
     void slotNetworkTimeout();
     void sortingChanged();
     void slotSearchTextChanged();
     void slotUpdateSearch();
-    
+
     void slotInfo(QString provider, QString server, QString version);
     void slotError(const QString& message);
     void scrollbarValueChanged(int value);
-    
+
 Q_SIGNALS:
     void signalRequestMoreData();
 };

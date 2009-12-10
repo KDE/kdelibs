@@ -42,16 +42,16 @@ private Q_SLOTS:
     void slotEntryPreviewLoaded(const QString &, const QImage&);
     void install();
     void uninstall();
-    
+
     void voteGood();
     void voteBad();
     void becomeFan();
     void entryChanged(const KNS3::EntryInternal& entry);
     void updateButtons();
-    
-private:    
+
+private:
     void init();
-    
+
     Ui::EntryDetailsDialog ui;
     Engine *m_engine;
     EntryInternal m_entry;

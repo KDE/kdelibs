@@ -3,7 +3,7 @@
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -315,7 +315,7 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         kWarning() << "Parsing Entry from invalid XML";
         return false;
     }
-    
+
     d->mCategory = xmldata.attribute("category");
 
     QDomNode n;
@@ -401,7 +401,7 @@ QDomElement KNS3::EntryInternal::entryXML() const
 {
     Q_ASSERT(!d->mUniqueId.isEmpty());
     Q_ASSERT(!d->mProviderId.isEmpty());
-    
+
     QDomDocument doc;
 
     QDomElement el = doc.createElement("stuff");
@@ -466,7 +466,7 @@ QDomElement KNS3::EntryInternal::entryXML() const
 Entry EntryInternal::toEntry() const
 {
     Entry e;
-    
+
     e.d->mName = d->mName;
     e.d->mCategory = d->mCategory;
     e.d->mLicense = d->mLicense;
@@ -474,12 +474,12 @@ Entry EntryInternal::toEntry() const
     e.d->mSummary = d->mSummary;
     e.d->mInstalledFiles = d->mInstalledFiles;
     e.d->mUnInstalledFiles = d->mUnInstalledFiles;
-    
+
     if (d->mStatus == Installing || d->mStatus == Updating) {
         e.d->mStatus = Entry::Invalid;
     } else  {
         e.d->mStatus = (Entry::Status) d->mStatus;
     }
-    
+
     return e;
 }

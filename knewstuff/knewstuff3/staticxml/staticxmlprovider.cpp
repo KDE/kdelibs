@@ -4,7 +4,7 @@
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -42,7 +42,7 @@ public:
     QMap<QString, KUrl> mDownloadUrls;
     KUrl mUploadUrl;
     KUrl mNoUploadUrl;
-    
+
     // cache of all entries known from this provider so far, mapped by their id
     EntryInternal::List cachedEntries;
     QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
@@ -65,7 +65,7 @@ QString StaticXmlProvider::id() const
 {
     Q_D(const StaticXmlProvider);
     return d->mId;
-    
+
 }
 
 bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
@@ -103,7 +103,7 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
     // FIXME: make sure new KUrl in KDE 4 handles this right
     // FIXME: this depends on freedesktop.org icon naming... introduce 'desktopicon'?
     KUrl iconurl(xmldata.attribute("icon"));
-    if (!iconurl.isValid()) 
+    if (!iconurl.isValid())
         iconurl.setPath(xmldata.attribute("icon"));
     d->mIcon = iconurl;
 
@@ -133,9 +133,9 @@ bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
     if (d->mId.isEmpty()) {
         d->mId = d->mDownloadUrls[d->mDownloadUrls.keys().first()].url();
     }
-    
+
     d->mInitialized = true;
-    
+
     emit providerInitialized(this);
     return true;
 }
@@ -200,7 +200,7 @@ void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstri
         emit loadingFinished(sortMode, searchstring, 0, 1, 1, installedEntries());
         return;
     }
-    
+
     KUrl url = downloadUrl(sortMode);
     if (!url.isEmpty()) {
         if (page == 0) {
@@ -261,7 +261,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     // we have a loader, so see which sortmode it was used for
     QStringList::ConstIterator it;
     SortMode mode;
-    
+
     foreach(const SortMode &sortMode, d->mFeedLoaders.keys()){
         if (loader == d->mFeedLoaders.value(sortMode))
         {
@@ -280,14 +280,14 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         EntryInternal entry;
         entry.setEntryXML(n.toElement());
         entry.setProviderId(d->mId);
-        
+
         // check to see if we already have this entry
         kDebug() << "Check: " << entry.providerId() << entry.uniqueId();
 
         int index = d->cachedEntries.indexOf(entry);
         if (index >= 0) {
             EntryInternal cacheEntry = d->cachedEntries.takeAt(index);
-            
+
             // check if updateable
             if ((cacheEntry.status() == EntryInternal::Installed) &&
                  ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {

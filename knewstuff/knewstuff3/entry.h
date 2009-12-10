@@ -3,7 +3,7 @@
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -45,7 +45,7 @@ class KNEWSTUFF_EXPORT Entry
 {
 public:
     typedef QList<Entry> List;
-    
+
     /**
     * Status of the entry. An entry will be downloadable from the provider's
     * site prior to the download. Once downloaded and installed, it will
@@ -62,7 +62,7 @@ public:
         Updateable,
         Deleted
     };
-    
+
     ~Entry();
     Entry(const Entry& other);
     Entry& operator=(const Entry& other);
@@ -99,34 +99,34 @@ public:
      * @return Current status of the entry
      */
     Status status() const;
-    
+
     /**
     * Retrieve the license name of the object.
     *
     * @return object license
     */
     QString license() const;
-    
+
     /**
     * Retrieve a short description about the object.
     *
     * @return object description
     */
     QString summary() const;
-    
+
     /**
     * Retrieve the version string of the object.
     *
     * @return object version
     */
     QString version() const;
-    
+
 private:
     Entry();
-    
+
     class Private;
     QExplicitlySharedDataPointer<Private> d;
-    
+
     friend class EntryInternal;
 };
 

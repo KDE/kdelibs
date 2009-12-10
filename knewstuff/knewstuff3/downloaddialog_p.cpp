@@ -5,7 +5,7 @@
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jeremy@scitools.com>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -149,51 +149,51 @@ void DownloadDialogPrivate::scrollbarValueChanged(int value)
 void DownloadDialogPrivate::init(const QString& configFile)
 {
     engine->init(configFile);
-        
+
     // Entries have been fetched and should be shown:
     connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), model, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
-    
+
     connect(engine, SIGNAL(signalError(const QString&)), SLOT(slotError(const QString&)));
-    
+
     // An entry has changes - eg because it was installed
     connect(engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), SLOT(slotEntryChanged(KNS3::EntryInternal)));
-    
+
     connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
-    
+
     // FIXME show download progress
     connect(engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
-        
+
     delegate = new ItemsViewDelegate(ui.m_listView);
     ui.m_listView->setItemDelegate(delegate);
     connect(delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)),
             engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)));
 
     ui.m_listView->setModel(sortingProxyModel);
-    
+
     connect(ui.newestRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
     connect(ui.ratingRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
     connect(ui.mostDownloadsRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
     connect(ui.installedRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    
+
     connect(ui.m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
     connect(ui.m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
-    
+
     ui.m_providerLabel->setVisible(false);
     ui.m_providerCombo->setVisible(false);
     ui.m_providerCombo->addItem(i18n("All Providers"));
-    
+
     ui.m_categoryLabel->setVisible(false);
     ui.m_categoryCombo->setVisible(false);
     ui.m_categoryCombo->addItem(i18n("All Categories"));
-    
-    
+
+
     ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
     "%1 Add-On Installer",
     KGlobal::activeComponent().aboutData()->programName()));
     ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
-    
+
     connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
-    
+
     // FIXME connect(engine, SIGNAL(signalJobStarted(KJob*)), ui.progressIndicator, SLOT(addJob(KJob*)));
     connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
 }
@@ -207,10 +207,10 @@ void DownloadDialogPrivate::displayMessage(const QString & msg, KTitleWidget::Me
     }
     // stop the pending timer if present
     messageTimer->stop();
-    
+
     // set text to messageLabel
     ui.m_titleWidget->setComment(msg, type);
-    
+
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
         //kDebug(551) << "starting the message timer for " << timeOutMs;

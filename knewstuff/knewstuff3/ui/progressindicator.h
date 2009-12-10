@@ -45,10 +45,10 @@ class ProgressIndicator : public QFrame
     Q_OBJECT
 public:
     ProgressIndicator(QWidget *parent);
-    
+
 public Q_SLOTS:
      void addJob(KJob*, const QString& label);
-    
+
 private Q_SLOTS:
     void jobFinished(KJob*);
 
@@ -56,10 +56,10 @@ private:
     void calculateAverage();
 
     QHash<KJob*, QString> m_jobs;
-    
+
     QVBoxLayout *m_detailsvbox;
     QProgressBar *m_pb;
-    
+
     uint m_finished;
     uint m_total;
 };

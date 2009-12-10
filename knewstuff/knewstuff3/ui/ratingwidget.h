@@ -27,7 +27,7 @@
 namespace KNS3 {
     // This is a copy of the class from Nepomuk as long as Nepomuk is not a hard dependency in kdelibs
     // In addition it has the editable property
-    
+
 /**
  * \brief Displays a rating value as a row of pixmaps.
  *
@@ -72,7 +72,7 @@ class RatingWidget : public QFrame
 
     /**
      * The layout direction. If RTL the stars
-     * representing the rating value will be drawn from the 
+     * representing the rating value will be drawn from the
      * right.
      *
      * \sa setLayoutDirection
@@ -96,21 +96,21 @@ class RatingWidget : public QFrame
      * \sa setHalfStepsEnabled
      */
     bool halfStepsEnabled() const;
-    
+
     /**
      * Set if the widget allows the user to set a rating, true by default.
      *
      * \sa isEditable
      */
     void setEditable(bool editable);
-    
+
     /**
     * If the widget allows the user to set a rating.
     *
     * \sa setEditable
     */
     bool isEditable();
-    
+
     /**
      * The icon used to draw a star. In case a custom pixmap has been set
      * this value is ignored.

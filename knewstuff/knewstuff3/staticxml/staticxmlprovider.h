@@ -3,7 +3,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -25,7 +25,7 @@
 namespace KNS3
 {
     class StaticXmlProviderPrivate;
-    
+
     /**
      * @short KNewStuff Base Provider class.
      *
@@ -54,7 +54,7 @@ namespace KNS3
         virtual ~StaticXmlProvider();
 
         virtual QString id() const;
-        
+
         /**
          * set the provider data xml, to initialize the provider
          */
@@ -65,17 +65,17 @@ namespace KNS3
          */
         virtual QDomElement providerXML() const;
         virtual bool isInitialized() const;
-        
+
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
-    
+
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 100);
         virtual void loadPayloadLink(const KNS3::EntryInternal& entry);
-        
+
     private:
         bool searchIncludesEntry(const EntryInternal& entry) const;
         KUrl downloadUrl(SortMode mode) const;
         EntryInternal::List installedEntries() const;
-        
+
     protected:
         StaticXmlProvider(StaticXmlProviderPrivate &dd);
     private Q_SLOTS:

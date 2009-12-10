@@ -2,7 +2,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -72,7 +72,7 @@ public:
         ScopeUser,
         ScopeSystem
     };
-    
+
     bool readConfig(const KConfigGroup& group);
     bool isRemote() const;
 
@@ -117,13 +117,13 @@ public Q_SLOTS:
      * @note FIXME: I don't believe this works yet :)
      */
     void uninstall(KNS3::EntryInternal entry);
-    
+
     void slotInstallationVerification(int result);
     void slotPayloadResult(KJob *job);
 
 Q_SIGNALS:
     void signalEntryChanged(const KNS3::EntryInternal& entry);
-    
+
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
     void signalPayloadFailed(const KNS3::EntryInternal& entry);
 
@@ -133,7 +133,7 @@ private:
     QString targetInstallationPath(const QString& payloadfile);
     QStringList installDownloadedFileAndUncompress(const KNS3::EntryInternal&  entry, const QString& payloadfile, const QString installdir);
     void runPostInstallationCommand(const QString& installPath);
-    
+
     static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
 
     Q_DISABLE_COPY(Installation)

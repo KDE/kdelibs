@@ -98,7 +98,7 @@ void Cache::writeRegistry()
         kWarning() << "Cannot write meta information to '" << registryFile << "'." << endl;
         return;
     }
-    
+
     QDomDocument doc;
     QDomElement root = doc.createElement("hotnewstuffregistry");
 

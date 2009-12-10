@@ -3,7 +3,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -31,7 +31,7 @@
 namespace KNS3
 {
     class ProviderPrivate;
-    
+
     /**
      * @short KNewStuff Base Provider class.
      *
@@ -57,14 +57,14 @@ namespace KNS3
             Downloads,
             Installed // only installed items
         };
-    
+
         /**
          * Constructor.
          */
         Provider();
         Provider(const Provider &other);
 
-        
+
         /**
          * Destructor.
          */
@@ -74,7 +74,7 @@ namespace KNS3
          * A unique Id for this provider (the url in most cases)
          */
         virtual QString id() const = 0;
-        
+
         /**
          * Set the provider data xml, to initialize the provider.
          * The Provider needs to have it's ID set in this function and cannot change it from there on.
@@ -89,7 +89,7 @@ namespace KNS3
         virtual bool isInitialized() const = 0;
 
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries) = 0;
-        
+
         /**
          * Retrieves the common name of the provider.
          *
@@ -123,12 +123,12 @@ namespace KNS3
 
     signals:
         void providerInitialized(KNS3::Provider*);
-            
+
         void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, const KNS3::EntryInternal::List&) const;
         void loadingFailed(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page);
-        
+
         void payloadLinkLoaded(const KNS3::EntryInternal& entry);
-        
+
     protected:
         QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;
         Provider(ProviderPrivate &dd);

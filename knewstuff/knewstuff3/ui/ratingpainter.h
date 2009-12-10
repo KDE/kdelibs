@@ -31,7 +31,7 @@ class QRect;
 
 namespace KNS3 {
     // This is a copy of the class from Nepomuk as long as Nepomuk is not a hard dependency in kdelibs
-    
+
 /**
  * \brief Utility class that draws a row of stars for a rating value.
  *
@@ -54,7 +54,7 @@ public:
      * should be sufficient.
      */
     RatingPainter();
-        
+
     /**
      * Destructor
      */
@@ -86,7 +86,7 @@ public:
 
     /**
      * The layout direction. If RTL the stars
-     * representing the rating value will be drawn from the 
+     * representing the rating value will be drawn from the
      * right.
      *
      * \sa setLayoutDirection
@@ -134,7 +134,7 @@ public:
      * one rating step corresponds to half a star.
      */
     void setHalfStepsEnabled( bool enabled );
-        
+
     /**
      * The alignment of the stars in the drawing rect.
      * All alignment flags are supported.

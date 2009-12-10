@@ -63,7 +63,7 @@ public:
         Rate,
         ShowDetails
     };
-    
+
     /**
      * Constructor.
      */
@@ -117,7 +117,7 @@ public:
 
 public Q_SLOTS:
     void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::EntryInternal entry);
-    
+
 Q_SIGNALS:
     /**
      * Indicates a message to be added to the ui's log, or sent to a messagebox
@@ -129,7 +129,7 @@ Q_SIGNALS:
 
     // a new search result is there, clear the list of items
     void signalResetView();
-    
+
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
 
@@ -138,36 +138,36 @@ Q_SIGNALS:
 
     void signalProvidersFinished();
     void signalEntriesFinished();
-    
+
     void signalProgress(const QString & message, int percentage);
 
     void signalDownloadDialogDone(KNS3::EntryInternal::List);
 
     void signalError(const QString& errorMessage);
-    
+
     void signalJobStarted(KJob*);
-    
+
 private Q_SLOTS:
     // the .knsrc file was loaded
     void slotProviderFileLoaded(const QDomDocument& doc);
     // loading the .knsrc file failed
     void slotProvidersFailed();
-    
+
     // called when a provider is ready to work
     void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::EntryInternal::List);
-    
+
     void slotPreviewResult(KJob *job);
 
     void slotSearchTimerExpired();
 
     void slotProgress(KJob *job, unsigned long percent);
-    
+
     void slotEntryChanged(const KNS3::EntryInternal& entry);
     void slotInstallationFailed(const KNS3::EntryInternal& entry);
     void downloadLinkLoaded(const KNS3::EntryInternal& entry);
-    
+
 private:
     /**
      * load providers from the providersurl in the knsrc file
@@ -189,6 +189,6 @@ private:
     class ProviderInformation;
 };
 
-} 
+}
 
 #endif

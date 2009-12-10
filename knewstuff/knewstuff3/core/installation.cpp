@@ -2,7 +2,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -56,20 +56,20 @@ struct KNS3::InstallationPrivate {
     QString uninstallCommand;
     // compression policy
     QString uncompression;
-    
+
     // only one of the four below can be set, that will be the target install path/file name
     // FIXME: check this when reading the config and make one path out of it if possible?
     QString standardResourceDirectory;
     QString targetDirectory;
     QString installPath;
     QString absoluteInstallPath;
-    
+
     // policies whether verification needs to be done
     Installation::Policy checksumPolicy;
     Installation::Policy signaturePolicy;
     // scope: install into user or system dirs
     Installation::Scope scope;
-    
+
     // FIXME this throws together a file name from entry name and version - why would anyone want that?
     bool customName;
 
@@ -118,7 +118,7 @@ bool Installation::readConfig(const KConfigGroup& group)
         kError() << "No installation target set";
         return false;
     }
-    
+
     QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
     if (!checksumpolicy.isEmpty()) {
         if (checksumpolicy == "never")
@@ -132,7 +132,7 @@ bool Installation::readConfig(const KConfigGroup& group)
             return false;
         }
     }
-    
+
     QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
     if (!signaturepolicy.isEmpty()) {
         if (signaturepolicy == "never")
@@ -146,7 +146,7 @@ bool Installation::readConfig(const KConfigGroup& group)
             return false;
         }
     }
-    
+
     QString scope = group.readEntry("Scope", QString());
     if (!scope.isEmpty()) {
         if (scope == "user")
@@ -157,7 +157,7 @@ bool Installation::readConfig(const KConfigGroup& group)
             kError() << "The scope '" + scope + "' is unknown." << endl;
             return false;
         }
-        
+
         if (d->scope == Installation::ScopeSystem) {
             if (!d->installPath.isEmpty()) {
                 kError() << "System installation cannot be mixed with InstallPath." << endl;
@@ -248,7 +248,7 @@ void Installation::slotPayloadResult(KJob *job)
 void Installation::install(KNS3::EntryInternal entry, const QString& downloadedFile)
 {
     kDebug() << "Install: " << entry.name() << " from " << downloadedFile;
-    
+
     if (entry.payload().isEmpty()) {
         kDebug() << "No payload associated with: " << entry.name();
         return;
@@ -290,7 +290,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
         }
     }
     */
-    
+
 
     QString targetPath = targetInstallationPath(downloadedFile);
     QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
@@ -304,7 +304,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
         emit signalEntryChanged(entry);
         return;
     }
-    
+
     entry.setInstalledFiles(installedFiles);
 
     if (!d->postInstallationCommand.isEmpty()) {
@@ -336,7 +336,7 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
 {
     QString installpath(payloadfile);
     QString installdir;
-    
+
     if (!isRemote()) {
         // installdir is the target directory
 
@@ -383,7 +383,7 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
         kDebug() << "installdir: " << installdir;
 
     }
-    
+
     return installdir;
 }
 
@@ -395,7 +395,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
 
     if (!isRemote()) {
         bool isarchive = true;
-        
+
         // respect the uncompress flag in the knsrc
         if (d->uncompression == "always" || d->uncompression == "archive") {
             // this is weird but a decompression is not a single name, so take the path instead
@@ -478,7 +478,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             QFile file(payloadfile);
             bool success = true;
             bool update = (entry.status() == EntryInternal::Updateable);
-            
+
             if (QFile::exists(installpath)) {
                 if (!update) {
                     if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File:")) == KMessageBox::Cancel) {
@@ -577,7 +577,7 @@ void Installation::slotInstallationVerification(int result)
 
     //FIXME do something here ??? and get the right entry again
     EntryInternal entry;
-    
+
     if (result & Security::SIGNED_OK)
         emit signalEntryChanged(entry);
     else

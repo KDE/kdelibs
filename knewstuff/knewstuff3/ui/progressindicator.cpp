@@ -36,13 +36,13 @@ ProgressIndicator::ProgressIndicator(QWidget *parent)
         : QFrame(parent)
 {
     setFrameStyle(QFrame::NoFrame);
-    
+
     m_finished = 0;
     m_total = 0;
-    
+
     m_pb = new QProgressBar();
     m_pb->setVisible(false);
-        
+
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setMargin(0);
     hbox->addWidget(m_pb);
@@ -70,7 +70,7 @@ void ProgressIndicator::calculateAverage()
         m_finished = 0;
         return;
     }
-    
+
     m_pb->setVisible(true);
     m_pb->setMaximum(m_total);
     m_pb->setValue(m_finished);

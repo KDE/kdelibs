@@ -93,12 +93,12 @@ public:
 
 Q_SIGNALS:
     void jobStarted(KJob*, const QString& label);
-    
+
 public slots:
     void slotEntryChanged(const EntryInternal& entry);
     void slotEntriesLoaded(KNS3::EntryInternal::List entries);
     void clearEntries();
-    
+
 private slots:
     void slotEntryPreviewLoaded(const QString &url, const QImage & pix);
 private:

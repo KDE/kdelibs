@@ -5,7 +5,7 @@
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jeremy@scitools.com>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -73,12 +73,12 @@ void DownloadDialog::init(const QString& configFile)
     connect(d->ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
 
     d->init(configFile);
-    
+
     // load the last size from config
     KConfigGroup group(KGlobal::config(), ConfigGroup);
     restoreDialogSize(group);
     setMinimumSize(700, 400);
-    
+
     setCaption(i18n("Get Hot New Stuff"));
 }
 
@@ -90,7 +90,7 @@ DownloadDialog::~DownloadDialog()
 }
 
 Entry::List DownloadDialog::changedEntries()
-{    
+{
     Entry::List entries;
     foreach (const EntryInternal &e, d->changedEntries) {
         entries.append(e.toEntry());

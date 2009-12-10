@@ -44,7 +44,7 @@ class DownloadDialogPrivate;
  * \section knsrc knsrc Files
  * The Dialog is configured by a .knsrc file containing the KHotNewStuff configuration.
  * Your application should install a file called: <em>$KDEDIR/share/config/appname.knsrc</em>
- * 
+ *
  * The file could look like this for wallpapers:
  * <pre>
    [KNewStuff3]
@@ -53,7 +53,7 @@ class DownloadDialogPrivate;
    StandardResource=wallpaper
    Uncompress=archive
  * </pre>
- * 
+ *
  * Uncompress can be one of: always, never or archive:
  * <ol>
  * <li>always: assume all downloaded files are archives and need to be extracted</li>
@@ -93,7 +93,7 @@ public:
      * @param parent the parent of the dialog
      */
     explicit DownloadDialog(const QString& configFile, QWidget * parent = 0);
-    
+
     /**
      * destructor
      */
@@ -104,7 +104,7 @@ public:
      * @return the list of entries
      */
     KNS3::Entry::List changedEntries();
-    
+
     /**
      * The list of entries that have been newly installed
      * @return the list of entries

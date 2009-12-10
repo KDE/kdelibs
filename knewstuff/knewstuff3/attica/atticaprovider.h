@@ -27,7 +27,7 @@ namespace Attica {
 namespace KNS3
 {
     class AtticaProviderPrivate;
-    
+
     /**
      * @short KNewStuff Attica Provider class.
      *
@@ -49,7 +49,7 @@ namespace KNS3
         ~AtticaProvider();
 
         virtual QString id() const;
-    
+
         /**
          * set the provider data xml, to initialize the provider
          */
@@ -64,7 +64,7 @@ namespace KNS3
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
         virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20);
         virtual void loadPayloadLink(const EntryInternal& entry);
-        
+
         virtual bool userCanVote() {return true;}
         virtual void vote(const EntryInternal& entry, bool positiveVote);
 

@@ -40,7 +40,7 @@ namespace KNS3
     static const int DelegateInstallButton = 1;
     static const int DelegateDetailsButton = 2;
     static const int DelegateRatingWidget = 3;
-    
+
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
 {
@@ -140,7 +140,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             // move the text right by kPreviewWidth + margin pixels to fit the preview
             infoLabel->move(PreviewWidth + margin * 2, 0);
             infoLabel->resize(QSize(option.rect.width() - PreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
-            
+
         } else {
             infoLabel->move(margin, 0);
             infoLabel->resize(QSize(option.rect.width() - (margin * 4) - size.width(), option.fontMetrics.height() * 7));
@@ -168,7 +168,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
                 text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + " <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
             }
         }
-        
+
         QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
             Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
         text += summary;
@@ -179,7 +179,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         if (downloads > 0) {
             text += i18n("<p>Downloads: %1</p>\n", downloads);
         }
-        
+
         text += "</body></html>";
         text.replace("[b]", "<b>");
         text.replace("[/b]", "</b>");
@@ -210,7 +210,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         //Q_ASSERT(button->menu()->actions().count() == 2);
 
         button->setEnabled(true);
-        
+
         switch (status) {
             case EntryInternal::Installed:
             button->setText(i18n("Uninstall"));
@@ -259,7 +259,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         // put the rating label below the install button
         rating->move(right - button->width() - margin, option.rect.height()/2 + button->height()/2);
         rating->resize(size);
-    }    
+    }
 }
 
 // draw the entry based on what
@@ -302,7 +302,7 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
             }
         }
     }
-    
+
     // TODO: get the right rect and use the painter? QRect rect(100, 100, 200, 120);
     //KRatingPainter::paintRating(painter, rect, Qt::AlignLeft, index.data(ItemsModel::kRating).toInt());
     painter->restore();
@@ -316,7 +316,7 @@ bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
 
         const QSortFilterProxyModel* model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));      
+        KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
 
         performAction(Engine::ShowDetails, entry);
    }

@@ -49,13 +49,13 @@ class ImageLoader : public QObject, public QImage
     Q_OBJECT
 public:
     ImageLoader(const QString& url, QObject* parent);
-    
+
     /**
      * Get the job doing the image loading in the background (to have progress information available)
      * @return the job
      */
     KJob* job();
-    
+
 Q_SIGNALS:
     void signalLoaded(const QString & url, const QImage& pix);
 

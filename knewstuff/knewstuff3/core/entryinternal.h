@@ -4,7 +4,7 @@
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -48,7 +48,7 @@ class EntryInternal
 {
 public:
     typedef QList<EntryInternal> List;
-    
+
     /**
     * Source of the entry, A entry's data is coming from either cache, or an online provider
     * this helps the engine know which data to use when merging cached entries with online
@@ -59,7 +59,7 @@ public:
         Online,
         Registry
     };
-    
+
     /**
     * Status of the entry. An entry will be downloadable from the provider's
     * site prior to the download. Once downloaded and installed, it will
@@ -78,7 +78,7 @@ public:
         Installing,  // this item is being installed right now
         Updating
     };
-    
+
     /**
      * Constructor.
      */
@@ -96,7 +96,7 @@ public:
     ~EntryInternal();
 
     bool isValid() const;
-    
+
     /**
      * Sets the name for this data object.
      */
@@ -111,7 +111,7 @@ public:
 
     void setUniqueId(const QString& id);
     QString uniqueId() const;
-    
+
     /**
      * Sets the data category, e.g. 'kdesktop/wallpaper'.
      */
@@ -126,7 +126,7 @@ public:
 
     void setHomepage(const KUrl& page);
     KUrl homepage() const;
-    
+
     /**
      * Sets the author of the object.
      */
@@ -211,13 +211,13 @@ public:
      * @return object preview filename
      */
     QString previewSmall() const;
-    
+
     /**
     * Sets the object's preview file, if available. This should be a
     * picture file.
     */
     void setPreviewBig(const QString& url);
-    
+
     /**
     * Retrieve the file name of an image containing a preview of the object.
     *

@@ -67,20 +67,20 @@ public:
 
     /**
       Set the file to be uploaded.
-      
+
       @param payloadFile the payload data file
     */
     void setUploadFile(const KUrl& payloadFile);
-    
+
     /**
       Set the suggested name for the upload.
       The application can suggest a title which can then be edited by the user before uploading.
       The name field will be left empty if no title was set.
-      
+
       @param name the suggested name for the upload
     */
     void setUploadName(const QString& name);
-    
+
 public Q_SLOTS:
     virtual void accept();
 

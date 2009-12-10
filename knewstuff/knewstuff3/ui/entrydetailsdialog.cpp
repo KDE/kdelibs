@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -92,11 +92,11 @@ void EntryDetailsDialog::init()
     connect(ui.uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
     // updating is the same as installing
     connect(ui.updateButton, SIGNAL(clicked()), this, SLOT(install()));
-    
+
     ui.installButton->setIcon(KIcon("dialog-ok"));
     ui.updateButton->setIcon(KIcon("system-software-update"));
     ui.uninstallButton->setIcon(KIcon("edit-delete"));
-    
+
     if(m_entry.previewSmall().isEmpty() && m_entry.previewBig().isEmpty()) {
         ui.previewBig->setVisible(false);
     } else {
@@ -122,11 +122,11 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 
 void EntryDetailsDialog::updateButtons()
 {
-    kDebug() << "update buttons: " << m_entry.status();    
+    kDebug() << "update buttons: " << m_entry.status();
     ui.installButton->setVisible(false);
     ui.uninstallButton->setVisible(false);
     ui.updateButton->setVisible(false);
-    
+
     switch (m_entry.status()) {
         case EntryInternal::Installed:
             ui.uninstallButton->setVisible(true);
@@ -138,28 +138,28 @@ void EntryDetailsDialog::updateButtons()
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(true);
             break;
-            
+
         case EntryInternal::Invalid:
         case EntryInternal::Downloadable:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(true);
             break;
-            
+
         case EntryInternal::Installing:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(false);
-            break;           
-        case EntryInternal::Updating:            
+            break;
+        case EntryInternal::Updating:
             ui.updateButton->setVisible(true);
             ui.updateButton->setEnabled(false);
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(false);
-            break;           
+            break;
         case EntryInternal::Deleted:
             ui.installButton->setVisible(true);
-            ui.installButton->setEnabled(true);            
+            ui.installButton->setEnabled(true);
             break;
-    }   
+    }
 }
 
 void EntryDetailsDialog::install()

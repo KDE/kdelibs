@@ -64,7 +64,7 @@ public:
 
     // keep track of the pages we requested
     QHash<BaseJob*, int> entryJobs;
-    
+
     AtticaProviderPrivate()
     {
     }
@@ -79,7 +79,7 @@ AtticaProvider::AtticaProvider(const QStringList& categories, const QStringList&
     d->categoryPatternList = categoriesPatterns;
 
     connect(&d->m_providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerLoaded(const Attica::Provider&)));
-    connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)), 
+    connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)),
             SLOT(authenticationCredentialsMissing(const Provider&)));
 }
 
@@ -108,7 +108,7 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
 
     if (xmldata.tagName() != "provider")
         return false;
-    
+
     // FIXME this is quite ugly, repackaging the xml into a string
     QDomDocument doc("temp");
     doc.appendChild(xmldata);
@@ -118,7 +118,7 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
     if (!d->m_providerManager.providers().isEmpty()) {
         kDebug() << "base url of attica provider:" << d->m_providerManager.providers().last().baseUrl().toString();
     }
-    
+
     if (d->m_providerManager.providers().isEmpty()) {
         return false;
     }
@@ -162,7 +162,7 @@ void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
     Q_D(AtticaProvider);
     kDebug() << "loading categories: " << d->categoryNameList;
-    
+
     Attica::ListJob<Attica::Category>* job = static_cast<Attica::ListJob<Attica::Category>*>(listJob);
     Category::List categoryList = job->itemList();
 
@@ -195,25 +195,25 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
         emit loadingFinished(sortMode, searchString, 0, 1, 10000, installedEntries());
         return;
     }
-    
+
     Attica::Provider::SortMode sorting = atticaSortMode(sortMode);
     ListJob<Content>* job = d->m_provider.searchContents(d->categoryList, searchString, sorting, page, pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
 
     d->entryJobs[job] = page;
-    
+
     job->start();
 }
 
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
     Q_D(AtticaProvider);
-    
+
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
     EntryInternal::List entries;
-    
+
     Q_FOREACH(const Content &content, contents) {
         d->cachedContent.insert(content.id(), content);
 
@@ -225,7 +225,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setReleaseDate(content.updated().date());
 
         int index = d->cachedEntries.indexOf(entry);
-        
+
         if (index >= 0) {
             EntryInternal cacheEntry = d->cachedEntries.at(index);
             // check if updateable
@@ -249,7 +249,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         Author author;
         author.setName(content.author());
         entry.setAuthor(author);
-        
+
         entry.setSource(KNS3::EntryInternal::Online);
         entry.setSummary(content.description());
 
