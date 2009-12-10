@@ -47,7 +47,7 @@ static inline std::ostream &operator<<(std::ostream &o, const QString &str)
 static void parseArgs(const QStringList &args, QString &directory, QString &file1, QString &file2)
 {
     int fileCount = 0;
-    directory = ".";
+    directory = '.';
 
     for (int i = 1; i < args.count(); ++i) {
         if (args.at(i) == "-d" ||  args.at(i) == "--directory") {
@@ -452,7 +452,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
     } else if ( type == "Path" && !defaultValue.isEmpty() ) {
       defaultValue = literalString( defaultValue );
     } else if ( type == "Url" && !defaultValue.isEmpty() ) {
-      defaultValue = "KUrl( " + literalString(defaultValue) + ")";
+      defaultValue = "KUrl( " + literalString(defaultValue) + ')';
     } else if ( ( type == "UrlList" || type == "StringList" || type == "PathList") && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
@@ -1169,14 +1169,14 @@ QString memberGetDefaultBody( CfgEntry *e )
     out << "  switch (i) {" << endl;
     for (int i = 0; i <= e->paramMax(); ++i) {
       if (!e->paramDefaultValue(i).isEmpty()) {
-        out << "  case " << i << ": return " << e->paramDefaultValue(i) << ";" << endl;
+        out << "  case " << i << ": return " << e->paramDefaultValue(i) << ';' << endl;
       }
     }
     out << "  default:" << endl;
-    out << "    return " << e->defaultValue().replace("$("+e->param()+")", "i") << ";" << endl;
+    out << "    return " << e->defaultValue().replace("$("+e->param()+')', "i") << ';' << endl;
     out << "  }" << endl;
   } else {
-    out << "  return " << e->defaultValue() << ";";
+    out << "  return " << e->defaultValue() << ';';
   }
 
   return result;
