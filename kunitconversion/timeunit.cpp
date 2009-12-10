@@ -199,21 +199,21 @@ Time::Time() : UnitCategory(TimeCategory)
     U(Week, 604800,
       i18nc("time unit symbol", "w"),
       i18nc("unit description in lists", "weeks"),
-      i18nc("unit synonyms for matching user input", "week;weeks;"),
+      i18nc("unit synonyms for matching user input", "week;weeks"),
       ki18nc("amount in units (real)", "%1 weeks"),
       ki18ncp("amount in units (integer)", "%1 week", "%1 weeks")
     );
     U(JulianYear, 3.15576e+07,
       i18nc("time unit symbol", "a"),
-      i18nc("unit description in lists", "julian years"),
-      i18nc("unit synonyms for matching user input", "julian year;julian years;a"),
-      ki18nc("amount in units (real)", "%1 julian years"),
-      ki18ncp("amount in units (integer)", "%1 julian year", "%1 julian years")
+      i18nc("unit description in lists", "Julian years"),
+      i18nc("unit synonyms for matching user input", "Julian year;Julian years;a"),
+      ki18nc("amount in units (real)", "%1 Julian years"),
+      ki18ncp("amount in units (integer)", "%1 Julian year", "%1 Julian years")
     );
     U(LeapYear, 3.16224e+07,
       i18nc("time unit symbol", "lpy"),
       i18nc("unit description in lists", "leap years"),
-      i18nc("unit synonyms for matching user input", "leap year;leap years;"),
+      i18nc("unit synonyms for matching user input", "leap year;leap years"),
       ki18nc("amount in units (real)", "%1 leap years"),
       ki18ncp("amount in units (integer)", "%1 leap year", "%1 leap years")
     );

@@ -91,16 +91,16 @@ Velocity::Velocity() : UnitCategory(VelocityCategory)
     U(SpeedOfLight, 2.99792e+08,
       i18nc("velocity unit symbol", "c"),
       i18nc("unit description in lists", "speed of light"),
-      i18nc("unit synonyms for matching user input", "speed of light;speed of light;c"),
+      i18nc("unit synonyms for matching user input", "speed of light;c"),
       ki18nc("amount in units (real)", "%1 speed of light"),
       ki18ncp("amount in units (integer)", "%1 speed of light", "%1 speed of light")
     );
     // http://en.wikipedia.org/wiki/Beaufort_scale
     U(Beaufort, new BeaufortConv(),
       i18nc("velocity unit symbol", "bft"),
-      i18nc("unit description in lists", "beauforts"),
-      i18nc("unit synonyms for matching user input", "beaufort;beauforts;bft"),
-      ki18nc("amount in units (real)", "%1 beauforts"),
-      ki18ncp("amount in units (integer)", "%1 beaufort", "%1 beauforts")
+      i18nc("unit description in lists", "Beaufort"),
+      i18nc("unit synonyms for matching user input", "Beaufort;Bft"),
+      ki18nc("amount in units (real)", "%1 on the Beaufort scale"),
+      ki18ncp("amount in units (integer)", "%1 on the Beaufort scale", "%1 on the Beaufort scale")
     );
 }

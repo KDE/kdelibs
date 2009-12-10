@@ -197,11 +197,11 @@ Pressure::Pressure() : UnitCategory(PressureCategory)
       ki18ncp("amount in units (integer)", "%1 decibar", "%1 decibars")
     );
     U(Torr, 133.322,
-      i18nc("pressure unit symbol", "torr"),
-      i18nc("unit description in lists", "torrs"),
-      i18nc("unit synonyms for matching user input", "torr;torrs;torr"),
-      ki18nc("amount in units (real)", "%1 torrs"),
-      ki18ncp("amount in units (integer)", "%1 torr", "%1 torrs")
+      i18nc("pressure unit symbol", "Torr"),
+      i18nc("unit description in lists", "Torr"),
+      i18nc("unit synonyms for matching user input", "Torr"),
+      ki18nc("amount in units (real)", "%1 torr"),
+      ki18ncp("amount in units (integer)", "%1 torr", "%1 torr")
     );
     U(TechnicalAtmosphere, 98066.5,
       i18nc("pressure unit symbol", "at"),
