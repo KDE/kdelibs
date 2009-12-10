@@ -592,7 +592,7 @@ KService::Ptr KService::serviceByDesktopName( const QString& _name )
     // Prefer kde4-konsole over kde-konsole, if both are available
     QString name = _name.toLower();
     KService::Ptr s;
-    if (!_name.startsWith("kde4-"))
+    if (!_name.startsWith(QLatin1String("kde4-")))
         s = KServiceFactory::self()->findServiceByDesktopName( "kde4-" + name );
     if (!s)
         s = KServiceFactory::self()->findServiceByDesktopName( name );
@@ -621,10 +621,10 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
     QString tmp = _storageId;
     tmp = tmp.mid(tmp.lastIndexOf('/')+1); // Strip dir
 
-    if (tmp.endsWith(".desktop"))
+    if (tmp.endsWith(QLatin1String(".desktop")))
         tmp.truncate(tmp.length()-8);
 
-    if (tmp.endsWith(".kdelnk"))
+    if (tmp.endsWith(QLatin1String(".kdelnk")))
         tmp.truncate(tmp.length()-7);
 
     service = KService::serviceByDesktopName(tmp);
@@ -754,7 +754,7 @@ QString KService::storageId() const
 QString KService::locateLocal() const
 {
     Q_D(const KService);
-    if (d->menuId.isEmpty() || entryPath().startsWith(".hidden") ||
+    if (d->menuId.isEmpty() || entryPath().startsWith(QLatin1String(".hidden")) ||
         (QDir::isRelativePath(entryPath()) && d->categories.isEmpty()))
         return KDesktopFile::locateLocal(entryPath());
 

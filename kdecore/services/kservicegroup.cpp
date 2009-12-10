@@ -603,7 +603,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
                         const QString &nextItem =
                             (it == sortOrder.constEnd()) ? QString() : *it;
 
-                        if ( nextItem.startsWith( ":O" ) )
+                        if ( nextItem.startsWith( QLatin1String(":O") ) )
                         {
                             QString tmp( nextItem );
                             tmp = tmp.remove(":O");

@@ -78,7 +78,7 @@ KServiceTypePrivate::init( KDesktopFile *config )
     QStringList::const_iterator gIt = tmpList.begin();
 
     for( ; gIt != tmpList.end(); ++gIt ) {
-        if ( (*gIt).startsWith( "Property::" ) ) {
+        if ( (*gIt).startsWith( QLatin1String("Property::") ) ) {
             KConfigGroup cg(config, *gIt );
             QVariant v = QVariant::nameToType( cg.readEntry( "Type" ).toLatin1().constData() );
             v = cg.readEntry( "Value", v );
@@ -90,7 +90,7 @@ KServiceTypePrivate::init( KDesktopFile *config )
 
     gIt = tmpList.begin();
     for( ; gIt != tmpList.end(); ++gIt ) {
-        if( (*gIt).startsWith( "PropertyDef::" ) ) {
+        if( (*gIt).startsWith( QLatin1String("PropertyDef::") ) ) {
             KConfigGroup cg(config, *gIt);
             m_mapPropDefs.insert( (*gIt).mid( 13 ),
                                   QVariant::nameToType( cg.readEntry( "Type" ).toLatin1().constData() ) );

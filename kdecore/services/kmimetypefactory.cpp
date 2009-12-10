@@ -290,7 +290,7 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
             KMimeType *newMimeType = createEntry( op.offset );
             assert (newMimeType && newMimeType->isType( KST_KMimeType ));
             matchingMimeTypes.push_back( KMimeType::Ptr( newMimeType ) );
-            if (op.pattern.startsWith("*."))
+            if (op.pattern.startsWith(QLatin1String("*.")))
                 foundExt = op.pattern.mid(2);
         }
     }

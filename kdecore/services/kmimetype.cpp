@@ -576,7 +576,7 @@ QString KMimeType::favIconForUrl( const KUrl& url )
         useFavIcons = cg.readEntry("EnableFavicon", true);
     }
 
-    if ( url.isLocalFile() || !url.protocol().startsWith("http")
+    if ( url.isLocalFile() || !url.protocol().startsWith(QLatin1String("http"))
          || !useFavIcons )
         return QString();
 
@@ -778,7 +778,7 @@ QString KMimeType::mainExtension() const
      Q_FOREACH(const QString& pattern, d->m_lstPatterns) {
         // Skip if if looks like: README or *. or *.*
         // or *.JP*G or *.JP?
-        if (pattern.startsWith("*.") &&
+        if (pattern.startsWith(QLatin1String("*.")) &&
             pattern.length() > 2 &&
             pattern.indexOf('*', 2) < 0 && pattern.indexOf('?', 2) < 0) {
             return pattern.mid(1);
