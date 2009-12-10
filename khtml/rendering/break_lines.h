@@ -68,7 +68,7 @@ namespace khtml {
         0xFF01, //fullwidth exclamation mark
         0xFF09, //fullwidth right parenthesis
         //0xFF0C,   //fullwidth comma
-        0xFF0D, //fullwidth hypen-minus
+        0xFF0D, //fullwidth hyphen-minus
         //0xFF0E,   //fullwidth full stop
         0xFF1F, //fullwidth question mark
         0xFF3D, //fullwidth right square bracket
