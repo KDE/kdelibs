@@ -369,6 +369,12 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("гније", "гње");
     SR_DICTI2E_ENTRY("Гније", "Гње");
     SR_DICTI2E_ENTRY("ГНИЈЕ", "ГЊЕ");
+    SR_DICTI2E_ENTRY("бијел", "бео");
+    SR_DICTI2E_ENTRY("Бијел", "Бео");
+    SR_DICTI2E_ENTRY("БИЈЕЛ", "БЕО");
+    SR_DICTI2E_ENTRY("цијел", "цео");
+    SR_DICTI2E_ENTRY("Цијел", "Цео");
+    SR_DICTI2E_ENTRY("ЦИЈЕЛ", "ЦЕО");
     // special cases, Latin
     SR_DICTI2E_ENTRY("lije", "li");
     SR_DICTI2E_ENTRY("Lije", "Li");
@@ -388,6 +394,12 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("gnije", "gnje");
     SR_DICTI2E_ENTRY("Gnije", "Gnje");
     SR_DICTI2E_ENTRY("GNIJE", "GNJE");
+    SR_DICTI2E_ENTRY("bijel", "beo");
+    SR_DICTI2E_ENTRY("Bijel", "Beo");
+    SR_DICTI2E_ENTRY("BIJEL", "BEO");
+    SR_DICTI2E_ENTRY("cijel", "ceo");
+    SR_DICTI2E_ENTRY("Cijel", "Ceo");
+    SR_DICTI2E_ENTRY("CIJEL", "CEO");
 
     d->maxReflexLen = 0;
     foreach (const QString &reflex, d->dictI2E.keys()) {
