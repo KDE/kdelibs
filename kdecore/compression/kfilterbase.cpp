@@ -74,18 +74,18 @@ bool KFilterBase::outBufferFull() const
 
 KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 {
-    if ( fileName.endsWith( ".gz", Qt::CaseInsensitive ) )
+    if ( fileName.endsWith( QLatin1String(".gz"), Qt::CaseInsensitive ) )
     {
         return new KGzipFilter;
     }
 #ifdef HAVE_BZIP2_SUPPORT
-    if ( fileName.endsWith( ".bz2", Qt::CaseInsensitive ) )
+    if ( fileName.endsWith( QLatin1String(".bz2"), Qt::CaseInsensitive ) )
     {
         return new KBzip2Filter;
     }
 #endif
 #ifdef HAVE_XZ_SUPPORT
-    if ( fileName.endsWith( ".lzma", Qt::CaseInsensitive ) || fileName.endsWith( ".xz", Qt::CaseInsensitive ) )
+    if ( fileName.endsWith( QLatin1String(".lzma"), Qt::CaseInsensitive ) || fileName.endsWith( QLatin1String(".xz"), Qt::CaseInsensitive ) )
     {
         return new KXzFilter;
     }
