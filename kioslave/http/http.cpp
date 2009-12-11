@@ -3338,7 +3338,9 @@ try_again:
 
     // Let the app know about the mime-type iff this is not
     // a redirection and the mime-type string is not empty.
-    if (!m_isRedirection && (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD)) {
+    if (!m_isRedirection && 
+       (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) && 
+       (m_isLoadingErrorPage || (m_request.responseCode != 401 && m_request.responseCode != 407))) {
         kDebug(7113) << "Emitting mimetype " << m_mimeType;
         mimeType( m_mimeType );
     }
