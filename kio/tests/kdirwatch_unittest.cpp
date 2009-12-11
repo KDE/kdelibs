@@ -46,6 +46,9 @@ private:
 
 QTEST_KDEMAIN(KDirWatch_UnitTest, GUI)
 
+// Just to make the inotify packets bigger
+static const char* s_filePrefix = "This_is_a_test_file_";
+
 void KDirWatch_UnitTest::touchOneFile()
 {
     KDirWatch watch;
@@ -62,7 +65,7 @@ void KDirWatch_UnitTest::touchOneFile()
         QTest::qWait(200);
     }
 
-    QCOMPARE(spyDirty[0][0].toString(), m_path + "0");
+    QCOMPARE(spyDirty[0][0].toString(), m_path + s_filePrefix + "0");
 }
 
 void KDirWatch_UnitTest::touch1000Files()
@@ -88,7 +91,7 @@ void KDirWatch_UnitTest::touch1000Files()
 
 void KDirWatch_UnitTest::createFile(int num)
 {
-    const QString fileName = "This_is_a_test_file_" + QString::number(num);
+    const QString fileName = s_filePrefix + QString::number(num);
     QFile file(m_path + fileName);
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.write(QByteArray("foo"));
