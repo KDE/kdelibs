@@ -2991,7 +2991,7 @@ try_again:
     // In fact we should do redirection only if we have a redirection response code (300 range)
     tIt = tokenizer.iterator("location");
     if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
-        locationStr = tIt.next().trimmed();
+        locationStr = QString::fromUtf8(tIt.next().trimmed());
     }
 
     // Harvest cookies (mmm, cookie fields!)
@@ -3285,105 +3285,116 @@ try_again:
             resource = m_request.proxyUrl;
         }
 
-        kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
+        // Workaround brain dead frameworks/sites that violate the spec and
+        // incorrectly return a 401 without the required WWW-Authenticate
+        // header field when they should actually be returning a 200.
+        // See BR #215736.
+        QList<QByteArray> authTokens = tIt.all();
+        if (authTokens.isEmpty()) {
+            m_request.responseCode = 200; // Change back the response code...
+            m_request.cacheTag.writeToCache = true;
+            mayCache = true;
+        } else {
+            kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
 
-        QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(tIt.all());
-        if (*auth) {
-            if (!bestOffer.toLower().startsWith((*auth)->scheme().toLower())) {
-                // huh, the strongest authentication scheme offered has changed.
-                kDebug(7113) << "deleting old auth class, scheme mismatch.";
-                delete *auth;
-                *auth = 0;
-            }
-        }
-        kDebug(7113) << "strongest authentication scheme offered is" << bestOffer;
-        if (!(*auth)) {
-            *auth = KAbstractHttpAuthentication::newAuth(bestOffer);
-        }
-        kDebug(7113) << "pointer to auth class is now" << *auth;
-        if (!(*auth)) {
-            if (m_request.preferErrorPage) {
-                setLoadingErrorPage();
-            } else {
-                error(ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!");
-                return false;
-            }
-        }
-
-        // *auth may still be null due to setLoadingErrorPage().
-
-        if (*auth) {
-            // remove trailing space from the method string, or digest auth will fail
-            QByteArray requestMethod = methodString(m_request.method).toLatin1().trimmed();
-            (*auth)->setChallenge(bestOffer, resource, requestMethod);
-
-            QString username;
-            QString password;
-            if ((*auth)->needCredentials()) {
-                // use credentials supplied by the application if available
-                if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
-                    username = m_request.url.user();
-                    password = m_request.url.pass();
-                    // don't try this password any more
-                    m_request.url.setPass(QString());
-                } else {
-                    // try to get credentials from kpasswdserver's cache, then try asking the user.
-                    KIO::AuthInfo authi;
-                    fillPromptInfo(&authi);
-                    bool obtained = checkCachedAuthentication(authi);
-                    const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
-                    if (!obtained || probablyWrong) {
-                        QString msg = (m_request.responseCode == 401) ?
-                                        i18n("Authentication Failed.") :
-                                        i18n("Proxy Authentication Failed.");
-                        obtained = openPasswordDialog(authi, msg);
-                        if (!obtained) {
-                            kDebug(7103) << "looks like the user canceled"
-                                         << (m_request.responseCode == 401 ? "WWW" : "proxy")
-                                         << "authentication.";
-                            kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
-                                         << "authInfo username =" << authi.username
-                                         << "authInfo realm =" << authi.realmValue;
-                            error(ERR_USER_CANCELED, resource.host());
-                            return false;
-                        }
-                    }
-                    if (!obtained) {
-                        kDebug(7103) << "could not obtain authentication credentials from cache or user!";
-                    }
-                    username = authi.username;
-                    password = authi.password;
+            QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authTokens);
+            if (*auth) {
+                if (!bestOffer.toLower().startsWith((*auth)->scheme().toLower())) {
+                    // huh, the strongest authentication scheme offered has changed.
+                    kDebug(7113) << "deleting old auth class, scheme mismatch.";
+                    delete *auth;
+                    *auth = 0;
                 }
             }
-            (*auth)->generateResponse(username, password);
-
-            kDebug(7113) << "auth state: isError" << (*auth)->isError()
-                         << "needCredentials" << (*auth)->needCredentials()
-                         << "forceKeepAlive" << (*auth)->forceKeepAlive()
-                         << "forceDisconnect" << (*auth)->forceDisconnect()
-                         << "headerFragment" << (*auth)->headerFragment();
-
-            if ((*auth)->isError()) {
+            kDebug(7113) << "strongest authentication scheme offered is" << bestOffer;
+            if (!(*auth)) {
+                *auth = KAbstractHttpAuthentication::newAuth(bestOffer);
+            }
+            kDebug(7113) << "pointer to auth class is now" << *auth;
+            if (!(*auth)) {
                 if (m_request.preferErrorPage) {
                     setLoadingErrorPage();
                 } else {
-                    error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
+                    error(ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!");
                     return false;
                 }
-                //### return false; ?
-            } else if ((*auth)->forceKeepAlive()) {
-                //### think this through for proxied / not proxied
-                m_request.isKeepAlive = true;
-            } else if ((*auth)->forceDisconnect()) {
-                //### think this through for proxied / not proxied
-                m_request.isKeepAlive = false;
-                httpCloseConnection();
             }
-        }
 
-        if (m_request.isKeepAlive) {
-            // Important: trash data until the next response header starts.
-            readBody(true);
+            // *auth may still be null due to setLoadingErrorPage().
+
+            if (*auth) {
+                // remove trailing space from the method string, or digest auth will fail
+                QByteArray requestMethod = methodString(m_request.method).toLatin1().trimmed();
+                (*auth)->setChallenge(bestOffer, resource, requestMethod);
+
+                QString username;
+                QString password;
+                if ((*auth)->needCredentials()) {
+                    // use credentials supplied by the application if available
+                    if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
+                        username = m_request.url.user();
+                        password = m_request.url.pass();
+                        // don't try this password any more
+                        m_request.url.setPass(QString());
+                    } else {
+                        // try to get credentials from kpasswdserver's cache, then try asking the user.
+                        KIO::AuthInfo authi;
+                        fillPromptInfo(&authi);
+                        bool obtained = checkCachedAuthentication(authi);
+                        const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
+                        if (!obtained || probablyWrong) {
+                            QString msg = (m_request.responseCode == 401) ?
+                                            i18n("Authentication Failed.") :
+                                            i18n("Proxy Authentication Failed.");
+                            obtained = openPasswordDialog(authi, msg);
+                            if (!obtained) {
+                                kDebug(7103) << "looks like the user canceled"
+                                             << (m_request.responseCode == 401 ? "WWW" : "proxy")
+                                             << "authentication.";
+                                kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
+                                             << "authInfo username =" << authi.username
+                                             << "authInfo realm =" << authi.realmValue;
+                                error(ERR_USER_CANCELED, resource.host());
+                                return false;
+                            }
+                        }
+                        if (!obtained) {
+                            kDebug(7103) << "could not obtain authentication credentials from cache or user!";
+                        }
+                        username = authi.username;
+                        password = authi.password;
+                    }
+                }
+                (*auth)->generateResponse(username, password);
+
+                kDebug(7113) << "auth state: isError" << (*auth)->isError()
+                             << "needCredentials" << (*auth)->needCredentials()
+                             << "forceKeepAlive" << (*auth)->forceKeepAlive()
+                             << "forceDisconnect" << (*auth)->forceDisconnect()
+                             << "headerFragment" << (*auth)->headerFragment();
+
+                if ((*auth)->isError()) {
+                    if (m_request.preferErrorPage) {
+                        setLoadingErrorPage();
+                    } else {
+                        error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
+                        return false;
+                    }
+                    //### return false; ?
+                } else if ((*auth)->forceKeepAlive()) {
+                    //### think this through for proxied / not proxied
+                    m_request.isKeepAlive = true;
+                } else if ((*auth)->forceDisconnect()) {
+                    //### think this through for proxied / not proxied
+                    m_request.isKeepAlive = false;
+                    httpCloseConnection();
+                }
+            }
+
+            if (m_request.isKeepAlive) {
+                // Important: trash data until the next response header starts.
+                readBody(true);
+            }
         }
     }
 
