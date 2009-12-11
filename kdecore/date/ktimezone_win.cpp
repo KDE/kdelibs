@@ -57,7 +57,7 @@ static inline QString tchar_to_qstring( const TCHAR * str ) {
     return QString::fromUtf16( reinterpret_cast<const ushort*>( str ) );
 }
 
-static inline TCHAR * _qstring_to_tchar( const QString&s ) {
+static inline TCHAR * qstring_to_tchar( const QString&s ) {
     return const_cast<ushort*>( s.utf16() );
 }
 
