@@ -3162,8 +3162,8 @@ try_again:
         QList<QByteArray> authTokens = tIt.all();
         if (authTokens.isEmpty()) {
             m_request.responseCode = 200; // Change back the response code...
-            m_request.cacheTag.writeToCache = true;
-            mayCache = true;
+            //m_request.cacheTag.writeToCache = true;
+            //mayCache = true;
         } else {
             kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
 
