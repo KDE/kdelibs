@@ -50,6 +50,36 @@ namespace {
     };
 }
 
+// TCHAR can be either uchar, or wchar_t:
+#ifdef UNICODE
+
+static inline QString tchar_to_qstring( const TCHAR * str ) {
+    return QString::fromUtf16( reinterpret_cast<const ushort*>( str ) );
+}
+
+static inline TCHAR * _qstring_to_tchar( const QString&s ) {
+    return const_cast<ushort*>( s.utf16() );
+}
+
+static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
+    return str.toStdWString();
+}
+
+#else
+
+static inline QString tchar_to_qstring( const TCHAR * str ) {
+    return QString::fromLocal8Bit( str );
+}
+
+static inline TCHAR * qstring_to_tchar( const QString&s ) {
+    return s.toLocal8Bit().data();
+}
+
+static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
+    return std::basic_string<TCHAR>( str.toLocal8Bit().constData() );
+}
+
+#endif
 
 static const TCHAR timeZonesKey[] = TEXT("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones");
 static inline QDateTime systemtime_to_qdatetime( const SYSTEMTIME & st ) {
@@ -225,23 +255,6 @@ Transitions transitions( const TIME_ZONE_INFORMATION & tz, int year ) {
 
 
 static const int MAX_KEY_LENGTH = 255;
-
-// TCHAR can be either uchar, or wchar_t:
-#ifdef UNICODE
-static inline QString tchar_to_qstring( const TCHAR * str ) {
-    return QString::fromWCharArray( str );
-}
-static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
-    return str.toStdWString();
-}
-#else
-static inline QString tchar_to_qstring( const TCHAR * str ) {
-    return QString::fromLocal8Bit( str );
-}
-static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
-    return std::basic_string<TCHAR>( str.toLocal8Bit().constData() );
-}
-#endif
 
 static QStringList list_key( HKEY key ) {
 
