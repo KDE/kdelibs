@@ -175,11 +175,11 @@ static bool get_binary_value( HKEY key, const TCHAR * value, void * data, DWORD 
     return true;
 }
 
-static bool get_string_value( HKEY key, const WCHAR * value, WCHAR * dest, DWORD destSizeInBytes ) {
+static bool get_string_value( HKEY key, const TCHAR * value, TCHAR * dest, DWORD destSizeInBytes ) {
     DWORD size = destSizeInBytes;
     DWORD type = REG_SZ;
     dest[0] = '\0';
-    if ( RegQueryValueExW( key, value, 0, &type, (LPBYTE)dest, &size ) != ERROR_SUCCESS )
+    if ( RegQueryValueEx( key, value, 0, &type, (LPBYTE)dest, &size ) != ERROR_SUCCESS )
         return false;
     //dest[ qMin( size, destSizeInBytes - sizeof( WCHAR ) ) / sizeof( WCHAR ) ] = 0;
     assert( type == REG_SZ );
@@ -410,9 +410,9 @@ KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
     get_string_value( key, L"Std", data->_tzi.StandardName, sizeof( data->_tzi.StandardName ) );
     get_string_value( key, L"Dlt", data->_tzi.DaylightName, sizeof( data->_tzi.DaylightName ) );
 
-    WCHAR display[512];
+    TCHAR display[512];
     get_string_value( key, L"Display", display, sizeof( display ) );
-    data->displayName = QString::fromWCharArray( display );
+    data->displayName = tchar_to_qstring( display );
 
 #define COPY( name ) data->_tzi.name = tzi.name
     COPY( Bias );
