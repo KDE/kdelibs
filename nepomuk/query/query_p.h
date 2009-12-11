@@ -28,6 +28,8 @@
 #include "term.h"
 #include "query.h"
 
+#include "nepomukquery_export.h"
+
 namespace Nepomuk {
     namespace Query {
 
@@ -48,7 +50,7 @@ namespace Nepomuk {
             /**
              * Removes redundant AND and OR operators.
              */
-            static Term optimizeTerm( const Term& term );
+            static NEPOMUKQUERY_EXPORT Term optimizeTerm( const Term& term );
 
             Term m_term;
             int m_limit;
