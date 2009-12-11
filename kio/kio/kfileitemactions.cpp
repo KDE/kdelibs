@@ -294,13 +294,13 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 
         }
         if (cfg.hasKey("X-KDE-Protocol")) {
-            const QString protocol = cfg.readEntry("X-KDE-Protocol");
-            if (protocol.startsWith('!')) {
-                const QString excludedProtocol = protocol.mid(1);
+            const QString theProtocol = cfg.readEntry("X-KDE-Protocol");
+            if (theProtocol.startsWith('!')) {
+                const QString excludedProtocol = theProtocol.mid(1);
                 if (excludedProtocol == protocol) {
                     continue;
                 }
-            } else if (protocol != protocol) {
+            } else if (protocol != theProtocol) {
                 continue;
             }
         }
