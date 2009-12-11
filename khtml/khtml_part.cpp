@@ -2158,6 +2158,8 @@ void KHTMLPart::onFirstData()
       // Note: decoder may be null if only write(QString) is used.
       if (d->m_decoder && d->m_decoder->visuallyOrdered())
           d->m_doc->setVisuallyOrdered();
+      // ensure part and view shares zoom-level before styling
+      updateZoomFactor();
       d->m_doc->recalcStyle( NodeImpl::Force );
 }
 
@@ -5639,6 +5641,12 @@ void KHTMLPart::setZoomFactor (int percent)
   if (d->m_zoomFactor == percent) return;
   d->m_zoomFactor = percent;
 
+  updateZoomFactor();
+}
+
+
+void KHTMLPart::updateZoomFactor ()
+{
   if(d->m_view) {
     QApplication::setOverrideCursor( Qt::WaitCursor );
     d->m_view->setZoomLevel( d->m_zoomFactor );
@@ -5658,6 +5666,7 @@ void KHTMLPart::setZoomFactor (int percent)
       d->m_paIncZoomFactor->setEnabled( d->m_zoomFactor < maxZoom );
   }
 }
+
 void KHTMLPart::slotIncFontSize()
 {
   incFontSize(zoomSizes, zoomSizeCount);

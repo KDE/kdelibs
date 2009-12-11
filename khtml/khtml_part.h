@@ -1284,6 +1284,11 @@ protected:
 
   bool mayPrefetchHostname( const QString& name );
 
+  /**
+   * @internal
+   */
+  void updateZoomFactor();
+
 public Q_SLOTS:
 
   /**
