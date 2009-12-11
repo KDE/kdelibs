@@ -44,6 +44,7 @@ private Q_SLOTS:
     void testNewItemByCopy();
     void testNewItemsInSymlink();
     void testRefreshItems();
+    void testRefreshRootItem();
     void testDeleteItem();
     void testRenameItem();
     void testRenameAndOverwrite();
@@ -68,6 +69,8 @@ private:
     void enterLoop(int exitCount = 1);
     int fileCount() const;
     QString path() const { return m_tempDir.name(); }
+    void waitForRefreshedItems();
+    void createSimpleFile(const QString& fileName);
 
 private:
     int m_exitCount;

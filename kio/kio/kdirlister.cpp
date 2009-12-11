@@ -616,7 +616,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
 
     if (!(listers.isEmpty() || killed)) {
         kWarning() << "The unexpected happened.";
-        kWarning() << "listers=" << listers;
+        kWarning() << "listers for" << _dir << "=" << listers;
         kWarning() << "job=" << job;
         Q_FOREACH(KDirLister *kdl, listers) {
             kDebug() << "lister" << kdl << "m_cachedItemsJob=" << kdl->d->m_cachedItemsJob;
@@ -906,7 +906,6 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     if (!oldItem.isLocalFile() && !oldItem.localPath().isEmpty()) { // it uses UDS_LOCAL_PATH? ouch, needs an update then
         slotFilesChanged( QStringList() << src.url() );
     } else {
-        aboutToRefreshItem( oldItem );
         if( nameOnly )
             fileitem->setName( dst.fileName() );
         else
@@ -922,25 +921,6 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
 #ifdef DEBUG_CACHE
     printDebug();
 #endif
-}
-
-void KDirListerCache::aboutToRefreshItem( const KFileItem& fileitem )
-{
-    // Look whether this item was shown in any view, i.e. held by any dirlister
-    KUrl parentDir( fileitem.url() );
-    parentDir.setPath( parentDir.directory() );
-    const QString parentDirURL = parentDir.url();
-
-    DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
-    if (dit == directoryData.end())
-        return;
-
-    foreach (KDirLister *kdl, (*dit).listersCurrentlyHolding)
-        kdl->d->aboutToRefreshItem( fileitem );
-
-    // Also look in listersCurrentlyListing, in case the user manages to rename during a listing
-    foreach (KDirLister *kdl, (*dit).listersCurrentlyListing)
-        kdl->d->aboutToRefreshItem( fileitem );
 }
 
 QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem )
@@ -963,11 +943,12 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
     QSet<KDirLister*> listersToRefresh;
     Q_FOREACH(KDirLister *kdl, listers) {
         // For a directory, look for dirlisters where it's the root item.
+        KUrl directoryUrl(oldItem.url());
         if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
             kdl->d->rootFileItem = fileitem;
+        } else {
+            directoryUrl.setPath(directoryUrl.directory());
         }
-        KUrl directoryUrl(oldItem.url());
-        directoryUrl.setPath(directoryUrl.directory());
         kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
         listersToRefresh.insert(kdl);
     }
@@ -1412,7 +1393,6 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
             for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end();
                   kit != kend ; ++kit )
             {
-                aboutToRefreshItem(*kit);
                 const KFileItem oldItem = *kit;
 
                 const KUrl oldItemUrl ((*kit).url());
@@ -1617,8 +1597,6 @@ void KDirListerCache::slotUpdateResult( KJob * j )
                 if (inPendingRemoteUpdates) {
                     pendingRemoteUpdates.erase(pru_it);
                 }
-                foreach ( KDirLister *kdl, listers )
-                    kdl->d->aboutToRefreshItem( *tmp );
 
                 //kDebug(7004) << "file changed:" << tmp->name();
 
@@ -1806,7 +1784,6 @@ void KDirListerCache::processPendingUpdates()
         KFileItem *item = findByUrl( 0, u ); // search all items
         if ( item ) {
             // we need to refresh the item, because e.g. the permissions can have changed.
-            aboutToRefreshItem( *item );
             KFileItem oldItem = *item;
             item->refresh();
             listers |= emitRefreshItem( oldItem, *item );
@@ -2230,6 +2207,8 @@ void KDirLister::Private::addNewItem(const KUrl& directoryUrl, const KFileItem &
     if (!isItemVisible(item))
         return; // No reason to continue... bailing out here prevents a mimetype scan.
 
+    //kDebug(7004) << "in" << directoryUrl << "item:" << item.url();
+
   if ( m_parent->matchesMimeFilter( item ) )
   {
     if ( !lstNewItems )
@@ -2262,13 +2241,10 @@ void KDirLister::Private::addNewItems(const KUrl& directoryUrl, const KFileItemL
     addNewItem(directoryUrl, *kit);
 }
 
-void KDirLister::Private::aboutToRefreshItem( const KFileItem &item )
-{
-    refreshItemWasFiltered = !isItemVisible(item) || !m_parent->matchesMimeFilter(item);
-}
-
 void KDirLister::Private::addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item)
 {
+    const bool refreshItemWasFiltered = !isItemVisible(oldItem) ||
+                                        !m_parent->matchesMimeFilter(oldItem);
   if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
     if ( refreshItemWasFiltered )
     {

@@ -60,7 +60,6 @@ public:
     lstMimeFilteredItems = 0;
     lstRemoveItems = 0;
 
-    refreshItemWasFiltered = false;
     hasPendingChanges = false;
 
     window = 0;
@@ -81,7 +80,6 @@ public:
   uint numJobs();
     void addNewItem(const KUrl& directoryUrl, const KFileItem& item);
     void addNewItems(const KUrl& directoryUrl, const KFileItemList& items);
-    void aboutToRefreshItem(const KFileItem& item);
     void addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item);
   void emitItems();
   void emitItemsDeleted(const KFileItemList &items);
@@ -125,7 +123,6 @@ public:
 
   bool delayedMimeTypes:1;
 
-  bool refreshItemWasFiltered:1;
     bool hasPendingChanges:1; // i.e. settings != oldSettings
 
   bool autoErrorHandling:2;
@@ -288,8 +285,6 @@ private:
   void removeDirFromCache( const KUrl& dir );
   // helper for renameDir
   void emitRedirections( const KUrl &oldUrl, const KUrl &url );
-
-  void aboutToRefreshItem( const KFileItem& fileitem );
 
     /**
      * Emits refreshItem() in the directories that cared for oldItem.
