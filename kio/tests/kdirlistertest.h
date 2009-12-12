@@ -19,15 +19,66 @@
 #ifndef KDIRLISTERTEST_H
 #define KDIRLISTERTEST_H
 
+#include <QSignalSpy>
 #include <QtCore/QObject>
 #include <ktempdir.h>
 #include <QtCore/QDate>
 #include <kdirlister.h>
 #include <QtCore/QEventLoop>
 
-class MyDirLister : public KDirLister
+Q_DECLARE_METATYPE(KFileItemList)
+
+class GlobalInits
 {
 public:
+    GlobalInits() {
+        // Must be done before the QSignalSpys connect
+        qRegisterMetaType<KUrl>();
+        qRegisterMetaType<KFileItem>();
+        qRegisterMetaType<KFileItemList>();
+    }
+};
+
+class MyDirLister : public KDirLister, GlobalInits
+{
+public:
+    MyDirLister()
+        : spyStarted(this, SIGNAL(started(KUrl))),
+          spyClear(this, SIGNAL(clear())),
+          spyClearKUrl(this, SIGNAL(clear(KUrl))),
+          spyCompleted(this, SIGNAL(completed())),
+          spyCompletedKUrl(this, SIGNAL(completed(KUrl))),
+          spyCanceled(this, SIGNAL(canceled())),
+          spyCanceledKUrl(this, SIGNAL(canceled(KUrl))),
+          spyRedirection(this, SIGNAL(redirection(KUrl))),
+          spyDeleteItem(this, SIGNAL(deleteItem(KFileItem))), 
+          spyItemsDeleted(this, SIGNAL(itemsDeleted(KFileItemList)))
+    {}
+
+    void clearSpies()
+    {
+        spyStarted.clear();
+        spyClear.clear();
+        spyClearKUrl.clear();
+        spyCompleted.clear();
+        spyCompletedKUrl.clear();
+        spyCanceled.clear();
+        spyCanceledKUrl.clear();
+        spyRedirection.clear();
+        spyDeleteItem.clear();
+        spyItemsDeleted.clear();
+    }
+
+    QSignalSpy spyStarted;
+    QSignalSpy spyClear;
+    QSignalSpy spyClearKUrl;
+    QSignalSpy spyCompleted;
+    QSignalSpy spyCompletedKUrl;
+    QSignalSpy spyCanceled;
+    QSignalSpy spyCanceledKUrl;
+    QSignalSpy spyRedirection;
+    QSignalSpy spyDeleteItem;
+    QSignalSpy spyItemsDeleted;
 protected:
     virtual void handleError(KIO::Job* job);
 };

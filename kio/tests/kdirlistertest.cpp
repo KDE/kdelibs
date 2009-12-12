@@ -32,8 +32,6 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 #include <kio/job.h>
 #include <kio/copyjob.h>
 
-Q_DECLARE_METATYPE(KFileItemList)
-
 void MyDirLister::handleError(KIO::Job* job)
 {
     // Currently we don't expect any errors.
@@ -62,14 +60,11 @@ void KDirListerTest::initTestCase()
     createTestFile(path+"toplevelfile_3");
     createTestDirectory(path+"subdir");
     createTestDirectory(path+"subdir/subsubdir");
-
-    // Hmmpf.
-    qRegisterMetaType<KUrl>();
-    qRegisterMetaType<KFileItemList>();
 }
 
 void KDirListerTest::cleanup()
 {
+    m_dirLister.clearSpies();
     disconnect(&m_dirLister, 0, this, 0);
 }
 
@@ -77,26 +72,18 @@ void KDirListerTest::testOpenUrl()
 {
     m_items.clear();
     const QString path = m_tempDir.name();
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
-    QSignalSpy spyRedirection(&m_dirLister, SIGNAL(redirection(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
 
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 0);
-    QCOMPARE(spyCompletedKUrl.count(), 0);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(spyRedirection.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyRedirection.count(), 0);
     QCOMPARE(m_items.count(), 0);
     QVERIFY(!m_dirLister.isFinished());
 
@@ -104,14 +91,14 @@ void KDirListerTest::testOpenUrl()
     qDebug("waiting for completed");
     connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 1);
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(spyRedirection.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyRedirection.count(), 0);
     QCOMPARE(m_items.count(), fileCount());
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
@@ -130,6 +117,8 @@ void KDirListerTest::testOpenUrl()
     QVERIFY(!itemForUrl.isNull());
     QCOMPARE(itemForUrl.url().url(), itemUrl.url());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
+
+    m_dirLister.clearSpies(); // for the tests that call testOpenUrl for setup
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
@@ -142,23 +131,16 @@ void KDirListerTest::testOpenUrlFromCache()
     {
         m_items.clear();
         const QString path = m_tempDir.name();
-        KDirLister secondDirLister;
-        QSignalSpy spyStarted(&secondDirLister, SIGNAL(started(KUrl)));
-        QSignalSpy spyClear(&secondDirLister, SIGNAL(clear()));
-        QSignalSpy spyClearKUrl(&secondDirLister, SIGNAL(clear(KUrl)));
-        QSignalSpy spyCompleted(&secondDirLister, SIGNAL(completed()));
-        QSignalSpy spyCompletedKUrl(&secondDirLister, SIGNAL(completed(KUrl)));
-        QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
-        QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
+        MyDirLister secondDirLister;
         connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
         secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags);
-        QCOMPARE(spyStarted.count(), 1);
-        QCOMPARE(spyCompleted.count(), 0);
-        QCOMPARE(spyCompletedKUrl.count(), 0);
-        QCOMPARE(spyCanceled.count(), 0);
-        QCOMPARE(spyCanceledKUrl.count(), 0);
-        QCOMPARE(spyClear.count(), 1);
-        QCOMPARE(spyClearKUrl.count(), 0);
+        QCOMPARE(secondDirLister.spyStarted.count(), 1);
+        QCOMPARE(secondDirLister.spyCompleted.count(), 0);
+        QCOMPARE(secondDirLister.spyCompletedKUrl.count(), 0);
+        QCOMPARE(secondDirLister.spyCanceled.count(), 0);
+        QCOMPARE(secondDirLister.spyCanceledKUrl.count(), 0);
+        QCOMPARE(secondDirLister.spyClear.count(), 1);
+        QCOMPARE(secondDirLister.spyClearKUrl.count(), 0);
         QCOMPARE(m_items.count(), 0);
         QVERIFY(!secondDirLister.isFinished());
 
@@ -166,13 +148,13 @@ void KDirListerTest::testOpenUrlFromCache()
         qDebug("waiting for completed");
         connect(&secondDirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
         enterLoop();
-        QCOMPARE(spyStarted.count(), 1);
-        QCOMPARE(spyCompleted.count(), 1);
-        QCOMPARE(spyCompletedKUrl.count(), 1);
-        QCOMPARE(spyCanceled.count(), 0);
-        QCOMPARE(spyCanceledKUrl.count(), 0);
-        QCOMPARE(spyClear.count(), 1);
-        QCOMPARE(spyClearKUrl.count(), 0);
+        QCOMPARE(secondDirLister.spyStarted.count(), 1);
+        QCOMPARE(secondDirLister.spyCompleted.count(), 1);
+        QCOMPARE(secondDirLister.spyCompletedKUrl.count(), 1);
+        QCOMPARE(secondDirLister.spyCanceled.count(), 0);
+        QCOMPARE(secondDirLister.spyCanceledKUrl.count(), 0);
+        QCOMPARE(secondDirLister.spyClear.count(), 1);
+        QCOMPARE(secondDirLister.spyClearKUrl.count(), 0);
         QCOMPARE(m_items.count(), 4);
         QVERIFY(secondDirLister.isFinished());
     }
@@ -185,13 +167,6 @@ void KDirListerTest::testNewItems()
 {
     QCOMPARE(m_items.count(), 4);
     const QString path = m_tempDir.name();
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
 
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
@@ -209,14 +184,13 @@ void KDirListerTest::testNewItems()
     //kDebug() << "numTries=" << numTries;
     QCOMPARE(m_items.count(), 5);
 
-    QCOMPARE(spyStarted.count(), 1); // Updates call started
-    QCOMPARE(spyCompleted.count(), 1); // and completed
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 0);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    disconnect(&m_dirLister, 0, this, 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1); // Updates call started
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1); // and completed
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 0);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
 
     const KUrl itemUrl = path + fileName;
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
@@ -232,13 +206,6 @@ void KDirListerTest::testNewItemByCopy()
     // a KFileItem::refresh().
     const int origItemCount = m_items.count();
     const QString path = m_tempDir.name();
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
 
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
@@ -257,14 +224,13 @@ void KDirListerTest::testNewItemByCopy()
     //kDebug() << "numTries=" << numTries;
     QCOMPARE(m_items.count(), origItemCount+1);
 
-    QCOMPARE(spyStarted.count(), 1); // Updates call started
-    QCOMPARE(spyCompleted.count(), 1); // and completed
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 0);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    disconnect(&m_dirLister, 0, this, 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1); // Updates call started
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1); // and completed
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 0);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
 
     // Give some time to KDirWatch
     QTest::qWait(1000);
@@ -343,13 +309,6 @@ void KDirListerTest::testRefreshItems()
     QVERIFY(!cachedItem.isNull());
     QCOMPARE(cachedItem.mimetype(), QString("application/octet-stream"));
 
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
 
@@ -364,13 +323,13 @@ void KDirListerTest::testRefreshItems()
     KDirWatch::self()->setDirty(path); // with only the file, we get into the new fast path that doesn't even emit started...
     waitForRefreshedItems();
 
-    QCOMPARE(spyStarted.count(), 1); // Updates (to a directory) call started...
-    QCOMPARE(spyCompleted.count(), 1); // and completed
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 0);
-    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1); // Updates (to a directory) call started...
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1); // and completed
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 0);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
     QCOMPARE(entry.first.url().path(), fileName);
@@ -379,7 +338,6 @@ void KDirListerTest::testRefreshItems()
     QCOMPARE(entry.second.url().path(), fileName);
     QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 6 /*<html>*/));
     QCOMPARE(entry.second.mimetype(), QString("text/html"));
-    disconnect(&m_dirLister, 0, this, 0);
 
     // Let's see what KDirLister has in cache now
     cachedItem = m_dirLister.findByUrl(KUrl(fileName));
@@ -401,26 +359,19 @@ void KDirListerTest::testRefreshRootItem()
     QVERIFY(!cachedItem.isNull());
     QVERIFY(cachedItem.isDir());
 
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
 
     org::kde::KDirNotify::emitFilesChanged(QStringList() << KUrl(path).url());
     waitForRefreshedItems();
 
-    QCOMPARE(spyStarted.count(), 0);
-    QCOMPARE(spyCompleted.count(), 0);
-    QCOMPARE(spyCompletedKUrl.count(), 0);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 0);
-    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 0);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
     QCOMPARE(entry.first.url().path(), path);
@@ -443,32 +394,29 @@ void KDirListerTest::testRefreshRootItem()
     QCOMPARE(entry.first.url().path(), path);
     QCOMPARE(entry.second.url().path(), path);
 
-    disconnect(&m_dirLister, 0, this, 0);
-
     m_refreshedItems.clear();
 }
-// This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
+
 void KDirListerTest::testDeleteItem()
 {
+    testOpenUrl(); // ensure m_items is uptodate
+    
     const int origItemCount = m_items.count();
     QCOMPARE(fileCount(), origItemCount);
     const QString path = m_tempDir.name();
-    qRegisterMetaType<KFileItem>("KFileItem");
-    QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)));
-    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(const KFileItemList&)));
     connect(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)), this, SLOT(exitLoop()));
 
     //kDebug() << "Removing " << path+"toplevelfile_1";
     QFile::remove(path+"toplevelfile_1");
     // the remove() doesn't always trigger kdirwatch in stat mode, if this all happens in the same second
     KDirWatch::self()->setDirty(path);
-    if (spyDeleteItem.count() == 0) {
+    if (m_dirLister.spyDeleteItem.count() == 0) {
         qDebug("waiting for deleteItem");
         enterLoop();
     }
 
-    QCOMPARE(spyDeleteItem.count(), 1);
-    QCOMPARE(spyItemsDeleted.count(), 1);
+    QCOMPARE(m_dirLister.spyDeleteItem.count(), 1);
+    QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
 
     // OK now kdirlister told us the file was deleted, let's try a re-listing
     m_items.clear();
@@ -488,7 +436,6 @@ void KDirListerTest::testRenameItem()
 {
     m_refreshedItems.clear();
     const QString dirPath = m_tempDir.name();
-    qRegisterMetaType<KFileItem>("KFileItem");
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
     const QString path = dirPath+"toplevelfile_2";
@@ -534,10 +481,8 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
     QCOMPARE(existingItem.url().path(), path);
 
     m_refreshedItems.clear();
-    qRegisterMetaType<KFileItem>("KFileItem");
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
-    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(KFileItemList)));
     const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
     KIO::SimpleJob* job = KIO::rename(newPath, path, KIO::Overwrite | KIO::HideProgressInfo);
@@ -550,7 +495,7 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
 
     // Check that itemsDeleted was emitted -- preferrably BEFORE refreshItems,
     // but we can't easily check that with QSignalSpy...
-    QCOMPARE(spyItemsDeleted.count(), 1);
+    QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
 
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
@@ -573,28 +518,11 @@ void KDirListerTest::testConcurrentListing()
     m_items.clear();
     m_items2.clear();
 
-    KDirLister dirLister2;
+    MyDirLister dirLister2;
 
     const QString path = m_tempDir.name();
 
-    // spy for m_dirLister signals
-    QSignalSpy spyStarted1(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear1(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl1(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted1(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl1(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled1(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl1(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-
-    // spy for dirLister2 signals
-    QSignalSpy spyStarted2(&dirLister2, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear2(&dirLister2, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl2(&dirLister2, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted2(&dirLister2, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl2(&dirLister2, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled2(&dirLister2, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl2(&dirLister2, SIGNAL(canceled(KUrl)));
     connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
 
     // Before dirLister2 has time to emit the items, let's make m_dirLister move to another dir.
@@ -605,22 +533,22 @@ void KDirListerTest::testConcurrentListing()
     dirLister2.openUrl(KUrl(path), KDirLister::NoFlags);
     m_dirLister.openUrl(KUrl(path+"subdir"), KDirLister::NoFlags);
 
-    QCOMPARE(spyStarted1.count(), 1);
-    QCOMPARE(spyCompleted1.count(), 0);
-    QCOMPARE(spyCompletedKUrl1.count(), 0);
-    QCOMPARE(spyCanceled1.count(), 0);
-    QCOMPARE(spyCanceledKUrl1.count(), 0);
-    QCOMPARE(spyClear1.count(), 1);
-    QCOMPARE(spyClearKUrl1.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 0);
 
-    QCOMPARE(spyStarted2.count(), 1);
-    QCOMPARE(spyCompleted2.count(), 0);
-    QCOMPARE(spyCompletedKUrl2.count(), 0);
-    QCOMPARE(spyCanceled2.count(), 0);
-    QCOMPARE(spyCanceledKUrl2.count(), 0);
-    QCOMPARE(spyClear2.count(), 1);
-    QCOMPARE(spyClearKUrl2.count(), 0);
+    QCOMPARE(dirLister2.spyStarted.count(), 1);
+    QCOMPARE(dirLister2.spyCompleted.count(), 0);
+    QCOMPARE(dirLister2.spyCompletedKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyCanceled.count(), 0);
+    QCOMPARE(dirLister2.spyCanceledKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyClear.count(), 1);
+    QCOMPARE(dirLister2.spyClearKUrl.count(), 0);
     QCOMPARE(m_items2.count(), 0);
     QVERIFY(!m_dirLister.isFinished());
     QVERIFY(!dirLister2.isFinished());
@@ -631,22 +559,22 @@ void KDirListerTest::testConcurrentListing()
     connect(&dirLister2, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop(2);
 
-    QCOMPARE(spyStarted1.count(), 1);
-    QCOMPARE(spyCompleted1.count(), 1);
-    QCOMPARE(spyCompletedKUrl1.count(), 1);
-    QCOMPARE(spyCanceled1.count(), 0);
-    QCOMPARE(spyCanceledKUrl1.count(), 0);
-    QCOMPARE(spyClear1.count(), 1);
-    QCOMPARE(spyClearKUrl1.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 3);
 
-    QCOMPARE(spyStarted2.count(), 1);
-    QCOMPARE(spyCompleted2.count(), 1);
-    QCOMPARE(spyCompletedKUrl2.count(), 1);
-    QCOMPARE(spyCanceled2.count(), 0);
-    QCOMPARE(spyCanceledKUrl2.count(), 0);
-    QCOMPARE(spyClear2.count(), 1);
-    QCOMPARE(spyClearKUrl2.count(), 0);
+    QCOMPARE(dirLister2.spyStarted.count(), 1);
+    QCOMPARE(dirLister2.spyCompleted.count(), 1);
+    QCOMPARE(dirLister2.spyCompletedKUrl.count(), 1);
+    QCOMPARE(dirLister2.spyCanceled.count(), 0);
+    QCOMPARE(dirLister2.spyCanceledKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyClear.count(), 1);
+    QCOMPARE(dirLister2.spyClearKUrl.count(), 0);
     QCOMPARE(m_items2.count(), origItemCount);
     QVERIFY(m_dirLister.isFinished());
 
@@ -663,37 +591,23 @@ void KDirListerTest::testConcurrentHoldingListing()
 
     testOpenUrl(); // ensure m_dirLister holds the items.
     const int origItemCount = m_items.count();
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     m_items.clear();
     m_items2.clear();
     const QString path = m_tempDir.name();
-    KDirLister dirLister2;
-    QSignalSpy spyStarted2(&dirLister2, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear2(&dirLister2, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl2(&dirLister2, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted2(&dirLister2, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl2(&dirLister2, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled2(&dirLister2, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl2(&dirLister2, SIGNAL(canceled(KUrl)));
+    MyDirLister dirLister2;
     connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
 
     dirLister2.openUrl(KUrl(path), KDirLister::Reload); // will start a list job
-    QCOMPARE(spyStarted2.count(), 1);
-    QCOMPARE(spyCompleted2.count(), 0);
+    QCOMPARE(dirLister2.spyStarted.count(), 1);
+    QCOMPARE(dirLister2.spyCompleted.count(), 0);
     QCOMPARE(m_items.count(), 0);
     QCOMPARE(m_items2.count(), 0);
 
     qDebug("calling m_dirLister.openUrl");
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags); // should emit cached items, and then "join" the running listjob
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
     QCOMPARE(m_items.count(), 0);
     QCOMPARE(m_items2.count(), 0);
 
@@ -701,27 +615,27 @@ void KDirListerTest::testConcurrentHoldingListing()
     connect(&dirLister2, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();
 
-    QCOMPARE(spyStarted2.count(), 1);
-    QCOMPARE(spyCompleted2.count(), 1);
-    QCOMPARE(spyCompletedKUrl2.count(), 1);
-    QCOMPARE(spyCanceled2.count(), 0);
-    QCOMPARE(spyCanceledKUrl2.count(), 0);
-    QCOMPARE(spyClear2.count(), 1);
-    QCOMPARE(spyClearKUrl2.count(), 0);
+    QCOMPARE(dirLister2.spyStarted.count(), 1);
+    QCOMPARE(dirLister2.spyCompleted.count(), 1);
+    QCOMPARE(dirLister2.spyCompletedKUrl.count(), 1);
+    QCOMPARE(dirLister2.spyCanceled.count(), 0);
+    QCOMPARE(dirLister2.spyCanceledKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyClear.count(), 1);
+    QCOMPARE(dirLister2.spyClearKUrl.count(), 0);
     QCOMPARE(m_items2.count(), origItemCount);
 
-    if (spyCompleted.isEmpty()) {
+    if (m_dirLister.spyCompleted.isEmpty()) {
         connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
         enterLoop();
     }
 
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 1);
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QVERIFY(dirLister2.isFinished());
     disconnect(&dirLister2, 0, this, 0);
     QVERIFY(m_dirLister.isFinished());
@@ -735,19 +649,12 @@ void KDirListerTest::testOpenUrlTwice()
     const int origItemCount = m_items.count();
     m_items.clear();
     const QString path = m_tempDir.name();
-    KDirLister secondDirLister;
-    QSignalSpy spyStarted(&secondDirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&secondDirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&secondDirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&secondDirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&secondDirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
+    MyDirLister secondDirLister;
     connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
 
     secondDirLister.openUrl(KUrl(path), KDirLister::Reload); // will start
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 0);
+    QCOMPARE(secondDirLister.spyStarted.count(), 1);
+    QCOMPARE(secondDirLister.spyCompleted.count(), 0);
 
     qDebug("calling openUrl again");
     secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags); // will stop + start
@@ -756,13 +663,13 @@ void KDirListerTest::testOpenUrlTwice()
     connect(&secondDirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();
 
-    QCOMPARE(spyStarted.count(), 2);
-    QCOMPARE(spyCompleted.count(), 1);
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0); // should not be emitted, see next test
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 2);
-    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(secondDirLister.spyStarted.count(), 2);
+    QCOMPARE(secondDirLister.spyCompleted.count(), 1);
+    QCOMPARE(secondDirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(secondDirLister.spyCanceled.count(), 0); // should not be emitted, see next test
+    QCOMPARE(secondDirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(secondDirLister.spyClear.count(), 2);
+    QCOMPARE(secondDirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), origItemCount);
     QVERIFY(secondDirLister.isFinished());
     disconnect(&secondDirLister, 0, this, 0);
@@ -779,19 +686,12 @@ void KDirListerTest::testOpenUrlTwiceWithKeep()
     m_items.clear();
     const QString path = m_tempDir.name() + "/newsubdir";
     QDir().mkdir(path);
-    KDirLister secondDirLister;
-    QSignalSpy spyStarted(&secondDirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&secondDirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&secondDirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&secondDirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&secondDirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
+    MyDirLister secondDirLister;
     connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
 
     secondDirLister.openUrl(KUrl(path)); // will start a list job
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 0);
+    QCOMPARE(secondDirLister.spyStarted.count(), 1);
+    QCOMPARE(secondDirLister.spyCompleted.count(), 0);
 
     qDebug("calling openUrl again");
     secondDirLister.openUrl(KUrl(path), KDirLister::Keep); // stops and restarts the job
@@ -800,13 +700,13 @@ void KDirListerTest::testOpenUrlTwiceWithKeep()
     connect(&secondDirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();
 
-    QCOMPARE(spyStarted.count(), 2);
-    QCOMPARE(spyCompleted.count(), 1);
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0); // should not be emitted, it led to recursion
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 1);
+    QCOMPARE(secondDirLister.spyStarted.count(), 2);
+    QCOMPARE(secondDirLister.spyCompleted.count(), 1);
+    QCOMPARE(secondDirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(secondDirLister.spyCanceled.count(), 0); // should not be emitted, it led to recursion
+    QCOMPARE(secondDirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(secondDirLister.spyClear.count(), 1);
+    QCOMPARE(secondDirLister.spyClearKUrl.count(), 1);
     QCOMPARE(m_items.count(), 0);
     QVERIFY(secondDirLister.isFinished());
     disconnect(&secondDirLister, 0, this, 0);
@@ -818,25 +718,18 @@ void KDirListerTest::testOpenAndStop()
 {
     m_items.clear();
     const QString path = "/"; // better not use a directory that we already listed!
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
     kDebug() << "Calling stop!";
     m_dirLister.stop(); // we should also test stop(KUrl(path))...
 
-    QCOMPARE(spyStarted.count(), 1); // The call to openUrl itself, emits started
-    QCOMPARE(spyCompleted.count(), 0); // we had time to stop before the job even started
-    QCOMPARE(spyCompletedKUrl.count(), 0);
-    QCOMPARE(spyCanceled.count(), 1);
-    QCOMPARE(spyCanceledKUrl.count(), 1);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1); // The call to openUrl itself, emits started
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0); // we had time to stop before the job even started
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 0); // we had time to stop before the job even started
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
@@ -846,26 +739,18 @@ void KDirListerTest::testRedirection()
 {
     m_items.clear();
     const KUrl url("file://somemachine/");
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
-    QSignalSpy spyRedirection(&m_dirLister, SIGNAL(redirection(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started
     m_dirLister.openUrl(url, KDirLister::NoFlags);
 
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 0);
-    QCOMPARE(spyCompletedKUrl.count(), 0);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(spyRedirection.count(), 0);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyRedirection.count(), 0);
     QCOMPARE(m_items.count(), 0);
     QVERIFY(!m_dirLister.isFinished());
 
@@ -873,14 +758,14 @@ void KDirListerTest::testRedirection()
     qDebug("waiting for redirection");
     connect(&m_dirLister, SIGNAL(redirection(KUrl, KUrl)), this, SLOT(exitLoop()));
     enterLoop();
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 0); // we stopped before the listing.
-    QCOMPARE(spyCompletedKUrl.count(), 0);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 2); // redirection cleared a second time (just in case...)
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(spyRedirection.count(), 1);
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0); // we stopped before the listing.
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 2); // redirection cleared a second time (just in case...)
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyRedirection.count(), 1);
     QVERIFY(m_items.isEmpty());
     QVERIFY(!m_dirLister.isFinished());
 
@@ -930,18 +815,16 @@ void KDirListerTest::testDeleteCurrentDir()
     enterLoop();
     disconnect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
 
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(KFileItemList)));
+    m_dirLister.clearSpies();
     connect(&m_dirLister, SIGNAL(clear()), &m_eventLoop, SLOT(quit()));
     KIO::DeleteJob* job = KIO::del(path(), KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
     enterLoop();
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(spyItemsDeleted.count(), 1);
-    QCOMPARE(spyItemsDeleted[0][0].value<KFileItemList>().count(), 1);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
+    QCOMPARE(m_dirLister.spyItemsDeleted[0][0].value<KFileItemList>().count(), 1);
 }
 
 int KDirListerTest::fileCount() const
