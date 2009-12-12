@@ -1,5 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
+*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
 *   Copyright (C) 2009 Radek Novacek <rnovacek@redhat.com>
 *
 *   This program is free software; you can redistribute it and/or modify
