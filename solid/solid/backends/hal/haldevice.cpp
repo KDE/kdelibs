@@ -796,9 +796,16 @@ QString HalDevice::volumeDescription() const
 
     bool drive_is_removable = storageDrive.isRemovable();
     bool drive_is_hotpluggable = storageDrive.isHotpluggable();
+    bool drive_is_encrypted_container = property("volume.fsusage").toString()=="crypto";
 
     QString size_str = formatByteSize(property("volume.size").toULongLong());
-    if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable) {
+    if (drive_is_encrypted_container) {
+        if (!size_str.isEmpty()) {
+            description = QObject::tr("%1 Encrypted Container", "%1 is the size").arg(size_str);
+        } else {
+            description = QObject::tr("Encrypted Container");
+        }
+    } else if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable) {
         if (!size_str.isEmpty()) {
             if (drive_is_hotpluggable) {
                 description = QObject::tr("%1 External Hard Drive", "%1 is the size").arg(size_str);
