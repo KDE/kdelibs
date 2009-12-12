@@ -51,6 +51,12 @@ file.
 
 */
 
+/**
+
+\defgroup KDEUIMacros KDEUI Macros
+
+*/
+
 // DOXYGEN_REFERENCES = kdecore
 // DOXYGEN_SET_INTERNAL_DOCS = YES
 // DOXYGEN_SET_PROJECT_NAME = KDEUI
