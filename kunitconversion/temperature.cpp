@@ -91,7 +91,7 @@ Temperature::Temperature() : UnitCategory(TemperatureCategory)
       i18nc("unit description in lists", "Rankine"),
       i18nc("unit synonyms for matching user input", "Rankine;°R;R;Ra"),
       ki18nc("amount in units (real)", "%1 Rankine"),
-      ki18ncp("amount in units (integer)", "%1 Rankine", "%1 ")
+      ki18ncp("amount in units (integer)", "%1 Rankine", "%1 Rankine")
     );
     U(Delisle, new DelisleConv(),
       i18nc("temperature unit symbol", "°De"),
@@ -110,7 +110,7 @@ Temperature::Temperature() : UnitCategory(TemperatureCategory)
     U(Reaumur, new ReaumurConv(),
       i18nc("temperature unit symbol", "°Ré"),
       i18nc("unit description in lists", "Réaumur"),
-      i18nc("unit synonyms for matching user input", "Réaumur;°Ré;Ré;Reaumur;°Ré;Re"),
+      i18nc("unit synonyms for matching user input", "Réaumur;°Ré;Ré;Reaumur;°Re;Re"),
       ki18nc("amount in units (real)", "%1 degrees Réaumur"),
       ki18ncp("amount in units (integer)", "%1 degree Réaumur", "%1 degrees Réaumur")
     );
