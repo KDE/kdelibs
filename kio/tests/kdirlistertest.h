@@ -112,6 +112,7 @@ protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtest
     void slotNewItems(const KFileItemList&);
     void slotNewItems2(const KFileItemList&);
     void slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
+    void slotRefreshItems2(const QList<QPair<KFileItem, KFileItem> >&);
 
 Q_SIGNALS:
     void refreshItemsReceived();
@@ -122,6 +123,7 @@ private:
     QString path() const { return m_tempDir.name(); }
     void waitForRefreshedItems();
     void createSimpleFile(const QString& fileName);
+    void fillDirLister2(MyDirLister& lister, const QString& path);
 
 private:
     int m_exitCount;
@@ -130,7 +132,7 @@ private:
     MyDirLister m_dirLister;
     KFileItemList m_items;
     KFileItemList m_items2;
-    QList<QPair<KFileItem, KFileItem> > m_refreshedItems;
+    QList<QPair<KFileItem, KFileItem> > m_refreshedItems, m_refreshedItems2;
 };
 
 

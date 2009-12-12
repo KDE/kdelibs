@@ -729,14 +729,6 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     KUrl url(_u);
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    // Maybe _u is a directory itself? (see KDirModelTest::testChmodDirectory)
-    DirItem* dirItem = dirItemForUrl(url);
-    if (dirItem && !dirItem->rootItem.isNull() && dirItem->rootItem.url() == url) {
-        // If lister is set, check that it contains this dir
-        if (!lister || lister->d->lstDirs.contains(url))
-            return &dirItem->rootItem;
-    }
-
     KUrl parentDir(url);
     parentDir.setPath( parentDir.directory() );
 
@@ -744,7 +736,7 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     if (lister && !lister->d->lstDirs.contains(parentDir))
         return 0;
 
-    dirItem = dirItemForUrl(parentDir);
+    DirItem* dirItem = dirItemForUrl(parentDir);
     if (dirItem) {
         KFileItemList::iterator it = dirItem->lstItems.begin();
         const KFileItemList::iterator end = dirItem->lstItems.end();
@@ -753,6 +745,16 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
                 return &*it;
             }
         }
+    }
+
+    // Maybe _u is a directory itself? (see KDirModelTest::testChmodDirectory)
+    // We check this last, though, we prefer returning a kfileitem with an actual
+    // name if possible (and we make it '.' for root items later).
+    dirItem = dirItemForUrl(url);
+    if (dirItem && !dirItem->rootItem.isNull() && dirItem->rootItem.url() == url) {
+        // If lister is set, check that it contains this dir
+        if (!lister || lister->d->lstDirs.contains(url))
+            return &dirItem->rootItem;
     }
 
     return 0;
@@ -923,12 +925,14 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
 #endif
 }
 
-QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem )
+QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem)
 {
+    //kDebug(7004) << "old:" << oldItem.name() << oldItem.url()
+    //             << "new:" << fileitem.name() << fileitem.url();
     // Look whether this item was shown in any view, i.e. held by any dirlister
     KUrl parentDir( oldItem.url() );
     parentDir.setPath( parentDir.directory() );
-    QString parentDirURL = parentDir.url();
+    const QString parentDirURL = parentDir.url();
     DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
     QList<KDirLister *> listers;
     // Also look in listersCurrentlyListing, in case the user manages to rename during a listing
@@ -945,11 +949,13 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
         // For a directory, look for dirlisters where it's the root item.
         KUrl directoryUrl(oldItem.url());
         if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
+            const KFileItem oldRootItem = kdl->d->rootFileItem;
             kdl->d->rootFileItem = fileitem;
+            kdl->d->addRefreshItem(directoryUrl, oldRootItem, fileitem);
         } else {
             directoryUrl.setPath(directoryUrl.directory());
+            kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
         }
-        kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
         listersToRefresh.insert(kdl);
     }
     return listersToRefresh;
@@ -1074,6 +1080,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
             // twice, otherwise, so that both views manage to recognize the item.
             // 2) with kio_ftp we can only know that something is a symlink when
             // listing the parent, so prefer that item, which has more info.
+            // Note that it gives a funky name() to the root item, rather than "." ;)
             dir->rootItem = itemForUrl(url);
             if (dir->rootItem.isNull())
                 dir->rootItem = KFileItem( *it, url, delayedMimeTypes, true  );
