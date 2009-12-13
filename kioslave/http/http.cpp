@@ -515,8 +515,6 @@ bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
      return false;
   }
 
-  Q_ASSERT(m_protocol == u.protocol().toLatin1());
-
   return true;
 }
 
