@@ -39,8 +39,6 @@
 #include <QScrollBar>
 #include <QPaintEvent>
 
-#include <kdebug.h>
-
 #include "kcategorydrawer.h"
 #include "kcategorizedsortfilterproxymodel.h"
 
@@ -917,6 +915,7 @@ void KCategorizedView::startDrag(Qt::DropActions supportedActions)
 void KCategorizedView::dragMoveEvent(QDragMoveEvent *event)
 {
     QListView::dragMoveEvent(event);
+    d->hoveredIndex = indexAt(event->pos());
 }
 
 void KCategorizedView::dragEnterEvent(QDragEnterEvent *event)
