@@ -41,8 +41,8 @@ while(<FILE>)
 	if(/^\s*<html>(.*)/io)
 	{
 		$inTip=1;
-		print "//i18n file tips.cpp line $.\n";
-		print "i18n(\n";
+		print "// i18n: file: tips:$.\n// i18n: ectx: \@info:tipoftheday\n";
+		print "i18n(";
 		printText($1);
 		next;
 	}	
