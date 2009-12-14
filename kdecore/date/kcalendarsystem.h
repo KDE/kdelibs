@@ -746,10 +746,32 @@ public:
      *
      * @param fromDate the date to be formatted
      * @param toFormat the date format to use
+     * @param formatStandard the standard the date format uses, defaults to KDE Standard
      *
      * @return The date as a string
      */
-    QString formatDate( const QDate &fromDate, const QString &toFormat ) const;
+    QString formatDate( const QDate &fromDate, const QString &toFormat,
+                        KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat ) const;
+
+    //KDE5 Make virtual
+    /**
+     * @since 4.4
+     *
+     * Returns a string formatted to the given format string and Digit Set.
+     * Only use this version if you need control over the Digit Set and do
+     * not want to use the locale Digit Set.
+     *
+     * @see formatDate
+     *
+     * @param fromDate the date to be formatted
+     * @param toFormat the date format to use
+     * @param digitSet the Digit Set to format the date in
+     * @param formatStandard the standard the date format uses, defaults to KDE Standard
+     *
+     * @return The date as a string
+     */
+    QString formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
+                        KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat ) const;
 
     /**
      * Converts a localized date string to a QDate.

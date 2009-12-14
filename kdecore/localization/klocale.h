@@ -671,6 +671,18 @@ public:
     bool nounDeclension() const;
 
     /**
+     * @since 4.4
+     *
+     * Standard used for Date Time Format String
+     */
+    enum DateTimeFormatStandard {
+         KdeFormat                   /**< KDE Standard */
+         //PosixFormat,              /**< POSIX Standard */  KDE 4.5
+         //GnuFormat                 /**< GNU Standard */    KDE 4.5
+         //UnicodeFormat             /**< UNICODE Standard (Java/OSX/Windows?) */  KDE 4.5
+    };
+
+    /**
      * Format for date string.
      */
     enum DateFormat {

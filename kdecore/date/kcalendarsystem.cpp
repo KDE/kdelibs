@@ -927,7 +927,14 @@ QString KCalendarSystem::formatDate( const QDate &fromDate,
 
 }
 
-QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat ) const
+QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat,
+                                     KLocale::DateTimeFormatStandard standard ) const
+{
+    return formatDate( fromDate, toFormat, locale()->dateTimeDigitSet(), standard );
+}
+
+QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
+                                     KLocale::DateTimeFormatStandard standard ) const
 {
     if ( !fromDate.isValid() ) {
         return QString();
@@ -1175,7 +1182,7 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
         }
     }
 
-    buffer = locale()->convertDigits( buffer, locale()->dateTimeDigitSet() );
+    buffer = locale()->convertDigits( buffer, digitSet );
 
     return buffer;
 }
