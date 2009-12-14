@@ -630,7 +630,7 @@ void KConfigTest::testDelete()
   foreach(const QByteArray& item, readLines())
       if (item.startsWith("devices|"))
           count++;
-  QVERIFY(count == 2);
+  QCOMPARE(count, 2);
   cg.deleteEntry("devices|manual|/mnt/ipod");
   cf.sync();
   foreach(const QByteArray& item, readLines())
