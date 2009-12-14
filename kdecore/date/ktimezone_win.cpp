@@ -57,12 +57,12 @@ static inline QString tchar_to_qstring( const TCHAR * str ) {
     return QString::fromUtf16( reinterpret_cast<const ushort*>( str ) );
 }
 
-static inline TCHAR * qstring_to_tchar( const QString&s ) {
-    return const_cast<ushort*>( s.utf16() );
+static inline const TCHAR * qstring_to_tchar( const QString& str ) {
+    return reinterpret_cast<const TCHAR*>( str.utf16() );
 }
 
 static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
-    return std::basic_string<TCHAR>( str.utf16() );
+    return std::basic_string<TCHAR>( qstring_to_tchar(str) );
 }
 
 #else
@@ -71,12 +71,12 @@ static inline QString tchar_to_qstring( const TCHAR * str ) {
     return QString::fromLocal8Bit( str );
 }
 
-static inline TCHAR * qstring_to_tchar( const QString&s ) {
-    return s.toLocal8Bit().data();
+static inline const TCHAR * qstring_to_tchar( const QString& str ) {
+    return str.toLocal8Bit().constData();
 }
 
 static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
-    return std::basic_string<TCHAR>( str.toLocal8Bit().constData() );
+    return std::basic_string<TCHAR>( qstring_to_tchar(str) );
 }
 
 #endif
