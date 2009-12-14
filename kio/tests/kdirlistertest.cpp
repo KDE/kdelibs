@@ -304,7 +304,7 @@ void KDirListerTest::testRefreshItems()
     m_refreshedItems.clear();
 
     const QString path = m_tempDir.name();
-    const QString fileName = path+"toplevelfile_2";
+    const QString fileName = path+"toplevelfile_1";
     KFileItem cachedItem = m_dirLister.findByUrl(KUrl(fileName));
     QVERIFY(!cachedItem.isNull());
     QCOMPARE(cachedItem.mimetype(), QString("application/octet-stream"));
@@ -318,14 +318,11 @@ void KDirListerTest::testRefreshItems()
     file.close();
     QCOMPARE(QFileInfo(fileName).size(), 11LL /*Hello world*/ + 6 /*<html>*/);
 
-    // KDirWatch doesn't make this work when using FAM :(
-    //KDirWatch::self()->setDirty(path+"toplevelfile_2"); // hack
-    KDirWatch::self()->setDirty(path); // with only the file, we get into the new fast path that doesn't even emit started...
     waitForRefreshedItems();
 
-    QCOMPARE(m_dirLister.spyStarted.count(), 1); // Updates (to a directory) call started...
-    QCOMPARE(m_dirLister.spyCompleted.count(), 1); // and completed
-    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyStarted.count(), 0); // fast path: no directory listing needed
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
     QCOMPARE(m_dirLister.spyCanceled.count(), 0);
     QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
     QCOMPARE(m_dirLister.spyClear.count(), 0);
