@@ -160,3 +160,8 @@ CHECK http://192.168.0.1:8080 Cookie: name2=value2
 CHECK https://192.168.0.1 Cookie: name1=value1; name11=value11; name3=value3
 CHECK http://192.168.0.10
 CHECK http://192.168.0
+## Check expiration dates for the so called Y2K38 (Year 2038) problem
+COOKIE ASK http://foo.bar Set-Cookie: CFID=15727;expires=Tue, 06-Dec-2039 00:30:42 GMT;path=/
+COOKIE ASK http://foo.bar Set-Cookie: CFTOKEN=49898422;expires=Tue, 06-Dec-2039 00:30:42 GMT;path=/
+CHECK http://foo.bar Cookie: CFID=15727; CFTOKEN=49898422
+CLEAR COOKIES

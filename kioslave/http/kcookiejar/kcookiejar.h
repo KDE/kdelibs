@@ -58,7 +58,7 @@ protected:
     QString mPath;
     QString mName;
     QString mValue;
-    time_t  mExpireDate;
+    qint64  mExpireDate;
     int     mProtocolVersion;
     bool    mSecure;
     bool    mCrossDomain;
@@ -74,7 +74,7 @@ public:
                          const QString &_path=QString(),
                          const QString &_name=QString(),
                          const QString &_value=QString(),
-                         time_t _expireDate=0,
+                         qint64 _expireDate=0,
                          int _protocolVersion=0,
                          bool _secure = false,
                          bool _httpOnly = false,
@@ -88,10 +88,10 @@ public:
     QList<long> &windowIds() { return mWindowIds; }
     const QList<long> &windowIds() const { return mWindowIds; }
     void    fixDomain(const QString &domain) { mDomain = domain; }
-    time_t  expireDate() const { return mExpireDate; }
+    qint64  expireDate() const { return mExpireDate; }
     int     protocolVersion() const { return mProtocolVersion; }
     bool    isSecure() const { return mSecure; }
-    bool    isExpired(time_t currentDate) const;
+    bool    isExpired(qint64 currentDate) const;
     bool    isCrossDomain() const { return mCrossDomain; }
     bool    isHttpOnly() const { return mHttpOnly; }
     bool    hasExplicitPath() const { return mExplicitPath; }
