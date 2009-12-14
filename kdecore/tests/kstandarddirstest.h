@@ -31,6 +31,7 @@ private Q_SLOTS:
     void testAppData();
     void testFindResource();
     void testFindAllResources();
+    void testFindAllResourcesNewDir();    
     void testFindDirs();
     void testFindResourceDir();
     void testFindExe();

@@ -147,6 +147,24 @@ void KStandarddirsTest::testFindAllResources()
 #endif
 }
 
+void KStandarddirsTest::testFindAllResourcesNewDir()
+{
+    const QStringList origFiles = KGlobal::dirs()->findAllResources("data", "katepart/syntax/");
+    const int origCount = origFiles.count();
+
+    const QString dir = m_kdehome + "/share/apps/katepart/syntax";
+    QDir().mkpath(dir);
+    QFile file(dir+"/unittest.testfile");
+    QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Text));
+    file.write("foo");
+    file.close();
+
+    const int newCount = KGlobal::dirs()->findAllResources("data", "katepart/syntax/").count();
+    QCOMPARE(newCount, origCount+1);
+    file.remove();
+    QDir().rmpath(dir);
+}
+
 void KStandarddirsTest::testFindDirs()
 {
     if ( !isKdelibsInstalled() )
