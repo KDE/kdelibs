@@ -231,7 +231,7 @@ void SolidHwTest::testDeviceInterfaces()
     Solid::Device cpu("/org/kde/solid/fakehw/acpi_CPU0");
 
     Solid::DeviceInterface *iface = cpu.asDeviceInterface(Solid::DeviceInterface::Processor);
-    Solid::Processor *processor = cpu.as<Solid::Processor>();
+    Solid::DeviceInterface *processor = cpu.as<Solid::Processor>();
 
     QVERIFY(cpu.isDeviceInterface(Solid::DeviceInterface::Processor));
     QVERIFY(iface!=0);

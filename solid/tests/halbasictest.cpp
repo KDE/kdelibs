@@ -67,7 +67,8 @@ void HalBasicTest::testBasic()
     QVERIFY(processor->unlock());
 #endif
 
-    QCOMPARE(interface->parent(), processor);
+    QObject *object = processor;
+    QCOMPARE(interface->parent(), object);
 
     delete processor;
     delete manager;
