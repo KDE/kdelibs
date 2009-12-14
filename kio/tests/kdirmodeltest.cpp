@@ -567,12 +567,16 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 
 void KDirModelTest::testRenameDirectoryInCache() // #188807
 {
+    // Ensure the stuff is in cache.
+    fillModel(true);
+    const QString path = m_tempDir->name();
+    QVERIFY(!m_dirModel->dirLister()->findByUrl(path).isNull());
+
     // No more dirmodel nor dirlister.
     delete m_dirModel;
     m_dirModel = 0;
 
     // Now let's rename a directory that is in KDirListerCache
-    const QString path = m_tempDir->name();
     const KUrl url(path);
     KUrl newUrl(path);
     newUrl.adjustPath(KUrl::RemoveTrailingSlash);
