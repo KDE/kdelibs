@@ -39,13 +39,6 @@
 #include <QtCore/QSet>
 
 
-uint qHash( const Nepomuk::Tag& res )
-{
-    return qHash( res.resourceUri().toString() );
-}
-
-
-
 class Nepomuk::TagWidget::Private
 {
 public:

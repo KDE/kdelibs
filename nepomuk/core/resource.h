@@ -716,6 +716,8 @@ namespace Nepomuk {
 
         friend class ResourceData;
     };
+
+    NEPOMUK_EXPORT uint qHash( const Resource& res );
 }
 
 #endif

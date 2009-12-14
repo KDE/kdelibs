@@ -31,13 +31,13 @@ namespace Nepomuk {
 
     /**
      * TagWidget provides a simple GUI interface to assign tags.
-     * It consists of a single text line displaying the assigned 
+     * It consists of a single text line displaying the assigned
      * tags and a menu to change the tags.
      */
     class NEPOMUK_EXPORT TagWidget : public QWidget
     {
         Q_OBJECT
-		
+
     public:
         /**
          * Creates a new TagWidget for resource. The assigned tags are loaded
@@ -54,7 +54,7 @@ namespace Nepomuk {
         QList<Resource> taggedResources() const;
 
         /**
-         * \return The list of all tags that are assigned to the currently set 
+         * \return The list of all tags that are assigned to the currently set
          * resource or an empty list if no resource has been set.
          *
          * \sa setTaggedResource, taggedResource, Resource::getTags
@@ -96,7 +96,5 @@ namespace Nepomuk {
         Private* const d;
     };
 }
-
-uint qHash( const Nepomuk::Tag& res );
 
 #endif

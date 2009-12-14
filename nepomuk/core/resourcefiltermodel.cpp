@@ -166,8 +166,8 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeProperty( const QU
 
 Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::ensureResource( const QUrl& resource, const QUrl& type )
 {
-    if ( !containsAnyStatement( Statement( resource, Vocabulary::RDF::type(), type ) ) ) {
-         Soprano::Error::ErrorCode c = addStatement( Statement( resource, Vocabulary::RDF::type(), type, mainContext() ) );
+    if ( !containsAnyStatement( Statement( resource, Soprano::Vocabulary::RDF::type(), type ) ) ) {
+         Soprano::Error::ErrorCode c = addStatement( Statement( resource, Soprano::Vocabulary::RDF::type(), type, mainContext() ) );
          if ( c == Soprano::Error::ErrorNone )
              return updateModificationDate( resource );
          else

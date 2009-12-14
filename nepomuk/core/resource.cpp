@@ -843,3 +843,9 @@ QList<Nepomuk::Resource> Nepomuk::Resource::allResources()
 {
     return Nepomuk::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( Soprano::Vocabulary::RDFS::Resource() ) );
 }
+
+
+uint Nepomuk::qHash( const Resource& res )
+{
+    return qHash(res.resourceUri());
+}
