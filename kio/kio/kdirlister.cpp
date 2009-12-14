@@ -732,17 +732,16 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     KUrl parentDir(url);
     parentDir.setPath( parentDir.directory() );
 
-    // If lister is set, check that it contains this dir
-    if (lister && !lister->d->lstDirs.contains(parentDir))
-        return 0;
-
     DirItem* dirItem = dirItemForUrl(parentDir);
     if (dirItem) {
-        KFileItemList::iterator it = dirItem->lstItems.begin();
-        const KFileItemList::iterator end = dirItem->lstItems.end();
-        for (; it != end ; ++it) {
-            if ((*it).url() == url) {
-                return &*it;
+        // If lister is set, check that it contains this dir
+        if (!lister || lister->d->lstDirs.contains(parentDir)) {
+            KFileItemList::iterator it = dirItem->lstItems.begin();
+            const KFileItemList::iterator end = dirItem->lstItems.end();
+            for (; it != end ; ++it) {
+                if ((*it).url() == url) {
+                    return &*it;
+                }
             }
         }
     }
@@ -753,8 +752,9 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     dirItem = dirItemForUrl(url);
     if (dirItem && !dirItem->rootItem.isNull() && dirItem->rootItem.url() == url) {
         // If lister is set, check that it contains this dir
-        if (!lister || lister->d->lstDirs.contains(url))
+        if (!lister || lister->d->lstDirs.contains(url)) {
             return &dirItem->rootItem;
+        }
     }
 
     return 0;

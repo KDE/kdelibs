@@ -118,6 +118,10 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(itemForUrl.url().url(), itemUrl.url());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 
+    KFileItem rootByUrl = m_dirLister.findByUrl(path);
+    QVERIFY(!rootByUrl.isNull());
+    QCOMPARE(rootByUrl.url().path() + '/', path);
+
     m_dirLister.clearSpies(); // for the tests that call testOpenUrl for setup
 }
 
@@ -410,7 +414,7 @@ void KDirListerTest::testRefreshRootItem()
 void KDirListerTest::testDeleteItem()
 {
     testOpenUrl(); // ensure m_items is uptodate
-    
+
     const int origItemCount = m_items.count();
     QCOMPARE(fileCount(), origItemCount);
     const QString path = m_tempDir.name();
