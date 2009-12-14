@@ -455,7 +455,7 @@ private:
         KTimeZone         tz;
     } converted;
 public:
-    KDateTime::SpecType   specType          : 4; // time spec type
+    KDateTime::SpecType   specType          : 4; // time spec type (N.B. need 3 bits + sign bit, since enums are signed on some platforms)
     Status                status            : 2; // reason for invalid status
     mutable bool          utcCached         : 1; // true if 'ut' is valid
     mutable bool          convertedCached   : 1; // true if 'converted' is valid
