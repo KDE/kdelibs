@@ -286,20 +286,20 @@ static QStringList list_standard_names()
 
     const HKeyCloser closer( timeZones );
     Q_FOREACH( const QString & keyname, keys ) {
-	
+    
         std::basic_string<TCHAR> keypath(path);
-        keypath	+= qstring_to_tcharstring(keyname);
-	HKEY key;
-	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
-	    return standardNames; // FIXME what's the right error handling here?
-	}
+        keypath += qstring_to_tcharstring(keyname);
+    HKEY key;
+    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
+        return standardNames; // FIXME what's the right error handling here?
+    }
 
-	const HKeyCloser closer( key );
+    const HKeyCloser closer( key );
 
-	TIME_ZONE_INFORMATION tz;
-	get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
+    TIME_ZONE_INFORMATION tz;
+    get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
 
-	standardNames << tchar_to_qstring(tz.StandardName);
+    standardNames << tchar_to_qstring(tz.StandardName);
     }
     return standardNames;
 }
@@ -316,22 +316,22 @@ static std::basic_string<TCHAR> pathFromZoneName(const KTimeZone& zone)
 
     const HKeyCloser closer( timeZones );
     Q_FOREACH( const QString & keyname, keys ) {
-	
+    
         std::basic_string<TCHAR> keypath(path);
-        keypath	+= qstring_to_tcharstring(keyname);
-	HKEY key;
-	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
-	    return 0; // FIXME what's the right error handling here?
-	}
+        keypath += qstring_to_tcharstring(keyname);
+    HKEY key;
+    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, keypath.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
+        return 0; // FIXME what's the right error handling here?
+    }
 
-	const HKeyCloser closer( key );
+    const HKeyCloser closer( key );
 
-	TIME_ZONE_INFORMATION tz;
-	get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
+    TIME_ZONE_INFORMATION tz;
+    get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
 
-	if ( tchar_to_qstring(tz.StandardName) == zone.name() ) {
-	    return keypath;
-	}
+    if ( tchar_to_qstring(tz.StandardName) == zone.name() ) {
+        return keypath;
+    }
     }
     Q_ASSERT(false);
 
