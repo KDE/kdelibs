@@ -712,8 +712,47 @@ void KCalendarTest::testHebrew()
 void KCalendarTest::testHijri()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create(QString( "hijri" ));
-    QDate testDate( 2005, 9, 10 );
 
+    QDate testDate( 2008, 12, 29 ); //1430-01-01, jd 2454830, not leap
+    QCOMPARE( calendar->year(testDate), 1430 );
+    QCOMPARE( calendar->month(testDate), 1 );
+    QCOMPARE( calendar->day(testDate), 1 );
+    QCOMPARE( calendar->isLeapYear( testDate ), false );
+    QCOMPARE( calendar->daysInYear(testDate), 354 );
+    QCOMPARE( calendar->daysInMonth(testDate), 30 );
+    QCOMPARE( calendar->dayOfYear(testDate), 1 );
+
+    testDate.setDate( 2009, 12, 17 ); //1430-12-29, jd 2455183, not leap
+    QCOMPARE( calendar->year(testDate), 1430 );
+    QCOMPARE( calendar->month(testDate), 12 );
+    QCOMPARE( calendar->day(testDate), 29 );
+    QCOMPARE( calendar->isLeapYear( testDate ), false );
+    QCOMPARE( calendar->daysInYear(testDate), 354 );
+    QCOMPARE( calendar->daysInMonth(testDate), 29 );
+    QCOMPARE( calendar->dayOfYear(testDate), 354 );
+
+    testDate.setDate( 2009, 12, 18 ); //1431-01-01, jd 2455184, leap
+    QCOMPARE( calendar->year(testDate), 1431 );
+    QCOMPARE( calendar->month(testDate), 1 );
+    QCOMPARE( calendar->day(testDate), 1 );
+    QCOMPARE( calendar->isLeapYear( testDate ), true );
+    QCOMPARE( calendar->daysInYear(testDate), 355 );
+    QCOMPARE( calendar->daysInMonth(testDate), 30 );
+    QCOMPARE( calendar->dayOfYear(testDate), 1 );
+
+    testDate.setDate( 2010, 12, 7 ); //1431-12-30, jd 2455538, leap
+    QCOMPARE( calendar->year(testDate), 1431 );
+    QCOMPARE( calendar->month(testDate), 12 );
+    QCOMPARE( calendar->day(testDate), 30 );
+    QCOMPARE( calendar->isLeapYear( testDate ), true );
+    QCOMPARE( calendar->daysInYear(testDate), 355 );
+    QCOMPARE( calendar->daysInMonth(testDate), 30 );
+    QCOMPARE( calendar->dayOfYear(testDate), 355 );
+
+    testDate.setDate( 2005, 9, 10 ); //1426-08-06
+    QCOMPARE( calendar->year(testDate), 1426 );
+    QCOMPARE( calendar->month(testDate), 8 );
+    QCOMPARE( calendar->day(testDate), 6 );
     QCOMPARE( calendar->daysInYear(testDate), 355 );
     QCOMPARE( calendar->daysInMonth(testDate), 29 );
     QCOMPARE( calendar->weeksInYear(testDate.year()), 50 );
@@ -900,8 +939,7 @@ void KCalendarTest::testHijriBasic()
     QCOMPARE( calendar->earliestValidDate(), QDate( 622, 7, 16 ) );
     QCOMPARE( calendar->latestValidDate(), QDate( 10323, 10, 21) );
 
-    // Restore after Hijri converted
-    //testValid( calendar, 10000, 13, 31, QDate( 1, 1, 1 ) );
+    testValid( calendar, 10000, 13, 31, QDate( 1, 1, 1 ) );
 
     QCOMPARE( calendar->isLeapYear( 1427 ), false );
     QCOMPARE( calendar->isLeapYear( 1428 ), true );

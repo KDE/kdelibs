@@ -1,8 +1,8 @@
 /*
     Copyright (c) 2002-2003 Carlos Moro <cfmoro@correo.uniovi.es>
     Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007 John Layt <john@layt.net>
- 
+    Copyright (c) 2007-2009 John Layt <john@layt.net>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -19,228 +19,49 @@
     Boston, MA 02110-1301, USA.
 */
 
-// Derived hijri kde calendar class
-
 #include "kcalendarsystemhijri_p.h"
 
-#include "kdebug.h"
-#include "klocale.h"
-
 #include <QtCore/QDate>
-#include <QtCore/QCharRef>
 
-
-//===========================================================================
-//  This section holds the old Hijri <=> jd <=> Hijri conversion code
-//  This is here to allow comparison testing to confirm old and new match
-//===========================================================================
-
-/*
-    The following C++ code is translated from the Lisp code
-    in ``Calendrical Calculations'' by Nachum Dershowitz and
-    Edward M. Reingold, Software---Practice & Experience,
-    vol. 20, no. 9 (September, 1990), pp. 899--928.
- 
-    This code is in the public domain, but any use of it
-    should publically acknowledge its source.
- 
-    Classes GregorianDate, IslamicDate
- */
-
-static int lastDayOfGregorianMonth( int month, int year )
+class KCalendarSystemHijriPrivate
 {
-    // Compute the last date of the month for the Gregorian calendar.
+public:
+    KCalendarSystemHijriPrivate( KCalendarSystemHijri *q ): q( q )
+    {
+    }
 
+    ~KCalendarSystemHijriPrivate()
+    {
+    }
+
+    KCalendarSystem *q;
+
+    int daysInMonth( int year, int month ) const;
+};
+
+int KCalendarSystemHijriPrivate::daysInMonth( int year, int month ) const
+{
     switch ( month ) {
     case 2:
-        if ( ( ( ( year % 4 ) == 0 ) && ( ( year % 100 ) != 0 ) )
-                || ( ( year % 400 ) == 0 ) ) {
-            return 29;
-        } else {
-            return 28;
-        }
     case 4:
     case 6:
-    case 9:
-    case 11: return 30;
-    default: return 31;
-    }
-}
-
-class GregorianDate
-{
-private:
-    int year;   // 1...
-    int month;  // 1 == January, ..., 12 == December
-    int day;    // 1..lastDayOfGregorianMonth(month, year)
-
-public:
-    GregorianDate( int m, int d, int y )
-    {
-        month = m; day = d; year = y;
-    }
-
-    // Computes the Gregorian date from the absolute date.
-    GregorianDate( int d )
-    {
-        // Search forward year by year from approximate year
-        year = d / 366;
-        while ( d >= GregorianDate( 1, 1, year + 1 ) ) {
-            year++;
-        }
-        // Search forward month by month from January
-        month = 1;
-        while ( d > GregorianDate( month, lastDayOfGregorianMonth( month, year ), year ) ) {
-            month++;
-        }
-        day = d - GregorianDate( month, 1, year ) + 1;
-    }
-
-    // Computes the absolute date from the Gregorian date.
-    operator int()
-    {
-        int N = day;           // days this month
-        for ( int m = month - 1;  m > 0; m-- ) // days in prior months this year
-            N = N + lastDayOfGregorianMonth( m, year );
-        return
-            ( N                    // days this year
-              + 365 * ( year - 1 )   // days in previous years ignoring leap days
-              + ( year - 1 ) / 4       // Julian leap days before this year...
-              - ( year - 1 ) / 100     // ...minus prior century years...
-              + ( year - 1 ) / 400 );   // ...plus prior years divisible by 400
-    }
-
-    int getMonth()
-    {
-        return month;
-    }
-
-    int getDay()
-    {
-        return day;
-    }
-
-    int getYear()
-    {
-        return year;
-    }
-
-};
-
-static int IslamicLeapYear( int year )
-{
-// True if year is an Islamic leap year
-
-    if ( ( ( ( 11 * year ) + 14 ) % 30 ) < 11 ) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-static const int IslamicEpoch = 227014; // Absolute date of start of
-// Islamic calendar
-
-static int lastDayOfIslamicMonth( int month, int year )
-{
-// Last day in month during year on the Islamic calendar.
-
-    if ( ( ( month % 2 ) == 1 ) || ( ( month == 12 ) && IslamicLeapYear( year ) ) ) {
-        return 30;
-    } else {
+    case 8:
+    case 10:
         return 29;
-    }
-}
-
-class IslamicDate
-{
-private:
-    int year;   // 1...
-    int month;  // 1..13 (12 in a common year)
-    int day;    // 1..lastDayOfIslamicMonth(month,year)
-
-public:
-    IslamicDate( int m, int d, int y )
-    {
-        month = m; day = d; year = y;
-    }
-
-    // Computes the Islamic date from the absolute date.
-    IslamicDate( int d )
-    {
-        if ( d <= IslamicEpoch ) { // Date is pre-Islamic
-            month = 0;
-            day = 0;
-            year = 0;
+    case 12:
+        if ( q->isLeapYear( year ) ) {
+            return 30;
         } else {
-            // Search forward year by year from approximate year
-            year = ( d - IslamicEpoch ) / 355;
-            while ( d >= IslamicDate( 1, 1, year + 1 ) ) {
-                year++;
-            }
-            // Search forward month by month from Muharram
-            month = 1;
-            while ( d > IslamicDate( month, lastDayOfIslamicMonth( month, year ), year ) ) {
-                month++;
-            }
-            day = d - IslamicDate( month, 1, year ) + 1;
+            return 29;
         }
-    }
-
-    // Computes the absolute date from the Islamic date.
-    operator int()
-    {
-        return ( day                          // days so far this month
-                 + 29 * ( month - 1 )         // days so far...
-                 + month / 2                  //            ...this year
-                 + 354 * ( year - 1 )         // non-leap days in prior years
-                 + ( 3 + ( 11 * year ) ) / 30 // leap days in prior years
-                 + IslamicEpoch );            // days before start of calendar
-    }
-
-    int getMonth()
-    {
-        return month;
-    }
-
-    int getDay()
-    {
-        return day;
-    }
-
-    int getYear()
-    {
-        return year;
-    }
-
-};
-
-static void gregorianToHijri( const QDate & date, int *pYear, int *pMonth, int * pDay )
-{
-    GregorianDate gregorian( date.month(), date.day(), date.year() );
-    int absolute = gregorian;
-
-    IslamicDate islamic( absolute );
-
-    if ( pYear ) {
-        * pYear = islamic.getYear();
-    }
-
-    if ( pMonth ) {
-        * pMonth = islamic.getMonth();
-    }
-
-    if ( pDay ) {
-        * pDay = islamic.getDay();
+    default:
+        return 30;
     }
 }
-
-//===========================================================================
-//  End of old code
-//===========================================================================
 
 KCalendarSystemHijri::KCalendarSystemHijri( const KLocale * locale )
-                     : KCalendarSystem( locale ), d( 0 )
+                     : KCalendarSystem( locale ),
+                       d( new KCalendarSystemHijriPrivate( this ) )
 {
 }
 
@@ -261,31 +82,27 @@ QDate KCalendarSystemHijri::epoch() const
 
 QDate KCalendarSystemHijri::earliestValidDate() const
 {
-    return KCalendarSystem::earliestValidDate();
+    return epoch();
 }
 
 QDate KCalendarSystemHijri::latestValidDate() const
 {
-    // Set to last day of year 9999 until confirm date formats & widgets support > 9999
+    // Set to last day of year 9999
     // Last day of Hijri year 9999 is 9999-12-29
-    // Which in Gregorian is 10323-10-21
-    // Which is jd xxxx FIXME Find out jd and use that instead
-    // Can't call setDate( 9999, 12, 29 ) as it creates circular reference!
-    return QDate( 10323, 10, 21 );
+    return QDate::fromJulianDay( 5491751 );
 }
 
-bool KCalendarSystemHijri::isValid( int y, int month, int day ) const
+bool KCalendarSystemHijri::isValid( int year, int month, int day ) const
 {
-    // taken from setYMD below, adapted to use new methods
-    if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
+    if ( year < 1 || year > 9999 ) {
         return false;
     }
 
-    if ( month < 1 || month > 12 ) {  // FIXME use monthsInYear
+    if ( month < 1 || month > 12 ) {
         return false;
     }
 
-    if ( day < 1 || day > lastDayOfIslamicMonth( month, y ) ) {
+    if ( day < 1 || day > d->daysInMonth( year, month ) ) {
         return false;
     }
 
@@ -303,114 +120,44 @@ bool KCalendarSystemHijri::setDate( QDate &date, int year, int month, int day ) 
 }
 
 // Deprecated
-bool KCalendarSystemHijri::setYMD( QDate &date, int y, int m, int d ) const
+bool KCalendarSystemHijri::setYMD( QDate &date, int year, int month, int day ) const
 {
-    // range checks
-    // Removed deleted minValidYear and maxValidYear methods
-    // Still use minimum of 1753 gregorain for now due to QDate using Julian calendar before then
-    // Later change to following once new methods validated
-    // if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) )
-    if ( y < year( QDate( 1753, 1, 1 ) ) || y > 9999 ) {
-        return false;
-    }
-
-    if ( m < 1 || m > 12 ) {
-        return false;
-    }
-
-    if ( d < 1 || d > lastDayOfIslamicMonth( m, y ) ) {
-        return false;
-    }
-
-    IslamicDate islamic ( m, d, y );
-    int absolute = islamic;
-    GregorianDate gregorian( absolute );
-
-    return date.setYMD( gregorian.getYear(), gregorian.getMonth(), gregorian.getDay() );
+    return KCalendarSystem::setYMD( date, year, month, day );
 }
 
 int KCalendarSystemHijri::year( const QDate &date ) const
 {
-    int y;
-
-    gregorianToHijri( date, &y, 0, 0 );
-
-    return y;
+    return KCalendarSystem::year( date );
 }
 
 int KCalendarSystemHijri::month( const QDate &date ) const
 {
-    int m;
-    gregorianToHijri( date, 0, &m, 0 );
-    return m;
+    return KCalendarSystem::month( date );
 }
 
 int KCalendarSystemHijri::day( const QDate &date ) const
 {
-    int d;
-
-    gregorianToHijri( date, 0, 0, &d );
-
-    return d;
+    return KCalendarSystem::day( date );
 }
 
 QDate KCalendarSystemHijri::addYears( const QDate &date, int nyears ) const
 {
-    QDate result = date;
-
-    int y = year( date ) + nyears;
-    int m = month( date );
-
-    //Quick hack to support destination month with fewer days than current month
-    if ( setYMD( result, y, m, 1 ) ) {
-        setYMD( result, y, m, qMin( day( date ), daysInMonth( result ) ) );
-    }
-
-    return result;
-
-/*  Use this once new jd formulas are verified
     return KCalendarSystem::addYears( date, nyears );
-*/
 }
 
 QDate KCalendarSystemHijri::addMonths( const QDate &date, int nmonths ) const
 {
-    QDate result = date;
-    int m = month( date );
-    int y = year( date );
-
-    if ( nmonths < 0 ) {
-        m += 12;
-        y -= 1;
-    }
-
-    --m; // this only works if we start counting at zero
-    m += nmonths;
-    y += m / 12;
-    m %= 12;
-    ++m;
-
-    //Quick hack to support destination month with fewer days than current month
-    if ( setYMD( result, y, m, 1 ) ) {
-        setYMD( result, y, m, qMin( day( date ), daysInMonth( result ) ) );
-    }
-
-    return result;
-
-/*  Use this once new jd formulas are verified
     return KCalendarSystem::addMonths( date, nmonths );
-*/
 }
 
 QDate KCalendarSystemHijri::addDays( const QDate &date, int ndays ) const
 {
-    return date.addDays( ndays );
+    return KCalendarSystem::addDays( date, ndays );
 }
 
 int KCalendarSystemHijri::monthsInYear( const QDate &date ) const
 {
     Q_UNUSED( date )
-
     return 12;
 }
 
@@ -421,116 +168,87 @@ int KCalendarSystemHijri::weeksInYear( const QDate &date ) const
 
 int KCalendarSystemHijri::weeksInYear( int year ) const
 {
-    QDate temp;
-    setYMD( temp, year, 12, lastDayOfIslamicMonth( 12, year ) );
-
-    // If the last day of the year is in the first week, we have to check the
-    // week before
-    if ( weekNumber( temp ) == 1 ) {
-        temp = addDays( temp, -7 );
-    }
-
-    return weekNumber( temp );
+    return KCalendarSystem::weeksInYear( year );
 }
 
 int KCalendarSystemHijri::daysInYear( const QDate &date ) const
 {
-    QDate first, last;
+    if ( !isValid( date ) ) {
+        return -1;
+    }
 
-    setYMD( first, year( date ), 1, 1 );
-    setYMD( last, year( date ) + 1, 1, 1 );
-
-    return first.daysTo( last );
+    if ( isLeapYear( date ) ) {
+        return 355;
+    } else {
+        return 354;
+    }
 }
 
 int KCalendarSystemHijri::daysInMonth( const QDate &date ) const
 {
-    int y, m;
+    if ( !isValid( date ) ) {
+        return -1;
+    }
 
-    gregorianToHijri( date, &y, &m, 0 );
-
-    return lastDayOfIslamicMonth( m, y );
+    return d->daysInMonth( year( date ), month( date ) );
 }
 
 int KCalendarSystemHijri::daysInWeek( const QDate &date ) const
 {
-    return KCalendarSystem::daysInWeek( date );
+    Q_UNUSED( date );
+    return 7;
 }
 
 int KCalendarSystemHijri::dayOfYear( const QDate &date ) const
 {
-    QDate first;
-
-    setYMD( first, year( date ), 1, 1 );
-
-    return first.daysTo( date ) + 1;
+    return KCalendarSystem::dayOfYear( date );
 }
 
 int KCalendarSystemHijri::dayOfWeek( const QDate &date ) const
 {
-    return date.dayOfWeek(); // same as gregorian
+    return KCalendarSystem::dayOfWeek( date );
 }
 
 int KCalendarSystemHijri::weekNumber( const QDate &date, int *yearNum ) const
 {
-    QDate firstDayWeek1, lastDayOfYear;
-    int y = year( date );
-    int week;
-    int weekDay1, dayOfWeek1InYear;
-
-    // let's guess 1st day of 1st week
-    setYMD( firstDayWeek1, y, 1, 1 );
-    weekDay1 = dayOfWeek( firstDayWeek1 );
-
-    // iso 8601: week 1  is the first containing thursday and week starts on
-    // monday
-    if ( weekDay1 > 4 ) {
-        firstDayWeek1 = addDays( firstDayWeek1 , 7 - weekDay1 + 1 ); // next monday
-    }
-
-    dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
-
-    // if our date in prev year's week
-    if ( dayOfYear( date ) < dayOfWeek1InYear ) {
-        if ( yearNum ) {
-            * yearNum = y - 1;
-        }
-        return weeksInYear( y - 1 );
-    }
-
-    // let's check if its last week belongs to next year
-    setYMD( lastDayOfYear, y, 12, lastDayOfIslamicMonth( 12, y ) );
-    // our date is in last week && 1st week in next year has thursday
-    if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )
-            && dayOfWeek( lastDayOfYear ) < 4 ) {
-        if ( yearNum ) {
-            * yearNum = y + 1;
-        }
-        week = 1;
-    } else {
-        if ( weekDay1 < 5 ) {
-            firstDayWeek1 = addDays( firstDayWeek1, - ( weekDay1 - 1 ) );
-        }
-
-        week = firstDayWeek1.daysTo( date ) / 7 + 1;
-    }
-
-    return week;
+    return KCalendarSystem::weekNumber( date, yearNum );
 }
 
 bool KCalendarSystemHijri::isLeapYear( int year ) const
 {
-    // Taken from IslamicLeapYear above
+    // Years 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29 of the 30 year cycle
+
+    /*
+    The following C++ code is translated from the Lisp code
+    in ``Calendrical Calculations'' by Nachum Dershowitz and
+    Edward M. Reingold, Software---Practice & Experience,
+    vol. 20, no. 9 (September, 1990), pp. 899--928.
+
+    This code is in the public domain, but any use of it
+    should publically acknowledge its source.
+    */
+
     if ( ( ( ( 11 * year ) + 14 ) % 30 ) < 11 ) {
         return true;
     } else {
         return false;
     }
+
+    // The following variations will be implemented in separate classes in 4.5
+    // May be cleaner to formally define using a case statement switch on (year % 30)
+
+    // Variation used by Bar Habraeus / Graves / Birashk / Some Microsoft products
+    // Years 2, 5, 7, 10, 13, 15, 18, 21, 24, 26, 29 of the 30 year cycle
+    // if ( ( ( ( 11 * year ) + 15 ) % 30 ) < 11 ) {
+
+    // Variation used by Bohras / Sahifa with epoch 15 July 622 jd = 1948440
+    // Years 2, 5, 8, 10, 13, 16, 19, 21, 24, 27, 29 of the 30 year cycle
+    // if ( ( ( ( 11 * year ) + 1 ) % 30 ) < 11 ) {
 }
 
 bool KCalendarSystemHijri::isLeapYear( const QDate &date ) const
 {
-    return KCalendarSystem::isLeapYear( year( date ) );
+    return KCalendarSystem::isLeapYear( date );
 }
 
 QString KCalendarSystemHijri::monthName( int month, int year, MonthNameFormat format ) const
@@ -772,7 +490,7 @@ int KCalendarSystemHijri::weekStartDay() const
 
 int KCalendarSystemHijri::weekDayOfPray() const
 {
-    return 5; // friday
+    return 5; // Friday
 }
 
 bool KCalendarSystemHijri::isLunar() const
@@ -797,38 +515,89 @@ bool KCalendarSystemHijri::isProleptic() const
 
 bool KCalendarSystemHijri::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
-    // From IslamicDate above.  Check me!
-    if ( jd >= earliestValidDate().toJulianDay() && jd <= latestValidDate().toJulianDay() ) {
-        // Search forward year by year from approximate year
-        year = ( jd - epoch().toJulianDay() ) / 355;
-        while ( jd >= IslamicDate( 1, 1, year + 1 ) ) {
-            year++;
-        }
-        // Search forward month by month from Muharram
-        month = 1;
-        while ( jd > IslamicDate( month, lastDayOfIslamicMonth( month, year ), year ) ) {
-            month++;
-        }
-        day = jd - IslamicDate( month, 1, year ) + 1;
-        return true;
+    /*
+    The following C++ code is translated from the Lisp code
+    in ``Calendrical Calculations'' by Nachum Dershowitz and
+    Edward M. Reingold, Software---Practice & Experience,
+    vol. 20, no. 9 (September, 1990), pp. 899--928.
+
+    This code is in the public domain, but any use of it
+    should publically acknowledge its source.
+    */
+
+    // Search forward year by year from approximate year
+    year = ( jd - epoch().toJulianDay() ) / 355;
+    int testJd;
+    dateToJulianDay( year, 12, d->daysInMonth( year, 12 ), testJd );
+    while ( jd > testJd ) {
+        year++;
+        dateToJulianDay( year, 12, d->daysInMonth( year, 12 ), testJd );
     }
 
-    return false;
+    // Search forward month by month from Muharram
+    month = 1;
+    dateToJulianDay( year, month, d->daysInMonth( year, month ), testJd );
+    while ( jd > testJd ) {
+        month++;
+        dateToJulianDay( year, month, d->daysInMonth( year, month ), testJd );
+    }
+
+    dateToJulianDay( year, month, 1, testJd );
+    day = jd - testJd + 1;
+
+    return true;
+
+    // Alternative implementations
+
+    // More recent editions of "Calendrical Calculations" by Dershowitz & Reingold have a more
+    // efficient direct calculation without recusrion, but this cannot be used due to licensing
+
+    /*
+    Formula from "Explanatory Supplement to the Astronomical Almanac" 2006, derived from Fliegel & Van Flandern 1968
+    int L = jd - epoch().toJulianDay() + 10632;
+    int N = ( L - 1 ) / 10631;
+    L = L - 10631 * N + 354;
+    int J = ( ( 10985 - L ) / 5316 ) x ( ( 50* L ) / 17719 ) + ( L / 5670 ) * ( ( 43 * L ) / 15238 );
+    L = L - ( ( 30 - J ) / 15 ) * ( ( 17719 * J ) / 50 ) - ( J / 16 ) * ( ( 15238 * J ) / 43 ) + 29;
+    year = ( 30 * N ) + J - 30;
+    month = ( 24 * L ) / 709;
+    day = L - ( ( 709 * month ) / 24 );
+    */
+
+    /*
+    Formula from Fourmilab website
+    jd = Math.floor(jd) + 0.5;
+    year = Math.floor(((30 * (jd - epoch().toJulianDay())) + 10646) / 10631);
+    month = qMin(12, Math.ceil((jd - (29 + islamic_to_jd(year, 1, 1))) / 29.5) + 1);
+    day = (jd - islamic_to_jd(year, month, 1)) + 1;
+    */
 }
 
 bool KCalendarSystemHijri::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
-    // From IslamicDate above.  Check me!
-    if ( isValid( year, month, day ) ) {
-        jd =  ( day                           // days so far this month
-                + 29 * ( month - 1 )          // days so far...
-                + month / 2                   //            ...this year
-                + 354 * ( year - 1 )          // non-leap days in prior years
-                + ( 3 + ( 11 * year ) ) / 30  // leap days in prior years
-                + epoch().toJulianDay() );                  // days before start of calendar
-        return true;
-    }
+    /*
+    The following C++ code is translated from the Lisp code
+    in ``Calendrical Calculations'' by Nachum Dershowitz and
+    Edward M. Reingold, Software---Practice & Experience,
+    vol. 20, no. 9 (September, 1990), pp. 899--928.
 
-    return false;
+    This code is in the public domain, but any use of it
+    should publically acknowledge its source.
+    */
+
+    jd = epoch().toJulianDay() - 1 +   // days before start of calendar
+         ( year - 1 ) * 354 +          // non-leap days in prior years
+         ( 3 + ( 11 * year ) ) / 30 +  // leap days in prior years
+         29 * ( month - 1 ) +          // days so far...
+         month / 2          +          //            ...this year
+         day;                          // days so far this month
+
+    return true;
+
+    // Alternative implementations
+
+    /*
+    Formula from "Explanatory Supplement to the Astronomical Almanac" 2006, derived from Fliegel & Van Flandern 1968
+    jd = ( 3 + ( 11 * year ) ) / 30 + 354 * year + 30 * month - ( month - 1 ) / 2 + day + epoch().toJulianDay() - 385;
+    */
 }
-
