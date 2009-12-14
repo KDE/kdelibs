@@ -61,8 +61,8 @@ find_package(Strigi REQUIRED)
 macro_log_feature(STRIGI_FOUND "Strigi" "A fast and small desktop searching program" "http://strigi.sourceforge.net" TRUE "${STRIGI_MIN_VERSION}" "Required by some critical kioslaves.")
 
 set(LIBATTICA_MIN_VERSION "0.1.1")
-find_package(LibAttica REQUIRED)
-macro_log_feature(LIBATTICA_FOUND "libattica" "A library to access Open Collaboration Service providers" "http://websvn.kde.org/trunk/kdesupport/attica/" FALSE "" "Required for Get Hot New Stuff.")
+find_package(LibAttica)
+macro_log_feature(LIBATTICA_FOUND "libattica" "A library to access Open Collaboration Service providers" "http://websvn.kde.org/trunk/kdesupport/attica/" TRUE "" "Required for Get Hot New Stuff.")
 
 #optional features
 if(X11_FOUND)
