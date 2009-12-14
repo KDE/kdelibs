@@ -40,7 +40,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QGroupBox>
-#include <QtCore/QDate>
 #include <QtGui/QPushButton>
 #include <QtGui/QRadioButton>
 #include <QtGui/QShortcut>
@@ -52,6 +51,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kvbox.h>
+#include <kdatetime.h>
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
@@ -283,7 +283,7 @@ void KCookieDetail::displayCookieDetails()
     else
         m_domain->setText(cookie.domain());
     m_path->setText(cookie.path());
-    QDateTime cookiedate;
+    KDateTime cookiedate;
     cookiedate.setTime_t(cookie.expireDate());
     if (cookie.expireDate())
         m_expires->setText(KGlobal::locale()->formatDateTime(cookiedate));

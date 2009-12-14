@@ -129,7 +129,7 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  const QString &_path,
                  const QString &_name,
                  const QString &_value,
-                 time_t _expireDate,
+                 qint64 _expireDate,
                  int _protocolVersion,
                  bool _secure,
                  bool _httpOnly,
@@ -150,7 +150,7 @@ KHttpCookie::KHttpCookie(const QString &_host,
 //
 // Checks if a cookie has been expired
 //
-bool    KHttpCookie::isExpired(time_t currentDate) const
+bool    KHttpCookie::isExpired(qint64 currentDate) const
 {
     return (mExpireDate != 0) && (mExpireDate < currentDate);
 }
@@ -722,7 +722,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 
             // Insert cookie in chain
             cookieList.append(cookie);
-            lastCookie = cookieList.end(); --lastCookie;
+            lastCookie = cookieList.end(); --lastCookie;            
         }
         else if (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0)
         {
@@ -1246,7 +1246,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
 
     QTextStream ts(&saveFile);
 
-    time_t curTime = time(0);
+    qint64 curTime = time(0);
 
     ts << "# KDE Cookie File v2\n#\n";
 
@@ -1283,9 +1283,9 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 domain += cookie.domain();
                 domain += '"';
                 // TODO: replace with direct QTextStream output ?
-                s.sprintf("%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
+                s.sprintf("%-20s %-20s %-12s %10lld  %3d %-20s %-4i %s\n",
                         cookie.host().toLatin1().constData(), domain.toLatin1().constData(),
-                        path.toLatin1().constData(), (unsigned long) cookie.expireDate(),
+                        path.toLatin1().constData(), cookie.expireDate(),
                         cookie.protocolVersion(),
                         cookie.name().isEmpty() ? cookie.value().toLatin1().constData() : cookie.name().toLatin1().constData(),
                         (cookie.isSecure() ? 1 : 0) + (cookie.isHttpOnly() ? 2 : 0) +
@@ -1342,7 +1342,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
         return false;
     }
 
-    time_t curTime = time(0);
+    qint64 curTime = time(0);
 
     char *buffer = new char[READ_BUFFER_SIZE];
 
@@ -1378,7 +1378,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
             const QString path = QString::fromLatin1( parseField(line) );
             const QString expStr = QString::fromLatin1( parseField(line) );
             if (expStr.isEmpty()) continue;
-            const int expDate = expStr.toInt();
+            const qint64 expDate = expStr.toLongLong();
             const QString verStr = QString::fromLatin1( parseField(line) );
             if (verStr.isEmpty()) continue;
             int protVer  = verStr.toInt();
