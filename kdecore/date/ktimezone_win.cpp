@@ -62,7 +62,7 @@ static inline TCHAR * qstring_to_tchar( const QString&s ) {
 }
 
 static inline std::basic_string<TCHAR> qstring_to_tcharstring( const QString& str ) {
-    return str.toStdWString();
+    return std::basic_string<TCHAR>( str.utf16() );
 }
 
 #else
