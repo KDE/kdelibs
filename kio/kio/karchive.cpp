@@ -223,9 +223,18 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         // Do NOT use fileInfo.readLink() for unix symlinks!
         // It returns the -full- path to the target, while we want the target string "as is".
 #if defined(Q_OS_UNIX) && !defined(Q_OS_OS2EMX)
+        const QByteArray encodedFileName = QFile::encodeName(fileName);
         QByteArray s;
+#if defined(PATH_MAX)
         s.resize(PATH_MAX+1);
-        int len = readlink( QFile::encodeName(fileName).data(), s.data(), PATH_MAX );
+#else
+        int path_max = pathconf(encodedFileName.data(), _PC_PATH_MAX);
+        if (path_max <= 0) {
+            path_max = 4096;
+        }
+        s.resize(path_max);
+#endif
+        int len = readlink(encodedFileName.data(), s.data(), s.size() - 1);
         if ( len >= 0 ) {
             s[len] = '\0';
             symLinkTarget = QFile::decodeName(s);
