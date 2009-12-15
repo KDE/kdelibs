@@ -1228,6 +1228,8 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
 {
   Q_D(KSelectionProxyModel);
 
+  beginResetModel();
+
   disconnect(sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           this, SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
   disconnect(sourceModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
@@ -1277,6 +1279,8 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           SLOT(sourceLayoutAboutToBeChanged()));
   connect(sourceModel, SIGNAL(layoutChanged()),
           SLOT(sourceLayoutChanged()));
+
+  endResetModel();
 }
 
 QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) const
