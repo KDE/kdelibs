@@ -203,11 +203,14 @@ class KTranslitSerbianPrivate
     QHash<QString, QString> dictI2E;
     int maxReflexLen;
     QChar reflexMark;
+
+    QString toLatinSimple (const QString& text, const QString &althead = "");
 };
 
 KTranslitSerbian::KTranslitSerbian ()
 : d(new KTranslitSerbianPrivate())
 {
+    // Known locale modifiers for dialect and script combinations.
     #define SR_NAME_ENTRY(hash, name) do { \
         hash[QString::fromAscii(name)] = true; \
     } while (0)
@@ -229,6 +232,7 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_NAME_ENTRY(d->ijekavianNames, "iyekavian");
     SR_NAME_ENTRY(d->ijekavianNames, "iyekavianlatin");
 
+    // Mapping from Cyrillic to Latin.
     #define SR_DICTC2L_ENTRY(a, b) do { \
         d->dictC2L[QString::fromUtf8(a)[0]] = QString::fromUtf8(b); \
     } while (0)
@@ -302,105 +306,40 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTC2L_ENTRY("Ӣ", "Ī");
     SR_DICTC2L_ENTRY("Ӯ", "Ū");
 
+    // Mapping from Ijekavian to Ekavian.
     d->reflexMark = QString::fromUtf8("›")[0];
     #define SR_DICTI2E_ENTRY(a, b) do { \
         d->dictI2E[QString::fromUtf8(a)] = QString::fromUtf8(b); \
     } while (0)
-    // basic, Cyrillic
+    // basic cases
     SR_DICTI2E_ENTRY("ије", "е");
-    SR_DICTI2E_ENTRY("Ије", "Е");
-    SR_DICTI2E_ENTRY("ИЈЕ", "Е");
     SR_DICTI2E_ENTRY("иј", "е");
-    SR_DICTI2E_ENTRY("Иј", "Е");
-    SR_DICTI2E_ENTRY("ИЈ", "Е");
     SR_DICTI2E_ENTRY("је", "е");
-    SR_DICTI2E_ENTRY("Је", "Е");
-    SR_DICTI2E_ENTRY("ЈЕ", "Е");
     SR_DICTI2E_ENTRY("ље", "ле");
-    SR_DICTI2E_ENTRY("Ље", "Ле");
-    SR_DICTI2E_ENTRY("ЉЕ", "ЛЕ");
     SR_DICTI2E_ENTRY("ње", "не");
-    SR_DICTI2E_ENTRY("Ње", "Не");
-    SR_DICTI2E_ENTRY("ЊЕ", "НЕ");
     SR_DICTI2E_ENTRY("ио", "ео");
-    SR_DICTI2E_ENTRY("Ио", "Ео");
-    SR_DICTI2E_ENTRY("ИО", "ЕО");
     SR_DICTI2E_ENTRY("иљ", "ел");
-    SR_DICTI2E_ENTRY("Иљ", "Ел");
-    SR_DICTI2E_ENTRY("ИЉ", "ЕЛ");
-    // basic, Latin
-    SR_DICTI2E_ENTRY("ije", "e");
-    SR_DICTI2E_ENTRY("Ije", "E");
-    SR_DICTI2E_ENTRY("IJE", "E");
-    SR_DICTI2E_ENTRY("ij", "e");
-    SR_DICTI2E_ENTRY("Ij", "E");
-    SR_DICTI2E_ENTRY("IJ", "E");
-    SR_DICTI2E_ENTRY("je", "e");
-    SR_DICTI2E_ENTRY("Je", "E");
-    SR_DICTI2E_ENTRY("JE", "E");
-    SR_DICTI2E_ENTRY("lje", "le");
-    SR_DICTI2E_ENTRY("Lje", "Le");
-    SR_DICTI2E_ENTRY("LJE", "LE");
-    SR_DICTI2E_ENTRY("nje", "ne");
-    SR_DICTI2E_ENTRY("Nje", "Ne");
-    SR_DICTI2E_ENTRY("NJE", "NE");
-    SR_DICTI2E_ENTRY("io", "eo");
-    SR_DICTI2E_ENTRY("Io", "Eo");
-    SR_DICTI2E_ENTRY("IO", "EO");
-    SR_DICTI2E_ENTRY("ilj", "el");
-    SR_DICTI2E_ENTRY("Ilj", "El");
-    SR_DICTI2E_ENTRY("ILJ", "EL");
     // special cases, Cyrillic
     SR_DICTI2E_ENTRY("лије", "ли");
-    SR_DICTI2E_ENTRY("Лије", "Ли");
-    SR_DICTI2E_ENTRY("ЛИЈЕ", "ЛИ");
     SR_DICTI2E_ENTRY("лијен", "лењ");
-    SR_DICTI2E_ENTRY("Лијен", "Лењ");
-    SR_DICTI2E_ENTRY("ЛИЈЕН", "ЛЕЊ");
     SR_DICTI2E_ENTRY("мија", "меја");
-    SR_DICTI2E_ENTRY("Мија", "Меја");
-    SR_DICTI2E_ENTRY("МИЈА", "МЕЈА");
     SR_DICTI2E_ENTRY("мије", "мејe");
-    SR_DICTI2E_ENTRY("Мије", "Мејe");
-    SR_DICTI2E_ENTRY("МИЈЕ", "МЕЈE");
     SR_DICTI2E_ENTRY("није", "ни");
-    SR_DICTI2E_ENTRY("Није", "Ни");
-    SR_DICTI2E_ENTRY("НИЈЕ", "НИ");
     SR_DICTI2E_ENTRY("гније", "гње");
-    SR_DICTI2E_ENTRY("Гније", "Гње");
-    SR_DICTI2E_ENTRY("ГНИЈЕ", "ГЊЕ");
     SR_DICTI2E_ENTRY("бијел", "бео");
-    SR_DICTI2E_ENTRY("Бијел", "Бео");
-    SR_DICTI2E_ENTRY("БИЈЕЛ", "БЕО");
     SR_DICTI2E_ENTRY("цијел", "цео");
-    SR_DICTI2E_ENTRY("Цијел", "Цео");
-    SR_DICTI2E_ENTRY("ЦИЈЕЛ", "ЦЕО");
-    // special cases, Latin
-    SR_DICTI2E_ENTRY("lije", "li");
-    SR_DICTI2E_ENTRY("Lije", "Li");
-    SR_DICTI2E_ENTRY("LIJE", "LI");
-    SR_DICTI2E_ENTRY("lijen", "lenj");
-    SR_DICTI2E_ENTRY("Lijen", "Lenj");
-    SR_DICTI2E_ENTRY("LIJEN", "LENJ");
-    SR_DICTI2E_ENTRY("mija", "meja");
-    SR_DICTI2E_ENTRY("Mija", "Meja");
-    SR_DICTI2E_ENTRY("MIJA", "MEJA");
-    SR_DICTI2E_ENTRY("mije", "meje");
-    SR_DICTI2E_ENTRY("Mije", "Meje");
-    SR_DICTI2E_ENTRY("MIJE", "MEJE");
-    SR_DICTI2E_ENTRY("nije", "ni");
-    SR_DICTI2E_ENTRY("Nije", "Ni");
-    SR_DICTI2E_ENTRY("NIJE", "NI");
-    SR_DICTI2E_ENTRY("gnije", "gnje");
-    SR_DICTI2E_ENTRY("Gnije", "Gnje");
-    SR_DICTI2E_ENTRY("GNIJE", "GNJE");
-    SR_DICTI2E_ENTRY("bijel", "beo");
-    SR_DICTI2E_ENTRY("Bijel", "Beo");
-    SR_DICTI2E_ENTRY("BIJEL", "BEO");
-    SR_DICTI2E_ENTRY("cijel", "ceo");
-    SR_DICTI2E_ENTRY("Cijel", "Ceo");
-    SR_DICTI2E_ENTRY("CIJEL", "CEO");
-
+    // derived Latin mappings (before capitalization and uppercasing)
+    foreach (const QString &reflex, d->dictI2E.keys()) {
+        QString ekform = d->dictI2E.value(reflex);
+        d->dictI2E[d->toLatinSimple(reflex)] = d->toLatinSimple(ekform);
+    }
+    // derived capitalized and uppercase mappings
+    foreach (const QString &reflex, d->dictI2E.keys()) {
+        QString ekform = d->dictI2E.value(reflex);
+        d->dictI2E[reflex[0].toUpper() + reflex.mid(1)] = ekform[0].toUpper() + ekform.mid(1);
+        d->dictI2E[reflex.toUpper()] = ekform.toUpper();
+    }
+    // maximum reflex length (needed on transliteration)
     d->maxReflexLen = 0;
     foreach (const QString &reflex, d->dictI2E.keys()) {
         if (d->maxReflexLen < reflex.length()) {
@@ -412,6 +351,43 @@ KTranslitSerbian::KTranslitSerbian ()
 KTranslitSerbian::~KTranslitSerbian ()
 {
     delete d;
+}
+
+QString KTranslitSerbianPrivate::toLatinSimple (const QString &text,
+                                                const QString &altHead)
+{
+    // NOTE: This loop has been somewhat optimized for speed.
+    int slen = text.length();
+    bool haveAlts = !altHead.isEmpty() && text.indexOf(altHead) >= 0;
+    QString ntext;
+    ntext.reserve(slen + 5);
+    for (int i = 0; i < slen; ++i) {
+        // Skip alternatives directives altogether, so that they can be used
+        // as a mean to exclude from transliteration.
+        if (haveAlts) {
+            int to = skipInsert(text, i, 2, altHead);
+            if (to > i) {
+                ntext.append(text.mid(i, to - i));
+                if (to >= slen) break;
+                i = to;
+            }
+        }
+        // Transliterate current character.
+        QChar c = text[i];
+        QString r = dictC2L[c];
+        if (!r.isEmpty()) {
+            if (   r.length() > 1 && c.isUpper()
+                && (   (i + 1 < slen && text[i + 1].isUpper())
+                    || (i > 0 && text[i - 1].isUpper()))) {
+                ntext.append(r.toUpper());
+            } else {
+                ntext.append(r);
+            }
+        } else {
+            ntext.append(c);
+        }
+    }
+    return ntext;
 }
 
 QString KTranslitSerbian::transliterate (const QString &str_,
@@ -466,38 +442,8 @@ QString KTranslitSerbian::transliterate (const QString &str_,
 
     // Resolve Cyrillic/Latin.
     if (d->latinNames.contains(script)) {
-        // NOTE: This loop has been somewhat optimized for speed.
-        int slen = str.length();
-        bool anyInserts = str.indexOf(insHead) >= 0;
-        QString nstr;
-        nstr.reserve(slen + 5);
-        for (int i = 0; i < slen; ++i) {
-            // Skip alternative inserts altogether, so that they can be used
-            // as a mean to exclude from transliteration.
-            if (anyInserts) {
-                int to = skipInsert(str, i, 2, insHead);
-                if (to > i) {
-                    nstr.append(str.mid(i, to - i));
-                    if (to >= slen) break;
-                    i = to;
-                }
-            }
-            // Transliterate current character.
-            QChar c = str[i];
-            QString r = d->dictC2L[c];
-            if (!r.isEmpty()) {
-                if (   r.length() > 1 && c.isUpper()
-                    && (   (i + 1 < slen && str[i + 1].isUpper())
-                        || (i > 0 && str[i - 1].isUpper()))) {
-                    nstr.append(r.toUpper());
-                } else {
-                    nstr.append(r);
-                }
-            } else {
-                nstr.append(c);
-            }
-        }
-        str = resolveInserts(nstr, 2, 1, insHead);
+        str = d->toLatinSimple(str, insHead);
+        str = resolveInserts(str, 2, 1, insHead);
     } else {
         str = resolveInserts(str, 2, 0, insHead);
     }
