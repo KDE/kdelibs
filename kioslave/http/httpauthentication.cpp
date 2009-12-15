@@ -186,8 +186,8 @@ void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const KUrl &
 
 QString KAbstractHttpAuthentication::realm() const
 {
-    QByteArray realm = valueForKey(m_challenge, "realm");
-    if (KGlobal::locale()->language().contains("ru")) {
+    const QByteArray realm = valueForKey(m_challenge, "realm");
+    if (KGlobal::locale()->language().contains(QLatin1String("ru"))) {
         //for sites like lib.homelinux.org
         return QTextCodec::codecForName("CP1251")->toUnicode(realm);
     }
@@ -247,7 +247,6 @@ void KHttpBasicAuthentication::generateResponse(const QString &user, const QStri
     m_headerFragment = "Basic ";
     m_headerFragment += KCodecs::base64Encode(m_username.toLatin1() + ':' + m_password.toLatin1());
     m_headerFragment += "\r\n";
-    return;
 }
 
 
@@ -445,7 +444,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     // Determine the path of the request url...
     QString requestPath = m_resource.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
     if (requestPath.isEmpty())
-      requestPath = '/';
+      requestPath = QLatin1Char('/');
 
     foreach (const KUrl &u, info.digestURIs)
     {
@@ -457,7 +456,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
 
       QString digestPath = u.directory (KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
       if (digestPath.isEmpty())
-        digestPath = '/';
+        digestPath = QLatin1Char('/');
 
       send &= (requestPath.startsWith(digestPath));
 
@@ -483,7 +482,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
   // Calculate the response...
   QByteArray Response = calculateResponse(info, m_resource);
 
-  QString auth = "Digest username=\"";
+  QByteArray auth = "Digest username=\"";
   auth += info.username;
 
   auth += "\", realm=\"";
@@ -494,7 +493,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
   auth += info.nonce;
 
   auth += "\", uri=\"";
-  auth += m_resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath);
+  auth += m_resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath).toLatin1();
 
   if (!info.algorithm.isEmpty()) {
     auth += "\", algorithm=\"";
@@ -524,7 +523,6 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
 // magic ends here
     // note that auth already contains \r\n
     m_headerFragment = auth;
-    return;
 }
 
 
@@ -552,7 +550,7 @@ void KHttpNtlmAuthentication::fillKioAuthInfo(KIO::AuthInfo *ai) const
     // Every auth scheme is supposed to supply a realm according to the RFCs. Of course this doesn't
     // prevent Microsoft from not doing it... Dummy value!
     // we don't have the username yet which may (may!) contain a domain, so we really have no choice
-    ai->realmValue = "NTLM";
+    ai->realmValue = QLatin1String("NTLM");
 }
 
 
@@ -573,9 +571,9 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
         // we've (hopefully) received a valid type 2 message: send type 3 message as last step
         QString domain;
         QString user = m_username;
-        if (user.contains('\\')) {
-            domain = user.section('\\', 0, 0);
-            user = user.section('\\', 1);
+        if (user.contains(QLatin1Char('\\'))) {
+            domain = user.section(QLatin1Char('\\'), 0, 0);
+            user = user.section(QLatin1Char('\\'), 1);
         }
 
         m_forceKeepAlive = true;
@@ -637,7 +635,7 @@ void KHttpNegotiateAuthentication::fillKioAuthInfo(KIO::AuthInfo *ai) const
 {
     authInfoBoilerplate(ai);
     //### does GSSAPI supply anything realm-like? dummy value for now.
-    ai->realmValue = "Negotiate";
+    ai->realmValue = QLatin1String("Negotiate");
 }
 
 

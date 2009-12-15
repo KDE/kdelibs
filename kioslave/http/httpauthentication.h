@@ -73,7 +73,7 @@ public:
     bool forceDisconnect() const { return m_forceDisconnect; }
 
     // insert this into the next request header after "Authorization: " or "Proxy-Authorization: "
-    QString headerFragment() const { return m_headerFragment; }
+    QByteArray headerFragment() const { return m_headerFragment; }
     // this is mainly for GUI shown to the user
     QString realm() const;
 
@@ -90,7 +90,7 @@ protected:
     bool m_needCredentials;
     bool m_forceKeepAlive;
     bool m_forceDisconnect;
-    QString m_headerFragment;
+    QByteArray m_headerFragment;
 
     QString m_username;
     QString m_password;
