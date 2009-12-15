@@ -353,7 +353,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
     while ( !src.isEmpty() ) {
         checkScriptBuffer();
         unsigned char ch = src->toLatin1();
-        if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QString::fromRawData( scriptCode+scriptCodeSize-3, 3 ) == "<!-" ) {
+        if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && ch == '-' && scriptCodeSize >= 4 && !src.escaped() && QString::fromRawData( scriptCode+scriptCodeSize-4, 4 ) == QLatin1String("<!--") ) {
             comment = true;
             scriptCode[ scriptCodeSize++ ] = ch;
             ++src;
