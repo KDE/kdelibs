@@ -42,14 +42,14 @@ public:
     /// Save the list of installed entries
     void writeRegistry();
 
-    void insertRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::EntryInternal::List& entries);
-    EntryInternal::List requestFromCache(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
+    void insertRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize, const KNS3::EntryInternal::List& entries);
+    EntryInternal::List requestFromCache(KNS3::Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize);
 
 public Q_SLOTS:
     void registerChangedEntry(const KNS3::EntryInternal& entry);
 
 private:
-    QString hashForRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize);
+    QString hashForRequest(KNS3::Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize);
     QString registryFile;
 
     QSet<EntryInternal> cache;

@@ -25,8 +25,8 @@
 
 #include <kdialog.h>
 
-#include <knewstuff3/knewstuff_export.h>
-#include <knewstuff3/entry.h>
+#include "knewstuff_export.h"
+#include "entry.h"
 
 namespace KNS3
 {

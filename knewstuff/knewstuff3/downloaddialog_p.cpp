@@ -30,6 +30,7 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <ktitlewidget.h>
+#include <kdebug.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
@@ -85,7 +86,6 @@ void DownloadDialogPrivate::sortingChanged()
     ui.m_searchEdit->setEnabled(sortMode != Provider::Installed);
 
     engine->setSortMode(sortMode);
-    engine->reloadEntries();
 }
 
 void DownloadDialogPrivate::slotUpdateSearch()
@@ -103,6 +103,20 @@ void DownloadDialogPrivate::slotSearchTextChanged()
     }
     searchTerm = ui.m_searchEdit->text().trimmed();
     engine->setSearchTerm(ui.m_searchEdit->text().trimmed());
+}
+
+void DownloadDialogPrivate::slotCategoryChanged(int idx)
+{
+    if (idx == 0) {
+        // All Categories item selected, reset filter
+        engine->setCategoriesFilter(QStringList());
+    }
+
+    QString category = ui.m_categoryCombo->currentText();
+    if (!category.isEmpty()) {
+        QStringList filter(category);
+        engine->setCategoriesFilter(filter);
+    }
 }
 
 void DownloadDialogPrivate::slotInfo(QString provider, QString server, QString version)
@@ -151,7 +165,7 @@ void DownloadDialogPrivate::init(const QString& configFile)
     engine->init(configFile);
 
     // Entries have been fetched and should be shown:
-    connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), model, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
+    connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), this, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
 
     connect(engine, SIGNAL(signalError(const QString&)), SLOT(slotError(const QString&)));
 
@@ -182,9 +196,18 @@ void DownloadDialogPrivate::init(const QString& configFile)
     ui.m_providerCombo->setVisible(false);
     ui.m_providerCombo->addItem(i18n("All Providers"));
 
-    ui.m_categoryLabel->setVisible(false);
-    ui.m_categoryCombo->setVisible(false);
-    ui.m_categoryCombo->addItem(i18n("All Categories"));
+    QStringList categories = engine->categories();
+    if (categories.size() < 2) {
+        ui.m_categoryLabel->setVisible(false);
+        ui.m_categoryCombo->setVisible(false);
+    } else {
+        ui.m_categoryCombo->addItem(i18n("All Categories"));
+        foreach(const QString& category, categories) {
+            ui.m_categoryCombo->addItem(category);
+        }
+    }
+
+    connect(ui.m_categoryCombo, SIGNAL(activated(int)), SLOT(slotCategoryChanged(int)));
 
 
     ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
@@ -196,6 +219,17 @@ void DownloadDialogPrivate::init(const QString& configFile)
 
     // FIXME connect(engine, SIGNAL(signalJobStarted(KJob*)), ui.progressIndicator, SLOT(addJob(KJob*)));
     connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
+}
+
+void DownloadDialogPrivate::slotEntriesLoaded(const EntryInternal::List& entries)
+{
+    foreach(const KNS3::EntryInternal &entry, entries) {
+        if (!categories.contains(entry.category())) {
+            kDebug() << "Found category: " << entry.category();
+            categories.insert(entry.category());
+        }
+    }
+    model->slotEntriesLoaded(entries);
 }
 
 void DownloadDialogPrivate::displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs)

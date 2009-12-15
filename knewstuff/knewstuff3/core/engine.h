@@ -108,12 +108,16 @@ public:
     void uninstall(KNS3::EntryInternal entry);
 
     void setSortMode(Provider::SortMode mode);
+    void setCategoriesFilter(const QStringList& categories);
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
     void slotRequestMoreData();
 
     void vote(const EntryInternal& entry, bool positiveVote);
     void becomeFan(const EntryInternal& entry);
+
+    QStringList categories() const;
+    QStringList categoriesFilter() const;
 
 public Q_SLOTS:
     void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::EntryInternal entry);

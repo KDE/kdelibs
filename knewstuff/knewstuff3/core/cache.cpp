@@ -121,21 +121,21 @@ void Cache::registerChangedEntry(const KNS3::EntryInternal& entry)
     cache.insert(entry);
 }
 
-void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, const KNS3::EntryInternal::List& entries)
+void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize, const KNS3::EntryInternal::List& entries)
 {
-    requestCache[hashForRequest(sortMode, searchstring, page, pageSize)] = entries;
-    kDebug() << hashForRequest(sortMode, searchstring, page, pageSize) << " keys: " << requestCache.keys();
+    requestCache[hashForRequest(sortMode, searchstring, categories, page, pageSize)] = entries;
+    kDebug() << hashForRequest(sortMode, searchstring, categories, page, pageSize) << " keys: " << requestCache.keys();
 }
 
-EntryInternal::List Cache::requestFromCache(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize)
+EntryInternal::List Cache::requestFromCache(Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize)
 {
-    kDebug() << hashForRequest(sortMode, searchstring, page, pageSize);
-    return requestCache.value(hashForRequest(sortMode, searchstring, page, pageSize));
+    kDebug() << hashForRequest(sortMode, searchstring, categories, page, pageSize);
+    return requestCache.value(hashForRequest(sortMode, searchstring, categories, page, pageSize));
 }
 
-QString Cache::hashForRequest(Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize)
+QString Cache::hashForRequest(Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize)
 {
-    return QString(QString::number((int)sortMode) + ',' + searchstring + ',' + QString::number(page) + ',' + QString::number(pageSize));
+    return QString(QString::number((int)sortMode) + ',' + searchstring + ',' + categories.join(QString('-')) + ',' + QString::number(page) + ',' + QString::number(pageSize));
 }
 
 #include "cache.moc"

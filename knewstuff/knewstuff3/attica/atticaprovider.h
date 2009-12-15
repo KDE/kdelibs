@@ -44,7 +44,7 @@ namespace KNS3
     {
         Q_OBJECT
     public:
-        AtticaProvider(const QStringList& categories, const QStringList& categoriesPatterns);
+        AtticaProvider(const QStringList& categories);
 
         ~AtticaProvider();
 
@@ -62,7 +62,10 @@ namespace KNS3
 
         virtual bool isInitialized() const;
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
-        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20);
+        virtual void loadEntries(SortMode sortMode = Rating,
+                                 const QString & searchstring = QString(),
+                                 const QStringList & categories = QStringList(),
+                                 int page = 0, int pageSize = 20);
         virtual void loadPayloadLink(const EntryInternal& entry);
 
         virtual bool userCanVote() {return true;}

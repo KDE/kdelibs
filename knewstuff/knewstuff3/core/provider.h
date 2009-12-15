@@ -112,7 +112,7 @@ namespace KNS3
          *
          * Note: the engine connects to loadingFinished() signal to get the result
          */
-        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), int page = 0, int pageSize = 20) = 0;
+        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), const QStringList & categories = QStringList(), int page = 0, int pageSize = 20) = 0;
         virtual void loadPayloadLink(const EntryInternal& entry) = 0;
 
         virtual bool userCanVote() {return false;}

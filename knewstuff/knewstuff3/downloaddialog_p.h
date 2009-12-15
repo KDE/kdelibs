@@ -63,12 +63,16 @@ public:
     QString searchTerm;
     QSet<EntryInternal> changedEntries;
 
+    QSet<QString> categories;
+    QSet<QString> providers;
+
     DownloadDialogPrivate();
     ~DownloadDialogPrivate();
     void init(const QString& configFile);
     void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0);
 
 public Q_SLOTS:
+    void slotEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void slotEntryChanged(const KNS3::EntryInternal& entry);
 
     void slotPayloadFailed(const EntryInternal& entry);
@@ -79,6 +83,7 @@ public Q_SLOTS:
     void sortingChanged();
     void slotSearchTextChanged();
     void slotUpdateSearch();
+    void slotCategoryChanged(int);
 
     void slotInfo(QString provider, QString server, QString version);
     void slotError(const QString& message);

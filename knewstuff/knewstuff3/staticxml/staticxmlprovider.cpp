@@ -189,10 +189,11 @@ void StaticXmlProvider::setCachedEntries(const KNS3::EntryInternal::List& cached
     d->cachedEntries.append(cachedEntries);
 }
 
-void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, int page, int pageSize)
+void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize)
 {
     Q_D(StaticXmlProvider);
     Q_UNUSED(pageSize); // here we just get that one page, no matter what
+    Q_UNUSED(categories);
     d->searchTerm = searchstring;
 
     if (sortMode == Installed) {

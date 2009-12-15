@@ -89,9 +89,10 @@ class KNS3::Engine::Private {
         QString searchTerm;
         // The url of the file containing information about content providers
         QString providerFileUrl;
-        // Categories to search in
+        // Categories from knsrc file
         QStringList categories;
-        QStringList categoriesPattern;
+        // Categories to search in
+        QStringList categoriesFilter;
 
         QHash<QString, ProviderInformation> providers;
 
@@ -99,7 +100,6 @@ class KNS3::Engine::Private {
         QString applicationName;
 
         QMap<EntryInternal, QString> previewfiles; // why not in entry?
-
 
         QMap<KJob*, EntryInternal> previewPictureJobs;
 
@@ -185,8 +185,8 @@ bool Engine::init(const QString &configfile)
     }
 
     d->categories = group.readEntry("Categories", QStringList());
-    d->categoriesPattern = group.readEntry("CategoryPattern", QStringList());
-    kDebug() << "Categories: " << d->categories << " pattern: " << d->categoriesPattern;
+    d->categoriesFilter = d->categories;
+    kDebug() << "Categories: " << d->categories;
     d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
 
@@ -206,6 +206,16 @@ bool Engine::init(const QString &configfile)
     loadProviders();
 
     return true;
+}
+
+QStringList Engine::categories() const
+{
+    return d->categories;
+}
+
+QStringList Engine::categoriesFilter() const
+{
+    return d->categoriesFilter;
 }
 
 void Engine::loadProviders()
@@ -245,7 +255,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
             QSharedPointer<KNS3::Provider> provider;
             if (isAtticaProviderFile || p.attribute("type").toLower() == "rest") {
                 #if defined(HAVE_LIBATTICA)
-                provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories, d->categoriesPattern));
+                provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
                 #else
                 kDebug() << "KHotNewStuff compiled without attica support, could not load provider.";
                 break;
@@ -277,8 +287,7 @@ void Engine::providerInitialized(Provider* p)
     kDebug() << "providerInitialized" << p->name();
     p->setCachedEntries(d->cache->registryForProvider(p->id()));
 
-    // TODO parameters according to search string etc
-    p->loadEntries(d->sortMode, d->searchTerm, 0, d->pageSize);
+    p->loadEntries(d->sortMode, d->searchTerm, d->categoriesFilter, 0, d->pageSize);
 }
 
 void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::EntryInternal::List entries)
@@ -293,7 +302,7 @@ void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString&
     kDebug() << "current page" << d->currentPage;
 
     //d->cache->insertEntries(entries);
-    d->cache->insertRequest(d->sortMode, d->searchTerm, d->currentPage, d->pageSize, entries);
+    d->cache->insertRequest(d->sortMode, d->searchTerm, d->categoriesFilter, d->currentPage, d->pageSize, entries);
     emit signalEntriesLoaded(entries);
 }
 
@@ -309,7 +318,7 @@ void Engine::reloadEntries()
 
             int page = 0;
             while (true) {
-                EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, page, d->pageSize);
+                EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, page, d->pageSize);
                 if (!cache.isEmpty()) {
                     kDebug() << "From cache";
                     emit signalEntriesLoaded(cache);
@@ -322,10 +331,16 @@ void Engine::reloadEntries()
             }
             if (page == 0) {
                 kDebug() << "From provider";
-                p.provider->loadEntries(d->sortMode, d->searchTerm, 0, d->pageSize);
+                p.provider->loadEntries(d->sortMode, d->searchTerm, d->categoriesFilter, 0, d->pageSize);
             }
         }
     }
+}
+
+void Engine::setCategoriesFilter(const QStringList& categories)
+{
+    d->categoriesFilter = categories;
+    reloadEntries();
 }
 
 void Engine::setSortMode(Provider::SortMode mode)
@@ -334,13 +349,14 @@ void Engine::setSortMode(Provider::SortMode mode)
         d->currentPage = -1;
     }
     d->sortMode = mode;
+    reloadEntries();
 }
 
 void Engine::setSearchTerm(const QString& searchString)
 {
     d->searchTimer->stop();
     d->searchTerm = searchString;
-    EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, 0, 20);
+    EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, 0, 20);
     if (!cache.isEmpty()) {
         reloadEntries();
     } else {
@@ -367,13 +383,13 @@ void Engine::slotRequestMoreData()
         if (p.provider->isInitialized()) {
             // FIXME: other parameters
             // FIXME use cache, if this request was sent already, take it from the cache
-            EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->requestedPage, 20);
+            EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, d->requestedPage, 20);
             if (!cache.isEmpty()) {
                 kDebug() << "From cache";
                 emit signalEntriesLoaded(cache);
             } else {
                 kDebug() << "From provider";
-                p.provider->loadEntries(d->sortMode, d->searchTerm, d->requestedPage, d->pageSize);
+                p.provider->loadEntries(d->sortMode, d->searchTerm, d->categoriesFilter, d->requestedPage, d->pageSize);
             }
         }
     }

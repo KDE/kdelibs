@@ -41,14 +41,8 @@ namespace KNS3
 class AtticaProviderPrivate :public ProviderPrivate
 {
 public:
-    // List of categories that have to match exactly with those on the server
-    QStringList categoryNameList;
-    // List of patterns that are matched against categories
-    // (so that Wallpaper returns KDE Wallpaper 640x480 for example)
-    QStringList categoryPatternList;
-
     // the attica categories we are interested in (e.g. Wallpaper, Application, Vocabulary File...)
-    Attica::Category::List categoryList;
+    QHash<QString, Attica::Category> categoryMap;
 
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
@@ -70,13 +64,15 @@ public:
     }
 };
 
-AtticaProvider::AtticaProvider(const QStringList& categories, const QStringList& categoriesPatterns)
+AtticaProvider::AtticaProvider(const QStringList& categories)
     : Provider(*new AtticaProviderPrivate)
 {
     Q_D(AtticaProvider);
     d->mName = QString("https://api.opendesktop.org/v1/");
-    d->categoryNameList = categories;
-    d->categoryPatternList = categoriesPatterns;
+
+    // init categories map with invalid categories
+    foreach (const QString& category, categories)
+        d->categoryMap.insert(category, Attica::Category());
 
     connect(&d->m_providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerLoaded(const Attica::Provider&)));
     connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)),
@@ -161,21 +157,15 @@ void AtticaProvider::providerLoaded(const Attica::Provider& provider)
 void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
     Q_D(AtticaProvider);
-    kDebug() << "loading categories: " << d->categoryNameList;
+    kDebug() << "loading categories: " << d->categoryMap.keys();
 
     Attica::ListJob<Attica::Category>* job = static_cast<Attica::ListJob<Attica::Category>*>(listJob);
     Category::List categoryList = job->itemList();
 
     foreach(const Category& category, categoryList) {
-        if (d->categoryNameList.contains(category.name())) {
+        if (d->categoryMap.contains(category.name())) {
             kDebug() << "Adding category: " << category.name();
-            d->categoryList.append(category);
-        }
-        foreach(const QString& pattern, d->categoryPatternList) {
-            if (category.name().contains(pattern)) {
-                kDebug() << "Adding category (pattern): " << category.name();
-                d->categoryList.append(category);
-            }
+            d->categoryMap[category.name()] = category;
         }
     }
     emit providerInitialized(this);
@@ -187,7 +177,7 @@ bool AtticaProvider::isInitialized() const
     return !d->m_providerManager.providers().isEmpty();
 }
 
-void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString, int page, int pageSize)
+void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString, const QStringList& categories, int page, int pageSize)
 {
     Q_D(AtticaProvider);
 
@@ -197,7 +187,18 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
     }
 
     Attica::Provider::SortMode sorting = atticaSortMode(sortMode);
-    ListJob<Content>* job = d->m_provider.searchContents(d->categoryList, searchString, sorting, page, pageSize);
+    Attica::Category::List categoriesToSearch;
+
+    if (categories.isEmpty()) {
+        // search in all categories
+        categoriesToSearch = d->categoryMap.values();
+    } else {
+        foreach (const QString& categoryName, categories) {
+            categoriesToSearch.append(d->categoryMap.value(categoryName));
+        }
+    }
+
+    ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, searchString, sorting, page, pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
 
     d->entryJobs[job] = page;
