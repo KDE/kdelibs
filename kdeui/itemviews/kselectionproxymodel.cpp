@@ -1171,6 +1171,9 @@ KSelectionProxyModel::~KSelectionProxyModel()
 void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
 {
   Q_D(KSelectionProxyModel);
+
+  beginResetModel();
+
   d->m_filterBehavior = behavior;
 
   switch(behavior)
@@ -1214,8 +1217,8 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
     break;
   }
   }
-  reset();
 
+  endResetModel();
 }
 
 KSelectionProxyModel::FilterBehavior KSelectionProxyModel::filterBehavior() const
