@@ -25,12 +25,19 @@
 #include <kdebug.h>
 
 #include <QStringList>
+#include <QLibrary>
+
 #include <windows.h>
 
 #include <memory>
 #include <string>
 #include <cassert>
 
+typedef BOOL (WINAPI *PtrTzSpecificLocalTimeToSystemTime )(LPTIME_ZONE_INFORMATION lpTimeZoneInformation,
+                                                           LPSYSTEMTIME lpLocalTime,
+                                                           LPSYSTEMTIME lpUniversalTime
+);
+static PtrTzSpecificLocalTimeToSystemTime pTzSpecificLocalTimeToSystemTime = 0;
 
 namespace {
     class HKeyCloser {
@@ -110,13 +117,14 @@ static bool TzSpecificLocalTimeToSystemTime_Portable( TIME_ZONE_INFORMATION* tz,
 
     // the method below was introduced in XP. If it's there, use it, otherwise
     // fall back to doing things manually
-//#if Q_OS_VERSION > 5.0
-#if 0
-    if ( QSysInfo::windowsVersion() > QSysInfo::WV_2000 )
-    {
-        return TzSpecificLocalTimeToSystemTime( &tz, i_stLocal , o_stUniversal ) != 0;
+    if (!pTzSpecificLocalTimeToSystemTime) {
+        QLibrary kernelLib(QLatin1String("kernel32"));
+        pTzSpecificLocalTimeToSystemTime  = (PtrTzSpecificLocalTimeToSystemTime)kernelLib.resolve("TzSpecificLocalTimeToSystemTime");
     }
-#endif
+
+    if ( pTzSpecificLocalTimeToSystemTime )
+        return pTzSpecificLocalTimeToSystemTime( tz, i_stLocal , o_stUniversal ) != 0;
+    
     // the algorithm is:
     // - switch to the desired timezone temporarily
     // - convert system time to (local) file time in that timezone
