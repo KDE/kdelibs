@@ -195,12 +195,18 @@ bool KJob::exec()
     setAutoDelete( false );
 
     Q_ASSERT( ! d->eventLoop );
-    d->eventLoop = new QEventLoop( this );
+
+    QEventLoop loop( this );
+
+    connect( this, SIGNAL( result( KJob* ) ),
+             &loop, SLOT( quit() ) );
+    d->eventLoop = &loop;
 
     start();
     if( !d->isFinished ) {
         d->eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
     }
+    d->eventLoop = 0;
 
     if ( wasAutoDelete ) {
         deleteLater();
@@ -301,8 +307,6 @@ void KJob::emitResult()
 
     if ( d->eventLoop ) {
         d->eventLoop->quit();
-        d->eventLoop->deleteLater();
-        d->eventLoop = 0;
     }
 
     // If we are displaying a progress dialog, remove it first.
