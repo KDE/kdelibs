@@ -818,7 +818,7 @@ public:
    * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath.
    * @since 4.2
    */
-  QString pathOrUrl(AdjustPathOption trailing) const; // KDE5: merge with above
+  QString pathOrUrl(AdjustPathOption trailing) const; // KDE5: merge with above. Rename to toUrlOrLocalFile?
 
   /**
    * Returns the URL as a string, using the standard conventions for mime data
@@ -1004,7 +1004,7 @@ public:
    * everything is 7 bit (ascii) after being percent-encoded.
    */
   static KDE_DEPRECATED QString encode_string(const QString &str) {
-      return QLatin1String( QUrl::toPercentEncoding( str ) ); //krazy:exclude=qclasses
+    return QString::fromLatin1( QUrl::toPercentEncoding( str ).constData() ); //krazy:exclude=qclasses
   }
 
   /**
@@ -1019,7 +1019,7 @@ public:
    *
    */
   static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
-      return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ) ); //krazy:exclude=qclasses
+      return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ).constData() ); //krazy:exclude=qclasses
   }
 
   /**

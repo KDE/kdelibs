@@ -176,35 +176,35 @@ namespace KDE
 #ifndef Q_WS_WIN
   inline int access(const QString &path, int mode)
   {
-    return ::access( QFile::encodeName(path), mode );
+    return ::access( QFile::encodeName(path).constData(), mode );
   }
   inline int chmod(const QString &path, mode_t mode)
   {
-    return ::chmod( QFile::encodeName(path), mode );
+    return ::chmod( QFile::encodeName(path).constData(), mode );
   }
   inline int lstat(const QString &path, KDE_struct_stat *buf)
   {
-    return KDE_lstat( QFile::encodeName(path), buf );
+    return KDE_lstat( QFile::encodeName(path).constData(), buf );
   }
   inline int mkdir(const QString &pathname, mode_t mode)
   {
-    return KDE_mkdir( QFile::encodeName(pathname), mode );
+    return KDE_mkdir( QFile::encodeName(pathname).constData(), mode );
   }
   inline int open(const QString &pathname, int flags, mode_t mode)
   {
-    return KDE_open( QFile::encodeName(pathname), flags, mode );
+    return KDE_open( QFile::encodeName(pathname).constData(), flags, mode );
   }
   inline int rename(const QString &in, const QString &out)
   {
-    return KDE_rename( QFile::encodeName(in), QFile::encodeName(out) );
+    return KDE_rename( QFile::encodeName(in).constData(), QFile::encodeName(out).constData() );
   }
   inline int stat(const QString &path, KDE_struct_stat *buf)
   {
-    return KDE_stat( QFile::encodeName(path), buf );
+    return KDE_stat( QFile::encodeName(path).constData(), buf );
   }
   inline int utime(const QString &filename, struct utimbuf *buf)
   {
-    return ::utime( QFile::encodeName(filename), buf );
+    return ::utime( QFile::encodeName(filename).constData(), buf );
   }
 #endif
 }
