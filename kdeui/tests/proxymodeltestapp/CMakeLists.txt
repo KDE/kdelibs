@@ -19,6 +19,7 @@ set(proxymodeltestapp_SRCS
 #     ../../itemviews/kreparentingproxymodel.cpp
     proxymodeltestwidget.cpp
     ../modelcommander.cpp
+    lessthanwidget.cpp
 )
 
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
