@@ -319,7 +319,7 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("ње", "не");
     SR_DICTI2E_ENTRY("ио", "ео");
     SR_DICTI2E_ENTRY("иљ", "ел");
-    // special cases, Cyrillic
+    // special cases
     SR_DICTI2E_ENTRY("лије", "ли");
     SR_DICTI2E_ENTRY("лијен", "лењ");
     SR_DICTI2E_ENTRY("мија", "меја");
