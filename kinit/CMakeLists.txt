@@ -44,7 +44,7 @@ else (APPLE OR WIN32)
   kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
 endif (APPLE OR WIN32)
 
-target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
+target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} )
 if (Q_WS_X11)
   target_link_libraries(kdeinit4 ${X11_X11_LIB})
 endif(Q_WS_X11)
