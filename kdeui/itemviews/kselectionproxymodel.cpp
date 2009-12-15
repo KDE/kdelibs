@@ -45,7 +45,7 @@ public:
   QItemSelectionModel *m_selectionModel;
   QList<QPersistentModelIndex> m_rootIndexList;
 
-  QList<QAbstractProxyModel *> m_proxyChain;
+  QList<const QAbstractProxyModel *> m_proxyChain;
 
   void sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
   void sourceRowsInserted(const QModelIndex &parent, int start, int end);
@@ -1072,11 +1072,9 @@ void KSelectionProxyModelPrivate::createProxyChain()
 {
   Q_Q(KSelectionProxyModel);
 
-  QAbstractItemModel *model = const_cast<QAbstractItemModel *>(m_selectionModel->model());
-  QAbstractProxyModel *nextProxyModel;
-  QAbstractProxyModel *proxyModel = qobject_cast<QAbstractProxyModel*>(model);
+  const QAbstractItemModel *model = m_selectionModel->model();
+  const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(model);
 
-  QAbstractItemModel *rootModel;
   while (proxyModel)
   {
 
@@ -1085,13 +1083,12 @@ void KSelectionProxyModelPrivate::createProxyChain()
 
     m_proxyChain << proxyModel;
 
-    nextProxyModel = qobject_cast<QAbstractProxyModel*>(proxyModel->sourceModel());
+    const QAbstractProxyModel *nextProxyModel = qobject_cast<const QAbstractProxyModel*>(proxyModel->sourceModel());
 
     if (!nextProxyModel)
     {
-      rootModel = qobject_cast<QAbstractItemModel*>(proxyModel->sourceModel());
       // It's the final model in the chain, so it is necessarily the sourceModel.
-      Q_ASSERT(rootModel == q->sourceModel());
+      Q_ASSERT(qobject_cast<QAbstractItemModel*>(proxyModel->sourceModel()) == q->sourceModel());
       break;
     }
     proxyModel = nextProxyModel;
@@ -1123,11 +1120,10 @@ QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &
 QModelIndex KSelectionProxyModelPrivate::selectionIndexToSourceIndex(const QModelIndex &index) const
 {
   QModelIndex seekIndex = index;
-  QListIterator<QAbstractProxyModel*> i(m_proxyChain);
-  QAbstractProxyModel *proxy;
+  QListIterator<const QAbstractProxyModel*> i(m_proxyChain);
   while (i.hasNext())
   {
-    proxy = i.next();
+    const QAbstractProxyModel *proxy = i.next();
     seekIndex = proxy->mapToSource(seekIndex);
   }
   return seekIndex;
