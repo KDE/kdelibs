@@ -54,11 +54,20 @@ protected:
     virtual void connectJob( KJob *job );
 };
 
+class WaitJob;
+
 class KJobTest : public QObject
 {
     Q_OBJECT
 public:
     KJobTest();
+
+public Q_SLOTS:
+
+    // These slots need to be public, otherwise qtestlib calls them as part of the test
+    void slotStartInnerJob();
+    void slotFinishOuterJob();
+    void slotFinishInnerJob();
 
 private Q_SLOTS:
     void testEmitResult_data();
@@ -69,6 +78,7 @@ private Q_SLOTS:
     void testKill_data();
     void testKill();
     void testDelegateUsage();
+    void testNestedExec();
 
     void slotResult( KJob *job );
     void slotFinished(KJob *job);
@@ -79,6 +89,18 @@ private:
     QString m_lastErrorText;
     int m_resultCount;
     int m_finishedCount;
+
+    WaitJob *m_outerJob;
+    WaitJob *m_innerJob;
+};
+
+class WaitJob : public KJob
+{
+    Q_OBJECT
+public:
+
+    virtual void start();
+    void makeItFinish();
 };
 
 #endif

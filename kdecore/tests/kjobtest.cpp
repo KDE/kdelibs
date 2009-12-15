@@ -295,6 +295,32 @@ void KJobTest::testDelegateUsage()
     QVERIFY( job2->uiDelegate()==0 );
 }
 
+void KJobTest::testNestedExec()
+{
+  m_innerJob = 0;
+  QTimer::singleShot( 100, this, SLOT( slotStartInnerJob() ) );
+  m_outerJob = new WaitJob();
+  m_outerJob->exec();
+}
+
+void KJobTest::slotStartInnerJob()
+{
+  QTimer::singleShot( 100, this, SLOT( slotFinishOuterJob() ) );
+  m_innerJob = new WaitJob();
+  m_innerJob->exec();
+}
+
+void KJobTest::slotFinishOuterJob()
+{
+  QTimer::singleShot( 100, this, SLOT( slotFinishInnerJob() ) );
+  m_outerJob->makeItFinish();
+}
+
+void KJobTest::slotFinishInnerJob()
+{
+  m_innerJob->makeItFinish();
+}
+
 void KJobTest::slotResult( KJob *job )
 {
     if ( job->error() )
@@ -373,6 +399,15 @@ void TestJob::setPercent( unsigned long percentage )
 void TestJob::doEmit()
 {
     emitResult();
+}
+
+void WaitJob::start()
+{
+}
+
+void WaitJob::makeItFinish()
+{
+  emitResult();
 }
 
 void TestJobUiDelegate::connectJob( KJob *job )
