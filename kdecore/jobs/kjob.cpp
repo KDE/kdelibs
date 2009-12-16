@@ -197,9 +197,6 @@ bool KJob::exec()
     Q_ASSERT( ! d->eventLoop );
 
     QEventLoop loop( this );
-
-    connect( this, SIGNAL( result( KJob* ) ),
-             &loop, SLOT( quit() ) );
     d->eventLoop = &loop;
 
     start();
