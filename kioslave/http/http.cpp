@@ -3187,7 +3187,7 @@ try_again:
                 if (m_request.preferErrorPage) {
                     setLoadingErrorPage();
                 } else {
-                    error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method!"));
+                    error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
                     return false;
                 }
             }
@@ -3249,7 +3249,7 @@ try_again:
                     if (m_request.preferErrorPage) {
                         setLoadingErrorPage();
                     } else {
-                        error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed!"));
+                        error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
                         return false;
                     }
                     //### return false; ?
