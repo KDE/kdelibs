@@ -83,29 +83,24 @@ public:
         QMutexLocker lock( &m_initMutex );
 
         // TODO: check if the service is also initialized
-        if ( QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.NepomukStorage") ) {
-            if ( !dbusModel ) {
-                dbusModel = dbusClient.createModel( "main" );
-            }
-
-            // we may get disconnected from the server but we don't want to try
-            // to connect every time the model is requested
-            if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
-                delete localSocketModel;
-                localSocketModel = 0;
-                QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
-                kDebug() << "Connecting to local socket" << socketName;
-                if ( localSocketClient.connect( socketName ) ) {
-                    localSocketModel = localSocketClient.createModel( "main" );
-                }
-                else {
-                    m_socketConnectFailed = true;
-                    kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
-                }
-            }
+        if ( !dbusModel ) {
+            dbusModel = dbusClient.createModel( "main" );
         }
-        else {
-            kDebug() << "Nepomuk storage service not running or not initialized.";
+
+        // we may get disconnected from the server but we don't want to try
+        // to connect every time the model is requested
+        if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
+            delete localSocketModel;
+            localSocketModel = 0;
+            QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
+            kDebug() << "Connecting to local socket" << socketName;
+            if ( localSocketClient.connect( socketName ) ) {
+                localSocketModel = localSocketClient.createModel( "main" );
+            }
+            else {
+                m_socketConnectFailed = true;
+                kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
+            }
         }
     }
 
