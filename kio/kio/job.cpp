@@ -2022,10 +2022,15 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
               offset = 0;
             else if ( res == R_CANCEL )
             {
-                if ( job == m_putJob )
+                if ( job == m_putJob ) {
                     m_putJob->kill( FileCopyJob::Quietly );
-                else
+                    q->removeSubjob(m_putJob);
+                    m_putJob = 0;
+                } else {
                     m_copyJob->kill( FileCopyJob::Quietly );
+                    q->removeSubjob(m_copyJob);
+                    m_copyJob = 0;
+                }
                 q->setError( ERR_USER_CANCELED );
                 q->emitResult();
                 return;
@@ -2112,6 +2117,8 @@ void FileCopyJobPrivate::slotDataReq( KIO::Job * , QByteArray &data)
        q->setError( ERR_INTERNAL );
        q->setErrorText( "'Put' job did not send canResume or 'Get' job did not send data!" );
        m_putJob->kill( FileCopyJob::Quietly );
+       q->removeSubjob(m_putJob);
+       m_putJob = 0;
        q->emitResult();
        return;
    }
