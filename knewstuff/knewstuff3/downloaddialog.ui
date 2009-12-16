@@ -6,21 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
-    <height>324</height>
+    <width>620</width>
+    <height>545</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0" colspan="2">
     <widget class="KTitleWidget" name="m_titleWidget"/>
    </item>
-   <item>
-    <layout class="QHBoxLayout" name="_2"/>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+   <item row="1" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0" colspan="3">
       <widget class="QListView" name="m_listView">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>2</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="mouseTracking">
         <bool>true</bool>
        </property>
@@ -29,9 +35,12 @@
        </property>
       </widget>
      </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
+     <item row="1" column="3">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <item row="0" column="0" colspan="3">
         <widget class="QLabel" name="m_providerLabel">
          <property name="text">
           <string>Provider:</string>
@@ -41,17 +50,14 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="1" colspan="2">
         <widget class="KComboBox" name="m_providerCombo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="3" column="0" colspan="3">
         <widget class="QLabel" name="m_categoryLabel">
          <property name="text">
           <string>Category:</string>
@@ -61,28 +67,17 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="KComboBox" name="m_categoryCombo">
+       <item row="4" column="1" colspan="2">
+        <widget class="KComboBox" name="m_categoryCombo"/>
+       </item>
+       <item row="7" column="1" colspan="2">
+        <widget class="QRadioButton" name="newestRadio">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>1</horstretch>
+           <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="orderLabel">
-         <property name="text">
-          <string>Order by:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="newestRadio">
          <property name="text">
           <string>Newest</string>
          </property>
@@ -91,54 +86,60 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="8" column="1" colspan="2">
         <widget class="QRadioButton" name="ratingRadio">
          <property name="text">
           <string>Rating</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="9" column="1" colspan="2">
         <widget class="QRadioButton" name="mostDownloadsRadio">
          <property name="text">
           <string>Most Downloads</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="10" column="1" colspan="2">
         <widget class="QRadioButton" name="installedRadio">
          <property name="text">
           <string>Installed</string>
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Search:</string>
+       <item row="2" column="1" colspan="2">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="buddy">
-          <cstring>m_searchEdit</cstring>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
        </item>
-       <item>
-        <widget class="KLineEdit" name="m_searchEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="5" column="1" colspan="2">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="clickMessage">
-          <string>Enter search phrase here</string>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
          </property>
-         <property name="showClearButton" stdset="0">
-          <bool>true</bool>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
-       <item>
+       <item row="14" column="1" colspan="2">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -151,26 +152,77 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="KPushButton" name="closeButton">
+       <item row="6" column="0" colspan="3">
+        <widget class="QLabel" name="orderLabel">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="text">
+          <string>Order by:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
         </widget>
+       </item>
+       <item row="12" column="0" colspan="3">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Search:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_searchEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1" colspan="2">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="13" column="1">
+        <widget class="KLineEdit" name="m_searchEdit">
+         <property name="clickMessage">
+          <string>Enter search phrase here</string>
+         </property>
+         <property name="showClearButton" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>9</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <property name="spacing">
-      <number>-1</number>
-     </property>
-     <item>
+     <item row="4" column="0" colspan="3">
       <widget class="KNS3::ProgressIndicator" name="progressIndicator">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
@@ -188,6 +240,33 @@
         <number>1</number>
        </property>
       </widget>
+     </item>
+     <item row="4" column="3">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="KPushButton" name="closeButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
