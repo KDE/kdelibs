@@ -2541,6 +2541,71 @@ const unsigned long* NETRootInfo::passedProperties() const {
         : p->client_properties;
 }
 
+void NETRootInfo::setSupported( NET::Property property, bool on ) {
+    if ( p->role != WindowManager )
+        return;
+
+    if ( on && !isSupported( property ) ) {
+        p->properties[ PROTOCOLS ] |= property;
+        setSupported();
+    } else if ( !on && isSupported( property ) ) {
+        p->properties[ PROTOCOLS ] &= ~property;
+        setSupported();
+    }
+}
+
+void NETRootInfo::setSupported( NET::Property2 property, bool on ) {
+    if ( p->role != WindowManager )
+        return;
+
+    if ( on && !isSupported( property ) ) {
+        p->properties[ PROTOCOLS2 ] |= property;
+        setSupported();
+    } else if ( !on && isSupported( property ) ) {
+        p->properties[ PROTOCOLS2 ] &= ~property;
+        setSupported();
+    }
+}
+
+void NETRootInfo::setSupported( NET::WindowType property, bool on ) {
+    if ( p->role != WindowManager )
+        return;
+
+    if ( on && !isSupported( property ) ) {
+        p->properties[ WINDOW_TYPES ] |= property;
+        setSupported();
+    } else if ( !on && isSupported( property ) ) {
+        p->properties[ WINDOW_TYPES ] &= ~property;
+        setSupported();
+    }
+}
+
+void NETRootInfo::setSupported( NET::State property, bool on ) {
+    if ( p->role != WindowManager )
+        return;
+
+    if ( on && !isSupported( property ) ) {
+        p->properties[ STATES ] |= property;
+        setSupported();
+    } else if ( !on && isSupported( property ) ) {
+        p->properties[ STATES ] &= ~property;
+        setSupported();
+    }
+}
+
+void NETRootInfo::setSupported( NET::Action property, bool on ) {
+    if ( p->role != WindowManager )
+        return;
+
+    if ( on && !isSupported( property ) ) {
+        p->properties[ ACTIONS ] |= property;
+        setSupported();
+    } else if ( !on && isSupported( property ) ) {
+        p->properties[ ACTIONS ] &= ~property;
+        setSupported();
+    }
+}
+
 bool NETRootInfo::isSupported( NET::Property property ) const {
     return p->properties[ PROTOCOLS ] & property;
 }

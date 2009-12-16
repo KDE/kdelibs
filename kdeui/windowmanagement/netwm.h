@@ -181,6 +181,39 @@ public:
     int screenNumber() const;
 
     /**
+      Sets the given property if on is true, and clears the property otherwise.
+      In WindowManager mode this function updates _NET_SUPPORTED.
+      In Client mode this function does nothing.
+
+      @since 4.4
+     **/
+    void setSupported( NET::Property property, bool on = true );
+
+    /**
+      @overload
+      @since 4.4
+     **/
+    void setSupported( NET::Property2 property, bool on = true );
+
+    /**
+      @overload
+      @since 4.4
+     **/
+    void setSupported( NET::WindowType property, bool on = true );
+
+    /**
+      @overload
+      @since 4.4
+     **/
+    void setSupported( NET::State property, bool on = true );
+
+    /**
+      @overload
+      @since 4.4
+     **/
+    void setSupported( NET::Action property, bool on = true );
+
+    /**
        Returns true if the given property is supported by the window
        manager. Note that for Client mode, NET::Supported needs
        to be passed in the properties argument for this to work.
