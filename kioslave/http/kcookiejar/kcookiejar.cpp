@@ -88,16 +88,16 @@
 // latin1 regardless of their actual encoding.
 
 // L1 is used to indicate latin1 constants
-#define L1(x) QLatin1String(x)
+#define QL1S(x) QLatin1String(x)
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
     switch( _advice )
     {
-    case KCookieAccept: return L1("Accept");
-    case KCookieReject: return L1("Reject");
-    case KCookieAsk: return L1("Ask");
-    default: return L1("Dunno");
+    case KCookieAccept: return QL1S("Accept");
+    case KCookieReject: return QL1S("Reject");
+    case KCookieAsk: return QL1S("Ask");
+    default: return QL1S("Dunno");
     }
 }
 
@@ -108,11 +108,11 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
 
     QString advice = _str.toLower();
 
-    if (advice == QLatin1String("accept"))
+    if (advice == QL1S("accept"))
         return KCookieAccept;
-    else if (advice == QLatin1String("reject"))
+    else if (advice == QL1S("reject"))
         return KCookieReject;
-    else if (advice == QLatin1String("ask"))
+    else if (advice == QL1S("ask"))
         return KCookieAsk;
 
     return KCookieDunno;
@@ -172,9 +172,9 @@ QString KHttpCookie::cookieStr(bool useDOMFormat) const
     {
         result = mName + '=' + mValue;
         if (mExplicitPath)
-            result += L1("; $Path=\"") + mPath + L1("\"");
+            result += QL1S("; $Path=\"") + mPath + QL1S("\"");
         if (!mDomain.isEmpty())
-            result += L1("; $Domain=\"") + mDomain + L1("\"");
+            result += QL1S("; $Domain=\"") + mDomain + QL1S("\"");
     }
     return result;
 }
@@ -306,8 +306,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     if (!parseUrl(_url, fqdn, path))
         return cookieStr;
 
-    bool secureRequest = _url.startsWith( L1("https://"), Qt::CaseInsensitive ) ||
-                         _url.startsWith( L1("webdavs://"), Qt::CaseInsensitive );
+    bool secureRequest = _url.startsWith( QL1S("https://"), Qt::CaseInsensitive ) ||
+                         _url.startsWith( QL1S("webdavs://"), Qt::CaseInsensitive );
 
     extractDomains(fqdn, domains);
 
@@ -327,7 +327,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
        }
        else
        {
-          QString key = (*it).isNull() ? L1("") : (*it);
+          QString key = (*it).isNull() ? QL1S("") : (*it);
           cookieList = m_cookieDomains.value(key);
           if (!cookieList)
              continue; // No cookies for this domain
@@ -396,18 +396,18 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     Q_FOREACH(const KHttpCookie& cookie, allCookies) {
         if (useDOMFormat) {
             if (cookieCount > 0)
-                cookieStr += L1("; ");
+                cookieStr += QL1S("; ");
             cookieStr += cookie.cookieStr(true);
         } else {
             if (cookieCount == 0) {
-                cookieStr += L1("Cookie: ");
+                cookieStr += QL1S("Cookie: ");
                 if (protVersion > 0) {
                     QString version;
                     version.sprintf("$Version=%d; ", protVersion); // Without quotes
                     cookieStr += version;
                 }
             } else {
-                cookieStr += L1("; ");
+                cookieStr += QL1S("; ");
             }
             cookieStr += cookie.cookieStr(false);
         }
@@ -522,7 +522,7 @@ void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
    else if ( domains.count() > 0 )
       _domain = domains[0];
    else
-      _domain = L1("");
+      _domain = QL1S("");
 }
 
 QString KCookieJar::stripDomain(const KHttpCookie& cookie)
@@ -546,8 +546,8 @@ bool KCookieJar::parseUrl(const QString &_url,
     _fqdn = kurl.host().toLower();
     if (kurl.port() > 0)
     {
-       if (((kurl.protocol() == L1("http")) && (kurl.port() != 80)) ||
-           ((kurl.protocol() == L1("https")) && (kurl.port() != 443)))
+       if (((kurl.protocol() == QL1S("http")) && (kurl.port() != 80)) ||
+           ((kurl.protocol() == QL1S("https")) && (kurl.port() != 443)))
        {
           // It's <port>:<host> so that the sorting works as expected
           _fqdn = QString::fromLatin1("%1:%2").arg(kurl.port()).arg(_fqdn);
@@ -564,9 +564,9 @@ bool KCookieJar::parseUrl(const QString &_url,
 
     _path = kurl.path();
     if (_path.isEmpty())
-       _path = L1("/");
+       _path = QL1S("/");
 
-    QRegExp exp(L1("[\\\\/]\\.\\.[\\\\/]"));
+    QRegExp exp(QL1S("[\\\\/]\\.\\.[\\\\/]"));
     // Weird path, cookie stealing attempt?
     if (exp.indexIn(_path) != -1)
        return false; // Deny everything!!
@@ -579,7 +579,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains) const
 {
     if (_fqdn.isEmpty()) {
-        _domains.append( L1("localhost") );
+        _domains.append( QL1S("localhost") );
         return;
     }
 
@@ -630,7 +630,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
               break;
        }
 
-       QString domain = partList.join(L1("."));
+       QString domain = partList.join(QL1S("."));
        _domains.append(domain);
        _domains.append('.' + domain);
        partList.erase(partList.begin()); // Remove part
@@ -715,7 +715,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Default domain = ""
             // Default path according to rfc2109
 
-            KHttpCookie cookie(fqdn, L1(""), defaultPath, Name, Value);
+            KHttpCookie cookie(fqdn, QL1S(""), defaultPath, Name, Value);
             if (windowId)
                cookie.mWindowIds.append(windowId);
             cookie.mCrossDomain = crossDomain;
@@ -733,7 +733,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Default domain = ""
             // Default path according to rfc2965
 
-            KHttpCookie cookie(fqdn, L1(""), defaultPath, Name, Value);
+            KHttpCookie cookie(fqdn, QL1S(""), defaultPath, Name, Value);
             if (windowId)
                cookie.mWindowIds.append(windowId);
             cookie.mCrossDomain = crossDomain;
@@ -814,12 +814,12 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 lastCookie->mProtocolVersion = Value.toInt();
             }
             else if ((cName == "secure") ||
-                     (cName.isEmpty() && Value.toLower() == L1("secure")))
+                     (cName.isEmpty() && Value.toLower() == QL1S("secure")))
             {
                 lastCookie->mSecure = true;
             }
             else if ((cName == "httponly") ||
-                     (cName.isEmpty() && Value.toLower() == L1("httponly")))
+                     (cName.isEmpty() && Value.toLower() == QL1S("httponly")))
             {
                 lastCookie->mHttpOnly = true;
             }
@@ -1276,10 +1276,10 @@ bool KCookieJar::saveCookies(const QString &_filename)
                     ts << '[' << domain.toLocal8Bit().data() << "]\n";
                 }
                 // Store persistent cookies
-                QString path = L1("\"");
+                QString path = QL1S("\"");
                 path += cookie.path();
                 path += '"';
-                QString domain = L1("\"");
+                QString domain = QL1S("\"");
                 domain += cookie.domain();
                 domain += '"';
                 // TODO: replace with direct QTextStream output ?
