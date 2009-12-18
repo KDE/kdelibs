@@ -62,9 +62,10 @@ void KAutostart::Private::copyIfNeeded()
     if (!QFile::exists(local)) {
         const QString global = KGlobal::dirs()->locate("autostart", name);
         if (!global.isEmpty()) {
-            KDesktopFile *newDf = df->copyTo(local);
+            KDesktopFile *newDf = df->copyTo(local); Q_UNUSED(newDf)
             delete df;
-            df = new KDesktopFile("autostart", name);
+            delete newDf; //Force sync-to-disk
+            df = new KDesktopFile("autostart", name); //Recreate from disk
         }
     }
 
@@ -102,7 +103,8 @@ KAutostart::~KAutostart()
 
 void KAutostart::setAutostarts(bool autostart)
 {
-    if (d->df->desktopGroup().readEntry("Hidden", false) == autostart) {
+    bool currentAutostartState = !d->df->desktopGroup().readEntry("Hidden", false);
+    if (currentAutostartState == autostart) {
         return;
     }
 
