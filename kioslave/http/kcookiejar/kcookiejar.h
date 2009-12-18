@@ -91,7 +91,11 @@ public:
     qint64  expireDate() const { return mExpireDate; }
     int     protocolVersion() const { return mProtocolVersion; }
     bool    isSecure() const { return mSecure; }
-    bool    isExpired(qint64 currentDate) const;
+    /**
+     *  If currentDate is -1, the default, then the current timestamp in UTC
+     *  is used for comparision against this cookie's expiration date.
+     */
+    bool    isExpired(qint64 currentDate = -1) const;
     bool    isCrossDomain() const { return mCrossDomain; }
     bool    isHttpOnly() const { return mHttpOnly; }
     bool    hasExplicitPath() const { return mExplicitPath; }

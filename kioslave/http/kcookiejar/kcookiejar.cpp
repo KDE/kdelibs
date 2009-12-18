@@ -152,6 +152,12 @@ KHttpCookie::KHttpCookie(const QString &_host,
 //
 bool    KHttpCookie::isExpired(qint64 currentDate) const
 {
+    if (currentDate == -1) {
+        KDateTime epoch;
+        epoch.setTime_t(0);
+        currentDate = epoch.secsTo_long(KDateTime::currentUtcDateTime());
+    }
+
     return (mExpireDate != 0) && (mExpireDate < currentDate);
 }
 
@@ -361,7 +367,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
           }
 
           // Do not send expired cookies.
-          if ( cookie.isExpired (time(0)) )
+          if ( cookie.isExpired())
           {
              // Note there is no need to actually delete the cookie here
              // since the cookieserver will invoke ::saveCookieJar because
@@ -642,30 +648,6 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     _domains.prepend( _fqdn );
 }
 
-/*
-   Changes dates in from the following format
-
-      Wed Sep 12 07:00:00 2007 GMT
-   to
-      Wed Sep 12 2007 07:00:00 GMT
-
-   to allow KDateTime::fromString to properly parse expiration date formats
-   used in cookies by some servers such as amazon.com. See BR# 145244.
-*/
-static QString fixupDateTime(const QString& date)
-{
-  QStringList list = date.split(' ');
-  const int index = list.indexOf(QRegExp("[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}"));
-
-  if (index > -1 && (index+1) < list.count())
-  {
-    list.insert(index+1, list.takeAt(index));
-    return list.join(" ");
-  }
-
-  return date;
-}
-
 //
 // This function parses cookie_headers and returns a linked list of
 // KHttpCookie objects for all cookies found in cookie_headers.
@@ -697,6 +679,9 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     int i = path.lastIndexOf('/');
     if (i > 0)
        defaultPath = path.left(i);
+
+    KDateTime epoch;
+    epoch.setTime_t(0);
 
     //  The hard stuff :)
     for(;;)
@@ -785,21 +770,34 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (max_age == 0)
                     lastCookie->mExpireDate = 1;
                 else
-                    lastCookie->mExpireDate = time(0)+max_age;
+                    lastCookie->mExpireDate = epoch.secsTo_long(KDateTime::currentUtcDateTime().addSecs(max_age));
             }
             else if (cName == "expires")
             {
-                // Parse brain-dead netscape cookie-format
-                lastCookie->mExpireDate = KDateTime::fromString(Value, KDateTime::RFCDate).toTime_t();
+                // Check for the most common cookie expire date format: Thu, 01-Jan-1970 00:00:00 GMT
+                KDateTime dt = KDateTime::fromString(Value, QL1S("%:A,%t%d-%:B-%Y%t%H:%M:%S%t%Z"));
+                if (!dt.isValid()) {
+                    // Check for a variation of the above format: Thu, 01 Jan 1970 00:00:00 GMT
+                    dt = KDateTime::fromString(Value, QL1S("%:A,%t%d%t%:B%t%Y%t%H:%M:%S%t%Z"));
+                    if (!dt.isValid()) {
+                        // Check for incorrect formats (amazon.com): Thu Jan 01 1970 00:00:00 GMT
+                        dt = KDateTime::fromString(Value, QL1S("%:A%t%:B%t%d%t%Y%t%H:%M:%S%t%Z"));
+                        if (!dt.isValid()) {
+                            // Check for a variation of the above format: Thu Jan 01 00:00:00 1970 GMT (BR# 145244)
+                            dt = KDateTime::fromString(Value, QL1S("%:A%t%:B%t%d%t%H:%M:%S%t%Y%t%Z"));
+                            if (!dt.isValid()) {
+                                // Finally we try the RFC date formats as last resort
+                                dt = KDateTime::fromString(Value, KDateTime::RFCDate);
+                            }
+                        }
+                    }
+                }
 
-                // Workaround for servers that send the expiration date in
-                // 'Wed Sep 12 07:00:00 2007 GMT' format. See BR# 145244.
-                if (lastCookie->mExpireDate == -1)
-                  lastCookie->mExpireDate = KDateTime::fromString(fixupDateTime(Value), KDateTime::RFCDate).toTime_t();
-
-                // We encode parse error/invalid as 0, but KDateTime likes -1, so convert
-                if (lastCookie->mExpireDate == -1)
-                  lastCookie->mExpireDate = 0;
+                if (dt.isValid()) {
+                    lastCookie->mExpireDate = epoch.secsTo_long(dt);
+                    if (lastCookie->mExpireDate == 0)
+                        lastCookie->mExpireDate = 1;
+                }
             }
             else if (cName == "path")
             {
@@ -961,7 +959,7 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
 
     // Add the cookie to the cookie list
     // The cookie list is sorted 'longest path first'
-    if (!cookie.isExpired(time(0)))
+    if (!cookie.isExpired())
     {
 #ifdef MAX_COOKIE_LIMIT
         if (cookieList->count() >= MAX_COOKIES_PER_HOST)
@@ -1246,8 +1244,6 @@ bool KCookieJar::saveCookies(const QString &_filename)
 
     QTextStream ts(&saveFile);
 
-    qint64 curTime = time(0);
-
     ts << "# KDE Cookie File v2\n#\n";
 
     QString s;
@@ -1266,7 +1262,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             const KHttpCookie& cookie = cookieIterator.next();
-            if (cookie.isExpired(curTime)) {
+            if (cookie.isExpired()) {
                 // Delete expired cookies
                 cookieIterator.remove();
             } else if (cookie.expireDate() != 0 && !m_ignoreCookieExpirationDate) {
