@@ -193,8 +193,14 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
             d->categories.append(category);
             kDebug() << "found category: " << category.name();
         }
+        else {
+            kDebug() << "found invalid category: " << category.name();
+        }
     }
-    button(Ok)->setEnabled(true);
+    // only enable the ok button if we have at least one category
+    if (d->categories.count() > 0) {
+        button(Ok)->setEnabled(true);
+    }
     d->ui.mProgressLabel->clear();
 }
 
