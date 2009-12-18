@@ -26,13 +26,11 @@
 #include <QtCore/QObject>
 #include <QtGui/QImage>
 #include <QtGui/QLabel>
-#include <QtGui/QToolButton>
 
 #include "core/engine.h"
 #include "core/entryinternal.h"
 
 #include <kicon.h>
-#include <kmenu.h>
 
 namespace KNS3
 {
@@ -42,6 +40,7 @@ class ItemsViewDelegate: public KWidgetItemDelegate
 public:
     explicit ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
     ~ItemsViewDelegate();
+
 
     // paint the item at index with all its attributes shown
     virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
@@ -67,8 +66,6 @@ private slots:
     void slotDetailsClicked();
 
 private:
-    KMenu * InstallMenu(const QToolButton* button, EntryInternal::Status status) const;
-
     QList<KIcon> m_statusicons;
     QImage m_frameImage;
 };

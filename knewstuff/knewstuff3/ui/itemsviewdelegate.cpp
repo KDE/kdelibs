@@ -64,20 +64,6 @@ ItemsViewDelegate::~ItemsViewDelegate()
 {
 }
 
-KMenu * ItemsViewDelegate::InstallMenu(const QToolButton* button, EntryInternal::Status status) const
-{
-    Q_UNUSED(button)
-    KMenu * installMenu = new KMenu(NULL);
-    QAction * action_install = installMenu->addAction(m_statusicons[EntryInternal::Installed], i18n("Install"));
-    QAction * action_uninstall = installMenu->addAction(m_statusicons[EntryInternal::Deleted], i18n("Uninstall"));
-    action_install->setData(Engine::Install);
-    action_uninstall->setData(Engine::Uninstall);
-
-    action_install->setVisible(status != EntryInternal::Installed);
-    action_uninstall->setVisible(status == EntryInternal::Installed);
-    return installMenu;
-}
-
 QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
 {
     QList<QWidget*> list;
@@ -89,7 +75,7 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     infoLabel->installEventFilter(delegate);
     list << infoLabel;
 
-    QToolButton * installButton = new QToolButton();
+    KPushButton * installButton = new KPushButton();
     list << installButton;
     setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
@@ -193,57 +179,45 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         infoLabel->setText(text.simplified());
     }
 
-    QToolButton * button = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
-    if (button != NULL) {
+    KPushButton * installButton = qobject_cast<KPushButton*>(widgets.at(DelegateInstallButton));
+    if (installButton != 0) {
         EntryInternal::Status status = EntryInternal::Status(model->data(index, ItemsModel::kStatus).toUInt());
-        //if (!button->menu()) {
-        //    button->setMenu(InstallMenu(button, status));
-        //    button->setIconSize(QSize(16, 16));
-            button->resize(size);
-        //}
-        button->move(right - button->width() - margin, option.rect.height()/2 - button->height()*1.5);
-        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        //button->setPopupMode(QToolButton::MenuButtonPopup);
-
-        // validate our assumptions
-        //Q_ASSERT(button->menu());
-        //Q_ASSERT(button->menu()->actions().count() == 2);
-
-        button->setEnabled(true);
+        installButton->resize(size);
+        installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
 
         switch (status) {
             case EntryInternal::Installed:
-            button->setText(i18n("Uninstall"));
-            button->setIcon(QIcon(m_statusicons[EntryInternal::Deleted]));
+            installButton->setText(i18n("Uninstall"));
+            installButton->setIcon(m_statusicons[EntryInternal::Deleted]);
             break;
         case EntryInternal::Updateable:
-            button->setText(i18n("Update"));
-            button->setIcon(QIcon(m_statusicons[EntryInternal::Updateable]));
+            installButton->setText(i18n("Update"));
+            installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
             break;
         case EntryInternal::Deleted:
-            button->setText(i18n("Install again"));
-            button->setIcon(QIcon(m_statusicons[EntryInternal::Installed]));
+            installButton->setText(i18n("Install again"));
+            installButton->setIcon(m_statusicons[EntryInternal::Installed]);
             break;
         case EntryInternal::Installing:
-            button->setText(i18n("Installing"));
-            button->setEnabled(false);
-            button->setIcon(QIcon(m_statusicons[EntryInternal::Updateable]));
+            installButton->setText(i18n("Installing"));
+            installButton->setEnabled(false);
+            installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
             break;
         case EntryInternal::Updating:
-            button->setText(i18n("Updating"));
-            button->setEnabled(false);
-            button->setIcon(QIcon(m_statusicons[EntryInternal::Updateable]));
+            installButton->setText(i18n("Updating"));
+            installButton->setEnabled(false);
+            installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
             break;
         default:
-            button->setText(i18n("Install"));
-            button->setIcon(QIcon(m_statusicons[EntryInternal::Installed]));
+            installButton->setText(i18n("Install"));
+            installButton->setIcon(m_statusicons[EntryInternal::Installed]);
         }
     }
 
     KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
     if (detailsButton) {
         detailsButton->setText(i18n("Details..."));
-        detailsButton->move(right - button->width() - margin, option.rect.height()/2 - button->height()/2);
+        detailsButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()/2);
         detailsButton->resize(size);
     }
 
@@ -257,7 +231,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
         rating->setRating((ratingValue-20)*10/60);
         // put the rating label below the install button
-        rating->move(right - button->width() - margin, option.rect.height()/2 + button->height()/2);
+        rating->move(right - installButton->width() - margin, option.rect.height()/2 + installButton->height()/2);
         rating->resize(size);
     }
 }
