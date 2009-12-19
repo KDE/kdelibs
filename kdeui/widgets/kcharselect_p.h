@@ -205,6 +205,9 @@ public:
         if (maxChar < 2*fm.xHeight()) {
             maxChar = 2 * fm.xHeight();
         }
+        if (maxChar < 5) {
+            maxChar = qMax(5, fm.height());
+        }
         m_columns  = maxWidth / maxChar;
         if (m_columns == 0) {
             m_columns = 1;
