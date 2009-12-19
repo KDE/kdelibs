@@ -318,26 +318,27 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
 
     if ( destinationState == DEST_NOT_STATED ) {
+        const bool isGlobalDest = m_dest == m_globalDest;
         const bool isDir = entry.isDir();
         // we were stating the dest
-        if (job->error())
+        if (job->error()) {
             destinationState = DEST_DOESNT_EXIST;
-        else {
+            //kDebug(7007) << "dest does not exist";
+        } else {
             // Treat symlinks to dirs as dirs here, so no test on isLink
             destinationState = isDir ? DEST_IS_DIR : DEST_IS_FILE;
             //kDebug(7007) << "dest is dir:" << isDir;
+
+            const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
+            if ( !sLocalPath.isEmpty() && kio_resolve_local_urls && destinationState != DEST_DOESNT_EXIST ) {
+                m_dest = KUrl();
+                m_dest.setPath(sLocalPath);
+                if ( isGlobalDest )
+                    m_globalDest = m_dest;
+            }
         }
-        const bool isGlobalDest = m_dest == m_globalDest;
         if ( isGlobalDest )
             m_globalDestinationState = destinationState;
-
-        const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
-        if ( !sLocalPath.isEmpty() && kio_resolve_local_urls ) {
-            m_dest = KUrl();
-            m_dest.setPath(sLocalPath);
-            if ( isGlobalDest )
-                m_globalDest = m_dest;
-        }
 
         q->removeSubjob( job );
         assert ( !q->hasSubjobs() );
@@ -371,10 +372,14 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
     // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
 
     KUrl srcurl;
-    if (!sLocalPath.isEmpty())
+    if (!sLocalPath.isEmpty() && destinationState != DEST_DOESNT_EXIST) {
+        kDebug() << "Using sLocalPath. destinationState=" << destinationState;
+        // Prefer the local path -- but only if we were able to stat() the dest.
+        // Otherwise, renaming a desktop:/ url would copy from src=file to dest=desktop (#218719)
         srcurl.setPath(sLocalPath);
-    else
+    } else {
         srcurl = sourceUrl;
+    }
     addCopyInfoFromUDSEntry(entry, srcurl, false, m_dest);
 
     m_currentDest = m_dest;
@@ -549,7 +554,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
             }
         }
         //kDebug(7007) << "displayName=" << displayName << "url=" << url;
-        if (!localPath.isEmpty() && kio_resolve_local_urls) {
+        if (!localPath.isEmpty() && kio_resolve_local_urls && destinationState != DEST_DOESNT_EXIST) {
             url = KUrl(localPath);
         }
 
@@ -672,8 +677,10 @@ void CopyJobPrivate::statCurrentSrc()
         KIO::UDSEntry entry;
         if (!cachedItem.isNull()) {
             entry = cachedItem.entry();
-            bool dummyIsLocal;
-            m_currentSrcURL = cachedItem.mostLocalUrl(dummyIsLocal); // #183585
+            if (destinationState != DEST_DOESNT_EXIST) { // only resolve src if we could resolve dest (#218719)
+                bool dummyIsLocal;
+                m_currentSrcURL = cachedItem.mostLocalUrl(dummyIsLocal); // #183585
+            }
         }
 
         if (m_mode == CopyJob::Move && (
