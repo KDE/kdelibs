@@ -564,6 +564,7 @@ install( FILES
    util/ksharedptr.h
    util/ksortablelist.h
    util/ktypelist.h
+   util/ktypelistutils.h
    util/kuser.h
    util/qtest_kde.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
