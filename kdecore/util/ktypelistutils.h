@@ -36,13 +36,43 @@
 template<class Types, typename Type>
 struct KTypeListPush
 {
-	typedef KTypeList<typename Types::Head, typename KTypeListPush<typename Types::Tail, Type>::Result> Result;
+    typedef KTypeList<typename Types::Head, typename KTypeListPush<typename Types::Tail, Type>::Result> Result;
 };
 
 template<typename Type>
 struct KTypeListPush<KDE::NullType, Type>
 {
-	typedef K_TYPELIST_1(Type) Result;
+    typedef K_TYPELIST_1(Type) Result;
+};
+
+/**
+ * Pop last element.
+ */
+template<class Types>
+struct KTypeListPop
+{
+    typedef KTypeList<typename Types::Head, typename KTypeListPop<typename Types::Tail>::Result> Result;
+};
+
+template<class Type>
+struct KTypeListPop<K_TYPELIST_1(Type)>
+{
+    typedef KDE::NullType Result;
+};
+
+/**
+ * Get last element.
+ */
+template<class Types>
+struct KTypeListEnd
+{
+    typedef typename KTypeListEnd<typename Types::Tail>::Result Result;
+};
+
+template<class Type>
+struct KTypeListEnd<K_TYPELIST_1(Type)>
+{
+    typedef Type Result;
 };
 
 /**
@@ -87,15 +117,15 @@ struct KTypeListReplaceBegin<KDE::NullType, Replace>
 template<class Types, std::size_t pos>
 struct KTypeListAt
 {
-	typedef typename KTypeListAt<
-		typename Types::Tail, pos - 1>::Result
-		Result;
+    typedef typename KTypeListAt<
+        typename Types::Tail, pos - 1>::Result
+        Result;
 };
 
 template<class Types>
 struct KTypeListAt<Types, 0>
 {
-	typedef typename Types::Head Result;
+    typedef typename Types::Head Result;
 };
 
 template<std::size_t pos>
@@ -144,13 +174,13 @@ template<class Types, template<typename> class Manip>
 class KTypeListForeach
 {
 public:
-	typedef KTypeList<typename Manip<typename Types::Head>::Result, typename KTypeListForeach<typename Types::Tail, Manip>::Result> Result;
+    typedef KTypeList<typename Manip<typename Types::Head>::Result, typename KTypeListForeach<typename Types::Tail, Manip>::Result> Result;
 };
 
 template<template<typename> class Manip>
 struct KTypeListForeach<KDE::NullType, Manip>
 {
-	typedef KDE::NullType Result;
+    typedef KDE::NullType Result;
 };
 
 /**
@@ -159,19 +189,19 @@ struct KTypeListForeach<KDE::NullType, Manip>
 template<class Types, typename Type>
 struct KTypeListContains
 {
-	enum { value = KTypeListContains<typename Types::Tail, Type>::value };
+    enum { value = KTypeListContains<typename Types::Tail, Type>::value };
 };
 
 template<class Tail, typename Type>
 struct KTypeListContains<KTypeList<Type, Tail>, Type>
 {
-	enum { value = true };
+    enum { value = true };
 };
 
 template<typename Type>
 struct KTypeListContains<KDE::NullType, Type>
 {
-	enum { value = false };
+    enum { value = false };
 };
 
 namespace KDE
@@ -182,13 +212,13 @@ namespace KDE
 template<typename T, typename U>
 struct SameTypes
 {
-	enum { value = false };
+    enum { value = false };
 };
 
 template<typename T>
 struct SameTypes<T, T>
 {
-	enum { value = true };
+    enum { value = true };
 };
 }
 
