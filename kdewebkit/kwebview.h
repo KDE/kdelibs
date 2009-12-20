@@ -37,8 +37,8 @@ template<class T> class KWebViewPrivate;
  * @short A re-implementation of QWebView that provides KDE integration.
  *
  * This is a drop-in replacement for QWebView that provides full KDE integration
- * through the use of @ref KWebPage. It also provides signals that capture
- * middle/shift/ctrl mouse clicks on links and url pasting from the selection
+ * through @ref KWebPage as well as additional signals that capture middle,
+ * shift and ctrl mouse clicks on links and url pasting from the selection
  * clipboard.
  *
  * @author Urs Wolfer <uwolfer @ kde.org>
