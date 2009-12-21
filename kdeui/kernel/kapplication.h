@@ -89,9 +89,12 @@ public:
    *
    * @param GUIenabled Set to false to disable all GUI stuff.
    * Note that for a non-GUI daemon, you might want to use QCoreApplication
-   * and a KComponentData instance instead. The main difference will be
-   * that you'll have to register to DBus yourself, but there is no
-   * point in a kdeui dependency in a non-GUI daemon.
+   * and a KComponentData instance instead. You'll save an unnecessary dependency
+   * to kdeui. The main difference is that you will have to do a number of things yourself:
+   * <ul>
+   *  <li>Register to DBus, if necessary.</li>
+   *  <li>Call KGlobal::locale(), if using multiple threads.</li>
+   * </ul>
    */
   explicit KApplication(bool GUIenabled = true);
 
