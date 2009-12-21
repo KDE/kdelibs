@@ -24,6 +24,7 @@
 #include "querybuilderdata_p.h"
 
 #include <Soprano/Node>
+#include <Soprano/Vocabulary/RDFS>
 
 Nepomuk::Query::LiteralTermPrivate::LiteralTermPrivate()
 {
@@ -43,15 +44,29 @@ bool Nepomuk::Query::LiteralTermPrivate::equals( const TermPrivate* other ) cons
 }
 
 
+//
+// A LiteralTerm not used in a ComparisonTerm is a "classical" plain text search term. That would mean "?r ?p ?v . ?v bif:contains 'foobar' . "
+// But since many relations like nao:hasTag or nmm:performer or similar are considered as plain text fields we extend the pattern by adding
+// relations to resources that have labels containing the query text.
+//
 QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
 {
     QString v1 = qbd->uniqueVarName();
     QString v2 = qbd->uniqueVarName();
-    return QString( "%1 %2 %3 . %3 bif:contains \"'%4*'\" . " )
+    QString v3 = qbd->uniqueVarName();
+    QString v4 = qbd->uniqueVarName();
+    // { ?r ?v1 ?v2 . ?v2 bif:contains XXX . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 rdfs:subPropertyOf rdfs:label . ?v2 bif:contains XXX . } .
+    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"'%4*'\" . } "
+                                "UNION "
+                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"'%4*'\" . } . " )
         .arg( resourceVarName,
               v1,
               v2,
-              m_value.toString() );
+              m_value.toString(),
+              v3,
+              v4,
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 }
 
 
