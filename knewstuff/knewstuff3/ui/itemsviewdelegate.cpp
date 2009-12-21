@@ -102,6 +102,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 {
     const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
     if (model == NULL) {
+        kDebug() << "WARNING - INVALID MODEL!";
         return;
     }
 
@@ -326,11 +327,11 @@ void ItemsViewDelegate::slotInstallClicked()
     QModelIndex index = focusedIndex();
 kDebug() << index;
     if (index.isValid()) {
-        const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
+        //const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
+        //kDebug() << model;
+        const ItemsModel * model = qobject_cast<const ItemsModel*>(index.model());
         kDebug() << model;
-        const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        kDebug() << realmodel;
-        KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
+        KNS3::EntryInternal entry = model->entryForIndex(index);
         if ( !entry.isValid() )
             return;
 
