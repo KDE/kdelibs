@@ -710,6 +710,10 @@ void KUrlTest::testPrettyURL()
   QCOMPARE( urlWithPass.pass(), QString::fromLatin1( "password" ) );
   QCOMPARE( urlWithPass.prettyUrl(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
 
+  KUrl urlWithPassAndNoUser("ftp://:password@ftp.kde.org/path");
+  QCOMPARE( urlWithPassAndNoUser.pass(), QString::fromLatin1( "password" ) );
+  QCOMPARE( urlWithPassAndNoUser.prettyUrl(), QString::fromLatin1( "ftp://ftp.kde.org/path" ) );
+
   KUrl xmppUri("xmpp:ogoffart@kde.org");
   QCOMPARE( xmppUri.prettyUrl(), QString::fromLatin1( "xmpp:ogoffart@kde.org" ) );
 
