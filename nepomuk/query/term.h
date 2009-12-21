@@ -334,11 +334,8 @@ namespace Nepomuk {
     }
 }
 
-#if defined(Q_CC_MSVC) || defined(Q_CC_SUN)
 // there is a hand written instantiation of clone()
 template<> Nepomuk::Query::TermPrivate* QSharedDataPointer<Nepomuk::Query::TermPrivate>::clone();
-#endif
-
 
 // FIXME: the compiler does not find the operator in the class
 NEPOMUKQUERY_EXPORT QDebug operator<<( QDebug, const Nepomuk::Query::Term& );
