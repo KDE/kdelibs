@@ -54,7 +54,9 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "simple literal query" )
         << Query( LiteralTerm( "Hello" ) )
-        << QString::fromLatin1( "select distinct ?r where { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello*'\" . }" );
+        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . } . ?v2 bif:contains \"'Hello*'\" . }" )
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 
     QTest::newRow( "type query" )
         << Query( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) )
