@@ -355,6 +355,7 @@ public:
    * current page to the bookmarks list.  The title will become the
    * "name" of the bookmark.  You must overload this function if you
    * wish to give your users the ability to add bookmarks.
+   * The default returns an empty string.
    *
    * @return the title of the current page.
    */
@@ -365,6 +366,7 @@ public:
    * current page to the bookmarks list.  The URL will become the URL
    * of the bookmark.  You must overload this function if you wish to
    * give your users the ability to add bookmarks.
+   * The default returns an empty string.
    *
    * @return the URL of the current page.
    */
@@ -373,11 +375,13 @@ public:
 
   /**
    * This function returns whether the owner supports tabs.
+   * The default returns @c false.
    */
   virtual bool supportsTabs() const { return false; }
 
   /**
    * Returns a list of title, URL pairs of the open tabs.
+   * The default returns an empty list.
    */
   virtual QList<QPair<QString, QString> > currentBookmarkList() const { return QList<QPair<QString, QString> >(); }
 
