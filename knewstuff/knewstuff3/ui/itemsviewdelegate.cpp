@@ -79,7 +79,6 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     list << installButton;
     setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
-    connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
 
     KPushButton* detailsButton = new KPushButton();
@@ -320,17 +319,6 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
     KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
     emit performAction(Engine::ContactEmail, entry);
-}
-
-void ItemsViewDelegate::slotActionTriggered(QAction *action)
-{
-    QModelIndex index = focusedIndex();
-    Q_ASSERT(index.isValid());
-
-    const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
-    emit performAction(Engine::EntryAction(action->data().toInt()), entry);
 }
 
 void ItemsViewDelegate::slotInstallClicked()

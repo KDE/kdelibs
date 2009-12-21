@@ -60,7 +60,6 @@ signals:
 
 private slots:
     bool eventFilter(QObject *watched, QEvent *event);
-    void slotActionTriggered(QAction *action);
     void slotInstallClicked();
     void slotLinkClicked(const QString & url);
     void slotDetailsClicked();
