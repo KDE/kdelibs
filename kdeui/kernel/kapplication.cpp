@@ -1087,8 +1087,10 @@ void KApplication::setTopWidget( QWidget *topWidget )
         topWidget->setWindowTitle(KGlobal::caption());
     }
 
+#ifdef Q_WS_X11
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId(topWidget->winId(), startupId());
+#endif
 }
 
 QByteArray KApplication::startupId() const
