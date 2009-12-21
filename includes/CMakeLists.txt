@@ -80,6 +80,7 @@ install( FILES
   KBookmarkAction
   KBookmarkActionInterface
   KBookmarkActionMenu
+  KBookmarkDialog
   KBookmarkDomBuilder
   KBookmarkExporterBase
   KBookmarkGroup
