@@ -1087,11 +1087,8 @@ void KApplication::setTopWidget( QWidget *topWidget )
         topWidget->setWindowTitle(KGlobal::caption());
     }
 
-#if defined Q_WS_X11
-//#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     // set the app startup notification window property
-    KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
-#endif
+    KStartupInfo::setWindowStartupId(topWidget->winId(), startupId());
 }
 
 QByteArray KApplication::startupId() const
