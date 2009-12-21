@@ -72,7 +72,7 @@
 #include <stdlib.h> // srand(), rand()
 #include <unistd.h>
 #if defined Q_WS_X11
-//#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
+//#ifndef Q_WS_QWS //FIXME(embedded): NetWM should talk to QWS...
 #include <netwm.h>
 #endif
 
@@ -467,7 +467,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 
   QApplication::setDesktopSettingsAware( false );
 
-#ifdef Q_WS_X11 //FIXME(E)
+#ifdef Q_WS_X11
   // create all required atoms in _one_ roundtrip to the X server
   if ( q->type() == KApplication::GuiClient ) {
       const int max = 20;
@@ -792,8 +792,6 @@ void KApplication::saveState( QSessionManager& sm )
 
     if ( canceled )
         sm.cancel();
-#else
-    // FIXME(E): Implement for Qt Embedded
 #endif
     d->session_save = false;
 }
@@ -866,8 +864,6 @@ void KApplicationPrivate::parseCommandLine( )
         if ( data )
             XFree( data );
     }
-#else
-    // FIXME(E): Implement for Qt Embedded
 #endif
 
 #ifndef Q_WS_WIN
@@ -896,8 +892,6 @@ KApplication::~KApplication()
 
 #ifdef Q_WS_X11
   mySmcConnection = 0;
-#else
-  // FIXME(E): Implement for Qt Embedded
 #endif
 }
 
