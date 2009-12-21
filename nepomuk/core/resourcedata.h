@@ -141,7 +141,7 @@ namespace Nepomuk {
          */
         bool determineUri();
 
-        void invalidateCache() { m_cacheDirty = true; }
+        void invalidateCache();
 
         Thing pimoThing();
 

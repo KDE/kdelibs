@@ -123,6 +123,9 @@ namespace Nepomuk {
         /**
          * Retrieve a list of all resource managed by this manager.
          *
+         * \warning This list will be very big. Usage of this method is
+         * discouraged.
+         *
          * \since 4.3
          */
         QList<Resource> allResources();
@@ -157,6 +160,14 @@ namespace Nepomuk {
          * \deprecated Use allResourcesWithProperty( const QString& type )
          */
         KDE_DEPRECATED QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v );
+
+        /**
+         * %ResourceManager caches resource locally so subsequent access is faster.
+         * This method clears this cache, deleting any Resource that is not used.
+         *
+         * \since 4.4
+         */
+        void clearCache();
 
         /**
          * \deprecated Use generateUniqueUri(const QString&)

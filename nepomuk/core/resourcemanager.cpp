@@ -124,16 +124,16 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
-        for( ResourceDataHash::iterator rdIt = m_uriKickoffData.begin();
-             rdIt != m_uriKickoffData.end(); ++rdIt ) {
-            if( rdIt.value()->type() == type ) {
-                l.append( rdIt.value() );
-            }
-        }
-        for( KickoffDataHash::iterator rdIt = m_idKickoffData.begin();
-             rdIt != m_idKickoffData.end(); ++rdIt ) {
-            if( rdIt.value()->type() == type ) {
-                l.append( rdIt.value() );
+        //
+        // We need to cache both m_uriKickoffData and m_idKickoffData since they might be changed
+        // in the loop by ResourceData::type()
+        //
+        QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
+        for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+             rdIt != rdl.end(); ++rdIt ) {
+            ResourceData* rd = *rdIt;
+            if( rd->type() == type ) {
+                l.append( rd );
             }
         }
     }
@@ -148,18 +148,17 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWi
 
     QList<ResourceData*> l;
 
-    for( ResourceDataHash::iterator rdIt = m_uriKickoffData.begin();
-         rdIt != m_uriKickoffData.end(); ++rdIt ) {
-        if( rdIt.value()->hasProperty( uri ) &&
-            rdIt.value()->property( uri ) == v ) {
-            l.append( rdIt.value() );
-        }
-    }
-    for( KickoffDataHash::iterator rdIt = m_idKickoffData.begin();
-         rdIt != m_idKickoffData.end(); ++rdIt ) {
-        if( rdIt.value()->hasProperty( uri ) &&
-            rdIt.value()->property( uri ) == v ) {
-            l.append( rdIt.value() );
+    //
+    // We need to cache both m_uriKickoffData and m_idKickoffData since they might be changed
+    // in the loop by ResourceData::type()
+    //
+    QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
+    for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+         rdIt != rdl.end(); ++rdIt ) {
+        ResourceData* rd = *rdIt;
+        if( rd->hasProperty( uri ) &&
+            rd->property( uri ) == v ) {
+            l.append( rd );
         }
     }
 
@@ -179,10 +178,6 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceData()
          rdIt != m_idKickoffData.end(); ++rdIt ) {
         l.append( rdIt.value() );
     }
-    for( ResourceDataHash::iterator rdIt = m_initializedData.begin();
-         rdIt != m_initializedData.end(); ++rdIt ) {
-        l.append( rdIt.value() );
-    }
 
     return l;
 }
@@ -194,16 +189,16 @@ bool Nepomuk::ResourceManagerPrivate::dataCacheFull()
 }
 
 
-void Nepomuk::ResourceManagerPrivate::cleanupCache()
+void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 {
-    if ( dataCnt >= 1000 ) {
-        for( ResourceDataHash::iterator rdIt = m_initializedData.begin();
-             rdIt != m_initializedData.end(); ++rdIt ) {
-            ResourceData* data = rdIt.value();
-            if ( !data->cnt() ) {
-                data->deleteData();
+    QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
+    for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+         rdIt != rdl.end(); ++rdIt ) {
+        ResourceData* data = *rdIt;
+        if ( !data->cnt() ) {
+            data->deleteData();
+            if( num > 0 && --num == 0 )
                 return;
-            }
         }
     }
 }
@@ -337,7 +332,9 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
         QList<ResourceData*> localData = d->allResourceDataOfType( type );
         for( QList<ResourceData*>::iterator rdIt = localData.begin();
              rdIt != localData.end(); ++rdIt ) {
-            l.append( Resource( *rdIt ) );
+            Resource res( *rdIt );
+            if( !l.contains( res ) )
+                l.append( res );
         }
 
 //        kDebug() << " added local resources: " << l.count();
@@ -353,6 +350,24 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
         }
 
 //        kDebug() << " added remote resources: " << l.count();
+    }
+
+    return l;
+}
+
+
+QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResources()
+{
+    QList<Nepomuk::Resource> l;
+    Q_FOREACH( ResourceData* data, d->allResourceData()) {
+        l << Resource( data );
+    }
+
+    Soprano::QueryResultIterator it = mainModel()->executeQuery( QLatin1String("select distinct ?r where { ?r a ?t . FILTER(?t != rdf:Property && ?t != rdfs:Class) . }"),
+                                                                 Soprano::Query::QueryLanguageSparql );
+    while( it.next() ) {
+        Resource r( it[0].uri() );
+        l << r;
     }
 
     return l;
@@ -401,6 +416,12 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
     }
 
     return l;
+}
+
+
+void Nepomuk::ResourceManager::clearCache()
+{
+    d->cleanupCache( -1 );
 }
 
 

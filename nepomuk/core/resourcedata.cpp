@@ -614,9 +614,6 @@ bool Nepomuk::ResourceData::determineUri()
                         m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffId );
                     }
                 }
-
-                QMutexLocker lock( &m_rm->mutex );
-                m_rm->m_idKickoffData.remove( m_kickoffId );
             }
 
             else if( !m_kickoffUri.isEmpty() ) {
@@ -677,9 +674,6 @@ bool Nepomuk::ResourceData::determineUri()
                     // for everything else we simply use the kickoff URI as resource URI
                     m_uri = m_kickoffUri;
                 }
-
-                QMutexLocker lock( &m_rm->mutex );
-                m_rm->m_uriKickoffData.remove( m_kickoffUri );
             }
 
             else {
@@ -705,6 +699,19 @@ bool Nepomuk::ResourceData::determineUri()
 
         return !m_uri.isEmpty();
     }
+}
+
+
+void Nepomuk::ResourceData::invalidateCache()
+{
+    //
+    // TODO: Resources might be deleted or only parts of resources might be deleted while we have local
+    // instances of them.
+    // If a resource's identifier is deleted and this instance was created using exactly that then the id
+    // is in m_rm->m_idKickoffData and this instance will be found again via that (now invalid) id!
+    // The same is true for completely deleted resources which are found again via their ids and their urls!
+    //
+    m_cacheDirty = true;
 }
 
 
