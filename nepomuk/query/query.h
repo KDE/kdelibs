@@ -221,6 +221,33 @@ namespace Nepomuk {
             QList<RequestProperty> requestProperties() const;
 
             /**
+             * \brief Aditional flags modifying the behaviour of toSparqlQuery() and toSearchUrl().
+             */
+            enum SparqlFlag {
+                /**
+                 * No flags, i.e. create a default query.
+                 */
+                NoFlags = 0x0,
+
+                /**
+                 * Create a SPARQL count query which will return the number
+                 * of results rather than the results themselves. Be aware that
+                 * with a count query any requestProperties() will result in a grouping,
+                 * i.e. multiple count values will be returned with respect to the request
+                 * properties.
+                 */
+                CreateCountQuery = 0x1,
+
+                /**
+                 * Automatically handle inverse properties, consider for example nie:isPartOf
+                 * and nie:hasPart at the same time and even if only one of both is
+                 * defined.
+                 */
+                HandleInverseProperties = 0x2
+            };
+            Q_DECLARE_FLAGS( SparqlFlags, SparqlFlag )
+
+            /**
              * Convert the query into a SPARQL query which can be used with the
              * Nepomuk query service or directly in Soprano::Model::executeQuery.
              *
@@ -230,12 +257,14 @@ namespace Nepomuk {
              * \warning The SPARQL queries created by this method contain SPARQL extensions
              * from Virtuoso and will not work with other RDF storage solutions!
              *
+             * \param flags Optional flags to change the query.
+             *
              * \return The SPARQL representation of this query or an empty string
              * if the query could not be converted (invalid query.)
              *
-             * \sa toSerachUrl()
+             * \sa toSearchUrl(), SparqlFlag
              */
-            QString toSparqlQuery() const;
+            QString toSparqlQuery( SparqlFlags flags = NoFlags ) const;
 
             /**
              * Convert the query into a URL which can be listed using KIO::DirLister.
@@ -245,12 +274,15 @@ namespace Nepomuk {
              * This is the perfect method for listing results in file managers or file
              * dialogs.
              *
+             * \param flags Optional flags to change the query.  Query::CreateCountQuery is not
+             * supported and will silently be dropped from \p flags.
+             *
              * \return A URL which will list a virtual folder containing all search results
              * from this query or an invalid URL in case this query is invalid.
              *
-             * \sa toSparqlQuery()
+             * \sa toSparqlQuery(), SparqlFlag
              */
-            KUrl toSearchUrl() const;
+            KUrl toSearchUrl( SparqlFlags flags = NoFlags ) const;
 
             /**
              * Build a request property map as used in QueryServiceClient::sparqlQuery()
@@ -278,6 +310,8 @@ namespace Nepomuk {
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Query& );
     }
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Nepomuk::Query::Query::SparqlFlags )
 
 NEPOMUKQUERY_EXPORT QDebug operator<<( QDebug, const Nepomuk::Query::Query& );
 

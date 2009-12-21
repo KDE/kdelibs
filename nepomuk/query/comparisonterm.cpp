@@ -86,8 +86,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     //      fail!
     //
 
-    Nepomuk::Types::Property p( m_property );
-    if ( p.literalRangeType().isValid() ) {
+    if ( m_property.literalRangeType().isValid() ) {
         if( !m_subTerm.isLiteralTerm() )
             kDebug() << "Incompatible subterm type:" << m_subTerm.type();
         if ( m_comparator == ComparisonTerm::Equal ) {
@@ -127,46 +126,58 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         if( !(m_comparator == ComparisonTerm::Equal ||
               m_comparator == ComparisonTerm::Contains ||
               m_comparator == ComparisonTerm::Regexp ))
-            kDebug() << "Incompatible property range:" << p.range().uri();
+            kDebug() << "Incompatible property range:" << m_property.range().uri();
+
+        //
+        // The core pattern is always the same: we match to resource that have a certain
+        // property defined. The value of that property is filled in below.
+        //
+        QString corePattern;
+        if( qbd->flags() & Query::HandleInverseProperties &&
+            m_property.inverseProperty().isValid() ) {
+            corePattern = QString::fromLatin1("{ %1 %2 %3 . } UNION { %3 %4 %1 . } . ")
+                              .arg( resourceVarName,
+                                    Soprano::Node::resourceToN3( m_property.uri() ),
+                                    QLatin1String("%1"), // funny way to have a resulting string which takes only one arg
+                                    Soprano::Node::resourceToN3( m_property.inverseProperty().uri() ) );
+        }
+        else {
+            corePattern = QString::fromLatin1("%1 %2 %3 . ")
+                              .arg( resourceVarName,
+                                    Soprano::Node::resourceToN3( m_property.uri() ),
+                                    QLatin1String("%1") ); // funny way to have a resulting string which takes only one arg
+        }
+
         if ( m_subTerm.isLiteralTerm() ) {
+            //
+            // the base of the pattern is always the same: match to resources related to X
+            // which has a label that we compare somehow. This label's value will be filled below
+            //
+            QString v1 = qbd->uniqueVarName();
+            QString v2 = qbd->uniqueVarName();
+            QString pattern = QString::fromLatin1( "%1%2 %3 %4 . %3 %5 %6 . " )
+                              .arg( corePattern.arg(v1),
+                                    v1,
+                                    v2,
+                                    QLatin1String("%1"), // funny way to have a resulting string which takes only one arg
+                                    Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subPropertyOf() ), // using crappy inferencing for now
+                                    Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::label() ) );
+
             if ( m_comparator == ComparisonTerm::Equal ) {
-                QString v1 = qbd->uniqueVarName();
-                QString v2 = qbd->uniqueVarName();
-                return QString( "%1 %2 %3 . %3 %4 %5 . %4 %6 %7 . " )
-                    .arg( resourceVarName,
-                          Soprano::Node::resourceToN3( m_property.uri() ),
-                          v1,
-                          v2,
-                          Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ),
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subPropertyOf() ), // using crappy inferencing for now
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::label() ) );
+                return pattern.arg( Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
-                QString v1 = qbd->uniqueVarName();
-                QString v2 = qbd->uniqueVarName();
                 QString v3 = qbd->uniqueVarName();
-                return QString( "%1 %2 %3 . %3 %4 %5 . %4 %6 %7 . %5 bif:contains \"'%8*'\" . " )
-                    .arg( resourceVarName,
-                          Soprano::Node::resourceToN3( m_property.uri() ),
-                          v1,
-                          v2,
+                return QString::fromLatin1( "%1%2 bif:contains \"'%3*'\" . " )
+                    .arg( pattern.arg(v3),
                           v3,
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subPropertyOf() ), // using crappy inferencing for now
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::label() ),
                           m_subTerm.toLiteralTerm().value().toString() );
             }
             else if ( m_comparator == ComparisonTerm::Regexp ) {
-                QString v1 = qbd->uniqueVarName();
-                QString v2 = qbd->uniqueVarName();
                 QString v3 = qbd->uniqueVarName();
-                return QString( "%1 %2 %3 . %3 %4 %5 . %4 %6 %7 . FILTER(REGEX(STR(%5)), '%8*', 'i') . " )
-                    .arg( resourceVarName,
-                          Soprano::Node::resourceToN3( m_property.uri() ),
-                          v1,
-                          v2,
+                return QString::fromLatin1( "%1FILTER(REGEX(STR(%2)), '%3*', 'i') . " )
+                    .arg( pattern.arg(v3),
                           v3,
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subPropertyOf() ), // using crappy inferencing for now
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::label() ),
                           m_subTerm.toLiteralTerm().value().toString() );
             }
             else {
@@ -175,18 +186,13 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
         }
         else if ( m_subTerm.isResourceTerm() ) {
-            return QString( "%1 %2 %3 . " )
-                .arg( resourceVarName,
-                      Soprano::Node::resourceToN3( m_property.uri() ),
-                      m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
+            // ?r <prop> <res>
+            return corePattern.arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
         }
         else {
+            // ?r <prop> ?v1 . ?v1 ...
             QString v = qbd->uniqueVarName();
-            return QString( "%1 %2 %3 . %4" )
-                .arg( resourceVarName,
-                      Soprano::Node::resourceToN3( m_property.uri() ),
-                      v,
-                      m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd ) );
+            return corePattern.arg(v) + m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd );
         }
     }
 }

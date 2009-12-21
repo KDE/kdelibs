@@ -298,7 +298,7 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
 }
 
 
-QString Nepomuk::Query::Query::toSparqlQuery() const
+QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 {
     // optimize whatever we can
     Term term = QueryPrivate::optimizeTerm( d->m_term );
@@ -309,14 +309,15 @@ QString Nepomuk::Query::Query::toSparqlQuery() const
     }
 
     // actually build the SPARQL query string
-    QueryBuilderData qbd;
+    QueryBuilderData qbd( flags );
     QString termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
     if( !termGraphPattern.isEmpty() ) {
-        QString query = QString::fromLatin1( "select distinct ?r %1 where { %2 %3 %4 }" )
-                        .arg( d->buildRequestPropertyVariableList() )
-                        .arg( termGraphPattern )
-                        .arg( d->createFolderFilter( QLatin1String( "?r" ), &qbd ) )
-                        .arg( d->buildRequestPropertyPatterns() );
+        QString query = QString::fromLatin1( "select distinct %1 %2 where { %3 %4 %5 }" )
+                        .arg( flags & CreateCountQuery ? QLatin1String("count(?r)") : QLatin1String("?r"),
+                              d->buildRequestPropertyVariableList(),
+                              termGraphPattern,
+                              d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
+                              d->buildRequestPropertyPatterns() );
         if ( d->m_limit > 0 )
             query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
         return query;
@@ -328,9 +329,9 @@ QString Nepomuk::Query::Query::toSparqlQuery() const
 }
 
 
-KUrl Nepomuk::Query::Query::toSearchUrl() const
+KUrl Nepomuk::Query::Query::toSearchUrl( SparqlFlags flags ) const
 {
-    QString sparql = toSparqlQuery();
+    QString sparql = toSparqlQuery( flags & ~CreateCountQuery );
     if( sparql.isEmpty() ) {
         return KUrl();
     }

@@ -25,13 +25,20 @@
 #include <QtCore/QString>
 #include <QtCore/QLatin1String>
 
+#include "query.h"
+
 namespace Nepomuk {
     namespace Query {
         class QueryBuilderData
         {
         public:
-            inline QueryBuilderData()
-                : m_varNameCnt( 0 ) {
+            inline QueryBuilderData( Query::SparqlFlags flags )
+                : m_varNameCnt( 0 ),
+                  m_flags( flags ) {
+            }
+
+            inline Query::SparqlFlags flags() const {
+                return m_flags;
             }
 
             inline QString uniqueVarName() {
@@ -40,6 +47,7 @@ namespace Nepomuk {
 
         private:
             int m_varNameCnt;
+            Query::SparqlFlags m_flags;
         };
     }
 }
