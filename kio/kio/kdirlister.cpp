@@ -110,12 +110,19 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   // like this we don't have to worry about trailing slashes any further
   _url.adjustPath(KUrl::RemoveTrailingSlash);
 
+  const QString urlStr = _url.url();
+
   if (_url.isLocalFile()) {
       // Resolve symlinks (#213799)
-      const QString local = QFileInfo(_url.toLocalFile()).canonicalFilePath();
-      _url.setPath(local);
+      const QString local = _url.toLocalFile();
+      const QString resolved = QFileInfo(_url.toLocalFile()).canonicalFilePath();
+      if (local != resolved)
+          canonicalUrls[resolved].append(urlStr);
+      // TODO: remove entry from canonicalUrls again in forgetDirs
+      // Note: this is why we use a QStringList value in there rather than a QSet:
+      // we can just remove one entry and not have to worry about other dirlisters
+      // (the non-unicity of the stringlist gives us the refcounting, basically).
   }
-  const QString urlStr = _url.url();
 
   if (!validUrl(lister, _url)) {
         kDebug(7004) << lister << "url=" << _url << "not a valid url";
@@ -763,11 +770,15 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
 void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify signals
 {
   kDebug(7004) << dir;
-  updateDirectory( KUrl(dir) );
+  Q_FOREACH(const QString& u, directoriesForCanonicalPath(dir)) {
+      updateDirectory(KUrl(u));
+  }
 }
 
 void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
 {
+    // TODO: handling of symlinks-to-directories isn't done here,
+    // because I'm not sure how to do it and keep the performance ok...
     slotFilesRemoved(KUrl::List(fileList));
 }
 
@@ -961,6 +972,18 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
     return listersToRefresh;
 }
 
+QStringList KDirListerCache::directoriesForCanonicalPath(const QString& dir) const
+{
+    QStringList dirs;
+    dirs << dir;
+    dirs << canonicalUrls.value(dir).toSet().toList(); /* make unique; there are faster ways, but this is really small anyway */
+    
+    if (dirs.count() > 1)
+        kDebug() << dir << "known as" << dirs;
+            
+    return dirs;
+}
+
 // private slots
 
 // Called by KDirWatch - usually when a dir we're watching has been modified,
@@ -975,7 +998,16 @@ void KDirListerCache::slotFileDirty( const QString& path )
     const bool isDir = S_ISDIR(buff.st_mode);
     KUrl url(path);
     url.adjustPath(KUrl::RemoveTrailingSlash);
+    Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.directory())) {
+        KUrl aliasUrl(dir);
+        aliasUrl.addPath(url.fileName());
+        handleFileDirty(aliasUrl, isDir);
+    }
+}
 
+// Called by slotFileDirty
+void KDirListerCache::handleFileDirty(const KUrl& url, bool isDir)
+{
     if (isDir) {
         // A dir: launch an update job if anyone cares about it
 
@@ -998,8 +1030,9 @@ void KDirListerCache::slotFileDirty( const QString& path )
         KFileItem* existingItem = findByUrl(0, url);
         if (!existingItem) {
             // No - update the parent dir then
-            url.setPath(url.directory());
-            updateDirectory(url);
+            KUrl dir(url);
+            dir.setPath(url.directory());
+            updateDirectory(dir);
         } else {
             // A known file: delay updating it, FAM is flooding us with events
             const QString filePath = url.toLocalFile();
@@ -1018,18 +1051,23 @@ void KDirListerCache::slotFileDirty( const QString& path )
 
 void KDirListerCache::slotFileCreated( const QString& path ) // from KDirWatch
 {
-  kDebug(7004) << path;
-  // XXX: how to avoid a complete rescan here?
-  KUrl u( path );
-  u.setPath( u.directory() );
-  updateDirectory( u );
+    kDebug(7004) << path;
+    // XXX: how to avoid a complete rescan here?
+    // We'd need to stat that one file separately and refresh the item(s) for it.
+    KUrl fileUrl(path);
+    slotFilesAdded(fileUrl.directory());
 }
 
 void KDirListerCache::slotFileDeleted( const QString& path ) // from KDirWatch
 {
-  kDebug(7004) << path;
-  KUrl u( path );
-  slotFilesRemoved( QStringList() << u.url() );
+    kDebug(7004) << path;
+    KUrl u( path );
+    QStringList fileUrls;
+    Q_FOREACH(KUrl url, directoriesForCanonicalPath(u.directory())) {
+        url.addPath(u.fileName());
+        fileUrls << url.url();
+    }
+    slotFilesRemoved(fileUrls);
 }
 
 void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )

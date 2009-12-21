@@ -274,6 +274,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
     const QString fileName = "toplevelfile_newinlink";
     createSimpleFile(path + fileName);
 
+    org::kde::KDirNotify::emitFilesAdded(path); // ### workaround for broken inotify
     int numTries = 0;
     // Give time for KDirWatch to notify us
     while (m_items2.count() == origItemCount) {
@@ -300,6 +301,8 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
         disconnect(&m_dirLister, 0, this, 0);
     }
     QCOMPARE(fileCount(), m_items.count());
+
+    // TODO: test file deletion, and file update.
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
