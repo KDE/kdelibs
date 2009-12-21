@@ -62,7 +62,7 @@ class MediaControlsPrivate
             stopButton.setAutoRaise(true);
 
             loopButton.setIconSize(QSize(32, 32));
-            loopButton.setIcon(KIcon("player_loop"));
+            loopButton.setIcon(KIcon("view-refresh"));
             loopButton.setToolTip(i18n("loop: restarts playback at end"));
             loopButton.setAutoRaise(true);
             loopButton.setCheckable(true);
