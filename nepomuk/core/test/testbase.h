@@ -17,18 +17,24 @@
 
 #include <QtTest/QtTest>
 
+class KTempDir;
+namespace Soprano {
+class Model;
+}
 
 class TestBase : public QObject
 {
     Q_OBJECT
 
- private Q_SLOTS:
+private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
     virtual void init();
     virtual void cleanup();
 
-protected:
-    QString backendName() const;
+private:
+    KTempDir* m_tmpDir;
+    Soprano::Model* m_model;
 };
 
 #endif

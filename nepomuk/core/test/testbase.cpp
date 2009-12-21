@@ -19,27 +19,33 @@
 
 #include <Soprano/Soprano>
 
+#include <ktempdir.h>
 
 void TestBase::initTestCase()
 {
-    Soprano::Model* model = Soprano::createModel();
-    Nepomuk::ResourceManager::instance()->setOverrideMainModel( model );
+    m_tmpDir = new KTempDir();
+    const Soprano::Backend* backend = Soprano::PluginManager::instance()->discoverBackendByName("virtuoso");
+    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, m_tmpDir->name() ));
+    Nepomuk::ResourceManager::instance()->setOverrideMainModel( m_model );
 }
+
+
+void TestBase::cleanupTestCase()
+{
+    Nepomuk::ResourceManager::instance()->setOverrideMainModel( 0 );
+    delete m_model;
+    delete m_tmpDir;
+}
+
 
 void TestBase::init()
 {
-    Nepomuk::ResourceManager::instance()->mainModel()->removeAllStatements();
+    m_model->removeAllStatements();
 }
 
 
 void TestBase::cleanup()
 {
-}
-
-
-QString TestBase::backendName() const
-{
-    return Soprano::usedBackend()->pluginName();
 }
 
 #include "testbase.moc"

@@ -229,7 +229,15 @@ void ResourceTest::testResourceManager()
         Resource r5( "res5", QUrl("http://test/myothertype" ) );
         Resource r6( "res6", QUrl("http://test/mythirdtype" ) );
 
+        QList<Resource> rl1 = ResourceManager::instance()->allResources();
+        foreach(Resource res, rl1) {
+            qDebug() << res.resourceUri() << res.identifiers() << res.resourceType();
+        }
         QList<Resource> rl = ResourceManager::instance()->allResourcesOfType( QUrl("http://test/mytype" ));
+        foreach(Resource res, rl) {
+            qDebug() << res.resourceUri() << res.identifiers() << res.resourceType();
+        }
+
         QCOMPARE( rl.count(), 2 );
         QVERIFY( rl.contains( r1 ) && rl.contains( r2 ) );
 
@@ -291,6 +299,9 @@ void ResourceTest::testLocalFileUrls()
         tmpFile1ResUri = fileRes.resourceUri();
     }
 
+    // clear cache to be sure we call ResourceData::determineUri
+    ResourceManager::instance()->clearCache();
+
     // verify that the resource in question is found again
     Resource fileRes1( KUrl(tmpFile1.fileName()) );
     QCOMPARE( tmpFile1ResUri, fileRes1.resourceUri() );
@@ -318,9 +329,6 @@ void ResourceTest::testLocalFileUrls()
     ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile3.fileName()), Soprano::Vocabulary::NAO::rating(), Soprano::LiteralValue(4) );
 
     Resource fileRes4( KUrl(tmpFile3.fileName()) );
-    // redland cannot handle UNION queries properly as we use in ResourceData::determineUri
-    if( backendName() == QLatin1String("redland"))
-        QEXPECT_FAIL( "", "The Redland backend is used for the test run. Its query support is rather poor which makes ResourceData::determineUri fail here.", Continue );
     QCOMPARE( KUrl(fileRes4.resourceUri()).url(), KUrl(tmpFile3.fileName()).url() );
 }
 
