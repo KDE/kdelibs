@@ -568,6 +568,8 @@ KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, 
     QString actionName(service->name().replace('&', "&&"));
     if (singleOffer) {
         actionName = i18n("Open &with %1", actionName);
+    } else {
+        actionName = i18nc("@item:inmenu Open With, %1 is application name", "%1", actionName);
     }
 
     KAction *act = new KAction(m_parentWidget);
