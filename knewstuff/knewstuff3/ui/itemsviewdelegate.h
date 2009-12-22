@@ -34,6 +34,8 @@
 
 namespace KNS3
 {
+    class ItemsModel;
+
 class ItemsViewDelegate: public KWidgetItemDelegate
 {
     Q_OBJECT
@@ -65,6 +67,9 @@ private slots:
     void slotDetailsClicked();
 
 private:
+    const ItemsModel* modelFromIndex(const QModelIndex& index) const;
+    KNS3::EntryInternal entryForIndex(const QModelIndex& index) const;
+
     QList<KIcon> m_statusicons;
     QImage m_frameImage;
 };

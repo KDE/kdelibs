@@ -64,6 +64,34 @@ ItemsViewDelegate::~ItemsViewDelegate()
 {
 }
 
+const ItemsModel* ItemsViewDelegate::modelFromIndex(const QModelIndex& index) const
+{
+    // FIXME:
+    // Different people report either cast to not work. Why would we sometimes get the proxy, sometimes the real thing?
+    const QSortFilterProxyModel* proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
+    if (proxyModel) {
+        kDebug() << "Got a proxy model.";
+        return qobject_cast<const ItemsModel*>(proxyModel->sourceModel());
+    } else {
+        kDebug() << "Got the base model.";
+        return qobject_cast<const ItemsModel*>(index.model());
+    }
+}
+
+KNS3::EntryInternal ItemsViewDelegate::entryForIndex(const QModelIndex& index) const
+{
+    const QSortFilterProxyModel* proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
+    if (proxyModel) {
+        kDebug() << "Got a proxy model.";
+        const ItemsModel* model = qobject_cast<const ItemsModel*>(proxyModel->sourceModel());
+        return model->entryForIndex(proxyModel->mapToSource(index));
+    } else {
+        kDebug() << "Got the base model.";
+        const ItemsModel* model = qobject_cast<const ItemsModel*>(index.model());
+        return model->entryForIndex(index);
+    }
+}
+
 QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
 {
     QList<QWidget*> list;
@@ -100,14 +128,9 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         const QStyleOptionViewItem &option,
         const QPersistentModelIndex &index) const
 {
-    const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-    if (model == NULL) {
+    const ItemsModel * model = modelFromIndex(index);
+    if (!model) {
         kDebug() << "WARNING - INVALID MODEL!";
-        return;
-    }
-
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    if (realmodel == NULL || !index.isValid()) {
         return;
     }
 
@@ -122,7 +145,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     QLabel * infoLabel = qobject_cast<QLabel*>(widgets.at(DelegateLabel));
     infoLabel->setWordWrap(true);
     if (infoLabel != NULL) {
-        if (realmodel->hasPreviewImages()) {
+        if (model->hasPreviewImages()) {
             // move the text right by kPreviewWidth + margin pixels to fit the preview
             infoLabel->move(PreviewWidth + margin * 2, 0);
             infoLabel->resize(QSize(option.rect.width() - PreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
@@ -257,8 +280,7 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
         painter->setPen(QPen(option.palette.text().color()));
     }
 
-    const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
+    const ItemsModel * realmodel = modelFromIndex(index);
 
     if (realmodel->hasPreviewImages()) {
         int height = option.rect.height();
@@ -292,9 +314,7 @@ bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
         QModelIndex index = focusedIndex();
         Q_ASSERT(index.isValid());
 
-        const QSortFilterProxyModel* model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-        const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
+        KNS3::EntryInternal entry = entryForIndex(index);
 
         performAction(Engine::ShowDetails, entry);
    }
@@ -320,9 +340,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
     QModelIndex index = focusedIndex();
     Q_ASSERT(index.isValid());
 
-    const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-    KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
+    KNS3::EntryInternal entry = entryForIndex(index);
     emit performAction(Engine::ContactEmail, entry);
 }
 
@@ -331,9 +349,8 @@ void ItemsViewDelegate::slotInstallClicked()
     QModelIndex index = focusedIndex();
 kDebug() << index;
     if (index.isValid()) {
-        //const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-        //kDebug() << model;
-        const ItemsModel * model = qobject_cast<const ItemsModel*>(index.model());
+
+        const ItemsModel * model = modelFromIndex(index);
         kDebug() << model;
         KNS3::EntryInternal entry = model->entryForIndex(index);
         if ( !entry.isValid() )
@@ -352,10 +369,8 @@ void ItemsViewDelegate::slotDetailsClicked()
     QModelIndex index = focusedIndex();
     kDebug() << index;
 
-    if (index.isValid()) {
-        //const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
-        //const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
+    if (index.isValid()) {        
+        const ItemsModel * realmodel = modelFromIndex(index);
         kDebug() << realmodel;
         //KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
         KNS3::EntryInternal entry = realmodel->entryForIndex(index);
