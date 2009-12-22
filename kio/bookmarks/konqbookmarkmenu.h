@@ -22,7 +22,7 @@
 #define __konqbookmarkmenu_h__
 #include "kbookmarkmenu.h"
 
-class KIO_EXPORT KonqBookmarkOwner : public KBookmarkOwner
+class KIO_EXPORT KonqBookmarkOwner : public KBookmarkOwner // KDE5 TODO: merge with KBookmarkOwner
 {
 public:
   virtual ~KonqBookmarkOwner();
