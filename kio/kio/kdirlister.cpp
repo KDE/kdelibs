@@ -977,10 +977,10 @@ QStringList KDirListerCache::directoriesForCanonicalPath(const QString& dir) con
     QStringList dirs;
     dirs << dir;
     dirs << canonicalUrls.value(dir).toSet().toList(); /* make unique; there are faster ways, but this is really small anyway */
-    
+
     if (dirs.count() > 1)
         kDebug() << dir << "known as" << dirs;
-            
+
     return dirs;
 }
 
@@ -998,52 +998,60 @@ void KDirListerCache::slotFileDirty( const QString& path )
     const bool isDir = S_ISDIR(buff.st_mode);
     KUrl url(path);
     url.adjustPath(KUrl::RemoveTrailingSlash);
-    Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.directory())) {
-        KUrl aliasUrl(dir);
-        aliasUrl.addPath(url.fileName());
-        handleFileDirty(aliasUrl, isDir);
+    if (isDir) {
+        Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.path())) {
+            handleDirDirty(dir);
+        }
+    } else {
+        Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.directory())) {
+            KUrl aliasUrl(dir);
+            aliasUrl.addPath(url.fileName());
+            handleFileDirty(aliasUrl);
+        }
     }
 }
 
 // Called by slotFileDirty
-void KDirListerCache::handleFileDirty(const KUrl& url, bool isDir)
+void KDirListerCache::handleDirDirty(const KUrl& url)
 {
-    if (isDir) {
-        // A dir: launch an update job if anyone cares about it
+    // A dir: launch an update job if anyone cares about it
 
-        // This also means we can forget about pending updates to individual files in that dir
-        const QString dirPath = url.toLocalFile(KUrl::AddTrailingSlash);
-        QMutableSetIterator<QString> pendingIt(pendingUpdates);
-        while (pendingIt.hasNext()) {
-            const QString updPath = pendingIt.next();
-            //kDebug(7004) << "had pending update" << updPath;
-            if (updPath.startsWith(dirPath) &&
-                updPath.indexOf('/', dirPath.length()) == -1) { // direct child item
-                kDebug(7004) << "forgetting about individual update to" << updPath;
-                pendingIt.remove();
-            }
+    // This also means we can forget about pending updates to individual files in that dir
+    const QString dirPath = url.toLocalFile(KUrl::AddTrailingSlash);
+    QMutableSetIterator<QString> pendingIt(pendingUpdates);
+    while (pendingIt.hasNext()) {
+        const QString updPath = pendingIt.next();
+        //kDebug(7004) << "had pending update" << updPath;
+        if (updPath.startsWith(dirPath) &&
+            updPath.indexOf('/', dirPath.length()) == -1) { // direct child item
+            kDebug(7004) << "forgetting about individual update to" << updPath;
+            pendingIt.remove();
         }
+    }
 
-        updateDirectory(url);
+    updateDirectory(url);
+}
+
+// Called by slotFileDirty
+void KDirListerCache::handleFileDirty(const KUrl& url)
+{
+    // A file: do we know about it already?
+    KFileItem* existingItem = findByUrl(0, url);
+    if (!existingItem) {
+        // No - update the parent dir then
+        KUrl dir(url);
+        dir.setPath(url.directory());
+        updateDirectory(dir);
     } else {
-        // A file: do we know about it already?
-        KFileItem* existingItem = findByUrl(0, url);
-        if (!existingItem) {
-            // No - update the parent dir then
+        // A known file: delay updating it, FAM is flooding us with events
+        const QString filePath = url.toLocalFile();
+        if (!pendingUpdates.contains(filePath)) {
             KUrl dir(url);
-            dir.setPath(url.directory());
-            updateDirectory(dir);
-        } else {
-            // A known file: delay updating it, FAM is flooding us with events
-            const QString filePath = url.toLocalFile();
-            if (!pendingUpdates.contains(filePath)) {
-                KUrl dir(url);
-                dir.setPath(dir.directory());
-                if (checkUpdate(dir.url())) {
-                    pendingUpdates.insert(filePath);
-                    if (!pendingUpdateTimer.isActive())
-                        pendingUpdateTimer.start( 500 );
-                }
+            dir.setPath(dir.directory());
+            if (checkUpdate(dir.url())) {
+                pendingUpdates.insert(filePath);
+                if (!pendingUpdateTimer.isActive())
+                    pendingUpdateTimer.start(500);
             }
         }
     }

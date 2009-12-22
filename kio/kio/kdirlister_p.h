@@ -271,7 +271,8 @@ private:
     bool checkUpdate( const QString& url );
 
     // Helper method for slotFileDirty
-    void handleFileDirty(const KUrl& url, bool isDir);
+    void handleFileDirty(const KUrl& url);
+    void handleDirDirty(const KUrl& url);
 
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted

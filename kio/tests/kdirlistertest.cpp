@@ -32,6 +32,8 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 #include <kio/job.h>
 #include <kio/copyjob.h>
 
+#define WORKAROUND_BROKEN_INOTIFY 0
+
 void MyDirLister::handleError(KIO::Job* job)
 {
     // Currently we don't expect any errors.
@@ -256,7 +258,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
     tempFile.close();
     bool symlinkOk = ::symlink(QFile::encodeName(path), QFile::encodeName(symPath)) == 0;
     QVERIFY(symlinkOk);
-    KDirLister dirLister2;
+    MyDirLister dirLister2;
     m_items2.clear();
     connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
@@ -274,7 +276,9 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
     const QString fileName = "toplevelfile_newinlink";
     createSimpleFile(path + fileName);
 
-    org::kde::KDirNotify::emitFilesAdded(path); // ### workaround for broken inotify
+#if WORKAROUND_BROKEN_INOTIFY
+    org::kde::KDirNotify::emitFilesAdded(path);
+#endif
     int numTries = 0;
     // Give time for KDirWatch to notify us
     while (m_items2.count() == origItemCount) {
@@ -298,11 +302,25 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
         }
         QCOMPARE(m_items2.count(), origItemCount+2);
         QCOMPARE(m_items.count(), origItemCount+2);
-        disconnect(&m_dirLister, 0, this, 0);
     }
     QCOMPARE(fileCount(), m_items.count());
 
-    // TODO: test file deletion, and file update.
+    // Test file deletion
+    {
+        qDebug() << "Deleting" << (path+fileName);
+        QTest::qWait(1000); // for timestamp difference
+        QFile::remove(path + fileName);
+        while (dirLister2.spyDeleteItem.count() == 0) {
+            QVERIFY(++numTries < 10);
+            QTest::qWait(200);
+        }
+        QCOMPARE(dirLister2.spyDeleteItem.count(), 1);
+        const KFileItem item = dirLister2.spyDeleteItem[0][0].value<KFileItem>();
+        QCOMPARE(item.url().path(), symPath + '/' + fileName);
+    }
+
+    // TODO: test file update.
+    disconnect(&m_dirLister, 0, this, 0);
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
@@ -489,7 +507,9 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
     const QString dirPath = m_tempDir.name();
     const QString path = dirPath+"toplevelfile_2";
     createTestFile(path);
-    org::kde::KDirNotify::emitFilesAdded(dirPath); // ### workaround for broken inotify
+#if WORKAROUND_BROKEN_INOTIFY
+    org::kde::KDirNotify::emitFilesAdded(dirPath);
+#endif
     KFileItem existingItem;
     while (existingItem.isNull()) {
         QTest::qWait(100);
