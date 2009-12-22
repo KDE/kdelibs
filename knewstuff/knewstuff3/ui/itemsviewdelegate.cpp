@@ -188,14 +188,17 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         switch (status) {
             case EntryInternal::Installed:
             installButton->setText(i18n("Uninstall"));
+            installButton->setEnabled(true);
             installButton->setIcon(m_statusicons[EntryInternal::Deleted]);
             break;
         case EntryInternal::Updateable:
             installButton->setText(i18n("Update"));
+            installButton->setEnabled(true);
             installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
             break;
         case EntryInternal::Deleted:
             installButton->setText(i18n("Install again"));
+            installButton->setEnabled(true);
             installButton->setIcon(m_statusicons[EntryInternal::Installed]);
             break;
         case EntryInternal::Installing:
@@ -210,6 +213,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             break;
         default:
             installButton->setText(i18n("Install"));
+            installButton->setEnabled(true);
             installButton->setIcon(m_statusicons[EntryInternal::Installed]);
         }
     }
