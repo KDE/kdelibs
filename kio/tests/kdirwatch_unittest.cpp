@@ -86,7 +86,7 @@ void KDirWatch_UnitTest::touchOneFile()
 
     createFile(0);
     QList<QVariantList> spy = waitForDirtySignal(watch, 1);
-    QCOMPARE(spy.count(), 1);
+    QVERIFY(spy.count() >= 1);
     QCOMPARE(spy[0][0].toString(), m_path + s_filePrefix + "0");
 }
 
