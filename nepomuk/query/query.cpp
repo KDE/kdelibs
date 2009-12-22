@@ -312,8 +312,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     QueryBuilderData qbd( flags );
     QString termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
     if( !termGraphPattern.isEmpty() ) {
-        QString query = QString::fromLatin1( "select distinct %1 %2 where { %3 %4 %5 }" )
-                        .arg( flags & CreateCountQuery ? QLatin1String("count(?r)") : QLatin1String("?r"),
+        QString query = QString::fromLatin1( "select %1 %2 where { %3 %4 %5 }" )
+                        .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
                               d->buildRequestPropertyVariableList(),
                               termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
