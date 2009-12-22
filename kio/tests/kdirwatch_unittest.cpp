@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kdebug.h>
 #include <ktempdir.h>
 #include <qtest_kde.h>
 #include <qtestevent.h>
@@ -37,8 +38,10 @@ public:
 private Q_SLOTS:
     void touchOneFile();
     void touch1000Files();
+    void removeAndReAdd();
 
 private:
+    QList<QVariantList> waitForDirtySignal(KDirWatch& dw, int expected);
     void createFile(int num);
     KTempDir m_tempDir;
     QString m_path;
@@ -49,29 +52,47 @@ QTEST_KDEMAIN(KDirWatch_UnitTest, GUI)
 // Just to make the inotify packets bigger
 static const char* s_filePrefix = "This_is_a_test_file_";
 
+// helper method
+void KDirWatch_UnitTest::createFile(int num)
+{
+    const QString fileName = s_filePrefix + QString::number(num);
+    QFile file(m_path + fileName);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write(QByteArray("foo"));
+    file.close();
+}
+
+// helper method
+QList<QVariantList> KDirWatch_UnitTest::waitForDirtySignal(KDirWatch& watch, int expected)
+{
+    QSignalSpy spyDirty(&watch, SIGNAL(dirty(QString)));
+    int numTries = 0;
+    // Give time for KDirWatch to notify us
+    while (spyDirty.count() < expected) {
+        if (++numTries > 10) {
+            kWarning() << "Timeout waiting for KDirWatch. Got" << spyDirty.count() << "dirty() signals, expected" << expected;
+            return spyDirty;
+        }
+        QTest::qWait(200);
+    }
+    return spyDirty;
+}
+
 void KDirWatch_UnitTest::touchOneFile()
 {
     KDirWatch watch;
-    QSignalSpy spyDirty(&watch, SIGNAL(dirty(QString)));
     watch.addDir(m_path);
     watch.startScan();
 
     createFile(0);
-
-    int numTries = 0;
-    // Give time for KDirWatch to notify us
-    while (spyDirty.count() == 0) {
-        QVERIFY(++numTries < 10);
-        QTest::qWait(200);
-    }
-
-    QCOMPARE(spyDirty[0][0].toString(), m_path + s_filePrefix + "0");
+    QList<QVariantList> spy = waitForDirtySignal(watch, 1);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy[0][0].toString(), m_path + s_filePrefix + "0");
 }
 
 void KDirWatch_UnitTest::touch1000Files()
 {
     KDirWatch watch;
-    QSignalSpy spyDirty(&watch, SIGNAL(dirty(QString)));
     watch.addDir(m_path);
     watch.startScan();
 
@@ -80,22 +101,27 @@ void KDirWatch_UnitTest::touch1000Files()
         createFile(i);
     }
 
-    int numTries = 0;
-    while (spyDirty.count() < fileCount) {
-        QVERIFY(++numTries < 10);
-        QTest::qWait(200);
-    }
-
-    qDebug() << spyDirty.count();
+    QList<QVariantList> spy = waitForDirtySignal(watch, fileCount);
+    QVERIFY(spy.count() >= fileCount);
+    qDebug() << spy.count();
 }
 
-void KDirWatch_UnitTest::createFile(int num)
+void KDirWatch_UnitTest::removeAndReAdd()
 {
-    const QString fileName = s_filePrefix + QString::number(num);
-    QFile file(m_path + fileName);
-    QVERIFY(file.open(QIODevice::WriteOnly));
-    file.write(QByteArray("foo"));
-    file.close();
+    KDirWatch watch;
+    watch.addDir(m_path);
+    watch.startScan();
+    createFile(0);
+    QList<QVariantList> spy = waitForDirtySignal(watch, 1);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy[0][0].toString(), m_path + s_filePrefix + "0");
+    // Just like KDirLister does: remove the watch, then re-add it.
+    watch.removeDir(m_path);
+    watch.addDir(m_path);
+    createFile(1);
+    spy = waitForDirtySignal(watch, 1);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy[0][0].toString(), m_path + s_filePrefix + "1");
 }
 
 #include "kdirwatch_unittest.moc"
