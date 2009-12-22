@@ -112,10 +112,11 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
   const QString urlStr = _url.url();
 
+  QString resolved;
   if (_url.isLocalFile()) {
       // Resolve symlinks (#213799)
       const QString local = _url.toLocalFile();
-      const QString resolved = QFileInfo(_url.toLocalFile()).canonicalFilePath();
+      resolved = QFileInfo(local).canonicalFilePath();
       if (local != resolved)
           canonicalUrls[resolved].append(urlStr);
       // TODO: remove entry from canonicalUrls again in forgetDirs
@@ -202,7 +203,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
                 kDebug(7004) << "Listing directory:" << _url;
             }
 
-            itemU = new DirItem(_url);
+            itemU = new DirItem(_url, resolved);
             itemsInUse.insert(urlStr, itemU);
 
 //        // we have a limit of MAX_JOBS_PER_LISTER concurrently running jobs

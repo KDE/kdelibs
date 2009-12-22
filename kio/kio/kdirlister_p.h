@@ -309,9 +309,9 @@ private:
 
   class DirItem
   {
-	public:
-    DirItem( const KUrl &dir )
-      : url(dir)
+  public:
+    DirItem(const KUrl &dir, const QString& canonicalPath)
+      : url(dir), m_canonicalPath(canonicalPath)
     {
       autoUpdates = 0;
       complete = false;
@@ -322,7 +322,7 @@ private:
       if ( autoUpdates )
       {
         if ( KDirWatch::exists() && url.isLocalFile() )
-            KDirWatch::self()->removeDir( url.path() );
+            KDirWatch::self()->removeDir(m_canonicalPath);
         sendSignal( false, url );
       }
       lstItems.clear();
@@ -343,11 +343,13 @@ private:
       if ( autoUpdates )
       {
         if ( url.isLocalFile() )
-            KDirWatch::self()->removeDir( url.path() );
+            KDirWatch::self()->removeDir(m_canonicalPath);
         sendSignal( false, url );
 
-        if ( newUrl.isLocalFile() )
-          KDirWatch::self()->addDir( newUrl.path() );
+        if (newUrl.isLocalFile()) {
+            m_canonicalPath = QFileInfo(newUrl.toLocalFile()).canonicalFilePath();
+            KDirWatch::self()->addDir(m_canonicalPath);
+        }
         sendSignal( true, newUrl );
       }
 
@@ -362,7 +364,7 @@ private:
       if ( autoUpdates++ == 0 )
       {
         if ( url.isLocalFile() )
-          KDirWatch::self()->addDir( url.path() );
+          KDirWatch::self()->addDir(m_canonicalPath);
         sendSignal( true, url );
       }
     }
@@ -372,7 +374,7 @@ private:
       if ( --autoUpdates == 0 )
       {
         if ( url.isLocalFile() )
-          KDirWatch::self()->removeDir( url.path() );
+          KDirWatch::self()->removeDir(m_canonicalPath);
         sendSignal( false, url );
       }
 
@@ -388,6 +390,9 @@ private:
 
     // the complete url of this directory
     KUrl url;
+
+    // the local path, with symlinks resolved, so that KDirWatch works
+    QString m_canonicalPath;
 
     // KFileItem representing the root of this directory.
     // Remember that this is optional. FTP sites don't return '.' in
