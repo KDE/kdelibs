@@ -7,6 +7,8 @@ set(KAUTH_BACKEND "" CACHE STRING "Specifies the KAuth backend to build. Current
 ## we check what is the best backend to build on this system.
 ## 4.4: We leave polkit-0.9 having more priority over polkit-1. This will change from 4.5 on
 if(NOT KAUTH_BACKEND)
+    # Look for the most appropriate backend
+    message(STATUS "No backend for KAuth was explicitely specified: probing system to find the best one available")
     if (APPLE)
         set (KAUTH_BACKEND "OSX")
     elseif (UNIX)
@@ -18,7 +20,7 @@ if(NOT KAUTH_BACKEND)
                               FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using PolicyKit < 0.90), hence to enable some workspace functionalities")
         else (POLKITQT_FOUND)
             macro_optional_find_package(PolkitQt-1)
-            
+
             if (POLKITQT-1_FOUND)
                 set (KAUTH_BACKEND "PolkitQt-1")
                 macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
@@ -41,7 +43,7 @@ if(NOT KAUTH_BACKEND)
 else(NOT KAUTH_BACKEND)
     # Case-insensitive
     string(TOUPPER ${KAUTH_BACKEND} KAUTH_BACKEND)
-    
+
     # Check if the specified backend is valid. If it is not, we fall back to the Fake one
     if (NOT KAUTH_BACKEND STREQUAL "OSX" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT" AND NOT KAUTH_BACKEND STREQUAL "POLKITQT-1" AND NOT KAUTH_BACKEND STREQUAL "FAKE")
         message ("WARNING: The KAuth Backend ${KAUTH_BACKEND} you specified does not exist. Falling back to Fake backend")

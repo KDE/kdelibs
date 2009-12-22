@@ -23,11 +23,9 @@
 
 #include <QDebug>
 #include <syslog.h>
-#include <PolkitQt/Authority>
-#include <PolkitQt/Subject>
+#include <PolkitQt1/Authority>
+#include <PolkitQt1/Subject>
 #include <QtCore/QCoreApplication>
-//#include <polkit-qt/context.h>
-//#include <polkit-qt/auth.h>
 
 namespace KAuth
 {
@@ -39,9 +37,11 @@ Polkit1Backend::Polkit1Backend()
 
 Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
 {
-    PolkitQt::UnixProcessSubject subject(QCoreApplication::applicationPid());
-    switch (PolkitQt::Authority::instance()->checkAuthorizationSync(action, &subject, PolkitQt::Authority::AllowUserInteraction)) {
-    case PolkitQt::Authority::Yes:
+    PolkitQt1::UnixProcessSubject subject(QCoreApplication::applicationPid());
+    PolkitQt1::Authority *authority = PolkitQt1::Authority::instance();
+
+    switch (authority->checkAuthorizationSync(action, &subject, PolkitQt1::Authority::AllowUserInteraction)) {
+    case PolkitQt1::Authority::Yes:
         return Action::Authorized;
     default:
         return Action::Denied;
@@ -50,9 +50,9 @@ Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
 
 void Polkit1Backend::setupAction(const QString &action)
 {
-    connect(PolkitQt::Authority::instance(), SIGNAL(configChanged()),
+    connect(PolkitQt1::Authority::instance(), SIGNAL(configChanged()),
             this, SLOT(checkForResultChanged()));
-    connect(PolkitQt::Authority::instance(), SIGNAL(consoleKitDBChanged()),
+    connect(PolkitQt1::Authority::instance(), SIGNAL(consoleKitDBChanged()),
             this, SLOT(checkForResultChanged()));
 
     m_cachedResults[action] = actionStatus(action);
@@ -60,13 +60,14 @@ void Polkit1Backend::setupAction(const QString &action)
 
 Action::AuthStatus Polkit1Backend::actionStatus(const QString &action)
 {
-    PolkitQt::UnixProcessSubject subject(QCoreApplication::applicationPid());
-    PolkitQt::Authority::Result r = PolkitQt::Authority::instance()->checkAuthorizationSync(action, &subject, PolkitQt::Authority::None);
+    PolkitQt1::UnixProcessSubject subject(QCoreApplication::applicationPid());
+    PolkitQt1::Authority::Result r = PolkitQt1::Authority::instance()->checkAuthorizationSync(action, &subject,
+                                                                                              PolkitQt1::Authority::None);
     switch (r) {
-    case PolkitQt::Authority::Yes:
+    case PolkitQt1::Authority::Yes:
         return Action::Authorized;
-    case PolkitQt::Authority::No:
-    case PolkitQt::Authority::Unknown:
+    case PolkitQt1::Authority::No:
+    case PolkitQt1::Authority::Unknown:
         return Action::Denied;
     default:
         return Action::AuthRequired;
@@ -89,8 +90,9 @@ bool Polkit1Backend::isCallerAuthorized(const QString &action, QByteArray caller
 
     s >> pid;
 
-    PolkitQt::UnixProcessSubject subject(pid);
-    return (PolkitQt::Authority::instance()->checkAuthorizationSync(action, &subject, PolkitQt::Authority::None) == PolkitQt::Authority::Yes);
+    PolkitQt1::UnixProcessSubject subject(pid);
+    return (PolkitQt1::Authority::instance()->checkAuthorizationSync(action, &subject, PolkitQt1::Authority::None) ==
+            PolkitQt1::Authority::Yes);
 }
 
 void Polkit1Backend::checkForResultChanged()
