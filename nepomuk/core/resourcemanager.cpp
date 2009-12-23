@@ -86,9 +86,11 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
     if( it == end ) {
         ResourceData* d = new ResourceData( url, QString(), type, this );
         m_uriKickoffData.insert( url, d );
+//         kDebug() << "--------------------------- Created new ResourceData:" << *d;
         return d;
     }
     else {
+//         kDebug() << "---------------------------- Reusing" << *it.value() << "for" << uri;
         return it.value();
     }
 }
@@ -198,7 +200,7 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
         if ( !data->cnt() ) {
             data->deleteData();
             if( num > 0 && --num == 0 )
-                return;
+                break;
         }
     }
 }

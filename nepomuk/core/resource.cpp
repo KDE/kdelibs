@@ -112,11 +112,12 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 
 Nepomuk::Resource::~Resource()
 {
-    // FIXME: ResourceData instances having a proxy also need to be deleted, maybe extend deref
-    if( m_data &&
-        !m_data->deref() &&
-        ( !m_data->isValid() || m_data->rm()->dataCacheFull() ) ) {
-        m_data->deleteData();
+    if ( m_data ) {
+        if ( !m_data->deref() ) {
+            if ( !m_data->isValid() || m_data->rm()->dataCacheFull() ) {
+                m_data->deleteData();
+            }
+        }
     }
 }
 
@@ -476,10 +477,15 @@ bool Nepomuk::Resource::operator==( const Resource& other ) const
         return false;
     }
 
-
+    // get the resource URIs since two different ResourceData instances
+    // can still represent the same Resource
     m_data->determineUri();
     other.m_data->determineUri();
-    return resourceUri() == other.resourceUri();
+
+    if( m_data->uri().isEmpty() )
+        return *m_data == *other.m_data;
+    else
+        return resourceUri() == other.resourceUri();
 }
 
 

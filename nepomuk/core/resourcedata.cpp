@@ -165,23 +165,40 @@ void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
 
 
 
-void Nepomuk::ResourceData::deleteData()
+void Nepomuk::ResourceData::resetAll()
 {
+    // reset proxy
     if( m_proxyData ) {
-        m_proxyData->deref();
+        if( !m_proxyData->deref() &&
+            rm()->dataCacheFull() )
+            m_proxyData->deleteData();
         m_proxyData = 0;
     }
-    else {
-        m_rm->mutex.lock();
-        if( !m_uri.isEmpty() )
-            m_rm->m_initializedData.remove( m_uri );
-        if( !m_kickoffUri.isEmpty() )
-            m_rm->m_uriKickoffData.remove( m_kickoffUri );
-        if( !m_kickoffId.isEmpty() )
-            m_rm->m_idKickoffData.remove( m_kickoffId );
-        m_rm->mutex.unlock();
-    }
 
+    // remove us from all caches (store() will re-insert us later if necessary)
+    m_rm->mutex.lock();
+    if( !m_uri.isEmpty() )
+        m_rm->m_initializedData.remove( m_uri );
+    if( !m_kickoffUri.isEmpty() )
+        m_rm->m_uriKickoffData.remove( m_kickoffUri );
+    if( !m_kickoffId.isEmpty() )
+        m_rm->m_idKickoffData.remove( m_kickoffId );
+    m_rm->mutex.unlock();
+
+    // reset all variables
+    m_uri = QUrl();
+    m_kickoffId.truncate(0);
+    m_kickoffUri = QUrl();
+    m_cache.clear();
+    m_cacheDirty = false;
+    m_types.clear();
+    m_mainType = Soprano::Vocabulary::RDFS::Resource();
+}
+
+
+void Nepomuk::ResourceData::deleteData()
+{
+    resetAll();
     deleteLater();
 }
 
@@ -290,14 +307,6 @@ bool Nepomuk::ResourceData::store()
 
     QList<Statement> statements;
 
-    // save type (There should be no need to save all the types since there is only one way
-    // that m_types contains more than one element: if we loaded them)
-    // The first type, however, can be set at creation time to any value
-    if ( m_mainType != Soprano::Vocabulary::RDFS::Resource() &&
-        !MAINMODEL->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) ) {
-        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) );
-    }
-
     if ( !exists() ) {
         // save the creation date
         statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::created(), Soprano::LiteralValue( QDateTime::currentDateTime() ) ) );
@@ -310,6 +319,9 @@ bool Nepomuk::ResourceData::store()
         // the only situation in which determineUri keeps the kickoff URI is for file URLs.
         if ( m_fileUrl.isValid() ) {
             statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_fileUrl ) );
+            if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+                m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
+            }
         }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method
@@ -317,6 +329,14 @@ bool Nepomuk::ResourceData::store()
             m_groundingOccurence->store();
             statements.append( Statement( m_uri, Vocabulary::PIMO::groundingOccurrence(), m_groundingOccurence->uri() ) );
         }
+    }
+
+    // save type (There should be no need to save all the types since there is only one way
+    // that m_types contains more than one element: if we loaded them)
+    // The first type, however, can be set at creation time to any value
+    if ( m_mainType != Soprano::Vocabulary::RDFS::Resource() &&
+        !MAINMODEL->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) ) {
+        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) );
     }
 
     if ( !statements.isEmpty() ) {
@@ -500,27 +520,21 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 
 void Nepomuk::ResourceData::remove( bool recursive )
 {
-    if( m_proxyData )
-        return m_proxyData->remove( recursive );
+    if( m_proxyData ) {
+        m_proxyData->remove( recursive );
+    }
+    else {
+        QMutexLocker lock(&m_modificationMutex);
 
-    QMutexLocker lock(&m_modificationMutex);
-
-    if ( determineUri() ) {
-        MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
-        if ( recursive ) {
-            MAINMODEL->removeAllStatements( Statement( Node(), Node(), m_uri ) );
+        if ( determineUri() ) {
+            MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
+            if ( recursive ) {
+                MAINMODEL->removeAllStatements( Statement( Node(), Node(), m_uri ) );
+            }
         }
-
-        // the url is invalid now
-        QMutexLocker rmlock(&m_rm->mutex);
-        m_rm->m_initializedData.remove( m_uri );
     }
 
-    m_uri = QUrl();
-    m_cache.clear();
-    m_cacheDirty = false;
-    m_types.clear();
-    m_mainType = Soprano::Vocabulary::RDFS::Resource();
+    resetAll();
 }
 
 
@@ -608,11 +622,6 @@ bool Nepomuk::ResourceData::determineUri()
                         m_uri = it["r"].uri();
                         it.close();
                     }
-                    else {
-                        // save the kickoff identifier as nao:identifier
-                        m_cache.insert( Soprano::Vocabulary::NAO::identifier(), m_kickoffId );
-                        m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffId );
-                    }
                 }
             }
 
@@ -656,16 +665,6 @@ bool Nepomuk::ResourceData::determineUri()
                                                                    m_kickoffUri.url() ) ).value();
                     if( !resourceUri.isEmpty() ) {
                         m_uri = resourceUri;
-                    }
-                    else {
-                        //
-                        // for files that are not in the db yet we create a new random URI
-                        // and keep the kickoff URI for later storage to nie:url in store()
-                        //
-                        m_uri = m_rm->m_manager->generateUniqueUri( QString() );
-                        if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
-                            m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
-                        }
                     }
 
                     m_fileUrl = m_kickoffUri;
@@ -711,23 +710,9 @@ void Nepomuk::ResourceData::invalidateCache()
     // is in m_rm->m_idKickoffData and this instance will be found again via that (now invalid) id!
     // The same is true for completely deleted resources which are found again via their ids and their urls!
     //
+    // See kdebase/runtime/nepomuk/services/filewatch/metadatamover.cpp for details on this issue.
+    //
     m_cacheDirty = true;
-}
-
-
-bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
-{
-    const ResourceData* that = this;
-    if( m_proxyData )
-        that = m_proxyData;
-
-    if( that == &other )
-        return true;
-
-    return( that->m_uri == other.m_uri &&
-            that->m_mainType == other.m_mainType &&
-            that->m_kickoffUri == other.m_kickoffUri &&
-            that->m_kickoffId == other.m_kickoffId );
 }
 
 
@@ -754,6 +739,42 @@ Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
         kDebug() << "created thing" << m_pimoThing->m_data << "with grounding occurence" << m_pimoThing->m_data->m_groundingOccurence;
     }
     return *m_pimoThing;
+}
+
+
+bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
+{
+    const ResourceData* that = this;
+    if( m_proxyData )
+        that = m_proxyData;
+
+    if( that == &other )
+        return true;
+
+    return( that->m_uri == other.m_uri &&
+            that->m_mainType == other.m_mainType &&
+            that->m_kickoffUri == other.m_kickoffUri &&
+            that->m_kickoffId == other.m_kickoffId );
+}
+
+
+QDebug Nepomuk::ResourceData::operator<<( QDebug dbg ) const
+{
+    dbg << QString::fromLatin1("[kickoffid: %1, kickoffuri: %2, uri: %3, type: %4, ref: %5")
+        .arg(m_kickoffId,
+             m_kickoffUri.url(),
+             m_uri.url(),
+             m_mainType.toString())
+        .arg(m_ref);
+    if(m_proxyData)
+        dbg << QLatin1String(", proxy: " ) << *m_proxyData;
+    return dbg << QLatin1String("]");
+}
+
+
+QDebug operator<<( QDebug dbg, const Nepomuk::ResourceData& data )
+{
+    return data.operator<<( dbg );
 }
 
 #include "resourcedata.moc"

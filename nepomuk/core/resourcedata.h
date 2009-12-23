@@ -113,6 +113,9 @@ namespace Nepomuk {
          * not exist the type and the identifier (if one has been used to create the instance)
          * are stored.
          *
+         * This is also the only place where a new URI is generated via ResourceManager::generateUniqueUri()
+         * in case m_uri is empty.
+         *
          * \sa exists, setProperty
          */
         bool store();
@@ -136,8 +139,9 @@ namespace Nepomuk {
         bool isValid() const;
 
         /**
-         * Makes sure the resource has a proper URI. This includes creating a new one
-         * in the store if it does not exist yet.
+         * Searches for the resource in the Nepomuk store using m_kickoffId and m_kickoffUri.
+         *
+         * \returns true if the resource was found and m_uri is set, false otherwise.
          */
         bool determineUri();
 
@@ -150,11 +154,17 @@ namespace Nepomuk {
          */
         bool operator==( const ResourceData& other ) const;
 
+        QDebug operator<<( QDebug dbg ) const;
+
         ResourceManagerPrivate* rm() const { return m_rm; }
 
     private:
         bool constHasType( const QUrl& type ) const;
         void loadType( const QUrl& type );
+
+        /// Will reset this instance to 0 as if constructed without parameters
+        /// Used by remove() and deleteData()
+        void resetAll();
 
         /// identifier that was used to construct the resource. Will be used by determineUri
         /// to check for nao:identifiers or even nie:urls.
@@ -199,5 +209,7 @@ namespace Nepomuk {
         ResourceManagerPrivate* m_rm;
     };
 }
+
+QDebug operator<<( QDebug dbg, const Nepomuk::ResourceData& );
 
 #endif

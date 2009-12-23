@@ -52,18 +52,22 @@ void ResourceTest::testResourceStates()
 
 void ResourceTest::testResourceRemoval()
 {
-    Resource res( "testi" );
+    QString testiId( QLatin1String("testi") );
+
+    Resource res( testiId );
     res.setProperty( QUrl("http://nepomuk.test.org/foo/bar"),  "foobar" );
 
-    QVERIFY( !res.resourceUri().isEmpty() );
+    QUrl testiUri = res.resourceUri();
 
-    QVERIFY( ResourceManager::instance()->mainModel()->containsAnyStatement( Statement( res.resourceUri(), Node(), Node() ) ) );
+    QVERIFY( !testiUri.isEmpty() );
+
+    QVERIFY( ResourceManager::instance()->mainModel()->containsAnyStatement( Statement( testiUri, Node(), Node() ) ) );
 
     res.remove();
 
     QVERIFY( !res.exists() );
 
-    QVERIFY( !ResourceManager::instance()->mainModel()->containsAnyStatement( Statement( res.resourceUri(), Node(), Node() ) ) );
+    QVERIFY( !ResourceManager::instance()->mainModel()->containsAnyStatement( Statement( testiUri, Node(), Node() ) ) );
 
     //
     // test recursive removal
@@ -83,6 +87,12 @@ void ResourceTest::testResourceRemoval()
     QVERIFY( !res2.exists() );
 
     QVERIFY( !ResourceManager::instance()->mainModel()->containsAnyStatement( Statement( res.resourceUri(), QUrl("http://nepomuk.test.org/foo/bar2"), Node(res2.resourceUri()) ) ) );
+
+    //
+    // Now make sure the relation between id and URI has actually be removed
+    //
+    Resource res3( testiId );
+    QVERIFY( res3.resourceUri() != testiUri );
 }
 
 
@@ -153,21 +163,14 @@ void ResourceTest::testResourceIdentifiers()
 
         QVERIFY( r1 == r2 );
 
-        theUri = r1.resourceUri();
-
-        Resource r3( r1.resourceUri() );
-
-        QVERIFY( r1 == r3 );
-
         QVERIFY( r1.resourceUri() != QUrl("wurst") );
 
         r1.setProperty( QUrl("http://nepomuk.test.org/foo/bar"), "foobar" );
 
+        theUri = r1.resourceUri();
+
         QList<Statement> sl
             = ResourceManager::instance()->mainModel()->listStatements( Statement( r1.resourceUri(), Node(), Node() ) ).allStatements();
-
-        foreach( const Statement& s, sl )
-            qDebug() << s << endl;
 
         QCOMPARE( sl.count(), 4 );
 
@@ -229,14 +232,7 @@ void ResourceTest::testResourceManager()
         Resource r5( "res5", QUrl("http://test/myothertype" ) );
         Resource r6( "res6", QUrl("http://test/mythirdtype" ) );
 
-        QList<Resource> rl1 = ResourceManager::instance()->allResources();
-        foreach(Resource res, rl1) {
-            qDebug() << res.resourceUri() << res.identifiers() << res.resourceType();
-        }
         QList<Resource> rl = ResourceManager::instance()->allResourcesOfType( QUrl("http://test/mytype" ));
-        foreach(Resource res, rl) {
-            qDebug() << res.resourceUri() << res.identifiers() << res.resourceType();
-        }
 
         QCOMPARE( rl.count(), 2 );
         QVERIFY( rl.contains( r1 ) && rl.contains( r2 ) );
@@ -302,34 +298,48 @@ void ResourceTest::testLocalFileUrls()
     // clear cache to be sure we call ResourceData::determineUri
     ResourceManager::instance()->clearCache();
 
-    // verify that the resource in question is found again
-    Resource fileRes1( KUrl(tmpFile1.fileName()) );
-    QCOMPARE( tmpFile1ResUri, fileRes1.resourceUri() );
+    {
+        // verify that the resource in question is found again
+        Resource fileRes1( KUrl(tmpFile1.fileName()) );
+        QCOMPARE( tmpFile1ResUri, fileRes1.resourceUri() );
 
-    // make sure the local resource is reused with the resource URI
-    Resource fileRes2( tmpFile1ResUri );
-    QCOMPARE( tmpFile1ResUri, fileRes2.resourceUri() );
+        // make sure the local resource is reused with the resource URI
+        Resource fileRes2( tmpFile1ResUri );
+        QCOMPARE( tmpFile1ResUri, fileRes2.resourceUri() );
 
-    // create a second test file
-    KTemporaryFile tmpFile2;
-    QVERIFY( tmpFile2.open() );
+        // create a second test file
+        KTemporaryFile tmpFile2;
+        QVERIFY( tmpFile2.open() );
 
-    // make sure the file:/ URL is reused as resource URI
-    ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile2.fileName()), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) );
+        // make sure the file:/ URL is reused as resource URI
+        ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile2.fileName()), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) );
 
-    Resource fileRes3( KUrl(tmpFile2.fileName()) );
-    fileRes3.setRating( 4 );
-    QCOMPARE( KUrl(fileRes3.resourceUri()), KUrl(tmpFile2.fileName()) );
+        Resource fileRes3( KUrl(tmpFile2.fileName()) );
+        fileRes3.setRating( 4 );
+        QCOMPARE( KUrl(fileRes3.resourceUri()), KUrl(tmpFile2.fileName()) );
 
-    // create a third test file
-    KTemporaryFile tmpFile3;
-    QVERIFY( tmpFile3.open() );
+        // create a third test file
+        KTemporaryFile tmpFile3;
+        QVERIFY( tmpFile3.open() );
 
-    // add a random bit of information about it
-    ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile3.fileName()), Soprano::Vocabulary::NAO::rating(), Soprano::LiteralValue(4) );
+        // add a random bit of information about it
+        ResourceManager::instance()->mainModel()->addStatement( KUrl(tmpFile3.fileName()), Soprano::Vocabulary::NAO::rating(), Soprano::LiteralValue(4) );
 
-    Resource fileRes4( KUrl(tmpFile3.fileName()) );
-    QCOMPARE( KUrl(fileRes4.resourceUri()).url(), KUrl(tmpFile3.fileName()).url() );
+        Resource fileRes4( KUrl(tmpFile3.fileName()) );
+        QCOMPARE( KUrl(fileRes4.resourceUri()).url(), KUrl(tmpFile3.fileName()).url() );
+
+        // make sure removing the resource results in us not reusing the URI
+        QUrl fileRes1Uri = fileRes1.resourceUri();
+        fileRes1.remove();
+
+        Resource fileRes5( KUrl(tmpFile1.fileName()) );
+        QVERIFY( fileRes1Uri != fileRes5.resourceUri() );
+    }
+
+    // clear cache to be sure we do not reuse the cache
+    ResourceManager::instance()->clearCache();
+
+
 }
 
 QTEST_KDEMAIN(ResourceTest, NoGUI)

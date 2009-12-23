@@ -227,9 +227,9 @@ namespace Nepomuk {
          * For historical reasons the method does return a URI as QString instead
          * of QUrl. The value equals resourceUri().toString().
          *
-         * \sa resourceUri, getIdentifiers
+         * \sa resourceUri(), getIdentifiers()
          *
-         * \deprecated use resourceUri instead
+         * \deprecated use resourceUri() instead
          */
         KDE_DEPRECATED QString uri() const;
 
@@ -240,10 +240,11 @@ namespace Nepomuk {
          *
          * The most important thing to remember is that the URI of for example
          * a file does not necessarily have a relation to its local path.
-         * (Although Nepomuk tries to keep the URI of file resources in sync
-         * with the file URL for convenience.)
          *
-         * \sa uri, getIdentifiers
+         * \return The resource URI of the resource or an empty url if the
+         * resource does not exist() yet.
+         *
+         * \sa getIdentifiers()
          */
         QUrl resourceUri() const;
 
