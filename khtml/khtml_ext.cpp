@@ -265,7 +265,7 @@ void KHTMLPartBrowserExtension::searchProvider()
     // action name is of form "previewProvider[<searchproviderprefix>:]"
     const QString searchProviderPrefix = QString( sender()->objectName() ).mid( 14 );
 
-    const QString text = m_part->simplifiedSelectedText();
+    const QString text = KHTMLPopupGUIClient::selectedTextAsOneLine(m_part); // #219815
     KUriFilterData data;
     QStringList list;
     data.setData( searchProviderPrefix + text );
@@ -430,7 +430,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
         addSearchActions(editActions);
 
-        QString selectedTextURL = selectedTextAsOneLine();
+        QString selectedTextURL = selectedTextAsOneLine(d->m_khtml);
         if ( selectedTextURL.contains("://") && KUrl(selectedTextURL).isValid() ) {
             if (selectedTextURL.length() > 18) {
                 selectedTextURL.truncate(15);
@@ -719,9 +719,9 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
     }
 }
 
-QString KHTMLPopupGUIClient::selectedTextAsOneLine() const
+QString KHTMLPopupGUIClient::selectedTextAsOneLine(KHTMLPart* part)
 {
-    QString text = d->m_khtml->simplifiedSelectedText();
+    QString text = part->simplifiedSelectedText();
     // in addition to what simplifiedSelectedText does,
     // remove linefeeds and any whitespace surrounding it (#113177),
     // to get it all in a single line.
@@ -734,7 +734,7 @@ void KHTMLPopupGUIClient::openSelection()
     KParts::BrowserArguments browserArgs;
     browserArgs.frameName = "_blank";
 
-    emit d->m_khtml->browserExtension()->openUrlRequest(selectedTextAsOneLine(), KParts::OpenUrlArguments(), browserArgs);
+    emit d->m_khtml->browserExtension()->openUrlRequest(selectedTextAsOneLine(d->m_khtml), KParts::OpenUrlArguments(), browserArgs);
 }
 
 KParts::BrowserExtension::ActionGroupMap KHTMLPopupGUIClient::actionGroups() const

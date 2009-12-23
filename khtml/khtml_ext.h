@@ -128,6 +128,9 @@ public:
   static void saveURL( QWidget* parent, const KUrl &url, const KUrl &destination,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        long cacheId = 0 );
+
+    static QString selectedTextAsOneLine(KHTMLPart* part);
+
 private Q_SLOTS:
   void slotSaveLinkAs();
   void slotSaveImageAs();
@@ -147,7 +150,6 @@ private Q_SLOTS:
     void openSelection();
 
 private:
-    QString selectedTextAsOneLine() const;
     void addSearchActions(QList<QAction *>& editActions);
 
   class KHTMLPopupGUIClientPrivate;
