@@ -2,6 +2,7 @@
 Type=ServiceType
 X-KDE-ServiceType=KIO/FileModule
 Name=filemodule
+Name[ast]=filemodule
 Name[bg]=файлов модул
 Name[ca]=filemodule
 Name[da]=filmodul
@@ -35,6 +36,7 @@ Name[x-test]=xxfilemodulexx
 Name[zh_CN]=文件模块
 Name[zh_TW]=檔案模組
 Comment=KIO File Module
+Comment[ast]=KIO File Module
 Comment[bg]=Файлов модул за KIO
 Comment[ca]=Mòdul KIO de fitxer
 Comment[cs]=Modul KIO File

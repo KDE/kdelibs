@@ -5,6 +5,7 @@ X-KDE-ServiceType=KConfigBackend
 Comment=Storage backend for KConfig
 Comment[ar]=خلفية الحفظ لـ KConfig
 Comment[as]=KConfig ৰ বাবে ভঁৰালৰ বেকএন্ড
+Comment[ast]=Infraestructura d'atroxamientu pa KConfig
 Comment[be@latin]=Słužba schovišča dla systemy „KConfig”
 Comment[bg]=Storage backend for KConfig
 Comment[bn]=KConfig-এর স্টোরেজ ব্যাকেন্ড
