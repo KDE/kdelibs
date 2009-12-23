@@ -46,12 +46,133 @@ int closeQString(void * context) {
     return 0;
 }
 
+#if defined (SIMPLE_XSLT) && defined(Q_WS_WIN)
+
+#define MAX_PATHS 64 
+xmlExternalEntityLoader defaultEntityLoader = NULL;
+static xmlChar *paths[MAX_PATHS + 1]; 
+static int nbpaths = 0; 
+static QHash<QString,QString> replaceURLList;
+
+/*
+* Entity loading control and customization.
+* taken from xsltproc.c
+*/
+static void parsePath(const xmlChar *path) 
+{
+    const xmlChar *cur;
+
+    if (path == NULL)
+        return;
+    while (*path != 0) {
+        if (nbpaths >= MAX_PATHS) {
+            kDebug() << "MAX_PATHS reached: too many paths";
+            return;
+        }
+        cur = path;
+        while ((*cur == ' ') || (*cur == ':'))
+            cur++;
+        path = cur;
+        while ((*cur != 0) && (*cur != ' ') && (*cur != ':'))
+            cur++;
+        if (cur != path) {
+            paths[nbpaths] = xmlStrndup(path, cur - path);
+            if (paths[nbpaths] != NULL)
+                nbpaths++;
+            path = cur;
+        }
+    }
+} 
+
+static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const char *ID,xmlParserCtxtPtr ctxt) 
+{
+    xmlParserInputPtr ret;
+    warningSAXFunc warning = NULL;
+	
+	// use local available dtd versions instead of fetching it everytime from the internet    
+	QString url = QLatin1String(_URL);
+	QHash<QString, QString>::const_iterator i;
+	for(i = replaceURLList.constBegin(); i != replaceURLList.constEnd(); i++)
+	{
+		if (url.startsWith(i.key()))
+		{
+			url.replace(i.key(),i.value());
+			kDebug() << "converted" << _URL << "to" << url;
+		}
+	}
+	char URL[1024]; 
+	strcpy(URL,url.toLatin1().constData());
+
+    const char *lastsegment = URL;
+    const char *iter = URL;
+
+    if (nbpaths > 0) {
+        while (*iter != 0) {
+            if (*iter == '/')
+            lastsegment = iter + 1;
+            iter++;
+        }
+    }
+
+    if ((ctxt != NULL) && (ctxt->sax != NULL)) {
+        warning = ctxt->sax->warning;
+        ctxt->sax->warning = NULL;
+    }
+        
+    if (defaultEntityLoader != NULL) {
+        ret = defaultEntityLoader(URL, ID, ctxt);
+        if (ret != NULL) {
+            if (warning != NULL)
+                ctxt->sax->warning = warning;
+            kDebug() << "Loaded URL=\"" << URL << "\" ID=\"" << ID << "\"";
+            return(ret);
+        }
+    }
+    for (int i = 0;i < nbpaths;i++) {
+        xmlChar *newURL;
+
+        newURL = xmlStrdup((const xmlChar *) paths[i]);
+        newURL = xmlStrcat(newURL, (const xmlChar *) "/");
+        newURL = xmlStrcat(newURL, (const xmlChar *) lastsegment);
+        if (newURL != NULL) {
+            ret = defaultEntityLoader((const char *)newURL, ID, ctxt);
+        if (ret != NULL) {
+            if (warning != NULL)
+                ctxt->sax->warning = warning;
+                kDebug() << "Loaded URL=\"" << newURL << "\" ID=\"" << ID << "\"";
+                xmlFree(newURL);
+                return(ret);
+            }
+            xmlFree(newURL);
+        }
+    }
+    if (warning != NULL) {
+        ctxt->sax->warning = warning;
+        if (URL != NULL)
+            warning(ctxt, "failed to load external entity \"%s\"\n", URL);
+        else if (ID != NULL)
+            warning(ctxt, "failed to load external entity \"%s\"\n", ID);
+    }
+    return(NULL);
+} 
+#endif
+
 QString transform( const QString &pat, const QString& tss,
                    const QVector<const char *> &params )
 {
     QString parsed;
 
     INFO(i18n("Parsing stylesheet"));
+#if defined (SIMPLE_XSLT) && defined(Q_WS_WIN)
+	// prepare use of local available dtd versions instead of fetching everytime from the internet
+	// this approach is url based
+    defaultEntityLoader = xmlGetExternalEntityLoader();
+    xmlSetExternalEntityLoader(xsltprocExternalEntityLoader);         
+	
+	QString dataPath = KStandardDirs::installPath("data");
+	replaceURLList[QLatin1String("http://www.oasis-open.org/docbook/xml/4.1.2")] = QString("file:///%1/ksgmltools2/docbook/xml-dtd-4.1.2").arg(dataPath);
+	replaceURLList[QLatin1String("http://www.oasis-open.org/docbook/xml/4.2")] = QString("file:///%1/ksgmltools2/docbook/xml-dtd-4.2").arg(dataPath);
+#endif
 
     xsltStylesheetPtr style_sheet =
         xsltParseStylesheetFile((const xmlChar *)tss.toLatin1().data());
