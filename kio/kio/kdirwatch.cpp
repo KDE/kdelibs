@@ -301,9 +301,10 @@ void KDirWatchPrivate::inotifyEventReceived()
               addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
           }
           if ( event->mask & IN_IGNORED ) {
-            e->wd = 0;
+            e->wd = -1;
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
+            //kDebug(7001) << "-->got CREATE signal for" << (e->path+'/'+path);
             Entry* sub_entry = e->findSubEntry(e->path + '/' + path);
 
             if (sub_entry /*&& sub_entry->isDir*/) {
@@ -596,7 +597,7 @@ bool KDirWatchPrivate::useINotify( Entry* e )
 {
   //kDebug (7001) << "trying to use inotify for monitoring";
 
-  e->wd = 0;
+  e->wd = -1;
   e->dirty = false;
 
   if (!supports_inotify) return false;
@@ -612,9 +613,9 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW|IN_MOVED_FROM|IN_MODIFY|IN_ATTRIB;
 
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
-                                    QFile::encodeName( e->path ), mask) ) > 0)
+                                    QFile::encodeName( e->path ), mask) ) >= 0)
   {
-    //kDebug (7001) << "inotify successfully used for monitoring";
+    //kDebug (7001) << "inotify successfully used for monitoring" << e->path << "wd=" << e->wd;
     return true;
   }
 
@@ -691,7 +692,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
                     << "(for" << sub_entry->path << ")";
 #ifdef HAVE_SYS_INOTIFY_H
        Entry* e = &(*it);
-       if( (e->m_mode == INotifyMode) && (e->wd > 0) ) {
+       if( (e->m_mode == INotifyMode) && (e->wd >= 0) ) {
          int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
          if(!e->isDir)
            mask |= IN_MODIFY|IN_ATTRIB;
@@ -701,6 +702,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
          inotify_rm_watch (m_inotify_fd, e->wd);
          e->wd = inotify_add_watch( m_inotify_fd, QFile::encodeName( e->path ),
                                     mask);
+         Q_ASSERT(e->wd >= 0);
        }
 #endif
     }
@@ -1152,7 +1154,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 #endif
       e->m_status = Normal;
       e->m_nlink = stat_buf.st_nlink;
-      e->m_ino = stat_buf.st_ino;	  
+      e->m_ino = stat_buf.st_ino;
       return Created;
     }
 
@@ -1161,26 +1163,26 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 		kDebug(7001) << "hard link change for " << e->path << " detected";
 		int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF
 			|IN_DONT_FOLLOW|IN_MODIFY|IN_ATTRIB;
-	  
+
 		inotify_rm_watch (m_inotify_fd, e->wd);
 		int wd = inotify_add_watch( m_inotify_fd, QFile::encodeName( e->path ), mask );
 		if ( wd == -1 ) {
-			// it's save to delay cause it won't be added to delayed removal list
+			// it's safe to delay because it won't be added to delayed removal list
 			m_delayedRelinkedEntry = e;
 			QTimer::singleShot( 200, this, SLOT(slotRewatchDelayed()) );
 			return Changed;
-		
+
 		} else {
 			e->wd = wd;
 			e->m_ctime = stat_buf.st_ctime;
 			e->m_nlink = stat_buf.st_nlink;
 			e->m_ino = stat_buf.st_ino;
-			kDebug(7001) << "re-watch for " << e->path << " finished";
+			kDebug(7001) << "re-watch for" << e->path << "finished";
 			return Changed;
 		}
 	}
 #endif
-	
+
 #ifdef Q_OS_WIN
     stat_buf.st_ctime = stat_buf.st_mtime;
 #endif
@@ -1290,8 +1292,8 @@ void KDirWatchPrivate::slotRewatchDelayed()
   	if ( !ret ) {
   	  m_delayedRelinkedEntry->wd = ret;
   	  emitEvent( m_delayedRelinkedEntry, Changed );
-  	  kDebug(7001) << "re-watch for " << m_delayedRelinkedEntry->path << " successed";
-  	} 
+  	  kDebug(7001) << "re-watch for" << m_delayedRelinkedEntry->path << "succeeded";
+  	}
 
   	m_delayedRelinkedEntry = NULL;
   }
@@ -1363,7 +1365,7 @@ void KDirWatchPrivate::slotRescan()
         addEntry(0, QDir::cleanPath( ( *it ).path+"/.."), &*it, true);
       }
     }
-    if ((*it).m_mode == INotifyMode && ev == Created && (*it).wd == 0) {
+    if ((*it).m_mode == INotifyMode && ev == Created && (*it).wd < 0) {
       cList.append( &(*it) );
       if (! useINotify( &(*it) )) {
         useStat( &(*it) );
@@ -1715,13 +1717,13 @@ void KDirWatch::addFile( const QString& _path )
   if ( !d )
 	return;
 
-#ifdef HAVE_SYS_INOTIFY_H  
+#ifdef HAVE_SYS_INOTIFY_H
   //TODO: detect link change, ino change
   KDirWatchPrivate::Entry* e = d->entry(_path);
   if ( e ) {
 	KDE_struct_stat lstat_buf;
 	if ( KDE::lstat(_path, &lstat_buf) == 0 ) {
-	  if ( S_ISREG(lstat_buf.st_mode) && e->m_status != KDirWatchPrivate::NonExistent 
+	  if ( S_ISREG(lstat_buf.st_mode) && e->m_status != KDirWatchPrivate::NonExistent
 		   && lstat_buf.st_ino != e->m_ino ) {
 		kDebug(7001) << "detected an exist entry with different inode, delete watch first";
 		d->removeEntry(this, _path, 0);
@@ -1729,7 +1731,7 @@ void KDirWatch::addFile( const QString& _path )
 	}
   }
 #endif
-  
+
   d->addEntry(this, _path, 0, false);
 }
 
@@ -1829,7 +1831,7 @@ void KDirWatch::setCreated( const QString & _file )
 
 void KDirWatch::setDirty( const QString & _file )
 {
-  kDebug(7001) << objectName() << "emitting dirty" << _file;
+  //kDebug(7001) << objectName() << "emitting dirty" << _file;
   emit dirty( _file );
 }
 
