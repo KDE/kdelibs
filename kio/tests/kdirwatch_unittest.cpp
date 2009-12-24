@@ -120,7 +120,7 @@ void KDirWatch_UnitTest::removeAndReAdd()
     watch.addDir(m_path);
     createFile(1);
     spy = waitForDirtySignal(watch, 1);
-    QCOMPARE(spy.count(), 1);
+    QVERIFY(spy.count() >= 1);
     QCOMPARE(spy[0][0].toString(), m_path + s_filePrefix + "1");
 }
 
