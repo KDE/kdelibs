@@ -301,7 +301,8 @@ void KDirWatchPrivate::inotifyEventReceived()
               addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
           }
           if ( event->mask & IN_IGNORED ) {
-            e->wd = -1;
+            // Causes bug #207361 with kernels 2.6.31 and 2.6.32!
+            //e->wd = -1;
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
             //kDebug(7001) << "-->got CREATE signal for" << (e->path+'/'+path);
