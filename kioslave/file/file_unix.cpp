@@ -42,10 +42,23 @@
 #include <grp.h>
 #include <utime.h>
 #include <pwd.h>
+#include <stdlib.h>
 
 #if defined(HAVE_LIMITS_H)
 #include <limits.h>  // PATH_MAX
 #endif
+
+namespace KDEPrivate
+{
+
+struct CharArrayDeleter
+{
+    CharArrayDeleter(char *b) : buf(b) {}
+    ~CharArrayDeleter() { free(buf); }
+    char *buf;
+};
+
+}
 
 using namespace KIO;
 
@@ -384,9 +397,14 @@ void FileProtocol::listDir( const KUrl& url)
            directories we keep as active directory. And
            as the slave runs in the background, it's hard
            to see for the user what the problem would be */
+#if !defined(PATH_MAX) && defined(__GLIBC__)
+        char *path_buffer = ::get_current_dir_name();
+        const KDEPrivate::CharArrayDeleter path_buffer_deleter(path_buffer);
+#else
         char path_buffer[PATH_MAX];
         path_buffer[0] = '\0';
         (void) getcwd(path_buffer, PATH_MAX - 1);
+#endif
         if ( chdir( _path.data() ) )  {
             if (errno == EACCES)
                 error(ERR_ACCESS_DENIED, path);
@@ -409,8 +427,14 @@ void FileProtocol::listDir( const KUrl& url)
 
         //kDebug(7101) << "============= COMPLETED LIST ============";
 
+#if !defined(PATH_MAX) && defined(__GLIBC__)
+        if (path_buffer)
+#else
         if (*path_buffer)
+#endif
+        {
             chdir(path_buffer);
+        }
     }
     finished();
 }
