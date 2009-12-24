@@ -111,7 +111,7 @@ public:
     virtual DOMString toString() const;
 
     void setElement(ElementImpl *element);
-    DOMStringImpl *val() { return m_value; }
+    DOMStringImpl *val() const { return m_value; }
 
 protected:
     ElementImpl *m_element;
