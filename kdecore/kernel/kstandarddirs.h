@@ -318,7 +318,9 @@ public:
      * to findResource("lib", "libkdecore.la"). KStandardDirs will
      * then look into the subdir lib of all elements of all prefixes
      * ($KDEDIRS) for a file libkdecore.la and return the path to
-     * the first one it finds (e.g. /opt/kde/lib/libkdecore.la)
+     * the first one it finds (e.g. /opt/kde/lib/libkdecore.la).
+     * You can use the program kde-config to list all resource types:
+     * $ kde-config --types
      *
      * @param type The type of the wanted resource
      * @param filename A relative filename of the resource.
