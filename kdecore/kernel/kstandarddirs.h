@@ -320,8 +320,16 @@ public:
      * ($KDEDIRS) for a file libkdecore.la and return the path to
      * the first one it finds (e.g. /opt/kde/lib/libkdecore.la).
      * You can use the program kde-config to list all resource types:
+     * @code
      * $ kde-config --types
+     * @endcode
      *
+     * Example:
+     * @code
+     * KStandardDirs* kst=new KStandardDirs();
+     * QString iconfilename=kst->findResource("icon",QString("oxygen/22x22/apps/ktip.png"));
+     * @endcode
+     * 
      * @param type The type of the wanted resource
      * @param filename A relative filename of the resource.
      *
