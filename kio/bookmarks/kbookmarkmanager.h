@@ -115,6 +115,7 @@ public:
      * @param toolbarCache iff true save a cache of the toolbar folder, too
      * @return true if saving was successful
      */
+     // KDE5 TODO: Use an enum and not a bool
     bool saveAs( const QString & filename, bool toolbarCache = true ) const;
 
     /**
@@ -186,6 +187,7 @@ public:
      * @param toolbarCache iff true save a cache of the toolbar folder, too
      * @return true if saving was successful
      */
+     // KDE5 TODO: Use an enum and not a bool
     bool save( bool toolbarCache = true ) const;
 
 
@@ -200,6 +202,7 @@ public:
      * @param browser iff false display no browser specific
      *            menu items in keditbookmarks :: --nobrowser
      */
+     // KDE5 TODO: Use an enum and not a bool
     void setEditorOptions( const QString& caption, bool browser );
 
     /**
