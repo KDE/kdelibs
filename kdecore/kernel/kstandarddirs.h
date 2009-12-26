@@ -326,8 +326,7 @@ public:
      *
      * Example:
      * @code
-     * KStandardDirs* kst=new KStandardDirs();
-     * QString iconfilename=kst->findResource("icon",QString("oxygen/22x22/apps/ktip.png"));
+     * QString iconfilename=KGlobal::dirs()->findResource("icon",QString("oxygen/22x22/apps/ktip.png"));
      * @endcode
      * 
      * @param type The type of the wanted resource
