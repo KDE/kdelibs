@@ -93,13 +93,16 @@ ANIMATED_PROPERTY_DEFINITIONS(SVGSVGElement, SVGLength, Length, length, Y, y, SV
 ANIMATED_PROPERTY_DEFINITIONS(SVGSVGElement, SVGLength, Length, length, Width, width, SVGNames::widthAttr, m_width)
 ANIMATED_PROPERTY_DEFINITIONS(SVGSVGElement, SVGLength, Length, length, Height, height, SVGNames::heightAttr, m_height)
 
+static AtomicString *bogus_atomic_string = 0;
+
 const AtomicString& SVGSVGElement::contentScriptType() const
 {
     /*static const AtomicString defaultValue("text/ecmascript");
     const AtomicString& n = getAttribute(contentScriptTypeAttr);
     return n.isNull() ? defaultValue : n;*/
 	ASSERT(false);
-	return "";
+	if (!bogus_atomic_string) bogus_atomic_string = new AtomicString();
+	return *bogus_atomic_string;
 }
 
 void SVGSVGElement::setContentScriptType(const AtomicString& type)
@@ -113,7 +116,8 @@ const AtomicString& SVGSVGElement::contentStyleType() const
     const AtomicString& n = getAttribute(contentStyleTypeAttr);
     return n.isNull() ? defaultValue : n;*/
 	ASSERT(false);
-	return "";
+	if (!bogus_atomic_string) bogus_atomic_string = new AtomicString();
+	return *bogus_atomic_string;
 }
 
 void SVGSVGElement::setContentStyleType(const AtomicString& type)
