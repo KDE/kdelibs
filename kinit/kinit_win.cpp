@@ -67,15 +67,13 @@ class ProcessListEntry {
            handle = _handle; 
            pid = _pid;
            DWORD length = GetLengthSid(_owner);
-           owner = (PSID) new BYTE[length];
+           owner = (PSID) malloc(length);
            CopySid(length, owner, _owner);
-           owner = _owner;
        }
 
        ~ProcessListEntry()
        {
-           // don't know why this crashes here.
-           // delete owner;
+           free(owner);
            owner = 0;
        }
        
@@ -122,7 +120,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
     KUser user;
     K_UID processSid;
     DWORD sidLength = GetLengthSid(user.uid());
-    processSid = (PSID)new BYTE[sidLength];
+    processSid = (PSID) malloc(sidLength);
     CopySid(sidLength, processSid, user.uid());
 
     // Get a handle to the process.
@@ -164,9 +162,9 @@ void ProcessList::getProcessNameAndID( DWORD processID )
                     GetTokenInformation(hToken, TokenUser, userStruct, size, &size);
 
                     sidLength = GetLengthSid(userStruct->User.Sid);
-                    delete processSid;
+                    free(processSid);
                     processSid = 0;
-                    processSid = (PSID)new BYTE[sidLength];
+                    processSid = (PSID) malloc(sidLength);
                     CopySid(sidLength, processSid, userStruct->User.Sid);
 
                     CloseHandle(hToken);
@@ -179,7 +177,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
     {
         processList << new ProcessListEntry( hProcess, szProcessName, processID, processSid );
     }
-    delete processSid;
+    free(processSid);
 }
 
 
