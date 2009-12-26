@@ -185,6 +185,9 @@
 <!ENTITY traducteurBrunoPinaud        '<othercredit role="translator"><firstname>Bruno</firstname><surname>Pinaud</surname><affiliation><address><email>bpinaud@ifrance.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurBrunoPinaud        '<othercredit role="reviewer"><firstname>Bruno</firstname><surname>Pinaud</surname><affiliation><address><email>bpinaud@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurPeterPotrowl        '<othercredit role="translator"><firstname>Peter</firstname><surname>Potrowl</surname><affiliation><address><email>peter017@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurPeterPotrowl        '<othercredit role="reviewer"><firstname>Peter</firstname><surname>Potrowl</surname><affiliation><address><email>peter017@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurGillesPoulain        '<othercredit role="translator"><firstname>Gilles</firstname><surname>Poulain</surname><affiliation><address><email>poulain.gilles@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurGillesPoulain        '<othercredit role="reviewer"><firstname>Gilles</firstname><surname>Poulain</surname><affiliation><address><email>poulain.gilles@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -301,6 +304,7 @@
 <!ENTITY PatricePawlak 'Patrice Pawlak <email>patrice.pawlak@free.fr</email>'>
 <!ENTITY RomainPelisse 'Romain Pelisse <email>belaran@gmail.com</email>'>
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>
+<!ENTITY PeterPotrowl       'Peter Potrowl <email>peter017@gmail.com</email>'>
 <!ENTITY GillesPoulain       'Gilles Poulain <email>poulain.gilles@gmail.com</email>'>
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
 <!ENTITY LaurentRathle     'Laurent Rathle <email>lrathle@kde-france.org</email>'>
