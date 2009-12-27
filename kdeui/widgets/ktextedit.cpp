@@ -342,11 +342,11 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     return true;
   } else if ( KStandardShortcut::undo().contains( key ) ) {
       if(!parent->isReadOnly())
-          parent->document()->undo();
+          parent->undo();
       return true;
   } else if ( KStandardShortcut::redo().contains( key ) ) {
       if(!parent->isReadOnly())
-         parent->document()->redo();
+         parent->redo();
       return true;
   } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
     parent->deleteWordBack();
