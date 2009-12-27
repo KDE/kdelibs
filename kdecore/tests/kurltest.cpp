@@ -1101,7 +1101,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
 
-#if QT_VERSION >= 0x040500 // QtSw issue 243557
+  // QtSw issue 243557
   QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
   QUrl tsdgeosQUrl;
   tsdgeosQUrl.setEncodedUrl(tsdgeos, QUrl::TolerantMode);
@@ -1118,7 +1118,6 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   pipesUrl.setEncodedUrl(pipesAgain, QUrl::TolerantMode);
   QVERIFY(pipesUrl.isValid());
   QCOMPARE(QString(pipesUrl.toEncoded()), QString("http://translate.google.com/translate_t#en%7Cuk%7Cdemo"));
-#endif
 
   // Shows up in nspluginviewer/flash
   QString flashRel = "javascript:window.location+\"__flashplugin_unique__\"";
@@ -1544,9 +1543,7 @@ void KUrlTest::testMoreBrokenStuff()
   QEXPECT_FAIL("","Issue N183630, task ID 183874; works with setUrl so we do that in _setEncodedUrl now", Continue);
 #endif
   QVERIFY(dxOffEagle3.isValid());
-#if QT_VERSION >= 0x040500
   QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle3.toEncoded());
-#endif
 
   QUrl javascript;
   javascript.setUrl("javascript:window.location+\"__flashplugin_unique__\"", QUrl::TolerantMode);

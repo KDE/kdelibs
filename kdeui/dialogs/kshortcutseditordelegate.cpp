@@ -301,30 +301,6 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
         case Qt::Key_Right:
             index = index.sibling(index.row(), index.column() + 1);
             break;
-// bug fixed in Qt 4.5.1, TT task 246699
-#if QT_VERSION < 0x040501
-        case Qt::Key_Up:
-        case Qt::Key_Down: {
-            // unfortunately Qt's implementation "forgets" the column we were in, so
-            // we have to save and restore it.
-
-            QTreeWidgetHack *hView = static_cast<QTreeWidgetHack *>(view);
-            QTreeWidgetItem *item = hView->itemFromIndex(index);
-            int column = index.column();
-            if (ke->key() == Qt::Key_Up) {
-                item = hView->itemAbove(item);
-            } else {
-                item = hView->itemBelow(item);
-            }
-            if (!item) {
-                break;
-            }
-            do {
-                index = hView->indexFromItem(item, column--);
-            } while (!index.isValid() && column >= 0);
-
-            break; }
-#endif
         default:
             return false;
         }

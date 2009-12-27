@@ -476,9 +476,7 @@ void ModelMoveCommand::doCommand()
 
 void ModelMoveCommand::emitPostSignal()
 {
-#if QT_VERSION >= 0x040600
   m_model->endMoveRows();
-#endif
 }
 
 

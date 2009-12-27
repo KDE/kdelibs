@@ -356,12 +356,7 @@ void quitApplicationsOverDBus()
             continue;
         QDBusInterface *iface = new QDBusInterface(service,
                                QLatin1String("/MainApplication"),
-//  see http://lists.kde.org/?l=kde-core-devel&m=121641642911291&w=2
-#if QT_VERSION < 0x040402
-                               QLatin1String(""),
-#else                             
                                QLatin1String("org.kde.KApplication"),
-#endif
                                connection);
         if (!iface->isValid()) {
             if (verbose)
