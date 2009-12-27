@@ -19,20 +19,22 @@
 #ifndef KDEFAKES_H
 #define KDEFAKES_H
 
-/* This file defines the prototypes for a few system calls for platforms which either
-   1) have those system calls, but lack the prototypes in their header files.
-   2) don't have those system calls, in which case kdecore provides those functions.
+/* This file defines the prototypes for a few (C library) functions for 
+   platforms which either
+   1) have those functions, but lack the prototypes in their header files.
+   2) don't have those functions, in which case kdecore provides them
 
-   You should include this file in any .cpp file that uses at least one of those functions:
-    strlcat, strlcpy, 
-    strcasestr,
-    setenv, unsetenv, 
-    usleep, initgroups, 
-    random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
-    mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
-    mkstemp, mkstemps (prefer to use QTemporaryfile instead)
-    trunc
-   
+   You should include this file in any .cpp file that uses any one of these 
+   functions:
+     strlcat, strlcpy, 
+     strcasestr,
+     setenv, unsetenv, 
+     usleep, initgroups, 
+     random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
+     mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
+     mkstemp, mkstemps (prefer to use QTemporaryfile instead)
+     trunc
+     getgrouplist
 */
 
 #cmakedefine HAVE_STRLCAT_PROTO 1
@@ -178,5 +180,18 @@ double trunc(double);
 }
 #endif
 #endif
+
+#cmakedefine HAVE_GETGROUPLIST 1
+#if !defined(HAVE_GETGROUPLIST)
+#include <sys/types.h> /* for gid_t */
+#ifdef __cplusplus
+extern "C" {
+#endif
+int getgrouplist(const char *, gid_t , gid_t *, int *);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 
 #endif /* KDEFAKES_H */
