@@ -24,6 +24,7 @@
 #include <kedittoolbar.h>
 #include <kaction.h>
 #include <kpushbutton.h>
+#include <kmenubar.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
 #include "testxmlguiwindow.h"
@@ -748,6 +749,29 @@ void KXmlGui_UnitTest::testDeletedContainers()
     QVERIFY(!factory->container("game", &mainWindow));
 
     mainWindow.close();
+}
+
+void KXmlGui_UnitTest::testTopLevelSeparator() {
+    const QByteArray xml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"before_separator\"><text>Before Separator</text></Menu>\n"
+        " <Separator />\n"
+        " <Menu name=\"after_separator\"><text>After Separator</text></Menu>\n"
+        "</MenuBar>\n"
+        "</gui>";
+    
+    TestXmlGuiWindow mainWindow(xml);
+    mainWindow.setAutoSaveSettings(false);
+    mainWindow.createActions(QStringList());
+    mainWindow.createGUI();
+
+    checkActions(mainWindow.menuBar()->actions(), QStringList()
+                 << "before_separator"
+                 << "separator"
+                 << "after_separator");
 }
 
 void KXmlGui_UnitTest::testXMLFileReplacement() {

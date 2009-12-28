@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testDeletedContainers();
     void testAutoSaveSettings();
     void testXMLFileReplacement();
+    void testTopLevelSeparator();
 };
 
 #endif
