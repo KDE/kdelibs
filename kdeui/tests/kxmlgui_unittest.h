@@ -41,6 +41,7 @@ private Q_SLOTS:
     void testAutoSaveSettings();
     void testXMLFileReplacement();
     void testTopLevelSeparator();
+    void testMenuNames();
 };
 
 #endif

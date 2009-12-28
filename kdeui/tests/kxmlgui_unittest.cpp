@@ -769,9 +769,30 @@ void KXmlGui_UnitTest::testTopLevelSeparator() {
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
-                 << "before_separator"
+                 << ""
                  << "separator"
-                 << "after_separator");
+                 << ""
+                 << "separator"
+                 << "");
+}
+
+void KXmlGui_UnitTest::testMenuNames() {
+    const QByteArray xml = 
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"filemenu\"><text>File Menu</text></Menu>\n"
+        "</MenuBar>\n"
+        "</gui>";
+    
+    TestXmlGuiWindow mainWindow(xml);
+    mainWindow.setAutoSaveSettings(false);
+    mainWindow.createActions(QStringList());
+    mainWindow.createGUI();
+
+    checkActions(mainWindow.menuBar()->actions(), QStringList()
+                 << "filemenu");
 }
 
 void KXmlGui_UnitTest::testXMLFileReplacement() {
