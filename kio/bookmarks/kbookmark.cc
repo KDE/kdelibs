@@ -406,6 +406,33 @@ void KBookmark::setIcon(const QString &icon)
         element.removeAttribute("icon");
 }
 
+QString KBookmark::description() const
+{
+    if (isSeparator())
+        return QString();
+
+    QString description = element.namedItem("desc").toElement().text();
+    description.replace('\n', ' '); // #140673
+    return description;
+}
+
+void KBookmark::setDescription(const QString &description)
+{
+    QDomNode descNode = element.namedItem("desc");
+    if (descNode.isNull()) {
+        descNode = element.ownerDocument().createElement("desc");
+        element.appendChild(descNode);
+    }
+
+    if (descNode.firstChild().isNull()) {
+        QDomText domtext = descNode.ownerDocument().createTextNode(QString());
+        descNode.appendChild(domtext);
+    }
+
+    QDomText domtext = descNode.firstChild().toText();
+    domtext.setData(description);
+}
+
 QString KBookmark::mimeType() const
 {
     QDomNode metaDataNode = metaData(METADATA_MIME_OWNER, false);

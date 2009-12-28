@@ -176,6 +176,20 @@ public:
     void setIcon(const QString &icon);
 
     /**
+     * @return Description of the bookmark
+     * @since 4.4
+     */
+    QString description() const;
+
+    /**
+     * Set the description of the bookmark
+     *
+     * @param description
+     * @since 4.4
+     */
+    void setDescription(const QString &description);
+
+    /**
      * @return Mime-Type of this item
      * @since 4.1
      */
