@@ -198,6 +198,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
         else
             parent->insertAction(parent->actions().value(index), act);
         containerAction = act;
+        containerAction->setObjectName( name );
     }
 
     return popup;
