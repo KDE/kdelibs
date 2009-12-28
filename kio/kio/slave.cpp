@@ -123,7 +123,7 @@ void Slave::accept()
 void Slave::timeout()
 {
     Q_D(Slave);
-   if (d->dead)
+   if (d->dead) //already dead? then slaveDied was emitted and we are done
       return;
    if (d->connection->isConnected())
       return;
@@ -318,6 +318,8 @@ void Slave::send(int cmd, const QByteArray &arr)
 void Slave::gotInput()
 {
     Q_D(Slave);
+    if (d->dead) //already dead? then slaveDied was emitted and we are done
+        return;
     ref();
     if (!dispatch())
     {
