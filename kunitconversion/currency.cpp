@@ -77,7 +77,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
     U(Fim, 0.168188,
       "FIM",
       KCurrencyCode::currencyCodeToName("FIM"),
-      i18nc("FIM Finnish Markka - unit synonyms for matching user input", "markka;markkas,markkaa") + ";FIM;" +
+      i18nc("FIM Finnish Markka - unit synonyms for matching user input", "markka;markkas;markkaa") + ";FIM;" +
       KGlobal::locale()->countryCodeToName("fi") + ';' + KCurrencyCode::currencyCodeToName("FIM"),
       ki18nc("amount in units (real)", "%1 markkas"),
       ki18ncp("amount in units (integer)", "%1 markka", "%1 markkas")  // Alternative = markkaa
