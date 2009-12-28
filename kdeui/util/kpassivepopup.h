@@ -1,11 +1,8 @@
 // -*- c++ -*-
 
 /*
- *   Copyright            : (C) 2001-2006 by Richard Moore
- *   Copyright            : (C) 2004-2005 by Sascha Cunz
- *   License              : This file is released under the terms of the LGPL, version 2.
- *   Email                : rich@kde.org
- *   Email                : sascha.cunz@tiscali.de
+ *   Copyright (C) 2001-2006 by Richard Moore <rich@kde.org>
+ *   Copyright (C) 2004-2005 by Sascha Cunz <sascha.cunz@tiscali.de>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public

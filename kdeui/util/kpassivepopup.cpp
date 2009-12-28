@@ -1,9 +1,6 @@
 /*
- *   copyright            : (C) 2001-2006 by Richard Moore
- *   copyright            : (C) 2004-2005 by Sascha Cunz
- *   License              : This file is released under the terms of the LGPL, version 2.
- *   email                : rich@kde.org
- *   email                : sascha.cunz@tiscali.de
+ *   Copyright (C) 2001-2006 by Richard Moore <rich@kde.org>
+ *   Copyright (C) 2004-2005 by Sascha Cunz <sascha.cunz@tiscali.de>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Library General Public
