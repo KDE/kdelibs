@@ -726,6 +726,7 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
 {
   setIcon(KIcon(bookmark().icon()));
   setHelpText( bookmark().url().pathOrUrl() );
+  setToolTip( bookmark().description() );
   connect(this, SIGNAL( triggered(Qt::MouseButtons, Qt::KeyboardModifiers) ),
      SLOT( slotSelected(Qt::MouseButtons, Qt::KeyboardModifiers) ));
 }
@@ -746,6 +747,7 @@ KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, QObject *parent)
   : KActionMenu(KIcon(bm.icon()), bm.text().replace('&', "&&"), parent),
     KBookmarkActionInterface(bm)
 {
+  setToolTip( bm.description() );
 }
 
 KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent)
