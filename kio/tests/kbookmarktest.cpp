@@ -31,6 +31,7 @@ static void compareBookmarks( const KBookmark& initialBookmark, const KBookmark&
     QCOMPARE( decodedBookmark.url(), initialBookmark.url() );
     QCOMPARE( decodedBookmark.icon(), initialBookmark.icon() );
     QCOMPARE( decodedBookmark.text(), initialBookmark.text() );
+    QCOMPARE( decodedBookmark.description(), initialBookmark.description() );
     QDomNamedNodeMap decodedAttribs = decodedBookmark.internalElement().attributes();
     QDomNamedNodeMap initialAttribs = initialBookmark.internalElement().attributes();
     QCOMPARE( decodedAttribs.count(), initialAttribs.count() );
@@ -47,6 +48,7 @@ void KBookmarkTest::testMimeDataOneBookmark()
     QMimeData* mimeData = new QMimeData;
 
     KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
+    bookmark.setDescription( "Comment" );
     QVERIFY( !bookmark.isNull() );
     bookmark.populateMimeData( mimeData );
 
@@ -71,8 +73,10 @@ void KBookmarkTest::testMimeDataBookmarkList()
     QMimeData* mimeData = new QMimeData;
 
     KBookmark bookmark1 = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
+    bookmark1.setDescription( "KDE comment" );
     QVERIFY( !bookmark1.isNull() );
     KBookmark bookmark2 = KBookmark::standaloneBookmark( "KOffice", KUrl( "http://www.koffice.org" ), "koicon" );
+    bookmark2.setDescription( "KOffice comment" );
     QVERIFY( !bookmark2.isNull() );
     bookmark2.setMetaDataItem( "key", "value" );
 
