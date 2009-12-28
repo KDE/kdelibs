@@ -66,7 +66,7 @@ public:
      *
      * The parent widget @p parent has a special meaning:
      * Besides owning the tray window, the parent widget will
-     * dissappear from taskbars when it is iconified while the tray
+     * disappear from taskbars when it is iconified while the tray
      * window is visible. This is the desired behavior. After all,
      * the tray window @p is the parent's taskbar icon.
      *
