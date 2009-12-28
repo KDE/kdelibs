@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=KFileModule
+Name[ar]=KFileModule
 Name[ast]=KFileModule
 Name[bg]=Модул KFile
 Name[ca]=KFileModule
@@ -37,6 +38,7 @@ Name[x-test]=xxKFileModulexx
 Name[zh_CN]=KFile 模块
 Name[zh_TW]=KFile 模組
 Comment=The default KDE file module providing the standard file dialog
+Comment[ar]=وحدة ملف كدي الافتراضية التي تعطي مربع الملف القياسي
 Comment[bg]=Подразбиращият се файлов модул на KDE, осигуряващ стандартния диалогов прозорец за файлове
 Comment[ca]=El mòdul de fitxers per defecte del KDE que proporciona el diàleg de fitxer estàndard
 Comment[da]=KDE's standard filmodul som giver standard fildialogen

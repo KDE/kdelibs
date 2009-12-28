@@ -12,6 +12,7 @@ X-KDE-PluginInfo-Depends=
 X-KDE-PluginInfo-License=LGPL
 X-KDE-PluginInfo-EnabledByDefault=true
 Name=Hunspell
+Name[ar]=ه‍نسبل
 Name[ast]=Hunspell
 Name[bg]=Hunspell
 Name[ca]=Hunspell
