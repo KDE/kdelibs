@@ -792,7 +792,9 @@ void KXmlGui_UnitTest::testMenuNames() {
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
-                 << "filemenu");
+                 << "filemenu"
+                 << "separator"
+                 << "help" );
 }
 
 void KXmlGui_UnitTest::testXMLFileReplacement() {
