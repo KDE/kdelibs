@@ -769,11 +769,11 @@ void KXmlGui_UnitTest::testTopLevelSeparator() {
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
-                 << ""
+                 << "before_separator"
                  << "separator"
-                 << ""
+                 << "after_separator"
                  << "separator"
-                 << "");
+                 << "help");
 }
 
 void KXmlGui_UnitTest::testMenuNames() {
