@@ -94,7 +94,7 @@ macro_optional_find_package(OpenGL)
 macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
 
 set(SOPRANO_MIN_VERSION "2.3.70")
-find_package(Soprano  REQUIRED COMPONENTS  PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
+macro_optional_find_package(Soprano COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
 macro_log_feature(SOPRANO_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is required to build the Nepomuk semantic desktop system.")
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
@@ -190,7 +190,7 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
                       ${CMAKE_SOURCE_DIR}/kio/kfile
                       ${KDE4_KDEUI_INCLUDES})
 
-# kpty 
+# kpty
 set(KDE4_KPTY_INCLUDES ${CMAKE_SOURCE_DIR}/kpty ${KDE4_KIO_INCLUDES} )
 
 # kparts depends on kio
@@ -298,14 +298,14 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION
 # configuration specific export files KDELibs4(Library|Tools)Targets-<config>.cmake
 # if the main exports file KDELibs4(Library|Tools)Targets.cmake has changed. This makes sure
 # that this main file doesn't include older and different configuration specific exports files,
-# which might have a different set of targets or targets with different names. 
+# which might have a different set of targets or targets with different names.
 # The code for installing the exports files will soon go into a macro. Alex
 install(CODE "set(EXPORT_FILES KDELibs4LibraryTargets.cmake KDELibs4ToolsTargets.cmake)"
         CODE "set(EXPORT_INSTALL_DIR \"${DATA_INSTALL_DIR}/cmake/modules\")"
         SCRIPT "${CMAKE_SOURCE_DIR}/cmake/modules/check_installed_exports_file.cmake" )
 install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake )
 install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake )
-# the following will be the correct locations once cmake has the improved FIND_PACKAGE() 
+# the following will be the correct locations once cmake has the improved FIND_PACKAGE()
 # install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${PLUGIN_INSTALL_DIR}/cmake RENAME KDE4Config.cmake)
 
 macro_optional_add_subdirectory( experimental )
