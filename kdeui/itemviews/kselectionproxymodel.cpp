@@ -268,6 +268,10 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
   Q_Q(KSelectionProxyModel);
+
+  foreach(const QModelIndex &idx, m_rootIndexList)
+    emit q->rootIndexAboutToBeRemoved(idx);
+
   q->beginResetModel();
 }
 
@@ -283,7 +287,6 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 
   while (it != end)
   {
-    emit q->rootIndexAboutToBeRemoved(*it);
     it = m_rootIndexList.erase(it);
   }
   q->endResetModel();
