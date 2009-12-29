@@ -82,6 +82,15 @@
 #include <kconfig.h>
 #include "kcomponentdata.h"
 
+#ifdef Q_OS_SOLARIS
+// For the purposes of KDebug Solaris has a GNU-libc-compatible 
+// backtrace() function. This isn't detected by the CMake checks
+// normally (check_function_exists fails), but we know it's there.
+// For better results, we would use walk_context(), but that's
+// a little more code -- see also the crash handler in kcrash.cpp .
+#define HAVE_BACKTRACE (1)
+#endif
+
 #ifdef HAVE_BACKTRACE
 #include <execinfo.h>
 #endif
