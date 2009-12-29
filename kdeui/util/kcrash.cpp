@@ -2,6 +2,8 @@
  * This file is part of the KDE Libraries
  * Copyright (C) 2000 Timo Hummel <timo.hummel@sap.com>
  *                    Tom Braun <braunt@fh-konstanz.de>
+ * Copyright 2009 KDE e.V.
+ *   By Adriaan de Groot <groot@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -58,6 +60,16 @@
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
+#endif
+
+#ifdef Q_OS_SOLARIS
+// Solaris has built-in, thread-safe, async-signal-safe, mechanisms
+// to walk the stack in the case of a crash, as well as (optionally)
+// to demangle C++ symbol names. In the case of a crash, dump a stack
+// trace to stderr before starting drKonqui (because what drKonqui is
+// going to do is -- through a complicated process -- print the
+// exact same information, but less reliably).
+#include <ucontext.h>
 #endif
 
 static KCrash::HandlerType s_emergencySaveFunction = 0;
@@ -218,6 +230,10 @@ KCrash::defaultCrashHandler (int sig)
 
   signal(SIGALRM, SIG_DFL);
   alarm(3); // Kill me... (in case we deadlock in malloc)
+
+#ifdef Q_OS_SOLARIS
+  (void) printstack(2 /* stderr, assuming it's still open. */);
+#endif
 
   if (crashRecursionCounter < 2) {
     if (s_emergencySaveFunction) {
