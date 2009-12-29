@@ -3123,7 +3123,7 @@ QString KHTMLPart::selectedText() const
             text = str.mid(khtml::RenderPosition::fromDOMPosition(sel.start()).renderedOffset());
           } else if(n == sel.end().node()) {
             text += str.left(khtml::RenderPosition::fromDOMPosition(sel.end()).renderedOffset());
-          } else 
+          } else
             text += str;
         }
       }
@@ -3411,7 +3411,8 @@ void KHTMLPart::selectionLayoutChanged()
     d->editor_context.m_selection.needsCaretRepaint();
     // make sure that caret is visible
     QRect r(d->editor_context.m_selection.getRepaintRect());
-    d->m_view->ensureVisible(r.x(), r.y());
+    if (d->editor_context.m_caretPaint)
+        d->m_view->ensureVisible(r.x(), r.y());
   }
 
   if (d->m_doc)
