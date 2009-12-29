@@ -242,11 +242,14 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
   Q_Q(KSelectionProxyModel);
 
   emit q->layoutAboutToBeChanged();
-
+  QPersistentModelIndex srcPersistentIndex;
   foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList())
   {
     m_proxyIndexes << proxyPersistentIndex;
-    m_layoutChangePersistentIndexes << QPersistentModelIndex(q->mapToSource(proxyPersistentIndex));
+    Q_ASSERT(proxyPersistentIndex.isValid());
+    srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
+    Q_ASSERT(srcPersistentIndex.isValid());
+    m_layoutChangePersistentIndexes << srcPersistentIndex;
   }
 }
 
