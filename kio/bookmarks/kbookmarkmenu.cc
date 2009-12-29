@@ -726,7 +726,9 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
 {
   setIcon(KIcon(bookmark().icon()));
   setHelpText( bookmark().url().pathOrUrl() );
-  setToolTip( bookmark().description() );
+  const QString description = bk.description();
+  if (!description.isEmpty())
+    setToolTip( description );
   connect(this, SIGNAL( triggered(Qt::MouseButtons, Qt::KeyboardModifiers) ),
      SLOT( slotSelected(Qt::MouseButtons, Qt::KeyboardModifiers) ));
 }
