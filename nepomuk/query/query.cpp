@@ -107,43 +107,6 @@ QString Nepomuk::Query::QueryPrivate::buildRequestPropertyPatterns() const
 }
 
 
-// static
-Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::optimizeTerm( const Nepomuk::Query::Term& term )
-{
-    switch( term.type() ) {
-    case Nepomuk::Query::Term::And:
-    case Nepomuk::Query::Term::Or: {
-        QList<Nepomuk::Query::Term> subTerms = static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms();
-        QList<Nepomuk::Query::Term> newSubTerms;
-        QList<Nepomuk::Query::Term>::const_iterator end( subTerms.constEnd() );
-        for ( QList<Nepomuk::Query::Term>::const_iterator it = subTerms.constBegin();
-              it != end; ++it ) {
-            const Nepomuk::Query::Term& t = *it;
-            Nepomuk::Query::Term ot = optimizeTerm( t );
-            if ( ot.isValid() ) {
-                if ( ot.type() == term.type() ) {
-                    newSubTerms += static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms();
-                }
-                else {
-                    newSubTerms += ot;
-                }
-            }
-        }
-        if ( newSubTerms.count() == 0 )
-            return Nepomuk::Query::Term();
-        else if ( newSubTerms.count() == 1 )
-            return newSubTerms.first();
-        else if ( term.isAndTerm() )
-            return Nepomuk::Query::AndTerm( newSubTerms );
-        else
-            return Nepomuk::Query::OrTerm( newSubTerms );
-    }
-
-    default:
-        return term;
-    }
-}
-
 
 class Nepomuk::Query::Query::RequestProperty::Private : public QSharedData
 {

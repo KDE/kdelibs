@@ -50,7 +50,7 @@ namespace Nepomuk {
             /**
              * Removes redundant AND and OR operators.
              */
-            static NEPOMUKQUERY_EXPORT Term optimizeTerm( const Term& term );
+            static Term optimizeTerm( const Term& term );
 
             Term m_term;
             int m_limit;
