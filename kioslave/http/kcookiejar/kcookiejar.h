@@ -93,7 +93,7 @@ public:
     bool    isSecure() const { return mSecure; }
     /**
      *  If currentDate is -1, the default, then the current timestamp in UTC
-     *  is used for comparision against this cookie's expiration date.
+     *  is used for comparison against this cookie's expiration date.
      */
     bool    isExpired(qint64 currentDate = -1) const;
     bool    isCrossDomain() const { return mCrossDomain; }
