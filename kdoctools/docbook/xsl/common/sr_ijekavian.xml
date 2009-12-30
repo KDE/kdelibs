@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0"
-        language="sr"
-        english-language-name="Serbian">
+        language="sr_ijekavian"
+        english-language-name="Serbian Ijekavian">
 
 <!-- modifier-separator: _ -->
 
@@ -10,7 +10,7 @@
 <!-- * do not submit an edited version of this file. Instead, submit an -->
 <!-- * edited version of the source file at the following location: -->
 <!-- * -->
-<!-- *  https://svn.sourceforge.net/svnroot/docbook/trunk/gentext/locale/sr.xml -->
+<!-- *  https://svn.sourceforge.net/svnroot/docbook/trunk/gentext/locale/sr_ijekavian.xml -->
 <!-- * -->
 <!-- * E-mail the edited source file to: -->
 <!-- * -->
@@ -60,12 +60,12 @@
 <l:gentext key="Editor" text="Уредник"/>
 <l:gentext key="Equation" text="Једначина"/>
 <l:gentext key="equation" text="једначина"/>
-<l:gentext key="Example" text="Пример"/>
-<l:gentext key="example" text="пример"/>
+<l:gentext key="Example" text="Примјер"/>
+<l:gentext key="example" text="примјер"/>
 <l:gentext key="Figure" text="Слика"/>
 <l:gentext key="figure" text="слика"/>
-<l:gentext key="Glossary" text="Речник"/>
-<l:gentext key="glossary" text="речник"/>
+<l:gentext key="Glossary" text="Рјечник"/>
+<l:gentext key="glossary" text="рјечник"/>
 <l:gentext key="GlossSee" text="Види"/>
 <l:gentext key="glosssee" text="види"/>
 <l:gentext key="GlossSeeAlso" text="Види такође"/>
@@ -85,11 +85,11 @@
 <l:gentext key="msglevel" text="ниво"/>
 <l:gentext key="MsgOrig" text="Извор"/>
 <l:gentext key="msgorig" text="извор"/>
-<l:gentext key="NOTE" text="ПРИМЕДБА"/>
-<l:gentext key="Note" text="Примедба"/>
-<l:gentext key="note" text="примедба"/>
-<l:gentext key="Part" text="Део"/>
-<l:gentext key="part" text="део"/>
+<l:gentext key="NOTE" text="ПРИМЈЕДБА"/>
+<l:gentext key="Note" text="Примједба"/>
+<l:gentext key="note" text="примједба"/>
+<l:gentext key="Part" text="Дио"/>
+<l:gentext key="part" text="дио"/>
 <l:gentext key="Preface" text="Предговор"/>
 <l:gentext key="preface" text="предговор"/>
 <l:gentext key="Procedure" text="Поступак"/>
@@ -120,13 +120,13 @@
 <l:gentext key="revhistory" text="историја ревизија"/>
 <l:gentext key="revision" text="ревизија"/>
 <l:gentext key="Revision" text="Ревизија"/>
-<l:gentext key="sect1" text="Одељак"/>
-<l:gentext key="sect2" text="Одељак"/>
-<l:gentext key="sect3" text="Одељак"/>
-<l:gentext key="sect4" text="Одељак"/>
-<l:gentext key="sect5" text="Одељак"/>
-<l:gentext key="section" text="одељак"/>
-<l:gentext key="Section" text="Одељак"/>
+<l:gentext key="sect1" text="Одјељак"/>
+<l:gentext key="sect2" text="Одјељак"/>
+<l:gentext key="sect3" text="Одјељак"/>
+<l:gentext key="sect4" text="Одјељак"/>
+<l:gentext key="sect5" text="Одјељак"/>
+<l:gentext key="section" text="одјељак"/>
+<l:gentext key="Section" text="Одјељак"/>
 <l:gentext key="see" text="види"/>
 <l:gentext key="See" text="Види"/>
 <l:gentext key="seealso" text="види такође"/>
@@ -144,9 +144,9 @@
 <l:gentext key="Table" text="Табела"/>
 <l:gentext key="task" text="задатак"/>
 <l:gentext key="Task" text="Задатак"/>
-<l:gentext key="tip" text="савет"/>
-<l:gentext key="TIP" text="САВЕТ"/>
-<l:gentext key="Tip" text="Савет"/>
+<l:gentext key="tip" text="савјет"/>
+<l:gentext key="TIP" text="САВЈЕТ"/>
+<l:gentext key="Tip" text="Савјет"/>
 <l:gentext key="Warning" text="Упозорење"/>
 <l:gentext key="warning" text="упозорење"/>
 <l:gentext key="WARNING" text="УПОЗОРЕЊЕ"/>
@@ -160,14 +160,14 @@
 <l:gentext key="lastlistcomma" text=","/>
 <l:gentext key="listcomma" text=","/>
 <l:gentext key="nonexistantelement" text="непостојећи елемент"/>
-<l:gentext key="notes" text="примедбе"/>
-<l:gentext key="Notes" text="Примедбе"/>
+<l:gentext key="notes" text="примједбе"/>
+<l:gentext key="Notes" text="Примједбе"/>
 <l:gentext key="Pgs" text="Стр."/>
 <l:gentext key="pgs" text="стр."/>
 <l:gentext key="Revisedby" text="Прегледао(ла): "/>
 <l:gentext key="revisedby" text="прегледао(ла): "/>
-<l:gentext key="TableNotes" text="Примедбе"/>
-<l:gentext key="tablenotes" text="примедбе"/>
+<l:gentext key="TableNotes" text="Примједбе"/>
+<l:gentext key="tablenotes" text="примједбе"/>
 <l:gentext key="TableofContents" text="Садржај"/>
 <l:gentext key="tableofcontents" text="садржај"/>
 <l:gentext key="unexpectedelementname" text="неочекивано име елемента"/>
@@ -192,8 +192,8 @@
 <l:gentext key="ListofUnknown" text="списак непознатих"/>
 <l:gentext key="listofunknown" text="Списак непознатих"/>
 <l:gentext key="nav-home" text="Почетак"/>
-<l:gentext key="nav-next" text="Следеће"/>
-<l:gentext key="nav-next-sibling" text="Брзо напред"/>
+<l:gentext key="nav-next" text="Сљедеће"/>
+<l:gentext key="nav-next-sibling" text="Брзо напријед"/>
 <l:gentext key="nav-prev" text="Претходно"/>
 <l:gentext key="nav-prev-sibling" text="Брзо назад"/>
 <l:gentext key="nav-up" text="Врх"/>
@@ -201,7 +201,7 @@
 <l:gentext key="Draft" text="Нацрт"/>
 <l:gentext key="above" text="изнад"/>
 <l:gentext key="below" text="испод"/>
-<l:gentext key="sectioncalled" text="одељак по имену"/>
+<l:gentext key="sectioncalled" text="одјељак по имену"/>
 <l:gentext key="index symbols" text="Симболи"/>
 <l:gentext key="lowercase.alpha" text="абвгдђежзијклљмнњопрстћуфхцчџш"/>
 <l:gentext key="uppercase.alpha" text="АБВГДЂЕЖЗИЈКЛЉМНЊОПРСТЋУФХЦЧЏШ"/>
@@ -242,7 +242,7 @@
 <l:template name="colophon" text="%t"/>
 <l:template name="dedication" text="%t"/>
 <l:template name="equation" text="Једначина %n. %t"/>
-<l:template name="example" text="Пример %n. %t"/>
+<l:template name="example" text="Примјер %n. %t"/>
 <l:template name="figure" text="Слика %n. %t"/>
 <l:template name="foil" text="%t"/>
 <l:template name="foilgroup" text="%t"/>
@@ -318,7 +318,7 @@
 <l:template name="article/appendix" text="%n. %t"/>
 <l:template name="bridgehead" text="%n. %t"/>
 <l:template name="chapter" text="Поглавље %n. %t"/>
-<l:template name="part" text="Део %n. %t"/>
+<l:template name="part" text="Дио %n. %t"/>
 <l:template name="sect1" text="%n. %t"/>
 <l:template name="sect2" text="%n. %t"/>
 <l:template name="sect3" text="%n. %t"/>
@@ -436,42 +436,42 @@
 <l:template name="docnamelong" text=" у документу са насловом %o"/>
 <l:template name="pageabbrev" text="(стр. %p)"/>
 <l:template name="Page" text="Страна %p"/>
-<l:template name="bridgehead" text="одељак по имену „%t“"/>
-<l:template name="refsection" text="одељак по имену „%t“"/>
-<l:template name="refsect1" text="одељак по имену „%t“"/>
-<l:template name="refsect2" text="одељак по имену „%t“"/>
-<l:template name="refsect3" text="одељак по имену „%t“"/>
-<l:template name="sect1" text="одељак по имену „%t“"/>
-<l:template name="sect2" text="одељак по имену „%t“"/>
-<l:template name="sect3" text="одељак по имену „%t“"/>
-<l:template name="sect4" text="одељак по имену „%t“"/>
-<l:template name="sect5" text="одељак по имену „%t“"/>
-<l:template name="section" text="одељак по имену „%t“"/>
-<l:template name="simplesect" text="одељак по имену „%t“"/>
+<l:template name="bridgehead" text="одјељак по имену „%t“"/>
+<l:template name="refsection" text="одјељак по имену „%t“"/>
+<l:template name="refsect1" text="одјељак по имену „%t“"/>
+<l:template name="refsect2" text="одјељак по имену „%t“"/>
+<l:template name="refsect3" text="одјељак по имену „%t“"/>
+<l:template name="sect1" text="одјељак по имену „%t“"/>
+<l:template name="sect2" text="одјељак по имену „%t“"/>
+<l:template name="sect3" text="одјељак по имену „%t“"/>
+<l:template name="sect4" text="одјељак по имену „%t“"/>
+<l:template name="sect5" text="одјељак по имену „%t“"/>
+<l:template name="section" text="одјељак по имену „%t“"/>
+<l:template name="simplesect" text="одјељак по имену „%t“"/>
 </l:context>
 <l:context name="xref-number"><l:template name="answer" text="О: %n"/>
 <l:template name="appendix" text="Додатак %n"/>
-<l:template name="bridgehead" text="Одељак %n"/>
+<l:template name="bridgehead" text="Одјељак %n"/>
 <l:template name="chapter" text="Поглавље %n"/>
 <l:template name="equation" text="Једначина %n"/>
-<l:template name="example" text="Пример %n"/>
+<l:template name="example" text="Примјер %n"/>
 <l:template name="figure" text="Слика %n"/>
-<l:template name="part" text="Део %n"/>
+<l:template name="part" text="Дио %n"/>
 <l:template name="procedure" text="Поступак %n"/>
 <l:template name="productionset" text="Продукција %n"/>
 <l:template name="qandadiv" text="П и О %n"/>
 <l:template name="qandaentry" text="П: %n"/>
 <l:template name="question" text="П: %n"/>
-<l:template name="sect1" text="Одељак %n"/>
-<l:template name="sect2" text="Одељак %n"/>
-<l:template name="sect3" text="Одељак %n"/>
-<l:template name="sect4" text="Одељак %n"/>
-<l:template name="sect5" text="Одељак %n"/>
-<l:template name="section" text="Одељак %n"/>
+<l:template name="sect1" text="Одјељак %n"/>
+<l:template name="sect2" text="Одјељак %n"/>
+<l:template name="sect3" text="Одјељак %n"/>
+<l:template name="sect4" text="Одјељак %n"/>
+<l:template name="sect5" text="Одјељак %n"/>
+<l:template name="section" text="Одјељак %n"/>
 <l:template name="table" text="Табела %n"/>
 </l:context>
 <l:context name="xref-number-and-title"><l:template name="appendix" text="Додатак %n, %t"/>
-<l:template name="bridgehead" text="Одељак %n, „%t“"/>
+<l:template name="bridgehead" text="Одјељак %n, „%t“"/>
 <l:template name="chapter" text="Поглавље %n, %t"/>
 <l:template name="equation" text="Једначина %n, „%t“"/>
 <l:template name="example" text="Пример %n, „%t“"/>
@@ -480,17 +480,17 @@
 <l:template name="procedure" text="Поступак %n, „%t“"/>
 <l:template name="productionset" text="Продукција %n, „%t“"/>
 <l:template name="qandadiv" text="П и О %n, „%t“"/>
-<l:template name="refsect1" text="одељак по имену „%t“"/>
-<l:template name="refsect2" text="одељак по имену „%t“"/>
-<l:template name="refsect3" text="одељак по имену „%t“"/>
-<l:template name="refsection" text="одељак по имену „%t“"/>
-<l:template name="sect1" text="Одељак %n, „%t“"/>
-<l:template name="sect2" text="Одељак %n, „%t“"/>
-<l:template name="sect3" text="Одељак %n, „%t“"/>
-<l:template name="sect4" text="Одељак %n, „%t“"/>
-<l:template name="sect5" text="Одељак %n, „%t“"/>
-<l:template name="section" text="Одељак %n, „%t“"/>
-<l:template name="simplesect" text="одељак по имену „%t“"/>
+<l:template name="refsect1" text="одјељак по имену „%t“"/>
+<l:template name="refsect2" text="одјељак по имену „%t“"/>
+<l:template name="refsect3" text="одјељак по имену „%t“"/>
+<l:template name="refsection" text="одјељак по имену „%t“"/>
+<l:template name="sect1" text="Одјељак %n, „%t“"/>
+<l:template name="sect2" text="Одјељак %n, „%t“"/>
+<l:template name="sect3" text="Одјељак %n, „%t“"/>
+<l:template name="sect4" text="Одјељак %n, „%t“"/>
+<l:template name="sect5" text="Одјељак %n, „%t“"/>
+<l:template name="section" text="Одјељак %n, „%t“"/>
+<l:template name="simplesect" text="одјељак по имену „%t“"/>
 <l:template name="table" text="Табела %n, „%t“"/>
 </l:context>
 <l:context name="authorgroup"><l:template name="sep" text=", "/>
@@ -521,13 +521,13 @@
 <l:template name="October" text="октобар"/>
 <l:template name="November" text="новембар"/>
 <l:template name="December" text="децембар"/>
-<l:template name="Monday" text="понедељак"/>
+<l:template name="Monday" text="понедјељак"/>
 <l:template name="Tuesday" text="уторак"/>
-<l:template name="Wednesday" text="среда"/>
+<l:template name="Wednesday" text="сриједа"/>
 <l:template name="Thursday" text="четвртак"/>
 <l:template name="Friday" text="петак"/>
 <l:template name="Saturday" text="субота"/>
-<l:template name="Sunday" text="недеља"/>
+<l:template name="Sunday" text="недјеља"/>
 </l:context>
 <l:context name="datetime-abbrev"><l:template name="Jan" text="јан"/>
 <l:template name="Feb" text="феб"/>
@@ -543,7 +543,7 @@
 <l:template name="Dec" text="дец"/>
 <l:template name="Mon" text="пон"/>
 <l:template name="Tue" text="уто"/>
-<l:template name="Wed" text="сре"/>
+<l:template name="Wed" text="сри"/>
 <l:template name="Thu" text="чет"/>
 <l:template name="Fri" text="пет"/>
 <l:template name="Sat" text="суб"/>

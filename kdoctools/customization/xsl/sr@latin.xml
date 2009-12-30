@@ -11,7 +11,7 @@
 <gentext key="Documentation.by" text="dokumentacija"/>
 <gentext key="LastUpdated" text="poslednja izmena"/>
 <gentext key="Serbian-Latin" text="srpski"/>
-<gentext key="Version" text="verzija"/>
+<gentext key="Version" text="izdanje"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="logo KDE‑a"/>
+<gentext key="logo-alt" text="logotip KDE‑a"/>
 </localization>

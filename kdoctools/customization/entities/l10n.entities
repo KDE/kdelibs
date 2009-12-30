@@ -559,6 +559,22 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
+<!ENTITY % Serbian-Ijekavian "IGNORE">
+<![%Serbian-Ijekavian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Serbian-Ijekavian Documentation V1.0//SRLATIN"
+           "../sr@ijekavian/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Serbian-Ijekavian-Latin "IGNORE">
+<![%Serbian-Ijekavian-Latin;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Serbian-Ijekavian-Latin Documentation V1.0//SRLATIN"
+           "../sr@ijekavianlatin/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % Swati "IGNORE">
 <![%Swati;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Swati Documentation V1.0//SS"

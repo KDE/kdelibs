@@ -9,7 +9,7 @@
 <guimenuitem>Приручник за &kappname-a;</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Позива Систем помоћи КДЕ‑а</action>, почев на страни намењеној &kappname-d; (овај документ).</para></listitem>
+<listitem><para><action>Позива Систем помоћи КДЕ‑а</action>, почев на страни намијењеној &kappname-d; (овај документ).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -21,7 +21,7 @@
 <guimenuitem>Шта је ово?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Претвара показивач миша у стрелицу са знаком питања.</action> Када потом кликнете на неки виџет &kappname-g;, приказаће се помоћни текст (ако је дефинисан) који објашњава намену виџета.</para></listitem>
+<listitem><para><action>Претвара показивач миша у стрелицу са знаком питања.</action> Када потом кликнете на неки виџет &kappname-g;, приказаће се помоћни текст (ако је дефинисан) који објашњава намјену виџета.</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -35,7 +35,7 @@
 <varlistentry>
 <term><menuchoice>
 <guimenu>Помоћ</guimenu>
-<guimenuitem>Промени језик програма...</guimenuitem>
+<guimenuitem>Промијени језик програма...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Отвара дијалог</action> у којем можете одредити главни и позадински језик за овај програм.</para></listitem>
 </varlistentry>

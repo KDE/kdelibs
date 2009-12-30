@@ -1,4 +1,4 @@
-<localization language="sr">
+<localization language="sr_ijekavian">
 <!-- Notes for translators:
  1. Do not translate `&...;' (unless you know the mechanism).
  2. In the strings ("..."), you can use the following notations, apart from Unicode,
@@ -7,10 +7,10 @@
     where X is an upper case hexadecimal, and XXXX is the Unicode
     value for the character (e.g. \U-00F3).
  -->
-<gentext key="Default" text="подразумевано"/>
+<gentext key="Default" text="подразумијевано"/>
 <gentext key="Documentation.by" text="документација"/>
-<gentext key="LastUpdated" text="последња измена"/>
-<gentext key="Serbian" text="српски"/>
+<gentext key="LastUpdated" text="посљедња измена"/>
+<gentext key="Serbian-Ijekavian" text="српски"/>
 <gentext key="Version" text="издање"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
 <gentext key="logo-alt" text="логотип КДЕ‑а"/>
