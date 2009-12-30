@@ -13154,6 +13154,10 @@ Name[x-test]=xxSerbianxx
 Name[zh_CN]=塞尔维亚语
 Name[zh_HK]=塞爾維亞語
 Name[zh_TW]=塞爾維亞語
+[sr@ijekavian]
+Name=Serbian Ijekavian
+[sr@ijekavianlatin]
+Name=Serbian Ijekavian Latin
 [sr@latin]
 Name=Serbian Latin
 Name[ar]=صربية لاتينية
