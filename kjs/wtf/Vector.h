@@ -53,7 +53,7 @@ namespace WTF {
     template<typename T>
     struct VectorDestructor<true, T>
     {
-        static void destruct(T* begin, T* end) 
+        static void destruct(T* begin, T* end)
         {
             for (T* cur = begin; cur != end; ++cur)
                 cur->~T();
@@ -72,7 +72,7 @@ namespace WTF {
     template<typename T>
     struct VectorInitializer<true, false, T>
     {
-        static void initialize(T* begin, T* end) 
+        static void initialize(T* begin, T* end)
         {
             for (T* cur = begin; cur != end; ++cur)
                 new (cur) T;
@@ -98,7 +98,7 @@ namespace WTF {
         {
             while (src != srcEnd) {
                 new (dst) T(*src);
-                src->~T();
+                const_cast<T*>(src)->~T();
                 ++dst;
                 ++src;
             }
@@ -113,7 +113,7 @@ namespace WTF {
                     --srcEnd;
                     --dstEnd;
                     new (dstEnd) T(*srcEnd);
-                    srcEnd->~T();
+                    const_cast<T*>(srcEnd)->~T();
                 }
             }
         }
@@ -238,7 +238,7 @@ namespace WTF {
         {
             VectorFiller<VectorTraits<T>::canFillWithMemset, T>::uninitializedFill(dst, dstEnd, val);
         }
-        
+
         static bool compare(const T* a, const T* b, size_t size)
         {
             return VectorComparer<VectorTraits<T>::canCompareWithMemcmp, T>::compare(a, b, size);
@@ -318,7 +318,7 @@ namespace WTF {
         {
             deallocateBuffer(buffer());
         }
-        
+
         void swap(VectorBuffer<T, 0>& other)
         {
             std::swap(m_buffer, other.m_buffer);
@@ -404,12 +404,12 @@ namespace WTF {
         typedef T* iterator;
         typedef const T* const_iterator;
 
-        Vector() 
+        Vector()
             : m_size(0)
         {
         }
-        
-        explicit Vector(size_t size) 
+
+        explicit Vector(size_t size)
             : m_size(size)
             , m_buffer(size)
         {
@@ -422,26 +422,26 @@ namespace WTF {
         }
 
         Vector(const Vector&);
-        template<size_t otherCapacity> 
+        template<size_t otherCapacity>
         Vector(const Vector<T, otherCapacity>&);
 
         Vector& operator=(const Vector&);
-        template<size_t otherCapacity> 
+        template<size_t otherCapacity>
         Vector& operator=(const Vector<T, otherCapacity>&);
 
         size_t size() const { return m_size; }
         size_t capacity() const { return m_buffer.capacity(); }
         bool isEmpty() const { return !size(); }
 
-        T& at(size_t i) 
-        { 
-            ASSERT(i < size());
-            return m_buffer.buffer()[i]; 
-        }
-        const T& at(size_t i) const 
+        T& at(size_t i)
         {
             ASSERT(i < size());
-            return m_buffer.buffer()[i]; 
+            return m_buffer.buffer()[i];
+        }
+        const T& at(size_t i) const
+        {
+            ASSERT(i < size());
+            return m_buffer.buffer()[i];
         }
 
         T& operator[](size_t i) { return at(i); }
@@ -454,7 +454,7 @@ namespace WTF {
         iterator end() { return begin() + m_size; }
         const_iterator begin() const { return data(); }
         const_iterator end() const { return begin() + m_size; }
-        
+
         T& first() { return at(0); }
         const T& first() const { return at(0); }
         T& last() { return at(size() - 1); }
@@ -484,10 +484,10 @@ namespace WTF {
         void remove(size_t position);
         void remove(size_t position, size_t length);
 
-        void removeLast() 
+        void removeLast()
         {
             ASSERT(!isEmpty());
-            shrink(size() - 1); 
+            shrink(size() - 1);
         }
 
         Vector(size_t size, const T& val)
@@ -513,7 +513,7 @@ namespace WTF {
     private:
         void expandCapacity(size_t newMinCapacity);
         const T* expandCapacity(size_t newMinCapacity, const T*);
-        template<typename U> U* expandCapacity(size_t newMinCapacity, U*); 
+        template<typename U> U* expandCapacity(size_t newMinCapacity, U*);
 
         size_t m_size;
         Buffer m_buffer;
@@ -528,7 +528,7 @@ namespace WTF {
     }
 
     template<typename T, size_t inlineCapacity>
-    template<size_t otherCapacity> 
+    template<size_t otherCapacity>
     Vector<T, inlineCapacity>::Vector(const Vector<T, otherCapacity>& other)
         : m_size(other.size())
         , m_buffer(other.capacity())
@@ -541,14 +541,14 @@ namespace WTF {
     {
         if (&other == this)
             return *this;
-        
+
         if (size() > other.size())
             shrink(other.size());
         else if (other.size() > capacity()) {
             clear();
             reserveCapacity(other.size());
         }
-        
+
         std::copy(other.begin(), other.begin() + size(), begin());
         TypeOperations::uninitializedCopy(other.begin() + size(), other.end(), end());
         m_size = other.size();
@@ -557,19 +557,19 @@ namespace WTF {
     }
 
     template<typename T, size_t inlineCapacity>
-    template<size_t otherCapacity> 
+    template<size_t otherCapacity>
     Vector<T, inlineCapacity>& Vector<T, inlineCapacity>::operator=(const Vector<T, otherCapacity>& other)
     {
         if (&other == this)
             return *this;
-        
+
         if (size() > other.size())
             shrink(other.size());
         else if (other.size() > capacity()) {
             clear();
             reserveCapacity(other.size());
         }
-        
+
         std::copy(other.begin(), other.begin() + size(), begin());
         TypeOperations::uninitializedCopy(other.begin() + size(), other.end(), end());
         m_size = other.size();
@@ -586,7 +586,7 @@ namespace WTF {
             clear();
             reserveCapacity(newSize);
         }
-        
+
         std::fill(begin(), end(), val);
         TypeOperations::uninitializedFill(end(), begin() + newSize, val);
         m_size = newSize;
@@ -605,7 +605,7 @@ namespace WTF {
     {
         reserveCapacity(max(newMinCapacity, max(static_cast<size_t>(16), capacity() + capacity() / 4 + 1)));
     }
-    
+
     template<typename T, size_t inlineCapacity>
     const T* Vector<T, inlineCapacity>::expandCapacity(size_t newMinCapacity, const T* ptr)
     {
@@ -636,7 +636,7 @@ namespace WTF {
             if (begin())
                 TypeOperations::initialize(end(), begin() + size);
         }
-        
+
         m_size = size;
     }
 
@@ -671,7 +671,7 @@ namespace WTF {
             TypeOperations::move(oldBuffer, oldEnd, begin());
         m_buffer.deallocateBuffer(oldBuffer);
     }
-    
+
     template<typename T, size_t inlineCapacity>
     void Vector<T, inlineCapacity>::shrinkCapacity(size_t newCapacity)
     {
@@ -719,14 +719,14 @@ namespace WTF {
             if (!begin())
                 return;
         }
-            
+
 #if COMPILER(MSVC7)
         // FIXME: MSVC7 generates compilation errors when trying to assign
         // a pointer to a Vector of its base class (i.e. can't downcast). So far
         // I've been unable to determine any logical reason for this, so I can
         // only assume it is a bug with the compiler. Casting is a bad solution,
-        // however, because it subverts implicit conversions, so a better 
-        // one is needed. 
+        // however, because it subverts implicit conversions, so a better
+        // one is needed.
         new (end()) T(static_cast<T>(*ptr));
 #else
         new (end()) T(*ptr);
@@ -768,7 +768,7 @@ namespace WTF {
             new (&spot[i]) T(data[i]);
         m_size = newSize;
     }
-     
+
     template<typename T, size_t inlineCapacity> template<typename U>
     inline void Vector<T, inlineCapacity>::insert(size_t position, const U& val)
     {
@@ -784,7 +784,7 @@ namespace WTF {
         new (spot) T(*data);
         ++m_size;
     }
-   
+
     template<typename T, size_t inlineCapacity> template<typename U, size_t c>
     inline void Vector<T, inlineCapacity>::insert(size_t position, const Vector<U, c>& val)
     {
@@ -802,13 +802,13 @@ namespace WTF {
     {
         insert(0, val);
     }
-   
+
     template<typename T, size_t inlineCapacity> template<typename U, size_t c>
     inline void Vector<T, inlineCapacity>::prepend(const Vector<U, c>& val)
     {
         insert(0, val.begin(), val.size());
     }
-    
+
     template<typename T, size_t inlineCapacity>
     inline void Vector<T, inlineCapacity>::remove(size_t position)
     {
@@ -826,7 +826,7 @@ namespace WTF {
         ASSERT(position + length < size());
         T* beginSpot = begin() + position;
         T* endSpot = beginSpot + length;
-        TypeOperations::destruct(beginSpot, endSpot); 
+        TypeOperations::destruct(beginSpot, endSpot);
         TypeOperations::moveOverlapping(endSpot, end(), beginSpot);
         m_size -= length;
     }
