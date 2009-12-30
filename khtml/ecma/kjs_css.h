@@ -39,6 +39,7 @@ namespace KJS {
     DOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclarationImpl* s);
     virtual ~DOMCSSStyleDeclaration();
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     JSValue *getValueProperty(ExecState *exec, int token);
 
@@ -47,7 +48,7 @@ namespace KJS {
     enum { CssText, Length, ParentRule,
            GetPropertyValue, GetPropertyCSSValue, RemoveProperty, GetPropertyPriority,
            SetProperty, Item };
-           
+
     DOM::CSSStyleDeclarationImpl *impl() const { return m_impl.get(); }
 
     JSValue *indexGetter(ExecState* exec, unsigned index);
@@ -74,7 +75,7 @@ namespace KJS {
   protected:
     SharedPtr<DOM::StyleSheetImpl> m_impl;
   };
-  DEFINE_PSEUDO_CONSTRUCTOR(DOMStyleSheetPseudoCtor)  
+  DEFINE_PSEUDO_CONSTRUCTOR(DOMStyleSheetPseudoCtor)
 
   JSValue* getDOMStyleSheet(ExecState *exec, DOM::StyleSheetImpl* ss);
 
@@ -92,13 +93,13 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState* ) const { return true; }
     static const ClassInfo info;
-    
+
     DOM::StyleSheetListImpl* impl() const { return m_impl.get(); }
     enum { Item, Length };
     JSValue *indexGetter(ExecState* exec, unsigned index);
   private:
     static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-  
+
     SharedPtr<DOM::StyleSheetListImpl> m_impl;
     SharedPtr<DOM::DocumentImpl>       m_doc;
   };

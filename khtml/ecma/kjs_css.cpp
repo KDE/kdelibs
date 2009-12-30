@@ -34,6 +34,7 @@
 #include "css/css_renderstyledeclarationimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/css_valueimpl.h"
+#include "css/cssproperties.h"
 
 #include "misc/htmltags.h"
 
@@ -72,7 +73,7 @@ namespace KJS {
 
 static QString cssPropertyName( const Identifier &p, bool* hadPixelPrefix )
 {
-    // The point here is to provide compatibility with IE 
+    // The point here is to provide compatibility with IE
     // syntax for accessing properties, which camel-cases them
     // and can add prefixes to produce things like pixelFoo
     QString prop = p.qstring();
@@ -199,17 +200,40 @@ bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifie
       CSSValueImpl *v = m_impl->getPropertyCSSValue(p);
       if (v && v->cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
          //### FIXME: should this not set exception when type is wrong, or convert?
-        return getImmediateValueSlot(this, 
+        return getImmediateValueSlot(this,
                   jsNumber(static_cast<CSSPrimitiveValueImpl*>(v)->floatValue(DOM::CSSPrimitiveValue::CSS_PX)), slot);
     }
 
     DOM::DOMString str = m_impl->getPropertyValue(p);
-    
+
     // We want to return at least an empty string here --- see #152791
     return getImmediateValueSlot(this, jsString(str), slot);
   }
 
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
+}
+
+void DOMCSSStyleDeclaration::getOwnPropertyNames(ExecState* exec, PropertyNameArray& arr)
+{
+    DOMObject::getOwnPropertyNames(exec, arr);
+
+    // Add in all properties we support.
+    for (int p = 1; p < CSS_PROP_TOTAL; ++p) {
+        QString dashName = getPropertyName(p).string();
+        QString camelName;
+
+        bool capitalize = false;
+        for (int c = 0; c < dashName.length(); ++c) {
+            if (dashName[c] == QLatin1Char('-')) {
+                capitalize = true;
+            } else {
+                camelName += capitalize ? dashName[c].toUpper() : dashName[c];
+                capitalize = false;
+            }
+        } // char
+
+        arr.add(KJS::Identifier(camelName));
+    } // prop
 }
 
 
@@ -595,7 +619,7 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
 */
 KJS_DEFINE_PROTOTYPE(DOMCSSStyleSheetProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCSSStyleSheetProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc, DOMStyleSheetProto) 
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc, DOMStyleSheetProto)
 
 DOMCSSStyleSheet::DOMCSSStyleSheet(ExecState *exec, DOM::CSSStyleSheetImpl* ss): DOMStyleSheet(exec, ss)
 {
