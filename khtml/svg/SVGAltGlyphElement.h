@@ -36,15 +36,15 @@ namespace WebCore
     public:
         SVGAltGlyphElement(const QualifiedName&, Document*);
         virtual ~SVGAltGlyphElement();
-                
+
         virtual RenderObject* createRenderer(RenderArena*, RenderStyle*);
         bool childShouldCreateRenderer(Node*) const;
 
-        const AtomicString& glyphRef() const;
-        void setGlyphRef(const AtomicString&, ExceptionCode&);
-        const AtomicString& format() const;
-        void setFormat(const AtomicString&, ExceptionCode&);
-    
+        DOMString glyphRef() const;
+        void setGlyphRef(const DOMString&, ExceptionCode&);
+        DOMString format() const;
+        void setFormat(const DOMString&, ExceptionCode&);
+
         SVGGlyphElement* glyphElement() const;
 
         // KHTML ElementImpl pure virtual method

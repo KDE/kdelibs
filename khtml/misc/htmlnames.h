@@ -43,6 +43,7 @@ const quint32 anyQName = makeId(anyNamespace, anyLocalName);
 #define ID_AUDIO 7
 #define ID_B 8
 #define ID_BASE 9
+#define ATTR_XML_BASE ((DOM::xmlNamespace << 16) | 9)
 #define ID_BASEFONT 10
 #define ID_BDO 11
 #define ID_BIG 12
@@ -199,6 +200,7 @@ const quint32 anyQName = makeId(anyNamespace, anyLocalName);
 #define ATTR_HSPACE ((DOM::emptyNamespace << 16) | 151)
 #define ATTR_HTTP_EQUIV ((DOM::emptyNamespace << 16) | 152)
 #define ATTR_ISMAP ((DOM::emptyNamespace << 16) | 153)
+#define ATTR_XML_LANG ((DOM::xmlNamespace << 16) | 154)
 #define ATTR_LANG ((DOM::emptyNamespace << 16) | 154)
 #define ATTR_LANGUAGE ((DOM::emptyNamespace << 16) | 155)
 #define ATTR_LEFT ((DOM::emptyNamespace << 16) | 156)
@@ -615,6 +617,7 @@ const quint32 anyQName = makeId(anyNamespace, anyLocalName);
 #define ATTR_XLINK_ARCROLE ((DOM::xlinkNamespace << 16) | 554)
 #define ATTR_XLINK_ROLE ((DOM::xlinkNamespace << 16) | 555)
 #define ATTR_XLINK_SHOW ((DOM::xlinkNamespace << 16) | 556)
+#define ATTR_XML_SPACE ((DOM::xmlNamespace << 16) | 557)
 #define ID_LAST_TAG 110
 #define ID_CLOSE_TAG 16384
 #define ATTR_LAST_ATTR 257

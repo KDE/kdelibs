@@ -83,6 +83,9 @@ parseAttrs("../svg/svgattrs.in", "svg", False)
 # parse XLink attrs
 parseAttrs("../svg/xlinkattrs.in", "xlink", False)
 
+# and XML attrs
+parseAttrs("xmlattrs.in", "xml", False)
+
 # sort the list
 def func(a, b):
     return cmp(a[0], b[0]) or -cmp(a[2], b[2])

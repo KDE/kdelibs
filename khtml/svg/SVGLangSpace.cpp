@@ -27,7 +27,6 @@
 #include "SVGLangSpace.h"
 
 #include "SVGElement.h"
-//#include "XMLNames.h"
 
 namespace WebCore {
 
@@ -51,14 +50,12 @@ void SVGLangSpace::setXmllang(const AtomicString& xmlLang)
 
 const AtomicString& SVGLangSpace::xmlspace() const
 {
-    /*if (!m_space) {
+    if (m_space.isNull()) {
         static const AtomicString defaultString("default");
         return defaultString;
     }
 
-    return m_space;*/
-	ASSERT(false);
-	return "";
+    return m_space;
 }
 
 void SVGLangSpace::setXmlspace(const AtomicString& xmlSpace)
@@ -68,22 +65,21 @@ void SVGLangSpace::setXmlspace(const AtomicString& xmlSpace)
 
 bool SVGLangSpace::parseMappedAttribute(MappedAttribute* attr)
 {
-    /*if (attr->name().matches(XMLNames::langAttr)) {
+    if (attr->id() == ATTR_XML_LANG) {
         setXmllang(attr->value());
         return true;
-    } else if (attr->name().matches(XMLNames::spaceAttr)) {
+    } else if (attr->id() == ATTR_XML_SPACE) {
         setXmlspace(attr->value());
         return true;
-    }*/
+    }
 
     return false;
 }
 
 bool SVGLangSpace::isKnownAttribute(const QualifiedName& attrName)
 {
-    /*return (attrName.matches(XMLNames::langAttr) ||
-            attrName.matches(XMLNames::spaceAttr));*/
-    return false;
+    return attrName.id() == ATTR_XML_LANG ||
+           attrName.id() == ATTR_XML_SPACE;
 }
 
 }

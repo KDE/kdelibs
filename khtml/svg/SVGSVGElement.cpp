@@ -93,34 +93,26 @@ ANIMATED_PROPERTY_DEFINITIONS(SVGSVGElement, SVGLength, Length, length, Y, y, SV
 ANIMATED_PROPERTY_DEFINITIONS(SVGSVGElement, SVGLength, Length, length, Width, width, SVGNames::widthAttr, m_width)
 ANIMATED_PROPERTY_DEFINITIONS(SVGSVGElement, SVGLength, Length, length, Height, height, SVGNames::heightAttr, m_height)
 
-static AtomicString *bogus_atomic_string = 0;
-
-const AtomicString& SVGSVGElement::contentScriptType() const
+DOMString SVGSVGElement::contentScriptType() const
 {
-    /*static const AtomicString defaultValue("text/ecmascript");
-    const AtomicString& n = getAttribute(contentScriptTypeAttr);
-    return n.isNull() ? defaultValue : n;*/
-	ASSERT(false);
-	if (!bogus_atomic_string) bogus_atomic_string = new AtomicString();
-	return *bogus_atomic_string;
+    static const DOMString defaultValue("text/ecmascript");
+    DOMString n = getAttribute(contentScriptTypeAttr);
+    return n.isNull() ? defaultValue : n;
 }
 
-void SVGSVGElement::setContentScriptType(const AtomicString& type)
+void SVGSVGElement::setContentScriptType(const DOMString& type)
 {
     setAttribute(SVGNames::contentScriptTypeAttr, type);
 }
 
-const AtomicString& SVGSVGElement::contentStyleType() const
+DOMString SVGSVGElement::contentStyleType() const
 {
-    /*static const AtomicString defaultValue("text/css");
-    const AtomicString& n = getAttribute(contentStyleTypeAttr);
-    return n.isNull() ? defaultValue : n;*/
-	ASSERT(false);
-	if (!bogus_atomic_string) bogus_atomic_string = new AtomicString();
-	return *bogus_atomic_string;
+    static const DOMString defaultValue("text/css");
+    const DOMString n = getAttribute(contentStyleTypeAttr);
+    return n.isNull() ? defaultValue : n;
 }
 
-void SVGSVGElement::setContentStyleType(const AtomicString& type)
+void SVGSVGElement::setContentStyleType(const DOMString& type)
 {
     setAttribute(SVGNames::contentStyleTypeAttr, type);
 }
@@ -433,7 +425,7 @@ AffineTransform SVGSVGElement::getScreenCTM() const
     /*document()->updateLayoutIgnorePendingStylesheets();
     float rootX = 0.0f;
     float rootY = 0.0f;
-    
+
     if (RenderObject* renderer = this->renderer()) {
         renderer = renderer->parent();
         if (isOutermostSVG()) {
@@ -448,7 +440,7 @@ AffineTransform SVGSVGElement::getScreenCTM() const
             rootY += y().value();
         }
     }
-    
+
     AffineTransform mat = SVGStyledLocatableElement::getScreenCTM();
     mat.translate(rootX, rootY);
 
@@ -566,7 +558,7 @@ AffineTransform SVGSVGElement::viewBoxToViewTransform(float viewWidth, float vie
         currentView()->setZoomAndPan(viewElement->zoomAndPan());
     renderer()->setNeedsLayout(true);
 }*/
-    
+
 void SVGSVGElement::willSaveToCache()
 {
     //pauseAnimations();

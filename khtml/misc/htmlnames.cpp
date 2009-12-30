@@ -177,7 +177,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_HSPACE), "hspace");
     s_idTable->addStaticMapping(localNamePart(ATTR_HTTP_EQUIV), "http-equiv");
     s_idTable->addStaticMapping(localNamePart(ATTR_ISMAP), "ismap");
-    s_idTable->addStaticMapping(localNamePart(ATTR_LANG), "lang");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XML_LANG), "lang");
     s_idTable->addStaticMapping(localNamePart(ATTR_LANGUAGE), "language");
     s_idTable->addStaticMapping(localNamePart(ATTR_LEFT), "left");
     s_idTable->addStaticMapping(localNamePart(ATTR_LEFTMARGIN), "leftmargin");
@@ -580,6 +580,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_ARCROLE), "arcrole");
     s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_ROLE), "role");
     s_idTable->addStaticMapping(localNamePart(ATTR_XLINK_SHOW), "show");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XML_SPACE), "space");
     return s_idTable;
 }
 

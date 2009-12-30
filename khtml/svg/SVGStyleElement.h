@@ -43,19 +43,19 @@ namespace WebCore {
         virtual void finishParsingChildren();
 
         // 'SVGStyleElement' functions
-        const AtomicString& xmlspace() const;
-        void setXmlspace(const AtomicString&, ExceptionCode&);
+        DOMString xmlspace() const;
+        void setXmlspace(const DOMString&, ExceptionCode&);
 
         virtual bool sheetLoaded();
 
-        virtual const AtomicString& type() const;
-        void setType(const AtomicString&, ExceptionCode&);
+        virtual const DOMString type() const;
+        void setType(const DOMString&, ExceptionCode&);
 
-        virtual const AtomicString& media() const;
-        void setMedia(const AtomicString&, ExceptionCode&);
+        virtual const DOMString media() const;
+        void setMedia(const DOMString&, ExceptionCode&);
 
         virtual String title() const;
-        void setTitle(const AtomicString&, ExceptionCode&);
+        void setTitle(const DOMString&, ExceptionCode&);
 
         StyleSheet* sheet();
 

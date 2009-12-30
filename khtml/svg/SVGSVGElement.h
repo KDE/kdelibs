@@ -55,15 +55,15 @@ namespace WebCore
         virtual ~SVGSVGElement();
 
         virtual bool isSVG() const { return true; }
-        
+
         virtual bool isValid() const { return SVGTests::isValid(); }
 
         // 'SVGSVGElement' functions
-        const AtomicString& contentScriptType() const;
-        void setContentScriptType(const AtomicString& type);
+        DOMString contentScriptType() const;
+        void setContentScriptType(const DOMString& type);
 
-        const AtomicString& contentStyleType() const;
-        void setContentStyleType(const AtomicString& type);
+        DOMString contentStyleType() const;
+        void setContentStyleType(const DOMString& type);
 
         FloatRect viewport() const;
 
@@ -87,9 +87,9 @@ namespace WebCore
 
         FloatPoint currentTranslate() const;
         void setCurrentTranslate(const FloatPoint&);
-        
+
         /*SMILTimeContainer* timeContainer() const { return m_timeContainer.get(); }*/
-        
+
         void pauseAnimations();
         void unpauseAnimations();
         bool animationsPaused() const;
@@ -144,7 +144,7 @@ namespace WebCore
         /*friend class RenderSVGViewportContainer;*/
 
         virtual bool hasRelativeValues() const;
-        
+
         bool isOutermostSVG() const;
 
     private:
@@ -158,7 +158,7 @@ namespace WebCore
         ANIMATED_PROPERTY_DECLARATIONS(SVGSVGElement, SVGLength, SVGLength, Y, y)
         ANIMATED_PROPERTY_DECLARATIONS(SVGSVGElement, SVGLength, SVGLength, Width, width)
         ANIMATED_PROPERTY_DECLARATIONS(SVGSVGElement, SVGLength, SVGLength, Height, height)
-        
+
         virtual void willSaveToCache();
         virtual void willRestoreFromCache();
 

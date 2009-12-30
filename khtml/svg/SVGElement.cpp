@@ -41,7 +41,6 @@
 #include "SVGSVGElement.h"
 /*#include "SVGURIReference.h"
 #include "SVGUseElement.h"
-#include "XMLNames.h"
 #include "RegisteredEventListener.h"*/
 
 namespace WebCore {
@@ -86,14 +85,12 @@ void SVGElement::setId(const String& value, ExceptionCode&)
 
 String SVGElement::xmlbase() const
 {
-    //return getAttribute(XMLNames::baseAttr);
-	ASSERT(false);
-	return "";
+    return getAttribute(ATTR_XML_BASE);
 }
 
 void SVGElement::setXmlbase(const String& value, ExceptionCode&)
 {
-    //setAttribute(XMLNames::baseAttr, value);
+    setAttribute(ATTR_XML_BASE, value);
 }
 
 SVGSVGElement* SVGElement::ownerSVGElement() const

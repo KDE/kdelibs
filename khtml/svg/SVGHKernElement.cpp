@@ -31,7 +31,7 @@
 #include "SVGNames.h"
 #include "SVGParserUtilities.h"
 //FIXME khtml #include "SimpleFontData.h"
-//FIXME khtml #include "XMLNames.h"
+
 
 namespace WebCore {
 

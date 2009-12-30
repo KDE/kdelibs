@@ -24,6 +24,8 @@
 #if ENABLE(SVG)
 #include "SVGTextContentElement.h"
 
+#include "cssvalues.h"
+
 /*#include "CSSPropertyNames.h"
 #include "CSSValueKeywords.h"*/
 #include "ExceptionCode.h"
@@ -38,7 +40,6 @@
 #include "SVGLength.h"
 #include "SVGInlineTextBox.h"
 #include "SVGNames.h"
-//#include "XMLNames.h"
 
 namespace WebCore {
 
@@ -121,7 +122,7 @@ struct SVGInlineTextBoxQueryWalker {
         , m_queryFloatResult(0.0f)
         , m_queryPointResult()
         , m_queryRectResult()
-        , m_stopProcessing(true)    
+        , m_stopProcessing(true)
         , m_atCharacter(0)
     {
     }
@@ -134,7 +135,7 @@ struct SVGInlineTextBoxQueryWalker {
 
         switch (m_mode) {
         case NumberOfCharacters:
-        {    
+        {
             m_queryLongResult += (end - start);
             m_stopProcessing = false;
             return;
@@ -294,7 +295,7 @@ private:
 };
 
 static Vector<SVGInlineTextBox*> findInlineTextBoxInTextChunks(const SVGTextContentElement* element, const Vector<SVGTextChunk>& chunks)
-{   
+{
     Vector<SVGTextChunk>::const_iterator it = chunks.begin();
     const Vector<SVGTextChunk>::const_iterator end = chunks.end();
 
@@ -321,7 +322,7 @@ static Vector<SVGInlineTextBox*> findInlineTextBoxInTextChunks(const SVGTextCont
 static inline SVGRootInlineBox* rootInlineBoxForTextContentElement(const SVGTextContentElement* element)
 {
     RenderObject* object = element->renderer();
-    
+
     if (!object || !object->isSVGText() || object->isText())
         return 0;
 
@@ -491,14 +492,14 @@ void SVGTextContentElement::parseMappedAttribute(MappedAttribute* attr)
         if (SVGTests::parseMappedAttribute(attr))
             return;
         if (SVGLangSpace::parseMappedAttribute(attr)) {
-            /*if (attr->name().matches(XMLNames::spaceAttr)) {
-                static const AtomicString preserveString("preserve");
+            if (attr->id() == ATTR_XML_SPACE) {
+                static const DOMString preserveString("preserve");
 
                 if (attr->value() == preserveString)
-                    addCSSProperty(attr, CSSPropertyWhiteSpace, CSSValuePre);
+                    addCSSProperty(attr, CSS_PROP_WHITE_SPACE, CSS_VAL_PRE);
                 else
-                    addCSSProperty(attr, CSSPropertyWhiteSpace, CSSValueNowrap);
-            }*/
+                    addCSSProperty(attr, CSS_PROP_WHITE_SPACE, CSS_VAL_NOWRAP);
+            }
             return;
         }
         if (SVGExternalResourcesRequired::parseMappedAttribute(attr))

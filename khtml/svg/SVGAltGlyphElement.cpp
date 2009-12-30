@@ -32,6 +32,8 @@
 #include "SVGNames.h"
 #include "XLinkNames.h"
 
+#include "dom/dom_exception.h"
+
 namespace WebCore {
 
 SVGAltGlyphElement::SVGAltGlyphElement(const QualifiedName& tagName, Document* doc)
@@ -43,22 +45,22 @@ SVGAltGlyphElement::~SVGAltGlyphElement()
 {
 }
 
-void SVGAltGlyphElement::setGlyphRef(const AtomicString& type, ExceptionCode& ec)
+void SVGAltGlyphElement::setGlyphRef(const DOMString& type, ExceptionCode& ec)
 {
-    //FIXME khtml ec = NO_MODIFICATION_ALLOWED_ERR;
+    ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 
-const AtomicString& SVGAltGlyphElement::glyphRef() const
+DOMString SVGAltGlyphElement::glyphRef() const
 {
     return getAttribute(SVGNames::glyphRefAttr);
 }
 
-void SVGAltGlyphElement::setFormat(const AtomicString& type, ExceptionCode& ec)
+void SVGAltGlyphElement::setFormat(const DOMString& type, ExceptionCode& ec)
 {
-    //FIXME khtml ec = NO_MODIFICATION_ALLOWED_ERR;
+    ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 
-const AtomicString& SVGAltGlyphElement::format() const
+DOMString SVGAltGlyphElement::format() const
 {
     return getAttribute(SVGNames::formatAttr);
 }

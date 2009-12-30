@@ -42,46 +42,47 @@ SVGStyleElement::SVGStyleElement(const QualifiedName& tagName, Document* doc)
 {
 }
 
-const AtomicString& SVGStyleElement::xmlspace() const
+DOMString SVGStyleElement::xmlspace() const
 {
-    return "";//return getAttribute(XMLNames::spaceAttr);
+    // ### shouldn't this provide default?
+    return getAttribute(ATTR_XML_SPACE);
 }
 
-void SVGStyleElement::setXmlspace(const AtomicString&, ExceptionCode& ec)
-{
-    ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-}
-
-const AtomicString& SVGStyleElement::type() const
-{
-    static const AtomicString defaultValue("text/css");
-    const AtomicString& n = getAttribute(ATTR_TYPE/*typeAttr*/);
-    return n.isNull() ? defaultValue : n;
-}
-
-void SVGStyleElement::setType(const AtomicString&, ExceptionCode& ec)
+void SVGStyleElement::setXmlspace(const DOMString&, ExceptionCode& ec)
 {
     ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 
-const AtomicString& SVGStyleElement::media() const
+const DOMString SVGStyleElement::type() const
 {
-    static const AtomicString defaultValue("all");
-    const AtomicString& n = getAttribute(ATTR_MEDIA/*mediaAttr*/);
+    static const DOMString defaultValue("text/css");
+    DOMString n = getAttribute(ATTR_TYPE);
     return n.isNull() ? defaultValue : n;
 }
 
-void SVGStyleElement::setMedia(const AtomicString&, ExceptionCode& ec)
+void SVGStyleElement::setType(const DOMString&, ExceptionCode& ec)
+{
+    ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+}
+
+const DOMString SVGStyleElement::media() const
+{
+    static const DOMString defaultValue("all");
+    DOMString n = getAttribute(ATTR_MEDIA);
+    return n.isNull() ? defaultValue : n;
+}
+
+void SVGStyleElement::setMedia(const DOMString&, ExceptionCode& ec)
 {
     ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 
 String SVGStyleElement::title() const
 {
-    return getAttribute(ATTR_TITLE/*titleAttr*/);
+    return getAttribute(ATTR_TITLE);
 }
 
-void SVGStyleElement::setTitle(const AtomicString&, ExceptionCode& ec)
+void SVGStyleElement::setTitle(const DOMString&, ExceptionCode& ec)
 {
     ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
