@@ -60,7 +60,8 @@ public:
   void sourceLayoutChanged();
   void sourceDataChanged(const QModelIndex &topLeft ,const QModelIndex &bottomRight);
 
-  void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected );
+  void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+  void sourceModelDestroyed();
 
   QModelIndexList toNonPersistent(const QList<QPersistentModelIndex> &list) const;
 
@@ -284,6 +285,15 @@ void KSelectionProxyModelPrivate::resetInternalData()
   m_proxyChain.clear();
   m_layoutChangePersistentIndexes.clear();
   m_pendingMoves.clear();
+}
+
+void KSelectionProxyModelPrivate::sourceModelDestroyed()
+{
+  Q_Q(KSelectionProxyModel);
+  // There is very little we can do here.
+  resetInternalData();
+  m_resetting = false;
+  q->endResetModel();
 }
 
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
@@ -1319,6 +1329,8 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           this, SLOT(sourceLayoutAboutToBeChanged()));
   disconnect(sourceModel, SIGNAL(layoutChanged()),
           this, SLOT(sourceLayoutChanged()));
+  disconnect(_sourceModel, SIGNAL(destroyed()),
+          this, SLOT(sourceModelDestroyed()));
 
   QAbstractProxyModel::setSourceModel(sourceModel);
   d->createProxyChain();
@@ -1346,6 +1358,8 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
           SLOT(sourceLayoutAboutToBeChanged()));
   connect(sourceModel, SIGNAL(layoutChanged()),
           SLOT(sourceLayoutChanged()));
+  connect(_sourceModel, SIGNAL(destroyed()),
+          SLOT(sourceModelDestroyed()));
 
   d->m_resetting = false;
   endResetModel();
