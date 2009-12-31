@@ -324,6 +324,7 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("лијен", "лењ");
     SR_DICTI2E_ENTRY("мија", "меја");
     SR_DICTI2E_ENTRY("мије", "мејe");
+    SR_DICTI2E_ENTRY("мију", "меју");
     SR_DICTI2E_ENTRY("није", "ни");
     SR_DICTI2E_ENTRY("бијел", "бео");
     SR_DICTI2E_ENTRY("цијел", "цео");
