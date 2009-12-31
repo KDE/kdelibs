@@ -64,6 +64,8 @@ public:
 
   QModelIndexList toNonPersistent(const QList<QPersistentModelIndex> &list) const;
 
+  void resetInternalData();
+
   /**
     Return true if @p idx is a descendant of one of the indexes in @p list.
     Note that this returns false if @p list contains @p idx.
@@ -276,6 +278,14 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
   emit q->layoutChanged();
 }
 
+void KSelectionProxyModelPrivate::resetInternalData()
+{
+  m_rootIndexList.clear();
+  m_proxyChain.clear();
+  m_layoutChangePersistentIndexes.clear();
+  m_pendingMoves.clear();
+}
+
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
   Q_Q(KSelectionProxyModel);
@@ -299,15 +309,8 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
+  resetInternalData();
   m_resetting = false;
-
-  QList<QPersistentModelIndex>::iterator it = m_rootIndexList.begin();
-  const QList<QPersistentModelIndex>::iterator end = m_rootIndexList.end();
-
-  while (it != end)
-  {
-    it = m_rootIndexList.erase(it);
-  }
   q->endResetModel();
 }
 
