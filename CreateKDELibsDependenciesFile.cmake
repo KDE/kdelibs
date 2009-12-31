@@ -110,3 +110,8 @@ endif (NOT QT_INSTALL_DIR)
 #        file (APPEND ${CMAKE_BINARY_DIR}/KDELibsDependencies.cmake "${__deps}")
 endif(WIN32)
 
+# This variable defines whether KPty::login/logout have been built with
+# utempter support so that they don't require special user permissions
+# in order to work properly. Used by kwrited.
+macro_bool_to_01(HAVE_UTEMPTER KDE4_KPTY_BUILT_WITH_UTEMPTER)
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake" "set(KDE4_KPTY_BUILT_WITH_UTEMPTER ${KDE4_KPTY_BUILT_WITH_UTEMPTER})")
