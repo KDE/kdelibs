@@ -220,7 +220,7 @@ void KSslInfoDialog::displayFromChain(int i)
     }
     d->ui.trusted->setText(trusted);
 
-    QString vp = i18nc("%1 is the effective data of the certificate, %2 is the expiry date", "%1 to %2");
+    QString vp = i18nc("%1 is the effective date of the certificate, %2 is the expiry date", "%1 to %2");
     vp = vp.arg(KGlobal::locale()->formatDateTime(cert.effectiveDate()));
     vp = vp.arg(KGlobal::locale()->formatDateTime(cert.expiryDate()));
     d->ui.validityPeriod->setText(vp);
