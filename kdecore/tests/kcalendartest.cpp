@@ -986,16 +986,16 @@ void KCalendarTest::testJalaliBasic()
     QCOMPARE( calendar->calendarType(), QString("jalali") );
     QCOMPARE( KCalendarSystem::calendarLabel( QString("jalali") ), QString("Jalali") );
 
+    //Birashk argorithm only good between AP 1244-01-01 to 1530-12-29 (AD 1865 to 2152)
     QCOMPARE( calendar->epoch(), QDate( 622, 3, 19 ) );
-    QCOMPARE( calendar->earliestValidDate(), QDate( 622, 3, 19 ) );
-    QCOMPARE( calendar->latestValidDate(), QDate( 10621, 3, 17 ) );
-
-    testValid( calendar, 10000, 13, 32, QDate( 1, 1, 1 ) );
+    QCOMPARE( calendar->earliestValidDate(), QDate( 1865, 03, 21 ) );
+    QCOMPARE( calendar->latestValidDate(), QDate( 2152, 03, 19 ) );
+    QCOMPARE( calendar->isValid( 1243, 12, 29 ), false );
+    QCOMPARE( calendar->isValid( 1531, 1, 1 ), false );
 
     QCOMPARE( calendar->isLeapYear( 1386 ), false );
     QCOMPARE( calendar->isLeapYear( 1387 ), true );
     QCOMPARE( calendar->isLeapYear( QDate( 2008, 1, 1 ) ), false );
-    QEXPECT_FAIL("", "Not working right, 2009-01-01 should be 1387, verify", Continue);
     QCOMPARE( calendar->isLeapYear( QDate( 2009, 1, 1 ) ), true );
 
     QCOMPARE( calendar->daysInWeek( QDate( 2007, 1, 1 ) ), 7 );
@@ -1020,6 +1020,15 @@ void KCalendarTest::testJalaliBasic()
     QCOMPARE( calendar->isLunar(), false );
     QCOMPARE( calendar->isLunisolar(), false );
     QCOMPARE( calendar->isSolar(), true );
+
+    testRoundTrip( calendar );
+/*
+    //Special cases using Birashk argorithm
+    QCOMPARE( calendar->isLeapYear( 1403 ), true );
+    QCOMPARE( calendar->isLeapYear( 1404 ), false );
+    QCOMPARE( calendar->isLeapYear( 1436 ), true );
+    QCOMPARE( calendar->isLeapYear( 1437 ), false );
+*/
 }
 
 void KCalendarTest::testJalaliYmd()
@@ -1494,22 +1503,27 @@ void KCalendarTest::testQDateIsLeapYear()
     QCOMPARE( calendar->isLeapYear( testDate ), testDate.isLeapYear( -2004 ) );
 }
 
-
-// Temporary tests to compare existing code to replacement code
-
-
-void KCalendarTest::testJalaliCompare()
+void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar )
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create(QString( "jalali" ));
+    int testYear, testMonth, testDay;
+    QDate testDate;
+    QDate loopDate = calendar->earliestValidDate();
+    while ( loopDate <= calendar->latestValidDate() ) {
+        testYear = calendar->year( loopDate );
+        testMonth = calendar->month( loopDate );
+        testDay = calendar->day( loopDate );
+        calendar->setDate( testDate, testYear, testMonth, testDay );
+//kDebug() << loopDate.toJulianDay() << " = " << testYear << "-" << testMonth << "-" << testDay << " = " << testDate.toJulianDay();
+        if ( testYear == 0 && testMonth == 0 && testDay == 0 ) {
+kDebug() << "JD to Date failed, JD = " << loopDate.toJulianDay();
+            QEXPECT_FAIL("", "JD to Date failed, JD = " + loopDate.toJulianDay(), Continue);
+        }
+        if ( testDate.toJulianDay() == 0 ) {
+kDebug() << "Date to JD failed, Date = " << testYear << '-' << testMonth << '-' << testDay;
+            QEXPECT_FAIL("", "Date to JD failed, Date = " + testYear + '-' + testMonth + '-' + testDay, Continue);
+        }
+        QCOMPARE( loopDate.toJulianDay(), testDate.toJulianDay() );
+        loopDate = loopDate.addDays(1);
+    }
 
-    testCompare( calendar, 2000, 1, 1 );
-}
-
-void KCalendarTest::testCompare( const KCalendarSystem *calendar, int year, int month, int day )
-{
-    QDate dateOld, dateNew;
-    calendar->setYMD( dateOld, year, month, day );
-    calendar->setDate( dateNew, year, month, day );
-    QCOMPARE( dateOld, dateNew );
-    QCOMPARE( calendar->daysInYear( dateNew ), dateNew.daysInYear() );
 }

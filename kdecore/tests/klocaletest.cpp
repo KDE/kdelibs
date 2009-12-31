@@ -20,6 +20,7 @@
 #include "klocaletest.h"
 #include "qtest_kde.h"
 
+#include "kdebug.h"
 #include "klocale.h"
 #include "kglobal.h"
 #include "kcalendarsystem.h"
@@ -42,6 +43,7 @@ KLocaleTest::formatNumbers()
 {
 	KLocale locale(*KGlobal::locale());
 
+    KGlobal::locale()->setDecimalPlaces(2);
 	QCOMPARE(locale.formatNumber(70), QString("70.00"));
 	QCOMPARE(locale.formatNumber(70, 0), QString("70"));
 	QCOMPARE(locale.formatNumber(70.2), QString("70.20"));
@@ -56,6 +58,7 @@ KLocaleTest::formatNumberStrings()
 {
 	KLocale locale(*KGlobal::locale());
 
+    KGlobal::locale()->setDecimalPlaces(2);
 	QCOMPARE(locale.formatNumber("70"), QString("70.00"));
 	QCOMPARE(locale.formatNumber("70", true, 2), QString("70.00"));
 	QCOMPARE(locale.formatNumber("70", true, 0), QString("70"));
@@ -151,7 +154,6 @@ KLocaleTest::readDate()
 	QString full("dddd dd MMMM yyyy");
 	bool ok=false;
 	QDate date;
-
 	date.setYMD( 2002, 5, 3 );
 	QCOMPARE(locale.readDate(date.toString(small)), date);
 	QCOMPARE(locale.readDate(date.toString(full)), date);

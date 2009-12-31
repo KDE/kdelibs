@@ -23,13 +23,12 @@ protected:
                         QString shortName, QString longName,
                         QString shortNamePossessive, QString longNamePossessive );
     void testGregorianCompareQDate( const KCalendarSystem *calendar, int year, int month, int day );
-    void testJalaliCompare();
-    void testCompare( const KCalendarSystem *calendar, int year, int month, int day );
     void testQDateYMD( const KCalendarSystem *calendar, int y, int m, int d );
 
     void testStrings( KLocale::DigitSet testDigitSet );
     QDate setDayOfYearDate( const KCalendarSystem * calendar, int year, int dayOfYear );
     QDate setIsoWeekDate( const KCalendarSystem * calendar, int year, int isoWeek, int dayOfWeek );
+    void testRoundTrip( const KCalendarSystem *calendar );
 
 private Q_SLOTS:
     void testTypes();
