@@ -1300,66 +1300,77 @@ KSelectionProxyModel::FilterBehavior KSelectionProxyModel::filterBehavior() cons
   return d->m_filterBehavior;
 }
 
-void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
+void KSelectionProxyModel::setSourceModel( QAbstractItemModel *_sourceModel )
 {
   Q_D(KSelectionProxyModel);
+  if (_sourceModel == sourceModel())
+    return;
 
   beginResetModel();
   d->m_resetting = true;
 
-  disconnect(sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
-          this, SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
-  disconnect(sourceModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-          this, SLOT(sourceRowsInserted(const QModelIndex &, int, int)));
-  disconnect(sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
-          this, SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
-  disconnect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
-          this, SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
-  disconnect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-         this, SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-  disconnect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-          this, SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-  disconnect(sourceModel, SIGNAL(modelAboutToBeReset()),
-          this, SLOT(sourceModelAboutToBeReset()));
-  disconnect(sourceModel, SIGNAL(modelReset()),
-          this, SLOT(sourceModelReset()));
-  disconnect(sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-          this, SLOT(sourceDataChanged(const QModelIndex &, const QModelIndex & )));
-  disconnect(sourceModel, SIGNAL(layoutAboutToBeChanged()),
-          this, SLOT(sourceLayoutAboutToBeChanged()));
-  disconnect(sourceModel, SIGNAL(layoutChanged()),
-          this, SLOT(sourceLayoutChanged()));
-  disconnect(_sourceModel, SIGNAL(destroyed()),
-          this, SLOT(sourceModelDestroyed()));
+  if (_sourceModel)
+  {
+    disconnect(_sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
+            this, SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
+    disconnect(_sourceModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+            this, SLOT(sourceRowsInserted(const QModelIndex &, int, int)));
+    disconnect(_sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
+            this, SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    disconnect(_sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+            this, SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
+    disconnect(_sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+            this, SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+    disconnect(_sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+            this, SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+    disconnect(_sourceModel, SIGNAL(modelAboutToBeReset()),
+            this, SLOT(sourceModelAboutToBeReset()));
+    disconnect(_sourceModel, SIGNAL(modelReset()),
+            this, SLOT(sourceModelReset()));
+    disconnect(_sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(sourceDataChanged(const QModelIndex &, const QModelIndex & )));
+    disconnect(_sourceModel, SIGNAL(layoutAboutToBeChanged()),
+            this, SLOT(sourceLayoutAboutToBeChanged()));
+    disconnect(_sourceModel, SIGNAL(layoutChanged()),
+            this, SLOT(sourceLayoutChanged()));
+    disconnect(_sourceModel, SIGNAL(destroyed()),
+            this, SLOT(sourceModelDestroyed()));
+  }
 
-  QAbstractProxyModel::setSourceModel(sourceModel);
-  d->createProxyChain();
-  d->selectionChanged(d->m_selectionModel->selection(), QItemSelection());
+  // Must be called before QAbstractProxyModel::setSourceModel because it emits some signals.
+  d->resetInternalData();
+  QAbstractProxyModel::setSourceModel(_sourceModel);
+  if (_sourceModel)
+  {
+    d->createProxyChain();
+    if (d->m_selectionModel->hasSelection())
+      d->selectionChanged(d->m_selectionModel->selection(), QItemSelection());
 
-  connect(sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
-          SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
-  connect(sourceModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-          SLOT(sourceRowsInserted(const QModelIndex &, int, int)));
-  connect(sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
-          SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
-  connect(sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
-          SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
-  connect(sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-          SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-  connect(sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-          SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-  connect(sourceModel, SIGNAL(modelAboutToBeReset()),
-          SLOT(sourceModelAboutToBeReset()));
-  connect(sourceModel, SIGNAL(modelReset()),
-          SLOT(sourceModelReset()));
-  connect(sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-          SLOT(sourceDataChanged(const QModelIndex &, const QModelIndex & )));
-  connect(sourceModel, SIGNAL(layoutAboutToBeChanged()),
-          SLOT(sourceLayoutAboutToBeChanged()));
-  connect(sourceModel, SIGNAL(layoutChanged()),
-          SLOT(sourceLayoutChanged()));
-  connect(_sourceModel, SIGNAL(destroyed()),
-          SLOT(sourceModelDestroyed()));
+    connect(_sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
+            SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
+    connect(_sourceModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+            SLOT(sourceRowsInserted(const QModelIndex &, int, int)));
+    connect(_sourceModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
+            SLOT(sourceRowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    connect(_sourceModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+            SLOT(sourceRowsRemoved(const QModelIndex &, int, int)));
+    connect(_sourceModel, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+            SLOT(sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+    connect(_sourceModel, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+            SLOT(sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+    connect(_sourceModel, SIGNAL(modelAboutToBeReset()),
+            SLOT(sourceModelAboutToBeReset()));
+    connect(_sourceModel, SIGNAL(modelReset()),
+            SLOT(sourceModelReset()));
+    connect(_sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+            SLOT(sourceDataChanged(const QModelIndex &, const QModelIndex & )));
+    connect(_sourceModel, SIGNAL(layoutAboutToBeChanged()),
+            SLOT(sourceLayoutAboutToBeChanged()));
+    connect(_sourceModel, SIGNAL(layoutChanged()),
+            SLOT(sourceLayoutChanged()));
+    connect(_sourceModel, SIGNAL(destroyed()),
+            SLOT(sourceModelDestroyed()));
+  }
 
   d->m_resetting = false;
   endResetModel();
