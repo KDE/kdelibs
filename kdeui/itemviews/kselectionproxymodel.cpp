@@ -1124,15 +1124,22 @@ void KSelectionProxyModelPrivate::createProxyChain()
   const QAbstractItemModel *model = m_selectionModel->model();
   const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(model);
 
+  const QAbstractProxyModel *nextProxyModel;
+
+  if (!proxyModel)
+  {
+    Q_ASSERT(model == q->sourceModel());
+    return;
+  }
+
   while (proxyModel)
   {
-
     if (proxyModel == q->sourceModel())
       break;
 
     m_proxyChain << proxyModel;
 
-    const QAbstractProxyModel *nextProxyModel = qobject_cast<const QAbstractProxyModel*>(proxyModel->sourceModel());
+    nextProxyModel = qobject_cast<const QAbstractProxyModel*>(proxyModel->sourceModel());
 
     if (!nextProxyModel)
     {
@@ -1174,8 +1181,11 @@ QModelIndex KSelectionProxyModelPrivate::selectionIndexToSourceIndex(const QMode
   while (i.hasNext())
   {
     const QAbstractProxyModel *proxy = i.next();
+    Q_ASSERT(seekIndex.model() == proxy);
     seekIndex = proxy->mapToSource(seekIndex);
   }
+
+  Q_ASSERT(seekIndex.model() == q_func()->sourceModel());
   return seekIndex;
 }
 
