@@ -241,6 +241,9 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
   Q_Q(KSelectionProxyModel);
 
+  if (!m_selectionModel->hasSelection())
+    return;
+
   emit q->layoutAboutToBeChanged();
   QPersistentModelIndex srcPersistentIndex;
   foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList())
@@ -257,6 +260,9 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 {
   Q_Q(KSelectionProxyModel);
 
+  if (!m_selectionModel->hasSelection())
+    return;
+
   for(int i = 0; i < m_proxyIndexes.size(); ++i)
   {
     q->changePersistentIndex(m_proxyIndexes.at(i), q->mapFromSource(m_layoutChangePersistentIndexes.at(i)));
@@ -272,6 +278,9 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
   Q_Q(KSelectionProxyModel);
 
+  if (!m_selectionModel->hasSelection())
+    return;
+
   foreach(const QModelIndex &idx, m_rootIndexList)
     emit q->rootIndexAboutToBeRemoved(idx);
 
@@ -281,6 +290,9 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 void KSelectionProxyModelPrivate::sourceModelReset()
 {
   Q_Q(KSelectionProxyModel);
+
+  if (!m_selectionModel->hasSelection())
+    return;
 
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
@@ -348,6 +360,9 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
 {
   Q_Q(KSelectionProxyModel);
 
+  if (!m_selectionModel->hasSelection() || (m_omitChildren && !m_startWithChildTrees))
+    return;
+
   if (isInModel(parent) && !(m_startWithChildTrees && m_omitDescendants))
   {
     // The easy case.
@@ -397,6 +412,9 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
   Q_UNUSED(end);
   Q_UNUSED(start);
 
+  if (!m_selectionModel->hasSelection() || (m_omitChildren && !m_startWithChildTrees))
+    return;
+
   if (isInModel(parent) && !(m_startWithChildTrees && m_omitDescendants))
   {
     q->endInsertRows();
@@ -413,6 +431,9 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
   Q_Q(KSelectionProxyModel);
+
+  if (!m_selectionModel->hasSelection() || (m_omitChildren && !m_startWithChildTrees))
+    return;
 
   QModelIndex firstAffectedIndex = q->sourceModel()->index(start, 0, parent);
 
@@ -517,7 +538,6 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
       proxyEnd = lastAffectedProxyChild.row();
     }
-
   }
 
   if (proxyStart == -1 || proxyEnd == -1)
@@ -525,7 +545,6 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
   m_rowsRemoved = true;
   q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
-
 }
 
 void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, int start, int end)
@@ -534,6 +553,9 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
   Q_UNUSED(parent)
   Q_UNUSED(start)
   Q_UNUSED(end)
+
+  if (!m_selectionModel->hasSelection() || (m_omitChildren && !m_startWithChildTrees))
+    return;
 
   QMutableListIterator<QPersistentModelIndex> it(m_rootIndexList);
   while (it.hasNext())
@@ -555,6 +577,9 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
   Q_Q(KSelectionProxyModel);
+
+  if (!m_selectionModel->hasSelection())
+    return;
 
   bool srcInModel = (!m_startWithChildTrees && isInModel(srcParent)) || (m_startWithChildTrees && m_rootIndexList.contains(srcParent));
   bool destInModel = (!m_startWithChildTrees && isInModel(destParent)) || (m_startWithChildTrees && m_rootIndexList.contains(destParent));
@@ -594,6 +619,9 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
   Q_UNUSED(srcEnd);
   Q_UNUSED(destParent)
   Q_UNUSED(destRow);
+
+  if (!m_selectionModel->hasSelection())
+    return;
 
   PendingMove pendingMove = m_pendingMoves.pop();
 
@@ -694,7 +722,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
 {
   Q_Q(KSelectionProxyModel);
 
-  if ( !q->sourceModel() )
+  if ( !q->sourceModel() || (selected.isEmpty() && deselected.isEmpty()) )
     return;
 
   // Any deselected indexes in the m_rootIndexList are removed. Then, any
@@ -1033,6 +1061,7 @@ int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
 
 void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
 {
+
   Q_Q(KSelectionProxyModel);
 
   // TODO: regroup indexes in list into contiguous ranges with the same parent.
@@ -1047,10 +1076,11 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
       QModelIndexList list = toNonPersistent(m_rootIndexList);
       int rootListRow = getRootListRow(list, newIndex);
       int rowCount = q->sourceModel()->rowCount(newIndex);
+      int startRow = getTargetRow(rootListRow);
       if ( rowCount > 0 )
       {
-        int startRow = getTargetRow(rootListRow);
-        q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
+        if (!m_resetting)
+          q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
         Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(rootListRow, newIndex);
         emit q->rootIndexAdded(newIndex);
@@ -1127,6 +1157,7 @@ QModelIndex KSelectionProxyModelPrivate::selectionIndexToSourceIndex(const QMode
 {
   QModelIndex seekIndex = index;
   QListIterator<const QAbstractProxyModel*> i(m_proxyChain);
+
   while (i.hasNext())
   {
     const QAbstractProxyModel *proxy = i.next();
@@ -1308,6 +1339,10 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
 QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
   Q_D(const KSelectionProxyModel);
+
+  if (!sourceModel())
+    return QModelIndex();
+
   int row = d->m_rootIndexList.indexOf( sourceIndex );
   if ( row != -1 )
   {
@@ -1374,7 +1409,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
     }
   }
 
-  if ( d->m_omitChildren )
+  if ( d->m_omitChildren || (d->m_startWithChildTrees && d->m_omitDescendants) )
     return 0;
 
   QModelIndex srcIndex = mapToSource(index);
@@ -1397,6 +1432,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
   Q_D(const KSelectionProxyModel);
+
   if (!hasIndex(row, column, parent) || !sourceModel())
     return QModelIndex();
 
@@ -1434,7 +1470,7 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
 {
   Q_D(const KSelectionProxyModel);
 
-  if (!sourceModel())
+  if (!sourceModel() || !index.isValid())
     return QModelIndex();
 
   QModelIndex sourceIndex = mapToSource(index);
@@ -1450,16 +1486,17 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
   return proxyParent;
 }
 
-Qt::ItemFlags KSelectionProxyModel::flags( const QModelIndex &index ) const
+Qt::ItemFlags KSelectionProxyModel::flags(const QModelIndex &index) const
 {
-  if (!index.isValid())
-    return 0;
+  if (!index.isValid() || !sourceModel())
+    return QAbstractProxyModel::flags(index);
 
   QModelIndex srcIndex = mapToSource(index);
+  Q_ASSERT(srcIndex.isValid());
   return sourceModel()->flags(srcIndex);
 }
 
-QVariant KSelectionProxyModel::data( const QModelIndex & index, int role ) const
+QVariant KSelectionProxyModel::data(const QModelIndex & index, int role) const
 {
   if (!sourceModel())
     return QVariant();
@@ -1481,7 +1518,8 @@ QVariant KSelectionProxyModel::headerData( int section, Qt::Orientation orientat
 
 QMimeData* KSelectionProxyModel::mimeData( const QModelIndexList & indexes ) const
 {
-  Q_ASSERT(sourceModel());
+  if(!sourceModel())
+    return QAbstractProxyModel::mimeData(indexes);
   QModelIndexList sourceIndexes;
   foreach(const QModelIndex& index, indexes)
     sourceIndexes << mapToSource(index);
@@ -1490,13 +1528,15 @@ QMimeData* KSelectionProxyModel::mimeData( const QModelIndexList & indexes ) con
 
 QStringList KSelectionProxyModel::mimeTypes() const
 {
-  Q_ASSERT(sourceModel());
+  if(!sourceModel())
+    return QAbstractProxyModel::mimeTypes();
   return sourceModel()->mimeTypes();
 }
 
 Qt::DropActions KSelectionProxyModel::supportedDropActions() const
 {
-  Q_ASSERT(sourceModel());
+  if(!sourceModel())
+    return QAbstractProxyModel::supportedDropActions();
   return sourceModel()->supportedDropActions();
 }
 
@@ -1521,6 +1561,9 @@ QItemSelectionModel *KSelectionProxyModel::selectionModel() const
 
 bool KSelectionProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+  if (!sourceModel())
+    return false;
+
   if ((row == -1) && (column == -1))
     return sourceModel()->dropMimeData(data, action, -1, -1, mapToSource(parent));
 
@@ -1547,6 +1590,5 @@ QList<QPersistentModelIndex> KSelectionProxyModel::sourceRootIndexes() const
   Q_D(const KSelectionProxyModel);
   return d->m_rootIndexList;
 }
-
 
 #include "moc_kselectionproxymodel.cpp"
