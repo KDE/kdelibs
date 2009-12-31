@@ -34,7 +34,8 @@ public:
       m_omitChildren(false),
       m_omitDescendants(false),
       m_includeAllSelected(false),
-      m_rowsRemoved(false)
+      m_rowsRemoved(false),
+      m_resetting(false)
   {
 
   }
@@ -158,6 +159,7 @@ public:
   bool m_omitDescendants;
   bool m_includeAllSelected;
   bool m_rowsRemoved;
+  bool m_resetting;
 
   struct PendingMove
   {
@@ -285,6 +287,7 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
     emit q->rootIndexAboutToBeRemoved(idx);
 
   q->beginResetModel();
+  m_resetting = true;
 }
 
 void KSelectionProxyModelPrivate::sourceModelReset()
@@ -296,6 +299,7 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
+  m_resetting = false;
 
   QList<QPersistentModelIndex>::iterator it = m_rootIndexList.begin();
   const QList<QPersistentModelIndex>::iterator end = m_rootIndexList.end();
@@ -1075,6 +1079,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
     {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
       int rootListRow = getRootListRow(list, newIndex);
+      Q_ASSERT(q->sourceModel() == newIndex.model());
       int rowCount = q->sourceModel()->rowCount(newIndex);
       int startRow = getTargetRow(rootListRow);
       if ( rowCount > 0 )
@@ -1083,25 +1088,33 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
           q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
         Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(rootListRow, newIndex);
-        emit q->rootIndexAdded(newIndex);
-        q->endInsertRows();
+        if (!m_resetting)
+        {
+          emit q->rootIndexAdded(newIndex);
+          q->endInsertRows();
+        }
       } else {
         // Even if the newindex doesn't have any children to put into the model yet,
         // We still need to make sure it's future children are inserted into the model.
         m_rootIndexList.insert(rootListRow, newIndex);
-        emit q->rootIndexAdded(newIndex);
+        if (!m_resetting)
+          emit q->rootIndexAdded(newIndex);
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
       int row = getRootListRow(list, newIndex);
-      q->beginInsertRows(QModelIndex(), row, row);
+
+      if (!m_resetting)
+        q->beginInsertRows(QModelIndex(), row, row);
       Q_ASSERT(newIndex.isValid());
       m_rootIndexList.insert(row, newIndex);
-      emit q->rootIndexAdded(newIndex);
-      q->endInsertRows();
+      if (!m_resetting)
+      {
+        emit q->rootIndexAdded(newIndex);
+        q->endInsertRows();
+      }
     }
   }
-  return;
 }
 
 void KSelectionProxyModelPrivate::createProxyChain()
@@ -1269,6 +1282,7 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
   Q_D(KSelectionProxyModel);
 
   beginResetModel();
+  d->m_resetting = true;
 
   disconnect(sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           this, SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
@@ -1320,6 +1334,7 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *sourceModel )
   connect(sourceModel, SIGNAL(layoutChanged()),
           SLOT(sourceLayoutChanged()));
 
+  d->m_resetting = false;
   endResetModel();
 }
 
