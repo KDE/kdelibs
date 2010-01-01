@@ -1022,13 +1022,13 @@ void KCalendarTest::testJalaliBasic()
     QCOMPARE( calendar->isSolar(), true );
 
     testRoundTrip( calendar );
-/*
+
     //Special cases using Birashk argorithm
     QCOMPARE( calendar->isLeapYear( 1403 ), true );
     QCOMPARE( calendar->isLeapYear( 1404 ), false );
     QCOMPARE( calendar->isLeapYear( 1436 ), true );
     QCOMPARE( calendar->isLeapYear( 1437 ), false );
-*/
+
 }
 
 void KCalendarTest::testJalaliYmd()

@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2002-2003 Arash Bijanzadeh  and FarsiKDE Project <www.farsikde.org>
     Contact: Arash Bijanzadeh <a.bijanzadeh@linuxiran.org>
-    Copyright (c) 2007-2009 John Layt <john@layt.net>
+    Copyright (c) 2007, 2008, 2009 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,7 +30,6 @@
 #include "kcalendarsystemjalali_p.h"
 
 #include <QtCore/QDate>
-#include <QtCore/qmath.h>
 
 class KCalendarSystemJalaliPrivate
 {
@@ -225,16 +224,22 @@ bool KCalendarSystemJalali::isLeapYear( int year ) const
 {
     // From formilab Public Domain code http://www.fourmilab.ch/documents/calendar/
     // Use Birashk algorithm as it matches the to/from jd code below
-/*
-    // Birashk algorithm is incorrect in only two years in period AP 1244 to 1531,
-    // so catch them here first
+
+    // Birashk algorithm is incorrect in two years in period AP 1244 to 1531,
+    // 1403/1404 and 1436/1437, and so catch them here first
     if ( year == 1403 || year == 1436 ) {
         return true;
     } else if ( year == 1404 || year == 1437 ) {
         return false;
     }
-*/
-    if ( ( ( ( ( ( ( year - ( ( year > 0 ) ? 474 : 473) ) % 2820 ) + 474 ) + 38 ) * 682 ) % 2816 ) < 682 ) {
+
+    if ( year >= 0 ) {
+        year = year - 474;
+    } else {
+        year = year - 473;
+    }
+
+    if ( ( ( ( ( ( year % 2820 ) + 474 ) + 38 ) * 682 ) % 2816 ) < 682 ) {
         return true;
     } else {
         return false;
@@ -510,88 +515,85 @@ bool KCalendarSystemJalali::isProleptic() const
 
 bool KCalendarSystemJalali::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
-/*
-    // Birashk algorithm is incorrect in only two years in period AP 1244 to 1531,
-    // which results in calculating the date as 1 day earlier than it should be,
-    // so adjust for that here
+    // Birashk algorithm is incorrect in two years in period AP 1244 to 1531.
+    // This results in a leap day being added to the end of 1404 instead of 1403
+    // and to the end of 1437 instead of 1436.  Check for these dates first and
+    // return accordingly.  Relies on later use of dateToJulianDay() to correctly
+    // calculate firstDayOfYear in 1404 and 1437, so no other adjustments needed.
     if ( jd == 2460755 ) {
         year = 1403;
         month = 12;
         day = 30;
         return true;
     }
-    if ( jd == 2472807 ) {
+    if ( jd == 2472808 ) {
         year = 1436;
         month = 12;
         day = 30;
         return true;
     }
-    if ( ( jd > 2460755 && jd < 2461121 ) || ( jd > 2472807 && jd < 2473174 ) ) {
-        jd = jd - 1;
-    }
-*/
+
     // From original KDE3 code, source unknown?  Unable to contact author or committer to confirm
     // Matches Fermilab code, EMACS and D&R so check for PD source, likely Birashk's book
-    int y, m, d;
-    int iYear, iMonth, iDay;
-    int depoch;
+
+    int jdCycleStart;
+    int daysSinceCycleStart;
     int cycle;
-    int cyear;
-    int ycycle;
-    int aux1, aux2;
-    int yday;
-    d = 1;
-    m = 1;
-    y = 475;
-    int testJd;
-    dateToJulianDay( y, m, d, testJd );
-    depoch = jd - testJd;
-    cycle = ( int ) ( depoch / 1029983 );
-    cyear = depoch % 1029983;
-    if ( cyear == 1029982 ) {
-        ycycle = 2820;
+    int dayInCycle;
+    int yearInCycle;
+    dateToJulianDay( 475, 1, 1, jdCycleStart );
+    daysSinceCycleStart = jd - jdCycleStart;
+    cycle = daysSinceCycleStart / 1029983;
+    dayInCycle = daysSinceCycleStart % 1029983;
+    if ( dayInCycle == 1029982 ) {
+        yearInCycle = 2820;
     } else {
-        aux1 = cyear / 366;
-        aux2 = cyear % 366;
-        ycycle = ( ( ( 2134 * aux1 ) + ( 2816 * aux2 ) + 2815 ) / 1028522 ) + aux1 + 1;
+        int aux1 = dayInCycle / 366;
+        int aux2 = dayInCycle % 366;
+        yearInCycle = ( ( ( 2134 * aux1 ) + ( 2816 * aux2 ) + 2815 ) / 1028522 ) + aux1 + 1;
     }
-    iYear = ycycle + ( 2820 * cycle ) + 474;
-    if ( iYear <= 0 ) {
-        iYear = iYear - 1;
+    year = yearInCycle + ( 2820 * cycle ) + 474;
+    if ( year <= 0 ) {
+        year = year - 1;
     }
-    y = iYear;
-    dateToJulianDay( y, m, d, testJd );
-    yday = ( jd - testJd ) + 1;
-    if( yday <= 186 ) {
-        iMonth = qCeil( ( yday - 1 ) / 31 );
+
+    int firstDayOfYear;
+    dateToJulianDay( year, 1, 1, firstDayOfYear );
+    int dayinYear = jd - firstDayOfYear + 1;
+    if( dayinYear <= 186 ) {
+        month = ( ( dayinYear - 1 ) / 31 ) + 1;
+        day = dayinYear - ( ( month - 1 ) * 31 );
     } else {
-        iMonth = qCeil( ( yday - 7 ) / 30 );
+        month = ( ( dayinYear - 7 ) / 30 ) + 1;
+        day = dayinYear - ( ( month - 1 ) * 30 ) - 6;
     }
-    iMonth++;
-    m = iMonth;
-    dateToJulianDay( y, m, d, testJd );
-    iDay = ( jd - testJd ) + 1;
-    day = iDay;
-    month = iMonth;
-    year = iYear;
+
     return true;
 }
 
 bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
-/*
-    // Birashk algorithm is incorrect in only two years in period AP 1244 to 1531,
-    // which results in calculating the date as 1 day earlier than it should be,
-    // so adjust for that here
+
+    // Birashk algorithm is incorrect in two years in period AP 1244 to 1531.
+    // This results in a leap day being added to the end of 1404 instead of 1403
+    // and to the end of 1437 instead of 1436.  Thus all dates in 1404 and 1437
+    // are off by 1 JD.  Check for these dates first and adjust accordingly.
     if ( year == 1403 && month == 12 && day == 30 ) {
         jd = 2460755;
         return true;
     }
     if ( year == 1436 && month == 12 && day == 30 ) {
-        jd = 2472807;
+        jd = 2472808;
         return true;
     }
-*/
+    if ( year == 1404 || year == 1437 ) {
+        if ( month < 12 && day + 1 > d->daysInMonth( year, month ) ) {
+            day = 1;
+            month = month + 1;
+        } else {
+            day = day + 1;
+        }
+    }
 
     // From original KDE3 code, source unknown?  Unable to contact author or committer to confirm
     // Matches Fermilab code, EMACS and D&R so check for PD source, likely Birashk's book
@@ -614,18 +616,11 @@ bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &
     }
 
     jd = ( epoch().toJulianDay() - 1 ) +          // days before epoch
-         ( epyear - 1 ) * 365 +                   // days in previous years
+         ( epyear - 1 ) * 365 +                   // normal days in previous years
          ( ( ( epyear * 682 ) - 110 ) / 2816 ) +  // leap days in previous years
          ( epbase / 2820 ) * 1029983 +
          monthDays +                              // days in previous months this year
          day;                                     // days in this month
-/*
-    // Birashk algorithm is incorrect in only two years in period AP 1244 to 1531,
-    // which results in calculating the date as 1 day earlier than it should be,
-    // so adjust for that here
-    if ( ( jd >= 2460755 && jd <= 2461120 ) || ( jd >= 2472807 && jd <= 2473173 ) ) {
-        jd = jd + 1;
-    }
-*/
+
     return true;
 }
