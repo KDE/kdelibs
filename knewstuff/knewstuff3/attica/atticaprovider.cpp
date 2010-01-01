@@ -56,10 +56,12 @@ public:
     // when the result is there.
     QHash<BaseJob*, EntryInternal> downloadLinkJobs;
 
-    // keep track of the pages we requested
-    QHash<BaseJob*, int> entryJobs;
+    // keep track of the current request
+    Attica::BaseJob* entryJob;
+    int currentPage;
 
     AtticaProviderPrivate()
+        : entryJob(0)
     {
     }
 };
@@ -150,7 +152,6 @@ void AtticaProvider::providerLoaded(const Attica::Provider& provider)
     Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
     job->start();
-
 }
 
 
@@ -181,6 +182,11 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
 {
     Q_D(AtticaProvider);
 
+    if (d->entryJob) {
+        d->entryJob->abort();
+        d->entryJob = 0;
+    }
+
     if (sortMode == Installed) {
         emit loadingFinished(sortMode, searchString, 0, 1, 10000, installedEntries());
         return;
@@ -201,8 +207,8 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
     ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, searchString, sorting, page, pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
 
-    d->entryJobs[job] = page;
-
+    d->currentPage = page;
+    d->entryJob = job;
     job->start();
 }
 
@@ -243,7 +249,6 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setHomepage(content.detailpage());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
-        //entry.setPreview(content.previewPicture("1"));
         entry.setPreviewSmall(content.smallPreviewPicture("1"));
         entry.setPreviewBig(content.previewPicture("1"));
         entry.setLicense(content.license());
@@ -258,9 +263,9 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     }
 
     // FIXME page number and strings
-    emit loadingFinished(Rating, "", d->entryJobs.value(job), entries.count(), 20, entries);
-    kDebug() << "loading finished page " << d->entryJobs.value(job);
-    d->entryJobs.remove(job);
+    emit loadingFinished(Rating, "", d->currentPage, entries.count(), 20, entries);
+    kDebug() << "loading finished page " << d->entryJob;
+    d->entryJob = 0;
 }
 
 Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMode)

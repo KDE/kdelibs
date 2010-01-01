@@ -156,7 +156,7 @@ void DownloadDialogPrivate::slotError(const QString& message)
 void DownloadDialogPrivate::scrollbarValueChanged(int value)
 {
     if ((double)value/ui.m_listView->verticalScrollBar()->maximum() > 0.9) {
-        engine->slotRequestMoreData();
+        engine->requestMoreData();
     }
 }
 

@@ -107,6 +107,7 @@ class KNS3::Engine::Private {
         int currentPage;
         // the page that was last requested, so it is not requested repeatedly
         int requestedPage;
+
         // when requesting entries from a provider, how many to ask for
         int pageSize;
 
@@ -356,7 +357,7 @@ void Engine::setSearchTerm(const QString& searchString)
 {
     d->searchTimer->stop();
     d->searchTerm = searchString;
-    EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, 0, 20);
+    EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, 0, d->pageSize);
     if (!cache.isEmpty()) {
         reloadEntries();
     } else {
@@ -369,7 +370,7 @@ void Engine::slotSearchTimerExpired()
     reloadEntries();
 }
 
-void Engine::slotRequestMoreData()
+void Engine::requestMoreData()
 {
     kDebug() << "Get more data! cur "  << d->currentPage << " req " << d->requestedPage;
 
@@ -383,7 +384,7 @@ void Engine::slotRequestMoreData()
         if (p.provider->isInitialized()) {
             // FIXME: other parameters
             // FIXME use cache, if this request was sent already, take it from the cache
-            EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, d->requestedPage, 20);
+            EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, d->requestedPage, d->pageSize);
             if (!cache.isEmpty()) {
                 kDebug() << "From cache";
                 emit signalEntriesLoaded(cache);

@@ -111,7 +111,7 @@ public:
     void setCategoriesFilter(const QStringList& categories);
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
-    void slotRequestMoreData();
+    void requestMoreData();
 
     void vote(const EntryInternal& entry, bool positiveVote);
     void becomeFan(const EntryInternal& entry);
