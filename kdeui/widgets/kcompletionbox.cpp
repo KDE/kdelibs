@@ -115,8 +115,14 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         return false;
     }
 
-    if (wid && (wid == d->m_parent || wid->windowFlags() & Qt::Window) &&
+    if (wid && wid == d->m_parent &&
         (type == QEvent::Move || type == QEvent::Resize)) {
+        hide();
+        return false;
+    }
+
+    if (wid && (wid->windowFlags() & Qt::Window) &&
+        type == QEvent::Move ) {
         hide();
         return false;
     }
