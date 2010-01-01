@@ -347,14 +347,15 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
 void ItemsViewDelegate::slotInstallClicked()
 {
     QModelIndex index = focusedIndex();
-kDebug() << index;
     if (index.isValid()) {
 
         const ItemsModel * model = modelFromIndex(index);
         kDebug() << model;
         KNS3::EntryInternal entry = model->entryForIndex(index);
-        if ( !entry.isValid() )
+        if (!entry.isValid()) {
+            kDebug() << "Invalid entry: " << entry.name();
             return;
+        }
 
         if (entry.status() == EntryInternal::Installed) {
             emit performAction(Engine::Uninstall, entry);

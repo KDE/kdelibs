@@ -264,7 +264,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 
     // FIXME page number and strings
     emit loadingFinished(Rating, "", d->currentPage, entries.count(), 20, entries);
-    kDebug() << "loading finished page " << d->entryJob;
+    kDebug() << "loading finished page " << d->currentPage;
     d->entryJob = 0;
 }
 

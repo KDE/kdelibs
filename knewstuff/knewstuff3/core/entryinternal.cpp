@@ -387,9 +387,17 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         return false;
     }
 
+    if (d->mUniqueId.isEmpty()) {
+        if (!d->mPayload.isEmpty()) {
+            d->mUniqueId = d->mPayload;
+        } else {
+            d->mUniqueId = d->mName;
+        }
+    }
+
     if (d->mPayload.isEmpty()) {
-        kWarning(550) << "Entry: no payload URL given";
-        //return false;
+        kWarning(550) << "Entry: no payload URL given for: " << d->mName << " - " << d->mUniqueId;
+        return false;
     }
     return true;
 }
