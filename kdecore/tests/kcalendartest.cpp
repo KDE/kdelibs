@@ -417,7 +417,7 @@ void KCalendarTest::testReadDate()
     QCOMPARE( calendar->readDate( "2004-W53-07", "%Y-W%V-%u" ), QDate( 2005, 1, 2 ) );
 
     //Need to fix each year!
-    QCOMPARE( calendar->readDate( "W46-05", "W%V-%u" ), QDate( 2009, 11, 13 ) );
+    QCOMPARE( calendar->readDate( "W46-05", "W%V-%u" ), QDate( 2010, 11, 19 ) );
 
     QCOMPARE( calendar->readDate( "2004-W00-01", "%Y-W%V-%u" ), QDate() );
     QCOMPARE( calendar->readDate( "2004-W01-00", "%Y-W%V-%u" ), QDate() );
@@ -682,31 +682,33 @@ void KCalendarTest::testGregorian()
 
 void KCalendarTest::testHebrew()
 {
-/*
     const KCalendarSystem *calendar = KCalendarSystem::create(QString( "hebrew" ));
-    QDate testDate( 2005, 9, 10 );
-    QCOMPARE( calendar->dayOfYear( testDate ), 253 );
+    QDate testDate( 2005, 9, 10 ); // 5756-13-06
+    QCOMPARE( calendar->dayOfYear( testDate ), 360 );
 
     QVERIFY( calendar->setYMD( testDate, 5760, 12, 24 ) );
     QCOMPARE( calendar->year( testDate ), 5760 );
     QCOMPARE( calendar->month( testDate ), 12 );
     QCOMPARE( calendar->day( testDate ), 24 );
-    QCOMPARE( calendar->daysInYear( testDate ), 999 );
+    QCOMPARE( calendar->daysInYear( testDate ), 385 );
 
-    QDate newDate = calendar->addYears( testDate, 4);
-    QCOMPARE( newDate.year(), 5760 );
-    QCOMPARE( calendar->daysInYear( newDate ), 999 );
+    testDate = calendar->addYears( testDate, 4);
+    QCOMPARE( calendar->year( testDate ), 5764 );
+    QCOMPARE( calendar->month( testDate ), 12 );
+    QCOMPARE( calendar->day( testDate ), 24 );
+    QCOMPARE( calendar->daysInYear( testDate ), 355 );
 
-    newDate = calendar->addMonths( testDate, -4 );
-    QCOMPARE( newDate.year(), 5760 );
-    QCOMPARE( newDate.month(), 8 );
-    QCOMPARE( newDate.day(), 24 );
+    testDate = calendar->addMonths( testDate, -4 );
+    QCOMPARE( calendar->year( testDate ), 5764 );
+    QCOMPARE( calendar->month( testDate ), 8 );
+    QCOMPARE( calendar->day( testDate ), 24 );
+    QCOMPARE( calendar->daysInYear( testDate ), 355 );
 
-    newDate = calendar->addDays( newDate, 20 );
-    QCOMPARE( newDate.year(), 5760 );
-    QCOMPARE( newDate.month(), 9 );
-    QCOMPARE( newDate.day(), 11 );
-*/
+    testDate = calendar->addDays( testDate, 20 );
+    QCOMPARE( calendar->year( testDate ), 5764 );
+    QCOMPARE( calendar->month( testDate ), 9 );
+    QCOMPARE( calendar->day( testDate ), 15 );
+    QCOMPARE( calendar->daysInYear( testDate ), 355 );
 }
 
 void KCalendarTest::testHijri()
@@ -847,6 +849,8 @@ void KCalendarTest::testGregorianBasic()
     QCOMPARE( calendar->isLunar(), false );
     QCOMPARE( calendar->isLunisolar(), false );
     QCOMPARE( calendar->isSolar(), true );
+
+    testRoundTrip( calendar );
 }
 
 void KCalendarTest::testGregorianYmd()
@@ -860,38 +864,38 @@ void KCalendarTest::testGregorianYmd()
 
 void KCalendarTest::testHebrewBasic()
 {
-/*
     const KCalendarSystem *calendar = KCalendarSystem::create(QString("hebrew"));
 
     QCOMPARE( calendar->calendarType(), QString("hebrew") );
     QCOMPARE( KCalendarSystem::calendarLabel( QString("hebrew") ), QString("Hebrew") );
-    QCOMPARE( calendar->epoch(), QDate( 1, 1, 1 ) );
-    QCOMPARE( calendar->earliestValidDate(), QDate( -4712, 1, 2 ) );
-    QCOMPARE( calendar->latestValidDate(), QDate( 9999, 12, 31 ) );
+    testEpoch( calendar,                1,  1,  1,  347998 );
+    testEarliestValidDate( calendar, 5344,  1,  1, 2299498 );
+    testLatestValidDate(   calendar, 8119, 13, 29, 3313431 );
 
-    testValid( calendar, 10000, 13, 32, QDate( -5000, 1, 1 ) );
+    QDate testDate = QDate::fromJulianDay( 2450340 ); //5756-12-29 Not Leap
+    QCOMPARE( calendar->isLeapYear( 5756 ), false );
+    QCOMPARE( calendar->isLeapYear( testDate ), false );
+    QCOMPARE( calendar->monthsInYear( testDate ), 12 );
+    QCOMPARE( calendar->month( testDate ), 12 );
+    QCOMPARE( calendar->monthName( testDate ), QString("Elul") );
 
-    QCOMPARE( calendar->isLeapYear( 2007 ), false );
-    QCOMPARE( calendar->isLeapYear( 2008 ), true );
-    QCOMPARE( calendar->isLeapYear( 1900 ), false );
-    QCOMPARE( calendar->isLeapYear( 2000 ), true );
-    QCOMPARE( calendar->isLeapYear( QDate( 2007, 1, 1 ) ), false );
-    QCOMPARE( calendar->isLeapYear( QDate( 2008, 1, 1 ) ), true );
+    testDate = QDate::fromJulianDay( 2450723 ); //5757-13-29 Leap
+    QCOMPARE( calendar->isLeapYear( 5757 ), true );
+    QCOMPARE( calendar->isLeapYear( testDate ), true );
+    QCOMPARE( calendar->monthsInYear( testDate ), 13 );
+    QCOMPARE( calendar->month( testDate ), 13 );
+    QCOMPARE( calendar->monthName( testDate ), QString("Elul") );
 
-    QCOMPARE( calendar->daysInWeek( QDate( 2007, 1, 1 ) ), 7 );
-    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+    QCOMPARE( calendar->daysInWeek( testDate ), 7 );
 
-    testYear(  calendar, QDate( 2007, 7, 9 ), 2007, QString("07"), QString("2007") );
-    testMonth( calendar, QDate( 2007, 7, 9 ),    7, QString("7"),  QString("07") );
-    testDay(   calendar, QDate( 2007, 7, 9 ),    9, QString("9"),  QString("09") );
+    testDate = QDate::fromJulianDay( 2432090 ); // 5707-01-01 Thursday
+    testYear(  calendar, testDate, 5707, "07", "5707" );
+    testMonth( calendar, testDate,    1,  "1",   "01" );
+    testDay(   calendar, testDate,    1,  "1",   "01" );
 
-    testWeekDayName( calendar, 6, QDate( 2007, 7, 28 ),
-                     QString("Sat"), QString("Saturday") );
-    testMonthName( calendar, 12, 2007, QDate( 2007, 12, 20 ),
-                   QString("Dec"), QString("December"),
-                   QString("of Dec"), QString("of December") );
+    testWeekDayName( calendar, 4, testDate, "Thu", "Thursday" );
+    testMonthName( calendar, 1, 5707, testDate, "Tishrey", "Tishrey", "of Tishrey", "of Tishrey" );
 
-    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
     QCOMPARE( calendar->weekStartDay(), 1 );
     QCOMPARE( calendar->weekDayOfPray(), 6 );
 
@@ -899,7 +903,8 @@ void KCalendarTest::testHebrewBasic()
     QCOMPARE( calendar->isLunar(), false );
     QCOMPARE( calendar->isLunisolar(), true );
     QCOMPARE( calendar->isSolar(), false );
-*/
+
+    testRoundTrip( calendar );
 }
 
 void KCalendarTest::testHebrewYmd()
@@ -968,6 +973,8 @@ void KCalendarTest::testHijriBasic()
     QCOMPARE( calendar->isLunar(), true );
     QCOMPARE( calendar->isLunisolar(), false );
     QCOMPARE( calendar->isSolar(), false );
+
+    testRoundTrip( calendar );
 }
 
 void KCalendarTest::testHijriYmd()
@@ -1059,6 +1066,26 @@ void KCalendarTest::testValid( const KCalendarSystem *calendar, int highInvalidY
 
     QCOMPARE( calendar->isValid( invalidDate ), false );
     QCOMPARE( calendar->isValid( QDate( 2000, 1, 1 ) ), true );
+}
+
+void KCalendarTest::testEpoch( const KCalendarSystem *calendar, int y, int m, int d, int jd )
+{
+    QCOMPARE( calendar->epoch(), QDate::fromJulianDay( jd ) );
+    if ( calendar->epoch() >= calendar->earliestValidDate() ) {
+        testYmd( calendar, y, m, d, jd );
+    }
+}
+
+void KCalendarTest::testEarliestValidDate( const KCalendarSystem *calendar, int y, int m, int d, int jd )
+{
+    QCOMPARE( calendar->earliestValidDate(), QDate::fromJulianDay( jd ) );
+    testYmd( calendar, y, m, d, jd );
+}
+
+void KCalendarTest::testLatestValidDate( const KCalendarSystem *calendar, int y, int m, int d, int jd )
+{
+    QCOMPARE( calendar->latestValidDate(), QDate::fromJulianDay( jd ) );
+    testYmd( calendar, y, m, d, jd );
 }
 
 void KCalendarTest::testYmd( const KCalendarSystem *calendar, int y, int m, int d, int jd )
@@ -1168,9 +1195,49 @@ void KCalendarTest::testMonthName( const KCalendarSystem *calendar, int month, i
     QCOMPARE( calendar->monthName( date ), longName );
 }
 
+void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar )
+{
+    kDebug() << "Testing round trip of dates for Calendar System " << calendar->calendarType();
+    kDebug() << "This may take some time, or you may have created an infinite loop.";
+    kDebug() << "Uncomment the loop debug message to see each date comparison.";
+
+    int testYear, testMonth, testDay;
+    QDate testDate;
+    QDate loopDate = calendar->earliestValidDate();
+    QByteArray msg;
+    while ( loopDate <= calendar->latestValidDate() ) {
+        testYear = calendar->year( loopDate );
+        testMonth = calendar->month( loopDate );
+        testDay = calendar->day( loopDate );
+        calendar->setDate( testDate, testYear, testMonth, testDay );
+        // Uncomment this to see each comparison printed
+        // or
+        // Uncomment the QEXPECT_FAIL statements to check all dates regardless of occasional failures
+        QByteArray msg = QByteArray::number( loopDate.toJulianDay() ) + " = " +
+                         QByteArray::number( testYear ) + '-' +
+                         QByteArray::number( testMonth ) + '-' +
+                         QByteArray::number( testDay ) + " = " +
+                         QByteArray::number( testDate.toJulianDay() );
+        /*
+        kDebug() << msg;
+        */
+        if ( testMonth <= 0 || testDay <= 0 ) { // year <= 0 is OK
+            msg.prepend( "Round Trip : JD to Date failed : " );
+            QEXPECT_FAIL( "", msg.data(), Continue );
+        } else if ( testDate.toJulianDay() == 0 ) {
+            msg.prepend( "Round Trip : Date to JD failed : " );
+            QEXPECT_FAIL( "", msg.data(), Continue );
+        } else if ( loopDate != testDate ) {
+            msg.prepend( "Round Trip : JD's differ       : " );
+            QEXPECT_FAIL( "", msg.data(), Continue );
+        }
+        QCOMPARE( loopDate.toJulianDay(), testDate.toJulianDay() );
+        loopDate = loopDate.addDays(1);
+    }
+}
+
 
 // Tests to compare new base methods are equal to QDate for Gregorian case
-
 
 void KCalendarTest::testQDateYearMonthDay()
 {
@@ -1501,29 +1568,4 @@ void KCalendarTest::testQDateIsLeapYear()
     calendar->setDate( testDate, -2004,  1,  1 );
     QCOMPARE( calendar->isLeapYear( -2004 ),    testDate.isLeapYear( -2004 ) );
     QCOMPARE( calendar->isLeapYear( testDate ), testDate.isLeapYear( -2004 ) );
-}
-
-void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar )
-{
-    int testYear, testMonth, testDay;
-    QDate testDate;
-    QDate loopDate = calendar->earliestValidDate();
-    while ( loopDate <= calendar->latestValidDate() ) {
-        testYear = calendar->year( loopDate );
-        testMonth = calendar->month( loopDate );
-        testDay = calendar->day( loopDate );
-        calendar->setDate( testDate, testYear, testMonth, testDay );
-//kDebug() << loopDate.toJulianDay() << " = " << testYear << "-" << testMonth << "-" << testDay << " = " << testDate.toJulianDay();
-        if ( testYear == 0 && testMonth == 0 && testDay == 0 ) {
-kDebug() << "JD to Date failed, JD = " << loopDate.toJulianDay();
-            QEXPECT_FAIL("", "JD to Date failed, JD = " + loopDate.toJulianDay(), Continue);
-        }
-        if ( testDate.toJulianDay() == 0 ) {
-kDebug() << "Date to JD failed, Date = " << testYear << '-' << testMonth << '-' << testDay;
-            QEXPECT_FAIL("", "Date to JD failed, Date = " + testYear + '-' + testMonth + '-' + testDay, Continue);
-        }
-        QCOMPARE( loopDate.toJulianDay(), testDate.toJulianDay() );
-        loopDate = loopDate.addDays(1);
-    }
-
 }

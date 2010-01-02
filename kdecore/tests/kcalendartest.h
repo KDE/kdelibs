@@ -10,6 +10,9 @@ class KCalendarTest : public QObject
 protected:
     void testValid( const KCalendarSystem *calendar, int highInvalidYear,
                     int highInvalidMonth, int highInvalidDay, QDate invalidDate );
+    void testEpoch( const KCalendarSystem *calendar, int y, int m, int d, int jd );
+    void testEarliestValidDate( const KCalendarSystem *calendar, int y, int m, int d, int jd );
+    void testLatestValidDate( const KCalendarSystem *calendar, int y, int m, int d, int jd );
     void testYear( const KCalendarSystem *calendar, QDate date,
                    int year, QString shortString, QString longString );
     void testMonth( const KCalendarSystem *calendar, QDate date, 
