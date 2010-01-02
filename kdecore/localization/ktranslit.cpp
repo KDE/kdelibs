@@ -54,6 +54,9 @@ QStringList KTranslit::fallbackList (const QString &lang)
 {
     QStringList fallbacks;
 
+    if (lang.startsWith(QString::fromAscii("sr@ije"))) {
+        fallbacks += QString::fromAscii("sr@ijekavian");
+    }
     if (lang.startsWith(QString::fromAscii("sr@"))) {
         fallbacks += QString::fromAscii("sr");
     }
