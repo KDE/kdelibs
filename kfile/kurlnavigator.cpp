@@ -601,6 +601,7 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
             const KUrl buttonUrl = q->url(idx);
             if (createButton) {
                 button = new KUrlNavigatorButton(buttonUrl, q);
+                button->setForegroundRole(QPalette::WindowText);
                 connect(button, SIGNAL(urlsDropped(const KUrl&, QDropEvent*)),
                         q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
                 appendWidget(button);
