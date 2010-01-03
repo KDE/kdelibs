@@ -122,7 +122,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
     }
 
     if (wid && (wid->windowFlags() & Qt::Window) &&
-        type == QEvent::Move ) {
+        type == QEvent::Move && wid == d->m_parent->window()) {
         hide();
         return false;
     }
