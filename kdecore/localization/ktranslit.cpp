@@ -324,13 +324,16 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("иљ", "ел");
     // special cases
     SR_DICTI2E_ENTRY("лије", "ли");
-    SR_DICTI2E_ENTRY("лијен", "лењ");
-    SR_DICTI2E_ENTRY("мија", "меја");
-    SR_DICTI2E_ENTRY("мије", "мејe");
-    SR_DICTI2E_ENTRY("мију", "меју");
     SR_DICTI2E_ENTRY("није", "ни");
+    SR_DICTI2E_ENTRY("биј", "беј");
+    SR_DICTI2E_ENTRY("виј", "веј");
+    SR_DICTI2E_ENTRY("миј", "меј");
+    SR_DICTI2E_ENTRY("риј", "реј");
+    SR_DICTI2E_ENTRY("сиј", "сеј");
     SR_DICTI2E_ENTRY("бијел", "бео");
+    SR_DICTI2E_ENTRY("дијел", "део");
     SR_DICTI2E_ENTRY("цијел", "цео");
+    SR_DICTI2E_ENTRY("лијен", "лењ");
     // derived Latin mappings (before capitalization and uppercasing)
     foreach (const QString &reflex, d->dictI2E.keys()) {
         QString ekform = d->dictI2E.value(reflex);
