@@ -79,7 +79,7 @@ namespace KNS3
          * Set the provider data xml, to initialize the provider.
          * The Provider needs to have it's ID set in this function and cannot change it from there on.
          */
-        virtual bool setProviderXML(QDomElement & xmldata) = 0;
+        virtual bool setProviderXML(const QDomElement & xmldata) = 0;
 
         /**
          * get the xml for the provider

@@ -68,7 +68,7 @@ QString StaticXmlProvider::id() const
 
 }
 
-bool StaticXmlProvider::setProviderXML(QDomElement & xmldata)
+bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
 {
     Q_D(StaticXmlProvider);
     kDebug(550) << "setting provider xml";
@@ -283,7 +283,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         entry.setProviderId(d->mId);
 
         // check to see if we already have this entry
-        kDebug() << "Check: " << entry.providerId() << entry.uniqueId();
+        //kDebug() << "Check: " << entry.providerId() << entry.uniqueId();
 
         int index = d->cachedEntries.indexOf(entry);
         if (index >= 0) {

@@ -53,7 +53,7 @@ namespace KNS3
         /**
          * set the provider data xml, to initialize the provider
          */
-        virtual bool setProviderXML(QDomElement & xmldata);
+        virtual bool setProviderXML(const QDomElement & xmldata);
 
         /**
          * get the xml for the provider

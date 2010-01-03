@@ -247,34 +247,29 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         return;
     }
 
-    QDomNode n;
-    for (n = providers.firstChild(); !n.isNull(); n = n.nextSibling()) {
-        QDomElement p = n.toElement();
+    QDomElement n = providers.firstChildElement("provider");
+    while (!n.isNull()) {
+        kDebug() << "Provider attributes: " << n.attribute("type");
 
-        if (p.tagName() == "provider") {
-            kDebug() << "Provider attributes: " << p.attribute("type");
-            QSharedPointer<KNS3::Provider> provider;
-            if (isAtticaProviderFile || p.attribute("type").toLower() == "rest") {
-                #if defined(HAVE_LIBATTICA)
-                provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
-                #else
-                kDebug() << "KHotNewStuff compiled without attica support, could not load provider.";
-                break;
-                #endif
-            } else {
-                provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
-            }
+        QSharedPointer<KNS3::Provider> provider;
+        if (isAtticaProviderFile || n.attribute("type").toLower() == "rest") {
 
-            connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
-            connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)),
-                    SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)));
-                    connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
+            provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
 
-            if (provider->setProviderXML(p)) {
-                ProviderInformation providerInfo(provider);
-                d->providers.insert(provider->id(), providerInfo);
-            }
+        } else {
+            provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
         }
+
+        connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
+        connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)),
+                SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)));
+        connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
+
+        if (provider->setProviderXML(n)) {
+            ProviderInformation providerInfo(provider);
+            d->providers.insert(provider->id(), providerInfo);
+        }
+        n = n.nextSiblingElement();
     }
 }
 

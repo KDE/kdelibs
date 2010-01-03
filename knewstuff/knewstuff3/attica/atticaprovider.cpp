@@ -99,7 +99,7 @@ void AtticaProvider::authenticationCredentialsMissing(const KNS3::Provider& )
 
 }
 
-bool AtticaProvider::setProviderXML(QDomElement & xmldata)
+bool AtticaProvider::setProviderXML(const QDomElement & xmldata)
 {
     Q_D(AtticaProvider);
     kDebug(550) << "setting provider xml";
@@ -109,7 +109,7 @@ bool AtticaProvider::setProviderXML(QDomElement & xmldata)
 
     // FIXME this is quite ugly, repackaging the xml into a string
     QDomDocument doc("temp");
-    doc.appendChild(xmldata);
+    doc.appendChild(xmldata.cloneNode(true));
     d->m_providerManager.addProviderFromXml(doc.toString());
 
     // FIXME I don't think the last is a good idea...
