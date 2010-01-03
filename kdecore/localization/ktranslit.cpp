@@ -316,7 +316,6 @@ KTranslitSerbian::KTranslitSerbian ()
     } while (0)
     // basic cases
     SR_DICTI2E_ENTRY("ије", "е");
-    SR_DICTI2E_ENTRY("иј", "е");
     SR_DICTI2E_ENTRY("је", "е");
     SR_DICTI2E_ENTRY("ље", "ле");
     SR_DICTI2E_ENTRY("ње", "не");
