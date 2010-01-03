@@ -1,0 +1,8 @@
+TODO for KNewStuff3
+
+- Stop loading of image previews that are not visible / only load visible previews (and maybe a couple that will come up next)
+- Indicator when fetching the next page of items (when scrolling down)
+- Scrolling with mousewheel jumps over multiple items
+- Details dialog: buttons don't get updated
+
+
