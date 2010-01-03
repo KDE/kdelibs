@@ -216,10 +216,19 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
     Q_D(AtticaProvider);
 
+    // FIXME: create a function to handel errors and enable after string freeze!
+    /*
     if (job->metadata().error()) {
-        KMessageBox::error(0, "Error.");
-    }
+        if (job->metadata().error() == Attica::Metadata::NetworkError) {
+            KMessageBox::error(0, i18n("Network error."), i18n("Get hot new stuff"));
+        } else {
+            if (job->metadata().statusCode() == 200) { // Attica::Metadata::)
+                KMessageBox::error(0, i18n("Too many requests to server."), i18n("Get hot new stuff"));
+            }
+        }
 
+    }
+    */
 
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
