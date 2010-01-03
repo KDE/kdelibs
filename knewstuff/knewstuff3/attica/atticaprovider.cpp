@@ -239,6 +239,8 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
             if ((cacheEntry.status() == EntryInternal::Installed) &&
                 ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
                 cacheEntry.setStatus(EntryInternal::Updateable);
+                cacheEntry.setUpdateVersion(entry.version());
+                cacheEntry.setUpdateReleaseDate(entry.releaseDate());
             }
             entry = cacheEntry;
         } else {

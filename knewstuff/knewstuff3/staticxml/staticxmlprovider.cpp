@@ -293,6 +293,10 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             if ((cacheEntry.status() == EntryInternal::Installed) &&
                  ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
                 entry.setStatus(EntryInternal::Updateable);
+                entry.setUpdateVersion(entry.version());
+                entry.setVersion(cacheEntry.version());
+                entry.setUpdateReleaseDate(entry.releaseDate());
+                entry.setReleaseDate(cacheEntry.releaseDate());
             } else {
                 entry.setStatus(cacheEntry.status());
             }

@@ -53,6 +53,11 @@ class EntryInternal::Private : public QSharedData
         QString mLicense;
         QString mVersion;
         QDate mReleaseDate;
+
+        // Version and date if a newer version is found (updateable)
+        QString mUpdateVersion;
+        QDate mUpdateReleaseDate;
+
         Author mAuthor;
         int mRating;
         int mDownloads;
@@ -213,6 +218,26 @@ QString EntryInternal::payload() const
 void EntryInternal::setPayload(const QString& url)
 {
     d->mPayload = url;
+}
+
+QDate EntryInternal::updateReleaseDate() const
+{
+    return d->mUpdateReleaseDate;
+}
+
+void EntryInternal::setUpdateReleaseDate(const QDate& releasedate)
+{
+    d->mUpdateReleaseDate = releasedate;
+}
+
+QString EntryInternal::updateVersion() const
+{
+    return d->mUpdateVersion;
+}
+
+void EntryInternal::setUpdateVersion(const QString& version)
+{
+    d->mUpdateVersion = version;
 }
 
 QString EntryInternal::previewSmall() const
@@ -376,7 +401,6 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
             } else if (statusText == "updateable") {
                 d->mStatus = EntryInternal::Updateable;
             }
-            //kDebug() << "got id number: " << idNumber;
         }
     }
 

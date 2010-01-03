@@ -328,6 +328,16 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
     // FIXME: change to accept filename + signature
     sec->checkValidity(QString());
 
+    // update version and release date to the new ones
+    if (entry.status() == EntryInternal::Updating) {
+        if (!entry.updateVersion().isEmpty()) {
+            entry.setVersion(entry.updateVersion());
+        }
+        if (!entry.updateReleaseDate().isValid()) {
+            entry.setReleaseDate(entry.updateReleaseDate());
+        }
+    }
+
     entry.setStatus(EntryInternal::Installed);
     emit signalEntryChanged(entry);
 }

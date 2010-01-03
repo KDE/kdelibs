@@ -188,6 +188,30 @@ public:
     QDate releaseDate() const;
 
     /**
+     * Sets the version number that is available as update.
+     */
+    void setUpdateVersion(const QString& version);
+
+    /**
+     * Retrieve the version string of the object that is available as update.
+     *
+     * @return object version
+     */
+    QString updateVersion() const;
+
+    /**
+     * Sets the release date that is available as update.
+     */
+    void setUpdateReleaseDate(const QDate& releasedate);
+
+    /**
+     * Retrieve the date of the newer version that is available as update.
+     *
+     * @return object release date
+     */
+    QDate updateReleaseDate() const;
+
+    /**
      * Sets the object's file.
      */
     void setPayload(const QString& url);
