@@ -70,10 +70,10 @@ const ItemsModel* ItemsViewDelegate::modelFromIndex(const QModelIndex& index) co
     // Different people report either cast to not work. Why would we sometimes get the proxy, sometimes the real thing?
     const QSortFilterProxyModel* proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
     if (proxyModel) {
-        kDebug() << "Got a proxy model.";
+        //kDebug() << "Got a proxy model.";
         return qobject_cast<const ItemsModel*>(proxyModel->sourceModel());
     } else {
-        kDebug() << "Got the base model.";
+        //kDebug() << "Got the base model.";
         return qobject_cast<const ItemsModel*>(index.model());
     }
 }
