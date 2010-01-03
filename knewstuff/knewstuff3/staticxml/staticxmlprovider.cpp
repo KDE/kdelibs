@@ -46,7 +46,7 @@ public:
     // cache of all entries known from this provider so far, mapped by their id
     EntryInternal::List cachedEntries;
     QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
-    QString searchTerm;
+    Provider::SearchRequest currentRequest;
     QString mId;
     bool mInitialized;
 };
@@ -189,36 +189,35 @@ void StaticXmlProvider::setCachedEntries(const KNS3::EntryInternal::List& cached
     d->cachedEntries.append(cachedEntries);
 }
 
-void StaticXmlProvider::loadEntries(SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize)
+void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 {
     Q_D(StaticXmlProvider);
-    Q_UNUSED(pageSize); // here we just get that one page, no matter what
-    Q_UNUSED(categories);
-    d->searchTerm = searchstring;
 
-    if (sortMode == Installed) {
+    d->currentRequest = request;
+
+    if (request.sortMode == Installed) {
         kDebug() << installedEntries().size();
-        emit loadingFinished(sortMode, searchstring, 0, 1, 1, installedEntries());
+        emit loadingFinished(request, installedEntries());
         return;
     }
 
-    KUrl url = downloadUrl(sortMode);
+    KUrl url = downloadUrl(request.sortMode);
     if (!url.isEmpty()) {
-        if (page == 0) {
+        if (request.page == 0) {
             // TODO first get the entries, then filter with searchString, finally emit the finished signal...
             XmlLoader * loader = new XmlLoader(this);
             connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
             connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
-            d->mFeedLoaders.insert(sortMode, loader);
+            d->mFeedLoaders.insert(request.sortMode, loader);
 
             loader->load(url);
             kDebug() << "Loader: " << loader;
         } else {
             // static providers only ever have one page of data
-            emit loadingFinished(sortMode, searchstring, page, 0, 1, EntryInternal::List());
+            //emit loadingFinished(sortMode, searchstring, page, 0, 1, EntryInternal::List());
         }
     } else {
-        emit loadingFailed(sortMode, searchstring, page);
+        emit loadingFailed(request);
     }
 }
 
@@ -254,8 +253,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     if (!loader)
     {
         kWarning() << "Loader not found!";
-        // FIXME emit something useful maybe? is this used?
-        emit loadingFailed(Rating, QString(), 0);
+        emit loadingFailed(d->currentRequest);
         return;
     }
 
@@ -309,7 +307,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             }
         }
     }
-    emit loadingFinished(mode, QString(), 0, entries.count(), 1, entries);
+    emit loadingFinished(d->currentRequest, entries);
 }
 
 void StaticXmlProvider::slotFeedFailed()
@@ -322,10 +320,10 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) co
 {
     Q_D(const StaticXmlProvider);
 
-    if (d->searchTerm.isEmpty()) {
+    if (d->currentRequest.searchTerm.isEmpty()) {
         return true;
     }
-    QString search = d->searchTerm;
+    QString search = d->currentRequest.searchTerm;
     if (entry.name().contains(search, Qt::CaseInsensitive) ||
         entry.summary().contains(search, Qt::CaseInsensitive) ||
         entry.author().name().contains(search, Qt::CaseInsensitive)

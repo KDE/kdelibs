@@ -110,12 +110,13 @@ void DownloadDialogPrivate::slotCategoryChanged(int idx)
     if (idx == 0) {
         // All Categories item selected, reset filter
         engine->setCategoriesFilter(QStringList());
-    }
 
-    QString category = ui.m_categoryCombo->currentText();
-    if (!category.isEmpty()) {
-        QStringList filter(category);
-        engine->setCategoriesFilter(filter);
+    } else {
+        QString category = ui.m_categoryCombo->currentText();
+        if (!category.isEmpty()) {
+            QStringList filter(category);
+            engine->setCategoriesFilter(filter);
+        }
     }
 }
 

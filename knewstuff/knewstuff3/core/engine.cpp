@@ -80,19 +80,15 @@ class KNS3::Engine::Private {
     public:
         // If the provider is ready to be used
         bool initialized;
-        Provider::SortMode sortMode;
         // handle installation of entries
         Installation* installation;
         // read/write cache of entries
         Cache* cache;
         QTimer* searchTimer;
-        QString searchTerm;
         // The url of the file containing information about content providers
         QString providerFileUrl;
         // Categories from knsrc file
         QStringList categories;
-        // Categories to search in
-        QStringList categoriesFilter;
 
         QHash<QString, ProviderInformation> providers;
 
@@ -103,22 +99,21 @@ class KNS3::Engine::Private {
 
         QMap<KJob*, EntryInternal> previewPictureJobs;
 
-        // the current page that has been requested from providers
+        // the current request from providers
+        Provider::SearchRequest currentRequest;
+
+        // the page that is currently displayed, so it is not requested repeatedly
         int currentPage;
-        // the page that was last requested, so it is not requested repeatedly
-        int requestedPage;
 
         // when requesting entries from a provider, how many to ask for
         int pageSize;
 
         Private()
             : initialized(false)
-            , sortMode(Provider::Newest)
             , installation(new Installation)
             , cache(new Cache)
             , searchTimer(new QTimer)
-            , currentPage(0)
-            , requestedPage(0)
+            , currentPage(-1)
             , pageSize(20)
         {
             searchTimer->setSingleShot(true);
@@ -186,7 +181,7 @@ bool Engine::init(const QString &configfile)
     }
 
     d->categories = group.readEntry("Categories", QStringList());
-    d->categoriesFilter = d->categories;
+
     kDebug() << "Categories: " << d->categories;
     d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
     d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
@@ -216,7 +211,7 @@ QStringList Engine::categories() const
 
 QStringList Engine::categoriesFilter() const
 {
-    return d->categoriesFilter;
+    return d->currentRequest.categories;
 }
 
 void Engine::loadProviders()
@@ -261,8 +256,8 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         }
 
         connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
-        connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)),
-                SLOT(slotEntriesLoaded(KNS3::Provider::SortMode, const QString&,int,int,int, const KNS3::EntryInternal::List&)));
+        connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)),
+                SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
         connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
 
         if (provider->setProviderXML(n)) {
@@ -283,30 +278,24 @@ void Engine::providerInitialized(Provider* p)
     kDebug() << "providerInitialized" << p->name();
     p->setCachedEntries(d->cache->registryForProvider(p->id()));
 
-    p->loadEntries(d->sortMode, d->searchTerm, d->categoriesFilter, 0, d->pageSize);
+    p->loadEntries(d->currentRequest);
 }
 
-void Engine::slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::EntryInternal::List entries)
+void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS3::EntryInternal::List entries)
 {
-    Q_UNUSED(sortMode)
-    Q_UNUSED(searchstring)
-    Q_UNUSED(page)
-    Q_UNUSED(pageSize)
-    Q_UNUSED(totalpages)
-    kDebug() << "loaded " << page;
-    d->currentPage = qMax<int>(page, d->currentPage);
-    kDebug() << "current page" << d->currentPage;
+    d->currentPage = qMax<int>(request.page, d->currentPage);
+    kDebug() << "loaded page " << request.page << "current page" << d->currentPage;
 
-    //d->cache->insertEntries(entries);
-    d->cache->insertRequest(d->sortMode, d->searchTerm, d->categoriesFilter, d->currentPage, d->pageSize, entries);
+    d->cache->insertRequest(request, entries);
     emit signalEntriesLoaded(entries);
 }
 
 void Engine::reloadEntries()
 {
     emit signalResetView();
-    d->currentPage = 0;
-    d->requestedPage = 0;
+    d->currentPage = -1;
+    d->currentRequest.page = 0;
+
     foreach (ProviderInformation p, d->providers) {
         if (p.provider->isInitialized()) {
             // FIXME: other parameters
@@ -314,12 +303,12 @@ void Engine::reloadEntries()
 
             int page = 0;
             while (true) {
-                EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, page, d->pageSize);
+                EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
                 if (!cache.isEmpty()) {
                     kDebug() << "From cache";
                     emit signalEntriesLoaded(cache);
                     d->currentPage = page;
-                    d->requestedPage = page;
+                    d->currentRequest.page = page;
                     ++page;
                 } else {
                     break;
@@ -327,7 +316,7 @@ void Engine::reloadEntries()
             }
             if (page == 0) {
                 kDebug() << "From provider";
-                p.provider->loadEntries(d->sortMode, d->searchTerm, d->categoriesFilter, 0, d->pageSize);
+                p.provider->loadEntries(d->currentRequest);
             }
         }
     }
@@ -335,24 +324,24 @@ void Engine::reloadEntries()
 
 void Engine::setCategoriesFilter(const QStringList& categories)
 {
-    d->categoriesFilter = categories;
+    d->currentRequest.categories = categories;
     reloadEntries();
 }
 
 void Engine::setSortMode(Provider::SortMode mode)
 {
-    if (d->sortMode != mode) {
-        d->currentPage = -1;
+    if (d->currentRequest.sortMode != mode) {
+        d->currentRequest.page = -1;
     }
-    d->sortMode = mode;
+    d->currentRequest.sortMode = mode;
     reloadEntries();
 }
 
 void Engine::setSearchTerm(const QString& searchString)
 {
     d->searchTimer->stop();
-    d->searchTerm = searchString;
-    EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, 0, d->pageSize);
+    d->currentRequest.searchTerm = searchString;
+    EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
     if (!cache.isEmpty()) {
         reloadEntries();
     } else {
@@ -367,25 +356,25 @@ void Engine::slotSearchTimerExpired()
 
 void Engine::requestMoreData()
 {
-    kDebug() << "Get more data! cur "  << d->currentPage << " req " << d->requestedPage;
+    kDebug() << "Get more data! current page: " << d->currentPage  << " requested: " << d->currentRequest.page;
 
-    if (d->currentPage < d->requestedPage) {
+    if (d->currentPage < d->currentRequest.page) {
         return;
     }
 
-    d->requestedPage++;
+    d->currentRequest.page++;
 
     foreach (ProviderInformation p, d->providers) {
         if (p.provider->isInitialized()) {
             // FIXME: other parameters
             // FIXME use cache, if this request was sent already, take it from the cache
-            EntryInternal::List cache = d->cache->requestFromCache(d->sortMode, d->searchTerm, d->categoriesFilter, d->requestedPage, d->pageSize);
+            EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
             if (!cache.isEmpty()) {
                 kDebug() << "From cache";
                 emit signalEntriesLoaded(cache);
             } else {
                 kDebug() << "From provider";
-                p.provider->loadEntries(d->sortMode, d->searchTerm, d->categoriesFilter, d->requestedPage, d->pageSize);
+                p.provider->loadEntries(d->currentRequest);
             }
         }
     }

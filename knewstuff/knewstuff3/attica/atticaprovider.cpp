@@ -58,7 +58,7 @@ public:
 
     // keep track of the current request
     Attica::BaseJob* entryJob;
-    int currentPage;
+    Provider::SearchRequest currentRequest;
 
     AtticaProviderPrivate()
         : entryJob(0)
@@ -178,7 +178,7 @@ bool AtticaProvider::isInitialized() const
     return !d->m_providerManager.providers().isEmpty();
 }
 
-void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString, const QStringList& categories, int page, int pageSize)
+void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 {
     Q_D(AtticaProvider);
 
@@ -187,27 +187,27 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
         d->entryJob = 0;
     }
 
-    if (sortMode == Installed) {
-        emit loadingFinished(sortMode, searchString, 0, 1, 10000, installedEntries());
+    d->currentRequest = request;
+    if (request.sortMode == Installed) {
+        emit loadingFinished(request, installedEntries());
         return;
     }
 
-    Attica::Provider::SortMode sorting = atticaSortMode(sortMode);
+    Attica::Provider::SortMode sorting = atticaSortMode(request.sortMode);
     Attica::Category::List categoriesToSearch;
 
-    if (categories.isEmpty()) {
+    if (request.categories.isEmpty()) {
         // search in all categories
         categoriesToSearch = d->categoryMap.values();
     } else {
-        foreach (const QString& categoryName, categories) {
+        foreach (const QString& categoryName, request.categories) {
             categoriesToSearch.append(d->categoryMap.value(categoryName));
         }
     }
 
-    ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, searchString, sorting, page, pageSize);
+    ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, request.searchTerm, sorting, request.page, request.pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
 
-    d->currentPage = page;
     d->entryJob = job;
     job->start();
 }
@@ -215,6 +215,11 @@ void AtticaProvider::loadEntries(SortMode sortMode, const QString& searchString,
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
     Q_D(AtticaProvider);
+
+    if (job->metadata().error()) {
+        KMessageBox::error(0, "Error.");
+    }
+
 
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
@@ -264,9 +269,9 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entries.append(entry);
     }
 
-    // FIXME page number and strings
-    emit loadingFinished(Rating, "", d->currentPage, entries.count(), 20, entries);
-    kDebug() << "loading finished page " << d->currentPage;
+    kDebug() << "loaded: " << d->currentRequest.hashForRequest() << " count: " << entries.size();
+
+    emit loadingFinished(d->currentRequest, entries);
     d->entryJob = 0;
 }
 

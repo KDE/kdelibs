@@ -59,6 +59,23 @@ namespace KNS3
         };
 
         /**
+         * used to keep track of a search
+         */
+        struct SearchRequest {
+            SortMode sortMode;
+            QString searchTerm;
+            QStringList categories;
+            int page;
+            int pageSize;
+
+            SearchRequest(SortMode sortMode_ = Newest, const QString& searchTerm_ = QString(), const QStringList& categories_ = QStringList(), int page_ = 0, int pageSize_ = 20)
+                :sortMode(sortMode_), searchTerm(searchTerm_), categories(categories_), page(page_), pageSize(pageSize_)
+            {}
+
+            QString hashForRequest() const;
+        };
+
+        /**
          * Constructor.
          */
         Provider();
@@ -112,7 +129,7 @@ namespace KNS3
          *
          * Note: the engine connects to loadingFinished() signal to get the result
          */
-        virtual void loadEntries(SortMode sortMode = Rating, const QString & searchstring = QString(), const QStringList & categories = QStringList(), int page = 0, int pageSize = 20) = 0;
+        virtual void loadEntries(const KNS3::Provider::SearchRequest& request) = 0;
         virtual void loadPayloadLink(const EntryInternal& entry) = 0;
 
         virtual bool userCanVote() {return false;}
@@ -124,10 +141,10 @@ namespace KNS3
     signals:
         void providerInitialized(KNS3::Provider*);
 
-        void loadingFinished(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, const KNS3::EntryInternal::List&) const;
-        void loadingFailed(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page);
+        void loadingFinished(const KNS3::Provider::SearchRequest&, const KNS3::EntryInternal::List&) const;
+        void loadingFailed(const KNS3::Provider::SearchRequest&);
 
-        void payloadLinkLoaded(const KNS3::EntryInternal& entry);
+        void payloadLinkLoaded(const KNS3::EntryInternal&);
 
     protected:
         QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;

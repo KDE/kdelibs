@@ -62,10 +62,7 @@ namespace KNS3
 
         virtual bool isInitialized() const;
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
-        virtual void loadEntries(SortMode sortMode = Rating,
-                                 const QString & searchstring = QString(),
-                                 const QStringList & categories = QStringList(),
-                                 int page = 0, int pageSize = 20);
+        virtual void loadEntries(const KNS3::Provider::SearchRequest& request);
         virtual void loadPayloadLink(const EntryInternal& entry);
 
         virtual bool userCanVote() {return true;}

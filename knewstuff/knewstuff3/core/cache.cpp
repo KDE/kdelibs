@@ -115,27 +115,21 @@ void Cache::writeRegistry()
     f.close();
 }
 
-
 void Cache::registerChangedEntry(const KNS3::EntryInternal& entry)
 {
     cache.insert(entry);
 }
 
-void Cache::insertRequest(Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize, const KNS3::EntryInternal::List& entries)
+void Cache::insertRequest(const KNS3::Provider::SearchRequest& request, const KNS3::EntryInternal::List& entries)
 {
-    requestCache[hashForRequest(sortMode, searchstring, categories, page, pageSize)] = entries;
-    kDebug() << hashForRequest(sortMode, searchstring, categories, page, pageSize) << " keys: " << requestCache.keys();
+    requestCache[request.hashForRequest()] = entries;
+    kDebug() << request.hashForRequest() << " keys: " << requestCache.keys();
 }
 
-EntryInternal::List Cache::requestFromCache(Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize)
+EntryInternal::List Cache::requestFromCache(const KNS3::Provider::SearchRequest& request)
 {
-    kDebug() << hashForRequest(sortMode, searchstring, categories, page, pageSize);
-    return requestCache.value(hashForRequest(sortMode, searchstring, categories, page, pageSize));
-}
-
-QString Cache::hashForRequest(Provider::SortMode sortMode, const QString& searchstring, const QStringList& categories, int page, int pageSize)
-{
-    return QString(QString::number((int)sortMode) + ',' + searchstring + ',' + categories.join(QString('-')) + ',' + QString::number(page) + ',' + QString::number(pageSize));
+    kDebug() << request.hashForRequest();
+    return requestCache.value(request.hashForRequest());
 }
 
 #include "cache.moc"

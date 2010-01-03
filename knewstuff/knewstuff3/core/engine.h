@@ -160,7 +160,7 @@ private Q_SLOTS:
     // called when a provider is ready to work
     void providerInitialized(KNS3::Provider*);
 
-    void slotEntriesLoaded(KNS3::Provider::SortMode sortMode, const QString& searchstring, int page, int pageSize, int totalpages, KNS3::EntryInternal::List);
+    void slotEntriesLoaded(const KNS3::Provider::SearchRequest&, KNS3::EntryInternal::List);
 
     void slotPreviewResult(KJob *job);
 

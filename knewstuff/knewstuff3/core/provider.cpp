@@ -31,6 +31,15 @@
 namespace KNS3
 {
 
+QString Provider::SearchRequest::hashForRequest() const
+{
+    return QString(QString::number((int)sortMode) + ','
+                   + searchTerm + ','
+                   + categories.join(QString('-')) + ','
+                   + QString::number(page) + ','
+                   + QString::number(pageSize));
+}
+
 Provider::Provider()
     :d_ptr(new ProviderPrivate)
 {}
