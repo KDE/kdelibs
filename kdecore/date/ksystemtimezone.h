@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2007,2009 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -73,6 +73,12 @@ class KSystemTimeZoneDataPrivate;
  * or the KTzfileTimeZone class instead, which provide accurate information from
  * the time zone definition files (but are likely to incur more overhead).
  *
+ * @note This class provides a facility to simulate the local system time
+ * zone. This facility is provided for testing purposes only, and is only
+ * available if the library is compiled with debug enabled. In release mode,
+ * simulation is inoperative and the real local system time zone is used at all
+ * times.
+ *
  * @short System time zone access
  * @see KTimeZones, KSystemTimeZone, KSystemTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
@@ -129,12 +135,12 @@ public:
      * Returns the current local system time zone.
      *
      * The idea of this routine is to provide a robust lookup of the local time
-     * zone. The problem is that on Unix systems, there are a variety of mechanisms
-     * for setting this information, and no well defined way of getting it. For
-     * example, if you set your time zone to "Europe/London", then the tzname[]
-     * maintained by tzset() typically returns { "GMT", "BST" }. The point of
-     * this routine is to actually return "Europe/London" (or rather, the
-     * corresponding KTimeZone).
+     * zone. On Unix systems, there are a variety of mechanisms for setting this
+     * information, and no well defined way of getting it. For example, if you
+     * set your time zone to "Europe/London", then the tzname[] maintained by
+     * tzset() typically returns { "GMT", "BST" }. The function of this routine
+     * is to actually return "Europe/London" (or rather, the corresponding
+     * KTimeZone).
      *
      * Note that depending on how the system stores its current time zone, this
      * routine may return a synonym of the expected time zone. For example,
@@ -142,12 +148,77 @@ public:
      * identical and there may be no way for the routine to distinguish which
      * of these is the correct zone name from the user's point of view.
      *
+     * @warning For testing purposes, if the library is compiled with debug
+     *          enabled, this method returns any simulated local system time
+     *          zone set by setLocalZone(). If the library is compiled in
+     *          release mode, it always returns the real local system time zone.
+     *
      * @return local system time zone. If necessary, we will use a series of
      *         heuristics which end by returning UTC. We will never return NULL.
      *         Note that if UTC is returned as a default, it may not belong to the
      *         the collection returned by KSystemTimeZones::zones().
      */
     static KTimeZone local();
+
+    /**
+     * Return the real (not simulated) local system time zone.
+     *
+     * @warning This method is provided only for testing purposes, and should
+     *          not be used in released code. If the library is compiled without
+     *          debug enabled, local() and realLocalZone() both return the real
+     *          local system time zone.
+     *          To avoid confusion, it is recommended that calls to
+     *          realLocalZone() should be conditionally compiled, e.g.:
+     *          \code
+     *          #ifndef NDEBUG
+     *             tz = KSystemTimeZones::realLocalZone();
+     *          #endif
+     *          \endcode
+     *
+     * @see setLocalZone()
+     */
+    static KTimeZone realLocalZone();
+
+    /**
+     * Set or clear the simulated local system time zone.
+     *
+     * @warning This method is provided only for testing purposes, and should
+     *          not be used in released code. If the library is compiled without
+     *          debug enabled, setLocalZone() has no effect.
+     *          To avoid confusion, it is recommended that calls to it should be
+     *          conditionally compiled, e.g.:
+     *          \code
+     *          #ifndef NDEBUG
+     *             KSystemTimeZones::setLocalZone(tz);
+     *          #endif
+     *          \endcode
+     *
+     * @param tz the time zone to simulate, or an invalid KTimeZone instance
+     *           (i.e. \code tz.isValid() == false \endcode) to cancel
+     *           simulation
+     */
+    static void setLocalZone(const KTimeZone& tz);
+
+    /**
+     * Check whether there is a simulated local system time zone.
+     *
+     * @warning This method is provided only for testing purposes, and should
+     *          not be used in released code. If the library is compiled without
+     *          debug enabled, isSimulated() always returns false.
+     *          To avoid confusion, it is recommended that calls to it should be
+     *          conditionally compiled, e.g.:
+     *          \code
+     *          #ifndef NDEBUG
+     *             if (KSystemTimeZones::isSimulated())
+     *             {
+     *                 ...
+     *             }
+     *          #endif
+     *          \endcode
+     *
+     * @see setLocalZone()
+     */
+    static bool isSimulated();
 
     /**
      * Returns the location of the system time zone zoneinfo database.

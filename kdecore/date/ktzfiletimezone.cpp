@@ -40,8 +40,8 @@
 // values are signed.
 static QDateTime fromTime_t(qint32 seconds)
 {
-    static QDate epochDate(1970,1,1);
-    static QTime epochTime(0,0,0);
+    static const QDate epochDate(1970,1,1);
+    static const QTime epochTime(0,0,0);
     int secs = (seconds >= 0) ? seconds % 86400 : -(-seconds % 86400);
     return QDateTime(epochDate.addDays(seconds / 86400), epochTime.addSecs(secs), Qt::UTC);
 }

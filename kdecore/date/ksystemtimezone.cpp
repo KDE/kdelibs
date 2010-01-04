@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2009 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -98,7 +98,7 @@ int gmtoff(time_t t)
     if (lwday != uwday)
     {
       // Adjust for different day
-      if (lwday == uwday + 1  ||  lwday == 0 && uwday == 6)
+      if (lwday == uwday + 1  ||  (lwday == 0 && uwday == 6))
         lt += 24*3600;
       else
         lt -= 24*3600;
@@ -167,6 +167,11 @@ KTzfileTimeZoneSource *KSystemTimeZonesPrivate::tzfileSource()
 }
 
 
+#ifndef NDEBUG
+K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
+#endif
+
+
 KSystemTimeZones::KSystemTimeZones()
   : d(0)
 {
@@ -183,8 +188,34 @@ KSystemTimeZones::~KSystemTimeZones()
 
 KTimeZone KSystemTimeZones::local()
 {
+#ifndef NDEBUG
+    if (simulatedLocalZone->isValid())
+	return *simulatedLocalZone;
+#endif
     KSystemTimeZonesPrivate::instance();
     return KSystemTimeZonesPrivate::m_localZone;
+}
+
+KTimeZone KSystemTimeZones::realLocalZone()
+{
+    KSystemTimeZonesPrivate::instance();
+    return KSystemTimeZonesPrivate::m_localZone;
+}
+
+void KSystemTimeZones::setLocalZone(const KTimeZone& tz)
+{
+#ifndef NDEBUG
+    *simulatedLocalZone = tz;
+#endif
+}
+
+bool KSystemTimeZones::isSimulated()
+{
+#ifndef NDEBUG
+    return simulatedLocalZone->isValid();
+#else
+    return false;
+#endif
 }
 
 QString KSystemTimeZones::zoneinfoDir()
@@ -289,6 +320,8 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     m_zoneinfoDir   = group.readEntry("ZoneinfoDir");
     m_zonetab       = group.readEntry("Zonetab");
     m_localZoneName = group.readEntry("LocalZone");
+    if (m_zoneinfoDir.length() > 1 && m_zoneinfoDir.endsWith('/'))
+        m_zoneinfoDir.truncate(m_zoneinfoDir.length() - 1);  // strip trailing '/'
     if (!init)
         setLocalZone();
     kDebug(161) << "readConfig(): local zone=" << m_localZoneName;
@@ -296,23 +329,38 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
 
 void KSystemTimeZonesPrivate::setLocalZone()
 {
+    QString filename;
     if (m_localZoneName.startsWith('/'))
     {
         // The time zone is specified by a file outside the zoneinfo directory
-        m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), m_localZoneName);
-        if (m_localZone.isValid() && m_instance)
-        {
-            // Add the new time zone to the list
-            KTimeZone oldzone = m_instance->zone(m_localZoneName);
-            if (!oldzone.isValid() || oldzone.type() != "KTzfileTimeZone")
-            {
-                m_instance->remove(oldzone);
-                m_instance->add(m_localZone);
-            }
-        }
+        filename = m_localZoneName;
     }
     else
+    {
+        // The zone name is either a known zone, or it's a relative file name
+        // in zoneinfo directory which isn't in zone.tab.
         m_localZone = m_instance->zone(m_localZoneName);
+        if (m_localZone.isValid())
+            return;
+        // It's a relative file name
+        filename = m_zoneinfoDir + '/' + m_localZoneName;
+    }
+
+    // Parse the specified time zone data file
+    QString zonename = filename;
+    if (zonename.startsWith(m_zoneinfoDir + '/'))
+        zonename = zonename.mid(m_zoneinfoDir.length() + 1);
+    m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), zonename);
+    if (m_localZone.isValid() && m_instance)
+    {
+        // Add the new time zone to the list
+        KTimeZone oldzone = m_instance->zone(zonename);
+        if (!oldzone.isValid() || oldzone.type() != "KTzfileTimeZone")
+        {
+            m_instance->remove(oldzone);
+            m_instance->add(m_localZone);
+        }
+    }
 }
 
 void KSystemTimeZonesPrivate::cleanup()
