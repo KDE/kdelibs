@@ -317,15 +317,21 @@ QStringList HalDevice::emblems() const
     QStringList res;
 
     if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess)) {
+        bool isEncrypted = property("volume.fsusage").toString()=="crypto";
+
         const Hal::StorageAccess accessIface(const_cast<HalDevice *>(this));
         if (accessIface.isAccessible()) {
-            res << "emblem-mounted";
+            if (isEncrypted) {
+                res << "emblem-encrypted-unlocked";
+            } else {
+                res << "emblem-mounted";
+            }
         } else {
-            res << "emblem-unmounted";
-        }
-
-        if (property("volume.fsusage").toString()=="crypto") {
-            res << "security-high";
+            if (isEncrypted) {
+                res << "emblem-encrypted-locked";
+            } else {
+                res << "emblem-unmounted";
+            }
         }
     }
 
