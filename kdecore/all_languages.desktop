@@ -13456,9 +13456,11 @@ Name[zh_TW]=塞爾維亞語
 [sr@ijekavian]
 Name=Serbian Ijekavian
 Name[bg]=Сръбски йекавски
+Name[ca]=Serbi ijekavski
 Name[da]=Serbisk Ijekaviansk
 Name[de]=Štokavisch
 Name[en_GB]=Serbian Ijekavian
+Name[es]=Serbio ijekaviano
 Name[id]=Ijekavian Serbia
 Name[is]=Serbneska Ijekavian
 Name[pt]=Sérvio Ijekavian
@@ -13472,9 +13474,11 @@ Name[uk]=Сербська (ієкавиця)
 [sr@ijekavianlatin]
 Name=Serbian Ijekavian Latin
 Name[bg]=Сръбски йекавски (латиница)
+Name[ca]=Serbi ijekavski llatí
 Name[da]=Serbisk Ijekaviansk latin
 Name[de]=Štokavisch (lat. Alphabet)
 Name[en_GB]=Serbian Ijekavian Latin
+Name[es]=Serbio latino ijekaviano
 Name[id]=Latin Ijekavian Serbia
 Name[is]=Serbneska Ijekavian latneskt
 Name[pt]=Sérvio Latino Ijekavian
