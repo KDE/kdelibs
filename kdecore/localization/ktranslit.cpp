@@ -204,8 +204,9 @@ class KTranslitSerbianPrivate
     QHash<QString, bool> ijekavianNames;
     QHash<QChar, QString> dictC2L;
     QHash<QString, QString> dictI2E;
-    int maxReflexLen;
-    QChar reflexMark;
+    int maxIjkformLen;
+    QChar iediffMarkOpen;
+    QChar iediffMarkClosed;
 
     QString toLatinSimple (const QString& text, const QString &althead = "");
 };
@@ -310,45 +311,38 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTC2L_ENTRY("Ӯ", "Ū");
 
     // Mapping from Ijekavian to Ekavian.
-    d->reflexMark = QString::fromUtf8("›")[0];
+    d->iediffMarkOpen = QString::fromUtf8("›")[0];
+    d->iediffMarkClosed = QString::fromUtf8("‹")[0];
     #define SR_DICTI2E_ENTRY(a, b) do { \
         d->dictI2E[QString::fromUtf8(a)] = QString::fromUtf8(b); \
     } while (0)
     // basic cases
-    SR_DICTI2E_ENTRY("ије", "е");
-    SR_DICTI2E_ENTRY("је", "е");
-    SR_DICTI2E_ENTRY("ље", "ле");
-    SR_DICTI2E_ENTRY("ње", "не");
-    SR_DICTI2E_ENTRY("ио", "ео");
-    SR_DICTI2E_ENTRY("иљ", "ел");
+    SR_DICTI2E_ENTRY("иј", "");
+    SR_DICTI2E_ENTRY("ј", "");
+    SR_DICTI2E_ENTRY("и", "е");
+    SR_DICTI2E_ENTRY("љ", "л");
+    SR_DICTI2E_ENTRY("њ", "н");
     // special cases
-    SR_DICTI2E_ENTRY("лије", "ли");
-    SR_DICTI2E_ENTRY("није", "ни");
-    SR_DICTI2E_ENTRY("биј", "беј");
-    SR_DICTI2E_ENTRY("виј", "веј");
-    SR_DICTI2E_ENTRY("миј", "меј");
-    SR_DICTI2E_ENTRY("риј", "реј");
-    SR_DICTI2E_ENTRY("сиј", "сеј");
-    SR_DICTI2E_ENTRY("бијел", "бео");
-    SR_DICTI2E_ENTRY("дијел", "део");
-    SR_DICTI2E_ENTRY("цијел", "цео");
-    SR_DICTI2E_ENTRY("лијен", "лењ");
+    SR_DICTI2E_ENTRY("иљ", "ел");
+    SR_DICTI2E_ENTRY("је", "");
+    SR_DICTI2E_ENTRY("ијел", "ео");
+    SR_DICTI2E_ENTRY("ијен", "ењ");
     // derived Latin mappings (before capitalization and uppercasing)
-    foreach (const QString &reflex, d->dictI2E.keys()) {
-        QString ekform = d->dictI2E.value(reflex);
-        d->dictI2E[d->toLatinSimple(reflex)] = d->toLatinSimple(ekform);
+    foreach (const QString &ijkform, d->dictI2E.keys()) {
+        QString ekvform = d->dictI2E.value(ijkform);
+        d->dictI2E[d->toLatinSimple(ijkform)] = d->toLatinSimple(ekvform);
     }
     // derived capitalized and uppercase mappings
-    foreach (const QString &reflex, d->dictI2E.keys()) {
-        QString ekform = d->dictI2E.value(reflex);
-        d->dictI2E[reflex[0].toUpper() + reflex.mid(1)] = ekform[0].toUpper() + ekform.mid(1);
-        d->dictI2E[reflex.toUpper()] = ekform.toUpper();
+    foreach (const QString &ijkform, d->dictI2E.keys()) {
+        QString ekvform = d->dictI2E.value(ijkform);
+        d->dictI2E[ijkform[0].toUpper() + ijkform.mid(1)] = ekvform[0].toUpper() + ekvform.mid(1);
+        d->dictI2E[ijkform.toUpper()] = ekvform.toUpper();
     }
-    // maximum reflex length (needed on transliteration)
-    d->maxReflexLen = 0;
-    foreach (const QString &reflex, d->dictI2E.keys()) {
-        if (d->maxReflexLen < reflex.length()) {
-            d->maxReflexLen = reflex.length();
+    // maximum length of Ijekavian forms (needed on transliteration)
+    d->maxIjkformLen = 0;
+    foreach (const QString &ijkform, d->dictI2E.keys()) {
+        if (d->maxIjkformLen < ijkform.length()) {
+            d->maxIjkformLen = ijkform.length();
         }
     }
 }
@@ -405,41 +399,47 @@ QString KTranslitSerbian::transliterate (const QString &str_,
 
     // Resolve Ekavian/Ijekavian.
     if (d->ijekavianNames.contains(script)) {
-        // Just remove reflex marks.
-        str.remove(d->reflexMark);
+        str.remove(d->iediffMarkOpen);
+        str.remove(d->iediffMarkClosed);
         str = resolveInserts(str, 2, 1, insHeadIje);
     } else {
         QString nstr;
         int p = 0;
         while (true) {
-            int pp = p;
-            p = str.indexOf(d->reflexMark, p);
+            int p1 = p; // rest of text start
+
+            p = str.indexOf(d->iediffMarkOpen, p);
             if (p < 0) {
-                nstr.append(str.mid(pp));
+                nstr.append(str.mid(p1));
                 break;
             }
-            nstr.append(str.mid(pp, p - pp));
-            p += 1;
+            int p2 = p; // opening mark start
 
-            // Try to resolve yat-reflex.
-            QString reflex;
-            QString ekvform;
-            for (int rl = d->maxReflexLen; rl > 0; --rl) {
-                reflex = str.mid(p, rl);
-                ekvform = d->dictI2E[reflex];
-                if (!ekvform.isEmpty()) {
-                    break;
-                }
+            nstr.append(str.mid(p1, p2 - p1));
+
+            p += 1; // length of opening mark
+            if (p >= str.length() || !str[p].isLetter()) {
+                nstr.append(d->iediffMarkOpen);
+                continue;
             }
+            int p3 = p; // difference start
 
-            if (!ekvform.isEmpty()) {
-                nstr.append(ekvform);
-                p += reflex.length();
+            p = str.indexOf(d->iediffMarkClosed, p);
+            if (p < 0 || p - p3 > d->maxIjkformLen) {
+                nstr.append(d->iediffMarkOpen);
+                p = p3;
+                continue;
+            }
+            int p4 = p; // closing mark start
+
+            p += 1; // length of closing mark
+            int p5 = p; // tail start
+
+            QString ijkform = str.mid(p3, p4 - p3);
+            if (d->dictI2E.contains(ijkform)) {
+                nstr.append(d->dictI2E.value(ijkform));
             } else {
-                QString dreflex = str.mid(p - 1, d->maxReflexLen + 1);
-                kDebug(173) << QString("Unknown yat-reflex {%1} "
-                                       "in {%2}").arg(dreflex, str);
-                nstr.append(str.mid(p - 1, 1));
+                nstr.append(str.mid(p2, p5 - p2));
             }
         }
         str = resolveInserts(nstr, 2, 0, insHeadIje);
