@@ -555,6 +555,9 @@ KMenu * KMenu::contextMenuFocus( )
 QAction * KMenu::contextMenuFocusAction( )
 {
   if (KMenu* menu = qobject_cast<KMenu*>(QApplication::activePopupWidget())) {
+    if (!menu->activeAction()) {
+      return 0;
+    }
     //QVariant var = menu->menuAction()->data();  //it seems that this action is not the good one, at least once the action has been clicked
     QVariant var = menu->activeAction()->data();
     KMenuContext ctx = var.value<KMenuContext>();
