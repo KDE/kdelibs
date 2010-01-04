@@ -124,7 +124,7 @@ void RenderBox::restructureParentFlow() {
     }
 }
 
-static inline bool overflowAppliesTo(RenderObject* o) 
+static inline bool overflowAppliesTo(RenderObject* o)
 {
      // css 2.1-11.1.1
      // 1) overflow only applies to non-replaced block-level elements, table cells, and inline-block elements
@@ -135,14 +135,14 @@ static inline bool overflowAppliesTo(RenderObject* o)
              if (!o->isBody()
                    // ...but only for HTML documents...
                    || !o->document()->isHTMLDocument()
-                   // ...and only when the root has a visible overflow   
+                   // ...and only when the root has a visible overflow
                    || !o->document()->documentElement()->renderer()
                    || !o->document()->documentElement()->renderer()->style()
                    ||  o->document()->documentElement()->renderer()->style()->hidesOverflow())
                  return true;
 
-     return false; 
-} 
+     return false;
+}
 
 void RenderBox::setStyle(RenderStyle *_style)
 {
@@ -187,7 +187,7 @@ void RenderBox::setStyle(RenderStyle *_style)
 
     if (overflowAppliesTo(this) && _style->hidesOverflow())
         setHasOverflowClip();
-        
+
     if (requiresLayer()) {
         if (!m_layer) {
             m_layer = new (renderArena()) RenderLayer(this);
@@ -233,7 +233,7 @@ void RenderBox::detachRemainingChildren()
 #ifdef APPLE_CHANGES
         if (firstChild()->isListMarker() || (firstChild()->style()->styleType() == RenderStyle::FIRST_LETTER && !firstChild()->isText()))
             firstChild()->remove();  // List markers are owned by their enclosing list and so don't get destroyed by this container. Similarly, first letters are destroyed by their remaining text fragment.
-        else 
+        else
 #endif
         {
         // Destroy any (most likely anonymous) children remaining in the render tree
@@ -463,7 +463,7 @@ void RenderBox::paintAllBackgrounds(QPainter *p, const QColor& c, const Backgrou
 void RenderBox::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
 {
     paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
-                            borderLeft(), borderRight(), paddingLeft(), paddingRight(), 
+                            borderLeft(), borderRight(), paddingLeft(), paddingRight(),
                             borderTop(), borderBottom(), paddingTop(), paddingBottom());
 }
 
@@ -482,16 +482,16 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
             w = bgWidth.value();
         else if (bgWidth.isPercent())
             w = bgWidth.width(scaledWidth);
-        
+
         if (bgHeight.isFixed())
             h = bgHeight.value();
         else if (bgHeight.isPercent())
             h = bgHeight.width(scaledHeight);
-        
+
         // If one of the values is auto we have to use the appropriate
         // scale to maintain our aspect ratio.
         if (bgWidth.isAuto() && !bgHeight.isAuto())
-            w = bg->pixmap_size().width() * h / bg->pixmap_size().height();        
+            w = bg->pixmap_size().width() * h / bg->pixmap_size().height();
         else if (!bgWidth.isAuto() && bgHeight.isAuto())
             h = bg->pixmap_size().height() * w / bg->pixmap_size().width();
         else if (bgWidth.isAuto() && bgHeight.isAuto()) {
@@ -499,7 +499,7 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
             // intrinsic size.
             w = bg->pixmap_size().width();
             h = bg->pixmap_size().height();
-        }        
+        }
         scaledWidth = qMax(1, w);
         scaledHeight = qMax(1, h);
     } else {
@@ -575,6 +575,12 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             p->fillRect(clipr.x(), clipr.y(), clipr.width(), clipr.height(), bgColor);
     }
 
+    // If we're one of the higher-up layers, make sure the color we
+    // pass to CachedImage::tiled_pixmap below is invalid, so it
+    // doesn't preblend upper-layers with the color.
+    if (bgLayer->next())
+        bgColor = QColor();
+
     // no progressive loading of the background image
     if (shouldPaintBackgroundImage) {
         int sx = 0;
@@ -611,7 +617,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 // go back to its true edge for the purpose of computing background-size
                 // and honouring background-origin
                 rw = width() - hpab;
-                rh = height() - vpab; 
+                rh = height() - vpab;
                 left += marginLeft();
                 hpab += marginLeft() + marginRight();
                 vpab += marginTop() + marginBottom();
@@ -726,13 +732,13 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             // Note that the reason we don't simply set the path as the clip path here before calling
             // p->drawTiledPixmap() is that QX11PaintEngine doesn't support anti-aliased clipping.
             if (!path.isEmpty()) {
-                QBrush brush(bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight));
+                QBrush brush(bg->tiled_pixmap(bgColor, scaledImageWidth, scaledImageHeight));
                 brush.setTransform(QTransform(1, 0, 0, 1, cx - sx, cy - sy));
                 QPainterPath cpath;
                 cpath.addRect(cx, cy, cw, ch);
                 p->fillPath(path.intersected(cpath), brush);
             } else
-                p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight), sx, sy);
+                p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(bgColor, scaledImageWidth, scaledImageHeight), sx, sy);
         }
     }
 
@@ -958,7 +964,7 @@ short RenderBox::containingBlockWidth(RenderObject* providedCB) const
                 r = lastLineBox->xPos() + lastLineBox->width() - lastLineBox->borderRight();
             }
             return qMax(0, r-l);
-        }    
+        }
         // 10.1.4.2
         return cb->contentWidth() + cb->paddingLeft() + cb->paddingRight();
     }
@@ -1729,11 +1735,11 @@ void RenderBox::calcAbsoluteHorizontal()
             m_x = minXPos;
         }
     }
- 
+
     if (short iw = intrinsicWidth()) {
         // some elements (e.g. Fieldset) have pseudo-replaced behaviour in quirk mode
         if (m_width < iw - bordersPlusPadding)
-            calcAbsoluteHorizontalValues(Length(iw - bordersPlusPadding, Fixed), containerBlock, containerDirection, 
+            calcAbsoluteHorizontalValues(Length(iw - bordersPlusPadding, Fixed), containerBlock, containerDirection,
                                      containerWidth, bordersPlusPadding,
                                      left, right, marginLeft, marginRight,
                                      m_width, m_marginLeft, m_marginRight, m_x);
@@ -2486,7 +2492,7 @@ int RenderBox::crossesPageBreak(int t, int b) const
         return false;
 }
 
-bool RenderBox::handleEvent(const DOM::EventImpl& e) 
+bool RenderBox::handleEvent(const DOM::EventImpl& e)
 {
     KHTMLAssert( scrollsOverflow() );
     bool accepted = false;
@@ -2553,7 +2559,7 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
         break;
       }
       case EventImpl::KEYDOWN_EVENT:
-      case EventImpl::KEYUP_EVENT: 
+      case EventImpl::KEYUP_EVENT:
         break;
       case EventImpl::KEYPRESS_EVENT:
       {
@@ -2587,7 +2593,7 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
         }
         break;
       }
-      default: 
+      default:
         break;
     }
     if (accepted)
