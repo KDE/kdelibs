@@ -50,7 +50,7 @@ public:
   {
     static const int column = 0;
     QModelIndex srcIndex = sourceModel()->index(sourceRow, column, parent_index);
-    return m_regExp.exactMatch(srcIndex.data().toString());
+    return srcIndex.data().toString().contains(m_regExp);
   }
 
   void setRegExp( const QRegExp &re)

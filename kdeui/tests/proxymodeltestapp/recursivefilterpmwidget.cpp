@@ -48,15 +48,10 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
   m_recursive = new KRecursiveFilterProxyModel(this);
   m_recursiveSubclass = new KRecursiveFilterProxyModelSubclass(this);
 
-  QStandardItemModel *stdItemModel = new QStandardItemModel(this);
-  QSortFilterProxyModel *qsf = new QSortFilterProxyModel(this);
-  QSortFilterProxyModel *qsf2 = new QSortFilterProxyModel(this);
-
-
   QTreeView *rootView = new QTreeView(splitter);
-  rootView->setModel(stdItemModel);
+  rootView->setModel(m_rootModel);
   QTreeView *recursiveView = new QTreeView(splitter);
-  recursiveView->setModel(qsf);
+  recursiveView->setModel(m_recursive);
   QTreeView *recursiveSubclassView = new QTreeView(splitter);
   recursiveSubclassView->setModel(m_recursiveSubclass);
 
@@ -70,39 +65,10 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
   connect(m_lineEdit, SIGNAL(textChanged(QString)), SLOT(reset()));
   connect(m_pushButton, SIGNAL(clicked(bool)), SLOT(actionClicked()));
 
+  m_recursive->setSourceModel(m_rootModel);
+  m_recursiveSubclass->setSourceModel(m_rootModel);
 
-//   m_recursive->setSourceModel(m_rootModel);
-  qsf2->setSourceModel(m_rootModel);
-//   qsf->setSourceModel(stdItemModel);
-
-  QStandardItem *topLevel = new QStandardItem("r");
-  stdItemModel->appendRow(topLevel);
-  topLevel->appendRow( new QStandardItem("a") );
-
-//   m_recursiveSubclass->setSourceModel(m_rootModel);
-
-//   reset();
-
-  QList<int> ancestorRows;
-  ModelInsertCommand *ins;
-  int max_runs = 2;
-
-  for (int i = 0; i < max_runs; i++)
-  {
-    ins = new ModelInsertCommand(m_rootModel, this);
-    ins->setAncestorRowNumbers(ancestorRows);
-    ins->setStartRow(0);
-    ins->setEndRow(0);
-    ins->doCommand();
-    ancestorRows << 0;
-  }
-
-//   m_rootModel->clear();
-//
-//   ins = new ModelInsertCommand(m_rootModel, this);
-//   ins->setStartRow(0);
-//   ins->setEndRow(4);
-//   ins->doCommand();
+  reset();
 }
 
 void RecursiveFilterProxyWidget::reset()
@@ -136,7 +102,7 @@ void RecursiveFilterProxyWidget::reset()
   }
 
   m_recursive->setFilterRegExp(m_lineEdit->text());
-//   m_recursiveSubclass->setRegExp(QRegExp(m_lineEdit->text()));
+  m_recursiveSubclass->setRegExp(QRegExp(m_lineEdit->text()));
 
   m_nextAction = InsertAction;
   m_pushButton->setText("Insert");
