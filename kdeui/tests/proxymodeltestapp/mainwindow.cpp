@@ -24,7 +24,7 @@
 #include <QSplitter>
 #include <QTabWidget>
 
-#include "../tests/dynamictreemodel.h"
+#include "dynamictreemodel.h"
 
 #include "descendantpmwidget.h"
 #include "selectionpmwidget.h"

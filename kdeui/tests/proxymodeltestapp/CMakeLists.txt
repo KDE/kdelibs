@@ -11,14 +11,12 @@ include_directories( ${KDE4_INCLUDES}
 set(proxymodeltestapp_SRCS
     main.cpp
     mainwindow.cpp
-    ../dynamictreemodel.cpp
     selectionpmwidget.cpp
 #     recursivefilterpmwidget.cpp
     descendantpmwidget.cpp
 #     reparentingpmwidget.cpp
 #     ../../itemviews/kreparentingproxymodel.cpp
     proxymodeltestwidget.cpp
-    ../modelcommander.cpp
     lessthanwidget.cpp
 )
 
@@ -26,6 +24,7 @@ kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
 
 target_link_libraries(proxymodeltestapp
    ${KDE4_KDEUI_LIBS}
+   proxymodeltestsuite
 )
 
 

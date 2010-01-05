@@ -1,7 +1,7 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory(kconfig_compiler)
 
-include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} proxymodeltestsuite )
 
 # QtTest needs this in order to include the gui stuff.
 # The alternative (which requires Qt>=4.6) is #include <QTestGui>
@@ -22,18 +22,15 @@ MACRO(KDEUI_EXECUTABLE_TESTS)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 SET(proxyModelTestSources
-  dynamictreemodel.cpp
-  proxymodeltest.cpp
-  modelspy.cpp
-  modelcommander.cpp
-  modelselector.cpp
   selectionproxymodeltest.cpp
 )
+
+add_subdirectory(proxymodeltestsuite)
 
 MACRO(KDEUI_PROXYMODEL_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} ${_testname}.cpp ${proxyModelTestSources} )
-               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN32_LIBRARIES} )
+               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN32_LIBRARIES} proxymodeltestsuite )
        ENDFOREACH(_testname)
 ENDMACRO(KDEUI_PROXYMODEL_TESTS)
 
