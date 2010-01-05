@@ -68,8 +68,9 @@ struct KNotification::Private
     KComponentData componentData;
 
     QTimer updateTimer;
+    bool needUpdate;
 
-    Private() : id(0), ref(1), widget(0l) {}
+    Private() : id(0), ref(1), widget(0l), needUpdate(false) {}
     /**
      * recursive function that raise the widget. @p w
      *
@@ -106,7 +107,6 @@ KNotification::KNotification(
 
 KNotification::~KNotification()
 {
-	kDebug( 299 ) << d->id;
 	if(d ->id > 0)
 		KNotificationManager::self()->close( d->id );
 	delete d;
@@ -143,6 +143,7 @@ void KNotification::setWidget(QWidget *wid)
 
 void KNotification::setTitle(const QString &title)
 {
+    d->needUpdate = true;
     d->title = title;
     if(d->id > 0)
         d->updateTimer.start();
@@ -150,6 +151,7 @@ void KNotification::setTitle(const QString &title)
 
 void KNotification::setText(const QString &text)
 {
+    d->needUpdate = true;
 	d->text=text;
 	if(d->id > 0)
 		d->updateTimer.start();
@@ -162,6 +164,7 @@ QPixmap KNotification::pixmap() const
 
 void KNotification::setPixmap(const QPixmap &pix)
 {
+    d->needUpdate = true;
 	d->pixmap=pix;
 	if(d->id > 0)
 		d->updateTimer.start();
@@ -174,6 +177,7 @@ QStringList KNotification::actions() const
 
 void KNotification::setActions(const QStringList& as )
 {
+    d->needUpdate = true;
 	d->actions=as;
 	if(d->id > 0)
 		d->updateTimer.start();
@@ -241,7 +245,6 @@ void KNotification::activate(unsigned int action)
 
 void KNotification::close()
 {
-	kDebug( 299 ) << d->id;
 	if(d->id >= 0)
 		KNotificationManager::self()->close( d->id );
 	if(d->id != -1) //=-1 mean still waiting for receiving the id
@@ -353,7 +356,8 @@ void KNotification::beep( const QString & reason, QWidget * widget )
 
 void KNotification::sendEvent()
 {
-	if(d->id<=0)
+    d->needUpdate = false;
+	if(d->id == 0)
 	{
 		QString appname;
 
@@ -368,10 +372,15 @@ void KNotification::sendEvent()
 		if (KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname ))
 			d->id = -1;
 	}
-	else
+	else if(d->id > 0)
 	{
 		KNotificationManager::self()->reemit(this , d->id );
 	}
+    else if(d->id == -1)
+    {
+        //schedgule an update.
+        d->needUpdate = true;
+    }
 }
 
 void KNotification::slotReceivedId(int id)
@@ -383,10 +392,11 @@ void KNotification::slotReceivedId(int id)
 		return;
 	}
 	d->id=id;
-	kDebug(299)  << id;
 	if(d->id>0)
 	{
 		KNotificationManager::self()->insert(this,d->id);
+        if (d->needUpdate)
+            sendEvent();
 	}
 	else
 	{
