@@ -465,6 +465,12 @@ void ProxyModelTest::doTest()
   m_modelSpy->startSpying();
   m_modelCommander->executeNextCommand();
 
+  if (modelSpy()->isEmpty())
+    QVERIFY(signalList.isEmpty());
+
+  // Make sure we didn't get any signals we didn't expect.
+  if (signalList.isEmpty())
+    QVERIFY(modelSpy()->isEmpty());
 
   while (!signalList.isEmpty())
   {
