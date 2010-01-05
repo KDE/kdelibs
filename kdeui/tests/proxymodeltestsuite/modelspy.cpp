@@ -52,11 +52,14 @@ void ModelSpy::startSpying()
           SLOT(layoutAboutToBeChanged()));
   connect(m_model, SIGNAL(layoutChanged()),
           SLOT(layoutChanged()));
-// TODO: ncomment for Qt4.6
-//  connect(m_model, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
-//          SLOT(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-//  connect(m_model, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-//          SLOT(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(m_model, SIGNAL(modelAboutToBeReset()),
+          SLOT(modelAboutToBeReset()));
+  connect(m_model, SIGNAL(modelReset()),
+          SLOT(modelReset()));
+  connect(m_model, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
+          SLOT(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+  connect(m_model, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          SLOT(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
 
   connect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
           SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
@@ -79,10 +82,14 @@ void ModelSpy::stopSpying()
           this, SLOT(layoutAboutToBeChanged()));
   disconnect(m_model, SIGNAL(layoutChanged()),
           this, SLOT(layoutChanged()));
-//  disconnect(m_model, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
-//          this, SLOT(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
-//  disconnect(m_model, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
-//          this, SLOT(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+  disconnect(m_model, SIGNAL(modelAboutToBeReset()),
+          this, SLOT(modelAboutToBeReset()));
+  disconnect(m_model, SIGNAL(modelReset()),
+          this, SLOT(modelReset()));
+  disconnect(m_model, SIGNAL(rowsAboutToBeMoved(const QModelIndex &, int, int,const QModelIndex &, int)),
+          this, SLOT(rowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+  disconnect(m_model, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)),
+          this, SLOT(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
 
   disconnect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
           this, SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
@@ -117,6 +124,16 @@ void ModelSpy::layoutAboutToBeChanged()
 void ModelSpy::layoutChanged()
 {
   append(QVariantList() << LayoutChanged);
+}
+
+void ModelSpy::modelAboutToBeReset()
+{
+  append(QVariantList() << ModelAboutToBeReset);
+}
+
+void ModelSpy::modelReset()
+{
+  append(QVariantList() << ModelReset);
 }
 
 void ModelSpy::rowsAboutToBeMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart)

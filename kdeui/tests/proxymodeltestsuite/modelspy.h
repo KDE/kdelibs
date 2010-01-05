@@ -36,7 +36,9 @@ enum SignalType
   RowsMoved,
   DataChanged,
   LayoutAboutToBeChanged,
-  LayoutChanged
+  LayoutChanged,
+  ModelAboutToBeReset,
+  ModelReset
 };
 
 Q_DECLARE_METATYPE( QModelIndex )
@@ -63,6 +65,9 @@ protected slots:
 
   void layoutAboutToBeChanged();
   void layoutChanged();
+
+  void modelAboutToBeReset();
+  void modelReset();
 
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
