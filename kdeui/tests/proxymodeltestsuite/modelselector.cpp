@@ -46,18 +46,16 @@ QItemSelectionModel* ModelSelector::selectionModel() const
 
 void ModelSelector::setWatch(bool watch)
 {
-  Q_ASSERT(m_model);
+  if (!m_model)
+    return;
+
+  disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+             this, SLOT(rowsInserted(const QModelIndex &, int, int)));
   if (watch)
   {
-    disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-               this, SLOT(rowsInserted(const QModelIndex &, int, int)));
+    Q_ASSERT(m_model);
     connect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
             SLOT(rowsInserted(const QModelIndex &, int, int)));
-  }
-  else
-  {
-    disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-               this, SLOT(rowsInserted(const QModelIndex &, int, int)));
   }
 }
 
