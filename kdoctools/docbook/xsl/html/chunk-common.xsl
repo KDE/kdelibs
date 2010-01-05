@@ -983,6 +983,7 @@
     </xsl:call-template>
 
     <body>
+      <div id="content">
       <xsl:call-template name="body.attributes"/>
       <xsl:call-template name="user.header.navigation"/>
 
@@ -994,7 +995,9 @@
 
       <xsl:call-template name="user.header.content"/>
 
-      <xsl:copy-of select="$content"/>
+      <div id="contentBody">
+        <xsl:copy-of select="$content"/>
+      </div>
 
       <xsl:call-template name="user.footer.content"/>
 
@@ -1005,6 +1008,7 @@
       </xsl:call-template>
 
       <xsl:call-template name="user.footer.navigation"/>
+      </div>
     </body>
   </html>
 </xsl:template>

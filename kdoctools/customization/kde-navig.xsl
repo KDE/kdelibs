@@ -1,6 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   version="1.0">
-  
+
   <xsl:template match="email">
     <xsl:call-template name="inline.monoseq">
       <xsl:with-param name="content">
@@ -32,43 +32,32 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  
+
   <xsl:template name="header.navigation">
     <xsl:param name="prev" select="/foo"/>
     <xsl:param name="next" select="/foo"/>
     <xsl:variable name="home" select="/*[1]"/>
     <xsl:variable name="up" select="parent::*"/>
     <xsl:if test="$suppress.navigation = '0'">
-      <div style="position: absolute; left 0px;">
-        <img src="{$kde.common}top-left.png" style="margin: 0px" alt="" />
-      </div>
-      <div style="background-image: url({$kde.common}top-middle.png); width: 100%; height: 131px;">
-        <div style="position: absolute; 
-                    right: 0px;">
-          <img src="{$kde.common}top-right.png"
-            style="margin: 0px" alt="" />
-          </div>
-            <div style="position: absolute;
-                        top: 63px;
-                        right: 0px;
-                        margin-top: -1em;
-                        margin-right: 5%;
-                        text-align: right; 
-                        font-size: xx-large; 
-                        font-weight: bold; 
-                        text-shadow: #CDE1FF 0px 0px 5px; 
-                        color: #444">
-              <xsl:apply-templates select="." mode="title.markup"/>
+      <div id="header">
+        <div id="header_content">
+          <div id="header_left">
+            <div id="header_right">
+              <img src="{$kde.common}top-kde.jpg" width="36" height="34" />
+              <!-- The space is for spacing between the logo and title text -->
+              <xsl:text> </xsl:text>
+              <xsl:apply-templates
+                select="." mode="title.markup"/>
             </div>
           </div>
-          
-          <div style="margin-top: 20px; background-color: #white; 
-                      color: black;
-                      margin-left: 20px; 
-                      margin-right: 20px;">
-            <div style="position: absolute; 
-                        left: 20px;">
+        </div>
+      </div>
+
+      <!-- output navigation links -->
+      <div class="navCenter">
+        <table class="navigation">
+          <tr>
+            <td class="prevCell">
               <xsl:if test="count($prev)>0">
                 <a accesskey="p">
                   <xsl:attribute name="href">
@@ -79,9 +68,16 @@
                   <xsl:call-template name="gentext.nav.prev"/>
                 </a>
               </xsl:if>
-            </div>
-            <div style="position: absolute; 
-                        right: 20px;">
+            </td>
+            <td class="upCell">
+              <xsl:choose>
+                <xsl:when test="count($up) > 0 and $up != $home">
+                  <xsl:apply-templates select="$up" mode="title.markup"/>
+                </xsl:when>
+                <xsl:otherwise>&#160;</xsl:otherwise>
+              </xsl:choose>
+            </td>
+            <td class="nextCell">
               <xsl:if test="count($next)>0">
                 <a accesskey="n">
                   <xsl:attribute name="href">
@@ -92,19 +88,12 @@
                   <xsl:call-template name="gentext.nav.next"/>
                 </a>
               </xsl:if>
-            </div>
-            <div class="navCenter">
-              <xsl:choose>
-                <xsl:when test="count($up) > 0 and $up != $home">
-                  <xsl:apply-templates select="$up" mode="title.markup"/>
-                </xsl:when>
-                <xsl:otherwise>&#160;</xsl:otherwise>
-              </xsl:choose>
-            </div>
-          </div>
-          
-        </xsl:if>
-      </xsl:template>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </xsl:if>
+  </xsl:template>
 
 <!-- ==================================================================== -->
 
@@ -115,109 +104,82 @@
   <xsl:variable name="up" select="parent::*"/>
 
   <xsl:if test="$suppress.navigation = '0'">
-
-    <div style="background-color: #white; color: black; 
-                margin-top: 20px; margin-left: 20px; 
-                margin-right: 20px;">
-      <div style="position: absolute; left: 20px;">
-<xsl:if test="count($prev)>0">
-              <a accesskey="p">
-                <xsl:attribute name="href">
-                  <xsl:call-template name="href.target">
-                    <xsl:with-param name="object" select="$prev"/>
-                  </xsl:call-template>
-                </xsl:attribute>
-                <xsl:call-template name="gentext.nav.prev"/>
-              </a>
-            </xsl:if>
-          </div>
-          <div style="position: absolute; right: 20px;">
-            <xsl:if test="count($next)>0">
-              <a accesskey="n">
-                <xsl:attribute name="href">
-                  <xsl:call-template name="href.target">
-                    <xsl:with-param name="object" select="$next"/>
-                  </xsl:call-template>
-                </xsl:attribute>
-                <xsl:call-template name="gentext.nav.next"/>
-              </a>
-            </xsl:if>
-          </div>
-          <div align="center">
-            <xsl:choose>
-              <xsl:when test="$home != .">
-                <a accesskey="h">
-                  <xsl:attribute name="href">
-                    <xsl:call-template name="href.target">
-                      <xsl:with-param name="object" select="$home"/>
-                    </xsl:call-template>
-                  </xsl:attribute>
-                  <xsl:call-template name="gentext.nav.home"/>
-                </a>
-              </xsl:when>
-              <xsl:otherwise>&#160;</xsl:otherwise>
-            </xsl:choose>
-          </div>
-        </div>
-    <div style="background-color: #white; 
-	color: black;
-        margin-left: 20px; 
-	margin-right: 20px;">
-      <div class="navLeft">
-        <xsl:apply-templates select="$prev" mode="title.markup"/>
-        <xsl:text>&#160;</xsl:text>
-      </div>
-      <div class="navRight">
-        <xsl:text>&#160;</xsl:text>
-        <xsl:apply-templates select="$next" mode="title.markup"/>
-      </div>
+    <div id="footer">
+      <!-- output navigation links -->
       <div class="navCenter">
-            <xsl:choose>
-              <xsl:when test="count($up)>0">
-                <a accesskey="u">
+        <table class="navigation">
+          <tr>
+            <td class="prevCell">
+              <xsl:if test="count($prev)>0">
+                <a accesskey="p">
                   <xsl:attribute name="href">
                     <xsl:call-template name="href.target">
-                      <xsl:with-param name="object" select="$up"/>
+                      <xsl:with-param name="object" select="$prev"/>
                     </xsl:call-template>
                   </xsl:attribute>
-                  <xsl:call-template name="gentext.nav.up"/>
+                  <xsl:call-template name="gentext.nav.prev"/>
                 </a>
-              </xsl:when>
-              <xsl:otherwise>&#160;</xsl:otherwise>
-            </xsl:choose>
-          </div>
-          
-          
-          
+              </xsl:if>
+            </td>
+            <td class="upCell">
+              <xsl:choose>
+                <xsl:when test="$home != .">
+                  <a accesskey="h">
+                    <xsl:attribute name="href">
+                      <xsl:call-template name="href.target">
+                        <xsl:with-param name="object" select="$home"/>
+                      </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:call-template name="gentext.nav.home"/>
+                  </a>
+                </xsl:when>
+                <xsl:otherwise>&#160;</xsl:otherwise>
+              </xsl:choose>
+            </td>
+            <td class="nextCell">
+              <xsl:if test="count($next)>0">
+                <a accesskey="n">
+                  <xsl:attribute name="href">
+                    <xsl:call-template name="href.target">
+                      <xsl:with-param name="object" select="$next"/>
+                    </xsl:call-template>
+                  </xsl:attribute>
+                  <xsl:call-template name="gentext.nav.next"/>
+                </a>
+              </xsl:if>
+            </td>
+          </tr>
+          <tr>
+            <td class="prevCell">
+              <xsl:apply-templates select="$prev" mode="title.markup"/>
+              <xsl:text>&#160;</xsl:text>
+            </td>
+            <td class="upCell">
+              <xsl:choose>
+                <xsl:when test="count($up) > 0 and $up != $home">
+                  <xsl:apply-templates select="$up" mode="title.markup"/>
+                </xsl:when>
+                <xsl:otherwise>&#160;</xsl:otherwise>
+              </xsl:choose>
+            </td>
+            <td class="nextCell">
+              <xsl:text>&#160;</xsl:text>
+              <xsl:apply-templates select="$next" mode="title.markup"/>
+            </td>
+          </tr>
+        </table>
       </div>
-      <br/>
-      <br/>
-
-      <div class="bannerBottom" style="background-image: url({$kde.common}bottom-middle.png);
-                                       background-repeat: x-repeat; 
-                                       width: 100%; 
-                                       height: 70px; 
-                                       bottom:0px;">
-	
-        <div class="BannerBottomRight">
-          <img src="{$kde.common}bottom-right.png" style="height: 70px; margin: 0px" alt=""/>
-        </div>
-        <div class="bannerBottomLeft">
-          <img src="{$kde.common}bottom-left.png" style="height: 70px; margin: 0px;" alt=""/>
-        </div>
-        <div id="comments" style="position:relative; top: 15px; left: 1em; width: 100%; color: #282828;">
-        <p>
-	<xsl:call-template name="gentext.footer-doc-comment"/>
-	<br/>
-	<xsl:call-template name="gentext.footer-doc-feedback"/>
-	<a href="mailto:kde-doc-english@kde.org" style="background:transparent; color: #282828; text-decoration: underline;">
-	<xsl:call-template name="gentext.footer-doc-teamname"/>
-	</a></p>
-	</div>
-
+      <div id="footer_text">
+        <xsl:call-template name="gentext.footer-doc-comment"/>
+        <br/>
+        <xsl:call-template name="gentext.footer-doc-feedback"/>
+        <a href="mailto:{$footer.email}" class="footer_email">
+          <xsl:call-template name="gentext.footer-doc-teamname"/>
+        </a>
       </div>
-
+    </div>
   </xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>
+<!-- vim: set sw=2: -->

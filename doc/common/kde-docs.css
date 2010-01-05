@@ -1,0 +1,333 @@
+/*
+ * kde-docs.css -- Style sheets for the KDE documentation generated
+ * HTML.
+ *
+ * Started by Michael Pyne <mpyne@kde.org>
+ */
+html, body {
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* These two divs force the content to fill up at least the viewport, which
+ * is needed in order to force the footer to the bottom of short pages.
+ */
+#content {
+    min-height: 100%;
+    position: relative;
+}
+
+#contentBody {
+    padding: 0;
+    padding-bottom: 8.9em;
+    margin: 0;
+    width: 100%;
+}
+
+/* This is for the header's navigation bar */
+#content > .navCenter {
+    background: #F8F8F8;
+    border-bottom: 1px solid #DDD;
+}
+
+/* Standard nav bar elements */
+div.navCenter table {
+    empty-cells: show;
+    border: 0px;
+    width: 100%;
+}
+
+div.navCenter td {
+    font-weight: normal;
+}
+
+div.navCenter td.prevCell {
+    padding-left: 20px;
+    text-align: left;
+}
+
+div.navCenter td.nextCell {
+    padding-right: 20px;
+    text-align: right;
+}
+
+div.navCenter td.upCell {
+    text-align: center;
+}
+
+/* Actual documentation styling */
+div.table table {
+    text-align: left; /* Disable justification */
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+/* Give alternating row colors */
+div.table tr:nth-child(odd) {
+    background-color: #eee;
+}
+
+div.table tr:nth-child(even) {
+    background-color: white;
+}
+
+div.table th {
+    background-color: white;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid black;
+}
+
+div.table td {
+    text-align: left;
+    padding: 4px;
+}
+
+div.tip, div.note, div.warning, div.important {
+    padding: 6pt;
+    padding-top: 3pt;
+}
+
+div.tip > .title, div.warning > .title, div.note > .title, div.important > .title {
+    padding: 4pt 1cm;
+    margin: 0;
+    margin-top: 4pt;
+}
+
+div.tip {
+    border: 1px solid #EEF;
+    border-left: 1px solid #88F;
+    background: #EFEFFF;
+}
+
+div.tip > .title {
+    border: 1px solid #88F;
+    background: #CFCFFF;
+    color: #222;
+}
+
+div.important {
+    border: 1px solid #FF2;
+    border-left: 1px solid #888;
+    background: #FF7;
+}
+
+div.important > .title {
+    border: 1px solid #836900;
+    background: #FC0;
+    color: #222;
+}
+
+div.note {
+    border: 1px solid #EEE;
+    border-left: 1px solid #888;
+    background: #EFEFEF;
+}
+
+div.note > .title {
+    border: 1px solid #888;
+    background: #CFCFCF;
+    color: #222;
+}
+
+div.warning {
+    border: 1px solid #FEE;
+    border-left: 1px solid #F88;
+    background: #FFEFEF;
+    margin-bottom: 6pt;
+}
+
+div.warning > .title {
+    border: 1px solid #F88;
+    background: #FFAFAF;
+    color: #222;
+}
+
+/* Make the content wrapping div have a nice margin. */
+body div.chapter, body div.sect1, body div.book, body div.article {
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+div.sect2 {
+    width: 100%;
+}
+
+.programlisting, pre.screen {
+    -khtml-border-radius: 7px;
+
+    /* This will work someday */
+    border-radius: 7px;
+
+    /* To support border radius on our OSS browser friends when
+     * viewing online */
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+}
+
+.programlisting {
+    border: 1px solid black;
+    background: white;
+}
+
+.guimenu, .guimenuitem, .guisubmenu,
+.guilabel, .interface, .guibutton {
+    background-color: rgb(220, 220, 220);
+    color: black;
+    border: 1px solid rgb(190, 190, 190);
+
+    -khtml-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.shortcut {
+    background-color: #DDF;
+    border: 1px dotted #BBF;
+    font-weight: normal;
+
+    -khtml-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.keycap {
+    background-color: #DFDFFF;
+    font-weight: bold;
+
+    -khtml-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+pre.screen {
+    border 2px solid gray;
+    background: black;
+
+    color: white;
+    font-weight: normal;
+    font-family: monospace;
+}
+
+/* Make a screen black on white */
+pre.screen * {
+    color: white;
+    background: black;
+    font-weight: normal;
+    font-family: monospace;
+}
+
+pre.screen .userinput {
+    color: green;
+}
+
+.informalexample {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    border-left: 1px dotted black;
+    padding-left: 4px;
+}
+
+div.tip {
+    margin-bottom: 12pt;
+}
+
+div.tip:last-child() {
+    margin-bottom: 0pt;
+}
+
+pre:last-child() {
+    margin-bottom: 0px;
+}
+
+div.titlepage {
+    margin-left: 0px;
+}
+
+h3.title {
+    margin-left: 0cm;
+}
+
+/*
+ * This gives us the styling for the header and footer.
+ * See customization/kde-navig.xsl for where it's used.
+ */
+#header {
+    width: 100%;
+    height: 51px;
+    color: #535353;
+    background: #eeeeee;
+    border-bottom: #bcbcbc 1px solid;
+}
+
+#header_content {
+    margin: 0 auto;
+    width: 80%;
+    height: 51px;
+    background: url("top.jpg") top left repeat-x;
+}
+
+#header_right img {
+    position: relative;
+    top: 8px; /* Vertically center */
+}
+
+#header_left {
+    background: url("top-left.jpg") top left no-repeat;
+    padding-left: 20px;
+    height: 51px;
+}
+
+#header_right {
+    background: url("top-right.jpg") top right no-repeat;
+    color: white;
+    padding-right: 20px;
+    height: 51px;
+    text-align: left;
+    font-size: 18pt;
+    font-weight: bold;
+    vertical-align: middle;
+    text-shadow: #112 2px 2px 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: 51px;
+}
+
+/* Used for the text and footer area at the bottom. */
+#footer {
+    width: 100%;
+    background-color: #eeeeee;
+    border: 0px;
+
+    /* Force footer to bottom of viewport/page */
+    position: absolute;
+    bottom: 0;
+    height: 8.7em;
+}
+
+#footer_text {
+    text-align:center;
+    vertical-align: middle;
+    padding-top: 12pt;
+}
+
+#footer .navCenter {
+    border-top: 1px solid #DDD;
+    border-bottom: 1px solid #AAA;
+}
+
+/* Two rows on this navCenter, so make the cells equal width */
+#footer .navCenter td {
+    width: 33%;
+}
+
+a.footer_email {
+    color: #282828;
+    text-decoration: underline;
+}

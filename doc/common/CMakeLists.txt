@@ -5,6 +5,7 @@ install(FILES
     bsd-license.html fdl-license fdl-license.html gpl-license gpl-license.html
     lgpl-license lgpl-license.html qpl-license.html x11-license.html
     xml.dcl
+    kde-docs.css
     doxygen.css
     tabs.css
     header.html
