@@ -191,13 +191,18 @@ void ProxyModelTest::doTestMappings(const QModelIndex &parent)
     {
       idx = m_proxyModel->index(row, column, parent);
       QVERIFY(idx.isValid());
+      QVERIFY(idx.row() == row);
+      QVERIFY(idx.column() == column);
+      QVERIFY(idx.parent() == parent);
       QVERIFY(idx.model() == m_proxyModel);
       srcIdx = m_proxyModel->mapToSource(idx);
       QVERIFY(srcIdx.isValid());
       QVERIFY(srcIdx.model() == m_proxyModel->sourceModel());
+      QVERIFY(m_model == m_proxyModel->sourceModel());
       QVERIFY(idx.data() == srcIdx.data());
       QVERIFY(m_proxyModel->mapFromSource(srcIdx) == idx);
-      doTestMappings(idx);
+      if (m_proxyModel->hasChildren(idx))
+        doTestMappings(idx);
     }
   }
 }
