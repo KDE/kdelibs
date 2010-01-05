@@ -248,9 +248,9 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
         QSharedPointer<KNS3::Provider> provider;
         if (isAtticaProviderFile || n.attribute("type").toLower() == "rest") {
-
+#ifdef HAVE_ATTICA
             provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
-
+#endif
         } else {
             provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
         }
