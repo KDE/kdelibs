@@ -64,6 +64,7 @@
 
 #include <kurl.h>
 #include <kdatetime.h>
+#include <ksystemtimezone.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <ksavefile.h>
@@ -774,17 +775,18 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             }
             else if (cName == "expires")
             {
+                KTimeZones *zones = KSystemTimeZones::timeZones();
                 // Check for the most common cookie expire date format: Thu, 01-Jan-1970 00:00:00 GMT
-                KDateTime dt = KDateTime::fromString(Value, QL1S("%:A,%t%d-%:B-%Y%t%H:%M:%S%t%Z"));
+                KDateTime dt = KDateTime::fromString(Value, QL1S("%:A,%t%d-%:B-%Y%t%H:%M:%S%t%Z"), zones);
                 if (!dt.isValid()) {
                     // Check for a variation of the above format: Thu, 01 Jan 1970 00:00:00 GMT
-                    dt = KDateTime::fromString(Value, QL1S("%:A,%t%d%t%:B%t%Y%t%H:%M:%S%t%Z"));
+                    dt = KDateTime::fromString(Value, QL1S("%:A,%t%d%t%:B%t%Y%t%H:%M:%S%t%Z"), zones);
                     if (!dt.isValid()) {
                         // Check for incorrect formats (amazon.com): Thu Jan 01 1970 00:00:00 GMT
-                        dt = KDateTime::fromString(Value, QL1S("%:A%t%:B%t%d%t%Y%t%H:%M:%S%t%Z"));
+                        dt = KDateTime::fromString(Value, QL1S("%:A%t%:B%t%d%t%Y%t%H:%M:%S%t%Z"), zones);
                         if (!dt.isValid()) {
                             // Check for a variation of the above format: Thu Jan 01 00:00:00 1970 GMT (BR# 145244)
-                            dt = KDateTime::fromString(Value, QL1S("%:A%t%:B%t%d%t%H:%M:%S%t%Y%t%Z"));
+                            dt = KDateTime::fromString(Value, QL1S("%:A%t%:B%t%d%t%H:%M:%S%t%Y%t%Z"), zones);
                             if (!dt.isValid()) {
                                 // Finally we try the RFC date formats as last resort
                                 dt = KDateTime::fromString(Value, KDateTime::RFCDate);
