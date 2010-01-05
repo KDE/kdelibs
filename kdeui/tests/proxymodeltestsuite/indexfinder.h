@@ -25,16 +25,19 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 class IndexFinder
 {
   public:
-    IndexFinder() : m_model(0) {}
+    IndexFinder(QList<int> rows = QList<int>()) : m_rows(rows), m_model(0) {}
 
     IndexFinder(QAbstractItemModel *model, QList<int> rows = QList<int>() )
-    :  m_rows(rows), m_model(model)
+      :  m_rows(rows), m_model(model)
     {
+      Q_ASSERT(model);
     }
 
     QModelIndex getIndex()
     {
-      const int col = 0;
+      if(!m_model)
+        return QModelIndex();
+      static const int col = 0;
       QModelIndex parent = QModelIndex();
       QListIterator<int> i(m_rows);
       while (i.hasNext())
@@ -50,7 +53,9 @@ class IndexFinder
       return (m_rows == other.m_rows && m_model == other.m_model );
     }
 
-    QList<int> rows() { return m_rows; }
+    QList<int> rows() const { return m_rows; }
+    void setRows( const QList<int> &rows ) { m_rows = rows; }
+    void setModel(QAbstractItemModel *model) { m_model = model; }
 
   private:
     QList<int> m_rows;
