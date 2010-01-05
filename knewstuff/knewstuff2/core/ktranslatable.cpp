@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2006, 2007 Josef Spillner <spillner@kde.org>
-    Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (c) 2008 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

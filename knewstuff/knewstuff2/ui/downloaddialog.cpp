@@ -3,7 +3,7 @@
     Copyright (C) 2005 by Enrico Ros <eros.kde@email.it>
     Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
-    Copyright (C) 2007 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (C) 2007 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
