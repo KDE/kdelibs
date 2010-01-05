@@ -67,6 +67,7 @@ public:
     QString originalText;
 
     QAction* lastHitAction;
+    QAction* lastHoveredAction;
     Qt::MouseButtons mouseButtons;
     Qt::KeyboardModifiers keyboardModifiers;
 
@@ -118,6 +119,7 @@ KMenu::KMenuPrivate::KMenuPrivate (KMenu *_parent)
     , shortcuts(false)
     , autoExec(false)
     , lastHitAction(0L)
+    , lastHoveredAction(0L)
     , mouseButtons(Qt::NoButton)
     , keyboardModifiers(Qt::NoModifier)
     , ctxMenu(0)
@@ -495,8 +497,9 @@ void KMenu::hideContextMenu()
     d->ctxMenu->hide();
 }
 
-void KMenu::KMenuPrivate::actionHovered(QAction* /*action*/)
+void KMenu::KMenuPrivate::actionHovered(QAction* action)
 {
+    lastHoveredAction = action;
     parent->hideContextMenu();
 }
 
@@ -555,11 +558,10 @@ KMenu * KMenu::contextMenuFocus( )
 QAction * KMenu::contextMenuFocusAction( )
 {
   if (KMenu* menu = qobject_cast<KMenu*>(QApplication::activePopupWidget())) {
-    if (!menu->activeAction()) {
+    if (!menu->d->lastHoveredAction) {
       return 0;
     }
-    //QVariant var = menu->menuAction()->data();  //it seems that this action is not the good one, at least once the action has been clicked
-    QVariant var = menu->activeAction()->data();
+    QVariant var = menu->d->lastHoveredAction->data();
     KMenuContext ctx = var.value<KMenuContext>();
     Q_ASSERT(ctx.menu() == menu);
     return ctx.action();
