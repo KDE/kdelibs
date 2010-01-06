@@ -272,25 +272,31 @@ void ModelCommander::setDefaultCommands()
   commandList.clear();
 
   // Insert a tree of items in one go.
-  ModelInsertWithDescendantsCommand *insWithDescs = new ModelInsertWithDescendantsCommand(m_model, this);
-  insWithDescs->setStartRow(2);
-  insWithDescs->setAncestorRowNumbers(QList<int>() << 10 );
-  QList<ModelInsertWithDescendantsCommand::InsertFragment> fragments;
-  ModelInsertWithDescendantsCommand::InsertFragment fragment;
+  ins = new ModelInsertCommand(m_model, this);
+  ins->setStartRow(0);
+  ins->setAncestorRowNumbers(QList<int>() << 10 << 2 );
+  ins->interpret(
+    " - 1"
+    " - 1"
+    " - - 1"
+    " - - 1"
+    " - - - 1"
+    " - - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+    " - - 1"
+    " - - - 1"
+    " - - 1"
+    " - - - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+  );
 
-  ModelInsertWithDescendantsCommand::InsertFragment subFragment;
-  subFragment.numRows = 10;
-
-  ModelInsertWithDescendantsCommand::InsertFragment subSubFragment;
-  subSubFragment.numRows = 10;
-  subFragment.subfragments.insert(4, subSubFragment);
-
-  fragment.numRows = 10;
-  fragment.subfragments.insert(5, subFragment);
-  fragment.subfragments.insert(2, subFragment);
-  fragments << fragment;
-  insWithDescs->setFragments(fragments );
-  commandList << insWithDescs;
+  commandList << ins;
 
   setCommand("insert09", commandList);
   commandList.clear();

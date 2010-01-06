@@ -114,16 +114,81 @@ protected:
 
 typedef QList<ModelChangeCommand*> ModelChangeCommandList;
 
+/**
+  @brief Inserts a sub tree into the dynamictreemodel.
+
+  As an alternative to setStartRow and setEndRow, the interpret command may be used.
+
+  The interpret command is used to set the structure of the subtree.
+
+  For example,
+  @code
+  cmd = new ModelInsertCommand(m_model, this);
+  cmd->interpret(
+    "- A"
+    "- B"
+    "- - C"
+    "- D"
+  );
+  @endcode
+
+  Will emit an insert for 3 rows, the second of which will have a child row. The interpretation
+  string may be complex as long as it is valid. The text at the end of each row does not need to be consistent.
+  There is a define DUMPTREE to make this command print the tree it inserts for better readability.
+
+  @code
+  cmd->interpret(
+    "- A"
+    "- - B"
+    "- - C"
+    "- - - C"
+    "- - C"
+    "- - - C"
+    "- - - C"
+    "- - C"
+    "- D"
+    "- - E"
+    "- - F"
+  );
+  @endcode
+
+  The string is valid if (depth of row (N + 1)) <= ( (depth of row N) + 1). For example, the following is invalid
+  because the depth of B is 2 and the depth of A is 0.
+
+  @code
+  cmd->interpret(
+    "- A"
+    "- - - B"
+    "- - C"
+  @endcode
+*/
 class ModelInsertCommand : public ModelChangeCommand
 {
   Q_OBJECT
+
+  struct Token
+  {
+    enum Type { Branch, Leaf };
+    Type type;
+    QString content;
+  };
 
 public:
 
   ModelInsertCommand(DynamicTreeModel *model, QObject *parent = 0 );
   virtual ~ModelInsertCommand() {}
 
+  void interpret(const QString &treeString);
+
   virtual void doCommand();
+  void doInsertTree(const QModelIndex &parent);
+
+protected:
+  QList<Token> tokenize(const QString &treeString) const;
+
+  QList<int> getDepths(const QString &treeString) const;
+
+  QString m_treeString;
 };
 
 class ModelInsertAndRemoveQueuedCommand : public ModelChangeCommand
@@ -151,31 +216,6 @@ protected slots:
 
 protected:
   void purgeItem(qint64 parent);
-};
-
-class ModelInsertWithDescendantsCommand : public ModelInsertCommand
-{
-  Q_OBJECT
-
-public:
-
-  struct InsertFragment
-  {
-    int numRows;
-    QHash<int, InsertFragment> subfragments;
-  };
-
-  ModelInsertWithDescendantsCommand(DynamicTreeModel *model, QObject *parent = 0);
-  virtual ~ModelInsertWithDescendantsCommand() {}
-
-  void setFragments(QList<InsertFragment> fragments);
-
-  virtual void doCommand();
-
-protected:
-  void insertFragment(qint64 parentIdentifier, InsertFragment fragment);
-
-  QList<InsertFragment> m_fragments;
 };
 
 class ModelRemoveCommand : public ModelChangeCommand

@@ -27,6 +27,13 @@
 #include <QDebug>
 
 #include <kdebug.h>
+#include <QStringList>
+
+// If DUMPTREE is defined, ModelInsertCommand dumps the tree of what it is inserting.
+// #define DUMPTREE
+#ifdef DUMPTREE
+#include <iostream>
+#endif
 
 DynamicTreeModel::DynamicTreeModel(QObject *parent)
   : QAbstractItemModel(parent),
@@ -174,28 +181,176 @@ ModelInsertCommand::ModelInsertCommand(DynamicTreeModel *model, QObject *parent 
 
 }
 
+QList<ModelInsertCommand::Token> ModelInsertCommand::tokenize(const QString& treeString) const
+{
+  QStringList parts = treeString.split("-");
+
+  QList<Token> tokens;
+
+  const QStringList::const_iterator begin = parts.constBegin();
+  const QStringList::const_iterator end = parts.constEnd();
+
+  QStringList::const_iterator it = begin;
+  ++it;
+  for (; it != end; ++it)
+  {
+    Token token;
+    if (it->trimmed().isEmpty())
+    {
+      token.type = Token::Branch;
+    } else {
+      token.type = Token::Leaf;
+      token.content = *it;
+    }
+    tokens.append(token);
+  }
+  return tokens;
+}
+
+void ModelInsertCommand::interpret(const QString& treeString)
+{
+  m_treeString = treeString;
+
+  QList<int> depths = getDepths(m_treeString);
+
+  int size = 0;
+  qCount(depths, 0, size);
+  Q_ASSERT(size != 0);
+
+  m_endRow = m_startRow + size - 1;
+}
+
+QList<int> ModelInsertCommand::getDepths(const QString& treeString) const
+{
+  int depth = 0;
+  QList<int> depths;
+
+#ifdef DUMPTREE
+  int id = 1;
+#endif
+
+  QList<Token> tokens = tokenize(treeString);
+  while(!tokens.isEmpty())
+  {
+    Token token = tokens.takeFirst();
+
+    if (token.type == Token::Branch)
+    {
+      ++depth;
+      continue;
+    }
+    Q_ASSERT(token.type == Token::Leaf);
+
+    depths.append(depth);
+#ifdef DUMPTREE
+    std::cout << "\"";
+    for (int i = 0; i <= depth; ++i)
+      std::cout << " -";
+    std::cout << " " << id++ << "\"" << std::endl;
+#endif
+    depth = 0;
+  }
+
+  return depths;
+}
+
 void ModelInsertCommand::doCommand()
 {
   QModelIndex parent = findIndex(m_rowNumbers);
-  m_model->beginInsertRows(parent, m_startRow, m_endRow);
-  qint64 parentId = parent.internalId();
-  for (int row = m_startRow; row <= m_endRow; row++)
+
+  if (!m_treeString.isEmpty())
   {
-    for(int col = 0; col < m_numCols; col++ )
+    QList<int> depths = getDepths(m_treeString);
+
+    int size = 0;
+    qCount(depths, 0, size);
+    Q_ASSERT(size != 0);
+    m_endRow = m_startRow + size - 1;
+  }
+  m_model->beginInsertRows(parent, m_startRow, m_endRow);
+  if (!m_treeString.isEmpty())
+  {
+    doInsertTree(parent);
+  } else {
+    qint64 parentId = parent.internalId();
+
+    for (int row = m_startRow; row <= m_endRow; row++)
     {
-      if (m_model->m_childItems[parentId].size() <= col)
+      for(int col = 0; col < m_numCols; col++ )
       {
-        m_model->m_childItems[parentId].append(QList<qint64>());
+        if (m_model->m_childItems[parentId].size() <= col)
+        {
+          m_model->m_childItems[parentId].append(QList<qint64>());
+        }
+        qint64 id = m_model->newId();
+        QString name = QString::number(id);
+
+        m_model->m_items.insert(id, name);
+        m_model->m_childItems[parentId][col].insert(row, id);
+
       }
-      qint64 id = m_model->newId();
-      QString name = QString::number(id);
-
-      m_model->m_items.insert(id, name);
-      m_model->m_childItems[parentId][col].insert(row, id);
-
     }
   }
   m_model->endInsertRows();
+}
+
+void ModelInsertCommand::doInsertTree(const QModelIndex &fragmentParent)
+{
+  static const int column = 0;
+
+  QList<int> depths = getDepths(m_treeString);
+
+  qint64 fragmentParentIdentifier = fragmentParent.internalId();
+  if (m_model->m_childItems[fragmentParentIdentifier].size() <= column)
+    m_model->m_childItems[fragmentParentIdentifier].append(QList<qint64>());
+
+  QList<int>::const_iterator it = depths.constBegin();
+  const QList<int>::const_iterator end = depths.constEnd();
+
+  QList<qint64> recentParents;
+  recentParents.append(fragmentParentIdentifier);
+
+  qint64 lastId;
+  qint64 id;
+  QString name;
+  int depth = 0;
+  int row = m_startRow;
+  Q_ASSERT(*it == depth);
+
+  QList<int> rows;
+  rows.append(row);
+
+  for( ; it != end; ++it)
+  {
+    id = m_model->newId();
+    if (*it > depth)
+    {
+      Q_ASSERT(*it == depth + 1);
+      fragmentParentIdentifier = lastId;
+      if (recentParents.size() == *it)
+        recentParents.append(fragmentParentIdentifier);
+      else
+        recentParents[*it] = fragmentParentIdentifier;
+
+      ++depth;
+
+    } else if ( *it < depth )
+    {
+      fragmentParentIdentifier = recentParents.at(*it);
+      depth = (*it);
+    }
+
+    if (m_model->m_childItems[fragmentParentIdentifier].size() <= column)
+    {
+      m_model->m_childItems[fragmentParentIdentifier].append(QList<qint64>());
+    }
+    if (rows.size() == depth)
+      rows.append(0);
+
+    m_model->m_items.insert(id, QString::number(id));
+    m_model->m_childItems[fragmentParentIdentifier][column].insert(rows[depth]++, id);
+    lastId = id;
+  }
 }
 
 
@@ -292,61 +447,6 @@ void ModelInsertAndRemoveQueuedCommand::doCommand()
 //   m_model->endRemoveRows();
 
 }
-
-ModelInsertWithDescendantsCommand::ModelInsertWithDescendantsCommand(DynamicTreeModel *model, QObject *parent)
-    : ModelInsertCommand(model, parent)
-{
-
-}
-
-void ModelInsertWithDescendantsCommand::setFragments(QList<InsertFragment> fragments)
-{
-  m_fragments = fragments;
-}
-
-void ModelInsertWithDescendantsCommand::insertFragment(qint64 parentIdentifier, InsertFragment fragment)
-{
-  for(int col = 0; col < m_numCols; col++ )
-  {
-    if (m_model->m_childItems[parentIdentifier].size() <= col)
-    {
-      m_model->m_childItems[parentIdentifier].append(QList<qint64>());
-    }
-    for (int row = 0; row < fragment.numRows; row++)
-    {
-      qint64 id = m_model->newId();
-      QString name = QString::number(id);
-
-      m_model->m_items.insert(id, name);
-      m_model->m_childItems[parentIdentifier][col].append(id);
-
-      if (col == 0 && fragment.subfragments.contains(row) )
-      {
-        insertFragment(id, fragment.subfragments.take(row));
-      }
-    }
-  }
-
-}
-
-void ModelInsertWithDescendantsCommand::doCommand()
-{
-  QModelIndex fragmentParent = findIndex(m_rowNumbers);
-
-  qint64 fragmentParentIdentifier = fragmentParent.internalId();
-
-  const int column = 0;
-
-  qint64 rootIdentifier = m_model->m_childItems[fragmentParentIdentifier][column][m_startRow];
-  QModelIndex fragmentIndex = m_model->index(m_startRow, column, fragmentParent);
-
-  InsertFragment fragment = m_fragments.at(0);
-
-  m_model->beginInsertRows(fragmentIndex, 0, fragment.numRows - 1);
-  insertFragment(rootIdentifier, fragment);
-  m_model->endInsertRows();
-}
-
 
 ModelRemoveCommand::ModelRemoveCommand(DynamicTreeModel *model, QObject *parent )
     : ModelChangeCommand(model, parent)
