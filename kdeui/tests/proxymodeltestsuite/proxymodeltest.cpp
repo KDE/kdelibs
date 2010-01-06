@@ -25,10 +25,10 @@
 
 ProxyModelTest::ProxyModelTest(QObject *parent)
 : QObject(parent),
-  m_model(new DynamicTreeModel(this)),
+  m_rootModel(new DynamicTreeModel(this)),
   m_proxyModel(0),
   m_modelSpy(new ModelSpy(this)),
-  m_modelCommander(new ModelCommander(m_model, this))
+  m_modelCommander(new ModelCommander(m_rootModel, this))
 {
 }
 
@@ -51,7 +51,7 @@ void ProxyModelTest::init()
   QVERIFY(m_modelSpy->isEmpty());
   bool spyingState = m_modelSpy->isSpying();
   m_modelSpy->stopSpying();
-  m_model->clear();
+  m_rootModel->clear();
   const char *currentTag = QTest::currentDataTag();
 
   QVERIFY(currentTag != 0);
@@ -66,7 +66,7 @@ void ProxyModelTest::init()
 
 DynamicTreeModel* ProxyModelTest::sourceModel()
 {
-  return m_model;
+  return m_rootModel;
 }
 
 QVariantList ProxyModelTest::getSignal(SignalType type, IndexFinder parentFinder, int start, int end)
@@ -198,7 +198,7 @@ void ProxyModelTest::doTestMappings(const QModelIndex &parent)
       srcIdx = m_proxyModel->mapToSource(idx);
       QVERIFY(srcIdx.isValid());
       QVERIFY(srcIdx.model() == m_proxyModel->sourceModel());
-      QVERIFY(m_model == m_proxyModel->sourceModel());
+      QVERIFY(m_rootModel == m_proxyModel->sourceModel());
       QVERIFY(idx.data() == srcIdx.data());
       QVERIFY(m_proxyModel->mapFromSource(srcIdx) == idx);
       if (m_proxyModel->hasChildren(idx))
@@ -289,7 +289,7 @@ void ProxyModelTest::setProxyModel(QAbstractProxyModel *proxyModel)
 
   m_proxyModel = proxyModel;
   testEmptyModel();
-  m_proxyModel->setSourceModel(m_model);
+  m_proxyModel->setSourceModel(m_rootModel);
 
   connect(m_proxyModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           SLOT(testMappings()));
@@ -414,7 +414,7 @@ void ProxyModelTest::doTest()
   QVERIFY(m_modelSpy->isEmpty());
   QList<QPersistentModelIndex> persistentIndexes;
 
-  const int columnCount = m_model->columnCount();
+  const int columnCount = m_rootModel->columnCount();
   QMutableListIterator<PersistentIndexChange> it(changeList);
 
   QString currentTest = QTest::currentDataTag();

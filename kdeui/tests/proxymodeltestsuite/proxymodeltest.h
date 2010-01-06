@@ -90,7 +90,7 @@ protected:
   void setCommands(QList<QPair<QString, ModelChangeCommandList> >  commands);
 
 private:
-  DynamicTreeModel *m_model;
+  DynamicTreeModel *m_rootModel;
   QAbstractProxyModel *m_proxyModel;
   ModelSpy *m_modelSpy;
   ModelCommander *m_modelCommander;
