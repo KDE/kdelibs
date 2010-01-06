@@ -37,9 +37,8 @@ class ModelMoveCommand;
 class DynamicTreeModel : public QAbstractItemModel
 {
   Q_OBJECT
-
 public:
-  DynamicTreeModel(QObject *parent = 0);
+  explicit DynamicTreeModel(QObject *parent = 0);
 
   QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
   QModelIndex parent(const QModelIndex &index) const;
@@ -102,7 +101,7 @@ public:
 
   virtual ~ModelChangeCommand() {}
 
-  void setAncestorRowNumbers(QList<int> rowNumbers) { m_rowNumbers = rowNumbers; }
+  void setAncestorRowNumbers(const QList<int> &rowNumbers) { m_rowNumbers = rowNumbers; }
   QList<int> srcAncestors() const { return m_rowNumbers; }
 
   QModelIndex findIndex(const QList<int> &rows) const;
@@ -191,7 +190,7 @@ class ModelInsertCommand : public ModelChangeCommand
 
 public:
 
-  ModelInsertCommand(DynamicTreeModel *model, QObject *parent = 0 );
+  explicit ModelInsertCommand(DynamicTreeModel *model, QObject *parent = 0 );
   virtual ~ModelInsertCommand() {}
 
   void interpret(const QString &treeString);
@@ -213,7 +212,7 @@ class ModelInsertAndRemoveQueuedCommand : public ModelChangeCommand
 
 public:
 
-  ModelInsertAndRemoveQueuedCommand(DynamicTreeModel *model, QObject *parent = 0 );
+  explicit ModelInsertAndRemoveQueuedCommand(DynamicTreeModel *model, QObject *parent = 0 );
   virtual ~ModelInsertAndRemoveQueuedCommand() {}
 
   virtual void doCommand();
@@ -238,7 +237,7 @@ class ModelRemoveCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
-  ModelRemoveCommand(DynamicTreeModel *model, QObject *parent = 0 );
+  explicit ModelRemoveCommand(DynamicTreeModel *model, QObject *parent = 0 );
   virtual ~ModelRemoveCommand() {}
 
   virtual void doCommand();
@@ -250,7 +249,7 @@ class ModelDataChangeCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
-  ModelDataChangeCommand(DynamicTreeModel *model, QObject *parent = 0);
+  explicit ModelDataChangeCommand(DynamicTreeModel *model, QObject *parent = 0);
 
   virtual ~ModelDataChangeCommand() {}
 
@@ -266,7 +265,7 @@ class ModelMoveCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
-  ModelMoveCommand(DynamicTreeModel *model, QObject *parent);
+  explicit ModelMoveCommand(DynamicTreeModel *model, QObject *parent);
 
   virtual ~ModelMoveCommand() {}
 
@@ -276,7 +275,7 @@ public:
 
   virtual void emitPostSignal();
 
-  void setDestAncestors( QList<int> rows ) { m_destRowNumbers = rows; }
+  void setDestAncestors( const QList<int> &rows ) { m_destRowNumbers = rows; }
   QList<int> destAncestors() const { return m_destRowNumbers; }
 
   void setDestRow(int row) { m_destRow = row; }
@@ -290,15 +289,15 @@ class ModelMoveLayoutChangeCommand : public ModelMoveCommand
 {
   Q_OBJECT
 public:
-  ModelMoveLayoutChangeCommand(DynamicTreeModel* model, QObject* parent);
+  explicit ModelMoveLayoutChangeCommand(DynamicTreeModel* model, QObject* parent);
   virtual ~ModelMoveLayoutChangeCommand();
 
   virtual bool emitPreSignal(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow);
 
   virtual void emitPostSignal();
 
-  void setEndOfMoveSourceAncestors(QList<int> rows ) { m_endOfMoveSourceAncestors = rows; }
-  void setEndOfMoveDestAncestors(QList<int> rows ) { m_endOfMoveDestAncestors = rows; }
+  void setEndOfMoveSourceAncestors(const QList<int> &rows ) { m_endOfMoveSourceAncestors = rows; }
+  void setEndOfMoveDestAncestors(const QList<int> &rows ) { m_endOfMoveDestAncestors = rows; }
 
 private:
   QModelIndexList m_beforeMoveList;
