@@ -19,6 +19,7 @@ set(proxymodeltestapp_SRCS
     proxymodeltestwidget.cpp
     lessthanwidget.cpp
     dynamictreewidget.cpp
+#    scriptablereparentingwidget.cpp
 )
 
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
@@ -26,6 +27,7 @@ kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
 target_link_libraries(proxymodeltestapp
    ${KDE4_KDEUI_LIBS}
    proxymodeltestsuite
+   ${QT_QTSCRIPT_LIBRARY}
 )
 
 
