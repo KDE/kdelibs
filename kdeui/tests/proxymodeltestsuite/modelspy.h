@@ -69,6 +69,8 @@ protected slots:
   void modelAboutToBeReset();
   void modelReset();
 
+  void modelDestroyed();
+
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
 private:

@@ -64,6 +64,7 @@ void ModelSpy::startSpying()
   connect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
           SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
 
+  connect(m_model, SIGNAL(destroyed()), SLOT(modelDestroyed()));
 }
 
 
@@ -94,6 +95,7 @@ void ModelSpy::stopSpying()
   disconnect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
           this, SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
 
+  disconnect(m_model, SIGNAL(destroyed()), this, SLOT(modelDestroyed()));
 }
 
 void ModelSpy::rowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
@@ -134,6 +136,11 @@ void ModelSpy::modelAboutToBeReset()
 void ModelSpy::modelReset()
 {
   append(QVariantList() << ModelReset);
+}
+
+void ModelSpy::modelDestroyed()
+{
+  m_model = 0;
 }
 
 void ModelSpy::rowsAboutToBeMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart)
