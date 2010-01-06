@@ -39,6 +39,10 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   m_treeView = new QTreeView(tabWidget);
   m_treeView->setModel(rootModel);
   m_treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  m_treeView->setDragDropMode(QAbstractItemView::InternalMove);
+  m_treeView->setDragEnabled(true);
+  m_treeView->setAcceptDrops(true);
+  m_treeView->setDropIndicatorShown(true);
 
   tabWidget->addTab(m_textEdit, "Edit");
   tabWidget->addTab(m_treeView, "View");
