@@ -32,6 +32,8 @@
 
 template<typename T> class QList;
 
+class ModelMoveCommand;
+
 class DynamicTreeModel : public QAbstractItemModel
 {
   Q_OBJECT
@@ -46,7 +48,15 @@ public:
 
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
+  bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
+  Qt::ItemFlags flags(const QModelIndex& index) const;
+  Qt::DropActions supportedDropActions() const;
+  QStringList mimeTypes() const;
+  QMimeData* mimeData(const QModelIndexList& indexes) const;
+
   void clear();
+  QList<int> indexToPath(const QModelIndex &idx) const;
+  ModelMoveCommand* getMoveCommand(const QList<int> &srcPath, int startRow, int endRow);
 
 protected slots:
 
@@ -92,8 +102,9 @@ public:
   virtual ~ModelChangeCommand() {}
 
   void setAncestorRowNumbers(QList<int> rowNumbers) { m_rowNumbers = rowNumbers; }
+  QList<int> srcAncestors() const { return m_rowNumbers; }
 
-  QModelIndex findIndex(QList<int> rows);
+  QModelIndex findIndex(const QList<int> &rows) const;
 
   void setStartRow(int row) { m_startRow = row; }
 
@@ -102,6 +113,10 @@ public:
   void setNumCols(int cols) { m_numCols = cols; }
 
   virtual void doCommand() = 0;
+
+  QModelIndex parentIndex() const { return findIndex(m_rowNumbers); }
+  int startRow() const { return m_startRow; }
+  int endRow() const { return m_endRow; }
 
 protected:
   DynamicTreeModel* m_model;
@@ -261,6 +276,7 @@ public:
   virtual void emitPostSignal();
 
   void setDestAncestors( QList<int> rows ) { m_destRowNumbers = rows; }
+  QList<int> destAncestors() const { return m_destRowNumbers; }
 
   void setDestRow(int row) { m_destRow = row; }
 

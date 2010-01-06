@@ -23,6 +23,7 @@
 #include <QHash>
 #include <QList>
 #include <QTimer>
+#include <QMimeData>
 
 #include <QDebug>
 
@@ -156,13 +157,180 @@ void DynamicTreeModel::clear()
 }
 
 
+bool DynamicTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int _column, const QModelIndex& parent)
+{
+  QByteArray encoded = data->data(mimeTypes().first());
+
+  QHash<QModelIndex, QList<int> > movedItems;
+  bool ok;
+  qint64 id;
+  int _row;
+  static const int column = 0;
+  QHash<qint64, QList<QList<qint64> > >::const_iterator it;
+  foreach(const QByteArray &ba, encoded.split('\0'))
+  {
+    id = ba.toInt(&ok);
+    if (!ok)
+      kDebug() << ba;
+    Q_ASSERT(ok);
+
+    _row = -1;
+    for (it = m_childItems.constBegin(); it != m_childItems.constEnd(); ++it)
+    {
+      _row = it.value().first().indexOf(id);
+      if (_row < 0)
+        continue;
+      movedItems[createIndex(_row, column, reinterpret_cast<void *>(id)).parent()].append(_row);
+      break;
+    }
+    Q_ASSERT(_row >= 0);
+    if (_row < 0)
+      return false;
+  }
+
+  const int destRow = row < 0 ? 0 : row;
+  const QList<int> destPath = indexToPath(parent);
+
+  QList<int> srcPath;
+  QModelIndex srcParent;
+  QHash<QModelIndex, QList<int> >::iterator src_parent_it = movedItems.begin();
+  int startRow = 0;
+  int endRow = 0;
+  int nextMovedRow = 0;
+
+  QList<int> rowsMoved;
+  QList<int>::iterator src_row_it;
+  QList<int>::iterator rows_moved_end;
+  QList<ModelMoveCommand *> moveCommands;
+
+  for ( ; src_parent_it != movedItems.end(); ++src_parent_it)
+  {
+    srcParent = src_parent_it.key();
+    srcPath = indexToPath(srcParent);
+
+    rowsMoved = src_parent_it.value();
+    qSort(rowsMoved);
+    src_row_it = rowsMoved.begin();
+    rows_moved_end = rowsMoved.end();
+    startRow = *src_row_it;
+    endRow = startRow;
+    ++src_row_it;
+
+    if (src_row_it == rows_moved_end)
+    {
+      moveCommands.prepend(getMoveCommand(srcPath, startRow, endRow));
+      continue;
+    }
+
+    for ( ; src_row_it != rows_moved_end; ++src_row_it)
+    {
+      nextMovedRow = *src_row_it;
+
+      if (nextMovedRow == endRow + 1)
+      {
+        ++endRow;
+      } else {
+        Q_ASSERT(nextMovedRow > endRow + 1);
+        moveCommands.prepend(getMoveCommand(srcPath, startRow, endRow));
+        startRow = nextMovedRow;
+        endRow = nextMovedRow;
+
+        if ((src_row_it + 1) == rows_moved_end)
+          moveCommands.prepend(getMoveCommand(srcPath, startRow, endRow));
+
+      }
+    }
+  }
+
+  QPersistentModelIndex destParent = parent;
+  QPersistentModelIndex destRowIndex = index(destRow, column, parent);
+
+  ModelMoveCommand *firstCommand = moveCommands.takeFirst();
+  firstCommand->setDestAncestors(indexToPath(parent));
+  firstCommand->setDestRow(destRow);
+  firstCommand->doCommand();
+
+  if (!destRowIndex.isValid())
+    destRowIndex = index(destRow, column, parent);
+
+  Q_ASSERT(destRowIndex.isValid());
+  int offset = firstCommand->endRow() - firstCommand->startRow() + 1;
+  foreach(ModelMoveCommand *moveCommand, moveCommands)
+  {
+    moveCommand->setDestAncestors(indexToPath(destParent));
+    moveCommand->setDestRow(destRowIndex.row() + offset);
+    moveCommand->doCommand();
+    offset = moveCommand->endRow() - moveCommand->startRow() + 1;
+  }
+
+  return false;
+}
+
+ModelMoveCommand* DynamicTreeModel::getMoveCommand(const QList<int> &srcPath, int startRow, int endRow)
+{
+  ModelMoveCommand *moveCommand = new ModelMoveCommand(this, this);
+  moveCommand->setAncestorRowNumbers(srcPath);
+  moveCommand->setStartRow(startRow);
+  moveCommand->setEndRow(endRow);
+  return moveCommand;
+}
+
+Qt::ItemFlags DynamicTreeModel::flags(const QModelIndex& index) const
+{
+  Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+  if (index.isValid())
+    return flags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable;
+  return flags;
+}
+
+Qt::DropActions DynamicTreeModel::supportedDropActions() const
+{
+  return Qt::MoveAction;
+}
+
+QStringList DynamicTreeModel::mimeTypes() const
+{
+  QStringList types;
+  types << QLatin1String("application/x-dynamictreemodel-itemlist");
+  return types;
+}
+
+QMimeData* DynamicTreeModel::mimeData(const QModelIndexList& indexes) const
+{
+  QMimeData *data = new QMimeData();
+  QByteArray itemData;
+  QModelIndexList::const_iterator it = indexes.begin();
+  const QModelIndexList::const_iterator end = indexes.end();
+  while(it != end)
+  {
+    itemData.append(QByteArray::number(it->internalId()));
+    ++it;
+    if (it != end)
+      itemData.append('\0');
+  }
+  data->setData(mimeTypes().first(), itemData);
+  return data;
+}
+
+QList<int> DynamicTreeModel::indexToPath(const QModelIndex &_idx) const
+{
+  QList<int> list;
+  QModelIndex idx = _idx;
+  while (idx.isValid())
+  {
+    list.prepend(idx.row());
+    idx = idx.parent();
+  }
+  return list;
+}
+
 ModelChangeCommand::ModelChangeCommand( DynamicTreeModel *model, QObject *parent )
     : QObject(parent), m_model(model), m_startRow(-1), m_endRow(-1), m_numCols(1)
 {
 
 }
 
-QModelIndex ModelChangeCommand::findIndex(QList<int> rows)
+QModelIndex ModelChangeCommand::findIndex(const QList<int> &rows) const
 {
   const int col = 0;
   QModelIndex parent = QModelIndex();
