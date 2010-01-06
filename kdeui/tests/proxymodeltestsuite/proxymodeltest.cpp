@@ -214,11 +214,18 @@ void ProxyModelTest::testMappings()
 
 void ProxyModelTest::verifyModel(const QModelIndex& parent, int start, int end)
 {
+  Q_UNUSED(start);
+  Q_UNUSED(end);
+
   QVERIFY(parent.model() == m_proxyModel || !parent.isValid());
 }
 
 void ProxyModelTest::verifyModel(const QModelIndex& parent, int start, int end, const QModelIndex& destParent, int dest)
 {
+  Q_UNUSED(start);
+  Q_UNUSED(end);
+  Q_UNUSED(dest);
+
   QVERIFY(parent.model() == m_proxyModel || !parent.isValid());
   QVERIFY(destParent.model() == m_proxyModel || !destParent.isValid());
 }
