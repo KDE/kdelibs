@@ -31,6 +31,7 @@
 #include "indexfinder.h"
 #include "modelcommander.h"
 #include "modelspy.h"
+#include "persistentchangelist.h"
 
 typedef QList<ModelChangeCommand*> CommandList;
 
@@ -39,25 +40,6 @@ Q_DECLARE_METATYPE( CommandList )
 typedef QList<QVariantList> SignalList;
 
 Q_DECLARE_METATYPE( SignalList )
-
-struct PersistentIndexChange
-{
-  IndexFinder parentFinder;
-  int startRow;
-  int endRow;
-  int difference;
-  bool toInvalid;
-  QModelIndexList indexes;
-  QList<QPersistentModelIndex> persistentIndexes;
-
-  QModelIndexList descendantIndexes;
-  QList<QPersistentModelIndex> persistentDescendantIndexes;
-};
-
-typedef QList<PersistentIndexChange> PersistentChangeList;
-
-Q_DECLARE_METATYPE( PersistentChangeList )
-
 
 class ProxyModelTest : public QObject
 {
