@@ -62,20 +62,24 @@ public:
     void setSrc(const String&);
     String currentSrc() const;
     
-    enum NetworkState { EMPTY, LOADING, LOADED_METADATA, LOADED_FIRST_FRAME, LOADED };
+    enum NetworkState { NETWORK_EMPTY, NETWORK_IDLE, NETWORK_LOADING, NETWORK_NO_SOURCE };
     NetworkState networkState() const;
-    float bufferingRate();
+    bool autobuffer() const;
+    void setAutobuffer(bool b);
     PassRefPtr<TimeRanges> buffered() const;
     void load(ExceptionCode&);
+    String canPlayType(String type);
+    
 
 // ready state
-    enum ReadyState { DATA_UNAVAILABLE, CAN_SHOW_CURRENT_FRAME, CAN_PLAY, CAN_PLAY_THROUGH };
+    enum ReadyState { HAVE_NOTHING, HAVE_METADATA, HAVE_CURRENT_DATA, HAVE_FUTURE_DATA, HAVE_ENOUGH_DATA };
     ReadyState readyState() const;
     bool seeking() const;
 
 // playback state
     float currentTime() const;
     void setCurrentTime(float, ExceptionCode&);
+    float startTime() const;
     float duration() const;
     bool paused() const;
     float defaultPlaybackRate() const;
@@ -87,23 +91,11 @@ public:
     bool ended() const;
     bool autoplay() const;    
     void setAutoplay(bool b);
+    bool loop() const;
+    void setLoop(bool b);
     void play(ExceptionCode&);
     void pause(ExceptionCode&);
     
-// looping
-    float start() const;
-    void setStart(float time);
-    float end() const;
-    void setEnd(float time);
-    float loopStart() const;
-    void setLoopStart(float time);
-    float loopEnd() const;
-    void setLoopEnd(float time);
-    unsigned playCount() const;
-    void setPlayCount(unsigned, ExceptionCode&);
-    unsigned currentLoop() const;
-    void setCurrentLoop(unsigned);
-
 // controls
     bool controls() const;
     void setControls(bool);
@@ -113,9 +105,6 @@ public:
     void setMuted(bool);
 
 protected:
-    float getTimeOffsetAttribute(NodeImpl::Id name, float valueOnError) const;
-    void setTimeOffsetAttribute(NodeImpl::Id name, float value);
-
     void checkIfSeekNeeded();
 
     void setReadyState(ReadyState);
@@ -136,8 +125,8 @@ protected:
     bool m_begun;
     bool m_loadedFirstFrame;
     bool m_autoplaying;
+    bool m_autobuffer;
     
-    unsigned m_currentLoop;
     float m_volume;
     bool m_muted;
     
@@ -150,8 +139,6 @@ protected:
     double m_previousProgressTime;
     bool m_sentStalledEvent;
     
-    float m_bufferingRate;
-
     QPointer<MediaPlayer> m_player;
 };
 

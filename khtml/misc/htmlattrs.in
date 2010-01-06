@@ -34,7 +34,6 @@ dir
 direction
 disabled
 enctype
-end
 face
 frame
 frameborder
@@ -51,8 +50,6 @@ left
 leftmargin
 link
 loop
-loopend
-loopstart
 marginheight
 marginwidth
 maxlength
@@ -71,7 +68,6 @@ oversrc
 pagex
 pagey
 plain
-playcount
 pluginpage
 pluginspage
 pluginurl

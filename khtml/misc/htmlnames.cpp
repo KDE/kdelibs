@@ -168,7 +168,6 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_DIRECTION), "direction");
     s_idTable->addStaticMapping(localNamePart(ATTR_DISABLED), "disabled");
     s_idTable->addStaticMapping(localNamePart(ATTR_ENCTYPE), "enctype");
-    s_idTable->addStaticMapping(localNamePart(ATTR_END), "end");
     s_idTable->addStaticMapping(localNamePart(ATTR_FACE), "face");
     s_idTable->addStaticMapping(localNamePart(ATTR_FRAMEBORDER), "frameborder");
     s_idTable->addStaticMapping(localNamePart(ATTR_HEIGHT), "height");
@@ -182,8 +181,6 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_LEFT), "left");
     s_idTable->addStaticMapping(localNamePart(ATTR_LEFTMARGIN), "leftmargin");
     s_idTable->addStaticMapping(localNamePart(ATTR_LOOP), "loop");
-    s_idTable->addStaticMapping(localNamePart(ATTR_LOOPEND), "loopend");
-    s_idTable->addStaticMapping(localNamePart(ATTR_LOOPSTART), "loopstart");
     s_idTable->addStaticMapping(localNamePart(ATTR_MARGINHEIGHT), "marginheight");
     s_idTable->addStaticMapping(localNamePart(ATTR_MARGINWIDTH), "marginwidth");
     s_idTable->addStaticMapping(localNamePart(ATTR_MAXLENGTH), "maxlength");
@@ -202,7 +199,6 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_PAGEX), "pagex");
     s_idTable->addStaticMapping(localNamePart(ATTR_PAGEY), "pagey");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLAIN), "plain");
-    s_idTable->addStaticMapping(localNamePart(ATTR_PLAYCOUNT), "playcount");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLUGINPAGE), "pluginpage");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLUGINSPAGE), "pluginspage");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLUGINURL), "pluginurl");
@@ -399,6 +395,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_EDGEMODE), "edgeMode");
     s_idTable->addStaticMapping(localNamePart(ATTR_ELEVATION), "elevation");
     s_idTable->addStaticMapping(localNamePart(ATTR_ENABLE_BACKGROUND), "enable-background");
+    s_idTable->addStaticMapping(localNamePart(ATTR_END), "end");
     s_idTable->addStaticMapping(localNamePart(ATTR_EXPONENT), "exponent");
     s_idTable->addStaticMapping(localNamePart(ATTR_EXTERNALRESOURCESREQUIRED), "externalResourcesRequired");
     s_idTable->addStaticMapping(localNamePart(ATTR_FILL), "fill");

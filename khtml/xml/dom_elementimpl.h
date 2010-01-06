@@ -258,6 +258,7 @@ public:
 
     // convenience methods which ignore exceptions
     void setAttribute (NodeImpl::Id id, const DOMString &value);
+    void setBooleanAttribute(NodeImpl::Id id, bool b);
 
     NamedAttrMapImpl* attributes(bool readonly = false) const
     {

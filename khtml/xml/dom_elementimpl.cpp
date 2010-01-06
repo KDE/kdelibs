@@ -544,6 +544,16 @@ void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
     setAttribute(id, emptyPrefixName, false, value, exceptioncode);
 }
 
+void ElementImpl::setBooleanAttribute(NodeImpl::Id id, bool b)
+{
+    if (b)
+        setAttribute(id, "1");
+    else {
+        int ec;
+        removeAttribute(id, ec);
+    }       
+}
+
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 {
     // If setting the whole map changes the id attribute, we need to

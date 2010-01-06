@@ -32,7 +32,7 @@ namespace khtml {
 
 class MediaError : public RefCounted<MediaError> {
 public:
-    enum Code { MEDIA_ERR_ABORTED = 1, MEDIA_ERR_NETWORK, MEDIA_ERR_DECODE };
+    enum Code { MEDIA_ERR_ABORTED = 1, MEDIA_ERR_NETWORK, MEDIA_ERR_DECODE, MEDIA_ERR_SRC_NOT_SUPPORTED };
 
     MediaError(Code code) : RefCounted<MediaError>(0), m_code(code) { }
 

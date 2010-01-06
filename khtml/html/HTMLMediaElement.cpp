@@ -36,6 +36,7 @@
 #include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include <phonon/mediaobject.h>
+#include <phonon/backendcapabilities.h>
 #include <rendering/render_media.h>
 
 const double doubleMax = 999999999.8; // ### numeric_limits<double>::max()
@@ -48,12 +49,12 @@ namespace khtml {
 HTMLMediaElement::HTMLMediaElement(Document* doc)
     : HTMLElement(doc)
     , m_defaultPlaybackRate(1.0f)
-    , m_networkState(EMPTY)
-    , m_readyState(DATA_UNAVAILABLE)
+    , m_networkState(NETWORK_EMPTY)
+    , m_readyState(HAVE_NOTHING)
     , m_begun(false)
     , m_loadedFirstFrame(false)
     , m_autoplaying(true)
-    , m_currentLoop(0)
+    , m_autobuffer(true)
     , m_volume(0.5f)
     , m_muted(false)
     , m_paused(true)
@@ -62,7 +63,6 @@ HTMLMediaElement::HTMLMediaElement(Document* doc)
     , m_previousProgress(0)
     , m_previousProgressTime(doubleMax)
     , m_sentStalledEvent(false)
-    , m_bufferingRate(0)
     , m_player(new MediaPlayer())
 {
 }
@@ -103,7 +103,7 @@ void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
     if (attrId == ATTR_SRC) {
         // 3.14.9.2.
         // change to src attribute triggers load()
-        if (inDocument() && m_networkState == EMPTY)
+        if (inDocument() && m_networkState == NETWORK_EMPTY)
             scheduleLoad();
     } if (attrId == ATTR_CONTROLS) {
         /*if (!isVideo() && attached() && (controls() != (renderer() != 0))) {
@@ -126,38 +126,6 @@ String serializeTimeOffset(float time)
     // FIXME serialize time offset values properly (format not specified yet)
     timeString.append("s");
     return timeString;
-}
-
-float parseTimeOffset(const String& timeString, bool* ok = 0)
-{
-#if 0
-    const UChar* characters = timeString.characters();
-    unsigned length = timeString.length();
-    
-    if (length && characters[length - 1] == 's')
-        length--;
-    
-    // FIXME parse time offset values (format not specified yet)
-    float val = charactersToFloat(characters, length, ok);
-    return val;
-#else
-    return timeString.string().toFloat(ok);
-#endif
-}
-
-float HTMLMediaElement::getTimeOffsetAttribute(NodeImpl::Id name, float valueOnError) const
-{
-    bool ok;
-    String timeString = getAttribute(name);
-    float result = parseTimeOffset(timeString, &ok);
-    if (ok)
-        return result;
-    return valueOnError;
-}
-
-void HTMLMediaElement::setTimeOffsetAttribute(NodeImpl::Id name, float value)
-{
-    setAttribute(name, serializeTimeOffset(value));
 }
 
 PassRefPtr<MediaError> HTMLMediaElement::error() const 
@@ -185,16 +153,40 @@ HTMLMediaElement::NetworkState HTMLMediaElement::networkState() const
     return m_networkState;
 }
 
-float HTMLMediaElement::bufferingRate()
+bool HTMLMediaElement::autobuffer() const
 {
-    if (!m_player)
-        return 0;
-    return m_bufferingRate;
+   return m_autobuffer;
+}
+
+void HTMLMediaElement::setAutobuffer(bool b)
+{
+    m_autobuffer = b;
 }
 
 void HTMLMediaElement::load(ExceptionCode&)
 {
     // ###
+}
+
+String HTMLMediaElement::canPlayType(String type)
+{
+    QString theType = type.string().simplified();
+    int paramsIdx = theType.indexOf(';');
+    bool hasParams = (paramsIdx > 0 );
+    // FIXME: Phonon doesn't provide the API to handle codec parameters yet
+    if (hasParams)
+        theType.truncate(paramsIdx);
+    while (1) {
+        if (Phonon::BackendCapabilities::isMimeTypeAvailable(theType))
+            return "probably";
+        if (theType == QLatin1String("audio/ogg") || theType == QLatin1String("video/ogg"))
+            theType = QLatin1String("application/ogg");
+        else
+            break;
+    }
+    if (theType == QLatin1String("application/octet-stream") && hasParams)
+        return "";
+    return "maybe";
 }
 
 void HTMLMediaElement::setReadyState(ReadyState state)
@@ -231,6 +223,11 @@ float HTMLMediaElement::currentTime() const
 void HTMLMediaElement::setCurrentTime(float time, ExceptionCode& ec)
 {
     //    seek(time, ec);
+}
+
+float HTMLMediaElement::startTime() const
+{
+    return 0.0f;
 }
 
 float HTMLMediaElement::duration() const
@@ -292,13 +289,23 @@ bool HTMLMediaElement::autoplay() const
 
 void HTMLMediaElement::setAutoplay(bool b)
 {
-    //   setBooleanAttribute(ATTR_AUTOPLAY, b);
+    setBooleanAttribute(ATTR_AUTOPLAY, b);
+}
+
+bool HTMLMediaElement::loop() const
+{
+    return hasAttribute(ATTR_LOOP);
+}
+
+void HTMLMediaElement::setLoop(bool b)
+{
+    setBooleanAttribute(ATTR_LOOP, b);
 }
 
 void HTMLMediaElement::play(ExceptionCode& ec)
 {
     // 3.14.9.7. Playing the media resource
-    if (!m_player || networkState() == EMPTY) {
+    if (!m_player || networkState() == NETWORK_EMPTY) {
         ec = 0;
         load(ec);
         if (ec)
@@ -306,7 +313,6 @@ void HTMLMediaElement::play(ExceptionCode& ec)
     }
     ExceptionCode unused;
     if (endedPlayback()) {
-        m_currentLoop = 0;
         // ### seek(effectiveStart(), unused);
     }
     setPlaybackRate(defaultPlaybackRate(), unused);
@@ -324,7 +330,7 @@ void HTMLMediaElement::play(ExceptionCode& ec)
 void HTMLMediaElement::pause(ExceptionCode& ec)
 {
     // 3.14.9.7. Playing the media resource
-    if (!m_player || networkState() == EMPTY) {
+    if (!m_player || networkState() == NETWORK_EMPTY) {
         ec = 0;
         load(ec);
         if (ec)
@@ -342,77 +348,6 @@ void HTMLMediaElement::pause(ExceptionCode& ec)
     updatePlayState();
 }
 
-unsigned HTMLMediaElement::playCount() const
-{
-    String val = getAttribute(ATTR_PLAYCOUNT);
-    int count = val.toInt();
-    return qMax(count, 1); 
-}
-
-void HTMLMediaElement::setPlayCount(unsigned count, ExceptionCode& ec)
-{
-    if (!count) {
-        ec = DOMException::INDEX_SIZE_ERR;
-        return;
-    }
-    setAttribute(ATTR_PLAYCOUNT, QString::number(count));
-    checkIfSeekNeeded();
-}
-
-float HTMLMediaElement::start() const 
-{ 
-    return getTimeOffsetAttribute(ATTR_START, 0); 
-}
-
-void HTMLMediaElement::setStart(float time) 
-{ 
-    setTimeOffsetAttribute(ATTR_START, time); 
-    checkIfSeekNeeded();
-}
-
-float HTMLMediaElement::end() const 
-{ 
-    return getTimeOffsetAttribute(ATTR_END, doubleInf); 
-}
-
-void HTMLMediaElement::setEnd(float time) 
-{ 
-    setTimeOffsetAttribute(ATTR_END, time); 
-    checkIfSeekNeeded();
-}
-
-float HTMLMediaElement::loopStart() const 
-{ 
-    return getTimeOffsetAttribute(ATTR_LOOPSTART, 0); 
-}
-
-void HTMLMediaElement::setLoopStart(float time) 
-{
-    setTimeOffsetAttribute(ATTR_LOOPSTART, time); 
-    checkIfSeekNeeded();
-}
-
-float HTMLMediaElement::loopEnd() const 
-{ 
-    return getTimeOffsetAttribute(ATTR_LOOPEND, doubleInf); 
-}
-
-void HTMLMediaElement::setLoopEnd(float time) 
-{ 
-    setTimeOffsetAttribute(ATTR_LOOPEND, time); 
-    checkIfSeekNeeded();
-}
-
-unsigned HTMLMediaElement::currentLoop() const
-{
-    return m_currentLoop;
-}
-
-void HTMLMediaElement::setCurrentLoop(unsigned currentLoop)
-{
-    m_currentLoop = currentLoop;
-}
-
 bool HTMLMediaElement::controls() const
 {
     return hasAttribute(ATTR_CONTROLS);
@@ -420,7 +355,7 @@ bool HTMLMediaElement::controls() const
 
 void HTMLMediaElement::setControls(bool b)
 {
-    // setBooleanAttribute(ATTR_CONTROLS, b);
+    setBooleanAttribute(ATTR_CONTROLS, b);
 }
 
 float HTMLMediaElement::volume() const
