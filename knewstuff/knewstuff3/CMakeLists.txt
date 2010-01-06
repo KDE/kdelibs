@@ -7,7 +7,7 @@ configure_file(
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. include_directories(${LIBATTICA_INCLUDE_DIR})
+include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. ${LIBATTICA_INCLUDE_DIR})
 
 set(knewstuff3_SRCS
     downloaddialog.cpp
