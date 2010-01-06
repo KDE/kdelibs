@@ -26,6 +26,8 @@ class QModelIndex;
 
 class QPlainTextEdit;
 class QTreeView;
+class QRadioButton;
+
 class DynamicTreeModel;
 
 class DynamicTreeWidget : public QWidget
@@ -42,6 +44,9 @@ public:
 private slots:
   void currentChanged(int index);
 
+  void removeSelected();
+  void insertSelected();
+
 private:
   void stringToModel(const QString &treeString);
   QString modelTreeToString(int depth, const QModelIndex &parent);
@@ -56,6 +61,11 @@ private:
   DynamicTreeModel *m_dynamicTreeModel;
   QTreeView *m_treeView;
   QPlainTextEdit *m_textEdit;
+
+  QPlainTextEdit *m_insertPatternTextEdit;
+  QRadioButton *m_insertChildren;
+  QRadioButton *m_insertSiblingsAbove;
+  QRadioButton *m_insertSiblingsBelow;
 };
 
 #endif

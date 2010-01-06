@@ -23,6 +23,8 @@
 #include <QPlainTextEdit>
 #include <QTreeView>
 #include <QHBoxLayout>
+#include <QPushButton>
+#include <QRadioButton>
 
 #include "dynamictreemodel.h"
 
@@ -36,6 +38,10 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
 
   m_textEdit = new QPlainTextEdit(tabWidget);
 
+  QWidget *container = new QWidget(tabWidget);
+
+  QVBoxLayout *viewLayout = new QVBoxLayout(container);
+
   m_treeView = new QTreeView(tabWidget);
   m_treeView->setModel(rootModel);
   m_treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -44,8 +50,35 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   m_treeView->setAcceptDrops(true);
   m_treeView->setDropIndicatorShown(true);
 
+  QPushButton *m_removeButton = new QPushButton("Remove", tabWidget);
+
+  connect(m_removeButton, SIGNAL(clicked(bool)), SLOT(removeSelected()));
+
+  m_insertPatternTextEdit = new QPlainTextEdit(tabWidget);
+  m_insertPatternTextEdit->setMaximumHeight(100);
+
+  m_insertChildren = new QRadioButton("Insert Children", tabWidget);
+  m_insertSiblingsAbove = new QRadioButton("Insert Siblings Above", tabWidget);
+  m_insertSiblingsBelow = new QRadioButton("Insert Siblings Below", tabWidget);
+
+  m_insertChildren->setChecked(true);
+
+  QPushButton *m_insertButton = new QPushButton("Insert", tabWidget);
+
+  connect(m_insertButton, SIGNAL(clicked(bool)), SLOT(insertSelected()));
+
+  viewLayout->addWidget(m_treeView);
+
+  viewLayout->addWidget(m_removeButton);
+
+  viewLayout->addWidget(m_insertPatternTextEdit);
+  viewLayout->addWidget(m_insertChildren);
+  viewLayout->addWidget(m_insertSiblingsAbove);
+  viewLayout->addWidget(m_insertSiblingsBelow);
+  viewLayout->addWidget(m_insertButton);
+
   tabWidget->addTab(m_textEdit, "Edit");
-  tabWidget->addTab(m_treeView, "View");
+  tabWidget->addTab(container, "View");
 
   tabWidget->setCurrentIndex(ViewTab);
 
@@ -126,6 +159,55 @@ QString DynamicTreeWidget::modelTreeToString(int depth, const QModelIndex &paren
       result.append(modelTreeToString(depth+1, idx));
   }
   return result;
+}
+
+void DynamicTreeWidget::removeSelected()
+{
+  QModelIndex parent;
+  int top;
+  int bottom;
+  ModelRemoveCommand *removeCommand = new ModelRemoveCommand(m_dynamicTreeModel, this);
+  QItemSelection selection = m_treeView->selectionModel()->selection();
+  while (!selection.isEmpty())
+  {
+    const QItemSelectionRange &range = selection.takeFirst(); // The selection model will take care of updating persistent indexes.
+    Q_ASSERT(range.isValid());
+    kDebug() << range.parent() << range.top() << range.bottom();
+    removeCommand->setAncestorRowNumbers(m_dynamicTreeModel->indexToPath(range.parent()));
+    removeCommand->setStartRow(range.top());
+    removeCommand->setEndRow(range.bottom());
+
+    kDebug() << m_dynamicTreeModel->indexToPath(range.parent());
+
+    removeCommand->doCommand();
+  }
+}
+
+void DynamicTreeWidget::insertSelected()
+{
+  const QModelIndexList selectedRows = m_treeView->selectionModel()->selectedRows();
+
+  if (selectedRows.size() != 1)
+    return;
+
+  const QModelIndex selectedRow = selectedRows.first();
+
+  ModelInsertCommand *ins = new ModelInsertCommand(m_dynamicTreeModel, this);
+  if (m_insertChildren->isChecked())
+  {
+    ins->setAncestorRowNumbers(m_dynamicTreeModel->indexToPath(selectedRow));
+    ins->setStartRow(0);
+  } else if (m_insertSiblingsAbove->isChecked())
+  {
+    ins->setAncestorRowNumbers(m_dynamicTreeModel->indexToPath(selectedRow.parent()));
+    ins->setStartRow(selectedRow.row());
+  } else {
+    Q_ASSERT(m_insertSiblingsBelow->isChecked());
+    ins->setAncestorRowNumbers(m_dynamicTreeModel->indexToPath(selectedRow.parent()));
+    ins->setStartRow(selectedRow.row() + 1);
+  }
+  ins->interpret(m_insertPatternTextEdit->toPlainText());
+  ins->doCommand();
 }
 
 #include "dynamictreewidget.moc"
