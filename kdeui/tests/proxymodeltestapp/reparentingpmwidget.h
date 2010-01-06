@@ -28,24 +28,6 @@
 #include "../itemviews/kreparentingproxymodel.h"
 
 class DynamicTreeModel;
-class QTreeView;
-class QLineEdit;
-class QItemSelectionModel;
-class QPushButton;
-
-class KDescendantsProxyModel;
-class KSelectionProxyModel;
-
-
-class CustomReparent : public KReparentingProxyModel
-{
-  Q_OBJECT
-public:
-  CustomReparent(QObject* parent = 0);
-
-  virtual bool isDescendantOf(const QModelIndex& left, const QModelIndex& right) const;
-
-};
 
 class ReparentingProxyModelWidget : public QWidget
 {
@@ -53,18 +35,8 @@ class ReparentingProxyModelWidget : public QWidget
 public:
   ReparentingProxyModelWidget(QWidget *parent = 0);
 
-public slots:
-  void reset();
-  void insertNewParent();
-
 private:
   DynamicTreeModel *m_rootModel;
-  CustomReparent *m_reparentingProxyModel;
-  QTreeView *m_reparentingView;
-  QTreeView *m_rootView;
-  QPushButton *m_button;
-  int m_numCols;
-
 };
 
 #endif

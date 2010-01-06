@@ -22,20 +22,19 @@
 #include "recursivefilterpmwidget.h"
 
 #include <QLineEdit>
-#include <QPushButton>
 #include <QSplitter>
 #include <QTreeView>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPlainTextEdit>
 
 #include "dynamictreemodel.h"
-#include <qstandarditemmodel.h>
+#include "dynamictreewidget.h"
 
 RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
   : QWidget(parent),
     m_lineEdit(new QLineEdit(this)),
-    m_label(new QLabel(this)),
-    m_pushButton(new QPushButton(this))
+    m_label(new QLabel(this))
 {
   m_label->setText("Matching filter re: ");
   m_lineEdit->setText("12|13|37|4");
@@ -48,8 +47,8 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
   m_recursive = new KRecursiveFilterProxyModel(this);
   m_recursiveSubclass = new KRecursiveFilterProxyModelSubclass(this);
 
-  QTreeView *rootView = new QTreeView(splitter);
-  rootView->setModel(m_rootModel);
+  DynamicTreeWidget *dynamicTreeWidget = new DynamicTreeWidget(m_rootModel, splitter);
+
   QTreeView *recursiveView = new QTreeView(splitter);
   recursiveView->setModel(m_recursive);
   QTreeView *recursiveSubclassView = new QTreeView(splitter);
@@ -57,13 +56,18 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
 
   hLayout->addWidget(m_label);
   hLayout->addWidget(m_lineEdit);
-  hLayout->addWidget(m_pushButton);
 
   vLayout->addLayout(hLayout);
   vLayout->addWidget(splitter);
 
   connect(m_lineEdit, SIGNAL(textChanged(QString)), SLOT(reset()));
-  connect(m_pushButton, SIGNAL(clicked(bool)), SLOT(actionClicked()));
+
+  connect(m_lineEdit, SIGNAL(textChanged(QString)), recursiveView, SLOT(expandAll()));
+  connect(m_lineEdit, SIGNAL(textChanged(QString)), recursiveSubclassView, SLOT(expandAll()));
+  connect(dynamicTreeWidget->textEdit(), SIGNAL(textChanged()), recursiveView, SLOT(expandAll()));
+  connect(dynamicTreeWidget->textEdit(), SIGNAL(textChanged()), recursiveSubclassView, SLOT(expandAll()));
+  connect(m_recursive, SIGNAL(modelReset()), recursiveView, SLOT(expandAll()), Qt::QueuedConnection);
+  connect(m_recursiveSubclass, SIGNAL(modelReset()), recursiveSubclassView, SLOT(expandAll()), Qt::QueuedConnection);
 
   m_recursive->setSourceModel(m_rootModel);
   m_recursiveSubclass->setSourceModel(m_rootModel);
@@ -73,112 +77,6 @@ RecursiveFilterProxyWidget::RecursiveFilterProxyWidget(QWidget* parent)
 
 void RecursiveFilterProxyWidget::reset()
 {
-  m_rootModel->clear();
-
-  QList<int> ancestorRows;
-
-  ModelInsertCommand *ins;
-  int max_runs = 4;
-  for (int i = 0; i < max_runs; i++)
-  {
-    ins = new ModelInsertCommand(m_rootModel, this);
-    ins->setAncestorRowNumbers(ancestorRows);
-    ins->setStartRow(0);
-    ins->setEndRow(4);
-    ins->doCommand();
-    ancestorRows << 2;
-  }
-
-  ancestorRows.clear();
-  ancestorRows << 3;
-  for (int i = 0; i < max_runs - 1; i++)
-  {
-    ins = new ModelInsertCommand(m_rootModel, this);
-    ins->setAncestorRowNumbers(ancestorRows);
-    ins->setStartRow(0);
-    ins->setEndRow(4);
-    ins->doCommand();
-    ancestorRows << 3;
-  }
-
   m_recursive->setFilterRegExp(m_lineEdit->text());
   m_recursiveSubclass->setRegExp(QRegExp(m_lineEdit->text()));
-
-  m_nextAction = InsertAction;
-  m_pushButton->setText("Insert");
 }
-
-void RecursiveFilterProxyWidget::insertRows()
-{
-  QList<int> ancestorRows;
-  ModelInsertCommand *ins;
-
-  ancestorRows << 3 << 3 << 2;
-  ins = new ModelInsertCommand(m_rootModel, this);
-  ins->setAncestorRowNumbers(ancestorRows);
-  ins->setStartRow(0);
-  ins->setEndRow(4);
-  ins->doCommand();
-
-  m_nextAction = RemoveAction;
-  m_pushButton->setText("Remove");
-}
-
-void RecursiveFilterProxyWidget::insertRows2()
-{
-  QList<int> ancestorRows;
-  ModelInsertCommand *ins;
-
-  ancestorRows << 4;
-  ins = new ModelInsertCommand(m_rootModel, this);
-  ins->setAncestorRowNumbers(ancestorRows);
-  ins->setStartRow(0);
-  ins->setEndRow(4);
-  ins->doCommand();
-
-  m_nextAction = ResetAction;
-  m_pushButton->setText("Reset");
-}
-
-void RecursiveFilterProxyWidget::removeRows()
-{
-  QList<int> ancestorRows;
-
-  ancestorRows << 3 << 3 << 2;
-  ModelRemoveCommand *rem = new ModelRemoveCommand(m_rootModel, this);
-  rem->setAncestorRowNumbers(ancestorRows);
-  rem->setStartRow(0);
-  rem->setEndRow(4);
-  rem->doCommand();
-
-  m_nextAction = Insert2Action;
-  m_pushButton->setText("Insert2");
-}
-
-void RecursiveFilterProxyWidget::actionClicked()
-{
-  switch(m_nextAction)
-  {
-  case InsertAction:
-  {
-    insertRows();
-    break;
-  }
-  case Insert2Action:
-  {
-    insertRows2();
-    break;
-  }
-  case RemoveAction:
-  {
-    removeRows();
-    break;
-  }
-  case ResetAction:
-  {
-    reset();
-    break;
-  }
-  }
-}
-

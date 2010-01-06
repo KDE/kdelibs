@@ -23,112 +23,35 @@
 
 #include <QTreeView>
 #include <QSplitter>
-#include <QPushButton>
+#include <QVBoxLayout>
 
 #include "dynamictreemodel.h"
-#include <QHBoxLayout>
-
-CustomReparent::CustomReparent(QObject* parent)
-    : KReparentingProxyModel(parent)
-{
-
-}
-
-bool CustomReparent::isDescendantOf(const QModelIndex& ancestor, const QModelIndex& descendant) const
-{
-  bool r = (
-             (ancestor.data().toString() == "1" && descendant.data().toString() == "3")
-          || (ancestor.data().toString() == "1" && descendant.data().toString() == "5")
-          || (ancestor.data().toString() == "1" && descendant.data().toString() == "7")
-          || (ancestor.data().toString() == "1" && descendant.data().toString() == "9")
-          || (ancestor.data().toString() == "3" && descendant.data().toString() == "5")
-          || (ancestor.data().toString() == "3" && descendant.data().toString() == "7")
-          || (ancestor.data().toString() == "13" && descendant.data().toString() == "15")
-
-          || (ancestor.data().toString() == "21" && descendant.data().toString() == "1")
-          || (ancestor.data().toString() == "21" && descendant.data().toString() == "11")
-          || (ancestor.data().toString() == "21" && descendant.data().toString() == "13")
-          || (ancestor.data().toString() == "21" && descendant.data().toString() == "17")
-
-          || (ancestor.data().toString() == "21" && descendant.data().toString() == "23")
-
-          || (ancestor.data().toString() == "23" && descendant.data().toString() == "1")
-          || (ancestor.data().toString() == "23" && descendant.data().toString() == "11")
-
-
-          )
-    ? true : KReparentingProxyModel::isDescendantOf(ancestor, descendant);
-
-//     kDebug() << "###" << r << ancestor.data() << descendant.data();
-    return r;
-}
+#include "dynamictreewidget.h"
+#include "scriptablereparentingwidget.h"
 
 ReparentingProxyModelWidget::ReparentingProxyModelWidget(QWidget* parent): QWidget(parent)
 {
   QVBoxLayout *layout = new QVBoxLayout(this);
 
-  m_button = new QPushButton("Add more", this);
-  layout->addWidget(m_button);
-
   QSplitter *vSplitter = new QSplitter( this );
   layout->addWidget(vSplitter);
 
-  m_numCols = 2;
   m_rootModel = new DynamicTreeModel(this);
 
-  m_rootView = new QTreeView( vSplitter );
-  m_rootView->setModel(m_rootModel);
-  m_rootView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  DynamicTreeWidget *dynamicTreeWidget = new DynamicTreeWidget(m_rootModel, vSplitter);
+  dynamicTreeWidget->setInitialTree(
+    "- 1"
+    "- 2"
+    "- - 3"
+    "- - - 4"
+    "- 5"
+    "- 6"
+    "- 7"
+  );
 
-
-  m_reparentingProxyModel = new CustomReparent(this);
-  m_reparentingProxyModel->setSourceModel(m_rootModel);
-
-  m_reparentingView = new QTreeView( vSplitter );
-  m_reparentingView->setModel( m_reparentingProxyModel );
+  ScriptableReparentingWidget *reparentingWidget = new ScriptableReparentingWidget(m_rootModel, vSplitter);
 
   setLayout(layout);
-
-  reset();
-}
-
-void ReparentingProxyModelWidget::reset()
-{
-  m_rootModel->clear();
-
-  disconnect(m_button, SIGNAL(clicked(bool)), this, SLOT(reset()));
-  ModelInsertCommand *insertCommand;
-  int max_runs = 1;
-  for (int i = 0; i < max_runs; i++)
-  {
-    insertCommand = new ModelInsertCommand(m_rootModel, this);
-    insertCommand->setNumCols(m_numCols);
-    insertCommand->setStartRow(0);
-    insertCommand->setEndRow(9);
-    insertCommand->doCommand();
-  }
-
-  m_reparentingView->expandAll();
-
-  m_button->setText("Add more");
-  connect(m_button, SIGNAL(clicked(bool)), SLOT(insertNewParent()));
-
-}
-
-void ReparentingProxyModelWidget::insertNewParent()
-{
-
-  disconnect(m_button, SIGNAL(clicked(bool)), this, SLOT(insertNewParent()));
-  ModelInsertCommand *insertCommand = new ModelInsertCommand(m_rootModel, this);
-  insertCommand->setNumCols(m_numCols);
-  insertCommand->setStartRow(0);
-  insertCommand->setEndRow(1);
-  insertCommand->doCommand();
-  m_reparentingView->expandAll();
-
-  m_button->setText("Reset");
-  connect(m_button, SIGNAL(clicked(bool)), SLOT(reset()));
-
 }
 
 #include "reparentingpmwidget.moc"

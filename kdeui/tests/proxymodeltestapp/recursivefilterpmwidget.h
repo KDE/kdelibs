@@ -70,31 +70,15 @@ public:
   RecursiveFilterProxyWidget(QWidget* parent = 0);
 
 protected slots:
-  void actionClicked();
   void reset();
-  void insertRows();
-  void insertRows2();
-  void removeRows();
 
 private:
-
-  enum NextAction
-  {
-    ResetAction,
-    InsertAction,
-    Insert2Action,
-    RemoveAction
-  };
-  NextAction m_nextAction;
-
   DynamicTreeModel *m_rootModel;
   KRecursiveFilterProxyModel *m_recursive;
   KRecursiveFilterProxyModelSubclass *m_recursiveSubclass;
 
   QLineEdit *m_lineEdit;
   QLabel *m_label;
-  QPushButton *m_pushButton;
-
 };
 
 #endif

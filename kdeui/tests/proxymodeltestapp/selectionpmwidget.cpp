@@ -24,13 +24,14 @@
 #include <QSplitter>
 #include <QTreeView>
 #include <QHBoxLayout>
-#include "dynamictreemodel.h"
-#include "kselectionproxymodel.h"
 #include <QLabel>
+
+#include "dynamictreemodel.h"
+#include "dynamictreewidget.h"
+#include "kselectionproxymodel.h"
 
 SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
 {
-
   QHBoxLayout *layout = new QHBoxLayout(this);
   QSplitter *vSplitter = new QSplitter( this );
   QSplitter *hSplitter1 = new QSplitter ( Qt::Vertical, vSplitter );
@@ -39,40 +40,9 @@ SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
 
   m_rootModel = new DynamicTreeModel(this);
 
-  QList<int> ancestorRows;
+  DynamicTreeWidget *dynTreeWidget = new DynamicTreeWidget(m_rootModel, hSplitter1);
 
-  ModelInsertCommand *ins;
-  int max_runs = 4;
-  for (int i = 0; i < max_runs; i++)
-  {
-    ins = new ModelInsertCommand(m_rootModel, this);
-    ins->setAncestorRowNumbers(ancestorRows);
-    ins->setStartRow(0);
-    ins->setEndRow(4);
-    ins->doCommand();
-    ancestorRows << 2;
-  }
-
-  ancestorRows.clear();
-  ancestorRows << 3;
-  for (int i = 0; i < max_runs - 1; i++)
-  {
-    ins = new ModelInsertCommand(m_rootModel, this);
-    ins->setAncestorRowNumbers(ancestorRows);
-    ins->setStartRow(0);
-    ins->setEndRow(4);
-    ins->doCommand();
-    ancestorRows << 3;
-  }
-
-  ModelDataChangeCommand *dataChCmd = new ModelDataChangeCommand(m_rootModel, this);
-  dataChCmd->setStartRow(0);
-  dataChCmd->setEndRow(4);
-  dataChCmd->doCommand();
-
-  QTreeView *rootView = createLabelledView("Dynamic Tree Model", hSplitter1);
-  rootView->setModel(m_rootModel);
-  rootView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  QTreeView *rootView = dynTreeWidget->treeView();
 
   KSelectionProxyModel *selectedBranchesModel = new KSelectionProxyModel(rootView->selectionModel(), this);
   selectedBranchesModel->setSourceModel(m_rootModel);
@@ -108,9 +78,6 @@ SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
 
   QTreeView *onlySelectedChildrenView = createLabelledView("ChildrenOfExactSelection", hSplitter2 );
   onlySelectedChildrenView->setModel(onlySelectedChildrenModel);
-
-  setLayout(layout);
-
 }
 
 QTreeView* SelectionProxyWidget::createLabelledView(const QString &labelText, QWidget *parent)
@@ -125,3 +92,4 @@ QTreeView* SelectionProxyWidget::createLabelledView(const QString &labelText, QW
   layout->addWidget(treeview);
   return treeview;
 }
+
