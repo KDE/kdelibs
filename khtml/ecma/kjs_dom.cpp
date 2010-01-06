@@ -1365,14 +1365,23 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
       return jsBoolean(element.hasAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
     case DOMElement::GetElementsByClassName: // HTML 5
       return getDOMNodeList(exec, element.getElementsByClassName(args[0]->toString(exec).domString()));
-    case DOMElement::Focus:
-      element.focus();
-      return jsUndefined();
-    case DOMElement::Blur:
-      element.blur();
-      return jsUndefined();
     default:
-      return jsUndefined();
+
+      // Make sure our layout is up to date before we call these
+      DOM::DocumentImpl* docimpl = element.document();
+      if (docimpl) {
+          docimpl->updateLayout();
+      }
+      switch(id) {
+        case DOMElement::Focus:
+          element.focus();
+          return jsUndefined();
+        case DOMElement::Blur:
+          element.blur();
+          return jsUndefined();
+        default:
+          return jsUndefined();
+      }
   }
 }
 
