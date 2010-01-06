@@ -6,7 +6,7 @@
  *           (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *           (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
- *           (C) 2005, 2008 Maksim Orlovich (maksim@kde.org)  
+ *           (C) 2005, 2008 Maksim Orlovich (maksim@kde.org)
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ AttrImpl::AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NamespaceName nam
     // so we don't attempt to update the getElementById cache or
     // call parseAttribute, etc. This is because we're normally lazily,
     // from previous attributes, so there is nothing really changing
-    m_element = 0; 
+    m_element = 0;
     createTextChild();
     m_element = element;
 }
@@ -317,11 +317,11 @@ void AttributeImpl::rewriteValue( const DOMString& newValue )
 {
     if (m_localName.id()) {
 	// We may have m_data.value == null if we were given a normalized value
-	// off a removeAttribute (which would call parseNullAttribute()). 
+	// off a removeAttribute (which would call parseNullAttribute()).
 	// Ignore such requests.
 	if (!m_data.value)
 	    return;
-	
+
 	DOMStringImpl* value = newValue.implementation();
 	if (m_data.value == value)
 	    return;
@@ -551,7 +551,7 @@ void ElementImpl::setBooleanAttribute(NodeImpl::Id id, bool b)
     else {
         int ec;
         removeAttribute(id, ec);
-    }       
+    }
 }
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
@@ -771,8 +771,8 @@ AttrImpl* ElementImpl::getAttributeNodeNS( const DOMString &namespaceURI,
     }
 
     NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
-    LocalName localname = LocalName::fromString(localName, m_htmlCompat ? IDS_NormalizeLower : IDS_CaseSensitive);    
-    
+    LocalName localname = LocalName::fromString(localName, m_htmlCompat ? IDS_NormalizeLower : IDS_CaseSensitive);
+
     NodeImpl::Id id = makeId(namespacename.id(), localname.id());
     if (!attributes(true)) return 0;
     return static_cast<AttrImpl*>(attributes()->getNamedItem(id, emptyPrefixName, true));
@@ -812,8 +812,8 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
     m_prefix = PrefixName::fromString(_prefix);
 }
 
-short ElementImpl::tabIndex() const 
-{ 
+short ElementImpl::tabIndex() const
+{
     return m_elementHasRareData ? rareData()->tabIndex() : 0;
 }
 
@@ -1409,6 +1409,14 @@ WTF::PassRefPtr<NodeImpl> XMLElementImpl::cloneNode ( bool deep )
     WTF::RefPtr<ElementImpl> clone = new XMLElementImpl(docPtr(), NamespaceName::fromId(namespacePart(id())), LocalName::fromId(localNamePart(id())), m_prefix);
     finishCloneNode( clone.get(), deep );
     return clone;
+}
+
+void XMLElementImpl::parseAttribute(AttributeImpl *attr)
+{
+    if (attr->id() == ATTR_ID) {
+        setHasID();
+        document()->incDOMTreeVersion(DocumentImpl::TV_IDNameHref);
+    }
 }
 
 // -------------------------------------------------------------------------

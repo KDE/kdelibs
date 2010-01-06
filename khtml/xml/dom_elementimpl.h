@@ -186,12 +186,12 @@ public:
     bool hasAttribute(const QualifiedName& name) const { return hasAttribute(name.tagName()); }
     DOMString getAttribute(const QualifiedName& name) const { int ec; return const_cast<ElementImpl*>(this)->getAttributeNS(name.namespaceURI(), name.localName(), ec); }
     DOMString getAttributeNS(const DOMString& namespaceURI, const DOMString& localName, int& exceptionCode) const { return const_cast<ElementImpl*>(this)->getAttributeNS(namespaceURI, localName, exceptionCode); }
-    // FIXME: get rid of const_cast hacks (the const qualifiers of getAttribute should be reviewed 
-    // as for external API it should look like const,hower we can replace AttributeImpl (small version) 
+    // FIXME: get rid of const_cast hacks (the const qualifiers of getAttribute should be reviewed
+    // as for external API it should look like const,hower we can replace AttributeImpl (small version)
     // with normal AttrImpl (NodeImpl)
     // END OF FIXME
     // enf of WC api compatibility stuff
-    
+
     //Higher-level DOM stuff
     virtual bool hasAttributes() const;
     bool hasAttribute( const DOMString& name ) const;
@@ -240,7 +240,7 @@ public:
 
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const;
-    virtual DOMString localName() const;    
+    virtual DOMString localName() const;
     virtual unsigned short nodeType() const;
     virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
     virtual DOMString nodeName() const;
@@ -303,7 +303,7 @@ public:
     virtual void attributeChanged(NodeImpl::Id attrId);
     // for WebCore API compatibility
     virtual void attributeChanged(AttributeImpl* attribute, bool /*preserveDecls*/) { attributeChanged(attribute->id()); }
-    
+
     virtual void defaultEventHandler(EventImpl *evt);
 
     virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
@@ -325,7 +325,7 @@ public:
     virtual DOMString toString() const;
     virtual DOMString selectionToString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const;
 
-    virtual bool isFocusable() const;	    
+    virtual bool isFocusable() const;
     virtual bool isContentEditable() const;
     void setContentEditable(bool enabled);
 
@@ -344,7 +344,7 @@ public:
      *  DOM::RangeImpl uses this which is why it is public.
      */
     DOMString openTagStartToString(bool expandurls = false) const;
-    
+
     void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
     //Called when mapping from id to this node in document should be removed
     virtual void removeId(const DOMString& id);
@@ -363,7 +363,7 @@ protected:
 private:
     // There is some information such as computed style for display:none
     // elements that is needed only for a few elements. We store it
-    // in one of these. 
+    // in one of these.
     ElementRareDataImpl* rareData();
     const ElementRareDataImpl* rareData() const;
     ElementRareDataImpl* createRareData();
@@ -386,6 +386,8 @@ class XMLElementImpl : public ElementImpl
 public:
     XMLElementImpl(DocumentImpl *doc, NamespaceName namespacename, LocalName localName, PrefixName prefix);
     ~XMLElementImpl();
+
+    void parseAttribute(AttributeImpl *attr);
 
     virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
