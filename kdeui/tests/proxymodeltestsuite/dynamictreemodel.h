@@ -47,6 +47,7 @@ public:
   int columnCount(const QModelIndex &index = QModelIndex()) const;
 
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
   bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
   Qt::ItemFlags flags(const QModelIndex& index) const;
