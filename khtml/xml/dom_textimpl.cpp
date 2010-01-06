@@ -312,7 +312,7 @@ bool CommentImpl::childTypeAllowed( unsigned short /*type*/ )
 DOMString CommentImpl::toString() const
 {
     // FIXME: substitute entity references as needed!
-    return DOMString("<!--") + escapeHTML( nodeValue() ) + "-->";
+    return DOMString("<!--") + nodeValue() + "-->";
 }
 
 // ---------------------------------------------------------------------------
@@ -473,17 +473,17 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
     if (!onlyWS) {
         return true;
     }
-    
+
     RenderObject *par = parentNode()->renderer();
-    
+
     if (par->isTable() || par->isTableRow() || par->isTableSection()) {
         return false;
     }
-    
+
     if (style->preserveWS() || style->preserveLF()) {
         return true;
     }
-    
+
     RenderObject *prev = previousRenderer();
     if (par->isInlineFlow()) {
         // <span><div/> <div/></span>
@@ -494,7 +494,7 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
         if (par->isRenderBlock() && !par->childrenInline() && (!prev || !prev->isInline())) {
             return false;
         }
-        
+
         RenderObject *first = par->firstChild();
         while (first && first->isFloatingOrPositioned())
             first = first->nextSibling();
@@ -505,7 +505,7 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -558,9 +558,9 @@ TextImpl *TextImpl::createNew(DOMStringImpl *_str)
 
 DOMStringImpl* TextImpl::renderString() const
 {
-    if (renderer()) 
+    if (renderer())
         return static_cast<RenderText*>(renderer())->string();
-    else 
+    else
         return string();
 }
 
@@ -578,7 +578,7 @@ DOMString TextImpl::toString(long long startOffset, long long endOffset) const
     if(endOffset >=0 || startOffset >0)
 	str = str.copy(); //we are going to modify this, so make a copy.  I hope I'm doing this right.
     if(endOffset >= 0)
-        str.truncate(endOffset); 
+        str.truncate(endOffset);
     if(startOffset > 0)    //note the order of these 2 'if' statements so that it works right when n==m_startContainer==m_endContainer
         str.remove(0, startOffset);
     return escapeHTML( str );
@@ -619,7 +619,7 @@ DOMString CDATASectionImpl::toString() const
 }
 
 // ---------------------------------------------------------------------------
- 
+
 EditingTextImpl::EditingTextImpl(DocumentImpl *impl, const DOMString &text)
     : TextImpl(impl, text.implementation())
 {
@@ -639,5 +639,5 @@ bool EditingTextImpl::rendererIsNeeded(RenderStyle */*style*/)
     return true;
 }
 
-  
+
 
