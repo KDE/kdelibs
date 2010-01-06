@@ -203,12 +203,16 @@ class KTranslitSerbianPrivate
     QHash<QString, bool> latinNames;
     QHash<QString, bool> ijekavianNames;
     QHash<QChar, QString> dictC2L;
-    QHash<QString, QString> dictI2E;
-    int maxIjkformLen;
-    QChar iediffMarkOpen;
-    QChar iediffMarkClosed;
+    QVector<QString> tickI2Es;
+    QVector<QHash<QString, QString> > dictI2Es;
+    QVector<int> minRefLens;
+    QVector<int> maxRefLens;
 
-    QString toLatinSimple (const QString& text, const QString &althead = "");
+    QString toLatinSimple (const QString& text,
+                           const QString &althead = "") const;
+    QString toDialectSimple (const QString &text,
+                             const QString &tick, const QHash<QString, QString> &dictI2E,
+                             int minRefLen, int maxRefLen, bool toIjek) const;
 };
 
 KTranslitSerbian::KTranslitSerbian ()
@@ -311,39 +315,57 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTC2L_ENTRY("Ӯ", "Ū");
 
     // Mapping from Ijekavian to Ekavian.
-    d->iediffMarkOpen = QString::fromUtf8("›")[0];
-    d->iediffMarkClosed = QString::fromUtf8("‹")[0];
-    #define SR_DICTI2E_ENTRY(a, b) do { \
-        d->dictI2E[QString::fromUtf8(a)] = QString::fromUtf8(b); \
+    #define SR_TICKI2E_ENTRY(t) do { \
+        d->tickI2Es.append(QString::fromUtf8(t)); \
+        d->dictI2Es.append(QHash<QString, QString>()); \
     } while (0)
-    // basic cases
-    SR_DICTI2E_ENTRY("иј", "");
-    SR_DICTI2E_ENTRY("ј", "");
-    SR_DICTI2E_ENTRY("и", "е");
-    SR_DICTI2E_ENTRY("љ", "л");
-    SR_DICTI2E_ENTRY("њ", "н");
-    // special cases
+    #define SR_DICTI2E_ENTRY(i, e) do { \
+        d->dictI2Es.last()[QString::fromUtf8(i)] = QString::fromUtf8(e); \
+    } while (0)
+    SR_TICKI2E_ENTRY("›");
+    SR_DICTI2E_ENTRY("ије", "е");
+    SR_DICTI2E_ENTRY("је", "е");
+    SR_TICKI2E_ENTRY("‹");
+    SR_DICTI2E_ENTRY("иј", "еј");
     SR_DICTI2E_ENTRY("иљ", "ел");
-    SR_DICTI2E_ENTRY("је", "");
+    SR_DICTI2E_ENTRY("ио", "ео");
+    SR_DICTI2E_ENTRY("ље", "ле");
+    SR_DICTI2E_ENTRY("ње", "не");
+    SR_TICKI2E_ENTRY("▹");
+    SR_DICTI2E_ENTRY("ије", "и");
+    SR_DICTI2E_ENTRY("је", "и");
+    SR_TICKI2E_ENTRY("◃");
     SR_DICTI2E_ENTRY("ијел", "ео");
     SR_DICTI2E_ENTRY("ијен", "ењ");
-    // derived Latin mappings (before capitalization and uppercasing)
-    foreach (const QString &ijkform, d->dictI2E.keys()) {
-        QString ekvform = d->dictI2E.value(ijkform);
-        d->dictI2E[d->toLatinSimple(ijkform)] = d->toLatinSimple(ekvform);
-    }
-    // derived capitalized and uppercase mappings
-    foreach (const QString &ijkform, d->dictI2E.keys()) {
-        QString ekvform = d->dictI2E.value(ijkform);
-        d->dictI2E[ijkform[0].toUpper() + ijkform.mid(1)] = ekvform[0].toUpper() + ekvform.mid(1);
-        d->dictI2E[ijkform.toUpper()] = ekvform.toUpper();
-    }
-    // maximum length of Ijekavian forms (needed on transliteration)
-    d->maxIjkformLen = 0;
-    foreach (const QString &ijkform, d->dictI2E.keys()) {
-        if (d->maxIjkformLen < ijkform.length()) {
-            d->maxIjkformLen = ijkform.length();
+    SR_DICTI2E_ENTRY("јел", "ео");
+    // derived mappings
+    for (int i = 0; i < d->dictI2Es.size(); ++i) {
+        QHash<QString, QString> &dictI2E = d->dictI2Es[i];
+        // derived Latin mappings (before capitalization and uppercasing)
+        foreach (const QString &ref, dictI2E.keys()) {
+            QString ekvform = dictI2E.value(ref);
+            dictI2E[d->toLatinSimple(ref)] = d->toLatinSimple(ekvform);
         }
+        // derived capitalized and uppercase mappings
+        foreach (const QString &ref, dictI2E.keys()) {
+            QString ekvform = dictI2E.value(ref);
+            dictI2E[ref[0].toUpper() + ref.mid(1)] = ekvform[0].toUpper() + ekvform.mid(1);
+            dictI2E[ref.toUpper()] = ekvform.toUpper();
+        }
+        // maximum and minimum length of Ijekavian forms
+        int minRefLen = 100;
+        int maxRefLen = 0;
+        foreach (const QString &ref, dictI2E.keys()) {
+            int refLen = ref.length();
+            if (minRefLen > refLen) {
+                minRefLen = refLen;
+            }
+            if (maxRefLen < refLen) {
+                maxRefLen = refLen;
+            }
+        }
+        d->minRefLens.append(minRefLen);
+        d->maxRefLens.append(maxRefLen);
     }
 }
 
@@ -353,7 +375,7 @@ KTranslitSerbian::~KTranslitSerbian ()
 }
 
 QString KTranslitSerbianPrivate::toLatinSimple (const QString &text,
-                                                const QString &altHead)
+                                                const QString &altHead) const
 {
     // NOTE: This loop has been somewhat optimized for speed.
     int slen = text.length();
@@ -389,6 +411,47 @@ QString KTranslitSerbianPrivate::toLatinSimple (const QString &text,
     return ntext;
 }
 
+QString KTranslitSerbianPrivate::toDialectSimple (const QString &str,
+                                                  const QString &tick,
+                                                  const QHash<QString, QString> &dictI2E,
+                                                  int minRefLen,
+                                                  int maxRefLen,
+                                                  bool toIjek) const
+{
+    QString nstr;
+    int p = 0;
+    while (true) {
+        int pp = p;
+        p = str.indexOf(tick, p);
+        if (p < 0) {
+            nstr.append(str.mid(pp));
+            break;
+        }
+        nstr.append(str.mid(pp, p - pp));
+        p += tick.length();
+        if (p >= str.length() || !str[p].isLetter()) {
+            nstr.append(tick);
+            continue;
+        }
+
+        QString ijkfrm;
+        QString ekvfrm;
+        int refLen = minRefLen;
+        while (refLen <= maxRefLen && ekvfrm.isEmpty()) {
+            ijkfrm = str.mid(p, refLen);
+            ekvfrm = dictI2E.value(ijkfrm);
+            ++refLen;
+        }
+        if (!ekvfrm.isEmpty()) {
+            nstr.append(!toIjek ? ekvfrm : ijkfrm);
+            p += ijkfrm.length();
+        } else {
+            nstr.append(tick);
+        }
+    }
+    return nstr;
+}
+
 QString KTranslitSerbian::transliterate (const QString &str_,
                                          const QString &script) const
 {
@@ -398,52 +461,20 @@ QString KTranslitSerbian::transliterate (const QString &str_,
     QString str = str_;
 
     // Resolve Ekavian/Ijekavian.
+    bool toIjek;
+    int toAlt;
     if (d->ijekavianNames.contains(script)) {
-        str.remove(d->iediffMarkOpen);
-        str.remove(d->iediffMarkClosed);
-        str = resolveInserts(str, 2, 1, insHeadIje);
+        toIjek = true;
+        toAlt = 1;
     } else {
-        QString nstr;
-        int p = 0;
-        while (true) {
-            int p1 = p; // rest of text start
-
-            p = str.indexOf(d->iediffMarkOpen, p);
-            if (p < 0) {
-                nstr.append(str.mid(p1));
-                break;
-            }
-            int p2 = p; // opening mark start
-
-            nstr.append(str.mid(p1, p2 - p1));
-
-            p += 1; // length of opening mark
-            if (p >= str.length() || !str[p].isLetter()) {
-                nstr.append(d->iediffMarkOpen);
-                continue;
-            }
-            int p3 = p; // difference start
-
-            p = str.indexOf(d->iediffMarkClosed, p);
-            if (p < 0 || p - p3 > d->maxIjkformLen) {
-                nstr.append(d->iediffMarkOpen);
-                p = p3;
-                continue;
-            }
-            int p4 = p; // closing mark start
-
-            p += 1; // length of closing mark
-            int p5 = p; // tail start
-
-            QString ijkform = str.mid(p3, p4 - p3);
-            if (d->dictI2E.contains(ijkform)) {
-                nstr.append(d->dictI2E.value(ijkform));
-            } else {
-                nstr.append(str.mid(p2, p5 - p2));
-            }
-        }
-        str = resolveInserts(nstr, 2, 0, insHeadIje);
+        toIjek = false;
+        toAlt = 0;
     }
+    for (int i = 0; i < d->tickI2Es.size(); ++i) {
+        str = d->toDialectSimple(str, d->tickI2Es[i], d->dictI2Es[i],
+                                 d->minRefLens[i], d->maxRefLens[i], toIjek);
+    }
+    str = resolveInserts(str, 2, toAlt, insHeadIje);
 
     // Resolve Cyrillic/Latin.
     if (d->latinNames.contains(script)) {
