@@ -243,6 +243,8 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
 
         dwFlags = MOVEFILE_REPLACE_EXISTING;
     }
+    // To avoid error 17 - The system cannot move the file to a different disk drive.
+    dwFlags |= MOVEFILE_COPY_ALLOWED;
 
     if ( MoveFileExW( ( LPCWSTR ) _src.filePath().utf16(),
                       ( LPCWSTR ) _dest.filePath().utf16(), dwFlags) == 0 )
