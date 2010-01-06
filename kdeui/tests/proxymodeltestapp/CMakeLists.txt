@@ -18,6 +18,7 @@ set(proxymodeltestapp_SRCS
 #     ../../itemviews/kreparentingproxymodel.cpp
     proxymodeltestwidget.cpp
     lessthanwidget.cpp
+    dynamictreewidget.cpp
 )
 
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
