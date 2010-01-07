@@ -160,12 +160,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     kioJob->addMetaData(d->metaDataForRequest(req));
 
     if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
+        QString contentType (QLatin1String("Content-Type: "));
         QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
+
         if (header.isValid())
-          kioJob->addMetaData("content-type",
-                              QString::fromLatin1("Content-Type: %1").arg(header.toString()));
+            contentType += header.toString();
         else
-          kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded");
+            contentType += QLatin1String("application/x-www-form-urlencoded");
+
+        kioJob->addMetaData("content-type", contentType);
     }
 
     return reply;
@@ -179,7 +182,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     // Add the user-specified meta data first...
     QVariant userMetaData = request.attribute (static_cast<QNetworkRequest::Attribute>(MetaData));
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
-      metaData += userMetaData.toMap();
+        metaData += userMetaData.toMap();
     }
 
     metaData.insert("PropagateHttpHeader", "true");
@@ -194,22 +197,30 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     request.setRawHeader("Connection", QByteArray());
 
     QString additionHeaders;
-    Q_FOREACH(const QByteArray &headerKey, request.rawHeaderList()) {
-        const QByteArray value = request.rawHeader(headerKey);
+    QListIterator<QByteArray> headersIt (request.rawHeaderList());
+
+    while (headersIt.hasNext()) {
+        const QByteArray key = headersIt.next();
+        const QByteArray value = request.rawHeader(key);
+
         if (value.isNull())
             continue;
 
         // createRequest() checks later for existence "content-type" metadata
-        if (headerKey=="Content-Type") {
+        if (QString::compare(key, QLatin1String("Content-Type"), Qt::CaseInsensitive) == 0) {
             metaData.insert("content-type", value);
             continue;
         }
 
         if (additionHeaders.length() > 0) {
-            additionHeaders += "\r\n";
+            additionHeaders += QLatin1String("\r\n");
         }
-        additionHeaders += headerKey + ": " + value;
+
+        additionHeaders += key;
+        additionHeaders += QLatin1String(": ");
+        additionHeaders += value;
     }
+
     metaData.insert("customHTTPHeader", additionHeaders);
 
     // Append per request meta data, if any...
