@@ -185,13 +185,35 @@ QVariantList ProxyModelTest::getResultSignal()
 
 void ProxyModelTest::testEmptyModel()
 {
-  QCOMPARE(m_proxyModel->rowCount(), 0);
-  QCOMPARE(m_proxyModel->columnCount(), 0);
-  QVERIFY(!m_proxyModel->index(0,0).isValid());
-  QVERIFY(!m_proxyModel->data(QModelIndex()).isValid());
-  QVERIFY(!m_proxyModel->parent(QModelIndex()).isValid());
-  QVERIFY(!m_proxyModel->mapToSource(QModelIndex()).isValid());
-  QVERIFY(!m_proxyModel->mapFromSource(QModelIndex()).isValid());
+  QAbstractProxyModel *proxyModel = getProxy();
+  // Many of these just check that the proxy does not crash when it does not have a source model.
+  QCOMPARE(proxyModel->rowCount(), 0);
+  QCOMPARE(proxyModel->columnCount(), 0);
+  QVERIFY(!proxyModel->index(0,0).isValid());
+  QVERIFY(!proxyModel->data(QModelIndex()).isValid());
+  QVERIFY(!proxyModel->parent(QModelIndex()).isValid());
+  QVERIFY(!proxyModel->mapToSource(QModelIndex()).isValid());
+  QVERIFY(!proxyModel->mapFromSource(QModelIndex()).isValid());
+  QVERIFY(!proxyModel->headerData(0, Qt::Horizontal, Qt::DisplayRole).isValid());
+  QVERIFY(!proxyModel->headerData(0, Qt::Vertical, Qt::DisplayRole).isValid());
+  Qt::ItemFlags flags = proxyModel->flags ( QModelIndex() );
+  QVERIFY( flags == Qt::ItemIsDropEnabled || flags == 0 );
+  QVERIFY(proxyModel->itemData(QModelIndex()).isEmpty());
+  QVERIFY(proxyModel->mapSelectionToSource(QItemSelection()).isEmpty());
+  QVERIFY(proxyModel->mapSelectionFromSource(QItemSelection()).isEmpty());
+  proxyModel->revert();
+  QVERIFY(proxyModel->submit());
+  QVERIFY(!proxyModel->sourceModel());
+  QVERIFY(!proxyModel->canFetchMore(QModelIndex()));
+  proxyModel->fetchMore(QModelIndex());
+  QMimeData *data = new QMimeData();
+  QVERIFY(!proxyModel->dropMimeData( data, Qt::CopyAction, 0, 0, QModelIndex()));
+  delete data;
+  QVERIFY(!proxyModel->hasChildren());
+  QVERIFY(!proxyModel->hasIndex(0, 0, QModelIndex()));
+  proxyModel->supportedDragActions();
+  proxyModel->supportedDropActions();
+  delete proxyModel;
 }
 
 void ProxyModelTest::doTestMappings(const QModelIndex &parent)
