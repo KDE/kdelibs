@@ -34,6 +34,18 @@ public:
   {
   }
 
+  virtual QAbstractProxyModel* getProxy()
+  {
+    // Make different selections and run all of the tests.
+    m_selectionModel = new QItemSelectionModel(sourceModel());
+    KSelectionProxyModel *proxyModel = new KSelectionProxyModel(m_selectionModel, this);
+
+    m_selMaker = new ModelSelector(modelSpy());
+    m_selMaker->setSelectionModel( m_selectionModel );
+    m_selMaker->setWatchedModel( sourceModel() );
+    return proxyModel;
+  }
+
 protected:
   virtual void testData()
   {

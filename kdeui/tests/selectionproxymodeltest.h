@@ -33,16 +33,8 @@ public:
       : ProxyModelTest( parent ),
       m_selectionModel(0)
   {
-    // Make different selections and run all of the tests.
-    m_selectionModel = new QItemSelectionModel(sourceModel());
-    m_proxyModel = new KSelectionProxyModel(m_selectionModel, this);
-
-    setProxyModel(m_proxyModel);
-
-    m_selMaker = new ModelSelector(modelSpy());
-    m_selMaker->setSelectionModel( m_selectionModel );
-    m_selMaker->setWatchedModel( sourceModel() );
   }
+
 
 protected:
   virtual void testData() = 0;

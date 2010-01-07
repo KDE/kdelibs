@@ -61,6 +61,13 @@ void ProxyModelTest::init()
 
   QVERIFY(currentTag != 0);
 
+  QAbstractProxyModel *proxyModel = getProxy();
+
+  Q_ASSERT(proxyModel);
+  // Don't set the sourceModel in getProxy.
+  Q_ASSERT(!proxyModel->sourceModel());
+  connectProxy(proxyModel);
+
   // Get the model into the state it is expected to be in.
   m_modelCommander->executeUntil(currentTag);
   if (spyingState)
@@ -236,7 +243,7 @@ void ProxyModelTest::verifyModel(const QModelIndex& topLeft, const QModelIndex& 
   QVERIFY(bottomRight.model() == m_proxyModel || !bottomRight.isValid());
 }
 
-void ProxyModelTest::setProxyModel(QAbstractProxyModel *proxyModel)
+void ProxyModelTest::connectProxy(QAbstractProxyModel *proxyModel)
 {
   if (m_proxyModel)
   {

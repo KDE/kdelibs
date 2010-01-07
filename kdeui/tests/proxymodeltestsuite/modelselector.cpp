@@ -177,6 +177,9 @@ void ModelSelector::makeSelections(const QString &testName)
   } else if ( testName == "change01" )
   {
     selectSiliently( QSet<int>() << 1 );
+  } else
+  {
+    selectSiliently( QSet<int>() << 1 );
   }
 
 }

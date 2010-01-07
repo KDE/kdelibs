@@ -52,8 +52,8 @@ class ProxyModelTest : public QObject
   Q_OBJECT
 public:
   ProxyModelTest(QObject *parent = 0);
+  virtual ~ProxyModelTest() {}
 
-  void setProxyModel(QAbstractProxyModel *proxyModel);
   DynamicTreeModel* sourceModel();
   void setLazyPersistence(Persistence persistence);
 
@@ -68,6 +68,7 @@ protected:
   virtual void doInit();
   virtual void testData();
   virtual void doCleanupTestCase();
+  virtual QAbstractProxyModel* getProxy() = 0;
 
   void testEmptyModel();
   void doTestMappings(const QModelIndex &parent);
@@ -85,6 +86,8 @@ private slots:
   void testProxyModel() { doTest(); }
 
 protected:
+  void connectProxy(QAbstractProxyModel *proxyModel);
+
   void doTest();
   void handleSignal(QVariantList expected);
   QVariantList getResultSignal();
