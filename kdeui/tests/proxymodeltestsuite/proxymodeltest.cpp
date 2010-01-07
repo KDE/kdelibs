@@ -32,6 +32,11 @@ ProxyModelTest::ProxyModelTest(QObject *parent)
 {
 }
 
+void ProxyModelTest::setLazyPersistence(Persistence persistence)
+{
+  m_modelSpy->setLazyPersistence(persistence == LazyPersistence);
+}
+
 void ProxyModelTest::doInitTestCase()
 {
   m_commandNames = m_modelCommander->commandNames();

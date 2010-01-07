@@ -20,7 +20,7 @@
 #include "modelspy.h"
 
 ModelSpy::ModelSpy(QObject *parent)
-    : QObject(parent), QList<QVariantList>(), m_model(0), m_isSpying(false)
+  : QObject(parent), QList<QVariantList>(), m_model(0), m_isSpying(false), m_lazyPersist(false)
 {
   qRegisterMetaType<QModelIndex>("QModelIndex");
 }
@@ -79,9 +79,9 @@ void ModelSpy::startSpying()
 void ModelSpy::stopSpying()
 {
   m_isSpying = false;
-
   if (!m_model)
     return;
+
   disconnect(m_model, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           this, SLOT(rowsAboutToBeInserted(const QModelIndex &, int, int)));
   disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
@@ -112,6 +112,9 @@ void ModelSpy::stopSpying()
 void ModelSpy::rowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
 {
   append(QVariantList() << RowsAboutToBeInserted << QVariant::fromValue(parent) << start << end);
+
+  if (m_lazyPersist)
+    doPersist();
 }
 
 void ModelSpy::rowsInserted(const QModelIndex &parent, int start, int end)
@@ -122,6 +125,9 @@ void ModelSpy::rowsInserted(const QModelIndex &parent, int start, int end)
 void ModelSpy::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
   append(QVariantList() << RowsAboutToBeRemoved << QVariant::fromValue(parent) << start << end);
+
+  if (m_lazyPersist)
+    doPersist();
 }
 
 void ModelSpy::rowsRemoved(const QModelIndex &parent, int start, int end)
@@ -132,6 +138,9 @@ void ModelSpy::rowsRemoved(const QModelIndex &parent, int start, int end)
 void ModelSpy::layoutAboutToBeChanged()
 {
   append(QVariantList() << LayoutAboutToBeChanged);
+
+  if (m_lazyPersist)
+    doPersist();
 }
 
 void ModelSpy::layoutChanged()
@@ -142,6 +151,10 @@ void ModelSpy::layoutChanged()
 void ModelSpy::modelAboutToBeReset()
 {
   append(QVariantList() << ModelAboutToBeReset);
+
+  // This is called in setSourceModel for example, which is not when we want to persist.
+  if (m_lazyPersist && m_model->hasChildren())
+    doPersist();
 }
 
 void ModelSpy::modelReset()
@@ -157,6 +170,9 @@ void ModelSpy::modelDestroyed()
 void ModelSpy::rowsAboutToBeMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart)
 {
   append(QVariantList() << RowsAboutToBeMoved << QVariant::fromValue(srcParent) << start << end << QVariant::fromValue(destParent) << destStart);
+
+  if (m_lazyPersist)
+    doPersist();
 }
 
 void ModelSpy::rowsMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart)
@@ -225,7 +241,8 @@ QModelIndexList ModelSpy::getUnchangedIndexes(const QModelIndex &parent, QList<Q
 void ModelSpy::preTestPersistIndexes(const PersistentChangeList &changeList)
 {
   m_changeList = changeList;
-  doPersist();
+  if (!m_lazyPersist)
+    doPersist();
 }
 
 void ModelSpy::doPersist()

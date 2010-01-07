@@ -53,6 +53,7 @@ public:
   ModelSpy(QObject *parent);
 
   void setModel(QAbstractItemModel *model);
+  void setLazyPersistence(bool lazy) { m_lazyPersist = lazy; }
 
   void preTestPersistIndexes(const PersistentChangeList &changeList);
   QModelIndexList getUnchangedIndexes() const { return m_unchangedIndexes; }
@@ -92,6 +93,7 @@ private:
 private:
   QAbstractItemModel *m_model;
   bool m_isSpying;
+  bool m_lazyPersist;
   PersistentChangeList m_changeList;
   QModelIndexList m_unchangedIndexes;
   QList<QPersistentModelIndex> m_unchangedPersistentIndexes;

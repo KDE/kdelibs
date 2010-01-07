@@ -41,6 +41,12 @@ typedef QList<QVariantList> SignalList;
 
 Q_DECLARE_METATYPE( SignalList )
 
+enum Persistence
+{
+  LazyPersistence,
+  ImmediatePersistence
+};
+
 class ProxyModelTest : public QObject
 {
   Q_OBJECT
@@ -49,6 +55,7 @@ public:
 
   void setProxyModel(QAbstractProxyModel *proxyModel);
   DynamicTreeModel* sourceModel();
+  void setLazyPersistence(Persistence persistence);
 
   ModelSpy* modelSpy() const { return m_modelSpy; }
 
