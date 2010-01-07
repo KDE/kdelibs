@@ -59,6 +59,10 @@ public:
 
   ModelSpy* modelSpy() const { return m_modelSpy; }
 
+  PersistentIndexChange getChange(IndexFinder sourceFinder, int start, int end, int difference, bool toInvalid = false);
+  QVariantList getSignal(SignalType type, IndexFinder parentFinder, int start, int end) const
+  { return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end; }
+
 protected:
   virtual void doInitTestCase();
   virtual void doInit();
@@ -81,9 +85,6 @@ private slots:
   void testProxyModel() { doTest(); }
 
 protected:
-  PersistentIndexChange getChange(IndexFinder sourceFinder, int start, int end, int difference, bool toInvalid = false);
-  QVariantList getSignal(SignalType type, IndexFinder parentFinder, int start, int end);
-
   void doTest();
   void handleSignal(QVariantList expected);
   QVariantList getResultSignal();

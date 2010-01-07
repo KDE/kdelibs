@@ -74,11 +74,6 @@ DynamicTreeModel* ProxyModelTest::sourceModel()
   return m_rootModel;
 }
 
-QVariantList ProxyModelTest::getSignal(SignalType type, IndexFinder parentFinder, int start, int end)
-{
-  return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end;
-}
-
 PersistentIndexChange ProxyModelTest::getChange(IndexFinder parentFinder, int start, int end, int difference, bool toInvalid)
 {
   Q_ASSERT(start <= end);
