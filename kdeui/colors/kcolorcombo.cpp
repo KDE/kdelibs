@@ -150,7 +150,7 @@ QSize KColorComboDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 }
 
 
-#define STANDARD_PAL_SIZE 26
+#define STANDARD_PAL_SIZE 17
 
 K_GLOBAL_STATIC_WITH_ARGS(QVector<QColor>, standardPalette, (STANDARD_PAL_SIZE))
 static void createStandardPalette()
@@ -160,27 +160,18 @@ static void createStandardPalette()
 
     int i = 0;
 
-    (*standardPalette)[i++] = QColor(255, 128, 128); //light red    
-    (*standardPalette)[i++] = QColor(255, 192, 128); //light orange
-    (*standardPalette)[i++] = QColor(255, 255, 128); //light yellow
-    (*standardPalette)[i++] = QColor(128, 255, 128); //light green
-    (*standardPalette)[i++] = QColor(128, 255, 255); //light light blue
-    (*standardPalette)[i++] = QColor(128, 128, 255); //light blue
-    (*standardPalette)[i++] = QColor(255, 128, 255); //light violet 
-    (*standardPalette)[i++] = QColor(255, 0, 0); //red
-    (*standardPalette)[i++] = QColor(255, 128, 0); //orange
-    (*standardPalette)[i++] = QColor(255, 255, 0); //yellow
-    (*standardPalette)[i++] = QColor(0, 255, 0); //green
-    (*standardPalette)[i++] = QColor(0, 255, 255); //light blue
-    (*standardPalette)[i++] = QColor(0, 0, 255); //blue
-    (*standardPalette)[i++] = QColor(255, 0, 255); //violet
-    (*standardPalette)[i++] = QColor(128, 0, 0); //dark red
-    (*standardPalette)[i++] = QColor(128, 64, 0); //dark orange
-    (*standardPalette)[i++] = QColor(128, 128, 0); //dark yellow
-    (*standardPalette)[i++] = QColor(0, 128, 0); //dark green
-    (*standardPalette)[i++] = QColor(0, 128, 128); //dark light blue
-    (*standardPalette)[i++] = QColor(0, 0, 128); //dark blue
-    (*standardPalette)[i++] = QColor(128, 0, 128); //dark violet
+    (*standardPalette)[i++] = Qt::red;
+    (*standardPalette)[i++] = Qt::green;
+    (*standardPalette)[i++] = Qt::blue;
+    (*standardPalette)[i++] = Qt::cyan;
+    (*standardPalette)[i++] = Qt::magenta;
+    (*standardPalette)[i++] = Qt::yellow;
+    (*standardPalette)[i++] = Qt::darkRed;
+    (*standardPalette)[i++] = Qt::darkGreen;
+    (*standardPalette)[i++] = Qt::darkBlue;
+    (*standardPalette)[i++] = Qt::darkCyan;
+    (*standardPalette)[i++] = Qt::darkMagenta;
+    (*standardPalette)[i++] = Qt::darkYellow;
     (*standardPalette)[i++] = Qt::white;
     (*standardPalette)[i++] = Qt::lightGray;
     (*standardPalette)[i++] = Qt::gray;
@@ -250,8 +241,8 @@ KColorCombo::KColorCombo( QWidget *parent )
     connect(this, SIGNAL(highlighted(int)), SLOT(_k_slotHighlighted(int)));
 
     // select the white color
-    setCurrentIndex(22);
-    d->_k_slotActivated(22);
+    setCurrentIndex(13);
+    d->_k_slotActivated(13);
 }
 
 
