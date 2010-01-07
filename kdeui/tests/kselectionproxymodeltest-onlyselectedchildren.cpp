@@ -160,8 +160,8 @@ protected:
     QTest::newRow("insert08") << signalList << persistentList;
     QTest::newRow("insert09") << signalList << persistentList;
 
-    IndexFinder topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
-    IndexFinder bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
+    IndexFinder topLeftFinder = IndexFinder(QList<int>() << 0 );
+    IndexFinder bottomRightFinder = IndexFinder(QList<int>() << 0 );
 
     signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 
@@ -169,8 +169,8 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 4 );
-    bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 7 );
+    topLeftFinder = IndexFinder(QList<int>() << 4 );
+    bottomRightFinder = IndexFinder(QList<int>() << 7 );
 
     signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 

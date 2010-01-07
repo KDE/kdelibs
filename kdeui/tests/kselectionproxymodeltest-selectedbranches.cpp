@@ -63,7 +63,7 @@ protected:
     QTest::newRow("insert01") << signalList << persistentList;
     signalList.clear();
 
-    indexFinder = IndexFinder( m_proxyModel, QList<int>() << 0);
+    indexFinder = IndexFinder( QList<int>() << 0);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
@@ -135,7 +135,7 @@ protected:
     QTest::newRow("insert04") << signalList << persistentList;
     signalList.clear();
 
-    indexFinder = IndexFinder( m_proxyModel, QList<int>() << 0);
+    indexFinder = IndexFinder( QList<int>() << 0);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
@@ -148,7 +148,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder( m_proxyModel, QList<int>() << 0);
+    indexFinder = IndexFinder( QList<int>() << 0);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 20, 29);
     signalList << getSignal(RowsInserted, indexFinder, 20, 29);
@@ -157,7 +157,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder( m_proxyModel, QList<int>() << 0);
+    indexFinder = IndexFinder( QList<int>() << 0);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 10, 19);
     signalList << getSignal(RowsInserted, indexFinder, 10, 19);
@@ -168,27 +168,27 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5 << 5);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5 << 5 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5 << 5 << 5);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 6);
+    indexFinder = IndexFinder(QList<int>() << 0 << 6);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 7);
+    indexFinder = IndexFinder(QList<int>() << 0 << 7);
 
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
     signalList << getSignal(RowsInserted, indexFinder, 0, 9);
@@ -197,7 +197,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 2);
+    indexFinder = IndexFinder(QList<int>() << 0 << 2);
 
     // Although a tree of items is inserted, only ten base items are relevant to the model.
     signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 9);
@@ -207,8 +207,8 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    IndexFinder topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 0 );
-    IndexFinder bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 0 );
+    IndexFinder topLeftFinder = IndexFinder(QList<int>() << 0 << 0 );
+    IndexFinder bottomRightFinder = IndexFinder(QList<int>() << 0 << 0 );
 
     signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 
@@ -216,8 +216,8 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 4 );
-    bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 7 );
+    topLeftFinder = IndexFinder(QList<int>() << 0 << 4 );
+    bottomRightFinder = IndexFinder(QList<int>() << 0 << 7 );
 
     signalList << ( QVariantList() << DataChanged << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder) );
 
@@ -225,7 +225,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 );
+    indexFinder = IndexFinder(QList<int>() << 0 );
 
     signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 0, 0 );
     signalList << getSignal(RowsRemoved, indexFinder, 0, 0 );
@@ -251,7 +251,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5);
 
     signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 0, 0 );
     signalList << getSignal(RowsRemoved, indexFinder, 0, 0 );
@@ -264,7 +264,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5);
 
     signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 8, 8 );
     signalList << getSignal(RowsRemoved, indexFinder, 8, 8 );
@@ -275,7 +275,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5);
 
     signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 3, 3 );
     signalList << getSignal(RowsRemoved, indexFinder, 3, 3 );
@@ -287,7 +287,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0 << 5);
+    indexFinder = IndexFinder(QList<int>() << 0 << 5);
 
     signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 0, 6 );
     signalList << getSignal(RowsRemoved, indexFinder, 0, 6 );
@@ -298,7 +298,7 @@ protected:
     signalList.clear();
     persistentList.clear();
 
-    indexFinder = IndexFinder(m_proxyModel, QList<int>() << 0);
+    indexFinder = IndexFinder(QList<int>() << 0);
 
     signalList << getSignal(RowsAboutToBeRemoved, indexFinder, 4, 4 );
     signalList << getSignal(RowsRemoved, indexFinder, 4, 4 );

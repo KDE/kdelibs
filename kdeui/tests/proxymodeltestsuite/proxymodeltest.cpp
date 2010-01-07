@@ -114,6 +114,7 @@ void ProxyModelTest::handleSignal(QVariantList expected)
   {
     QVERIFY( expected.size() == 3 );
     IndexFinder parentFinder = qvariant_cast<IndexFinder>(expected.at(0));
+    parentFinder.setModel(m_proxyModel);
     QModelIndex parent = parentFinder.getIndex();
 
 // This is where is usually goes wrong...
@@ -140,11 +141,13 @@ void ProxyModelTest::handleSignal(QVariantList expected)
   {
     QVERIFY( expected.size() == 5 );
     IndexFinder scrParentFinder = qvariant_cast<IndexFinder>(expected.at(0));
+    scrParentFinder.setModel(m_proxyModel);
     QModelIndex srcParent = scrParentFinder.getIndex();
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(0)), srcParent );
     QCOMPARE(result.at(1), expected.at(1) );
     QCOMPARE(result.at(2), expected.at(2) );
     IndexFinder destParentFinder = qvariant_cast<IndexFinder>(expected.at(3));
+    destParentFinder.setModel(m_proxyModel);
     QModelIndex destParent = destParentFinder.getIndex();
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(3)), destParent );
     QCOMPARE(result.at(4), expected.at(4) );
@@ -154,8 +157,11 @@ void ProxyModelTest::handleSignal(QVariantList expected)
   {
     QVERIFY( expected.size() == 2 );
     IndexFinder topLeftFinder = qvariant_cast<IndexFinder>(expected.at(0));
+    topLeftFinder.setModel(m_proxyModel);
     QModelIndex topLeft = topLeftFinder.getIndex();
     IndexFinder bottomRightFinder = qvariant_cast<IndexFinder>(expected.at(1));
+    bottomRightFinder.setModel(m_proxyModel);
+
     QModelIndex bottomRight = bottomRightFinder.getIndex();
 
     QVERIFY(topLeft.isValid() && bottomRight.isValid());
