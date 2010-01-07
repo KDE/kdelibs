@@ -87,7 +87,11 @@ static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
 static void filterMimeTypeOffers(KServiceOfferList& list, const QString& genericServiceType)
 {
     KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
-    Q_ASSERT(genericServiceTypePtr);
+    if (!genericServiceTypePtr) {
+        kError(7014) << "KMimeTypeTrader: couldn't find service type" << genericServiceType <<
+            "\nPlease ensure that the .desktop file for it is installed; then run kbuildsycoca4.";
+        return;
+    }
 
     QMutableListIterator<KServiceOffer> it(list);
     while(it.hasNext()) {
