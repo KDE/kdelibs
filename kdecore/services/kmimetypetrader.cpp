@@ -78,6 +78,13 @@ static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
     return lst;
 }
 
+#define CHECK_SERVICETYPE(genericServiceTypePtr) \
+    if (!genericServiceTypePtr) { \
+        kError(7014) << "KMimeTypeTrader: couldn't find service type" << genericServiceType << \
+            "\nPlease ensure that the .desktop file for it is installed; then run kbuildsycoca4."; \
+        return; \
+    }
+
 /**
  * Filter the offers for the requested mime type for the genericServiceType.
  *
@@ -87,11 +94,7 @@ static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
 static void filterMimeTypeOffers(KServiceOfferList& list, const QString& genericServiceType)
 {
     KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
-    if (!genericServiceTypePtr) {
-        kError(7014) << "KMimeTypeTrader: couldn't find service type" << genericServiceType <<
-            "\nPlease ensure that the .desktop file for it is installed; then run kbuildsycoca4.";
-        return;
-    }
+    CHECK_SERVICETYPE(genericServiceTypePtr);
 
     QMutableListIterator<KServiceOffer> it(list);
     while(it.hasNext()) {
@@ -108,7 +111,7 @@ static void filterMimeTypeOffers(KServiceOfferList& list, const QString& generic
 static void filterMimeTypeOffers(KService::List& list, const QString& genericServiceType)
 {
     KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
-    Q_ASSERT(genericServiceTypePtr);
+    CHECK_SERVICETYPE(genericServiceTypePtr);
 
     QMutableListIterator<KService::Ptr> it(list);
     while(it.hasNext()) {
@@ -121,6 +124,8 @@ static void filterMimeTypeOffers(KService::List& list, const QString& genericSer
         }
     }
 }
+
+#undef CHECK_SERVICETYPE
 
 KService::List KMimeTypeTrader::query( const QString& mimeType,
                                        const QString& genericServiceType,
