@@ -341,59 +341,6 @@ void ProxyModelTest::setProxyModel(QAbstractProxyModel *proxyModel)
   m_modelSpy->setModel(m_proxyModel);
 }
 
-QModelIndexList ProxyModelTest::getDescendantIndexes(const QModelIndex &parent)
-{
-  QModelIndexList list;
-  const int column = 0;
-  for(int row = 0; row < m_proxyModel->rowCount(parent); ++row)
-  {
-    QModelIndex idx = m_proxyModel->index(row, column, parent);
-    list << idx;
-    list << getDescendantIndexes(idx);
-  }
-  return list;
-}
-
-QList< QPersistentModelIndex > ProxyModelTest::toPersistent(QModelIndexList list)
-{
-  QList<QPersistentModelIndex > persistentList;
-  foreach(QModelIndex idx, list)
-  {
-    persistentList << QPersistentModelIndex(idx);
-  }
-  return persistentList;
-}
-
-
-QModelIndexList ProxyModelTest::getUnchangedIndexes(const QModelIndex &parent, QList<QItemSelectionRange> ignoredRanges)
-{
-  QModelIndexList list;
-  int rowCount = m_proxyModel->rowCount(parent);
-  for (int row = 0; row < rowCount; )
-  {
-    int column = 0;
-    QModelIndex idx = m_proxyModel->index( row, column, parent);
-    bool found = false;
-    foreach(QItemSelectionRange range, ignoredRanges)
-    {
-      if (range.topLeft().parent() == parent &&  range.topLeft().row() == idx.row())
-      {
-        row = range.bottomRight().row() + 1;
-        found = true;
-        break;
-      }
-    }
-    if (!found)
-    {
-      for (column = 0; column < m_proxyModel->columnCount(); ++column )
-        list << m_proxyModel->index( row, column, parent);
-      list << getUnchangedIndexes(idx, ignoredRanges);
-      ++row;
-    }
-  }
-  return list;
-}
-
 void ProxyModelTest::testData()
 {
 
@@ -412,60 +359,9 @@ void ProxyModelTest::doTest()
   QFETCH( PersistentChangeList, changeList );
 
   QVERIFY(m_modelSpy->isEmpty());
-  QList<QPersistentModelIndex> persistentIndexes;
 
-  const int columnCount = m_rootModel->columnCount();
-  QMutableListIterator<PersistentIndexChange> it(changeList);
+  m_modelSpy->preTestPersistIndexes(changeList);
 
-  QString currentTest = QTest::currentDataTag();
-  m_commandNames.removeAll(currentTest);
-
-  // The indexes are defined by the test are described with IndexFinder before anything in the model exists.
-  // Now that the indexes should exist, resolve them in the change objects.
-  QList<QItemSelectionRange> changedRanges;
-  while (it.hasNext())
-  {
-    PersistentIndexChange change = it.next();
-    QModelIndex parent = change.parentFinder.getIndex();
-
-    QVERIFY(change.startRow >= 0);
-    QVERIFY(change.startRow <= change.endRow);
-#if 0
-    kDebug() << parent << change.startRow << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
-#endif
-    Q_ASSERT(change.endRow < m_proxyModel->rowCount(parent));
-
-    QModelIndex topLeft = m_proxyModel->index( change.startRow, 0, parent );
-    QModelIndex bottomRight = m_proxyModel->index( change.endRow, columnCount - 1, parent );
-
-    // We store the changed ranges so that we know which ranges should not be changed
-    changedRanges << QItemSelectionRange(topLeft, bottomRight);
-
-    // Store the inital state of the indexes in the model which we expect to change.
-    for (int row = change.startRow; row <= change.endRow; ++row )
-    {
-      for (int column = 0; column < columnCount; ++column)
-      {
-        QModelIndex idx = m_proxyModel->index(row, column, parent);
-        QVERIFY(idx.isValid());
-        change.indexes << idx;
-        change.persistentIndexes << QPersistentModelIndex(idx);
-      }
-
-      // Also store the descendants of changed indexes so that we can verify the effect on them
-      QModelIndex idx = m_proxyModel->index(row, 0, parent);
-      QModelIndexList descs = getDescendantIndexes(idx);
-      change.descendantIndexes << descs;
-      change.persistentDescendantIndexes << toPersistent(descs);
-    }
-    it.setValue(change);
-  }
-
-  // Any indexes outside of the ranges we expect to be changed are stored
-  // so that we can later verify that they remain unchanged.
-  QModelIndexList unchangedIndexes = getUnchangedIndexes(QModelIndex(), changedRanges);
-
-  QList<QPersistentModelIndex> unchangedPersistentIndexes = toPersistent(unchangedIndexes);
   // Run the test.
 
   Q_ASSERT(m_modelSpy->isEmpty());
@@ -490,7 +386,7 @@ void ProxyModelTest::doTest()
   QVERIFY(m_modelSpy->isEmpty());
 
   // Persistent indexes should change by the amount described in change objects.
-  foreach (PersistentIndexChange change, changeList)
+  foreach (PersistentIndexChange change, m_modelSpy->getChangeList())
   {
     for (int i = 0; i < change.indexes.size(); i++)
     {
@@ -529,6 +425,10 @@ void ProxyModelTest::doTest()
       QCOMPARE(idx.parent(), persistentIndex.parent());
     }
   }
+
+  QModelIndexList unchangedIndexes = m_modelSpy->getUnchangedIndexes();
+  QList<QPersistentModelIndex> unchangedPersistentIndexes = m_modelSpy->getUnchangedPersistentIndexes();
+
   // Indexes unaffected by the signals should be unchanged.
   for (int i = 0; i < unchangedIndexes.size(); ++i)
   {
@@ -538,6 +438,7 @@ void ProxyModelTest::doTest()
     QCOMPARE(unchangedIdx.column(), persistentIndex.column());
     QCOMPARE(unchangedIdx.parent(), persistentIndex.parent());
   }
+  m_modelSpy->clearTestData();
 }
 
 void ProxyModelTest::setCommands(QList<QPair<QString, ModelChangeCommandList> > commands)

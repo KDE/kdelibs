@@ -74,11 +74,6 @@ private slots:
   void testProxyModel() { doTest(); }
 
 protected:
-  QModelIndexList getUnchangedIndexes(const QModelIndex &parent, QList< QItemSelectionRange > ignoredRanges);
-
-  QModelIndexList getDescendantIndexes(const QModelIndex &index);
-  QList< QPersistentModelIndex > toPersistent(QModelIndexList list);
-
   PersistentIndexChange getChange(IndexFinder sourceFinder, int start, int end, int difference, bool toInvalid = false);
   QVariantList getSignal(SignalType type, IndexFinder parentFinder, int start, int end);
 

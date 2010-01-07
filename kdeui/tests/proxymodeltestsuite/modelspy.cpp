@@ -20,7 +20,7 @@
 #include "modelspy.h"
 
 ModelSpy::ModelSpy(QObject *parent)
-    : QObject(parent), QList<QVariantList>(), m_isSpying(false)
+    : QObject(parent), QList<QVariantList>(), m_model(0), m_isSpying(false)
 {
   qRegisterMetaType<QModelIndex>("QModelIndex");
 }
@@ -28,7 +28,15 @@ ModelSpy::ModelSpy(QObject *parent)
 void ModelSpy::setModel(QAbstractItemModel *model)
 {
   Q_ASSERT(model);
+  stopSpying();
   m_model = model;
+}
+
+void ModelSpy::clearTestData()
+{
+  m_changeList.clear();
+  m_unchangedIndexes.clear();
+  m_unchangedPersistentIndexes.clear();
 }
 
 void ModelSpy::startSpying()
@@ -71,6 +79,9 @@ void ModelSpy::startSpying()
 void ModelSpy::stopSpying()
 {
   m_isSpying = false;
+
+  if (!m_model)
+    return;
   disconnect(m_model, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           this, SLOT(rowsAboutToBeInserted(const QModelIndex &, int, int)));
   disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
@@ -156,5 +167,120 @@ void ModelSpy::rowsMoved(const QModelIndex &srcParent, int start, int end, const
 void ModelSpy::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
   append(QVariantList() << DataChanged << QVariant::fromValue(topLeft) << QVariant::fromValue(bottomRight));
+}
+
+QModelIndexList ModelSpy::getDescendantIndexes(const QModelIndex &parent)
+{
+  QModelIndexList list;
+  const int column = 0;
+  for(int row = 0; row < m_model->rowCount(parent); ++row)
+  {
+    QModelIndex idx = m_model->index(row, column, parent);
+    list << idx;
+    list << getDescendantIndexes(idx);
+  }
+  return list;
+}
+
+QList< QPersistentModelIndex > ModelSpy::toPersistent(QModelIndexList list)
+{
+  QList<QPersistentModelIndex > persistentList;
+  foreach(QModelIndex idx, list)
+  {
+    persistentList << QPersistentModelIndex(idx);
+  }
+  return persistentList;
+}
+
+QModelIndexList ModelSpy::getUnchangedIndexes(const QModelIndex &parent, QList<QItemSelectionRange> ignoredRanges)
+{
+  QModelIndexList list;
+  int rowCount = m_model->rowCount(parent);
+  for (int row = 0; row < rowCount; )
+  {
+    int column = 0;
+    QModelIndex idx = m_model->index( row, column, parent);
+    Q_ASSERT(idx.isValid());
+    bool found = false;
+    foreach(QItemSelectionRange range, ignoredRanges)
+    {
+      if (range.topLeft().parent() == parent &&  range.topLeft().row() == idx.row())
+      {
+        row = range.bottomRight().row() + 1;
+        found = true;
+        break;
+      }
+    }
+    if (!found)
+    {
+      for (column = 0; column < m_model->columnCount(); ++column )
+        list << m_model->index( row, column, parent);
+      list << getUnchangedIndexes(idx, ignoredRanges);
+      ++row;
+    }
+  }
+  return list;
+}
+
+void ModelSpy::preTestPersistIndexes(const PersistentChangeList &changeList)
+{
+  m_changeList = changeList;
+  doPersist();
+}
+
+void ModelSpy::doPersist()
+{
+  Q_ASSERT(m_unchangedIndexes.isEmpty());
+  Q_ASSERT(m_unchangedPersistentIndexes.isEmpty());
+
+  const int columnCount = m_model->columnCount();
+  QMutableListIterator<PersistentIndexChange> it(m_changeList);
+
+  // The indexes are defined by the test are described with IndexFinder before anything in the model exists.
+  // Now that the indexes should exist, resolve them in the change objects.
+  QList<QItemSelectionRange> changedRanges;
+
+  while (it.hasNext())
+  {
+    PersistentIndexChange change = it.next();
+    change.parentFinder.setModel(m_model);
+    QModelIndex parent = change.parentFinder.getIndex();
+
+    Q_ASSERT(change.startRow >= 0);
+    Q_ASSERT(change.startRow <= change.endRow);
+#if 0
+    kDebug() << parent << change.startRow << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
+#endif
+    Q_ASSERT(change.endRow < m_model->rowCount(parent));
+
+    QModelIndex topLeft = m_model->index( change.startRow, 0, parent );
+    QModelIndex bottomRight = m_model->index( change.endRow, columnCount - 1, parent );
+
+    // We store the changed ranges so that we know which ranges should not be changed
+    changedRanges << QItemSelectionRange(topLeft, bottomRight);
+
+    // Store the inital state of the indexes in the model which we expect to change.
+    for (int row = change.startRow; row <= change.endRow; ++row )
+    {
+      for (int column = 0; column < columnCount; ++column)
+      {
+        QModelIndex idx = m_model->index(row, column, parent);
+        Q_ASSERT(idx.isValid());
+        change.indexes << idx;
+        change.persistentIndexes << QPersistentModelIndex(idx);
+      }
+
+      // Also store the descendants of changed indexes so that we can verify the effect on them
+      QModelIndex idx = m_model->index(row, 0, parent);
+      QModelIndexList descs = getDescendantIndexes(idx);
+      change.descendantIndexes << descs;
+      change.persistentDescendantIndexes << toPersistent(descs);
+    }
+    it.setValue(change);
+  }
+  // Any indexes outside of the ranges we expect to be changed are stored
+  // so that we can later verify that they remain unchanged.
+  m_unchangedIndexes = getUnchangedIndexes(QModelIndex(), changedRanges);
+  m_unchangedPersistentIndexes = toPersistent(m_unchangedIndexes);
 }
 

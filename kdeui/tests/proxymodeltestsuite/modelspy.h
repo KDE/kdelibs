@@ -25,6 +25,9 @@
 #include <QVariantList>
 #include <QModelIndex>
 
+#include "persistentchangelist.h"
+#include <QItemSelectionRange>
+
 enum SignalType
 {
   NoSignal,
@@ -51,9 +54,16 @@ public:
 
   void setModel(QAbstractItemModel *model);
 
+  void preTestPersistIndexes(const PersistentChangeList &changeList);
+  QModelIndexList getUnchangedIndexes() const { return m_unchangedIndexes; }
+  QList<QPersistentModelIndex> getUnchangedPersistentIndexes() const { return m_unchangedPersistentIndexes; }
+  PersistentChangeList getChangeList() const { return m_changeList; }
+
   void startSpying();
   void stopSpying();
   bool isSpying() { return m_isSpying; }
+
+  void clearTestData();
 
 protected slots:
   void rowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
@@ -74,8 +84,18 @@ protected slots:
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
 private:
+  void doPersist();
+  QModelIndexList getUnchangedIndexes(const QModelIndex &parent, QList< QItemSelectionRange > ignoredRanges);
+  QModelIndexList getDescendantIndexes(const QModelIndex &index);
+  QList< QPersistentModelIndex > toPersistent(QModelIndexList list);
+
+private:
   QAbstractItemModel *m_model;
   bool m_isSpying;
+  PersistentChangeList m_changeList;
+  QModelIndexList m_unchangedIndexes;
+  QList<QPersistentModelIndex> m_unchangedPersistentIndexes;
 };
 
 #endif
+
