@@ -34,6 +34,7 @@
 
 #include <QtCore/QVector>
 #include <QtGui/QAbstractItemDelegate>
+#include <QtGui/QApplication>
 #include <QtGui/QStylePainter>
 
 #include <kglobal.h>
@@ -84,24 +85,19 @@ KColorComboDelegate::~KColorComboDelegate()
 void KColorComboDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     // background
-    QBrush backbrush = k_colorcombodelegate_brush(index, Qt::BackgroundRole);
     QColor innercolor(Qt::white);
     bool isSelected = (option.state & QStyle::State_Selected);
-    bool paletteBrush = false;
-    if (backbrush.style() == Qt::NoBrush) {
-        paletteBrush = true;
-        if (isSelected) {
-            backbrush = option.palette.brush(QPalette::Highlight);
-        } else {
-            backbrush = option.palette.brush(QPalette::Base);
-        }
-    }
+    bool paletteBrush = (k_colorcombodelegate_brush(index, Qt::BackgroundRole).style() == Qt::NoBrush);
     if (isSelected) {
         innercolor = option.palette.color(QPalette::Highlight);
     } else {
         innercolor = option.palette.color(QPalette::Base);
     }
-    painter->fillRect(option.rect, backbrush);
+    // highlight selected item
+    QStyleOptionViewItemV4 opt(option);
+    opt.showDecorationSelected = true;
+    QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
     QRect innerrect = option.rect.adjusted(colorframe_delta, colorframe_delta, -colorframe_delta, -colorframe_delta);
     // inner color
     QVariant cv = index.data(ColorRole);
