@@ -462,9 +462,7 @@ void KColorPatch::paintEvent(QPaintEvent* pe)
 {
     QFrame::paintEvent(pe);
     QPainter painter(this);
-    painter.setPen(d->color);
-    painter.setBrush(QBrush(d->color));
-    painter.drawRect(contentsRect());
+    painter.fillRect(contentsRect(), d->color);
 }
 
 void KColorPatch::mouseMoveEvent(QMouseEvent *e)

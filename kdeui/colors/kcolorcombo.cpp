@@ -98,7 +98,7 @@ void KColorComboDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     opt.showDecorationSelected = true;
     QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
-    QRect innerrect = option.rect.adjusted(colorframe_delta, colorframe_delta, -colorframe_delta, -colorframe_delta);
+    QRect innerrect = option.rect.adjusted(colorframe_delta, colorframe_delta, -colorframe_delta - 1, -colorframe_delta - 1);
     // inner color
     QVariant cv = index.data(ColorRole);
     if (cv.type() == QVariant::Color) {
