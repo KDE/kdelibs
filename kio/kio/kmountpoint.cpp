@@ -198,6 +198,10 @@ void KMountPoint::Private::finalizeCurrentMountPoint(DetailsNeededFlags infoNeed
 
 KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded)
 {
+#ifdef Q_WS_WIN
+    return KMountPoint::currentMountPoints(infoNeeded);
+#endif
+
     KMountPoint::List result;
 
 #ifdef HAVE_SETMNTENT
