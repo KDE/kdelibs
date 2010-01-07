@@ -323,6 +323,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 void UploadDialog::fileUploadFinished(Attica::BaseJob* )
 {
     KMessageBox::information(0, i18n("Content Added"), i18n("File Uploaded"));
+    d->ui.mProgressLabel->setText(i18n("Content successfully uploaded"));
     d->ui.mProgress->setVisible(false);
     d->finished = true;
     setButtons(KDialog::Ok);
