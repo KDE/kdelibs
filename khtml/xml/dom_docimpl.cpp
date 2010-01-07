@@ -868,7 +868,7 @@ void DocumentImpl::setTitle(const DOMString& _title)
 	    titleStr = url.prettyUrl();
 	}
 
-	emit view()->part()->setWindowCaption( KStringHandler::csqueeze( titleStr, 128 ) );
+	emit view()->part()->setWindowCaption( titleStr );
     }
 }
 
