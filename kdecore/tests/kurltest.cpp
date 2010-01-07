@@ -1100,6 +1100,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QVERIFY(dxOffEagle.isValid());
   //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
+  QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?[{\"foo: bar\"}]") );
 
   // QtSw issue 243557
   QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
