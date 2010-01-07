@@ -47,6 +47,12 @@ enum Persistence
   ImmediatePersistence
 };
 
+enum SourceModel
+{
+  DynamicTree,
+  IntermediateProxy
+};
+
 class ProxyModelTest : public QObject
 {
   Q_OBJECT
@@ -54,9 +60,12 @@ public:
   ProxyModelTest(QObject *parent = 0);
   virtual ~ProxyModelTest() {}
 
-  DynamicTreeModel* sourceModel();
   void setLazyPersistence(Persistence persistence);
+  void setUseIntermediateProxy(SourceModel sourceModel);
 
+  DynamicTreeModel* rootModel() const { return m_rootModel; }
+  QAbstractItemModel* sourceModel() const { return m_sourceModel; }
+  QAbstractProxyModel* proxyModel() const { return m_proxyModel; }
   ModelSpy* modelSpy() const { return m_modelSpy; }
 
   PersistentIndexChange getChange(IndexFinder sourceFinder, int start, int end, int difference, bool toInvalid = false);
@@ -100,7 +109,9 @@ protected:
 
 private:
   DynamicTreeModel *m_rootModel;
+  QAbstractItemModel *m_sourceModel;
   QAbstractProxyModel *m_proxyModel;
+  QAbstractProxyModel *m_intermediateProxyModel;
   ModelSpy *m_modelSpy;
   ModelCommander *m_modelCommander;
   QStringList m_commandNames;

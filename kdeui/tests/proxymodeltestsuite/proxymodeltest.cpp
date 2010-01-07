@@ -20,21 +20,36 @@
 #include "proxymodeltest.h"
 
 #include "dynamictreemodel.h"
+
 #include <QItemSelectionModel>
+#include <QSortFilterProxyModel>
+
 #include "modelspy.h"
 
 ProxyModelTest::ProxyModelTest(QObject *parent)
-: QObject(parent),
-  m_rootModel(new DynamicTreeModel(this)),
-  m_proxyModel(0),
-  m_modelSpy(new ModelSpy(this)),
-  m_modelCommander(new ModelCommander(m_rootModel, this))
+  : QObject(parent),
+    m_rootModel(new DynamicTreeModel(this)),
+    m_sourceModel(m_rootModel),
+    m_proxyModel(0),
+    m_intermediateProxyModel(0),
+    m_modelSpy(new ModelSpy(this)),
+    m_modelCommander(new ModelCommander(m_rootModel, this))
 {
 }
 
 void ProxyModelTest::setLazyPersistence(Persistence persistence)
 {
   m_modelSpy->setLazyPersistence(persistence == LazyPersistence);
+}
+
+void ProxyModelTest::setUseIntermediateProxy(SourceModel sourceModel)
+{
+  if (sourceModel == DynamicTree)
+    return;
+
+  m_intermediateProxyModel = new QSortFilterProxyModel(this);
+  m_intermediateProxyModel->setSourceModel(m_rootModel);
+  m_sourceModel = m_intermediateProxyModel;
 }
 
 void ProxyModelTest::doInitTestCase()
@@ -74,11 +89,6 @@ void ProxyModelTest::init()
     m_modelSpy->startSpying();
 
   QVERIFY(m_modelSpy->isEmpty());
-}
-
-DynamicTreeModel* ProxyModelTest::sourceModel()
-{
-  return m_rootModel;
 }
 
 PersistentIndexChange ProxyModelTest::getChange(IndexFinder parentFinder, int start, int end, int difference, bool toInvalid)
@@ -298,7 +308,7 @@ void ProxyModelTest::doTestMappings(const QModelIndex &parent)
       srcIdx = m_proxyModel->mapToSource(idx);
       QVERIFY(srcIdx.isValid());
       QVERIFY(srcIdx.model() == m_proxyModel->sourceModel());
-      QVERIFY(m_rootModel == m_proxyModel->sourceModel());
+      QVERIFY(m_sourceModel == m_proxyModel->sourceModel());
       QVERIFY(idx.data() == srcIdx.data());
       QVERIFY(m_proxyModel->mapFromSource(srcIdx) == idx);
       if (m_proxyModel->hasChildren(idx))
