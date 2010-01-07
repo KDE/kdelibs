@@ -216,6 +216,71 @@ void ProxyModelTest::testEmptyModel()
   delete proxyModel;
 }
 
+void ProxyModelTest::testSourceReset()
+{
+  ModelInsertCommand *ins = new ModelInsertCommand(m_rootModel, this);
+  ins->setStartRow(0);
+  ins->interpret(
+    "- 1"
+    "- 2"
+    "- - 3"
+    "- - 4"
+    "- 5"
+    "- 6"
+    "- 7"
+    "- 8"
+    "- 9"
+    "- - 10"
+  );
+  ins->doCommand();
+
+  // The proxymodel should reset any internal state it holds when the source model is reset.
+  QPersistentModelIndex pmi = m_proxyModel->index(0, 0);
+  testMappings();
+  m_rootModel->clear(); // Resets the model.
+  testMappings(); // Calls some rowCount() etc which should test internal structures in the proxy.
+  m_proxyModel->setSourceModel(0);
+}
+
+void ProxyModelTest::testDestroyModel()
+{
+  QAbstractItemModel *currentSourceModel = m_sourceModel;
+  DynamicTreeModel *rootModel = new DynamicTreeModel(this);
+  m_sourceModel = rootModel;
+
+  ModelInsertCommand *ins = new ModelInsertCommand(rootModel, this);
+  ins->setStartRow(0);
+  ins->interpret(
+    " - 1"
+    " - 1"
+    " - - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+    " - 1"
+    " - - 1"
+  );
+  ins->doCommand();
+
+  m_proxyModel = getProxy();
+  connectProxy(m_proxyModel);
+
+  if(m_proxyModel->hasChildren())
+  {
+    m_modelSpy->startSpying();
+
+    delete m_sourceModel;
+    m_sourceModel = 0;
+
+    m_modelSpy->stopSpying();
+    testMappings();
+    QCOMPARE(m_modelSpy->size(), 1);
+    QVERIFY(m_modelSpy->takeFirst().first() == ModelReset);
+  }
+  m_sourceModel = currentSourceModel;
+}
+
 void ProxyModelTest::doTestMappings(const QModelIndex &parent)
 {
   QModelIndex idx;

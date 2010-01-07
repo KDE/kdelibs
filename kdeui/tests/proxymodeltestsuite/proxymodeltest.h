@@ -72,6 +72,9 @@ protected:
 
   void testEmptyModel();
   void doTestMappings(const QModelIndex &parent);
+  void testSourceReset();
+  void testDestroyModel();
+
 
 protected slots:
   void testMappings();
