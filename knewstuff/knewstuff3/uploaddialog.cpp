@@ -106,7 +106,7 @@ void UploadDialog::setUploadName(const QString& name)
 
 bool UploadDialog::init(const QString &configfile)
 {
-    // popuplate dialog with stuff
+    // populate dialog with stuff
     QWidget* _mainWidget = new QWidget(this);
     setMainWidget(_mainWidget);
     d->ui.setupUi(_mainWidget);
