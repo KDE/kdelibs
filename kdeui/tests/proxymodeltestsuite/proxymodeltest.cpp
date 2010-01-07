@@ -398,8 +398,19 @@ void ProxyModelTest::connectProxy(QAbstractProxyModel *proxyModel)
   }
 
   m_proxyModel = proxyModel;
-  testEmptyModel();
-  m_proxyModel->setSourceModel(m_rootModel);
+  m_modelSpy->setModel(m_proxyModel);
+
+  QVERIFY(m_modelSpy->isEmpty());
+
+  m_modelSpy->startSpying();
+  m_proxyModel->setSourceModel(m_sourceModel);
+  m_modelSpy->stopSpying();
+
+  QVERIFY(m_modelSpy->size() == 2);
+  QVERIFY(m_modelSpy->takeFirst().first() == ModelAboutToBeReset);
+  QVERIFY(m_modelSpy->takeFirst().first() == ModelReset);
+  QVERIFY(m_modelSpy->isEmpty());
+  testMappings();
 
   connect(m_proxyModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
           SLOT(testMappings()));
@@ -447,8 +458,6 @@ void ProxyModelTest::connectProxy(QAbstractProxyModel *proxyModel)
   connect(m_proxyModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
           SLOT(verifyModel(const QModelIndex &, const QModelIndex &)));
 
-  testMappings();
-  m_modelSpy->setModel(m_proxyModel);
 }
 
 void ProxyModelTest::testData()
