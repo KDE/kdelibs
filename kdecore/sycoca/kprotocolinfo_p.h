@@ -58,6 +58,7 @@ public:
   //KUrl::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
+  int maxSlavesPerHost;
 };
 
 

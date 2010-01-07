@@ -218,6 +218,20 @@ public:
    */
   static int maxSlaves( const QString& protocol );
 
+
+  /**
+   * Returns the limit on the number of slaves for this protocol per host.
+   *
+   * This corresponds to the "maxInstancesPerHost=" field in the protocol description file.
+   * The default is 0 which means there is no per host limit.
+   *
+   * @param protocol the protocol to check
+   * @return the maximum number of slaves, or 1 if unknown
+   *
+   * @since 4.4
+   */
+  static int maxSlavesPerHost( const QString& protocol );
+
   /**
    * Returns whether mimetypes can be determined based on extension for this
    * protocol. For some protocols, e.g. http, the filename extension in the URL

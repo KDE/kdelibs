@@ -1839,6 +1839,8 @@ void FileCopyJobPrivate::startBestCopyMethod()
    else
    {
       startDataPump();
+      if (m_putJob)
+        SimpleJobPrivate::get(m_putJob)->m_pairedUrl = m_src;
    }
 }
 
