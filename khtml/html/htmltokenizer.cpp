@@ -1399,7 +1399,10 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     }
                     // no quotes. Every space means end of value
                     // '/' does not delimit in IE!
-                    if ( curchar <= ' ' || curchar == '>' )
+                    // HTML5: must not contain any literal space characters, any U+0022 QUOTATION MARK (") characters,
+                    // U+0027 APOSTROPHE (') characters, U+003D EQUALS SIGN (=) characters, U+003C LESS-THAN SIGN (<) characters,
+                    // U+003E GREATER-THAN SIGN (>) characters, or U+0060 GRAVE ACCENT (`) characters, and must not be the empty string.
+                    if ( curchar <= ' ' || curchar == '>' || curchar == '\'' || curchar == '"' || curchar == '<' || curchar == '=' || curchar == '`' )
                     {
                         DOMString v(buffer+1, dest-buffer-1);
                         currToken.addAttribute(parser->docPtr(), buffer, attrName, v);
