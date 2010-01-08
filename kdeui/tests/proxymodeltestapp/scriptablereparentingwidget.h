@@ -25,7 +25,7 @@
 
 #include "kreparentingproxymodel.h"
 
-
+class QComboBox;
 class QTreeView;
 class QPlainTextEdit;
 class QScriptEngine;
@@ -53,8 +53,10 @@ public:
 
 private slots:
   void textChanged();
+  void setExampleFunction(int index);
 
 private:
+  QComboBox *m_comboBox;
   ScriptableReparentingProxyModel *m_reparentingProxyModel;
   QTreeView *m_treeView;
   QPlainTextEdit *m_textEdit;
