@@ -59,8 +59,9 @@ void KServiceTypeTrader::applyConstraints( KService::List& lst,
     const ParseTreeBase::Ptr constr = parseConstraints( constraint ); // for ownership
     const ParseTreeBase* pConstraintTree = constr.data(); // for speed
 
-    if ( !!constr )
-    {
+    if (!constr) { // parse error
+        lst.clear();
+    } else {
         // Find all services matching the constraint
         // and remove the other ones
         KService::List::iterator it = lst.begin();
@@ -72,7 +73,6 @@ void KServiceTypeTrader::applyConstraints( KService::List& lst,
                 ++it;
         }
     }
-    // TODO: catch parse errors here (to delete the partial tree) (see 932881)
 }
 
 #if 0
