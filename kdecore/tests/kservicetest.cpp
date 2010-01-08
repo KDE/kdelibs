@@ -267,8 +267,7 @@ void KServiceTest::testTraderConstraints()
 
     // A test with an invalid query, to test for memleaks
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "A == B OR C == D AND OR Foo == 'Parse Error'");
-    // The constraint is ignored, in such cases, so we do get results.
-    QVERIFY(!offers.isEmpty());
+    QVERIFY(offers.isEmpty());
 }
 
 void KServiceTest::testHasServiceType1() // with services constructed with a full path (rare)
