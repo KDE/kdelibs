@@ -19,6 +19,7 @@
 
 #include "dynamictreewidget.h"
 
+#include <QComboBox>
 #include <QTabWidget>
 #include <QPlainTextEdit>
 #include <QTreeView>
@@ -28,6 +29,105 @@
 
 #include "dynamictreemodel.h"
 
+
+static const char *treePredefinesNames[] = {
+  "Flat List",
+  "Straight Line Tree",
+  "Dragon Teeth 1",
+  "Dragon Teeth 2",
+  "Random Tree 1"
+};
+
+static const char *treePredefinesContent[] = {
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1"
+  " - 1",
+
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - - - - - 1"
+  " - - - - - - 1"
+  " - - - - - - - 1"
+  " - - - - - - - - 1"
+  " - - - - - - - - - 1"
+  " - - - - - - - - - - 1"
+  " - - - - - - - - - - - 1"
+  " - - - - - - - - - - - - 1"
+  " - - - - - - - - - - - - - 1"
+  " - - - - - - - - - - - - - - 1"
+  " - - - - - - - - - - - - - - - 1"
+  " - - - - - - - - - - - - - - - - 1",
+
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1",
+
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - - - - - 1"
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - - - - - 1"
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - - - - - 1"
+  " - 1"
+  " - - 1"
+  " - - - 1"
+  " - - - - 1"
+  " - - - - - 1",
+
+  " - 1"
+  " - 2"
+  " - - 3"
+  " - - - 4"
+  " - 5"
+  " - 6"
+  " - 7"
+  " - - 8"
+  " - - - 9"
+  " - - - 10"
+  " - - - - 11"
+  " - - - 12"
+  " - - - - 13"
+  " - 14"
+  " - 15"
+};
+
 DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f), m_dynamicTreeModel(rootModel)
 {
@@ -36,11 +136,21 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->addWidget(tabWidget);
 
-  m_textEdit = new QPlainTextEdit(tabWidget);
+  QWidget *editContainer = new QWidget(tabWidget);
+  QVBoxLayout *editLayout = new QVBoxLayout(editContainer);
 
-  QWidget *container = new QWidget(tabWidget);
+  m_treePredefines = new QComboBox(editContainer);
+  for (int i = 0; i < sizeof treePredefinesNames / sizeof *treePredefinesNames; ++i)
+    m_treePredefines->addItem(*(treePredefinesNames + i), *(treePredefinesContent + i));
+  editLayout->addWidget(m_treePredefines);
+  connect(m_treePredefines, SIGNAL(currentIndexChanged(int)), SLOT(setTreePredefine(int)));
 
-  QVBoxLayout *viewLayout = new QVBoxLayout(container);
+  m_textEdit = new QPlainTextEdit(editContainer);
+  editLayout->addWidget(m_textEdit);
+
+  QWidget *viewContainer = new QWidget(tabWidget);
+
+  QVBoxLayout *viewLayout = new QVBoxLayout(viewContainer);
 
   m_treeView = new QTreeView(tabWidget);
   m_treeView->setModel(rootModel);
@@ -77,8 +187,8 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   viewLayout->addWidget(m_insertSiblingsBelow);
   viewLayout->addWidget(m_insertButton);
 
-  tabWidget->addTab(m_textEdit, "Edit");
-  tabWidget->addTab(container, "View");
+  tabWidget->addTab(editContainer, "Edit");
+  tabWidget->addTab(viewContainer, "View");
 
   tabWidget->setCurrentIndex(ViewTab);
 
@@ -209,5 +319,12 @@ void DynamicTreeWidget::insertSelected()
   ins->interpret(m_insertPatternTextEdit->toPlainText());
   ins->doCommand();
 }
+
+void DynamicTreeWidget::setTreePredefine(int index)
+{
+  stringToModel(m_treePredefines->itemData(index).toString());
+  m_textEdit->setPlainText(modelTreeToString(0, QModelIndex()));
+}
+
 
 #include "dynamictreewidget.moc"

@@ -24,6 +24,7 @@
 
 class QModelIndex;
 
+class QComboBox;
 class QPlainTextEdit;
 class QTreeView;
 class QRadioButton;
@@ -43,6 +44,7 @@ public:
 
 private slots:
   void currentChanged(int index);
+  void setTreePredefine(int index);
 
   void removeSelected();
   void insertSelected();
@@ -66,6 +68,8 @@ private:
   QRadioButton *m_insertChildren;
   QRadioButton *m_insertSiblingsAbove;
   QRadioButton *m_insertSiblingsBelow;
+  QComboBox *m_insertSubTreePredefines;
+  QComboBox *m_treePredefines;
 };
 
 #endif
