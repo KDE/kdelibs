@@ -70,6 +70,7 @@ ScriptableReparentingWidget::ScriptableReparentingWidget(QAbstractItemModel *roo
   QWidget *container = new QWidget(splitter);
   QVBoxLayout *layout = new QVBoxLayout(container);
   m_textEdit = new QPlainTextEdit(container);
+  m_textEdit->setFont(QFont("monospace"));
 
   layout->addWidget(new QLabel("function isDescendantOf (ancestor, descendant) {", container));
   QHBoxLayout *indentedLayout = new QHBoxLayout(container);
