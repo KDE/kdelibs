@@ -108,10 +108,7 @@ ScriptableReparentingWidget::ScriptableReparentingWidget(QAbstractItemModel *roo
 
   m_comboBox = new QComboBox(container);
   for (int i = 0; i < sizeof threadingFunctionNames / sizeof *threadingFunctionNames; ++i)
-  {
-    kDebug() << *(threadingFunctionNames + i) << *(threadingFunctionBodies + i);
     m_comboBox->addItem(*(threadingFunctionNames + i), *(threadingFunctionBodies + i));
-  }
   layout->addWidget(m_comboBox);
   connect(m_comboBox, SIGNAL(currentIndexChanged(int)), SLOT(setExampleFunction(int)));
 
