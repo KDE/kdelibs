@@ -768,12 +768,17 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     return 0;
 }
 
-void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify signals
+void KDirListerCache::slotFilesAdded( const QString &dir /*url*/ ) // from KDirNotify signals
 {
-  kDebug(7004) << dir;
-  Q_FOREACH(const QString& u, directoriesForCanonicalPath(dir)) {
-      updateDirectory(KUrl(u));
-  }
+    KUrl urlDir(dir);
+    kDebug(7004) << urlDir; // output urls, not qstrings, since they might contain a password
+    if (urlDir.isLocalFile()) {
+        Q_FOREACH(const QString& u, directoriesForCanonicalPath(urlDir.path())) {
+            updateDirectory(KUrl(u));
+        }
+    } else {
+        updateDirectory(urlDir);
+    }
 }
 
 void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
