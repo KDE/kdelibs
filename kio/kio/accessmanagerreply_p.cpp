@@ -28,9 +28,9 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <QSslConfiguration>
-#include <QTimer>
-#include <QPointer>
+#include <QtNetwork/QSslConfiguration>
+#include <QtCore/QTimer>
+#include <QtCore/QPointer>
 
 namespace KDEPrivate {
 
@@ -46,12 +46,12 @@ public:
 
     AccessManagerReply *q;
 
-    QPointer<KIO::Job> m_kioJob;
+    QPointer<KIO::SimpleJob> m_kioJob;
     QByteArray m_data;
     bool m_metaDataRead;
 };
 
-AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::Job *kioJob, QObject *parent)
+AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::SimpleJob *kioJob, QObject *parent)
                    :QNetworkReply(parent), d(new AccessManagerReply::AccessManagerReplyPrivate(this))
 
 {
@@ -89,13 +89,15 @@ void AccessManagerReply::abort()
 {
     if (d->m_kioJob) {
         d->m_kioJob->kill();
-        d->m_kioJob->deleteLater();
     }
+
+    d->m_data.clear();
+    d->m_metaDataRead = false;
 }
 
 qint64 AccessManagerReply::bytesAvailable() const
 {
-    return QNetworkReply::bytesAvailable() + d->m_data.length();
+    return (QNetworkReply::bytesAvailable() + d->m_data.length());
 }
 
 qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
@@ -109,29 +111,41 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
     return length;
 }
 
-void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
+void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 {
     if (!d->m_metaDataRead) {
-        const QString responseCode = kioJob->queryMetaData("responsecode");
-        if (!responseCode.isEmpty()) 
+        // Set the HTTP status code...
+        const QString responseCode = job->queryMetaData("responsecode");
+        if (!responseCode.isEmpty())
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, responseCode.toInt());
 
-        const QString headers = kioJob->queryMetaData("HTTP-Headers");
+        // Set the encrypted attribute...
+        setAttribute(QNetworkRequest::ConnectionEncryptedAttribute,
+                     QString::compare(job->queryMetaData("ssl_in_use"), QLatin1String("true"), Qt::CaseInsensitive));
+
+        // Set the raw header information...
+        const QString headers = job->queryMetaData("HTTP-Headers");
         if (!headers.isEmpty()) {
             QStringListIterator it (headers.split('\n'));
             while (it.hasNext()) {
                 const QStringList headerPair = it.next().split(QLatin1String(":"));
-                if (headerPair.size() == 2) {
+                if (headerPair.size() == 2 &&
+                    !headerPair.at(0).contains("set-cookie", Qt::CaseInsensitive)) {
                     setRawHeader(headerPair.at(0).trimmed().toUtf8(), headerPair.at(1).trimmed().toUtf8());
                 }
             }
         }
 
+        // Set the returned meta data as attribute...
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData),
-                     kioJob->metaData().toVariant());
+                     job->metaData().toVariant());
         d->m_metaDataRead = true;
     }
+}
 
+void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
+{
+    readHttpResponseHeaders(kioJob);
     d->m_data += data;
     emit readyRead();
 }
@@ -144,7 +158,7 @@ void AccessManagerReply::setMimeType(KIO::Job *kioJob, const QString &mimeType)
 
 void AccessManagerReply::jobDone(KJob *kJob)
 {
-    const int errcode = kJob->error();
+    int errcode = kJob->error();
     switch (errcode)
     {
         case 0:
@@ -165,9 +179,18 @@ void AccessManagerReply::jobDone(KJob *kJob)
             break;
         case KIO::ERR_USER_CANCELED:
         case KIO::ERR_ABORTED:
-            setError(QNetworkReply::OperationCanceledError, errorString());
-            kDebug( 7044 ) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
+        {
+            QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+            if (redirectUrl.isValid()) {
+                errcode = 0;
+                readHttpResponseHeaders(d->m_kioJob);
+                kDebug( 7044 ) << "Redirecting to" << redirectUrl;
+            } else {
+                setError(QNetworkReply::OperationCanceledError, kJob->errorText());
+                kDebug( 7044 ) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
+            }
             break;
+        }
         case KIO::ERR_UNKNOWN_PROXY_HOST:
             setError(QNetworkReply::ProxyNotFoundError, errorString());
             kDebug( 7044 ) << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
@@ -208,16 +231,9 @@ void AccessManagerReply::jobDone(KJob *kJob)
 }
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job, const KUrl& url)
-{
-    job->kill();
-    
-    // unfortunately we don't get HTTP response code for redirection, so for
-    // temporary one assume code 302 which is most often used
-    if (q->attribute(QNetworkRequest::HttpStatusCodeAttribute).isNull())
-        q->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 302);
-
+{   
     q->setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
-    emit q->finished();
+    job->kill(KJob::EmitResult);
 }
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsigned long percent)
@@ -225,7 +241,6 @@ void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsign
     qulonglong bytes = job->totalAmount(KJob::Bytes);
     emit q->downloadProgress(bytes * ((double)percent / 100), bytes);
 }
-
 }
 
 #include "accessmanagerreply_p.moc"
