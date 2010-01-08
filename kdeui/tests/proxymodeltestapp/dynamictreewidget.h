@@ -45,6 +45,7 @@ public:
 private slots:
   void currentChanged(int index);
   void setTreePredefine(int index);
+  void setInsertSubTreePredefine(int index);
 
   void removeSelected();
   void insertSelected();

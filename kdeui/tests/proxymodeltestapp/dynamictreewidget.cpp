@@ -29,7 +29,6 @@
 
 #include "dynamictreemodel.h"
 
-
 static const char *treePredefinesNames[] = {
   "Flat List",
   "Straight Line Tree",
@@ -128,6 +127,44 @@ static const char *treePredefinesContent[] = {
   " - 15"
 };
 
+static const char *insertSubTreePredefinesNames[] = {
+  "Flat List",
+  "Straight Line Tree",
+  "Dragon Teeth 1",
+  "Dragon Teeth 2",
+  "Random Tree 1"
+};
+
+static const char *insertSubTreePredefinesContent[] = {
+  " - 1\n"
+  " - 1\n"
+  " - 1\n"
+  " - 1\n",
+
+  " - 1\n"
+  " - - 1\n"
+  " - - - 1\n"
+  " - - - - 1\n",
+
+  " - 1\n"
+  " - - 1\n"
+  " - 1\n"
+  " - - 1\n",
+
+  " - 1\n"
+  " - - 1\n"
+  " - - - 1\n"
+  " - 1\n"
+  " - - 1\n"
+  " - - - 1\n",
+
+  " - 1\n"
+  " - 2\n"
+  " - - 3\n"
+  " - - - 4\n"
+  " - 5\n"
+};
+
 DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f), m_dynamicTreeModel(rootModel)
 {
@@ -164,6 +201,12 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
 
   connect(m_removeButton, SIGNAL(clicked(bool)), SLOT(removeSelected()));
 
+  m_insertSubTreePredefines = new QComboBox(this);
+  for (int i = 0; i < sizeof insertSubTreePredefinesNames / sizeof *insertSubTreePredefinesNames; ++i)
+    m_insertSubTreePredefines->addItem(*(insertSubTreePredefinesNames + i), *(insertSubTreePredefinesContent + i));
+  editLayout->addWidget(m_insertSubTreePredefines);
+  connect(m_insertSubTreePredefines, SIGNAL(currentIndexChanged(int)), SLOT(setInsertSubTreePredefine(int)));
+
   m_insertPatternTextEdit = new QPlainTextEdit(tabWidget);
   m_insertPatternTextEdit->setMaximumHeight(100);
 
@@ -181,6 +224,7 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
 
   viewLayout->addWidget(m_removeButton);
 
+  viewLayout->addWidget(m_insertSubTreePredefines);
   viewLayout->addWidget(m_insertPatternTextEdit);
   viewLayout->addWidget(m_insertChildren);
   viewLayout->addWidget(m_insertSiblingsAbove);
@@ -324,6 +368,11 @@ void DynamicTreeWidget::setTreePredefine(int index)
 {
   stringToModel(m_treePredefines->itemData(index).toString());
   m_textEdit->setPlainText(modelTreeToString(0, QModelIndex()));
+}
+
+void DynamicTreeWidget::setInsertSubTreePredefine(int index)
+{
+  m_insertPatternTextEdit->setPlainText(m_insertSubTreePredefines->itemData(index).toString());
 }
 
 
