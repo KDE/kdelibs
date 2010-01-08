@@ -659,7 +659,7 @@ namespace Nepomuk {
 
         /**
          * Get property 'Symbol'. Each resource can have a symbol assigned.
-         * For now this is a simple string which can either be the patch to
+         * For now this is a simple string which can either be the path to
          * an actual pixmap file or just the name of an icon as defined by
          * the freedesktop.org standard.
          */
@@ -667,7 +667,7 @@ namespace Nepomuk {
 
         /**
          * Set property 'Symbol'. Each resource can have a symbol assigned.
-         * For now this is a simple string which can either be the patch to
+         * For now this is a simple string which can either be the path to
          * an actual pixmap file or just the name of an icon as defined by
          * the freedesktop.org standard.
          */
@@ -676,7 +676,7 @@ namespace Nepomuk {
         /**
          * Add a value to property 'Symbol'. Each resource can have a symbol
          * assigned. For now this is a simple string which can either be
-         * the patch to an actual pixmap file or just the name of an icon as
+         * the path to an actual pixmap file or just the name of an icon as
          * defined by the freedesktop.org standard.
          */
         void addSymbol( const QString& value );
