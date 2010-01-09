@@ -32,6 +32,7 @@
 #include "kservice.h"
 #include "kservicetypetrader.h"
 #include "kdebug.h"
+#include "imagemanager.h"
 
 namespace khtmlImLoad {
 
@@ -70,15 +71,24 @@ public:
         }
 
         QSize size = reader.size();
-        if (size.isValid())
-            notifyImageInfo(size.width(), size.height());
+        if (size.isValid()) {
+            if (ImageManager::isAcceptableSize(size.width(), size.height()))
+                notifyImageInfo(size.width(), size.height());
+            else
+                return Error;
+        }
 
         if (!reader.read(&image)) {
             return Error;
         }
 
-        if (!size.isValid())
-            notifyImageInfo(image.width(), image.height());
+        if (!size.isValid()) {
+            // Might be too late by now..
+            if (ImageManager::isAcceptableSize(image.width(), image.height()))
+                notifyImageInfo(image.width(), image.height());
+            else
+                return Error;
+        }
 
         ImageFormat format;
         if (!imageFormat(image, format)) {
@@ -124,6 +134,15 @@ static const char* positiveList[] = {
     "BMP", "TIFF", "JP2", "PNM", "EXR", "XBM", "XPM", "ICO", 0
 };
 
+bool isSupportedFormat(QString format) {
+    QStringList pList;
+    for(int i=0; positiveList[i]; i++) {
+        pList.append(QString::fromLatin1(positiveList[i]));
+    }
+
+    return pList.contains(format, Qt::CaseInsensitive);
+}
+
 static QStringList s_formats;
 
 ImageLoaderProvider::Type QImageIOLoaderProvider::type()
@@ -137,17 +156,13 @@ const QStringList& QImageIOLoaderProvider::mimeTypes()
 
 //     QList<QByteArray> formats = QImageIOReader::supportedFormats();
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
-    QStringList pList;
-    for(int i=0; positiveList[i]; i++) {
-        pList.append(QString::fromLatin1(positiveList[i]));
-    }
 
     foreach(KService::Ptr service, services) {
         QStringList formats = service->property("X-KDE-ImageFormat").toStringList();
         QString mimetype = service->property("X-KDE-MimeType").toString();
         bool positive = false;
-        foreach(QString format, pList) {
-            if (formats.contains(format, Qt::CaseInsensitive)) {
+        foreach(QString format, formats) {
+            if (isSupportedFormat(format)) {
                 positive = true;
                 break;
             }
@@ -168,7 +183,7 @@ ImageLoader* QImageIOLoaderProvider::loaderFor(const QByteArray& prefix)
     prefixBuffer.open(QIODevice::ReadOnly);
     QByteArray format = QImageReader::imageFormat(&prefixBuffer);
     prefixBuffer.close();
-    if (format.isEmpty())
+    if (format.isEmpty() || !isSupportedFormat(format))
         return 0;
     else
         kDebug(399) << "QImageIO - Format guessed: " << format << endl;
