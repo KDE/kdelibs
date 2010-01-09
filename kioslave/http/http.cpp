@@ -3462,17 +3462,14 @@ static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
 void HTTPProtocol::parseContentDisposition(const QString &disposition)
 {
     kDebug(7113) << "disposition: " << disposition;
-    QString strDisposition;
-    QString strFilename;
-
     int pos = 0;
-
-    strDisposition = extractUntil(disposition, QLatin1Char(';'), pos);
+    const QString strDisposition = extractUntil(disposition, QLatin1Char(';'), pos).toLower();
+    QString strFilename;
 
     while (pos < disposition.length()) {
         const QString key = extractUntil(disposition, QLatin1Char('='), pos);
         const QString val = extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
-        if (key == QLatin1String("filename"))
+        if (key.toLower() == QLatin1String("filename"))
             strFilename = val;
     }
 
@@ -3487,6 +3484,7 @@ void HTTPProtocol::parseContentDisposition(const QString &disposition)
 
         kDebug(7113) << "Content-Disposition: filename=" << strFilename;
     }
+    kDebug(7113) << "Content-Disposition: type=" << strDisposition;
     setMetaData(QLatin1String("content-disposition-type"), strDisposition);
     if (!strFilename.isEmpty())
         setMetaData(QLatin1String("content-disposition-filename"), KCodecs::decodeRFC2047String(strFilename));
