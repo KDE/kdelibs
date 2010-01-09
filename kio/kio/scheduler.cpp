@@ -43,6 +43,11 @@
 
 using namespace KIO;
 
+typedef QPointer<Slave> SlavePtr;
+typedef QList<SlavePtr> SlaveList;
+typedef QMap<SlavePtr, QList<SimpleJob *> *> CoSlaveMap;
+
+
 #ifndef KDE_USE_FINAL // already defined in job.cpp
 static inline Slave *jobSlave(SimpleJob *job)
 {
@@ -55,13 +60,26 @@ static inline int jobCommand(SimpleJob *job)
     return SimpleJobPrivate::get(job)->m_command;
 }
 
+static inline KUrl pairedRequest(SimpleJob *job)
+{
+    return SimpleJobPrivate::get(job)->m_pairedUrl;
+}
+
 static inline void startJob(SimpleJob *job, Slave *slave)
 {
     SimpleJobPrivate::get(job)->start(slave);
 }
 
-typedef QList<Slave *> SlaveList;
-typedef QMap<Slave *, QList<SimpleJob *> * > CoSlaveMap;
+static void reparseConfiguration(const SlaveList& list)
+{
+    QListIterator<SlavePtr> it (list);
+    while (it.hasNext())
+    {
+      Slave* slave = it.next();
+      slave->send(CMD_REPARSECONFIGURATION);
+      slave->resetHost();
+    }
+}
 
 class KIO::SchedulerPrivate
 {
@@ -133,8 +151,8 @@ public:
     void publishSlaveOnHold();
     void registerWindow(QWidget *wid);
 
-    Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
-    Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url);
+    Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact, bool enforeLimits = false);
+    Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl& url, bool enforceLimits = false);
 
     void debug_info();
 
@@ -156,37 +174,132 @@ public:
     void slotUnregisterWindow(QObject *);
 };
 
+
 class KIO::SchedulerPrivate::ProtocolInfo
 {
 public:
-    ProtocolInfo() : maxSlaves(1), skipCount(0)
+    ProtocolInfo() : maxSlaves(1), maxSlavesPerHost(0), skipCount(0)
     {
     }
 
     ~ProtocolInfo()
     {
-        qDeleteAll(allSlaves());
+        qDeleteAll(activeSlaves.begin(), activeSlaves.end());
+        qDeleteAll(idleSlaves.begin(), idleSlaves.end());
+        qDeleteAll(coIdleSlaves.begin(), coIdleSlaves.end());
+
+        SlaveList list (coSlaves.keys());
+        qDeleteAll(list.begin(), list.end());
     }
 
-    // bad performance, but will change this later
-    SlaveList allSlaves() const
+    Slave* findJobCoSlave(SimpleJob* job) const
     {
-        SlaveList ret(activeSlaves);
-        ret.append(idleSlaves);
-        ret.append(coSlaves.keys());
-        ret.append(coIdleSlaves);
-        return ret;
+        Slave* slave;
+
+        // Search all slaves to see if job is in the queue of a coSlave
+        QListIterator<SlavePtr> it (activeSlaves);
+        while(it.hasNext())
+        {
+            slave = it.next();
+            JobList *list = coSlaves.value(slave);
+            if (list && list->removeAll(job))
+              return slave;
+        }
+
+        it = idleSlaves;
+        while(it.hasNext())
+        {
+            slave = it.next();
+            JobList *list = coSlaves.value(slave);
+            if (list && list->removeAll(job))
+              return slave;
+        }
+
+        it = coIdleSlaves;
+        while(it.hasNext())
+        {
+            slave = it.next();
+            JobList *list = coSlaves.value(slave);
+            if (list && list->removeAll(job))
+              return slave;
+        }
+
+        it = coSlaves.keys();
+        while(it.hasNext())
+        {
+            slave = it.next();
+            JobList *list = coSlaves.value(slave);
+            if (list && list->removeAll(job))
+              return slave;
+        }
+
+        return 0;
     }
 
+    void reparseSlaveConfiguration() const
+    {
+        reparseConfiguration(activeSlaves);
+        reparseConfiguration(idleSlaves);
+        reparseConfiguration(coIdleSlaves);
+        reparseConfiguration(coSlaves.keys());
+    }
+
+    int activeSlaveCountFor(SimpleJob* job)
+    {
+        int count = 0;
+        QString host = job->url().host();
+
+        if (!host.isEmpty())
+        {
+            QListIterator<SlavePtr> it (activeSlaves);
+            while (it.hasNext())
+            {
+                if (host == it.next()->host())
+                    count++;
+            }
+
+            QString url = job->url().url();
+
+            if (reserveList.contains(url)) {
+                kDebug() << "*** Removing paired request for: " << url;
+                reserveList.removeOne(url);
+            } else {
+                count += reserveList.count();
+            }
+        }
+
+        return count;
+    }
+
+    QStringList reserveList;
     QList<SimpleJob *> joblist;
     SlaveList activeSlaves;
     SlaveList idleSlaves;
     CoSlaveMap coSlaves;
     SlaveList coIdleSlaves;
     int maxSlaves;
+    int maxSlavesPerHost;
     int skipCount;
     QString protocol;
 };
+
+static inline bool checkLimits(KIO::SchedulerPrivate::ProtocolInfo *protInfo, SimpleJob *job)
+{
+  const int numActiveSlaves = protInfo->activeSlaveCountFor(job);
+
+#if 0
+    kDebug() << job->url() << ": ";
+    kDebug() << "    protocol :" << job->url().protocol()
+             << ", max :" << protInfo->maxSlaves
+             << ", max/host :" << protInfo->maxSlavesPerHost
+             << ", active :" << protInfo->activeSlaves.count()
+             << ", idle :" << protInfo->idleSlaves.count()
+             << ", active for " << job->url().host() << " = " << numActiveSlaves;
+#endif
+
+  return (protInfo->maxSlavesPerHost < 1 || protInfo->maxSlavesPerHost > numActiveSlaves);
+}
+
 
 KIO::SchedulerPrivate::ProtocolInfo *
 KIO::SchedulerPrivate::ProtocolInfoDict::get(const QString &protocol)
@@ -197,6 +310,7 @@ KIO::SchedulerPrivate::ProtocolInfoDict::get(const QString &protocol)
         info = new ProtocolInfo;
         info->protocol = protocol;
         info->maxSlaves = KProtocolInfo::maxSlaves( protocol );
+        info->maxSlavesPerHost = KProtocolInfo::maxSlavesPerHost( protocol );
 
         insert(protocol, info);
     }
@@ -345,10 +459,7 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
     ProtocolInfoDict::ConstIterator endIt = proto.isEmpty() ? protInfoDict.constEnd() :
                                                               it + 1;
     for (; it != endIt; ++it) {
-        foreach(Slave *slave, (*it)->allSlaves()) {
-            slave->send(CMD_REPARSECONFIGURATION);
-            slave->resetHost();
-        }
+        (*it)->reparseSlaveConfiguration();
     }
 }
 
@@ -372,13 +483,14 @@ void SchedulerPrivate::doJob(SimpleJob *job)
 
 void SchedulerPrivate::scheduleJob(SimpleJob *job)
 {
-    newJobs.removeOne(job);
-    QString protocol = SimpleJobPrivate::get(job)->m_protocol;
-//    kDebug(7006) << "protocol=" << protocol;
+    const QString protocol = SimpleJobPrivate::get(job)->m_protocol;
+    //kDebug(7006) << "protocol=" << protocol;
     ProtocolInfo *protInfo = protInfoDict.get(protocol);
-    protInfo->joblist.append(job);
-
-    slaveTimer.start(0);
+    if (!protInfo->joblist.contains(job)) { // scheduleJob already called for this job?
+        newJobs.removeOne(job);
+        protInfo->joblist.append(job);
+        slaveTimer.start(0);
+    }
 }
 
 void SchedulerPrivate::cancelJob(SimpleJob *job) {
@@ -391,17 +503,12 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
         ProtocolInfo *protInfo = protInfoDict.get(SimpleJobPrivate::get(job)->m_protocol);
         protInfo->joblist.removeAll(job);
 
-        // Search all slaves to see if job is in the queue of a coSlave
-        foreach(Slave* coSlave, protInfo->allSlaves())
-        {
-           JobList *list = protInfo->coSlaves.value(coSlave);
-           if (list && list->removeAll(job)) {
-               // Job was found and removed.
-               // Fall through to kill the slave as well!
-               slave = coSlave;
-               break;
-           }
-        }
+        KUrl pairedUrl = pairedRequest(job);
+        if (pairedUrl.isValid())
+          protInfo->reserveList.removeAll(pairedUrl.url());
+
+        slave = protInfo->findJobCoSlave(job);
+
         if (!slave)
         {
            return; // Job was not yet running and not in a coSlave queue.
@@ -487,15 +594,15 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
 
     SimpleJob *job = 0;
     Slave *slave = 0;
-
+    
     if (protInfo->skipCount > 2)
     {
        bool dummy;
        // Prevent starvation. We skip the first entry in the queue at most
        // 2 times in a row. The
        protInfo->skipCount = 0;
-       job = protInfo->joblist.at(0);
-       slave = findIdleSlave(protInfo, job, dummy );
+       job = protInfo->joblist.at(0);     
+       slave = findIdleSlave(protInfo, job, dummy, true);
     }
     else
     {
@@ -505,7 +612,8 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
        for(int i = 0; (i < protInfo->joblist.count()) && (i < 10); i++)
        {
           job = protInfo->joblist.at(i);
-          slave = findIdleSlave(protInfo, job, exact);
+          slave = findIdleSlave(protInfo, job, exact, true);
+
           if (!firstSlave)
           {
              firstJob = job;
@@ -528,20 +636,30 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
 
     if (!slave)
     {
-       if ( protInfo->maxSlaves > static_cast<int>(protInfo->activeSlaves.count()) )
-       {
+       slave = createSlave(protInfo, job, job->url(), true);
+       if (slave)
           newSlave = true;
-          slave = createSlave(protInfo, job, job->url());
-          if (!slave)
-             slaveTimer.start(0);
-       }
+       else
+          slaveTimer.start(0);
     }
 
     if (!slave)
     {
-//          kDebug(7006) << "No slaves available";
-//          kDebug(7006) << " -- active: " << protInfo->activeSlaves.count();
+       //kDebug(7006) << "No slaves available";
+       //kDebug(7006) << " -- active: " << protInfo->activeSlaves.count();
        return false;
+    }
+
+    // Check to make sure the scheduling of this job is dependent on another
+    // job request yet to arrive and if it is add the url of the new job to
+    // to the reserve list. This is done to avoid any potential deadlock
+    // conditions that might occur as a result of scheduling high level jobs,
+    // e.g. cipying file from one ftp server to another one.
+    KUrl url = pairedRequest(job);
+    if (url.isValid())
+    {
+        kDebug() << "*** PAIRED REQUEST: " << url;
+        protInfoDict.get(url.protocol())->reserveList << url.url();
     }
 
     protInfo->activeSlaves.append(slave);
@@ -600,8 +718,10 @@ static Slave *searchIdleList(SlaveList &idleSlaves, const KUrl &url, const QStri
     QString user = url.user();
     exact = true;
 
-    foreach( Slave *slave, idleSlaves )
+    Q_FOREACH( Slave *slave, idleSlaves )
     {
+//       kDebug() << "job protocol: " << protocol << ", slave protocol: " << slave->slaveProtocol();
+//       kDebug() << "job host: " << host << ", slave host: " << slave->host();
        if ((protocol == slave->slaveProtocol()) &&
            (host == slave->host()) &&
            (port == slave->port()) &&
@@ -619,78 +739,95 @@ static Slave *searchIdleList(SlaveList &idleSlaves, const KUrl &url, const QStri
     return 0;
 }
 
-Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact)
+Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job,
+                                       bool &exact, bool enforceLimits)
 {
     Slave *slave = 0;
-    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
-    if (jobPriv->m_checkOnHold)
+    if (!enforceLimits || checkLimits(protInfo, job))
     {
-       slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
-       if (slave)
-          return slave;
-    }
-    if (slaveOnHold)
-    {
-       // Make sure that the job wants to do a GET or a POST, and with no offset
-       bool bCanReuse = (jobCommand(job) == CMD_GET);
-       KIO::TransferJob * tJob = qobject_cast<KIO::TransferJob *>(job);
-       if ( tJob )
-       {
-          bCanReuse = (jobCommand(job) == CMD_GET || jobCommand(job) == CMD_SPECIAL);
-          if ( bCanReuse )
-          {
-            KIO::MetaData outgoing = tJob->outgoingMetaData();
-            QString resume = (!outgoing.contains("resume")) ? QString() : outgoing["resume"];
-            kDebug(7006) << "Resume metadata is" << resume;
-            bCanReuse = (resume.isEmpty() || resume == "0");
-          }
-       }
-//       kDebug(7006) << "bCanReuse = " << bCanReuse;
-       if (bCanReuse)
-       {
-          if (job->url() == urlOnHold)
-          {
-             kDebug(7006) << "HOLD: Reusing held slave for" << urlOnHold;
-             slave = slaveOnHold;
-          }
-          else
-          {
-             kDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold << ")";
-             slaveOnHold->kill();
-          }
-          slaveOnHold = 0;
-          urlOnHold = KUrl();
-       }
-       if (slave)
-          return slave;
+        KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+
+        if (jobPriv->m_checkOnHold)
+        {
+           slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
+           if (slave)
+              return slave;
+        }
+        if (slaveOnHold)
+        {
+           // Make sure that the job wants to do a GET or a POST, and with no offset
+           bool bCanReuse = (jobCommand(job) == CMD_GET);
+           KIO::TransferJob * tJob = qobject_cast<KIO::TransferJob *>(job);
+           if ( tJob )
+           {
+              bCanReuse = (jobCommand(job) == CMD_GET || jobCommand(job) == CMD_SPECIAL);
+              if ( bCanReuse )
+              {
+                KIO::MetaData outgoing = tJob->outgoingMetaData();
+                QString resume = (!outgoing.contains("resume")) ? QString() : outgoing["resume"];
+                kDebug(7006) << "Resume metadata is" << resume;
+                bCanReuse = (resume.isEmpty() || resume == "0");
+              }
+           }
+    //       kDebug(7006) << "bCanReuse = " << bCanReuse;
+           if (bCanReuse)
+           {
+              if (job->url() == urlOnHold)
+              {
+                 kDebug(7006) << "HOLD: Reusing held slave for" << urlOnHold;
+                 slave = slaveOnHold;
+              }
+              else
+              {
+                 kDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold << ")";
+                 slaveOnHold->kill();
+              }
+              slaveOnHold = 0;
+              urlOnHold = KUrl();
+           }
+           if (slave)
+              return slave;
+        }
+
+        slave = searchIdleList(protInfo->idleSlaves, job->url(), jobPriv->m_protocol, exact);
     }
 
-    return searchIdleList(protInfo->idleSlaves, job->url(), jobPriv->m_protocol, exact);
+    return slave;
 }
 
-Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url)
+Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job,
+                                     const KUrl &url, bool enforceLimits)
 {
-   int error;
-   QString errortext;
-   Slave *slave = Slave::createSlave(protInfo->protocol, url, error, errortext);
-   if (slave)
+   Slave *slave = 0;
+   const int slavesCount = protInfo->activeSlaves.count() + protInfo->idleSlaves.count();
+
+   if (!enforceLimits ||
+       (protInfo->maxSlaves > slavesCount && checkLimits(protInfo, job)))
    {
-      protInfo->idleSlaves.append(slave);
-      q->connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
-                 SLOT(slotSlaveDied(KIO::Slave *)));
-      q->connect(slave, SIGNAL(slaveStatus(pid_t,const QByteArray&,const QString &, bool)),
-                 SLOT(slotSlaveStatus(pid_t,const QByteArray&, const QString &, bool)));
-   }
-   else
-   {
-      kError() << "couldn't create slave:" << errortext;
-      if (job)
+      int error;
+      QString errortext;
+      slave = Slave::createSlave(protInfo->protocol, url, error, errortext);
+
+      if (slave)
       {
-         protInfo->joblist.removeAll(job);
-         job->slotError( error, errortext );
+         protInfo->idleSlaves.append(slave);
+         q->connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
+                    SLOT(slotSlaveDied(KIO::Slave *)));
+         q->connect(slave, SIGNAL(slaveStatus(pid_t,const QByteArray&,const QString &, bool)),
+                    SLOT(slotSlaveStatus(pid_t,const QByteArray&, const QString &, bool)));
+      }
+      else
+      {
+         kError() << "couldn't create slave:" << errortext;
+         if (job)
+         {
+            protInfo->joblist.removeAll(job);
+            job->slotError( error, errortext );
+         }
       }
    }
+
    return slave;
 }
 
@@ -751,7 +888,7 @@ void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
 
 void SchedulerPrivate::slotCleanIdleSlaves()
 {
-    foreach (ProtocolInfo *protInfo, protInfoDict) {
+    Q_FOREACH (ProtocolInfo *protInfo, protInfoDict) {
         SlaveList::iterator it = protInfo->idleSlaves.begin();
         for( ; it != protInfo->idleSlaves.end(); )
         {
@@ -775,7 +912,7 @@ void SchedulerPrivate::slotCleanIdleSlaves()
 
 void SchedulerPrivate::scheduleCleanup()
 {
-    foreach (ProtocolInfo *protInfo, protInfoDict) {
+    Q_FOREACH (ProtocolInfo *protInfo, protInfoDict) {
         if (protInfo->idleSlaves.count() && !cleanupTimer.isActive()) {
             cleanupTimer.start(MAX_SLAVE_IDLE * 1000);
             break;
@@ -848,7 +985,7 @@ void
 SchedulerPrivate::slotScheduleCoSlave()
 {
     slaveConfig = SlaveConfig::self();
-    foreach (ProtocolInfo *protInfo, protInfoDict) {
+    Q_FOREACH (ProtocolInfo *protInfo, protInfoDict) {
         SlaveList::iterator it = protInfo->coIdleSlaves.begin();
         for( ; it != protInfo->coIdleSlaves.end(); )
         {
@@ -921,16 +1058,15 @@ SchedulerPrivate::assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
 //    kDebug(7006) << "_assignJobToSlave( " << job << ", " << slave << ")";
     QString dummy;
-    if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url(), dummy ))
-        ||
-        (!newJobs.removeAll(job)))
+    ProtocolInfo *protInfo = protInfoDict.get(slave->protocol());
+    if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url(), dummy )) ||
+        !(protInfo->joblist.removeAll(job) > 0 || newJobs.removeAll(job) > 0))
     {
         kDebug(7006) << "_assignJobToSlave(): ERROR, nonmatching or unknown job.";
         job->kill();
         return false;
     }
 
-    ProtocolInfo *protInfo = protInfoDict.get(slave->protocol());
     JobList *list = protInfo->coSlaves.value(slave);
     assert(list);
     if (!list)

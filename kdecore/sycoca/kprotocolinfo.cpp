@@ -69,6 +69,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_icon = config.readEntry( "Icon" );
   m_config = config.readEntry( "config", m_name );
   m_maxSlaves = config.readEntry( "maxInstances", 1);
+  d->maxSlavesPerHost = config.readEntry( "maxInstancesPerHost", 0);
 
   QString tmp = config.readEntry( "input" );
   if ( tmp == "filesystem" )
@@ -151,7 +152,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> d->capabilities >> d->proxyProtocol
         >> i_canRenameFromFile >> i_canRenameToFile
         >> i_canDeleteRecursive >> i_fileNameUsedForCopying
-        >> d->archiveMimetype;
+        >> d->archiveMimetype >> d->maxSlavesPerHost;
 
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
@@ -230,7 +231,7 @@ KProtocolInfoPrivate::save( QDataStream& _str)
         << capabilities << proxyProtocol
         << i_canRenameFromFile << i_canRenameToFile
         << i_canDeleteRecursive << i_fileNameUsedForCopying
-        << archiveMimetype;
+        << archiveMimetype << maxSlavesPerHost;
 }
 
 
@@ -280,6 +281,15 @@ int KProtocolInfo::maxSlaves( const QString& _protocol )
     return 1;
 
   return prot->m_maxSlaves;
+}
+
+int KProtocolInfo::maxSlavesPerHost( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return 0;
+
+  return prot->d_func()->maxSlavesPerHost;
 }
 
 bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )

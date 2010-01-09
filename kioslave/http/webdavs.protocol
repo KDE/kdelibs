@@ -14,5 +14,7 @@ defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=folder-remote
 config=webdav
+maxInstances=20
+maxInstancesPerHost=5
 X-DocPath=kioslave/webdav/index.html
 Class=:internet

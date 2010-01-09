@@ -101,8 +101,29 @@ namespace KIO {
         KUrl m_url;
         KUrl m_subUrl;
         int m_command;
+        /*
+          In high-level jobs such as FileCopyJob, this variable represents the
+          source (GET) url and is used by KIO::Scheduler to avoid deadlock conditions
+          when scheduling jobs with two remote ends, e.g. copying file from one ftp
+          server to another.
+         */
+        KUrl m_pairedUrl;
 
         // for use in KIO::Scheduler
+        //
+        // There are two kinds of protocol:
+        // (1) The protocol of the url
+        // (2) The actual protocol that the io-slave uses.
+        //
+        // These two often match, but not necessarily. Most notably, they don't
+        // match when doing ftp via a proxy.
+        // In that case (1) is ftp, but (2) is http.
+        //
+        // JobData::protocol stores (2) while Job::url().protocol() returns (1).
+        // The ProtocolInfoDict is indexed with (2).
+        //
+        // We schedule slaves based on (2) but tell the slave about (1) via
+        // Slave::setProtocol().
         QString m_protocol;
         QString m_proxy;
         bool m_checkOnHold;
