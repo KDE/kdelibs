@@ -17,6 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QtCore/QMap>
+
+#include <kcodecs.h>
 
 // Advance *pos beyond spaces / tabs
 static void skipSpace(const char input[], int *pos, int end)
@@ -272,4 +275,110 @@ TokenIterator HeaderTokenizer::iterator(const char *key) const
     } else {
         return TokenIterator(m_nullTokens, m_buffer);
     }
+}
+
+static void skipLWS(const QString &str, int &pos)
+{
+    while (pos < str.length() && (str[pos] == QLatin1Char(' ') || str[pos] == QLatin1Char('\t')))
+        ++pos;
+}
+
+// Extracts token-like input until terminator char or EOL.. Also skips over the terminator.
+// We don't try to be strict or anything..
+static QString extractUntil(const QString &str, QChar term, int &pos)
+{
+    QString out;
+    skipLWS(str, pos);
+    while (pos < str.length() && (str[pos] != term)) {
+        out += str[pos];
+        ++pos;
+    }
+
+    if (pos < str.length()) // Stopped due to finding term
+        ++pos;
+
+    // Remove trailing linear whitespace...
+    while (out.endsWith(QLatin1Char(' ')) || out.endsWith(QLatin1Char('\t')))
+        out.chop(1);
+
+    return out;
+}
+
+// As above, but also handles quotes..
+static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
+{
+    skipLWS(str, pos);
+
+    // Are we quoted?
+    if (pos < str.length() && str[pos] == QLatin1Char('"')) {
+        QString out;
+
+        // Skip the quote...
+        ++pos;
+
+        // Parse until trailing quote...
+        while (pos < str.length()) {
+            if (str[pos] == QLatin1Char('\\') && pos + 1 < str.length()) {
+                // quoted-pair = "\" CHAR
+                out += str[pos + 1];
+                pos += 2; // Skip both...
+            } else if (str[pos] == QLatin1Char('"')) {
+                ++pos;
+                break;
+            }  else {
+                out += str[pos];
+                ++pos;
+            }
+        }
+
+        // Skip until term..
+        while (pos < str.length() && (str[pos] != term))
+            ++pos;
+
+        if (pos < str.length()) // Stopped due to finding term
+            ++pos;
+
+        return out;
+    } else {
+        return extractUntil(str, term, pos);
+    }
+}
+
+static QMap<QLatin1String, QString> contentDispositionParser(const QString &disposition)
+{
+    kDebug(7113) << "disposition: " << disposition;
+    int pos = 0;
+    const QString strDisposition = extractUntil(disposition, QLatin1Char(';'), pos).toLower();
+    QString strFilename;
+
+    QMap<QLatin1String, QString> parameters;
+    parameters.insert(QLatin1String("type"), strDisposition);
+
+    while (pos < disposition.length()) {
+        const QString key = extractUntil(disposition, QLatin1Char('='), pos);
+        const QString val = extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
+        if (key.toLower() == QLatin1String("filename"))
+            strFilename = val;
+    }
+
+    // Content-Disposition is not allowed to dictate directory
+    // path, thus we extract the filename only.
+    if ( !strFilename.isEmpty() )
+    {
+        int pos = strFilename.lastIndexOf( QLatin1Char('/') );
+
+        if( pos > -1 )
+            strFilename = strFilename.mid(pos+1);
+
+        strFilename = KCodecs::decodeRFC2047String(strFilename);
+        parameters.insert(QLatin1String("filename"), strFilename);
+    }
+
+    QMap<QLatin1String, QString>::const_iterator i = parameters.constBegin();
+    while (i != parameters.constEnd()) {
+        kDebug(7113) << "Content-Disposition: " << i.key() << "=" << i.value();
+        ++i;
+    }
+
+    return parameters;
 }
