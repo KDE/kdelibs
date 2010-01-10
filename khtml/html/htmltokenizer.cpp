@@ -619,7 +619,7 @@ void HTMLTokenizer::parseDoctype(TokenizerString &src)
                 isWhitespace = c == '\r' || c == '\n' || c == '\t' || c == ' ';
             }
         }
-        
+
         switch (doctypeToken.state) {
             case DoctypeBegin: {
                 doctypeToken.state = DoctypeBeforeName;
@@ -1087,7 +1087,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         doctypeSearchCount++; // A '!' is also part of doctype, so we are moving through that still as well
                     else
                         doctypeSearchCount = 0;
-                    
+
                     if (searchCount == 4)
                     {
 #ifdef TOKEN_DEBUG
@@ -1110,7 +1110,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 else
                     searchCount = 0; // Stop looking for '<!--' sequence
             }
-            
+
             if (doctypeSearchCount > 0) {
                 if((*src).toLower() == doctypeStart[doctypeSearchCount]) {
                     doctypeSearchCount++;
@@ -1123,7 +1123,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         doctypeComment = NoDoctypeComment;
                         doctypeToken.reset();
                         doctype = true;
-                        
+
                         parseDoctype(src);
                         return;
                     }
@@ -1402,7 +1402,10 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     // HTML5: must not contain any literal space characters, any U+0022 QUOTATION MARK (") characters,
                     // U+0027 APOSTROPHE (') characters, U+003D EQUALS SIGN (=) characters, U+003C LESS-THAN SIGN (<) characters,
                     // U+003E GREATER-THAN SIGN (>) characters, or U+0060 GRAVE ACCENT (`) characters, and must not be the empty string.
-                    if ( curchar <= ' ' || curchar == '>' || curchar == '\'' || curchar == '"' || curchar == '<' || curchar == '=' || curchar == '`' )
+                    // Real life: images.google.com uses URLs including form arguments (foo=bar)
+                    // in unquoted parameters --- with an html5 <!doctype html> DTD.
+                    // Real life takes priority, so we accept at least =
+                    if ( curchar <= ' ' || curchar == '>' || curchar == '\'' || curchar == '"' || curchar == '<' || /*curchar == '=' ||*/ curchar == '`' )
                     {
                         DOMString v(buffer+1, dest-buffer-1);
                         currToken.addAttribute(parser->docPtr(), buffer, attrName, v);
@@ -1913,7 +1916,7 @@ void HTMLTokenizer::timerEvent( QTimerEvent *e )
     if ( e->timerId() == m_yieldTimer ) {
         killTimer(m_yieldTimer);
         m_yieldTimer = 0;
-        write( TokenizerString(), true ); 
+        write( TokenizerString(), true );
     } else if ( e->timerId() == m_autoCloseTimer && cachedScript.isEmpty() ) {
          finish();
     }
