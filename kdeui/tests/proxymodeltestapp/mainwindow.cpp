@@ -32,6 +32,7 @@
 // #include "reparentingpmwidget.h"
 // #include "recursivefilterpmwidget.h"
 #include "lessthanwidget.h"
+#include "matchcheckingwidget.h"
 
 MainWindow::MainWindow() : KXmlGuiWindow()
 {
@@ -43,7 +44,9 @@ MainWindow::MainWindow() : KXmlGuiWindow()
 //   RecursiveFilterProxyWidget *recursive = new RecursiveFilterProxyWidget();
   ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
   LessThanWidget *lessThanWidget = new LessThanWidget();
+  MatchCheckingWidget *matchCheckingWidget = new MatchCheckingWidget();
 
+  tabWidget->addTab(matchCheckingWidget, "Match Checking PM");
   tabWidget->addTab(descPMWidget, "descendant PM");
   tabWidget->addTab(selProxyWidget, "selection PM");
 //   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");

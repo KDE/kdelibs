@@ -337,6 +337,37 @@ QList<int> DynamicTreeModel::indexToPath(const QModelIndex &_idx) const
   return list;
 }
 
+QModelIndexList DynamicTreeModel::match(const QModelIndex& start, int role, const QVariant& value, int hits, Qt::MatchFlags flags) const
+{
+  if (role != DynamicTreeModelId)
+    return QAbstractItemModel::match(start, role, value, hits, flags);
+
+  qint64 id = value.toLongLong();
+
+  QHash<qint64, QList<QList<qint64> > >::const_iterator it = m_childItems.constBegin();
+  const QHash<qint64, QList<QList<qint64> > >::const_iterator end = m_childItems.constEnd();
+
+  QList<QList<qint64> > items;
+  QList<QList<qint64> >::const_iterator itemIt;
+  QList<QList<qint64> >::const_iterator itemEnd;
+  int foundIndexRow;
+  for ( ; it != end; ++it)
+  {
+    items = it.value();
+    itemEnd = items.constEnd();
+    for (itemIt = items.constBegin(); itemIt != itemEnd; ++itemIt)
+    {
+      foundIndexRow = itemIt->indexOf(id);
+      if (foundIndexRow != -1)
+      {
+        static const int column = 0;
+        return QModelIndexList() << createIndex(foundIndexRow, column, reinterpret_cast<void *>(id));
+      }
+    }
+  }
+  return QModelIndexList();
+}
+
 ModelChangeCommand::ModelChangeCommand( DynamicTreeModel *model, QObject *parent )
     : QObject(parent), m_model(model), m_startRow(-1), m_endRow(-1), m_numCols(1)
 {

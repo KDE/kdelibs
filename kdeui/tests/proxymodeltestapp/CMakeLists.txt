@@ -20,6 +20,7 @@ set(proxymodeltestapp_SRCS
     lessthanwidget.cpp
     dynamictreewidget.cpp
 #    scriptablereparentingwidget.cpp
+    matchcheckingwidget.cpp
 )
 
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})

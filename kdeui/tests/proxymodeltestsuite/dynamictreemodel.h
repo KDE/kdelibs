@@ -38,6 +38,13 @@ class DynamicTreeModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
+  enum Roles
+  {
+    DynamicTreeModelId = Qt::UserRole,
+
+    LastRole
+  };
+
   explicit DynamicTreeModel(QObject *parent = 0);
 
   QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -53,6 +60,8 @@ public:
   Qt::DropActions supportedDropActions() const;
   QStringList mimeTypes() const;
   QMimeData* mimeData(const QModelIndexList& indexes) const;
+  QModelIndexList match(const QModelIndex& start, int role, const QVariant& value, int hits = 1,
+                        Qt::MatchFlags flags = Qt::MatchFlags(Qt::MatchStartsWith | Qt::MatchWrap)) const;
 
   void clear();
   QList<int> indexToPath(const QModelIndex &idx) const;

@@ -251,6 +251,9 @@ public:
   virtual QModelIndex parent(const QModelIndex&) const;
   virtual int columnCount(const QModelIndex& = QModelIndex() ) const;
 
+  virtual QModelIndexList match(const QModelIndex& start, int role, const QVariant& value, int hits = 1,
+                                Qt::MatchFlags flags = Qt::MatchFlags(Qt::MatchStartsWith | Qt::MatchWrap)) const;
+
 Q_SIGNALS:
 #if !defined(Q_MOC_RUN)
 private: // Don't allow subclasses to emit these signals.

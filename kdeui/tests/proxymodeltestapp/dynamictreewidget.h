@@ -39,6 +39,7 @@ public:
 
   void setInitialTree(const QString &treeString);
 
+  DynamicTreeModel *model() const { return m_dynamicTreeModel; }
   QTreeView *treeView() const { return m_treeView; }
   QPlainTextEdit *textEdit() const { return m_textEdit; }
 
