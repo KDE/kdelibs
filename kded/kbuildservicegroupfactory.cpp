@@ -54,7 +54,7 @@ KServiceGroup *
 KBuildServiceGroupFactory::createEntry( const QString&, const char * ) const
 {
   // Unused
-  kWarning("!!!! KBuildServiceGroupFactory::createEntry called!");
+  kWarning(7021) << "called!";
   return 0;
 }
 
@@ -68,7 +68,7 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, const KS
 
   if (!entry)
   {
-    kWarning(7021) << "KBuildServiceGroupFactory::addNewEntryTo( " << menuName << ", " << newEntry->name() << " ): menu does not exists!";
+    kWarning(7021) << "( " << menuName << ", " << newEntry->name() << " ): menu does not exists!";
     return;
   }
   entry->addEntry( KSycocaEntry::Ptr::staticCast( newEntry ) );
@@ -80,7 +80,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
   if (ptr)
   {
-    kWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): menu already exists!";
+    kWarning(7021) << "( " << menuName << ", " << file << " ): menu already exists!";
     return KServiceGroup::Ptr::staticCast( ptr );
   }
 
@@ -110,7 +110,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
          parentEntry = KServiceGroup::Ptr::staticCast( ptr );
      if (!parentEntry)
      {
-        kWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): parent menu does not exist!";
+        kWarning(7021) << "( " << menuName << ", " << file << " ): parent menu does not exist!";
      }
      else
      {
