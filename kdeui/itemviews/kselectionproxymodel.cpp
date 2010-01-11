@@ -1644,4 +1644,18 @@ QList<QPersistentModelIndex> KSelectionProxyModel::sourceRootIndexes() const
   return d->m_rootIndexList;
 }
 
+QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, const QVariant& value, int hits, Qt::MatchFlags flags) const
+{
+  if (role < Qt::UserRole)
+    return QAbstractProxyModel::match(start, role, value, hits, flags);
+
+  QModelIndexList list;
+  foreach(const QModelIndex idx, sourceModel()->match(mapToSource(start), role, value, hits, flags))
+  {
+    list << mapFromSource(idx);
+  }
+  return list;
+
+}
+
 #include "moc_kselectionproxymodel.cpp"
