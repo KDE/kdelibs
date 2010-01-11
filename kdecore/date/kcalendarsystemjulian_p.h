@@ -22,7 +22,7 @@
 
 #include "kcalendarsystem.h"
 
-class KCalendarSystemJulianProleptic;
+class KCalendarSystemJulianPrivate;
 
 /**
  * @internal
@@ -112,7 +112,7 @@ protected:
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
 
 private:
-    KCalendarSystemJulianProleptic * const d;
+    KCalendarSystemJulianPrivate * const d;
 };
 
 #endif // KCALENDARSYSTEMJULIAN_H
