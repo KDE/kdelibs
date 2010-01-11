@@ -1,10 +1,5 @@
 project(knewstuff3)
 
-configure_file(
-   ${CMAKE_CURRENT_SOURCE_DIR}/config-knewstuff3.h.cmake
-   ${CMAKE_CURRENT_BINARY_DIR}/config-knewstuff3.h
-)
-
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
 include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. ${LIBATTICA_INCLUDE_DIR})
