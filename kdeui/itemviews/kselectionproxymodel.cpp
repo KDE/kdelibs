@@ -1650,9 +1650,13 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
     return QAbstractProxyModel::match(start, role, value, hits, flags);
 
   QModelIndexList list;
+  QModelIndex proxyIndex;
   foreach(const QModelIndex idx, sourceModel()->match(mapToSource(start), role, value, hits, flags))
   {
-    list << mapFromSource(idx);
+    proxyIndex = mapFromSource(idx);
+    if (proxyIndex.isValid())
+      list << proxyIndex;
+
   }
   return list;
 
