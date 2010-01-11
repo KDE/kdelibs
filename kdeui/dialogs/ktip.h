@@ -108,7 +108,8 @@ class KDEUI_EXPORT KTipDialog : public KDialog
     /**
      * Construct a tip dialog.
      *
-     * @param database TipDatabase that should be used by the TipDialog.
+     * @param database TipDatabase that should be used by the TipDialog. The KTipDialog
+     *                 will take ownership of the database, including deleting it.
      * @param parent Parent widget of TipDialog.
      */
     explicit KTipDialog( KTipDatabase *database, QWidget *parent = 0 );
