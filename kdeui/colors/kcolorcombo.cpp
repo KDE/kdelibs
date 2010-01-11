@@ -106,9 +106,12 @@ void KColorComboDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         if (tmpcolor.isValid()) {
             innercolor = tmpcolor;
             paletteBrush = false;
-            painter->setPen(Qt::black);
+            painter->setPen(Qt::transparent);
             painter->setBrush(innercolor);
-            painter->drawRect(innerrect);
+            QPainter::RenderHints tmpHint = painter->renderHints();
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->drawRoundedRect(innerrect, 2, 2);
+            painter->setRenderHints(tmpHint);
             painter->setBrush(Qt::NoBrush);
         }
     }
@@ -319,7 +322,10 @@ void KColorCombo::paintEvent(QPaintEvent *event)
     painter.drawComplexControl(QStyle::CC_ComboBox, opt);
 
     QRect frame = style()->subControlRect(QStyle::CC_ComboBox, &opt, QStyle::SC_ComboBoxEditField, this);
-    painter.fillRect(frame.adjusted(1, 1, -1, -1), QBrush(d->internalcolor));
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::transparent);
+    painter.setBrush(QBrush(d->internalcolor));
+    painter.drawRoundedRect(frame.adjusted(1, 1, -1, -1), 2, 2);
 }
 
 /**
