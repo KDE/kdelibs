@@ -67,6 +67,7 @@ KCalendarSystemHijri::KCalendarSystemHijri( const KLocale * locale )
 
 KCalendarSystemHijri::~KCalendarSystemHijri()
 {
+    delete d;
 }
 
 QString KCalendarSystemHijri::calendarType() const
