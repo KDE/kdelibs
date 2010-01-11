@@ -20,8 +20,6 @@
 
 #include "engine.h"
 
-#include "config-knewstuff3.h"
-
 #include "entry.h"
 #include "core/installation.h"
 #include "core/xmlloader.h"
