@@ -21,24 +21,27 @@
 */
 
 #include "kbookmarkmanager.h"
+
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QProcess>
+#include <QtCore/QRegExp>
+#include <QtCore/QTextStream>
+#include <QtDBus/QtDBus>
+#include <QtGui/QApplication>
+
+#include <kconfiggroup.h>
+#include <kdebug.h>
+#include <kdirwatch.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <ksavefile.h>
+#include <kstandarddirs.h>
+
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
 #include "kbookmarkdialog.h"
-#include <kdebug.h>
-#include <kstandarddirs.h>
-#include <ksavefile.h>
-#include <qregexp.h>
-#include <kmessagebox.h>
-#include <qprocess.h>
-#include <klocale.h>
-#include <kdirwatch.h>
-#include <QtGui/QApplication>
-#include <kconfiggroup.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <QtDBus/QtDBus>
-#include <QtCore/QTextStream>
 #include "kbookmarkmanageradaptor_p.h"
 
 #define BOOKMARK_CHANGE_NOTIFY_INTERFACE "org.kde.KIO.KBookmarkManager"
@@ -49,6 +52,8 @@ public:
     ~KBookmarkManagerList() {
         qDeleteAll( begin() , end() ); // auto-delete functionality
     }
+
+    QReadWriteLock lock;
 };
 
 K_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf)
@@ -155,9 +160,21 @@ static KBookmarkManager* lookupExisting(const QString& bookmarksFile)
 
 KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, const QString& dbusObjectName )
 {
-    KBookmarkManager* mgr = lookupExisting(bookmarksFile);
-    if (mgr) return mgr;
-    
+    KBookmarkManager* mgr(0);
+    {
+        QReadLocker readLock(&s_pSelf->lock);
+        mgr = lookupExisting(bookmarksFile);
+        if (mgr) { 
+            return mgr;
+        }
+    }
+
+    QWriteLocker writeLock(&s_pSelf->lock);
+    mgr = lookupExisting(bookmarksFile);
+    if (mgr) {
+        return mgr;
+    }
+
     mgr = new KBookmarkManager( bookmarksFile, dbusObjectName );
     s_pSelf->append( mgr );
     return mgr;
@@ -165,9 +182,21 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
 
 KBookmarkManager* KBookmarkManager::managerForExternalFile( const QString& bookmarksFile )
 {
-    KBookmarkManager* mgr = lookupExisting(bookmarksFile);
-    if (mgr) return mgr;
-    
+    KBookmarkManager* mgr(0);
+    {
+        QReadLocker readLock(&s_pSelf->lock);
+        mgr = lookupExisting(bookmarksFile);
+        if (mgr) { 
+            return mgr;
+        }
+    }
+
+    QWriteLocker writeLock(&s_pSelf->lock);
+    mgr = lookupExisting(bookmarksFile);
+    if (mgr) {
+        return mgr;
+    }
+
     mgr = new KBookmarkManager( bookmarksFile );
     s_pSelf->append( mgr );
     return mgr;
@@ -200,7 +229,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString
 {
     if(dbusObjectName.isNull()) // get dbusObjectName from file
         if ( QFile::exists(d->m_bookmarksFile) )
-            parse(); //sets d->m_dbusObjectnName
+            parse(); //sets d->m_dbusObjectName
 
     init( "/KBookmarkManager/"+d->m_dbusObjectName );
 
@@ -289,8 +318,10 @@ void KBookmarkManager::slotFileChanged(const QString& path)
 
 KBookmarkManager::~KBookmarkManager()
 {
-    if(!s_pSelf.isDestroyed())
-        s_pSelf->removeAll( this );
+    if (!s_pSelf.isDestroyed()) {
+        s_pSelf->removeAll(this);
+    }
+
     delete d;
 }
 
