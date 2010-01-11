@@ -70,6 +70,7 @@ KCalendarSystemJalali::KCalendarSystemJalali( const KLocale * locale )
 
 KCalendarSystemJalali::~KCalendarSystemJalali()
 {
+    delete d;
 }
 
 QString KCalendarSystemJalali::calendarType() const
