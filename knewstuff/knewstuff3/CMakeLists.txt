@@ -1,21 +1,8 @@
 project(knewstuff3)
 
-# Try to find Attica
-macro_optional_find_package(LibAttica)
-macro_bool_to_01(LIBATTICA_FOUND HAVE_LIBATTICA)
-macro_log_feature(LIBATTICA_FOUND "libattica" "A library to access Open Collaboration Service providers" "http://kde.org" FALSE "" "Required to access OSC providers in get hot new stuff.")
-configure_file(
-   ${CMAKE_CURRENT_SOURCE_DIR}/config-knewstuff3.h.cmake
-   ${CMAKE_CURRENT_BINARY_DIR}/config-knewstuff3.h
-)
-
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/..)
-
-if(LIBATTICA_FOUND)
-    include_directories(${LIBATTICA_INCLUDE_DIR})
-endif(LIBATTICA_FOUND)
+include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURCE_DIR}/.. ${LIBATTICA_INCLUDE_DIR})
 
 set(knewstuff3_SRCS
     downloaddialog.cpp
@@ -39,14 +26,9 @@ set(knewstuff3_SRCS
     ui/progressindicator.cpp
     ui/ratingpainter.cpp
     ui/ratingwidget.cpp
+    attica/atticaprovider.cpp
+    uploaddialog.cpp
 )
-
-if(LIBATTICA_FOUND)
-    set(knewstuff3_SRCS ${knewstuff3_SRCS}
-        attica/atticaprovider.cpp
-        uploaddialog.cpp
-    )
-endif(LIBATTICA_FOUND)
 
 kde4_add_ui_files(knewstuff3_SRCS
     downloaddialog.ui
@@ -62,10 +44,7 @@ target_link_libraries(knewstuff3
     ${KDE4_KUTILS_LIBS}
 )
 
-if(LIBATTICA_FOUND)
-    target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES})
-endif(LIBATTICA_FOUND)
-
+target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES})
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
 set_target_properties(knewstuff3 PROPERTIES
@@ -85,7 +64,5 @@ install(FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )
 
-if(LIBATTICA_FOUND)
-    install(FILES uploaddialog.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel)
-endif(LIBATTICA_FOUND)
+install(FILES uploaddialog.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel)
 

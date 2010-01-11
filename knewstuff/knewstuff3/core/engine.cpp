@@ -20,8 +20,6 @@
 
 #include "engine.h"
 
-#include "config-knewstuff3.h"
-
 #include "entry.h"
 #include "core/installation.h"
 #include "core/xmlloader.h"
@@ -53,9 +51,7 @@
 #include <shlobj.h>
 #endif
 
-#if defined(HAVE_LIBATTICA)
 #include "attica/atticaprovider.h"
-#endif
 
 #include "core/cache.h"
 #include "staticxml/staticxmlprovider.h"
@@ -248,9 +244,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
         QSharedPointer<KNS3::Provider> provider;
         if (isAtticaProviderFile || n.attribute("type").toLower() == "rest") {
-#ifdef HAVE_ATTICA
             provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
-#endif
         } else {
             provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
         }
