@@ -346,17 +346,6 @@ bool KProtocolInfo::showFilePreview( const QString& _protocol )
   return prot->d_func()->showPreviews;
 }
 
-/*
-KUrl::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return KUrl::Auto;
-
-  return prot->d->uriMode;
-}
-*/
-
 QStringList KProtocolInfo::capabilities( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);

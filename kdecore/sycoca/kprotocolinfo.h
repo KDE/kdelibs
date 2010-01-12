@@ -285,21 +285,6 @@ public:
   static bool showFilePreview( const QString& protocol );
 
   /**
-   * Returns the suggested URI parsing mode for the KUrl parser.
-   *
-   * This corresponds to the "URIMode=" field in the protocol description file.
-   *
-   * The following parsing modes are defined:
-   * @li "url" for a standards compliant URL
-   * @li "rawuri" for a non-conformant URI for which URL parsing would be meaningless
-   * @li "mailto" for a mailto style URI (the path part contains only an email address)
-   *
-   * @param protocol the protocol to check
-   * @return the suggested parsing mode, or KUrl::Auto if unspecified
-   */
-  //static KUrl::URIMode uriParseMode( const QString& protocol ); - gone in Qt-4.x
-
-  /**
    * Returns the list of capabilities provided by the kioslave implementing
    * this protocol.
    *
