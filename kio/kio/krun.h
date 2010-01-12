@@ -239,7 +239,7 @@ public:
                        const QString& suggestedFileName = QString(), const QByteArray& asn = QByteArray());
 
     /**
-     * Run the given shell command and notifies kicker of the starting
+     * Run the given shell command and notifies KDE of the starting
      * of the application. If the program to be called doesn't exist,
      * an error box will be displayed.
      *
@@ -255,6 +255,14 @@ public:
     static bool runCommand(const QString &cmd, QWidget* window);
 
     /**
+     * Overload that also takes a working directory, so that a command like
+     * "kwrite file.txt" finds file.txt from the right place.
+     * @since 4.4
+     */
+    static bool runCommand(const QString &cmd, QWidget* window, const QString& workingDirectory);
+    // TODO KDE5: merge the above with 2-args runCommand, using QString()
+
+    /**
      * Same as the other runCommand(), but it also takes the name of the
      * binary, to display an error message in case it couldn't find it.
      *
@@ -268,6 +276,18 @@ public:
      */
     static bool runCommand(const QString& cmd, const QString & execName,
                            const QString & icon, QWidget* window, const QByteArray& asn = QByteArray());
+
+    /**
+     * Overload that also takes a working directory, so that a command like
+     * "kwrite file.txt" finds file.txt from the right place.
+     * @param workingDirectory the working directory for the started process. The default
+     *                         (if passing an empty string) is the user's document path.
+     * @since 4.4
+     */
+    static bool runCommand(const QString& cmd, const QString & execName,
+                           const QString & icon, QWidget* window,
+                           const QByteArray& asn, const QString& workingDirectory);
+    // TODO KDE5: merge the above with 5-args runCommand, using QString()
 
     /**
      * Display the Open-With dialog for those URLs, and run the chosen application.
