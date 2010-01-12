@@ -48,6 +48,12 @@ public:
     static HistoryProvider * self();
 
     /**
+     * @returns true if a provider has already been created.
+     * @since 4.4
+     */
+    static bool exists();
+
+    /**
      * @returns true if @p item is present in the history.
      */
     virtual bool contains( const QString& item ) const;
