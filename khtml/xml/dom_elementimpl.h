@@ -132,7 +132,7 @@ protected:
 struct AttributeImpl
 {
     inline NodeImpl::Id id() const { return m_localName.id() ? makeId(m_namespace.id(), m_localName.id()) : m_data.attr->fastId(); }
-    DOMStringImpl *val() const { return m_localName.id() ? m_data.value : m_data.attr->val(); }
+    DOMStringImpl *val() const { if (m_localName.id()) return m_data.value; else return m_data.attr->val(); }
     DOMString value() const { return val(); }
     AttrImpl *attr() const { return m_localName.id() ? 0 : m_data.attr; }
     DOMString namespaceURI() const { return m_localName.id() ? m_namespace.toString() : m_data.attr->namespaceURI(); }
