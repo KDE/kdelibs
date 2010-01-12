@@ -1191,11 +1191,13 @@ void KDirModelTest::testDeleteCurrentDirectory()
     QVERIFY(!fileIndex.isValid());
 }
 
+#if QT_VERSION < 0x040700
 // The old slow way. (this isn't QUrl's fault, I'm just using QUrl in order
 // to be able to test a different hashing function than the KUrl one).
 inline uint qHash(const QUrl& qurl) {
     return qHash(qurl.toEncoded());
 }
+#endif
 
 void KDirModelTest::testKUrlHash()
 {
