@@ -53,6 +53,11 @@ HistoryProvider * HistoryProvider::self()
     return historyProviderPrivate->q;
 }
 
+bool HistoryProvider::exists()
+{
+    return historyProviderPrivate->q;
+}
+
 HistoryProvider::HistoryProvider( QObject *parent )
     : QObject( parent ), d(historyProviderPrivate)
 {
