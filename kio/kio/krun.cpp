@@ -55,6 +55,7 @@
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -1006,19 +1007,37 @@ bool KRun::run(const QString& _exec, const KUrl::List& _urls, QWidget* window, c
 
 bool KRun::runCommand(const QString &cmd, QWidget* window)
 {
+    return runCommand(cmd, window, QString());
+}
+
+bool KRun::runCommand(const QString& cmd, QWidget* window, const QString& workingDirectory)
+{
     if (cmd.isEmpty()) {
         kWarning() << "Command was empty, nothing to run";
         return false;
     }
     const QString bin = KShell::splitArgs(cmd).first();
-    return KRun::runCommand(cmd, bin, bin /*iconName*/, window, QByteArray());
+    return KRun::runCommand(cmd, bin, bin /*iconName*/, window, QByteArray(), workingDirectory);
 }
 
 bool KRun::runCommand(const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn)
 {
+    return runCommand(cmd, execName, iconName, window, asn, QString());
+}
+
+bool KRun::runCommand(const QString& cmd, const QString &execName, const QString & iconName,
+                      QWidget* window, const QByteArray& asn, const QString& workingDirectory)
+{
     kDebug(7010) << "runCommand " << cmd << "," << execName;
     KProcess * proc = new KProcess;
     proc->setShellCommand(cmd);
+    if (workingDirectory.isEmpty()) {
+        // see bug 108510, and we need "alt+f2 editor" (which starts a desktop file via klauncher)
+        // and "alt+f2 editor -someoption" (which calls runCommand) to be consistent.
+        proc->setWorkingDirectory(KGlobalSettings::documentPath());
+    } else {
+        proc->setWorkingDirectory(workingDirectory);
+    }
     QString bin = binaryName(execName, true);
     KService::Ptr service = KService::serviceByDesktopName(bin);
     return runCommandInternal(proc, service.data(),
