@@ -724,7 +724,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 {
     d->bMultiple = (properties->items().count() > 1);
     d->bIconChanged = false;
-    d->bKDesktopMode = (qApp->objectName() == "kdesktop");
     d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
     kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple;
 
@@ -741,6 +740,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QString iconStr = KMimeType::iconNameForUrl(url, mode);
     QString directory = properties->kurl().directory();
     QString protocol = properties->kurl().protocol();
+    d->bKDesktopMode = protocol == QLatin1String("desktop") ||
+                properties->currentDir().protocol() == QLatin1String("desktop");
     QString mimeComment = item.mimeComment();
     d->mimeType = item.mimetype();
     KIO::filesize_t totalSize = item.size();
@@ -1122,7 +1123,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
 void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 {
-    if ( d->m_lined )
+    if ( d->m_lined && !d->m_bFromTemplate )
     {
         d->m_lined->setReadOnly( ro );
         if (ro)
@@ -1389,8 +1390,13 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
 
     if ( d->bKDesktopMode && d->bDesktopFile ) {
         // Renamed? Update Name field
-        if ( d->oldFileName != properties->kurl().fileName() || d->m_bFromTemplate ) {
-            KDesktopFile config( properties->kurl().toLocalFile() );
+        // Note: The desktop ioslave does this as well, but not when
+        //       the file is copied from a template.
+        if ( d->m_bFromTemplate ) {
+            KIO::UDSEntry entry;
+            KIO::NetAccess::stat( properties->kurl(), entry, 0 );
+            KFileItem item( entry, properties->kurl() );
+            KDesktopFile config( item.localPath() );
             KConfigGroup cg = config.desktopGroup();
             QString nameStr = nameFromFileName(properties->kurl().fileName());
             cg.writeEntry( "Name", nameStr );
@@ -3018,7 +3024,8 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
     properties->addPage(d->m_frame, i18n("&Application"));
 
-    bool bKDesktopMode = (qApp->objectName() == "kdesktop");
+    bool bKDesktopMode = properties->kurl().protocol() == QLatin1String("desktop") ||
+                    properties->currentDir().protocol() == QLatin1String("desktop");
 
     if (bKDesktopMode)
     {
