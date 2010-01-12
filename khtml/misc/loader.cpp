@@ -1152,7 +1152,7 @@ void DocLoader::registerPreload(CachedObject* resource)
     fprintf(stderr, "PRELOADING %s\n", resource->url().string().toLatin1().data());
 #endif
 }
- 
+
 void DocLoader::clearPreloads()
 {
     printPreloadStats();
@@ -1184,7 +1184,7 @@ void DocLoader::printPreloadStats()
             fprintf(stderr,"HIT COMPLETE PRELOAD %s\n", res->url().string().toLatin1().data());
         else if (res->preloadResult() == CachedObject::PreloadReferencedWhileLoading)
             fprintf(stderr,"HIT LOADING PRELOAD %s\n", res->url().string().toLatin1().data());
-        
+
         if (res->type() == CachedObject::Script) {
             scripts++;
             if (res->preloadResult() < CachedObject::PreloadReferencedWhileLoading)
@@ -1258,7 +1258,7 @@ CachedSound *DocLoader::requestSound( const DOM::DOMString &url )
       CachedSound* s = Cache::requestObject<CachedSound, CachedObject::Sound>( this, fullURL, 0 );
       return s;
 }
-            
+
 CachedFont *DocLoader::requestFont( const DOM::DOMString &url )
 {
     DOCLOADER_SECCHECK(true);
@@ -1429,7 +1429,7 @@ void Loader::slotMimetype( KIO::Job *j, const QString& s )
     if (!r)
         return;
     CachedObject *o = r->object;
-    
+
     // Mozilla plain ignores any  mimetype that doesn't have / in it, and handles it as "",
     // including when being picky about mimetypes. Match that for better compatibility with broken servers.
     if (s.contains('/'))
@@ -1467,7 +1467,7 @@ void Loader::slotFinished( KJob* job )
       r->object->setExpireDate( expireDate );
 
       if ( r->object->type() == CachedObject::Image ) {
-          QString fn = j->queryMetaData("content-disposition");
+          QString fn = j->queryMetaData("content-disposition-filename");
           static_cast<CachedImage*>( r->object )->setSuggestedFilename(fn);
 #ifdef IMAGE_TITLES
           static_cast<CachedImage*>( r->object )->setSuggestedTitle(fn);
