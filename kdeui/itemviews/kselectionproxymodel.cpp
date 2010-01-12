@@ -246,10 +246,11 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
   Q_Q(KSelectionProxyModel);
 
+  emit q->layoutAboutToBeChanged();
+
   if (!m_selectionModel->hasSelection())
     return;
 
-  emit q->layoutAboutToBeChanged();
   QPersistentModelIndex srcPersistentIndex;
   foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList())
   {
@@ -266,7 +267,10 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
   Q_Q(KSelectionProxyModel);
 
   if (!m_selectionModel->hasSelection())
+  {
+    emit q->layoutChanged();
     return;
+  }
 
   for(int i = 0; i < m_proxyIndexes.size(); ++i)
   {
