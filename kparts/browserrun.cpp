@@ -495,7 +495,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
 void BrowserRun::slotCopyToTempFileResult(KJob *job)
 {
     if ( job->error() ) {
-	    job->uiDelegate()->showErrorMessage();
+        job->uiDelegate()->showErrorMessage();
     } else {
         // Same as KRun::foundMimeType but with a different URL
         (void) (KRun::runUrl( static_cast<KIO::FileCopyJob *>(job)->destUrl(), d->m_mimeType, d->m_window ));
@@ -515,8 +515,16 @@ bool BrowserRun::hideErrorDialog() const
     return d->m_bHideErrorDialog;
 }
 
-QString BrowserRun::contentDisposition() const {
+QString BrowserRun::contentDisposition() const
+{
     return d->m_contentDisposition;
+}
+
+bool BrowserRun::serverSuggestsSave() const
+{
+    // RfC 2183, section 2.8:
+    // Unrecognized disposition types should be treated as `attachment'.
+    return !contentDisposition().isEmpty() && (contentDisposition() != "inline");
 }
 
 KParts::OpenUrlArguments& KParts::BrowserRun::arguments()
