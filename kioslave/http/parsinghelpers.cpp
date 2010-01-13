@@ -370,7 +370,6 @@ static QMap<QLatin1String, QString> contentDispositionParser(const QString &disp
         if( pos > -1 )
             strFilename = strFilename.mid(pos+1);
 
-        strFilename = KCodecs::decodeRFC2047String(strFilename);
         parameters.insert(QLatin1String("filename"), strFilename);
     }
 
