@@ -2564,6 +2564,9 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         case SH_DialogButtonBox_ButtonsHaveIcons:
             return KGlobalSettings::showIconsOnPushButtons();
 
+        case SH_ItemView_ArrowKeysNavigateIntoChildren:
+            return true;
+
         default:
             break;
     };
