@@ -330,6 +330,7 @@ public:
         }
         return memcmp(m_index, other.m_index, sizeof(m_index)) == 0;
     }
+
 private:
     explicit CacheIndex(const QByteArray &index)
     {
@@ -411,7 +412,7 @@ public:
         while (true) {
             QByteArray baIndex = sboard.read(ScoreboardEntry::indexSize);
             QByteArray baRest = sboard.read(ScoreboardEntry::size - ScoreboardEntry::indexSize);
-            if (baIndex.size() + baRest.size() != ScoreboardEntry::indexSize) {
+            if (baIndex.size() + baRest.size() != ScoreboardEntry::size) {
                 break;
             }
 
@@ -448,9 +449,6 @@ public:
         if (it == m_scoreboard.constEnd()) {
             return false;
         }
-        // TODO debug why this seems to fill in wrong info!
-        kDebug(7113);
-        it.value().debugPrint();
         *mcfi = it.value();
         return true;
     }
@@ -512,12 +510,17 @@ public:
         fi.sizeOnDisk = fileInfo.size();
         fi.debugPrint();
         // a CacheFileInfo is-a MiniCacheFileInfo which enables the following assignment...
-        m_scoreboard[CacheIndex(fi.baseName)] = fi;
+        add(fi);
         // finally, return cache dir growth (only relevant if a file was actually created!)
         return ccc == CreateFileNotificationCommand ? fi.sizeOnDisk : 0;
     }
 
-    void fileRemoved(const QString &basename)
+    void add(const CacheFileInfo &fi)
+    {
+        m_scoreboard[CacheIndex(fi.baseName)] = fi;
+    }
+
+    void remove(const QString &basename)
     {
         m_scoreboard.remove(CacheIndex(basename));
     }
@@ -655,6 +658,9 @@ public:
                 }
                 if (!gotInfo) {
                     gotInfo = readCacheFile(baseName, fi, CleanCache);
+                    if (gotInfo && scoreboard) {
+                        scoreboard->add(*fi);
+                    }
                 }
                 if (gotInfo) {
                     m_fiList.append(fi);
@@ -691,7 +697,7 @@ public:
             if (QFile::remove(filename)) {
                 m_totalSizeOnDisk -= fi->sizeOnDisk;
                 if (scoreboard) {
-                    scoreboard->fileRemoved(fi->baseName);
+                    scoreboard->remove(fi->baseName);
                 }
             }
             delete fi;
