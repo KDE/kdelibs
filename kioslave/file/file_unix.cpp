@@ -48,6 +48,15 @@
 #include <limits.h>  // PATH_MAX
 #endif
 
+//sendfile has different semantics in different platforms
+#if defined HAVE_SENDFILE && defined Q_OS_LINUX
+#define USE_SENDFILE 1
+#endif
+
+#ifdef USE_SENDFILE
+#include <sys/sendfile.h>
+#endif
+
 namespace KDEPrivate
 {
 

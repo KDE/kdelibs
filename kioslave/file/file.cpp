@@ -38,15 +38,6 @@
 #include <sys/time.h>
 #endif
 
-//sendfile has different semantics in different platforms
-#if defined HAVE_SENDFILE && defined Q_OS_LINUX
-#define USE_SENDFILE 1
-#endif
-
-#ifdef USE_SENDFILE
-#include <sys/sendfile.h>
-#endif
-
 #ifdef HAVE_POSIX_ACL
 #include <sys/acl.h>
 #include <acl/libacl.h>
