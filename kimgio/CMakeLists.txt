@@ -103,6 +103,14 @@ install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/
 endif(OPENEXR_FOUND)
 macro_log_feature(OPENEXR_FOUND "OpenEXR" "A library for manipulating OpenEXR image files" "http://www.openexr.com" FALSE "" "Provides support for OpenEXR images.")
 
+##################################
+                                              
+set(kimg_pic_LIB_SRCS pic_read.cpp pic_write.cpp pic_io_plugin.cpp pic_io_handler.cpp)
+kde4_add_plugin(kimg_pic ${kimg_pic_LIB_SRCS})
+target_link_libraries(kimg_pic ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
+
+install(TARGETS kimg_pic  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+
 
 ########### install files ###############
 
@@ -129,6 +137,7 @@ install( FILES
   psd.desktop
   hdr.desktop
   tiff.desktop
+  pic.desktop
   DESTINATION ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 install( FILES qimageio_plugin.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR}/ )
