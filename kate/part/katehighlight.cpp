@@ -3225,7 +3225,7 @@ void KateHlManager::getDefaults(uint schema, KateAttributeList &list)
   list.append(charAttribute);
 
   KateAttribute* string = new KateAttribute();
-  string->setTextColor(QColor::QColor("#D00"));
+  string->setTextColor(QColor("#D00"));
   string->setSelectedTextColor(Qt::red);
   list.append(string);
 
@@ -3242,9 +3242,9 @@ void KateHlManager::getDefaults(uint schema, KateAttributeList &list)
 
   KateAttribute* alert = new KateAttribute();
   alert->setTextColor(Qt::black);
-  alert->setSelectedTextColor( QColor::QColor("#FCC") );
+  alert->setSelectedTextColor( QColor("#FCC") );
   alert->setBold(true);
-  alert->setBGColor( QColor::QColor("#FCC") );
+  alert->setBGColor( QColor("#FCC") );
   list.append(alert);
 
   KateAttribute* functionAttribute = new KateAttribute();
