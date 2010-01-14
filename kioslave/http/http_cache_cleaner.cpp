@@ -58,6 +58,10 @@ static const char *appName = "kio_http_cache_cleaner";
 // !START OF SYNC!
 // Keep the following in sync with the cache code in http.cpp
 
+static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
+static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
+static const int s_hashedUrlBytes = s_hashedUrlBits / 8;
+
 static const char *version = "A\n";
 
 // never instantiated, on-disk / wire format only
@@ -297,7 +301,7 @@ public:
         QByteArray ba = baseName.toLatin1();
         const int sz = ba.size();
         const char *input = ba.constData();
-        Q_ASSERT(sz == sizeof(m_index) * 2);
+        Q_ASSERT(sz == s_hashedUrlNibbles);
 
         int translated = 0;
         for (int i = 0; i < sz; i++) {
@@ -328,26 +332,26 @@ public:
         if (m_hashedValue != other.m_hashedValue) {
             return false;
         }
-        return memcmp(m_index, other.m_index, sizeof(m_index)) == 0;
+        return memcmp(m_index, other.m_index, s_hashedUrlBytes) == 0;
     }
 
 private:
     explicit CacheIndex(const QByteArray &index)
     {
-        Q_ASSERT(index.length() >= sizeof(m_index));
-        memcpy(m_index, index.constData(), sizeof(m_index));
+        Q_ASSERT(index.length() >= s_hashedUrlBytes);
+        memcpy(m_index, index.constData(), s_hashedUrlBytes);
         computeHash();
     }
 
     void computeHash()
     {
         uint hash = 0;
-        const int ints = sizeof(m_index) / sizeof(uint);
+        const int ints = s_hashedUrlBytes / sizeof(uint);
         for (int i = 0; i < ints; i++) {
             hash ^= reinterpret_cast<uint *>(&m_index[0])[i];
         }
-        if (sizeof(m_index) % sizeof(uint)) {
-            const int offset = sizeof(m_index) - sizeof(uint);
+        if (s_hashedUrlBytes % sizeof(uint)) {
+            const int offset = s_hashedUrlBytes - sizeof(uint);
             hash ^= *reinterpret_cast<uint *>(&m_index[offset]);
         }
         m_hashedValue = hash;
@@ -356,7 +360,7 @@ private:
     friend uint qHash(const CacheIndex &);
     friend class Scoreboard;
 
-    quint8 m_index[20]; // packed binary version of the hexadecimal name
+    quint8 m_index[s_hashedUrlBytes]; // packed binary version of the hexadecimal name
     uint m_hashedValue;
 };
 
@@ -376,8 +380,8 @@ static CacheCleanerCommand readCommand(const QByteArray &cmd, CacheFileInfo *fi)
     stream >> ret;
 
     QByteArray baseName;
-    baseName.resize(40);
-    stream.readRawData(baseName.data(), 40);
+    baseName.resize(s_hashedUrlNibbles);
+    stream.readRawData(baseName.data(), s_hashedUrlNibbles);
     Q_ASSERT(stream.atEnd());
     fi->baseName = QString::fromLatin1(baseName);
 
@@ -389,8 +393,8 @@ static CacheCleanerCommand readCommand(const QByteArray &cmd, CacheFileInfo *fi)
 // never istantiated, on-disk format only
 struct ScoreboardEntry {
 // from scoreboard file
-    quint8 index[20];
-    static const int indexSize = sizeof(index);
+    quint8 index[s_hashedUrlBytes];
+    static const int indexSize = s_hashedUrlBytes;
     qint32 useCount;
 // from scoreboard file, but compared with filesystem to see if scoreboard has current data
     qint64 lastUsedDate;
@@ -434,7 +438,7 @@ public:
         QHash<CacheIndex, MiniCacheFileInfo>::ConstIterator it = m_scoreboard.constBegin();
         for (; it != m_scoreboard.constEnd(); ++it) {
             const char *indexData = reinterpret_cast<const char *>(it.key().m_index);
-            stream.writeRawData(indexData, sizeof(it.key().m_index));
+            stream.writeRawData(indexData, s_hashedUrlBytes);
 
             stream << it.value().useCount;
             stream << it.value().lastUsedDate;
@@ -628,19 +632,19 @@ public:
         if (!m_fileNameList.isEmpty()) {
             while (t.elapsed() < 100 && !m_fileNameList.isEmpty()) {
                 QString baseName = m_fileNameList.takeFirst();
-                // check if the filename is of the 40 letters, 0...f type
-                if (baseName.length() < 40) {
+                // check if the filename is of the $s_hashedUrlNibbles letters, 0...f type
+                if (baseName.length() < s_hashedUrlNibbles) {
                     continue;
                 }
                 bool nameOk = true;
-                for (int i = 0; i < 40 && nameOk; i++) {
+                for (int i = 0; i < s_hashedUrlNibbles && nameOk; i++) {
                     QChar c = baseName[i];
                     nameOk = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
                 }
                 if (!nameOk) {
                     continue;
                 }
-                if (baseName.length() > 40) {
+                if (baseName.length() > s_hashedUrlNibbles) {
                     if (g_currentDate - QFileInfo(filePath(baseName)).lastModified().toTime_t() > 15*60) {
                         // it looks like a temporary file that hasn't been touched in > 15 minutes...
                         QFile::remove(filePath(baseName));
