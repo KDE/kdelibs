@@ -81,7 +81,6 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     if (!flags || (flags & KWalletIntegration))
         setWallet(new KWebWallet);
 
-#if QT_VERSION >= 0x040600
     action(Back)->setIcon(QIcon::fromTheme("go-previous"));
     action(Forward)->setIcon(QIcon::fromTheme("go-next"));
     action(Reload)->setIcon(QIcon::fromTheme("view-refresh"));
@@ -106,32 +105,6 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, QIcon::fromTheme("preferences-plugin").pixmap(32, 32));
     settings()->setWebGraphic(QWebSettings::MissingImageGraphic, QIcon::fromTheme("image-missing").pixmap(32, 32));
     settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, QIcon::fromTheme("applications-internet").pixmap(32, 32));
-#else
-    action(Back)->setIcon(KIcon("go-previous"));
-    action(Forward)->setIcon(KIcon("go-next"));
-    action(Reload)->setIcon(KIcon("view-refresh"));
-    action(Stop)->setIcon(KIcon("process-stop"));
-    action(Cut)->setIcon(KIcon("edit-cut"));
-    action(Copy)->setIcon(KIcon("edit-copy"));
-    action(Paste)->setIcon(KIcon("edit-paste"));
-    action(Undo)->setIcon(KIcon("edit-undo"));
-    action(Redo)->setIcon(KIcon("edit-redo"));
-    action(InspectElement)->setIcon(KIcon("view-process-all"));
-    action(OpenLinkInNewWindow)->setIcon(KIcon("window-new"));
-    action(OpenFrameInNewWindow)->setIcon(KIcon("window-new"));
-    action(OpenImageInNewWindow)->setIcon(KIcon("window-new"));
-    action(CopyLinkToClipboard)->setIcon(KIcon("edit-copy"));
-    action(CopyImageToClipboard)->setIcon(KIcon("edit-copy"));
-    action(ToggleBold)->setIcon(KIcon("format-text-bold"));
-    action(ToggleItalic)->setIcon(KIcon("format-text-italic"));
-    action(ToggleUnderline)->setIcon(KIcon("format-text-underline"));
-    action(DownloadLinkToDisk)->setIcon(KIcon("document-save"));
-    action(DownloadImageToDisk)->setIcon(KIcon("document-save"));
-
-    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KIcon("preferences-plugin").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KIcon("image-missing").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KIcon("applications-internet").pixmap(32, 32));
-#endif
 
     action(Back)->setShortcut(KStandardShortcut::back().primary());
     action(Forward)->setShortcut(KStandardShortcut::forward().primary());
