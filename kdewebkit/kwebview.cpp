@@ -84,14 +84,6 @@ void KWebView::mouseReleaseEvent(QMouseEvent *event)
     if (d->mouseReleased(event->pos())) {
         return;
     }
-
-    const bool isAccepted = event->isAccepted();
-    page()->event(event);
-
-    if (!event->isAccepted())
-      d->handleUrlPasteFromClipboard();
-
-    event->setAccepted(isAccepted);
 }
 
 #include "kwebview.moc"
