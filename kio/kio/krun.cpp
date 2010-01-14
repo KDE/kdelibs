@@ -1391,6 +1391,9 @@ void KRun::foundMimeType(const QString& type)
 
     KIO::TransferJob *job = qobject_cast<KIO::TransferJob *>(d->m_job);
     if (job) {
+        // Update our URL in case of a redirection
+        setUrl( job->url() );
+
         job->putOnHold();
         KIO::Scheduler::publishSlaveOnHold();
         d->m_job = 0;
