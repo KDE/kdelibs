@@ -104,6 +104,16 @@ private Q_SLOTS:
         assert( testCombo->KTestComboBox::delegate() == 0L );
         delete testCombo; // not needed anymore
     }
+
+    void testSelectionResetOnReturn()
+    {
+        KHistoryComboBox *testCombo= new KHistoryComboBox( true, 0);
+        QTest::keyClicks(testCombo, "Hello world");
+        testCombo->lineEdit()->setSelection(5, 3);
+        QVERIFY(testCombo->lineEdit()->hasSelectedText());
+        QTest::keyClick(testCombo, Qt::Key_Return);
+        QVERIFY(!testCombo->lineEdit()->hasSelectedText());
+    }
 };
 
 QTEST_KDEMAIN(KComboBox_UnitTest, GUI)
