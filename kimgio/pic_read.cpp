@@ -29,6 +29,7 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <qimage.h>
+#include <algorithm>
 
 /**
  * Reads the PIC header and checks that it is OK
