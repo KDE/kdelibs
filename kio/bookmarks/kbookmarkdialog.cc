@@ -342,7 +342,7 @@ void KBookmarkDialog::fillGroup( QTreeWidgetItem * parentItem, const KBookmarkGr
 KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidget * tree)
     : QTreeWidgetItem(tree), m_address("")
 {
-    setText(0, i18n("Bookmarks"));
+    setText(0, i18nc("name of the container of all browser bookmarks","Bookmarks"));
     setIcon(0, SmallIcon("bookmarks"));
     tree->expandItem(this);
     tree->setCurrentItem( this );
