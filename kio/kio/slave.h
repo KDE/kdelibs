@@ -36,6 +36,7 @@
 namespace KIO {
 
     class SlavePrivate;
+    class SimpleJob;
     // Attention developers: If you change the implementation of KIO::Slave,
     // do *not* use connection() or slaveconn but the respective KIO::Slave
     // accessor methods. Otherwise classes derived from Slave might break. (LS)
@@ -56,10 +57,13 @@ namespace KIO {
 
         int slave_pid();
 
-	/**
-	 * Force termination
-	 */
-	void kill();
+    void setJob(KIO::SimpleJob *job);
+    KIO::SimpleJob *job() const;
+
+    /**
+    * Force termination
+    */
+    void kill();
 
         /**
          * @return true if the slave survived the last mission.

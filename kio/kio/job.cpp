@@ -313,8 +313,7 @@ bool SimpleJob::doKill()
 {
     //kDebug() << this;
     Q_D(SimpleJob);
-    Scheduler::cancelJob( this ); // deletes the slave if not 0
-    d->m_slave = 0; // -> set to 0
+    Scheduler::cancelJob(this); // deletes the slave if not 0
     return Job::doKill();
 }
 
@@ -346,8 +345,9 @@ void SimpleJob::putOnHold()
     if ( d->m_slave )
     {
         Scheduler::putSlaveOnHold(this, d->m_url);
-        d->m_slave = 0;
     }
+    // we should now be disassociated from the slave
+    Q_ASSERT(!d->m_slave);
     kill( Quietly );
 }
 
@@ -362,19 +362,19 @@ SimpleJob::~SimpleJob()
     if (d->m_slave) // was running
     {
         kDebug(7007) << "Killing running job in destructor!"  << kBacktrace();
+        Scheduler::cancelJob(this);
 #if 0
         d->m_slave->kill();
         Scheduler::jobFinished( this, d->m_slave ); // deletes the slave
 #endif
-        d->m_slave = 0; // -> set to 0
     }
-    Scheduler::cancelJob( this );
 }
 
 void SimpleJobPrivate::start(Slave *slave)
 {
     Q_Q(SimpleJob);
     m_slave = slave;
+    slave->setJob(q);
 
     q->connect( slave, SIGNAL(error(int,QString)),
                 SLOT(slotError(int,QString)) );
@@ -441,8 +441,7 @@ void SimpleJobPrivate::slaveDone()
     if (!m_slave) return;
     if (m_command == CMD_OPEN) m_slave->send(CMD_CLOSE);
     q->disconnect(m_slave); // Remove all signals between slave and job
-    Scheduler::jobFinished( q, m_slave );
-    m_slave = 0;
+    Scheduler::jobFinished(q, m_slave);
 }
 
 void SimpleJob::slotFinished( )
@@ -616,14 +615,15 @@ void MkdirJob::slotFinished()
         QDataStream istream( d->m_packedArgs );
         istream >> dummyUrl >> permissions;
 
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL = KUrl();
         d->m_packedArgs.truncate(0);
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-        stream << d->m_url << permissions;
+        stream << d->m_redirectionURL << permissions;
 
         // Return slave to the scheduler
         d->slaveDone();
+
+        d->m_url = d->m_redirectionURL;
+        d->m_redirectionURL.clear();
         Scheduler::doJob(this);
     }
 }
@@ -834,14 +834,16 @@ void StatJob::slotFinished()
         //kDebug(7007) << "StatJob: Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL = KUrl();
+
         d->m_packedArgs.truncate(0);
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-        stream << d->m_url;
+        stream << d->m_redirectionURL;
 
         // Return slave to the scheduler
         d->slaveDone();
+
+        d->m_url = d->m_redirectionURL;
+        d->m_redirectionURL.clear();
         Scheduler::doJob(this);
     }
 }
@@ -864,8 +866,7 @@ StatJob *KIO::mostLocalUrl(const KUrl& url, JobFlags flags)
     StatJob* job = stat( url, StatJob::SourceSide, 2, flags );
     if (url.isLocalFile()) {
         QTimer::singleShot(0, job, SLOT(slotFinished()));
-        Scheduler::cancelJob( job ); // deletes the slave if not 0
-        //job->d_func()->m_slave = 0; // -> set to 0
+        Scheduler::cancelJob(job); // deletes the slave if not 0
     }
     return job;
 }
@@ -986,8 +987,6 @@ void TransferJob::slotFinished()
         if (queryMetaData("cache") != "reload")
             addMetaData("cache","refresh");
         d->m_internalSuspended = false;
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL = KUrl();
         // The very tricky part is the packed arguments business
         QString dummyStr;
         KUrl dummyUrl;
@@ -996,7 +995,7 @@ void TransferJob::slotFinished()
             case CMD_GET: {
                 d->m_packedArgs.truncate(0);
                 QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                stream << d->m_url;
+                stream << d->m_redirectionURL;
                 break;
             }
             case CMD_PUT: {
@@ -1005,7 +1004,7 @@ void TransferJob::slotFinished()
                 istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
                 d->m_packedArgs.truncate(0);
                 QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                stream << d->m_url << iOverwrite << iResume << permissions;
+                stream << d->m_redirectionURL << iOverwrite << iResume << permissions;
                 break;
             }
             case CMD_SPECIAL: {
@@ -1016,15 +1015,19 @@ void TransferJob::slotFinished()
                    addMetaData("cache","reload");
                    d->m_packedArgs.truncate(0);
                    QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                   stream << d->m_url;
+                   stream << d->m_redirectionURL;
                    d->m_command = CMD_GET;
                 }
                 break;
             }
         }
 
-        // Return slave to the scheduler
+        // Return slave to the scheduler while we still have the old URL in place; the scheduler
+        // requires a job URL to stay invariant while the job is running.
         d->slaveDone();
+
+        d->m_url = d->m_redirectionURL;
+        d->m_redirectionURL.clear();
         Scheduler::doJob(this);
     }
 }
@@ -1624,14 +1627,15 @@ void MimetypeJob::slotFinished( )
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
         d->staticData.truncate(0);
         d->m_internalSuspended = false;
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL = KUrl();
         d->m_packedArgs.truncate(0);
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-        stream << d->m_url;
+        stream << d->m_redirectionURL;
 
         // Return slave to the scheduler
         d->slaveDone();
+
+        d->m_url = d->m_redirectionURL;
+        d->m_redirectionURL.clear();
         Scheduler::doJob(this);
     }
 }
@@ -2456,14 +2460,15 @@ void ListJob::slotFinished()
         //kDebug(7007) << "Redirection to " << d->m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL = KUrl();
         d->m_packedArgs.truncate(0);
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-        stream << d->m_url;
+        stream << d->m_redirectionURL;
 
         // Return slave to the scheduler
         d->slaveDone();
+
+        d->m_url = d->m_redirectionURL;
+        d->m_redirectionURL.clear();
         Scheduler::doJob(this);
     }
 }
@@ -2713,8 +2718,9 @@ void MultiGetJob::slotFinished()
         // return slave to pool
         // fetch new slave for first entry in d->m_waitQueue and call start
         // again.
-        d->m_url = d->m_waitQueue.first().url;
         d->slaveDone();
+
+        d->m_url = d->m_waitQueue.first().url;
         Scheduler::doJob(this);
      }
   }

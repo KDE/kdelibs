@@ -233,6 +233,7 @@ namespace KIO {
          * @see slaveConnected()
          * @see slaveError()
          */
+        // KDE5: those methods should probably be removed, ugly and only marginally useful
         static bool connect( const char *signal, const QObject *receiver,
                              const char *member);
 
@@ -275,15 +276,12 @@ namespace KIO {
         // connected to D-Bus signal:
         Q_PRIVATE_SLOT(schedulerPrivate, void slotReparseSlaveConfiguration(const QString &))
 
-        Q_PRIVATE_SLOT(schedulerPrivate, void startStep())
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotCleanIdleSlaves())
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveConnected())
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveError(int error, const QString &errorMsg))
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotScheduleCoSlave())
         Q_PRIVATE_SLOT(schedulerPrivate, void slotUnregisterWindow(QObject *))
     private:
         friend class SchedulerPrivate;
-        SchedulerPrivate * const d;
+        SchedulerPrivate *const d;
 };
 
 }

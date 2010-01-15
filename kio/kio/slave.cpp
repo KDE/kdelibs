@@ -78,11 +78,13 @@ namespace KIO {
             m_protocol(protocol),
             m_slaveProtocol(protocol),
             slaveconnserver(new KIO::ConnectionServer),
+            m_job(0),
             m_pid(0),
             m_port(0),
             contacted(false),
             dead(false),
             contact_started(time(0)),
+            m_idleSince(0),
             m_refCount(1)
         {
             slaveconnserver->listenForRemote();
@@ -100,12 +102,13 @@ namespace KIO {
         QString m_user;
         QString m_passwd;
         KIO::ConnectionServer *slaveconnserver;
+        KIO::SimpleJob *m_job;
         pid_t m_pid;
         quint16 m_port;
         bool contacted;
         bool dead;
         time_t contact_started;
-        time_t idle_since;
+        time_t m_idleSince;
         int m_refCount;
   };
 }
@@ -128,7 +131,8 @@ void Slave::timeout()
    if (d->connection->isConnected())
       return;
 
-   kDebug(7002) << "slave failed to connect to application pid=" << d->m_pid << " protocol=" << d->m_protocol;
+   kDebug(7002) << "slave failed to connect to application pid=" << d->m_pid
+                << " protocol=" << d->m_protocol;
    if (d->m_pid && (::kill(d->m_pid, 0) == 0))
    {
       int delta_t = (int) difftime(time(0), d->contact_started);
@@ -146,6 +150,7 @@ void Slave::timeout()
    if (!d->m_host.isEmpty())
       arg += "://"+d->m_host;
    kDebug(7002) << "slave died pid = " << d->m_pid;
+
    ref();
    // Tell the job about the problem.
    emit error(ERR_SLAVE_DIED, arg);
@@ -215,7 +220,7 @@ QString Slave::passwd()
 void Slave::setIdle()
 {
     Q_D(Slave);
-    d->idle_since = time(0);
+    d->m_idleSince = time(0);
 }
 
 bool Slave::isConnected()
@@ -250,7 +255,10 @@ void Slave::deref()
 time_t Slave::idleTime()
 {
     Q_D(Slave);
-    return (time_t) difftime(time(0), d->idle_since);
+    if (!d->m_idleSince) {
+        return time_t(0);
+    }
+    return time_t(difftime(time(0), d->m_idleSince));
 }
 
 void Slave::setPID(pid_t pid)
@@ -263,6 +271,18 @@ int Slave::slave_pid()
 {
     Q_D(Slave);
     return d->m_pid;
+}
+
+void Slave::setJob(KIO::SimpleJob *job)
+{
+    Q_D(Slave);
+    d->m_job = job;
+}
+
+KIO::SimpleJob *Slave::job() const
+{
+    Q_D(const Slave);
+    return d->m_job;
 }
 
 bool Slave::isAlive()
@@ -347,6 +367,7 @@ void Slave::kill()
     if (d->m_pid)
     {
        ::kill(d->m_pid, SIGTERM);
+       d->m_pid = 0;
     }
 }
 
