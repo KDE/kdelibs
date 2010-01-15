@@ -2224,7 +2224,7 @@ QString RenderTextArea::text()
         while (!tc.atEnd()) {
            tc.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
            txt += tc.selectedText();
-           if (tc.movePosition(QTextCursor::Down)) {
+           if (tc.movePosition(QTextCursor::Right)) {
                txt += QLatin1String("\n");
                tc.movePosition(QTextCursor::StartOfLine);
            } else {
