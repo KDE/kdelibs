@@ -832,8 +832,8 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
   XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj);
 
   if (!request->doc) {
-    setDOMException(exec, DOM::INVALID_STATE_ERR);
-    return;
+    setDOMException(exec, DOMException::INVALID_STATE_ERR);
+    return jsUndefined();
   }
 
   int ec = 0;
