@@ -143,7 +143,6 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
         textRect.setLeft(textRect.left() + 7);
         textRect.setHeight(fontMetrics.height());
         textRect.setRight(textRect.right() - 7);
-        textRect.setBottom(textRect.bottom() - 5); // only one pixel separation here (no gradient)
 
         painter->save();
         painter->setFont(font);
