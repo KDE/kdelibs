@@ -113,7 +113,9 @@ public:
     void reloadEntries();
     void requestMoreData();
 
+    bool userCanVote(const EntryInternal& entry);
     void vote(const EntryInternal& entry, bool positiveVote);
+    bool userCanBecomeFan(const EntryInternal& entry);
     void becomeFan(const EntryInternal& entry);
 
     QStringList categories() const;

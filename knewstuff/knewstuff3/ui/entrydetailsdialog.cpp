@@ -57,6 +57,22 @@ void EntryDetailsDialog::init()
     setMainWidget(_mainWidget);
     ui.setupUi(_mainWidget);
 
+    if (!m_engine->userCanVote(m_entry)) {
+        ui.voteGoodButton->setEnabled(false);
+        ui.voteBadButton->setEnabled(false);
+    }
+    else {
+        connect(ui.voteGoodButton, SIGNAL(clicked()), this, SLOT(voteGood()));
+        connect(ui.voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
+    }
+    
+    if (!m_engine->userCanBecomeFan(m_entry)) {
+        ui.becomeFanButton->setEnabled(false);
+    }
+    else {
+        connect(ui.becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
+    }
+
     ui.closeButton->setGuiItem(KStandardGuiItem::Close);
     connect(ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
 
@@ -81,10 +97,6 @@ void EntryDetailsDialog::init()
     ui.ratingWidget->setHalfStepsEnabled(true);
     ui.ratingWidget->setEditable(false);
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
-
-    connect(ui.voteGoodButton, SIGNAL(clicked()), this, SLOT(voteGood()));
-    connect(ui.voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
-    connect(ui.becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
 
     connect(m_engine, SIGNAL(signalEntryChanged(const KNS3::Entry&)), this, SLOT(entryChanged(const KNS3::Entry&)));
     updateButtons();

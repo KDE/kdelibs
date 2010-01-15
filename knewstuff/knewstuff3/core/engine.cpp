@@ -538,10 +538,22 @@ void Engine::slotInstallationFailed(const KNS3::EntryInternal& entry)
     // FIXME implement warning?
 }
 
+bool Engine::userCanVote(const EntryInternal& entry)
+{
+    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    return p->userCanVote();
+}
+
 void Engine::vote(const EntryInternal& entry, bool positiveVote)
 {
     QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
     p->vote(entry, positiveVote);
+}
+
+bool Engine::userCanBecomeFan(const EntryInternal& entry)
+{
+    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    return p->userCanBecomeFan();
 }
 
 void Engine::becomeFan(const EntryInternal& entry)
