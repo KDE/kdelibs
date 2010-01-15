@@ -329,10 +329,11 @@ public:
 
     bool operator==(const CacheIndex &other) const
     {
-        if (m_hashedValue != other.m_hashedValue) {
-            return false;
+        const bool isEqual = memcmp(m_index, other.m_index, s_hashedUrlBytes) == 0;
+        if (isEqual) {
+            Q_ASSERT(m_hash == other.m_hash);
         }
-        return memcmp(m_index, other.m_index, s_hashedUrlBytes) == 0;
+        return isEqual;
     }
 
 private:
@@ -350,23 +351,28 @@ private:
         for (int i = 0; i < ints; i++) {
             hash ^= reinterpret_cast<uint *>(&m_index[0])[i];
         }
-        if (s_hashedUrlBytes % sizeof(uint)) {
-            const int offset = s_hashedUrlBytes - sizeof(uint);
-            hash ^= *reinterpret_cast<uint *>(&m_index[offset]);
+        if (const int bytesLeft = s_hashedUrlBytes % sizeof(uint)) {
+            // dead code until a new url hash algorithm or architecture with sizeof(uint) != 4 appears.
+            // we have the luxury of ignoring endianness because the hash is never written to disk.
+            // just merge the bits into the the hash in some way.
+            const int offset = ints * sizeof(uint);
+            for (int i = 0; i < bytesLeft; i++) {
+                hash ^= static_cast<uint>(m_index[offset + i]) << (i * 8);
+            }
         }
-        m_hashedValue = hash;
+        m_hash = hash;
     }
 
     friend uint qHash(const CacheIndex &);
     friend class Scoreboard;
 
     quint8 m_index[s_hashedUrlBytes]; // packed binary version of the hexadecimal name
-    uint m_hashedValue;
+    uint m_hash;
 };
 
 uint qHash(const CacheIndex &ci)
 {
-    return ci.m_hashedValue;
+    return ci.m_hash;
 }
 
 
