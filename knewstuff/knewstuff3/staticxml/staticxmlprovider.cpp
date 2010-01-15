@@ -195,27 +195,28 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
 
     d->currentRequest = request;
 
+    // static providers only have on page containing everything
+    if (request.page > 0) {
+        emit loadingFinished(request, EntryInternal::List());
+        return;
+    }
+
     if (request.sortMode == Installed) {
-        kDebug() << installedEntries().size();
+        kDebug() << "Installed entries: " << d->mId << installedEntries().size();
         emit loadingFinished(request, installedEntries());
         return;
     }
 
     KUrl url = downloadUrl(request.sortMode);
     if (!url.isEmpty()) {
-        if (request.page == 0) {
-            // TODO first get the entries, then filter with searchString, finally emit the finished signal...
-            XmlLoader * loader = new XmlLoader(this);
-            connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
-            connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
-            d->mFeedLoaders.insert(request.sortMode, loader);
+        // TODO first get the entries, then filter with searchString, finally emit the finished signal...
+        // FIXME: don't creat an endless number of xmlloaders!
+        XmlLoader * loader = new XmlLoader(this);
+        connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
+        connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
+        d->mFeedLoaders.insert(request.sortMode, loader);
 
-            loader->load(url);
-            kDebug() << "Loader: " << loader;
-        } else {
-            // static providers only ever have one page of data
-            //emit loadingFinished(sortMode, searchstring, page, 0, 1, EntryInternal::List());
-        }
+        loader->load(url);
     } else {
         emit loadingFailed(request);
     }
@@ -280,13 +281,10 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         entry.setEntryXML(n.toElement());
         entry.setProviderId(d->mId);
 
-        // check to see if we already have this entry
-        //kDebug() << "Check: " << entry.providerId() << entry.uniqueId();
-
         int index = d->cachedEntries.indexOf(entry);
         if (index >= 0) {
-            EntryInternal cacheEntry = d->cachedEntries.takeAt(index);
 
+            EntryInternal cacheEntry = d->cachedEntries.takeAt(index);
             // check if updateable
             if ((cacheEntry.status() == EntryInternal::Installed) &&
                  ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
@@ -300,11 +298,11 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             }
             cacheEntry = entry;
             entries << cacheEntry;
-        } else {
-            d->cachedEntries.append(entry);
-            if (searchIncludesEntry(entry)) {
+        }
+        d->cachedEntries.append(entry);
+
+        if (searchIncludesEntry(entry)) {
                 entries << entry;
-            }
         }
     }
     emit loadingFinished(d->currentRequest, entries);

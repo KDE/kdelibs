@@ -49,7 +49,15 @@ public Q_SLOTS:
     void registerChangedEntry(const KNS3::EntryInternal& entry);
 
 private:
+    // compatibility with KNS2
+    void readKns2MetaFiles();
+
+    // The file that is used to keep track of downloaded entries
     QString registryFile;
+
+    // The component name that was used in KNS2 to keep track of .meta files
+    // This is only for compatibility with the former version - KNewStuff2.
+    QString m_kns2ComponentName;
 
     QSet<EntryInternal> cache;
     QHash<QString, EntryInternal::List> requestCache;
