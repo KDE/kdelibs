@@ -189,7 +189,11 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 
     d->currentRequest = request;
     if (request.sortMode == Installed) {
-        emit loadingFinished(request, installedEntries());
+        if (request.page == 0) {
+            emit loadingFinished(request, installedEntries());
+        } else {
+            emit loadingFinished(request, EntryInternal::List());
+        }
         return;
     }
 

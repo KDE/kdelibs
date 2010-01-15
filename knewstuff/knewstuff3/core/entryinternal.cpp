@@ -43,7 +43,7 @@ class EntryInternal::Private : public QSharedData
 
         bool operator==(const Private& other) const
         {
-            return mUniqueId == other.mUniqueId;
+            return mUniqueId == other.mUniqueId && mProviderId == other.mProviderId;
         }
 
         QString mUniqueId;

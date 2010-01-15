@@ -292,25 +292,25 @@ void Engine::reloadEntries()
 
     foreach (ProviderInformation p, d->providers) {
         if (p.provider->isInitialized()) {
-            // FIXME: other parameters
-            // FIXME use cache, if this request was sent already, take it from the cache
-
-            int page = 0;
-            while (true) {
+            if (d->currentRequest.sortMode == Provider::Installed) {
+                // when asking for installed entries, never use the cache
+                p.provider->loadEntries(d->currentRequest);
+            } else {
+                // take entries from cache until there are no more
                 EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
-                if (!cache.isEmpty()) {
+                while (!cache.isEmpty()) {
                     kDebug() << "From cache";
                     emit signalEntriesLoaded(cache);
-                    d->currentPage = page;
-                    d->currentRequest.page = page;
-                    ++page;
-                } else {
-                    break;
+
+                    d->currentPage = d->currentRequest.page;
+                    ++d->currentRequest.page;
+                    cache = d->cache->requestFromCache(d->currentRequest);
                 }
-            }
-            if (page == 0) {
-                kDebug() << "From provider";
-                p.provider->loadEntries(d->currentRequest);
+                // if the cache was empty, request data from provider
+                if (d->currentPage == -1) {
+                    kDebug() << "From provider";
+                    p.provider->loadEntries(d->currentRequest);
+                }
             }
         }
     }
@@ -360,16 +360,7 @@ void Engine::requestMoreData()
 
     foreach (ProviderInformation p, d->providers) {
         if (p.provider->isInitialized()) {
-            // FIXME: other parameters
-            // FIXME use cache, if this request was sent already, take it from the cache
-            EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
-            if (!cache.isEmpty()) {
-                kDebug() << "From cache";
-                emit signalEntriesLoaded(cache);
-            } else {
-                kDebug() << "From provider";
-                p.provider->loadEntries(d->currentRequest);
-            }
+            p.provider->loadEntries(d->currentRequest);
         }
     }
 }
