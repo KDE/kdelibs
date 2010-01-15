@@ -218,8 +218,8 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         QDockWidget *dock = qobject_cast<QDockWidget*>(it->m_widget);
         if (dock)
         {
-            if (checkChange(contents[cnt]))
-                dock->setWindowTitle(contents[cnt].accelerated());
+//             if (checkChange(contents[cnt]))
+//                 dock->setWindowTitle(contents[cnt].accelerated());
             continue;
         }
         QTabBar *tabBar = qobject_cast<QTabBar*>(it->m_widget);
@@ -431,6 +431,7 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 
 void KAcceleratorManagerPrivate::manageDockWidget(QDockWidget *dock, Item *item)
 {
+return;
     // As of Qt 4.4.3 setting a shortcut to a QDockWidget has no effect,
     // because a QDockWidget does not grab it, even while displaying an underscore
     // in the title for the given shortcut letter.
