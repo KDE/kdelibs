@@ -86,7 +86,8 @@ public:
     void init() {
         QMutexLocker lock( &m_initMutex );
 
-        if ( QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.NepomukStorage") ) {
+        // Comment out the check for the storage service via DBus - fixes bug 209821
+        //if ( QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.NepomukStorage") ) {
             if ( !dbusModel ) {
                 dbusModel = dbusClient.createModel( "main" );
             }
@@ -111,7 +112,7 @@ public:
                     kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
                 }
             }
-        }
+        //}
     }
 
     Soprano::Model* model() {
