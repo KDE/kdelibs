@@ -3399,13 +3399,14 @@ try_again:
 
 void HTTPProtocol::parseContentDisposition(const QString &disposition)
 {
-    QMap<QLatin1String, QString> parameters = contentDispositionParser(disposition);
+    const QMap<QLatin1String, QString> parameters = contentDispositionParser(disposition);
 
-    setMetaData(QLatin1String("content-disposition-type"), parameters.value(QLatin1String("type")));
-
-    const QString strFilename = parameters.value(QLatin1String("filename"));
-    if( !strFilename.isEmpty() )
-        setMetaData(QLatin1String("content-disposition-filename"), strFilename);
+    QMap<QLatin1String, QString>::const_iterator i = parameters.constBegin();
+    while (i != parameters.constEnd()) {
+        setMetaData(QLatin1String("content-disposition-") + i.key(), i.value());
+        kDebug(7113) << "Content-Disposition: " << i.key() << "=" << i.value();
+        ++i;
+    }
 }
 
 void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)

@@ -373,11 +373,5 @@ static QMap<QLatin1String, QString> contentDispositionParser(const QString &disp
         parameters.insert(QLatin1String("filename"), strFilename);
     }
 
-    QMap<QLatin1String, QString>::const_iterator i = parameters.constBegin();
-    while (i != parameters.constEnd()) {
-        kDebug(7113) << "Content-Disposition: " << i.key() << "=" << i.value();
-        ++i;
-    }
-
     return parameters;
 }
