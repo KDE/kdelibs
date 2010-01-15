@@ -87,7 +87,7 @@ public:
         Action,        ///< An action icon (e.g. 'save', 'print').
         Application,   ///< An icon that represents an application.
         Device,        ///< An icon that represents a device.
-        FileSystem,    ///< An icon that represents a file system.
+        FileSystem,    ///< An icon that represents a file system. @deprecated Use Place instead.
         MimeType,      ///< An icon that represents a mime type (or file type).
         Animation,     ///< An icon that is animated.
         Category,      ///< An icon that represents a category.
