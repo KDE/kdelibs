@@ -22,9 +22,6 @@
 
 #include <QObject>
 #include <QtScript/QScriptable>
-
-#include "katepartprivate_export.h"
-
 #include <QtScript/QScriptValue>
 
 #include <ktexteditor/cursor.h>
@@ -42,7 +39,7 @@ class KateDocument;
  * setDocument _must_ be called before using any other method. This is not checked
  * for the sake of speed.
  */
-class KATEPART_TESTS_EXPORT KateScriptDocument : public QObject, protected QScriptable
+class KateScriptDocument : public QObject, protected QScriptable
 {
   Q_OBJECT
   // Note: we have no Q_PROPERTIES due to consistency: everything is a function.

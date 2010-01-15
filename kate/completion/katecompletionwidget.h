@@ -22,8 +22,6 @@
 #include <QtGui/QFrame>
 #include <QObject>
 
-#include "katepartprivate_export.h"
-
 #include <ktexteditor/range.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/codecompletionmodel.h>
@@ -51,7 +49,7 @@ namespace KTextEditor {
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KATEPART_TESTS_EXPORT KateCompletionWidget : public QFrame
+class KateCompletionWidget : public QFrame
 {
   Q_OBJECT
 

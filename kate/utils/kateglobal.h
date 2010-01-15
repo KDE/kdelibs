@@ -19,7 +19,6 @@
 #ifndef __KATE_GLOBAL_H__
 #define __KATE_GLOBAL_H__
 
-#include "katepartprivate_export.h"
 #include "katescript.h"
 
 #include <ktexteditor/editor.h>
@@ -59,7 +58,7 @@ namespace Kate {
  * or view stay around, here is the place to put things
  * which are needed and shared by all this objects ;)
  */
-class KATEPART_TESTS_EXPORT KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterface, public KTextEditor::ContainerInterface
+class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterface, public KTextEditor::ContainerInterface
 {
   Q_OBJECT
   Q_INTERFACES(KTextEditor::CommandInterface)

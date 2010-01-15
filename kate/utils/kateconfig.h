@@ -19,8 +19,6 @@
 #ifndef __KATE_CONFIG_H__
 #define __KATE_CONFIG_H__
 
-#include "katepartprivate_export.h"
-
 #include <ktexteditor/markinterface.h>
 #include <kencodingprober.h>
 
@@ -89,7 +87,7 @@ class KateConfig
     bool configIsRunning;
 };
 
-class KATEPART_TESTS_EXPORT KateDocumentConfig : public KateConfig
+class KateDocumentConfig : public KateConfig
 {
   private:
     friend class KateGlobal;
@@ -281,7 +279,7 @@ class KATEPART_TESTS_EXPORT KateDocumentConfig : public KateConfig
     KateDocument *m_doc;
 };
 
-class KATEPART_TESTS_EXPORT KateViewConfig : public KateConfig
+class KateViewConfig : public KateConfig
 {
   private:
     friend class KateGlobal;

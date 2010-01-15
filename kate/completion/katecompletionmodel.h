@@ -27,7 +27,6 @@
 
 #include <ktexteditor/codecompletionmodel.h>
 
-#include "katepartprivate_export.h"
 #include "expandingtree/expandingwidgetmodel.h"
 
 class KateCompletionWidget;
@@ -44,7 +43,7 @@ class HierarchicalModelHandler;
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KATEPART_TESTS_EXPORT KateCompletionModel : public ExpandingWidgetModel
+class KateCompletionModel : public ExpandingWidgetModel
 {
   Q_OBJECT
 

@@ -23,8 +23,6 @@
 #include <QObject>
 #include <QtScript/QScriptable>
 
-#include "katepartprivate_export.h"
-
 #include <ktexteditor/cursor.h>
 #include <ktexteditor/range.h>
 
@@ -40,7 +38,7 @@ class KateView;
  * setView _must_ be called before using any other method. This is not checked
  * for the sake of speed.
  */
-class KATEPART_TESTS_EXPORT KateScriptView : public QObject, protected QScriptable
+class KateScriptView : public QObject, protected QScriptable
 {
   /// Properties are accessible with a nicer syntax from JavaScript
   Q_OBJECT

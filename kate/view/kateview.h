@@ -22,7 +22,6 @@
 #ifndef kate_view_h
 #define kate_view_h
 
-#include "katepartprivate_export.h"
 #include "kateviinputmodemanager.h"
 
 #include <ktexteditor/view.h>
@@ -74,7 +73,7 @@ class QVBoxLayout;
 //
 // Kate KTextEditor::View class ;)
 //
-class KATEPART_TESTS_EXPORT KateView : public KTextEditor::View,
+class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SessionConfigInterface,
                  public KTextEditor::TemplateInterface,
