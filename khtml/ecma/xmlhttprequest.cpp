@@ -327,6 +327,10 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
 
 XMLHttpRequest::~XMLHttpRequest()
 {
+  if (job && method.toUpper() != QLatin1String("POST")) {
+        job->kill();
+        job = 0;
+  }
   if (onLoadListener)
       onLoadListener->deref();
   if (onReadyStateChangeListener)
@@ -339,6 +343,17 @@ XMLHttpRequest::~XMLHttpRequest()
 
 void XMLHttpRequest::changeState(XMLHttpRequestState newState)
 {
+  // Other engines cancel transfer if the controlling document doesn't
+  // exist anymore. Match that, though being paranoid about post
+  // (And don't emit any events w/o a doc, if we're kept alive otherwise).
+  if (!doc) {
+    if (job && method.toUpper() != QLatin1String("POST")) {
+      job->kill();
+      job = 0;
+    }
+    return;
+  }
+
   if (m_state != newState) {
     m_state = newState;
     ProtectedPtr<JSObject> ref(this);
@@ -769,13 +784,19 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 
   if ( decoder == NULL ) {
-    int pos = responseHeaders.indexOf(QLatin1String("content-type:"), 0, Qt::CaseInsensitive);
+    QString type = m_mimeTypeOverride;
 
-    if ( pos > -1 ) {
-      pos += 13;
-      int index = responseHeaders.indexOf('\n', pos);
-      QString type = responseHeaders.mid(pos, (index-pos));
-      index = type.indexOf(';');
+    if (type.isEmpty()) {
+      int pos = responseHeaders.indexOf(QLatin1String("content-type:"), 0, Qt::CaseInsensitive);
+      if ( pos > -1 ) {
+        pos += 13;
+        int index = responseHeaders.indexOf('\n', pos);
+        type = responseHeaders.mid(pos, (index-pos));
+      }
+    }
+
+    if (!type.isEmpty()) {
+      int index = type.indexOf(';');
       if (index > -1)
         encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", Qt::CaseInsensitive)).trimmed();
     }
@@ -809,6 +830,11 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
   }
 
   XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj);
+
+  if (!request->doc) {
+    setDOMException(exec, DOM::INVALID_STATE_ERR);
+    return;
+  }
 
   int ec = 0;
 
