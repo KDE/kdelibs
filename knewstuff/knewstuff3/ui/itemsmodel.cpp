@@ -128,6 +128,9 @@ void ItemsModel::addEntry(const EntryInternal& entry)
     QString preview = entry.previewSmall();
     if (!preview.isEmpty()) {
         m_hasPreviewImages = true;
+        if (rowCount() >= 0) {
+            emit dataChanged(index(0,0), index(rowCount()-1,0));
+        }
     }
 
     //kDebug(551) << "adding entry " << entry.name() << " to the model";
