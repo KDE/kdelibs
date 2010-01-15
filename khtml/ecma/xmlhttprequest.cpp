@@ -349,6 +349,11 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
       ev.handle()->setTarget(this);
       ev.handle()->setCurrentTarget(this);
       onReadyStateChangeListener->handleEvent(ev);
+
+      // Make sure the event doesn't point to us, since it can't prevent
+      // us from being collecte.
+      ev.handle()->setTarget(0);
+      ev.handle()->setCurrentTarget(0);
     }
 
     if (m_state == XHRS_Loaded && onLoadListener != 0 && doc->view() && doc->view()->part()) {
@@ -357,6 +362,8 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
       ev.handle()->setTarget(this);
       ev.handle()->setCurrentTarget(this);
       onLoadListener->handleEvent(ev);
+      ev.handle()->setTarget(0);
+      ev.handle()->setCurrentTarget(0);
     }
   }
 }
