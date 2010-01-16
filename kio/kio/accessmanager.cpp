@@ -25,12 +25,13 @@
 
 #include "accessmanagerreply_p.h"
 
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
-
 #include <kdebug.h>
 #include <kio/job.h>
 #include <kio/scheduler.h>
+
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
+
 
 namespace KIO {
 
@@ -108,12 +109,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     kioJob->addMetaData(d->metaDataForRequest(req));
 
     if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
+        QString contentType (QLatin1String("Content-Type: "));
         QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
+
         if (header.isValid())
-          kioJob->addMetaData("content-type",
-                              QString::fromLatin1("Content-Type: %1").arg(header.toString()));
+            contentType += header.toString();
         else
-          kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded");
+            contentType += QLatin1String("application/x-www-form-urlencoded");
+
+        kioJob->addMetaData("content-type", contentType);
     }
 
     //kDebug () << "Job '" << kioJob << "' started...";
@@ -143,24 +147,31 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     request.setRawHeader("Connection", QByteArray());
 
     QString additionHeaders;
-    Q_FOREACH(const QByteArray &headerKey, request.rawHeaderList()) {
-        const QByteArray value = request.rawHeader(headerKey);
+    QListIterator<QByteArray> headersIt (request.rawHeaderList());
+
+    while (headersIt.hasNext()) {
+        const QByteArray key = headersIt.next();
+        const QByteArray value = request.rawHeader(key);
+
         if (value.isNull())
             continue;
 
         // createRequest() checks later for existence "content-type" metadata
-        if (headerKey=="Content-Type") {
+        if (QString::compare(key, QLatin1String("Content-Type"), Qt::CaseInsensitive) == 0) {
             metaData.insert("content-type", value);
             continue;
         }
 
         if (additionHeaders.length() > 0) {
-            additionHeaders += "\r\n";
+            additionHeaders += QLatin1String("\r\n");
         }
-        additionHeaders += headerKey + ": " + value;
-    }
-    metaData.insert("customHTTPHeader", additionHeaders);
 
+        additionHeaders += key;
+        additionHeaders += QLatin1String(": ");
+        additionHeaders += value;
+    }
+
+    metaData.insert("customHTTPHeader", additionHeaders);
     return metaData;
 }
 

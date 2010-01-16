@@ -28,6 +28,7 @@
 namespace KIO
 {
     class Job;
+    class SimpleJob;
 }
 class KJob;
 class KUrl;
@@ -43,7 +44,7 @@ class AccessManagerReply : public QNetworkReply
 {
     Q_OBJECT
 public:
-    AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::Job *kioJob, QObject *parent);
+    AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::SimpleJob *kioJob, QObject *parent);
     virtual ~AccessManagerReply();
     virtual qint64 bytesAvailable() const;
     virtual void abort();
@@ -55,6 +56,7 @@ public Q_SLOTS:
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
+    void readHttpResponseHeaders(KIO::Job *);
 
 private:
     class AccessManagerReplyPrivate;
