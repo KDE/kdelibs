@@ -482,8 +482,6 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
     for( QMap<QString, QString>::iterator i = encparams.begin();
          i != encparams.end(); ++i )
     {
-        if( parameters.contains(i.key()) )
-            continue;
         QString val = i.value();
 
         // RfC 2231 encoded character set in filename
