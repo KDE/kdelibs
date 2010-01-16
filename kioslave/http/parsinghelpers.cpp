@@ -283,23 +283,62 @@ static void skipLWS(const QString &str, int &pos)
         ++pos;
 }
 
-// Extracts token-like input until terminator char or EOL.. Also skips over the terminator.
-// We don't try to be strict or anything..
-static QString extractUntil(const QString &str, QChar term, int &pos)
+// keep the common ending, this allows the compiler to join them
+static const char *typeSpecials =  "*'%()<>@,;:\\\"/[]?=";
+static const char *attrSpecials =   "'%()<>@,;:\\\"/[]?=";
+static const char *valueSpecials =    "()<>@,;:\\\"/[]?=";
+
+static bool specialChar(const QChar &ch, const char *specials)
+{
+    if( (ch.unicode() < 32) || (ch.unicode() >= 128) )
+        return true;
+
+    for( int i = strlen(specials) - 1; i>= 0; i--)
+       if( ch == QLatin1Char(specials[i]) )
+           return true;
+
+    return false;
+}
+
+/**
+ * read and parse the input until the given terminator
+ * @param str input string to parse
+ * @param term terminator
+ * @param pos position marker in the input string
+ * @param specials characters forbidden in this section
+ * @return the next section or an empty string if it was invalid
+ *
+ * Extracts token-like input until terminator char or EOL.
+ * Also skips over the terminator.
+ *
+ * pos is correctly incremented even if this functions returns
+ * an empty string so this can be used to skip over invalid
+ * parts and continue.
+ */
+static QString extractUntil(const QString &str, QChar term, int &pos, const char *specials)
 {
     QString out;
     skipLWS(str, pos);
+    bool valid = true;
+
     while (pos < str.length() && (str[pos] != term)) {
         out += str[pos];
+        valid &= !specialChar(str[pos], specials);
         ++pos;
     }
 
     if (pos < str.length()) // Stopped due to finding term
         ++pos;
 
+    if( !valid )
+        return QString();
+
     // Remove trailing linear whitespace...
     while (out.endsWith(QLatin1Char(' ')) || out.endsWith(QLatin1Char('\t')))
         out.chop(1);
+
+    if( out.contains(QLatin1Char(' ')) )
+        out.clear();
 
     return out;
 }
@@ -340,37 +379,110 @@ static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
 
         return out;
     } else {
-        return extractUntil(str, term, pos);
+        return extractUntil(str, term, pos, valueSpecials);
     }
 }
 
-static QMap<QLatin1String, QString> contentDispositionParser(const QString &disposition)
+static QMap<QString, QString> contentDispositionParser(const QString &disposition)
 {
     kDebug(7113) << "disposition: " << disposition;
     int pos = 0;
-    const QString strDisposition = extractUntil(disposition, QLatin1Char(';'), pos).toLower();
-    QString strFilename;
+    const QString strDisposition = extractUntil(disposition, QLatin1Char(';'), pos, typeSpecials).toLower();
 
-    QMap<QLatin1String, QString> parameters;
-    parameters.insert(QLatin1String("type"), strDisposition);
+    QMap<QString, QString> parameters;
+    QMap<QString, QString> contparams;   // all parameters that contain continuations
+
+    if( !strDisposition.isEmpty() )
+        parameters.insert(QLatin1String("type"), strDisposition);
 
     while (pos < disposition.length()) {
-        const QString key = extractUntil(disposition, QLatin1Char('='), pos);
-        const QString val = extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
-        if (key.toLower() == QLatin1String("filename"))
-            strFilename = val;
+        QString key = extractUntil(disposition, QLatin1Char('='), pos, attrSpecials).toLower();
+
+        if( key.isEmpty() ) {
+            extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
+            continue;
+        }
+
+        int spos = key.indexOf(QLatin1Char('*'));
+        QString val;
+        if( key.endsWith(QLatin1Char('*')) )
+            val = extractUntil(disposition, QLatin1Char(';'), pos, valueSpecials).toLower();
+        else
+            val = extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
+
+        if( val.isEmpty() )
+            continue;
+
+        if( spos == key.length() - 1 ) {
+            // encoded parameters are not yet supported
+            continue;
+        } else if( spos >= 0 ) {
+            contparams.insert(key, val);
+        } else {
+            parameters.insert(key, val);
+        }
     }
 
-    // Content-Disposition is not allowed to dictate directory
-    // path, thus we extract the filename only.
-    if ( !strFilename.isEmpty() )
-    {
-        int pos = strFilename.lastIndexOf( QLatin1Char('/') );
+    QMap<QString, QString>::iterator i = contparams.begin();
+    while( i != contparams.end() ) {
+        QString key = i.key();
+        int spos = key.indexOf(QLatin1Char('*'));
+        bool hasencoding = false;
 
-        if( pos > -1 )
-            strFilename = strFilename.mid(pos+1);
+        if( key.at(spos + 1) != QLatin1Char('0') ) {
+            ++i;
+            continue;
+        }
 
-        parameters.insert(QLatin1String("filename"), strFilename);
+        // no leading zeros allowed, so delete the junk
+        int klen = key.length();
+        if( klen > spos + 2 ) {
+            // nothing but continuations and encodings may insert * into parameter name
+            if( (klen > spos + 3) || ((klen == spos + 3) && (key.at(spos + 2) != QLatin1Char('*'))) ) {
+                kDebug(7113) << "removing invalid key " << key << "with val" << i.value() << key.at(spos + 2);
+                i = contparams.erase(i);
+                continue;
+            }
+            hasencoding = true;
+        }
+
+        int seqnum = 1;
+        QMap<QString, QString>::iterator partsi;
+        // we do not need to care about encoding specifications: only the first
+        // part is allowed to have one
+        QString val = i.value();
+
+        if (hasencoding)
+            key.chop(2);
+        else
+            key.chop(1);
+
+        while( (partsi = contparams.find(key + QString::number(seqnum))) != contparams.end() )
+        {
+            val += partsi.value();
+            contparams.erase(partsi);
+        }
+
+        i = contparams.erase(i);
+
+        if( parameters.contains(key) )
+            continue;
+
+        key.chop(1);
+        if (!hasencoding) {
+            parameters.insert(key, val);
+        }
+    }
+
+    const QLatin1String fn("filename");
+    if( parameters.contains(fn) ) {
+        // Content-Disposition is not allowed to dictate directory
+        // path, thus we extract the filename only.
+        QString val = parameters[fn];
+        int slpos = val.lastIndexOf( QLatin1Char('/') );
+
+        if( slpos > -1 )
+            parameters.insert(fn, val.mid( slpos + 1 ));
     }
 
     return parameters;

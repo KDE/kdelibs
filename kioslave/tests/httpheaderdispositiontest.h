@@ -24,7 +24,7 @@ class HeaderDispositionTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    void testUppercaseAttachmentHeader();
+    void runAllTests();
 };
 
 #endif //HTTPHEADERDISPOSITIONTEST_H
