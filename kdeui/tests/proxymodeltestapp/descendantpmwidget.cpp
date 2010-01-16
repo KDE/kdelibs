@@ -114,6 +114,7 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
 
 void DescendantProxyModelWidget::doMatch(const QString &matchData)
 {
+  Q_UNUSED(matchData);
 #if 0
   m_itemSelectionModel->clearSelection();
 

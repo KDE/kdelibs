@@ -287,7 +287,6 @@ KPageWidgetItem *DialogPrivate::createPageItem(KPageWidgetItem *parentItem,
 
 void DialogPrivate::parseGroupFile( const QString & filename )
 {
-    Q_Q(Dialog);
 	KConfig file( filename, KConfig::SimpleConfig );
     const QStringList groups = file.groupList();
     foreach (const QString &group, groups) {

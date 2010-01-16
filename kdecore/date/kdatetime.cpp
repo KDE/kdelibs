@@ -2314,6 +2314,7 @@ void KDateTime::setFromStringDefault(const Spec &spec)
 
 void KDateTime::setSimulatedSystemTime(const KDateTime& newTime)
 {
+    Q_UNUSED(newTime);
 #ifndef NDEBUG
     if (newTime.isValid())
     {

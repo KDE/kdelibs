@@ -232,23 +232,32 @@ void JobRemoteTest::openFileWriting()
 
 void JobRemoteTest::slotFileJobData (KIO::Job *job, const QByteArray &data)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(data);
 }
 
 void JobRemoteTest::slotFileJobRedirection (KIO::Job *job, const KUrl &url)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(url);
 }
 
 void JobRemoteTest::slotFileJobMimetype (KIO::Job *job, const QString &type)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(type);
 }
 
 void JobRemoteTest::slotFileJobOpen (KIO::Job *job)
 {
+    Q_UNUSED(job);
     fileJob->seek (0);
 }
 
 void JobRemoteTest::slotFileJobWritten (KIO::Job *job, KIO::filesize_t written)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(written);
     if (m_rwCount > 5) {
         fileJob->close();
     } else {
@@ -259,6 +268,8 @@ void JobRemoteTest::slotFileJobWritten (KIO::Job *job, KIO::filesize_t written)
 
 void JobRemoteTest::slotFileJobPosition (KIO::Job *job, KIO::filesize_t offset)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(offset);
     const QByteArray data("test....end");
     fileJob->write (data);
 
@@ -267,6 +278,7 @@ void JobRemoteTest::slotFileJobPosition (KIO::Job *job, KIO::filesize_t offset)
 
 void JobRemoteTest::slotFileJobClose (KIO::Job *job)
 {
+    Q_UNUSED(job);
     kDebug() << "+++++++++ closed";
 }
 
@@ -325,6 +337,7 @@ void JobRemoteTest::openFileReading()
 
 void JobRemoteTest::slotFileJob2Data (KIO::Job *job, const QByteArray &data)
 {
+    Q_UNUSED(job);
     kDebug() << "m_rwCount = " << m_rwCount << " data: " << data;
     m_data.append(data);
 
@@ -337,24 +350,31 @@ void JobRemoteTest::slotFileJob2Data (KIO::Job *job, const QByteArray &data)
 
 void JobRemoteTest::slotFileJob2Redirection (KIO::Job *job, const KUrl &url)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(url);
 }
 
 void JobRemoteTest::slotFileJob2Mimetype (KIO::Job *job, const QString &type)
 {
+    Q_UNUSED(job);
     kDebug() << "mimetype: " << type;
 }
 
 void JobRemoteTest::slotFileJob2Open (KIO::Job *job)
 {
+    Q_UNUSED(job);
     fileJob->seek (m_rwCount--*5);
 }
 
 void JobRemoteTest::slotFileJob2Written (KIO::Job *job, KIO::filesize_t written)
 {
+    Q_UNUSED(job);
+    Q_UNUSED(written);
 }
 
 void JobRemoteTest::slotFileJob2Position (KIO::Job *job, KIO::filesize_t offset)
 {
+    Q_UNUSED(job);
     kDebug() << "position : " << offset << " -> read (5)";
     fileJob->read (5);
 }
@@ -362,6 +382,7 @@ void JobRemoteTest::slotFileJob2Position (KIO::Job *job, KIO::filesize_t offset)
 
 void JobRemoteTest::slotFileJob2Close (KIO::Job *job)
 {
+    Q_UNUSED(job);
     kDebug() << "+++++++++ job2 closed";
 }
 

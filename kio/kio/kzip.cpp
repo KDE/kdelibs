@@ -556,8 +556,9 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 		    else
 		    {
 // 			kDebug(7040) << "before interesting dev->pos(): " << dev->pos();
-			bool success = dev->seek( dev->pos() + compr_size ); // can this fail ???
-                        Q_ASSERT( success ); // let's see...
+          bool success = dev->seek( dev->pos() + compr_size ); // can this fail ???
+          Q_UNUSED( success ); // prevent warning in release builds.
+          Q_ASSERT( success ); // let's see...
 /*			kDebug(7040) << "after interesting dev->pos(): " << dev->pos();
 			if ( success )
 				kDebug(7040) << "dev->at was successful... ";
@@ -1371,6 +1372,7 @@ QIODevice* KZipFileEntry::createDevice() const
             return 0L; // ouch
         static_cast<KFilterDev *>(filterDev)->setSkipHeaders(); // Just zlib, not gzip
         bool b = filterDev->open( QIODevice::ReadOnly );
+        Q_UNUSED( b );
         Q_ASSERT( b );
         return filterDev;
     }

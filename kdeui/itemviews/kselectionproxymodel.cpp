@@ -614,6 +614,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
     {
       // The easy case.
       bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
+      Q_UNUSED( allowMove ); // prevent warning in release builds.
       Q_ASSERT( allowMove );
     } else {
       // source is in the proxy, but dest isn't.

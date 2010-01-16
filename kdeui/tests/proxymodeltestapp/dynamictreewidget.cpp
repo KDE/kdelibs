@@ -177,7 +177,7 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   QVBoxLayout *editLayout = new QVBoxLayout(editContainer);
 
   m_treePredefines = new QComboBox(editContainer);
-  for (int i = 0; i < sizeof treePredefinesNames / sizeof *treePredefinesNames; ++i)
+  for (uint i = 0; i < sizeof treePredefinesNames / sizeof *treePredefinesNames; ++i)
     m_treePredefines->addItem(*(treePredefinesNames + i), *(treePredefinesContent + i));
   editLayout->addWidget(m_treePredefines);
   connect(m_treePredefines, SIGNAL(currentIndexChanged(int)), SLOT(setTreePredefine(int)));
@@ -202,7 +202,7 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   connect(m_removeButton, SIGNAL(clicked(bool)), SLOT(removeSelected()));
 
   m_insertSubTreePredefines = new QComboBox(this);
-  for (int i = 0; i < sizeof insertSubTreePredefinesNames / sizeof *insertSubTreePredefinesNames; ++i)
+  for (uint i = 0; i < sizeof insertSubTreePredefinesNames / sizeof *insertSubTreePredefinesNames; ++i)
     m_insertSubTreePredefines->addItem(*(insertSubTreePredefinesNames + i), *(insertSubTreePredefinesContent + i));
   editLayout->addWidget(m_insertSubTreePredefines);
   connect(m_insertSubTreePredefines, SIGNAL(currentIndexChanged(int)), SLOT(setInsertSubTreePredefine(int)));
@@ -318,8 +318,6 @@ QString DynamicTreeWidget::modelTreeToString(int depth, const QModelIndex &paren
 void DynamicTreeWidget::removeSelected()
 {
   QModelIndex parent;
-  int top;
-  int bottom;
   ModelRemoveCommand *removeCommand = new ModelRemoveCommand(m_dynamicTreeModel, this);
   QItemSelection selection = m_treeView->selectionModel()->selection();
   while (!selection.isEmpty())

@@ -340,6 +340,7 @@ KRulerTest::slotCheckLength(bool fixlen)
 void 
 KRulerTest::slotSetRotate(double d)
 {
+  Q_UNUSED(d);
 #ifdef KRULER_ROTATE_TEST
   vruler->rotate = d;
   vruler->update();
@@ -350,6 +351,7 @@ KRulerTest::slotSetRotate(double d)
 void 
 KRulerTest::slotSetXTrans(double d)
 {
+  Q_UNUSED(d);
 #ifdef KRULER_ROTATE_TEST
   vruler->xtrans = d;
   vruler->update();
@@ -360,6 +362,7 @@ KRulerTest::slotSetXTrans(double d)
 void 
 KRulerTest::slotSetYTrans(double d)
 {
+  Q_UNUSED(d);
 #ifdef KRULER_ROTATE_TEST
   vruler->ytrans = d;
   vruler->update();

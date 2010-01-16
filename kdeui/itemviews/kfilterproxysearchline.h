@@ -46,7 +46,7 @@ class KDEUI_EXPORT KFilterProxySearchLine
 
 public:
     /**
-     * Contructor
+     * Constructor
      */
     explicit KFilterProxySearchLine( QWidget* parent = 0 );
 

@@ -79,8 +79,7 @@ int main(int argc, char **argv)
     QLabel *l = new QLabel("System Tray Main Window", 0L);
     KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
-    KStatusNotifierItemTest *trayTest = new KStatusNotifierItemTest(0, tray);
-
+    new KStatusNotifierItemTest(0, tray);
 
     tray->setTitle("DBus System tray test");
     tray->setIconByName("konqueror");

@@ -55,6 +55,7 @@ static bool deepCompareDomNodes(const QDomNode & node1, const QDomNode & node2)
     return true;
 }
 
+/*
 static QString nodeAsString(const QDomNode & node1)
 {
     QString str;
@@ -62,6 +63,7 @@ static QString nodeAsString(const QDomNode & node1)
     ts << node1; 
     return str;    
 }
+*/
 
 static bool exactCompareBookmarks(const KBookmark & bookmark1, const KBookmark & bookmark2)
 {

@@ -29,6 +29,9 @@ QString FastCode::propertySetterDeclaration( const Property* property, const Res
 
 QString FastCode::propertyGetterDeclaration( const Property* property, const ResourceClass* rc, const QString &nameSpace ) const
 {
+    Q_UNUSED( property );
+    Q_UNUSED( rc );
+    Q_UNUSED( nameSpace );
     return QString();
 }
 
@@ -43,11 +46,16 @@ QString FastCode::propertyAdderDeclaration( const Property* property, const Reso
 
 QString FastCode::propertyReversePropertyGetterDeclaration( const Property* property, const ResourceClass* rc, const QString &nameSpace ) const
 {
+    Q_UNUSED( property );
+    Q_UNUSED( rc );
+    Q_UNUSED( nameSpace );
     return QString();
 }
 
 QString FastCode::resourceAllResourcesDeclaration( const ResourceClass* rc, const QString &nameSpace ) const
 {
+    Q_UNUSED( rc );
+    Q_UNUSED( nameSpace );
     return QString();
 }
 
@@ -90,6 +98,8 @@ QString FastCode::propertySetterDefinition( const Property* property, const Reso
 
 QString FastCode::propertyGetterDefinition( const Property* property, const ResourceClass* rc ) const
 {
+    Q_UNUSED( property );
+    Q_UNUSED( rc );
     return QString();
 }
 
@@ -110,11 +120,14 @@ QString FastCode::propertyAdderDefinition( const Property* property, const Resou
 
 QString FastCode::propertyReversePropertyGetterDefinition( const Property* property, const ResourceClass* rc ) const
 {
+    Q_UNUSED( property );
+    Q_UNUSED( rc );
     return QString();
 }
 
 QString FastCode::resourceAllResourcesDefinition( const ResourceClass* rc ) const
 {
+    Q_UNUSED( rc );
     return QString();
 }
 

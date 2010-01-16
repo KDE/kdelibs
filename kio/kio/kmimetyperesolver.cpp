@@ -153,6 +153,7 @@ void KMimeTypeResolverPrivate::_k_slotProcessMimeIcons()
     if (index.isValid()) {
         // Found a visible item.
         const int numFound = m_pendingIndexes.removeAll(index);
+        Q_UNUSED(numFound); // prevent warning in release builds.
         Q_ASSERT(numFound == 1);
     } else {
         // No more visible items.

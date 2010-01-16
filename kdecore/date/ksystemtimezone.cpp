@@ -204,6 +204,7 @@ KTimeZone KSystemTimeZones::realLocalZone()
 
 void KSystemTimeZones::setLocalZone(const KTimeZone& tz)
 {
+    Q_UNUSED(tz);
 #ifndef NDEBUG
     *simulatedLocalZone = tz;
 #endif

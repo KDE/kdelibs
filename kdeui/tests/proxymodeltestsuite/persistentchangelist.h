@@ -41,3 +41,4 @@ typedef QList<PersistentIndexChange> PersistentChangeList;
 Q_DECLARE_METATYPE( PersistentChangeList )
 
 #endif
+

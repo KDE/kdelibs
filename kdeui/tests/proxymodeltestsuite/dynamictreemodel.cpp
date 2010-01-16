@@ -172,6 +172,8 @@ void DynamicTreeModel::clear()
 
 bool DynamicTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int _column, const QModelIndex& parent)
 {
+  Q_UNUSED(action);
+  Q_UNUSED(_column);
   QByteArray encoded = data->data(mimeTypes().first());
 
   QHash<QModelIndex, QList<int> > movedItems;
@@ -522,7 +524,7 @@ void ModelInsertCommand::doInsertTree(const QModelIndex &fragmentParent)
   QList<qint64> recentParents;
   recentParents.append(fragmentParentIdentifier);
 
-  qint64 lastId;
+  qint64 lastId = 0;
   qint64 id;
   QString name;
   int depth = 0;

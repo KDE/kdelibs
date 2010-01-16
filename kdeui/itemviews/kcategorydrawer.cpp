@@ -70,7 +70,7 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
     QFont font(QApplication::font());
     font.setBold(true);
     const QFontMetrics fontMetrics = QFontMetrics(font);
-    const int height = categoryHeight(index, option);
+    //const int height = categoryHeight(index, option);
 
     QColor outlineColor = option.palette.text().color();
     outlineColor.setAlphaF(0.35);

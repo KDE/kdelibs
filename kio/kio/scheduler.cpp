@@ -350,6 +350,7 @@ void ConnectedSlaveQueue::startRunnableJobs()
 
 static void ensureNoDuplicates(QMap<int, HostQueue *> *queuesBySerial)
 {
+    Q_UNUSED(queuesBySerial);
 #ifdef SCHEDULER_DEBUG
     // a host queue may *never* be in queuesBySerial twice.
     QSet<HostQueue *> seen;
@@ -362,6 +363,8 @@ static void ensureNoDuplicates(QMap<int, HostQueue *> *queuesBySerial)
 
 static void verifyRunningJobsCount(QHash<QString, HostQueue> *queues, int runningJobsCount)
 {
+    Q_UNUSED(queues);
+    Q_UNUSED(runningJobsCount);
 #ifdef SCHEDULER_DEBUG
     int realRunningJobsCount = 0;
     foreach (const HostQueue &hq, *queues) {
@@ -477,6 +480,7 @@ void ProtoQueue::removeJob(SimpleJob *job)
             Q_ASSERT(!jobPriv->m_slave);
             Q_ASSERT(prevRunningJobs == hq.runningJobsCount());
             const bool removed = m_queuesBySerial.remove(prevLowestSerial);
+            Q_UNUSED(removed);
             Q_ASSERT(removed);
         } else {
             if (prevRunningJobs != hq.runningJobsCount()) {
@@ -506,6 +510,7 @@ void ProtoQueue::removeJob(SimpleJob *job)
         // if the assertion fails the job has probably changed the host part of its URL while
         // running, so we can't find it by hostname. don't do this.
         const bool removed = m_connectedSlaveQueue.removeJob(job);
+        Q_UNUSED(removed);
         Q_ASSERT(removed);
     }
 
