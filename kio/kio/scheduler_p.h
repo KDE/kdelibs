@@ -88,7 +88,7 @@ public:
     SerialPicker()
      : m_offset(1) {}
 
-    int next(int priority = 0)
+    int next()
     {
         if (m_offset >= m_jobsPerPriority) {
             m_offset = 1;
@@ -99,7 +99,7 @@ public:
     int changedPrioritySerial(int oldSerial, int newPriority) const;
 
 private:
-    static const int m_jobsPerPriority = 100000000;
+    static const uint m_jobsPerPriority = 100000000;
     uint m_offset;
 public:
     static const int maxSerial = m_jobsPerPriority * 20;
