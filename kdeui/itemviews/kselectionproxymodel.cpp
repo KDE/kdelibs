@@ -1114,17 +1114,16 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
           q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
         Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(rootListRow, newIndex);
+        emit q->rootIndexAdded(newIndex);
         if (!m_resetting)
         {
-          emit q->rootIndexAdded(newIndex);
           q->endInsertRows();
         }
       } else {
         // Even if the newindex doesn't have any children to put into the model yet,
         // We still need to make sure it's future children are inserted into the model.
         m_rootIndexList.insert(rootListRow, newIndex);
-        if (!m_resetting)
-          emit q->rootIndexAdded(newIndex);
+        emit q->rootIndexAdded(newIndex);
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
@@ -1134,9 +1133,9 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
         q->beginInsertRows(QModelIndex(), row, row);
       Q_ASSERT(newIndex.isValid());
       m_rootIndexList.insert(row, newIndex);
+      emit q->rootIndexAdded(newIndex);
       if (!m_resetting)
       {
-        emit q->rootIndexAdded(newIndex);
         q->endInsertRows();
       }
     }
