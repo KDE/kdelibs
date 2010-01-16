@@ -706,6 +706,7 @@ void KTcpSocket::setCaCertificates(const QList<QSslCertificate> &certificates)
 
 void KTcpSocket::setCiphers(const QList<KSslCipher> &ciphers)
 {
+    d->ciphers = ciphers;
     QList<QSslCipher> cl;
     foreach (const KSslCipher &c, d->ciphers) {
         cl.append(d->ccc.converted(c));
