@@ -17,10 +17,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-// tests with charset encoding deactivated for the moment:
-// they would all fail as that is currently not implemented
-#undef ENCODING_TESTS
-
 #include <qtest_kde.h>
 
 #include <QtCore/QByteArray>
@@ -103,7 +99,6 @@ static struct {
       "modification-date\tWed, 12 Feb 1997 16:29:51 -0500" },
     { "foobar",
       "type\tfoobar" },
-#ifdef ENCODING_TESTS
     { "attachment; filename*=UTF-8''foo-%c3%a4-%e2%82%ac.html",
       "type\tattachment\n"
       "filename\tfoo-ä-€.html" },
@@ -122,15 +117,12 @@ static struct {
 // no character set given but 8 bit characters
     { "attachment; filename*=''foo-%c3%a4.html",
       "type\tattachment" },
-#endif /* ENCODING_TESTS */
     { "attachment; filename*0=\"foo.\"; filename*1=\"html\"",
       "type\tattachment\n"
       "filename\tfoo.html" },
-#ifdef ENCODING_TESTS
     { "attachment; filename*0*=UTF-8''foo-%c3%a4; filename*1=\".html\"",
       "type\tattachment\n"
       "filename\tfoo-ä.html" },
-#endif /* ENCODING_TESTS */
 // invalid argument, should be ignored
     { "attachment; filename==?ISO-8859-1?Q?foo-=E4.html?=",
       "type\tattachment" },
@@ -149,12 +141,10 @@ static struct {
     { "attachment; filename*0=\"foo\"; filename*01=\".html\"",
       "type\tattachment\n"
       "filename\tfoo" },
-#ifdef ENCODING_TESTS
 // "wrong" element ordering and encoding
     { "attachment; filename*1=\"html\"; filename*0*=us-ascii''foo.",
       "type\tattachment\n"
       "filename\tfoo.html" }
-#endif /* ENCODING_TESTS */
 };
 
 #if 0

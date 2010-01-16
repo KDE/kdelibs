@@ -17,7 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtCore/QMap>
+#include <QMap>
+#include <QTextCodec>
+#include <QUrl>
 
 #include <kcodecs.h>
 
@@ -391,6 +393,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
 
     QMap<QString, QString> parameters;
     QMap<QString, QString> contparams;   // all parameters that contain continuations
+    QMap<QString, QString> encparams;    // all parameters that have character encoding
 
     if( !strDisposition.isEmpty() )
         parameters.insert(QLatin1String("type"), strDisposition);
@@ -414,8 +417,8 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
             continue;
 
         if( spos == key.length() - 1 ) {
-            // encoded parameters are not yet supported
-            continue;
+            key.chop(1);
+            encparams.insert(key, val);
         } else if( spos >= 0 ) {
             contparams.insert(key, val);
         } else {
@@ -469,9 +472,50 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
             continue;
 
         key.chop(1);
-        if (!hasencoding) {
+        if (hasencoding) {
+            encparams.insert(key, val);
+        } else {
             parameters.insert(key, val);
         }
+    }
+
+    for( QMap<QString, QString>::iterator i = encparams.begin();
+         i != encparams.end(); ++i )
+    {
+        if( parameters.contains(i.key()) )
+            continue;
+        QString val = i.value();
+
+        // RfC 2231 encoded character set in filename
+        int spos = val.indexOf(QLatin1Char('\''));
+        if (spos == -1)
+            continue;
+        int npos = val.indexOf(QLatin1Char('\''), spos + 1);
+        if (npos == -1)
+            continue;
+
+        const QString charset = val.left( spos );
+        const QString lang = val.mid( spos + 1, npos - spos - 1 );
+        const QByteArray rawval = QByteArray::fromPercentEncoding( val.mid(npos + 1).toAscii() );
+        if( charset.isEmpty() || (charset == QLatin1String("us-ascii")) ) {
+            bool valid = true;
+            for( int j = rawval.length() - 1; (j >= 0) && valid; j-- )
+                valid = (rawval.at(j) >= 32);
+
+            if( valid )
+                val = QString::fromAscii(rawval.constData());
+            else
+                val.clear();
+        } else {
+            QTextCodec *codec = QTextCodec::codecForName( charset.toAscii() );
+            if( codec )
+                val = codec->toUnicode(rawval);
+            else
+                val.clear();
+        }
+
+        if( !val.isEmpty() )
+            parameters.insert( i.key(), val );
     }
 
     const QLatin1String fn("filename");
