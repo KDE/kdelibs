@@ -307,8 +307,15 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
   if (!m_selectionModel->hasSelection())
     return;
 
-  foreach(const QModelIndex &idx, m_rootIndexList)
+  QMutableListIterator<QPersistentModelIndex> it(m_rootIndexList);
+  QPersistentModelIndex idx;
+  while (it.hasNext())
+  {
+    QPersistentModelIndex idx = it.next();
     emit q->rootIndexAboutToBeRemoved(idx);
+    m_selectionModel->select(idx, QItemSelectionModel::Deselect);
+    it.remove();
+  }
 
   q->beginResetModel();
   m_resetting = true;
