@@ -304,9 +304,6 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
   Q_Q(KSelectionProxyModel);
 
-  if (!m_selectionModel->hasSelection())
-    return;
-
   QMutableListIterator<QPersistentModelIndex> it(m_rootIndexList);
   QPersistentModelIndex idx;
   while (it.hasNext())
@@ -324,9 +321,6 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 void KSelectionProxyModelPrivate::sourceModelReset()
 {
   Q_Q(KSelectionProxyModel);
-
-  if (!m_selectionModel->hasSelection())
-    return;
 
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
