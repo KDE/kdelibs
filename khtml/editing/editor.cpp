@@ -509,7 +509,7 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
 
   bool ctrl  = _ke->modifiers() & Qt::ControlModifier;
   bool alt   = _ke->modifiers() & Qt::AltModifier;
-  bool shift = _ke->modifiers() & Qt::ShiftModifier;
+  //bool shift = _ke->modifiers() & Qt::ShiftModifier;
   bool meta  = _ke->modifiers() & Qt::MetaModifier;
 
   if (ctrl || alt || meta) {

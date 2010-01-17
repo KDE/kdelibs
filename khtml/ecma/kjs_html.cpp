@@ -1916,7 +1916,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   }
   break;
   case ID_LAYER: {
-    DOM::HTMLLayerElementImpl& layerElement = static_cast<DOM::HTMLLayerElementImpl&>(element);
+    //DOM::HTMLLayerElementImpl& layerElement = static_cast<DOM::HTMLLayerElementImpl&>(element);
     switch (token) {
     /*case LayerClip:           return getLayerClip(exec, layerElement); */
     case LayerDocument:       return jsUndefined();
@@ -2436,7 +2436,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
     }
     break;
     case ID_BODY: {
-      DOM::HTMLBodyElementImpl& body = static_cast<DOM::HTMLBodyElementImpl&>(element);
+      //DOM::HTMLBodyElementImpl& body = static_cast<DOM::HTMLBodyElementImpl&>(element);
       switch (token) {
       case BodyOnLoad:
         DOM::DocumentImpl *doc = element.document();
@@ -3182,6 +3182,7 @@ JSValue *HTMLSelectCollection::selectedIndexGetter(ExecState*, JSObject*, const 
 
 JSValue *HTMLSelectCollection::selectedValueGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
+    Q_UNUSED(propertyName);
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return jsString(thisObj->element->value());
 }

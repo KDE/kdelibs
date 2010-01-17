@@ -55,11 +55,15 @@ RenderSVGRoot::~RenderSVGRoot()
 
 short RenderSVGRoot::lineHeight(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 
 short RenderSVGRoot::baselinePosition(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 
@@ -152,7 +156,7 @@ void RenderSVGRoot::paint(PaintInfo& paintInfo, int parentX, int parentY)
 {
     calcViewport();
 
-    SVGSVGElement* svg = static_cast<SVGSVGElement*>(element());
+    //SVGSVGElement* svg = static_cast<SVGSVGElement*>(element());
     if (viewport().width() <= 0. || viewport().height() <= 0.)
         return;
 
@@ -286,6 +290,7 @@ IntRect RenderSVGRoot::absoluteClippedOverflowRect()
 
 void RenderSVGRoot::absoluteRects(Vector<IntRect>& rects, int, int)
 {
+    Q_UNUSED(rects);
     /*for (RenderObject* current = firstChild(); current != 0; current = current->nextSibling())
         current->absoluteRects(rects, 0, 0);*/
 }
@@ -303,9 +308,10 @@ AffineTransform RenderSVGRoot::absoluteTransform() const
 
 FloatRect RenderSVGRoot::relativeBBox(bool includeStroke) const
 {
+    Q_UNUSED(includeStroke);
     FloatRect rect;
     
-    RenderObject* current = firstChild();
+    //RenderObject* current = firstChild();
     /*for (; current != 0; current = current->nextSibling()) {
         FloatRect childBBox = current->relativeBBox(includeStroke);
         FloatRect mappedBBox = current->localTransform().mapRect(childBBox);

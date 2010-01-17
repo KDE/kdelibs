@@ -214,13 +214,13 @@ bool pointsListFromSVGData(SVGPointList* pointsList, const String& points)
     protected:
         virtual void svgMoveTo(double x1, double y1, bool closed, bool abs = true) = 0;
         virtual void svgLineTo(double x1, double y1, bool abs = true) = 0;
-        virtual void svgLineToHorizontal(double x, bool abs = true) {}
-        virtual void svgLineToVertical(double y, bool abs = true) {}
+        virtual void svgLineToHorizontal(double x, bool abs = true) { Q_UNUSED(x); Q_UNUSED(abs); }
+        virtual void svgLineToVertical(double y, bool abs = true) { Q_UNUSED(y); Q_UNUSED(abs); }
         virtual void svgCurveToCubic(double x1, double y1, double x2, double y2, double x, double y, bool abs = true) = 0;
-        virtual void svgCurveToCubicSmooth(double x, double y, double x2, double y2, bool abs = true) {}
-        virtual void svgCurveToQuadratic(double x, double y, double x1, double y1, bool abs = true) {}
-        virtual void svgCurveToQuadraticSmooth(double x, double y, bool abs = true) {}
-        virtual void svgArcTo(double x, double y, double r1, double r2, double angle, bool largeArcFlag, bool sweepFlag, bool abs = true) {}
+        virtual void svgCurveToCubicSmooth(double x, double y, double x2, double y2, bool abs = true) { Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(x2); Q_UNUSED(y2); Q_UNUSED(abs); }
+        virtual void svgCurveToQuadratic(double x, double y, double x1, double y1, bool abs = true) { Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(x1); Q_UNUSED(y1); Q_UNUSED(abs); }
+        virtual void svgCurveToQuadraticSmooth(double x, double y, bool abs = true) {Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(abs);}
+        virtual void svgArcTo(double x, double y, double r1, double r2, double angle, bool largeArcFlag, bool sweepFlag, bool abs = true) { Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(r1); Q_UNUSED(r2); Q_UNUSED(angle);  Q_UNUSED(largeArcFlag); Q_UNUSED(sweepFlag); Q_UNUSED(abs);}
         virtual void svgClosePath() = 0;
     private:
         void calculateArc(bool relative, double& curx, double& cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag);

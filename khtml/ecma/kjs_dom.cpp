@@ -681,11 +681,13 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
         node.insertBefore(docFrag.get(), node.firstChild(), exception);
       else if (where == "beforeend")
         return getDOMNode(exec, node.appendChild(docFrag.get(), exception));
-      else if (where == "afterend")
-        if (node.nextSibling())
+      else if (where == "afterend") {
+        if (node.nextSibling()) {
 	  node.parentNode()->insertBefore(docFrag.get(), node.nextSibling(),exception);
-	else
+        } else {
 	  node.parentNode()->appendChild(docFrag.get(),exception);
+        }
+      }
 
       return jsUndefined();
     }

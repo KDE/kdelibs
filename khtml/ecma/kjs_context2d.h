@@ -85,8 +85,10 @@ namespace KJS {
   public:
     Context2D(ExecState* exec, DOM::CanvasContext2DImpl *ctx);
     
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     JSValue *getValueProperty(ExecState *exec, int token) const;
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/);
 

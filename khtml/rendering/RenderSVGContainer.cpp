@@ -225,11 +225,15 @@ bool RenderSVGContainer::requiresLayer()
 
 short RenderSVGContainer::lineHeight(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 
 short RenderSVGContainer::baselinePosition(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 
@@ -312,6 +316,7 @@ void RenderSVGContainer::applyContentTransforms(PaintInfo& paintInfo)
 
 void RenderSVGContainer::applyAdditionalTransforms(PaintInfo& paintInfo)
 {
+    Q_UNUSED(paintInfo);
     // no-op
 }
 
@@ -336,6 +341,8 @@ bool RenderSVGContainer::selfWillPaint() const
 
 void RenderSVGContainer::paint(PaintInfo& paintInfo, int parentX, int parentY)
 {
+    Q_UNUSED(parentX);
+    Q_UNUSED(parentY);
     if (/*paintInfo.context->paintingDisabled() || */!drawsContents())
         return;
 
@@ -399,6 +406,7 @@ IntRect RenderSVGContainer::absoluteClippedOverflowRect()
 
 void RenderSVGContainer::absoluteRects(Vector<IntRect>& rects, int, int, bool)
 {
+    Q_UNUSED(rects);
     //FIXME rects.append(absoluteClippedOverflowRect());
 }
 

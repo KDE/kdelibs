@@ -146,6 +146,7 @@ SVGPaintServer* SVGPaintServer::strokePaintServer(const RenderStyle* style, cons
 
 DashArray dashArrayFromRenderingStyle(const RenderStyle* style)
 {
+    Q_UNUSED(style);
     DashArray array;
     
     /*CSSValueList* dashes = style->svgStyle()->strokeDashArray();

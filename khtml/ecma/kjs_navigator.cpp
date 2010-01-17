@@ -81,6 +81,7 @@ namespace KJS {
           : PluginBase(exec, pluginsEnabled),
             m_pluginsEnabled(pluginsEnabled) {}
 
+        using KJS::JSObject::getOwnPropertySlot;
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         JSValue *getValueProperty(ExecState *exec, int token) const;
         virtual const ClassInfo* classInfo() const { return &info; }
@@ -99,6 +100,7 @@ namespace KJS {
         MimeTypes(ExecState *exec, bool pluginsEnabled)
           : PluginBase(exec, pluginsEnabled),
             m_pluginsEnabled(pluginsEnabled) {}
+        using KJS::JSObject::getOwnPropertySlot;
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
@@ -117,6 +119,7 @@ namespace KJS {
         Plugin(ExecState *exec, const PluginBase::PluginInfo *info)
           : PluginBase( exec, true )
         { m_info = info; }
+        using KJS::JSObject::getOwnPropertySlot;
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
@@ -135,6 +138,7 @@ namespace KJS {
         MimeType(ExecState *exec, const PluginBase::MimeClassInfo *info)
           : PluginBase( exec, true )
         { m_info = info; }
+        using KJS::JSObject::getOwnPropertySlot;
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;

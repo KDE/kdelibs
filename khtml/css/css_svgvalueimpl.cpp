@@ -87,12 +87,12 @@ QColor SVGColorImpl::colorFromRGBColorString(const DOMString& colorDOMString)
     return QColor(colorDOMString.string());
 }
 
-void SVGColorImpl::setRGBColorICCColor(const DOMString& /* rgbColor */, const DOMString& /* iccColor */, int& ec)
+void SVGColorImpl::setRGBColorICCColor(const DOMString& /* rgbColor */, const DOMString& /* iccColor */, int& /* ec */)
 {
     // ### TODO: implement me!
 }
 
-void SVGColorImpl::setColor(unsigned short colorType, const DOMString& /* rgbColor */ , const DOMString& /* iccColor */, int& ec)
+void SVGColorImpl::setColor(unsigned short colorType, const DOMString& /* rgbColor */ , const DOMString& /* iccColor */, int& /*ec*/)
 {
     // ### TODO: implement me!
     m_colorType = colorType;

@@ -85,6 +85,7 @@ namespace KJS {
   public:
     History(ExecState *exec, KHTMLPart *p)
       : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue *getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -99,6 +100,7 @@ namespace KJS {
   public:
     External(ExecState *exec, KHTMLPart *p)
       : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -641,6 +643,7 @@ KParts::ReadOnlyPart* Window::frameByIndex(unsigned i)
 
 JSValue* Window::indexGetter(ExecState *exec, unsigned index)
 {
+  Q_UNUSED(exec);
   KParts::ReadOnlyPart* frame = frameByIndex(index);
   if (frame)
     return Window::retrieve(frame);
@@ -649,6 +652,7 @@ JSValue* Window::indexGetter(ExecState *exec, unsigned index)
 
 JSValue *Window::framePartGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
+  Q_UNUSED(exec);
   Window* thisObj = static_cast<Window*>(slot.slotBase());
   KHTMLPart *part = qobject_cast<KHTMLPart*>(thisObj->m_frame->m_part);
   KParts::ReadOnlyPart *rop = part->findFramePart( propertyName.qstring() );
@@ -1406,6 +1410,7 @@ JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const Q
 
 void Window::clear( ExecState *exec )
 {
+  Q_UNUSED(exec);
   delete winq;
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes

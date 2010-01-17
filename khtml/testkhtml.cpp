@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	::exit( 1 );
     }
 
-    KHTMLGlobal *fac = new KHTMLGlobal;
+    new KHTMLGlobal;
 
     KXmlGuiWindow *toplevel = new KXmlGuiWindow();
     KHTMLPart *doc = new KHTMLPart( toplevel, toplevel, KHTMLPart::BrowserViewGUI );

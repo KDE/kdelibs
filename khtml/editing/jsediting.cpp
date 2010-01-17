@@ -264,13 +264,13 @@ static bool execInsertText(KHTMLPart *part, bool /*userInterface*/, const DOMStr
     return true;
 }
 
-static bool execInsertOrderedList(KHTMLPart *part, bool /*userInterface*/, const DOMString &value)
+static bool execInsertOrderedList(KHTMLPart *part, bool /*userInterface*/, const DOMString &/*value*/)
 {
     InsertListCommandImpl::insertList(KPAC::xmlDocImpl(part), InsertListCommandImpl::OrderedList);
     return true;
 }
 
-static bool execInsertUnorderedList(KHTMLPart *part, bool /*userInterface*/, const DOMString &value)
+static bool execInsertUnorderedList(KHTMLPart *part, bool /*userInterface*/, const DOMString &/*value*/)
 {
     InsertListCommandImpl::insertList(KPAC::xmlDocImpl(part), InsertListCommandImpl::UnorderedList);
     return true;

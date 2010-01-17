@@ -173,6 +173,7 @@ static inline float alignmentBaselineToShift(bool isVerticalText, const RenderOb
 
 static inline float glyphOrientationToAngle(const SVGRenderStyle* svgStyle, bool isVerticalText, const UChar& character)
 {
+    Q_UNUSED(character);
     switch (isVerticalText ? svgStyle->glyphOrientationVertical() : svgStyle->glyphOrientationHorizontal()) {
     case GO_AUTO:
     {
@@ -324,6 +325,7 @@ FloatPoint topLeftPositionOfCharacterRange(Vector<SVGChar>::iterator it, Vector<
 // Helper function
 static float calculateKerning(RenderObject* item)
 {
+    Q_UNUSED(item);
     /*FIXME const Font& font = item->style()->font();
     const SVGRenderStyle* svgStyle = item->style()->svgStyle();
 
@@ -404,8 +406,9 @@ struct SVGRootInlineBoxPaintWalker {
         m_savedInfo = m_paintInfo;
         //m_paintInfo.context->save();
 
-        if (!flowBox->isRootInlineBox())
+        if (!flowBox->isRootInlineBox()) {
             ;//FIXME m_paintInfo.context->concatCTM(m_rootBox->object()->localTransform());
+        }
 
         //m_paintInfo.context->concatCTM(object->localTransform());
         m_paintInfo.p->setWorldMatrix(object->localTransform(), true);
@@ -488,6 +491,7 @@ struct SVGRootInlineBoxPaintWalker {
     void chunkPortionCallback(SVGInlineTextBox* textBox, int startOffset, const AffineTransform& chunkCtm,
                               const Vector<SVGChar>::iterator& start, const Vector<SVGChar>::iterator& end)
     {
+        Q_UNUSED(chunkCtm);
         //kDebug() << "text chunk rendering code here" << endl;
         RenderText* text = textBox->/*textObject()*/renderText();
         ASSERT(text);
@@ -1111,7 +1115,7 @@ void SVGRootInlineBox::layoutInlineBoxes(InlineFlowBox* start, Vector<SVGChar>::
 
     if (start->isRootInlineBox()) {
         int top = lowY - object()->yPos();
-        int bottom = highY - object()->yPos();
+        //int bottom = highY - object()->yPos();
 
         start->setXPos(lowX - object()->xPos());
         start->setYPos(top);
@@ -1126,6 +1130,8 @@ void SVGRootInlineBox::layoutInlineBoxes(InlineFlowBox* start, Vector<SVGChar>::
 
 void SVGRootInlineBox::buildLayoutInformationForTextBox(SVGCharacterLayoutInfo& info, InlineTextBox* textBox, LastGlyphInfo& lastGlyph)
 {
+    Q_UNUSED(lastGlyph);
+
     RenderText* text = textBox->renderText();
     ASSERT(text);
 

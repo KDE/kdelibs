@@ -35,6 +35,7 @@ namespace KJS {
   public:
     DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d);
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
 private:
     SharedPtr<DOM::DocumentImpl> doc;

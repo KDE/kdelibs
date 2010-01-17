@@ -241,6 +241,10 @@ void SVGStyledElement::invalidateResourcesInAncestorChain() const
 
 void SVGStyledElement::childrenChanged(bool changedByParser, Node* beforeChange, Node* afterChange, int childCountDelta)
 {
+    Q_UNUSED(changedByParser);
+    Q_UNUSED(beforeChange);
+    Q_UNUSED(afterChange);
+    Q_UNUSED(childCountDelta);
     SVGElement::childrenChanged();
     /*SVGElement::childrenChanged(changedByParser, beforeChange, afterChange, childCountDelta);
     if (document()->parsing())
@@ -260,6 +264,7 @@ void SVGStyledElement::childrenChanged(bool changedByParser, Node* beforeChange,
 
 void SVGStyledElement::updateElementInstance(SVGDocumentExtensions* extensions) const
 {
+    Q_UNUSED(extensions);
     /*if (gElementsWithInstanceUpdatesBlocked && gElementsWithInstanceUpdatesBlocked->contains(this))
         return;
 
@@ -289,6 +294,7 @@ void SVGStyledElement::updateElementInstance(SVGDocumentExtensions* extensions) 
 
 RenderStyle* SVGStyledElement::resolveStyle(RenderStyle* parentStyle)
 {
+    Q_UNUSED(parentStyle);
     if (renderer()) {
         RenderStyle* renderStyle = renderer()->style();
         renderStyle->ref();
@@ -300,6 +306,7 @@ RenderStyle* SVGStyledElement::resolveStyle(RenderStyle* parentStyle)
 
 PassRefPtr<DOM::CSSValueImpl> SVGStyledElement::getPresentationAttribute(const String& name)
 {
+    Q_UNUSED(name);
     /*MappedAttribute* cssSVGAttr = mappedAttributes()->getAttributeItem(name);
     if (!cssSVGAttr || !cssSVGAttr->style())
         return 0;

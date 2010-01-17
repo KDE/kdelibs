@@ -44,6 +44,7 @@ SVGLocatable::~SVGLocatable()
 
 SVGElement* SVGLocatable::nearestViewportElement(const SVGStyledElement* e)
 {
+    Q_UNUSED(e);
 	/*
     Node* n = e->parentNode();
     while (n && !n->isDocumentNode()) {
@@ -63,6 +64,7 @@ SVGElement* SVGLocatable::nearestViewportElement(const SVGStyledElement* e)
 
 SVGElement* SVGLocatable::farthestViewportElement(const SVGStyledElement* e)
 {
+    Q_UNUSED(e);
     // FIXME : likely this will be always the <svg> farthest away.
     // If we have a different implementation of documentElement(), one
     // that give the documentElement() of the svg fragment, it could be
@@ -88,6 +90,7 @@ SVGElement* SVGLocatable::farthestViewportElement(const SVGStyledElement* e)
 // http://www.w3.org/TR/2005/WD-SVGMobile12-20050413/svgudom.html#svg::SVGLocatable
 FloatRect SVGLocatable::getBBox(const SVGStyledElement* e)
 {
+    Q_UNUSED(e);
     FloatRect bboxRect;
 
     /*if (e && e->renderer()) {
@@ -140,6 +143,7 @@ AffineTransform SVGLocatable::getScreenCTM(const SVGElement* element)
 
 AffineTransform SVGLocatable::getTransformToElement(SVGElement* target, ExceptionCode& ec) const
 {
+    Q_UNUSED(ec);
     AffineTransform ctm = getCTM();
 
     if (target && target->isStyledLocatable()) {

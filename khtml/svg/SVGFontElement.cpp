@@ -91,6 +91,9 @@ void SVGFontElement::ensureGlyphCache() const
 // Returns the number of characters consumed or 0 if no range was found.
 static unsigned parseUnicodeRange(const UChar* characters, unsigned length, pair<unsigned, unsigned>& range)
 {
+    Q_UNUSED(characters);
+    Q_UNUSED(length);
+    Q_UNUSED(range);
     // FIXME khtml
     return 0;
     /*if (length < 2)

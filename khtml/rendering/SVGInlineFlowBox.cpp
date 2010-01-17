@@ -35,17 +35,26 @@ using namespace SVGNames;
 
 void SVGInlineFlowBox::paint(RenderObject::PaintInfo& paintInfo, int tx, int ty)
 {
+    Q_UNUSED(paintInfo);
+    Q_UNUSED(tx);
+    Q_UNUSED(ty);
     //ASSERT_NOT_REACHED();
 }
 
 int SVGInlineFlowBox::placeBoxesHorizontally(int x, int& leftPosition, int& rightPosition, bool& needsWordSpacing)
 {
+    Q_UNUSED(x);
+    Q_UNUSED(leftPosition);
+    Q_UNUSED(rightPosition);
+    Q_UNUSED(needsWordSpacing);
+
     // no-op
     return 0;
 }
 
 void SVGInlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
 {
+    Q_UNUSED(heightOfBlock);
     // no-op
 }
 

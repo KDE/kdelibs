@@ -175,11 +175,15 @@ bool RenderPath::requiresLayer()
 
 short RenderPath::lineHeight(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return static_cast<short>(relativeBBox(true).height());
 }
 
 short RenderPath::baselinePosition(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return static_cast<short>(relativeBBox(true).height());
 }
 

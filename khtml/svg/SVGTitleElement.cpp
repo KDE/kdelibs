@@ -49,6 +49,10 @@ void SVGTitleElement::removedFromDocument()
 
 void SVGTitleElement::childrenChanged(bool changedByParser, Node* beforeChange, Node* afterChange, int childCountDelta)
 {
+    Q_UNUSED(changedByParser);
+    Q_UNUSED(beforeChange);
+    Q_UNUSED(afterChange);
+    Q_UNUSED(childCountDelta);
     SVGElement::childrenChanged(/*changedByParser, beforeChange, afterChange, childCountDelta*/);
     if (inDocument())
         document()->setTitle(textContent()/*, this*/);

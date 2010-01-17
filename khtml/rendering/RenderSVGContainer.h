@@ -50,8 +50,14 @@ public:
     virtual void destroy();
     void destroyLeftoverChildren();
 
+    // uncomment if you know how line 64' ambiguoty should be solved in that case.
+    // using khtml::RenderObject::removeChildNode;
     virtual RenderObject* removeChildNode(RenderObject*, bool fullRemove = true);
+    // uncomment if you know how line 64' ambiguoty should be solved in that case.
+    // using khtml::RenderObject::appendChildNode;
     virtual void appendChildNode(RenderObject*, bool fullAppend = true);
+    // uncomment if you know how line 62' of the implementation ambiguoty should be solved in that case.
+    // using khtml::RenderObject::insertChildNode;
     virtual void insertChildNode(RenderObject* child, RenderObject* before, bool fullInsert = true);
 
     // Designed for speed.  Don't waste time doing a bunch of work like layer updating and repainting when we know that our

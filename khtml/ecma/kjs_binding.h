@@ -384,6 +384,7 @@ namespace KJS {
    public: \
      Class(ExecState *exec): DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype()) {} \
      \
+     using KJS::JSObject::getOwnPropertySlot;\
      virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);\
      JSValue* getValueProperty(ExecState *exec, int token) const; \
      virtual const ClassInfo* classInfo() const { return &info; } \

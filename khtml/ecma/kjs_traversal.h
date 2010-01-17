@@ -31,6 +31,7 @@ namespace KJS {
   public:
     DOMNodeIterator(ExecState *exec, DOM::NodeIteratorImpl* ni);
     ~DOMNodeIterator();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -47,6 +48,7 @@ namespace KJS {
   class NodeFilterConstructor : public DOMObject {
   public:
     NodeFilterConstructor(ExecState *);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -58,9 +60,11 @@ namespace KJS {
   public:
     DOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw);
     ~DOMTreeWalker();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     virtual void mark();
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName,
                         JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }

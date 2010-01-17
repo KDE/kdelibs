@@ -293,6 +293,7 @@ DOM::NodeFilterImpl* KJS::toNodeFilter(JSValue *val)
 
 JSValue *KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
 {
+  Q_UNUSED(exec);
   if (nf->isJSFilter()) {
     return static_cast<JSNodeFilter*>(nf)->filter();
   }

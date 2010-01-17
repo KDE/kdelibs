@@ -47,6 +47,7 @@ SVGAltGlyphElement::~SVGAltGlyphElement()
 
 void SVGAltGlyphElement::setGlyphRef(const DOMString& type, ExceptionCode& ec)
 {
+    Q_UNUSED(type);
     ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 
@@ -57,6 +58,7 @@ DOMString SVGAltGlyphElement::glyphRef() const
 
 void SVGAltGlyphElement::setFormat(const DOMString& type, ExceptionCode& ec)
 {
+    Q_UNUSED(type);
     ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 

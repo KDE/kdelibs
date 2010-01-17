@@ -95,6 +95,8 @@ IntRect RenderSVGInlineText::selectionRect(bool)
 
 IntRect RenderSVGInlineText::computeAbsoluteRectForRange(int startPos, int endPos)
 {
+    Q_UNUSED(startPos);
+    Q_UNUSED(endPos);
     IntRect rect;
 
     RenderBlock* cb = containingBlock();

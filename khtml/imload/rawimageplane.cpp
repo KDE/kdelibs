@@ -28,6 +28,7 @@ namespace khtmlImLoad {
 bool RawImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
                             PixmapTile* tile)
 {
+    Q_UNUSED(tileX);
     return checkUpToDate(versions + tileY * Tile::TileSize, tile);
 }
 

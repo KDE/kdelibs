@@ -36,9 +36,9 @@
 #define ANIMATED_PROPERTY_EMPTY_DECLARATIONS(BareType, NullType, UpperProperty, LowerProperty) \
 public: \
     virtual BareType LowerProperty() const { ASSERT_NOT_REACHED(); return NullType; } \
-    virtual void set##UpperProperty(BareType newValue) { ASSERT_NOT_REACHED(); }\
+    virtual void set##UpperProperty(BareType) { ASSERT_NOT_REACHED(); }\
     virtual BareType LowerProperty##BaseValue() const { ASSERT_NOT_REACHED(); return NullType; } \
-    virtual void set##UpperProperty##BaseValue(BareType newValue) { ASSERT_NOT_REACHED(); } \
+    virtual void set##UpperProperty##BaseValue(BareType) { ASSERT_NOT_REACHED(); } \
     virtual void start##UpperProperty() const { ASSERT_NOT_REACHED(); } \
     virtual void stop##UpperProperty() { ASSERT_NOT_REACHED(); }
 

@@ -364,7 +364,7 @@ void RenderImage::layout()
     KHTMLAssert( needsLayout());
     KHTMLAssert( minMaxKnown() );
 
-    short m_width = 0;
+    //short m_width = 0;
     int m_height;
 
     // minimum height

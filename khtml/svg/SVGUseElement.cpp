@@ -151,6 +151,10 @@ void SVGUseElement::svgAttributeChanged(const QualifiedName& attrName)
 
 void SVGUseElement::childrenChanged(bool changedByParser, Node* beforeChange, Node* afterChange, int childCountDelta)
 {
+    Q_UNUSED(changedByParser);
+    Q_UNUSED(beforeChange);
+    Q_UNUSED(afterChange);
+    Q_UNUSED(childCountDelta);
     SVGElement::childrenChanged(/*changedByParser, beforeChange, afterChange, childCountDelta*/);
 
     if (!attached())
@@ -225,6 +229,7 @@ void dumpInstanceTree(unsigned int& depth, String& text, SVGElementInstance* tar
 
 static bool isDisallowedElement(Node* element)
 {
+    Q_UNUSED(element);
 #if ENABLE(SVG_FOREIGN_OBJECT)
     // <foreignObject> should never be contained in a <use> tree. Too dangerous side effects possible.
     if (element->hasTagName(SVGNames::foreignObjectTag))
@@ -518,6 +523,7 @@ void SVGUseElement::alterShadowTreeForSVGTag(SVGElement* target)
 
 void SVGUseElement::removeDisallowedElementsFromSubtree(Node* subtree)
 {
+    Q_UNUSED(subtree);
     // Implement me: khtml, NodeImpl::traverseNextSibling
     /*ASSERT(!subtree->inDocument());
     ExceptionCode ec;
@@ -801,6 +807,8 @@ SVGElementInstance* SVGUseElement::instanceForShadowTreeElement(Node* element, S
 
 void SVGUseElement::transferUseAttributesToReplacedElement(SVGElement* from, SVGElement* to) const
 {
+    Q_UNUSED(from);
+    Q_UNUSED(to);
     // Implement me: khtml
     /*ASSERT(from);
     ASSERT(to);

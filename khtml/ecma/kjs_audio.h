@@ -40,6 +40,7 @@ namespace KJS {
   public:
     AudioConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject* construct(ExecState *exec, const List &args);
   private:
     SharedPtr<DOM::DocumentImpl> doc;
@@ -55,8 +56,10 @@ namespace KJS {
     Audio(ExecState *, DOM::DocumentImpl* d, const QString& url);
     virtual ~Audio();
 
+    using KJS::JSObject::getOwnPropertySlot;
     bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue *getValueProperty(ExecState *exec, int token) const;
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/);
     virtual bool toBoolean(ExecState *) const { return true; }

@@ -416,7 +416,7 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
             return consumed;
         }
         uchar* lines[1] = {scanline};
-        int oldoutput_scanline = cinfo.output_scanline;
+        //int oldoutput_scanline = cinfo.output_scanline;
 
         //Decode and feed line-by-line
         while(cinfo.output_scanline < cinfo.output_height)

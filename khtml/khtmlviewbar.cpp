@@ -103,6 +103,7 @@ void KHTMLViewBar::showBarWidget (KHTMLViewBarWidget *barWidget)
 
 bool KHTMLViewBar::hasWidget(KHTMLViewBarWidget* wid) const
 {
+    Q_UNUSED(wid);
     return layout()->count() != 0;
 }
 
@@ -137,6 +138,7 @@ void KHTMLViewBar::keyPressEvent(QKeyEvent* event)
 
 void KHTMLViewBar::hideEvent(QHideEvent* event)
 {
+  Q_UNUSED(event);
 //   if (!event->spontaneous())
 //     m_view->setFocus();
 }

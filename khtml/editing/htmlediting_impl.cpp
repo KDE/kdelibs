@@ -2680,7 +2680,7 @@ static bool isOpenForMoreTypingCommand(const EditCommandImpl *command)
 
 void TypingCommandImpl::deleteKeyPressed0(DocumentImpl *document)
 {
-    Editor *editor = document->part()->editor();
+    //Editor *editor = document->part()->editor();
     // FIXME reenable after properly modify selection of the lastEditCommand
     // if (isOpenForMoreTypingCommand(lastEditCommand)) {
     //     static_cast<TypingCommand &>(lastEditCommand).deleteKeyPressed();

@@ -120,6 +120,7 @@ void SVGRenderStyle::inheritFrom(const SVGRenderStyle* svgInheritParent)
 
 float SVGRenderStyle::cssPrimitiveToLength(const RenderObject* item, DOM::CSSValueImpl* value, float defaultValue)
 {
+    Q_UNUSED(item);
     DOM::CSSPrimitiveValueImpl* primitive = static_cast<DOM::CSSPrimitiveValueImpl*>(value);
     if (!primitive) return defaultValue;
 

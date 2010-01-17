@@ -79,6 +79,9 @@ void SVGPaintServer::draw(QPainter* painter, QPainterPath* painterPath, const Re
 
 void SVGPaintServer::teardown(QPainter* painter, QPainterPath* painterPath, const RenderObject*, SVGPaintTargetType, bool isPaintingText) const
 {
+    Q_UNUSED(painter);
+    Q_UNUSED(painterPath);
+    Q_UNUSED(isPaintingText);
     // no-op
 }
 

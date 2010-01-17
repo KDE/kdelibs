@@ -29,6 +29,7 @@ namespace khtmlImLoad {
 bool ScaledImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
                             PixmapTile* tile)
 {
+    Q_UNUSED(tileX);
     if (!tile->pixmap) return false;
 
     for (unsigned int line = 0; line < tileHeight(tileY); ++line)
@@ -44,6 +45,7 @@ template<typename T>
 static void scaleLoop(QImage* dst, unsigned int* xScaleTable,
                       int line, const QImage& src, int srcLine, int tileX, int tileY)
 {
+    Q_UNUSED(tileY);
     const T* srcPix = reinterpret_cast<const T*>(src.scanLine (srcLine));
     T*       dstPix = reinterpret_cast<T*>(dst->scanLine(line));
     

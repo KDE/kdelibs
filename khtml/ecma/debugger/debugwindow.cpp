@@ -640,7 +640,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
     
-    if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled() || !m_catchExceptions)
+    if ((khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled()) || !m_catchExceptions)
         return shouldContinue(ic);
 
     QString exceptionMsg = exceptionToString(exec, exceptionObj);
@@ -692,6 +692,8 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 
 bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
+    Q_UNUSED(lastLine);
+
     InterpreterContext* candidateCtx = m_contexts[exec->dynamicInterpreter()];
 
     if (!shouldContinue(candidateCtx))
@@ -728,6 +730,7 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
 
 bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
 {
+    Q_UNUSED(args);
     InterpreterContext* ctx = m_contexts[exec->dynamicInterpreter()];
 
     // First update call stack.
@@ -752,6 +755,8 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
 
 bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
+    Q_UNUSED(lineno);
+    Q_UNUSED(function);
     InterpreterContext* ic  = m_contexts[exec->dynamicInterpreter()];
 
     if (m_localVariables->currentlyDisplaying() == exec)
@@ -988,6 +993,9 @@ void DebugWindow::markSet(KTextEditor::Document* document, KTextEditor::Mark mar
 
 void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *document, int line)
 {
+    Q_UNUSED(document);
+    Q_UNUSED(line);
+
     // This "enters" a new debugging session, i.e. enables usage of the debugging window
     // It re-enters the qt event loop here, allowing execution of other parts of the
     // program to continue while the script is stopped. We have to be a bit careful here,

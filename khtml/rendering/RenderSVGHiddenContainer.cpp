@@ -47,11 +47,15 @@ bool RenderSVGHiddenContainer::requiresLayer()
 
 short RenderSVGHiddenContainer::lineHeight(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return 0;
 }
 
 short RenderSVGHiddenContainer::baselinePosition(bool b, bool isRootLineBox) const
 {
+    Q_UNUSED(b);
+    Q_UNUSED(isRootLineBox);
     return 0;
 }
 
@@ -85,6 +89,7 @@ IntRect RenderSVGHiddenContainer::absoluteClippedOverflowRect()
 
 void RenderSVGHiddenContainer::absoluteRects(Vector<IntRect>& rects, int, int, bool)
 {
+    Q_UNUSED(rects);
     // This subtree does not take up space or paint
 }
 
@@ -105,6 +110,7 @@ AffineTransform RenderSVGHiddenContainer::localTransform() const
 
 FloatRect RenderSVGHiddenContainer::relativeBBox(bool includeStroke) const
 {
+    Q_UNUSED(includeStroke);
     return FloatRect();
 }
 

@@ -65,8 +65,10 @@ namespace KJS {
   class HTMLElement : public DOMElement {
   public:
     HTMLElement(ExecState *exec, DOM::HTMLElementImpl* e);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue* value, int);
     virtual UString toString(ExecState *exec) const;
@@ -215,6 +217,7 @@ namespace KJS {
     HTMLCollection(KJS::JSObject *proto, DOM::HTMLCollectionImpl* c);
     ~HTMLCollection();
     JSValue* getValueProperty(ExecState *exec, int token);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
 
     virtual JSValue* callAsFunction(ExecState *exec, JSObject* thisObj, const List& args);
@@ -242,7 +245,9 @@ namespace KJS {
   public:
     enum { Add };
     HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
 
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -261,6 +266,7 @@ namespace KJS {
   public:
     OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject* construct(ExecState *exec, const List &args);
   private:
     SharedPtr<DOM::DocumentImpl> doc;
@@ -272,6 +278,7 @@ namespace KJS {
   public:
     ImageConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject* construct(ExecState *exec, const List &args);
   private:
     SharedPtr<DOM::DocumentImpl> doc;

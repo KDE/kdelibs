@@ -189,16 +189,24 @@ EventTargetNode* SVGElementInstance::toNode()
 
 void SVGElementInstance::addEventListener(const AtomicString& eventType, PassRefPtr<EventListener> eventListener, bool useCapture)
 {
+    Q_UNUSED(eventType);
+    Q_UNUSED(eventListener);
+    Q_UNUSED(useCapture);
     // FIXME!
 }
 
 void SVGElementInstance::removeEventListener(const AtomicString& eventType, EventListener* eventListener, bool useCapture)
 {
+    Q_UNUSED(eventType);
+    Q_UNUSED(eventListener);
+    Q_UNUSED(useCapture);
     // FIXME!
 }
 
 bool SVGElementInstance::dispatchEvent(PassRefPtr<Event>, ExceptionCode& ec, bool tempEvent)
 {
+    Q_UNUSED(ec);
+    Q_UNUSED(tempEvent);
     // FIXME!
     return false;
 }

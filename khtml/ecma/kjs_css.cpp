@@ -732,7 +732,7 @@ bool DOMCSSRuleList::getOwnPropertySlot(ExecState *exec, const Identifier& prope
     return true;
 
   //Check whether it's an index
-  CSSRuleListImpl &cssRuleList = *m_impl;
+  //CSSRuleListImpl &cssRuleList = *m_impl;
 
   if (getIndexSlot(this, *m_impl, propertyName, slot))
     return true;

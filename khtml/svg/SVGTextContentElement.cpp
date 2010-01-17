@@ -130,6 +130,7 @@ struct SVGInlineTextBoxQueryWalker {
     void chunkPortionCallback(SVGInlineTextBox* textBox, int startOffset, const AffineTransform& chunkCtm,
                               const Vector<SVGChar>::iterator& start, const Vector<SVGChar>::iterator& end)
     {
+        Q_UNUSED(chunkCtm);
         RenderStyle* style = textBox->renderText()->style();
         bool isVerticalText = style->svgStyle()->writingMode() == WM_TBRL || style->svgStyle()->writingMode() == WM_TB;
 

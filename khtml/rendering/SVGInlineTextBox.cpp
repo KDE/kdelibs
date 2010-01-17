@@ -87,6 +87,8 @@ float SVGInlineTextBox::calculateGlyphWidth(RenderStyle* style, int offset, int 
 
 float SVGInlineTextBox::calculateGlyphHeight(RenderStyle* style, int offset, int extraCharsAvailable) const
 {
+    Q_UNUSED(offset);
+    Q_UNUSED(extraCharsAvailable);
     ASSERT(style);
 
     // This is just a guess, and the only purpose of this function is to centralize this hack.
@@ -286,6 +288,8 @@ bool SVGInlineTextBox::svgCharacterHitsPosition(int x, int y, int& offset) const
 
 int SVGInlineTextBox::offsetForPosition(int x, bool includePartialGlyphs) const
 {
+    Q_UNUSED(x);
+    Q_UNUSED(includePartialGlyphs);
     // SVG doesn't use the offset <-> position selection system. 
     ASSERT_NOT_REACHED();
     return 0;
@@ -293,6 +297,7 @@ int SVGInlineTextBox::offsetForPosition(int x, bool includePartialGlyphs) const
 
 int SVGInlineTextBox::positionForOffset(int offset) const
 {
+    Q_UNUSED(offset);
     // SVG doesn't use the offset <-> position selection system. 
     ASSERT_NOT_REACHED();
     return 0;
@@ -331,6 +336,11 @@ IntRect SVGInlineTextBox::selectionRect(int, int, int startPos, int endPos)
 
 void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int tx, int ty, const SVGChar& svgChar, const UChar* chars, int length, SVGPaintServer* activePaintServer)
 {
+    Q_UNUSED(tx);
+    Q_UNUSED(ty);
+    Q_UNUSED(chars);
+    Q_UNUSED(length);
+    Q_UNUSED(activePaintServer);
     kDebug() << "paint character" << endl;
     /*FIXME khtml if (object()->style()->visibility() != VISIBLE || paintInfo.phase == PaintPhaseOutline)
         return;
@@ -386,7 +396,7 @@ void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int t
     // Set a text shadow if we have one.
     // FIXME: Support multiple shadow effects.  Need more from the CG API before
     // we can do this.
-    bool setShadow = false;
+    //bool setShadow = false;
     if (styleToUse->textShadow()) {
         /*FIXME khtml paintInfo.context->setShadow(IntSize(styleToUse->textShadow()->x, styleToUse->textShadow()->y),
                                      styleToUse->textShadow()->blur, styleToUse->textShadow()->color);
@@ -450,6 +460,13 @@ void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int t
 
 void SVGInlineTextBox::paintSelection(int boxStartOffset, const SVGChar& svgChar, const UChar* chars, int length, khtml::RenderObject::PaintInfo& p, RenderStyle* style, const Font* f)
 {
+    Q_UNUSED(boxStartOffset);
+    Q_UNUSED(svgChar);
+    Q_UNUSED(chars);
+    Q_UNUSED(length);
+    Q_UNUSED(p);
+    Q_UNUSED(style);
+    Q_UNUSED(f);
     /*if (selectionState() == RenderObject::SelectionNone)
         return;
 
@@ -496,6 +513,8 @@ void SVGInlineTextBox::paintSelection(int boxStartOffset, const SVGChar& svgChar
 
 static inline Path pathForDecoration(ETextDecoration decoration, RenderObject* object, float x, float y, float width)
 {
+    Q_UNUSED(decoration);
+
     float thickness = SVGRenderStyle::cssPrimitiveToLength(object, object->style()->svgStyle()->strokeWidth(), 1.0f);
 
     const Font& font = object->style()->htmlFont();
@@ -512,6 +531,14 @@ static inline Path pathForDecoration(ETextDecoration decoration, RenderObject* o
 
 void SVGInlineTextBox::paintDecoration(ETextDecoration decoration, khtml::RenderObject::PaintInfo& pI, int tx, int ty, int width, const SVGChar& svgChar, const SVGTextDecorationInfo& info)
 {
+    Q_UNUSED(decoration);
+    Q_UNUSED(pI);
+    Q_UNUSED(tx);
+    Q_UNUSED(ty);
+    Q_UNUSED(width);
+    Q_UNUSED(svgChar);
+    Q_UNUSED(info);
+
     /*FIXME if (object()->style()->visibility() != VISIBLE)
         return;
 

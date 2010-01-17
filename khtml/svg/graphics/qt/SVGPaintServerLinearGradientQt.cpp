@@ -37,6 +37,8 @@ namespace WebCore {
 
 QGradient SVGPaintServerLinearGradient::setupGradient(QPainter* painter, QPainterPath* painterPath, const RenderObject* object) const
 {
+    Q_UNUSED(painter);
+    Q_UNUSED(object);
     //QPainterPath* path(context ? context->currentPath() : 0);
     //Q_ASSERT(path);
 

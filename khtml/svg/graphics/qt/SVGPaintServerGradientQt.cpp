@@ -57,6 +57,7 @@ void SVGPaintServerGradient::fillColorArray(QGradient& gradient, const Vector<SV
 bool SVGPaintServerGradient::setup(QPainter* painter, QPainterPath* painterPath, const RenderObject* object,
                                    SVGPaintTargetType type, bool isPaintingText) const
 {
+    Q_UNUSED(isPaintingText);
     kDebug() << "!!!!!!!" << endl;
     m_ownerElement->buildGradient();
 

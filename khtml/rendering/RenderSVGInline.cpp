@@ -39,6 +39,7 @@ RenderSVGInline::RenderSVGInline(DOM::NodeImpl* n)
 
 InlineBox* RenderSVGInline::createInlineBox(bool makePlaceHolderBox, bool isRootLineBox, bool isOnlyRun)
 {
+    Q_UNUSED(isOnlyRun);
     ASSERT(!(!isRootLineBox && (isReplaced() || makePlaceHolderBox)));
     ASSERT(isInlineFlow());
 

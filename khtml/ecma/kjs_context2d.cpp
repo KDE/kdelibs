@@ -705,6 +705,9 @@ KJS_IMPLEMENT_PROTOTYPE("CanvasPatternProto", CanvasPatternProto, CanvasPatternF
 
 JSValue *CanvasPatternFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
+    Q_UNUSED(exec);
+    Q_UNUSED(thisObj);
+    Q_UNUSED(args);
     assert(0);
     return NULL;
 }
@@ -752,6 +755,7 @@ void CanvasImageDataArray::mark()
 
 JSValue* CanvasImageDataArray::indexGetter(ExecState* exec, unsigned index)
 {
+    Q_UNUSED(exec);
     if (index >= size) // paranoia..
         return jsNull();
 

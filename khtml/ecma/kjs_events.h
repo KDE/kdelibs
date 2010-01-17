@@ -99,8 +99,10 @@ namespace KJS {
     DOMEvent(JSObject *proto, DOM::EventImpl* e);
     ~DOMEvent();
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName,
 			JSValue* value, int attr = None);
     virtual JSValue* defaultValue(ExecState *exec, KJS::JSType hint) const;
@@ -127,6 +129,7 @@ namespace KJS {
   class EventExceptionConstructor : public DOMObject {
   public:
     EventExceptionConstructor(ExecState *);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -142,6 +145,7 @@ namespace KJS {
     DOMUIEvent(ExecState *exec, DOM::UIEventImpl* ue);
     DOMUIEvent(JSObject *proto, DOM::UIEventImpl* ue);
     ~DOMUIEvent();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -155,6 +159,7 @@ namespace KJS {
   public:
     DOMMouseEvent(ExecState *exec, DOM::MouseEventImpl* me);
     ~DOMMouseEvent();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -173,6 +178,7 @@ namespace KJS {
     DOMKeyEventBase(JSObject* proto, DOM::KeyEventBaseImpl* ke);
     ~DOMKeyEventBase();
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -186,6 +192,7 @@ namespace KJS {
   public:
     DOMTextEvent(ExecState *exec, DOM::TextEventImpl* ke);
     ~DOMTextEvent();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -199,6 +206,7 @@ namespace KJS {
   public:
     DOMKeyboardEvent(ExecState *exec, DOM::KeyboardEventImpl* ke);
     ~DOMKeyboardEvent();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -212,6 +220,7 @@ namespace KJS {
   class KeyboardEventConstructor : public DOMObject {
   public:
     KeyboardEventConstructor(ExecState *);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -225,6 +234,7 @@ namespace KJS {
   class MutationEventConstructor : public DOMObject {
   public:
     MutationEventConstructor(ExecState *);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -238,6 +248,7 @@ namespace KJS {
   public:
     DOMMutationEvent(ExecState *exec, DOM::MutationEventImpl* me);
     ~DOMMutationEvent();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only

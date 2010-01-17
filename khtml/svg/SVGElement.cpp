@@ -258,6 +258,9 @@ static Node* shadowTreeParentElementForShadowTreeElement(Node* node)
 
 bool SVGElement::dispatchEvent(Event* e, ExceptionCode& ec, bool tempEvent)
 {
+    Q_UNUSED(e);
+    Q_UNUSED(ec);
+    Q_UNUSED(tempEvent);
     kDebug() << "dispatch event" << endl;
     // TODO: This function will be removed in a follow-up patch!
 
@@ -297,6 +300,7 @@ void SVGElement::attributeChanged(Attribute* attr, bool preserveDecls)
 // for KHTML compatibility
 void SVGElement::addCSSProperty(Attribute* attr, int id, const String& value)
 {
+    Q_UNUSED(attr);
     kDebug() << "called with: " << id << " " << value << endl;
     /* WARNING: copy&past'ed from HTMLElementImpl class */
     if (!m_hasCombinedStyle) createNonCSSDecl();
@@ -306,6 +310,7 @@ void SVGElement::addCSSProperty(Attribute* attr, int id, const String& value)
 
 void SVGElement::addCSSProperty(Attribute* attr, int id, int value)
 {
+    Q_UNUSED(attr);
     kDebug() << "called with: " << id << " " << value << endl;
     /* WARNING: copy&past'ed from HTMLElementImpl class */
     if (!m_hasCombinedStyle) createNonCSSDecl();

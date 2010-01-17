@@ -99,7 +99,7 @@ void SVGPolyElement::svgAttributeChanged(const QualifiedName& attrName)
         m_ignoreAttributeChanges = true;
         renderer()->setNeedsLayout(true);
 
-        ExceptionCode ec = 0;
+        //ExceptionCode ec = 0;
 
         // Spec: Additionally, the 'points' attribute on the original element
         // accessed via the XML DOM (e.g., using the getAttribute() method call)

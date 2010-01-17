@@ -32,6 +32,7 @@ namespace KJS {
   public:
     XMLSerializerConstructorImp(ExecState *);
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
   };
 

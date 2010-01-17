@@ -336,6 +336,7 @@ sub GenerateHeader
 
     # Getters
     if ($numAttributes > 0 || $dataNode->extendedAttributes->{"GenerateConstructor"}) {
+        push(@headerContent, "    using KJS::JSObject::getOwnPropertySlot;\n");
         push(@headerContent, "    virtual bool getOwnPropertySlot(KJS::ExecState*, const KJS::Identifier&, KJS::PropertySlot&);\n");
         push(@headerContent, "    KJS::JSValue* getValueProperty(KJS::ExecState*, int token) const;\n");
         if ($dataNode->extendedAttributes->{"CustomGetOwnPropertySlot"}) {
@@ -352,6 +353,7 @@ sub GenerateHeader
     }
 
     if ($hasReadWriteProperties) {
+        push(@headerContent, "    using KJS::JSObject::put;\n");
         push(@headerContent, "    virtual void put(KJS::ExecState*, const KJS::Identifier&, KJS::JSValue*, int attr = KJS::None);\n");
         push(@headerContent, "    void putValueProperty(KJS::ExecState*, int, KJS::JSValue*, int attr);\n");
         if ($dataNode->extendedAttributes->{"CustomPutFunction"}) {
@@ -542,6 +544,7 @@ sub GenerateHeader
     push(@headerContent, "    virtual const KJS::ClassInfo* classInfo() const { return &s_info; }\n");
     push(@headerContent, "    static const KJS::ClassInfo s_info;\n");
     if ($numFunctions > 0 || $numConstants > 0) {
+        push(@headerContent, "    using KJS::JSObject::getOwnPropertySlot;\n");
         push(@headerContent, "    bool getOwnPropertySlot(KJS::ExecState*, const KJS::Identifier&, KJS::PropertySlot&);\n");
     }
     if ($numConstants ne 0) {
@@ -1773,6 +1776,7 @@ public:
         setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
         putDirect(exec->propertyNames().prototype, ${protoClassName}::self(exec), None);
     }
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState*, const Identifier&, PropertySlot&);
     JSValue* getValueProperty(ExecState*, int token) const;
     virtual const ClassInfo* classInfo() const { return &s_info; }

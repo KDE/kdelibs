@@ -102,6 +102,7 @@ void SVGAElement::svgAttributeChanged(const QualifiedName& attrName)
 
 RenderObject* SVGAElement::createRenderer(RenderArena* arena, RenderStyle* style)
 {
+    Q_UNUSED(style);
     if (static_cast<SVGElement*>(parent())->isTextContent())
         return new (arena) RenderSVGInline(this);
 
@@ -192,6 +193,7 @@ bool SVGAElement::isMouseFocusable() const
 
 bool SVGAElement::isKeyboardFocusable(DOM::KeyboardEventImpl* event) const
 {
+    Q_UNUSED(event);
     if (!isFocusable())
         return false;
     

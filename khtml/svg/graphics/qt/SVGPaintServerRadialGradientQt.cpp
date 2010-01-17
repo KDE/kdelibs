@@ -37,6 +37,7 @@ namespace WebCore {
 
 QGradient SVGPaintServerRadialGradient::setupGradient(QPainter* painter, QPainterPath* painterPath, const RenderObject* object) const
 {
+    Q_UNUSED(object);
     //QPainter* painter(context ? context->platformContext() : 0);
     //Q_ASSERT(painter);
 
@@ -44,7 +45,7 @@ QGradient SVGPaintServerRadialGradient::setupGradient(QPainter* painter, QPainte
     //Q_ASSERT(path);
     QPainterPath* path(painterPath);
 
-    RenderStyle* renderStyle = object->style();
+    //RenderStyle* renderStyle = object->style();
 
     QMatrix mat = painter->matrix();
 

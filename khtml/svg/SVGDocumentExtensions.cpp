@@ -69,11 +69,13 @@ EventListener* SVGDocumentExtensions::createSVGEventListener(const String& funct
 
 void SVGDocumentExtensions::addTimeContainer(SVGSVGElement* element)
 {
+    Q_UNUSED(element);
     /*m_timeContainers.add(element);*/
 }
 
 void SVGDocumentExtensions::removeTimeContainer(SVGSVGElement* element)
 {
+    Q_UNUSED(element);
     /*m_timeContainers.remove(element);*/
 }
 
@@ -104,12 +106,14 @@ void SVGDocumentExtensions::unpauseAnimations()
 
 void SVGDocumentExtensions::reportWarning(const String& message)
 {
+    Q_UNUSED(message);
     /*if (Frame* frame = m_doc->frame())
         frame->domWindow()->console()->addMessage(JSMessageSource, ErrorMessageLevel, "Warning: " + message, m_doc->tokenizer() ? m_doc->tokenizer()->lineNumber() : 1, String());*/
 }
 
 void SVGDocumentExtensions::reportError(const String& message)
 {
+    Q_UNUSED(message);
     /*if (Frame* frame = m_doc->frame())
         frame->domWindow()->console()->addMessage(JSMessageSource, ErrorMessageLevel, "Error: " + message, m_doc->tokenizer() ? m_doc->tokenizer()->lineNumber() : 1, String());*/
 }
@@ -133,6 +137,7 @@ void SVGDocumentExtensions::addPendingResource(const AtomicString& id, SVGStyled
 
 bool SVGDocumentExtensions::isPendingResource(const AtomicString& id) const
 {
+    Q_UNUSED(id);
     /*if (id.isEmpty())
         return false;
 
@@ -143,6 +148,7 @@ bool SVGDocumentExtensions::isPendingResource(const AtomicString& id) const
 
 std::auto_ptr<HashSet<SVGStyledElement*> > SVGDocumentExtensions::removePendingResource(const AtomicString& id)
 {
+    Q_UNUSED(id);
     /*ASSERT(m_pendingResources.contains(id));
 
     std::auto_ptr<HashSet<SVGStyledElement*> > set(m_pendingResources.get(id));

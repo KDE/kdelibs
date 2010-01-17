@@ -107,6 +107,7 @@ AffineTransform* SVGTextElement::supplementalTransform()
 
 RenderObject* SVGTextElement::createRenderer(RenderArena* arena, RenderStyle* style)
 {
+    Q_UNUSED(style);
     kDebug() << "create renderer for <text>" << endl;
     return new (arena) RenderSVGText(this);
 }

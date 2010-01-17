@@ -41,6 +41,8 @@ namespace WebCore {
 
 void prepareToRenderSVGContent(RenderObject* object, RenderObject::PaintInfo& paintInfo, const FloatRect& boundingBox, SVGResourceFilter*& filter, SVGResourceFilter* rootFilter)
 {    
+    Q_UNUSED(filter);
+    Q_UNUSED(rootFilter);
     SVGElement* svgElement = static_cast<SVGElement*>(object->element());
     ASSERT(svgElement && svgElement->document() && svgElement->isStyled());
     ASSERT(object);
@@ -105,6 +107,11 @@ void prepareToRenderSVGContent(RenderObject* object, RenderObject::PaintInfo& pa
 
 void finishRenderSVGContent(RenderObject* object, RenderObject::PaintInfo& paintInfo, const FloatRect& boundingBox, SVGResourceFilter*& filter, QPainter* savedContext)
 {
+    Q_UNUSED(object);
+    Q_UNUSED(paintInfo);
+    Q_UNUSED(boundingBox);
+    Q_UNUSED(filter);
+    Q_UNUSED(savedContext);
 /*    ASSERT(object);
 
     const RenderStyle* style = object->style();

@@ -218,6 +218,7 @@ float SVGSVGElement::currentScale() const
 
 void SVGSVGElement::setCurrentScale(float scale)
 {
+    Q_UNUSED(scale);
     /*if (document() && document()->frame())
         document()->frame()->setZoomFactor(scale, true);*/
 }
@@ -236,6 +237,7 @@ void SVGSVGElement::setCurrentTranslate(const FloatPoint &translation)
 
 void SVGSVGElement::addSVGWindowEventListener(const AtomicString& eventType, const Attribute* attr)
 {
+    Q_UNUSED(eventType);
     // FIXME: None of these should be window events long term.
     // Once we propertly support SVGLoad, etc.
     RefPtr<EventListener> listener = document()->accessSVGExtensions()->
@@ -317,7 +319,7 @@ unsigned long SVGSVGElement::suspendRedraw(unsigned long /* max_wait_millisecond
     return 0;
 }
 
-void SVGSVGElement::unsuspendRedraw(unsigned long /* suspend_handle_id */, ExceptionCode& ec)
+void SVGSVGElement::unsuspendRedraw(unsigned long /* suspend_handle_id */, ExceptionCode& /*ec*/)
 {
     // if suspend_handle_id is not found, throw exception
     // FIXME: Implement me (see bug 11275)
@@ -335,18 +337,21 @@ void SVGSVGElement::forceRedraw()
 
 DOM::NodeListImpl* SVGSVGElement::getIntersectionList(const FloatRect& rect, SVGElement*)
 {
+    Q_UNUSED(rect);
     // FIXME: Implement me (see bug 11274)
     return 0;
 }
 
 DOM::NodeListImpl* SVGSVGElement::getEnclosureList(const FloatRect& rect, SVGElement*)
 {
+    Q_UNUSED(rect);
     // FIXME: Implement me (see bug 11274)
     return 0;
 }
 
 bool SVGSVGElement::checkIntersection(SVGElement* element, const FloatRect& rect)
 {
+    Q_UNUSED(element);
     // TODO : take into account pointer-events?
     // FIXME: Why is element ignored??
     // FIXME: Implement me (see bug 11274)
@@ -355,6 +360,7 @@ bool SVGSVGElement::checkIntersection(SVGElement* element, const FloatRect& rect
 
 bool SVGSVGElement::checkEnclosure(SVGElement* element, const FloatRect& rect)
 {
+    Q_UNUSED(element);
     // TODO : take into account pointer-events?
     // FIXME: Why is element ignored??
     // FIXME: Implement me (see bug 11274)

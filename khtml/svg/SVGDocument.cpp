@@ -57,6 +57,9 @@ SVGSVGElement* SVGDocument::rootElement() const
 
 void SVGDocument::dispatchZoomEvent(float prevScale, float newScale)
 {
+    Q_UNUSED(prevScale);
+    Q_UNUSED(newScale);
+
 	/*ExceptionCode ec = 0;
     RefPtr<SVGZoomEvent> event = static_pointer_cast<SVGZoomEvent>(createEvent("SVGZoomEvents", ec));
     event->initEvent(EventNames::zoomEvent, true, false);
@@ -88,12 +91,14 @@ bool SVGDocument::zoomAndPanEnabled() const
 
 void SVGDocument::startPan(const FloatPoint& start)
 {
+    Q_UNUSED(start);
     /*if (rootElement())
         m_translate = FloatPoint(start.x() - rootElement()->currentTranslate().x(), rootElement()->currentTranslate().y() + start.y());*/
 }
 
 void SVGDocument::updatePan(const FloatPoint& pos) const
 {
+    Q_UNUSED(pos);
     if (rootElement()) {
         /*rootElement()->setCurrentTranslate(FloatPoint(pos.x() - m_translate.x(), m_translate.y() - pos.y()));
         if (renderer())
