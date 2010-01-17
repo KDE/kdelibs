@@ -85,16 +85,16 @@ void KGraphicsWebView::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (d->mouseReleased(event->pos().toPoint())) {
+        event->accept();
         return;
     }
 
-    const bool isAccepted = event->isAccepted();
-    page()->event(event);
+    if (d->handleUrlPasteFromClipboard()) {
+        event->accept();
+        return;
+    }
 
-    if (!event->isAccepted())
-      d->handleUrlPasteFromClipboard();
-
-    event->setAccepted(isAccepted);
+    QGraphicsWebView::mouseReleaseEvent(event);
 }
 
 #include "kgraphicswebview.moc"
