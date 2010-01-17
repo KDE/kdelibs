@@ -41,13 +41,17 @@ namespace KJS {
     FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b, const ScopeChain &sc);
     virtual ~FunctionImp();
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
+    using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     JSObject *construct(ExecState *exec, const List &args);
 
     // Note: implemented in nodes2string.cpp

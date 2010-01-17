@@ -508,7 +508,7 @@ bool JSObject::getPropertyAttributes(const Identifier& propertyName, unsigned& a
   return false;
 }
 
-void JSObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void JSObject::getOwnPropertyNames(ExecState* /*exec*/, PropertyNameArray& propertyNames)
 {
    _prop.getEnumerablePropertyNames(propertyNames);
 

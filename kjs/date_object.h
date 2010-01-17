@@ -53,6 +53,7 @@ namespace KJS {
     class DatePrototype : public DateInstance {
     public:
         DatePrototype(ExecState *, ObjectPrototype *);
+        using KJS::JSObject::getOwnPropertySlot;
         virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
         virtual const ClassInfo *classInfo() const { return &info; }
         static const ClassInfo info;

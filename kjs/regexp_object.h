@@ -74,11 +74,14 @@ namespace KJS {
                     FunctionPrototype *funcProto,
                     RegExpPrototype *regProto);
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
+    using KJS::JSObject::put;
     virtual void put(ExecState *, const Identifier &, JSValue *, int attr = None);
     void putValueProperty(ExecState *, int token, JSValue *, int attr);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     JSValue *getValueProperty(ExecState *, int token) const;
 

@@ -37,7 +37,9 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState*, const Identifier&, PropertySlot&);
     virtual bool getOwnPropertySlot(ExecState*, unsigned propertyName, PropertySlot&);
 
+    using KJS::JSObject::put;
     virtual void put(ExecState* exec, const Identifier& propertyName, JSValue*, int attr = None);
+    using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState* exec, const Identifier& propertyName);
     virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
 
@@ -68,6 +70,7 @@ namespace KJS {
   public:
     StringPrototype(ExecState *exec,
                        ObjectPrototype *objProto);
+    using KJS::StringInstance::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -113,6 +116,7 @@ namespace KJS {
                     StringPrototype *stringProto);
 
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
   };

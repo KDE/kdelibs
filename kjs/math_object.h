@@ -30,6 +30,7 @@ namespace KJS {
   public:
     MathObjectImp(ExecState *exec,
                   ObjectPrototype *objProto);
+    using KJS::JSObject::getOwnPropertySlot;
     bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     JSValue *getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo *classInfo() const { return &info; }

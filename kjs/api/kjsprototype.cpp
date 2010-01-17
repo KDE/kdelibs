@@ -67,6 +67,7 @@ public:
           CustomObjectInfo(v)
     {}
 
+    using KJS::JSObject::put;
     void put(ExecState* exec, const Identifier& id,
              JSValue *value, int attr = None);
 
@@ -169,6 +170,7 @@ public:
         qDeleteAll(properties);
     }
 
+    using KJS::JSObject::getOwnPropertySlot;
     bool getOwnPropertySlot(ExecState *exec, const Identifier& id,
                             PropertySlot& sl)
     {
@@ -286,6 +288,7 @@ void KJSPrototype::defineProperty(KJSContext* ctx,
                                   PropertyGetter getter,
                                   PropertySetter setter)
 {
+    Q_UNUSED(ctx);
     assert(getter);
 
     CustomPrototype* p = PROTOTYPE(this);

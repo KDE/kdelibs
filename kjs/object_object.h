@@ -75,6 +75,7 @@ namespace KJS {
                     FunctionPrototype *funcProto);
 
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *, const List &args);
     virtual JSValue *callAsFunction(ExecState *, JSObject *, const List &args);
   };

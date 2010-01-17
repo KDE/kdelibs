@@ -111,6 +111,8 @@ KJSArray::KJSArray(KJSContext* ctx, int len)
 
 static JSValue* constructDateHelper(KJSContext* ctx, const QDateTime& dt)
 {
+    Q_UNUSED(ctx);
+    Q_UNUSED(dt);
     kWarning() << "converDateTimeHelper() not implemented, yet";
 
     // ### make call into data_object.cpp

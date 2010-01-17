@@ -53,6 +53,7 @@ namespace KJS {
                    ErrorPrototype *errorProto);
 
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
@@ -72,6 +73,7 @@ namespace KJS {
                    JSObject *prot);
 
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 

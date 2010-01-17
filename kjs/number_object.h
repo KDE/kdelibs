@@ -82,6 +82,7 @@ namespace KJS {
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
+    using KJS::JSObject::getOwnPropertySlot;
     bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     JSValue *getValueProperty(ExecState *exec, int token) const;
 

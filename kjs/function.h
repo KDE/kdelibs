@@ -93,8 +93,11 @@ namespace KJS {
   public:
     Arguments(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act);
     virtual void mark();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
+    using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -120,8 +123,11 @@ namespace KJS {
     void requestTearOff();
     void performTearOff();
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
+    using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
     bool isLocalReadOnly(int propertyID) const {

@@ -78,6 +78,7 @@ namespace KJS {
                      BooleanPrototype *booleanProto);
 
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);

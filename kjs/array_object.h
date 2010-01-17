@@ -32,6 +32,7 @@ namespace KJS {
   public:
     ArrayPrototype(ExecState *exec,
                       ObjectPrototype *objProto);
+    using KJS::ArrayInstance::getOwnPropertySlot;
     bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -58,6 +59,7 @@ namespace KJS {
                    ArrayPrototype *arrayProto);
 
     virtual bool implementsConstruct() const;
+    using KJS::JSObject::construct;
     virtual JSObject *construct(ExecState *exec, const List &args);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
