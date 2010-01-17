@@ -30,9 +30,8 @@
 #include <QtGui/QClipboard>
 #include <QtGui/QApplication>
 #include <QtWebKit/QWebFrame>
-#if QT_VERSION >= 0x040600
 #include <QtWebKit/QWebElement>
-#endif
+
 #include <kurl.h>
 #include <kurifilter.h>
 
@@ -100,23 +99,17 @@ public:
         return false;
     }
 
-    void handleUrlPasteFromClipboard()
+    bool handleUrlPasteFromClipboard()
     {
-        if (hitTest.isContentEditable()) {
-#if QT_VERSION >= 0x040600
-            QString text (hitTest.element().toPlainText());
-            text += QApplication::clipboard()->text(QClipboard::Selection).trimmed();
-            hitTest.element().setPlainText(text);
-#endif
-            return;
-        }
-
-        if (q->page() && !q->page()->isModified() && (pressedButtons & Qt::MidButton)) {
+        if ((pressedButtons & Qt::MidButton) && !hitTest.isContentEditable() && q->page() && !q->page()->isModified()) {
             QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
             if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
                 emit q->selectionClipboardUrlPasted(KUrl(clipboardText));
+                return true;
             }
         }
+
+	return false;
     }
 
     T *q;
