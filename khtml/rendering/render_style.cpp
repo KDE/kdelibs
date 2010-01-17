@@ -181,7 +181,7 @@ bool BackgroundLayer::operator==(const BackgroundLayer& o) const {
 void BackgroundLayer::fillUnsetProperties()
 {
     BackgroundLayer* curr;
-    for (curr = this; curr && curr->isBackgroundImageSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundImageSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -192,7 +192,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundXPositionSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundXPositionSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -203,7 +203,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundYPositionSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundYPositionSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -214,7 +214,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundAttachmentSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundAttachmentSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -225,7 +225,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundClipSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundClipSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -236,7 +236,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundOriginSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundOriginSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -247,7 +247,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundRepeatSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundRepeatSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -258,7 +258,7 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
-    for (curr = this; curr && curr->isBackgroundSizeSet(); curr = curr->next());
+    for (curr = this; curr && curr->isBackgroundSizeSet(); curr = curr->next()) {};
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
@@ -485,9 +485,9 @@ bool StyleCSS3InheritedData::operator==(const StyleCSS3InheritedData& o) const
 
 bool StyleCSS3InheritedData::shadowDataEquivalent(const StyleCSS3InheritedData& o) const
 {
-    if (!textShadow && o.textShadow || textShadow && !o.textShadow)
+    if ((!textShadow && o.textShadow) || (textShadow && !o.textShadow))
         return false;
-    if (textShadow && o.textShadow && (*textShadow != *o.textShadow))
+    if ((textShadow && o.textShadow) && (*textShadow != *o.textShadow))
         return false;
     return true;
 }

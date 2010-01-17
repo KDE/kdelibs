@@ -416,6 +416,7 @@ public:
     bool multiple() const { return m_multiple; }
 
     void add ( HTMLElementImpl* element, HTMLElementImpl* before, int& exceptioncode );
+    using DOM::NodeImpl::remove;
     void remove ( long index );
 
     DOMString value() const;

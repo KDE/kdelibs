@@ -1228,7 +1228,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
             while( lowestCol < nCols ) {
                 while( RenderTableCell* cell = cellsWithColSpanZero.take( lowestCol ) ) {
                     const int cellRow = cell->row();
-                    const int cellRowSpan = cell->rowSpan();
+                    //const int cellRowSpan = cell->rowSpan();
                     int finalSpan = cell->colSpan();
                     for( int i = lowestCol; i < nCols; ++i ) {
                         if( !cellAt( cellRow, i ) ) {
@@ -1895,9 +1895,9 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 	    while ( c && (*row)[c] == (RenderTableCell *)-1 )
 		c--;
 	    for ( ; c < endcol; c++ ) {
-		RenderTableCell *cell = (*row)[c];
-		if ( !cell || cell == (RenderTableCell *)-1 || nextrow && (*nextrow)[c] == cell )
-		    continue;
+          RenderTableCell *cell = (*row)[c];
+          if ( !cell || cell == (RenderTableCell *)-1 || (nextrow && (*nextrow)[c] == cell) )
+		          continue;
                 RenderObject* rowr = cell->parent();
                 int rtx = tx+rowr->xPos();
                 int rty = ty+rowr->yPos();
@@ -2104,6 +2104,8 @@ static NodeImpl *findLastSelectableNode(NodeImpl *base)
 
 FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
 {
+    Q_UNUSED( node );
+    Q_UNUSED( offset );
     // Table sections need extra treatment for selections. The rows are scanned
     // from top to bottom, and within each row, only the cell that matches
     // the given position best is descended into.

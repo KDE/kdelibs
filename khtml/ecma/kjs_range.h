@@ -35,6 +35,7 @@ namespace KJS {
   public:
     DOMRange(ExecState *exec, DOM::RangeImpl* r);
     ~DOMRange();
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -56,6 +57,7 @@ namespace KJS {
   public:
     DOMSelection(ExecState* exec, DOM::DocumentImpl* parentDocument);
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -76,6 +78,7 @@ namespace KJS {
   class RangeConstructor : public DOMObject {
   public:
     RangeConstructor(ExecState *);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only

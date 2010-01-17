@@ -412,6 +412,7 @@ DOMString TextImpl::wholeText() const
 
 TextImpl* TextImpl::replaceWholeText(const DOMString& newText, int &ec)
 {
+    Q_UNUSED(ec);
     // We don't support "read-only" text nodes (no Entity node support)
     // Thus, we remove all adjacent text nodes, and replace the contents of this one.
     assert(!isReadOnly());

@@ -47,6 +47,7 @@ public:
     virtual void attach();
 
 //    virtual void parseAttribute(AttributeImpl *token);
+    using DOM::ElementImpl::attributeChanged;
     virtual void attributeChanged(NodeImpl::Id attrId);
 
     virtual bool isVideo() const { return false; }

@@ -225,6 +225,7 @@ namespace WebCore {
         virtual void buildPendingResource() { }
 
         virtual void svgAttributeChanged(const QualifiedName&) { }
+        using DOM::ElementImpl::attributeChanged;
         virtual void attributeChanged(Attribute*, bool preserveDecls = false);
 
         void sendSVGLoadEventIfPossible(bool sendParentLoadEvents = false);

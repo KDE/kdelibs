@@ -54,6 +54,7 @@ namespace WebCore {
         virtual void buildPendingResource();
 
         virtual void parseMappedAttribute(MappedAttribute*);
+        using DOM::NodeImpl::childrenChanged;
         virtual void childrenChanged(bool changedByParser = false, Node* beforeChange = 0, Node* afterChange = 0, int childCountDelta = 0);
 
         virtual void svgAttributeChanged(const QualifiedName&);

@@ -2904,6 +2904,9 @@ khtml::EditorContext *KHTMLPart::editorContext() const {
 
 void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelection)
 {
+  Q_UNUSED(node);
+  Q_UNUSED(offset);
+  Q_UNUSED(extendSelection);
 #ifndef KHTML_NO_CARET
 #if 0
   kDebug(6200) << "node: " << node.handle() << " nodeName: "
@@ -2930,6 +2933,7 @@ KHTMLPart::CaretDisplayPolicy KHTMLPart::caretDisplayPolicyNonFocused() const
 
 void KHTMLPart::setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy)
 {
+  Q_UNUSED(policy);
 #if 0
 #ifndef KHTML_NO_CARET
   view()->setCaretDisplayPolicyNonFocused(policy);

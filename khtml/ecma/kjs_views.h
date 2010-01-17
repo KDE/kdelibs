@@ -33,6 +33,7 @@ namespace KJS {
     ~DOMAbstractView();
 
     JSValue *getValueProperty(ExecState *exec, int token);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     
     // no put - all read-only

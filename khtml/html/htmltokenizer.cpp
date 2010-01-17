@@ -1800,10 +1800,16 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             // ### Gecko and MSIE though only ignores LF immediately after
             // starttags and only for PRE elements -- asj (28/06-2005)
             if ( pending )
+            {
                 if (!select)
+                {
                     addPending();
+                }
                 else
+                {
                     pending = NonePending;
+                }
+            }
 
             // Cancel unused discards
             discard = NoneDiscard;

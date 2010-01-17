@@ -1530,11 +1530,13 @@ int RenderBox::availableHeightUsing(const Length& h) const
     if (h.isFixed())
         return calcContentHeight(h.value());
 
-    if (isCanvas())
-        if (static_cast<const RenderCanvas*>(this)->pagedMode())
+    if (isCanvas()) {
+        if (static_cast<const RenderCanvas*>(this)->pagedMode()) {
             return static_cast<const RenderCanvas*>(this)->pageHeight();
-        else
+        } else {
             return static_cast<const RenderCanvas*>(this)->viewportHeight();
+        }
+    }
 
     // We need to stop here, since we don't want to increase the height of the table
     // artificially.  We're going to rely on this cell getting expanded to some new

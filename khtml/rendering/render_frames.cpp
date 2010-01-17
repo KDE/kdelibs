@@ -448,7 +448,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
   int _x = evt->clientX();
   int _y = evt->clientY();
 
-  if ( !m_resizing && evt->id() == EventImpl::MOUSEMOVE_EVENT || evt->id() == EventImpl::MOUSEDOWN_EVENT )
+  if ( ( !m_resizing && evt->id() == EventImpl::MOUSEMOVE_EVENT ) || evt->id() == EventImpl::MOUSEDOWN_EVENT )
   {
 #ifdef DEBUG_LAYOUT
     kDebug( 6031 ) << "mouseEvent:check";
@@ -576,6 +576,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
 
 void RenderFrameSet::paintFrameSetRules( QPainter *paint, const QRect& damageRect )
 {
+  Q_UNUSED( damageRect );
   KHTMLView *view = canvas()->view();
   if (view && !noResize()) {
       paint->setPen( Qt::gray );

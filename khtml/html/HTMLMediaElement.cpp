@@ -222,6 +222,8 @@ float HTMLMediaElement::currentTime() const
 
 void HTMLMediaElement::setCurrentTime(float time, ExceptionCode& ec)
 {
+    Q_UNUSED(time);
+    Q_UNUSED(ec);
     //    seek(time, ec);
 }
 
@@ -264,6 +266,8 @@ float HTMLMediaElement::playbackRate() const
 
 void HTMLMediaElement::setPlaybackRate(float rate, ExceptionCode& ec)
 {
+    Q_UNUSED(rate);
+    Q_UNUSED(ec);
     // stub
     #if 0
     if (rate == 0.0f) {

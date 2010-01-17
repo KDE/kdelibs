@@ -66,6 +66,7 @@ namespace KJS {
       Height, Width, ColorDepth, PixelDepth, AvailLeft, AvailTop, AvailHeight,
       AvailWidth
     };
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
   private:
@@ -105,7 +106,9 @@ namespace KJS {
 
     virtual void mark();
     JSValue* getValueProperty(ExecState *exec, int token);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
     virtual DOM::AbstractViewImpl* toAbstractView() const;
@@ -321,7 +324,9 @@ namespace KJS {
     ~Location();
 
     JSValue* getValueProperty(ExecState *exec, int token) const;
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual JSValue* toPrimitive(ExecState *exec, JSType preferred) const;
     virtual UString toString(ExecState *exec) const;

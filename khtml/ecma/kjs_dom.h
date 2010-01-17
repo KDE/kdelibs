@@ -39,9 +39,11 @@ namespace KJS {
     DOMNode(JSObject *proto, DOM::NodeImpl* n);
     ~DOMNode();
     virtual bool toBoolean(ExecState *) const;
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
 
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -83,7 +85,7 @@ namespace KJS {
     ~DOMNodeList();
 
     JSValue* indexGetter(ExecState *exec, unsigned index);
-    
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual JSValue* callAsFunction(ExecState *exec, JSObject* thisObj, const List& args);
     virtual bool implementsCall() const { return true; }
@@ -115,9 +117,11 @@ namespace KJS {
     DOMDocument(ExecState *exec,  DOM::DocumentImpl* d);
     DOMDocument(JSObject *proto, DOM::DocumentImpl* d);
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -144,9 +148,11 @@ namespace KJS {
   class DOMAttr : public DOMNode {
   public:
     DOMAttr(ExecState *exec, DOM::AttrImpl* a) : DOMNode(exec, a) { }
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -159,6 +165,7 @@ namespace KJS {
     // Build a DOMElement
     DOMElement(ExecState *exec, DOM::ElementImpl* e);
     DOMElement(JSObject *proto, DOM::ElementImpl* e);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
 
@@ -205,6 +212,7 @@ namespace KJS {
     // Build a DOMDocumentType
     DOMDocumentType(ExecState *exec, DOM::DocumentTypeImpl* dt);
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -218,6 +226,7 @@ namespace KJS {
     DOMNamedNodeMap(ExecState *, DOM::NamedNodeMapImpl* m);
     ~DOMNamedNodeMap();
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -239,9 +248,11 @@ namespace KJS {
   public:
     DOMProcessingInstruction(ExecState *exec, DOM::ProcessingInstructionImpl* pi) : DOMNode(exec, pi) { }
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -252,6 +263,7 @@ namespace KJS {
   public:
     DOMNotation(ExecState *exec, DOM::NotationImpl* n) : DOMNode(exec, n) { }
 
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -263,6 +275,7 @@ namespace KJS {
   class DOMEntity : public DOMNode {
   public:
     DOMEntity(ExecState *exec, DOM::EntityImpl* e) : DOMNode(exec, e) { }
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -293,6 +306,7 @@ namespace KJS {
   class DOMNamedNodesCollection : public DOMObject {
   public:
     DOMNamedNodesCollection(ExecState *exec, const QList<SharedPtr<DOM::NodeImpl> >& nodes );
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -309,8 +323,10 @@ namespace KJS {
   public:
     // Build a DOMCharacterData
     DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *, int token) const;
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -322,6 +338,7 @@ namespace KJS {
   class DOMText : public DOMCharacterData {
   public:
     DOMText(ExecState *exec, DOM::TextImpl* t);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState* exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }

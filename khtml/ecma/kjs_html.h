@@ -39,7 +39,9 @@ namespace KJS {
   public:
     HTMLDocument(ExecState *exec, DOM::HTMLDocumentImpl* d);
     JSValue* getValueProperty(ExecState *exec, int token);
+    using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     void putValueProperty(ExecState *exec, int token, JSValue* value, int /*attr*/);
 

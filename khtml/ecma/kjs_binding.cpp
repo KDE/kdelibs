@@ -230,6 +230,7 @@ QString Identifier::qstring() const
 
 JSValue* valueGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot)
 {
+  Q_UNUSED(exec);
   return static_cast<JSValue*>(slot.customValue());
 }
 
@@ -383,7 +384,9 @@ class EmbedLiveConnect : public JSObject
 public:
   ~EmbedLiveConnect();
 
+  using KJS::JSObject::getOwnPropertySlot;
   virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+  using KJS::JSObject::put;
   virtual void put(ExecState * exec, const Identifier &prop, JSValue *value, int=None);
 
   virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);

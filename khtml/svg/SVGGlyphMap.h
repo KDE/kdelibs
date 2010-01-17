@@ -36,7 +36,7 @@ namespace WTF
         static const bool needsDestruction = false;
         static const bool needsRef = false;
         static QChar deletedValue() { return QChar(-1); }
-        static bool isDeletedValue(const QChar& c) { return false; }
+        static bool isDeletedValue(const QChar&) { return false; }
         static QChar constructDeletedValue(QChar*) { return QChar(-1); }
     };
     template<> struct DefaultHash<QChar>
