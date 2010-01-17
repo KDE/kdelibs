@@ -235,7 +235,8 @@ void XSyncBasedPoller::catchIdleEvent()
      * we have to subtract 1 from the counter value
      */
 
-    uint overflow;
+    //NOTE: this must be a int, else compilation might fail
+    int overflow;
     XSyncValue add;
     XSyncValue plusone;
     XSyncIntToValue(&add, -1);
