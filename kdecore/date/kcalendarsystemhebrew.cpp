@@ -949,6 +949,7 @@ bool KCalendarSystemHebrew::isProleptic() const
 
 bool KCalendarSystemHebrew::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
+    Q_UNUSED(jd);
     year = -1;
     month = -1;
     day = -1;
@@ -957,6 +958,9 @@ bool KCalendarSystemHebrew::julianDayToDate( int jd, int &year, int &month, int 
 
 bool KCalendarSystemHebrew::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
+    Q_UNUSED(year);
+    Q_UNUSED(month);
+    Q_UNUSED(day);
     jd = -1;
     return false;
 }

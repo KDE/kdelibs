@@ -936,6 +936,7 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
                                      KLocale::DateTimeFormatStandard standard ) const
 {
+    Q_UNUSED(standard);
     if ( !fromDate.isValid() ) {
         return QString();
     }
