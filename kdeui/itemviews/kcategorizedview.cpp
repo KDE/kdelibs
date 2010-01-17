@@ -474,6 +474,7 @@ KCategorizedView::KCategorizedView(QWidget *parent)
     : QListView(parent)
     , d(new Private(this))
 {
+  setVerticalScrollMode(ScrollPerPixel);
 }
 
 KCategorizedView::~KCategorizedView()
