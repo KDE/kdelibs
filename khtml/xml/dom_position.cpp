@@ -177,7 +177,7 @@ ElementImpl *Position::element() const
         return 0;
 
     NodeImpl *n = node();
-    for (; n && !n->isElementNode(); n = n->parentNode()); //loop
+    for (; n && !n->isElementNode(); n = n->parentNode()) {}; //loop
 
     return static_cast<ElementImpl *>(n);
 }

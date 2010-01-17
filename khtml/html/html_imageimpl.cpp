@@ -572,12 +572,12 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
                             m_coords[(i<<1)+1].minWidth(height_));
         region = QRegion(points);
     }
-    else if (shape==Circle && m_coordsLen>=3 || shape==Unknown && m_coordsLen == 3) {
+    else if ((shape==Circle && m_coordsLen>=3) || (shape==Unknown && m_coordsLen == 3)) {
         int r = qMin(m_coords[2].minWidth(width_), m_coords[2].minWidth(height_));
         region = QRegion(m_coords[0].minWidth(width_)-r,
                          m_coords[1].minWidth(height_)-r, 2*r, 2*r,QRegion::Ellipse);
     }
-    else if (shape==Rect && m_coordsLen>=4 || shape==Unknown && m_coordsLen == 4) {
+    else if ((shape==Rect && m_coordsLen>=4) || (shape==Unknown && m_coordsLen == 4)) {
         int x0 = m_coords[0].minWidth(width_);
         int y0 = m_coords[1].minWidth(height_);
         int x1 = m_coords[2].minWidth(width_);

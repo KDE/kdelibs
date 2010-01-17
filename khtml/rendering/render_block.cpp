@@ -656,7 +656,7 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         anonBlock->deleteLineBoxTree();
         anonBlock->detach();
     }
-    if (checkContinuationMerge && (!prev && !next || m_childrenInline)) {
+    if (checkContinuationMerge && ((!prev && !next) || m_childrenInline)) {
         // |oldChild| was a block that splitted an inline into continuations.
         // Now that we only have inline content left, we may merge back those continuations
         // into a single inline.
@@ -1138,6 +1138,7 @@ RenderObject* RenderBlock::handleRunInChild(RenderObject* child, bool& handled)
 
 int RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, int yPosEstimate)
 {
+    Q_UNUSED(yPosEstimate);
     // Get our max pos and neg top margins.
     int posTop = child->maxTopMargin(true);
     int negTop = child->maxTopMargin(false);
@@ -1813,7 +1814,7 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
         and the paint action is PaintActionForeground,
         then paint the caret.
     */
-    if (!canvas()->hasSelection() && pI.phase == PaintActionForeground
+    if ((!canvas()->hasSelection() && pI.phase == PaintActionForeground)
          || pI.phase == PaintActionSelection) {
         KHTMLPart *part = document()->part();
         const Selection &s = part->caret();
@@ -3089,7 +3090,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                     prevFloat = child;
                 }
 
-                if (!qBreak && (autoWrap || oldAutoWrap) || clearPreviousFloat) {
+                if ((!qBreak && (autoWrap || oldAutoWrap)) || clearPreviousFloat) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
                 }

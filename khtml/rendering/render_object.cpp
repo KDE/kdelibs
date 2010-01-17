@@ -3086,6 +3086,7 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
 // SVG
 FloatRect RenderObject::relativeBBox(bool includeStroke) const
 {
+    Q_UNUSED(includeStroke);
     return FloatRect();
 }
 

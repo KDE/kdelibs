@@ -452,7 +452,7 @@ RenderLayer *RenderLayer::stackingContext() const
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() &&
           curr->m_object->style()->hasAutoZIndex();
-          curr = curr->parent());
+          curr = curr->parent()) {};
     return curr;
 }
 
@@ -461,7 +461,7 @@ RenderLayer* RenderLayer::enclosingPositionedAncestor() const
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() &&
          !curr->m_object->isPositioned() && !curr->m_object->isRelPositioned();
-         curr = curr->parent());
+         curr = curr->parent()) {};
 
     return curr;
 }
@@ -474,7 +474,7 @@ bool RenderLayer::isTransparent() const
 RenderLayer* RenderLayer::transparentAncestor() const
 {
     RenderLayer* curr = parent();
-    for ( ; curr && curr->m_object->style()->opacity() == 1.0f; curr = curr->parent());
+    for ( ; curr && curr->m_object->style()->opacity() == 1.0f; curr = curr->parent()) {};
     return curr;
 }
 

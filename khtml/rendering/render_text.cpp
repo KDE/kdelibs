@@ -1588,7 +1588,7 @@ bool RenderText::containsOnlyWhitespace(unsigned int from, unsigned int len) con
     unsigned int currPos;
     for (currPos = from;
          currPos < from+len && (str->s[currPos] == '\n' || str->s[currPos].direction() == QChar::DirWS);
-         currPos++);
+         currPos++) {};
     return currPos >= (from+len);
 }
 
