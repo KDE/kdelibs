@@ -39,6 +39,8 @@ KServiceFactory::KServiceFactory()
     m_menuIdDictOffset = 0;
     if (!KSycoca::self()->isBuilding()) {
         QDataStream* str = stream();
+        if (!str) 
+            return;
         // Read Header
         qint32 i;
         (*str) >> i;
