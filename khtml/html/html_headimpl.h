@@ -151,6 +151,7 @@ public:
 
     void setCreatedByParser(bool createdByParser) { m_createdByParser = createdByParser; }
 
+    bool isValidScript() const;
     void evaluateScript(const QString &, const DOMString &);
 
     DOMString text() const;
@@ -179,6 +180,7 @@ private:
     khtml::CachedScript *m_cachedScript;
     bool m_createdByParser;
     bool m_evaluated;
+    bool m_hasNonEmptyForAttribute;
 };
 
 // -------------------------------------------------------------------------

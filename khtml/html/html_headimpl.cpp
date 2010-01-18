@@ -352,7 +352,7 @@ void HTMLMetaElementImpl::process()
 // -------------------------------------------------------------------------
 
 HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentImpl *doc)
-    : HTMLElementImpl(doc), m_cachedScript(0), m_createdByParser(false), m_evaluated(false)
+    : HTMLElementImpl(doc), m_cachedScript(0), m_createdByParser(false), m_evaluated(false), m_hasNonEmptyForAttribute(false)
 {
 }
 
@@ -387,6 +387,10 @@ void HTMLScriptElementImpl::parseAttribute(AttributeImpl *attr)
             loadFromUrl(url);
         break;
     }
+    case ATTR_FOR: {
+        m_hasNonEmptyForAttribute = !attr->value().isEmpty();
+        break;
+    }
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -395,6 +399,61 @@ void HTMLScriptElementImpl::parseAttribute(AttributeImpl *attr)
 bool HTMLScriptElementImpl::isURLAttribute(AttributeImpl *attr) const
 {
     return attr->id() == ATTR_SRC;
+}
+
+bool HTMLScriptElementImpl::isValidScript() const
+{
+    // HTML5 draft 4.3.1 : script elements with non-empty for attribute
+    // must not be executed.
+    if (m_hasNonEmptyForAttribute)
+        return false;
+
+    // Check type before language, since language is deprecated
+    /*
+        Mozilla 1.5 doesn't accept the text/javascript1.x formats, but WinIE 6 does.
+        Mozilla 1.5 doesn't accept text/jscript, text/ecmascript, and text/livescript, but WinIE 6 does.
+        Mozilla 1.5 accepts application/x-javascript, WinIE 6 doesn't.
+        Mozilla 1.5 allows leading and trailing whitespace, but WinIE 6 doesn't.
+        Mozilla 1.5 and WinIE 6 both accept the empty string, but neither accept a whitespace-only string.
+        We want to accept all the values that either of these browsers accept, but not other values.
+    */
+    QString type = getAttribute(ATTR_TYPE).string().trimmed().toLower();
+    if (!type.isEmpty())
+       return !(type.compare("text/javascript") != 0 &&
+                type.compare("text/javascript1.0") != 0 &&
+                type.compare("text/javascript1.1") != 0 &&
+                type.compare("text/javascript1.2") != 0 &&
+                type.compare("text/javascript1.3") != 0 &&
+                type.compare("text/javascript1.4") != 0 &&
+                type.compare("text/javascript1.5") != 0 &&
+                type.compare("text/jscript") != 0 &&
+                type.compare("text/ecmascript") != 0 &&
+                type.compare("text/livescript") != 0 &&
+                type.compare("application/x-javascript") != 0 &&
+                type.compare("application/x-ecmascript") != 0 &&
+                type.compare("application/javascript") != 0 &&
+                type.compare("application/ecmascript") != 0 );
+
+    /*
+        Mozilla 1.5 doesn't accept jscript or ecmascript, but WinIE 6 does.
+        Mozilla 1.5 accepts javascript1.0, javascript1.4, and javascript1.5, but WinIE 6 accepts only 1.1 - 1.3.
+        Neither Mozilla 1.5 nor WinIE 6 accept leading or trailing whitespace.
+        We want to accept all the values that either of these browsers accept, but not other values.
+    */
+    QString lang = getAttribute(ATTR_LANGUAGE).string().toLower();
+    if (!lang.isEmpty())
+       return !(lang.compare("javascript") != 0 &&
+                lang.compare("javascript1.0") != 0 &&
+                lang.compare("javascript1.1") != 0 &&
+                lang.compare("javascript1.2") != 0 &&
+                lang.compare("javascript1.3") != 0 &&
+                lang.compare("javascript1.4") != 0 &&
+                lang.compare("javascript1.5") != 0 &&
+                lang.compare("ecmascript") != 0 &&
+                lang.compare("livescript") != 0 &&
+                lang.compare("jscript") );
+
+    return true;        
 }
 
 void HTMLScriptElementImpl::childrenChanged()
@@ -468,7 +527,7 @@ void HTMLScriptElementImpl::notifyFinished(CachedObject* o)
 
 void HTMLScriptElementImpl::evaluateScript(const QString &URL, const DOMString &script)
 {
-    if (m_evaluated)
+    if (m_evaluated || !isValidScript())
         return;
 
     KHTMLPart *part = document()->part();

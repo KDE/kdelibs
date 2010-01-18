@@ -42,6 +42,7 @@
 #include "dom/dom_string.h"
 #include "xml/dom_nodeimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_headimpl.h"
 
 class KHTMLView;
 class HTMLStackElem;
@@ -93,6 +94,8 @@ public:
 
     DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document); }
     DOM::DocumentImpl *docPtr() const { return document; }
+
+    DOM::HTMLScriptElementImpl *currentScriptElement() const { return (current && current->id() == ID_SCRIPT) ? static_cast<DOM::HTMLScriptElementImpl*>(current) : 0;}
 
 protected:
 
