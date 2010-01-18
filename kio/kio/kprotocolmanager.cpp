@@ -556,8 +556,22 @@ QString KProtocolManager::acceptLanguagesHeader()
       languageListFinal += langs;
   }
 
-  // The header is composed of comma separated languages.
-  QString header = languageListFinal.join(", ");
+  // The header is composed of comma separated languages, with an optional
+  // associated priority estimate (q=1..0) defaulting to 1.
+  // As our language tags are already sorted by priority, we'll just decrease
+  // the value evenly
+  int prio = 10;
+  QString header;
+  foreach (const QString &lang,languageListFinal) {
+      header += lang;
+      if (prio < 10)
+          header += QString(";q=0.%1").arg(prio);
+      // do not add cosmetic whitespace in here : it is less compatible (#220677)
+      header += ",";
+      if (prio > 1)
+          --prio;
+  }
+  header.chop(1);
 
   // Some of the languages may have country specifier delimited by
   // underscore, or modifier delimited by at-sign.
