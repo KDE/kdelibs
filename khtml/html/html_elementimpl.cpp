@@ -508,6 +508,13 @@ DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &htm
 
 void HTMLElementImpl::setInnerHTML( const DOMString &html, int &exceptioncode )
 {
+    if (id() == ID_SCRIPT || id() == ID_STYLE) {
+        // Script and CSS source shouldn't be parsed as HTML.
+        removeChildren();
+        appendChild(document()->createTextNode(html), exceptioncode);
+        return;
+    }
+
     DocumentFragment fragment = createContextualFragment( html );
     if ( fragment.isNull() ) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
