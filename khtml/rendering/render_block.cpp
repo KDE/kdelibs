@@ -3208,6 +3208,10 @@ void RenderBlock::calcInlineMinMaxWidth()
                 else
                     inlineMax += childMax;
             }
+
+            // Ignore spaces after a list marker.
+            if (child->isListMarker())
+                stripFrontSpaces = true;
         }
         else
         {

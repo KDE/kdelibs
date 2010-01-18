@@ -2042,7 +2042,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             currentCharacterIsSpace = false;
             trailingSpaceObject = 0;
 
-            if (o->isListMarker() && o->style()->listStylePosition() == OUTSIDE) {
+            if (o->isListMarker()) {
                 checkShouldIgnoreInitialWhitespace = true;
             }
         } else if ( o->isText() ) {
