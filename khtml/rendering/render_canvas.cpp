@@ -82,6 +82,8 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
 
     m_needsWidgetMasks = false;
 
+    m_isPerformingLayout = false;
+
     // Create a new root layer for our layer hierarchy.
     m_layer = new (node->document()->renderArena()) RenderLayer(this);
 }
@@ -142,6 +144,8 @@ void RenderCanvas::calcMinMaxWidth()
 
 void RenderCanvas::layout()
 {
+    m_isPerformingLayout = true;
+
     if (m_pagedMode) {
        m_minWidth = m_width;
 //        m_maxWidth = m_width;
@@ -201,6 +205,7 @@ void RenderCanvas::layout()
     scheduleDeferredRepaints();
     setNeedsLayout(false);
 
+    m_isPerformingLayout = false;
 #ifdef SPEED_DEBUG
     kDebug() << "RenderCanvas::end time used=" << qt.elapsed();
 #endif

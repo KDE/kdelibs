@@ -137,6 +137,8 @@ public:
     void removeStaticObject( RenderObject*o, bool positioned=false );
 
     void updateDocSizeAfterLayerTranslation( RenderObject* o, bool posXOffset, bool posYOffset );
+
+    bool isPerformingLayout() const { return m_isPerformingLayout; }
 protected:
     // makes sure document, scrollbars and viewport size are accurate
     void updateDocumentSize();
@@ -177,6 +179,8 @@ protected:
     bool m_pagedMode;
     // Canvas contains overlaid widgets
     bool m_needsWidgetMasks;
+    // Wether we are currently performing a layout
+    bool m_isPerformingLayout;
 
     short m_pageNr;
 
