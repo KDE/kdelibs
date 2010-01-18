@@ -346,6 +346,11 @@ khtml_mediaquery:
      }
 ;
 
+maybe_plus:
+    /* empty */
+  | '+'
+  ;
+
 maybe_space:
     /* empty */ %prec REDUCE
   | maybe_space S
@@ -980,31 +985,31 @@ pseudo:
         $$->value = domString($3);
     }
     // used by :nth-*
-    | ':' FUNCTION NTH ')' {
+    | ':' FUNCTION maybe_space NTH maybe_space ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::PseudoClass;
-        $$->string_arg = domString($3);
+        $$->string_arg = domString($4);
         $$->value = domString($2);
     }
     // used by :nth-*
-    | ':' FUNCTION INTEGER ')' {
+    | ':' FUNCTION maybe_space maybe_plus INTEGER maybe_space ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::PseudoClass;
-        $$->string_arg = QString::number($3);
+        $$->string_arg = QString::number($5);
         $$->value = domString($2);
     }
     // used by :nth-* and :lang
-    | ':' FUNCTION IDENT ')' {
+    | ':' FUNCTION maybe_space IDENT maybe_space ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::PseudoClass;
-        $$->string_arg = domString($3);
+        $$->string_arg = domString($4);
         $$->value = domString($2);
     }
-    // used by :contains
-    | ':' FUNCTION STRING ')' {
+    // used by :contains and :lang
+    | ':' FUNCTION maybe_space STRING maybe_space ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::PseudoClass;
-        $$->string_arg = domString($3);
+        $$->string_arg = domString($4);
         $$->value = domString($2);
     }
     // used only by :not
