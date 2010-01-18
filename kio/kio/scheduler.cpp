@@ -415,15 +415,19 @@ void ProtoQueue::queueJob(SimpleJob *job)
 
     SimpleJobPrivate::get(job)->m_schedSerial = m_serialPicker.next();
 
+    const bool wasQueueEmpty = hq.isQueueEmpty();
     hq.queueJob(job);
-    // the queue's highest priority job may have changed, so update the ordered list of queues.
+    // note that HostQueue::queueJob() into an empty queue changes its lowestSerial() too...
+    // the queue's lowest serial job may have changed, so update the ordered list of queues.
     // however, we ignore all jobs that would cause more connections to a host than allowed.
     if (prevLowestSerial != hq.lowestSerial()) {
         if (hq.runningJobsCount() < m_maxConnectionsPerHost) {
-            // the next line may do nothing, that case is not an error
-            m_queuesBySerial.remove(prevLowestSerial);
+            // if the connection limit didn't keep the HQ unscheduled it must have been lack of jobs
+            if (m_queuesBySerial.remove(prevLowestSerial) == 0) {
+                Q_UNUSED(wasQueueEmpty);
+                Q_ASSERT(wasQueueEmpty);
+            }
             m_queuesBySerial.insert(hq.lowestSerial(), &hq);
-            Q_ASSERT(hq.runningJobsCount() < m_maxConnectionsPerHost);
         } else {
 #ifdef SCHEDULER_DEBUG
             // ### this assertion may fail if the limits were modified at runtime!
