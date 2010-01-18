@@ -330,6 +330,21 @@ Nepomuk::Query::Term noFolderTerm = Nepomuk::Query::NegationTerm::negateTerm(fol
 fileQuery.setTerm( Nepomuk::Query::AndTerm( fileQuery.term(), noFolderTerm ) );
 \endcode
 
+Match all EmailAddress instances with a specific email address:
+\code
+Nepomuk::Query::ComparisonTerm email( Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
+\endcode
+
+Match all nco:PersonContact instances:
+\code
+Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
+\endcode
+
+Match all person contacts with a specific email address:
+\code
+Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::hasEmailAddress(), email ) );
+\endcode
+
 List all query results in a KDirModel:
 
 \code
@@ -426,26 +441,47 @@ target_link_libraries(foobar
 \endcode
 */
 
-/**
- * \namespace Nepomuk::Types
- *
- * \brief The %Types namespace contains all classes used to handle ontology entities such as classes and properties.
- */
+/** \namespace Nepomuk::Types
+\brief The %Types namespace contains all classes used to handle ontology entities such as classes and properties.
+*/
 
-/**
- * \namespace Nepomuk::Query
- *
- * \brief The %Query namespace contains all classes that make up the Nepomuk %Query API.
- *
- * Constructing queries consists of creating and combining different types of Term subclasses or using the
- * QueryParser to parse user queries (see the QueryParser documentation for details on the query syntax).
- *
- * The constructed queries can then be executed on the nepomuk query service via the QueryServiceClient,
- * used directly on a Soprano::Model (for example the %Nepomuk main model which can be retrieved via
- * ResourceManager::mainModel()), or listed via KIO (see Query::Query::toSearchUrl()).
- *
- * \sa \ref examples_query
- */
+/** \namespace Nepomuk::Query
+
+\brief The %Query namespace contains all classes that make up the Nepomuk %Query API.
+
+Constructing queries consists of creating and combining different types of Term subclasses or using the
+QueryParser to parse user queries (see the QueryParser documentation for details on the query syntax).
+
+The constructed queries can then be executed on the nepomuk query service via the QueryServiceClient,
+used directly on a Soprano::Model (for example the %Nepomuk main model which can be retrieved via
+ResourceManager::mainModel()), or listed via KIO (see Query::Query::toSearchUrl()).
+
+\section nepomuk_constructing_queries Constructing Queries
+
+Basically all one needs to know is that each Term matches a set of resources. Different types of terms do
+so in different ways. The simplest type is the ResourceTerm which matches exactly one resource by URI.
+The ComparisonTerm matches all resources that have a property with a certain value. The LiteralTerm by
+itselt matches all resources that contain the string value in one of their properties, and so on.
+
+Thus, constructing a query means to combine all constraints that the results should fulfill using AndTerm
+and maybe OrTerm. Everything can also the nested and most importantly (this is the one real graph query
+thing in the API) ComparisonTerm can use any other term as object, meaning it can compare the value of
+a property (if it is not a literal value) to the results of a subquery. A simple example would be the
+following:
+
+\code
+// match all EmailAddress instances with a specific email address:
+Nepomuk::Query::ComparisonTerm email( Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
+
+// match all nco:PersonContact instances
+Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
+
+// match all person contacts with a specific email address
+Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::hasEmailAddress(), email ) );
+\endcode
+
+\sa \ref examples_query
+*/
 
 // DOXYGEN_SET_RECURSIVE = NO
 // DOXYGEN_SET_FILE_PATTERNS = *.h
