@@ -164,8 +164,6 @@ void SlaveKeeper::grimReaper()
 }
 
 
-
-
 int HostQueue::lowestSerial() const
 {
     QMap<int, SimpleJob*>::ConstIterator first = m_queuedJobs.constBegin();
@@ -479,9 +477,10 @@ void ProtoQueue::removeJob(SimpleJob *job)
             // we have dequeued the not yet running job with the lowest serial
             Q_ASSERT(!jobPriv->m_slave);
             Q_ASSERT(prevRunningJobs == hq.runningJobsCount());
-            const bool removed = m_queuesBySerial.remove(prevLowestSerial);
-            Q_UNUSED(removed);
-            Q_ASSERT(removed);
+            if (m_queuesBySerial.remove(prevLowestSerial) == 0) {
+                // make sure that the queue was not scheduled for a good reason
+                Q_ASSERT(hq.runningJobsCount() == m_maxConnectionsPerHost);
+            }
         } else {
             if (prevRunningJobs != hq.runningJobsCount()) {
                 // we have dequeued a previously running job
