@@ -49,6 +49,10 @@ static const int computedProperties[] = {
     CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS,
     CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS,
     CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS,
+    CSS_PROP_BORDER_TOP_RIGHT_RADIUS,
+    CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS,
+    CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS,
+    CSS_PROP_BORDER_TOP_LEFT_RADIUS,
     CSS_PROP_BORDER_TOP_COLOR,
     CSS_PROP_BORDER_RIGHT_COLOR,
     CSS_PROP_BORDER_BOTTOM_COLOR,
@@ -483,12 +487,16 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl(style->borderVerticalSpacing(),
                                          CSSPrimitiveValue::CSS_PX);
     case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
+    case CSS_PROP_BORDER_TOP_RIGHT_RADIUS:
 	return valueForBorderRadii(style->borderTopRightRadius());
     case CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS:
+    case CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS:
 	return valueForBorderRadii(style->borderBottomRightRadius());
     case CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS:
+    case CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS:
 	return valueForBorderRadii(style->borderBottomLeftRadius());
     case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS:
+    case CSS_PROP_BORDER_TOP_LEFT_RADIUS:
 	return valueForBorderRadii(style->borderTopLeftRadius());
     case CSS_PROP_BORDER_TOP_COLOR:
         return valueForColor(style->borderTopColor());

@@ -667,11 +667,14 @@ bool CSSParser::parseValue( int propId, bool important )
             }
         }
         break;
-
     case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
     case CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS:
     case CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS:
-    case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS: {
+    case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS:
+    case CSS_PROP_BORDER_TOP_RIGHT_RADIUS:
+    case CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS:
+    case CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS:
+    case CSS_PROP_BORDER_TOP_LEFT_RADIUS: {
         //<length> <length>?
         if (num < 1 || num > 2)
             return false;
@@ -699,6 +702,7 @@ bool CSSParser::parseValue( int propId, bool important )
     }
 
     case CSS_PROP__KHTML_BORDER_RADIUS:
+    case CSS_PROP_BORDER_RADIUS:
         return parseBorderRadius(important);
 
     case CSS_PROP_BORDER_SPACING:
@@ -781,12 +785,15 @@ bool CSSParser::parseValue( int propId, bool important )
 
     case CSS_PROP_BACKGROUND_ATTACHMENT:
     case CSS_PROP__KHTML_BACKGROUND_CLIP:
+    case CSS_PROP_BACKGROUND_CLIP:
     case CSS_PROP_BACKGROUND_IMAGE:
     case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
+    case CSS_PROP_BACKGROUND_ORIGIN:
     case CSS_PROP_BACKGROUND_POSITION:
     case CSS_PROP_BACKGROUND_POSITION_X:
     case CSS_PROP_BACKGROUND_POSITION_Y:
     case CSS_PROP__KHTML_BACKGROUND_SIZE:
+    case CSS_PROP_BACKGROUND_SIZE:
     case CSS_PROP_BACKGROUND_REPEAT: {
         CSSValueImpl *val1 = 0, *val2 = 0;
         int propId1, propId2;
@@ -1217,11 +1224,11 @@ bool CSSParser::parseBackgroundShorthand(bool important)
 {
     // Position must come before color in this array because a plain old "0" is a legal color
     // in quirks mode but it's usually the X coordinate of a position.
-    // FIXME: Add CSS_PROP__KHTML_BACKGROUND_SIZE to the shorthand.
+    // FIXME: Add CSS_PROP_BACKGROUND_SIZE to the shorthand.
     const int numProperties = 7;
     const int properties[numProperties] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
-        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,  CSS_PROP__KHTML_BACKGROUND_CLIP,
-        CSS_PROP__KHTML_BACKGROUND_ORIGIN, CSS_PROP_BACKGROUND_COLOR };
+        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,  CSS_PROP_BACKGROUND_CLIP,
+        CSS_PROP_BACKGROUND_ORIGIN, CSS_PROP_BACKGROUND_COLOR };
 
     ShorthandScope scope(this, CSS_PROP_BACKGROUND);
 
@@ -1311,10 +1318,10 @@ static void completeMissingRadii(SharedPtr<CSSPrimitiveValueImpl>* array)
 }
 
 bool CSSParser::parseBorderRadius(bool important) {
-    const int properties[4] = { CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS,
-                                CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS,
-                                CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS,
-                                CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS };
+    const int properties[4] = { CSS_PROP_BORDER_TOP_LEFT_RADIUS,
+                                CSS_PROP_BORDER_TOP_RIGHT_RADIUS,
+                                CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS,
+                                CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS };
     SharedPtr<CSSPrimitiveValueImpl> horiz[4], vert[4];
 
 
@@ -1380,7 +1387,6 @@ bool CSSParser::parseBorderRadius(bool important) {
                                         new PairImpl(horiz[c].get(), vert[c].get())), important);
     return true;
 }
-
 
 bool CSSParser::parseShortHand(int propId, const int *properties, int numProperties, bool important )
 {
@@ -1810,6 +1816,8 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                         valueList->next();
                     break;
                 }
+                case CSS_PROP_BACKGROUND_CLIP:
+                case CSS_PROP_BACKGROUND_ORIGIN:
                 case CSS_PROP__KHTML_BACKGROUND_CLIP:
                 case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
                     if (val->id == CSS_VAL_BORDER || val->id == CSS_VAL_PADDING || val->id == CSS_VAL_CONTENT) {
@@ -1854,6 +1862,7 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                     }
                     break;
                 case CSS_PROP__KHTML_BACKGROUND_SIZE:
+                case CSS_PROP_BACKGROUND_SIZE:
                     currValue = parseBackgroundSize();
                     if (currValue)
                         valueList->next();

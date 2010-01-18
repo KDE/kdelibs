@@ -2274,15 +2274,18 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_BACKGROUND_VALUE(backgroundAttachment, BackgroundAttachment, value)
         break;
     case CSS_PROP__KHTML_BACKGROUND_CLIP:
+    case CSS_PROP_BACKGROUND_CLIP:
         HANDLE_BACKGROUND_VALUE(backgroundClip, BackgroundClip, value)
         break;
     case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
+    case CSS_PROP_BACKGROUND_ORIGIN:
         HANDLE_BACKGROUND_VALUE(backgroundOrigin, BackgroundOrigin, value)
         break;
     case CSS_PROP_BACKGROUND_REPEAT:
         HANDLE_BACKGROUND_VALUE(backgroundRepeat, BackgroundRepeat, value)
         break;
     case CSS_PROP__KHTML_BACKGROUND_SIZE:
+    case CSS_PROP_BACKGROUND_SIZE:
         HANDLE_BACKGROUND_VALUE(backgroundSize, BackgroundSize, value)
         break;
     case CSS_PROP_BORDER_COLLAPSE:
@@ -2838,15 +2841,19 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     // ### should these handle initial & inherit?
     case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
+    case CSS_PROP_BORDER_TOP_RIGHT_RADIUS:
         style->setBorderTopRightRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
         break;
     case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS:
+    case CSS_PROP_BORDER_TOP_LEFT_RADIUS:
         style->setBorderTopLeftRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
         break;
     case CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS:
+    case CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS:
         style->setBorderBottomRightRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
         break;
     case CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS:
+    case CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS:
         style->setBorderBottomLeftRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
         break;
 

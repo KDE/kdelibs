@@ -28,6 +28,14 @@ background-position-y
 -khtml-border-bottom-left-radius
 -khtml-border-top-left-radius
 -khtml-border-radius
+background-clip
+background-origin
+background-size
+border-top-right-radius
+border-bottom-right-radius
+border-bottom-left-radius
+border-top-left-radius
+border-radius
 
 border-collapse
 border-spacing
