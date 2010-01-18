@@ -239,7 +239,7 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
 
 void CSSStyleSheetImpl::addNamespace(CSSParser* /*p*/, const DOM::DOMString& prefix, const DOM::DOMString& uri)
 {
-    if (uri.isEmpty())
+    if (uri.isNull())
         return;
 
     m_namespaces = new CSSNamespace(prefix, uri, m_namespaces);
