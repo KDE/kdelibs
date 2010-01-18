@@ -139,6 +139,24 @@ using namespace DOM;
 
 #undef __inline
 
+static QHash<QString,int>* sCompatibleProperties = 0;
+
+static const int sMinCompatPropLen = 21; // shortest key in the hash below
+
+static void initCompatibleProperties() {
+     QHash<QString,int>*& cp = sCompatibleProperties;
+     // Hash of (Property name, Vendor Prefix length)
+     cp = new QHash<QString, int>;
+     cp->insert("-webkit-background-clip", 7);
+     cp->insert("-webkit-background-origin", 7);
+     cp->insert("-webkit-background-size", 7);
+     cp->insert("-webkit-border-top-right-radius", 7);
+     cp->insert("-webkit-border-bottom-right-radius", 7);
+     cp->insert("-webkit-border-bottom-left-radius", 7);
+     cp->insert("-webkit-border-top-left-radius", 7);
+     cp->insert("-webkit-border-radius", 7);
+}
+
 int DOM::getPropertyID(const char *tagStr, int len)
 {
     { // HTML CSS Properties
@@ -681,26 +699,26 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   292,   292,   293,   294,   295,   296,   300,   301,   305,
-     312,   318,   343,   349,   351,   355,   356,   359,   361,   362,
-     365,   367,   370,   379,   381,   385,   387,   398,   408,   411,
-     417,   418,   422,   430,   431,   435,   436,   439,   441,   452,
-     453,   454,   455,   456,   457,   458,   462,   463,   464,   465,
-     469,   470,   474,   480,   483,   489,   495,   499,   506,   509,
-     515,   518,   521,   527,   530,   536,   539,   544,   548,   553,
-     560,   571,   583,   584,   594,   612,   615,   621,   628,   631,
-     637,   638,   639,   643,   644,   648,   670,   683,   701,   711,
-     714,   717,   731,   745,   752,   753,   754,   758,   763,   770,
-     777,   785,   795,   808,   813,   820,   828,   841,   845,   851,
-     854,   864,   871,   885,   886,   887,   891,   908,   915,   921,
-     928,   937,   950,   953,   956,   959,   962,   965,   971,   972,
-     976,   982,   988,   995,  1002,  1009,  1016,  1025,  1028,  1031,
-    1034,  1039,  1045,  1049,  1052,  1057,  1063,  1085,  1091,  1098,
-    1099,  1103,  1107,  1123,  1126,  1129,  1135,  1136,  1138,  1139,
-    1140,  1146,  1147,  1148,  1150,  1156,  1157,  1158,  1159,  1160,
-    1161,  1162,  1163,  1164,  1165,  1166,  1167,  1168,  1169,  1170,
-    1171,  1172,  1173,  1174,  1175,  1176,  1181,  1189,  1205,  1212,
-    1218,  1227,  1253,  1254,  1258,  1259
+       0,   310,   310,   311,   312,   313,   314,   318,   319,   323,
+     330,   336,   361,   367,   369,   373,   374,   377,   379,   380,
+     383,   385,   388,   397,   399,   403,   405,   416,   426,   429,
+     435,   436,   440,   448,   449,   453,   454,   457,   459,   470,
+     471,   472,   473,   474,   475,   476,   480,   481,   482,   483,
+     487,   488,   492,   498,   501,   507,   513,   517,   524,   527,
+     533,   536,   539,   545,   548,   554,   557,   562,   566,   571,
+     578,   589,   601,   602,   612,   630,   633,   639,   646,   649,
+     655,   656,   657,   661,   662,   666,   688,   701,   719,   729,
+     732,   735,   749,   763,   770,   771,   772,   776,   781,   788,
+     795,   803,   813,   826,   831,   838,   846,   859,   863,   869,
+     872,   882,   889,   903,   904,   905,   909,   926,   933,   939,
+     946,   955,   968,   971,   974,   977,   980,   983,   989,   990,
+     994,  1000,  1006,  1013,  1020,  1027,  1034,  1043,  1046,  1049,
+    1052,  1057,  1063,  1067,  1070,  1075,  1081,  1103,  1109,  1131,
+    1132,  1136,  1140,  1156,  1159,  1162,  1168,  1169,  1171,  1172,
+    1173,  1179,  1180,  1181,  1183,  1189,  1190,  1191,  1192,  1193,
+    1194,  1195,  1196,  1197,  1198,  1199,  1200,  1201,  1202,  1203,
+    1204,  1205,  1206,  1207,  1208,  1209,  1214,  1222,  1238,  1245,
+    1251,  1260,  1286,  1287,  1291,  1292
 };
 #endif
 
@@ -2982,7 +3000,22 @@ yyreduce:
 
     {
 	QString str = qString((yyvsp[(1) - (2)].string));
-	(yyval.prop_id) = getPropertyID( str.toLower().toLatin1(), str.length() );
+	str = str.toLower();
+	if (str.length() >= sMinCompatPropLen && str[0] == '-' && str[1] != 'k') {
+	    // vendor extension. Lets try and convert a selected few
+	    if (!sCompatibleProperties)
+	        initCompatibleProperties();
+            QHash<QString,int>::iterator it = sCompatibleProperties->find( str );
+            if (it != sCompatibleProperties->end()) {
+                str = "-khtml" + str.mid( it.value() );
+              
+                (yyval.prop_id) = getPropertyID( str.toLatin1(), str.length() );
+            } else {
+                (yyval.prop_id) = 0;
+            }
+	} else {
+	    (yyval.prop_id) = getPropertyID( str.toLatin1(), str.length() );
+        }
     ;}
     break;
 
