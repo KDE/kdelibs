@@ -93,7 +93,11 @@ private:
         
         //Ask libPNG to change bit depths we don't support
         if (bitDepth < 8)
+#if PNG_LIBPNG_VER < 10400
             png_set_gray_1_2_4_to_8(pngReadStruct);
+#else
+            png_set_expand_gray_1_2_4_to_8(pngReadStruct);
+#endif
         
         if (bitDepth > 8)
             png_set_strip_16       (pngReadStruct);
