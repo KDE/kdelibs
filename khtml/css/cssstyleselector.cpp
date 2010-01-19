@@ -1405,7 +1405,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             if (value->length() < selValue->length())
                 return false;
             // Check if value begins with selStr:
-            if (!value->startsWith(selValue))
+            if (!value->startsWith(selValue, caseSensitive ? DOM::CaseSensitive : DOM::CaseInsensitive))
                 return false;
             // It does. Check for exact match or following '-':
             return value->length() == selValue->length() || (*value)[selValue->length()].unicode() == '-';
