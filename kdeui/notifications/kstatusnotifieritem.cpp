@@ -673,7 +673,6 @@ void KStatusNotifierItemPrivate::serviceChange(const QString& name, const QStrin
     } else {
         //registered
         registerToDaemon();
-        setLegacySystemTrayEnabled(false);
     }
 }
 
