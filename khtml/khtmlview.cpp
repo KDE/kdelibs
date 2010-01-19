@@ -875,17 +875,15 @@ void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
 
 void KHTMLView::paintEvent( QPaintEvent *e )
 {
-    QPainter p(widget());
-
     QRect r = e->rect();
     QRect v(contentsX(), contentsY(), visibleWidth(), visibleHeight());
     QPoint off(contentsX(),contentsY());
-    p.translate(-off);
     r.translate(off);
-
     r = r.intersect(v);
-
     if (!r.isValid() || r.isEmpty()) return;
+
+    QPainter p(widget());
+    p.translate(-off);
 
     if (d->haveZoom()) {
         p.scale( d->zoomLevel/100., d->zoomLevel/100.);
@@ -2123,10 +2121,13 @@ bool  KHTMLView::viewportEvent ( QEvent * e )
         return false;
       case QEvent::Paint: {
           QRect r = static_cast<QPaintEvent*>(e)->rect();
-          r.setX(r.x() +contentsX());
-          r.setY(r.y() +contentsY());
-          QPaintEvent pe(r);
-          paintEvent(&pe);
+          r = r.intersect( widget()->rect() );
+          if (r.isValid() && !r.isEmpty()) {
+              r.setX(r.x() +contentsX());
+              r.setY(r.y() +contentsY());
+              QPaintEvent pe(r);
+              paintEvent(&pe);
+          }
           return true;
       }
       default:
