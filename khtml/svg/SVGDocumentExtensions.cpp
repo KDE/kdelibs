@@ -56,7 +56,7 @@ SVGDocumentExtensions::~SVGDocumentExtensions()
     deleteAllValues(m_elementInstances);
 }
 
-EventListener* SVGDocumentExtensions::createSVGEventListener(const String& functionName, const String& code, Node *node)
+EventListener* SVGDocumentExtensions::createSVGEventListener(const DOMString& functionName, const DOMString& code, DOM::NodeImpl* node)
 {
     /*if (Frame* frame = m_doc->frame())
         if (frame->scriptProxy()->isEnabled())
@@ -81,13 +81,13 @@ void SVGDocumentExtensions::startAnimations()
 {
     // FIXME: Eventually every "Time Container" will need a way to latch on to some global timer
     // starting animations for a document will do this "latching"
-#if ENABLE(SVG_ANIMATION)    
+#if ENABLE(SVG_ANIMATION)
     HashSet<SVGSVGElement*>::iterator end = m_timeContainers.end();
     for (HashSet<SVGSVGElement*>::iterator itr = m_timeContainers.begin(); itr != end; ++itr)
         (*itr)->timeContainer()->begin();
 #endif
 }
-    
+
 void SVGDocumentExtensions::pauseAnimations()
 {
     HashSet<SVGSVGElement*>::iterator end = m_timeContainers.end();
