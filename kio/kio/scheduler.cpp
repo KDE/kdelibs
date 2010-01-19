@@ -413,6 +413,8 @@ void ProtoQueue::queueJob(SimpleJob *job)
     const int prevLowestSerial = hq.lowestSerial();
     Q_ASSERT(hq.runningJobsCount() <= m_maxConnectionsPerHost);
 
+    // nevert insert a job twice
+    Q_ASSERT(SimpleJobPrivate::get(job)->m_schedSerial == 0);
     SimpleJobPrivate::get(job)->m_schedSerial = m_serialPicker.next();
 
     const bool wasQueueEmpty = hq.isQueueEmpty();
@@ -888,6 +890,12 @@ void SchedulerPrivate::scheduleJob(SimpleJob *job)
 
 void SchedulerPrivate::cancelJob(SimpleJob *job)
 {
+    // this method is called all over the place in job.cpp, so just do this check here to avoid
+    // much boilerplate in job code.
+    if (SimpleJobPrivate::get(job)->m_schedSerial == 0) {
+        kDebug(7006) << "Doing nothing because I don't know job" << job;
+        return;
+    }
     Slave *slave = jobSlave(job);
     kDebug(7006) << job << slave;
     if (slave) {
@@ -901,12 +909,16 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 {
     kDebug(7006) << job << slave;
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+    // make sure that we knew about the job!
+    Q_ASSERT(jobPriv->m_schedSerial);
+
     ProtoQueue *pq = m_protocols.value(jobPriv->m_protocol);
     pq->removeJob(job);
     if (slave) {
         slave->setJob(0);
         slave->disconnect(job);
     }
+    jobPriv->m_schedSerial = 0; // this marks the job as unscheduled again
     jobPriv->m_slave = 0;
 }
 

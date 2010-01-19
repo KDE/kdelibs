@@ -363,14 +363,10 @@ void SimpleJob::removeOnHold()
 SimpleJob::~SimpleJob()
 {
     Q_D(SimpleJob);
-    if (d->m_slave) // was running
-    {
-        kDebug(7007) << "Killing running job in destructor!"  << kBacktrace();
+    // last chance to remove this job from the scheduler!
+    if (d->m_schedSerial) {
+        kDebug(7007) << "Killing job in destructor!"  << kBacktrace();
         Scheduler::cancelJob(this);
-#if 0
-        d->m_slave->kill();
-        Scheduler::jobFinished( this, d->m_slave ); // deletes the slave
-#endif
     }
 }
 
@@ -445,7 +441,10 @@ void SimpleJobPrivate::slaveDone()
     if (!m_slave) return;
     if (m_command == CMD_OPEN) m_slave->send(CMD_CLOSE);
     q->disconnect(m_slave); // Remove all signals between slave and job
-    Scheduler::jobFinished(q, m_slave);
+    // only finish a job once; Scheduler::jobFinished() resets schedSerial to zero.
+    if (m_schedSerial) {
+        Scheduler::jobFinished(q, m_slave);
+    }
 }
 
 void SimpleJob::slotFinished( )
