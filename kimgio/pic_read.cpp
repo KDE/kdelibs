@@ -52,10 +52,9 @@ bool picReadHeader(QIODevice *dev, PICHeader *hdr, bool peek) {
     hdr->fields = ntohs(hdr->fields);
 
     if (hdr->magic != PIC_MAGIC_NUMBER || strncmp(hdr->id, "PICT", 4)) {
-        std::cerr << "Not a PIC file" << std::endl;
         return false;
     }
-    
+
     return result == HEADER_SIZE;
 }
 
