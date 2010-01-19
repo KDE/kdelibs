@@ -311,8 +311,13 @@ void SimpleJobPrivate::simpleJobInit()
 
 bool SimpleJob::doKill()
 {
-    //kDebug() << this;
-    Scheduler::cancelJob(this); // deletes the slave if not 0
+    Q_D(SimpleJob);
+    if ((d->m_extraFlags & JobPrivate::EF_KillCalled) == 0) {
+        d->m_extraFlags |= JobPrivate::EF_KillCalled;
+        Scheduler::cancelJob(this); // deletes the slave if not 0
+    } else {
+        kWarning(7007) << "This is overkill.";
+    }
     return Job::doKill();
 }
 
