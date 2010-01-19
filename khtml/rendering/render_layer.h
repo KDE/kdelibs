@@ -180,9 +180,11 @@ public:
     void checkInlineRelOffset(const RenderObject* o, int& x, int& y);
     int scrollXOffset() { return m_scrollX + m_scrollXOrigin; }
     int scrollYOffset() { return m_scrollY; }
-    void scrollToOffset(int x, int y, bool updateScrollbars = true, bool repaint = true);
+    void scrollToOffset(int x, int y, bool updateScrollbars = true, bool repaint = true, bool dispatchEvent = true);
     void scrollToXOffset(int x) { scrollToOffset(x, m_scrollY); }
     void scrollToYOffset(int y) { scrollToOffset(m_scrollX + m_scrollXOrigin, y); }
+    void resetXOffset() { scrollToOffset(0, m_scrollY, false, false, false); }
+    void resetYOffset() { scrollToOffset(m_scrollX + m_scrollXOrigin, 0, false, false, false); }
     void showScrollbar(Qt::Orientation, bool);
     ScrollBarWidget* horizontalScrollbar() { return m_hBar; }
     ScrollBarWidget* verticalScrollbar() { return m_vBar; }

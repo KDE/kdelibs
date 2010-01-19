@@ -692,8 +692,9 @@ void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
         y += sy;
 }
 
-void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repaint)
+void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repaint, bool dispatchEvent)
 {
+    assert(!renderer()->canvas()->isPerformingLayout() || !dispatchEvent);
     if (renderer()->style()->overflowX() != OMARQUEE || !renderer()->hasOverflowClip()) {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
@@ -731,6 +732,9 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
         if (m_vBar)
             m_vBar->setValue(m_scrollY);
     }
+
+    if (!dispatchEvent)
+        return;
 
     // Fire the scroll DOM event. Do this the very last thing, since the handler may kill us.
     m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);    
@@ -917,14 +921,14 @@ void RenderLayer::checkScrollbarsAfterLayout()
             if (m_hBar) 
                 m_hBar->setEnabled(true);
             else
-                scrollToXOffset(0);
+                resetXOffset();
         }
         if (m_object->style()->overflowY() == OAUTO) {
             showScrollbar(Qt::Vertical, needVerticalBar);
             if (m_vBar)
                 m_vBar->setEnabled(true);
             else
-                scrollToYOffset(0);
+                resetYOffset();
         }
 
         m_object->setNeedsLayout(true);
@@ -945,24 +949,16 @@ void RenderLayer::checkScrollbarsAfterLayout()
         if (pageStep < 0) pageStep = clientWidth;
         m_hBar->setSingleStep(LINE_STEP);
         m_hBar->setPageStep(pageStep);
-#ifdef APPLE_CHANGES
-        m_hBar->setKnobProportion(clientWidth, m_scrollWidth);
-#else
         m_hBar->setRange(0, needHorizontalBar ? m_scrollWidth-clientWidth : 0);
         if (hasReversedScrollbar())
             m_hBar->setValue( m_hBar->maximum() - m_scrollX );
-#endif
     }
     if (m_vBar) {
         int pageStep = (clientHeight-PAGE_KEEP);
         if (pageStep < 0) pageStep = clientHeight;
         m_vBar->setSingleStep(LINE_STEP);
         m_vBar->setPageStep(pageStep);
-#ifdef APPLE_CHANGES
-        m_vBar->setKnobProportion(clientHeight, m_scrollHeight);
-#else
         m_vBar->setRange(0, needVerticalBar ? m_scrollHeight-clientHeight : 0);
-#endif
     }
 }
 
