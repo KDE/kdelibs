@@ -280,6 +280,7 @@ bool ConnectedSlaveQueue::removeJob(SimpleJob *job)
 
 void ConnectedSlaveQueue::addSlave(Slave *slave)
 {
+    Q_ASSERT(slave);
     if (!m_connectedSlaves.contains(slave)) {
         m_connectedSlaves.insert(slave, QList<SimpleJob *>());
     }
@@ -619,7 +620,10 @@ void ProtoQueue::startAJob()
             setupSlave(slave, jobPriv->m_url, jobPriv->m_protocol, jobPriv->m_proxy, isNewSlave);
             startJob(startingJob, slave);
         } else {
+            // dispose of our records about the job and mark the job as unknown
+            // (to prevent crashes later)
             removeJob(startingJob);
+            jobPriv->m_schedSerial = 0;
         }
     } else {
 #ifdef SCHEDULER_DEBUG
@@ -1084,14 +1088,16 @@ Slave *SchedulerPrivate::getConnectedSlave(const KUrl &url, const KIO::MetaData 
     ProtoQueue *pq = protoQ(protocol);
 
     Slave *slave = pq->createSlave(protocol, /* job */0, url);
-    setupSlave(slave, url, protocol, proxy, true, &config);
-    pq->m_connectedSlaveQueue.addSlave(slave);
+    if (slave) {
+        setupSlave(slave, url, protocol, proxy, true, &config);
+        pq->m_connectedSlaveQueue.addSlave(slave);
 
-    slave->send( CMD_CONNECT );
-    q->connect(slave, SIGNAL(connected()),
-               SLOT(slotSlaveConnected()));
-    q->connect(slave, SIGNAL(error(int, const QString &)),
-               SLOT(slotSlaveError(int, const QString &)));
+        slave->send( CMD_CONNECT );
+        q->connect(slave, SIGNAL(connected()),
+                   SLOT(slotSlaveConnected()));
+        q->connect(slave, SIGNAL(error(int, const QString &)),
+                   SLOT(slotSlaveError(int, const QString &)));
+    }
     kDebug(7006) << url << slave;
     return slave;
 }
