@@ -67,7 +67,7 @@ public:
           CustomObjectInfo(v)
     {}
 
-    using KJS::JSObject::put;
+    using Base::put;
     void put(ExecState* exec, const Identifier& id,
              JSValue *value, int attr = None);
 
