@@ -68,7 +68,12 @@ KateTemplateHandler::KateTemplateHandler( KateDocument *doc, const Cursor& posit
   }
   m_doc->editEnd();
 
-  if ( !initialValues.isEmpty() ) {
+  ///TODO: maybe support delayed actions, i.e.:
+  /// - create doc
+  /// - insert template
+  /// - create view => ranges are added
+  /// for now simply "just insert" the code when we have no active view
+  if ( !initialValues.isEmpty() && m_doc->activeView() ) {
     // only do complex stuff when required
 
     handleTemplateString(initialValues);
