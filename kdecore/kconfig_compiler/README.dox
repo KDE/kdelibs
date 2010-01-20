@@ -14,9 +14,12 @@ name is the same as that of the .kcfgc file.
 
 The structure of the .kcfg file is described by its DTD kcfg.xsd.
 
-The \<kcfgfile\> tag contains the name of the configuration file described.
-Omitting the name will make the generated class use the default configuration
-file ("\<appname\>rc").
+The \<kcfgfile\> tag may contain either the "name" attribute, which should be the name
+of the configuration file described, or the "arg" attribute, which, if set to
+"true", will allow you to pass the KSharedConfig::Ptr object to use.
+
+If neither "name" nor "arg" is set, the default configuration file
+("\<appname\>rc") will be used.
 
 The \<include\> tags are optional and may contain C++ header files that
 are needed to compile the code needed to compute default values. To generate
