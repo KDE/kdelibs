@@ -1,17 +1,17 @@
-/* 
+/*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -37,7 +37,7 @@ namespace Nepomuk {
      * to the %Nepomuk server.
      *
      * Usage is very simple. Just create an instance and start
-     * using it. Use the isValid method to check the connection 
+     * using it. Use the isValid method to check the connection
      * to the server. All communication details are handled transparently.
      *
      * It is perfectly alright to create several instances of MainModel
@@ -81,10 +81,18 @@ namespace Nepomuk {
          */
         bool isValid() const;
 
+        /**
+         * Try connecting to the Nepomuk storage service. There is no need to call
+         * this unless one wants to reconnect to a previously non-running system.
+         * All methods below do connect automatically but do not retry after a
+         * failure.
+         */
+        bool init();
+
         Soprano::StatementIterator listStatements( const Soprano::Statement &partial ) const;
         Soprano::NodeIterator listContexts() const;
-        Soprano::QueryResultIterator executeQuery( const QString& query, 
-                                                   Soprano::Query::QueryLanguage language, 
+        Soprano::QueryResultIterator executeQuery( const QString& query,
+                                                   Soprano::Query::QueryLanguage language,
                                                    const QString& userQueryLanguage = QString() ) const;
         bool containsStatement( const Soprano::Statement &statement ) const;
         bool containsAnyStatement( const Soprano::Statement &statement ) const;

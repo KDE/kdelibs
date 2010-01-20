@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -79,8 +79,12 @@ public:
 
     Soprano::Util::DummyModel* dummyModel;
 
-    void init() {
+    void init( bool forced ) {
         QMutexLocker lock( &m_initMutex );
+
+        if( forced ) {
+            m_socketConnectFailed = false;
+        }
 
         // TODO: check if the service is also initialized
         if ( !dbusModel ) {
@@ -105,7 +109,7 @@ public:
     }
 
     Soprano::Model* model() {
-        init();
+        init( false );
 
         QMutexLocker lock( &m_initMutex );
 
@@ -151,7 +155,7 @@ Nepomuk::MainModel::MainModel( QObject* parent )
 {
     setParent( parent );
 
-    s_modelContainer->init();
+    init();
 
     if ( s_modelContainer->dbusModel ) {
         // we have to use the dbus model for signals in any case
@@ -176,6 +180,13 @@ Nepomuk::MainModel::~MainModel()
 bool Nepomuk::MainModel::isValid() const
 {
     return s_modelContainer->dbusClient.isValid() || s_modelContainer->localSocketClient.isConnected();
+}
+
+
+bool Nepomuk::MainModel::init()
+{
+    s_modelContainer->init( true );
+    return isValid();
 }
 
 
