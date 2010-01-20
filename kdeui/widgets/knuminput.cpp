@@ -92,12 +92,14 @@ KNumInput::KNumInput(QWidget* parent)
     : QWidget(parent), d(new KNumInputPrivate(this))
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 KNumInput::KNumInput(QWidget* parent, KNumInput* below)
     : QWidget(parent), d(new KNumInputPrivate(this, below))
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 KNumInput::~KNumInput()
