@@ -26,6 +26,7 @@
 #include "result.h"
 #include "query.h"
 #include "term.h"
+#include "nepomukquery_export.h"
 
 Q_DECLARE_METATYPE(Nepomuk::Query::Result)
 Q_DECLARE_METATYPE(Soprano::Node)
@@ -40,14 +41,15 @@ namespace Nepomuk {
          * query service. This method is only made public for the query service
          * itself which links to this library, too.
          */
-        void registerDBusTypes();
+        NEPOMUKQUERY_EXPORT void registerDBusTypes();
     }
 }
 
-QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& );
-const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& );
+// We export the non-public operators so that we do not need duplicated code in kdebase
+NEPOMUKQUERY_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& );
+NEPOMUKQUERY_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& );
 
-QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::Query::Result& );
-const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Result& );
+NEPOMUKQUERY_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::Query::Result& );
+NEPOMUKQUERY_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Result& );
 
 #endif
