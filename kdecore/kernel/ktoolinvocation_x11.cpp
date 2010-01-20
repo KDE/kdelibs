@@ -251,7 +251,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     {
       KMessage::message(KMessage::Error,
                       i18n("Could not launch the mail client:\n\n%1", error),
-                      i18n("Could not Launch Mail Client"));
+                      i18n("Could not launch Mail Client"));
     }
 }
 
@@ -300,7 +300,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
                         KMessage::message(KMessage::Error,
                                           // TODO: i18n("Could not launch %1:\n\n%2", exe, error),
                                           i18n("Could not launch the browser:\n\n%1", error),
-                                          i18n("Could not Launch Browser"));
+                                          i18n("Could not launch Browser"));
                     }
                     return;
                 }
@@ -326,7 +326,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
         KMessage::message(KMessage::Error,
                           // TODO: i18n("Could not launch %1:\n\n%2", exe, error),
                           i18n("Could not launch the browser:\n\n%1", error),
-                          i18n("Could not Launch Browser"));
+                          i18n("Could not launch Browser"));
     }
 }
 
@@ -366,6 +366,6 @@ void KToolInvocation::invokeTerminal(const QString &command,
                                     cmd, cmdTokens, &error, 0, NULL, startup_id, false, workdir)) {
       KMessage::message(KMessage::Error,
                       i18n("Could not launch the terminal client:\n\n%1", error),
-                      i18n("Could not Launch Terminal Client"));
+                      i18n("Could not launch Terminal Client"));
     }
 }
