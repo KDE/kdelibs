@@ -4,7 +4,7 @@
  * revision: 2
  * kate-version: 3.4
  * type: commands
- * functions: sort, natsort, uniq, test
+ * functions: sort, natsort, uniq, rtrim, ltrim, trim, test
  */
 
 function sort()
@@ -34,6 +34,36 @@ function natsort()
     each(function(lines){return lines.sort(natcompare);});
 }
 
+function rtrim()
+{
+    each(function(lines){
+        for ( var i = 0; i < lines.length; ++i ) {
+            lines[i] = lines[i].replace(/\s+$/, '');
+        }
+        return lines;
+    });
+}
+
+function ltrim()
+{
+    each(function(lines){
+        for ( var i = 0; i < lines.length; ++i ) {
+            lines[i] = lines[i].replace(/^\s+/, '');
+        }
+        return lines;
+    });
+}
+
+function trim()
+{
+    each(function(lines){
+        for ( var i = 0; i < lines.length; ++i ) {
+            lines[i] = lines[i].replace(/^\s+|\s+$/, '');
+        }
+        return lines;
+    });
+}
+
 function test()
 {
     var start = new Cursor(3, 6);
@@ -55,14 +85,20 @@ function test()
 function help(cmd)
 {
     if (cmd == "sort") {
-        return "Sort the selected text.";
+        return "Sort the selected text or whole document.";
     } else if (cmd == "uniq") {
-        return "Remove duplicate lines from the selected text.";
+        return "Remove duplicate lines from the selected text or whole document.";
     } else if (cmd == "natsort") {
-        return "Sort the selected text in natural order.<br>"
+        return "Sort the selected text or whole document in natural order.<br>"
               +"Here's an example to show the difference to the normal sort method:<br>"
               +"sort(a10, a1, a2) => a1, a10, a2<br>"
               +"natsort(a10, a1, a2) => a1, a2, a10";
+    } else if (cmd == "rtrim") {
+        return "Trims trailing whitespace from selection or whole document.";
+    } else if (cmd == "ltrim") {
+        return "Trims leading whitespace from selection or whole document.";
+    } else if (cmd == "trim") {
+        return "Trims leading and trailing whitespace from selection or whole document.";
     }
 }
 
@@ -77,12 +113,12 @@ function each(func)
 
     var selection = view.selection();
     if (!selection.isValid()) {
-        debug("invalid selection");
-        return;
+        // use whole range
+        selection = document.documentRange();
+    } else {
+        selection.start.column = 0;
+        selection.end.column = document.lineLength(selection.end.line);
     }
-
-    selection.start.column = 0;
-    selection.end.column = document.lineLength(selection.end.line);
 
     var text = document.text(selection);
 
