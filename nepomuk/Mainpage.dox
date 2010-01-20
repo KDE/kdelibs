@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -314,6 +314,8 @@ Nepomuk::Query::ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
 Nepomuk::Query::FileQuery fileQuery( term );
 \endcode
 
+\subsection query_examples_file Listing Files
+
 Restrict the search to a specific folder:
 
 \code
@@ -330,6 +332,19 @@ Nepomuk::Query::Term noFolderTerm = Nepomuk::Query::NegationTerm::negateTerm(fol
 fileQuery.setTerm( Nepomuk::Query::AndTerm( fileQuery.term(), noFolderTerm ) );
 \endcode
 
+List all query results in a KDirModel:
+
+\code
+KDirModel* model = getFancyDirModel();
+Nepomuk::Query::Query query = buildFancyQuery();
+KUrl searchUrl = query.toSearchUrl();
+model->dirLister()->open( searchUrl );
+\endcode
+
+KIO will use the \p nepomuksearch:/ slave to list search results as file entries.
+
+\subsection query_examples_misc Misc Query Examples
+
 Match all EmailAddress instances with a specific email address:
 \code
 Nepomuk::Query::ComparisonTerm email( Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
@@ -344,17 +359,6 @@ Match all person contacts with a specific email address:
 \code
 Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::hasEmailAddress(), email ) );
 \endcode
-
-List all query results in a KDirModel:
-
-\code
-KDirModel* model = getFancyDirModel();
-Nepomuk::Query::Query query = buildFancyQuery();
-KUrl searchUrl = query.toSearchUrl();
-model->dirLister()->open( searchUrl );
-\endcode
-
-KIO will use the \p nepomuksearch:/ slave to list search results as file entries.
 */
 
 
