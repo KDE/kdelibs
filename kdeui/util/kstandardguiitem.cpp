@@ -152,7 +152,7 @@ KGuiItem saveAs()
 KGuiItem apply()
 {
   return KGuiItem( i18n( "&Apply" ), "dialog-ok-apply", i18n( "Apply changes" ),
-                   i18n( "When clicking <b>Apply</b>, the settings will be "
+                   i18n( "When you click <b>Apply</b>, the settings will be "
                          "handed over to the program, but the dialog "
                          "will not be closed.\n"
                          "Use this to try different settings." ) );
@@ -161,7 +161,7 @@ KGuiItem apply()
 KGuiItem adminMode()
 {
   return KGuiItem( i18n( "Administrator &Mode..." ), "", i18n( "Enter Administrator Mode" ),
-                   i18n( "When clicking <b>Administrator Mode</b> you will be prompted "
+                   i18n( "When you click <b>Administrator Mode</b> you will be prompted "
                          "for the administrator (root) password in order to make changes "
                          "which require root privileges." ) );
 }
