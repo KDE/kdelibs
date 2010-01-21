@@ -81,21 +81,19 @@ public:
         hitTest = q->page()->mainFrame()->hitTestContent(pos);
         const QUrl url = hitTest.linkUrl();
 
-        if (url.isEmpty()) {
-            return false;
-        }
+        if (!url.isEmpty()) {
+            if ((pressedButtons & Qt::MidButton) ||
+                ((pressedButtons & Qt::LeftButton) && (keyboardModifiers & Qt::ControlModifier))) {
+                emit q->linkMiddleOrCtrlClicked(url);
+                return true;
+            }
 
-        if ((pressedButtons & Qt::MidButton) ||
-            ((pressedButtons & Qt::LeftButton) && (keyboardModifiers & Qt::ControlModifier))) {
-            emit q->linkMiddleOrCtrlClicked(url);
-            return true;
+            if ((pressedButtons & Qt::LeftButton) && (keyboardModifiers & Qt::ShiftModifier)) {
+                emit q->linkShiftClicked(url);
+                return true;
+            }
         }
-
-        if ((pressedButtons & Qt::LeftButton) && (keyboardModifiers & Qt::ShiftModifier)) {
-            emit q->linkShiftClicked(url);
-            return true;
-        }
-
+        
         return false;
     }
 
@@ -109,7 +107,7 @@ public:
             }
         }
 
-	return false;
+        return false;
     }
 
     T *q;
