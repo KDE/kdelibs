@@ -60,7 +60,6 @@ public:
     lstMimeFilteredItems = 0;
     lstRemoveItems = 0;
 
-    refreshItemWasFiltered = false;
     hasPendingChanges = false;
 
     window = 0;
@@ -81,7 +80,6 @@ public:
   uint numJobs();
     void addNewItem(const KUrl& directoryUrl, const KFileItem& item);
     void addNewItems(const KUrl& directoryUrl, const KFileItemList& items);
-    void aboutToRefreshItem(const KFileItem& item);
     void addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item);
   void emitItems();
   void emitItemsDeleted(const KFileItemList &items);
@@ -125,7 +123,6 @@ public:
 
   bool delayedMimeTypes:1;
 
-  bool refreshItemWasFiltered:1;
     bool hasPendingChanges:1; // i.e. settings != oldSettings
 
   bool autoErrorHandling:2;
@@ -274,7 +271,8 @@ private:
     bool checkUpdate( const QString& url );
 
     // Helper method for slotFileDirty
-    void handleFileDirty(const KUrl& url, bool isDir);
+    void handleFileDirty(const KUrl& url);
+    void handleDirDirty(const KUrl& url);
 
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
@@ -291,8 +289,6 @@ private:
   void removeDirFromCache( const KUrl& dir );
   // helper for renameDir
   void emitRedirections( const KUrl &oldUrl, const KUrl &url );
-
-  void aboutToRefreshItem( const KFileItem& fileitem );
 
     /**
      * Emits refreshItem() in the directories that cared for oldItem.
@@ -313,9 +309,9 @@ private:
 
   class DirItem
   {
-	public:
-    DirItem( const KUrl &dir )
-      : url(dir)
+  public:
+    DirItem(const KUrl &dir, const QString& canonicalPath)
+      : url(dir), m_canonicalPath(canonicalPath)
     {
       autoUpdates = 0;
       complete = false;
@@ -326,7 +322,7 @@ private:
       if ( autoUpdates )
       {
         if ( KDirWatch::exists() && url.isLocalFile() )
-            KDirWatch::self()->removeDir( url.path() );
+            KDirWatch::self()->removeDir(m_canonicalPath);
         sendSignal( false, url );
       }
       lstItems.clear();
@@ -347,11 +343,13 @@ private:
       if ( autoUpdates )
       {
         if ( url.isLocalFile() )
-            KDirWatch::self()->removeDir( url.path() );
+            KDirWatch::self()->removeDir(m_canonicalPath);
         sendSignal( false, url );
 
-        if ( newUrl.isLocalFile() )
-          KDirWatch::self()->addDir( newUrl.path() );
+        if (newUrl.isLocalFile()) {
+            m_canonicalPath = QFileInfo(newUrl.toLocalFile()).canonicalFilePath();
+            KDirWatch::self()->addDir(m_canonicalPath);
+        }
         sendSignal( true, newUrl );
       }
 
@@ -366,7 +364,7 @@ private:
       if ( autoUpdates++ == 0 )
       {
         if ( url.isLocalFile() )
-          KDirWatch::self()->addDir( url.path() );
+          KDirWatch::self()->addDir(m_canonicalPath);
         sendSignal( true, url );
       }
     }
@@ -376,7 +374,7 @@ private:
       if ( --autoUpdates == 0 )
       {
         if ( url.isLocalFile() )
-          KDirWatch::self()->removeDir( url.path() );
+          KDirWatch::self()->removeDir(m_canonicalPath);
         sendSignal( false, url );
       }
 
@@ -392,6 +390,9 @@ private:
 
     // the complete url of this directory
     KUrl url;
+
+    // the local path, with symlinks resolved, so that KDirWatch works
+    QString m_canonicalPath;
 
     // KFileItem representing the root of this directory.
     // Remember that this is optional. FTP sites don't return '.' in

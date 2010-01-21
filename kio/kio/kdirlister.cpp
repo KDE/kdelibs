@@ -112,10 +112,11 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
   const QString urlStr = _url.url();
 
+  QString resolved;
   if (_url.isLocalFile()) {
       // Resolve symlinks (#213799)
       const QString local = _url.toLocalFile();
-      const QString resolved = QFileInfo(_url.toLocalFile()).canonicalFilePath();
+      resolved = QFileInfo(local).canonicalFilePath();
       if (local != resolved)
           canonicalUrls[resolved].append(urlStr);
       // TODO: remove entry from canonicalUrls again in forgetDirs
@@ -202,7 +203,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
                 kDebug(7004) << "Listing directory:" << _url;
             }
 
-            itemU = new DirItem(_url);
+            itemU = new DirItem(_url, resolved);
             itemsInUse.insert(urlStr, itemU);
 
 //        // we have a limit of MAX_JOBS_PER_LISTER concurrently running jobs
@@ -623,7 +624,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
 
     if (!(listers.isEmpty() || killed)) {
         kWarning() << "The unexpected happened.";
-        kWarning() << "listers=" << listers;
+        kWarning() << "listers for" << _dir << "=" << listers;
         kWarning() << "job=" << job;
         Q_FOREACH(KDirLister *kdl, listers) {
             kDebug() << "lister" << kdl << "m_cachedItemsJob=" << kdl->d->m_cachedItemsJob;
@@ -736,41 +737,48 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     KUrl url(_u);
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    // Maybe _u is a directory itself? (see KDirModelTest::testChmodDirectory)
-    DirItem* dirItem = dirItemForUrl(url);
-    if (dirItem && !dirItem->rootItem.isNull() && dirItem->rootItem.url() == url) {
-        // If lister is set, check that it contains this dir
-        if (!lister || lister->d->lstDirs.contains(url))
-            return &dirItem->rootItem;
-    }
-
     KUrl parentDir(url);
     parentDir.setPath( parentDir.directory() );
 
-    // If lister is set, check that it contains this dir
-    if (lister && !lister->d->lstDirs.contains(parentDir))
-        return 0;
-
-    dirItem = dirItemForUrl(parentDir);
+    DirItem* dirItem = dirItemForUrl(parentDir);
     if (dirItem) {
-        KFileItemList::iterator it = dirItem->lstItems.begin();
-        const KFileItemList::iterator end = dirItem->lstItems.end();
-        for (; it != end ; ++it) {
-            if ((*it).url() == url) {
-                return &*it;
+        // If lister is set, check that it contains this dir
+        if (!lister || lister->d->lstDirs.contains(parentDir)) {
+            KFileItemList::iterator it = dirItem->lstItems.begin();
+            const KFileItemList::iterator end = dirItem->lstItems.end();
+            for (; it != end ; ++it) {
+                if ((*it).url() == url) {
+                    return &*it;
+                }
             }
+        }
+    }
+
+    // Maybe _u is a directory itself? (see KDirModelTest::testChmodDirectory)
+    // We check this last, though, we prefer returning a kfileitem with an actual
+    // name if possible (and we make it '.' for root items later).
+    dirItem = dirItemForUrl(url);
+    if (dirItem && !dirItem->rootItem.isNull() && dirItem->rootItem.url() == url) {
+        // If lister is set, check that it contains this dir
+        if (!lister || lister->d->lstDirs.contains(url)) {
+            return &dirItem->rootItem;
         }
     }
 
     return 0;
 }
 
-void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify signals
+void KDirListerCache::slotFilesAdded( const QString &dir /*url*/ ) // from KDirNotify signals
 {
-  kDebug(7004) << dir;
-  Q_FOREACH(const QString& u, directoriesForCanonicalPath(dir)) {
-      updateDirectory(KUrl(u));
-  }
+    KUrl urlDir(dir);
+    kDebug(7004) << urlDir; // output urls, not qstrings, since they might contain a password
+    if (urlDir.isLocalFile()) {
+        Q_FOREACH(const QString& u, directoriesForCanonicalPath(urlDir.path())) {
+            updateDirectory(KUrl(u));
+        }
+    } else {
+        updateDirectory(urlDir);
+    }
 }
 
 void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
@@ -917,7 +925,6 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     if (!oldItem.isLocalFile() && !oldItem.localPath().isEmpty()) { // it uses UDS_LOCAL_PATH? ouch, needs an update then
         slotFilesChanged( QStringList() << src.url() );
     } else {
-        aboutToRefreshItem( oldItem );
         if( nameOnly )
             fileitem->setName( dst.fileName() );
         else
@@ -935,31 +942,14 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
 #endif
 }
 
-void KDirListerCache::aboutToRefreshItem( const KFileItem& fileitem )
+QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem)
 {
-    // Look whether this item was shown in any view, i.e. held by any dirlister
-    KUrl parentDir( fileitem.url() );
-    parentDir.setPath( parentDir.directory() );
-    const QString parentDirURL = parentDir.url();
-
-    DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
-    if (dit == directoryData.end())
-        return;
-
-    foreach (KDirLister *kdl, (*dit).listersCurrentlyHolding)
-        kdl->d->aboutToRefreshItem( fileitem );
-
-    // Also look in listersCurrentlyListing, in case the user manages to rename during a listing
-    foreach (KDirLister *kdl, (*dit).listersCurrentlyListing)
-        kdl->d->aboutToRefreshItem( fileitem );
-}
-
-QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem )
-{
+    //kDebug(7004) << "old:" << oldItem.name() << oldItem.url()
+    //             << "new:" << fileitem.name() << fileitem.url();
     // Look whether this item was shown in any view, i.e. held by any dirlister
     KUrl parentDir( oldItem.url() );
     parentDir.setPath( parentDir.directory() );
-    QString parentDirURL = parentDir.url();
+    const QString parentDirURL = parentDir.url();
     DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
     QList<KDirLister *> listers;
     // Also look in listersCurrentlyListing, in case the user manages to rename during a listing
@@ -974,12 +964,15 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
     QSet<KDirLister*> listersToRefresh;
     Q_FOREACH(KDirLister *kdl, listers) {
         // For a directory, look for dirlisters where it's the root item.
-        if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
-            kdl->d->rootFileItem = fileitem;
-        }
         KUrl directoryUrl(oldItem.url());
-        directoryUrl.setPath(directoryUrl.directory());
-        kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
+        if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
+            const KFileItem oldRootItem = kdl->d->rootFileItem;
+            kdl->d->rootFileItem = fileitem;
+            kdl->d->addRefreshItem(directoryUrl, oldRootItem, fileitem);
+        } else {
+            directoryUrl.setPath(directoryUrl.directory());
+            kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
+        }
         listersToRefresh.insert(kdl);
     }
     return listersToRefresh;
@@ -990,10 +983,10 @@ QStringList KDirListerCache::directoriesForCanonicalPath(const QString& dir) con
     QStringList dirs;
     dirs << dir;
     dirs << canonicalUrls.value(dir).toSet().toList(); /* make unique; there are faster ways, but this is really small anyway */
-    
+
     if (dirs.count() > 1)
         kDebug() << dir << "known as" << dirs;
-            
+
     return dirs;
 }
 
@@ -1010,38 +1003,61 @@ void KDirListerCache::slotFileDirty( const QString& path )
         return; // error
     const bool isDir = S_ISDIR(buff.st_mode);
     KUrl url(path);
-    Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.directory())) {
-        KUrl aliasUrl(dir);
-        aliasUrl.addPath(url.fileName());
-        handleFileDirty(aliasUrl, isDir);
+    url.adjustPath(KUrl::RemoveTrailingSlash);
+    if (isDir) {
+        Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.path())) {
+            handleDirDirty(dir);
+        }
+    } else {
+        Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.directory())) {
+            KUrl aliasUrl(dir);
+            aliasUrl.addPath(url.fileName());
+            handleFileDirty(aliasUrl);
+        }
     }
 }
 
 // Called by slotFileDirty
-void KDirListerCache::handleFileDirty(const KUrl& url, bool isDir)
+void KDirListerCache::handleDirDirty(const KUrl& url)
 {
-    if (isDir) {
-        // A dir: launch an update job if anyone cares about it
-        updateDirectory(url);
+    // A dir: launch an update job if anyone cares about it
+
+    // This also means we can forget about pending updates to individual files in that dir
+    const QString dirPath = url.toLocalFile(KUrl::AddTrailingSlash);
+    QMutableSetIterator<QString> pendingIt(pendingUpdates);
+    while (pendingIt.hasNext()) {
+        const QString updPath = pendingIt.next();
+        //kDebug(7004) << "had pending update" << updPath;
+        if (updPath.startsWith(dirPath) &&
+            updPath.indexOf('/', dirPath.length()) == -1) { // direct child item
+            kDebug(7004) << "forgetting about individual update to" << updPath;
+            pendingIt.remove();
+        }
+    }
+
+    updateDirectory(url);
+}
+
+// Called by slotFileDirty
+void KDirListerCache::handleFileDirty(const KUrl& url)
+{
+    // A file: do we know about it already?
+    KFileItem* existingItem = findByUrl(0, url);
+    if (!existingItem) {
+        // No - update the parent dir then
+        KUrl dir(url);
+        dir.setPath(url.directory());
+        updateDirectory(dir);
     } else {
-        // A file: do we know about it already?
-        KFileItem* existingItem = findByUrl(0, url);
-        if (!existingItem) {
-            // No - update the parent dir then
+        // A known file: delay updating it, FAM is flooding us with events
+        const QString filePath = url.toLocalFile();
+        if (!pendingUpdates.contains(filePath)) {
             KUrl dir(url);
-            dir.setPath(url.directory());
-            updateDirectory(dir);
-        } else {
-            // A known file: delay updating it, FAM is flooding us with events
-            const QString urlStr = url.url(KUrl::RemoveTrailingSlash);
-            if (!pendingUpdates.contains(urlStr)) {
-                KUrl dir(url);
-                dir.setPath(dir.directory());
-                if (checkUpdate(dir.url())) {
-                    pendingUpdates.insert(urlStr);
-                    if (!pendingUpdateTimer.isActive())
-                        pendingUpdateTimer.start( 500 );
-                }
+            dir.setPath(dir.directory());
+            if (checkUpdate(dir.url())) {
+                pendingUpdates.insert(filePath);
+                if (!pendingUpdateTimer.isActive())
+                    pendingUpdateTimer.start(500);
             }
         }
     }
@@ -1116,6 +1132,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
             // twice, otherwise, so that both views manage to recognize the item.
             // 2) with kio_ftp we can only know that something is a symlink when
             // listing the parent, so prefer that item, which has more info.
+            // Note that it gives a funky name() to the root item, rather than "." ;)
             dir->rootItem = itemForUrl(url);
             if (dir->rootItem.isNull())
                 dir->rootItem = KFileItem( *it, url, delayedMimeTypes, true  );
@@ -1435,7 +1452,6 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
             for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end();
                   kit != kend ; ++kit )
             {
-                aboutToRefreshItem(*kit);
                 const KFileItem oldItem = *kit;
 
                 const KUrl oldItemUrl ((*kit).url());
@@ -1640,8 +1656,6 @@ void KDirListerCache::slotUpdateResult( KJob * j )
                 if (inPendingRemoteUpdates) {
                     pendingRemoteUpdates.erase(pru_it);
                 }
-                foreach ( KDirLister *kdl, listers )
-                    kdl->d->aboutToRefreshItem( *tmp );
 
                 //kDebug(7004) << "file changed:" << tmp->name();
 
@@ -1726,7 +1740,7 @@ void KDirListerCache::deleteUnmarkedItems( const QList<KDirLister *>& listers, K
     while (kit.hasNext()) {
         const KFileItem& item = kit.next();
         if (!item.isMarked()) {
-            //kDebug() << "deleted:" << item.name() << &item;
+            //kDebug(7004) << "deleted:" << item.name() << &item;
             deletedItems.append(item);
             kit.remove();
         }
@@ -1823,13 +1837,12 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
 void KDirListerCache::processPendingUpdates()
 {
     QSet<KDirLister *> listers;
-    foreach(const QString& file, pendingUpdates) {
+    foreach(const QString& file, pendingUpdates) { // always a local path
         kDebug(7004) << file;
         KUrl u(file);
         KFileItem *item = findByUrl( 0, u ); // search all items
         if ( item ) {
             // we need to refresh the item, because e.g. the permissions can have changed.
-            aboutToRefreshItem( *item );
             KFileItem oldItem = *item;
             item->refresh();
             listers |= emitRefreshItem( oldItem, *item );
@@ -2253,6 +2266,8 @@ void KDirLister::Private::addNewItem(const KUrl& directoryUrl, const KFileItem &
     if (!isItemVisible(item))
         return; // No reason to continue... bailing out here prevents a mimetype scan.
 
+    //kDebug(7004) << "in" << directoryUrl << "item:" << item.url();
+
   if ( m_parent->matchesMimeFilter( item ) )
   {
     if ( !lstNewItems )
@@ -2285,13 +2300,10 @@ void KDirLister::Private::addNewItems(const KUrl& directoryUrl, const KFileItemL
     addNewItem(directoryUrl, *kit);
 }
 
-void KDirLister::Private::aboutToRefreshItem( const KFileItem &item )
-{
-    refreshItemWasFiltered = !isItemVisible(item) || !m_parent->matchesMimeFilter(item);
-}
-
 void KDirLister::Private::addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item)
 {
+    const bool refreshItemWasFiltered = !isItemVisible(oldItem) ||
+                                        !m_parent->matchesMimeFilter(oldItem);
   if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
     if ( refreshItemWasFiltered )
     {

@@ -19,15 +19,66 @@
 #ifndef KDIRLISTERTEST_H
 #define KDIRLISTERTEST_H
 
+#include <QSignalSpy>
 #include <QtCore/QObject>
 #include <ktempdir.h>
 #include <QtCore/QDate>
 #include <kdirlister.h>
 #include <QtCore/QEventLoop>
 
-class MyDirLister : public KDirLister
+Q_DECLARE_METATYPE(KFileItemList)
+
+class GlobalInits
 {
 public:
+    GlobalInits() {
+        // Must be done before the QSignalSpys connect
+        qRegisterMetaType<KUrl>();
+        qRegisterMetaType<KFileItem>();
+        qRegisterMetaType<KFileItemList>();
+    }
+};
+
+class MyDirLister : public KDirLister, GlobalInits
+{
+public:
+    MyDirLister()
+        : spyStarted(this, SIGNAL(started(KUrl))),
+          spyClear(this, SIGNAL(clear())),
+          spyClearKUrl(this, SIGNAL(clear(KUrl))),
+          spyCompleted(this, SIGNAL(completed())),
+          spyCompletedKUrl(this, SIGNAL(completed(KUrl))),
+          spyCanceled(this, SIGNAL(canceled())),
+          spyCanceledKUrl(this, SIGNAL(canceled(KUrl))),
+          spyRedirection(this, SIGNAL(redirection(KUrl))),
+          spyDeleteItem(this, SIGNAL(deleteItem(KFileItem))), 
+          spyItemsDeleted(this, SIGNAL(itemsDeleted(KFileItemList)))
+    {}
+
+    void clearSpies()
+    {
+        spyStarted.clear();
+        spyClear.clear();
+        spyClearKUrl.clear();
+        spyCompleted.clear();
+        spyCompletedKUrl.clear();
+        spyCanceled.clear();
+        spyCanceledKUrl.clear();
+        spyRedirection.clear();
+        spyDeleteItem.clear();
+        spyItemsDeleted.clear();
+    }
+
+    QSignalSpy spyStarted;
+    QSignalSpy spyClear;
+    QSignalSpy spyClearKUrl;
+    QSignalSpy spyCompleted;
+    QSignalSpy spyCompletedKUrl;
+    QSignalSpy spyCanceled;
+    QSignalSpy spyCanceledKUrl;
+    QSignalSpy spyRedirection;
+    QSignalSpy spyDeleteItem;
+    QSignalSpy spyItemsDeleted;
 protected:
     virtual void handleError(KIO::Job* job);
 };
@@ -37,11 +88,14 @@ class KDirListerTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void initTestCase();
+    void cleanup();
     void testOpenUrl();
     void testOpenUrlFromCache();
     void testNewItems();
+    void testNewItemByCopy();
     void testNewItemsInSymlink();
     void testRefreshItems();
+    void testRefreshRootItem();
     void testDeleteItem();
     void testRenameItem();
     void testRenameAndOverwrite();
@@ -58,6 +112,7 @@ protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtest
     void slotNewItems(const KFileItemList&);
     void slotNewItems2(const KFileItemList&);
     void slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
+    void slotRefreshItems2(const QList<QPair<KFileItem, KFileItem> >&);
 
 Q_SIGNALS:
     void refreshItemsReceived();
@@ -66,6 +121,9 @@ private:
     void enterLoop(int exitCount = 1);
     int fileCount() const;
     QString path() const { return m_tempDir.name(); }
+    void waitForRefreshedItems();
+    void createSimpleFile(const QString& fileName);
+    void fillDirLister2(MyDirLister& lister, const QString& path);
 
 private:
     int m_exitCount;
@@ -74,7 +132,7 @@ private:
     MyDirLister m_dirLister;
     KFileItemList m_items;
     KFileItemList m_items2;
-    QList<QPair<KFileItem, KFileItem> > m_refreshedItems;
+    QList<QPair<KFileItem, KFileItem> > m_refreshedItems, m_refreshedItems2;
 };
 
 
