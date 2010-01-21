@@ -273,6 +273,9 @@ private:
     // otherwise mark the cached item as not-up-to-date for later and return false
     bool checkUpdate( const QString& url );
 
+    // Helper method for slotFileDirty
+    void handleFileDirty(const KUrl& url, bool isDir);
+
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the children.
@@ -297,6 +300,12 @@ private:
      * (but this allows to buffer change notifications)
      */
     QSet<KDirLister *> emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem);
+
+    /**
+     * When KDirWatch tells us that something changed in "dir", we need to
+     * also notify the dirlisters that are listing a symlink to "dir" (#213799)
+     */
+    QStringList directoriesForCanonicalPath(const QString& dir) const;
 
 #ifndef NDEBUG
   void printDebug();
@@ -401,6 +410,11 @@ private:
 
     typedef QHash<QString /*url*/, KDirListerCacheDirectoryData> DirectoryDataHash;
     DirectoryDataHash directoryData;
+
+    // Symlink-to-directories are registered here so that we can
+    // find the url that changed, when kdirwatch tells us about
+    // changes in the canonical url. (#213799)
+    QHash<QString /*canonical path*/, QStringList /*dirlister urls*/> canonicalUrls;
 
     // Set of local files that we have changed recently (according to KDirWatch)
     // We temporize the notifications by keeping them 500ms in this list.

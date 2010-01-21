@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testOpenUrl();
     void testOpenUrlFromCache();
     void testNewItems();
+    void testNewItemsInSymlink();
     void testRefreshItems();
     void testDeleteItem();
     void testRenameItem();
@@ -63,9 +64,10 @@ Q_SIGNALS:
 
 private:
     void enterLoop(int exitCount = 1);
+    int fileCount() const;
+    QString path() const { return m_tempDir.name(); }
 
 private:
-    QString path() const { return m_tempDir.name(); }
     int m_exitCount;
     QEventLoop m_eventLoop;
     KTempDir m_tempDir;

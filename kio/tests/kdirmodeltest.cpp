@@ -657,6 +657,14 @@ void KDirModelTest::testExpandToUrl_data()
     QTest::newRow("subdir/subsubdir/testfile sync")
         << false << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 
+#ifndef Q_WS_WIN
+    // Expand a symlink to a directory (#219547)
+    const QString dirlink = m_tempDir->name() + "dirlink";
+    createTestSymlink(dirlink, "/");
+    QTest::newRow("dirlink")
+        << false << "dirlink/tmp" << (QStringList()<<"dirlink"<<"dirlink/tmp");
+#endif
+
     // Do a cold-cache test too, but nowadays it doesn't change anything anymore,
     // apart from testing different code paths inside KDirLister.
     QTest::newRow("subdir/subsubdir/testfile with reload")
