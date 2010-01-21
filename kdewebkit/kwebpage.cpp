@@ -81,30 +81,32 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     if (!flags || (flags & KWalletIntegration))
         setWallet(new KWebWallet);
 
-    action(Back)->setIcon(QIcon::fromTheme("go-previous"));
-    action(Forward)->setIcon(QIcon::fromTheme("go-next"));
-    action(Reload)->setIcon(QIcon::fromTheme("view-refresh"));
-    action(Stop)->setIcon(QIcon::fromTheme("process-stop"));
-    action(Cut)->setIcon(QIcon::fromTheme("edit-cut"));
-    action(Copy)->setIcon(QIcon::fromTheme("edit-copy"));
-    action(Paste)->setIcon(QIcon::fromTheme("edit-paste"));
-    action(Undo)->setIcon(QIcon::fromTheme("edit-undo"));
-    action(Redo)->setIcon(QIcon::fromTheme("edit-redo"));
-    action(InspectElement)->setIcon(QIcon::fromTheme("view-process-all"));
-    action(OpenLinkInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
-    action(OpenFrameInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
-    action(OpenImageInNewWindow)->setIcon(QIcon::fromTheme("window-new"));
-    action(CopyLinkToClipboard)->setIcon(QIcon::fromTheme("edit-copy"));
-    action(CopyImageToClipboard)->setIcon(QIcon::fromTheme("edit-copy"));
-    action(ToggleBold)->setIcon(QIcon::fromTheme("format-text-bold"));
-    action(ToggleItalic)->setIcon(QIcon::fromTheme("format-text-italic"));
-    action(ToggleUnderline)->setIcon(QIcon::fromTheme("format-text-underline"));
-    action(DownloadLinkToDisk)->setIcon(QIcon::fromTheme("document-save"));
-    action(DownloadImageToDisk)->setIcon(QIcon::fromTheme("document-save"));
+    // TODO: If and when the upstream uses QIcon::fromTheme for setting
+    // icons and shortcuts, then code below can be removed...
+    action(Back)->setIcon(KIcon("go-previous"));
+    action(Forward)->setIcon(KIcon("go-next"));
+    action(Reload)->setIcon(KIcon("view-refresh"));
+    action(Stop)->setIcon(KIcon("process-stop"));
+    action(Cut)->setIcon(KIcon("edit-cut"));
+    action(Copy)->setIcon(KIcon("edit-copy"));
+    action(Paste)->setIcon(KIcon("edit-paste"));
+    action(Undo)->setIcon(KIcon("edit-undo"));
+    action(Redo)->setIcon(KIcon("edit-redo"));
+    action(InspectElement)->setIcon(KIcon("view-process-all"));
+    action(OpenLinkInNewWindow)->setIcon(KIcon("window-new"));
+    action(OpenFrameInNewWindow)->setIcon(KIcon("window-new"));
+    action(OpenImageInNewWindow)->setIcon(KIcon("window-new"));
+    action(CopyLinkToClipboard)->setIcon(KIcon("edit-copy"));
+    action(CopyImageToClipboard)->setIcon(KIcon("edit-copy"));
+    action(ToggleBold)->setIcon(KIcon("format-text-bold"));
+    action(ToggleItalic)->setIcon(KIcon("format-text-italic"));
+    action(ToggleUnderline)->setIcon(KIcon("format-text-underline"));
+    action(DownloadLinkToDisk)->setIcon(KIcon("document-save"));
+    action(DownloadImageToDisk)->setIcon(KIcon("document-save"));
 
-    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, QIcon::fromTheme("preferences-plugin").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, QIcon::fromTheme("image-missing").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, QIcon::fromTheme("applications-internet").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KIcon("preferences-plugin").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KIcon("image-missing").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KIcon("applications-internet").pixmap(32, 32));
 
     action(Back)->setShortcut(KStandardShortcut::back().primary());
     action(Forward)->setShortcut(KStandardShortcut::forward().primary());
