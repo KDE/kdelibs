@@ -386,7 +386,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
         if ( (!useRevProxy && !isRevMatch) || (useRevProxy && isRevMatch) )
         {
            d->url = proxy;
-           if ( d->url.isValid() )
+           if (d->url.isValid() && !d->url.protocol().isEmpty())
            {
               // The idea behind slave protocols is not applicable to http
               // and webdav protocols.
