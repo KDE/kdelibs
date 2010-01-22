@@ -480,13 +480,14 @@ void RenderWidget::updateFromElement()
         }
 
         // Border:
-        if (shouldPaintBorder() || (!shouldPaintBackgroundOrBorder() && canHaveBorder()))
-        {
+        if (shouldDisableNativeBorders()) {
             if (QFrame* frame = qobject_cast<QFrame*>(m_widget))
                 frame->setFrameShape(QFrame::NoFrame);
             else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget))
                 lineEdit->setFrame(false);
         }
+        else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget))
+            lineEdit->setFrame(true);  // set frame in case previously disabled #216795
 
         // Font:
         setStyle(style());
@@ -497,7 +498,7 @@ void RenderWidget::updateFromElement()
 
 void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
 {
-    bool fudge = !shouldPaintBorder();
+    bool fudge = !shouldPaintCSSBorders();
     paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
                                 fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
                                 fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
@@ -510,13 +511,13 @@ void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     QRect cr = r.intersected(paintInfo.r);
 
     if (qobject_cast<QAbstractScrollArea*>(m_widget) || (isRedirectedWidget() && 
-            (style()->hasBackgroundImage() || (style()->hasBackground() && shouldPaintBorder()))))
+            (style()->hasBackgroundImage() || (style()->hasBackground() && shouldPaintCSSBorders()))))
     {
         paintAllBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), 
             cr, r.x(), r.y(), r.width(), r.height());
     }
 
-    if (shouldPaintBorder() && style()->hasBorder())
+    if (shouldPaintCSSBorders() && style()->hasBorder())
     {
         paintBorder(paintInfo.p, _tx, _ty, width(), height(), style());
     }

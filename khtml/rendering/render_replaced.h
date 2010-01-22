@@ -118,7 +118,7 @@ protected:
     virtual bool canHaveBorder() const { return false; }
     virtual bool includesPadding() const { return false; }
 
-    bool shouldPaintBorder() const { 
+    bool shouldPaintCSSBorders() const {
         // Don't paint borders if the border-style is native
         // or borders are not supported on this widget    
         return shouldPaintBackgroundOrBorder() && canHaveBorder() && 
@@ -127,6 +127,11 @@ protected:
               style()->borderTopStyle()    != BNATIVE ||
               style()->borderBottomStyle() != BNATIVE);
     }
+
+    bool shouldDisableNativeBorders() const {
+        return (shouldPaintCSSBorders() || (!shouldPaintBackgroundOrBorder() && canHaveBorder()));
+    }
+
     virtual bool acceptsSyntheticEvents() const { return true; }
 
 

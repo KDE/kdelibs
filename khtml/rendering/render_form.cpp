@@ -351,7 +351,7 @@ void RenderButton::layout()
 void RenderButton::setStyle(RenderStyle *style)
 {
     RenderFormElement::setStyle(style);
-    if (shouldPaintBorder()) {
+    if (shouldDisableNativeBorders()) {
         // we paint the borders ourselves on this button,
         // remove the widget's native ones.
         KHTMLProxyStyle* style = static_cast<KHTMLProxyStyle*>(getProxyStyle());
@@ -507,7 +507,7 @@ void RenderSubmitButton::setPadding()
 
     if (!RenderWidget::paddingLeft() && !RenderWidget::paddingRight() && 
         !RenderWidget::paddingTop() && !RenderWidget::paddingBottom()) {
-        widget()->setStyleSheet( shouldPaintBorder() ? sBorderNoneSheet : QString() );
+        widget()->setStyleSheet( shouldDisableNativeBorders() ? sBorderNoneSheet : QString() );
     }
 
     widget()->setStyleSheet(
@@ -515,7 +515,7 @@ void RenderSubmitButton::setPadding()
             .arg( RenderWidget::paddingLeft() )
             .arg( RenderWidget::paddingRight() )
             .arg( RenderWidget::paddingTop() )
-            .arg( RenderWidget::paddingBottom()) + (shouldPaintBorder() ? sBorderNoneSheet : QString())
+            .arg( RenderWidget::paddingBottom()) + (shouldDisableNativeBorders() ? sBorderNoneSheet : QString())
      );
 }
 
@@ -527,7 +527,7 @@ void RenderSubmitButton::setStyle(RenderStyle *style)
     RenderFormElement::setStyle(style);
 
     QString s = widget()->styleSheet();
-    if (shouldPaintBorder()) {
+    if (shouldDisableNativeBorders()) {
         // we paint the borders ourselves on this button,
         // remove the widget's native ones.
         if (!s.contains(sBorderNoneSheet)) {
@@ -608,7 +608,7 @@ void RenderSubmitButton::calcMinMaxWidth()
     toAdd = qMax(0,toAdd);
     w += toAdd;
 
-    if (shouldPaintBorder()) {
+    if (shouldDisableNativeBorders()) {
         // we paint the borders ourselves, so let's override our height to something saner
         h = ts.height();
     }
@@ -1033,7 +1033,7 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     RenderFormElement::setStyle( _style );
 
     widget()->setAlignment(textAlignment());
-    bool showClearButton = (!shouldPaintBorder() && !_style->hasBackgroundImage());
+    bool showClearButton = (!shouldDisableNativeBorders() && !_style->hasBackgroundImage());
     static_cast<LineEditWidget*>(widget())->setClearButtonShown( showClearButton );
     if (showClearButton) {
         QList<QWidget *> wl = qFindChildren<QWidget *>(m_widget, QString());
