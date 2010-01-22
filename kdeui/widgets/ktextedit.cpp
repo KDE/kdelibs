@@ -614,6 +614,7 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     if (!wordIsMisspelled || selectedWordClicked || inQuote) {
         QMenu *popup = mousePopupMenu();
         if ( popup ) {
+            aboutToShowContextMenu(popup);
             popup->exec( event->globalPos() );
             delete popup;
         }

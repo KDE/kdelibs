@@ -273,6 +273,21 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
       */
      void languageChanged(const QString &language);
 
+    /**
+     * Emitted before the context menu is displayed.
+     *
+     * The signal allows you to add your own entries into the
+     * the context menu that is created on demand.
+     *
+     * NOTE: Do not store the pointer to the QMenu
+     * provided through since it is created and deleted
+     * on demand.
+     *
+     * @param p the context menu about to be displayed
+     * @since 4.5
+     */
+    void aboutToShowContextMenu(QMenu* menu);
+
   public Q_SLOTS:
 
     /**

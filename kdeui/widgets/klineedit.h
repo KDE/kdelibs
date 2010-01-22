@@ -427,13 +427,13 @@ Q_SIGNALS:
      * The signal allows you to add your own entries into the
      * the context menu that is created on demand.
      *
-     * NOTE: Do not store the pointer to the QPopupMenu
+     * NOTE: Do not store the pointer to the QMenu
      * provided through since it is created and deleted
      * on demand.
      *
      * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QMenu * p );
+    void aboutToShowContextMenu(QMenu* menu);
 
     /**
      * Emitted when the user clicked on the clear button
