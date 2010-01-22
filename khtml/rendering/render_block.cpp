@@ -838,7 +838,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int toAdd = borderBottom() + paddingBottom();
     if (m_layer && scrollsOverflowX() && style()->height().isAuto())
         toAdd += m_layer->horizontalScrollbarHeight();
-    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
+    if ( floatBottom()+toAdd > m_height && (isFloatingOrPositioned() || flowAroundFloats()) )
         m_overflowHeight = m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
