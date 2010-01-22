@@ -191,7 +191,7 @@ protected:
     void parseServer(khtml::TokenizerString &str);
     void parseText(khtml::TokenizerString &str);
     void parseListing(khtml::TokenizerString &str);
-    void parseSpecial(khtml::TokenizerString &str);
+    void parseRawContent(khtml::TokenizerString &str);
     void parseTag(khtml::TokenizerString &str);
     void parseEntity(khtml::TokenizerString &str, QChar *&dest, bool start = false);
     void parseProcessingInstruction(khtml::TokenizerString &str);
@@ -206,14 +206,14 @@ protected:
         if ( (dest - buffer) > size-len )
             enlargeBuffer(len);
     }
-    inline void checkScriptBuffer(int len = 10)
+    inline void checkRawContentBuffer(int len = 10)
     {
-        if ( scriptCodeSize + len >= scriptCodeMaxSize )
-            enlargeScriptBuffer(len);
+        if ( rawContentSize + len >= rawContentMaxSize )
+            enlargeRawContentBuffer(len);
     }
 
     void enlargeBuffer(int len);
-    void enlargeScriptBuffer(int len);
+    void enlargeRawContentBuffer(int len);
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
@@ -330,8 +330,6 @@ protected:
 
     bool brokenServer;
 
-    bool brokenScript;
-
     // doctype parsing from WebCore + internal subset checker and comments in doctype
     // are we in <!DOCTYPE ...> block?
     bool doctype;
@@ -353,15 +351,17 @@ protected:
     // name of an unknown attribute
     QString attrName;
 
-    // Used to store the code of a srcipting sequence
-    QChar *scriptCode;
-    // Size of the script sequenze stored in scriptCode
-    int scriptCodeSize;
-    // Maximal size that can be stored in scriptCode
-    int scriptCodeMaxSize;
+    // Used to store the content of 
+    QChar *rawContent;
+    // Size of the script sequenze stored in rawContent
+    int rawContentSize;
+    // Maximal size that can be stored in rawContent
+    int rawContentMaxSize;
     // resync point of script code size
-    int scriptCodeResync;
-
+    int rawContentResync;
+    // this tracks the number of advances done in 'raw' tokenizing
+    // mode since we last decoded an entity.
+    int rawContentSinceLastEntity;
     // Stores characters if we are scanning for a string like "</script>"
     QChar searchBuffer[ 10 ];
     // Counts where we are in the string we are scanning for

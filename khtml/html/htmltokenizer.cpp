@@ -38,7 +38,6 @@
 #include "dtd.h"
 
 #include <misc/loader.h>
-#include <misc/htmlhashes.h>
 
 #include <khtmlview.h>
 #include <khtml_part.h>
@@ -141,8 +140,8 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
 {
     view = _view;
     buffer = 0;
-    scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
+    rawContent = 0;
+    rawContentSize = rawContentMaxSize = rawContentResync = rawContentSinceLastEntity = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
@@ -160,8 +159,8 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl 
 {
     view = 0;
     buffer = 0;
-    scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
+    rawContent = 0;
+    rawContentSize = rawContentMaxSize = rawContentResync = rawContentSinceLastEntity = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
@@ -194,10 +193,10 @@ void HTMLTokenizer::reset()
     buffer = dest = 0;
     size = 0;
 
-    if ( scriptCode )
-        KHTML_DELETE_QCHAR_VEC(scriptCode);
-    scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
+    if ( rawContent )
+        KHTML_DELETE_QCHAR_VEC(rawContent);
+    rawContent = 0;
+    rawContentSize = rawContentMaxSize = rawContentResync = 0;
 
     if (m_autoCloseTimer > 0) {
         killTimer(m_autoCloseTimer);
@@ -250,7 +249,6 @@ void HTMLTokenizer::begin()
     noMoreData = false;
     brokenComments = false;
     brokenServer = false;
-    brokenScript = false;
     lineno = 0;
     scriptStartLineno = 0;
     tagStartLineno = 0;
@@ -341,8 +339,15 @@ void HTMLTokenizer::processListing(TokenizerString list)
     pre = old_pre;
 }
 
-void HTMLTokenizer::parseSpecial(TokenizerString &src)
+void HTMLTokenizer::parseRawContent(TokenizerString &src)
 {
+    // The 'raw content' mode is a very lax tokenizing mode
+    // that will absorb anything but the exact closing tag
+    // that made us enter this mode, *except* if it inside a comment.
+    //
+    // Any other tag or comment will be passed verbatim to the parser as part
+    // of the content. It is used for script, style, and a few others.
+    // 
     assert( textarea || title || !Entity );
     assert( !tag );
     assert( xmp+textarea+title+style+script == 1 );
@@ -352,24 +357,26 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
     if ( comment ) parseComment( src );
 
     while ( !src.isEmpty() ) {
-        checkScriptBuffer();
+        checkRawContentBuffer();
         unsigned char ch = src->toLatin1();
-        if ( !scriptCodeResync && !brokenComments && !title && !textarea && !xmp && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QString::fromRawData( scriptCode+scriptCodeSize-3, 3 ) == "<!-" ) {
+        if ( !rawContentResync && !brokenComments && !xmp && ch == '-' && 
+              rawContentSize >= 3 && rawContentSinceLastEntity >= 3 && !src.escaped() && 
+              QString::fromRawData( rawContent+rawContentSize-3, 3 ) == "<!-" ) {
             comment = true;
-            scriptCode[ scriptCodeSize++ ] = ch;
+            rawContent[ rawContentSize++ ] = ch;
             ++src;
             parseComment( src );
             continue;
         }
-        if ( scriptCodeResync && !tquote && ( ch == '>' ) ) {
+        if ( rawContentResync && !tquote && ( ch == '>' ) ) {
             ++src;
-            scriptCodeSize = scriptCodeResync-1;
-            scriptCodeResync = 0;
-            scriptCode[ scriptCodeSize ] = scriptCode[ scriptCodeSize + 1 ] = 0;
+            rawContentSize = rawContentResync-1;
+            rawContentResync = 0;
+            rawContent[ rawContentSize ] = rawContent[ rawContentSize + 1 ] = 0;
             if ( script )
                 scriptHandler();
             else {
-                processListing(TokenizerString(scriptCode, scriptCodeSize));
+                processListing(TokenizerString(rawContent, rawContentSize));
                 processToken();
                 if ( style )         { currToken.tid = ID_STYLE + ID_CLOSE_TAG; }
                 else if ( textarea ) { currToken.tid = ID_TEXTAREA + ID_CLOSE_TAG; }
@@ -378,20 +385,20 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
                 processToken();
                 script = style = textarea = title = xmp = false;
                 tquote = NoQuote;
-                scriptCodeSize = scriptCodeResync = 0;
+                rawContentSize = rawContentResync = 0;
             }
             return;
         }
         // possible end of tagname, lets check.
-        if ( !scriptCodeResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
-             scriptCodeSize >= searchStopperLen &&
-             QString::compare(QString::fromRawData(scriptCode + scriptCodeSize - searchStopperLen, searchStopperLen),
-                 QLatin1String(searchStopper), Qt::CaseInsensitive) == 0) {
-            scriptCodeResync = scriptCodeSize-searchStopperLen+1;
+        if ( !rawContentResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
+              rawContentSize >= searchStopperLen && rawContentSinceLastEntity >= searchStopperLen &&
+              QString::compare(QString::fromRawData(rawContent + rawContentSize - searchStopperLen, searchStopperLen),
+                  QLatin1String(searchStopper), Qt::CaseInsensitive) == 0) {
+            rawContentResync = rawContentSize-searchStopperLen+1;
             tquote = NoQuote;
             continue;
         }
-        if ( scriptCodeResync && !escaped ) {
+        if ( rawContentResync && !escaped ) {
             if(ch == '\"')
                 tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
             else if(ch == '\'')
@@ -400,15 +407,16 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
                 tquote = NoQuote;
         }
         escaped = ( !escaped && ch == '\\' );
-        if (!scriptCodeResync && (textarea||title) && !src.escaped() && ch == '&') {
-            QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+        if (!rawContentResync && (textarea||title) && !src.escaped() && ch == '&') {
+            QChar *rawContentDest = rawContent+rawContentSize;
             ++src;
-            parseEntity(src,scriptCodeDest,true);
-            scriptCodeSize = scriptCodeDest-scriptCode;
+            parseEntity(src,rawContentDest,true);
+            rawContentSize = rawContentDest-rawContent;
         }
         else {
-            scriptCode[ scriptCodeSize++ ] = *src;
+            rawContent[ rawContentSize++ ] = *src;
             ++src;
+            ++rawContentSinceLastEntity;
         }
     }
 }
@@ -418,7 +426,7 @@ void HTMLTokenizer::scriptHandler()
     QString currentScriptSrc = scriptSrc;
     scriptSrc.clear();
 
-    processListing(TokenizerString(scriptCode, scriptCodeSize));
+    processListing(TokenizerString(rawContent, rawContentSize));
     QString exScript( buffer, dest-buffer );
 
     processToken();
@@ -443,7 +451,7 @@ void HTMLTokenizer::scriptHandler()
             pendingQueue.push(src);
             int scriptCount = cachedScript.count();
             setSrc(TokenizerString());
-            scriptCodeSize = scriptCodeResync = 0;
+            rawContentSize = rawContentResync = 0;
             cs->ref(this);
             if (cachedScript.count() == scriptCount)
                 deferredScript = true;
@@ -451,7 +459,7 @@ void HTMLTokenizer::scriptHandler()
         else if (currentScriptSrc.isEmpty() && view && javascript ) {
             pendingQueue.push(src);
             setSrc(TokenizerString());
-            scriptCodeSize = scriptCodeResync = 0;
+            rawContentSize = rawContentResync = 0;
             scriptExecution( exScript, QString(), tagStartLineno /*scriptStartLineno*/ );
         } else {
             // script was filtered or disallowed
@@ -460,7 +468,7 @@ void HTMLTokenizer::scriptHandler()
     }
 
     script = false;
-    scriptCodeSize = scriptCodeResync = 0;
+    rawContentSize = rawContentResync = 0;
 
     if ( !effectiveScript )
         return;
@@ -506,9 +514,9 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
-    checkScriptBuffer(src.length());
+    checkRawContentBuffer(src.length());
     while ( src.length() ) {
-        scriptCode[ scriptCodeSize++ ] = *src;
+        rawContent[ rawContentSize++ ] = *src;
 
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         qDebug("comment is now: *%s*", src.toString().left(16).toLatin1().constData());
@@ -518,8 +526,8 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
         {
             bool handleBrokenComments =  brokenComments && !( script || style );
             bool scriptEnd=false;
-            if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
-                  scriptCode[scriptCodeSize-2] == '-' )
+            if ( rawContentSize > 2 && rawContent[rawContentSize-3] == '-' &&
+                  rawContent[rawContentSize-2] == '-' )
             {
                 scriptEnd=true;
             }
@@ -527,15 +535,15 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
             if (handleBrokenComments || scriptEnd ){
                 ++src;
                 if ( !( title || script || xmp || textarea || style) ) {
-                    checkScriptBuffer();
-                    scriptCode[ scriptCodeSize ] = 0;
-                    scriptCode[ scriptCodeSize + 1 ] = 0;
+                    checkRawContentBuffer();
+                    rawContent[ rawContentSize ] = 0;
+                    rawContent[ rawContentSize + 1 ] = 0;
                     currToken.tid = ID_COMMENT;
-                    processListing(TokenizerString(scriptCode, scriptCodeSize - 3));
+                    processListing(TokenizerString(rawContent, rawContentSize - 3));
                     processToken();
                     currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
                     processToken();
-                    scriptCodeSize = 0;
+                    rawContentSize = 0;
                 }
                 comment = false;
                 return; // Finished parsing comment
@@ -821,14 +829,14 @@ void HTMLTokenizer::parseDoctype(TokenizerString &src)
 
 void HTMLTokenizer::parseServer(TokenizerString &src)
 {
-    checkScriptBuffer(src.length());
+    checkRawContentBuffer(src.length());
     while ( !src.isEmpty() ) {
-        scriptCode[ scriptCodeSize++ ] = *src;
+        rawContent[ rawContentSize++ ] = *src;
         if (src->unicode() == '>' &&
-            scriptCodeSize > 1 && scriptCode[scriptCodeSize-2] == '%') {
+            rawContentSize > 1 && rawContent[rawContentSize-2] == '%') {
             ++src;
             server = false;
-            scriptCodeSize = 0;
+            rawContentSize = 0;
             return; // Finished parsing server include
         }
         ++src;
@@ -1035,6 +1043,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                     src.prepend( TokenizerString(QString::fromAscii(cBuffer+entityLen, rem)) );
                 }
                 src.push( EntityChar );
+                rawContentSinceLastEntity = -1;
             } else {
 #ifdef TOKEN_DEBUG
                 kDebug( 6036 ) << "unknown entity!";
@@ -1059,7 +1068,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
 void HTMLTokenizer::parseTag(TokenizerString &src)
 {
     assert(!Entity );
-    checkScriptBuffer( src.length() );
+    checkRawContentBuffer( src.length() );
 
     while ( !src.isEmpty() )
     {
@@ -1462,7 +1471,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             if(tagID >= ID_CLOSE_TAG)
                 tagID -= ID_CLOSE_TAG;
-            else if ( !brokenScript && tagID == ID_SCRIPT ) {
+            else if ( tagID == ID_SCRIPT ) {
                 assert( !parser->currentScriptElement() );
                 DOMStringImpl* a = 0;
                 scriptSrc.clear(); scriptSrcCharset.clear();
@@ -1506,17 +1515,19 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     searchStopper = scriptEnd;
                     searchStopperLen = 8;
                     script = true;
-                    parseSpecial(src);
+                    parseRawContent(src);
                 }
-                else if (tagID < ID_CLOSE_TAG) // Handle <script src="foo"/>
+                else if (tagID < ID_CLOSE_TAG) { // Handle <script src="foo"/>
+                    script = true;
                     scriptHandler();
+                }
                 break;
             case ID_STYLE:
                 if (beginTag) {
                     searchStopper = styleEnd;
                     searchStopperLen = 7;
                     style = true;
-                    parseSpecial(src);
+                    parseRawContent(src);
                 }
                 break;
             case ID_TEXTAREA:
@@ -1525,7 +1536,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     searchStopperLen = 10;
                     textarea = true;
                     discard = NoneDiscard;
-                    parseSpecial(src);
+                    parseRawContent(src);
                 }
                 break;
             case ID_TITLE:
@@ -1533,7 +1544,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     searchStopper = titleEnd;
                     searchStopperLen = 7;
                     title = true;
-                    parseSpecial(src);
+                    parseRawContent(src);
                 }
                 break;
             case ID_XMP:
@@ -1541,7 +1552,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     searchStopper = xmpEnd;
                     searchStopperLen = 5;
                     xmp = true;
-                    parseSpecial(src);
+                    parseRawContent(src);
                 }
                 break;
             case ID_SELECT:
@@ -1673,15 +1684,15 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         else if ( plaintext )
             parseText( src );
         else if (script)
-            parseSpecial(src);
+            parseRawContent(src);
         else if (style)
-            parseSpecial(src);
+            parseRawContent(src);
         else if (xmp)
-            parseSpecial(src);
+            parseRawContent(src);
         else if (textarea)
-            parseSpecial(src);
+            parseRawContent(src);
         else if (title)
-            parseSpecial(src);
+            parseRawContent(src);
         else if (comment)
             parseComment(src);
         else if (doctypeComment && doctypeComment != DoctypeCommentEnd && doctypeComment != DoctypeCommentBogus)
@@ -1890,24 +1901,21 @@ void HTMLTokenizer::setAutoClose( bool b ) {
 
 void HTMLTokenizer::end()
 {
-    if ( buffer == 0 ) {
-        emit finishedParsing();
-        return;
+    if ( buffer ) {
+        // parseTag is using the buffer for different matters
+        if ( !tag )
+            processToken();
+
+        if(buffer)
+            KHTML_DELETE_QCHAR_VEC(buffer);
+
+        if(rawContent)
+            KHTML_DELETE_QCHAR_VEC(rawContent);
+
+        rawContent = 0;
+        rawContentSize = rawContentMaxSize = rawContentResync = 0;
+        buffer = 0;
     }
-
-    // parseTag is using the buffer for different matters
-    if ( !tag )
-        processToken();
-
-    if(buffer)
-        KHTML_DELETE_QCHAR_VEC(buffer);
-
-    if(scriptCode)
-        KHTML_DELETE_QCHAR_VEC(scriptCode);
-
-    scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-    buffer = 0;
     emit finishedParsing();
 }
 
@@ -1917,39 +1925,42 @@ void HTMLTokenizer::finish()
         killTimer( m_autoCloseTimer );
         m_autoCloseTimer = 0;
     }
-    // do this as long as we don't find matching comment ends
-    while((title || script || comment || server) && scriptCode && scriptCodeSize)
+    // The purpose of this iteration is to recover from 'raw content' tokenizing mode.
+    // In this mode, any error such as the lack of a closing tag (for the considered element) or of a closing comment,
+    // would result in the entire document being absorbed in one node.
+    // When it happens, we simply put back in the input buffer what this mode's output has accumulated so far,
+    // and retokenize after either disabling the 'raw content' mode (by setting the corresponding members to false)
+    // or after setting a few flags disabling some lax parsing 'features' (brokenComments/brokenServer).
+    while((title || comment || server) && rawContent && rawContentSize)
     {
         // we've found an unmatched comment start
         if (comment)
             brokenComments = true;
         else if (server)
             brokenServer = true;
-        else if (script)
-            brokenScript = true;
 
-        checkScriptBuffer();
-        scriptCode[ scriptCodeSize ] = 0;
-        scriptCode[ scriptCodeSize + 1 ] = 0;
+        checkRawContentBuffer();
+        rawContent[ rawContentSize ] = 0;
+        rawContent[ rawContentSize + 1 ] = 0;
         int pos;
         QString food;
-        if (title || style || script)
-            food.setUnicode(scriptCode, scriptCodeSize);
-        else if (server) {
+        if (title || style || script) {
+            if (title)
+                currToken.reset();
+            food.setUnicode(rawContent, rawContentSize);
+        } else if (server) {
             food = "<";
-            food += QString(scriptCode, scriptCodeSize);
+            food += QString(rawContent, rawContentSize);
         }
         else {
-            pos = QString::fromRawData(scriptCode, scriptCodeSize).indexOf('>');
-            food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
+            pos = QString::fromRawData(rawContent, rawContentSize).indexOf('>');
+            food.setUnicode(rawContent+pos+1, rawContentSize-pos-1); // deep copy
         }
-        KHTML_DELETE_QCHAR_VEC(scriptCode);
-        scriptCode = 0;
-        scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-        if (script)
-            scriptHandler();
+        KHTML_DELETE_QCHAR_VEC(rawContent);
+        rawContent = 0;
+        rawContentSize = rawContentMaxSize = rawContentResync = 0;
 
-        comment = title = server = script = false;
+        comment = server = title = false;
         if ( !food.isEmpty() )
             write(food, true);
     }
@@ -1989,27 +2000,28 @@ void HTMLTokenizer::processToken()
     dest = buffer;
 
 #ifdef TOKEN_DEBUG
-    QString name = QString( getTagName(currToken.tid) );
     QString text;
+    bool closing = (currToken.tid > ID_CLOSE_TAG);
+    int rid = currToken.tid-(closing ? ID_CLOSE_TAG : 0);
     if(currToken.text)
         text = QString::fromRawData(currToken.text->s, currToken.text->l);
-
-    kDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.tid;
+    kDebug( 6036 ) << "Token -->" << LocalName::fromId(localNamePart(rid)).toString()
+                   << "id =" << currToken.tid << "closing ="<< closing;
     if (currToken.flat)
         kDebug( 6036 ) << "Token is FLAT!";
     if(!text.isNull())
         kDebug( 6036 ) << "text: \"" << text << "\"";
     unsigned long l = currToken.attrs ? currToken.attrs->length() : 0;
+ 
     if(l) {
         kDebug( 6036 ) << "Attributes: " << l;
         for (unsigned long i = 0; i < l; ++i) {
             NodeImpl::Id tid = currToken.attrs->idAt(i);
             DOMString value = currToken.attrs->valueAt(i);
-            kDebug( 6036 ) << "    " << tid << " " << parser->doc()->document()->getName(NodeImpl::AttributeId, tid).string()
+            kDebug( 6036 ) << "    " << tid << " " << LocalName::fromId(localNamePart(tid)).toString()
                             << "=\"" << value.string() << "\"" << endl;
         }
     }
-    kDebug( 6036 );
 #endif
 
     // In some cases, parseToken() can cause javascript code to be executed
@@ -2057,11 +2069,11 @@ void HTMLTokenizer::enlargeBuffer(int len)
     size = newsize;
 }
 
-void HTMLTokenizer::enlargeScriptBuffer(int len)
+void HTMLTokenizer::enlargeRawContentBuffer(int len)
 {
-    int newsize = qMax(scriptCodeMaxSize*2, scriptCodeMaxSize+len);
-    scriptCode = KHTML_REALLOC_QCHAR_VEC(scriptCode, newsize);
-    scriptCodeMaxSize = newsize;
+    int newsize = qMax(rawContentMaxSize*2, rawContentMaxSize+len);
+    rawContent = KHTML_REALLOC_QCHAR_VEC(rawContent, newsize);
+    rawContentMaxSize = newsize;
 }
 
 void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)

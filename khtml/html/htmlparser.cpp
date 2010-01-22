@@ -469,6 +469,9 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 return insertNode(n);
             }
             break;
+        case ID_TITLE:
+            popBlock(current->id());
+            return insertNode(n);
         default:
             break;
         }
