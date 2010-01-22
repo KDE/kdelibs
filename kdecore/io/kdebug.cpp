@@ -83,7 +83,7 @@
 #include "kcomponentdata.h"
 
 #ifdef Q_OS_SOLARIS
-// For the purposes of KDebug Solaris has a GNU-libc-compatible 
+// For the purposes of KDebug Solaris has a GNU-libc-compatible
 // backtrace() function. This isn't detected by the CMake checks
 // normally (check_function_exists fails), but we know it's there.
 // For better results, we would use walk_context(), but that's
@@ -93,6 +93,10 @@
 
 #ifdef HAVE_BACKTRACE
 #include <execinfo.h>
+#ifdef __GNUC__
+#define HAVE_BACKTRACE_DEMANGLE
+#include <cxxabi.h>
+#endif
 #endif
 
 #include "kdebugdbusiface_p.h"
@@ -661,6 +665,36 @@ struct KDebugPrivate
 
 K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
+#ifdef HAVE_BACKTRACE
+static QString maybeDemangledName(char *name)
+{
+#ifdef HAVE_BACKTRACE_DEMANGLE
+    const int len = strlen(name);
+    QByteArray in = QByteArray::fromRawData(name, len);
+    const int mangledNameStart = in.indexOf("(_");
+    if (mangledNameStart >=0) {
+        const int mangledNameEnd = in.indexOf('+', mangledNameStart + 2);
+        if (mangledNameEnd >= 0) {
+            int status;
+            // if we forget about this line and the one that undoes its effect we don't change the
+            // internal data of the QByteArray::fromRawData() ;)
+            name[mangledNameEnd] = 0;
+            char *demangled = abi::__cxa_demangle(name + mangledNameStart + 1, 0, 0, &status);
+            name[mangledNameEnd] = '+';
+            if (demangled) {
+                QString ret = QString::fromLatin1(name, mangledNameStart + 1) +
+                              QString::fromLatin1(demangled) +
+                              QString::fromLatin1(name + mangledNameEnd, len - mangledNameEnd);
+                free(demangled);
+                return ret;
+            }
+        }
+    }
+#endif
+    return QString::fromLatin1(name);
+}
+#endif
+
 QString kRealBacktrace(int levels)
 {
     QString s;
@@ -676,9 +710,8 @@ QString kRealBacktrace(int levels)
     s = QLatin1String("[\n");
 
     for (int i = 0; i < n; ++i)
-        s += QString::number(i) +
-             QLatin1String(": ") +
-             QLatin1String(strings[i]) + QLatin1String("\n");
+        s += QString::number(i) + QLatin1String(": ") +
+             maybeDemangledName(strings[i]) + QLatin1Char('\n');
     s += QLatin1String("]\n");
     if (strings)
         free (strings);
