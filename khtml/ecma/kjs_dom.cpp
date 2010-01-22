@@ -1810,7 +1810,7 @@ JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
       ret = new DOMProcessingInstruction(exec, static_cast<DOM::ProcessingInstructionImpl*>(n));
       break;
     case DOM::Node::COMMENT_NODE:
-      ret = new DOMCharacterData(exec, static_cast<DOM::CharacterDataImpl*>(n));
+      ret = new DOMComment(exec, static_cast<DOM::CommentImpl*>(n));
       break;
     case DOM::Node::DOCUMENT_NODE:
       if (static_cast<DOM::DocumentImpl*>(n)->isHTMLDocument())
@@ -2084,5 +2084,30 @@ JSValue* DOMTextProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
     default:
       break;
   }
+  return jsUndefined();
+}
+
+// -------------------------------------------------------------------------
+
+const ClassInfo DOMComment::info = { "Comment",
+                                    &DOMCharacterData::info, 0, 0 };
+/*
+@begin DOMCommentProtoTable 1
+@end
+*/
+
+KJS_DEFINE_PROTOTYPE(DOMCommentProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMCommentProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMComment",DOMCommentProto,DOMCommentProtoFunc,DOMCharacterDataProto)
+
+DOMComment::DOMComment(ExecState *exec, DOM::CommentImpl* d)
+ : DOMCharacterData(exec, d)
+ {
+    setPrototype(DOMCommentProto::self(exec));
+ }
+
+JSValue* DOMCommentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+{
+  KJS_CHECK_THIS( KJS::DOMComment, thisObj );
   return jsUndefined();
 }

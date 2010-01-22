@@ -347,6 +347,14 @@ namespace KJS {
     enum { SplitText, WholeText, ReplaceWholeText };
   };
 
+  class DOMComment : public DOMCharacterData {
+  public:
+    DOMComment(ExecState *exec, DOM::CommentImpl* t);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    DOM::CommentImpl* impl() const { return static_cast<DOM::CommentImpl*>(m_impl.get()); }
+  };
+
 } // namespace
 
 #endif
