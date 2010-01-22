@@ -890,6 +890,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotChangeDecorationPosition() )
     Q_PRIVATE_SLOT( d, void _k_slotExpandToUrl(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotItemsChanged() )
+    Q_PRIVATE_SLOT( d, void _k_slotDirectoryCreated(const KUrl&) )
 };
 
 #endif

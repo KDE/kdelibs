@@ -26,6 +26,7 @@
 #include "kfileitem.h"
 #include "kfilemetapreview.h"
 #include "kpreviewwidgetbase.h"
+#include "knewfilemenu.h"
 
 #include <config-kfile.h>
 
@@ -235,6 +236,7 @@ public:
     void _k_slotChangeDecorationPosition();
     void _k_slotExpandToUrl(const QModelIndex&);
     void _k_slotItemsChanged();
+    void _k_slotDirectoryCreated(const KUrl&);
 
     void updateListViewGrid();
     int iconSizeForViewType(QAbstractItemView *itemView) const;
@@ -284,6 +286,8 @@ public:
     KActionMenu *actionMenu;
     KActionCollection *actionCollection;
 
+    KNewFileMenu *newFileMenu;
+
     KConfigGroup *configGroup;
 
     KFilePreviewGenerator *previewGenerator;
@@ -319,6 +323,7 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     dropOptions(0),
     actionMenu(0),
     actionCollection(0),
+    newFileMenu(0),
     configGroup(0),
     previewGenerator(0),
     showPreviews(false),
@@ -728,47 +733,11 @@ void KDirOperator::Private::_k_slotToggleIgnoreCase()
     d->sorting = d->fileView->sorting();*/
 }
 
-// Duplicated in libkonq's KonqOperations
-static bool confirmCreatingHiddenDir(const QString& name, QWidget* parent)
-{
-    KGuiItem continueGuiItem(KStandardGuiItem::cont());
-    continueGuiItem.setText(i18nc("@action:button", "Create directory"));
-    KGuiItem cancelGuiItem(KStandardGuiItem::cancel());
-    cancelGuiItem.setText(i18nc("@action:button", "Enter a different name"));
-    return KMessageBox::warningContinueCancel(
-        parent,
-        i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
-        i18n("Create hidden directory?"),
-        continueGuiItem,
-        cancelGuiItem,
-        "confirm_create_hidden_dir") == KMessageBox::Continue;
-}
-
 void KDirOperator::mkdir()
 {
-    bool ok;
-    QString where = url().pathOrUrl();
-    QString name = i18n("New Folder");
-    if (url().isLocalFile() && QFileInfo(url().toLocalFile(KUrl::AddTrailingSlash) + name).exists())
-        name = KIO::RenameDialog::suggestName(url(), name);
-
-    bool askAgain;
-    do {
-        askAgain = false;
-        name = KInputDialog::getText(i18n("New Folder"),
-                                     i18n("Create new folder in:\n%1" ,  where),
-                                     name, &ok, this);
-        if (ok) {
-            if (name.startsWith('.') && !showHiddenFiles()) {
-                if (!confirmCreatingHiddenDir(name, this)) {
-                    askAgain = true;
-                    continue;
-                }
-            }
-            KDirOperator::mkdir(KIO::encodeFileName(name), true);
-            break;
-        }
-    } while (askAgain);
+    d->newFileMenu->setPopupFiles(url());
+    d->newFileMenu->setViewShowsHiddenFiles(showHiddenFiles());
+    d->newFileMenu->createDirectory();
 }
 
 bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
@@ -792,7 +761,6 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 
     if (exists) { // url was already existent
         KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.", url.pathOrUrl()));
-        enterDirectory = false;
     } else if (!writeOk) {
         KMessageBox::sorry(d->itemView, i18n("You do not have permission to "
                                               "create that folder."));
@@ -1328,6 +1296,10 @@ void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
     Q_UNUSED(item);
     setupMenu();
     updateSelectionDependentActions();
+
+    d->newFileMenu->setPopupFiles(url());
+    d->newFileMenu->setViewShowsHiddenFiles(showHiddenFiles());
+    d->newFileMenu->checkUpToDate();
 
     emit contextMenuAboutToShow( item, d->actionMenu->menu() );
 
@@ -1997,6 +1969,9 @@ void KDirOperator::setupActions()
     // TODO: QAbstractItemView does not offer an action collection. Provide
     // an interface to add a custom action collection.
 
+    d->newFileMenu = new KNewFileMenu(d->actionCollection, "new", this);
+    connect(d->newFileMenu, SIGNAL(directoryCreated(KUrl)), this, SLOT(_k_slotDirectoryCreated(KUrl)));
+    
     d->actionCollection->addAssociatedWidget(this);
     foreach (QAction* action, d->actionCollection->actions())
       action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -2030,7 +2005,7 @@ void KDirOperator::setupMenu(int whichActions)
     }
 
     if (whichActions & FileActions) {
-        d->actionMenu->addAction(d->actionCollection->action("mkdir"));
+        d->actionMenu->addAction(d->actionCollection->action("new"));
         if (d->currUrl.isLocalFile() && !(QApplication::keyboardModifiers() & Qt::ShiftModifier)) {
             d->actionMenu->addAction(d->actionCollection->action("trash"));
         }
@@ -2674,6 +2649,11 @@ bool KDirOperator::Private::isReadable(const KUrl& url)
             closedir(test);
     }
     return readable;
+}
+
+void KDirOperator::Private::_k_slotDirectoryCreated(const KUrl& url)
+{
+    parent->setUrl(url, true);
 }
 
 #include "kdiroperator.moc"

@@ -24,6 +24,8 @@ set(kfile_LIB_SRCS
   kfileplacesview.cpp
   kfileplaceeditdialog.cpp
   kfilepreviewgenerator.cpp
+  knameandurlinputdialog.cpp
+  knewfilemenu.cpp
   kprotocolcombo.cpp
   kurlbutton.cpp
   kurldropdownbutton.cpp
@@ -66,6 +68,8 @@ install( FILES
   kfiletreeview.h
   kfilewidget.h
   kurlnavigator.h
+  knewfilemenu.h
+  knameandurlinputdialog.h
   kfile_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
