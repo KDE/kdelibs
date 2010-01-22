@@ -185,6 +185,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_underMouse = 0;
     m_buffer[0] = 0;
     m_buffer[1] = 0;
+    m_nativeFrameShape = QFrame::NoFrame;
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
     m_view  = node->document()->view();
@@ -480,14 +481,16 @@ void RenderWidget::updateFromElement()
         }
 
         // Border:
-        if (shouldDisableNativeBorders()) {
-            if (QFrame* frame = qobject_cast<QFrame*>(m_widget))
+        if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
+            if (shouldDisableNativeBorders()) {
+                m_nativeFrameShape = frame->frameShape();
                 frame->setFrameShape(QFrame::NoFrame);
-            else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget))
-                lineEdit->setFrame(false);
+            } else if (m_nativeFrameShape != QFrame::NoFrame) {
+                frame->setFrameShape(m_nativeFrameShape);
+            }
+        } else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
+            lineEdit->setFrame(!shouldDisableNativeBorders()); 
         }
-        else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget))
-            lineEdit->setFrame(true);  // set frame in case previously disabled #216795
 
         // Font:
         setStyle(style());

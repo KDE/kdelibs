@@ -146,6 +146,8 @@ protected:
     QPointer<QWidget> m_underMouse;
     QPixmap *m_buffer[2];
 
+    QFrame::Shape m_nativeFrameShape;
+
     //Because we mess with normal detach due to ref/deref,
     //we need to keep track of the arena ourselves
     //so it doesn't get yanked from us, etc.
