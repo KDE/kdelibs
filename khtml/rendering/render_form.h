@@ -216,6 +216,8 @@ public:
     virtual void updateFromElement();
     virtual short baselinePosition( bool ) const;
 protected:
+    virtual void setPadding();
+    virtual void setStyle(RenderStyle *style);
     virtual bool canHaveBorder() const;
 private:
     QString rawText();

@@ -485,6 +485,7 @@ bool RenderRadioButton::handleEvent(const DOM::EventImpl& ev)
 
 // -------------------------------------------------------------------------------
 
+static const QString &sBorderNoneSheet = KGlobal::staticQString("QPushButton{border:none}");
 
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
@@ -493,6 +494,49 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     setQWidget(p);
     //p->setAutoMask(true);
     p->setMouseTracking(true);
+}
+
+void RenderSubmitButton::setPadding()
+{
+    // Proxy styling doesn't work well enough for buttons.
+    // Use stylesheets instead. tests/css/button-padding-top.html
+    assert(!m_proxyStyle);
+
+    if (!includesPadding())
+        return;
+
+    if (!RenderWidget::paddingLeft() && !RenderWidget::paddingRight() && 
+        !RenderWidget::paddingTop() && !RenderWidget::paddingBottom()) {
+        widget()->setStyleSheet( shouldPaintBorder() ? sBorderNoneSheet : QString() );
+    }
+
+    widget()->setStyleSheet(
+        QString("QPushButton{padding-left:%1px; padding-right:%2px; padding-top:%3px; padding-bottom:%4px}")
+            .arg( RenderWidget::paddingLeft() )
+            .arg( RenderWidget::paddingRight() )
+            .arg( RenderWidget::paddingTop() )
+            .arg( RenderWidget::paddingBottom()) + (shouldPaintBorder() ? sBorderNoneSheet : QString())
+     );
+}
+
+void RenderSubmitButton::setStyle(RenderStyle *style)
+{
+    // Proxy styling doesn't work well enough for buttons.
+    // Use stylesheets instead. tests/css/button-padding-top.html
+    assert(!m_proxyStyle);
+    RenderFormElement::setStyle(style);
+
+    QString s = widget()->styleSheet();
+    if (shouldPaintBorder()) {
+        // we paint the borders ourselves on this button,
+        // remove the widget's native ones.
+        if (!s.contains(sBorderNoneSheet)) {
+            s.append(sBorderNoneSheet);
+            widget()->setStyleSheet( s );
+        }
+    } else {
+        widget()->setStyleSheet( s.remove(sBorderNoneSheet) );
+    }
 }
 
 QString RenderSubmitButton::rawText()
