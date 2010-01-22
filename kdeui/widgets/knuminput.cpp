@@ -413,6 +413,7 @@ void KIntNumInput::setSliderEnabled(bool slider)
             connect(priv->slider, SIGNAL(valueChanged(int)),
                     d->intSpinBox, SLOT(setValue(int)));
             priv->slider->setTickPosition(QSlider::TicksBelow);
+            layout(true);
         }
 
         const int value = d->intSpinBox->value();
@@ -427,6 +428,9 @@ void KIntNumInput::setSliderEnabled(bool slider)
         priv->slider->setPageStep(qMax(1, major));
         priv->slider->setTickInterval(major);
     } else {
+        if (priv->slider) {
+            layout(true);
+        }
         delete priv->slider;
         priv->slider = 0;
     }
@@ -919,6 +923,7 @@ void KDoubleNumInput::setSliderEnabled(bool enabled)
             // feedback line: when one moves, the other moves, too:
             connect(priv->slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)));
+            layout(true);
         }
         if (steps > 1000 || d->exponentRatio != 1.0) {
             priv->slider->setRange(0, 1000);
@@ -934,6 +939,9 @@ void KDoubleNumInput::setSliderEnabled(bool enabled)
         spinBoxChanged(spin->value());
         connect(spin, SIGNAL(valueChanged(double)), SLOT(spinBoxChanged(double)));
     } else {
+        if (priv->slider) {
+            layout(true);
+        }
         delete priv->slider;
         priv->slider = 0;
     }
