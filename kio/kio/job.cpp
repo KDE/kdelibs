@@ -316,7 +316,7 @@ bool SimpleJob::doKill()
         d->m_extraFlags |= JobPrivate::EF_KillCalled;
         Scheduler::cancelJob(this); // deletes the slave if not 0
     } else {
-        kWarning(7007) << "This is overkill.";
+        kWarning(7007) << this << "This is overkill.";
     }
     return Job::doKill();
 }
@@ -365,7 +365,7 @@ SimpleJob::~SimpleJob()
     Q_D(SimpleJob);
     // last chance to remove this job from the scheduler!
     if (d->m_schedSerial) {
-        kDebug(7007) << "Killing job in destructor!"  << kBacktrace();
+        kDebug(7007) << "Killing job" << this << "in destructor!"  << kBacktrace();
         Scheduler::cancelJob(this);
     }
 }
@@ -438,9 +438,12 @@ void SimpleJobPrivate::start(Slave *slave)
 void SimpleJobPrivate::slaveDone()
 {
     Q_Q(SimpleJob);
-    if (!m_slave) return;
-    if (m_command == CMD_OPEN) m_slave->send(CMD_CLOSE);
-    q->disconnect(m_slave); // Remove all signals between slave and job
+    if (m_slave) {
+        if (m_command == CMD_OPEN) {
+            m_slave->send(CMD_CLOSE);
+        }
+        q->disconnect(m_slave); // Remove all signals between slave and job
+    }
     // only finish a job once; Scheduler::jobFinished() resets schedSerial to zero.
     if (m_schedSerial) {
         Scheduler::jobFinished(q, m_slave);
@@ -526,6 +529,20 @@ void SimpleJobPrivate::slotSpeed( unsigned long speed )
     q_func()->emitSpeed( speed );
 }
 
+void SimpleJobPrivate::restartAfterRedirection(KUrl *redirectionUrl)
+{
+    Q_Q(SimpleJob);
+    // Return slave to the scheduler while we still have the old URL in place; the scheduler
+    // requires a job URL to stay invariant while the job is running.
+    slaveDone();
+
+    m_url = *redirectionUrl;
+    redirectionUrl->clear();
+    if ((m_extraFlags & EF_KillCalled) == 0) {
+        Scheduler::doJob(q);
+    }
+}
+
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
 {
     Q_D(SimpleJob);
@@ -536,6 +553,7 @@ void SimpleJob::storeSSLSessionFromJob(const KUrl &redirectionURL)
 {
     Q_UNUSED(redirectionURL);
 }
+
 
 //////////
 class KIO::MkdirJobPrivate: public SimpleJobPrivate
@@ -622,12 +640,7 @@ void MkdirJob::slotFinished()
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
         stream << d->m_redirectionURL << permissions;
 
-        // Return slave to the scheduler
-        d->slaveDone();
-
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL.clear();
-        Scheduler::doJob(this);
+        d->restartAfterRedirection(&d->m_redirectionURL);
     }
 }
 
@@ -842,12 +855,7 @@ void StatJob::slotFinished()
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
         stream << d->m_redirectionURL;
 
-        // Return slave to the scheduler
-        d->slaveDone();
-
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL.clear();
-        Scheduler::doJob(this);
+        d->restartAfterRedirection(&d->m_redirectionURL);
     }
 }
 
@@ -1025,13 +1033,7 @@ void TransferJob::slotFinished()
             }
         }
 
-        // Return slave to the scheduler while we still have the old URL in place; the scheduler
-        // requires a job URL to stay invariant while the job is running.
-        d->slaveDone();
-
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL.clear();
-        Scheduler::doJob(this);
+        d->restartAfterRedirection(&d->m_redirectionURL);
     }
 }
 
@@ -1634,12 +1636,7 @@ void MimetypeJob::slotFinished( )
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
         stream << d->m_redirectionURL;
 
-        // Return slave to the scheduler
-        d->slaveDone();
-
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL.clear();
-        Scheduler::doJob(this);
+        d->restartAfterRedirection(&d->m_redirectionURL);
     }
 }
 
@@ -2467,12 +2464,7 @@ void ListJob::slotFinished()
         QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
         stream << d->m_redirectionURL;
 
-        // Return slave to the scheduler
-        d->slaveDone();
-
-        d->m_url = d->m_redirectionURL;
-        d->m_redirectionURL.clear();
-        Scheduler::doJob(this);
+        d->restartAfterRedirection(&d->m_redirectionURL);
     }
 }
 
@@ -2724,7 +2716,9 @@ void MultiGetJob::slotFinished()
         d->slaveDone();
 
         d->m_url = d->m_waitQueue.first().url;
-        Scheduler::doJob(this);
+        if ((d->m_extraFlags & JobPrivate::EF_KillCalled) == 0) {
+            Scheduler::doJob(this);
+        }
      }
   }
 }

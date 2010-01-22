@@ -176,6 +176,13 @@ namespace KIO {
          **/
         void slaveDone();
 
+        /**
+         * Called by subclasses to restart the job after a redirection was signalled.
+         * The m_redirectionURL data member can appear in several subclasses, so we have it
+         * passed in. The regular URL will be set to the redirection URL which is then cleared.
+         */
+        void restartAfterRedirection(KUrl *redirectionUrl);
+
         Q_DECLARE_PUBLIC(SimpleJob)
 
         static inline SimpleJobPrivate *get(KIO::SimpleJob *job)
