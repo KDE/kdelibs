@@ -1474,11 +1474,12 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 currToken.flat = false;
 
             bool beginTag = !currToken.flat && (tagID < ID_CLOSE_TAG);
+            HTMLScriptElementImpl* prevScriptElem = 0;
 
             if(tagID >= ID_CLOSE_TAG)
                 tagID -= ID_CLOSE_TAG;
             else if ( tagID == ID_SCRIPT ) {
-                assert( !parser->currentScriptElement() );
+                prevScriptElem = parser->currentScriptElement();
                 DOMStringImpl* a = 0;
                 scriptSrc.clear(); scriptSrcCharset.clear();
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
@@ -1499,7 +1500,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             if (javascript) {
                 HTMLScriptElementImpl* sc = parser->currentScriptElement();
-                javascript = sc ? sc->isValidScript() : false;
+                javascript = (sc && sc != prevScriptElem) ? sc->isValidScript() : false;
             }
 
             if ( parser->selectMode() && beginTag)
