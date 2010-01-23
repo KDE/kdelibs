@@ -69,6 +69,13 @@ private:
     QSet<KIO::SimpleJob *> m_runningJobs;
 };
 
+struct PerSlaveQueue
+{
+    PerSlaveQueue() : runningJob(0) {}
+    QList <SimpleJob *> waitingList;
+    SimpleJob *runningJob;
+};
+
 class ConnectedSlaveQueue : public QObject
 {
     Q_OBJECT
@@ -90,7 +97,7 @@ private slots:
     void startRunnableJobs();
 private:
     // note that connected slaves stay here when idle, they are not returned to SlaveKeeper
-    QHash<KIO::Slave *, QList<KIO::SimpleJob *> > m_connectedSlaves;
+    QHash<KIO::Slave *, PerSlaveQueue> m_connectedSlaves;
     QSet<KIO::Slave *> m_runnableSlaves;
     QTimer m_startJobsTimer;
 };

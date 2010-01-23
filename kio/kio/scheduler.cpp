@@ -226,18 +226,19 @@ ConnectedSlaveQueue::ConnectedSlaveQueue()
 
 bool ConnectedSlaveQueue::queueJob(SimpleJob *job, Slave *slave)
 {
-    QHash<Slave *, QList<SimpleJob *> >::Iterator it = m_connectedSlaves.find(slave);
+    QHash<Slave *, PerSlaveQueue>::Iterator it = m_connectedSlaves.find(slave);
     if (it == m_connectedSlaves.end()) {
         return false;
     }
-    QList<SimpleJob *> &jobList = it.value();
-    if (jobList.isEmpty()) {
+    SimpleJobPrivate::get(job)->m_slave = slave;
+
+    PerSlaveQueue &jobs = it.value();
+    jobs.waitingList.append(job);
+    if (!jobs.runningJob) {
         // idle slave now has a job to run
         m_runnableSlaves.insert(slave);
         m_startJobsTimer.start();
     }
-    SimpleJobPrivate::get(job)->m_slave = slave;
-    jobList.append(job);
     return true;
 }
 
@@ -245,35 +246,36 @@ bool ConnectedSlaveQueue::removeJob(SimpleJob *job)
 {
     Slave *slave = jobSlave(job);
     Q_ASSERT(slave);
-    QHash<Slave *, QList<SimpleJob *> >::Iterator it = m_connectedSlaves.find(slave);
+    QHash<Slave *, PerSlaveQueue>::Iterator it = m_connectedSlaves.find(slave);
     if (it == m_connectedSlaves.end()) {
         return false;
     }
-    QList<SimpleJob *> &jobList = it.value();
-    const bool removedRunning = (!jobList.isEmpty() && jobList.first() == job);
-    const bool removedTheJob = jobList.removeAll(job) != 0;
-    if (removedRunning || (jobList.isEmpty() && !removedTheJob)) {
+    PerSlaveQueue &jobs = it.value();
+    if (jobs.runningJob || jobs.waitingList.isEmpty()) {
         // a slave that was busy running a job was not runnable.
-        // a slave that previously had no job was not runnable either.
+        // a slave that has no waiting job(s) was not runnable either.
         Q_ASSERT(!m_runnableSlaves.contains(slave));
     }
+
+    const bool removedRunning = jobs.runningJob == job;
+    const bool removedWaiting = jobs.waitingList.removeAll(job) != 0;
+    if (removedRunning) {
+        jobs.runningJob = 0;
+        Q_ASSERT(!removedWaiting);
+    }
+    const bool removedTheJob = removedRunning || removedWaiting;
 
     if (!slave->isAlive()) {
         removeSlave(slave);
         return removedTheJob;
     }
-    if (removedTheJob) {
-        if (jobList.isEmpty()) {
-            if (!removedRunning) {
-                m_runnableSlaves.remove(slave);
-            }
-        } else {
-            if (removedRunning) {
-                // the slave can start the next job on the list now that the previous one is done
-                m_runnableSlaves.insert(slave);
-                m_startJobsTimer.start();
-            }
-        }
+
+    if (removedRunning && jobs.waitingList.count()) {
+        m_runnableSlaves.insert(slave);
+        m_startJobsTimer.start();
+    }
+    if (removedWaiting && jobs.waitingList.isEmpty()) {
+        m_runnableSlaves.remove(slave);
     }
     return removedTheJob;
 }
@@ -282,21 +284,27 @@ void ConnectedSlaveQueue::addSlave(Slave *slave)
 {
     Q_ASSERT(slave);
     if (!m_connectedSlaves.contains(slave)) {
-        m_connectedSlaves.insert(slave, QList<SimpleJob *>());
+        m_connectedSlaves.insert(slave, PerSlaveQueue());
     }
 }
 
 bool ConnectedSlaveQueue::removeSlave(Slave *slave)
 {
-    QHash<Slave *, QList<SimpleJob *> >::Iterator it = m_connectedSlaves.find(slave);
+    QHash<Slave *, PerSlaveQueue>::Iterator it = m_connectedSlaves.find(slave);
     if (it == m_connectedSlaves.end()) {
         return false;
     }
-    foreach (SimpleJob *job, it.value()) {
+    PerSlaveQueue &jobs = it.value();
+    foreach (SimpleJob *job, jobs.waitingList) {
+        // ### for compatibility with the old scheduler we don't touch the running job, if any.
+        // make sure that the job doesn't call back into Scheduler::cancelJob(); this would
+        // a) crash and b) be unnecessary because we clean up just fine.
+        SimpleJobPrivate::get(job)->m_schedSerial = 0;
         job->kill();
     }
     m_connectedSlaves.erase(it);
     m_runnableSlaves.remove(slave);
+
     slave->kill();
     return true;
 }
@@ -304,12 +312,11 @@ bool ConnectedSlaveQueue::removeSlave(Slave *slave)
 // KDE5: only one caller, for doubtful reasons. remove this if possible.
 bool ConnectedSlaveQueue::isIdle(Slave *slave)
 {
-    QHash<Slave *, QList<SimpleJob *> >::Iterator it = m_connectedSlaves.find(slave);
+    QHash<Slave *, PerSlaveQueue>::Iterator it = m_connectedSlaves.find(slave);
     if (it == m_connectedSlaves.end()) {
         return false;
     }
-    // I... I didn't want to do this.
-    return it.value().isEmpty() || m_runnableSlaves.contains(slave);
+    return it.value().runningJob == 0;
 }
 
 
@@ -326,7 +333,10 @@ void ConnectedSlaveQueue::startRunnableJobs()
             continue;
         }
         it = m_runnableSlaves.erase(it);
-        SimpleJob *job = m_connectedSlaves[slave].first();
+        PerSlaveQueue &jobs = m_connectedSlaves[slave];
+        SimpleJob *job = jobs.waitingList.takeFirst();
+        Q_ASSERT(!jobs.runningJob);
+        jobs.runningJob = job;
 
         const KUrl url = job->url();
         // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
