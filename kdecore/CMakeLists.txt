@@ -306,7 +306,7 @@ configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @
 
 kde4_add_executable(kde4-config NOGUI kde-config.cpp )
 
-target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 install(TARGETS kde4-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
