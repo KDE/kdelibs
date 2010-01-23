@@ -546,7 +546,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
       button->addActions(selectableActionGroup()->actions());
 
       d->m_buttons.append(button);
-      return button;
+      return proxyWidget(button);
     }
 
     case ComboBoxMode: {

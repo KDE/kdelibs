@@ -33,7 +33,9 @@
 #include "kauthactionwatcher.h"
 
 #include <QtGui/QApplication>
+#include <QtGui/QHBoxLayout>
 #include <QtGui/QShortcutEvent>
+#include <QtGui/QToolBar>
 
 #include <kdebug.h>
 
@@ -412,6 +414,22 @@ void KAction::setAuthAction(KAuth::Action *action)
         connect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));
         d->authStatusChanged(d->authAction->status());
+    }
+}
+
+QWidget *KAction::proxyWidget(QWidget *w) const
+{
+    QToolBar *tb = dynamic_cast<QToolBar *>(w->parentWidget());
+    if (tb)
+    {
+        QWidget *holder = new QWidget(tb);
+        QHBoxLayout *l = new QHBoxLayout(holder);
+        l->addWidget(w, 0, Qt::AlignCenter);
+        return holder;
+    }
+    else
+    {
+        return w;
     }
 }
 
