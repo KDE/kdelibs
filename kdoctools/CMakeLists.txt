@@ -71,7 +71,7 @@ set(genshortcutents_SRCS genshortcutents.cpp )
 
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
-target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
+target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### install files ###############
