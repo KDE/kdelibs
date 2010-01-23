@@ -672,7 +672,7 @@ static QString maybeDemangledName(char *name)
     const int len = strlen(name);
     QByteArray in = QByteArray::fromRawData(name, len);
     const int mangledNameStart = in.indexOf("(_");
-    if (mangledNameStart >=0) {
+    if (mangledNameStart >= 0) {
         const int mangledNameEnd = in.indexOf('+', mangledNameStart + 2);
         if (mangledNameEnd >= 0) {
             int status;
