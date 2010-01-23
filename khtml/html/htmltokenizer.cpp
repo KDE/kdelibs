@@ -360,7 +360,7 @@ void HTMLTokenizer::parseRawContent(TokenizerString &src)
         checkRawContentBuffer();
         unsigned char ch = src->toLatin1();
         if ( !rawContentResync && !brokenComments && !xmp && ch == '-' && 
-              rawContentSize >= 3 && rawContentSinceLastEntity >= 3 && !src.escaped() && 
+              rawContentSize >= 3 && ((!textarea && !title) || rawContentSinceLastEntity >= 3) && !src.escaped() && 
               QString::fromRawData( rawContent+rawContentSize-3, 3 ) == "<!-" ) {
             comment = true;
             rawContent[ rawContentSize++ ] = ch;
@@ -391,9 +391,14 @@ void HTMLTokenizer::parseRawContent(TokenizerString &src)
         }
         // possible end of tagname, lets check.
         if ( !rawContentResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
-              rawContentSize >= searchStopperLen && rawContentSinceLastEntity >= searchStopperLen &&
+              rawContentSize >= searchStopperLen && ((!textarea && !title) || rawContentSinceLastEntity >= searchStopperLen) &&
               QString::compare(QString::fromRawData(rawContent + rawContentSize - searchStopperLen, searchStopperLen),
                   QLatin1String(searchStopper), Qt::CaseInsensitive) == 0) {
+
+            // the purpose of rawContentResync is to look for an end tag that could possibly be of the form:
+            // </endtag   junk="more junk>\"><>"     >
+            // IOW, once the '</endtag' sequence has been found, the rest of the tag must still be validated,
+            // so this micro-tokenizer switches to rawContentResync state until '>' is finally found.
             rawContentResync = rawContentSize-searchStopperLen+1;
             tquote = NoQuote;
             continue;
@@ -1054,6 +1059,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 for(unsigned int i = 0; i < cBufferPos; i++)
                     dest[i] = cBuffer[i];
                 dest += cBufferPos;
+                rawContentSinceLastEntity += cBufferPos+1;
                 if (pre)
                     prePos += cBufferPos+1;
             }
@@ -1536,6 +1542,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     searchStopperLen = 10;
                     textarea = true;
                     discard = NoneDiscard;
+                    rawContentSinceLastEntity = 0;
                     parseRawContent(src);
                 }
                 break;
@@ -1544,6 +1551,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     searchStopper = titleEnd;
                     searchStopperLen = 7;
                     title = true;
+                    rawContentSinceLastEntity = 0;
                     parseRawContent(src);
                 }
                 break;
@@ -1944,9 +1952,8 @@ void HTMLTokenizer::finish()
         rawContent[ rawContentSize + 1 ] = 0;
         int pos;
         QString food;
-        if (title || style || script) {
-            if (title)
-                currToken.reset();
+        if (title || style || script || textarea) {
+            rawContentSinceLastEntity = 0;
             food.setUnicode(rawContent, rawContentSize);
         } else if (server) {
             food = "<";
