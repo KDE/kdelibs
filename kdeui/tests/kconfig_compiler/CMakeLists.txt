@@ -29,7 +29,7 @@ gen_kcfg_test_source(test1 test1_SRCS)
 
 kde4_add_executable(test1 TEST ${test1_SRCS})
 
-target_link_libraries(test1  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test1  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -41,7 +41,7 @@ gen_kcfg_test_source(test2 test2_SRCS)
 
 kde4_add_executable(test2 TEST ${test2_SRCS})
 
-target_link_libraries(test2  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test2  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -53,7 +53,7 @@ gen_kcfg_test_source(test3 test3_SRCS)
 
 kde4_add_executable(test3 TEST ${test3_SRCS})
 
-target_link_libraries(test3  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test3  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -65,7 +65,7 @@ gen_kcfg_test_source(test4 test4_SRCS)
 
 kde4_add_executable(test4 TEST ${test4_SRCS})
 
-target_link_libraries(test4  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test4  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -77,7 +77,7 @@ gen_kcfg_test_source(test5 test5_SRCS)
 
 kde4_add_executable(test5 TEST ${test5_SRCS})
 
-target_link_libraries(test5  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test5  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -89,7 +89,7 @@ gen_kcfg_test_source(test6 test6_SRCS)
 
 kde4_add_executable(test6 TEST ${test6_SRCS})
 
-target_link_libraries(test6  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test6  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -101,7 +101,7 @@ gen_kcfg_test_source(test7 test7_SRCS)
 
 kde4_add_executable(test7 TEST ${test7_SRCS})
 
-target_link_libraries(test7  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test7  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -114,7 +114,7 @@ gen_kcfg_test_source(test8b test8_SRCS)
 
 kde4_add_executable(test8 TEST ${test8_SRCS})
 
-target_link_libraries(test8  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test8  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -126,7 +126,7 @@ gen_kcfg_test_source(test9 test9_SRCS)
 
 kde4_add_executable(test9 TEST ${test9_SRCS})
 
-target_link_libraries(test9  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test9  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -138,7 +138,7 @@ gen_kcfg_test_source(test10 test10_SRCS)
 
 kde4_add_executable(test10 TEST ${test10_SRCS})
 
-target_link_libraries(test10  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test10  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -150,7 +150,7 @@ gen_kcfg_test_source(test_dpointer test_dpointer_SRCS)
 
 kde4_add_executable(test_dpointer TEST ${test_dpointer_SRCS})
 
-target_link_libraries(test_dpointer  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test_dpointer  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
@@ -162,7 +162,7 @@ gen_kcfg_test_source(test_signal test_signal_SRCS)
 
 kde4_add_executable(test_signal TEST ${test_signal_SRCS})
 
-target_link_libraries(test_signal  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test_signal  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 
 ########### next target ###############
