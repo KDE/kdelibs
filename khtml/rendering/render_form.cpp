@@ -599,13 +599,14 @@ void RenderSubmitButton::calcMinMaxWidth()
     }
 
     assert(includesPadding());
-    int padding = RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    int hpadding = RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    int vpadding = RenderWidget::paddingTop() + RenderWidget::paddingBottom();
 
     // add 30% margins to the width (heuristics to make it look similar to IE)
     // ### FIXME BASELINE: we could drop this emulation and adopt Mozilla style buttons
     // (+/- padding: 0px 8px 0px 8px) - IE is most often in a separate css
     // code path nowadays, so we have wider buttons than other engines.
-    int toAdd = (w*13/10)-w-padding;
+    int toAdd = (w*13/10)-w-hpadding;
     toAdd = qMax(0,toAdd);
     w += toAdd;
 
@@ -613,7 +614,7 @@ void RenderSubmitButton::calcMinMaxWidth()
         // we paint the borders ourselves, so let's override our height to something saner
         h = ts.height();
     }
-
+    h -= vpadding;
     s = QSize(w,h).expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
