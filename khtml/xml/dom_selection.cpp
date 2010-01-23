@@ -461,7 +461,7 @@ Range Selection::toRange() const
 {
     if (isEmpty())
         return Range();
-    
+
     NodeImpl *start, *end;
     long so, eo;
     getRange(start, so, end, eo);
@@ -550,7 +550,7 @@ void Selection::paintCaret(QPainter *p, const QRect &rect)
         Position pos = caretPos();
         if (!pos.inRenderedContent()) {
             // ### wrong wrong wrong wrong wrong. this will break quanta vpl
-            moveToRenderedContent();  
+            moveToRenderedContent();
         }
         layoutCaret();
     }
@@ -590,12 +590,16 @@ void Selection::validate(ETextGranularity granularity)
         assignExtent(extent().equivalentLeafPosition());
     }
 
-    // make sure we do not have a dangling start or end
-    if (base().isEmpty() && extent().isEmpty()) {
-        assignStartAndEnd(emptyPosition(), emptyPosition());
+    // make sure we do not have a dangling start or end. In particular, if one
+    // of base or extent is empty, we use the other one (which may be empty as
+    // well) for everything, before getting into the code that computes
+    // start + end from base + extent based on granularity.
+    if (base().isEmpty()) {
+        assignBaseAndExtent(extent(), extent());
         m_baseIsStart = true;
     }
-    else if (base().isEmpty() || extent().isEmpty()) {
+    else if (extent().isEmpty()) {
+        assignBaseAndExtent(base(), base());
         m_baseIsStart = true;
     }
     else {
@@ -698,6 +702,9 @@ void Selection::validate(ETextGranularity granularity)
         m_state = CARET;
     else
         m_state = RANGE;
+
+     if (start().isEmpty())
+         assert (m_state == NONE);
 
     m_needsCaretLayout = true;
 
