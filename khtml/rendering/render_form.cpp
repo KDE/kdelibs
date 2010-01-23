@@ -508,6 +508,7 @@ void RenderSubmitButton::setPadding()
     if (!RenderWidget::paddingLeft() && !RenderWidget::paddingRight() && 
         !RenderWidget::paddingTop() && !RenderWidget::paddingBottom()) {
         widget()->setStyleSheet( shouldDisableNativeBorders() ? sBorderNoneSheet : QString() );
+        return;
     }
 
     widget()->setStyleSheet(
