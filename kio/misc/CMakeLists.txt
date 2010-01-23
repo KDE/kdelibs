@@ -17,7 +17,7 @@ set(kmailservice_SRCS kmailservice.cpp )
 
 kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
-target_link_libraries(kmailservice  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(kmailservice  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 install(TARGETS kmailservice DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
@@ -29,7 +29,7 @@ set(ktelnetservice_SRCS ktelnetservice.cpp )
 
 kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 
-target_link_libraries(ktelnetservice  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(ktelnetservice  ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 install(TARGETS ktelnetservice DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
