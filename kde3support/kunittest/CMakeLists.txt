@@ -25,7 +25,7 @@ set(kunittestmodrunner_SRCS modrunner.cpp )
 
 kde4_add_executable(kunittestmodrunner NOGUI ${kunittestmodrunner_SRCS})
 
-target_link_libraries(kunittestmodrunner ${KDE4_KDECORE_LIBS} kunittest)
+target_link_libraries(kunittestmodrunner ${KDE4_KDECORE_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} kunittest)
 
 install(TARGETS kunittestmodrunner DESTINATION ${BIN_INSTALL_DIR} )
 
