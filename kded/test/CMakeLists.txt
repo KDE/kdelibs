@@ -7,7 +7,7 @@ set(kmimefileparsertest_SRCS kmimefileparsertest.cpp ../kmimefileparser.cpp ../.
 
 kde4_add_unit_test(kmimefileparsertest ${kmimefileparsertest_SRCS})
 
-target_link_libraries(kmimefileparsertest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kmimefileparsertest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 ######### kmimeassociationstest ########
 
@@ -15,5 +15,5 @@ set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../kmimeassociations.cp
 
 kde4_add_unit_test(kmimeassociationstest ${kmimeassociationstest_SRCS})
 
-target_link_libraries(kmimeassociationstest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kmimeassociationstest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 

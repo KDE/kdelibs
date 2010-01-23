@@ -61,7 +61,7 @@ set(kdontchangethehostname_SRCS khostname.cpp )
 
 kde4_add_executable(kdontchangethehostname NOGUI ${kdontchangethehostname_SRCS})
 
-target_link_libraries(kdontchangethehostname  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kdontchangethehostname ${KDE4_KDECORE_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY})
 
 install(TARGETS kdontchangethehostname DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
