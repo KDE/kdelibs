@@ -23,6 +23,7 @@
 // Derived hebrew kde calendar class
 
 #include "kcalendarsystemhebrew_p.h"
+#include "kcalendarsystemprivate_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -334,26 +335,24 @@ static class h_date *toHebrew( const QDate &date )
     return sd;
 }
 
-class KCalendarSystemHebrewPrivate
+class KCalendarSystemHebrewPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemHebrewPrivate( KCalendarSystemHebrew *q ): q( q )
+    KCalendarSystemHebrewPrivate( KCalendarSystemHebrew *q ) : KCalendarSystemPrivate( q )
     {
     }
 
-    ~KCalendarSystemHebrewPrivate()
+    virtual ~KCalendarSystemHebrewPrivate()
     {
     }
 
-    KCalendarSystem *q;
+    virtual bool isLeapYear( int year ) const;
 
-    bool isLeapYear( int year ) const;
+    virtual int monthNumberToMonthIndex( int year, int month ) const;
 
-    int monthNumberToMonthIndex( int year, int month ) const;
+    virtual int monthsInYear( int year ) const;
 
-    int monthsInYear( int year ) const;
-
-    int daysInMonth( int year, int month ) const;
+    virtual int daysInMonth( int year, int month ) const;
 };
 
 bool KCalendarSystemHebrewPrivate::isLeapYear( int year ) const
@@ -405,15 +404,22 @@ int KCalendarSystemHebrewPrivate::daysInMonth( int year, int month ) const
 }
 
 KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale * locale )
-                      : KCalendarSystem( locale ),
-                        d( new KCalendarSystemHebrewPrivate( this ) )
+                      : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), locale ),
+                        dont_use( 0 )
+{
+    setMaxMonthsInYear(13);
+}
+
+KCalendarSystemHebrew::KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd, const KLocale * locale )
+                      : KCalendarSystem( dd, locale ),
+                        dont_use( 0 )
 {
     setMaxMonthsInYear(13);
 }
 
 KCalendarSystemHebrew::~KCalendarSystemHebrew()
 {
-    delete d;
+    delete dont_use;
 }
 
 QString KCalendarSystemHebrew::calendarType() const
@@ -443,6 +449,8 @@ QDate KCalendarSystemHebrew::latestValidDate() const
 
 bool KCalendarSystemHebrew::isValid( int year, int month, int day ) const
 {
+    Q_D( const KCalendarSystemHebrew );
+
     if ( year < 5344 || year > 8119 ) {
         return false;
     }
@@ -572,6 +580,8 @@ QDate KCalendarSystemHebrew::addDays( const QDate &date, int ndays ) const
 
 int KCalendarSystemHebrew::monthsInYear( const QDate &date ) const
 {
+    Q_D( const KCalendarSystemHebrew );
+
     if ( !isValid( date ) ) {
         return -1;
     }
@@ -611,6 +621,8 @@ int KCalendarSystemHebrew::daysInYear( const QDate &date ) const
 
 int KCalendarSystemHebrew::daysInMonth( const QDate &date ) const
 {
+    Q_D( const KCalendarSystemHebrew );
+
     if ( !isValid( date ) ) {
         return -1;
     }
@@ -698,6 +710,7 @@ int KCalendarSystemHebrew::weekNumber( const QDate &date, int *yearNum ) const
 
 bool KCalendarSystemHebrew::isLeapYear( int year ) const
 {
+    Q_D( const KCalendarSystemHebrew );
     return d->isLeapYear( year );
 }
 
@@ -711,6 +724,8 @@ bool KCalendarSystemHebrew::isLeapYear( const QDate &date ) const
 // Ask translators for short fomats of month names!
 QString KCalendarSystemHebrew::monthName( int month, int year, MonthNameFormat format ) const
 {
+    Q_D( const KCalendarSystemHebrew );
+
     if ( month < 1 || month > d->monthsInYear( year ) ) {
         return QString();
     }

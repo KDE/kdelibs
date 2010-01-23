@@ -20,6 +20,7 @@
 // Derived gregorian kde calendar class
 
 #include "kcalendarsystemgregorianproleptic_p.h"
+#include "kcalendarsystemprivate_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -27,13 +28,33 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
+class KCalendarSystemGregorianProlepticPrivate : public KCalendarSystemPrivate
+{
+public:
+    KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q ) : KCalendarSystemPrivate( q )
+    {
+    }
+
+    virtual ~KCalendarSystemGregorianProlepticPrivate()
+    {
+    }
+};
+
 KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KLocale * locale )
-                         : KCalendarSystem( locale ), d( 0 )
+                                  : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), locale ),
+                                    dont_use( 0 )
+{
+}
+
+KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd, const KLocale * locale )
+                                  : KCalendarSystem( dd, locale ),
+                                    dont_use( 0 )
 {
 }
 
 KCalendarSystemGregorianProleptic::~KCalendarSystemGregorianProleptic()
 {
+    delete dont_use;
 }
 
 QString KCalendarSystemGregorianProleptic::calendarType() const

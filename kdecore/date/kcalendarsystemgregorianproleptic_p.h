@@ -111,10 +111,12 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd, const KLocale *locale = 0 );
 
 private:
     friend class KCalendarSystemIndianNational;  // To allow access to julianDayToDate() and dateToJulianDay()
-    KCalendarSystemGregorianProlepticPrivate * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemGregorianProleptic )
+    KCalendarSystemGregorianProlepticPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMGREGORIANPROLEPTIC_H

@@ -18,6 +18,7 @@
 */
 
 #include "kcalendarsystemindiannational_p.h"
+#include "kcalendarsystemprivate_p.h"
 #include "kcalendarsystemgregorianproleptic_p.h"
 
 #include "kdebug.h"
@@ -26,32 +27,39 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
-class KCalendarSystemIndianNationalPrivate
+class KCalendarSystemIndianNationalPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemIndianNationalPrivate( KCalendarSystem *q ): q( q )
+    KCalendarSystemIndianNationalPrivate( KCalendarSystemIndianNational *q ) : KCalendarSystemPrivate( q )
     {
         gregorian = new KCalendarSystemGregorianProleptic();
     }
 
-    ~KCalendarSystemIndianNationalPrivate()
+    virtual ~KCalendarSystemIndianNationalPrivate()
     {
         delete gregorian;
     }
 
-    KCalendarSystem *q;
     KCalendarSystemGregorianProleptic *gregorian;
 };
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KLocale * locale )
-                             : KCalendarSystem( locale ), d( new KCalendarSystemIndianNationalPrivate( this ) )
+                              : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), locale ),
+                                dont_use( 0 )
+{
+    setHasYear0(true);
+}
+
+KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemIndianNationalPrivate &dd, const KLocale * locale )
+                              : KCalendarSystem( dd, locale ),
+                                dont_use( 0 )
 {
     setHasYear0(true);
 }
 
 KCalendarSystemIndianNational::~KCalendarSystemIndianNational()
 {
-    delete d;
+    delete dont_use;
 }
 
 QString KCalendarSystemIndianNational::calendarType() const
@@ -228,6 +236,8 @@ int KCalendarSystemIndianNational::weekNumber( const QDate &date, int * yearNum 
 
 bool KCalendarSystemIndianNational::isLeapYear( int year ) const
 {
+    Q_D( const KCalendarSystemIndianNational );
+
     //Uses same rule as Gregorian, and is explicitly synchronized to Gregorian
     //so add 78 years to get Gregorian year and call Gregorian implementation
     return d->gregorian->isLeapYear( year + 78 );
@@ -485,6 +495,8 @@ bool KCalendarSystemIndianNational::isProleptic() const
 
 bool KCalendarSystemIndianNational::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
+    Q_D( const KCalendarSystemIndianNational );
+
     // The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
     // We can use this and the regular sequence of days in months to do a simple conversion by finding
     // what day in the Gregorian year the Julian Day number is, converting this to the day in the
@@ -541,6 +553,8 @@ bool KCalendarSystemIndianNational::julianDayToDate( int jd, int &year, int &mon
 
 bool KCalendarSystemIndianNational::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
+    Q_D( const KCalendarSystemIndianNational );
+
     // The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
     // We can use this and the regular sequence of days in months to do a simple conversion by finding
     // the Julian Day number of the first day of the year and adding on the required number of months

@@ -20,23 +20,22 @@
 */
 
 #include "kcalendarsystemhijri_p.h"
+#include "kcalendarsystemprivate_p.h"
 
 #include <QtCore/QDate>
 
-class KCalendarSystemHijriPrivate
+class KCalendarSystemHijriPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemHijriPrivate( KCalendarSystemHijri *q ): q( q )
+    KCalendarSystemHijriPrivate( KCalendarSystemHijri *q ) : KCalendarSystemPrivate( q )
     {
     }
 
-    ~KCalendarSystemHijriPrivate()
+    virtual ~KCalendarSystemHijriPrivate()
     {
     }
 
-    KCalendarSystem *q;
-
-    int daysInMonth( int year, int month ) const;
+    virtual int daysInMonth( int year, int month ) const;
 };
 
 int KCalendarSystemHijriPrivate::daysInMonth( int year, int month ) const
@@ -60,13 +59,20 @@ int KCalendarSystemHijriPrivate::daysInMonth( int year, int month ) const
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri( const KLocale * locale )
-                     : KCalendarSystem( locale ),
-                       d( new KCalendarSystemHijriPrivate( this ) )
+                     : KCalendarSystem( *new KCalendarSystemHijriPrivate( this ), locale ),
+                       dont_use( 0 )
+{
+}
+
+KCalendarSystemHijri::KCalendarSystemHijri( KCalendarSystemHijriPrivate &dd, const KLocale * locale )
+                     : KCalendarSystem( dd, locale ),
+                       dont_use( 0 )
 {
 }
 
 KCalendarSystemHijri::~KCalendarSystemHijri()
 {
+    delete dont_use;
 }
 
 QString KCalendarSystemHijri::calendarType() const
@@ -94,6 +100,8 @@ QDate KCalendarSystemHijri::latestValidDate() const
 
 bool KCalendarSystemHijri::isValid( int year, int month, int day ) const
 {
+    Q_D( const KCalendarSystemHijri );
+
     if ( year < 1 || year > 9999 ) {
         return false;
     }
@@ -186,6 +194,8 @@ int KCalendarSystemHijri::daysInYear( const QDate &date ) const
 
 int KCalendarSystemHijri::daysInMonth( const QDate &date ) const
 {
+    Q_D( const KCalendarSystemHijri );
+
     if ( !isValid( date ) ) {
         return -1;
     }
@@ -515,6 +525,8 @@ bool KCalendarSystemHijri::isProleptic() const
 
 bool KCalendarSystemHijri::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
+    Q_D( const KCalendarSystemHijri );
+
     /*
     The following C++ code is translated from the Lisp code
     in ``Calendrical Calculations'' by Nachum Dershowitz and

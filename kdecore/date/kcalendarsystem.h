@@ -926,8 +926,6 @@ public:
 
 protected:
 
-    friend class KCalendarSystemPrivate;
-
     /**
      * Internal method to convert a Julian Day number into the YMD values for
      * this calendar system.
@@ -1011,9 +1009,29 @@ protected:
      */
     void setHasYear0( bool hasYear0 );
 
+    /**
+    * Constructor of abstract calendar class. This will be called by derived classes.
+    *
+    * @param dd derived private d-pointer.
+    * @param locale locale to use for translations. The global locale is used if null.
+    */
+    KCalendarSystem( KCalendarSystemPrivate &dd, const KLocale *locale = 0 );
+
 private:
+    //Required for shared d-pointer as already private, remove in KDE5
+    friend class KCalendarSystemCoptic;
+    friend class KCalendarSystemEthiopian;
+    friend class KCalendarSystemGregorian;
+    friend class KCalendarSystemGregorianProleptic;
+    friend class KCalendarSystemHebrew;
+    friend class KCalendarSystemHijri;
+    friend class KCalendarSystemIndianNational;
+    friend class KCalendarSystemJalali;
+    friend class KCalendarSystemJulian;
+
     Q_DISABLE_COPY( KCalendarSystem )
-    KCalendarSystemPrivate * const d;
+    KCalendarSystemPrivate * const d_ptr; // KDE5 make protected
+    Q_DECLARE_PRIVATE( KCalendarSystem )
 };
 
 #endif

@@ -27,6 +27,7 @@
 #include "kcalendarsystem.h"
 
 class KCalendarSystemJalaliPrivate;
+
 /**
  Jalali calendar type implementation
 */
@@ -102,9 +103,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemJalaliPrivate * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemJalali )
+    KCalendarSystemJalaliPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMJALALI_H

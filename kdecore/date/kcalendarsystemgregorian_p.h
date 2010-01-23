@@ -114,9 +114,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemGregorian( KCalendarSystemGregorianPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemGregorianPrivate * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemGregorian )
+    KCalendarSystemGregorianPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif

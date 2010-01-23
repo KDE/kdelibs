@@ -1368,10 +1368,10 @@ void KCalendarTest::testQDateDaysInYear()
     QCOMPARE( calendar->daysInYear( testDate ),  testDate.daysInYear() );
 
     calendar->setDate( testDate, -4700, 1, 1 );
-    QEXPECT_FAIL("", "Returns 365 instead of 366", Continue);
+    QEXPECT_FAIL("", "Returns 365 instead of 366", Continue); // Fix submitted to Qt
     QCOMPARE( calendar->daysInYear( testDate ),  testDate.daysInYear() );
     calendar->setDate( testDate, -4000, 1, 1 );
-    QEXPECT_FAIL("", "Returns 365 instead of 366", Continue);
+    QEXPECT_FAIL("", "Returns 365 instead of 366", Continue); // Fix submitted to Qt
     QCOMPARE( calendar->daysInYear( testDate ),  testDate.daysInYear() );
 
     calendar->setDate( testDate, 1, 1, 1 );
@@ -1446,7 +1446,7 @@ void KCalendarTest::testQDateDayOfYear()
 
     calendar->setDate( testDate, -2000,  1,  1 );
     QCOMPARE( calendar->dayOfYear( testDate ), testDate.dayOfYear() );
-    calendar->setDate( testDate, -2000,  2, 29 );
+    calendar->setDate( testDate, -2000,  2, 28 );
     QCOMPARE( calendar->dayOfYear( testDate ), testDate.dayOfYear() );
     calendar->setDate( testDate, -2000,  6,  1 );
     QCOMPARE( calendar->dayOfYear( testDate ), testDate.dayOfYear() );
@@ -1457,7 +1457,7 @@ void KCalendarTest::testQDateDayOfYear()
 
     calendar->setDate( testDate, -4712,  1,  2 );
     QCOMPARE( calendar->dayOfYear( testDate ), testDate.dayOfYear() );
-    calendar->setDate( testDate, -4712,  2, 29 );
+    calendar->setDate( testDate, -4712,  2, 28 );
     QCOMPARE( calendar->dayOfYear( testDate ), testDate.dayOfYear() );
     calendar->setDate( testDate, -4712,  6,  1 );
     QCOMPARE( calendar->dayOfYear( testDate ), testDate.dayOfYear() );

@@ -107,9 +107,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemEthiopianPrivate * const d;
+    Q_DECLARE_PRIVATE(KCalendarSystemEthiopian);
+    KCalendarSystemEthiopianPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMETHIOPIAN_H

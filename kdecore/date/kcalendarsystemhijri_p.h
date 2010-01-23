@@ -111,9 +111,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemHijri( KCalendarSystemHijriPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemHijriPrivate * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemHijri )
+    KCalendarSystemHijriPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMHIJRI_H

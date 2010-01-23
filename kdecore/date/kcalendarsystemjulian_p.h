@@ -22,7 +22,7 @@
 
 #include "kcalendarsystem.h"
 
-class KCalendarSystemJulianProleptic;
+class KCalendarSystemJulianPrivate;
 
 /**
  * @internal
@@ -110,9 +110,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemJulianProleptic * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemJulian )
+    KCalendarSystemJulianPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMJULIAN_H

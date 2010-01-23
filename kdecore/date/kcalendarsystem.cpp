@@ -20,6 +20,7 @@
 */
 
 #include "kcalendarsystem.h"
+#include "kcalendarsystemprivate_p.h"
 
 #include "kglobal.h"
 #include "kdebug.h"
@@ -141,36 +142,7 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
 }
 
 
-class KCalendarSystemPrivate
-{
-public:
-    KCalendarSystemPrivate( KCalendarSystem *q ): q( q )
-    {
-    }
-
-    ~KCalendarSystemPrivate()
-    {
-    }
-
-    KCalendarSystem *q;
-
-    bool setAnyDate( QDate &date, int year, int month, int day ) const;
-
-    int addYearNumber( int originalYear, int addYears ) const;
-
-    QDate invalidDate() const;
-
-    int stringToInteger( const QString &sNum, int &iLength );
-
-    QString simpleDateString( const QString &str ) const;
-
-    int maxDaysInWeek;
-    int maxMonthsInYear;
-
-    bool hasYear0;
-
-    const KLocale *locale;
-};
+// Shared d pointer base class definitions
 
 // Allows us to set dates outside publically valid range, USE WITH CARE!!!!
 bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int day ) const
@@ -204,7 +176,7 @@ QDate KCalendarSystemPrivate::invalidDate() const
     return QDate();
 }
 
-int KCalendarSystemPrivate::stringToInteger( const QString &sNum, int &iLength )
+int KCalendarSystemPrivate::stringToInteger( const QString &sNum, int &iLength ) const
 {
     int iPos = 0;
     int result = 0;
@@ -232,17 +204,27 @@ QString KCalendarSystemPrivate::simpleDateString( const QString &str ) const
     return newStr;
 }
 
-KCalendarSystem::KCalendarSystem( const KLocale *locale ) : d( new KCalendarSystemPrivate( this ) )
+KCalendarSystem::KCalendarSystem( const KLocale *locale )
+                : d_ptr( new KCalendarSystemPrivate( this ) )
 {
+    d_ptr->locale = locale;
     setMaxDaysInWeek(7);
     setMaxMonthsInYear(12);
     setHasYear0(false);
-    d->locale = locale;
+}
+
+KCalendarSystem::KCalendarSystem( KCalendarSystemPrivate &dd, const KLocale *locale )
+                : d_ptr( &dd )
+{
+    d_ptr->locale = locale;
+    setMaxDaysInWeek(7);
+    setMaxMonthsInYear(12);
+    setHasYear0(false);
 }
 
 KCalendarSystem::~KCalendarSystem()
 {
-    delete d;
+    delete d_ptr;
 }
 
 // This method MUST be re-implemented in any new Calendar System
@@ -294,6 +276,8 @@ bool KCalendarSystem::isValid( int y, int month, int day ) const
 
 bool KCalendarSystem::isValid( int y, int dayOfYear ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
         return false;
     }
@@ -363,6 +347,8 @@ bool KCalendarSystem::isValid( const QDate &date ) const
 
 bool KCalendarSystem::setDate( QDate &date, int year, int month, int day ) const
 {
+    Q_D( const KCalendarSystem );
+
     date = d->invalidDate();
 
     if ( isValid( year, month, day ) ) {
@@ -380,6 +366,8 @@ bool KCalendarSystem::setDate( QDate &date, int year, int month, int day ) const
 
 bool KCalendarSystem::setDate( QDate &date, int year, int dayOfYear ) const
 {
+    Q_D( const KCalendarSystem );
+
     date = d->invalidDate();
 
     if ( isValid( year, dayOfYear ) ) {
@@ -397,6 +385,8 @@ bool KCalendarSystem::setDate( QDate &date, int year, int dayOfYear ) const
 
 bool KCalendarSystem::setDateIsoWeek( QDate &date, int year, int isoWeekNumber, int dayOfIsoWeek ) const
 {
+    Q_D( const KCalendarSystem );
+
     date = d->invalidDate();
 
     if ( isValidIsoWeekDate( year, isoWeekNumber, dayOfIsoWeek ) ) {
@@ -469,6 +459,8 @@ int KCalendarSystem::day( const QDate &date ) const
 
 QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( isValid( date ) ) {
 
         int originalYear, originalMonth, originalDay;
@@ -498,6 +490,8 @@ QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
 
 QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( isValid( date ) ) {
 
         int originalYear, originalMonth, originalDay;
@@ -539,6 +533,8 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
 
 QDate KCalendarSystem::addDays( const QDate &date, int numDays ) const
 {
+    Q_D( const KCalendarSystem );
+
     // QDate only holds a uint and has no boundary checking in addDays(), so we need to check
     if ( isValid( date ) && (long) date.toJulianDay() + (long) numDays > 0 ) {
         // QDate adds straight to jd
@@ -553,6 +549,8 @@ QDate KCalendarSystem::addDays( const QDate &date, int numDays ) const
 
 int KCalendarSystem::monthsInYear( const QDate &date ) const
 {
+    Q_D( const KCalendarSystem );
+
     // Last day of this year = first day of next year minus 1 day
     // Use setAnyDate() to allow correct calculation in last valid year
 
@@ -602,6 +600,8 @@ int KCalendarSystem::weeksInYear( int year ) const
 
 int KCalendarSystem::daysInYear( const QDate &date ) const
 {
+    Q_D( const KCalendarSystem );
+
     // Days in year = jd of first day of next year minus jd of first day of this year
     // Use setAnyDate() to allow correct calculation in last valid year
 
@@ -619,6 +619,8 @@ int KCalendarSystem::daysInYear( const QDate &date ) const
 
 int KCalendarSystem::daysInMonth( const QDate &date ) const
 {
+    Q_D( const KCalendarSystem );
+
     // Days In Month = jd of first day of next month minus jd of first day of this month
     // Use setAnyDate() to allow correct calculation in last valid year
 
@@ -681,6 +683,8 @@ int KCalendarSystem::dayOfWeek( const QDate &date ) const
 // JPL still need to fully clean up here
 int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( isValid( date ) ) {
         QDate firstDayWeek1, lastDayOfYear;
         int y = year( date );
@@ -870,21 +874,23 @@ QString KCalendarSystem::daysInWeekString( const QDate &date) const
 
 int KCalendarSystem::yearStringToInteger( const QString &yearString, int &iLength ) const
 {
+    Q_D( const KCalendarSystem );
     return d->stringToInteger( yearString, iLength );
 }
 
 int KCalendarSystem::monthStringToInteger( const QString &monthString, int &iLength ) const
 {
+    Q_D( const KCalendarSystem );
     return d->stringToInteger( monthString, iLength );
 }
 
 int KCalendarSystem::dayStringToInteger( const QString &dayString, int &iLength ) const
 {
+    Q_D( const KCalendarSystem );
     return d->stringToInteger( dayString, iLength );
 }
 
-QString KCalendarSystem::formatDate( const QDate &fromDate,
-                                     KLocale::DateFormat toFormat ) const
+QString KCalendarSystem::formatDate( const QDate &fromDate, KLocale::DateFormat toFormat ) const
 {
     if ( !fromDate.isValid() ) {
         return QString();
@@ -936,7 +942,9 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
                                      KLocale::DateTimeFormatStandard standard ) const
 {
-    Q_UNUSED(standard);
+    // Currently defaults to KLocale::KdeFormat, KDE 4.5 to support other standards (POSIX, Unicode)
+    Q_UNUSED( standard );
+
     if ( !fromDate.isValid() ) {
         return QString();
     }
@@ -1211,6 +1219,8 @@ QDate KCalendarSystem::readDate( const QString &str, bool *ok ) const
 
 QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( flags & KLocale::ShortFormat ) {
         return readDate( str, locale()->dateFormatShort(), ok );
     } else if ( flags & KLocale::NormalFormat ) {
@@ -1227,6 +1237,8 @@ QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flag
 
 QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, bool *ok ) const
 {
+    Q_D( const KCalendarSystem );
+
     QString str = intstr.simplified().toLower();
     QString fmt = fmtstr.simplified();
     int dd = -1;
@@ -1418,6 +1430,8 @@ bool KCalendarSystem::dateToJulianDay( int year, int month, int day, int &jd ) c
 
 const KLocale * KCalendarSystem::locale() const
 {
+    Q_D( const KCalendarSystem );
+
     if ( d->locale ) {
         return d->locale;
     }
@@ -1427,15 +1441,18 @@ const KLocale * KCalendarSystem::locale() const
 
 void KCalendarSystem::setMaxMonthsInYear( int maxMonths )
 {
+    Q_D( KCalendarSystem );
     d->maxMonthsInYear = maxMonths;
 }
 
 void KCalendarSystem::setMaxDaysInWeek( int maxDays )
 {
+    Q_D( KCalendarSystem );
     d->maxDaysInWeek = maxDays;
 }
 
 void KCalendarSystem::setHasYear0( bool hasYear0 )
 {
+    Q_D( KCalendarSystem );
     d->hasYear0 = hasYear0;
 }

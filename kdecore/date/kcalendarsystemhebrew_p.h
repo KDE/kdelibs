@@ -110,9 +110,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemHebrewPrivate * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemHebrew )
+    KCalendarSystemHebrewPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMHEBREW_H

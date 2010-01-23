@@ -18,6 +18,7 @@
 */
 
 #include "kcalendarsystemjulian_p.h"
+#include "kcalendarsystemprivate_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -25,13 +26,33 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
+class KCalendarSystemJulianPrivate : public KCalendarSystemPrivate
+{
+public:
+    KCalendarSystemJulianPrivate( KCalendarSystemJulian *q ) : KCalendarSystemPrivate( q )
+    {
+    }
+
+    virtual ~KCalendarSystemJulianPrivate()
+    {
+    }
+};
+
 KCalendarSystemJulian::KCalendarSystemJulian( const KLocale * locale )
-                         : KCalendarSystem( locale ), d( 0 )
+                      : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), locale ),
+                        dont_use( 0 )
+{
+}
+
+KCalendarSystemJulian::KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd, const KLocale * locale )
+                      : KCalendarSystem( dd, locale ),
+                        dont_use( 0 )
 {
 }
 
 KCalendarSystemJulian::~KCalendarSystemJulian()
 {
+    delete dont_use;
 }
 
 QString KCalendarSystemJulian::calendarType() const

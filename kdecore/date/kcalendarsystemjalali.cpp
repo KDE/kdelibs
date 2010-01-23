@@ -28,23 +28,22 @@
 */
 
 #include "kcalendarsystemjalali_p.h"
+#include "kcalendarsystemprivate_p.h"
 
 #include <QtCore/QDate>
 
-class KCalendarSystemJalaliPrivate
+class KCalendarSystemJalaliPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q ): q( q )
+    KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q ) : KCalendarSystemPrivate( q )
     {
     }
 
-    ~KCalendarSystemJalaliPrivate()
+    virtual ~KCalendarSystemJalaliPrivate()
     {
     }
 
-    KCalendarSystem *q;
-
-    int daysInMonth( int year, int month ) const;
+    virtual int daysInMonth( int year, int month ) const;
 };
 
 int KCalendarSystemJalaliPrivate::daysInMonth( int year, int month ) const
@@ -63,13 +62,20 @@ int KCalendarSystemJalaliPrivate::daysInMonth( int year, int month ) const
 }
 
 KCalendarSystemJalali::KCalendarSystemJalali( const KLocale * locale )
-                      : KCalendarSystem( locale ),
-                        d( new KCalendarSystemJalaliPrivate( this ) )
+                      : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), locale ),
+                        dont_use( 0 )
+{
+}
+
+KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd, const KLocale * locale )
+                      : KCalendarSystem( dd, locale ),
+                        dont_use( 0 )
 {
 }
 
 KCalendarSystemJalali::~KCalendarSystemJalali()
 {
+    delete dont_use;
 }
 
 QString KCalendarSystemJalali::calendarType() const
@@ -99,6 +105,8 @@ QDate KCalendarSystemJalali::latestValidDate() const
 
 bool KCalendarSystemJalali::isValid( int year, int month, int day ) const
 {
+    Q_D( const KCalendarSystemJalali );
+
     // Using the Birashk formula which is accurate in period AP 1244 to 1530 (AD 1865 to 2152)
     if ( year < 1244 || year > 1530 ) {
         return false;
@@ -193,6 +201,8 @@ int KCalendarSystemJalali::daysInYear( const QDate &date ) const
 
 int KCalendarSystemJalali::daysInMonth( const QDate &date ) const
 {
+    Q_D( const KCalendarSystemJalali );
+
     if ( !isValid( date ) ) {
         return -1;
     }
@@ -573,6 +583,7 @@ bool KCalendarSystemJalali::julianDayToDate( int jd, int &year, int &month, int 
 
 bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
+    Q_D( const KCalendarSystemJalali );
 
     // Birashk algorithm is incorrect in two years in period AP 1244 to 1531.
     // This results in a leap day being added to the end of 1404 instead of 1403

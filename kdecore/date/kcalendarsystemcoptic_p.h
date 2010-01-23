@@ -106,9 +106,11 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
+    KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    KCalendarSystemCopticPrivate * const d;
+    Q_DECLARE_PRIVATE( KCalendarSystemCoptic )
+    KCalendarSystemCopticPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
 #endif // KCALENDARSYSTEMCOPTIC_H

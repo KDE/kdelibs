@@ -18,6 +18,8 @@
 */
 
 #include "kcalendarsystemethiopian_p.h"
+#include "kcalendarsystemprivate_p.h"
+#include "kcalendarsystemcopticprivate_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -25,28 +27,37 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
-class KCalendarSystemEthiopianPrivate
+class KCalendarSystemEthiopianPrivate : public KCalendarSystemCopticPrivate
 {
 public:
-    KCalendarSystemEthiopianPrivate( KCalendarSystem *q ): q( q )
+    KCalendarSystemEthiopianPrivate( KCalendarSystemEthiopian *q ) : KCalendarSystemCopticPrivate( q )
     {
     }
 
-    ~KCalendarSystemEthiopianPrivate()
+    virtual ~KCalendarSystemEthiopianPrivate()
     {
     }
-
-    KCalendarSystem *q;
 };
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KLocale * locale )
-                     : KCalendarSystemCoptic( locale ), d( 0 )
+                         : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), locale ),
+                           dont_use( 0 )
 {
+    setHasYear0(false);
+    setMaxMonthsInYear(13);
+}
+
+KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale * locale )
+                     : KCalendarSystemCoptic( dd, locale ),
+                       dont_use( 0 )
+{
+    setHasYear0(false);
+    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemEthiopian::~KCalendarSystemEthiopian()
 {
-    delete d;
+    delete dont_use;
 }
 
 QString KCalendarSystemEthiopian::calendarType() const

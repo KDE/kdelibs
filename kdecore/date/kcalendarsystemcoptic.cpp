@@ -18,6 +18,8 @@
 */
 
 #include "kcalendarsystemcoptic_p.h"
+#include "kcalendarsystemprivate_p.h"
+#include "kcalendarsystemcopticprivate_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -25,22 +27,17 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
-class KCalendarSystemCopticPrivate
-{
-public:
-    KCalendarSystemCopticPrivate( KCalendarSystem *q ): q( q )
-    {
-    }
-
-    ~KCalendarSystemCopticPrivate()
-    {
-    }
-
-    KCalendarSystem *q;
-};
-
 KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale * locale )
-                     : KCalendarSystem( locale ), d( 0 )
+                     : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), locale ),
+                       dont_use( 0 )
+{
+    setHasYear0(false);
+    setMaxMonthsInYear(13);
+}
+
+KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KLocale * locale )
+                     : KCalendarSystem( dd, locale ),
+                       dont_use( 0 )
 {
     setHasYear0(false);
     setMaxMonthsInYear(13);
@@ -48,7 +45,7 @@ KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale * locale )
 
 KCalendarSystemCoptic::~KCalendarSystemCoptic()
 {
-    delete d;
+    delete dont_use;
 }
 
 QString KCalendarSystemCoptic::calendarType() const
@@ -74,7 +71,7 @@ QDate KCalendarSystemCoptic::latestValidDate() const
 {
     // Set to last day of year 9999 until confirm date formats & widgets support > 9999
     //9999-12-30
-    //100283-08-29 AD Julian
+    //10283-08-29 AD Julian
     return QDate::fromJulianDay( 5477164 );
 }
 
