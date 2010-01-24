@@ -1302,7 +1302,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
 
     //kDebug(264) << "key:" << key << ", use QPC:" << d->mUseQPixmapCache;
     // First try the QPixmapCache
-    if (d->mUseQPixmapCache && QPixmapCache::find(d->qpcKey(key), pix)) {
+    if (d->mUseQPixmapCache && QPixmapCache::find(d->qpcKey(key), &pix)) {
         //kDebug(264) << "Found from QPC";
         return true;
     }
