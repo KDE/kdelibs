@@ -534,13 +534,6 @@ Q_SIGNALS:
      */
     void globalShortcutChanged(const QKeySequence&);
 
-protected:
-    /**
-     * Call this from your createWidget function to make sure
-     * your action widget is properly centered in vertical toolbars
-     */
-    QWidget *proxyWidget(QWidget *w) const;
-    
 private:
     friend class KGlobalAccelPrivate; // Needs access to the component
     friend class KActionCollectionPrivate; // Needs access to the component

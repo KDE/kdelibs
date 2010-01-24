@@ -92,7 +92,7 @@ QWidget * KToolBarPopupAction::createWidget( QWidget * _parent )
   else
     button->setPopupMode( QToolButton::InstantPopup );
 
-  return proxyWidget( button );
+  return button;
 }
 
 bool KToolBarPopupAction::delayed() const

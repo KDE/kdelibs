@@ -417,20 +417,6 @@ void KAction::setAuthAction(KAuth::Action *action)
     }
 }
 
-QWidget *KAction::proxyWidget(QWidget *w) const
-{
-    QToolBar *tb = dynamic_cast<QToolBar *>(w->parentWidget());
-    if (tb) {
-        QWidget *holder = new QWidget(tb);
-        QHBoxLayout *l = new QHBoxLayout(holder);
-        l->setMargin(0);
-        l->addWidget(w, 0, Qt::AlignCenter);
-        return holder;
-    } else {
-        return w;
-    }
-}
-
 /* vim: et sw=2 ts=2
  */
 

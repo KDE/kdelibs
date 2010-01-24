@@ -101,7 +101,7 @@ QWidget * KActionMenu::createWidget( QWidget * _parent )
   else
     button->setPopupMode(QToolButton::MenuButtonPopup);
 
-  return proxyWidget(button);
+  return button;
 }
 
 void KActionMenu::remove( KAction* cmd )
