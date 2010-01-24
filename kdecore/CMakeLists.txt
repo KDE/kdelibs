@@ -107,7 +107,7 @@ if (UNIX)
    )
 endif (UNIX)
 
-if (KAUTH_BACKEND STREQUAL "POLKITQT")
+if (KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
     message(STATUS "Building PolkitQt KAuth backend")
 
     set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -115,7 +115,7 @@ if (KAUTH_BACKEND STREQUAL "POLKITQT")
     )
 
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
-elseif (KAUTH_BACKEND STREQUAL "POLKITQT-1")
+elseif (KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
     message(STATUS "Building PolkitQt-1 KAuth backend")
 
     set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -123,7 +123,7 @@ elseif (KAUTH_BACKEND STREQUAL "POLKITQT-1")
     )
 
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT-1_CORE_LIBRARY})
-elseif (KAUTH_BACKEND STREQUAL "OSX")
+elseif (KDE4_AUTH_BACKEND_NAME STREQUAL "OSX")
     message(STATUS "Building Apple KAuth backend")
 
     set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -131,7 +131,7 @@ elseif (KAUTH_BACKEND STREQUAL "OSX")
     )
 
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${SECURITY_LIBRARY})
-elseif (KAUTH_BACKEND STREQUAL "FAKE")
+elseif (KDE4_AUTH_BACKEND_NAME STREQUAL "FAKE")
     message(STATUS "Building Fake KAuth backend")
     message("WARNING: KAuth will be built with Fake backend. The library will not work properly unless compiled with
              a working backend")
@@ -378,13 +378,13 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 set(kauth_policy_gen_SRCS
     auth/policy-gen/policy-gen.cpp )
 
-if(KAUTH_BACKEND STREQUAL "OSX")
+if(KDE4_AUTH_BACKEND_NAME STREQUAL "OSX")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/mac/kauth-policy-gen-mac.cpp )
-elseif(KAUTH_BACKEND STREQUAL "POLKITQT")
+elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
        auth/backends/policykit/kauth-policy-gen-polkit.cpp )
-elseif(KAUTH_BACKEND STREQUAL "POLKITQT-1")
+elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
       auth/backends/polkit-1/kauth-policy-gen-polkit1.cpp )
 else()
