@@ -338,7 +338,7 @@ void DialogPrivate::createDialogFromServices()
         if (!parent) {
             // dummy kcm
             bool foundPlugin = false;
-            foreach (KPluginInfo pinfo, plugininfos) {
+            foreach (const KPluginInfo &pinfo, plugininfos) {
                 if (pinfo.service() == info.service()) {
                     if (!pinfo.kcmServices().count()) {
                         const KService::Ptr service = info.service();

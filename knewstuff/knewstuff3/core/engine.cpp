@@ -290,7 +290,7 @@ void Engine::reloadEntries()
     d->currentPage = -1;
     d->currentRequest.page = 0;
 
-    foreach (ProviderInformation p, d->providers) {
+    foreach (const ProviderInformation &p, d->providers) {
         if (p.provider->isInitialized()) {
             if (d->currentRequest.sortMode == Provider::Installed) {
                 // when asking for installed entries, never use the cache
@@ -358,7 +358,7 @@ void Engine::requestMoreData()
 
     d->currentRequest.page++;
 
-    foreach (ProviderInformation p, d->providers) {
+    foreach (const ProviderInformation &p, d->providers) {
         if (p.provider->isInitialized()) {
             p.provider->loadEntries(d->currentRequest);
         }

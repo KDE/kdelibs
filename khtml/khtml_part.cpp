@@ -3457,7 +3457,7 @@ void KHTMLPart::timerEvent(QTimerEvent *e)
           d->m_DNSPrefetchTimer = -1;
       }
   } else if (e->timerId() == d->m_DNSTTLTimer) {
-      foreach (QString name, d->m_lookedupHosts)
+      foreach (const QString &name, d->m_lookedupHosts)
           d->m_DNSPrefetchQueue.enqueue(name);
       if (d->m_DNSPrefetchTimer <= 0)
          d->m_DNSPrefetchTimer = startTimer( sDNSPrefetchTimerDelay );

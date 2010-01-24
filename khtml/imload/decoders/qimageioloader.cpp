@@ -157,11 +157,11 @@ const QStringList& QImageIOLoaderProvider::mimeTypes()
 //     QList<QByteArray> formats = QImageIOReader::supportedFormats();
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
 
-    foreach(KService::Ptr service, services) {
+    foreach(const KService::Ptr &service, services) {
         QStringList formats = service->property("X-KDE-ImageFormat").toStringList();
         QString mimetype = service->property("X-KDE-MimeType").toString();
         bool positive = false;
-        foreach(QString format, formats) {
+        foreach(const QString &format, formats) {
             if (isSupportedFormat(format)) {
                 positive = true;
                 break;

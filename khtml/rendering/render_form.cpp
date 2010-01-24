@@ -780,15 +780,15 @@ bool WebShortcutCreator::createWebShortcut(QString query)
             isOk = true;
             QStringList keyList( keys.split( ',' ) );
             KService::List providers = KServiceTypeTrader::self()->query( "SearchProvider" );
-            foreach ( KService::Ptr provider, providers ) {
+            foreach ( const KService::Ptr &provider, providers ) {
                 if ( !isOk ) {
                     break;
                 }
-                foreach ( QString s, provider->property( "Keys" ).toStringList() ) {
+                foreach ( const QString &s, provider->property( "Keys" ).toStringList() ) {
                     if ( !isOk ) {
                         break;
                     }
-                    foreach ( QString t, keys ) {
+                    foreach ( const QString &t, keys ) {
                         if ( !isOk ) {
                             break;
                         }
