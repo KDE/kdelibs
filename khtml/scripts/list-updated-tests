@@ -23,7 +23,16 @@
 # using 'testregression -g'
 #
 # It makes it easier to maintain a private baseline.
-
+#
+# Say for instance that you have a private baseline generated with:
+#   testregression -g -r baseline_priv .
+#
+# From time to time, people will have to add/update tests in the svn-kept baseline.
+# So instead of regenerating your whole private baseline to update it, you may run:
+#   testregression -g -r baseline_priv `list-updated-tests` .
+# to update those tests in your own baseline ( check first that list-updated-tests does have an output a all)
+#
+# Of course, this will only work *before* you 'svn update'.
 
 use strict;
 
