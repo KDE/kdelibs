@@ -424,6 +424,7 @@ QWidget *KAction::proxyWidget(QWidget *w) const
     {
         QWidget *holder = new QWidget(tb);
         QHBoxLayout *l = new QHBoxLayout(holder);
+        l->setMargin(0);
         l->addWidget(w, 0, Qt::AlignCenter);
         return holder;
     }
