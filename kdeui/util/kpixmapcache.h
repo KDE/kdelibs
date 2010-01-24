@@ -126,9 +126,16 @@ public:
      * QPixmapCache is used by default.
      **/
     void setUseQPixmapCache(bool use);
+
     /**
      * Whether QPixmapCache should be used to cache pixmaps in memory in
-     *  addition to caching them on the disk.
+     * addition to caching them on the disk.
+     *
+     * @b NOTE: The design of QPixmapCache means that the entries stored in
+     * the cache are shared throughout the entire process, and not just in
+     * this particular KPixmapCache. KPixmapCache makes an effort to ensure
+     * that entries from other KPixmapCaches do not inadvertently spill over
+     * into this one, but is not entirely successful (@see discard())
      **/
     bool useQPixmapCache() const;
 
@@ -185,9 +192,16 @@ public:
      * @param name unique name of the cache to be deleted
      **/
     static void deleteCache(const QString& name);
+
     /**
      * Deletes all entries and reinitializes this cache.
-     **/
+     *
+     * @b NOTE: If useQPixmapCache is set to true then that cache must also
+     * be cleared. There is only one QPixmapCache for the entire process
+     * however so other KPixmapCaches and other QPixmapCache users may also
+     * be affected, leading to a temporary slowdown until the QPixmapCache is
+     * repopulated.
+     */
     void discard();
 
     /**

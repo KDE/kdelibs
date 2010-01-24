@@ -243,6 +243,8 @@ public:
     // List of all KPixmapCache::Private instances in this process.
     static QList<KPixmapCache::Private *> mCaches;
 
+    static unsigned kpcNumber; // Used to setup for qpcKey
+
     int findOffset(const QString& key);
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
     void writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset);
@@ -264,9 +266,13 @@ public:
     //  lookups faster as the beginnings of the keys are more random
     QString indexKey(const QString& key);
 
+    // Returns a QString suitable for use in the static QPixmapCache, which
+    // differentiates each KPC object in the process.
+    QString qpcKey(const QString& key) const;
 
     KPixmapCache* q;
 
+    QString mThisString; // Used by qpcKey
     quint32 mHeaderSize;  // full size of the index header, including custom (subclass') header data
     quint32 mIndexRootOffset;  // offset of the first entry in index file
 
@@ -386,11 +392,14 @@ public:
 // List of KPixmapCache::Private instances.
 QList<KPixmapCache::Private *> KPixmapCache::Private::mCaches;
 
+unsigned KPixmapCache::Private::kpcNumber = 0;
+
 KPixmapCache::Private::Private(KPixmapCache* _q)
 {
     q = _q;
     mCaches.append(this);
     mRemovalThread = 0;
+    mThisString = QString("%1").arg(kpcNumber++);
 }
 
 KPixmapCache::Private::~Private()
@@ -786,6 +795,12 @@ QString KPixmapCache::Private::indexKey(const QString& key)
 {
     const QByteArray latin1 = key.toLatin1();
     return QString("%1%2").arg((ushort)qChecksum(latin1.data(), latin1.size()), 4, 16, QLatin1Char('0')).arg(key);
+}
+
+
+QString KPixmapCache::Private::qpcKey(const QString& key) const
+{
+    return mThisString + key;
 }
 
 void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset)
@@ -1249,6 +1264,8 @@ void KPixmapCache::discard()
     d->mInited = false;
 
     if (d->mUseQPixmapCache) {
+        // TODO: This is broken, it removes every cached QPixmap in the whole
+        // process, not just this KPixmapCache.
         QPixmapCache::clear();
     }
 
@@ -1285,7 +1302,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
 
     //kDebug(264) << "key:" << key << ", use QPC:" << d->mUseQPixmapCache;
     // First try the QPixmapCache
-    if (d->mUseQPixmapCache && QPixmapCache::find(key, pix)) {
+    if (d->mUseQPixmapCache && QPixmapCache::find(d->qpcKey(key), pix)) {
         //kDebug(264) << "Found from QPC";
         return true;
     }
@@ -1307,7 +1324,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     bool ret = d->loadData(offset, pix);
     if (ret && d->mUseQPixmapCache) {
         // This pixmap wasn't in QPC, put it there
-        QPixmapCache::insert(key, pix);
+        QPixmapCache::insert(d->qpcKey(key), pix);
     }
     return ret;
 }
@@ -1380,7 +1397,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     //kDebug(264) << "key:" << key << ", size:" << pix.width() << "x" << pix.height();
     // Insert to QPixmapCache as well
     if (d->mUseQPixmapCache) {
-        QPixmapCache::insert(key, pix);
+        QPixmapCache::insert(d->qpcKey(key), pix);
     }
 
     KPCLockFile lock(d->mLockFileName);
