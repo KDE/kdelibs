@@ -120,7 +120,7 @@ KIO::MetaData& AccessManager::sessionMetaData()
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
-    KIO::SimpleJob *kioJob = 0;
+    KIO::TransferJob *kioJob = 0;
 
     if ( !d->externalContentAllowed && req.url().scheme() != "file" &&
          req.url().scheme() != "data" && !req.url().scheme().isEmpty() ) {
@@ -155,6 +155,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             return 0;
     }
 
+    kioJob->setHandleRedirection(false);
     KIO::Scheduler::scheduleJob(kioJob);
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
 

@@ -220,17 +220,17 @@ namespace KIO {
          * Signals a redirection.
          * Use to update the URL shown to the user.
          * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param url the new url
+         * @param job the job that is redirected
+         * @param url the new url
          */
         void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param fromUrl the original URL
-	 * @param toUrl the new URL
+         * @param job the job that is redirected
+         * @param fromUrl the original URL
+         * @param toUrl the new URL
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
@@ -251,10 +251,11 @@ namespace KIO {
         inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
                                   const QByteArray &_staticData)
             : SimpleJobPrivate(url, command, packedArgs),
-              m_internalSuspended(false), m_errorPage(false), staticData(_staticData),
-              m_isMimetypeEmitted(false), m_subJob(0)
+              m_handleRedirection(true), m_internalSuspended(false), m_errorPage(false),
+              staticData(_staticData), m_isMimetypeEmitted(false), m_subJob(0)
             { }
 
+        bool m_handleRedirection;
         bool m_internalSuspended;
         bool m_errorPage;
         QByteArray staticData;

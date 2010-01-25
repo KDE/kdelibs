@@ -982,59 +982,64 @@ void TransferJob::slotRedirection( const KUrl &url)
 void TransferJob::slotFinished()
 {
     Q_D(TransferJob);
+    
     //kDebug(7007) << this << "," << m_url;
-    if (d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid())
-        SimpleJob::slotFinished();
-    else {
+    if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid()) {
+      
         //kDebug(7007) << "Redirection to" << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
-        // Honour the redirection
-        // We take the approach of "redirecting this same job"
-        // Another solution would be to create a subjob, but the same problem
-        // happens (unpacking+repacking)
-        d->staticData.truncate(0);
-        d->m_incomingMetaData.clear();
-        if (queryMetaData("cache") != "reload")
-            addMetaData("cache","refresh");
-        d->m_internalSuspended = false;
-        // The very tricky part is the packed arguments business
-        QString dummyStr;
-        KUrl dummyUrl;
-        QDataStream istream( d->m_packedArgs );
-        switch( d->m_command ) {
-            case CMD_GET: {
-                d->m_packedArgs.truncate(0);
-                QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                stream << d->m_redirectionURL;
-                break;
-            }
-            case CMD_PUT: {
-                int permissions;
-                qint8 iOverwrite, iResume;
-                istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
-                d->m_packedArgs.truncate(0);
-                QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                stream << d->m_redirectionURL << iOverwrite << iResume << permissions;
-                break;
-            }
-            case CMD_SPECIAL: {
-                int specialcmd;
-                istream >> specialcmd;
-                if (specialcmd == 1) // HTTP POST
-                {
-                   addMetaData("cache","reload");
-                   d->m_packedArgs.truncate(0);
-                   QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                   stream << d->m_redirectionURL;
-                   d->m_command = CMD_GET;
+        
+        if (d->m_handleRedirection) {
+            // Honour the redirection
+            // We take the approach of "redirecting this same job"
+            // Another solution would be to create a subjob, but the same problem
+            // happens (unpacking+repacking)
+            d->staticData.truncate(0);
+            d->m_incomingMetaData.clear();
+            if (queryMetaData("cache") != "reload")
+                addMetaData("cache","refresh");
+            d->m_internalSuspended = false;
+            // The very tricky part is the packed arguments business
+            QString dummyStr;
+            KUrl dummyUrl;
+            QDataStream istream( d->m_packedArgs );
+            switch( d->m_command ) {
+                case CMD_GET: {
+                    d->m_packedArgs.truncate(0);
+                    QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+                    stream << d->m_redirectionURL;
+                    break;
                 }
-                break;
+                case CMD_PUT: {
+                    int permissions;
+                    qint8 iOverwrite, iResume;
+                    istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
+                    d->m_packedArgs.truncate(0);
+                    QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+                    stream << d->m_redirectionURL << iOverwrite << iResume << permissions;
+                    break;
+                }
+                case CMD_SPECIAL: {
+                    int specialcmd;
+                    istream >> specialcmd;
+                    if (specialcmd == 1) // HTTP POST
+                    {
+                      addMetaData("cache","reload");
+                      d->m_packedArgs.truncate(0);
+                      QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+                      stream << d->m_redirectionURL;
+                      d->m_command = CMD_GET;
+                    }
+                    break;
+                }
             }
+            d->restartAfterRedirection(&d->m_redirectionURL);
+            return;
         }
-
-        d->restartAfterRedirection(&d->m_redirectionURL);
     }
+    
+    SimpleJob::slotFinished();
 }
 
 void TransferJob::setAsyncDataEnabled(bool enabled)
@@ -1622,22 +1627,28 @@ void MimetypeJob::slotFinished( )
         emit TransferJob::mimetype( this, d->m_mimetype );
         setError( 0 );
     }
-    if ( d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error() )
+    
+    if ( !error() && !d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() )
     {
-        // Return slave to the scheduler
-        TransferJob::slotFinished();
-    } else {
         //kDebug(7007) << "Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
-        d->staticData.truncate(0);
-        d->m_internalSuspended = false;
-        d->m_packedArgs.truncate(0);
-        QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-        stream << d->m_redirectionURL;
+        
+        if (d->m_handleRedirection) 
+        {
+            d->staticData.truncate(0);
+            d->m_internalSuspended = false;
+            d->m_packedArgs.truncate(0);
+            QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+            stream << d->m_redirectionURL;
 
-        d->restartAfterRedirection(&d->m_redirectionURL);
+            d->restartAfterRedirection(&d->m_redirectionURL);
+            return;
+        }
     }
+    
+    // Return slave to the scheduler
+    TransferJob::slotFinished();    
 }
 
 MimetypeJob *KIO::mimetype(const KUrl& url, JobFlags flags)
