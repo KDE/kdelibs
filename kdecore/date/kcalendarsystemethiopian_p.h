@@ -110,7 +110,7 @@ protected:
     KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale *locale = 0 );
 
 private:
-    Q_DECLARE_PRIVATE(KCalendarSystemEthiopian);
+    Q_DECLARE_PRIVATE(KCalendarSystemEthiopian)
     KCalendarSystemEthiopianPrivate * const dont_use; // KDE5 remove, use shared d
 };
 

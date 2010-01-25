@@ -133,8 +133,8 @@ protected Q_SLOTS:
     virtual void slotResult(KJob* job);
 
 private:
-    Q_PRIVATE_SLOT(d, void _k_slotActionTriggered(QAction*));
-    Q_PRIVATE_SLOT(d, void _k_slotFillTemplates());
+    Q_PRIVATE_SLOT(d, void _k_slotActionTriggered(QAction*))
+    Q_PRIVATE_SLOT(d, void _k_slotFillTemplates())
     KNewFileMenuPrivate* const d;
 };
 
