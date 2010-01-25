@@ -148,7 +148,7 @@ static KAbstractFileModule* loadFileModule( const QString& moduleName )
         return 0;
 }
 
-static const char* s_defaultFileModuleName = "kfilemodule";
+static const char s_defaultFileModuleName[] = "kfilemodule";
 static KAbstractFileModule* fileModule()
 {
     if(!s_module) {

@@ -56,7 +56,7 @@ namespace KIO
     };
 
     /*
-    static const char* s_states[] = {
+    static const char* const s_states[] = {
         "DELETEJOB_STATE_STATING",
         "DELETEJOB_STATE_DELETING_FILES",
         "DELETEJOB_STATE_DELETING_DIRS"

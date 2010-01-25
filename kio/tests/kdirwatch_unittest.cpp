@@ -50,7 +50,7 @@ private:
 QTEST_KDEMAIN(KDirWatch_UnitTest, GUI)
 
 // Just to make the inotify packets bigger
-static const char* s_filePrefix = "This_is_a_test_file_";
+static const char s_filePrefix[] = "This_is_a_test_file_";
 
 // helper method
 void KDirWatch_UnitTest::createFile(int num)

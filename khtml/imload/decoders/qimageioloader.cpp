@@ -130,7 +130,7 @@ public:
     }
 };
 
-static const char* positiveList[] = {
+static const char* const positiveList[] = {
     "BMP", "TIFF", "JP2", "PNM", "EXR", "XBM", "XPM", "ICO", 0
 };
 

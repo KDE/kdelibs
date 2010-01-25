@@ -35,7 +35,7 @@ QTEST_KDEMAIN( KApplication_UnitTest, GUI )
 // and the test takes forevery anyway.
 
 // Created by the unittest in kdecore
-static const char* s_module = "libklibloadertestmodule";
+static const char s_module[] = "libklibloadertestmodule";
 
 void KApplication_UnitTest::testKLibLoaderUnload()
 {

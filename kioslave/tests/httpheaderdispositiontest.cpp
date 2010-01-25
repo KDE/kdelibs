@@ -50,7 +50,7 @@ static void runTest(const char *header, const char *result)
     QCOMPARE(parameters.count(), QByteArray(result).split('\n').count());
 }
 
-static struct {
+static const struct {
 	const char *header;
 	const char *result;
 } testpatterns[] = {
@@ -178,12 +178,12 @@ static struct {
 
 };
 
-static const char *isoheaders[] =
+static const char * const isoheaders[] =
 {
 "attachment; filename=\"foo-ä.html\""
 };
 
-static const char *isoresults[] =
+static const char * const isoresults[] =
 {
 "type\tattachment\n"
 "filename\tfoo-ä.html",

@@ -1,5 +1,5 @@
 /* XPM */
-static const char *test_pass_xpm[] = {
+static const char * const test_pass_xpm[] = {
 "16 16 103 2",
 "  	c None",
 ". 	c #E7E7E7",

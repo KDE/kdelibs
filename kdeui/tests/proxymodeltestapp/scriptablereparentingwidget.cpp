@@ -29,7 +29,7 @@
 #include <QSplitter>
 #include <QComboBox>
 
-static const char *threadingFunctionNames[] = {
+static const char * const threadingFunctionNames[] = {
   "None",
   "Flat List",
   "Straight Line Tree",
@@ -38,7 +38,7 @@ static const char *threadingFunctionNames[] = {
   "Specified parents 1"
 };
 
-static const char *threadingFunctionBodies[] = {
+static const char * const threadingFunctionBodies[] = {
   "",
   "return false;",
   "return true;",

@@ -29,7 +29,7 @@
 
 #include "dynamictreemodel.h"
 
-static const char *treePredefinesNames[] = {
+static const char * const treePredefinesNames[] = {
   "Flat List",
   "Straight Line Tree",
   "Dragon Teeth 1",
@@ -37,7 +37,7 @@ static const char *treePredefinesNames[] = {
   "Random Tree 1"
 };
 
-static const char *treePredefinesContent[] = {
+static const char * const treePredefinesContent[] = {
   " - 1"
   " - 1"
   " - 1"
@@ -127,7 +127,7 @@ static const char *treePredefinesContent[] = {
   " - 15"
 };
 
-static const char *insertSubTreePredefinesNames[] = {
+static const char * const insertSubTreePredefinesNames[] = {
   "Flat List",
   "Straight Line Tree",
   "Dragon Teeth 1",
@@ -135,7 +135,7 @@ static const char *insertSubTreePredefinesNames[] = {
   "Random Tree 1"
 };
 
-static const char *insertSubTreePredefinesContent[] = {
+static const char * const insertSubTreePredefinesContent[] = {
   " - 1\n"
   " - 1\n"
   " - 1\n"

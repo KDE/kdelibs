@@ -234,7 +234,7 @@ static QByteArray uriListData(const KUrl::List& urls)
     return uriListData;
 }
 
-static const char* s_kdeUriListMime = "application/x-kde4-urilist";
+static const char s_kdeUriListMime[] = "application/x-kde4-urilist";
 
 void KUrl::List::populateMimeData( QMimeData* mimeData,
                                    const KUrl::MetaDataMap& metaData,

@@ -1,5 +1,5 @@
 /* XPM */
-static const char *test_crash_xpm[] = {
+static const char * const test_crash_xpm[] = {
 "16 16 219 2",
 "  	c None",
 ". 	c #000000",

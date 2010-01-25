@@ -259,12 +259,12 @@ static void testCopyTo( KArchive* archive )
 #endif
 }
 
-static const char* s_tarFileName = "karchivetest.tar";
-static const char* s_tarGzFileName = "karchivetest.tar.gz";
-static const char* s_tarGzMaxLengthFileName = "karchivetest-maxlength.tar.gz";
-static const char* s_zipFileName = "karchivetest.zip";
-static const char* s_zipMaxLengthFileName = "karchivetest-maxlength.zip";
-static const char* s_zipLocaleFileName = "karchivetest-locale.zip";
+static const char s_tarFileName[] = "karchivetest.tar";
+static const char s_tarGzFileName[]  = "karchivetest.tar.gz";
+static const char s_tarGzMaxLengthFileName[] = "karchivetest-maxlength.tar.gz";
+static const char s_zipFileName[] = "karchivetest.zip";
+static const char s_zipMaxLengthFileName[] = "karchivetest-maxlength.zip";
+static const char s_zipLocaleFileName[] = "karchivetest-locale.zip";
 
 void KArchiveTest::testCreateTar()
 {

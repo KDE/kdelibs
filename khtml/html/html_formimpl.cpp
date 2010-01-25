@@ -138,7 +138,7 @@ static QByteArray encodeCString(const QByteArray& e)
 {
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
-    static const char *safe = "-._*";
+    static const char safe[] = "-._*";
     QByteArray encoded(( e.length()+e.count( '\n' ) )*3
                      +e.count('\r') * 3 + 1, 0);
     int enclen = 0;

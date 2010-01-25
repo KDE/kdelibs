@@ -1648,8 +1648,8 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       // NOTE : no, we don't want to use KLocale here
       // It seems all FTP servers use the English way
       //kDebug(7102) << "Looking for month " << p_date_1;
-      static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+      static const char * const s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
       for ( int c = 0 ; c < 12 ; c ++ )
         if ( !strcmp( p_date_1, s_months[c]) )
         {

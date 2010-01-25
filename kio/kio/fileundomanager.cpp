@@ -40,7 +40,7 @@
 using namespace KIO;
 
 static const char* undoStateToString(UndoState state) {
-    static const char* s_undoStateToString[] = { "MAKINGDIRS", "MOVINGFILES", "STATINGFILE", "REMOVINGDIRS", "REMOVINGLINKS" };
+    static const char* const s_undoStateToString[] = { "MAKINGDIRS", "MOVINGFILES", "STATINGFILE", "REMOVINGDIRS", "REMOVINGLINKS" };
     return s_undoStateToString[state];
 }
 

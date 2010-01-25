@@ -41,7 +41,7 @@
 #include <klocale.h>
 #include <kacceleratormanager.h>
 
-static const char *KMENU_TITLE = "kmenu_title";
+static const char KMENU_TITLE[] = "kmenu_title";
 
 class KMenu::KMenuPrivate
 {

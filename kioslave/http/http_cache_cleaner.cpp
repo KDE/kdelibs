@@ -52,8 +52,8 @@ time_t g_currentDate;
 int g_maxCacheAge;
 qint64 g_maxCacheSize;
 
-static const char *appFullName = "org.kde.kio_http_cache_cleaner";
-static const char *appName = "kio_http_cache_cleaner";
+static const char appFullName[] = "org.kde.kio_http_cache_cleaner";
+static const char appName[] = "kio_http_cache_cleaner";
 
 // !START OF SYNC!
 // Keep the following in sync with the cache code in http.cpp
@@ -62,7 +62,7 @@ static const int s_hashedUrlBits = 160;   // this number should always be divisi
 static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
 static const int s_hashedUrlBytes = s_hashedUrlBits / 8;
 
-static const char *version = "A\n";
+static const char version[] = "A\n";
 
 // never instantiated, on-disk / wire format only
 struct SerializedCacheFileInfo {

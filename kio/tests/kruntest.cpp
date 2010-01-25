@@ -45,7 +45,7 @@ void testKRun::foundMimeType( const QString& _type )
   return;
 }
 
-static const char* testFile = KDESRCDIR "/kruntest.cpp";
+static const char testFile[] = KDESRCDIR "/kruntest.cpp";
 
 static const struct {
     const char* text;

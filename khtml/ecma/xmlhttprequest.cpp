@@ -271,7 +271,7 @@ static bool canSetRequestHeader(const QString& name)
     static QSet<CaseInsensitiveString> forbiddenHeaders;
 
     if (forbiddenHeaders.isEmpty()) {
-	static const char* hdrs[] = {
+	static const char* const hdrs[] = {
 	    "accept-charset",
 	    "accept-encoding",
 	    "content-length",

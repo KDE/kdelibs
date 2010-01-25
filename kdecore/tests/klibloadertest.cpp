@@ -46,7 +46,7 @@ void KLibLoaderTest::testNonWorking()
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
-static const char* s_kgenericFactoryModule = "klibloadertestmodule";
+static const char s_kgenericFactoryModule[] = "klibloadertestmodule";
 
 void KLibLoaderTest::testFindLibrary()
 {
@@ -85,7 +85,7 @@ void KLibLoaderTest::testWrongClass_KLibLoader_KGenericFactory()
     QVERIFY( !errorString.isEmpty() );
 }
 
-static const char* s_kpluginFactoryModule = "klibloadertestmodule4";
+static const char s_kpluginFactoryModule[] = "klibloadertestmodule4";
 
 // old loader, new plugin
 void KLibLoaderTest::testWorking_KLibLoader_KPluginFactory()

@@ -286,9 +286,9 @@ static void skipLWS(const QString &str, int &pos)
 }
 
 // keep the common ending, this allows the compiler to join them
-static const char *typeSpecials =  "*'%()<>@,;:\\\"/[]?=";
-static const char *attrSpecials =   "'%()<>@,;:\\\"/[]?=";
-static const char *valueSpecials =    "()<>@,;:\\\"/[]?=";
+static const char typeSpecials[] =  "*'%()<>@,;:\\\"/[]?=";
+static const char attrSpecials[] =   "'%()<>@,;:\\\"/[]?=";
+static const char valueSpecials[] =    "()<>@,;:\\\"/[]?=";
 
 static bool specialChar(const QChar &ch, const char *specials)
 {

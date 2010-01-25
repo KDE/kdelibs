@@ -57,7 +57,7 @@ QTEST_KDEMAIN(HeaderTokenizeTest, NoGUI)
 //no use testing many different headers, just a couple each of the multi-valued
 //and the single-valued group to make sure that corner cases work both if there
 //are already entries for the header and if there are no entries.
-static const char *messyHeader =
+static const char messyHeader[] =
 "\n"
 "accept-ranges:foo\r\n"
 "connection: one\r\n"
@@ -75,12 +75,12 @@ static const char *messyHeader =
 "\n\r ";   //two malformed newlines; end of header. also observe the trailing space.
 
 //tab separates values, newline separates header lines. the first word is the key.
-static const char* messyResult =
+static const char messyResult[] =
 "accept-ranges\tfoo\t42\tmaybe   or not\n"
 "connection\tone   t_   wo\tthree\tfour\t:fi:ve\tSix\tseven\teight";
 
 
-static const char *redirectHeader =
+static const char redirectHeader[] =
 //"HTTP/1.1 302 Moved Temporarily\r\n"
 "Location: http://www.hertz.de/rentacar/index.jsp?bsc=t&targetPage=reservationOnHomepage.jsp\r\n"
 "Connection:close\r\n"
@@ -88,7 +88,7 @@ static const char *redirectHeader =
 "Pragma: no-cache\r\n"
 "\r\n";
 
-static const char *redirectResult =
+static const char redirectResult[] =
 "cache-control\tno-cache\n"
 "connection\tclose\n"
 "location\thttp://www.hertz.de/rentacar/index.jsp?bsc=t&targetPage=reservationOnHomepage.jsp\n"

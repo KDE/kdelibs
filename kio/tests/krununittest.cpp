@@ -94,10 +94,10 @@ void KRunUnitTest::testProcessDesktopExec()
 {
     KUrl::List l0;
     static const char
-        *execs[] = { "Exec=date -u", "Exec=echo $PWD" },
-        *terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
-          *sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
-        *rslts[] = {
+        * const execs[] = { "Exec=date -u", "Exec=echo $PWD" },
+        * const terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
+          * const sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
+        * const rslts[] = {
             "/bin/date -u", // 0
             /* sh */ " -c 'echo $PWD '", // 1
             "x-term -T ' - just_a_test' -e /bin/date -u", // 2
