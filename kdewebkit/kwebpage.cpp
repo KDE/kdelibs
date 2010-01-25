@@ -115,6 +115,7 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     action(Paste)->setShortcut(KStandardShortcut::paste().primary());
     action(Undo)->setShortcut(KStandardShortcut::undo().primary());
     action(Redo)->setShortcut(KStandardShortcut::redo().primary());
+    action(SelectAll)->setShortcut(KStandardShortcut::selectAll().primary());
 }
 
 KWebPage::~KWebPage()
