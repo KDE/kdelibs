@@ -85,7 +85,7 @@ namespace KIO {
          */
         SimpleJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs)
             : m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command),
-              m_checkOnHold(false), m_schedSerial(0)
+              m_checkOnHold(false), m_schedSerial(0), m_redirectionHandlingEnabled(true)
         {
             if (m_url.hasSubUrl())
             {
@@ -129,6 +129,7 @@ namespace KIO {
         QString m_proxy;
         bool m_checkOnHold;
         int m_schedSerial;
+        bool m_redirectionHandlingEnabled;
 
         void simpleJobInit();
 
@@ -251,11 +252,11 @@ namespace KIO {
         inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
                                   const QByteArray &_staticData)
             : SimpleJobPrivate(url, command, packedArgs),
-              m_handleRedirection(true), m_internalSuspended(false), m_errorPage(false),
+              m_internalSuspended(false), m_errorPage(false),
               staticData(_staticData), m_isMimetypeEmitted(false), m_subJob(0)
             { }
 
-        bool m_handleRedirection;
+
         bool m_internalSuspended;
         bool m_errorPage;
         QByteArray staticData;
