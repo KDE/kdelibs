@@ -483,8 +483,11 @@ void RenderWidget::updateFromElement()
         // Border:
         if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
             if (shouldDisableNativeBorders()) {
-                m_nativeFrameShape = frame->frameShape();
-                frame->setFrameShape(QFrame::NoFrame);
+                if (frame->frameShape() != QFrame::NoFrame) {
+                    m_nativeFrameShape = frame->frameShape();
+                    frame->setFrameShape(QFrame::NoFrame);
+                }
+
             } else if (m_nativeFrameShape != QFrame::NoFrame) {
                 frame->setFrameShape(m_nativeFrameShape);
             }
