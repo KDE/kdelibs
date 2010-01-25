@@ -179,18 +179,9 @@ void AccessManagerReply::jobDone(KJob *kJob)
             break;
         case KIO::ERR_USER_CANCELED:
         case KIO::ERR_ABORTED:
-        {
-            QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-            if (redirectUrl.isValid()) {
-                errcode = 0;
-                readHttpResponseHeaders(d->m_kioJob);
-                kDebug( 7044 ) << "Redirecting to" << redirectUrl;
-            } else {
-                setError(QNetworkReply::OperationCanceledError, kJob->errorText());
-                kDebug( 7044 ) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
-            }
+            setError(QNetworkReply::OperationCanceledError, kJob->errorText());
+            kDebug( 7044 ) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
             break;
-        }
         case KIO::ERR_UNKNOWN_PROXY_HOST:
             setError(QNetworkReply::ProxyNotFoundError, errorString());
             kDebug( 7044 ) << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
@@ -226,14 +217,21 @@ void AccessManagerReply::jobDone(KJob *kJob)
             kDebug( 7044 ) << errcode;
     }
 
+    QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    if (redirectUrl.isValid()) {
+        readHttpResponseHeaders(d->m_kioJob);
+        //kDebug( 7044 ) << "HTTP Status code:" << attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        //kDebug( 7044 ) << "Redirecting to" << redirectUrl;
+    }
+
     setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
     emit finished();
 }
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job, const KUrl& url)
 {   
+    Q_UNUSED(job);
     q->setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
-    job->kill(KJob::EmitResult);
 }
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsigned long percent)
