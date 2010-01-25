@@ -242,10 +242,11 @@ namespace KIO {
         inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
                                   const QByteArray &_staticData)
             : SimpleJobPrivate(url, command, packedArgs),
-              m_internalSuspended(false), m_errorPage(false), staticData(_staticData),
-              m_isMimetypeEmitted(false), m_subJob(0)
+              m_handleRedirection(true), m_internalSuspended(false), m_errorPage(false),
+              staticData(_staticData), m_isMimetypeEmitted(false), m_subJob(0)
             { }
 
+        bool m_handleRedirection;
         bool m_internalSuspended;
         bool m_errorPage;
         QByteArray staticData;
