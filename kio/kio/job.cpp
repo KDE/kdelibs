@@ -1168,6 +1168,17 @@ bool TransferJob::isErrorPage() const
     return d_func()->m_errorPage;
 }
 
+bool TransferJob::handleRedirection() const
+{
+    return d_func()->m_handleRedirection;
+}
+
+void TransferJob::setHandleRedirection(bool handle)
+{
+    Q_D(TransferJob);
+    d->m_handleRedirection = handle;
+}
+
 void TransferJobPrivate::start(Slave *slave)
 {
     Q_Q(TransferJob);
