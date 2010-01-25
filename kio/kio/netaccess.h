@@ -53,6 +53,7 @@ namespace KIO {
    * but the Qt event loop continues running while the operations
    * are handled. More precisely, the GUI will still repaint, but no user
    * interaction will be possible. If you can, please use async KIO jobs instead!
+   * See the documentation of KJob::exec() for more about the dangers of NetAccess.
    *
    * This class isn't meant to be used as a class but only as a simple
    * namespace for static functions, though an instance of the class
