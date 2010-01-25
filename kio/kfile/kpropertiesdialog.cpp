@@ -1469,10 +1469,9 @@ void KFilePropsPlugin::applyIconChanges()
         // (otherwise write empty value)
 
         kDebug(250) << "**" << path << "**";
-        QFile f( path );
 
         // If default icon and no .directory file -> don't create one
-        if ( !sIcon.isEmpty() || f.exists() )
+        if ( !sIcon.isEmpty() || QFile::exists(path) )
         {
             KDesktopFile cfg(path);
             kDebug(250) << "sIcon = " << (sIcon);
