@@ -45,6 +45,9 @@ KBookmark KBookmarkDialog::editBookmark(const KBookmark & bm)
     m_bm = bm;
     m_title->setText(bm.fullText());
     m_url->setText(bm.url().url());
+    m_comment->setVisible(true);
+    m_commentLabel->setVisible(true);
+    m_comment->setText(bm.description());
     m_folderTree->setVisible(false);
 
     m_mode = EditBookmark;
@@ -71,6 +74,9 @@ KBookmark KBookmarkDialog::addBookmark(const QString & title, const KUrl & url, 
     m_urlLabel->setVisible(true);
     m_title->setText(title);    
     m_url->setText(url.url());
+    m_comment->setText(QString());
+    m_comment->setVisible(true);
+    m_commentLabel->setVisible(true);
     setParentBookmark(parent);
     m_folderTree->setVisible(true);
 
@@ -99,6 +105,9 @@ KBookmarkGroup KBookmarkDialog::addBookmarks(const QList<QPair<QString, QString>
     m_url->setVisible(false);
     m_urlLabel->setVisible(false);
     m_title->setText(name);
+    m_comment->setVisible(true);
+    m_commentLabel->setVisible(true);
+    m_comment->setText(QString());
     setParentBookmark(parent);
     m_folderTree->setVisible(true);
 
@@ -125,6 +134,8 @@ KBookmarkGroup KBookmarkDialog::selectFolder(KBookmark parent)
     m_urlLabel->setVisible(false);
     m_title->setVisible(false);
     m_titleLabel->setVisible(false);
+    m_comment->setVisible(false);
+    m_commentLabel->setVisible(false);
     setParentBookmark(parent);
     m_folderTree->setVisible(true);
 
@@ -148,6 +159,9 @@ KBookmarkGroup KBookmarkDialog::createNewFolder(const QString & name, KBookmark 
     setCaption( i18nc("@title:window","New Folder"));
     m_url->setVisible(false);
     m_urlLabel->setVisible(false);
+    m_comment->setVisible(true);
+    m_commentLabel->setVisible(true);
+    m_comment->setText(QString());
     m_title->setText(name);
     setParentBookmark(parent);
     m_folderTree->setVisible(true);
@@ -203,6 +217,7 @@ void KBookmarkDialog::slotButtonClicked(int button)
             if(m_title->text().isEmpty())
                 m_title->setText("New Folder");
             m_bm = parent.createNewFolder(m_title->text());
+            m_bm.setDescription(m_comment->text());
             save(m_mode, m_bm);
             m_mgr->emitChanged(parent);
         } else if(m_mode == NewBookmark) {
@@ -210,6 +225,7 @@ void KBookmarkDialog::slotButtonClicked(int button)
             if(m_title->text().isEmpty())
                 m_title->setText("New Bookmark");
             m_bm = parent.addBookmark(m_title->text(), KUrl(m_url->text()));
+            m_bm.setDescription(m_comment->text());
             save(m_mode, m_bm);
             m_mgr->emitChanged(parent);
         } else if(m_mode == NewMultipleBookmarks) {
@@ -217,6 +233,7 @@ void KBookmarkDialog::slotButtonClicked(int button)
             if(m_title->text().isEmpty())
                 m_title->setText("New Folder");
             m_bm = parent.createNewFolder(m_title->text());
+            m_bm.setDescription(m_comment->text());
             QList< QPair<QString, QString> >::iterator  it, end;
             end = m_list.end();
             for(it = m_list.begin(); it!= m_list.end(); ++it)
@@ -228,6 +245,7 @@ void KBookmarkDialog::slotButtonClicked(int button)
         } else if(m_mode == EditBookmark) {
             m_bm.setFullText(m_title->text());
             m_bm.setUrl(KUrl(m_url->text()));
+            m_bm.setDescription(m_comment->text());
             save(m_mode, m_bm);
             m_mgr->emitChanged(m_bm.parentGroup());
         } else if(m_mode == SelectFolder) {
@@ -257,6 +275,7 @@ void KBookmarkDialog::initLayout()
 
     form->addRow( m_titleLabel, m_title );
     form->addRow( m_urlLabel, m_url );
+    form->addRow( m_commentLabel, m_comment );
 
     vbox->addWidget(m_folderTree);
 }
@@ -277,6 +296,11 @@ void KBookmarkDialog::initLayoutPrivate()
     m_url->setMinimumWidth(300);
     m_urlLabel = new QLabel( i18nc("@label:textbox", "Location:" ), m_main );
     m_urlLabel->setBuddy( m_url );
+
+    m_comment = new KLineEdit( m_main );
+    m_comment->setMinimumWidth(300);
+    m_commentLabel = new QLabel( i18nc("@label:textbox", "Comment:" ), m_main );
+    m_commentLabel->setBuddy( m_comment );
 
     m_folderTree = new QTreeWidget(m_main);
     m_folderTree->setColumnCount(1);

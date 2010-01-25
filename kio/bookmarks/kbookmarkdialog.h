@@ -114,8 +114,10 @@ protected:
   QWidget * m_main;
   KLineEdit * m_url;
   KLineEdit * m_title;
+  KLineEdit * m_comment;
   QLabel * m_titleLabel;
   QLabel * m_urlLabel;
+  QLabel * m_commentLabel;
   QTreeWidget * m_folderTree;
   KBookmarkManager * m_mgr;
   KBookmark m_bm;
