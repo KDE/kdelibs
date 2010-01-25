@@ -496,6 +496,15 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     p->setMouseTracking(true);
 }
 
+static inline void setStyleSheet_helper(const QString& s, QWidget* w)
+{
+    // ### buggy Qt stylesheets mess with the widget palette.
+    // force it again after any stylesheet update.
+    QPalette pal = w->palette();
+    w->setStyleSheet(s);
+    w->setPalette(pal);
+}
+
 void RenderSubmitButton::setPadding()
 {
     // Proxy styling doesn't work well enough for buttons.
@@ -507,17 +516,17 @@ void RenderSubmitButton::setPadding()
 
     if (!RenderWidget::paddingLeft() && !RenderWidget::paddingRight() && 
         !RenderWidget::paddingTop() && !RenderWidget::paddingBottom()) {
-        widget()->setStyleSheet( shouldDisableNativeBorders() ? sBorderNoneSheet : QString() );
+        setStyleSheet_helper( (shouldDisableNativeBorders() ? sBorderNoneSheet : QString()), widget() );
         return;
     }
 
-    widget()->setStyleSheet(
+    setStyleSheet_helper(
         QString("QPushButton{padding-left:%1px; padding-right:%2px; padding-top:%3px; padding-bottom:%4px}")
             .arg( RenderWidget::paddingLeft() )
             .arg( RenderWidget::paddingRight() )
             .arg( RenderWidget::paddingTop() )
             .arg( RenderWidget::paddingBottom()) + (shouldDisableNativeBorders() ? sBorderNoneSheet : QString())
-     );
+     , widget());
 }
 
 void RenderSubmitButton::setStyle(RenderStyle *style)
@@ -533,10 +542,10 @@ void RenderSubmitButton::setStyle(RenderStyle *style)
         // remove the widget's native ones.
         if (!s.contains(sBorderNoneSheet)) {
             s.append(sBorderNoneSheet);
-            widget()->setStyleSheet( s );
+            setStyleSheet_helper( s, widget() );
         }
     } else {
-        widget()->setStyleSheet( s.remove(sBorderNoneSheet) );
+        setStyleSheet_helper( s.remove(sBorderNoneSheet), widget() );
     }
 }
 
@@ -613,8 +622,9 @@ void RenderSubmitButton::calcMinMaxWidth()
     if (shouldDisableNativeBorders()) {
         // we paint the borders ourselves, so let's override our height to something saner
         h = ts.height();
+    } else {
+        h -= vpadding;
     }
-    h -= vpadding;
     s = QSize(w,h).expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
