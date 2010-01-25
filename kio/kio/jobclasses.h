@@ -361,6 +361,23 @@ namespace KIO {
          */
         static void removeOnHold();
 
+        /**
+         * Returns true if redirections are handled internally, the default.
+         *
+         * @since 4.4
+         */
+        bool isRedirectionHandlingEnabled() const;
+
+        /**
+         * Set @p handle to false to prevent the internal handling of redirections.
+         *
+         * When this flag is set, redirection requests are simply forwarded to the
+         * caller instead of being handled internally.
+         *
+         * @since 4.4
+         */
+        void setRedirectionHandlingEnabled(bool handle);
+
     public Q_SLOTS:
         /**
          * @internal
@@ -600,23 +617,6 @@ namespace KIO {
          * @since 4.2.1
          */
         void setTotalSize(KIO::filesize_t bytes);
-
-        /**
-         * Returns true when redirections are handled internally, the default.
-         *
-         * @since 4.4
-         */
-        bool handleRedirection() const;
-
-        /**
-         * Set @p handle to false to prevent the internal handling of redirections.
-         *
-         * When this flag is set, redirection requests are simply forwarded to the
-         * caller instead of being handled internally.
-         *
-         * @since 4.4
-         */
-        void setHandleRedirection(bool handle);
 
     protected:
         /**

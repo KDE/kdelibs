@@ -120,7 +120,7 @@ KIO::MetaData& AccessManager::sessionMetaData()
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
-    KIO::TransferJob *kioJob = 0;
+    KIO::SimpleJob *kioJob = 0;
 
     if ( !d->externalContentAllowed && req.url().scheme() != "file" && !req.url().scheme().isEmpty() ) {
         kDebug( 7044 ) << "Blocked: " << req.url().scheme() <<  req.url();
