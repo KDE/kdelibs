@@ -417,8 +417,13 @@ bool HTMLScriptElementImpl::isValidScript() const
         Mozilla 1.5 and WinIE 6 both accept the empty string, but neither accept a whitespace-only string.
         We want to accept all the values that either of these browsers accept, but not other values.
     */
-    QString type = getAttribute(ATTR_TYPE).string().trimmed().toLower();
-    if (!type.isEmpty())
+    QString type = getAttribute(ATTR_TYPE).string().toLower();
+
+    // Gecko accepts initial/trailing whitespace around the mimetype.
+    // Whitespace only, however, musn't trigger execution.
+    int length = type.length();
+    type = type.trimmed();
+    if (length)
        return !(type.compare("text/javascript") != 0 &&
                 type.compare("text/javascript1.0") != 0 &&
                 type.compare("text/javascript1.1") != 0 &&
