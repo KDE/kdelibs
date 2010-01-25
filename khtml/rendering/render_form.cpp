@@ -1050,8 +1050,15 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     if (showClearButton) {
         QList<QWidget *> wl = qFindChildren<QWidget *>(m_widget, QString());
         foreach (QWidget* w, wl)
-            if (!w->isWindow())
+            if (!w->isWindow()) {
+                // this duplicates KHTMLView's handleWidget but this widget 
+                // is created on demand, so it might not be here at ChildPolished time
                 w->setObjectName("KHTMLLineEditButton");
+                w->installEventFilter(view());
+                w->setAttribute(Qt::WA_NoSystemBackground);
+                w->setAttribute(Qt::WA_WState_InPaintEvent);
+                w->setAttribute(Qt::WA_OpaquePaintEvent);
+            }
     }
 }
 
