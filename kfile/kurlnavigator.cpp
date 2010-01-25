@@ -705,8 +705,8 @@ void KUrlNavigator::Private::updateButtonVisibility()
     }
 
     // hide buttons...
-    QList<KUrlNavigatorButton*>::iterator it = m_navButtons.end();
-    const QList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.begin();
+    QList<KUrlNavigatorButton*>::const_iterator it = m_navButtons.constEnd();
+    const QList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.constBegin();
     bool isLastButton = true;
     bool hasHiddenButtons = false;
 
