@@ -37,3 +37,16 @@ KAction *KNS3::standardAction(const QString &what,
     return action;
 }
 
+KAction *KNS3::standardActionUpload(const QString &what,
+                             const QObject *receiver,
+                             const char *slot, KActionCollection *parent,
+                             const char *name)
+{
+    KAction *action = new KAction(what, parent);
+    parent->addAction(QString(name), action);
+    // FIXME: Get a specific upload icon!
+    action->setIcon(KIcon("get-hot-new-stuff"));
+    QObject::connect(action, SIGNAL(triggered(bool)), receiver, slot);
+
+    return action;
+}
