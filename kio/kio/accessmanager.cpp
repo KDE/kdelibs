@@ -155,7 +155,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             return 0;
     }
 
-    kioJob->setHandleRedirection(false);
+    kioJob->setRedirectionHandlingEnabled(false);
     KIO::Scheduler::scheduleJob(kioJob);
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
 

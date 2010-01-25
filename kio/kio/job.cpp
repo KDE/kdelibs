@@ -360,12 +360,12 @@ void SimpleJob::removeOnHold()
     Scheduler::removeSlaveOnHold();
 }
 
-bool SimpleJob::handleRedirection() const
+bool SimpleJob::isRedirectionHandlingEnabled() const
 {
     return d_func()->m_redirectionHandlingEnabled;
 }
 
-void SimpleJob::setHandleRedirection(bool handle)
+void SimpleJob::setRedirectionHandlingEnabled(bool handle)
 {
     Q_D(SimpleJob);
     d->m_redirectionHandlingEnabled = handle;
