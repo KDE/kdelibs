@@ -611,7 +611,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     }
 
     d->ops->setUrl(startDir, true);
-    d->urlNavigator->setUrl(startDir);
+    d->urlNavigator->setLocationUrl(startDir);
     if (d->placesView) {
         d->placesView->setUrl(startDir);
     }
@@ -1414,7 +1414,7 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 
     locationEdit->blockSignals( blocked );
 
-    urlNavigator->setUrl(url);
+    urlNavigator->setLocationUrl(url);
 
     // is trigged in ctor before completion object is set
     KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());

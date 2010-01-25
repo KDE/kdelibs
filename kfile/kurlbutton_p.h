@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2006 by Peter Penz <peter.penz@gmx.at>                      *
+ * Copyright (C) 2006-2010 by Peter Penz <peter.penz@gmx.at>                 *
  * Copyright (C) 2006 by Aaron J. Seigo <aseigo@kde.org>                     *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
@@ -25,7 +25,6 @@
 
 class KUrl;
 class QEvent;
-class KUrlNavigator;
 
 /**
  * @brief Base class for buttons of the URL navigator.
@@ -38,9 +37,11 @@ class KUrlButton : public QPushButton
     Q_OBJECT
 
 public:
-    explicit KUrlButton(KUrlNavigator* parent);
+    explicit KUrlButton(QWidget* parent);
     virtual ~KUrlButton();
-    KUrlNavigator* urlNavigator() const;
+
+    void setActive(bool active);
+    bool isActive() const;
 
 protected:
     enum DisplayHint {
@@ -57,21 +58,18 @@ protected:
 
     virtual void enterEvent(QEvent* event);
     virtual void leaveEvent(QEvent* event);
-    virtual void contextMenuEvent(QContextMenuEvent* event);
 
     void drawHoverBackground(QPainter* painter);
 
     /** Returns the foreground color by respecting the current display hint. */
     QColor foregroundColor() const;
 
+private Q_SLOTS:
+    /** Invokes setActive(true). */
+    void activate();
+
 private:
     int m_displayHint;
-    KUrlNavigator* m_urlNavigator;
 };
-
-inline KUrlNavigator* KUrlButton::urlNavigator() const
-{
-    return m_urlNavigator;
-}
 
 #endif

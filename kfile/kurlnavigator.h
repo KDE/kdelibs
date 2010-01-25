@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2006 by Peter Penz <peter.penz@gmx.at>                      *
+ * Copyright (C) 2006-2010 by Peter Penz <peter.penz@gmx.at>                 *
  * Copyright (C) 2006 by Aaron J. Seigo <aseigo@kde.org>                     *
  * Copyright (C) 2007 by Kevin Ottens <ervin@kde.org>                        *
  * Copyright (C) 2007 by Urs Wolfer <uwolfer @ kde.org>                      *
@@ -26,20 +26,21 @@
 
 #include <kurl.h>
 #include <QtGui/QWidget>
+#include <QtCore/QByteArray>
 
 class KFilePlacesModel;
 class KUrlComboBox;
 class QMouseEvent;
 
 /**
- * @brief Allows to navigate through the paths of an URL.
+ * @brief Widget that allows to navigate through the paths of an URL.
  *
  * The URL navigator offers two modes:
- * - Editable:     Represents the 'classic' mode, where the URL
+ * - Editable:     Represents the 'classic' mode, where the URL of the location
  *                 is editable inside a line editor. By pressing RETURN
  *                 the URL will get activated.
- * - Non editable ("breadcrumb view"): The URL is represented by a
- *                 number of buttons, where each button represents a path
+ * - Non editable ("breadcrumb view"): The URL of the location is represented by
+ *                 a number of buttons, where each button represents a path
  *                 of the URL. By clicking on a button the path will get
  *                 activated. This mode also supports drag and drop of items.
  *
@@ -67,52 +68,71 @@ class KFILE_EXPORT KUrlNavigator : public QWidget
     Q_OBJECT
 
 public:
+    /** @since 4.5 */
+    KUrlNavigator(QWidget* parent = 0);
+
     /**
      * @param placesModel    Model for the places which are selectable inside a
      *                       menu. A place can be a bookmark or a device. If it is 0,
-                             there is no places selector displayed.
+     *                       no places selector is displayed.
      * @param url            URL which is used for the navigation or editing.
      * @param parent         Parent widget.
      */
     KUrlNavigator(KFilePlacesModel* placesModel, const KUrl& url, QWidget* parent);
     virtual ~KUrlNavigator();
 
-    /** Returns the current URL. */
-    // KDE5: return 'KUrl' instead of 'const KUrl&'
-    const KUrl& url() const;
+    /**
+     * @return URL of the location given by the \a historyIndex. If \a historyIndex
+     *         is smaller than 0, the URL of the current location is returned.
+     * @since  4.5
+     */
+    KUrl locationUrl(int historyIndex = -1) const;
 
     /**
-     * Returns the currently entered, but not accepted URL.
-     * Attention: It is possible that the returned URL is not valid!
+     * Saves the location state described by \a state for the current location. It is recommended
+     * that at least the scroll position of a view is remembered and restored when traversing
+     * through the history. Saving the location state should be done when the signal
+     * KUrlNavigator::urlAboutToBeChanged() has been emitted. Restoring the location state (see
+     * KUrlNavigator::locationState()) should be done when the signal KUrlNavigator::urlChanged()
+     * has been emitted.
+     *
+     * Example:
+     * \code
+     * QByteArray state;
+     * QDataStream data(&state, QIODevice::WriteOnly);
+     * data << QPoint(x, y);
+     * data << ...;
+     * ...
+     * urlNavigator::saveLocationState(state);
+     * \endcode
+     *
+     * @since 4.5
      */
-    KUrl uncommittedUrl() const;
+    void saveLocationState(const QByteArray& state);
 
     /**
-     * Returns the portion of the current URL up to the path part given
-     * by \a index. Assuming that the current URL is /home/peter/Documents/Music,
-     * then the following URLs are returned for an index:
-     * - index <= 0: /home
-     * - index is 1: /home/peter
-     * - index is 2: /home/peter/Documents
-     * - index >= 3: /home/peter/Documents/Music
+     * @return Location state given by \a historyIndex. If \a historyIndex
+     *         is smaller than 0, the state of the current location is returned.
+     * @see    KUrlNavigator::saveLocationState()
+     * @since  4.5
      */
-    KUrl url(int index) const;
+    QByteArray locationState(int historyIndex = -1) const;
 
     /**
      * Goes back one step in the URL history. The signals
-     * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
-     * are emitted if true is returned. False is returned if the beginning
-     * of the history has already been reached and hence going back was not
-     * possible. The history index (see KUrlNavigator::historyIndex()) is
+     * KUrlNavigator::urlAboutToBeChanged(), KUrlNavigator::urlChanged() and
+     * KUrlNavigator::historyChanged() are emitted if true is returned. False is returned
+     * if the beginning of the history has already been reached and hence going back was
+     * not possible. The history index (see KUrlNavigator::historyIndex()) is
      * increased by one if the operation was successful.
      */
     bool goBack();
 
     /**
      * Goes forward one step in the URL history. The signals
-     * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
-     * are emitted if true is returned. False is returned if the end
-     * of the history has already been reached and hence going forward
+     * KUrlNavigator::urlAboutToBeChanged(), KUrlNavigator::urlChanged() and
+     * KUrlNavigator::historyChanged() are emitted if true is returned. False is returned
+     * if the end of the history has already been reached and hence going forward
      * was not possible. The history index (see KUrlNavigator::historyIndex()) is
      * decreased by one if the operation was successful.
      */
@@ -120,16 +140,16 @@ public:
 
     /**
      * Goes up one step of the URL path and remembers the old path
-     * in the history. The signals KUrlNavigator::urlChanged() and
-     * KUrlNavigator::historyChanged() are emitted if true is returned.
-     * False is returned if going up was not possible as the root has
-     * been reached.
+     * in the history. The signals KUrlNavigator::urlAboutToBeChanged(),
+     * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged() are
+     * emitted if true is returned. False is returned if going up was not
+     * possible as the root has been reached.
      */
     bool goUp();
 
     /**
      * Goes to the home URL and remembers the old URL in the history.
-     * The signals KUrlNavigator::urlChanged()
+     * The signals KUrlNavigator::urlAboutToBeChanged(), KUrlNavigator::urlChanged()
      * and KUrlNavigator::historyChanged() are emitted.
      *
      * @see KUrlNavigator::setHomeUrl()
@@ -139,8 +159,11 @@ public:
     /**
      * Sets the home URL used by KUrlNavigator::goHome(). If no
      * home URL is set, the default home path of the user is used.
+     * @since 4.5
      */
-    void setHomeUrl(const QString& homeUrl);
+    void setHomeUrl(const KUrl& url);
+
+    KUrl homeUrl() const;
 
     /**
      * Allows to edit the URL of the navigation bar if \a editable
@@ -170,7 +193,7 @@ public:
     
     /**
      * @return True, if the full path of the URL should be shown in the breadcrumb view.
-     * @since 4.2
+     * @since  4.2
      */
     bool showFullPath() const;
     
@@ -186,8 +209,8 @@ public:
     void setActive(bool active);
 
     /**
-     * Returns true, if the URL navigator is in the active mode.
-     * @see KUrlNavigator::setActive()
+     * @return True, if the URL navigator is in the active mode.
+     * @see    KUrlNavigator::setActive()
      */
     bool isActive() const;
 
@@ -199,43 +222,32 @@ public:
      */
     void setPlacesSelectorVisible(bool visible);
 
-    /** Returns true, if the places selector is visible. */
+    /** @return True, if the places selector is visible. */
     bool isPlacesSelectorVisible() const;
 
-    /** Returns the amount of items in the history. */
+    /**
+     * @return The currently entered, but not accepted URL.
+     *         It is possible that the returned URL is not valid.
+     */
+    KUrl uncommittedUrl() const;
+
+    /**
+     * @return The amount of locations in the history. The data for each
+     *         location can be retrieved by KUrlNavigator::locationUrl() and
+     *         KUrlNavigator::locationState().
+     */
     int historySize() const;
 
     /**
-     * Returns the history index of the current URL, where
-     * 0 <= history index < KUrlNavigator::historySize(). As long
-     * as KUrlNavigator::goBack() is not invoked, the history index
-     * stays on 0.
+     * @return  The history index of the current location, where
+     *          0 <= history index < KUrlNavigator::historySize(). 0 is the most
+     *          recent history entry.
      */
     int historyIndex() const;
     
     /**
-     * @return URL for the history element with the index \a historyIndex.
-     *         The history index 0 represents the most recent URL.
-     * @since 4.3
-     */
-    KUrl historyUrl(int historyIndex) const;
-
-    /**
-     * Returns the saved root URL for the current URL
-     * (see KUrlNavigator::saveRootUrl()).
-     */    
-    // KDE5: return 'KUrl' instead of 'const KUrl&'    
-    const KUrl& savedRootUrl() const;
-
-    /**
-     * Returns the saved contents position of the upper left corner
-     * for the current URL.
-     */
-    QPoint savedPosition() const;
-
-    /**
-     * Returns the used editor when the navigator is in the edit mode
-     * (see KUrlNavigator::setUrlEditable()).
+     * @return The used editor when the navigator is in the edit mode
+     * @see    KUrlNavigator::setUrlEditable()
      */
     KUrlComboBox* editor() const;
 
@@ -243,20 +255,64 @@ public:
      * If an application supports only some special protocols, they can be set
      * with \a protocols .
      */
-    void setCustomProtocols(const QStringList &protocols);
+    void setCustomProtocols(const QStringList& protocols);
 
     /**
-     * Returns the custom protocols if they are set, QStringList() otherwise.
+     * @return The custom protocols if they are set, QStringList() otherwise.
      */
     QStringList customProtocols() const;
 
+    /**
+     * @return     The current URL of the location.
+     * @deprecated Use KUrlNavigator::locationUrl() instead.
+     */
+    KDE_DEPRECATED const KUrl& url() const;
+
+    /**
+     * @return The portion of the current URL up to the path part given
+     * by \a index. Assuming that the current URL is /home/peter/Documents/Music,
+     * then the following URLs are returned for an index:
+     * - index <= 0: /home
+     * - index is 1: /home/peter
+     * - index is 2: /home/peter/Documents
+     * - index >= 3: /home/peter/Documents/Music
+     * @deprecated It should not be necessary for a client of KUrlNavigator to query this information.
+     */
+    KDE_DEPRECATED KUrl url(int index) const;
+
+    /**
+     * @return URL for the history element with the index \a historyIndex.
+     *         The history index 0 represents the most recent URL.
+     * @since 4.3
+     * @deprecated Use KUrlNavigator::locationUrl(historyIndex) instead.
+     */
+    KDE_DEPRECATED KUrl historyUrl(int historyIndex) const;
+
+    /**
+     * @return The saved root URL for the current URL (see KUrlNavigator::saveRootUrl()).
+     * @deprecated Use KUrlNavigator::locationState() instead.
+     */
+    KDE_DEPRECATED const KUrl& savedRootUrl() const;
+
+    /**
+     * @return The saved contents position of the upper left corner
+     *         for the current URL.
+     * @deprecated Use KUrlNavigator::locationState() instead.
+     */
+    KDE_DEPRECATED QPoint savedPosition() const;
+
+    /** @deprecated Use setHomeUrl(const KUrl& url) instead. */
+    KDE_DEPRECATED void setHomeUrl(const QString& homeUrl);
+
 public Q_SLOTS:
     /**
-     * Sets the active URL to \a url. The old URL is added to the history.
-     * The signals KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
-     * are emitted.
+     * Sets the location to \a url. The old URL is added to the history.
+     * The signals KUrlNavigator::urlAboutToBeChanged(), KUrlNavigator::urlChanged()
+     * and KUrlNavigator::historyChanged() are emitted. Use
+     * KUrlNavigator::locationUrl() to read the location.
+     * @since 4.5
      */
-    void setUrl(const KUrl& url);
+    void setLocationUrl(const KUrl& url);
 
     /**
      * Activates the URL navigator (KUrlNavigator::isActive() will return true)
@@ -264,27 +320,26 @@ public Q_SLOTS:
      */
     void requestActivation();
 
-    /**
-     * Saves the used root URL of the content for the current history element.
-     * Saving the root URL might be useful if the item view is represented by a tree or
-     * columns, where it is mandatory to restore the root URL to iterating
-     * through the history.
-     */
-    void saveRootUrl(const KUrl& url);
-
-    /**
-     * Saves the coordinates of the contents for
-     * the current history element. The contents of the URL is usually shown
-     * inside an instance of QAbstractItemView. It is recommended to invoke this
-     * slot whenever the upper left position of the QAbstractItemView has been
-     * changed to be able to restore the position when going back in history.
-     *
-     * @see KUrlNavigator::savedPosition()
-     */
-    void savePosition(int x, int y);
-
     /* @see QWidget::setFocus() */
     void setFocus();
+
+    /**
+     * Sets the location to \a url.
+     * @deprecated Use KUrlNavigator::setLocationUrl(url).
+     */
+    KDE_DEPRECATED void setUrl(const KUrl& url);
+
+    /**
+     * Saves the used root URL of the content for the current history element.
+     * @deprecated Use KUrlNavigator::saveLocationState() instead.
+     */
+    KDE_DEPRECATED void saveRootUrl(const KUrl& url);
+
+    /**
+     * Saves the coordinates of the contents for the current history element.
+     * @deprecated Use KUrlNavigator::saveLocationState() instead.
+     */
+    KDE_DEPRECATED void savePosition(int x, int y);
 
 Q_SIGNALS:
     /**
@@ -294,11 +349,20 @@ Q_SIGNALS:
     void activated();
 
     /**
-     * Is emitted, if the URL has been changed e. g. by
+     * Is emitted, if the location URL has been changed e. g. by
      * the user.
      * @see KUrlNavigator::setUrl()
      */
     void urlChanged(const KUrl& url);
+    
+    /**
+     * Is emitted, before the location URL is going to be changed to \a newUrl.
+     * The signal KUrlNavigator::urlChanged() will be emitted after the change
+     * has been done. Connecting to this signal is useful to save the state
+     * of a view with KUrlNavigator::saveLocationState().
+     * @since 4.5
+     */
+    void urlAboutToBeChanged(const KUrl& newUrl);
 
     /**
      * Is emitted, if the editable state for the URL has been changed
@@ -325,7 +389,6 @@ Q_SIGNALS:
      * Is emitted if a dropping has been done above the destination
      * \a destination. The receiver must accept the drop event if
      * the dropped data can be handled.
-     *
      * @since 4.2
      */
     void urlsDropped(const KUrl& destination, QDropEvent* event);
@@ -334,6 +397,13 @@ Q_SIGNALS:
      * This signal is emitted when the Return or Enter key is pressed.
      */
     void returnPressed();
+
+    /**
+     * Is emitted if the URL \a url should be opened in a new tab because
+     * the user clicked on a breadcrumb with the middle mouse button.
+     * @since 4.5
+     */
+    void tabRequested(const KUrl& url);
 
 protected:
     /*
@@ -361,6 +431,8 @@ private:
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())
     Q_PRIVATE_SLOT(d, void dropUrls(const KUrl& destination, QDropEvent*))
+    Q_PRIVATE_SLOT(d, void slotNavigatorButtonClicked(const KUrl& url, Qt::MouseButton button))
+    Q_PRIVATE_SLOT(d, void openContextMenu(const QPoint& pos))
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())

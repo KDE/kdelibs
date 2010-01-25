@@ -41,18 +41,19 @@ KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent)
     m_hoverArrow(false),
     m_pendingTextChange(false),
     m_url(url),
+    m_subDir(),
     m_popupDelay(0),
     m_listJob(0)
 {
     setAcceptDrops(true);
     setUrl(url);
     setMouseTracking(true);
-    connect(this, SIGNAL(clicked()), this, SLOT(updateNavigatorUrl()));
 
     m_popupDelay = new QTimer(this);
     m_popupDelay->setSingleShot(true);
     connect(m_popupDelay, SIGNAL(timeout()), this, SLOT(startListJob()));
     connect(this, SIGNAL(pressed()), this, SLOT(startPopupDelay()));
+    connect(this, SIGNAL(clicked()), this, SLOT(stopPopupDelay()));
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
@@ -78,27 +79,6 @@ KUrl KUrlNavigatorButton::url() const
     return m_url;
 }
 
-void KUrlNavigatorButton::setActive(bool active)
-{
-    QFont adjustedFont(font());
-    if (active) {
-        setDisplayHintEnabled(ActivatedHint, true);
-        adjustedFont.setBold(true);
-    } else {
-        setDisplayHintEnabled(ActivatedHint, false);
-        adjustedFont.setBold(false);
-    }
-
-    setFont(adjustedFont);
-    updateMinimumWidth();
-    update();
-}
-
-bool KUrlNavigatorButton::isActive() const
-{
-    return isDisplayHintEnabled(ActivatedHint);
-}
-
 void KUrlNavigatorButton::setText(const QString& text)
 {
     QString adjustedText = text;
@@ -111,6 +91,16 @@ void KUrlNavigatorButton::setText(const QString& text)
     // assure that statFinished() does not overwrite a text that has been
     // set by a client of the URL navigator button
     m_pendingTextChange = false;
+}
+
+void KUrlNavigatorButton::setActiveSubDirectory(const QString& subDir)
+{
+    m_subDir = subDir;
+}
+
+QString KUrlNavigatorButton::activeSubDirectory() const
+{
+    return m_subDir;
 }
 
 QSize KUrlNavigatorButton::sizeHint() const
@@ -291,20 +281,20 @@ void KUrlNavigatorButton::dragLeaveEvent(QDragLeaveEvent* event)
 void KUrlNavigatorButton::mousePressEvent(QMouseEvent* event)
 {
     if (isAboveArrow(event->x()) && (event->button() == Qt::LeftButton)) {
-        urlNavigator()->requestActivation();
+        // the mouse is pressed above the [>] button
         startListJob();
-    } else {
-        // the mouse is pressed above the text area
-        KUrlButton::mousePressEvent(event);
     }
+    KUrlButton::mousePressEvent(event);
 }
 
 void KUrlNavigatorButton::mouseReleaseEvent(QMouseEvent* event)
 {
     if (!isAboveArrow(event->x()) || (event->button() != Qt::LeftButton)) {
-        // the mouse is released above the text area
-        KUrlButton::mouseReleaseEvent(event);
+        // the mouse has been released above the text area and not
+        // above the [>] button
+        emit clicked(m_url, event->button());
     }
+    KUrlButton::mouseReleaseEvent(event);
 }
 
 void KUrlNavigatorButton::mouseMoveEvent(QMouseEvent* event)
@@ -316,13 +306,6 @@ void KUrlNavigatorButton::mouseMoveEvent(QMouseEvent* event)
         m_hoverArrow = hoverArrow;
         update();
     }
-}
-
-void KUrlNavigatorButton::updateNavigatorUrl()
-{
-    // TODO KDE 4.5: emit signal
-    stopPopupDelay();
-    urlNavigator()->setUrl(m_url);
 }
 
 void KUrlNavigatorButton::startPopupDelay()
@@ -433,9 +416,6 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
 
     m_dirsMenu->setLayoutDirection(Qt::LeftToRight);
 
-    const QString relativeUrl = KUrl::relativeUrl(m_url, urlNavigator()->url());
-    const QString selectedSubdir = relativeUrl.section('/', 1, 1);
-
     const int subDirsCount = m_subDirs.count();
     for (int i = 0; i < subDirsCount; ++i) {
         const QString subDirName = m_subDirs[i].first;
@@ -443,7 +423,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         QString text = KStringHandler::csqueeze(subDirDisplayName, 60);
         text.replace('&', "&&");
         QAction* action = new QAction(text, this);
-        if (selectedSubdir == subDirName) {
+        if (m_subDir == subDirName) {
             QFont font(action->font());
             font.setBold(true);
             action->setFont(font);
@@ -465,14 +445,14 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
 
     const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
     const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
-    const QPoint popupPos  = urlNavigator()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
+    const QPoint popupPos  = parentWidget()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
 
     const QAction* action = m_dirsMenu->exec(popupPos);
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = m_url;
         url.addPath(m_subDirs[result].first);
-        urlNavigator()->setUrl(url);
+        emit clicked(url, Qt::LeftButton);
     }
 
     m_subDirs.clear();

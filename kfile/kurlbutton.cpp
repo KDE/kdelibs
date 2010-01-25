@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2006 by Peter Penz <peter.penz@gmx.at>                      *
+ * Copyright (C) 2006-2010 by Peter Penz <peter.penz@gmx.at>                 *
  * Copyright (C) 2006 by Aaron J. Seigo <aseigo@kde.org>                     *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
@@ -19,12 +19,11 @@
 
 #include "kurlbutton_p.h"
 
-#include "kurlnavigator.h"
-
 #include <kcolorscheme.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
+#include <kurl.h>
 
 #include <QApplication>
 #include <QClipboard>
@@ -32,20 +31,43 @@
 #include <QStyle>
 #include <QStyleOptionFocusRect>
 
-KUrlButton::KUrlButton(KUrlNavigator* parent) :
+KUrlButton::KUrlButton(QWidget* parent) :
     QPushButton(parent),
-    m_displayHint(0),
-    m_urlNavigator(parent)
+    m_displayHint(0)
 {
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     setMinimumHeight(parent->minimumHeight());
+    setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this, SIGNAL(pressed()), parent, SLOT(requestActivation()));
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(activate()));
 }
 
 KUrlButton::~KUrlButton()
 {
+}
+
+
+void KUrlButton::setActive(bool active)
+{
+    QFont adjustedFont(font());
+    if (active) {
+        setDisplayHintEnabled(ActivatedHint, true);
+        adjustedFont.setBold(true);
+    } else {
+        setDisplayHintEnabled(ActivatedHint, false);
+        adjustedFont.setBold(false);
+    }
+
+    setFont(adjustedFont);
+    update();
+}
+
+bool KUrlButton::isActive() const
+{
+    return isDisplayHintEnabled(ActivatedHint);
 }
 
 void KUrlButton::setDisplayHintEnabled(DisplayHint hint,
@@ -78,64 +100,6 @@ void KUrlButton::leaveEvent(QEvent* event)
     update();
 }
 
-void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
-{
-    Q_UNUSED(event);
-    m_urlNavigator->requestActivation();
-
-    KMenu popup(this);
-
-    // provide 'Copy' action, which copies the current URL of
-    // the URL navigator into the clipboard
-    QAction* copyAction = popup.addAction(KIcon("edit-copy"), i18n("Copy"));
-
-    // provide 'Paste' action, which copies the current clipboard text
-    // into the URL navigator
-    QAction* pasteAction = popup.addAction(KIcon("edit-paste"), i18n("Paste"));
-    QClipboard* clipboard = QApplication::clipboard();
-    pasteAction->setEnabled(!clipboard->text().isEmpty());
-
-    popup.addSeparator();
-
-    // provide radiobuttons for toggling between the edit and the navigation mode
-    QAction* editAction = popup.addAction(i18n("Edit"));
-    editAction->setCheckable(true);
-
-    QAction* navigateAction = popup.addAction(i18n("Navigate"));
-    navigateAction->setCheckable(true);
-
-    QActionGroup* modeGroup = new QActionGroup(&popup);
-    modeGroup->addAction(editAction);
-    modeGroup->addAction(navigateAction);
-    if (m_urlNavigator->isUrlEditable()) {
-        editAction->setChecked(true);
-    } else {
-        navigateAction->setChecked(true);
-    }
-    
-    popup.addSeparator();
-    
-    // allow showing of the full path
-    QAction* showFullPathAction = popup.addAction(i18n("Show Full Path"));
-    showFullPathAction->setCheckable(true);
-    showFullPathAction->setChecked(m_urlNavigator->showFullPath());
-
-    QAction* activatedAction = popup.exec(QCursor::pos());
-    if (activatedAction == copyAction) {
-        QMimeData* mimeData = new QMimeData();
-        mimeData->setText(m_urlNavigator->url().pathOrUrl());
-        clipboard->setMimeData(mimeData);
-    } else if (activatedAction == pasteAction) {
-        m_urlNavigator->setUrl(KUrl(clipboard->text()));
-    } else if (activatedAction == editAction) {
-        m_urlNavigator->setUrlEditable(true);
-    } else if (activatedAction == navigateAction) {
-        m_urlNavigator->setUrlEditable(false);
-    } else if (activatedAction == showFullPathAction) {
-        m_urlNavigator->setShowFullPath(showFullPathAction->isChecked());
-    }
-}
-
 void KUrlButton::drawHoverBackground(QPainter* painter)
 {
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
@@ -143,7 +107,7 @@ void KUrlButton::drawHoverBackground(QPainter* painter)
                                isDisplayHintEnabled(PopupActiveHint);
 
     QColor backgroundColor = isHighlighted ? palette().color(QPalette::Highlight) : Qt::transparent;
-    if (!urlNavigator()->isActive() && isHighlighted) {
+    if (!isActive() && isHighlighted) {
         backgroundColor.setAlpha(128);
     }
 
@@ -164,15 +128,20 @@ QColor KUrlButton::foregroundColor() const
                                isDisplayHintEnabled(PopupActiveHint);
 
     QColor foregroundColor = palette().color(foregroundRole());
-    const bool isActive = m_urlNavigator->isActive();
 
-    int alpha = isActive ? 255 : 128;
-    if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
+    const bool active = isActive();
+    int alpha = active ? 255 : 128;
+    if ((!isDisplayHintEnabled(ActivatedHint) || !active) && !isHighlighted) {
         alpha -= alpha / 4;
     }
     foregroundColor.setAlpha(alpha);
 
     return foregroundColor;
+}
+
+void KUrlButton::activate()
+{
+    setActive(true);
 }
 
 #include "kurlbutton_p.moc"

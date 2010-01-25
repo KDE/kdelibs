@@ -59,9 +59,6 @@ public:
     void setUrl(const KUrl& url);
     KUrl url() const;
 
-    void setActive(bool active);
-    bool isActive() const;
-
     /* Implementation note: QAbstractButton::setText() is not virtual,
      * but KUrlNavigatorButton needs to adjust the minimum size when
      * the text has been changed. KUrlNavigatorButton::setText() hides
@@ -69,6 +66,13 @@ public:
      * the usage in KUrlNavigator.
      */
     void setText(const QString& text);
+
+    /**
+     * Sets the name of the sub directory that should be marked when
+     * opening the sub directories popup.
+     */
+    void setActiveSubDirectory(const QString& subDir);
+    QString activeSubDirectory() const;
 
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
@@ -79,6 +83,8 @@ Q_SIGNALS:
      * to the destination \a destination.
      */
     void urlsDropped(const KUrl& destination, QDropEvent* event);
+
+    void clicked(const KUrl& url, Qt::MouseButton button);
 
 protected:
     virtual void paintEvent(QPaintEvent* event);
@@ -93,7 +99,6 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* event);
 
 private Q_SLOTS:
-    void updateNavigatorUrl();
     void startPopupDelay();
     void stopPopupDelay();
     void startListJob();
@@ -112,6 +117,7 @@ private:
     bool m_hoverArrow;
     bool m_pendingTextChange;
     KUrl m_url;
+    QString m_subDir;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     /// pair of name and display name
