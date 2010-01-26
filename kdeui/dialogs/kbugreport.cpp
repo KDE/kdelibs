@@ -341,15 +341,21 @@ void KBugReportPrivate::_k_appChanged(int i)
         appName = appName.left( index );
     kDebug() << "appName " << appName;
 
-    if (appname == appName && m_aboutData)
+    QString strDisplayVersion; //Version string to show in the UI
+    if (appname == appName && m_aboutData) {
         m_strVersion = m_aboutData->version();
-    else
-        m_strVersion = i18nc("unknown program name", "unknown");
+        strDisplayVersion = m_strVersion;
+    } else {
+        m_strVersion = QLatin1String("unknown"); //English string to put in the bug report
+        strDisplayVersion = i18nc("unknown program name", "unknown");
+    }
 
-    if ( !submitBugWeb )
+    if ( !submitBugWeb ) {
         m_strVersion += ' ' + kde_version;
+        strDisplayVersion += ' ' + kde_version;
+    }
 
-    m_version->setText(m_strVersion);
+    m_version->setText(strDisplayVersion);
     if ( submitBugWeb )
         _k_updateUrl();
 }
