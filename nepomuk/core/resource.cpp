@@ -345,7 +345,6 @@ bool Nepomuk::Resource::isValid() const
 }
 
 
-// KDE 4.5: cache this one in ResourceData, maybe even use an inference query
 QString Nepomuk::Resource::genericLabel() const
 {
     QString label = this->label();
@@ -353,13 +352,13 @@ QString Nepomuk::Resource::genericLabel() const
         label = property( Soprano::Vocabulary::RDFS::label() ).toString();
 
         if ( label.isEmpty() ) {
-            label = property( Soprano::Vocabulary::NAO::identifier() ).toString();
+            label = property( Nepomuk::Vocabulary::NIE::title() ).toString();
 
             if ( label.isEmpty() ) {
                 label = property( Nepomuk::Vocabulary::NCO::fullname() ).toString();
 
                 if ( label.isEmpty() ) {
-                    label = property( Nepomuk::Vocabulary::NIE::title() ).toString();
+                    label = property( Soprano::Vocabulary::NAO::identifier() ).toString();
 
                     if ( label.isEmpty() ) {
                         label = property( Soprano::Vocabulary::Xesam::name() ).toString();
