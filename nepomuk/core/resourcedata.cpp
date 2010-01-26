@@ -611,15 +611,19 @@ bool Nepomuk::ResourceData::determineUri()
                 }
 
                 //
-                // Check if the kickoffUriOrId is a resource identifier
+                // Check if the kickoffUriOrId is a resource identifier or a resource URI
                 //
                 else {
-                    QString query = QString::fromLatin1("select ?r where { ?r %1 %2 . }")
+                    QString query = QString::fromLatin1("select distinct ?r ?o where { { ?r %1 %2 . } UNION { %3 ?p ?o . } . }")
                                     .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::identifier()) )
-                                    .arg( Soprano::Node::literalToN3(m_kickoffId) );
+                                    .arg( Soprano::Node::literalToN3(m_kickoffId) )
+                                    .arg( Soprano::Node::resourceToN3(KUrl(m_kickoffId)) );
                     Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
                     if( it.next() ) {
                         m_uri = it["r"].uri();
+                        if( m_uri.isEmpty() ) {
+                            m_uri = KUrl(m_kickoffId);
+                        }
                         it.close();
                     }
                 }

@@ -101,8 +101,11 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
     if ( uriOrId.isEmpty() ) {
         return new ResourceData( QUrl(), QString(), type, this );
     }
-    else if( QFile::exists( uriOrId ) ) {
-        return data( KUrl(uriOrId), type );
+    else {
+        KUrl url(uriOrId);
+        if( QFile::exists( url.toLocalFile() ) ) {
+            return data( url, type );
+        }
     }
 
     QMutexLocker lock( &mutex );
