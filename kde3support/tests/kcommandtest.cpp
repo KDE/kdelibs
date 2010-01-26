@@ -110,7 +110,7 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( !redo->isEnabled() );
         QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( m_documentRestored, 0 );
-        QCOMPARE( ch.presentCommand(), c1 );
+        QCOMPARE( ch.presentCommand(), static_cast<K3Command*>(c1) );
         //ch.undo();
         undo->trigger();
         QCOMPARE( m_documentRestored, 1 );
@@ -127,7 +127,7 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( ch.isUndoAvailable() );
         QVERIFY( !redo->isEnabled() );
         QVERIFY( !ch.isRedoAvailable() );
-        QCOMPARE( ch.presentCommand(), c1 );
+        QCOMPARE( ch.presentCommand(), static_cast<K3Command*>(c1) );
         KTestCommand::clearLists();
 
         KTestCommand* c2 = new KTestCommand( "2" );
@@ -177,13 +177,13 @@ void KCommandTest::testCommandHistoryAdd()
         ch.addCommand( c3 );
         // c2 got deleted
         QCOMPARE( KTestCommand::deletedCommands.join( "," ), QString( "2" ) );
-        QCOMPARE( ch.presentCommand(), c3 );
+        QCOMPARE( ch.presentCommand(), static_cast<K3Command*>(c3) );
         ch.undo();
         QVERIFY( undo->isEnabled() );
         QVERIFY( ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
-        QCOMPARE( ch.presentCommand(), c1 );
+        QCOMPARE( ch.presentCommand(), static_cast<K3Command*>(c1) );
         ch.undo();
         QCOMPARE( m_documentRestored, 3 );
         QVERIFY( !undo->isEnabled() );
