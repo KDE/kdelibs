@@ -56,13 +56,13 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
     QString v3 = qbd->uniqueVarName();
     QString v4 = qbd->uniqueVarName();
     // { ?r ?v1 ?v2 . ?v2 bif:contains XXX . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 rdfs:subPropertyOf rdfs:label . ?v2 bif:contains XXX . } .
-    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"'%4*'\" . } "
+    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"'%4'\" . } "
                                 "UNION "
-                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"'%4*'\" . } . " )
+                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"'%4'\" . } . " )
         .arg( resourceVarName,
               v1,
               v2,
-              m_value.toString(),
+              queryText(),
               v3,
               v4,
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
@@ -73,6 +73,17 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
 QString Nepomuk::Query::LiteralTermPrivate::toString() const
 {
     return QString( "[Literal %1]" ).arg( Soprano::Node::literalToN3( m_value ) );
+}
+
+
+QString Nepomuk::Query::LiteralTermPrivate::queryText() const
+{
+    QString s = m_value.toString();
+    if( !s.endsWith(QLatin1String("*")) &&
+        !s.endsWith(QLatin1String("?")) ) {
+        s += QLatin1String("*");
+    }
+    return s;
 }
 
 

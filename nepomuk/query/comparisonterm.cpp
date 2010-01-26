@@ -23,6 +23,7 @@
 #include "comparisonterm_p.h"
 #include "querybuilderdata_p.h"
 #include "literalterm.h"
+#include "literalterm_p.h"
 #include "resourceterm.h"
 #include "resource.h"
 
@@ -97,11 +98,11 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             QString v = qbd->uniqueVarName();
-            return QString( "%1 %2 %3 . %3 bif:contains \"'%4*'\" . " )
+            return QString( "%1 %2 %3 . %3 bif:contains \"'%4'\" . " )
                 .arg( resourceVarName,
                       Soprano::Node::resourceToN3( m_property.uri() ),
                       v,
-                      m_subTerm.toLiteralTerm().value().toString() );
+                      static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
             QString v = qbd->uniqueVarName();
