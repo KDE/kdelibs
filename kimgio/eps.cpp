@@ -256,6 +256,7 @@ bool EPSHandler::write(const QImage &image)
         return false;
 
     psOut.setOutputFileName(tmpFile.fileName());
+    psOut.setOutputFormat(QPrinter::PostScriptFormat);
     psOut.setFullPage(true);
 
     // painting the pixmap to the "printer" which is a file
