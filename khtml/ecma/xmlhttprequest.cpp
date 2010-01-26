@@ -757,6 +757,15 @@ void XMLHttpRequest::slotRedirection(KIO::Job*, const KUrl& url)
   }
 }
 
+static QString encodingFromContentType(const QString& type)
+{
+    QString encoding;
+    int index = type.indexOf(';');
+    if (index > -1)
+        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", Qt::CaseInsensitive)).trimmed();
+    return encoding;
+}
+
 #ifdef APPLE_CHANGES
 void XMLHttpRequest::slotData( KIO::Job*, const char *data, int len )
 #else
@@ -784,26 +793,22 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 
   if ( decoder == NULL ) {
-    QString type = m_mimeTypeOverride;
+    if (!m_mimeTypeOverride.isEmpty())
+        encoding = encodingFromContentType(m_mimeTypeOverride);
 
-    if (type.isEmpty()) {
+    if (encoding.isEmpty()) {
       int pos = responseHeaders.indexOf(QLatin1String("content-type:"), 0, Qt::CaseInsensitive);
       if ( pos > -1 ) {
         pos += 13;
         int index = responseHeaders.indexOf('\n', pos);
-        type = responseHeaders.mid(pos, (index-pos));
+        QString type = responseHeaders.mid(pos, (index-pos));
+        encoding = encodingFromContentType(type);
       }
-    }
-
-    if (!type.isEmpty()) {
-      int index = type.indexOf(';');
-      if (index > -1)
-        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", Qt::CaseInsensitive)).trimmed();
     }
 
     decoder = new KEncodingDetector;
 
-    if (!encoding.isNull())
+    if (!encoding.isEmpty())
       decoder->setEncoding(encoding.toLatin1().constData(), KEncodingDetector::EncodingFromHTTPHeader);
     else
       decoder->setEncoding("UTF-8", KEncodingDetector::DefaultEncoding);
