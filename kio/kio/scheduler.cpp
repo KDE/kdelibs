@@ -613,6 +613,13 @@ void ProtoQueue::startAJob()
         }
 
 
+        // always increase m_runningJobsCount because it's correct if there is a slave and if there
+        // is no slave, removeJob() will balance the number again. removeJob() would decrease the
+        // number too much otherwise.
+        // Note that createSlave() can call slotError() on a job which in turn calls removeJob(),
+        // so increase the count here already.
+        m_runningJobsCount++;
+
         bool isNewSlave = false;
         Slave *slave = m_slaveKeeper.takeSlaveForJob(startingJob);
         SimpleJobPrivate *jobPriv = SimpleJobPrivate::get(startingJob);
@@ -621,10 +628,6 @@ void ProtoQueue::startAJob()
             slave = createSlave(jobPriv->m_protocol, startingJob, jobPriv->m_url);
         }
 
-        // always increase m_runningJobsCount because it's correct if there is a slave and if there
-        // is no slave, removeJob() will balance the number again. removeJob() would decrease the
-        // number too much otherwise.
-        m_runningJobsCount++;
         if (slave) {
             jobPriv->m_slave = slave;
             setupSlave(slave, jobPriv->m_url, jobPriv->m_protocol, jobPriv->m_proxy, isNewSlave);
@@ -632,8 +635,12 @@ void ProtoQueue::startAJob()
         } else {
             // dispose of our records about the job and mark the job as unknown
             // (to prevent crashes later)
-            removeJob(startingJob);
-            jobPriv->m_schedSerial = 0;
+            // note that the job's slotError() can have called removeJob() first, so check that
+            // it's not a ghost job with null serial already.
+            if (jobPriv->m_schedSerial) {
+                removeJob(startingJob);
+                jobPriv->m_schedSerial = 0;
+            }
         }
     } else {
 #ifdef SCHEDULER_DEBUG
