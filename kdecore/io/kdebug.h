@@ -227,6 +227,8 @@ inline KDE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( le
 static inline KDE_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
 #endif
 
+class WrongSyntax {};
+
 /**
  * @internal
  * A class for using operator()
@@ -283,6 +285,8 @@ public:
      * in other files (with a better name for the function of course).
      */
     static KDECORE_EXPORT int registerArea(const QByteArray& areaName, bool enabled = true);
+private:
+    WrongSyntax operator()(const char*) {return WrongSyntax();} // error! Use kDebug() << "..." or kWarning() << "..." instead.
 };
 
 
