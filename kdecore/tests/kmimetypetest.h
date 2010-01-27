@@ -49,6 +49,7 @@ private Q_SLOTS:
     void testMimeTypeTraderForTextPlain();
     void testMimeTypeTraderForDerivedMimeType();
     void testMimeTypeTraderForAlias();
+    void testPreferredService();
     void testHasServiceType1();
     void testHasServiceType2();
     void testPatterns_data();
@@ -59,6 +60,7 @@ private Q_SLOTS:
     void testParseMagicFile();
 private:
     QList<KMimeMagicRule> m_rules;
+    QString m_nonKdeApp;
 };
 
 

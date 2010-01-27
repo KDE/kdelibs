@@ -649,29 +649,34 @@ QString KService::username() const {
     return user;
 }
 
-bool KService::noDisplay() const {
-    if ( qvariant_cast<bool>(property("NoDisplay", QVariant::Bool)) )
-        return true;
-
+bool KService::showInKDE() const
+{
     Q_D(const KService);
 
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "OnlyShowIn" );
     if ( (it != d->m_mapProps.end()) && (it->isValid()))
     {
-        QString aValue = it->toString();
-        QStringList aList = aValue.split(';');
+        const QStringList aList = it->toString().split(';');
         if (!aList.contains("KDE"))
-            return true;
+            return false;
     }
 
     it = d->m_mapProps.find( "NotShowIn" );
     if ( (it != d->m_mapProps.end()) && (it->isValid()))
     {
-        QString aValue = it->toString();
-        QStringList aList = aValue.split(';');
+        const QStringList aList = it->toString().split(';');
         if (aList.contains("KDE"))
-            return true;
+            return false;
     }
+    return true;
+}
+
+bool KService::noDisplay() const {
+    if ( qvariant_cast<bool>(property("NoDisplay", QVariant::Bool)) )
+        return true;
+
+    if (!showInKDE())
+        return true;
 
     if (!KAuthorized::authorizeControlModule( storageId() ) )
         return true;

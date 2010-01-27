@@ -79,8 +79,9 @@ public:
      * @param menu the QMenu where to add actions
      * @param traderConstraint this constraint allows to exclude the current application
      * from the "open with" list. Example: "DesktopEntryName != 'kfmclient'".
+     * (Default value added in kdelibs-4.5, pass QString() explicitely for earlier versions).
      */
-    void addOpenWithActionsTo(QMenu* menu, const QString& traderConstraint);
+    void addOpenWithActionsTo(QMenu* menu, const QString& traderConstraint = QString());
 
     /**
      * Returns an action for the preferred application only.
@@ -95,8 +96,11 @@ public:
      * show the list of associated applications.
      * Used in KParts::BrowserOpenOrSaveQuestion for example.
      *
-     * This is basically a KMimeTypeTrader::query, but it also cleans up duplicates,
-     * and honors OnlyShowIn and NotShowIn fields.
+     * This is basically a KMimeTypeTrader::query, but it supports multiple mimetypes, and
+     * also cleans up "apparent" duplicates, such as the kde3 and kde4 applications with the same name.
+     *
+     * Note that in general you should use KMimeTypeTrader instead, e.g. query() or
+     * preferredService().
      *
      * Returns the applications associated with all the given mimetypes.
      * @param mimeTypeList the mimetypes

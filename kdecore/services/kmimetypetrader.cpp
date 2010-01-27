@@ -100,9 +100,10 @@ static void filterMimeTypeOffers(KServiceOfferList& list, const QString& generic
     while(it.hasNext()) {
         const KService::Ptr servPtr = it.next().service();
         // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
-        if ( !KServiceFactory::self()->hasOffer(genericServiceTypePtr->offset(),
-                                                genericServiceTypePtr->serviceOffersOffset(),
-                                                servPtr->offset()) ) {
+        if (!KServiceFactory::self()->hasOffer(genericServiceTypePtr->offset(),
+                                               genericServiceTypePtr->serviceOffersOffset(),
+                                               servPtr->offset())
+            || !servPtr->showInKDE()) {
             it.remove();
         }
     }
@@ -117,9 +118,10 @@ static void filterMimeTypeOffers(KService::List& list, const QString& genericSer
     while(it.hasNext()) {
         const KService::Ptr servPtr = it.next();
         // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
-        if ( !KServiceFactory::self()->hasOffer(genericServiceTypePtr->offset(),
-                                                genericServiceTypePtr->serviceOffersOffset(),
-                                                servPtr->offset()) ) {
+        if (!KServiceFactory::self()->hasOffer(genericServiceTypePtr->offset(),
+                                               genericServiceTypePtr->serviceOffersOffset(),
+                                               servPtr->offset())
+            || !servPtr->showInKDE()) {
             it.remove();
         }
     }

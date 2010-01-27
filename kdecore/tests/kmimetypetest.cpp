@@ -80,10 +80,29 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("MimeType", "text/plain;");
     }
 
+    // Create fake "NotShowIn=KDE" service
+    m_nonKdeApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_nonkde_application.desktop");
+    const bool mustCreateNonKdeApp = !QFile::exists(m_nonKdeApp);
+    if (mustCreateNonKdeApp) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(m_nonKdeApp);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "NonKDEApp");
+        group.writeEntry("Type", "Application");
+        group.writeEntry("Exec", "xterm");
+        group.writeEntry("NotShowIn", "KDE;FVWM;");
+        group.writeEntry("MimeType", "text/plain;");
+        group.writeEntry("InitialPreference", "50");
+    }
+
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
         QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     }
+
+    KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
+    QVERIFY(fakeApp); // it should be found.
+    QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
 }
 
 void KMimeTypeTest::cleanupTestCase()
@@ -607,7 +626,6 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
 
     // We shouldn't have non-plugins
     QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
-
 }
 
 void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
@@ -630,8 +648,20 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
 
     offers = KMimeTypeTrader::self()->query("text/x-patch", "Application");
     QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
+
+    // We shouldn't have non-kde apps
+    Q_FOREACH( KService::Ptr service, offers )
+        kDebug() << service->name() << service->entryPath();
+
+    QVERIFY( !offerListHasService( offers, m_nonKdeApp ) );
 }
 
+void KMimeTypeTest::testPreferredService()
+{
+    // The "NotShowIn=KDE" service should not be the preferred one!
+    KService::Ptr serv = KMimeTypeTrader::self()->preferredService("text/plain");
+    QVERIFY( serv->entryPath() != m_nonKdeApp );
+}
 
 void KMimeTypeTest::testMimeTypeTraderForAlias()
 {

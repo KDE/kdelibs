@@ -458,27 +458,6 @@ KService::List KFileItemActions::associatedApplications(const QStringList& mimeT
             skipThisEntry = true;
         }
 
-        if (!skipThisEntry) {
-            // Skip OnlyShowIn=Foo and NotShowIn=KDE entries,
-            // but still offer NoDisplay=true entries, that's the
-            // whole point of such desktop files. This is why we don't
-            // use service->noDisplay() here.
-            const QString onlyShowIn = service->property("OnlyShowIn", QVariant::String).toString();
-            if (!onlyShowIn.isEmpty()) {
-                const QStringList aList = onlyShowIn.split(';', QString::SkipEmptyParts);
-                if (!aList.contains("KDE")) {
-                    skipThisEntry = true;
-                }
-            }
-            const QString notShowIn = service->property("NotShowIn", QVariant::String).toString();
-            if (!notShowIn.isEmpty()) {
-                const QStringList aList = notShowIn.split(';', QString::SkipEmptyParts);
-                if (aList.contains("KDE")) {
-                    skipThisEntry = true;
-                }
-            }
-        }
-
         if (skipThisEntry) {
             it = offers.erase(it);
         } else {

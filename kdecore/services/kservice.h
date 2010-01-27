@@ -324,10 +324,25 @@ public:
     int initialPreference() const;
 
     /**
-     * Whether the entry should be suppressed in menus.
+     * Whether the entry should be suppressed in the K menu.
      * @return true to suppress this service
+     *
+     * Such services still appear in trader queries, i.e. in
+     * "Open With" popup menus for instance.
      */
     bool noDisplay() const;
+
+    /**
+     * Whether the service should be shown in KDE at all
+     * (including in context menus).
+     * @return true if the service should be shown.
+     * 
+     * KMimeTypeTrader honours this and removes such services
+     * from its results.
+     *
+     * @since 4.5
+     */
+    bool showInKDE() const;
 
     /**
      * Name of the application this service belongs to.
