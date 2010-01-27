@@ -26,31 +26,33 @@ class KLocale;
 class KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemPrivate( KCalendarSystem *q ): q( q )
-    {
-    }
+    explicit KCalendarSystemPrivate( KCalendarSystem *q );
 
-    virtual ~KCalendarSystemPrivate()
-    {
-    }
+    virtual ~KCalendarSystemPrivate();
 
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
+
+    // Utility functions
     bool setAnyDate( QDate &date, int year, int month, int day ) const;
-
     int addYearNumber( int originalYear, int addYears ) const;
-
     QDate invalidDate() const;
-
     int stringToInteger( const QString &sNum, int &iLength ) const;
-
     QString simpleDateString( const QString &str ) const;
+    QDate firstDayOfYear( int year ) const;
+    QDate lastDayOfYear( int year ) const;
 
-    int maxDaysInWeek;
-    int maxMonthsInYear;
-
-    bool hasYear0;
-
+    // Global variables each calendar system must initialise
     const KCalendarSystem *q;
-
     const KLocale *locale;
 };
 

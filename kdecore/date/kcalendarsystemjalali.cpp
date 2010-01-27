@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2002-2003 Arash Bijanzadeh  and FarsiKDE Project <www.farsikde.org>
     Contact: Arash Bijanzadeh <a.bijanzadeh@linuxiran.org>
-    Copyright (c) 2007, 2008, 2009 John Layt <john@layt.net>
+    Copyright 2007, 2008, 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -35,31 +35,122 @@
 class KCalendarSystemJalaliPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q ) : KCalendarSystemPrivate( q )
-    {
-    }
+    explicit KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q );
 
-    virtual ~KCalendarSystemJalaliPrivate()
-    {
-    }
+    virtual ~KCalendarSystemJalaliPrivate();
 
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
 };
+
+// Shared d pointer base class definitions
+
+KCalendarSystemJalaliPrivate::KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q )
+                             :KCalendarSystemPrivate( q )
+{
+}
+
+KCalendarSystemJalaliPrivate::~KCalendarSystemJalaliPrivate()
+{
+}
+
+int KCalendarSystemJalaliPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
 
 int KCalendarSystemJalaliPrivate::daysInMonth( int year, int month ) const
 {
-    if ( month <= 6 ) {
-        return 31;
-    } else if ( month <= 11 ) {
-        return 30;
-    } else {
-        if ( q->isLeapYear( year ) ) {
+    if ( month == 12 ) {
+        if ( isLeapYear( year ) ) {
             return 30;
         } else {
             return 29;
         }
     }
+
+    if ( month <= 6  ) {
+        return 31;
+    }
+
+    return 30;
 }
+
+int KCalendarSystemJalaliPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 366;
+    } else {
+        return 365;
+    }
+}
+
+int KCalendarSystemJalaliPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemJalaliPrivate::isLeapYear( int year ) const
+{
+    // From formilab Public Domain code http://www.fourmilab.ch/documents/calendar/
+    // Use Birashk algorithm as it matches the to/from jd code below
+
+    // Birashk algorithm is incorrect in two years in period AP 1244 to 1531,
+    // 1403/1404 and 1436/1437, and so catch them here first
+    if ( year == 1403 || year == 1436 ) {
+        return true;
+    } else if ( year == 1404 || year == 1437 ) {
+        return false;
+    }
+
+    if ( year >= 0 ) {
+        year = year - 474;
+    } else {
+        year = year - 473;
+    }
+
+    if ( ( ( ( ( ( year % 2820 ) + 474 ) + 38 ) * 682 ) % 2816 ) < 682 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool KCalendarSystemJalaliPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemJalaliPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemJalaliPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+int KCalendarSystemJalaliPrivate::earliestValidYear() const
+{
+    return 1244;
+}
+
+int KCalendarSystemJalaliPrivate::latestValidYear() const
+{
+    return 1530;
+}
+
 
 KCalendarSystemJalali::KCalendarSystemJalali( const KLocale * locale )
                       : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), locale ),
@@ -105,22 +196,7 @@ QDate KCalendarSystemJalali::latestValidDate() const
 
 bool KCalendarSystemJalali::isValid( int year, int month, int day ) const
 {
-    Q_D( const KCalendarSystemJalali );
-
-    // Using the Birashk formula which is accurate in period AP 1244 to 1530 (AD 1865 to 2152)
-    if ( year < 1244 || year > 1530 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 12 ) {
-        return false;
-    }
-
-    if ( day < 1 || day > d->daysInMonth( year, month ) ) {
-        return false;
-    }
-
-    return true;
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemJalali::isValid( const QDate &date ) const
@@ -172,8 +248,7 @@ QDate KCalendarSystemJalali::addDays( const QDate &date, int ndays ) const
 
 int KCalendarSystemJalali::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 12;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemJalali::weeksInYear( const QDate &date ) const
@@ -188,26 +263,12 @@ int KCalendarSystemJalali::weeksInYear( int year ) const
 
 int KCalendarSystemJalali::daysInYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    if ( isLeapYear( date ) ) {
-        return 366;
-    } else {
-        return 365;
-    }
+    return KCalendarSystem::daysInYear( date );
 }
 
 int KCalendarSystemJalali::daysInMonth( const QDate &date ) const
 {
-    Q_D( const KCalendarSystemJalali );
-
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    return d->daysInMonth( year( date ), month( date ) );
+    return KCalendarSystem::daysInMonth( date );
 }
 
 int KCalendarSystemJalali::daysInWeek( const QDate &date ) const
@@ -232,28 +293,7 @@ int KCalendarSystemJalali::weekNumber( const QDate &date, int *yearNum ) const
 
 bool KCalendarSystemJalali::isLeapYear( int year ) const
 {
-    // From formilab Public Domain code http://www.fourmilab.ch/documents/calendar/
-    // Use Birashk algorithm as it matches the to/from jd code below
-
-    // Birashk algorithm is incorrect in two years in period AP 1244 to 1531,
-    // 1403/1404 and 1436/1437, and so catch them here first
-    if ( year == 1403 || year == 1436 ) {
-        return true;
-    } else if ( year == 1404 || year == 1437 ) {
-        return false;
-    }
-
-    if ( year >= 0 ) {
-        year = year - 474;
-    } else {
-        year = year - 473;
-    }
-
-    if ( ( ( ( ( ( year % 2820 ) + 474 ) + 38 ) * 682 ) % 2816 ) < 682 ) {
-        return true;
-    } else {
-        return false;
-    }
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemJalali::isLeapYear( const QDate &date ) const

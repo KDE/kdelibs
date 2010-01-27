@@ -25,13 +25,21 @@
 class KCalendarSystemCopticPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemCopticPrivate( KCalendarSystemCoptic *q ) : KCalendarSystemPrivate( q )
-    {
-    }
+    explicit KCalendarSystemCopticPrivate( KCalendarSystemCoptic *q );
 
-    virtual ~KCalendarSystemCopticPrivate()
-    {
-    }
+    virtual ~KCalendarSystemCopticPrivate();
+
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
 };
 
 #endif // KCALENDARSYSTEMCOPTICPRIVATE_H

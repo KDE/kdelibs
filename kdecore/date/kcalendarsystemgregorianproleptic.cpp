@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 John Layt <john@layt.net>
+    Copyright 2009, 2010 John Layt <john@layt.net>
  
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,14 +31,113 @@
 class KCalendarSystemGregorianProlepticPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q ) : KCalendarSystemPrivate( q )
-    {
+    explicit KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q );
+
+    virtual ~KCalendarSystemGregorianProlepticPrivate();
+
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
+};
+
+// Shared d pointer base class definitions
+
+KCalendarSystemGregorianProlepticPrivate::KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q )
+                                         :KCalendarSystemPrivate( q )
+{
+}
+
+KCalendarSystemGregorianProlepticPrivate::~KCalendarSystemGregorianProlepticPrivate()
+{
+}
+
+int KCalendarSystemGregorianProlepticPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
+
+int KCalendarSystemGregorianProlepticPrivate::daysInMonth( int year, int month ) const
+{
+    if ( month == 2 ) {
+        if ( isLeapYear( year ) ) {
+            return 29;
+        } else {
+            return 28;
+        }
     }
 
-    virtual ~KCalendarSystemGregorianProlepticPrivate()
-    {
+    if ( month == 4 || month == 6 || month == 9 || month == 11 ) {
+        return 30;
     }
-};
+
+    return 31;
+}
+
+int KCalendarSystemGregorianProlepticPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 366;
+    } else {
+        return 365;
+    }
+}
+
+int KCalendarSystemGregorianProlepticPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemGregorianProlepticPrivate::isLeapYear( int year ) const
+{
+    if ( year < 1 ) {
+        year = year + 1;
+    }
+
+    if ( year % 4 == 0 ) {
+        if ( year % 100 != 0 ) {
+            return true;
+        } else if ( year % 400 == 0 ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool KCalendarSystemGregorianProlepticPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemGregorianProlepticPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemGregorianProlepticPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+int KCalendarSystemGregorianProlepticPrivate::earliestValidYear() const
+{
+    return -4713;
+}
+
+int KCalendarSystemGregorianProlepticPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 
 KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KLocale * locale )
                                   : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), locale ),
@@ -83,27 +182,7 @@ QDate KCalendarSystemGregorianProleptic::latestValidDate() const
 
 bool KCalendarSystemGregorianProleptic::isValid( int year, int month, int day ) const
 {
-    if ( year < -4713 || year > 9999 || year == 0 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 12 ) {
-        return false;
-    }
-
-    if ( month == 2 ) {
-        if ( isLeapYear( year ) ) {
-            return ( day >= 1 && day <= 29 );
-        } else {
-            return ( day >= 1 && day <= 28 );
-        }
-    }
-
-    if ( month == 4 || month == 6 || month == 9 || month == 11  ) {
-        return ( day >= 1 && day <= 30 );
-    }
-
-    return ( day >= 1 && day <= 31 );
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemGregorianProleptic::isValid( const QDate &date ) const
@@ -117,9 +196,9 @@ bool KCalendarSystemGregorianProleptic::setDate( QDate &date, int year, int mont
 }
 
 // Deprecated
-bool KCalendarSystemGregorianProleptic::setYMD( QDate &date, int y, int m, int d ) const
+bool KCalendarSystemGregorianProleptic::setYMD( QDate &date, int year, int month, int day ) const
 {
-    return KCalendarSystem::setDate( date, y, m, d );
+    return KCalendarSystem::setYMD( date, year, month, day );
 }
 
 int KCalendarSystemGregorianProleptic::year( const QDate &date ) const
@@ -154,8 +233,7 @@ QDate KCalendarSystemGregorianProleptic::addDays( const QDate &date, int ndays )
 
 int KCalendarSystemGregorianProleptic::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 12;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemGregorianProleptic::weeksInYear( const QDate &date ) const
@@ -170,44 +248,17 @@ int KCalendarSystemGregorianProleptic::weeksInYear( int year ) const
 
 int KCalendarSystemGregorianProleptic::daysInYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    if ( isLeapYear( date ) ) {
-        return 366;
-    } else {
-        return 365;
-    }
+    return KCalendarSystem::daysInYear( date );
 }
 
 int KCalendarSystemGregorianProleptic::daysInMonth( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    int m = month( date );
-
-    if ( m == 2 ) {
-        if ( isLeapYear( year( date ) ) ) {
-            return 29;
-        } else {
-            return 28;
-        }
-    }
-
-    if ( m == 4 || m == 6 || m == 9 || m == 11 ) {
-        return 30;
-    }
-
-    return 31;
+    return KCalendarSystem::daysInMonth( date );
 }
 
 int KCalendarSystemGregorianProleptic::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemGregorianProleptic::dayOfYear( const QDate &date ) const
@@ -227,22 +278,7 @@ int KCalendarSystemGregorianProleptic::weekNumber( const QDate &date, int * year
 
 bool KCalendarSystemGregorianProleptic::isLeapYear( int year ) const
 {
-    int y;
-
-    if ( year < 1 ) {
-        y = year + 1;
-    } else {
-        y = year;
-    }
-
-    if ( y % 4 == 0 ) {
-        if ( y % 100 != 0 ) {
-            return true;
-        } else if ( y % 400 == 0 ) {
-            return true;
-        }
-    }
-    return false;
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemGregorianProleptic::isLeapYear( const QDate &date ) const

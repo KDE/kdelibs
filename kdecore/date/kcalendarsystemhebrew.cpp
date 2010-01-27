@@ -1,6 +1,6 @@
 /*
     Copyright (c) 2003 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007 John Layt <john@layt.net>
+    Copyright 2007, 2009, 2010 John Layt <john@layt.net>
         Calendar conversion routines based on Hdate v6, by Amos
         Shapir 1978 (rev. 1985, 1992)
 
@@ -338,41 +338,34 @@ static class h_date *toHebrew( const QDate &date )
 class KCalendarSystemHebrewPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemHebrewPrivate( KCalendarSystemHebrew *q ) : KCalendarSystemPrivate( q )
-    {
-    }
+    explicit KCalendarSystemHebrewPrivate( KCalendarSystemHebrew *q );
 
-    virtual ~KCalendarSystemHebrewPrivate()
-    {
-    }
+    virtual ~KCalendarSystemHebrewPrivate();
 
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
 
     virtual int monthNumberToMonthIndex( int year, int month ) const;
-
-    virtual int monthsInYear( int year ) const;
-
-    virtual int daysInMonth( int year, int month ) const;
 };
 
-bool KCalendarSystemHebrewPrivate::isLeapYear( int year ) const
+// Shared d pointer base class definitions
+
+KCalendarSystemHebrewPrivate::KCalendarSystemHebrewPrivate( KCalendarSystemHebrew *q )
+                             :KCalendarSystemPrivate( q )
 {
-    return ( ( ( ( 7 * year ) + 1 ) % 19 ) < 7 );
 }
 
-int KCalendarSystemHebrewPrivate::monthNumberToMonthIndex( int year, int month ) const
+KCalendarSystemHebrewPrivate::~KCalendarSystemHebrewPrivate()
 {
-    if ( q->isLeapYear( year ) ) {
-        if ( month == 6 ) {
-            return 13;        // Adar I
-        } else if ( month == 7 ) {
-            return 14;        // Adar II
-        } else if ( month > 7 ) {
-            return month - 1; // Because of Adar II
-        }
-    }
-
-    return month;
 }
 
 int KCalendarSystemHebrewPrivate::monthsInYear( int year ) const
@@ -396,25 +389,95 @@ int KCalendarSystemHebrewPrivate::daysInMonth( int year, int month ) const
         return 29;
     }
 
-    if ( mi % 2 == 0 ) {
+    if ( mi % 2 == 0 ) {  // Even number months have 29 days
         return 29;
-    } else {
+    } else {  // Odd number months have 30 days
         return 30;
     }
 }
+
+int KCalendarSystemHebrewPrivate::daysInYear( int year ) const
+{
+    int days;
+
+    // Get Regular year length
+    if ( isLeapYear( year ) ) {  // Has 13 months
+        days = 384;
+    } else {  // Has 12 months
+        days = 354;
+    }
+
+    // Check if is Deficient or Abundant year
+    if ( short_kislev( year ) ) { // Deficient
+        days = days - 1;
+    } else if ( long_cheshvan( year ) ) { // Abundant
+        days = days + 1;
+    }
+
+    return days;
+}
+
+int KCalendarSystemHebrewPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemHebrewPrivate::isLeapYear( int year ) const
+{
+    return ( ( ( ( 7 * year ) + 1 ) % 19 ) < 7 );
+}
+
+bool KCalendarSystemHebrewPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemHebrewPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemHebrewPrivate::maxMonthsInYear() const
+{
+    return 13;
+}
+
+int KCalendarSystemHebrewPrivate::earliestValidYear() const
+{
+    return 5344;
+}
+
+int KCalendarSystemHebrewPrivate::latestValidYear() const
+{
+    return 8119;
+}
+
+int KCalendarSystemHebrewPrivate::monthNumberToMonthIndex( int year, int month ) const
+{
+    if ( isLeapYear( year ) ) {
+        if ( month == 6 ) {
+            return 13;        // Adar I
+        } else if ( month == 7 ) {
+            return 14;        // Adar II
+        } else if ( month > 7 ) {
+            return month - 1; // Because of Adar II
+        }
+    }
+
+    return month;
+}
+
 
 KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale * locale )
                       : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), locale ),
                         dont_use( 0 )
 {
-    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemHebrew::KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd, const KLocale * locale )
                       : KCalendarSystem( dd, locale ),
                         dont_use( 0 )
 {
-    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemHebrew::~KCalendarSystemHebrew()
@@ -449,21 +512,7 @@ QDate KCalendarSystemHebrew::latestValidDate() const
 
 bool KCalendarSystemHebrew::isValid( int year, int month, int day ) const
 {
-    Q_D( const KCalendarSystemHebrew );
-
-    if ( year < 5344 || year > 8119 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > d->monthsInYear( year ) ) {
-        return false;
-    }
-
-    if ( day < 1 || day > d->daysInMonth( year, month ) ) {
-        return false;
-    }
-
-    return true;
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemHebrew::isValid( const QDate &date ) const
@@ -473,120 +522,48 @@ bool KCalendarSystemHebrew::isValid( const QDate &date ) const
 
 bool KCalendarSystemHebrew::setDate( QDate &date, int year, int month, int day ) const
 {
-    return setYMD( date, year, month, day );
+    return KCalendarSystem::setDate( date, year, month, day );
 }
 
 // Deprecated
 bool KCalendarSystemHebrew::setYMD( QDate &date, int year, int month, int day ) const
 {
-    if ( !isValid( year, month, day) ) {
-        return false;
-    }
-
-    class h_date * gd = hebrewToGregorian( year, month, day );
-
-    return date.setYMD( gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1 );
+    return KCalendarSystem::setYMD( date, year, month, day );
 }
 
 int KCalendarSystemHebrew::year( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    class h_date * sd = toHebrew( date );
-    return sd->hd_year;
+    return KCalendarSystem::year( date );
 }
 
 int KCalendarSystemHebrew::month( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    class h_date * sd = toHebrew( date );
-
-    int month = sd->hd_mon;
-    if ( isLeapYear( sd->hd_year ) ) {
-        if( month == 13 /*AdarI*/ ) {
-            month = 6;
-        } else if( month == 14 /*AdarII*/ ) {
-            month = 7;
-        } else if ( month > 6 && month < 13 ) {
-            ++month;
-        }
-    }
-
-    return month;
+    return KCalendarSystem::month( date );
 }
 
 int KCalendarSystemHebrew::day( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    class h_date * sd = toHebrew( date );
-
-    return sd->hd_day;
+    return KCalendarSystem::day( date );
 }
 
 QDate KCalendarSystemHebrew::addYears( const QDate &date, int nyears ) const
 {
-    if ( !isValid( date ) ) {
-        return QDate();
-    }
-
-    QDate result = date;
-    int y = year( date ) + nyears;
-
-    setYMD( result, y, month( date ), day( date ) );
-
-    return result;
+    return KCalendarSystem::addYears( date, nyears );
 }
 
 QDate KCalendarSystemHebrew::addMonths( const QDate &date, int nmonths ) const
 {
-    if ( !isValid( date ) ) {
-        return QDate();
-    }
-
-    QDate result = date;
-
-    while ( nmonths > 0 ) {
-        result = addDays( result, daysInMonth( result ) );
-        --nmonths;
-    }
-
-    while ( nmonths < 0 ) {
-        // get the number of days in the previous month to be consistent with
-        // addMonths where nmonths > 0
-        int nDaysInMonth = daysInMonth( addDays( result, -day( result ) ) );
-        result = addDays( result, -nDaysInMonth );
-        ++nmonths;
-    }
-
-    return result;
+    return KCalendarSystem::addMonths( date, nmonths );
 }
 
 QDate KCalendarSystemHebrew::addDays( const QDate &date, int ndays ) const
 {
-    if ( !isValid( date ) ) {
-        return QDate();
-    }
-
-    return date.addDays( ndays );
+    return KCalendarSystem::addDays( date, ndays );
 }
 
 int KCalendarSystemHebrew::monthsInYear( const QDate &date ) const
 {
-    Q_D( const KCalendarSystemHebrew );
-
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    return d->monthsInYear( year( date ) );
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemHebrew::weeksInYear( const QDate &date ) const
@@ -601,53 +578,22 @@ int KCalendarSystemHebrew::weeksInYear( int year ) const
 
 int KCalendarSystemHebrew::daysInYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    int y = year( date );
-
-    // Last valid year, as setYmd() won't allow calculating following year
-    if ( y == 8119 ) {
-        return 385;
-    }
-
-    QDate first, last;
-    setYMD( first, y, 1, 1 ); // 1 Tishrey
-    setYMD( last, y + 1, 1, 1 ); // 1 Tishrey the year later
-
-    return first.daysTo( last );
+    return KCalendarSystem::daysInYear( date );
 }
 
 int KCalendarSystemHebrew::daysInMonth( const QDate &date ) const
 {
-    Q_D( const KCalendarSystemHebrew );
-
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    return d->daysInMonth( year( date ), month( date ) );
+    return KCalendarSystem::daysInMonth( date );
 }
 
 int KCalendarSystemHebrew::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemHebrew::dayOfYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    QDate first;
-
-    setYMD( first, year( date ), 1, 1 );
-
-    return first.daysTo( date ) + 1;
+    return KCalendarSystem::dayOfYear( date );
 }
 
 int KCalendarSystemHebrew::dayOfWeek( const QDate &date ) const
@@ -662,56 +608,12 @@ int KCalendarSystemHebrew::dayOfWeek( const QDate &date ) const
 
 int KCalendarSystemHebrew::weekNumber( const QDate &date, int *yearNum ) const
 {
-    QDate firstDayWeek1, lastDayOfYear;
-    int y = year( date );
-    int week;
-    int weekDay1, dayOfWeek1InYear;
-
-    // let's guess 1st day of 1st week
-    setYMD( firstDayWeek1, y, 1, 1 );
-    weekDay1 = dayOfWeek( firstDayWeek1 );
-
-    // iso 8601: week 1  is the first containing thursday and week starts on
-    // monday
-    if ( weekDay1 > 4 /*Thursday*/ ) {
-        firstDayWeek1 = addDays( firstDayWeek1 , 7 - weekDay1 + 1 ); // next monday
-    }
-
-    dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
-
-    // if our date in prev year's week
-    if ( dayOfYear( date ) < dayOfWeek1InYear ) {
-        if ( yearNum )
-            * yearNum = y - 1;
-        return weeksInYear( y - 1 );
-    }
-
-    // let's check if its last week belongs to next year
-    setYMD( lastDayOfYear, y + 1, 1, 1 );
-    lastDayOfYear = addDays( lastDayOfYear, -1 );
-    // if our date is in last week && 1st week in next year has thursday
-    if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )
-            && dayOfWeek( lastDayOfYear ) < 4 ) {
-        if ( yearNum ) {
-            * yearNum = y + 1;
-        }
-        week = 1;
-    } else {
-        // To calculate properly the number of weeks from day a to x let's make a day 1 of week
-        if( weekDay1 < 5 ) {
-            firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1 ) );
-        }
-
-        week = firstDayWeek1.daysTo( date ) / 7 + 1;
-    }
-
-    return week;
+    return KCalendarSystem::weekNumber( date, yearNum );
 }
 
 bool KCalendarSystemHebrew::isLeapYear( int year ) const
 {
-    Q_D( const KCalendarSystemHebrew );
-    return d->isLeapYear( year );
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemHebrew::isLeapYear( const QDate &date ) const
@@ -964,18 +866,33 @@ bool KCalendarSystemHebrew::isProleptic() const
 
 bool KCalendarSystemHebrew::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
-    Q_UNUSED(jd);
-    year = -1;
-    month = -1;
-    day = -1;
-    return false;
+    class h_date * sd = toHebrew( QDate::fromJulianDay( jd ) );
+
+    year = sd->hd_year;
+
+    month = sd->hd_mon;
+    if ( isLeapYear( sd->hd_year ) ) {
+        if( month == 13 /*AdarI*/ ) {
+            month = 6;
+        } else if( month == 14 /*AdarII*/ ) {
+            month = 7;
+        } else if ( month > 6 && month < 13 ) {
+            ++month;
+        }
+    }
+
+    day = sd->hd_day;
+
+    return true;
 }
 
 bool KCalendarSystemHebrew::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
-    Q_UNUSED(year);
-    Q_UNUSED(month);
-    Q_UNUSED(day);
-    jd = -1;
-    return false;
+    class h_date * gd = hebrewToGregorian( year, month, day );
+
+    QDate tempDate( gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1 );
+
+    jd = tempDate.toJulianDay();
+
+    return true;
 }

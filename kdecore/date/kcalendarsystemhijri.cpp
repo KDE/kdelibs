@@ -1,7 +1,7 @@
 /*
     Copyright (c) 2002-2003 Carlos Moro <cfmoro@correo.uniovi.es>
     Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007-2009 John Layt <john@layt.net>
+    Copyright 2007, 2008, 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,36 +27,124 @@
 class KCalendarSystemHijriPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemHijriPrivate( KCalendarSystemHijri *q ) : KCalendarSystemPrivate( q )
-    {
-    }
+    explicit KCalendarSystemHijriPrivate( KCalendarSystemHijri *q );
 
-    virtual ~KCalendarSystemHijriPrivate()
-    {
-    }
+    virtual ~KCalendarSystemHijriPrivate();
 
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
 };
+
+// Shared d pointer base class definitions
+
+KCalendarSystemHijriPrivate::KCalendarSystemHijriPrivate( KCalendarSystemHijri *q )
+                            :KCalendarSystemPrivate( q )
+{
+}
+
+KCalendarSystemHijriPrivate::~KCalendarSystemHijriPrivate()
+{
+}
+
+int KCalendarSystemHijriPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
 
 int KCalendarSystemHijriPrivate::daysInMonth( int year, int month ) const
 {
-    switch ( month ) {
-    case 2:
-    case 4:
-    case 6:
-    case 8:
-    case 10:
+    if ( month == 12 && isLeapYear( year ) ) {
+        return 30;
+    }
+
+    if ( month % 2 == 0 ) { // Even number months have 29 days
         return 29;
-    case 12:
-        if ( q->isLeapYear( year ) ) {
-            return 30;
-        } else {
-            return 29;
-        }
-    default:
+    } else {  // Odd number months have 30 days
         return 30;
     }
 }
+
+int KCalendarSystemHijriPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 355;
+    } else {
+        return 354;
+    }
+}
+
+int KCalendarSystemHijriPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemHijriPrivate::isLeapYear( int year ) const
+{
+    // Years 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29 of the 30 year cycle
+
+    /*
+    The following C++ code is translated from the Lisp code
+    in ``Calendrical Calculations'' by Nachum Dershowitz and
+    Edward M. Reingold, Software---Practice & Experience,
+    vol. 20, no. 9 (September, 1990), pp. 899--928.
+
+    This code is in the public domain, but any use of it
+    should publically acknowledge its source.
+    */
+
+    if ( ( ( ( 11 * year ) + 14 ) % 30 ) < 11 ) {
+        return true;
+    } else {
+        return false;
+    }
+
+    // The following variations will be implemented in separate classes in 4.5
+    // May be cleaner to formally define using a case statement switch on (year % 30)
+
+    // Variation used by Bar Habraeus / Graves / Birashk / Some Microsoft products
+    // Years 2, 5, 7, 10, 13, 15, 18, 21, 24, 26, 29 of the 30 year cycle
+    // if ( ( ( ( 11 * year ) + 15 ) % 30 ) < 11 ) {
+
+    // Variation used by Bohras / Sahifa with epoch 15 July 622 jd = 1948440
+    // Years 2, 5, 8, 10, 13, 16, 19, 21, 24, 27, 29 of the 30 year cycle
+    // if ( ( ( ( 11 * year ) + 1 ) % 30 ) < 11 ) {
+}
+
+bool KCalendarSystemHijriPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemHijriPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemHijriPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+int KCalendarSystemHijriPrivate::earliestValidYear() const
+{
+    return 1;
+}
+
+int KCalendarSystemHijriPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 
 KCalendarSystemHijri::KCalendarSystemHijri( const KLocale * locale )
                      : KCalendarSystem( *new KCalendarSystemHijriPrivate( this ), locale ),
@@ -100,21 +188,7 @@ QDate KCalendarSystemHijri::latestValidDate() const
 
 bool KCalendarSystemHijri::isValid( int year, int month, int day ) const
 {
-    Q_D( const KCalendarSystemHijri );
-
-    if ( year < 1 || year > 9999 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 12 ) {
-        return false;
-    }
-
-    if ( day < 1 || day > d->daysInMonth( year, month ) ) {
-        return false;
-    }
-
-    return true;
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemHijri::isValid( const QDate &date ) const
@@ -165,8 +239,7 @@ QDate KCalendarSystemHijri::addDays( const QDate &date, int ndays ) const
 
 int KCalendarSystemHijri::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 12;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemHijri::weeksInYear( const QDate &date ) const
@@ -181,32 +254,17 @@ int KCalendarSystemHijri::weeksInYear( int year ) const
 
 int KCalendarSystemHijri::daysInYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    if ( isLeapYear( date ) ) {
-        return 355;
-    } else {
-        return 354;
-    }
+    return KCalendarSystem::daysInYear( date );
 }
 
 int KCalendarSystemHijri::daysInMonth( const QDate &date ) const
 {
-    Q_D( const KCalendarSystemHijri );
-
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    return d->daysInMonth( year( date ), month( date ) );
+    return KCalendarSystem::daysInMonth( date );
 }
 
 int KCalendarSystemHijri::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemHijri::dayOfYear( const QDate &date ) const
@@ -226,34 +284,7 @@ int KCalendarSystemHijri::weekNumber( const QDate &date, int *yearNum ) const
 
 bool KCalendarSystemHijri::isLeapYear( int year ) const
 {
-    // Years 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29 of the 30 year cycle
-
-    /*
-    The following C++ code is translated from the Lisp code
-    in ``Calendrical Calculations'' by Nachum Dershowitz and
-    Edward M. Reingold, Software---Practice & Experience,
-    vol. 20, no. 9 (September, 1990), pp. 899--928.
-
-    This code is in the public domain, but any use of it
-    should publically acknowledge its source.
-    */
-
-    if ( ( ( ( 11 * year ) + 14 ) % 30 ) < 11 ) {
-        return true;
-    } else {
-        return false;
-    }
-
-    // The following variations will be implemented in separate classes in 4.5
-    // May be cleaner to formally define using a case statement switch on (year % 30)
-
-    // Variation used by Bar Habraeus / Graves / Birashk / Some Microsoft products
-    // Years 2, 5, 7, 10, 13, 15, 18, 21, 24, 26, 29 of the 30 year cycle
-    // if ( ( ( ( 11 * year ) + 15 ) % 30 ) < 11 ) {
-
-    // Variation used by Bohras / Sahifa with epoch 15 July 622 jd = 1948440
-    // Years 2, 5, 8, 10, 13, 16, 19, 21, 24, 27, 29 of the 30 year cycle
-    // if ( ( ( ( 11 * year ) + 1 ) % 30 ) < 11 ) {
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemHijri::isLeapYear( const QDate &date ) const

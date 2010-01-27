@@ -1,16 +1,16 @@
 /*
-    Copyright (c) 2009 John Layt <john@layt.net>
- 
+    Copyright 2009, 2010 John Layt <john@layt.net>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -29,14 +29,109 @@
 class KCalendarSystemJulianPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemJulianPrivate( KCalendarSystemJulian *q ) : KCalendarSystemPrivate( q )
-    {
+    explicit KCalendarSystemJulianPrivate( KCalendarSystemJulian *q );
+
+    virtual ~KCalendarSystemJulianPrivate();
+
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
+};
+
+// Shared d pointer base class definitions
+
+KCalendarSystemJulianPrivate::KCalendarSystemJulianPrivate( KCalendarSystemJulian *q )
+                             :KCalendarSystemPrivate( q )
+{
+}
+
+KCalendarSystemJulianPrivate::~KCalendarSystemJulianPrivate()
+{
+}
+
+int KCalendarSystemJulianPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
+
+int KCalendarSystemJulianPrivate::daysInMonth( int year, int month ) const
+{
+    if ( month == 2 ) {
+        if ( isLeapYear( year ) ) {
+            return 29;
+        } else {
+            return 28;
+        }
     }
 
-    virtual ~KCalendarSystemJulianPrivate()
-    {
+    if ( month == 4 || month == 6 || month == 9 || month == 11 ) {
+        return 30;
     }
-};
+
+    return 31;
+}
+
+int KCalendarSystemJulianPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 366;
+    } else {
+        return 365;
+    }
+}
+
+int KCalendarSystemJulianPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemJulianPrivate::isLeapYear( int year ) const
+{
+    if ( year < 1 ) {
+        year = year + 1;
+    }
+
+    if ( year % 4 == 0 ) {
+        return true;
+    }
+
+    return false;
+}
+
+bool KCalendarSystemJulianPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemJulianPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemJulianPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+int KCalendarSystemJulianPrivate::earliestValidYear() const
+{
+    return -4712;
+}
+
+int KCalendarSystemJulianPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 
 KCalendarSystemJulian::KCalendarSystemJulian( const KLocale * locale )
                       : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), locale ),
@@ -67,8 +162,9 @@ QDate KCalendarSystemJulian::epoch() const
 
 QDate KCalendarSystemJulian::earliestValidDate() const
 {
-    // 2 Jan 4713 BC, no year zero
-    return QDate::fromJulianDay( 1 );
+    // 1 Jan 4712 BC, no year zero, cant be 4713BC due to error in QDate that day 0 is not valid
+    // and we really need the first in each year to be valid for the date maths
+    return QDate::fromJulianDay( 366 );
 }
 
 QDate KCalendarSystemJulian::latestValidDate() const
@@ -80,27 +176,7 @@ QDate KCalendarSystemJulian::latestValidDate() const
 
 bool KCalendarSystemJulian::isValid( int year, int month, int day ) const
 {
-    if ( year < -4713 || year > 9999 || year == 0 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 12 ) {
-        return false;
-    }
-
-    if ( month == 2 ) {
-        if ( isLeapYear( year ) ) {
-            return ( day >= 1 && day <= 29 );
-        } else {
-            return ( day >= 1 && day <= 28 );
-        }
-    }
-
-    if ( month == 4 || month == 6 || month == 9 || month == 11  ) {
-        return ( day >= 1 && day <= 30 );
-    }
-
-    return ( day >= 1 && day <= 31 );
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemJulian::isValid( const QDate &date ) const
@@ -151,8 +227,7 @@ QDate KCalendarSystemJulian::addDays( const QDate &date, int ndays ) const
 
 int KCalendarSystemJulian::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 12;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemJulian::weeksInYear( const QDate &date ) const
@@ -177,8 +252,7 @@ int KCalendarSystemJulian::daysInMonth( const QDate &date ) const
 
 int KCalendarSystemJulian::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemJulian::dayOfYear( const QDate &date ) const
@@ -198,18 +272,7 @@ int KCalendarSystemJulian::weekNumber( const QDate &date, int * yearNum ) const
 
 bool KCalendarSystemJulian::isLeapYear( int year ) const
 {
-    int y;
-
-    if ( year < 1 ) {
-        y = year + 1;
-    } else {
-        y = year;
-    }
-
-    if ( y % 4 == 0 ) {
-        return true;
-    }
-    return false;
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemJulian::isLeapYear( const QDate &date ) const

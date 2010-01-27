@@ -1,7 +1,7 @@
 /*
     Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
     Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007 John Layt <john@layt.net>
+    Copyright 2007, 2010 John Layt <john@layt.net>
  
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,14 +33,88 @@
 class KCalendarSystemGregorianPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemGregorianPrivate( KCalendarSystemGregorian *q ) : KCalendarSystemPrivate( q )
-    {
-    }
+    explicit KCalendarSystemGregorianPrivate( KCalendarSystemGregorian *q );
 
-    virtual ~KCalendarSystemGregorianPrivate()
-    {
-    }
+    virtual ~KCalendarSystemGregorianPrivate();
+
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
 };
+
+// Shared d pointer implementations
+
+KCalendarSystemGregorianPrivate::KCalendarSystemGregorianPrivate( KCalendarSystemGregorian *q )
+                                :KCalendarSystemPrivate( q )
+
+{
+}
+
+KCalendarSystemGregorianPrivate::~KCalendarSystemGregorianPrivate()
+{
+}
+
+int KCalendarSystemGregorianPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
+
+int KCalendarSystemGregorianPrivate::daysInMonth( int year, int month ) const
+{
+    QDate tempDate( year, month, 1 );
+    return tempDate.daysInMonth();
+}
+
+int KCalendarSystemGregorianPrivate::daysInYear( int year ) const
+{
+    QDate tempDate( year, 1, 1 );
+    return tempDate.daysInYear();
+}
+
+int KCalendarSystemGregorianPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemGregorianPrivate::isLeapYear( int year ) const
+{
+    return QDate::isLeapYear( year );
+}
+
+bool KCalendarSystemGregorianPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemGregorianPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemGregorianPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+int KCalendarSystemGregorianPrivate::earliestValidYear() const
+{
+    return -4712;
+}
+
+int KCalendarSystemGregorianPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 
 KCalendarSystemGregorian::KCalendarSystemGregorian( const KLocale * locale )
                          : KCalendarSystem( *new KCalendarSystemGregorianPrivate( this ), locale ),
@@ -112,17 +186,17 @@ bool KCalendarSystemGregorian::setYMD( QDate &date, int y, int m, int d ) const
 
 int KCalendarSystemGregorian::year( const QDate &date ) const
 {
-    return KCalendarSystem::year( date );
+    return date.year();
 }
 
 int KCalendarSystemGregorian::month( const QDate &date ) const
 {
-    return KCalendarSystem::month( date );
+    return date.month();
 }
 
 int KCalendarSystemGregorian::day( const QDate &date ) const
 {
-    return KCalendarSystem::day( date );
+    return date.day();
 }
 
 QDate KCalendarSystemGregorian::addYears( const QDate &date, int nyears ) const
@@ -142,8 +216,7 @@ QDate KCalendarSystemGregorian::addDays( const QDate &date, int ndays ) const
 
 int KCalendarSystemGregorian::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 12;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemGregorian::weeksInYear( const QDate &date ) const
@@ -158,41 +231,27 @@ int KCalendarSystemGregorian::weeksInYear( int year ) const
 
 int KCalendarSystemGregorian::daysInYear( const QDate &date ) const
 {
-    return KCalendarSystem::daysInYear( date );
+    return date.daysInYear();
 }
 
 int KCalendarSystemGregorian::daysInMonth( const QDate &date ) const
 {
-    return KCalendarSystem::daysInMonth( date );
+    return date.daysInMonth();
 }
 
 int KCalendarSystemGregorian::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemGregorian::dayOfYear( const QDate &date ) const
 {
-    //Base class takes the jd of the given date, and subtracts the jd of the first day of that year
-    //but in QDate 1 Jan -4713 is not a valid date, so special case it here.
-
-    // Don't bother with validity check here, not needed, leave to base class
-    if ( year( date ) == -4713 ) {
-        QDate secondDayOfYear;
-        if ( setDate( secondDayOfYear, -4713, 1, 2 ) ) {
-            return ( date.toJulianDay() - secondDayOfYear.toJulianDay() + 2 );
-        }
-    } else {
-        return KCalendarSystem::dayOfYear( date );
-    }
-
-    return -1;
+    return date.dayOfYear();
 }
 
 int KCalendarSystemGregorian::dayOfWeek( const QDate &date ) const
 {
-    return KCalendarSystem::dayOfWeek( date );
+    return date.dayOfWeek();
 }
 
 int KCalendarSystemGregorian::weekNumber( const QDate &date, int * yearNum ) const
@@ -202,13 +261,12 @@ int KCalendarSystemGregorian::weekNumber( const QDate &date, int * yearNum ) con
 
 bool KCalendarSystemGregorian::isLeapYear( int year ) const
 {
-    // Use QDate's so we match it's weird changover from Gregorian to Julian
     return QDate::isLeapYear( year );
 }
 
 bool KCalendarSystemGregorian::isLeapYear( const QDate &date ) const
 {
-    return KCalendarSystem::isLeapYear( date );
+    return QDate::isLeapYear( date.year() );
 }
 
 QString KCalendarSystemGregorian::monthName( int month, int year, MonthNameFormat format ) const
@@ -461,11 +519,7 @@ bool KCalendarSystemGregorian::julianDayToDate( int jd, int &year, int &month, i
 {
     QDate date = QDate::fromJulianDay( jd );
 
-    if ( date.isValid() ) {
-        year = date.year();
-        month = date.month();
-        day = date.day();
-    }
+    date.getDate( &year, &month, &day );
 
     return date.isValid();
 }
@@ -474,10 +528,8 @@ bool KCalendarSystemGregorian::dateToJulianDay( int year, int month, int day, in
 {
     QDate date;
 
-    if ( date.setDate( year, month, day ) ) {
-        jd = date.toJulianDay();
-        return true;
-    }
+    date.setDate( year, month, day );
+    jd = date.toJulianDay();
 
-    return false;
+    return date.isValid();
 }

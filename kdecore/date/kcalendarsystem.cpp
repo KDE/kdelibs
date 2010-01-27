@@ -1,7 +1,7 @@
 /*
     Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
     Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007-2009 John Layt <john@layt.net>
+    Copyright 2007, 2008, 2009, 2010 John Layt <john@layt.net>
  
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -144,6 +144,117 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
 
 // Shared d pointer base class definitions
 
+KCalendarSystemPrivate::KCalendarSystemPrivate( KCalendarSystem *q ): q( q )
+{
+}
+
+KCalendarSystemPrivate::~KCalendarSystemPrivate()
+{
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::daysInMonth( int year, int month ) const
+{
+    if ( month == 2 ) {
+        if ( isLeapYear( year ) ) {
+            return 29;
+        } else {
+            return 28;
+        }
+    }
+
+    if ( month == 4 || month == 6 || month == 9 || month == 11 ) {
+        return 30;
+    }
+
+    return 31;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 366;
+    } else {
+        return 365;
+    }
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+bool KCalendarSystemPrivate::isLeapYear( int year ) const
+{
+    if ( year < 1 ) {
+        year = year + 1;
+    }
+
+    if ( year % 4 == 0 ) {
+        if ( year % 100 != 0 ) {
+            return true;
+        } else if ( year % 400 == 0 ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+bool KCalendarSystemPrivate::hasYearZero() const
+{
+    return false;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+// Convenince, faster than calling year( ealiestValidDate() ),
+// needed in fake-virtual functions so don't remove
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::earliestValidYear() const
+{
+    return -4712;
+}
+
+// Convenince, faster than calling year( latestValidDate() ),
+// needed in fake-virtual functions so don't remove
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+int KCalendarSystemPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 // Allows us to set dates outside publically valid range, USE WITH CARE!!!!
 bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int day ) const
 {
@@ -159,7 +270,7 @@ int KCalendarSystemPrivate::addYearNumber( int originalYear, int addYears ) cons
 {
     int newYear = originalYear + addYears;
 
-    if (!hasYear0) {
+    if ( !hasYearZero() ) {
         if ( originalYear > 0 && newYear <= 0 ) {
             newYear = newYear - 1;
         } else if ( originalYear < 0 && newYear >= 0 ) {
@@ -204,22 +315,32 @@ QString KCalendarSystemPrivate::simpleDateString( const QString &str ) const
     return newStr;
 }
 
+QDate KCalendarSystemPrivate::firstDayOfYear( int year ) const
+{
+    int jd;
+    q->dateToJulianDay( year, 1, 1, jd );
+    return QDate::fromJulianDay( jd );
+}
+
+QDate KCalendarSystemPrivate::lastDayOfYear( int year ) const
+{
+    int jd;
+    q->dateToJulianDay( year, 1, 1, jd );
+    jd = jd + daysInYear( year ) - 1;
+    return QDate::fromJulianDay( jd );
+}
+
+
 KCalendarSystem::KCalendarSystem( const KLocale *locale )
                 : d_ptr( new KCalendarSystemPrivate( this ) )
 {
     d_ptr->locale = locale;
-    setMaxDaysInWeek(7);
-    setMaxMonthsInYear(12);
-    setHasYear0(false);
 }
 
 KCalendarSystem::KCalendarSystem( KCalendarSystemPrivate &dd, const KLocale *locale )
                 : d_ptr( &dd )
 {
     d_ptr->locale = locale;
-    setMaxDaysInWeek(7);
-    setMaxMonthsInYear(12);
-    setHasYear0(false);
 }
 
 KCalendarSystem::~KCalendarSystem()
@@ -227,11 +348,11 @@ KCalendarSystem::~KCalendarSystem()
     delete d_ptr;
 }
 
+// Dummy version using Gregorian as an example
 // This method MUST be re-implemented in any new Calendar System
 QDate KCalendarSystem::epoch() const
 {
-    // Earliest valid QDate
-    return QDate::fromJulianDay( 1 );
+    return QDate::fromJulianDay( 38 );
 }
 
 QDate KCalendarSystem::earliestValidDate() const
@@ -239,6 +360,7 @@ QDate KCalendarSystem::earliestValidDate() const
     return epoch();
 }
 
+// Dummy version using Gregorian as an example
 // This method MUST be re-implemented in any new Calendar System
 QDate KCalendarSystem::latestValidDate() const
 {
@@ -246,89 +368,70 @@ QDate KCalendarSystem::latestValidDate() const
     return QDate::fromJulianDay( 5373484 );
 }
 
-// This method MUST be re-implemented in any new Calendar System
-bool KCalendarSystem::isValid( int y, int month, int day ) const
-{
-    // Default to true Gregorian
-
-    if ( y == 0 || y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 12 ) {
-        return false;
-    }
-
-    if ( month == 2 ) {
-        if ( isLeapYear( y ) ) {
-            return ( day >= 1 && day <= 29 );
-        } else {
-            return ( day >= 1 && day <= 28 );
-        }
-    }
-
-    if ( month == 4 || month == 6 || month == 9 || month == 11  ) {
-        return ( day >= 1 && day <= 30 );
-    }
-
-    return ( day >= 1 && day <= 31 );
-}
-
-bool KCalendarSystem::isValid( int y, int dayOfYear ) const
+bool KCalendarSystem::isValid( int year, int month, int day ) const
 {
     Q_D( const KCalendarSystem );
 
-    if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
+    if ( year < d->earliestValidYear() || year > d->latestValidYear() ||
+         ( !d->hasYearZero() && year == 0 ) ) {
         return false;
     }
 
-    if ( !d->hasYear0 && y == 0 ) {
+    if ( month < 1 || month > d->monthsInYear( year ) ) {
         return false;
     }
 
-    QDate testDate;
-    setDate( testDate, y, 1, 1 );
+    if ( day < 1 || day > d->daysInMonth( year, month ) ) {
+        return false;
+    }
 
-    return ( dayOfYear > 0 && isValid( testDate ) && dayOfYear <= daysInYear( testDate ) );
+    return true;
 }
 
-bool KCalendarSystem::isValidIsoWeekDate( int y, int isoWeekNumber, int dayOfIsoWeek ) const
+// NOT VIRTUAL - If override needed use shared-d
+bool KCalendarSystem::isValid( int year, int dayOfYear ) const
 {
+    Q_D( const KCalendarSystem );
+
+    return ( isValid( year, 1, 1 ) && dayOfYear > 0 && dayOfYear <= d->daysInYear( year ) );
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+bool KCalendarSystem::isValidIsoWeekDate( int year, int isoWeekNumber, int dayOfIsoWeek ) const
+{
+    Q_D( const KCalendarSystem );
+
     //Tests Year value in standard YMD isValid()
-    if ( !isValid( y, 1, 1 ) ) {
+    if ( !isValid( year, 1, 1 ) ) {
         return false;
     }
 
-    QDate firstDayOfYear;
-    setDate( firstDayOfYear, y, 1, 1 );
-
     //Test Week Number falls in valid range for this year
-    int weeksInThisYear = weeksInYear( y );
+    int weeksInThisYear = weeksInYear( year );
     if ( isoWeekNumber < 1 || isoWeekNumber  > weeksInThisYear ) {
         return false;
     }
 
     //Test Day of Week Number falls in valid range
-    if ( dayOfIsoWeek < 1 || dayOfIsoWeek > daysInWeek( firstDayOfYear ) ) {
+    if ( dayOfIsoWeek < 1 || dayOfIsoWeek > d->daysInWeek() ) {
         return false;
     }
 
     //If not in earliest or latest years then all OK
     //Otherwise need to check don't fall into previous or next year that would be invalid
-    if ( y == year( earliestValidDate() ) && isoWeekNumber == 1 ) {
+    if ( year == d->earliestValidYear() && isoWeekNumber == 1 ) {
         //If firstDayOfYear falls on or before Thursday then firstDayOfYear falls in week 1 this
         //year and if wanted dayOfIsoWeek falls before firstDayOfYear then falls in previous year
         //and so in invalid year
-        int dowFirstDay = dayOfWeek( firstDayOfYear );
+        int dowFirstDay = dayOfWeek( d->firstDayOfYear( year ) );
         if ( dowFirstDay <= 4 && dayOfIsoWeek < dowFirstDay ) {
             return false;
         }
-    } else if ( y == year( latestValidDate() ) && isoWeekNumber == weeksInThisYear ) {
+    } else if ( year == d->latestValidYear() && isoWeekNumber == weeksInThisYear ) {
         //If lastDayOfYear falls on or after Thursday then lastDayOfYear falls in last week this
         //year and if wanted dayOfIsoWeek falls after lastDayOfYear then falls in next year
         //and so in invalid year
-        QDate lastDayOfYear = addDays( firstDayOfYear, daysInYear( firstDayOfYear ) - 1 );
-        int dowLastDay = dayOfWeek( lastDayOfYear );
+        int dowLastDay = dayOfWeek( d->lastDayOfYear( year ) );
         if ( dowLastDay >= 4 && dayOfIsoWeek > dowLastDay ) {
             return false;
         }
@@ -364,6 +467,7 @@ bool KCalendarSystem::setDate( QDate &date, int year, int month, int day ) const
     return false;
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 bool KCalendarSystem::setDate( QDate &date, int year, int dayOfYear ) const
 {
     Q_D( const KCalendarSystem );
@@ -383,6 +487,7 @@ bool KCalendarSystem::setDate( QDate &date, int year, int dayOfYear ) const
     return false;
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 bool KCalendarSystem::setDateIsoWeek( QDate &date, int year, int isoWeekNumber, int dayOfIsoWeek ) const
 {
     Q_D( const KCalendarSystem );
@@ -391,11 +496,10 @@ bool KCalendarSystem::setDateIsoWeek( QDate &date, int year, int isoWeekNumber, 
 
     if ( isValidIsoWeekDate( year, isoWeekNumber, dayOfIsoWeek ) ) {
 
-        QDate calcDate;
-        setDate( calcDate, year, 1, 1 );
-
-        int daysToAdd = ( daysInWeek( calcDate ) * ( isoWeekNumber - 1 ) ) + dayOfIsoWeek;
+        QDate calcDate = d->firstDayOfYear( year );
         int dowFirstDayOfYear = dayOfWeek( calcDate );
+
+        int daysToAdd = ( d->daysInWeek() * ( isoWeekNumber - 1 ) ) + dayOfIsoWeek;
 
         if ( dowFirstDayOfYear <= 4 ) {
             calcDate = calcDate.addDays( daysToAdd - dowFirstDayOfYear );
@@ -416,6 +520,31 @@ bool KCalendarSystem::setDateIsoWeek( QDate &date, int year, int isoWeekNumber, 
 bool KCalendarSystem::setYMD( QDate &date, int year, int month, int day ) const
 {
     return setDate( date, year, month, day );
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+void KCalendarSystem::getDate( const QDate date, int *year, int *month, int *day ) const
+{
+    int y, m, d;
+
+    if ( isValid( date ) ) {
+        julianDayToDate( date.toJulianDay(), y, m, d );
+    } else {
+        y = 0;  // How do you denote invalid year when we support -ve years?
+        m = 0;
+        d = 0;
+    }
+
+    if ( year ) {
+        *year = y;
+    }
+    if ( month ) {
+        *month = m;
+    }
+    if ( day ) {
+        *day = d;
+    }
+
 }
 
 int KCalendarSystem::year( const QDate &date ) const
@@ -464,24 +593,21 @@ QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
     if ( isValid( date ) ) {
 
         int originalYear, originalMonth, originalDay;
-        int newYear, newMonth, newDay;
-        QDate firstOfNewMonth, newDate;
-
         julianDayToDate( date.toJulianDay(), originalYear, originalMonth, originalDay );
 
-        newYear = d->addYearNumber( originalYear, numYears );
-
-        newMonth = originalMonth;
+        int newYear = d->addYearNumber( originalYear, numYears );
+        int newMonth = originalMonth;
+        int newDay = originalDay;
 
         //Adjust day number if new month has fewer days than old month
-        if ( setDate( firstOfNewMonth, newYear, newMonth, 1 ) ) {
-            int daysInNewMonth = daysInMonth( firstOfNewMonth );
-            newDay = ( daysInNewMonth < originalDay ) ? daysInNewMonth : originalDay;
-
-            if ( setDate( newDate, newYear, newMonth, newDay ) ) {
-                return newDate;
-            }
+        int daysInNewMonth = d->daysInMonth( newYear, newMonth );
+        if ( daysInNewMonth < originalDay ) {
+            newDay = daysInNewMonth;
         }
+
+        QDate newDate;
+        setDate( newDate, newYear, newMonth, newDay );
+        return newDate;
 
     }
 
@@ -495,17 +621,13 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
     if ( isValid( date ) ) {
 
         int originalYear, originalMonth, originalDay;
-        int newYear, newMonth, newDay;
-        int monthsInOriginalYear, daysInNewMonth;
-        QDate firstOfNewMonth, newDate;
-
         julianDayToDate( date.toJulianDay(), originalYear, originalMonth, originalDay );
 
-        monthsInOriginalYear = monthsInYear( date );
+        int monthsInOriginalYear = d->monthsInYear( originalYear );
 
-        newYear = d->addYearNumber( originalYear, ( originalMonth + numMonths ) / monthsInOriginalYear );
-
-        newMonth = ( originalMonth + numMonths ) % monthsInOriginalYear;
+        int newYear = d->addYearNumber( originalYear, ( originalMonth + numMonths ) / monthsInOriginalYear );
+        int newMonth = ( originalMonth + numMonths ) % monthsInOriginalYear;
+        int newDay = originalDay;
 
         if ( newMonth == 0 ) {
             newYear = d->addYearNumber( newYear, - 1 );
@@ -517,14 +639,14 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
         }
 
         //Adjust day number if new month has fewer days than old month
-        if ( setDate( firstOfNewMonth, newYear, newMonth, 1 ) ) {
-            daysInNewMonth = daysInMonth( firstOfNewMonth );
-            newDay = ( daysInNewMonth < originalDay ) ? daysInNewMonth : originalDay;
-
-            if ( setDate( newDate, newYear, newMonth, newDay ) ) {
-                return newDate;
-            }
+        int daysInNewMonth = d->daysInMonth( newYear, newMonth );
+        if ( daysInNewMonth < originalDay ) {
+            newDay = daysInNewMonth;
         }
+
+        QDate newDate;
+        setDate( newDate, newYear, newMonth, newDay );
+        return newDate;
 
     }
 
@@ -551,14 +673,20 @@ int KCalendarSystem::monthsInYear( const QDate &date ) const
 {
     Q_D( const KCalendarSystem );
 
-    // Last day of this year = first day of next year minus 1 day
-    // Use setAnyDate() to allow correct calculation in last valid year
-
     if ( isValid( date ) ) {
-        QDate firstDayOfNextYear;
-        d->setAnyDate( firstDayOfNextYear, d->addYearNumber( year( date ), 1 ), 1, 1 );
-        QDate lastDayOfThisYear = addDays( firstDayOfNextYear, -1 );
-        return month( lastDayOfThisYear );
+        return d->monthsInYear( year( date ) );
+    }
+
+    return -1;
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::monthsInYear( int year ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( year, 1, 1 ) ) {
+        return d->monthsInYear( year );
     }
 
     return -1;
@@ -569,19 +697,18 @@ int KCalendarSystem::weeksInYear( const QDate &date ) const
     if ( isValid( date ) ) {
         return weeksInYear( year( date ) );
     }
+
     return -1;
 }
 
 // ISO compliant week numbering, not traditional number, rename in KDE5 to isoWeeksInYear()
 int KCalendarSystem::weeksInYear( int year ) const
 {
-    // Last day of this year = first day of this year plus days in this year minus 1 day
+    Q_D( const KCalendarSystem );
 
     if ( isValid( year, 1, 1 ) ) {
-        QDate firstDayOfThisYear;
-        setDate( firstDayOfThisYear, year, 1, 1);
-
-        QDate lastDayOfThisYear = addDays( firstDayOfThisYear, daysInYear( firstDayOfThisYear ) - 1 );
+        QDate firstDayOfThisYear = d->firstDayOfYear( year );
+        QDate lastDayOfThisYear = d->lastDayOfYear( year );
 
         int weekYear = year;
         int lastWeekInThisYear = weekNumber( lastDayOfThisYear, &weekYear );
@@ -602,16 +729,20 @@ int KCalendarSystem::daysInYear( const QDate &date ) const
 {
     Q_D( const KCalendarSystem );
 
-    // Days in year = jd of first day of next year minus jd of first day of this year
-    // Use setAnyDate() to allow correct calculation in last valid year
-
     if ( isValid( date ) ) {
-        QDate firstDayOfThisYear, firstDayOfNextYear;
+        return d->daysInYear( year( date ) );
+    }
 
-        setDate( firstDayOfThisYear, year( date ), 1, 1 );
-        d->setAnyDate( firstDayOfNextYear, d->addYearNumber( year( date ), 1 ), 1, 1 );
+    return -1;
+}
 
-        return ( firstDayOfNextYear.toJulianDay() - firstDayOfThisYear.toJulianDay() );
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::daysInYear( int year ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( year, 1, 1 ) ) {
+        return d->daysInYear( year );
     }
 
     return -1;
@@ -621,25 +752,20 @@ int KCalendarSystem::daysInMonth( const QDate &date ) const
 {
     Q_D( const KCalendarSystem );
 
-    // Days In Month = jd of first day of next month minus jd of first day of this month
-    // Use setAnyDate() to allow correct calculation in last valid year
-
     if ( isValid( date ) ) {
-        QDate firstDayOfThisMonth, firstDayOfNextMonth;
+        return d->daysInMonth( year( date ), month( date ) );
+    }
 
-        int thisYear = year( date );
-        int thisMonth = month( date );
+    return -1;
+}
 
-        setDate( firstDayOfThisMonth, thisYear, thisMonth, 1 );
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::daysInMonth( int year, int month ) const
+{
+    Q_D( const KCalendarSystem );
 
-        //check if next month falls in next year
-        if ( thisMonth < monthsInYear( date ) ) {
-            setDate( firstDayOfNextMonth, thisYear, thisMonth + 1, 1 );
-        } else {
-            d->setAnyDate( firstDayOfNextMonth, d->addYearNumber( thisYear, 1 ), 1, 1 );
-        }
-
-        return ( firstDayOfNextMonth.toJulianDay() - firstDayOfThisMonth.toJulianDay() );
+    if ( isValid( year, 1, 1 ) ) {
+        return d->daysInMonth( year, month );
     }
 
     return -1;
@@ -647,20 +773,18 @@ int KCalendarSystem::daysInMonth( const QDate &date ) const
 
 int KCalendarSystem::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    Q_UNUSED( date )
+    Q_D( const KCalendarSystem );
+    return d->daysInWeek();
 }
 
 int KCalendarSystem::dayOfYear( const QDate &date ) const
 {
     //Take the jd of the given date, and subtract the jd of the first day of that year
+    Q_D( const KCalendarSystem );
 
     if ( isValid( date ) ) {
-        QDate firstDayOfYear;
-
-        if ( setDate( firstDayOfYear, year( date ), 1, 1 ) ) {
-            return ( date.toJulianDay() - firstDayOfYear.toJulianDay() + 1 );
-        }
+        return ( date.toJulianDay() - d->firstDayOfYear( year( date ) ).toJulianDay() + 1 );
     }
 
     return -1;
@@ -672,8 +796,10 @@ int KCalendarSystem::dayOfWeek( const QDate &date ) const
     // This is true for Julian/Gregorian calendar with jd 0 being Monday
     // We add 1 for ISO compliant numbering for 7 day week
     // Assumes we've never skipped weekdays
+    Q_D( const KCalendarSystem );
+
     if ( isValid( date ) ) {
-        return ( ( date.toJulianDay() % daysInWeek( date ) ) + 1 );
+        return ( ( date.toJulianDay() % d->daysInWeek() ) + 1 );
     }
 
     return -1;
@@ -692,12 +818,12 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
         int weekDay1, dayOfWeek1InYear;
 
         // let's guess 1st day of 1st week
-        setDate( firstDayWeek1, y, 1, 1 );
+        firstDayWeek1 = d->firstDayOfYear( y );
         weekDay1 = dayOfWeek( firstDayWeek1 );
 
         // iso 8601: week 1  is the first containing thursday and week starts on monday
         if ( weekDay1 > 4 /*Thursday*/ ) {
-            firstDayWeek1 = addDays( firstDayWeek1 , daysInWeek( date ) - weekDay1 + 1 ); // next monday
+            firstDayWeek1 = addDays( firstDayWeek1 , d->daysInWeek() - weekDay1 + 1 ); // next monday
         }
 
         dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
@@ -711,10 +837,10 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
         }
 
         // let's check if its last week belongs to next year
-        d->setAnyDate( lastDayOfYear, d->addYearNumber( y, 1 ), 1, 1 );
-        lastDayOfYear = addDays( lastDayOfYear, -1 );
+        lastDayOfYear = d->lastDayOfYear( y );
+
         // if our date is in last week && 1st week in next year has thursday
-        if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )
+        if ( ( dayOfYear( date ) >= d->daysInYear( y ) - dayOfWeek( lastDayOfYear ) + 1 )
              && dayOfWeek( lastDayOfYear ) < 4 ) {
             if ( yearNum ) {
                 * yearNum = d->addYearNumber( y, 1 );
@@ -726,7 +852,7 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
                 firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1 ) );
             }
 
-            week = firstDayWeek1.daysTo( date ) / daysInWeek( date ) + 1;
+            week = firstDayWeek1.daysTo( date ) / d->daysInWeek() + 1;
         }
 
         return week;
@@ -735,38 +861,34 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
     return -1;
 }
 
-// This method MUST be reimplemented in any derived Calendar Systems
 bool KCalendarSystem::isLeapYear( int year ) const
 {
-    // Default to pure Gregorian
+    Q_D( const KCalendarSystem );
 
-    int y;
-
-    if ( year < 1 ) {
-        y = year + 1;
-    } else {
-        y = year;
+    if ( isValid( year, 1, 1 ) ) {
+        return d->isLeapYear( year );
     }
 
-    if ( y % 4 == 0 ) {
-        if ( y % 100 != 0 ) {
-            return true;
-        } else if ( y % 400 == 0 ) {
-            return true;
-        }
-    }
     return false;
 }
 
 bool KCalendarSystem::isLeapYear( const QDate &date ) const
 {
-    return isLeapYear( year( date ) );
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( date ) ) {
+        return d->isLeapYear( year( date ) );
+    }
+
+    return false;
 }
 
 QString KCalendarSystem::monthName( const QDate &date, MonthNameFormat format ) const
 {
     if ( isValid( date ) ) {
-        return monthName( month( date ), year( date ), format );
+        int year, month;
+        getDate( date, &year, &month, 0 );
+        return monthName( month, year, format );
     }
 
     return QString();
@@ -808,6 +930,7 @@ QString KCalendarSystem::dayString( const QDate &date, StringFormat format ) con
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::dayOfYearString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
@@ -817,11 +940,13 @@ QString KCalendarSystem::dayOfYearString( const QDate &date, StringFormat format
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::dayOfWeekString( const QDate &date ) const
 {
     return formatDate( date, "%-u" );
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::weekNumberString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
@@ -831,6 +956,7 @@ QString KCalendarSystem::weekNumberString( const QDate &date, StringFormat forma
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::monthsInYearString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
@@ -840,6 +966,7 @@ QString KCalendarSystem::monthsInYearString( const QDate &date, StringFormat for
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::weeksInYearString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
@@ -849,6 +976,7 @@ QString KCalendarSystem::weeksInYearString( const QDate &date, StringFormat form
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInYearString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
@@ -858,6 +986,7 @@ QString KCalendarSystem::daysInYearString( const QDate &date, StringFormat forma
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInMonthString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
@@ -867,9 +996,12 @@ QString KCalendarSystem::daysInMonthString( const QDate &date, StringFormat form
     }
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInWeekString( const QDate &date) const
 {
-    return QString::number( daysInWeek( date ) );
+    Q_D( const KCalendarSystem );
+    Q_UNUSED( date );
+    return QString::number( d->daysInWeek() );
 }
 
 int KCalendarSystem::yearStringToInteger( const QString &yearString, int &iLength ) const
@@ -933,17 +1065,19 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, KLocale::DateFormat 
 
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat,
                                      KLocale::DateTimeFormatStandard standard ) const
 {
     return formatDate( fromDate, toFormat, locale()->dateTimeDigitSet(), standard );
 }
 
+// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
                                      KLocale::DateTimeFormatStandard standard ) const
 {
     // Currently defaults to KLocale::KdeFormat, KDE 4.5 to support other standards (POSIX, Unicode)
-    Q_UNUSED( standard );
+    Q_UNUSED( standard )
 
     if ( !fromDate.isValid() ) {
         return QString();
@@ -1282,7 +1416,7 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
                 case 'A':
                     error = true;
                     j = 1;
-                    while ( error && j <= d->maxDaysInWeek ) {
+                    while ( error && j <= d->maxDaysInWeek() ) {
                         shortName = weekDayName( j, KCalendarSystem::ShortDayName ).toLower();
                         longName = weekDayName( j, KCalendarSystem::LongDayName ).toLower();
                         if ( str.mid( strpos, longName.length() ) == longName ) {
@@ -1300,7 +1434,7 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
                 case 'B':
                     error = true;
                     j = 1;
-                    while ( error && j <= d->maxMonthsInYear ) {
+                    while ( error && j <= d->maxMonthsInYear() ) {
                         //This may be a problem in calendar systems with variable number of months
                         //in the year and/or names of months that change depending on the year, e.g
                         //Hebrew.  We really need to know the correct year first, but we may not have
@@ -1393,39 +1527,73 @@ int KCalendarSystem::weekStartDay() const
     return locale()->weekStartDay();
 }
 
-// Fake version using QDate, each Calendar System MUST implement the correct version for themselves
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
 // The implementation MUST NOT do validity checking on date ranges, all calls to this function MUST
 // instead be wrapped in validity checks, as sometimes we want this to work outside the public valid
 // range, i.e. to allow us to internally set dates of 1/1/10000 which are not publically valid but
 // are required for internal maths
 bool KCalendarSystem::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
-    QDate date = QDate::fromJulianDay( jd );
+    // Formula from The Calendar FAQ by Claus Tondering
+    // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
+    // NOTE: Coded from scratch from mathematical formulas, not copied from
+    // the Boost licensed source code
 
-    if ( date.isValid() ) {
-        year = date.year();
-        month = date.month();
-        day = date.day();
+    int a = jd + 32044;
+    int b = ( ( 4 * a ) + 3 ) / 146097;
+    int c = a - ( ( 146097 * b ) / 4 );
+    int d = ( ( 4 * c ) + 3 ) / 1461;
+    int e = c - ( ( 1461 * d ) / 4 );
+    int m = ( ( 5 * e ) + 2 ) / 153;
+    day = e - ( ( (153 * m ) + 2 ) / 5 ) + 1;
+    month = m + 3 - ( 12 * ( m / 10 ) );
+    year = ( 100 * b ) + d - 4800 + ( m / 10 );
+
+    // If year is -ve then is BC.  In Gregorian there is no year 0, but the maths
+    // is easier if we pretend there is, so internally year of 0 = 1BC = -1 outside
+    if ( year < 1 ) {
+        year = year - 1;
     }
 
-    return date.isValid();
+    return true;
 }
 
-// Fake version using QDate, each Calendar System MUST implement the correct version for themselves
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
 // The implementation MUST NOT do validity checking on date ranges, all calls to this function MUST
 // instead be wrapped in validity checks, as sometimes we want this to work outside the public valid
 // range, i.e. to allow us to internally set dates of 1/1/10000 which are not publically valid but
 // are required for internal maths
 bool KCalendarSystem::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
-    QDate date;
+    // Formula from The Calendar FAQ by Claus Tondering
+    // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
+    // NOTE: Coded from scratch from mathematical formulas, not copied from
+    // the Boost licensed source code
 
-    if ( date.setDate( year, month, day ) ) {
-        jd = date.toJulianDay();
-        return true;
+    // If year is -ve then is BC.  In Gregorian there is no year 0, but the maths
+    // is easier if we pretend there is, so internally year of -1 = 1BC = 0 internally
+    int y;
+    if ( year < 1 ) {
+        y = year + 1;
+    } else {
+        y = year;
     }
 
-    return false;
+    int a = ( 14 - month ) / 12;
+    y = y + 4800 - a;
+    int m = month + ( 12 * a ) - 3;
+
+    jd = day
+         + ( ( ( 153 * m ) + 2 ) / 5 )
+         + ( 365 * y )
+         + ( y / 4 )
+         - ( y / 100 )
+         + ( y / 400 )
+         - 32045;
+
+    return true;
 }
 
 const KLocale * KCalendarSystem::locale() const
@@ -1439,20 +1607,20 @@ const KLocale * KCalendarSystem::locale() const
     return KGlobal::locale();
 }
 
+// Deprecated
 void KCalendarSystem::setMaxMonthsInYear( int maxMonths )
 {
-    Q_D( KCalendarSystem );
-    d->maxMonthsInYear = maxMonths;
+    Q_UNUSED( maxMonths )
 }
 
+// Deprecated
 void KCalendarSystem::setMaxDaysInWeek( int maxDays )
 {
-    Q_D( KCalendarSystem );
-    d->maxDaysInWeek = maxDays;
+    Q_UNUSED( maxDays )
 }
 
+// Deprecated
 void KCalendarSystem::setHasYear0( bool hasYear0 )
 {
-    Q_D( KCalendarSystem );
-    d->hasYear0 = hasYear0;
+    Q_UNUSED( hasYear0 )
 }

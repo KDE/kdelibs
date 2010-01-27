@@ -1,16 +1,14 @@
 /*
     Copyright (C) 2002-2003 Arash Bijanzadeh  and FarsiKDE Project <www.farsikde.org>
     Contact: Arash Bijanzadeh <a.bijanzadeh@linuxiran.org>
-    Copyright (c) 2007 John Layt <john@layt.net>
+    Copyright 2007, 2010 John Layt <john@layt.net>
 
-    This program is part of FarsiKDE
-
-    FarsiKDE is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
 
-    FarsiKDE is distributed in the hope that it will be useful,
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
@@ -19,7 +17,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
- */
+*/
 
 #ifndef KCALENDARSYSTEMJALALI_H
 #define KCALENDARSYSTEMJALALI_H

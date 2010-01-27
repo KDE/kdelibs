@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 John Layt <john@layt.net>
+    Copyright 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,7 +18,6 @@
 */
 
 #include "kcalendarsystemethiopian_p.h"
-#include "kcalendarsystemprivate_p.h"
 #include "kcalendarsystemcopticprivate_p.h"
 
 #include "kdebug.h"
@@ -27,10 +26,11 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
+//Reuse the Coptic private implementation
 class KCalendarSystemEthiopianPrivate : public KCalendarSystemCopticPrivate
 {
 public:
-    KCalendarSystemEthiopianPrivate( KCalendarSystemEthiopian *q ) : KCalendarSystemCopticPrivate( q )
+    explicit KCalendarSystemEthiopianPrivate( KCalendarSystemEthiopian *q ) : KCalendarSystemCopticPrivate( q )
     {
     }
 
@@ -43,16 +43,12 @@ KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KLocale * locale )
                          : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), locale ),
                            dont_use( 0 )
 {
-    setHasYear0(false);
-    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale * locale )
                      : KCalendarSystemCoptic( dd, locale ),
                        dont_use( 0 )
 {
-    setHasYear0(false);
-    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemEthiopian::~KCalendarSystemEthiopian()

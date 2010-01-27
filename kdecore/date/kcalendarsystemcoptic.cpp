@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 John Layt <john@layt.net>
+    Copyright 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,20 +27,100 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
+// Shared d pointer implementations
+
+KCalendarSystemCopticPrivate::KCalendarSystemCopticPrivate( KCalendarSystemCoptic *q )
+                             :KCalendarSystemPrivate( q )
+{
+}
+
+KCalendarSystemCopticPrivate::~KCalendarSystemCopticPrivate()
+{
+}
+
+int KCalendarSystemCopticPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 13;
+}
+
+int KCalendarSystemCopticPrivate::daysInMonth( int year, int month ) const
+{
+    if ( month == 13 ) {
+        if ( isLeapYear( year ) ) {
+            return 6;
+        } else {
+            return 5;
+        }
+    }
+
+    return 30;
+}
+
+int KCalendarSystemCopticPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 366;
+    } else {
+        return 365;
+    }
+}
+
+int KCalendarSystemCopticPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemCopticPrivate::isLeapYear( int year ) const
+{
+    //Uses same rule as Julian but offset by 1 year with year 3 being first leap year
+    if ( year < 1 ) {
+        year = year + 2;
+    } else {
+        year = year + 1;
+    }
+
+    if ( year % 4 == 0 ) {
+        return true;
+    }
+    return false;
+}
+
+bool KCalendarSystemCopticPrivate::hasYearZero() const
+{
+    return false;
+}
+
+int KCalendarSystemCopticPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemCopticPrivate::maxMonthsInYear() const
+{
+    return 13;
+}
+
+int KCalendarSystemCopticPrivate::earliestValidYear() const
+{
+    return 1;
+}
+
+int KCalendarSystemCopticPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale * locale )
                      : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), locale ),
                        dont_use( 0 )
 {
-    setHasYear0(false);
-    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KLocale * locale )
                      : KCalendarSystem( dd, locale ),
                        dont_use( 0 )
 {
-    setHasYear0(false);
-    setMaxMonthsInYear(13);
 }
 
 KCalendarSystemCoptic::~KCalendarSystemCoptic()
@@ -77,23 +157,7 @@ QDate KCalendarSystemCoptic::latestValidDate() const
 
 bool KCalendarSystemCoptic::isValid( int year, int month, int day ) const
 {
-    if ( year < 0 || year > 9999 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 13 ) {
-        return false;
-    }
-
-    if ( month == 13 ) {
-        if ( isLeapYear( year ) ) {
-            return ( day >= 1 && day <= 6 );
-        } else {
-            return ( day >= 1 && day <= 5 );
-        }
-    }
-
-    return ( day >= 1 && day <= 30 );
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemCoptic::isValid( const QDate &date ) const
@@ -144,8 +208,7 @@ QDate KCalendarSystemCoptic::addDays( const QDate &date, int ndays ) const
 
 int KCalendarSystemCoptic::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 13;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemCoptic::weeksInYear( const QDate &date ) const
@@ -160,40 +223,17 @@ int KCalendarSystemCoptic::weeksInYear( int year ) const
 
 int KCalendarSystemCoptic::daysInYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    if ( isLeapYear( date ) ) {
-        return 366;
-    } else {
-        return 365;
-    }
+    return KCalendarSystem::daysInYear( date );
 }
 
 int KCalendarSystemCoptic::daysInMonth( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    int m = month( date );
-
-    if ( m == 13 ) {
-        if ( isLeapYear( year( date ) ) ) {
-            return 6;
-        } else {
-            return 5;
-        }
-    }
-
-    return 30;
+    return KCalendarSystem::daysInMonth( date );
 }
 
 int KCalendarSystemCoptic::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemCoptic::dayOfYear( const QDate &date ) const
@@ -213,19 +253,7 @@ int KCalendarSystemCoptic::weekNumber( const QDate &date, int * yearNum ) const
 
 bool KCalendarSystemCoptic::isLeapYear( int year ) const
 {
-    //Uses same rule as Julian but offset by 1 year with year 3 being first leap year
-    int y;
-
-    if ( year < 1 ) {
-        y = year + 2;
-    } else {
-        y = year + 1;
-    }
-
-    if ( y % 4 == 0 ) {
-        return true;
-    }
-    return false;
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemCoptic::isLeapYear( const QDate &date ) const

@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 John Layt <john@layt.net>
+    Copyright 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,31 +30,118 @@
 class KCalendarSystemIndianNationalPrivate : public KCalendarSystemPrivate
 {
 public:
-    KCalendarSystemIndianNationalPrivate( KCalendarSystemIndianNational *q ) : KCalendarSystemPrivate( q )
-    {
-        gregorian = new KCalendarSystemGregorianProleptic();
-    }
+    explicit KCalendarSystemIndianNationalPrivate( KCalendarSystemIndianNational *q );
 
-    virtual ~KCalendarSystemIndianNationalPrivate()
-    {
-        delete gregorian;
-    }
+    virtual ~KCalendarSystemIndianNationalPrivate();
+
+    // Virtual methods each calendar system must re-implement
+    virtual int monthsInYear( int year ) const;
+    virtual int daysInMonth( int year, int month ) const;
+    virtual int daysInYear( int year ) const;
+    virtual int daysInWeek() const;
+    virtual bool isLeapYear( int year ) const;
+    virtual bool hasYearZero() const;
+    virtual int maxDaysInWeek() const;
+    virtual int maxMonthsInYear() const;
+    virtual int earliestValidYear() const;
+    virtual int latestValidYear() const;
 
     KCalendarSystemGregorianProleptic *gregorian;
 };
+
+// Shared d pointer base class definitions
+
+KCalendarSystemIndianNationalPrivate::KCalendarSystemIndianNationalPrivate( KCalendarSystemIndianNational *q )
+                                     :KCalendarSystemPrivate( q ),
+                                      gregorian( new KCalendarSystemGregorianProleptic )
+{
+}
+
+KCalendarSystemIndianNationalPrivate::~KCalendarSystemIndianNationalPrivate()
+{
+    delete gregorian;
+}
+
+int KCalendarSystemIndianNationalPrivate::monthsInYear( int year ) const
+{
+    Q_UNUSED( year )
+    return 12;
+}
+
+int KCalendarSystemIndianNationalPrivate::daysInMonth( int year, int month ) const
+{
+    if ( month == 1 ) {
+        if ( isLeapYear( year ) ) {
+            return 31;
+        } else {
+            return 30;
+        }
+    }
+
+    if ( month >= 2 || month <= 6  ) {
+        return 31;
+    }
+
+    return 30;
+}
+
+int KCalendarSystemIndianNationalPrivate::daysInYear( int year ) const
+{
+    if ( isLeapYear( year ) ) {
+        return 366;
+    } else {
+        return 365;
+    }
+}
+
+int KCalendarSystemIndianNationalPrivate::daysInWeek() const
+{
+    return 7;
+}
+
+bool KCalendarSystemIndianNationalPrivate::isLeapYear( int year ) const
+{
+    //Uses same rule as Gregorian, and is explicitly synchronized to Gregorian
+    //so add 78 years to get Gregorian year and call Gregorian implementation
+    return gregorian->isLeapYear( year + 78 );
+}
+
+bool KCalendarSystemIndianNationalPrivate::hasYearZero() const
+{
+    return true;
+}
+
+int KCalendarSystemIndianNationalPrivate::maxDaysInWeek() const
+{
+    return 7;
+}
+
+int KCalendarSystemIndianNationalPrivate::maxMonthsInYear() const
+{
+    return 12;
+}
+
+int KCalendarSystemIndianNationalPrivate::earliestValidYear() const
+{
+    return 0;
+}
+
+int KCalendarSystemIndianNationalPrivate::latestValidYear() const
+{
+    return 9999;
+}
+
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KLocale * locale )
                               : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), locale ),
                                 dont_use( 0 )
 {
-    setHasYear0(true);
 }
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemIndianNationalPrivate &dd, const KLocale * locale )
                               : KCalendarSystem( dd, locale ),
                                 dont_use( 0 )
 {
-    setHasYear0(true);
 }
 
 KCalendarSystemIndianNational::~KCalendarSystemIndianNational()
@@ -92,27 +179,7 @@ QDate KCalendarSystemIndianNational::latestValidDate() const
 
 bool KCalendarSystemIndianNational::isValid( int year, int month, int day ) const
 {
-    if ( year < 0 || year > 9999 ) {
-        return false;
-    }
-
-    if ( month < 1 || month > 12 ) {
-        return false;
-    }
-
-    if ( month == 1 ) {
-        if ( isLeapYear( year ) ) {
-            return ( day >= 1 && day <= 31 );
-        } else {
-            return ( day >= 1 && day <= 30 );
-        }
-    }
-
-    if ( month >= 2 || month <= 6  ) {
-        return ( day >= 1 && day <= 31 );
-    }
-
-    return ( day >= 1 && day <= 30 );
+    return KCalendarSystem::isValid( year, month, day );
 }
 
 bool KCalendarSystemIndianNational::isValid( const QDate &date ) const
@@ -163,8 +230,7 @@ QDate KCalendarSystemIndianNational::addDays( const QDate &date, int ndays ) con
 
 int KCalendarSystemIndianNational::monthsInYear( const QDate &date ) const
 {
-    Q_UNUSED( date )
-    return 12;
+    return KCalendarSystem::monthsInYear( date );
 }
 
 int KCalendarSystemIndianNational::weeksInYear( const QDate &date ) const
@@ -179,44 +245,17 @@ int KCalendarSystemIndianNational::weeksInYear( int year ) const
 
 int KCalendarSystemIndianNational::daysInYear( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    if ( isLeapYear( date ) ) {
-        return 366;
-    } else {
-        return 365;
-    }
+    return KCalendarSystem::daysInYear( date );
 }
 
 int KCalendarSystemIndianNational::daysInMonth( const QDate &date ) const
 {
-    if ( !isValid( date ) ) {
-        return -1;
-    }
-
-    int m = month( date );
-
-    if ( m == 1 ) {
-        if ( isLeapYear( year( date ) ) ) {
-            return 31;
-        } else {
-            return 30;
-        }
-    }
-
-    if ( m >= 2 || m <= 6  ) {
-        return 31;
-    }
-
-    return 30;
+    return KCalendarSystem::daysInMonth( date );
 }
 
 int KCalendarSystemIndianNational::daysInWeek( const QDate &date ) const
 {
-    Q_UNUSED( date );
-    return 7;
+    return KCalendarSystem::daysInWeek( date );
 }
 
 int KCalendarSystemIndianNational::dayOfYear( const QDate &date ) const
@@ -236,11 +275,7 @@ int KCalendarSystemIndianNational::weekNumber( const QDate &date, int * yearNum 
 
 bool KCalendarSystemIndianNational::isLeapYear( int year ) const
 {
-    Q_D( const KCalendarSystemIndianNational );
-
-    //Uses same rule as Gregorian, and is explicitly synchronized to Gregorian
-    //so add 78 years to get Gregorian year and call Gregorian implementation
-    return d->gregorian->isLeapYear( year + 78 );
+    return KCalendarSystem::isLeapYear( year );
 }
 
 bool KCalendarSystemIndianNational::isLeapYear( const QDate &date ) const

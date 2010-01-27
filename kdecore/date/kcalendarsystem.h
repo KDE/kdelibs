@@ -1,7 +1,7 @@
 /*
     Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
     Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
-    Copyright (c) 2007 John Layt <john@layt.net>
+    Copyright 2007, 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -259,6 +259,19 @@ public:
      */
     virtual bool setYMD( QDate &date, int y, int m, int d ) const;
 
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns the year, month and day portion of a given date in the current calendar system
+     *
+     * @param date date to get year, month and day for
+     * @param year year number returned in this variable
+     * @param month month number returned in this variable
+     * @param day day of month returned in this variable
+     */
+    void getDate( const QDate date, int *year, int *month, int *day ) const;
+
     /**
      * Returns the year portion of a given date in the current calendar system
      *
@@ -318,6 +331,17 @@ public:
      */
     virtual int monthsInYear( const QDate &date ) const;
 
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns number of months in the given year
+     *
+     * @param year the required year
+     * @return number of months in the year, -1 if input date invalid
+     */
+    int monthsInYear( int year ) const;
+
     /**
      * Returns the number of ISO weeks in the given year.
      *
@@ -345,6 +369,17 @@ public:
      */
     virtual int daysInYear( const QDate &date ) const;
 
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns the number of days in the given year.
+     *
+     * @param year the year
+     * @return number of days in year, -1 if input date invalid
+     */
+    int daysInYear( int year ) const;
+
     /**
      * Returns the number of days in the given month.
      *
@@ -352,6 +387,18 @@ public:
      * @return number of days in month, -1 if input date invalid
      */
     virtual int daysInMonth( const QDate &date ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns the number of days in the given month.
+     *
+     * @param year the year the month is in
+     * @param month the month
+     * @return number of days in month, -1 if input date invalid
+     */
+    int daysInMonth( int year, int month ) const;
 
     /**
      * Returns the number of days in the given week.
@@ -987,6 +1034,8 @@ protected:
     const KLocale *locale() const;
 
     /**
+     * @deprecated
+     *
      * Sets the maximum number of months in a year
      *
      * Only for internal calendar system use
@@ -994,6 +1043,8 @@ protected:
     void setMaxMonthsInYear( int maxMonths );
 
     /**
+     * @deprecated
+     *
      * Sets the maximum number of days in a week
      *
      * Only for internal calendar system use
@@ -1001,6 +1052,8 @@ protected:
     void setMaxDaysInWeek( int maxDays );
 
     /**
+     * @deprecated
+     *
      * @since 4.4
      *
      * Sets if Calendar System has Year 0 or not
