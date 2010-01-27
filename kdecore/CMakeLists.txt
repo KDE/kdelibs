@@ -14,8 +14,12 @@ configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/networ
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
 
+# This file handles all the logic for compiling KAuth's backends
 include(auth/ConfigureChecks.cmake)
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
+
+# Configure a small file to tell BackendsManager what to use
+configure_file(auth/BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
@@ -107,40 +111,10 @@ if (UNIX)
    )
 endif (UNIX)
 
-if (KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
-    message(STATUS "Building PolkitQt KAuth backend")
-
-    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-       auth/backends/policykit/PolicyKitBackend.cpp
-    )
-
-    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT_CORE_LIBRARY})
-elseif (KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
-    message(STATUS "Building PolkitQt-1 KAuth backend")
-
-    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-       auth/backends/polkit-1/Polkit1Backend.cpp
-    )
-
-    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${POLKITQT-1_CORE_LIBRARY})
-elseif (KDE4_AUTH_BACKEND_NAME STREQUAL "OSX")
-    message(STATUS "Building Apple KAuth backend")
-
-    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-       auth/backends/mac/AuthServicesBackend.cpp
-    )
-
-    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${SECURITY_LIBRARY})
-elseif (KDE4_AUTH_BACKEND_NAME STREQUAL "FAKE")
-    message(STATUS "Building Fake KAuth backend")
-    message("WARNING: KAuth will be built with Fake backend. The library will not work properly unless compiled with
-             a working backend")
-
-    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-       auth/backends/fake/FakeBackend.cpp
-    )
-endif ()
-
+# Add KAuth backend sources
+set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} ${KAUTH_BACKEND_SRCS} ${KAUTH_HELPER_BACKEND_SRCS})
+# Add KAuth backend libraries
+set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${KAUTH_BACKEND_LIBS})
 
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
@@ -163,11 +137,6 @@ endif (UNIX)
 
 
 ########### next target ###############
-
-qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
-                     auth/backends/dbus/org.kde.auth.xml
-                     auth/backends/dbus/DBusHelperProxy.h
-                     KAuth::DBusHelperProxy)
 
 set(kdecore_LIB_SRCS
    compression/kgzipfilter.cpp
@@ -222,8 +191,6 @@ set(kdecore_LIB_SRCS
    auth/BackendsManager.cpp
    auth/HelperProxy.cpp
    auth/kauthhelpersupport.cpp
-   auth/backends/dbus/DBusHelperProxy.cpp
-   ${kauth_dbus_adaptor_SRCS}
    services/kfoldermimetype.cpp
    services/kmimetypefactory.cpp
    services/kmimemagicrule.cpp
@@ -337,13 +304,6 @@ set(kdecore_LIB_SRCS
    ${kdecore_OPTIONAL_SRCS}
 )
 
-set_source_files_properties( auth/backends/policykit/PolicyKitBackend.cpp
-                             auth/backends/polkit-1/Polkit1Backend.cpp
-                             auth/backends/fake/FakeBackend.cpp
-                             auth/backends/mac/AuthServicesBackend.cpp
-                             auth/backends/dbus/DBusHelperProxy.cpp
-                             PROPERTIES COMPILE_FLAGS -DQT_STATICPLUGIN )
-
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
@@ -375,34 +335,12 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 ########### next target ###############
 
 # KAuth policy generator executable
-set(kauth_policy_gen_SRCS
-    auth/policy-gen/policy-gen.cpp )
 
-if(KDE4_AUTH_BACKEND_NAME STREQUAL "OSX")
-   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-       auth/backends/mac/kauth-policy-gen-mac.cpp )
-elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
-   set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-       auth/backends/policykit/kauth-policy-gen-polkit.cpp )
-elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
-  set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-      auth/backends/polkit-1/kauth-policy-gen-polkit1.cpp )
-else()
-    set(kauth_policy_gen_SRCS ${kauth_policy_gen_SRCS}
-       auth/backends/fake/kauth-policy-gen-polkit.cpp )
-endif()
+# KAUTH_POLICY_GEN_SRCS has been generated from auth/ConfigureChecks.cmake
+kde4_add_executable(kauth-policy-gen NOGUI ${KAUTH_POLICY_GEN_SRCS})
 
-kde4_add_executable(kauth-policy-gen NOGUI ${kauth_policy_gen_SRCS})
-
-
-set( KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY} )
-if (APPLE)
-  set( KAUTH_POLICY_GEN_LIBRARIES ${KAUTH_POLICY_GEN_LIBRARIES} ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
-endif (APPLE)
-
-
+# KAUTH_POLICY_GEN_LIBRARIES has been generated from auth/ConfigureChecks.cmake
 target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
-
 
 install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 
@@ -571,13 +509,6 @@ install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
-
-install( FILES auth/backends/dbus/org.kde.auth.conf
-         DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
-
-install( FILES auth/backends/dbus/dbus_policy.stub 
-               auth/backends/dbus/dbus_service.stub
-         DESTINATION ${DATA_INSTALL_DIR}/kauth COMPONENT Devel)
 
 install( FILES sonnet/backgroundchecker.h sonnet/speller.h sonnet/globals.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)

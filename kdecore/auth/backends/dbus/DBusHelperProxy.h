@@ -21,7 +21,6 @@
 #ifndef DBUS_HELPER_PROXY_H
 #define DBUS_HELPER_PROXY_H
 
-#include <QObject>
 #include <QVariant>
 #include "HelperProxy.h"
 #include "kauthactionreply.h"
@@ -49,7 +48,7 @@ class DBusHelperProxy : public HelperProxy
     };
 
 public:
-    DBusHelperProxy() : responder(NULL), m_stopRequest(false) {}
+    DBusHelperProxy() : responder(0), m_stopRequest(false) {}
 
     virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
     virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);

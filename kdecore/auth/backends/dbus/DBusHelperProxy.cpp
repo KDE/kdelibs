@@ -93,7 +93,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     QDataStream stream(&blob, QIODevice::WriteOnly);
 
     stream << arguments;
-    
+
     QDBusConnection::systemBus().interface()->startService(helperID);
 
     if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
@@ -117,9 +117,9 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     QDBusPendingCallWatcher watcher(pendingCall, this);
     connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
     e.exec();
-    
+
     QDBusMessage reply = pendingCall.reply();
-    
+
     if (reply.type() == QDBusMessage::ErrorMessage) {
         ActionReply r = ActionReply::DBusErrorReply;
         r.setErrorDescription(i18n("DBus Backend error: could not contact the helper. "
@@ -329,7 +329,3 @@ void debugMessageReceived(int t, const QString &message)
 }
 
 } // namespace Auth
-
-#ifndef KDE_USE_FINAL
-Q_EXPORT_PLUGIN2(helper_proxy, KAuth::DBusHelperProxy)
-#endif
