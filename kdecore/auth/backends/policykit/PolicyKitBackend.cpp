@@ -20,7 +20,6 @@
 
 #include "PolicyKitBackend.h"
 
-#include <QDebug>
 #include <syslog.h>
 #include <polkit-qt/context.h>
 #include <polkit-qt/auth.h>
@@ -99,5 +98,3 @@ void PolicyKitBackend::checkForResultChanged()
 }
 
 } // namespace Auth
-
-Q_EXPORT_PLUGIN2(auth_backend, KAuth::PolicyKitBackend)

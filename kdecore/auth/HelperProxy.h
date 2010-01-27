@@ -20,7 +20,6 @@
 #ifndef HELPER_PROXY_H
 #define HELPER_PROXY_H
 
-#include <QtPlugin>
 #include <QObject>
 #include <QMap>
 #include <QString>

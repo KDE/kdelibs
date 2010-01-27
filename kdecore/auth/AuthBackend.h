@@ -21,7 +21,6 @@
 #ifndef AUTH_BACKEND_H
 #define AUTH_BACKEND_H
 
-#include <QtPlugin>
 #include <QObject>
 
 #include "kauthaction.h"

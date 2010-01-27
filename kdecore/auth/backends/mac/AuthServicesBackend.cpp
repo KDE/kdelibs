@@ -120,5 +120,3 @@ bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray c
 }
 
 }; // namespace KAuth
-
-Q_EXPORT_PLUGIN2(auth_backend, KAuth::AuthServicesBackend);

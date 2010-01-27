@@ -106,5 +106,3 @@ void Polkit1Backend::checkForResultChanged()
 }
 
 } // namespace Auth
-
-Q_EXPORT_PLUGIN2(auth_backend, KAuth::Polkit1Backend)
