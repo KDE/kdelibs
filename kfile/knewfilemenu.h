@@ -80,6 +80,11 @@ public:
     void setSupportedMimeTypes(const QStringList& mime);
 
     /**
+     * Returns the mimetypes set in supportedMimeTypes()
+     */
+    QStringList supportedMimeTypes() const;
+
+    /**
      * Set if the directory view currently shows dot files.
      */
     void setViewShowsHiddenFiles(bool b);

@@ -126,7 +126,7 @@ public:
           m_viewShowsHiddenFiles(false),
           q(qq)
     {}
-    
+
     /**
      * Fills the menu from the templates list.
      */
@@ -157,7 +157,7 @@ public:
     KUrl::List m_popupFiles;
 
     QStringList m_supportedMimeTypes;
-    
+
     QString m_tempFileToDelete; // set when a tempfile was created for a Type=URL desktop file
 
     /**
@@ -340,10 +340,10 @@ void KNewFileMenuPrivate::fillMenu()
                     sep->setSeparator(true);
                     menu->addAction(sep);
                 } else {
-                    
+
                     if (!m_supportedMimeTypes.isEmpty()) {
                         bool keep = false;
-                        
+
                         // We need to do mimetype filtering, for real files.
                         const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
                         if (createSymlink) {
@@ -376,7 +376,7 @@ void KNewFileMenuPrivate::fillMenu()
                             continue;
                         }
                     }
-                    
+
                     QAction * act = new QAction(q);
                     act->setData(i);
                     act->setIcon(KIcon(entry.icon));
@@ -527,7 +527,7 @@ void KNewFileMenu::createDirectory()
                 url = baseUrl;
                 url.addPath( name );
             }
-            
+
             KIO::SimpleJob * job = KIO::mkdir(url);
             job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
             job->ui()->setWindow(d->m_parentWidget);
@@ -864,6 +864,11 @@ void KNewFileMenu::setViewShowsHiddenFiles(bool b)
 void KNewFileMenu::setSupportedMimeTypes(const QStringList& mime)
 {
     d->m_supportedMimeTypes = mime;
+}
+
+QStringList KNewFileMenu::supportedMimeTypes() const
+{
+    return d->m_supportedMimeTypes;
 }
 
 #include "knewfilemenu.moc"
