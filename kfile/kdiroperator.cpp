@@ -1278,6 +1278,16 @@ QStringList KDirOperator::mimeFilter() const
     return d->dirLister->mimeFilters();
 }
 
+void KDirOperator::setNewFileMenuSupportedMimeTypes(const QStringList& mimeTypes)
+{
+    d->newFileMenu->setSupportedMimeTypes(mimeTypes);
+}
+
+QStringList KDirOperator::newFileMenuSupportedMimeTypes() const
+{
+    return d->newFileMenu->supportedMimeTypes();
+}
+
 bool KDirOperator::checkPreviewSupport()
 {
     KToggleAction *previewAction = static_cast<KToggleAction*>(d->actionCollection->action("preview"));

@@ -182,6 +182,34 @@ public:
      * @returns the current mime filter.
      */
     QStringList mimeFilter() const;
+    
+    /**
+     * Only show the files in a given set of mimetypes.
+     * This is useful in specialized applications (while file managers, on
+     * the other hand, want to show all mimetypes). Internally uses 
+     * KNewFileMenu::setSupportedMimeTypes
+     * 
+     * Example:
+     * \code
+     * QStringList mimeTypes;
+     * mimeTypes << "text/html" << "inode/directory";
+     * dirOperator->setNewFileMenuSupportedMimeTypes(mimeTypes);
+     * \endcode
+     * 
+     * Note: If the list is empty, all options will be shown. Otherwise, 
+     * without the mimetype inode/directory, only file options will be shown.
+     *
+     * @see KNewFileMenu::setSupportedMimeTypes
+     * @see newFileMenuSupportedMimeTypes
+     * @since 4.5
+     */
+    void setNewFileMenuSupportedMimeTypes(const QStringList& mime);
+
+    /**
+     * @returns the current Supported Mimes Types.
+     * @since 4.5
+     */
+    QStringList newFileMenuSupportedMimeTypes() const;
 
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
