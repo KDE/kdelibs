@@ -1852,6 +1852,32 @@ bool RenderBlock::inlineChildNeedsLineBox(RenderObject* inlineObj) // WC: genera
 
     return !it.atEnd();
 }
+ 
+void RenderBlock::fitBelowFloats(int widthToFit, int& availableWidth)
+{
+    assert(widthToFit > availableWidth);
+
+    int floatBottom;
+    int lastFloatBottom = m_height;
+    int newLineWidth = availableWidth;
+    while (true) {
+        floatBottom = nearestFloatBottom(lastFloatBottom);
+        if (!floatBottom)
+            break;
+
+        newLineWidth = lineWidth(floatBottom);
+        lastFloatBottom = floatBottom;
+        if (newLineWidth >= widthToFit)
+            break;
+    }
+    if (newLineWidth > availableWidth) {
+        m_height = lastFloatBottom;
+        availableWidth = newLineWidth;
+#ifdef DEBUG_LINEBREAKS
+    kDebug(6041) << " new position at " << m_height << " newWidth " << availableWidth;
+#endif
+    }
+}
 
 BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi)
 {
@@ -2133,26 +2159,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifdef DEBUG_LINEBREAKS
                     kDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).toLatin1().constData() << "' adding " << tmpW << " new width = " << w;
 #endif
-                    if ( autoWrap && w + tmpW > width && w == 0 ) {
-                        int fb = nearestFloatBottom(m_height);
-                        int newLineWidth = lineWidth(fb);
-                        // See if |tmpW| will fit on the new line.  As long as it does not,
-                        // keep adjusting our float bottom until we find some room.
-                        int lastFloatBottom = m_height;
-                        while (lastFloatBottom < fb && tmpW > newLineWidth) {
-                            lastFloatBottom = fb;
-                            fb = nearestFloatBottom(fb);
-                            newLineWidth = lineWidth(fb);
-                        }
-
-                        if(!w && m_height < fb && width < newLineWidth) {
-                            m_height = fb;
-                            width = newLineWidth;
-#ifdef DEBUG_LINEBREAKS
-                            kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width;
-#endif
-                        }
-                    }
+                    if (!w && autoWrap && tmpW > width)
+                        fitBelowFloats(tmpW, width);
 
                     if (autoWrap) {
                         if (w+tmpW > width) {
@@ -2298,7 +2306,12 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                             }
                         }
 
-                        bool canPlaceOnLine = (w + tmpW <= width+1) || !autoWrap;
+                        bool willFitOnLine = (w + tmpW <= width);
+                        if (!willFitOnLine && !w) {
+                            fitBelowFloats(tmpW, width);
+                            willFitOnLine = tmpW <= width;
+                        }        
+                        bool canPlaceOnLine = willFitOnLine || !autoWrap;
                         if (canPlaceOnLine && checkForBreak) {
                             w += tmpW;
                             tmpW = 0;
@@ -2315,23 +2328,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 if (currentCharacterIsSpace && !ignoringSpaces && !lastIt.current->style()->preserveWS())
                     trailingSpaceObject = 0;
 
-                int fb = nearestFloatBottom(m_height);
-                int newLineWidth = lineWidth(fb);
-                // See if |tmpW| will fit on the new line.  As long as it does not,
-                // keep adjusting our float bottom until we find some room.
-                int lastFloatBottom = m_height;
-                while (lastFloatBottom < fb && tmpW > newLineWidth) {
-                    lastFloatBottom = fb;
-                    fb = nearestFloatBottom(fb);
-                    newLineWidth = lineWidth(fb);
-                }
-                if( !w && m_height < fb && width < newLineWidth ) {
-                    m_height = fb;
-                    width = newLineWidth;
-#ifdef DEBUG_LINEBREAKS
-                kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width;
-#endif
-                }
+                if (w)
+                    goto end;
+                fitBelowFloats(tmpW, width);
 
                 // |width| may have been adjusted because we got shoved down past a float (thus
                 // giving us more room), so we need to retest, and only jump to

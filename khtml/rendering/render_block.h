@@ -120,6 +120,7 @@ public:
 
     // the implementation of the following functions is in bidi.cpp
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end, BidiState &bidi );
+    void fitBelowFloats(int widthToFit, int& availableWidth);
     BidiIterator findNextLineBreak(BidiIterator &start, BidiState &info );
     RootInlineBox* constructLine(const BidiIterator& start, const BidiIterator& end);
     InlineFlowBox* createLineBoxes(RenderObject* obj);

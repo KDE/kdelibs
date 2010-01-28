@@ -35,6 +35,7 @@
 #include "render_block.h"
 
 #include <kdebug.h>
+#include <limits.h>
 #include "render_text.h"
 #include "render_table.h"
 #include "render_canvas.h"
@@ -2255,16 +2256,19 @@ RenderBlock::lineWidth(int y, bool *canClearLine) const
 int
 RenderBlock::nearestFloatBottom(int height) const
 {
-    if (!m_floatingObjects) return 0;
-    int bottom = 0;
+   if (!m_floatingObjects)
+        return 0;
+
+    int bottom = INT_MAX;
     FloatingObject* r;
     QListIterator<FloatingObject*> it(*m_floatingObjects);
-    while ( it.hasNext() ) {
+    while (it.hasNext()) {
         r = it.next();
-        if (r->endY>height && (r->endY<bottom || bottom==0))
-            bottom=r->endY;
+        if (r->endY > height)
+            bottom = qMin(r->endY, bottom);
     }
-    return qMax(bottom, height);
+
+    return bottom == INT_MAX ? 0 : bottom;
 }
 
 int RenderBlock::floatBottom() const
