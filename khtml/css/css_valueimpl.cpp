@@ -588,7 +588,8 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
         CSS_PROP_BACKGROUND_POSITION_X,
         CSS_PROP_BACKGROUND_POSITION_Y,
         CSS_PROP_BACKGROUND_REPEAT,
-        CSS_PROP__KHTML_BACKGROUND_SIZE
+        CSS_PROP__KHTML_BACKGROUND_SIZE,
+        CSS_PROP_BACKGROUND_SIZE
     };
     SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP_BACKGROUND, backgroundProperties);
 
@@ -608,13 +609,20 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
     SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP_OVERFLOW, overflowProperties);
 
     static const int borderRadiusProperties[] = {
+        CSS_PROP_BORDER_TOP_RIGHT_RADIUS,
+        CSS_PROP_BORDER_TOP_LEFT_RADIUS,
+        CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS,
+        CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS
+    };
+    SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP_BORDER_RADIUS, borderRadiusProperties);
+    static const int prefixedBorderRadiusProperties[] = {
         CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS,
         CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS,
         CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS,
         CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS
     };
-    SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP__KHTML_BORDER_RADIUS, borderRadiusProperties);
-    
+    SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP__KHTML_BORDER_RADIUS, prefixedBorderRadiusProperties);
+                                                
     static const int markerProperties[] = {
         CSS_PROP_MARKER_START, 
         CSS_PROP_MARKER_MID,
