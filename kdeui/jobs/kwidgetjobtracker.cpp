@@ -585,6 +585,7 @@ void KWidgetJobTracker::Private::ProgressWidget::setDestVisible(bool visible)
         destInvite->setText( QString() );
         destEdit->setText( QString() );
     }
+    setMaximumHeight(sizeHint().height());
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &dest)
@@ -603,6 +604,7 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
         openFile->show();
         openLocation->show();
         keepOpenCheck->show();
+        setMaximumHeight(sizeHint().height());
         location=dest;
     }
 }
@@ -662,7 +664,7 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_arrowToggled()
         arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
         arrowState = Qt::DownArrow;
     }
-
+    setMaximumHeight(sizeHint().height());
 }
 
 #include "kwidgetjobtracker.moc"
