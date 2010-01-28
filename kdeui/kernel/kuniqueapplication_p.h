@@ -42,10 +42,6 @@ public:
    static bool s_nofork;
    static bool s_multipleInstances;
    static bool s_handleAutoStarted;
-
-#ifdef Q_WS_WIN
-   static QString s_dbusServiceName;
-#endif
 };
 
 class KUniqueApplicationAdaptor: public QDBusAbstractAdaptor
