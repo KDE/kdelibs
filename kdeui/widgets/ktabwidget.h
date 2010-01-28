@@ -210,6 +210,10 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * you from which index to which index a tab has been moved.
      *
      * @deprecated Use QTabWidget::setMovable() instead.
+     *
+     * Note, however, that QTabWidget::setMovable(true) disables
+     * dragging tabs out of the KTabBar (e.g., dragging the tab
+     * URL from Konqueror to another application)!
      */
     QT_MOC_COMPAT void setTabReorderingEnabled( bool enable );
 
