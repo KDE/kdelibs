@@ -88,7 +88,12 @@ using namespace DOM;
     {
         KHTMLProxyStyle(QWidget *parent)
             : KdeUiProxyStyle(parent)
-        { noBorder = false; left = right = top = bottom = 0; m_proxy = qobject_cast<KdeUiProxyStyle*>(parent->style()); }
+        {
+            noBorder = false;
+            left = right = top = bottom = 0;
+            m_proxy = qobject_cast<KdeUiProxyStyle*>(parent->style());
+            setParent(parent);
+        }
 
         QStyle* proxy() const { return m_proxy ? m_proxy : style(); }
 
@@ -178,11 +183,7 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
 }
 
 RenderFormElement::~RenderFormElement()
-{
-    if (widget())
-        widget()->setStyle(0);
-    delete m_proxyStyle;
-}
+{}
 
 void RenderFormElement::setStyle(RenderStyle *style)
 {
@@ -253,6 +254,10 @@ short RenderFormElement::baselinePosition( bool f ) const
 
 void RenderFormElement::setQWidget( QWidget *w )
 {
+    // Avoid dangling proxy pointer when we switch widgets.
+    // the widget will cleanup the proxy, as it is its kid.
+    m_proxyStyle = 0;
+
     // sets the Qt Object Name for the purposes
     // of setPadding() -- this is because QStyleSheet
     // will propagate children of 'w' even if they are toplevel, like
@@ -514,7 +519,7 @@ void RenderSubmitButton::setPadding()
     if (!includesPadding())
         return;
 
-    if (!RenderWidget::paddingLeft() && !RenderWidget::paddingRight() && 
+    if (!RenderWidget::paddingLeft() && !RenderWidget::paddingRight() &&
         !RenderWidget::paddingTop() && !RenderWidget::paddingBottom()) {
         setStyleSheet_helper( (shouldDisableNativeBorders() ? sBorderNoneSheet : QString()), widget() );
         return;
@@ -1051,7 +1056,7 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
         QList<QWidget *> wl = qFindChildren<QWidget *>(m_widget, QString());
         foreach (QWidget* w, wl)
             if (!w->isWindow()) {
-                // this duplicates KHTMLView's handleWidget but this widget 
+                // this duplicates KHTMLView's handleWidget but this widget
                 // is created on demand, so it might not be here at ChildPolished time
                 w->setObjectName("KHTMLLineEditButton");
                 w->installEventFilter(view());
