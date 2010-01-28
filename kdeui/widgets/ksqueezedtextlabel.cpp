@@ -41,21 +41,21 @@ public:
     Qt::TextElideMode elideMode;
 };
 
-KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent )
- : QLabel ( parent ),
-  d( new KSqueezedTextLabelPrivate )
+KSqueezedTextLabel::KSqueezedTextLabel(const QString &text , QWidget *parent)
+ : QLabel (parent),
+  d(new KSqueezedTextLabelPrivate)
 {
-  setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
+  setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   d->fullText = text;
   d->elideMode = Qt::ElideMiddle;
   squeezeTextToLabel();
 }
 
-KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent )
- : QLabel ( parent ),
-  d( new KSqueezedTextLabelPrivate )
+KSqueezedTextLabel::KSqueezedTextLabel(QWidget *parent)
+ : QLabel (parent),
+  d(new KSqueezedTextLabelPrivate)
 {
-  setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
+  setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   d->elideMode = Qt::ElideMiddle;
 }
 
@@ -64,7 +64,8 @@ KSqueezedTextLabel::~KSqueezedTextLabel()
   delete d;
 }
 
-void KSqueezedTextLabel::resizeEvent( QResizeEvent * ) {
+void KSqueezedTextLabel::resizeEvent(QResizeEvent *)
+{
   squeezeTextToLabel();
 }
 
@@ -77,7 +78,7 @@ QSize KSqueezedTextLabel::minimumSizeHint() const
 
 QSize KSqueezedTextLabel::sizeHint() const
 {
-  int maxWidth = KGlobalSettings::desktopGeometry( this ).width() * 3 / 4;
+  int maxWidth = KGlobalSettings::desktopGeometry(this).width() * 3 / 4;
   QFontMetrics fm(fontMetrics());
   int textWidth = fm.width(d->fullText);
   if (textWidth > maxWidth) {
@@ -86,17 +87,20 @@ QSize KSqueezedTextLabel::sizeHint() const
   return QSize(textWidth, QLabel::sizeHint().height());
 }
 
-void KSqueezedTextLabel::setText( const QString &text ) {
+void KSqueezedTextLabel::setText(const QString &text)
+{
   d->fullText = text;
   squeezeTextToLabel();
 }
 
-void KSqueezedTextLabel::clear() {
+void KSqueezedTextLabel::clear()
+{
   d->fullText.clear();
   QLabel::clear();
 }
 
-void KSqueezedTextLabel::squeezeTextToLabel() {
+void KSqueezedTextLabel::squeezeTextToLabel()
+{
   QFontMetrics fm(fontMetrics());
   int labelWidth = size().width();
   QStringList squeezedLines;
@@ -116,11 +120,11 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
     setToolTip(d->fullText);
   } else {
     QLabel::setText(d->fullText);
-    setToolTip( QString() );
+    setToolTip(QString());
   }
 }
 
-void KSqueezedTextLabel::setAlignment( Qt::Alignment alignment )
+void KSqueezedTextLabel::setAlignment(Qt::Alignment alignment)
 {
   // save fullText and restore it
   QString tmpFull(d->fullText);
