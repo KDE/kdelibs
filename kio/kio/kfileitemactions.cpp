@@ -426,7 +426,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 // static
 KService::List KFileItemActions::associatedApplications(const QStringList& mimeTypeList, const QString& traderConstraint)
 {
-    if (!KAuthorized::authorizeKAction("openwith")) {
+    if (!KAuthorized::authorizeKAction("openwith") || mimeTypeList.isEmpty()) {
         return KService::List();
     }
 
@@ -435,7 +435,6 @@ KService::List KFileItemActions::associatedApplications(const QStringList& mimeT
 
     QStringList::ConstIterator it = mimeTypeList.constBegin();
     const QStringList::ConstIterator end = mimeTypeList.constEnd();
-    Q_ASSERT(it != end);
     QString firstMimeType = *it;
     ++it;
     for (; it != end ; ++it) {
