@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     options.add("exec-prefix", ki18n("Compiled in exec_prefix for KDE libraries"));
     options.add("libsuffix",   ki18n("Compiled in library path suffix"));
     options.add("localprefix", ki18n("Prefix in $HOME used to write files"));
-    options.add("version",     ki18n("Compiled in version string for KDE libraries"));
+    options.add("kde-version", ki18n("Compiled in version string for KDE libraries"));
     options.add("types",       ki18n("Available KDE resource types"));
     options.add("path type",       ki18n("Search path for resource type"));
     options.add("locate filename", ki18n("Find filename inside the resource type given to --path"));
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    if (args->isSet("version"))
+    if (args->isSet("kde-version"))
     {
         printf("%s\n", KDE_VERSION_STRING);
         return 0;
