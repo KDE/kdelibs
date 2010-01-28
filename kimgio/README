@@ -15,4 +15,5 @@ PCX	<read> <write>
 SGI	<read> <write>   (images/x-rgb: *.bw, *.rgb, *.rgba, *.sgi)
 DDS	<read>
 XCF	<read>
+RAS     <read> (images/x-sun-raster: *.ras, *.sun, *.im1, *.im8, *.im8g...)
 

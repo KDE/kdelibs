@@ -11,3 +11,4 @@ Allen Barnett <allen@lignumcomputing.com> -- XCF format read support (qimgio)
 Ignacio Castaño <castano@ludicon.com> -- DDS and PDS format reader.
 Christoph Hormann <chris_hormann@gmx.de> -- HDR format read support.
 Michael Ritzert <kde@ritzert.de> -- JPEG 2000 format read/write support
+Troy Unrau <troy@kde.org> -- Sun RASter read support
