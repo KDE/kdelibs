@@ -49,6 +49,14 @@ install(TARGETS kimg_tga  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats
 
 ##################################
 
+set(kimg_ras_LIB_SRCS ras.cpp)
+kde4_add_plugin(kimg_ras ${kimg_ras_LIB_SRCS})
+target_link_libraries(kimg_ras  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
+
+install(TARGETS kimg_ras  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+
+##################################
+
 set(kimg_rgb_LIB_SRCS rgb.cpp)
 kde4_add_plugin(kimg_rgb ${kimg_rgb_LIB_SRCS})
 target_link_libraries(kimg_rgb  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
@@ -130,6 +138,7 @@ install( FILES
   gif.desktop
   pcx.desktop
   tga.desktop
+  ras.desktop
   rgb.desktop
   xcf.desktop
   dds.desktop
