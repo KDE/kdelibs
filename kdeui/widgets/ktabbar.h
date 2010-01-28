@@ -51,9 +51,13 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
     /**
      * Sets the tab reordering enabled or disabled. If enabled,
      * the user can reorder the tabs by drag and drop the tab
-     * headers.
+     * headers with the middle mouse button.
      *
      * @deprecated Use QTabBar::setMovable() instead.
+     *
+     * Note, however, that QTabBar::setMovable(true) disables
+     * dragging tabs out of the KTabBar (e.g., dragging the tab
+     * URL from Konqueror to another application)!
      */
     KDE_DEPRECATED void setTabReorderingEnabled( bool enable );
 
@@ -165,8 +169,11 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
     void initiateDrag( int );
     void testCanDecode( const QDragMoveEvent*, bool& );
     void receivedDropEvent( int, QDropEvent* );
-    /** @deprecated Use QTabBar::tabMoved(int,int) instead.*/
-    QT_MOC_COMPAT void moveTab( int, int );
+    /**
+     * Used internally by KTabBar's/KTabWidget's middle-click tab moving mechanism.
+     * Tells the KTabWidget which owns the KTabBar to move a tab.
+     */
+    void moveTab( int, int );
     /** @deprecated Use QTabBar::tabCloseRequested(int) instead. */
     QT_MOC_COMPAT void closeRequest( int );
 #ifndef QT_NO_WHEELEVENT

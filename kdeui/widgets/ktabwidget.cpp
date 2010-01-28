@@ -234,7 +234,7 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   connect(tabBar(), SIGNAL(initiateDrag( int )), SLOT(initiateDrag( int )));
   connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
   connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
-  connect(tabBar(), SIGNAL(tabMoved( int, int )), SLOT(moveTab( int, int )));
+  connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
   connect(tabBar(), SIGNAL(tabCloseRequested( int )), SLOT(closeRequest( int )));
 #ifndef QT_NO_WHEELEVENT
   connect(tabBar(), SIGNAL(wheelDelta( int )), SLOT(wheelDelta( int )));

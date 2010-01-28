@@ -22,6 +22,7 @@
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <ktabwidget.h>
+#include <QTabBar>
 
 class KTabWidget_UnitTest : public QObject
 {
@@ -105,6 +106,8 @@ private Q_SLOTS:
          QVERIFY(w.isTabBarHidden());
      }
 
+     void testMiddleClickTabReordering();
+
 private Q_SLOTS:
     void slotCurrentChanged(int index)
     {
@@ -114,6 +117,52 @@ private Q_SLOTS:
         QCOMPARE(w->tabText(0), QString("First post!"));
     }
 };
+
+// TabWidgetTabRect is a tab widget that provides access to the tab bar.
+// This is needed for the following unit test.
+
+class MyTabWidget : public KTabWidget {
+
+public:
+    QTabBar* getTabBar() const {
+        return tabBar();
+    }
+};
+
+void KTabWidget_UnitTest::testMiddleClickTabReordering()
+{
+    MyTabWidget tabWidget;
+    tabWidget.setTabReorderingEnabled(true);
+
+    QWidget* w0 = new QWidget;
+    QWidget* w1 = new QWidget;
+    tabWidget.insertTab(0, w0, "Tab 0");
+    tabWidget.insertTab(1, w1, "Tab 1");
+    tabWidget.show();
+
+    QPoint pos0 = tabWidget.getTabBar()->tabRect(0).center();
+    QPoint pos1 = tabWidget.getTabBar()->tabRect(1).center();
+
+    // Press MMB
+    QTest::mousePress(tabWidget.getTabBar(), Qt::MidButton, Qt::NoModifier, pos0);
+
+    // We need a first move event on tab 0 to initialize tab moving
+    QMouseEvent moveEvent(QEvent::MouseMove, pos0, Qt::NoButton, Qt::MidButton, Qt::NoModifier);
+    bool moveEventReceived = qApp->notify(tabWidget.getTabBar(), &moveEvent);
+    QVERIFY(moveEventReceived);
+
+    // Move tab 0 to tab 1
+    moveEvent = QMouseEvent(QEvent::MouseMove, pos1, Qt::NoButton, Qt::MidButton, Qt::NoModifier);
+    moveEventReceived = qApp->notify(tabWidget.getTabBar(), &moveEvent);
+    QVERIFY(moveEventReceived);
+
+    QCOMPARE(tabWidget.tabText(0), QString("Tab 1"));
+    QCOMPARE(tabWidget.tabText(1), QString("Tab 0"));
+    QCOMPARE(tabWidget.widget(0), w1);
+    QCOMPARE(tabWidget.widget(1), w0);
+
+    QTest::mouseRelease(tabWidget.getTabBar(), Qt::MidButton, Qt::NoModifier, pos1);
+}
 
 QTEST_KDEMAIN(KTabWidget_UnitTest, GUI)
 
