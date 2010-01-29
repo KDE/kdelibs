@@ -22,7 +22,7 @@
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <ktabwidget.h>
-#include <QTabBar>
+#include <QtGui/QTabBar>
 
 class KTabWidget_UnitTest : public QObject
 {
