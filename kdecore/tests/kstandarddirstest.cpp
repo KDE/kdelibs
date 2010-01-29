@@ -312,6 +312,8 @@ void KStandarddirsTest::testSetXdgDataDirs()
     // By default we should have KDEDIR/share/applications in `kde4-config --path xdgdata-apps`
     const QStringList dirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
     const QString kdeDataApps = KStandardDirs::realPath(KDEDIR "/share/applications/");
+    if (!dirs.contains(kdeDataApps))
+        kDebug() << kdeDataApps << "not in" << dirs;
     QVERIFY(dirs.contains(kdeDataApps));
 
     // When setting XDG_DATA_DIR this should still be true
