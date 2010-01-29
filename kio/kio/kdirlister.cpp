@@ -1180,6 +1180,12 @@ void KDirListerCache::slotResult( KJob *j )
   DirectoryDataHash::iterator dit = directoryData.find(jobUrlStr);
   Q_ASSERT(dit != directoryData.end());
   KDirListerCacheDirectoryData& dirData = *dit;
+  if ( dirData.listersCurrentlyListing.isEmpty() ) {
+    // We're about to assert; dump the current state...
+#ifndef NDEBUG
+    printDebug();
+#endif
+  }
   Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
   QList<KDirLister *> listers = dirData.listersCurrentlyListing;
 
