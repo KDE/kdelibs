@@ -39,10 +39,8 @@ namespace Nepomuk {
 
     class ResourceManagerPrivate;
 
-    class ResourceData : public QObject
+    class ResourceData
     {
-        Q_OBJECT
-
     public:
         explicit ResourceData( const QUrl& uri, const QString& kickoffId_, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
@@ -157,6 +155,8 @@ namespace Nepomuk {
         QDebug operator<<( QDebug dbg ) const;
 
         ResourceManagerPrivate* rm() const { return m_rm; }
+
+        ResourceData* proxy() const { return m_proxyData; }
 
     private:
         bool constHasType( const QUrl& type ) const;

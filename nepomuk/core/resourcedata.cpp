@@ -91,7 +91,8 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
 
     m_types << m_mainType;
 
-    m_rm->cleanupCache();
+    if( m_rm->dataCacheFull() )
+        m_rm->cleanupCache();
 
     ++m_rm->dataCnt;
 }
@@ -168,7 +169,9 @@ void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
 void Nepomuk::ResourceData::resetAll()
 {
     // reset proxy
+    bool hadProxy = false;
     if( m_proxyData ) {
+        hadProxy = true;
         if( !m_proxyData->deref() &&
             rm()->dataCacheFull() )
             m_proxyData->deleteData();
@@ -177,7 +180,7 @@ void Nepomuk::ResourceData::resetAll()
 
     // remove us from all caches (store() will re-insert us later if necessary)
     m_rm->mutex.lock();
-    if( !m_uri.isEmpty() )
+    if( !m_uri.isEmpty() && !hadProxy ) // if we had a proxy we were not in m_initializedData ourselves
         m_rm->m_initializedData.remove( m_uri );
     if( !m_kickoffUri.isEmpty() )
         m_rm->m_uriKickoffData.remove( m_kickoffUri );
@@ -199,7 +202,7 @@ void Nepomuk::ResourceData::resetAll()
 void Nepomuk::ResourceData::deleteData()
 {
     resetAll();
-    deleteLater();
+    delete this;
 }
 
 
@@ -303,6 +306,13 @@ bool Nepomuk::ResourceData::store()
         // create a random URI and add us to the initialized data, i.e. make us "valid"
         m_uri = m_rm->m_manager->generateUniqueUri( QString() );
         m_rm->m_initializedData.insert( m_uri, this );
+
+        // each initialized resource has to be in a kickoff list
+        // thus, we make sure that is the case.
+        if( m_kickoffUri.isEmpty() && m_kickoffId.isEmpty() ) {
+            m_kickoffUri = m_uri;
+            m_rm->m_uriKickoffData.insert( m_uri, this );
+        }
     }
 
     QList<Statement> statements;
@@ -661,6 +671,8 @@ bool Nepomuk::ResourceData::determineUri()
                     // the filex:/ URL. Since that is quite some work which involved Solid and, thus,
                     // DBus calls we simply call the removable storage service directly.
                     //
+                    // If there is no resource yet we create a new uri in store()
+                    //
                     KUrl resourceUri = QDBusReply<QString>( QDBusInterface(QLatin1String("org.kde.nepomuk.services.nepomukremovablestorageservice"),
                                                                            QLatin1String("/nepomukremovablestorageservice"),
                                                                            QLatin1String("org.kde.nepomuk.RemovableStorage"),
@@ -780,5 +792,3 @@ QDebug operator<<( QDebug dbg, const Nepomuk::ResourceData& data )
 {
     return data.operator<<( dbg );
 }
-
-#include "resourcedata.moc"

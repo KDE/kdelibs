@@ -41,7 +41,7 @@ namespace Nepomuk {
     class MainModel;
     class ResourceFilterModel;
 
-    typedef QHash<QUrl, Nepomuk::ResourceData*> ResourceDataHash;
+    typedef QHash<KUrl, Nepomuk::ResourceData*> ResourceDataHash;
     typedef QHash<QString, Nepomuk::ResourceData*> KickoffDataHash;
 
     class ResourceManagerPrivate

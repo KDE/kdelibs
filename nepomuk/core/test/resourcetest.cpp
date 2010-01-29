@@ -293,6 +293,11 @@ void ResourceTest::testLocalFileUrls()
         QCOMPARE( fileRes.resourceUri(), fileRes3.resourceUri() );
 
         tmpFile1ResUri = fileRes.resourceUri();
+
+        // make sure even the string constructor will find the resource again with
+        Resource fileRes4( KUrl(tmpFile1ResUri).url() );
+        fileRes4.setRating(4);
+        QCOMPARE( fileRes4.resourceUri(), tmpFile1ResUri );
     }
 
     // clear cache to be sure we call ResourceData::determineUri
@@ -338,8 +343,6 @@ void ResourceTest::testLocalFileUrls()
 
     // clear cache to be sure we do not reuse the cache
     ResourceManager::instance()->clearCache();
-
-
 }
 
 QTEST_KDEMAIN(ResourceTest, NoGUI)
