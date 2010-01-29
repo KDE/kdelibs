@@ -1106,7 +1106,11 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
         return;
     }
     KDirListerCacheDirectoryData& dirData = *dit;
-    Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
+    if (dirData.listersCurrentlyListing.isEmpty()) {
+        kError(7004) << "Internal error: job is listing" << url << "but directoryData says no listers are currently listing " << urlStr;
+        Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
+        return;
+    }
 
     // check if anyone wants the mimetypes immediately
     bool delayedMimeTypes = true;
