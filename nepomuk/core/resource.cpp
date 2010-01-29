@@ -114,7 +114,15 @@ Nepomuk::Resource::~Resource()
 {
     if ( m_data ) {
         if ( !m_data->deref() ) {
-            if ( !m_data->isValid() || m_data->rm()->dataCacheFull() ) {
+            //
+            // We delete data objects in one of three cases:
+            // 1. They are not valid and as such not in one of the ResourceManagerPrivate kickoff lists
+            // 2. They have a proxy which is the actual thing to reuse later on
+            // 3. The cache is already full and we need to clean up
+            //
+            if ( !m_data->isValid() ||
+                 m_data->proxy() ||
+                 m_data->rm()->dataCacheFull() ) {
                 m_data->deleteData();
             }
         }
