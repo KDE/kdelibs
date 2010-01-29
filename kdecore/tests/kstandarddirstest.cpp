@@ -220,7 +220,13 @@ void KStandarddirsTest::testFindExe()
     // findExe with relative path
     const QString pwd = QDir::currentPath();
     QDir::setCurrent("/bin");
-    QCOMPARE(KGlobal::dirs()->findExe("./sh"), QString::fromLatin1("/bin/sh"));
+    QStringList possibleResults;
+    possibleResults << QString::fromLatin1("/bin/sh") << QString::fromLatin1("/usr/bin/sh");
+    const QString sh = KGlobal::dirs()->findExe("./sh");
+    if (!possibleResults.contains(sh)) {
+        kDebug() << sh;
+    }
+    QVERIFY(possibleResults.contains(sh));
     QDir::setCurrent(pwd);
 #endif
 
