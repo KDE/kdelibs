@@ -494,8 +494,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
             execpath = exec;
         }
     }
+#ifndef NDEBUG
     fprintf(stderr,"kdeinit4: preparing to launch %s\n", libpath.isEmpty()
         ? execpath.constData() : libpath.toUtf8().constData());
+#endif
     if (!args) {
         argc = 1;
     }
