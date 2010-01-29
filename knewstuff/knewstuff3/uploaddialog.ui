@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>454</height>
+    <width>442</width>
+    <height>469</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,8 +94,14 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
-         <string>Name:</string>
+         <string>Title:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -106,7 +112,14 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="KLineEdit" name="mNameEdit"/>
+       <widget class="KLineEdit" name="mNameEdit">
+        <property name="toolTip">
+         <string>Name of the file as it will appear on the website</string>
+        </property>
+        <property name="whatsThis">
+         <string>This should clearly describe the file content. It can be the same text than the Title of the kvtml file.</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_5">
@@ -255,7 +268,7 @@
       <number>0</number>
      </property>
      <property name="value">
-      <number>120251</number>
+      <number>127169</number>
      </property>
     </widget>
    </item>
