@@ -954,7 +954,7 @@ void TransferJob::slotData( const QByteArray &_data)
 {
     Q_D(TransferJob);
     if (d->m_command == CMD_GET && !d->m_isMimetypeEmitted) {
-        kWarning(7007) << "mimetype() not emitted when sending first data!; job URL ="
+        kWarning(7007) << "mimeType() not emitted when sending first data!; job URL ="
                        << d->m_url << "data size =" << _data.size();
     }
     // shut up the warning, HACK: downside is that it changes the meaning of the variable
