@@ -70,7 +70,7 @@ namespace { // Private.
 		         << "ColorMapType: " << head.ColorMapType
 		         << "ColorMapLength: " << head.ColorMapLength;
 		return s;
-	};
+	}
 
 	static bool IsSupported( const RasHeader & head )
 	{
@@ -97,7 +97,7 @@ namespace { // Private.
 		  return false;
 		}
 		return true;
-	};
+	}
 
 	static bool LoadRAS( QDataStream & s, const RasHeader & ras, QImage &img )
 	{
@@ -193,7 +193,7 @@ namespace { // Private.
 	    }
 	    
             return true;
-	};
+	}
 } // namespace
 
 RASHandler::RASHandler()
