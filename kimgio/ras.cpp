@@ -61,14 +61,14 @@ namespace { // Private.
 		s >> head.Type;
 		s >> head.ColorMapType;
 		s >> head.ColorMapLength;
-		qDebug() << "MagicNumber: " << head.MagicNumber
+		/*qDebug() << "MagicNumber: " << head.MagicNumber
 		         << "Width: " << head.Width
 		         << "Height: " << head.Height
 		         << "Depth: " << head.Depth
 		         << "Length: " << head.Length
 		         << "Type: " << head.Type
 		         << "ColorMapType: " << head.ColorMapType
-		         << "ColorMapLength: " << head.ColorMapLength;
+		         << "ColorMapLength: " << head.ColorMapLength;*/
 		return s;
 	}
 
@@ -112,7 +112,7 @@ namespace { // Private.
 	    // this will be 1 if padding required, 0 otherwise
 	    int paddingrequired = (ras.Width*(ras.Depth/8) % 2);
 	    
-	    qDebug() << "paddingrequired: " << paddingrequired;
+	    // qDebug() << "paddingrequired: " << paddingrequired;
 	    // don't trust ras.Length
             QVector<quint8> input(ras.Length);
 	    
