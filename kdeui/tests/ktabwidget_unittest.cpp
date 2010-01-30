@@ -118,7 +118,7 @@ private Q_SLOTS:
     }
 };
 
-// TabWidgetTabRect is a tab widget that provides access to the tab bar.
+// MyTabWidget is a tab widget that provides access to the tab bar.
 // This is needed for the following unit test.
 
 class MyTabWidget : public KTabWidget {
