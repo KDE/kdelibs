@@ -1368,10 +1368,14 @@ void KCalendarTest::testQDateDaysInYear()
     QCOMPARE( calendar->daysInYear( testDate ),  testDate.daysInYear() );
 
     calendar->setDate( testDate, -4700, 1, 1 );
+#if QT_VERSION < 0x040601
     QEXPECT_FAIL("", "Returns 365 instead of 366", Continue); // Fix submitted to Qt
+#endif
     QCOMPARE( calendar->daysInYear( testDate ),  testDate.daysInYear() );
     calendar->setDate( testDate, -4000, 1, 1 );
+#if QT_VERSION < 0x040601
     QEXPECT_FAIL("", "Returns 365 instead of 366", Continue); // Fix submitted to Qt
+#endif
     QCOMPARE( calendar->daysInYear( testDate ),  testDate.daysInYear() );
 
     calendar->setDate( testDate, 1, 1, 1 );
