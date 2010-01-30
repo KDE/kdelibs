@@ -121,12 +121,21 @@ namespace KIO {
         static void doJob(SimpleJob *job);
 
         /**
-         * Calling ths function makes that @p job gets scheduled for later
-         * execution, if multiple jobs are registered it might wait for
-         * other jobs to finish.
+         * Schedules @p job scheduled for later
+         * execution. This just sets the job's priority to 1 now.
          * @param job the job to schedule
          */
-        static void scheduleJob(SimpleJob *job);
+        KDE_DEPRECATED static void scheduleJob(SimpleJob *job);
+
+        /**
+         * Changes the priority of @p job; jobs of the same priority run in the order in which
+         * they were created. Jobs of lower numeric priority always run before any
+         * waiting jobs of higher numeric priority. The range of priority is -10 to 10,
+         * the default priority of jobs is 0.
+         * @param job the job to change
+         * @param priority new priority of @p job, lower runs earlier
+         */
+        static void setJobPriority(SimpleJob *job, int priority);
 
         /**
          * Stop the execution of a job.

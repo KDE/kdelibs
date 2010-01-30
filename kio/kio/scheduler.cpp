@@ -73,7 +73,8 @@ Slave *heldSlaveForJob(SimpleJob *job);
 
 int SerialPicker::changedPrioritySerial(int oldSerial, int newPriority) const
 {
-    Q_ASSERT(newPriority >= -5 && newPriority <= 5);
+    Q_ASSERT(newPriority >= -10 && newPriority <= 10);
+    newPriority = qBound(-10, newPriority, 10);
     int unbiasedSerial = oldSerial % m_jobsPerPriority;
     return unbiasedSerial + newPriority * m_jobsPerPriority;
 }
@@ -456,22 +457,21 @@ void ProtoQueue::queueJob(SimpleJob *job)
     ensureNoDuplicates(&m_queuesBySerial);
 }
 
-void ProtoQueue::changeJobPriority(SimpleJob *job, int newPriority)
+void ProtoQueue::changeJobPriority(SimpleJob *job, int newPrio)
 {
     SimpleJobPrivate *jobPriv = SimpleJobPrivate::get(job);
-    HostQueue &hq = m_queuesByHostname[jobPriv->m_url.host()];
-    if (hq.isJobRunning(job)) {
+    QHash<QString, HostQueue>::Iterator it = m_queuesByHostname.find(jobPriv->m_url.host());
+    if (it == m_queuesByHostname.end()) {
         return;
     }
+    HostQueue &hq = it.value();
     const int prevLowestSerial = hq.lowestSerial();
-    if (!hq.removeJob(job)) {
+    if (hq.isJobRunning(job) || !hq.removeJob(job)) {
         return;
     }
-    const int oldSerial = jobPriv->m_schedSerial;
-    jobPriv->m_schedSerial = m_serialPicker.changedPrioritySerial(oldSerial, newPriority);
-    const bool needReinsert = prevLowestSerial == oldSerial;
+    jobPriv->m_schedSerial = m_serialPicker.changedPrioritySerial(jobPriv->m_schedSerial, newPrio);
     hq.queueJob(job);
-    Q_ASSERT(needReinsert || hq.lowestSerial() == prevLowestSerial);
+    const bool needReinsert = hq.lowestSerial() != prevLowestSerial;
     // the host queue might be absent from m_queuesBySerial because the connections per host limit
     // for that host has been reached.
     if (needReinsert && m_queuesBySerial.remove(prevLowestSerial)) {
@@ -687,6 +687,7 @@ public:
 
     void doJob(SimpleJob *job);
     void scheduleJob(SimpleJob *job);
+    void setJobPriority(SimpleJob *job, int priority);
     void cancelJob(SimpleJob *job);
     void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
     void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
@@ -774,6 +775,11 @@ void Scheduler::doJob(SimpleJob *job)
 void Scheduler::scheduleJob(SimpleJob *job)
 {
     schedulerPrivate->scheduleJob(job);
+}
+
+void Scheduler::setJobPriority(SimpleJob *job, int priority)
+{
+    schedulerPrivate->setJobPriority(job, priority);
 }
 
 void Scheduler::cancelJob(SimpleJob *job)
@@ -904,9 +910,14 @@ void SchedulerPrivate::doJob(SimpleJob *job)
 void SchedulerPrivate::scheduleJob(SimpleJob *job)
 {
     kDebug(7006) << job;
-    const QString protocol = SimpleJobPrivate::get(job)->m_protocol;
-    ProtoQueue *proto = protoQ(protocol);
-    proto->changeJobPriority(job, 1);
+    setJobPriority(job, 1);
+}
+
+void SchedulerPrivate::setJobPriority(SimpleJob *job, int priority)
+{
+    kDebug(7006) << job << priority;
+    ProtoQueue *proto = protoQ(SimpleJobPrivate::get(job)->m_protocol);
+    proto->changeJobPriority(job, priority);
 }
 
 void SchedulerPrivate::cancelJob(SimpleJob *job)
