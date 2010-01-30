@@ -71,6 +71,8 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     // KDE IO (KIO) integration...
     if (!flags || (flags & KIOIntegration)) {
         KIO::Integration::AccessManager *manager = new KIO::Integration::AccessManager(this);
+        // Disable QtWebKit's internal cache to avoid duplication with the one in KIO....
+        manager->setCache(0);
         QWidget *widget = qobject_cast<QWidget*>(parent);
         if (widget && widget->window())
             manager->setCookieJarWindowId(widget->window()->winId());
