@@ -25,6 +25,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QHeaderView>
 #include <QtGui/QPainter>
+#include <QtGui/QTextLayout>
 #include <QtGui/QVBoxLayout>
 
 #include <kdialog.h>
@@ -377,6 +378,25 @@ void KPageListViewDelegate::iconSettingsChanged( int group )
     }
 }
 
+static int layoutText(QTextLayout *layout, int maxWidth)
+{
+    qreal height = 0;
+    int textWidth = 0;
+    layout->beginLayout();
+    while (true) {
+        QTextLine line = layout->createLine();
+        if (!line.isValid()) {
+            break;
+        }
+        line.setLineWidth(maxWidth);
+        line.setPosition(QPointF(0, height));
+        height += line.height();
+        textWidth = qMax(textWidth, qRound(line.naturalTextWidth() + 0.5));
+    }
+    layout->endLayout();
+    return textWidth;
+}
+
 void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
   if ( !index.isValid() )
@@ -389,9 +409,11 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   QFontMetrics fm = painter->fontMetrics();
   int wp = pixmap.width();
   int hp = pixmap.height();
-  QRect textBoundingRect = fm.boundingRect( 0, 0, qMax(3 * wp, 7 * fm.height() ), 0, Qt::TextWordWrap, text );
-  int ht = textBoundingRect.height();
-  int wt = textBoundingRect.width();
+
+  QTextLayout iconTextLayout( text, option.font );
+  QTextOption textOption( Qt::AlignHCenter );
+  iconTextLayout.setTextOption( textOption );
+  layoutText( &iconTextLayout, qMax( 3 * wp, 8 * fm.height() ) );
 
   QPen pen = painter->pen();
   QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
@@ -409,14 +431,10 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
     painter->setPen( option.palette.color( cg, QPalette::Text ) );
   }
 
-  QFont font = painter->font();
-  painter->setFont( option.font );
-
   painter->drawPixmap( option.rect.x() + (option.rect.width()/2)-(wp/2), option.rect.y() + 5, pixmap );
   if ( !text.isEmpty() )
-    painter->drawText( option.rect.x() + (option.rect.width()/2)-(wt/2), option.rect.y() + hp+7, wt, ht, Qt::AlignHCenter | Qt::TextWordWrap, text );
+    iconTextLayout.draw( painter, QPoint( option.rect.x() + (option.rect.width()/2)-(iconTextLayout.boundingRect().width()/2), option.rect.y() + hp+7 ) );
 
-  painter->setFont( font );
   painter->setPen( pen );
 
   drawFocus( painter, option, option.rect );
@@ -444,9 +462,9 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
     wp = mIconSize;
   }
 
-  QRect textBoundingRect = fm.boundingRect( 0, 0, qMax(3 * wp, 7 * fm.height() ), 0, Qt::TextWordWrap, text );
-  int ht = textBoundingRect.height();
-  int wt = textBoundingRect.width();
+  QTextLayout iconTextLayout( text, option.font );
+  int wt = layoutText( &iconTextLayout, qMax( 3 * wp, 8 * fm.height() ) );
+  int ht = iconTextLayout.boundingRect().height();
 
   int width, height;
   if ( text.isEmpty() )
