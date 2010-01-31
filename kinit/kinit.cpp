@@ -179,7 +179,9 @@ static void cleanup_fds()
         maxfd = rl.rlim_max;
     for (int fd = 3; fd < maxfd; ++fd)
     {
+#ifdef KDEINIT_OOM_PROTECT
        if( fd != oom_pipe )
+#endif
           close(fd);
     }
 }
