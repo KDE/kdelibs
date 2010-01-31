@@ -301,8 +301,8 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
     void setSpellCheckingLanguage(const QString &language);
 
     /**
-     * Create a modal dialog to check the spelling.  This slot will not return
-     * until spell checking has been completed.
+     * Show a dialog to check the spelling. The spellCheckStatus() signal
+     * will be emitted when the spell checking dialog is closed.
      */
     void checkSpelling();
 
