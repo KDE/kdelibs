@@ -1654,6 +1654,15 @@ bool KLineEdit::autoSuggest() const
 void KLineEdit::paintEvent( QPaintEvent *ev )
 {
     if (echoMode() == Password && d->threeStars) {
+        // ### hack alert!
+        // QLineEdit has currently no hooks to modify the displayed string.
+        // When we call setText(), an update() is triggered and we get
+        // into an infinite recursion.
+        // Qt offers the setUpdatesEnabled() method, but when we re-enable
+        // them, update() is triggered, and we get into the same recursion.
+        // To work around this problem, we set/clear the internal Qt flag which
+        // marks the updatesDisabled state manually.
+        setAttribute(Qt::WA_UpdatesDisabled, true);
         blockSignals(true);
         const QString oldText = text();
         const bool isModifiedState = isModified(); // save modified state because setText resets it
@@ -1662,6 +1671,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         setText(oldText);
         setModified(isModifiedState);
         blockSignals(false);
+        setAttribute(Qt::WA_UpdatesDisabled, false);
     } else {
         QLineEdit::paintEvent( ev );
     }
