@@ -122,8 +122,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 {
     KIO::SimpleJob *kioJob = 0;
 
-    if ( !d->externalContentAllowed && req.url().scheme() != "file" &&
-         req.url().scheme() != "data" && !req.url().scheme().isEmpty() ) {
+    if ( !d->externalContentAllowed && req.url().scheme() != "file" && !req.url().scheme().isEmpty() ) {
         kDebug( 7044 ) << "Blocked: " << req.url().scheme() <<  req.url();
         /* if kioJob equals zero, the AccessManagerReply will block the request */
         return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
@@ -162,15 +161,13 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     kioJob->addMetaData(d->metaDataForRequest(req));
 
     if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
-        QString contentType (QLatin1String("Content-Type: "));
         QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
-
         if (header.isValid())
-            contentType += header.toString();
+          kioJob->addMetaData(QLatin1String("content-type"),
+                              QString::fromLatin1("Content-Type: %1").arg(header.toString()));
         else
-            contentType += QLatin1String("application/x-www-form-urlencoded");
-
-        kioJob->addMetaData("content-type", contentType);
+          kioJob->addMetaData(QLatin1String("content-type"),
+                              QLatin1String("Content-Type: application/x-www-form-urlencoded"));
     }
 
     return reply;
@@ -181,60 +178,59 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
 {
     KIO::MetaData metaData;
 
-    // Add the user-specified meta data first...
+    // Add any meta data specified within request...
     QVariant userMetaData = request.attribute (static_cast<QNetworkRequest::Attribute>(MetaData));
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
-        metaData += userMetaData.toMap();
+      metaData += userMetaData.toMap();
     }
 
     metaData.insert("PropagateHttpHeader", "true");
 
-    metaData.insert("UserAgent", request.rawHeader("User-Agent"));
-    request.setRawHeader("User-Agent", QByteArray());
+    if (request.hasRawHeader("User-Agent")) {
+        metaData.insert("UserAgent", request.rawHeader("User-Agent"));
+        request.setRawHeader("User-Agent", QByteArray());
+    }
 
-    metaData.insert("accept", request.rawHeader("Accept"));
-    request.setRawHeader("Accept", QByteArray());
+    if (request.hasRawHeader("Accept")) {
+        metaData.insert("accept", request.rawHeader("Accept"));
+        request.setRawHeader("Accept", QByteArray());
+    }
+
+    if (request.hasRawHeader("Referer")) {
+        metaData.insert("referrer", request.rawHeader("Referer"));
+        request.setRawHeader("Referer", QByteArray());
+    }
+
+    if (request.hasRawHeader("Content-Type")) {
+        metaData.insert("content-type", request.rawHeader("Content-Type"));
+        request.setRawHeader("Content-Type", QByteArray());
+    }
 
     request.setRawHeader("content-length", QByteArray());
     request.setRawHeader("Connection", QByteArray());
+    request.setRawHeader("If-None-Match", QByteArray());
+    request.setRawHeader("If-Modified-Since", QByteArray());
 
-    QString additionHeaders;
-    QListIterator<QByteArray> headersIt (request.rawHeaderList());
-
-    while (headersIt.hasNext()) {
-        const QByteArray key = headersIt.next();
+    QStringList customHeaders;
+    Q_FOREACH(const QByteArray &key, request.rawHeaderList()) {
         const QByteArray value = request.rawHeader(key);
-
-        if (value.isNull())
-            continue;
-
-        // createRequest() checks later for existence "content-type" metadata
-        if (QString::compare(key, QLatin1String("Content-Type"), Qt::CaseInsensitive) == 0) {
-            metaData.insert("content-type", value);
-            continue;
-        }
-
-        if (additionHeaders.length() > 0) {
-            additionHeaders += QLatin1String("\r\n");
-        }
-
-        additionHeaders += key;
-        additionHeaders += QLatin1String(": ");
-        additionHeaders += value;
+        if (value.length())
+            customHeaders << (key + ": " + value);
     }
 
-    metaData.insert("customHTTPHeader", additionHeaders);
+    if (!customHeaders.isEmpty())
+        metaData.insert("customHTTPHeader", customHeaders.join("\r\n"));
 
     // Append per request meta data, if any...
-    if (!requestMetaData.isEmpty())
+    if (!requestMetaData.isEmpty()) {
         metaData += requestMetaData;
+        // Clear per request meta data...
+        requestMetaData.clear();
+    }
 
     // Append per session meta data, if any...
     if (!sessionMetaData.isEmpty())
         metaData += sessionMetaData;
-
-    // Clear per request meta data...
-    requestMetaData.clear();
 
     return metaData;
 }
