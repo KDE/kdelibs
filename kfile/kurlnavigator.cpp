@@ -52,8 +52,6 @@
 
 #include <fixx11h.h>
 
-#include <kdebug.h>
-
 struct LocationData
 {
     KUrl url;
@@ -640,11 +638,14 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
             if (isFirstButton) {
                 button->setText(text);
             }
+            button->setActive(q->isActive());
 
             if (createButton) {
                 m_navButtons.append(button);
             }
+
             ++idx;
+            button->setActiveSubDirectory(path.section('/', idx, idx));
         }
     } while (hasNext);
 
@@ -720,7 +721,6 @@ void KUrlNavigator::Private::updateButtonVisibility()
             hasHiddenButtons = true;
         }
         else {
-            button->setActive(isLastButton);
             // Don't show the button immediately, as setActive()
             // might change the size and a relayout gets triggered
             // after showing the button. So the showing of all buttons
@@ -979,6 +979,12 @@ void KUrlNavigator::setActive(bool active)
 {
     if (active != d->m_active) {
         d->m_active = active;
+
+        d->m_dropDownButton->setActive(active);
+        foreach(KUrlNavigatorButton* button, d->m_navButtons) {
+            button->setActive(active);
+        }
+
         update();
         if (active) {
             emit activated();

@@ -45,10 +45,9 @@ public:
 
 protected:
     enum DisplayHint {
-        ActivatedHint = 1,
-        EnteredHint = 2,
-        DraggedHint = 4,
-        PopupActiveHint = 8
+        EnteredHint = 1,
+        DraggedHint = 2,
+        PopupActiveHint = 4
     };
 
     enum { BorderWidth = 2 };
@@ -69,6 +68,7 @@ private Q_SLOTS:
     void activate();
 
 private:
+    bool m_active;
     int m_displayHint;
 };
 

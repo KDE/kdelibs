@@ -96,6 +96,12 @@ void KUrlNavigatorButton::setText(const QString& text)
 void KUrlNavigatorButton::setActiveSubDirectory(const QString& subDir)
 {
     m_subDir = subDir;
+
+    QFont adjustedFont(font());
+    adjustedFont.setBold(m_subDir.isEmpty());
+    setFont(adjustedFont);
+
+    update();
 }
 
 QString KUrlNavigatorButton::activeSubDirectory() const
@@ -135,7 +141,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 
     const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
 
-    if (!isDisplayHintEnabled(ActivatedHint)) {
+    if (!m_subDir.isEmpty()) {
         // draw arrow
         const int arrowSize = arrowWidth();
         const int arrowX = leftToRight ? (buttonWidth - arrowSize) - BorderWidth : BorderWidth;
@@ -466,7 +472,7 @@ int KUrlNavigatorButton::arrowWidth() const
 {
     // if there isn't arrow then return 0
     int width = 0;
-    if (!isDisplayHintEnabled(ActivatedHint)) {
+    if (!m_subDir.isEmpty()) {
         width = height() / 2;
         if (width < 4) {
             width = 4;
@@ -485,7 +491,7 @@ bool KUrlNavigatorButton::isAboveArrow(int x) const
 bool KUrlNavigatorButton::isTextClipped() const
 {
     int availableWidth = width() - 2 * BorderWidth;
-    if (!isDisplayHintEnabled(ActivatedHint)) {
+    if (!m_subDir.isEmpty()) {
         availableWidth -= arrowWidth() - BorderWidth;
     }
 

@@ -33,6 +33,7 @@
 
 KUrlButton::KUrlButton(QWidget* parent) :
     QPushButton(parent),
+    m_active(true),
     m_displayHint(0)
 {
     setFocusPolicy(Qt::NoFocus);
@@ -52,22 +53,15 @@ KUrlButton::~KUrlButton()
 
 void KUrlButton::setActive(bool active)
 {
-    QFont adjustedFont(font());
-    if (active) {
-        setDisplayHintEnabled(ActivatedHint, true);
-        adjustedFont.setBold(true);
-    } else {
-        setDisplayHintEnabled(ActivatedHint, false);
-        adjustedFont.setBold(false);
+    if (m_active != active) {
+        m_active = active;
+        update();
     }
-
-    setFont(adjustedFont);
-    update();
 }
 
 bool KUrlButton::isActive() const
 {
-    return isDisplayHintEnabled(ActivatedHint);
+    return m_active;
 }
 
 void KUrlButton::setDisplayHintEnabled(DisplayHint hint,
@@ -107,7 +101,7 @@ void KUrlButton::drawHoverBackground(QPainter* painter)
                                isDisplayHintEnabled(PopupActiveHint);
 
     QColor backgroundColor = isHighlighted ? palette().color(QPalette::Highlight) : Qt::transparent;
-    if (!isActive() && isHighlighted) {
+    if (!m_active && isHighlighted) {
         backgroundColor.setAlpha(128);
     }
 
@@ -129,9 +123,8 @@ QColor KUrlButton::foregroundColor() const
 
     QColor foregroundColor = palette().color(foregroundRole());
 
-    const bool active = isActive();
-    int alpha = active ? 255 : 128;
-    if ((!isDisplayHintEnabled(ActivatedHint) || !active) && !isHighlighted) {
+    int alpha = m_active ? 255 : 128;
+    if (!m_active && !isHighlighted) {
         alpha -= alpha / 4;
     }
     foregroundColor.setAlpha(alpha);
