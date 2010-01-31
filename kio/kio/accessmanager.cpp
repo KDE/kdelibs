@@ -163,10 +163,11 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
         QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
         if (header.isValid())
-          kioJob->addMetaData("content-type",
+          kioJob->addMetaData(QLatin1String("content-type"),
                               QString::fromLatin1("Content-Type: %1").arg(header.toString()));
         else
-          kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded");
+          kioJob->addMetaData(QLatin1String("content-type"),
+                              QLatin1String("Content-Type: application/x-www-form-urlencoded"));
     }
 
     return reply;
@@ -177,7 +178,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
 {
     KIO::MetaData metaData;
 
-    // Add the user-specified meta data first...
+    // Add any meta data specified within request...
     QVariant userMetaData = request.attribute (static_cast<QNetworkRequest::Attribute>(MetaData));
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
       metaData += userMetaData.toMap();
@@ -185,44 +186,51 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
 
     metaData.insert("PropagateHttpHeader", "true");
 
-    metaData.insert("UserAgent", request.rawHeader("User-Agent"));
-    request.setRawHeader("User-Agent", QByteArray());
+    if (request.hasRawHeader("User-Agent")) {
+        metaData.insert("UserAgent", request.rawHeader("User-Agent"));
+        request.setRawHeader("User-Agent", QByteArray());
+    }
 
-    metaData.insert("accept", request.rawHeader("Accept"));
-    request.setRawHeader("Accept", QByteArray());
+    if (request.hasRawHeader("Accept")) {
+        metaData.insert("accept", request.rawHeader("Accept"));
+        request.setRawHeader("Accept", QByteArray());
+    }
+
+    if (request.hasRawHeader("Referer")) {
+        metaData.insert("referrer", request.rawHeader("Referer"));
+        request.setRawHeader("Referer", QByteArray());
+    }
+
+    if (request.hasRawHeader("Content-Type")) {
+        metaData.insert("content-type", request.rawHeader("Content-Type"));
+        request.setRawHeader("Content-Type", QByteArray());
+    }
 
     request.setRawHeader("content-length", QByteArray());
     request.setRawHeader("Connection", QByteArray());
+    request.setRawHeader("If-None-Match", QByteArray());
+    request.setRawHeader("If-Modified-Since", QByteArray());
 
-    QString additionHeaders;
-    Q_FOREACH(const QByteArray &headerKey, request.rawHeaderList()) {
-        const QByteArray value = request.rawHeader(headerKey);
-        if (value.isNull())
-            continue;
-
-        // createRequest() checks later for existence "content-type" metadata
-        if (headerKey=="Content-Type") {
-            metaData.insert("content-type", value);
-            continue;
-        }
-
-        if (additionHeaders.length() > 0) {
-            additionHeaders += "\r\n";
-        }
-        additionHeaders += headerKey + ": " + value;
+    QStringList customHeaders;
+    Q_FOREACH(const QByteArray &key, request.rawHeaderList()) {
+        const QByteArray value = request.rawHeader(key);
+        if (value.length())
+            customHeaders << (key + ": " + value);
     }
-    metaData.insert("customHTTPHeader", additionHeaders);
+
+    if (!customHeaders.isEmpty())
+        metaData.insert("customHTTPHeader", customHeaders.join("\r\n"));
 
     // Append per request meta data, if any...
-    if (!requestMetaData.isEmpty())
+    if (!requestMetaData.isEmpty()) {
         metaData += requestMetaData;
+        // Clear per request meta data...
+        requestMetaData.clear();
+    }
 
     // Append per session meta data, if any...
     if (!sessionMetaData.isEmpty())
         metaData += sessionMetaData;
-
-    // Clear per request meta data...
-    requestMetaData.clear();
 
     return metaData;
 }
