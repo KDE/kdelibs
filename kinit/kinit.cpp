@@ -160,6 +160,10 @@ extern "C" KParts::Plugin* _kinit_init_kparts() { return new KParts::Plugin(); }
 #include <kio/authinfo.h>
 extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
 
+#ifdef KDEINIT_OOM_PROTECT
+static int oom_pipe = -1;
+#endif
+
 /*
  * Clean up the file descriptor table by closing all file descriptors
  * that are still open.
@@ -174,7 +178,10 @@ static void cleanup_fds()
     if (getrlimit(RLIMIT_NOFILE, &rl) == 0)
         maxfd = rl.rlim_max;
     for (int fd = 3; fd < maxfd; ++fd)
-       close(fd);
+    {
+       if( fd != oom_pipe )
+          close(fd);
+    }
 }
 
 /*
@@ -419,8 +426,6 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
 }
 
 #ifdef KDEINIT_OOM_PROTECT
-static int oom_pipe = -1;
-
 static void oom_protect_sighandler( int ) {
 }
 
@@ -439,7 +444,11 @@ static void reset_oom_protect() {
    pid_t pid = getpid();
    if( write( oom_pipe, &pid, sizeof( pid_t )) > 0 ) {
       sigsuspend( &oldsigs ); // wait for the signal to come
-    }
+   } else {
+#ifndef NDEBUG
+      fprintf( stderr, "Failed to reset OOM protection: %d\n", pid );
+#endif
+   }
    sigprocmask( SIG_SETMASK, &oldsigs, NULL );
    sigaction( SIGUSR1, &oldact, NULL );
    close( oom_pipe );
