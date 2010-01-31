@@ -55,6 +55,7 @@ KCategorizedView::Private::Private(KCategorizedView *q)
     , hoveredIndex(QModelIndex())
     , pressedPosition(QPoint())
     , rubberBandRect(QRect())
+    , pastSelected(QModelIndexList())
 {
 }
 
@@ -460,6 +461,75 @@ void KCategorizedView::Private::topToBottomVisualRect(const QModelIndex &index, 
 
     item.size = q->sizeHintForIndex(index);
     item.size.setWidth(viewportWidth());
+}
+
+QModelIndex KCategorizedView::Private::drawerIndexAt(const QPoint &point)
+{
+    if (blocks.isEmpty()) {
+        return QModelIndex();
+    }
+
+    for (QHash<QString, Private::Block>::Iterator it = blocks.begin(); it != blocks.end(); ++it) {
+        Block &block = *it;
+        QModelIndex categoryIndex = block.firstIndex;
+        QStyleOptionViewItemV4 option(q->viewOptions());
+        int height = categoryDrawer->categoryHeight(categoryIndex, q->viewOptions());
+        QPoint pos = blockPosition(it.key());
+        pos.ry() -= height;
+        option.rect.setTopLeft(pos);
+        option.rect.setWidth(viewportWidth() + categoryDrawer->leftMargin() + categoryDrawer->rightMargin());
+        option.rect.setHeight(height);
+
+        if (option.rect.contains(point)) {
+            return categoryIndex;
+        }
+    }
+
+    return QModelIndex();
+}
+
+void KCategorizedView::Private::listSelect(const QModelIndexList &indexList) const
+{
+    QModelIndexList::ConstIterator it;
+    for (it = indexList.constBegin(); it != indexList.constEnd(); ++it) {
+        const QModelIndex itemIndex = *it;
+        q->selectionModel()->select(itemIndex, QItemSelectionModel::SelectCurrent);
+    }
+}
+
+bool KCategorizedView::Private::rangeSelected(const QModelIndex &firstIndex, const int &rowCount) const
+{
+    Q_ASSERT(rowCount >= 0);
+
+    if (rowCount == 0) {
+        return q->selectionModel()->isSelected(firstIndex);
+    }
+
+    // If there are no selected items in the view
+    // or if the number of selected items is less
+    // than the length of the list you are checking,
+    // then the items in the list cannot all be
+    // selected
+    if (!q->selectionModel()->hasSelection() || (q->selectionModel()->selectedIndexes().count() < rowCount)) {
+        return false;
+    }
+
+    // If all of the items in the view are selected,
+    // all of the items in a subset of that view must
+    // also be selected
+    if (q->selectionModel()->selectedIndexes().count() == proxyModel->rowCount()) {
+        return true;
+    }
+
+    for (int row = 0; row != rowCount; ++row) {
+        const QModelIndex itemIndex = firstIndex.sibling(firstIndex.row() + row, firstIndex.column());
+        if (!q->selectionModel()->isSelected(itemIndex)) {
+            return false;
+        }
+    }
+
+    return true;
+
 }
 
 void KCategorizedView::Private::_k_slotCollapseOrExpandClicked(QModelIndex)
@@ -883,19 +953,48 @@ void KCategorizedView::mouseMoveEvent(QMouseEvent *event)
 
 void KCategorizedView::mousePressEvent(QMouseEvent *event)
 {
-    QListView::mousePressEvent(event);
     if (event->button() == Qt::LeftButton) {
+        d->pastSelected = selectionModel()->selectedIndexes();
         d->pressedPosition = event->pos();
         d->pressedPosition.rx() += horizontalOffset();
         d->pressedPosition.ry() += verticalOffset();
     }
+    QListView::mousePressEvent(event);
 }
 
 void KCategorizedView::mouseReleaseEvent(QMouseEvent *event)
 {
+    if (d->isCategorized()) {
+        const QRect rect(d->pressedPosition, event->pos() + QPoint(horizontalOffset(), verticalOffset()));
+        if ((event->button() == Qt::LeftButton) && (rect.topLeft() == rect.bottomRight())) {
+            const QModelIndex index = d->drawerIndexAt(rect.topLeft());
+            if (index.isValid()) {
+
+                const QString category = d->categoryForIndex(index);
+                const Private::Block &block = d->blocks[category];
+
+                d->listSelect(d->pastSelected);
+
+                QItemSelectionModel::SelectionFlags flags;
+                flags |= d->rangeSelected(block.firstIndex, block.items.count() -1) ? QItemSelectionModel::Deselect
+                                                                                 : QItemSelectionModel::Select;
+
+                QItemSelection selection;
+
+                const QModelIndex lastIndex = block.firstIndex.sibling(block.firstIndex.row() + block.items.count() - 1, block.firstIndex.column());
+
+                selection << QItemSelectionRange(block.firstIndex, lastIndex);
+                selectionModel()->select(selection, flags);
+
+                d->pastSelected.clear();
+                return;
+            }
+        }
+    }
     QListView::mouseReleaseEvent(event);
     d->pressedPosition = QPoint();
     d->rubberBandRect = QRect();
+    d->pastSelected.clear();
 }
 
 void KCategorizedView::leaveEvent(QEvent *event)

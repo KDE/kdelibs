@@ -122,6 +122,29 @@ public:
     void topToBottomVisualRect(const QModelIndex &index, Item &item,
                                const Block &block, const QPoint &blockPos) const;
 
+    /**
+      * If the provided QPoint is in a category drawer (category title),
+      * returns the index of the first item in the category.
+      * Otherwise returns an invalid index.
+      */
+    QModelIndex drawerIndexAt(const QPoint &point);
+
+    /**
+      * Selects all of items provided in the list of indices.
+      * This should not remove the existing selection,
+      * but that has not been well-tested.
+      */
+    void listSelect(const QModelIndexList &indexList) const;
+
+    /**
+      * Determines if all the items are selected in a
+      * linear range defined starting at firstIndex and
+      * continuing for the number of row defined by rowCount.
+      * Since this is part of KCategorizedView, only the
+      * rows are varied.
+      */
+    bool rangeSelected(const QModelIndex &firstIndex, const int &rowCount) const;
+
     void _k_slotCollapseOrExpandClicked(QModelIndex);
 
     KCategorizedView *q;
@@ -136,6 +159,7 @@ public:
 
     QPoint pressedPosition;
     QRect rubberBandRect;
+    QModelIndexList pastSelected;
 
     QHash<QString, Block> blocks;
 };
