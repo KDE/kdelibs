@@ -45,6 +45,7 @@ class AccessManager::AccessManagerPrivate
 public:
     AccessManagerPrivate():externalContentAllowed(true) {}
     KIO::MetaData metaDataForRequest(QNetworkRequest request);
+    bool isRequestAllowed(const QUrl& url) const;
 
     bool externalContentAllowed;
     KIO::MetaData requestMetaData;
@@ -122,8 +123,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 {
     KIO::SimpleJob *kioJob = 0;
 
-    if ( !d->externalContentAllowed && req.url().scheme() != "file" && !req.url().scheme().isEmpty() ) {
-        kDebug( 7044 ) << "Blocked: " << req.url().scheme() <<  req.url();
+    if ( !d->isRequestAllowed(req.url()) ) {
+        kDebug( 7044 ) << "Blocked: " << req.url();
         /* if kioJob equals zero, the AccessManagerReply will block the request */
         return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
     }
@@ -172,7 +173,6 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     return reply;
 }
-
 
 KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRequest request)
 {
@@ -233,6 +233,14 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
         metaData += sessionMetaData;
 
     return metaData;
+}
+
+bool AccessManager::AccessManagerPrivate::isRequestAllowed(const QUrl& url) const
+{
+    const QString scheme (url.scheme());
+
+    return (externalContentAllowed && !scheme.isEmpty() &&
+            scheme != QLatin1String("file")  && scheme != QLatin1String("data"));
 }
 
 
