@@ -71,7 +71,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
         } else {
             // "Open" selected, possible with a specific application
             if (selectedService) {
-                KRun::setPreferredService(selectedService->entryName());
+                KRun::setPreferredService(selectedService->desktopEntryName());
             } else {
                 KRun::displayOpenWithDialog(url(), part()->widget(), false /*tempfile*/, suggestedFileName());
                 setFinished(true);
