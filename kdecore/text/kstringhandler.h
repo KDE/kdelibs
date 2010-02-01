@@ -214,5 +214,20 @@ namespace KStringHandler
       @since 4.1
      */
     KDECORE_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
+
+    /**
+      Preprocesses the given string in order to provide additional line breaking
+      opportunities for QTextLayout.
+
+      This is done by inserting ZWSP (Zero-width space) characters in the string
+      at points that wouldn't normally be considered word boundaries by QTextLayout,
+      but where wrapping the text will produce good results.
+
+      Examples of such points includes after punctuation signs, underscores and
+      dashes, that aren't followed by spaces.
+
+      @since 4.4
+    */
+    KDECORE_EXPORT QString preProcessWrap( const QString& text );
 }
 #endif
