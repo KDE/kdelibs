@@ -233,7 +233,13 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
     }
 }
 
-BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& _mimeType )
+BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& mimeType)
+{
+    KService::Ptr dummy;
+    return handleNonEmbeddable(mimeType, &dummy);
+}
+
+BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _mimeType, KService::Ptr* selectedService)
 {
     QString mimeType( _mimeType );
     Q_ASSERT( !hasFinished() ); // only come here if the mimetype couldn't be embedded
@@ -246,6 +252,8 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
         // ... -> ask whether to save
         BrowserOpenOrSaveQuestion question(d->m_window, KRun::url(), mimeType);
         question.setSuggestedFileName(suggestedFileName());
+        if (selectedService)
+            question.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
         BrowserOpenOrSaveQuestion::Result res = question.askOpenOrSave();
         if (res == BrowserOpenOrSaveQuestion::Save) {
             save( KRun::url(), suggestedFileName() );
@@ -284,6 +292,8 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                          this, SLOT(slotCopyToTempFileResult(KJob *)) );
                 return Delayed; // We'll continue after the job has finished
             }
+            if (selectedService)
+                *selectedService = question.selectedService();
         }
     }
 

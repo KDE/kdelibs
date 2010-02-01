@@ -60,13 +60,22 @@ void KHTMLRun::foundMimeType( const QString &_type )
         if ( hasFinished() ) // abort was called (this happens with the activex fallback for instance)
             return;
         // Couldn't embed -> call BrowserRun::handleNonEmbeddable()
-        KParts::BrowserRun::NonEmbeddableResult res = handleNonEmbeddable( mimeType );
+        KService::Ptr selectedService;
+        KParts::BrowserRun::NonEmbeddableResult res = handleNonEmbeddable( mimeType, &selectedService );
         if ( res == KParts::BrowserRun::Delayed )
             return;
         setFinished( res == KParts::BrowserRun::Handled );
         if ( hasFinished() ) { // saved or canceled -> flag completed
             m_child->m_bCompleted = true;
             static_cast<KHTMLPart *>(part())->checkCompleted();
+        } else {
+            // "Open" selected, possible with a specific application
+            if (selectedService) {
+                KRun::setPreferredService(selectedService->entryName());
+            } else {
+                KRun::displayOpenWithDialog(url(), part()->widget(), false /*tempfile*/, suggestedFileName());
+                setFinished(true);
+            }
         }
     }
 

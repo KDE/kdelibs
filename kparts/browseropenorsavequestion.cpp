@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 David Faure <faure@kde.org>
+    Copyright (c) 2009, 2010 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -112,7 +112,7 @@ public:
 
     bool autoEmbedMimeType(int flags);
 
-    int execute(const QString& dontShowAgainName)
+    int executeDialog(const QString& dontShowAgainName)
     {
         KConfigGroup cg(dontAskConfig, "Notification Messages"); // group name comes from KMessageBox
         const QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
@@ -150,10 +150,11 @@ public:
     QLabel* fileNameLabel;
 
 protected:
-    virtual void slotButtonClicked(int button)
+    virtual void slotButtonClicked(int buttonId)
     {
-        if (button != OpenWith) {
-            done(button);
+        KPushButton* button = KDialog::button(KDialog::ButtonCode(buttonId));
+        if (button && !button->menu()) {
+            done(buttonId);
         }
     }
 private:
@@ -197,36 +198,50 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
     d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
 
+    KGuiItem openWithDialogItem(i18nc("@label:button", "&Open with..."), "document-open");
+
     // I thought about using KFileItemActions, but we don't want a submenu, nor the slots....
     // and we want no menu at all if there's only one offer.
     // TODO: we probably need a setTraderConstraint(), to exclude the current application?
     const KService::List apps = KFileItemActions::associatedApplications(QStringList() << d->mimeType,
                                                                          QString() /* TODO trader constraint */);
     if (apps.isEmpty()) {
-        KGuiItem openItem(i18nc("@label:button", "&Open with..."), "document-open");
-        d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
+        d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openWithDialogItem);
     } else {
         KService::Ptr offer = apps.first();
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", offer->name()), offer->icon());
         d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
-        if (apps.count() > 1 && (d->features & ServiceSelection)) {
-            KMenu* menu = new KMenu(d);
-            KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");
-            d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithItem);
+        if (d->features & ServiceSelection) {
             d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, true);
-            d->setButtonMenu(BrowserOpenOrSaveQuestionPrivate::OpenWith, menu, KDialog::InstantPopup);
-            QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
-            for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
-                KAction* act = createAppAction(*it, d);
-                menu->addAction(act);
+            KMenu* menu = new KMenu(d);
+            if (apps.count() > 1) {
+                // Provide an additional button with a menu of associated apps
+                KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");
+                d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithItem);
+                d->setButtonMenu(BrowserOpenOrSaveQuestionPrivate::OpenWith, menu, KDialog::InstantPopup);
+                QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
+                for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
+                    KAction* act = createAppAction(*it, d);
+                    menu->addAction(act);
+                }
+                KAction* openWithDialogAction = new KAction(d);
+                openWithDialogAction->setIcon(KIcon("document-open"));
+                openWithDialogAction->setText(openWithDialogItem.text());
+                menu->addAction(openWithDialogAction);
+            } else {
+                // Only one associated app, already offered by the other menu -> add "Open With..." button
+                d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithDialogItem);
             }
+        } else {
+            kDebug() << "Not using new feature ServiceSelection; port the caller to BrowserOpenOrSaveQuestion::setFeature(ServiceSelection)";
+            //kDebug() << kBacktrace();
         }
     }
 
     // KEEP IN SYNC with kdebase/runtime/keditfiletype/filetypedetails.cpp!!!
     const QString dontAskAgain = QLatin1String("askSave") + d->mimeType;
 
-    const int choice = d->execute(dontAskAgain);
+    const int choice = d->executeDialog(dontAskAgain);
     return choice == BrowserOpenOrSaveQuestionPrivate::Save ? Save
         : (choice == BrowserOpenOrSaveQuestionPrivate::Cancel ? Cancel : Open);
 }
@@ -276,7 +291,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
     const QString dontAskAgain = QLatin1String("askEmbedOrSave")+ d->mimeType; // KEEP IN SYNC!!!
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 
-    const int choice = d->execute(dontAskAgain);
+    const int choice = d->executeDialog(dontAskAgain);
     return choice == BrowserOpenOrSaveQuestionPrivate::Save ? Save
         : (choice == BrowserOpenOrSaveQuestionPrivate::Cancel ? Cancel : Embed);
 }

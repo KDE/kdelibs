@@ -163,7 +163,29 @@ namespace KParts {
         /**
          * Helper for foundMimeType: call this if the mimetype couldn't be embedded
          */
-        NonEmbeddableResult handleNonEmbeddable( const QString& mimeType );
+        NonEmbeddableResult handleNonEmbeddable( const QString& mimeType ); // TODO KDE5: remove, and add =0 to the other overload
+
+        /**
+         * Helper for foundMimeType: call this if the mimetype couldn't be embedded
+         * @param mimeType the mimetype found for the URL
+         * @param pSelectedService Output variable: pointer to a KService::Ptr, which will be set
+         *        to the service selected in the BrowserOpenOrSaveQuestion dialog, if any.
+         *
+         * How to handle this properly: if pSelectedService is non-zero, then the dialog will show
+         * additional "open with" buttons. In your code, you should write:
+         * @code
+            if (selectedService) {
+                KRun::setPreferredService(selectedService->desktopEntryName());
+                // and let this code path fall back to KRun::foundMimeType(mimeType);
+            } else {
+                KRun::displayOpenWithDialog(url(), m_window, false, suggestedFileName());
+                setFinished(true);
+            }
+         * @endcode
+         *        
+         * @since 4.5
+         */
+        NonEmbeddableResult handleNonEmbeddable(const QString& mimeType, KService::Ptr* pSelectedService);
 
     protected Q_SLOTS:
         void slotBrowserScanFinished(KJob *job);
