@@ -220,10 +220,10 @@ struct KDebugPrivate
         Q_ASSERT(int(QtDebugMsg) == 0);
         Q_ASSERT(int(QtFatalMsg) == 3);
 
-        // Create the dbus interface if it has not been created yet
-        // But only register to DBus if we are in a process with a dbus event loop,
+        // Create the D-Bus interface if it has not been created yet
+        // But only register to D-Bus if we are in a process with a D-Bus event loop,
         // otherwise introspection will just hang.
-        // Examples of processes without a dbus event loop: kioslaves and the main kdeinit process.
+        // Examples of processes without a D-Bus event loop: kioslaves and the main kdeinit process.
         //
         // How to know that we have a real event loop? That's tricky.
         // We could delay registration in kDebugDBusIface with a QTimer, but

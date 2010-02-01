@@ -44,7 +44,7 @@
  Not only: the library can also be used to lock down some actions in your application without using an helper but just checking for authorization and verifying if the user is allowed to perform it.
 
  The KDE Authorization library uses different backends depending on the system where it's built. As far as the user authorization is concerned, it currently uses PolicyKit on linux and Authorization Services
- on Mac OSX, and a Windows backend will eventually be written, too. At the communication layer, the library uses dbus on every supported platform.
+ on Mac OSX, and a Windows backend will eventually be written, too. At the communication layer, the library uses D-Bus on every supported platform.
 
 
  @section kauth_concepts Concepts
@@ -397,7 +397,7 @@ public:
         AuthorizationDenied, ///< You don't have the authorization to execute the action
         UserCancelled, ///< Action execution has been cancelled by the user
         HelperBusy, ///< The helper is busy executing another action (or group of actions). Try later
-        DBusError ///< An error from dbus occurred
+        DBusError ///< An error from D-Bus occurred
     };
 
     /// Default constructor. Sets type() to Success and errorCode() to zero.

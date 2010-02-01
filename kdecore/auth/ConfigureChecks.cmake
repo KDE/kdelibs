@@ -165,7 +165,7 @@ else()
 endif()
 
 # Helper backend
-# No selection, we have DBus only
+# No selection, we have D-Bus only
 
 set (KAUTH_COMPILING_DBUS_HELPER_BACKEND TRUE)
 

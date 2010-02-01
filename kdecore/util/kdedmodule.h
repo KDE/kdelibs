@@ -62,7 +62,7 @@ public:
   /**
    * @internal called by kded after loading a module
    * The module name is set from the path of the desktop file, and is
-   * used to register the module to dbus.
+   * used to register the module to D-Bus.
    */
   void setModuleName( const QString& name );
 
@@ -85,7 +85,7 @@ Q_SIGNALS:
   void windowUnregistered(qlonglong windowId);
 
   /**
-   * Emitted after the module is registered successfully with dbus
+   * Emitted after the module is registered successfully with D-Bus
    *
    * @since 4.2
    */

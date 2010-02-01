@@ -62,7 +62,7 @@ void KDEDModule::setModuleName( const QString& name )
 
    if (this->metaObject()->indexOfClassInfo("D-Bus Interface")!=-1)
       {
-      // 1. There are kded modules that don't have a dbus interface.
+      // 1. There are kded modules that don't have a D-Bus interface.
       // 2. qt 4.4.3 crashes when trying to emit signals on class without
       //    Q_CLASSINFO("D-Bus Interface", "<your interface>") but
       //    ExportSignal set.
@@ -77,7 +77,7 @@ void KDEDModule::setModuleName( const QString& name )
       regOptions = QDBusConnection::ExportScriptableSlots
                      | QDBusConnection::ExportScriptableProperties
                      | QDBusConnection::ExportAdaptors;
-      kDebug() << "Registration of kded module " << d->moduleName << "without dbus interface.";
+      kDebug() << "Registration of kded module " << d->moduleName << "without D-Bus interface.";
       }
 
    if (!QDBusConnection::sessionBus().registerObject(realPath.path(), this, regOptions))

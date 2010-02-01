@@ -319,7 +319,7 @@ public:
      * custom data coming from the helper.
      *
      * The method blocks the execution, and will
-     * return only when the action has been completed (or failed). Take note, however, that with the dbus
+     * return only when the action has been completed (or failed). Take note, however, that with the D-Bus
      * helper proxy (currently the only one implemented on all the supported platforms), the request is
      * sent using the QDBus::BlockWithGui flag.
      *
@@ -363,7 +363,7 @@ public:
      * This method executes each action in the list. It checks for authorization of each action, and put the
      * denied actions, if any, in the list pointed by the deniedActions parameter, if not NULL.
      *
-     * Please note that with the dbus helper proxy (currently the only one implemented), the execution of a group
+     * Please note that with the D-Bus helper proxy (currently the only one implemented), the execution of a group
      * of actions is very different from executing in sequence each action using, for example, executeAsync().
      * Currently, the helper can execute only one request at the time. For this reason, if you have to call
      * different actions in sequence, you can't call executeAsync() like this:

@@ -443,7 +443,7 @@ namespace KGlobal
      *
      * However, don't try to call setAllowQuit(false) in applications, it doesn't make sense.
      * If you find that the application quits too early when closing a window, then consider
-     * _what_ is making your application still alive to the user (like a systray icon or a dbus object)
+     * _what_ is making your application still alive to the user (like a systray icon or a D-Bus object)
      * and use KGlobal::ref() + KGlobal::deref() in that object.
      *
      * @since 4.1.1

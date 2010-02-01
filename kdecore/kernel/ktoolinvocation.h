@@ -46,13 +46,13 @@ class KToolInvocationPrivate;
  * There are three possibilities:
  * @li X-DBUS-StartupType=None (default)
  *    Always start a new service,
- *    don't wait till the service registers with dbus.
+ *    don't wait till the service registers with D-Bus.
  * @li X-DBUS-StartupType=Multi
  *    Always start a new service,
- *    wait until the service has registered with dbus.
+ *    wait until the service has registered with D-Bus.
  * @li X-DBUS-StartupType=Unique
  *    Only start the service if it isn't already running,
- *    wait until the service has registered with dbus.
+ *    wait until the service has registered with D-Bus.
  * The .desktop file can specify the name that the application will use when registering
  * using X-DBUS-ServiceName=org.domain.mykapp. Otherwise org.kde.binaryname is assumed.
  *
@@ -62,7 +62,7 @@ class KToolInvocationPrivate;
  * Calls to members are only allowed if there is a Q(Core)Application object created
  * If you call the members with signal/slot connections across threads, you can't use the return values
  * If a function is called from the wrong thread and it has a return value -1 is returned
- * Investigate if this is really needed or if DBUS is threadsafe anyway
+ * Investigate if this is really needed or if D-Bus is threadsafe anyway
  *
  * For more details see <a
  * href="http://techbase.kde.org/Development/Architecture/KDE4/Starting_Other_Programs#KToolInvocation::startServiceByDesktopPath">techbase</a>.
@@ -174,7 +174,7 @@ public Q_SLOTS:
 
 public:
   /**
-   * Returns the DBus interface of the service launcher.
+   * Returns the D-Bus interface of the service launcher.
    * The returned object is owned by KApplication, do not delete it!
    */
   static OrgKdeKLauncherInterface *klauncher();
