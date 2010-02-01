@@ -1053,9 +1053,10 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     bool showClearButton = (!shouldDisableNativeBorders() && !_style->hasBackgroundImage());
     static_cast<LineEditWidget*>(widget())->setClearButtonShown( showClearButton );
     if (showClearButton) {
-        QList<QWidget *> wl = qFindChildren<QWidget *>(m_widget, QString());
-        foreach (QWidget* w, wl)
-            if (!w->isWindow()) {
+        QObjectList children = widget()->children();
+        foreach (QObject* object, children) {
+            QWidget *w = qobject_cast<QWidget*>(object);
+            if (w && !w->isWindow()) {
                 // this duplicates KHTMLView's handleWidget but this widget
                 // is created on demand, so it might not be here at ChildPolished time
                 w->setObjectName("KHTMLLineEditButton");
@@ -1064,6 +1065,7 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
                 w->setAttribute(Qt::WA_WState_InPaintEvent);
                 w->setAttribute(Qt::WA_OpaquePaintEvent);
             }
+        }
     }
 }
 
