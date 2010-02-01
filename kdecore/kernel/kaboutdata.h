@@ -229,7 +229,7 @@ class KDECORE_EXPORT KAboutData
      *        Start the address with "http://". "http://some.domain" is
      *        is correct, "some.domain" is not.
      * IMPORTANT: if you set a home page address, this will change the "organization domain"
-     * of the application, which is used for automatic DBUS registration.
+     * of the application, which is used for automatic D-Bus registration.
      * @see setOrganizationDomain
      *
      * @param bugsEmailAddress The bug report email address string.
@@ -519,7 +519,7 @@ class KDECORE_EXPORT KAboutData
      * Make sure to call setOrganizationDomain if your product is developed out of the
      * kde.org version-control system.
      *
-     * Used by the automatic registration to DBus done by KApplication and KUniqueApplication.
+     * Used by the automatic registration to D-Bus done by KApplication and KUniqueApplication.
      *
      * IMPORTANT: if the organization domain is set, the .desktop file that describes your
      * application should have an entry like X-DBUS-ServiceName=reversed_domain.kmyapp
@@ -564,7 +564,7 @@ class KDECORE_EXPORT KAboutData
     /**
      * Returns the domain name of the organization that wrote this application.
      *
-     * Used by the automatic registration to DBus done by KApplication and KUniqueApplication.
+     * Used by the automatic registration to D-Bus done by KApplication and KUniqueApplication.
      */
     QString organizationDomain() const;
 
