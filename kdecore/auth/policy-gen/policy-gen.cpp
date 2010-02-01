@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     }
 
     QSettings ini(argv[1], QSettings::IniFormat);
+    ini.setIniCodec("UTF-8");
     if (ini.status()) {
         qCritical("Error loading file: %s", argv[1]);
         return 1;
