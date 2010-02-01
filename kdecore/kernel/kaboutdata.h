@@ -583,8 +583,8 @@ class KDECORE_EXPORT KAboutData
     /**
      * Returns the program's icon name.
      *
-     * The default value is @p appName .
-     * Use @p setProgramIconName if you need to have an icon
+     * The default value is appName().
+     * Use setProgramIconName() if you need to have an icon
      * whose name is different from the internal application name.
      *
      * @return the program's icon name.
