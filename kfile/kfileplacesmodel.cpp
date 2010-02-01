@@ -21,6 +21,12 @@
 #include "kfileplacesitem_p.h"
 #include "kfileplacessharedbookmarks_p.h"
 
+#ifdef Q_OS_WIN
+#include "Windows.h"
+#include "WinBase.h"
+#include <QtCore/QDir>
+#endif
+
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
@@ -114,10 +120,36 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
                                               "Network", I18N_NOOP2("KFile System Bookmarks", "Network"),
                                               KUrl("remote:/"), "network-workgroup");
 #ifdef Q_OS_WIN
-        //C:/ as root for windows...forward slashes are valid too and are used in much/most of the KDE code on Windows
-        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                              "Root", I18N_NOOP2("KFile System Bookmarks", "Root"),
-                                              KUrl("C:/"), "folder-red");
+        // adding drives
+        foreach ( const QFileInfo& info, QDir::drives() ) {
+            uint type = DRIVE_UNKNOWN;
+            QString driveIcon = "drive-harddisk";
+            QT_WA({ type = GetDriveTypeW((wchar_t *)info.absoluteFilePath().utf16()); },
+                  { type = GetDriveTypeA(info.absoluteFilePath().toLocal8Bit()); });
+            // qDebug() << "drive " << info.absoluteFilePath() << " type: " << type;
+            switch (type) {
+                case DRIVE_REMOVABLE:
+                    driveIcon = "drive-removable-media";
+                    break;
+                case DRIVE_FIXED:
+                    driveIcon = "drive-harddisk";
+                    break;
+                case DRIVE_REMOTE:
+                    driveIcon = "network-server";
+                    break;
+                case DRIVE_CDROM:
+                    driveIcon = "drive-optical";
+                    break;
+                case DRIVE_RAMDISK:
+                case DRIVE_UNKNOWN:
+                case DRIVE_NO_ROOT_DIR:
+                default:
+                    driveIcon = "drive-harddisk";
+            }
+            KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
+                                                  info.absoluteFilePath(), info.absoluteFilePath(),
+                                                  KUrl(info.absoluteFilePath()), driveIcon);
+        }
 #else
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Root", I18N_NOOP2("KFile System Bookmarks", "Root"),
