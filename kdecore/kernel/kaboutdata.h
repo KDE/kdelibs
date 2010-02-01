@@ -50,7 +50,7 @@ class KAboutData;
  * KAboutData about("khello", "khello", ki18n("KHello"), "0.1",
  *                   ki18n("A KDE version of Hello, world!"),
  *                   KAboutData::License_LGPL,
- *                   ki18n("Copyright (c) 2003 Developer"));
+ *                   ki18n("Copyright (C) 2003 Developer"));
  *
  * about.addAuthor(ki18n("Joe Developer"), ki18n("developer"), "joe@host.com", 0);
  * QList<KAboutPerson> people = about.authors();
@@ -218,7 +218,7 @@ class KDECORE_EXPORT KAboutData
               setLicenseTextFile if you use a license not predefined here.
      *
      * @param copyrightStatement A copyright statement, that can look like this:
-     *        ki18n("(c) 1999-2000, Name"). The string specified here is
+     *        ki18n("Copyright (C) 1999-2000 Name"). The string specified here is
      *        taken verbatim; the author information from addAuthor is not used.
      *
      * @param otherText Some free form text, that can contain any kind of
@@ -480,7 +480,7 @@ class KDECORE_EXPORT KAboutData
      * Defines the copyright statement to show when displaying the license.
      *
      * @param copyrightStatement A copyright statement, that can look like
-     *        this: ki18n("(c) 1999-2000, Name"). The string specified here is
+     *        this: ki18n("Copyright (C) 1999-2000 Name"). The string specified here is
      *        taken verbatim; the author information from addAuthor is not used.
      */
     KAboutData &setCopyrightStatement( const KLocalizedString &copyrightStatement );
