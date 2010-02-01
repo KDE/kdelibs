@@ -221,7 +221,7 @@ class KDECORE_EXPORT KAboutData
      *        ki18n("(c) 1999-2000, Name"). The string specified here is
      *        taken verbatim; the author information from addAuthor is not used.
      *
-     * @param text Some free form text, that can contain any kind of
+     * @param otherText Some free form text, that can contain any kind of
      *        information. The text can contain newlines. This string
      *        should be marked for translation.
      *
@@ -243,7 +243,7 @@ class KDECORE_EXPORT KAboutData
                 const KLocalizedString &shortDescription = KLocalizedString(),
                 enum LicenseKey licenseType = License_Unknown,
                 const KLocalizedString &copyrightStatement = KLocalizedString(),
-                const KLocalizedString &text = KLocalizedString(),
+                const KLocalizedString &otherText = KLocalizedString(),
                 const QByteArray &homePageAddress = QByteArray(),
                 const QByteArray &bugsEmailAddress = "submit@bugs.kde.org"
               );
