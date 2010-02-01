@@ -347,6 +347,10 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
 //        d->ui.userEditCombo->setMinimumWidth( s.width() );
         d->ui.userNameLabel->setBuddy( d->userEditCombo );
         d->ui.formLayout->setWidget( d->commentRow, QFormLayout::FieldRole, d->userEditCombo );
+        setTabOrder( d->ui.userEdit, d->ui.anonymousCheckBox );
+        setTabOrder( d->ui.anonymousCheckBox, d->ui.domainEdit );
+        setTabOrder( d->ui.domainEdit, d->ui.passEdit );
+        setTabOrder( d->ui.passEdit, d->ui.keepCheckBox );
         connect( d->ui.userEdit, SIGNAL(returnPressed()), d->ui.passEdit, SLOT(setFocus()) );
     }
 
