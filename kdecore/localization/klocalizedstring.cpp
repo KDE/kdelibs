@@ -779,14 +779,19 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     return final;
 }
 
-static QString wrapInt (const QString &numstr)
+static QString wrapNum (const QString &tag, const QString &numstr,
+                        int fieldWidth, const QChar &fillChar)
 {
-    return "<"KUIT_NUMINTG">" + numstr + "</"KUIT_NUMINTG">"; //krazy:exclude=doublequote_chars
-}
-
-static QString wrapReal (const QString &numstr)
-{
-    return "<"KUIT_NUMREAL">" + numstr + "</"KUIT_NUMREAL">"; //krazy:exclude=doublequote_chars
+    QString optag;
+    if (fieldWidth != 0) {
+        QString fillString = KuitSemantics::escape(fillChar);
+        optag = QString("<%1 width='%2' fill='%3'>")
+                       .arg(tag, QString::number(fieldWidth), fillString);
+    } else {
+        optag = QString("<%1>").arg(tag);
+    }
+    QString cltag = QString("</%1>").arg(tag);
+    return optag + numstr + cltag;
 }
 
 KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
@@ -798,7 +803,8 @@ KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
 }
@@ -812,7 +818,8 @@ KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
 }
@@ -826,7 +833,8 @@ KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
 }
@@ -840,7 +848,8 @@ KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
 }
@@ -854,7 +863,8 @@ KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
 }
@@ -868,7 +878,8 @@ KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
 }
@@ -878,7 +889,9 @@ KLocalizedString KLocalizedString::subs (double a, int fieldWidth,
                                          const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(wrapReal(QString("%1").arg(a, fieldWidth, format, precision, fillChar)));
+    kls.d->args.append(wrapNum(KUIT_NUMREAL,
+                               QString::number(a, format, precision),
+                               fieldWidth, fillChar));
     kls.d->vals.append(static_cast<realn>(a));
     return kls;
 }

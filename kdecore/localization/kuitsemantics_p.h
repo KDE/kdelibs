@@ -70,7 +70,8 @@ class KuitSemantics
     static bool mightBeRichText (const QString &text);
 
     /**
-     * Like Qt::escape() (cannot link to QtGui).
+     * Convert &, ", ', <, > characters into XML entities
+     * &amp;, &lt;, &gt;, &apos;, &quot;, respectively.
      */
     static QString escape (const QString &text);
 

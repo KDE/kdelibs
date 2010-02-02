@@ -67,7 +67,8 @@ namespace Kuit {
     namespace Att { // tag attribute names
         typedef enum {
             None,
-            Ctx, Url, Address, Section, Label, Strong
+            Ctx, Url, Address, Section, Label, Strong,
+            Width, Fill // internal helpers for numbers, not part of DTD
         } Var;
     }
 
@@ -186,9 +187,9 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_TAG(Message, "message", None, None);
     SETUP_TAG(Numid, "numid", None, None);
     SETUP_TAG(Nl, "nl", None, None);
-
-    SETUP_TAG(NumIntg, KUIT_NUMINTG, None, None); // internal, not part of DTD
-    SETUP_TAG(NumReal, KUIT_NUMREAL, None, None); // internal, not part of DTD
+    // Internal, not part of DTD.
+    SETUP_TAG(NumIntg, KUIT_NUMINTG, Width << Fill, None);
+    SETUP_TAG(NumReal, KUIT_NUMREAL, Width << Fill, None);
 
     // Setup known attribute names.
     #undef SETUP_ATT
@@ -201,6 +202,9 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_ATT(Section, "section");
     SETUP_ATT(Label, "label");
     SETUP_ATT(Strong, "strong");
+    // Internal, not part of DTD.
+    SETUP_ATT(Width, "width");
+    SETUP_ATT(Fill, "fill");
 
     // Setup known format names.
     #undef SETUP_FMT
@@ -396,7 +400,8 @@ class KuitSemanticsPrivate
                                        int &numle, int &numtr);
 
     // Modifies text for some tags.
-    QString modifyTagText (Kuit::TagVar tag, const QString &text,
+    QString modifyTagText (const QString &text, Kuit::TagVar tag,
+                           const QHash<Kuit::AttVar, QString> &avals,
                            int numctx, Kuit::FmtVar fmt) const;
 
     private:
@@ -1330,7 +1335,8 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
         QString pattern = visualPattern(oel.tag, oel.akey, fmt);
 
         // Some tags modify their text.
-        QString mtext = modifyTagText(oel.tag, oel.formattedText, numctx, fmt);
+        QString mtext = modifyTagText(oel.formattedText, oel.tag, oel.avals,
+                                      numctx, fmt);
 
         using namespace Kuit;
 
@@ -1406,8 +1412,9 @@ void KuitSemanticsPrivate::countWrappingNewlines (const QString &text,
     }
 }
 
-QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
-                                             const QString &text,
+QString KuitSemanticsPrivate::modifyTagText (const QString &text,
+                                             Kuit::TagVar tag,
+                                             const QHash<Kuit::AttVar, QString> &avals,
                                              int numctx,
                                              Kuit::FmtVar fmt) const
 {
@@ -1415,7 +1422,11 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
     if (   (tag == Kuit::Tag::NumIntg || tag == Kuit::Tag::NumReal) \
         && numctx < 1)
     {
-        return KGlobal::locale()->formatNumber(text, false);
+        int fieldWidth = avals.value(Kuit::Att::Width, QString('0')).toInt();
+        QString fillStr = avals.value(Kuit::Att::Fill, QString(' '));
+        QChar fillChar = !fillStr.isEmpty() ? fillStr[0] : QChar(' ');
+        return QString("%1").arg(KGlobal::locale()->formatNumber(text, false),
+                                 fieldWidth, fillChar);
     }
     else if (tag == Kuit::Tag::Filename) {
         return QDir::toNativeSeparators(text);
@@ -1630,6 +1641,10 @@ QString KuitSemantics::escape (const QString &text)
             ntext += "&lt;";
         } else if (c == '>') {
             ntext += "&gt;";
+        } else if (c == '\'') {
+            ntext += "&apos;";
+        } else if (c == '"') {
+            ntext += "&quot;";
         } else {
             ntext += c;
         }
@@ -1637,4 +1652,3 @@ QString KuitSemantics::escape (const QString &text)
 
     return ntext;
 }
-
