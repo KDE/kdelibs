@@ -45,6 +45,7 @@
 #include <kcolorscheme.h>
 #include <kglobalsettings.h>
 #include <ktextedit.h>
+#include <kstringhandler.h>
 
 #include "delegateanimationhandler_p.h"
 
@@ -905,8 +906,10 @@ QString KFileItemDelegate::Private::display(const QModelIndex &index) const
         {
             if (index.column() == KDirModel::Size)
                 return itemSize(index, fileItem(index));
-            else
-                return replaceNewlines(value.toString());
+            else {
+                const QString text = replaceNewlines(value.toString());
+                return KStringHandler::preProcessWrap(text);
+            }
         }
 
         case QVariant::Double:
