@@ -1460,6 +1460,10 @@ void CopyJobPrivate::copyNextFile()
             JobFlags flags = bOverwrite ? Overwrite : DefaultFlags;
             KIO::FileCopyJob * moveJob = KIO::file_move( uSource, uDest, (*it).permissions, flags | HideProgressInfo/*no GUI*/ );
             moveJob->setSourceSize( (*it).size );
+            if ((*it).mtime != -1) {
+                QDateTime dt; dt.setTime_t( (*it).mtime );
+                moveJob->setModificationTime( dt ); // #55804
+            }
             newjob = moveJob;
             //kDebug(7007) << "Moving" << uSource << "to" << uDest;
             //emit moving( this, uSource, uDest );
