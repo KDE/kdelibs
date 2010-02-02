@@ -156,6 +156,16 @@ void KLocalizedStringTest::correctSubs ()
              QString("E = mc^2"));
     QCOMPARE(i18n("E = mc^&#0050;"),
              QString("E = mc^2"));
+
+    // Number formatting.
+    QCOMPARE(ki18n("%1").subs(42).toString(),
+             QString("42"));
+    QCOMPARE(ki18n("%1").subs(42, 5).toString(),
+             QString("   42"));
+    QCOMPARE(ki18n("%1").subs(42, -5, 10, QChar('_')).toString(),
+             QString("42___"));
+    QCOMPARE(ki18n("%1").subs(4.2, 5, 'f', 2).toString(),
+             QString(" 4.20"));
 }
 
 void KLocalizedStringTest::correctButIllFormed()
