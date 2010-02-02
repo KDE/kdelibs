@@ -378,7 +378,6 @@ int KWindowSystem::numberOfDesktops()
 
 void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     SetForegroundWindow(subwindow->winId());
 }
 
@@ -405,13 +404,11 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
 
 WId KWindowSystem::activeWindow()
 {
-    KWindowSystem::init(INFO_WINDOWS);
     return GetActiveWindow();
 }
 
 void KWindowSystem::activateWindow( WId win, long )
 {
-    KWindowSystem::init(INFO_WINDOWS);
     SetActiveWindow( win );
 }
 
