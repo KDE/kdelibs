@@ -239,8 +239,7 @@ bool AccessManager::AccessManagerPrivate::isRequestAllowed(const QUrl& url) cons
 {
     const QString scheme (url.scheme());
 
-    return (externalContentAllowed && !scheme.isEmpty() &&
-            scheme != QLatin1String("file")  && scheme != QLatin1String("data"));
+    return (externalContentAllowed || scheme == QLatin1String("file")  || scheme == QLatin1String("data"));
 }
 
 
