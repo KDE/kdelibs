@@ -158,12 +158,12 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 
   for(QStringList::ConstIterator it = headers.begin(); it != headers.end(); ++it)
   {
-    QString header = (*it).toLower();
     // Do not allow Request line to be specified and ignore
     // the other HTTP headers.
-    if (!header.contains(QLatin1Char(':')) || header.startsWith(QLatin1String("host")) ||
-        header.startsWith(QLatin1String("proxy-authorization")) ||
-        header.startsWith(QLatin1String("via")))
+    if (!(*it).contains(QLatin1Char(':')) ||
+        (*it).startsWith(QLatin1String("host"), Qt::CaseInsensitive) ||
+        (*it).startsWith(QLatin1String("proxy-authorization"), Qt::CaseInsensitive) ||
+        (*it).startsWith(QLatin1String("via"), Qt::CaseInsensitive))
       continue;
 
     sanitizedHeaders += (*it);
@@ -2299,14 +2299,13 @@ bool HTTPProtocol::sendQuery()
         kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset);
     }
 
-    if ( m_request.cacheTag.policy== CC_Reload )
+    if ( !m_request.cacheTag.useCache || m_request.cacheTag.policy== CC_Reload )
     {
       /* No caching for reload */
       header += QLatin1String("Pragma: no-cache\r\n"); /* for HTTP/1.0 caches */
       header += QLatin1String("Cache-control: no-cache\r\n"); /* for HTTP >=1.1 caches */
     }
-
-    if (m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::ValidateCached)
+    else if (m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::ValidateCached)
     {
       kDebug(7113) << "needs validation, performing conditional get.";
       /* conditional get */
