@@ -603,15 +603,14 @@ void ProtoQueue::startAJob()
         Q_ASSERT(hq->runningJobsCount() < m_maxConnectionsPerHost);
         SimpleJob *startingJob = hq->nextStartingJob();
         Q_ASSERT(hq->runningJobsCount() <= m_maxConnectionsPerHost);
-        if (hq->lowestSerial() != prevLowestSerial) {
-            m_queuesBySerial.erase(first);
-            // we've increased hq's runningJobsCount() by calling nexStartingJob()
-            // so we need to check again.
-            if (!hq->isQueueEmpty() && hq->runningJobsCount() < m_maxConnectionsPerHost) {
-                m_queuesBySerial.insert(hq->lowestSerial(), hq);
-            }
-        }
+        Q_ASSERT(hq->lowestSerial() != prevLowestSerial);
 
+        m_queuesBySerial.erase(first);
+        // we've increased hq's runningJobsCount() by calling nexStartingJob()
+        // so we need to check again.
+        if (!hq->isQueueEmpty() && hq->runningJobsCount() < m_maxConnectionsPerHost) {
+            m_queuesBySerial.insert(hq->lowestSerial(), hq);
+        }
 
         // always increase m_runningJobsCount because it's correct if there is a slave and if there
         // is no slave, removeJob() will balance the number again. removeJob() would decrease the
