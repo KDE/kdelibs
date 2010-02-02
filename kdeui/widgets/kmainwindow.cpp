@@ -1058,7 +1058,7 @@ bool KMainWindow::event( QEvent* ev )
                 connect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
                         this, SLOT(setSettingsDirty()));
                 connect(dock, SIGNAL(visibilityChanged(bool)),
-                        this, SLOT(setSettingsDirty()));
+                        this, SLOT(setSettingsDirty()), Qt::QueuedConnection);
                 connect(dock, SIGNAL(topLevelChanged(bool)),
                         this, SLOT(setSettingsDirty()));
 
