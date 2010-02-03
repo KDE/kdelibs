@@ -684,7 +684,7 @@ public:
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
   *
-  * The @p details message can conatin additional information about
+  * The @p details message can contain additional information about
   * the problem and can be shown on request to advanced/interested users.
   *
   * If your program detects the action specified by the user is somehow
