@@ -71,6 +71,7 @@
 #include <kio/previewjob.h>
 #include <kio/renamedialog.h>
 #include <kfilepreviewgenerator.h>
+#include <krun.h>
 #include <kpropertiesdialog.h>
 #include <kstandardshortcut.h>
 #include <kde_file.h>
@@ -209,6 +210,7 @@ public:
     void _k_slotToggleHidden(bool);
     void _k_togglePreview(bool);
     void _k_toggleInlinePreviews(bool);
+    void _k_slotOpenFileManager();
     void _k_slotSortByName();
     void _k_slotSortBySize();
     void _k_slotSortByDate();
@@ -674,6 +676,11 @@ void KDirOperator::Private::_k_toggleInlinePreviews(bool show)
             const_cast<QAbstractItemModel*>(index.model())->setData(index, KIcon(item.iconName()), Qt::DecorationRole);
         }
     }
+}
+
+void KDirOperator::Private::_k_slotOpenFileManager()
+{
+    new KRun(currUrl, parent);
 }
 
 void KDirOperator::Private::_k_slotSortByName()
@@ -1962,6 +1969,11 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("inline preview", inlinePreview);
     connect(inlinePreview, SIGNAL(toggled(bool)), SLOT(_k_toggleInlinePreviews(bool)));
 
+    KAction *fileManager = new KAction(i18n("Open File Manager"), this);
+    d->actionCollection->addAction("file manager", fileManager);
+    fileManager->setIcon(KIcon(QLatin1String("system-file-manager")));
+    connect(fileManager, SIGNAL(triggered()), SLOT(_k_slotOpenFileManager()));
+
     action = new KAction(i18n("Properties"), this);
     d->actionCollection->addAction("properties", action);
     action->setIcon(KIcon("document-properties"));
@@ -2042,6 +2054,7 @@ void KDirOperator::setupMenu(int whichActions)
     }
 
     if (whichActions & FileActions) {
+        d->actionMenu->addAction(d->actionCollection->action("file manager"));
         d->actionMenu->addAction(d->actionCollection->action("properties"));
     }
 }

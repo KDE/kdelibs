@@ -891,6 +891,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotToggleHidden(bool) )
     Q_PRIVATE_SLOT( d, void _k_togglePreview(bool) )
     Q_PRIVATE_SLOT( d, void _k_toggleInlinePreviews(bool) )
+    Q_PRIVATE_SLOT( d, void _k_slotOpenFileManager() )
     Q_PRIVATE_SLOT( d, void _k_slotSortByName() )
     Q_PRIVATE_SLOT( d, void _k_slotSortBySize() )
     Q_PRIVATE_SLOT( d, void _k_slotSortByDate() )
