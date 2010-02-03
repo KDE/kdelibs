@@ -123,7 +123,7 @@ Nepomuk::Resource::~Resource()
             if ( !m_data->isValid() ||
                  m_data->proxy() ||
                  m_data->rm()->dataCacheFull() ) {
-                m_data->deleteData();
+                delete m_data;
             }
         }
     }
@@ -134,7 +134,7 @@ Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
         if ( m_data && !m_data->deref() && !m_data->isValid() ) {
-            m_data->deleteData();
+            delete m_data;
         }
         m_data = res.m_data;
         if ( m_data )

@@ -45,14 +45,6 @@ namespace Nepomuk {
         explicit ResourceData( const QUrl& uri, const QString& kickoffId_, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
 
-        /**
-         * Used instead of the destructor in Resource. The reason for the existence of
-         * this method is that the destructor does not remove the uri from the global
-         * data map. That behaviour is necessary since in certain situations temporary
-         * ResourceData instances are created.
-         */
-        void deleteData();
-
         inline bool ref() {
             return m_ref.ref();
         }
@@ -164,7 +156,7 @@ namespace Nepomuk {
 
         /// Will reset this instance to 0 as if constructed without parameters
         /// Used by remove() and deleteData()
-        void resetAll();
+        void resetAll( bool isDelete = false );
 
         /// identifier that was used to construct the resource. Will be used by determineUri
         /// to check for nao:identifiers or even nie:urls.

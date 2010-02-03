@@ -201,7 +201,7 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
          rdIt != rdl.end(); ++rdIt ) {
         ResourceData* data = *rdIt;
         if ( !data->cnt() ) {
-            data->deleteData();
+            delete data;
             if( num > 0 && --num == 0 )
                 break;
         }
@@ -258,6 +258,7 @@ Nepomuk::ResourceManager::ResourceManager()
 
 Nepomuk::ResourceManager::~ResourceManager()
 {
+    clearCache();
     delete d->resourceFilterModel;
     delete d->mainModel;
     delete d;
