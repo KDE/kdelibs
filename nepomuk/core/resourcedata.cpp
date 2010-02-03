@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -94,14 +94,14 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
     if( m_rm->dataCacheFull() )
         m_rm->cleanupCache();
 
-    ++m_rm->dataCnt;
+    m_rm->dataCnt.ref();
 }
 
 
 Nepomuk::ResourceData::~ResourceData()
 {
-    delete m_pimoThing;
-    --m_rm->dataCnt;
+    resetAll(true);
+    m_rm->dataCnt.deref();
 }
 
 
@@ -166,7 +166,7 @@ void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
 
 
 
-void Nepomuk::ResourceData::resetAll()
+void Nepomuk::ResourceData::resetAll( bool isDelete )
 {
     // reset proxy
     bool hadProxy = false;
@@ -174,7 +174,7 @@ void Nepomuk::ResourceData::resetAll()
         hadProxy = true;
         if( !m_proxyData->deref() &&
             rm()->dataCacheFull() )
-            m_proxyData->deleteData();
+            delete m_proxyData;
         m_proxyData = 0;
     }
 
@@ -190,19 +190,22 @@ void Nepomuk::ResourceData::resetAll()
 
     // reset all variables
     m_uri = QUrl();
+    m_fileUrl = KUrl();
     m_kickoffId.truncate(0);
     m_kickoffUri = QUrl();
     m_cache.clear();
     m_cacheDirty = false;
     m_types.clear();
-    m_mainType = Soprano::Vocabulary::RDFS::Resource();
-}
+    delete m_pimoThing;
+    m_pimoThing = 0;
+    m_groundingOccurence = 0;
 
-
-void Nepomuk::ResourceData::deleteData()
-{
-    resetAll();
-    delete this;
+    // when we are being deleted the value of m_mainType is not important
+    // andmore. Also since ResourceManager is a global static it might be
+    // deleted after the global static behind Soprano::Vocabulary::RDFS
+    // which results in a crash.
+    if( !isDelete )
+        m_mainType = Soprano::Vocabulary::RDFS::Resource();
 }
 
 

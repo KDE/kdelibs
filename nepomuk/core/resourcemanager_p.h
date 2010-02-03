@@ -69,7 +69,7 @@ namespace Nepomuk {
         /// contains all non-initialized ResourceData objects created in data(QString)
         KickoffDataHash m_idKickoffData;
 
-        int dataCnt;
+        QAtomicInt dataCnt;
 
         ResourceManager* m_manager;
 
