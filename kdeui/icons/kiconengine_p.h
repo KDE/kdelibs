@@ -58,16 +58,6 @@ class KIconEngine : public QIconEngineV2
      */
     virtual ~KIconEngine();
 
-    /**
-     * Allows the KDE icon name assigned to this icon engine to be retrieved.
-     */
-    const QString& iconName() const;
-
-    /**
-     * Returns the icon loader used by this engine for rendering purposes.
-     */
-    KIconLoader* iconLoader() const;
-
     /// Reimplementation
     virtual QSize actualSize ( const QSize & size, QIcon::Mode mode, QIcon::State state );
     /// Reimplementation
@@ -81,8 +71,13 @@ class KIconEngine : public QIconEngineV2
     virtual bool write(QDataStream &out) const;
 
   private:
-    class Private;
-    Private * const d;
+    QString mIconName;
+    QStringList mOverlays;
+    KIconLoader* mIconLoader;
 };
+
+inline KIconEngine::~KIconEngine()
+{
+}
 
 #endif
