@@ -97,6 +97,10 @@ public:
           loop( 0 ) {
     }
 
+    ~Private() {
+        QDBusConnection::disconnectFromBus( dbusConnection.name() );
+    }
+
     void _k_entriesRemoved( const QStringList& );
     void _k_finishedListing();
     bool handleQueryReply( QDBusReply<QDBusObjectPath> reply );
