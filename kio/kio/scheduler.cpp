@@ -744,7 +744,8 @@ Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job,
 {
     Slave *slave = 0;
 
-    if (!enforceLimits || checkLimits(protInfo, job))
+    if (true /* ### temporary workaround for #224857*/ ||
+        !enforceLimits || checkLimits(protInfo, job))
     {
         KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
