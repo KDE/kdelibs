@@ -342,7 +342,7 @@ static void create_netwm_atoms(Display *d) {
 	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
 	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
             "_KDE_NET_WM_TEMPORARY_RULES",
-            "_KDE_NET_WM_FRAME_OVERLAP",
+            "_NET_WM_FRAME_OVERLAP",
 
 	    "WM_STATE",
 	    "WM_PROTOCOLS",
