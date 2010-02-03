@@ -1461,8 +1461,7 @@ void CopyJobPrivate::copyNextFile()
             KIO::FileCopyJob * moveJob = KIO::file_move( uSource, uDest, (*it).permissions, flags | HideProgressInfo/*no GUI*/ );
             moveJob->setSourceSize( (*it).size );
             if ((*it).mtime != -1) {
-                QDateTime dt; dt.setTime_t( (*it).mtime );
-                moveJob->setModificationTime( dt ); // #55804
+                moveJob->setModificationTime( QDateTime::fromTime_t( (*it).mtime ) ); // #55804
             }
             newjob = moveJob;
             //kDebug(7007) << "Moving" << uSource << "to" << uDest;
@@ -1485,8 +1484,7 @@ void CopyJobPrivate::copyNextFile()
             copyJob->setParentJob( q ); // in case of rename dialog
             copyJob->setSourceSize( (*it).size );
             if ((*it).mtime != -1) {
-                QDateTime dt; dt.setTime_t( (*it).mtime );
-                copyJob->setModificationTime( dt );
+                copyJob->setModificationTime( QDateTime::fromTime_t( (*it).mtime ) );
             }
             newjob = copyJob;
             //kDebug(7007) << "Copying" << uSource << "to" << uDest;
