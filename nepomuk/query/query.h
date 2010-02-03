@@ -109,16 +109,25 @@ namespace Nepomuk {
              * The root term of the query.
              * This can be any type of term.
              *
-             * \sa setTerm
+             * \sa setTerm()
              */
             Term term() const;
 
             /**
              * The maximum number of results that this query should yield.
              *
-             * \sa setLimit
+             * \sa setLimit()
              */
             int limit() const;
+
+            /**
+             * The first result that should be retrieved.
+             *
+             * \sa setOffset()
+             *
+             * \since 4.5
+             */
+            int offset() const;
 
             /**
              * Set the root term of the query.
@@ -134,6 +143,14 @@ namespace Nepomuk {
              * \sa limit
              */
             void setLimit( int );
+
+            /**
+             * The first result that should be retrieved. This can be combined
+             * with setLimit() to do paged results.
+             *
+             * \since 4.5
+             */
+            void setOffset( int offset );
 
             /**
              * \class RequestProperty query.h Nepomuk/Query/Query

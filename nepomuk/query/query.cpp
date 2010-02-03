@@ -50,10 +50,17 @@
 
 #include <kdebug.h>
 
+/*
+## Full Text Score
+## Entity Rank
+## Surfaced via SPARQL
 
+SELECT ?s ?sc  ( <LONG::IRI_RANK> (?s) ) as ?Rank
+WHERE { ?s ?p ?o .
+?o bif:contains 'NEW AND YOR' option (score ?sc). }
+ORDER BY  desc (?
+*/
 
-namespace {
-}
 
 
 QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourceVarName, QueryBuilderData* qbd ) const
@@ -203,6 +210,12 @@ int Nepomuk::Query::Query::limit() const
 }
 
 
+int Nepomuk::Query::Query::offset() const
+{
+    return d->m_offset;
+}
+
+
 void Nepomuk::Query::Query::setTerm( const Term& term )
 {
     d->m_term = term;
@@ -212,6 +225,12 @@ void Nepomuk::Query::Query::setTerm( const Term& term )
 void Nepomuk::Query::Query::setLimit( int limit )
 {
     d->m_limit = limit;
+}
+
+
+void Nepomuk::Query::Query::setOffset( int offset )
+{
+    d->m_offset = offset;
 }
 
 
@@ -254,6 +273,7 @@ namespace {
 bool Nepomuk::Query::Query::operator==( const Query& other ) const
 {
     return( d->m_limit == other.d->m_limit &&
+            d->m_offset == other.d->m_offset &&
             d->m_term == other.d->m_term &&
             compareQList( d->m_requestProperties, other.d->m_requestProperties ) &&
             compareQList( d->m_includeFolders, other.d->m_includeFolders ) &&
@@ -281,6 +301,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
                               termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                               d->buildRequestPropertyPatterns() );
+        if ( d->m_offset > 0 )
+            query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
         if ( d->m_limit > 0 )
             query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
         return query;
@@ -319,6 +341,7 @@ Nepomuk::Query::RequestPropertyMap Nepomuk::Query::Query::requestPropertyMap() c
 QDebug operator<<( QDebug dbg, const Nepomuk::Query::Query& query )
 {
     dbg << "(Query:           " << query.term() << endl
+        << " Offset:           " << query.offset()
         << " Limit:           " << query.limit() << ")";
     return dbg;
 }

@@ -40,6 +40,7 @@ namespace Nepomuk {
         public:
             QueryPrivate()
                 : m_limit( 0 ),
+                  m_offset( 0 ),
                   m_isFileQuery( false ) {
             }
 
@@ -54,6 +55,7 @@ namespace Nepomuk {
 
             Term m_term;
             int m_limit;
+            int m_offset;
 
             QList<Query::RequestProperty> m_requestProperties;
 
