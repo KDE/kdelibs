@@ -935,7 +935,7 @@ KCmdLineArgsStatic::parseAllArgs()
          }
          else
          {
-           s->printQ(s->about->customAuthorPlainText());
+           s->printQ(s->about->customAuthorPlainText()+QLatin1Char('\n'));
          }
        }
        exit(0);
