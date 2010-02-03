@@ -109,12 +109,17 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
                                 const QString &header,
                                 bool manage)
 {
+  Q_ASSERT(page);
+  if (!page) {
+      return 0;
+  }
+
   KPageWidgetItem* item = d->addPageInternal(page, itemName, pixmapName, header);
-  if(manage)
+  if (manage) {
     d->manager->addWidget(page);
-  
-  if (d->shown && manage)
-  {
+  }
+
+  if (d->shown && manage) {
     // update the default button if the dialog is shown
     bool is_default = isButtonEnabled(Default) && d->manager->isDefault();
     enableButton(Default,!is_default);
@@ -128,6 +133,11 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
                                 const QString &pixmapName,
                                 const QString &header)
 {
+  Q_ASSERT(page);
+  if (!page) {
+      return 0;
+  }
+
   KPageWidgetItem* item = d->addPageInternal(page, itemName, pixmapName, header);
   d->managerForPage[page] = new KConfigDialogManager(page, config);
   d->setupManagerConnections(d->managerForPage[page]);
