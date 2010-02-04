@@ -152,6 +152,8 @@ public:
 protected:
     virtual void slotButtonClicked(int buttonId)
     {
+        if (buttonId == OpenWith)
+            selectedService = 0;
         KPushButton* button = KDialog::button(KDialog::ButtonCode(buttonId));
         if (button && !button->menu()) {
             done(buttonId);
@@ -166,7 +168,7 @@ public Q_SLOTS:
     {
         selectedService = action->data().value<KService::Ptr>();
         //showService(selectedService);
-        done(OpenWith);
+        done(OpenDefault);
     }
 };
 
@@ -212,6 +214,8 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", offer->name()), offer->icon());
         d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
         if (d->features & ServiceSelection) {
+            // OpenDefault shall use this service
+            d->selectedService = apps.first();
             d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, true);
             KMenu* menu = new KMenu(d);
             if (apps.count() > 1) {
