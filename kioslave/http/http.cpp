@@ -3309,8 +3309,13 @@ try_again:
     }
 
     // If we're redirected to a http:// url, remember that we're doing webdav...
-    if (m_protocol == "webdav" || m_protocol == "webdavs")
-        u.setProtocol(QString::fromLatin1(m_protocol));
+    if (m_protocol == "webdav" || m_protocol == "webdavs"){
+        if(u.protocol() == QLatin1String("http")){
+            u.setProtocol(QString::fromLatin1("webdav"));
+        }else if(u.protocol() == QLatin1String("https")){
+            u.setProtocol(QString::fromLatin1("webdavs"));
+        }
+    }
 
     kDebug(7113) << "Re-directing from" << m_request.url.url()
                  << "to" << u.url();
