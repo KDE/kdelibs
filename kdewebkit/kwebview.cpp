@@ -80,18 +80,21 @@ void KWebView::mousePressEvent(QMouseEvent *event)
 }
 
 void KWebView::mouseReleaseEvent(QMouseEvent *event)
-{
+{    
     if (d->mouseReleased(event->pos())) {
         event->accept();
         return;
     }
 
-    if (d->handleUrlPasteFromClipboard()) {
-        event->accept();
+    // WORKAROUND: Let the page handle the event first so that middle clicking
+    // on scroll bars does not result in navigation to url from the selection
+    // clipboard.
+    page()->event(event);
+    if (event->isAccepted())
         return;
-    }
 
-    QWebView::mouseReleaseEvent(event);
+    if (d->handleUrlPasteFromClipboard())
+        event->accept();
 }
 
 #include "kwebview.moc"
