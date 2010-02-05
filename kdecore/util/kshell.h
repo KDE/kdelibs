@@ -65,8 +65,9 @@ namespace KShell {
          * Further meta characters on *NIX are the grouping symbols
          * opening and closing @c braces, the command substitution symbol
          * @c backquote, the generic substitution symbol @c dollar (if
-         * not followed by an apostrophe), the wildcards @c asterisk and
-         * @c question @c mark and the comment symbol @c hash @c mark.
+         * not followed by an apostrophe), the wildcards @c asterisk,
+         * @c question @c mark and opening and closing @c square @c brackets
+         * and the comment symbol @c hash @c mark.
          * Additionally, a variable assignment in the first word is recognized.
          *
          * A further meta character on Windows is the environment variable
