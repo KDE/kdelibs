@@ -2001,9 +2001,11 @@ void KFileWidgetPrivate::_k_activateUrlNavigator()
 {
 //     kDebug(kfile_area);
 
-    urlNavigator->setUrlEditable(true);
-    urlNavigator->setFocus();
-    urlNavigator->editor()->lineEdit()->selectAll();
+    urlNavigator->setUrlEditable(!urlNavigator->isUrlEditable());
+    if(urlNavigator->isUrlEditable()) {
+        urlNavigator->setFocus();
+        urlNavigator->editor()->lineEdit()->selectAll();
+    }
 }
 
 void KFileWidgetPrivate::_k_zoomOutIconsSize()
