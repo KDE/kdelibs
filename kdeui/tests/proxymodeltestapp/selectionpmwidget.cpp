@@ -38,6 +38,7 @@ SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
 
   m_rootModel = new DynamicTreeModel(this);
 
+  DynamicTreeWidget *dynTreeWidget1 = new DynamicTreeWidget(m_rootModel, splitter);
   DynamicTreeWidget *dynTreeWidget = new DynamicTreeWidget(m_rootModel, splitter);
 
   QTreeView *rootView = dynTreeWidget->treeView();
