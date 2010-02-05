@@ -104,23 +104,26 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
     }
 
     QWebElementCollection formElements = frame->findAllElements(QL1S("form[method=post]"));
+    const int formElementCount = formElements.count();
 
-    Q_FOREACH(const QWebElement& formElement, formElements) {
+    for ( int i = 0; i < formElementCount; ++i ) {
+        const QWebElement formElement = formElements.at(i);
+
         KWebWallet::WebForm form;
         form.url = frame->url();
         form.name = formElement.attribute(QL1S("name"));
         form.index = QString::number(i);
 
-        QWebElementCollection inputElements = formElement.findAll(inputSelector);        
-
+        QWebElementCollection inputElements = formElement.findAll(inputSelector);
         Q_FOREACH(QWebElement inputElement, inputElements) {
-            const QString type = inputElement.attribute(QL1S("type"));
+            const QString type = inputElement.attribute(QL1S("type"), QL1S("text"));
             const QString name = inputElement.attribute(QL1S("name"));
             const QString value = inputElement.evaluateJavaScript(QL1S("this.value")).toString();
 
-            if (!value.isEmpty() && (type.isEmpty() ||
-                type.compare(QL1S("text"), Qt::CaseInsensitive) == 0 ||
-                (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0 && !ignorepasswd))) {
+            if (!value.isEmpty() &&
+                inputElement.attribute(QL1S("autocomplete")).compare(QL1S("off"), Qt::CaseInsensitive) != 0 &&
+                (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0 ||
+                 (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0 && !ignorepasswd))) {
                 form.fields << qMakePair(name, value);
             }
         }
@@ -396,10 +399,8 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
             QListIterator<WebForm::WebField> fieldIt (form.fields);
             while (fieldIt.hasNext()) {
                 const WebForm::WebField field = fieldIt.next();
-                const QString script = QString (QL1S("if(document.forms[\"%1\"].elements[\"%2\"] && "
-                                                     "!document.forms[\"%1\"].elements[\"%2\"].disabled && "
-                                                     "!document.forms[\"%1\"].elements[\"%2\"].readonly) "
-                                                     "document.forms[\"%1\"].elements[\"%2\"].value=\"%3\";"))
+                const QString script = QString::fromLatin1("var e = document.forms[\"%1\"].elements[\"%2\"];"
+                                                           "if(e && !e.disabled  && !e.readonly) e.value=\"%3\";")
                                        .arg(formName).arg(field.first).arg(escapeValue(field.second));
                 frame->evaluateJavaScript(script);
             }
