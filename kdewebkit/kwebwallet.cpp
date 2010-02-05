@@ -30,6 +30,8 @@
 #include <QtCore/QPointer>
 #include <QtWebKit/QWebPage>
 #include <QtWebKit/QWebFrame>
+#include <QtWebKit/QWebElement>
+#include <QtWebKit/QWebElementCollection>
 #include <qwindowdefs.h>
 
 #define QL1S(x)   QLatin1String(x)
@@ -94,36 +96,39 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
 {
     Q_ASSERT(frame);
 
+    QString inputSelector;
     KWebWallet::WebFormList list;
-    const QString fileName = (fillform ? QL1S(":/resources/parseFormNames.js"):QL1S(":/resources/parseForms.js"));
-    QFile file(fileName);
 
-    if (file.open(QFile::ReadOnly)) {
-        const QVariant r = frame->evaluateJavaScript(file.readAll());
-        QListIterator<QVariant> formIt (r.toList());
-        while (formIt.hasNext()) {
-            KWebWallet::WebForm form;
-            form.url = frame->url();
-            const QVariantMap map = formIt.next().toMap();
-            form.name = map.value(QL1S("name")).toString();
-            form.index = map.value(QL1S("index")).toString();
-            QListIterator<QVariant> elementIt (map.value(QL1S("elements")).toList());
-            while (elementIt.hasNext()) {
-                const QVariantMap elementMap = elementIt.next().toMap();
-                if ((fillform && elementMap[QL1S("autocomplete")].toString() == QL1S("off")) ||
-                    (ignorepasswd && elementMap.value(QL1S("type")).toString() == QL1S("password"))) {
-                    continue;
-                } else {
-                    KWebWallet::WebForm::WebField field = qMakePair(elementMap.value(QL1S("name")).toString(),
-                                                                    elementMap.value(QL1S("value")).toString());
-                    form.fields << field;
-                }
-            }
-
-            if ((fillform && q->hasCachedFormData(form)) || !form.fields.isEmpty())
-                list << form;
-        }
+    if (!fillform) {
+        inputSelector = QL1S("input");
     }
+
+    QWebElementCollection formElements = frame->findAllElements(QL1S("form[method=post]"));
+
+    Q_FOREACH(const QWebElement& formElement, formElements) {
+        KWebWallet::WebForm form;
+        form.url = frame->url();
+        form.name = formElement.attribute(QL1S("name"));
+        form.index = QString::number(i);
+
+        QWebElementCollection inputElements = formElement.findAll(inputSelector);        
+
+        Q_FOREACH(QWebElement inputElement, inputElements) {
+            const QString type = inputElement.attribute(QL1S("type"));
+            const QString name = inputElement.attribute(QL1S("name"));
+            const QString value = inputElement.evaluateJavaScript(QL1S("this.value")).toString();
+
+            if (!value.isEmpty() && (type.isEmpty() ||
+                type.compare(QL1S("text"), Qt::CaseInsensitive) == 0 ||
+                (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0 && !ignorepasswd))) {
+                form.fields << qMakePair(name, value);
+            }
+        }
+
+        if ((fillform && q->hasCachedFormData(form)) || !form.fields.isEmpty())
+            list << form;
+    }
+
     return list;
 }
 
