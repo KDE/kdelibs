@@ -152,7 +152,7 @@ public:
 protected:
     virtual void slotButtonClicked(int buttonId)
     {
-        if (buttonId == OpenWith)
+        if (buttonId != OpenDefault)
             selectedService = 0;
         KPushButton* button = KDialog::button(KDialog::ButtonCode(buttonId));
         if (button && !button->menu()) {
