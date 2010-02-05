@@ -1414,7 +1414,21 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
       d->m_map.insert(sourceIndex.internalPointer(), QPersistentModelIndex(sourceIndex));
       return createIndex( row, sourceIndex.column(), sourceIndex.internalPointer() );
     }
-    return QModelIndex();
+    QModelIndex sourceParent = sourceIndex.parent();
+    int parentRow = d->m_rootIndexList.indexOf( sourceParent );
+    if ( parentRow == -1 )
+      return QModelIndex();
+
+    int proxyRow = sourceIndex.row();
+    while (parentRow > 0)
+    {
+      --parentRow;
+      QModelIndex selectedIndexAbove = d->m_rootIndexList.at( parentRow );
+      proxyRow += sourceModel()->rowCount(selectedIndexAbove);
+    }
+
+    d->m_map.insert(sourceIndex.internalPointer(), QPersistentModelIndex(sourceIndex));
+    return createIndex( proxyRow, sourceIndex.column(), sourceIndex.internalPointer() );
   } else if ( d->isInModel( sourceIndex ) )
   {
     int targetRow = sourceIndex.row();
