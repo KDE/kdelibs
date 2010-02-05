@@ -304,9 +304,6 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
   Q_Q(KSelectionProxyModel);
 
-  if (!m_selectionModel->hasSelection())
-    return;
-
   // Deselecting an index in the selectionModel will cause it to
   // be removed from m_rootIndexList, so we don't need to clear
   // the list here manually.
@@ -325,13 +322,12 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 {
   Q_Q(KSelectionProxyModel);
 
-  if (!m_selectionModel->hasSelection())
-    return;
-
   // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
   // but when it gets one we'll be notified anyway.
   resetInternalData();
+  m_selectionModel->clearSelection();
   m_resetting = false;
+  createProxyChain();
   q->endResetModel();
 }
 
@@ -372,11 +368,14 @@ int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) c
     parentPosition--;
 
     parentAbove = m_rootIndexList.at(parentPosition);
+    Q_ASSERT(parentAbove.isValid());
 
     int rows = q->sourceModel()->rowCount(parentAbove);
     if ( rows > 0 )
     {
-      QModelIndex proxyChildAbove = q->mapFromSource(q->sourceModel()->index(rows - 1, 0, parentAbove));
+      QModelIndex sourceIndexAbove = q->sourceModel()->index(rows - 1, 0, parentAbove);
+      Q_ASSERT(sourceIndexAbove.isValid());
+      QModelIndex proxyChildAbove = q->mapFromSource(sourceIndexAbove);
       Q_ASSERT(proxyChildAbove.isValid());
       return proxyChildAbove.row() + 1;
     }
@@ -618,6 +617,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
     {
       // The easy case.
       bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
+      Q_UNUSED( allowMove ); // prevent warning in release builds.
       Q_ASSERT( allowMove );
     } else {
       // source is in the proxy, but dest isn't.
@@ -1112,17 +1112,16 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
           q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
         Q_ASSERT(newIndex.isValid());
         m_rootIndexList.insert(rootListRow, newIndex);
+        emit q->rootIndexAdded(newIndex);
         if (!m_resetting)
         {
-          emit q->rootIndexAdded(newIndex);
           q->endInsertRows();
         }
       } else {
         // Even if the newindex doesn't have any children to put into the model yet,
         // We still need to make sure it's future children are inserted into the model.
         m_rootIndexList.insert(rootListRow, newIndex);
-        if (!m_resetting)
-          emit q->rootIndexAdded(newIndex);
+        emit q->rootIndexAdded(newIndex);
       }
     } else {
       QModelIndexList list = toNonPersistent(m_rootIndexList);
@@ -1132,9 +1131,9 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
         q->beginInsertRows(QModelIndex(), row, row);
       Q_ASSERT(newIndex.isValid());
       m_rootIndexList.insert(row, newIndex);
+      emit q->rootIndexAdded(newIndex);
       if (!m_resetting)
       {
-        emit q->rootIndexAdded(newIndex);
         q->endInsertRows();
       }
     }
@@ -1415,7 +1414,21 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
       d->m_map.insert(sourceIndex.internalPointer(), QPersistentModelIndex(sourceIndex));
       return createIndex( row, sourceIndex.column(), sourceIndex.internalPointer() );
     }
-    return QModelIndex();
+    QModelIndex sourceParent = sourceIndex.parent();
+    int parentRow = d->m_rootIndexList.indexOf( sourceParent );
+    if ( parentRow == -1 )
+      return QModelIndex();
+
+    int proxyRow = sourceIndex.row();
+    while (parentRow > 0)
+    {
+      --parentRow;
+      QModelIndex selectedIndexAbove = d->m_rootIndexList.at( parentRow );
+      proxyRow += sourceModel()->rowCount(selectedIndexAbove);
+    }
+
+    d->m_map.insert(sourceIndex.internalPointer(), QPersistentModelIndex(sourceIndex));
+    return createIndex( proxyRow, sourceIndex.column(), sourceIndex.internalPointer() );
   } else if ( d->isInModel( sourceIndex ) )
   {
     int targetRow = sourceIndex.row();
@@ -1662,7 +1675,7 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
 
   QModelIndexList list;
   QModelIndex proxyIndex;
-  foreach(const QModelIndex idx, sourceModel()->match(mapToSource(start), role, value, hits, flags))
+  foreach(const QModelIndex &idx, sourceModel()->match(mapToSource(start), role, value, hits, flags))
   {
     proxyIndex = mapFromSource(idx);
     if (proxyIndex.isValid())
