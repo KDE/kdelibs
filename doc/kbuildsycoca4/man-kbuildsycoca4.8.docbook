@@ -39,11 +39,11 @@
 <group>
 <arg choice="opt">--nosignal</arg>
 <arg choice="opt">--noincremental</arg>
-<arg choice="opt">---checkstamps</arg>
-<arg choice="opt">---nocheckfiles</arg>
-<arg choice="opt">---global</arg>
-<arg choice="opt">---menutest</arg>
-<arg choice="opt">---track <replaceable>menu-id</replaceable></arg>
+<arg choice="opt">--checkstamps</arg>
+<arg choice="opt">--nocheckfiles</arg>
+<arg choice="opt">--global</arg>
+<arg choice="opt">--menutest</arg>
+<arg choice="opt">--track <replaceable>menu-id</replaceable></arg>
 <arg choice="opt">--help</arg>
 <arg choice="opt">--help-qt</arg>
 <arg choice="opt">--help-kde</arg>
