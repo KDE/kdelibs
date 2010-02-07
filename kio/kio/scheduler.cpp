@@ -894,7 +894,9 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
 void SchedulerPrivate::doJob(SimpleJob *job)
 {
     kDebug(7006) << job;
-    Q_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
+        kWarning(7006) << "KIO is not thread-safe.";
+    }
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
     jobPriv->m_protocol = KProtocolManager::slaveProtocol(job->url(), jobPriv->m_proxy);
@@ -941,7 +943,10 @@ void SchedulerPrivate::cancelJob(SimpleJob *job)
 void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 {
     kDebug(7006) << job << slave;
-    Q_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
+        kWarning(7006) << "KIO is not thread-safe.";
+    }
+
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
     // make sure that we knew about the job!
     Q_ASSERT(jobPriv->m_schedSerial);
