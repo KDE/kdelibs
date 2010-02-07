@@ -41,14 +41,11 @@
  * Creates key used to store and retrieve form data.
  *
  */
-static QString walletKey(KWebWallet::WebForm form, bool useIndexOnEmptyName = false)
+static QString walletKey(KWebWallet::WebForm form)
 {
     QString key = form.url.toString(QUrl::RemoveQuery|QUrl::RemoveFragment);
     key += QL1C('#');
-    if (form.name.isEmpty() && useIndexOnEmptyName)
-        key += form.index;
-    else
-        key += form.name;
+    key += form.name;
 
     return key;
 }
@@ -77,7 +74,8 @@ public:
     void removeDataFromCache(const WebFormList &formList);
 
     // Private Q_SLOT...
-    void _k_openWalletDone(bool);    
+    void _k_openWalletDone(bool);
+    void _k_walletClosed();
 
     WId wid;
     KWebWallet *q;
@@ -97,39 +95,47 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
     Q_ASSERT(frame);
 
     QString inputSelector;
-    KWebWallet::WebFormList list;
 
-    if (!fillform) {
+    if (fillform) {
         inputSelector = QL1S("input");
     }
 
+    KWebWallet::WebFormList list;
     QWebElementCollection formElements = frame->findAllElements(QL1S("form[method=post]"));
     const int formElementCount = formElements.count();
 
     for ( int i = 0; i < formElementCount; ++i ) {
+        int numPasswdInputs = 0;
         const QWebElement formElement = formElements.at(i);
 
         KWebWallet::WebForm form;
         form.url = frame->url();
-        form.name = formElement.attribute(QL1S("name"));
         form.index = QString::number(i);
+        form.name = formElement.attribute(QL1S("name"));
 
-        QWebElementCollection inputElements = formElement.findAll(inputSelector);
-        Q_FOREACH(QWebElement inputElement, inputElements) {
+        Q_FOREACH(QWebElement inputElement, formElement.findAll(inputSelector)) {
             const QString type = inputElement.attribute(QL1S("type"), QL1S("text"));
             const QString name = inputElement.attribute(QL1S("name"));
             const QString value = inputElement.evaluateJavaScript(QL1S("this.value")).toString();
+            const QString autocomplete = inputElement.attribute(QL1S("autocomplete"));
+            const bool isPassword = (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0);
 
-            if (!value.isEmpty() &&
-                inputElement.attribute(QL1S("autocomplete")).compare(QL1S("off"), Qt::CaseInsensitive) != 0 &&
-                (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0 ||
-                 (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0 && !ignorepasswd))) {
-                form.fields << qMakePair(name, value);
+            if (value.length() &&
+                autocomplete.compare(QL1S("off"), Qt::CaseInsensitive) != 0) {
+
+                if (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0 ||
+                    (!ignorepasswd && isPassword)) {
+                    form.fields << qMakePair(name, value);
+                    if (isPassword)
+                        numPasswdInputs++;
+                }
             }
         }
 
-        if ((fillform && q->hasCachedFormData(form)) || !form.fields.isEmpty())
+        if ((fillform && q->hasCachedFormData(form)) ||
+            (numPasswdInputs > 0 && !form.fields.isEmpty())) {
             list << form;
+        }
     }
 
     return list;
@@ -248,6 +254,14 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
         delete wallet;
         kWarning() << "Deleted KWallet instance because it cannot be set to use its form data folder!";
     }
+}
+
+void KWebWallet::KWebWalletPrivate::_k_walletClosed()
+{
+    if (wallet)
+      wallet->deleteLater();
+
+    emit q->walletClosed();
 }
 
 KWebWallet::KWebWallet(QObject *parent, WId wid)

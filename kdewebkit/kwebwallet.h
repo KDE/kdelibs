@@ -199,6 +199,11 @@ Q_SIGNALS:
      */
     void saveFormDataCompleted(const QUrl &url, bool ok);
 
+    /**
+     * This signal is emitted whenever the current wallet is closed.
+     */
+    void walletClosed();
+
 protected:
     /**
      * Returns a list of forms for @p url that are waiting to be filled.
@@ -273,6 +278,7 @@ private:
     
 
     Q_PRIVATE_SLOT(d, void _k_openWalletDone(bool))
+    Q_PRIVATE_SLOT(d, void _k_walletClosed())
 };
 
 #endif // KWEBWALLET_H
