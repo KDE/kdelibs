@@ -117,7 +117,7 @@
          <string>Name of the file as it will appear on the website</string>
         </property>
         <property name="whatsThis">
-         <string>This should clearly describe the file content. It can be the same text than the Title of the kvtml file.</string>
+         <string>This should clearly describe the file content. It can be the same text as the title of the kvtml file.</string>
         </property>
        </widget>
       </item>
