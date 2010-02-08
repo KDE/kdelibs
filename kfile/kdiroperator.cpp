@@ -1311,7 +1311,6 @@ bool KDirOperator::checkPreviewSupport()
 void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
 {
     Q_UNUSED(item);
-    setupMenu();
     updateSelectionDependentActions();
 
     d->newFileMenu->setPopupFiles(url());
