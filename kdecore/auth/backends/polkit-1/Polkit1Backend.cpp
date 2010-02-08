@@ -37,15 +37,9 @@ Polkit1Backend::Polkit1Backend()
 
 Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
 {
-    PolkitQt1::UnixProcessSubject subject(QCoreApplication::applicationPid());
-    PolkitQt1::Authority *authority = PolkitQt1::Authority::instance();
-
-    switch (authority->checkAuthorizationSync(action, &subject, PolkitQt1::Authority::AllowUserInteraction)) {
-    case PolkitQt1::Authority::Yes:
-        return Action::Authorized;
-    default:
-        return Action::Denied;
-    }
+    Q_UNUSED(action)
+    // Always return Yes here, we'll authorize inside isCallerAuthorized
+    return Action::Authorized;
 }
 
 void Polkit1Backend::setupAction(const QString &action)
@@ -91,8 +85,16 @@ bool Polkit1Backend::isCallerAuthorized(const QString &action, QByteArray caller
     s >> pid;
 
     PolkitQt1::UnixProcessSubject subject(pid);
-    return (PolkitQt1::Authority::instance()->checkAuthorizationSync(action, &subject, PolkitQt1::Authority::None) ==
-            PolkitQt1::Authority::Yes);
+    PolkitQt1::Authority *authority = PolkitQt1::Authority::instance();
+
+    switch (authority->checkAuthorizationSync(action, &subject, PolkitQt1::Authority::AllowUserInteraction)) {
+    case PolkitQt1::Authority::Yes:
+        return true;
+    default:
+        return false;
+    }
+
+    return false;
 }
 
 void Polkit1Backend::checkForResultChanged()
