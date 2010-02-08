@@ -58,6 +58,22 @@ static QString escapeValue (const QString& _value)
     return value;
 }
 
+static int getWebFields(const QWebElement &formElement,
+                        const QString& selector, QList<KWebWallet::WebForm::WebField> &fields)
+{
+    QWebElementCollection collection = formElement.findAll(selector);
+    const int count = collection.count();
+
+    for(int i = 0; i < count; ++i) {
+        QWebElement element = collection.at(i);
+        const QString value = element.evaluateJavaScript(QL1S("this.value")).toString();
+        if (!value.isEmpty())
+            fields << qMakePair(element.attribute(QL1S("name")), value);
+    }
+
+    return count;
+}
+
 class KWebWallet::KWebWalletPrivate
 {  
 public:
@@ -94,47 +110,48 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
 {
     Q_ASSERT(frame);
 
-    QString inputSelector;
-
-    if (fillform) {
-        inputSelector = QL1S("input");
-    }
-
     KWebWallet::WebFormList list;
     QWebElementCollection formElements = frame->findAllElements(QL1S("form[method=post]"));
     const int formElementCount = formElements.count();
 
-    for ( int i = 0; i < formElementCount; ++i ) {
-        int numPasswdInputs = 0;
-        const QWebElement formElement = formElements.at(i);
+    if (fillform) {
+        for ( int i = 0; i < formElementCount; ++i ) {
+            const QWebElement formElement = formElements.at(i);
 
-        KWebWallet::WebForm form;
-        form.url = frame->url();
-        form.index = QString::number(i);
-        form.name = formElement.attribute(QL1S("name"));
-
-        Q_FOREACH(QWebElement inputElement, formElement.findAll(inputSelector)) {
-            const QString type = inputElement.attribute(QL1S("type"), QL1S("text"));
-            const QString name = inputElement.attribute(QL1S("name"));
-            const QString value = inputElement.evaluateJavaScript(QL1S("this.value")).toString();
-            const QString autocomplete = inputElement.attribute(QL1S("autocomplete"));
-            const bool isPassword = (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0);
-
-            if (value.length() &&
-                autocomplete.compare(QL1S("off"), Qt::CaseInsensitive) != 0) {
-
-                if (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0 ||
-                    (!ignorepasswd && isPassword)) {
-                    form.fields << qMakePair(name, value);
-                    if (isPassword)
-                        numPasswdInputs++;
-                }
-            }
+            KWebWallet::WebForm form;
+            form.url = frame->url();
+            form.index = QString::number(i);
+            form.name = formElement.attribute(QL1S("name"));
+            if (q->hasCachedFormData(form))
+                list << form;
         }
+    } else {
+        int numPasswdFields = 0;
+        QString passwdSelector;
 
-        if ((fillform && q->hasCachedFormData(form)) ||
-            (numPasswdInputs > 0 && !form.fields.isEmpty())) {
-            list << form;
+        if (!ignorepasswd)
+            passwdSelector = QL1S("input[type=password]:not([autocomplete=off])");
+
+        for (int i = 0; i < formElementCount; ++i) {
+            const QWebElement formElement = formElements.at(i);
+
+            KWebWallet::WebForm form;
+            form.url = frame->url();
+            form.index = QString::number(i);
+            form.name = formElement.attribute(QL1S("name"));
+
+            // Get all <input> elements of type 'password'
+            numPasswdFields = getWebFields(formElement, passwdSelector, form.fields);
+
+            // Get all <input> elements of type 'text'
+            getWebFields(formElement, QL1S("input[type=text]:not([autocomplete=off])"), form.fields);
+
+            // Get all <input> elements without a type attribute.
+            getWebFields(formElement, QL1S("input:not([type])"), form.fields);
+
+            // Add the form the list if it contains a password field...
+            if ((ignorepasswd || numPasswdFields > 0) && !form.fields.isEmpty())
+                list << form;
         }
     }
 
@@ -252,7 +269,6 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
         // Delete the wallet if opening the wallet failed or we were unable
         // to change to the folder we wanted to change to.
         delete wallet;
-        kWarning() << "Deleted KWallet instance because it cannot be set to use its form data folder!";
     }
 }
 
