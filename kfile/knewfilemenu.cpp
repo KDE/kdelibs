@@ -173,7 +173,7 @@ public:
     class RealFileOrDirStrategy;
 };
 
-KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QWidget* parent)
+KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent)
     : KActionMenu(KIcon("document-new"), i18n("Create New"), parent),
       d(new KNewFileMenuPrivate(this))
 {
@@ -182,7 +182,7 @@ KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, Q
     d->m_newMenuGroup = new QActionGroup(this);
     connect(d->m_newMenuGroup, SIGNAL(triggered(QAction*)), this, SLOT(_k_slotActionTriggered(QAction*)));
     d->m_actionCollection = collection;
-    d->m_parentWidget = parent;
+    d->m_parentWidget = qobject_cast<QWidget*>(parent);
     d->m_newDirAction = 0;
 
     d->m_actionCollection->addAction(name, this);
@@ -869,6 +869,11 @@ void KNewFileMenu::setSupportedMimeTypes(const QStringList& mime)
 QStringList KNewFileMenu::supportedMimeTypes() const
 {
     return d->m_supportedMimeTypes;
+}
+
+void KNewFileMenu::setParentWidget(QWidget* parentWidget)
+{
+    d->m_parentWidget = parentWidget;
 }
 
 #include "knewfilemenu.moc"

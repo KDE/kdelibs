@@ -57,12 +57,11 @@ public:
      * Constructor.
      * @param parent the KActionCollection this KAction should be added to.
      * @param name action name, when adding the action to the collection
-     * @param parent the parent widget that will be the owner of
-     * this KNewFileMenu and that will take care of destroying this instance
-     * once the parentWidget itself got destroyed. It is also used as parent widget
-     * for any dialogs that this class might show.
+     * @param parent the parent object, for ownership.
+     * If the parent object is a widget, it will also used as parent widget
+     * for any dialogs that this class might show. Otherwise, call setParentWidget.
      */
-    KNewFileMenu(KActionCollection* collection, const QString& name, QWidget* parent);
+    KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent);
 
     /**
      * Destructor.
@@ -71,6 +70,12 @@ public:
      * you can safely create and delete KNewMenu instances without a performance issue.
      */
     virtual ~KNewFileMenu();
+
+    /**
+     * Sets a parent widget for the dialogs shown by KNewFileMenu.
+     * This is strongly recommended, for apps with a main window.
+     */
+    void setParentWidget(QWidget* parentWidget);
 
     /**
      * Only show the files in a given set of mimetypes.
