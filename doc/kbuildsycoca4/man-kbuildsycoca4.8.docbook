@@ -15,8 +15,8 @@
 </affiliation>
 </author>
 
-<date>2001-04-25</date>
-<releaseinfo>0.01.01</releaseinfo>
+<date>2010-01-04</date>
+<releaseinfo>1.1 (&kde; 4.4)</releaseinfo>
 
 </refentryinfo>
 
@@ -38,7 +38,12 @@
 
 <group>
 <arg choice="opt">--nosignal</arg>
-<arg choice="opt">--incremental</arg>
+<arg choice="opt">--noincremental</arg>
+<arg choice="opt">--checkstamps</arg>
+<arg choice="opt">--nocheckfiles</arg>
+<arg choice="opt">--global</arg>
+<arg choice="opt">--menutest</arg>
+<arg choice="opt">--track <replaceable>menu-id</replaceable></arg>
 <arg choice="opt">--help</arg>
 <arg choice="opt">--help-qt</arg>
 <arg choice="opt">--help-kde</arg>
@@ -58,9 +63,8 @@
 <command>kbuildsycoca4</command>, as part of the &kde; command line
 tools ensures the proper operation of &kde; by reading in all the
 <literal role="extension">.desktop</literal>, <literal
-role="extension">.directory</literal>, <literal
-role="extension">.kimgio</literal> and <literal
-role="extension">.protocol</literal> files to constructs a binary
+role="extension">.xml</literal>, and <literal
+role="extension">.protocol</literal> files to construct a binary
 database. 
 </para>
 
@@ -70,7 +74,7 @@ configuration information a program needs to run.
 </para>
 
 <para>
-This tool is part of ksycoca, which stands for &kde; System
+This tool is part of ksycoca4, which stands for &kde; System
 Configuration Cache
 </para>
 
@@ -83,14 +87,49 @@ Configuration Cache
 <varlistentry>
 <term><option>--nosignal</option></term>
 <listitem>
-<para>Don't signal applications </para>
+<para>Do not signal applications to update</para>
 </listitem>
 </varlistentry>
 
 <varlistentry>
-<term><option>--incremental</option></term>
+<term><option>--noincremental</option></term>
 <listitem>
-<para>Incremental Update</para>
+<para>Disable incremental update, re-read everything</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--checkstamps</option></term>
+<listitem>
+<para>Check file timestamps</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--nocheckfiles</option></term>
+<listitem>
+<para>Disable checking files (dangerous)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--global</option></term>
+<listitem>
+<para>Create global database</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--menutest</option></term>
+<listitem>
+<para>Perform menu generation test run only</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--track <replaceable>menu-id</replaceable></option></term>
+<listitem>
+<para>Track menu id for debug purposes</para>
 </listitem>
 </varlistentry>
 
@@ -143,7 +182,7 @@ Show author information
 </varlistentry>
 
 <varlistentry>
-<term><option>--version</option></term>
+<term><option>-v , --version</option></term>
 <listitem>
 <para>
 Show version information
@@ -178,9 +217,9 @@ command at the prompt
 
 <variablelist>
 <varlistentry>
-<term><filename>/tmp/kde-$USER/ksycoca</filename></term>
+<term><filename>/var/tmp/kde-$USER/ksycoca4</filename></term>
 <listitem>
-<para>...</para>
+<para>The default directory where the cache files are stored.</para>
 </listitem>
 </varlistentry>
 </variablelist>
