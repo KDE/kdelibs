@@ -28,6 +28,7 @@
 #include "nfo.h"
 #include "pimo.h"
 #include "nepomukmainmodel.h"
+#include "dbusconnectionpool.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -676,18 +677,12 @@ bool Nepomuk::ResourceData::determineUri()
                     //
                     // If there is no resource yet we create a new uri in store()
                     //
-
-                    //
-                    // We create a new dbus connection to protect us from multi-thread related crashes.
-                    //
-                    QDBusConnection conn = QDBusConnection::connectToBus( QDBusConnection::SessionBus, m_kickoffUri.url() );
                     KUrl resourceUri = QDBusReply<QString>( QDBusInterface(QLatin1String("org.kde.nepomuk.services.nepomukremovablestorageservice"),
                                                                            QLatin1String("/nepomukremovablestorageservice"),
                                                                            QLatin1String("org.kde.nepomuk.RemovableStorage"),
-                                                                           conn)
+                                                                           DBusConnectionPool::threadConnection())
                                                             .call( QLatin1String("resourceUriFromLocalFileUrl"),
                                                                    m_kickoffUri.url() ) ).value();
-                    QDBusConnection::disconnectFromBus( conn.name() );
                     if( !resourceUri.isEmpty() ) {
                         m_uri = resourceUri;
                     }
