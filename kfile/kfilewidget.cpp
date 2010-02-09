@@ -405,6 +405,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
                    KDirOperator::FileActions |
                    KDirOperator::ViewActions);
     KActionCollection *coll = d->ops->actionCollection();
+    coll->addAssociatedWidget(this);
 
     // add nav items to the toolbar
     //

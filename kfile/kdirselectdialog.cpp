@@ -288,6 +288,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     hlay->setMargin(0);
     QVBoxLayout *mainLayout = new QVBoxLayout();
     d->m_actions=new KActionCollection(this);
+    d->m_actions->addAssociatedWidget(this);
     d->m_placesView = new KFilePlacesView( page );
     d->m_placesView->setModel(new KFilePlacesModel(d->m_placesView));
     d->m_placesView->setObjectName( QLatin1String( "speedbar" ) );
