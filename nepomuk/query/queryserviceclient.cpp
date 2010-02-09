@@ -24,6 +24,7 @@
 #include "query.h"
 #include "queryserviceinterface.h"
 #include "queryinterface.h"
+#include <dbusconnectionpool.h>
 
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -38,31 +39,6 @@
 
 
 namespace {
-    /**
-     * Each thread needs its own QDBusConnection. We do it the very easy
-     * way and just create a new connection for each client
-     * Why does Qt not handle this automatically?
-     */
-    class QDBusConnectionPerThreadHelper
-    {
-    public:
-        QDBusConnectionPerThreadHelper()
-            : m_counter( 0 ) {
-        }
-
-        QDBusConnection newConnection() {
-            QMutexLocker lock( &m_mutex );
-            return QDBusConnection::connectToBus( QDBusConnection::SessionBus,
-                                                  QString("NepomukQueryServiceConnection%1").arg(++m_counter) );
-        }
-
-    private:
-        int m_counter;
-        QMutex m_mutex;
-    };
-
-    K_GLOBAL_STATIC( QDBusConnectionPerThreadHelper, s_globalDBusConnectionPerThreadHelper )
-
     /// create a mapping from binding name to property
     QHash<QString, QString> encodeRequestProperties( const QList<Nepomuk::Query::Query::RequestProperty>& rps )
     {
@@ -93,12 +69,8 @@ public:
     Private()
         : queryServiceInterface( 0 ),
           queryInterface( 0 ),
-          dbusConnection( s_globalDBusConnectionPerThreadHelper->newConnection() ),
+          dbusConnection( DBusConnectionPool::threadConnection() ),
           loop( 0 ) {
-    }
-
-    ~Private() {
-        QDBusConnection::disconnectFromBus( dbusConnection.name() );
     }
 
     void _k_entriesRemoved( const QStringList& );

@@ -21,6 +21,7 @@ set(nepomuk_LIB_SRCS
   resourcefiltermodel.cpp
   nepomukmainmodel.cpp
   tools.cpp
+  dbusconnectionpool.cpp
   ui/kratingwidget.cpp
   ui/ktagcloudwidget.cpp
   ui/kblocklayout.cpp
