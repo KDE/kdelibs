@@ -326,11 +326,11 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         const int gray = qGray(color);
         const bool inverse = (gray < 100);
         const QRgb bgColor = (inverse) ? qRgb(255,255,255) : qRgb(0,0,0);
-        QPixmap pixmap(w, h);
-        pixmap.fill(bgColor);
+        QImage img(w, h, QImage::Format_RGB32);
+        img.fill(bgColor);
         QPainter p;
 
-        p.begin(&pixmap);
+        p.begin(&img);
         p.setPen(shadow->color);
         p.setFont(pt->font());
         f->drawText(&p, thickness, thickness+m_baseline, text->str->s, text->str->l,
@@ -338,7 +338,6 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                     m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 
         p.end();
-        QImage img = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
 
         int md = thickness*thickness; // max-dist^2
 
