@@ -1,4 +1,5 @@
-//krazy:exclude=license (not a library)
+//Not a library
+//krazy:excludeall=license
 
 /* kgrantpty - helper program for KPty. */
 
