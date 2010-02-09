@@ -37,6 +37,8 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusReply>
 
+#define QL1S(x)     QLatin1String(x)
+
 
 namespace KIO {
 
@@ -96,7 +98,7 @@ void AccessManager::setCookieJarWindowId(WId id)
     KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
     if (jar) {
         jar->setWindowId(id);
-        d->sessionMetaData.insert(QLatin1String("window-id"), QString::number((qlonglong)id));
+        d->sessionMetaData.insert(QL1S("window-id"), QString::number((qlonglong)id));
     }
 }
 
@@ -164,11 +166,11 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
         QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
         if (header.isValid())
-          kioJob->addMetaData(QLatin1String("content-type"),
+          kioJob->addMetaData(QL1S("content-type"),
                               QString::fromLatin1("Content-Type: %1").arg(header.toString()));
         else
-          kioJob->addMetaData(QLatin1String("content-type"),
-                              QLatin1String("Content-Type: application/x-www-form-urlencoded"));
+          kioJob->addMetaData(QL1S("content-type"),
+                              QL1S("Content-Type: application/x-www-form-urlencoded"));
     }
 
     return reply;
@@ -197,12 +199,12 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     }
 
     if (request.hasRawHeader("Referer")) {
-        metaData.insert("referrer", request.rawHeader("Referer"));
+        metaData.insert(QL1S("referrer"), request.rawHeader("Referer"));
         request.setRawHeader("Referer", QByteArray());
     }
 
     if (request.hasRawHeader("Content-Type")) {
-        metaData.insert("content-type", request.rawHeader("Content-Type"));
+        metaData.insert(QL1S("content-type"), request.rawHeader("Content-Type"));
         request.setRawHeader("Content-Type", QByteArray());
     }
 
@@ -239,7 +241,7 @@ bool AccessManager::AccessManagerPrivate::isRequestAllowed(const QUrl& url) cons
 {
     const QString scheme (url.scheme());
 
-    return (externalContentAllowed || scheme == QLatin1String("file")  || scheme == QLatin1String("data"));
+    return (externalContentAllowed || scheme == QL1S("file")  || scheme == QL1S("data"));
 }
 
 
