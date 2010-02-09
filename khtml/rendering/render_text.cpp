@@ -365,8 +365,9 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         float* amap = (float*)alloca(sizeof(float)*(h*w));
         memset(amap, 0, h*w*(sizeof(float)));
         for(int j=thickness; j<h-thickness; j++) {
+            const QRgb *line = (QRgb*)img.scanLine(j);
             for(int i=thickness; i<w-thickness; i++) {
-                QRgb col= img.pixel(i,j);
+                QRgb col= line[i];
                 if (col == bgColor) continue;
                 float g = qGray(col);
                 if (inverse)
@@ -393,10 +394,11 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         factor = 1.0/factor;
 
         for(int j=0; j<h; j++) {
+            QRgb *line = (QRgb*)res.scanLine(j);
             for(int i=0; i<w; i++) {
                 int a = (int)(amap[i+j*w] * factor * 255.0);
                 if (a > 255) a = 255;
-                res.setPixel(i,j, qRgba(r,g,b,a));
+                line[i] = qRgba(r,g,b,a);
             }
         }
 
