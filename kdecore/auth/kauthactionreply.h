@@ -209,6 +209,7 @@
  The piece of code that calls the action of the previous example is located in example/mainwindow.cpp in the on_readAction_triggered() slot. It looks like this:
  @code
  Action readAction = "org.kde.auth.example.read";
+ readAction.setHelperID("org.kde.auth.example");
  readAction.arguments()["filename"] = filename;
 
  ActionReply reply = readAction.execute();
@@ -221,7 +222,9 @@
  First of all, it creates the action object specifying the action id. Then it loads the filename (we want to read a forbidden file) into the arguments() QVariantMap, which will be directly passed to the
  helper in the read() slot's parameter. This example code uses a synchronous call to execute the action and retrieve the reply. If the reply succeeded, the reply data is retrieved from the returned QVariantMap
  object. Please note that, although the execute() method will return only when the action is completed, the GUI will remain responsive because an internal event loop is entered. This means you should be
- prepared to receive other events in the meanwhile.
+ prepared to receive other events in the meanwhile. Also, notice that you have to set explicitely the helper ID to the action: this is done for an added safety, to prevent the caller from accidentally invoking
+ an helper, and also because KAuth actions may be used without an helper attached (the default). In this case, action.execute() will return ActionSuccess if the authentication went well. This is quite useful 
+ if you want your user to authenticate before doing something, which however needs no privileged permissions implementation-wise.
 
 
  @section kauth_async Asynchronous calls, data reporting, and action termination
