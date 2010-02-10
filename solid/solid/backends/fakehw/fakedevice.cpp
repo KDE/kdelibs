@@ -307,6 +307,8 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::SmartCardReader:
         iface = new FakeSmartCardReader(this);
         break;
+    case Solid::DeviceInterface::SerialInterface:
+        break;
     case Solid::DeviceInterface::Unknown:
         break;
     case Solid::DeviceInterface::Last:
