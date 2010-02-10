@@ -217,10 +217,10 @@ bool KACLListViewItem::operator< ( const QTreeWidgetItem& other ) const
     return key() < static_cast<const KACLListViewItem&>(other).key();
 }
 
+#if 0
 void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
                                   int column, int width, int alignment )
 {
-    /*
     if ( isDefault ) {
         setForeground( QColor( 0, 0, 255 ) );
     }
@@ -244,8 +244,8 @@ void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
             p->drawLine( 0, 0, width - 1, 0 );
         p->drawLine( 0, height() - 1, width - 1, height() - 1 );
     }
-     */
 }
+#endif
 
 
 void KACLListViewItem::updatePermPixmaps()
