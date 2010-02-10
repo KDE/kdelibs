@@ -97,7 +97,6 @@ public:
 
     SchedulerPrivate() :
         q(new Scheduler),
-        busy( false ),
         slaveOnHold( 0 ),
         slaveConfig( SlaveConfig::self() ),
         sessionData( new SessionData ),
@@ -124,7 +123,6 @@ public:
     QTimer slaveTimer;
     QTimer coSlaveTimer;
     QTimer cleanupTimer;
-    bool busy;
 
     ProtocolInfoDict protInfoDict;
     Slave *slaveOnHold;
@@ -190,6 +188,7 @@ public:
 
         SlaveList list (coSlaves.keys());
         qDeleteAll(list.begin(), list.end());
+        scheduledSlaves.clear();
     }
 
     Slave* findJobCoSlave(SimpleJob* job) const
@@ -251,7 +250,7 @@ public:
 
         if (!host.isEmpty())
         {
-            QListIterator<SlavePtr> it (activeSlaves);
+            QListIterator<SlavePtr> it (scheduledSlaves);
             while (it.hasNext())
             {
                 if (host == it.next()->host())
@@ -261,7 +260,7 @@ public:
             QString url = job->url().url();
 
             if (reserveList.contains(url)) {
-                kDebug() << "*** Removing paired request for: " << url;
+                kDebug(7006) << "*** Removing paired request for: " << url;
                 reserveList.removeOne(url);
             } else {
                 count += reserveList.count();
@@ -274,6 +273,7 @@ public:
     QStringList reserveList;
     QList<SimpleJob *> joblist;
     SlaveList activeSlaves;
+    SlaveList scheduledSlaves;
     SlaveList idleSlaves;
     CoSlaveMap coSlaves;
     SlaveList coIdleSlaves;
@@ -288,13 +288,13 @@ static inline bool checkLimits(KIO::SchedulerPrivate::ProtocolInfo *protInfo, Si
   const int numActiveSlaves = protInfo->activeSlaveCountFor(job);
 
 #if 0
-    kDebug() << job->url() << ": ";
-    kDebug() << "    protocol :" << job->url().protocol()
-             << ", max :" << protInfo->maxSlaves
-             << ", max/host :" << protInfo->maxSlavesPerHost
-             << ", active :" << protInfo->activeSlaves.count()
-             << ", idle :" << protInfo->idleSlaves.count()
-             << ", active for " << job->url().host() << " = " << numActiveSlaves;
+    kDebug(7006) << job->url() << ": ";
+    kDebug(7006) << "    protocol :" << job->url().protocol()
+                 << ", max :" << protInfo->maxSlaves
+                 << ", max/host :" << protInfo->maxSlavesPerHost
+                 << ", active :" << protInfo->scheduledSlaves.count()
+                 << ", idle :" << protInfo->idleSlaves.count()
+                 << ", active for " << job->url().host() << " = " << numActiveSlaves;
 #endif
 
   return (protInfo->maxSlavesPerHost < 1 || protInfo->maxSlavesPerHost > numActiveSlaves);
@@ -477,7 +477,7 @@ void SchedulerPrivate::doJob(SimpleJob *job)
     slaveTimer.start(0);
 #ifndef NDEBUG
     if (newJobs.count() > 150)
-        kDebug() << "WARNING - KIO::Scheduler got more than 150 jobs! This shows a misuse in your app (yes, a job is a QObject).";
+        kDebug(7006) << "WARNING - KIO::Scheduler got more than 150 jobs! This shows a misuse in your app (yes, a job is a QObject).";
 #endif
 }
 
@@ -526,10 +526,21 @@ void SchedulerPrivate::startStep()
        (void) startJobDirect();
     }
 
+    int queuedJobCount = 0;
     QHashIterator<QString, ProtocolInfo*> it(protInfoDict);
+
     while(it.hasNext()) {
        it.next();
        if (startJobScheduled(it.value())) return;
+       queuedJobCount += it.value()->joblist.count();
+    }
+
+    // If we still have jobs that are waiting to be scheduled and slaveTimer is
+    // not active, start the timer. Not that the timer is started with a 1 sec
+    // delay to avoid pegging the CPU...
+    if (queuedJobCount > 0 && !slaveTimer.isActive()) {
+       //kDebug(7006) << queuedJobCount << "jobs waiting to be scheduled...";
+       slaveTimer.start(1000);
     }
 }
 
@@ -639,8 +650,6 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
        slave = createSlave(protInfo, job, job->url(), true);
        if (slave)
           newSlave = true;
-       else
-          slaveTimer.start(0);
     }
 
     if (!slave)
@@ -658,11 +667,12 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
     KUrl url = pairedRequest(job);
     if (url.isValid())
     {
-        kDebug() << "*** PAIRED REQUEST: " << url;
+        kDebug(7006) << "*** PAIRED REQUEST: " << url;
         protInfoDict.get(url.protocol())->reserveList << url.url();
     }
 
     protInfo->activeSlaves.append(slave);
+    protInfo->scheduledSlaves.append(slave);
     protInfo->idleSlaves.removeAll(slave);
     protInfo->joblist.removeOne(job);
 //        kDebug(7006) << "scheduler: job started " << job;
@@ -744,8 +754,7 @@ Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job,
 {
     Slave *slave = 0;
 
-    if (true /* ### temporary workaround for #224857*/ ||
-        !enforceLimits || checkLimits(protInfo, job))
+    if (!enforceLimits || checkLimits(protInfo, job))
     {
         KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
@@ -801,7 +810,7 @@ Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job,
                                      const KUrl &url, bool enforceLimits)
 {
    Slave *slave = 0;
-   const int slavesCount = protInfo->activeSlaves.count() + protInfo->idleSlaves.count();
+   const int slavesCount = protInfo->scheduledSlaves.count() + protInfo->idleSlaves.count();
 
    if (!enforceLimits ||
        (protInfo->maxSlaves > slavesCount && checkLimits(protInfo, job)))
@@ -843,6 +852,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
     ProtocolInfo *protInfo = protInfoDict.get(jobPriv->m_protocol);
     slave->disconnect(job);
     protInfo->activeSlaves.removeAll(slave);
+    protInfo->scheduledSlaves.removeAll(slave);
     if (slave->isAlive())
     {
        JobList *list = protInfo->coSlaves.value(slave);
@@ -875,6 +885,7 @@ void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
     assert(!slave->isAlive());
     ProtocolInfo *protInfo = protInfoDict.get(slave->slaveProtocol());
     protInfo->activeSlaves.removeAll(slave);
+    protInfo->scheduledSlaves.removeAll(slave);
     if (slave == slaveOnHold)
     {
        slaveOnHold = 0;
