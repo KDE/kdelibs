@@ -108,16 +108,17 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     support->setOpenExternalLinks(true);
     support->setTextInteractionFlags(Qt::TextBrowserInteraction);
     support->setText(i18n("<html>"
-        "KDE is available free of charge, but costs are incurred and assets formed in its creation.<br /><br />"
-        "Thus, the KDE community formed KDE e.V., a non-profit organization"
-        " legally founded in Tuebingen, Germany. KDE e.V. represents"
-        " the KDE community in legal and financial matters."
-        " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org</a>"
+        "KDE software is and will always be available free of charge, however creating it is not free.<br /><br />"
+        "To support development the KDE community has formed the KDE e.V., a non-profit organization "
+        "legally founded in Germany. KDE e.V. represents the KDE community in legal and financial matters. "
+        "See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org</a>"
         " for information on KDE e.V.<br /><br />"
-        "KDE benefits from financial support. Most of the funds raised are used to "
-        "reimburse members and others for expenses they incur when "
-        "contributing to KDE. You are encouraged to support KDE through a financial "
-        "donation, using one of the ways described at "
+        "KDE benefits from many kinds of contributions, including financial. "
+        "We use the funds to reimburse members and others for expenses "
+        "they incur when contributing. Further funds are used for legal "
+        "support and organizing conferences and meetings. <br /> <br />"
+        "We would like to encourage you to support our efforts with a "
+        "financial donation, using one of the ways described at "
         "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
         "<br /><br />Thank you very much in advance for your support.</html>") + "<br /><br />"); // FIXME: ugly <br /> at the end...
 
