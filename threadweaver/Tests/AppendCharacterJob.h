@@ -73,6 +73,7 @@ public:
     {
       for (int i = 0; i < 100; ++i) {
         int k = (i << 3) + (i >> 4);
+        Q_UNUSED( k );
       }
     }
 };
