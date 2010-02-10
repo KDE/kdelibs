@@ -183,8 +183,10 @@ public:
 
     void togglePerm( acl_perm_t perm );
 
+#if 0
     virtual void paintCell( QPainter *p, const QColorGroup &cg,
                             int column, int width, int alignment );
+#endif
 
     void updatePermPixmaps();
     void repaint();
