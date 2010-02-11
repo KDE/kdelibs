@@ -44,15 +44,18 @@ KCupsOptionsWidget::~KCupsOptionsWidget()
 
 bool KCupsOptionsWidget::cupsAvailable()
 {
+#ifdef Q_WS_X11
     // Ideally we would have access to the private Qt method
-    // QCUPSSupport::cupsAvailable() to do this as it is very complex routine,
-    // instead just take the simplest case of if we can connect to port 631
-    // then assume CUPS must be running and used by Qt.
-    QTcpSocket qsock;
-    qsock.connectToHost("localhost", 631);
-    bool rtn = qsock.waitForConnected() && qsock.isValid();
-    qsock.abort();
-    return rtn;
+    // QCUPSSupport::cupsAvailable() to do this as it is very complex routine.
+    // However, if CUPS is available then QPrinter::numCopies() will always return 1
+    // whereas if CUPS is not available it will return the real number of copies.
+    // This behaviour is guaranteed never to change, so we can use it as a reliable substitute.
+    QPrinter testPrinter;
+    testPrinter.setNumCopies( 2 );
+    return ( testPrinter.numCopies() == 1 );
+#else
+    return false;
+#endif
 }
 
 void KCupsOptionsWidget::setupPrinter()
