@@ -150,7 +150,7 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
             getWebFields(formElement, QL1S("input:not([type])"), form.fields);
 
             // Add the form the list if it contains a password field...
-            if ((ignorepasswd || numPasswdFields > 0) && !form.fields.isEmpty())
+            if ((ignorepasswd || numPasswdFields == 1) && !form.fields.isEmpty())
                 list << form;
         }
     }
