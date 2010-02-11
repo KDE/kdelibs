@@ -1353,8 +1353,11 @@ void KDirWatchPrivate::slotRescan()
   QList<Entry*> dList, cList;
 #endif
 
-  it = m_mapEntries.begin();
-  for( ; it != m_mapEntries.end(); ++it ) {
+  // Make a copy of the list to avoid crashes during reentrancy from slots (#220153)
+  EntryMap mapEntries = m_mapEntries;
+
+  it = mapEntries.begin();
+  for( ; it != mapEntries.end(); ++it ) {
     // we don't check invalid entries (i.e. remove delayed)
     if (!(*it).isValid()) continue;
 
