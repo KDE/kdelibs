@@ -1389,10 +1389,10 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
         RenderObject *o = first( this, 0, false );
         while ( o ) {
             invalidateVerticalPosition();
-            if (o->markedForRepaint()) {
+            if (!fullLayout && o->markedForRepaint()) {
                 o->repaintDuringLayout();
                 o->setMarkedForRepaint(false);
-             }
+            }
             if (o->isReplaced() || o->isFloating() || o->isPositioned()) {
 
                 if ((!o->isPositioned() || o->isPosWithStaticDim()) && 
@@ -1411,8 +1411,10 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
                 }
             }
             else {
-                if (fullLayout || o->selfNeedsLayout())
+                if (fullLayout || o->selfNeedsLayout()) {
                     o->dirtyInlineBoxes(fullLayout);
+                    o->setMarkedForRepaint(false);
+                }
                 o->setNeedsLayout(false);
             }
             o = Bidinext( this, o, 0, false );
