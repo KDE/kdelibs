@@ -2705,7 +2705,20 @@ int RenderBlock::getClearDelta(RenderObject *child, int yPos)
         bool needsRecalc = child->usesLineWidth();
         int cury = yPos;
         int childw = 0;
-        int aw = availableWidth();
+        int aw = contentWidth();
+#if 0
+        // this is a silly Gecko compatibility hack - enable only if it becomes
+        // necessary, and then check regularly with new Gecko versions
+        if (!style()->hasBorder()) {
+            RenderObject* ps = child;
+            while ((ps = ps->previousSibling())) {
+                if (!ps->isFloating() && !ps->isPositioned())
+                    break;
+            }
+            if (!ps)
+                return 0;
+        }
+#endif
         while (true) {
             int curw = lineWidth(cury, &canClear);
             if (!canClear || curw == aw)
