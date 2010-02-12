@@ -75,7 +75,14 @@ static bool inRenderLayerDetach;
 void
 RenderScrollMediator::slotValueChanged()
 {
-    m_layer->updateScrollPositionFromScrollbars();
+    if ( m_layer->renderer()->canvas()->isPerformingLayout() ) {
+        if (!m_waitingForUpdate)
+            QTimer::singleShot(0, this, SLOT(slotValueChanged()));
+        m_waitingForUpdate = true;
+    } else {
+        m_waitingForUpdate = false;
+        m_layer->updateScrollPositionFromScrollbars();
+    }
 }
 
 RenderLayer::RenderLayer(RenderObject* object)

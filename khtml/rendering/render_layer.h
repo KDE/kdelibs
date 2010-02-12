@@ -62,13 +62,14 @@ class RenderScrollMediator: public QObject
     Q_OBJECT
 public:
     RenderScrollMediator(RenderLayer* layer)
-    :m_layer(layer) {}
+    :m_layer(layer), m_waitingForUpdate(false) {}
 
 public Q_SLOTS:
     void slotValueChanged();
 
 private:
     RenderLayer* m_layer;
+    bool m_waitingForUpdate;
 };
 
 // This class handles the auto-scrolling of layers with overflow: marquee.
