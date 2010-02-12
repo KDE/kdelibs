@@ -211,6 +211,7 @@ set(khtmlmisc_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/misc/idstring.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/htmlnames.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/AtomicString.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/misc/woff.cpp
 )
 
 set(khtmlediting_STAT_SRCS

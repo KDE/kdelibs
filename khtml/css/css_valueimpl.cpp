@@ -1617,7 +1617,7 @@ bool CSSFontFaceSrcValueImpl::isSupportedFormat() const
         return true;
     }
 
-    return !strcasecmp(m_format, "truetype") || !strcasecmp(m_format, "opentype")
+    return !strcasecmp(m_format, "truetype") || !strcasecmp(m_format, "opentype") || !strcasecmp(m_format, "woff")
 #if 0
     //ENABLE(SVG_FONTS)
            || isSVGFontFaceSrc()

@@ -2,9 +2,10 @@
     This file is part of the KDE libraries
 
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
-    Copyright (C) 2001-2003 Dirk Mueller (mueller@kde.org)
-    Copyright (C) 2002 Waldo Bastian (bastian@kde.org)
-    Copyright (C) 2003 Apple Computer, Inc.
+              (C) 2001-2003 Dirk Mueller (mueller@kde.org)
+              (C) 2002 Waldo Bastian (bastian@kde.org)
+              (C) 2003 Apple Computer, Inc.
+              (C) 2006-2010 Germain Garand (germain@ebooksfrance.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -44,6 +45,7 @@
 
 #include "loader.h"
 #include "seed.h"
+#include "woff.h"
 #include <imload/image.h>
 #include <imload/imagepainter.h>
 #include <kfilterdev.h>
@@ -1028,6 +1030,28 @@ void CachedFont::data( QBuffer &buffer, bool eof )
         delete dev;
     }
 
+    // handle decoding of WOFF fonts
+    int woffStatus = eWOFF_ok;
+    if (int need = WOFF::getDecodedSize( m_font.constData(), m_font.size(), &woffStatus)) {
+        m_hadError = true;
+        do {
+            if (WOFF_FAILURE(woffStatus))
+                break;
+            QByteArray wbuffer;
+            wbuffer.resize( need );
+            int len;
+            woffStatus = eWOFF_ok;
+            WOFF::decodeToBuffer(m_font.constData(), m_font.size(), wbuffer.data(), wbuffer.size(), &len, &woffStatus);
+            if (WOFF_FAILURE(woffStatus))
+                break;
+            wbuffer.resize(len);
+            m_font = wbuffer;
+            m_hadError = false;
+        } while (false);
+    } else if (m_font.isEmpty()) {
+        m_hadError = true;
+    }
+
     setSize(m_font.size());
 
     m_loading = false;
@@ -1045,6 +1069,7 @@ void CachedFont::checkNotify()
 void CachedFont::error( int /*err*/, const char* /*text*/ )
 {
     m_loading = false;
+    m_hadError = true;
     checkNotify();
 }
 
