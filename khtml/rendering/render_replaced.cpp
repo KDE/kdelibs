@@ -736,11 +736,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, Q
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    // Qt 4.4 regression #2: 
-    //    can't use QWidget::render to directly paint widgets on the view anymore.
-    //    Results are unreliable for subrects, leaving blank squares. (cf. kde #158607)
-    //
-    bool buffered = true; // p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
+    bool buffered = p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
 
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
