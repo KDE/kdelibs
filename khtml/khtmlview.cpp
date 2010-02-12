@@ -604,6 +604,12 @@ void KHTMLView::init()
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
 
+    // Do *not* remove this attribute frivolously.
+    // You might not notice a change of behaviour in Debug builds
+    // but removing opaque events will make QWidget::scroll fail horribly
+    // in Release builds.
+    widget()->setAttribute( Qt::WA_OpaquePaintEvent );
+
     verticalScrollBar()->setCursor( Qt::ArrowCursor );
     horizontalScrollBar()->setCursor( Qt::ArrowCursor );
 
