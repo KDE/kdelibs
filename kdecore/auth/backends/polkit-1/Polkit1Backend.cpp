@@ -21,7 +21,7 @@
 
 #include "Polkit1Backend.h"
 
-#include <QDebug>
+#include <QtCore/qplugin.h>
 #include <syslog.h>
 #include <PolkitQt1/Authority>
 #include <PolkitQt1/Subject>
@@ -108,3 +108,5 @@ void Polkit1Backend::checkForResultChanged()
 }
 
 } // namespace Auth
+
+Q_EXPORT_PLUGIN2(kauth_backend, KAuth::Polkit1Backend)

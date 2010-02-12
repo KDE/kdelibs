@@ -21,29 +21,8 @@
 
 #include "BackendsConfig.h"
 
-// Here comes all the logic for compiling the chosen backends
-#ifdef KAUTH_COMPILING_OSX_BACKEND
-#include "backends/mac/AuthServicesBackend.h"
-typedef KAuth::AuthServicesBackend KAuthAuthBackend;
-#endif
-#ifdef KAUTH_COMPILING_POLKITQT_BACKEND
-#include "backends/policykit/PolicyKitBackend.h"
-typedef KAuth::PolicyKitBackend KAuthAuthBackend;
-#endif
-#ifdef KAUTH_COMPILING_POLKITQT1_BACKEND
-#include "backends/polkit-1/Polkit1Backend.h"
-typedef KAuth::Polkit1Backend KAuthAuthBackend;
-#endif
-#ifdef KAUTH_COMPILING_FAKE_BACKEND
-#include "backends/fake/FakeBackend.h"
-typedef KAuth::FakeBackend KAuthAuthBackend;
-#endif
-
-// Helper backends
-#ifdef KAUTH_COMPILING_DBUS_HELPER_BACKEND
-#include "backends/dbus/DBusHelperProxy.h"
-typedef KAuth::DBusHelperProxy KAuthHelperBackend;
-#endif
+#include <QPluginLoader>
+#include <QDir>
 
 namespace KAuth
 {
@@ -55,11 +34,62 @@ BackendsManager::BackendsManager()
 {
 }
 
+QList< QObject* > BackendsManager::retrieveInstancesIn(const QString& path)
+{
+    QDir pluginPath(path);
+
+    if (!pluginPath.exists()) {
+        return QList< QObject* >();
+    }
+
+    QFileInfoList entryList = pluginPath.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+
+    if (entryList.isEmpty()) {
+        return QList< QObject* >();
+    }
+
+    QList< QObject* > retlist;
+
+    foreach(const QFileInfo &fi, entryList) {
+        QString filePath = fi.filePath(); // file name with path
+        QString fileName = fi.fileName(); // just file name
+
+        if(!QLibrary::isLibrary(filePath)) {
+            continue;
+        }
+
+        QString errstr;
+        QPluginLoader loader(filePath);
+        QObject *instance = loader.instance();
+        if (instance) {
+            retlist.append(instance);
+        }
+    }
+
+    return retlist;
+}
+
 void BackendsManager::init()
 {
-    // Beware: here comes all the logic for loading the correct backend
-    auth = new KAuthAuthBackend;
-    helper = new KAuthHelperBackend;
+    // Backend plugin
+    QList< QObject* > backends = retrieveInstancesIn(KAUTH_BACKEND_PLUGIN_DIR);
+
+    foreach (QObject *instance, backends) {
+        auth = qobject_cast< KAuth::AuthBackend* >(instance);
+        if (auth) {
+            break;
+        }
+    }
+
+    // Helper plugin
+    QList< QObject* > helpers = retrieveInstancesIn(KAUTH_HELPER_PLUGIN_DIR);
+
+    foreach (QObject *instance, helpers) {
+        helper = qobject_cast< KAuth::HelperProxy* >(instance);
+        if (helper) {
+            break;
+        }
+    }
 
     Q_ASSERT_X(auth, __FUNCTION__, "No AuthBackend found.");
     Q_ASSERT_X(helper, __FUNCTION__, "No HelperBackend found.");

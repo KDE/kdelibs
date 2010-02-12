@@ -22,11 +22,12 @@
 
 #include "AuthBackend.h"
 #include "HelperProxy.h"
+#include <kdecore_export.h>
 
 namespace KAuth
 {
 
-class BackendsManager
+class KDECORE_EXPORT BackendsManager
 {
     static AuthBackend *auth;
     static HelperProxy *helper;
@@ -38,6 +39,7 @@ public:
 
 private:
     static void init();
+    static QList<QObject*> retrieveInstancesIn(const QString &path);
 };
 
 } // namespace Auth

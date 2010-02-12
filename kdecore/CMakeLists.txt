@@ -111,11 +111,6 @@ if (UNIX)
    )
 endif (UNIX)
 
-# Add KAuth backend sources
-set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} ${KAUTH_BACKEND_SRCS} ${KAUTH_HELPER_BACKEND_SRCS})
-# Add KAuth backend libraries
-set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${KAUTH_BACKEND_LIBS})
-
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
@@ -343,6 +338,31 @@ kde4_add_executable(kauth-policy-gen NOGUI ${KAUTH_POLICY_GEN_SRCS})
 target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
 
 install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+
+########### next target ###############
+
+# KAuth backend plugin
+
+set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
+kde4_add_library(kauth_backend_plugin SHARED ${KAUTH_BACKEND_SRCS})
+target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
+install(TARGETS kauth_backend_plugin
+        LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+        ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+        RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+)
+
+########### next target ###############
+
+# KAuth helper plugin
+
+kde4_add_library(kauth_helper_plugin SHARED ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
+target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
+install(TARGETS kauth_helper_plugin
+        LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+        ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+        RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+)
 
 ########### next target ###############
 

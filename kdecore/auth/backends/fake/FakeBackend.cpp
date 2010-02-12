@@ -19,6 +19,8 @@
 
 #include "FakeBackend.h"
 
+#include <QtCore/qplugin.h>
+
 #include <syslog.h>
 
 namespace KAuth
@@ -59,3 +61,5 @@ bool FakeBackend::isCallerAuthorized(const QString &action, QByteArray callerID)
 }
 
 } // namespace Auth
+
+Q_EXPORT_PLUGIN2(kauth_backend, KAuth::FakeBackend)
