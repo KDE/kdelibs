@@ -19,6 +19,7 @@
 
 
 #include "karchivetest.h"
+#include <kmimetype.h>
 #include "karchivetest.moc"
 #include <ktar.h>
 #include <kzip.h>
@@ -200,6 +201,12 @@ static void testFileData( KArchive* archive )
     QVERIFY(e && e->isDirectory());
 }
 
+static void testReadWrite( KArchive* archive )
+{
+    bool ok = archive->writeFile( "newfile", "dfaure", "users", "New File", 8, 0100440 );
+    QVERIFY(ok);
+}
+
 static void testCopyTo( KArchive* archive )
 {
     const KArchiveDirectory* dir = archive->directory();
@@ -268,6 +275,12 @@ static const char s_zipLocaleFileName[] = "karchivetest-locale.zip";
 
 void KArchiveTest::testCreateTar()
 {
+    // With    tempfile: 0.7-0.8 ms, 994236 instr. loads
+    // Without tempfile:    0.81 ms, 992541 instr. loads
+    // Note: use ./karchivetest 2>&1 | grep ms
+    //       to avoid being slowed down by the kDebugs.
+    QBENCHMARK {
+
     KTar tar( s_tarFileName );
 
     bool ok = tar.open( QIODevice::WriteOnly );
@@ -282,10 +295,15 @@ void KArchiveTest::testCreateTar()
     QVERIFY( fileInfo.exists() );
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
     QVERIFY( fileInfo.size() > 450 );
+    }
 }
 
 void KArchiveTest::testCreateTarGz()
 {
+    // With    tempfile: 1.3-1.7 ms, 2555089 instr. loads
+    // Without tempfile:    0.87 ms,  987915 instr. loads
+    QBENCHMARK {
+
     KTar tar( s_tarGzFileName );
 
     bool ok = tar.open( QIODevice::WriteOnly );
@@ -300,11 +318,20 @@ void KArchiveTest::testCreateTarGz()
     QVERIFY( fileInfo.exists() );
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
     QVERIFY( fileInfo.size() > 350 );
+
+    }
 }
 
-void KArchiveTest::testReadTar()
+void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
 {
-    // testCreateTar must have been run first.
+    kDebug() << "START";
+    // 1.6-1.7 ms per interaction, 2908428 instruction loads
+    // After the "no tempfile when writing fix" this went down
+    // to 0.9-1.0 ms, 1689059 instruction loads.
+    // I guess it finds the data in the kernel cache now that no KTempFile is
+    // used when writing.
+    QBENCHMARK {
+
     KTar tar( s_tarGzFileName );
 
     bool ok = tar.open( QIODevice::ReadOnly );
@@ -348,6 +375,7 @@ void KArchiveTest::testReadTar()
 
     ok = tar.close();
     QVERIFY( ok );
+    }
 }
 
 // This tests the decompression using kfilterdev, basically.
@@ -403,6 +431,33 @@ void KArchiveTest::testTarCopyTo()
     QVERIFY( ok );
 }
 
+void KArchiveTest::testTarReadWrite()
+{
+    // testCreateTar must have been run first.
+    KTar tar( s_tarGzFileName );
+    bool ok = tar.open( QIODevice::ReadWrite );
+    QVERIFY( ok );
+
+    testReadWrite( &tar );
+    testFileData( &tar );
+
+    ok = tar.close();
+    QVERIFY( ok );
+
+    // Reopen it and check it
+    {
+        KTar tar( s_tarGzFileName );
+        bool ok = tar.open( QIODevice::ReadOnly );
+        QVERIFY( ok );
+        testFileData( &tar );
+        const KArchiveDirectory* dir = tar.directory();
+        const KArchiveEntry* e = dir->entry( "newfile" );
+        QVERIFY( e && e->isFile() );
+        const KArchiveFile* f = (KArchiveFile*)e;
+        QCOMPARE( f->data().size(), 8 );
+    }
+}
+
 void KArchiveTest::testTarMaxLength()
 {
     KTar tar( s_tarGzMaxLengthFileName );
@@ -437,6 +492,7 @@ void KArchiveTest::testTarMaxLength()
     QCOMPARE( listing[  3], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
     QCOMPARE( listing[  4], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
 
+    // TODO:
     // ################################################# BUG! ###########################
     // There seems to be a bug (which is in kde3 too), we miss 512 and 513.
     // But note that tar tvzf says "skipping next header" (and it skips 511),
@@ -667,4 +723,7 @@ void KArchiveTest::initTestCase()
         QVERIFY(false);
     }
 #endif
+
+    // For better benchmarks: initialize KMimeTypeFactory magic here
+    KMimeType::findByContent(QByteArray("hello"));
 }

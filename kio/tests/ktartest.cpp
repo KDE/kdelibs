@@ -40,6 +40,8 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
   }
 }
 
+// See karchivetest.cpp for the unittest that coverts KTar.
+
 int main( int argc, char** argv )
 {
     if (argc != 2)
