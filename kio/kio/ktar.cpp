@@ -73,15 +73,14 @@ KTar::KTar( const QString& fileName, const QString & _mimetype )
 }
 
 KTar::KTar( QIODevice * dev )
-    : KArchive( dev ),d(new KTarPrivate(this))
+    : KArchive( dev ), d(new KTarPrivate(this))
 {
     Q_ASSERT( dev );
 }
 
-// Only called when the a filename was given
+// Only called when a filename was given
 bool KTar::createDevice( QIODevice::OpenMode mode )
 {
-    Q_UNUSED( mode );
     if ( d->mimetype.isEmpty() ) // Find out mimetype manually
     {
         if ( mode != QIODevice::WriteOnly && QFile::exists( fileName() ) )
@@ -144,7 +143,7 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         }
     }
 
-    if( d->mimetype == "application/x-tar" )
+    if (d->mimetype == "application/x-tar" || mode == QIODevice::WriteOnly)
     {
         return KArchive::createDevice( mode );
     }
@@ -499,10 +498,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
 /*
  * Writes back the changes of the temporary file
  * to the original file.
- * Must only be called if in QIODevice::WriteOnly mode
+ * Must only be called if in write mode, not in read mode
  */
-bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
-    if ( ! tmpFile )
+bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
+{
+    if ( !tmpFile )
         return true;
 
     kDebug(7041) << "Write temporary file to compressed file";
@@ -555,7 +555,7 @@ bool KTar::closeArchive() {
     // If we are in write mode and had created
     // a temporary tar file, we have to write
     // back the changes to the original file
-    if( mode() == QIODevice::WriteOnly) {
+    if( mode() & QIODevice::WriteOnly) {
         ok = d->writeBackTempFile( fileName() );
         delete d->tmpFile;
         d->tmpFile = 0;
