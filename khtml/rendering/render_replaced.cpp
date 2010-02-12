@@ -883,7 +883,10 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
         keyPressEvent(static_cast<QKeyEvent *>(e));
         break;
     case QEvent::KeyRelease:
-        keyReleaseEvent(static_cast<QKeyEvent *>(e));
+        if (qobject_cast<QLineEdit*>(this))
+            event(e);
+        else
+            keyReleaseEvent(static_cast<QKeyEvent *>(e));
         break;
     case QEvent::FocusIn:
         focusInEvent(static_cast<QFocusEvent *>(e));
