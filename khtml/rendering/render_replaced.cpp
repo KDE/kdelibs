@@ -700,14 +700,9 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             pp.fillRect(r, Qt::transparent);
         }
         d = pm;
+    } else {
+        p->end();
     }
-    // Qt 4.4 regression #1: 
-    // can't let a painter active on the view as Qt thinks it is opened on the *pixmap*
-    // and prints "paint device can only be painted by one painter at a time" warnings.
-    //
-    // Testcase: paintEvent(...) { QPainter p(this); aChildWidget->render( aPixmapTarget, ...); }
-    //
-    p->end();
 
     setInPaintEventFlag( widget, false );
 
@@ -715,7 +710,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     setInPaintEventFlag( widget );
 
-//    if (!buffered) {
+    if (!buffered) {
         p->begin(x);
         p->setWorldTransform(t);
         p->setWindow(w);
@@ -728,8 +723,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->setOpacity(op);
         p->setPen(pen);
         p->setBrush(brush);
-//    } else {
-    if (buffered) {
+    } else {
         // transfer results
         QPoint off(r.x(), r.y());
         p->drawPixmap(thePoint+off, static_cast<QPixmap&>(*d), r);
