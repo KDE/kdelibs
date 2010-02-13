@@ -22,6 +22,9 @@
 #include "dbusconnectionpool.h"
 #include <QThreadStorage>
 
+namespace {
+QAtomicInt s_connectionCounter;
+
 class DBusConnectionPoolPrivate
 {
 public:
@@ -36,14 +39,14 @@ public:
     }
 
     QDBusConnection connection() const { return m_connection; }
-    
+
 private:
-    int newNumber() {
-        return m_counter.fetchAndAddAcquire(1);
+    static int newNumber() {
+        return s_connectionCounter.fetchAndAddAcquire(1);
     }
-    QAtomicInt m_counter;
     QDBusConnection m_connection;
 };
+}
 
 QThreadStorage<DBusConnectionPoolPrivate *> s_perThreadConnection;
 
