@@ -33,8 +33,6 @@
 
 static int hebrewDaysElapsed( int y );
 
-static QString num2heb( int num, bool includeMillenium );
-
 class h_date
 {
 public:
@@ -151,104 +149,6 @@ static class h_date * gregorianToHebrew( int y, int m, int d )
     return( &h );
 }
 
-static QString num2heb( int num, bool includeMillenium )
-{
-    const QChar decade[] = {
-                               0x05D8, 0x05D9, 0x05DB, 0x05DC, 0x05DE,
-                               0x05E0, 0x05E1, 0x05E2, 0x05E4, 0x05E6
-                           };
-    QString result;
-
-    if ( num < 1 || num > 9999 ) {
-        return QString::number( num );
-    }
-
-    if ( num >= 1000 ) {
-        if ( includeMillenium || num % 1000 == 0 )
-            result += QChar( 0x05D0 - 1 + num / 1000 );
-        num %= 1000;
-    }
-
-    if ( num >= 100 ) {
-        while ( num >= 500 ) {
-            result += QChar( 0x05EA );
-            num -= 400;
-        }
-        result += QChar( 0x05E7 - 1 + num / 100 );
-        num %= 100;
-    }
-
-    if ( num >= 10 ) {
-        if ( num == 15 || num == 16 )
-            num -= 9;
-        result += decade[num / 10];
-        num %= 10;
-    }
-
-    if ( num > 0 ) {
-        result += QChar( 0x05D0 - 1 + num );
-    }
-
-    if ( result.length() == 1 ) {
-        result += '\'';
-    } else {
-        result.insert( result.length() - 1, '\"' );
-    }
-
-    return result;
-}
-
-static int heb2num( const QString &str, int &iLength )
-{
-    QChar c;
-    QString s = str;
-    int result = 0;
-    iLength = 0;
-    int decadeValues[14] = {10, 20, 20, 30, 40, 40, 50,
-                            50, 60, 70, 80, 80, 90, 90};
-
-    int pos;
-    for ( pos = 0 ; pos < s.length() ; pos++ ) {
-        c = s[pos];
-        if ( s.length() > pos && ( s[pos + 1] == QChar( '\'' ) ||
-                                   s[pos + 1] == QChar( '\"' ) ) ) {
-            iLength++;
-            s.remove( pos + 1, 1 );
-        }
-
-        if ( c >= QChar( 0x05D0 ) && c <= QChar( 0x05D7 ) ) {
-            if ( s.length() > pos && s[pos + 1] >= QChar( 0x05D0 ) &&
-                    s[pos + 1] <= QChar( 0x05EA ) ) {
-                result += ( c.unicode() - 0x05D0 + 1 ) * 1000;
-            } else {
-                result += c.unicode() - 0x05D0 + 1;
-            }
-        } else if ( c == QChar( 0x05D8 ) ) {
-            if ( s.length() > pos && s[pos + 1] >= QChar( 0x05D0 ) &&
-                    s[pos + 1] <= QChar( 0x05EA ) && s[pos + 1] != QChar( 0x05D5 ) &&
-                    s[pos + 1] != QChar( 0x05D6 ) ) {
-                result += 9000;
-            } else {
-                result += 9;
-            }
-        } else if ( c >= QChar( 0x05D9 ) && c <= QChar( 0x05E6 ) ) {
-            if ( s.length() > pos && s[pos + 1] >= QChar( 0x05D9 ) ) {
-                return -1;
-            } else {
-                result += decadeValues[c.unicode() - 0x05D9];
-            }
-        } else if ( c >= QChar( 0x05E7 ) && c <= QChar( 0x05EA ) ) {
-            result += ( c.unicode() - 0x05E7 + 1 ) * 100;
-        } else {
-            break;
-        }
-    }
-
-    iLength += pos;
-
-    return result;
-}
-
 /* constants, in 1/18th of minute */
 static const int HOUR = 1080;
 static const int DAY = 24*HOUR;
@@ -354,6 +254,10 @@ public:
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
 
+    virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
+    virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = '0' ) const;
+    virtual QString stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const;
+
     virtual int monthNumberToMonthIndex( int year, int month ) const;
 };
 
@@ -450,6 +354,239 @@ int KCalendarSystemHebrewPrivate::earliestValidYear() const
 int KCalendarSystemHebrewPrivate::latestValidYear() const
 {
     return 8119;
+}
+
+int KCalendarSystemHebrewPrivate::integerFromString( const QString &inputString, int maxLength, int &readLength ) const
+{
+    if ( locale()->language() == "he" ) {
+
+        // Hebrew numbers are composed of combinations of normal letters which have a numeric value.
+        // This is a non-positional system, the numeric values are simply added together, however
+        // convention is for a RTL highest to lowest value ordering. There is also a degree of
+        // ambiguity due to the lack of a letter for 0, hence 5 and 5000 are written the same.
+        // Hebrew numbers are only used in dates.
+        // See http://www.i18nguy.com/unicode/hebrew-numbers.html for more explaination
+
+        /*
+        Ref table for numbers to Hebrew chars
+
+        Value     1       2       3        4        5       6         7        8      9
+
+        x 1    Alef א  Bet  ב  Gimel ג  Dalet ד  He   ה  Vav  ו    Zayen ז  Het  ח  Tet  ט
+               0x05D0  0x05D1  0x05D2   0x05D3   0x05D4  0x05D5    0x05D6   0x05D7  0x05D8
+
+        x 10   Yod  י  Kaf  כ  Lamed ל  Mem  מ   Nun  נ  Samekh ס  Ayin ע   Pe   פ  Tzadi צ
+               0x05D9  0x05DB  0x05DC   0x05DE   0x05E0  0x05E1    0x05E2   0x05E4  0x05E6
+
+        x 100  Qof  ק  Resh ר  Shin ש   Tav  ת
+               0x05E7  0x05E8  0x05E9   0x05EA
+
+        Note special cases 15 = 9 + 6 = 96 טו and 16 = 9 + 7 = 97 טז
+        */
+
+        int decadeValues[14] = {10, 20, 20, 30, 40, 40, 50, 50, 60, 70, 80, 80, 90, 90};
+
+        QChar thisChar, nextChar;
+        QString string = inputString;
+
+        int stringLength = string.length();
+        readLength = 0;
+        int position = 0;
+        int result = 0;
+        int value = 0;
+
+        for ( ; position < stringLength ; ++position ) {
+
+            thisChar = string[position];
+
+            if ( position + 1 < stringLength ) {
+                nextChar = string[position + 1];
+                // Ignore any geresh or gershayim chars, we don't bother checking they are in the right place
+                if ( nextChar == '\'' ||  nextChar == QChar( 0x05F3 ) ||   // geresh
+                     nextChar == '\"' ||  nextChar == QChar( 0x05F4 ) ) {  // gershayim
+                    string.remove( position + 1, 1 );
+                    stringLength = string.length();
+                    if ( position + 1 < stringLength ) {
+                        nextChar = string[position + 1];
+                    } else {
+                        nextChar = QChar();
+                    }
+                    readLength = readLength + 1;
+                }
+            } else {
+                nextChar = QChar();
+            }
+
+            if ( thisChar >= QChar( 0x05D0 ) && thisChar <= QChar( 0x05D7 ) ) {
+
+                // If this char Alef to Het, 1 to 8, א to ח
+
+                // If next char is any valid digit char (Alef to Tav, 1 to 400, א to ת)
+                // then this char is a thousands digit
+                // else this char is a ones digit
+
+                if ( nextChar >= QChar( 0x05D0 ) && nextChar <= QChar( 0x05EA ) ) {
+                    value = ( thisChar.unicode() - 0x05D0 + 1 ) * 1000;
+                } else {
+                    value = thisChar.unicode() - 0x05D0 + 1;
+                }
+
+            } else if ( thisChar == QChar( 0x05D8 ) ) {
+
+                // If this char is Tet, 9, ט
+
+                // If next char is any valid digit char (Alef to Tav, 1 to 400, א to ת)
+                // and next char not 6 (Special case for 96 = 15)
+                // and next char not 7 (Special case for 97 = 16)
+                // then is a thousands digit else is 9
+
+                if ( nextChar >= QChar( 0x05D0 ) && nextChar <= QChar( 0x05EA ) &&
+                     nextChar != QChar( 0x05D5 ) && nextChar != QChar( 0x05D6 ) ) {
+                    value = 9000;
+                } else {
+                    value = 9;
+                }
+
+            } else if ( thisChar >= QChar( 0x05D9 ) && thisChar <= QChar( 0x05E6 ) ) {
+
+                // If this char Yod to Tsadi, 10 to 90, י to צ
+
+                // If next char is a tens or hundreds char then is an error
+                // Else is a tens digit
+
+                if ( nextChar >= QChar( 0x05D9 ) ) {
+                    return -1;
+                } else {
+                    value = decadeValues[thisChar.unicode() - 0x05D9];
+                }
+
+            } else if ( thisChar >= QChar( 0x05E7 ) && thisChar <= QChar( 0x05EA ) ) {
+
+                // If this char Qof to Tav, 100 to 400, ק to ת, then is hundreds digit
+
+                value = ( thisChar.unicode() - 0x05E7 + 1 ) * 100;
+
+            } else {
+
+                // If this char any non-digit char including whitespace or punctuation, we're done
+                break;
+
+            }
+
+            result = result + value;
+
+            value = 0;
+        }
+
+        readLength += position;
+
+        return result;
+
+    } else {
+        return KCalendarSystemPrivate::integerFromString( inputString, maxLength, readLength );
+    }
+}
+
+QString KCalendarSystemHebrewPrivate::stringFromInteger( int number, int padWidth, QChar padChar ) const
+{
+    return KCalendarSystemPrivate::stringFromInteger( number, padWidth, padChar );
+}
+
+QString KCalendarSystemHebrewPrivate::stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const
+{
+    if ( locale()->language() == "he" ) {
+
+        // Hebrew numbers are composed of combinations of normal letters which have a numeric value.
+        // This is a non-positional system, the numeric values are simply added together, however
+        // convention is for a RTL highest to lowest value ordering. There is also a degree of
+        // ambiguity due to the lack of a letter for 0, hence 5 and 5000 are written the same.
+        // Hebrew numbers are only used in dates.
+        // See http://www.i18nguy.com/unicode/hebrew-numbers.html for more explaination
+
+        /*
+        Ref table for numbers to Hebrew chars
+
+        Value     1       2       3        4        5       6         7        8      9
+
+        x 1    Alef א  Bet  ב  Gimel ג  Dalet ד  He   ה  Vav  ו    Zayen ז  Het  ח  Tet  ט
+               0x05D0  0x05D1  0x05D2   0x05D3   0x05D4  0x05D5    0x05D6   0x05D7  0x05D8
+
+        x 10   Yod  י  Kaf  כ  Lamed ל  Mem  מ   Nun  נ  Samekh ס  Ayin ע   Pe   פ  Tzadi צ
+               0x05D9  0x05DB  0x05DC   0x05DE   0x05E0  0x05E1    0x05E2   0x05E4  0x05E6
+
+        x 100  Qof  ק  Resh ר  Shin ש   Tav  ת
+               0x05E7  0x05E8  0x05E9   0x05EA
+
+        Note special cases 15 = 9 + 6 = 96 טו and 16 = 9 + 7 = 97 טז
+        */
+
+        const QChar decade[] = {
+        //  Tet = ט,    Yod = י,    Kaf = כ,    Lamed = ל,  Mem = מ
+        //  Nun = נ,    Samekh = ס, Ayin = ע,   Pe = פ,     Tsadi = צ
+            0x05D8,     0x05D9,     0x05DB,     0x05DC,     0x05DE,
+            0x05E0,     0x05E1,     0x05E2,     0x05E4,     0x05E6
+        };
+
+        QString result;
+
+        // We have no rules for coping with numbers outside this range
+        if ( number < 1 || number > 9999 ) {
+            return KCalendarSystemPrivate::stringFromInteger( number, padWidth, padChar, digitSet );
+        }
+
+        // Translate the thousands digit, just uses letter for number 1..9 ( א to ט, Alef to Tet )
+        // Years 5001-5999 do not have the thousands by convention
+        if ( number >= 1000 ) {
+            if ( number <= 5000 || number >= 6000 ) {
+                result += QChar( 0x05D0 - 1 + number / 1000 );  // Alef א to Tet ט
+            }
+            number %= 1000;
+        }
+
+        // Translate the hundreds digit
+        // Use traditional method where we only have letters assigned values for 100, 200, 300 and 400
+        // so may need to repeat 400 twice to make up the required number
+        if ( number >= 100 ) {
+            while ( number >= 500 ) {
+                result += QChar( 0x05EA );  // Tav = ת
+                number -= 400;
+            }
+            result += QChar( 0x05E7 - 1 + number / 100 ); // Qof = ק to xxx
+            number %= 100;
+        }
+
+        // Translate the tens digit
+        // The numbers 15 and 16 translate to letters that spell out the name of God which is
+        // forbidden, so require special treatment where 15 = 9 + 6 and 1 = 9 + 7.
+        if ( number >= 10 ) {
+            if ( number == 15 || number == 16 )
+                number -= 9;
+            result += decade[number / 10];
+            number %= 10;
+        }
+
+        // Translate the ones digit, uses letter for number 1..9 ( א to ט, Alef to Tet )
+        if ( number > 0 ) {
+            result += QChar( 0x05D0 - 1 + number );  // Alef = א to xxx
+        }
+
+        // When used in a string with mixed names and numbers the numbers need special chars to
+        // distinguish them from words composed of the same letters.
+        // Single digit numbers are followed by a geresh symbol ׳ (Unicode = 0x05F3), but we use
+        // single quote for convenience.
+        // Multiple digit numbers have a gershayim symbol ״ (Unicode = 0x05F4) as second-to-last
+        // char, but we use double quote for convenience.
+        if ( result.length() == 1 ) {
+            result += '\'';
+        } else {
+            result.insert( result.length() - 1, '\"' );
+        }
+
+        return result;
+
+    } else {
+        return KCalendarSystemPrivate::stringFromInteger( number, padWidth, padChar, digitSet );
+    }
 }
 
 int KCalendarSystemHebrewPrivate::monthNumberToMonthIndex( int year, int month ) const
@@ -744,74 +881,47 @@ QString KCalendarSystemHebrew::weekDayName( const QDate &date, WeekDayNameFormat
     return weekDayName( dayOfWeek( date ), format );
 }
 
-QString KCalendarSystemHebrew::yearString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemHebrew::yearString( const QDate &date, StringFormat format ) const
 {
-    QString sResult;
-
-    // Only use hebrew numbers if the hebrew setting is selected
-    if ( locale()->language() == QLatin1String( "he" ) ) {
-        if ( format == ShortFormat ) {
-            sResult = num2heb( year( pDate ), false );
-        }
-    } else {
-        sResult = KCalendarSystem::yearString( pDate, format );
-    }
-
-    return sResult;
+    return KCalendarSystem::yearString( date, format );
 }
 
-QString KCalendarSystemHebrew::monthString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemHebrew::monthString( const QDate &date, StringFormat format ) const
 {
-    return KCalendarSystem::monthString( pDate, format );
+    return KCalendarSystem::monthString( date, format );
 }
 
-QString KCalendarSystemHebrew::dayString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemHebrew::dayString( const QDate &date, StringFormat format ) const
 {
-    QString sResult;
-
-    // Only use hebrew numbers if the hebrew setting is selected
-    if ( locale()->language() == QLatin1String( "he" ) ) {
-        sResult = num2heb( day( pDate ), false );
-    } else {
-        sResult = KCalendarSystem::dayString( pDate, format );
-    }
-
-    return sResult;
+    return KCalendarSystem::dayString( date, format );
 }
 
-int KCalendarSystemHebrew::yearStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemHebrew::yearStringToInteger( const QString &string, int &readLength ) const
 {
-    int iResult;
+    int result = KCalendarSystem::yearStringToInteger( string, readLength );
 
-    if ( locale()->language() == "he" ) {
-        iResult = heb2num( sNum, iLength );
-    } else {
-        iResult = KCalendarSystem::yearStringToInteger( sNum, iLength );
+    // Hebrew has no letter for 0, so 5 and 5000 are written the same
+    // Assume if less than 10 then we are in an exact multiple of 1000
+    if ( result < 10 ) {
+        result = result * 1000;
     }
 
-    if ( iResult < 1000 ) {
-        iResult += 5000; // assume we're in the 6th millenium (y6k bug)
+    // Not good just assuming, make configurable
+    if ( result < 1000 ) {
+        result += 5000; // assume we're in the 6th millenium (y6k bug)
     }
 
-    return iResult;
+    return result;
 }
 
-int KCalendarSystemHebrew::monthStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemHebrew::monthStringToInteger( const QString &string, int &readLength ) const
 {
-    return KCalendarSystem::monthStringToInteger( sNum, iLength );
+    return KCalendarSystem::monthStringToInteger( string, readLength );
 }
 
-int KCalendarSystemHebrew::dayStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemHebrew::dayStringToInteger( const QString &string, int &readLength ) const
 {
-    int iResult;
-
-    if ( locale()->language() == "he" ) {
-        iResult = heb2num( sNum, iLength );
-    } else {
-        iResult = KCalendarSystem::yearStringToInteger( sNum, iLength );
-    }
-
-    return iResult;
+    return KCalendarSystem::yearStringToInteger( string, readLength );
 }
 
 QString KCalendarSystemHebrew::formatDate( const QDate &date, KLocale::DateFormat format ) const

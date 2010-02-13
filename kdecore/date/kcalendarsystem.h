@@ -632,7 +632,7 @@ public:
      */
     QString daysInWeekString( const QDate &date ) const;
 
-    //KDE5 remove?
+    //KDE5 make protected or remove?
     /**
      * @deprecated
      *
@@ -644,7 +644,7 @@ public:
      */
     virtual int yearStringToInteger( const QString &sNum, int &iLength ) const;
 
-    //KDE5 remove?
+    //KDE5 make protected or remove?
     /**
      * @deprecated
      *
@@ -656,7 +656,7 @@ public:
      */
     virtual int monthStringToInteger( const QString &sNum, int &iLength ) const;
 
-    //KDE5 remove?
+    //KDE5 make protected or remove?
     /**
      * @deprecated
      *

@@ -255,6 +255,45 @@ int KCalendarSystemPrivate::latestValidYear() const
     return 9999;
 }
 
+// Reimplement if special string to integer handling required, e.g. Hebrew.
+// Peel a number off the front of a string which may have other trailing chars after the number
+// Stop either at either maxLength, eos, or first non-digit char
+int KCalendarSystemPrivate::integerFromString( const QString &string, int maxLength, int &readLength ) const
+{
+    int position = 0;
+
+    if ( maxLength < 0 ) {
+        maxLength = string.length();
+    }
+
+    while ( position < string.length() &&
+            position < maxLength &&
+            string.at( position ).isDigit() ) {
+        position++;
+    }
+
+    readLength = position;
+    return string.left( position ).toInt();
+}
+
+// Reimplement if special integer to string handling required, e.g. Hebrew.
+// Utility to convert an integer into the correct display string form
+QString KCalendarSystemPrivate::stringFromInteger( int number, int padWidth, QChar padChar ) const
+{
+    return stringFromInteger( number, padWidth, padChar, q->locale()->dateTimeDigitSet() );
+}
+
+// Reimplement if special integer to string handling required, e.g. Hebrew.
+// Utility to convert an integer into the correct display string form
+QString KCalendarSystemPrivate::stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const
+{
+    if ( padChar == '\0' || padWidth == 0 ) {
+        return q->locale()->convertDigits( QString::number( number ), digitSet );
+    } else {
+        return q->locale()->convertDigits( QString::number( number ).rightJustified( padWidth, padChar ), digitSet );
+    }
+}
+
 // Allows us to set dates outside publically valid range, USE WITH CARE!!!!
 bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int day ) const
 {
@@ -287,20 +326,6 @@ QDate KCalendarSystemPrivate::invalidDate() const
     return QDate();
 }
 
-int KCalendarSystemPrivate::stringToInteger( const QString &sNum, int &iLength ) const
-{
-    int iPos = 0;
-    int result = 0;
-
-    for ( ; sNum.length() > iPos && sNum.at( iPos ).isDigit(); iPos++ ) {
-        result *= 10;
-        result += sNum.at( iPos ).digitValue();
-    }
-    iLength = iPos;
-
-    return result;
-}
-
 QString KCalendarSystemPrivate::simpleDateString( const QString &str ) const
 {
     QString newStr;
@@ -330,17 +355,27 @@ QDate KCalendarSystemPrivate::lastDayOfYear( int year ) const
     return QDate::fromJulianDay( jd );
 }
 
+const KLocale * KCalendarSystemPrivate::locale() const
+{
+    if ( m_locale ) {
+        return m_locale;
+    } else {
+        return KGlobal::locale();
+    }
+}
+
+
 
 KCalendarSystem::KCalendarSystem( const KLocale *locale )
                 : d_ptr( new KCalendarSystemPrivate( this ) )
 {
-    d_ptr->locale = locale;
+    d_ptr->m_locale = locale;
 }
 
 KCalendarSystem::KCalendarSystem( KCalendarSystemPrivate &dd, const KLocale *locale )
                 : d_ptr( &dd )
 {
-    d_ptr->locale = locale;
+    d_ptr->m_locale = locale;
 }
 
 KCalendarSystem::~KCalendarSystem()
@@ -959,40 +994,48 @@ QString KCalendarSystem::weekNumberString( const QDate &date, StringFormat forma
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::monthsInYearString( const QDate &date, StringFormat format ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( format == ShortFormat ) {
-        return QString::number( monthsInYear( date ) );
+        return d->stringFromInteger( monthsInYear( date ), 0, '0' );
     } else {
-        return QString::number( monthsInYear( date ) ).rightJustified( 2, '0' );
+        return d->stringFromInteger( monthsInYear( date ), 2, '0' );
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::weeksInYearString( const QDate &date, StringFormat format ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( format == ShortFormat ) {
-        return QString::number( weeksInYear( date ) );
+        return d->stringFromInteger( weeksInYear( date ), 0, '0' );
     } else {
-        return QString::number( weeksInYear( date ) ).rightJustified( 2, '0' );
+        return d->stringFromInteger( weeksInYear( date ), 2, '0' );
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInYearString( const QDate &date, StringFormat format ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( format == ShortFormat ) {
-        return QString::number( daysInYear( date ) );
+        return d->stringFromInteger( daysInYear( date ), 0, '0' );
     } else {
-        return QString::number( daysInYear( date ) ).rightJustified( 3, '0' );
+        return d->stringFromInteger( daysInYear( date ), 3, '0' );
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInMonthString( const QDate &date, StringFormat format ) const
 {
+    Q_D( const KCalendarSystem );
+
     if ( format == ShortFormat ) {
-        return QString::number( daysInMonth( date ) );
+        return d->stringFromInteger( daysInMonth( date ), 0, '0' );
     } else {
-        return QString::number( daysInMonth( date ) ).rightJustified( 2, '0' );
+        return d->stringFromInteger( daysInMonth( date ), 2, '0' );
     }
 }
 
@@ -1001,25 +1044,25 @@ QString KCalendarSystem::daysInWeekString( const QDate &date) const
 {
     Q_D( const KCalendarSystem );
     Q_UNUSED( date );
-    return QString::number( d->daysInWeek() );
+    return d->stringFromInteger( d->daysInWeek(), 0 );
 }
 
-int KCalendarSystem::yearStringToInteger( const QString &yearString, int &iLength ) const
+int KCalendarSystem::yearStringToInteger( const QString &yearString, int &readLength ) const
 {
     Q_D( const KCalendarSystem );
-    return d->stringToInteger( yearString, iLength );
+    return d->integerFromString( yearString, 4, readLength );
 }
 
-int KCalendarSystem::monthStringToInteger( const QString &monthString, int &iLength ) const
+int KCalendarSystem::monthStringToInteger( const QString &monthString, int &readLength ) const
 {
     Q_D( const KCalendarSystem );
-    return d->stringToInteger( monthString, iLength );
+    return d->integerFromString( monthString, 2, readLength );
 }
 
-int KCalendarSystem::dayStringToInteger( const QString &dayString, int &iLength ) const
+int KCalendarSystem::dayStringToInteger( const QString &dayString, int &readLength ) const
 {
     Q_D( const KCalendarSystem );
-    return d->stringToInteger( dayString, iLength );
+    return d->integerFromString( dayString, 2, readLength );
 }
 
 QString KCalendarSystem::formatDate( const QDate &fromDate, KLocale::DateFormat toFormat ) const
@@ -1078,6 +1121,7 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 {
     // Currently defaults to KLocale::KdeFormat, KDE 4.5 to support other standards (POSIX, Unicode)
     Q_UNUSED( standard )
+    Q_D( const KCalendarSystem );
 
     if ( !fromDate.isValid() ) {
         return QString();
@@ -1144,7 +1188,8 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 
         } else {
 
-            QString temp;
+            QString componentString;
+            int componentInteger = 0;
             int minWidth = 0;
             int isoWeekYear = yy;
             QDate yearDate;
@@ -1154,58 +1199,58 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
             //Numbers will override with correct width unless flagged
             switch ( toFormat.at( format_index ).unicode() ) {
                 case '%':  //Literal %
-                    temp = QLatin1Char('%');
+                    componentString = QLatin1Char('%');
                     if ( !escapePad ) {
                         padChar = QChar();
                     }
                     break;
                 case 't':  //Tab
-                    temp = "\t";
+                    componentString = "\t";
                     if ( !escapePad ) {
                         padChar = QChar();
                     }
                     break;
                 case 'Y':  //Long year numeric, default 0 pad to 4 places with sign
-                    temp.setNum( qAbs( yy ) );
+                    componentInteger = qAbs( yy );
                     minWidth = 4;
                     if ( yy < 0 ) {
                         signChar = '-';
                     }
                     break;
                 case 'C':  //Century numeric, default 0 pad to 2 places with sign
-                    temp.setNum( qAbs( yy ) / 100 );
+                    componentInteger =  qAbs( yy ) / 100 ;
                     minWidth = 2;
                     if ( yy < 0 ) {
                         signChar = '-';
                     }
                     break;
                 case 'y':  //Short year numeric, default 0 pad to 2 places with sign
-                    temp.setNum( qAbs( yy ) % 100 );
+                    componentInteger =  qAbs( yy ) % 100;
                     minWidth = 2;
                     if ( yy < 0 ) {
                         signChar = '-';
                     }
                     break;
                 case 'm':  //Long month numeric, default 0 pad to 2 places no sign
-                    temp.setNum( mm );
+                    componentInteger =  mm;
                     minWidth = 2;
                     break;
                 case 'n':  //Short month numeric, default no pad to 1 places no sign
                     //Note C/POSIX/GNU %n is actually newline not short month
                     //Copy what %e does, no padding by default
-                    temp.setNum( mm );
+                    componentInteger =  mm;
                     minWidth = 1;
                     if ( !escapePad ) {
                         padChar = QChar();
                     }
                     break;
                 case 'd':  //Long day numeric, default 0 pad to 2 places no sign
-                    temp.setNum( dd );
+                    componentInteger =  dd;
                     minWidth = 2;
                     break;
                 case 'e':  //Short day numeric, default no pad to 1 places no sign
                     //KDE does non-standard no-padding, C/POSIX/GNU pads with spaces by default
-                    temp.setNum( dd );
+                    componentInteger =  dd;
                     minWidth = 1;
                     if ( !escapePad ) {
                         padChar = QChar();
@@ -1213,9 +1258,9 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
                     break;
                 case 'B':  //Long month name, default space pad to 0 places no sign
                     if ( locale()->dateMonthNamePossessive() ) {
-                        temp = monthName( mm, yy, KCalendarSystem::LongNamePossessive );
+                        componentString = monthName( mm, yy, KCalendarSystem::LongNamePossessive );
                     } else {
-                        temp = monthName( mm, yy, KCalendarSystem::LongName );
+                        componentString = monthName( mm, yy, KCalendarSystem::LongName );
                     }
                     if ( !escapePad ) {
                         padChar = ' ';
@@ -1224,9 +1269,9 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
                 case 'h':  //Short month name, default space pad to 0 places no sign
                 case 'b':  //Short month name, default space pad to 0 places no sign
                     if ( locale()->dateMonthNamePossessive() ) {
-                        temp = monthName( mm, yy, KCalendarSystem::ShortNamePossessive );
+                        componentString = monthName( mm, yy, KCalendarSystem::ShortNamePossessive );
                     } else {
-                        temp = monthName( mm, yy, KCalendarSystem::ShortName );
+                        componentString = monthName( mm, yy, KCalendarSystem::ShortName );
                     }
                     if ( !escapePad ) {
                         padChar = ' ';
@@ -1236,26 +1281,26 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
                     if ( !escapePad ) {
                         padChar = ' ';
                     }
-                    temp = weekDayName( fromDate, KCalendarSystem::LongDayName );
+                    componentString = weekDayName( fromDate, KCalendarSystem::LongDayName );
                     break;
                 case 'a':  //Short weekday name, default space pad to 0 places no sign
-                    temp = weekDayName( fromDate, KCalendarSystem::ShortDayName );
+                    componentString = weekDayName( fromDate, KCalendarSystem::ShortDayName );
                     if ( !escapePad ) {
                         padChar = ' ';
                     }
                     break;
                 case 'j':  //Long day of year numeric, default 0 pad to 3 places no sign
-                    temp.setNum( dayOfYear( fromDate ) );
+                    componentInteger = dayOfYear( fromDate );
                     minWidth = 3;
                     break;
                 case 'V':  //Long ISO week of year numeric, default 0 pad to 2 places no sign
-                    temp.setNum( weekNumber( fromDate ) );
+                    componentInteger = weekNumber( fromDate );
                     minWidth = 2;
                     break;
                 case 'G':  //Long year of ISO week of year numeric, default 0 pad to 4 places with sign
                     weekNumber( fromDate, &isoWeekYear );
                     setDate( yearDate, isoWeekYear, 1, 1 );
-                    temp.setNum( qAbs( isoWeekYear ) );
+                    componentInteger = qAbs( isoWeekYear );
                     minWidth = 4;
                     if ( isoWeekYear < 0 ) {
                         signChar = '-';
@@ -1264,56 +1309,59 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
                 case 'g':  //Short year of ISO week of year numeric, default 0 pad to 2 places with sign
                     weekNumber( fromDate, &isoWeekYear );
                     setDate( yearDate, isoWeekYear, 1, 1 );
-                    temp.setNum( qAbs( isoWeekYear ) % 100 );
+                    componentInteger = qAbs( isoWeekYear ) % 100;
                     minWidth = 2;
                     if ( isoWeekYear < 0 ) {
                         signChar = '-';
                     }
                     break;
                 case 'u':  //Short day of week numeric
-                    temp.setNum( dayOfWeek( fromDate ) );
+                    componentInteger = dayOfWeek( fromDate );
                     minWidth = 1;
                     break;
                 case 'D':  //US short date format, ignore any overrides
-                    temp = formatDate( fromDate, "%m/%d/%y" );
+                    componentString = formatDate( fromDate, "%m/%d/%y" );
                     padWidth = 0;
                     padChar = QChar();
                     caseChar = QChar();
                     break;
                 case 'F':  //Full or ISO short date format, ignore any overrides
-                    temp = formatDate( fromDate, "%Y-%m-%d" );
+                    componentString = formatDate( fromDate, "%Y-%m-%d" );
                     padWidth = 0;
                     padChar = QChar();
                     caseChar = QChar();
                     break;
                 case 'x':  //Locale short date format, ignore any overrides
-                    temp = formatDate( fromDate, locale()->dateFormatShort() );
+                    componentString = formatDate( fromDate, locale()->dateFormatShort() );
                     padWidth = 0;
                     padChar = QChar();
                     caseChar = QChar();
                     break;
                 default:  //No valid format code, treat as literal but apply any overrides
                     //GNU date returns all chars since and including % and applies the overrides which seems wrong.
-                    temp = toFormat.at( format_index );
+                    componentString = toFormat.at( format_index );
                     break;
             }
 
-            padWidth = qMax( minWidth, padWidth );
-            if ( !padChar.isNull()  && padWidth > 0 ) {
-                temp = temp.rightJustified( padWidth, padChar );
+            if ( componentString.isEmpty() ) {
+                padWidth = qMax( minWidth, padWidth );
+                componentString = d->stringFromInteger( componentInteger, padWidth, padChar, digitSet );
+                if ( !signChar.isNull() ) {
+                    componentString.prepend( signChar );
+                }
+            } else {
+                if ( padChar != '\0' && padWidth != 0 ) {
+                    componentString = componentString.rightJustified( padWidth, padChar );
+                }
+
+                if ( caseChar == '^' ) {
+                    componentString = componentString.toUpper();
+                } else if ( caseChar == '#' ) {
+                    componentString = componentString.toUpper(); // JPL ???
+                }
             }
 
-            if ( caseChar == '^' ) {
-                temp = temp.toUpper();
-            } else if ( caseChar == '#' ) {
-                temp = temp.toUpper(); // JPL ???
-            }
-
-            if ( !signChar.isNull() ) {
-                temp.prepend( signChar );
-            }
-
-            buffer.append( temp );
+            buffer.append( componentString );
 
             escape = false;
             escapePad = false;
@@ -1324,8 +1372,6 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
             signChar = QChar();
         }
     }
-
-    buffer = locale()->convertDigits( buffer, digitSet );
 
     return buffer;
 }
@@ -1384,7 +1430,7 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
     int yy = year( QDate::currentDate() );
     int strpos = 0;
     int fmtpos = 0;
-    int iLength; // Temporary variable used when reading input
+    int readLength; // Temporary variable used when reading input
     bool error = false;
 
     while ( fmt.length() > fmtpos && str.length() > strpos && !error ) {
@@ -1412,8 +1458,8 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
             fmtChar = fmt.at( fmtpos++ );
             switch ( fmtChar.unicode() )
             {
-                case 'a':
-                case 'A':
+                case 'a':  // Weekday Name Short
+                case 'A':  // Weekday Name Long
                     error = true;
                     j = 1;
                     while ( error && j <= d->maxDaysInWeek() ) {
@@ -1429,16 +1475,16 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
                         j++;
                     }
                     break;
-                case 'b':
-                case 'h':
-                case 'B':
+                case 'b':  // Month Name Short
+                case 'h':  // Month Name Short
+                case 'B':  // Month Name Long
                     error = true;
                     j = 1;
                     while ( error && j <= d->maxMonthsInYear() ) {
-                        //This may be a problem in calendar systems with variable number of months
-                        //in the year and/or names of months that change depending on the year, e.g
-                        //Hebrew.  We really need to know the correct year first, but we may not have
-                        //read it yet and will be using the current year instead
+                        // This may be a problem in calendar systems with variable number of months
+                        // in the year and/or names of months that change depending on the year, e.g
+                        // Hebrew.  We really need to know the correct year first, but we may not have
+                        // read it yet and will be using the current year instead
                         if ( locale()->dateMonthNamePossessive() ) {
                             shortName = monthName( j, yy, KCalendarSystem::ShortNamePossessive ).toLower();
                             longName = monthName( j, yy, KCalendarSystem::LongNamePossessive ).toLower();
@@ -1458,41 +1504,42 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmtstr, b
                         j++;
                     }
                     break;
-                case 'd':
-                case 'e':
-                    dd = d->stringToInteger( str.mid( strpos ), iLength );
-                    strpos += iLength;
-                    error = iLength <= 0;
+                case 'd': // Day Number Long
+                case 'e': // Day Number Short
+                    dd = dayStringToInteger( str.mid( strpos ), readLength );
+                    strpos += readLength;
+                    error = readLength <= 0;
                     break;
-                case 'n':
-                case 'm':
-                    mm = d->stringToInteger( str.mid( strpos ), iLength );
-                    strpos += iLength;
-                    error = iLength <= 0;
+                case 'n': // Month Number Short
+                case 'm': // Month Number Long
+                    mm = monthStringToInteger( str.mid( strpos ), readLength );
+                    strpos += readLength;
+                    error = readLength <= 0;
                     break;
-                case 'Y':
-                case 'y':
-                    yy = d->stringToInteger( str.mid( strpos ), iLength );
-                    strpos += iLength;
+                case 'Y': // Year Number Long
+                case 'y': // Year Number Short
+                    yy = yearStringToInteger( str.mid( strpos ), readLength );
+                    strpos += readLength;
                     // JPL are we sure about this? Do users really want 99 = 2099 or 1999? Should we use a Y2K style range?
+                    // Using 2000 only valid for Gregorian, Hebrew should be 5000, etc.
                     if ( fmtChar == 'y' && yy >= 0 && yy < 100 )
                         yy += 2000; // QDate assumes 19xx by default, but this isn't what users want...
-                        error = iLength <= 0;
+                        error = readLength <= 0;
                     break;
-                case 'j':
-                    dayInYear = d->stringToInteger( str.mid( strpos ), iLength );
-                    strpos += iLength;
-                    error = iLength <= 0;
+                case 'j': // Day Of Year Number
+                    dayInYear = d->integerFromString( str.mid( strpos ), 3, readLength );
+                    strpos += readLength;
+                    error = readLength <= 0;
                     break;
-                case 'V':
-                    isoWeekNumber = d->stringToInteger( str.mid( strpos ), iLength );
-                    strpos += iLength;
-                    error = iLength <= 0;
+                case 'V': // ISO Week Number
+                    isoWeekNumber = d->integerFromString( str.mid( strpos ), 2, readLength );
+                    strpos += readLength;
+                    error = readLength <= 0;
                     break;
-                case 'u':
-                    dayOfIsoWeek = d->stringToInteger( str.mid( strpos ), iLength );
-                    strpos += iLength;
-                    error = iLength <= 0;
+                case 'u': // ISO Day Of Week
+                    dayOfIsoWeek = d->integerFromString( str.mid( strpos ), 1, readLength );
+                    strpos += readLength;
+                    error = readLength <= 0;
                     break;
             }
         }
@@ -1600,11 +1647,7 @@ const KLocale * KCalendarSystem::locale() const
 {
     Q_D( const KCalendarSystem );
 
-    if ( d->locale ) {
-        return d->locale;
-    }
-
-    return KGlobal::locale();
+    return d->locale();
 }
 
 // Deprecated

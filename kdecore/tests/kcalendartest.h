@@ -3,6 +3,13 @@
 
 #include <QtCore/QObject>
 
+#include "klocale.h"
+
+class QString;
+class QDate;
+
+class KCalendarSystem;
+
 class KCalendarTest : public QObject
 {
     Q_OBJECT
@@ -39,6 +46,7 @@ private Q_SLOTS:
     void testFormatDate();
     void testReadDate();
     void testStringForms();
+    void testHebrewStrings();
     void testIsoWeekDate();
     void testDayOfYearDate();
     void testGregorian();

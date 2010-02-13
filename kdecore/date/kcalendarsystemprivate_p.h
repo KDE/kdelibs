@@ -20,6 +20,10 @@
 #ifndef KCALENDARSYSTEMPRIVATE_H
 #define KCALENDARSYSTEMPRIVATE_H
 
+class QChar;
+class QString;
+class QDate;
+
 class KCalendarSystem;
 class KLocale;
 
@@ -42,18 +46,24 @@ public:
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
 
+    // Virtual methods to re-implement if special number/string conversion needed
+    // Currently only Hebrew needs special conversion, rest use KLocale DigitSet
+    virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
+    virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = '0' ) const;
+    virtual QString stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const;
+
     // Utility functions
     bool setAnyDate( QDate &date, int year, int month, int day ) const;
     int addYearNumber( int originalYear, int addYears ) const;
     QDate invalidDate() const;
-    int stringToInteger( const QString &sNum, int &iLength ) const;
     QString simpleDateString( const QString &str ) const;
     QDate firstDayOfYear( int year ) const;
     QDate lastDayOfYear( int year ) const;
+    const KLocale *locale() const;
 
     // Global variables each calendar system must initialise
     const KCalendarSystem *q;
-    const KLocale *locale;
+    const KLocale *m_locale;
 };
 
 #endif // KCALENDARSYSTEMPRIVATE_H
