@@ -568,7 +568,11 @@ DOMStringImpl* TextImpl::renderString() const
 DOMString TextImpl::toString() const
 {
     // FIXME: substitute entity references as needed!
-    return escapeHTML( nodeValue() );
+    bool escape = true;
+    for (NodeImpl* node = parentNode(); node; node = node->parentNode())
+        if (node->id() == ID_SCRIPT)
+            escape = false;
+    return escape ? escapeHTML( nodeValue() ) : nodeValue();
 }
 
 DOMString TextImpl::toString(long long startOffset, long long endOffset) const
