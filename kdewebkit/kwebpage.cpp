@@ -111,7 +111,7 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     action(Back)->setShortcut(KStandardShortcut::back().primary());
     action(Forward)->setShortcut(KStandardShortcut::forward().primary());
     action(Reload)->setShortcut(KStandardShortcut::reload().primary());
-    action(Stop)->setShortcut(Qt::Key_Escape);
+    action(Stop)->setShortcut(QKeySequence(Qt::Key_Escape));
     action(Cut)->setShortcut(KStandardShortcut::cut().primary());
     action(Copy)->setShortcut(KStandardShortcut::copy().primary());
     action(Paste)->setShortcut(KStandardShortcut::paste().primary());
@@ -259,7 +259,7 @@ QString KWebPage::userAgentForUrl(const QUrl& _url) const
     return userAgent;
 }
 
-bool KWebPage::acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest & request, NavigationType type)
+bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
     kDebug() << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
 

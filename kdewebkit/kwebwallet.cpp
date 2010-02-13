@@ -30,6 +30,8 @@
 #include <QtCore/QPointer>
 #include <QtWebKit/QWebPage>
 #include <QtWebKit/QWebFrame>
+#include <QtWebKit/QWebElement>
+#include <QtWebKit/QWebElementCollection>
 #include <qwindowdefs.h>
 
 #define QL1S(x)   QLatin1String(x)
@@ -39,14 +41,11 @@
  * Creates key used to store and retrieve form data.
  *
  */
-static QString walletKey(KWebWallet::WebForm form, bool useIndexOnEmptyName = false)
+static QString walletKey(KWebWallet::WebForm form)
 {
     QString key = form.url.toString(QUrl::RemoveQuery|QUrl::RemoveFragment);
     key += QL1C('#');
-    if (form.name.isEmpty() && useIndexOnEmptyName)
-        key += form.index;
-    else
-        key += form.name;
+    key += form.name;
 
     return key;
 }
@@ -57,6 +56,22 @@ static QString escapeValue (const QString& _value)
     value.replace(QL1C('\\'), QL1S("\\\\"));
     value.replace(QL1C('\"'), QL1S("\\\""));
     return value;
+}
+
+static int getWebFields(const QWebElement &formElement,
+                        const QString& selector, QList<KWebWallet::WebForm::WebField> &fields)
+{
+    QWebElementCollection collection = formElement.findAll(selector);
+    const int count = collection.count();
+
+    for(int i = 0; i < count; ++i) {
+        QWebElement element = collection.at(i);
+        const QString value = element.evaluateJavaScript(QL1S("this.value")).toString();
+        if (!value.isEmpty())
+            fields << qMakePair(element.attribute(QL1S("name")), value);
+    }
+
+    return count;
 }
 
 class KWebWallet::KWebWalletPrivate
@@ -96,35 +111,50 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
     Q_ASSERT(frame);
 
     KWebWallet::WebFormList list;
-    const QString fileName = (fillform ? QL1S(":/resources/parseFormNames.js"):QL1S(":/resources/parseForms.js"));
-    QFile file(fileName);
+    QWebElementCollection formElements = frame->findAllElements(QL1S("form[method=post]"));
+    const int formElementCount = formElements.count();
 
-    if (file.open(QFile::ReadOnly)) {
-        const QVariant r = frame->evaluateJavaScript(file.readAll());
-        QListIterator<QVariant> formIt (r.toList());
-        while (formIt.hasNext()) {
+    if (fillform) {
+        for ( int i = 0; i < formElementCount; ++i ) {
+            const QWebElement formElement = formElements.at(i);
+
             KWebWallet::WebForm form;
             form.url = frame->url();
-            const QVariantMap map = formIt.next().toMap();
-            form.name = map.value(QL1S("name")).toString();
-            form.index = map.value(QL1S("index")).toString();
-            QListIterator<QVariant> elementIt (map.value(QL1S("elements")).toList());
-            while (elementIt.hasNext()) {
-                const QVariantMap elementMap = elementIt.next().toMap();
-                if ((fillform && elementMap[QL1S("autocomplete")].toString() == QL1S("off")) ||
-                    (ignorepasswd && elementMap.value(QL1S("type")).toString() == QL1S("password"))) {
-                    continue;
-                } else {
-                    KWebWallet::WebForm::WebField field = qMakePair(elementMap.value(QL1S("name")).toString(),
-                                                                    elementMap.value(QL1S("value")).toString());
-                    form.fields << field;
-                }
-            }
+            form.index = QString::number(i);
+            form.name = formElement.attribute(QL1S("name"));
+            if (q->hasCachedFormData(form))
+                list << form;
+        }
+    } else {
+        int numPasswdFields = 0;
+        QString passwdSelector;
 
-            if ((fillform && q->hasCachedFormData(form)) || !form.fields.isEmpty())
+        if (!ignorepasswd)
+            passwdSelector = QL1S("input[type=password]:not([autocomplete=off])");
+
+        for (int i = 0; i < formElementCount; ++i) {
+            const QWebElement formElement = formElements.at(i);
+
+            KWebWallet::WebForm form;
+            form.url = frame->url();
+            form.index = QString::number(i);
+            form.name = formElement.attribute(QL1S("name"));
+
+            // Get all <input> elements of type 'password'
+            numPasswdFields = getWebFields(formElement, passwdSelector, form.fields);
+
+            // Get all <input> elements of type 'text'
+            getWebFields(formElement, QL1S("input[type=text]:not([autocomplete=off])"), form.fields);
+
+            // Get all <input> elements without a type attribute.
+            getWebFields(formElement, QL1S("input:not([type])"), form.fields);
+
+            // Add the form the list if it contains a password field...
+            if ((ignorepasswd || numPasswdFields == 1) && !form.fields.isEmpty())
                 list << form;
         }
     }
+
     return list;
 }
 
@@ -239,7 +269,6 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
         // Delete the wallet if opening the wallet failed or we were unable
         // to change to the folder we wanted to change to.
         delete wallet;
-        kWarning() << "Deleted KWallet instance because it cannot be set to use its form data folder!";
     }
 }
 
@@ -400,10 +429,8 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
             QListIterator<WebForm::WebField> fieldIt (form.fields);
             while (fieldIt.hasNext()) {
                 const WebForm::WebField field = fieldIt.next();
-                const QString script = QString (QL1S("if(document.forms[\"%1\"].elements[\"%2\"] && "
-                                                     "!document.forms[\"%1\"].elements[\"%2\"].disabled && "
-                                                     "!document.forms[\"%1\"].elements[\"%2\"].readonly) "
-                                                     "document.forms[\"%1\"].elements[\"%2\"].value=\"%3\";"))
+                const QString script = QString::fromLatin1("var e = document.forms[\"%1\"].elements[\"%2\"];"
+                                                           "if(e && !e.disabled  && !e.readonly) e.value=\"%3\";")
                                        .arg(formName).arg(field.first).arg(escapeValue(field.second));
                 frame->evaluateJavaScript(script);
             }

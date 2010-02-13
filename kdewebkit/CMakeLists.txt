@@ -14,13 +14,8 @@ set(kdewebkit_LIB_SRCS
     kwebpluginfactory.cpp
 )
 
-qt4_add_resources(kdewebkit_RC_SRCS
-    kdewebkit.qrc
-)
-
 kde4_add_library(kdewebkit SHARED 
     ${kdewebkit_LIB_SRCS} 
-    ${kdewebkit_RC_SRCS}
 )
 
 target_link_libraries(kdewebkit
