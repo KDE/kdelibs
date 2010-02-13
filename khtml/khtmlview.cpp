@@ -2310,9 +2310,14 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 
 		break;
             case QEvent::FocusIn:
-            case QEvent::FocusOut:
-                block = true;
+            case QEvent::FocusOut: {
+                QPoint dummy;
+                KHTMLView* root = m_kwp->rootViewPos(dummy);
+                if (!root)
+                    root = this;
+                block = static_cast<QFocusEvent*>(e)->reason() != Qt::MouseFocusReason ||  root->underMouse();
                 break;
+            }
 	    default:
 		break;
 	    }
