@@ -127,7 +127,7 @@ protected:
      * true if everything was ok, and false otherwise.
      *
      * If a problem is detected it's up to this method to trigger error()
-     * before returning. Returning false silently cancel the current
+     * before returning. Returning false silently cancels the current
      * slave operation.
      *
      * @param url The URL as given during the slave call
@@ -137,8 +137,8 @@ protected:
     virtual bool rewriteUrl(const KUrl &url, KUrl &newURL)=0;
 
     /**
-     * Allow to modify a UDSEntry before it's sent to the ioslave enpoint.
-     * This is the default implementation working in most case, but sometimes
+     * Allow to modify a UDSEntry before it's sent to the ioslave endpoint.
+     * This is the default implementation working in most cases, but sometimes
      * you could make use of more forwarding black magic (for example
      * dynamically transform any desktop file into a fake directory...)
      *
