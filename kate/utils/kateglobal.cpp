@@ -157,9 +157,8 @@ KateGlobal::KateGlobal ()
   m_viewConfig = new KateViewConfig ();
   m_rendererConfig = new KateRendererConfig ();
 
-  // create script manager (search scripts) + register commands
+  // create script manager (search scripts)
   m_scriptManager = new KateScriptManager ();
-  KateCmd::self()->registerCommand (m_scriptManager);
 
   //
   // plugin manager
