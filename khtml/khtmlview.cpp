@@ -1385,7 +1385,8 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     LinkCursor linkCursor = LINK_NORMAL;
     switch (!forceDefault ? (style ? style->cursor() : CURSOR_AUTO) : CURSOR_DEFAULT) {
     case CURSOR_AUTO:
-        if ( r && r->isText() && !r->isPointInsideSelection(xm, ym, m_part->caret()) )
+        if ( r && r->isText() && ((m_part->d->m_bMousePressed && m_part->d->editor_context.m_beganSelectingText) || 
+                                   !r->isPointInsideSelection(xm, ym, m_part->caret())) )
             c = QCursor(Qt::IBeamCursor);
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
