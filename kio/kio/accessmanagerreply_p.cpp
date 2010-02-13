@@ -72,11 +72,14 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
     } else {
         connect(kioJob, SIGNAL(redirection(KIO::Job*, const KUrl&)), SLOT(_k_redirection(KIO::Job*, const KUrl&)));
         connect(kioJob, SIGNAL(percent(KJob*, unsigned long)), SLOT(_k_percent(KJob*, unsigned long)));
-        connect(kioJob, SIGNAL(data(KIO::Job *, const QByteArray &)),
-            SLOT(appendData(KIO::Job *, const QByteArray &)));
         connect(kioJob, SIGNAL(result(KJob *)), SLOT(jobDone(KJob *)));
-        connect(kioJob, SIGNAL(mimetype(KIO::Job *, const QString&)),
-            SLOT(setMimeType(KIO::Job *, const QString&)));
+
+        if (!qobject_cast<KIO::StatJob*>(kioJob)) {
+            connect(kioJob, SIGNAL(data(KIO::Job *, const QByteArray &)),
+                SLOT(appendData(KIO::Job *, const QByteArray &)));
+            connect(kioJob, SIGNAL(mimetype(KIO::Job *, const QString&)),
+                SLOT(setMimeType(KIO::Job *, const QString&)));
+        }
     }
 }
 
@@ -225,6 +228,8 @@ void AccessManagerReply::jobDone(KJob *kJob)
     }
 
     setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
+    if (errcode)
+        emit error(error());
     emit finished();
 }
 
