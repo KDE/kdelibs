@@ -166,7 +166,7 @@ void KateOnTheFlyChecker::textInserted(KTextEditor::Document *document, const KT
   QMutexLocker smartLock(smartInterface->smartMutex());
   // don't consider a range that is not within the document range
   const KTextEditor::Range documentIntersection = document->documentRange().intersect(range);
-  if(documentIntersection.isEmpty()) {
+  if(!documentIntersection.isValid()) {
     return;
   }
   const QList<KTextEditor::View*>& viewList = m_document->views();
@@ -174,7 +174,7 @@ void KateOnTheFlyChecker::textInserted(KTextEditor::Document *document, const KT
   for(QList<KTextEditor::View*>::const_iterator i = viewList.begin(); i != viewList.end(); ++i) {
     KateView *view = static_cast<KateView*>(*i);
     KTextEditor::Range visibleIntersection = documentIntersection.intersect(view->visibleRange());
-    if(visibleIntersection.isValid() && !visibleIntersection.isEmpty()) {
+    if(visibleIntersection.isValid()) {  // allow empty intersections
       // we don't handle this directly as the highlighting information might not be up-to-date yet
       KTextEditor::SmartRange *smartRange = smartInterface->newSmartRange(visibleIntersection);
       smartRange->addWatcher(this);
