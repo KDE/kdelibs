@@ -101,11 +101,10 @@ void ServiceBrowserPrivate::serviceResolved(bool success)
 	}
 }
 
-RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s) const
+RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s, const QList<RemoteService::Ptr>& where) const
 {
-    Q_FOREACH (const RemoteService::Ptr& i, m_services) if (*s==*i) return i;
-    Q_FOREACH (const RemoteService::Ptr& i, m_duringResolve) if (*s==*i) return i;
-    return s;
+    Q_FOREACH (const RemoteService::Ptr& i, where) if (*s==*i) return i;
+    return RemoteService::Ptr();
 }
 
 void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QString& type, const QString& domain, uint)
@@ -125,9 +124,17 @@ void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QSt
 void ServiceBrowserPrivate::gotRemoveService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
 	m_timer.start(TIMEOUT_LAST_SERVICE);
-	RemoteService::Ptr svr=find(RemoteService::Ptr(new RemoteService(name, type,domain)));
-	emit m_parent->serviceRemoved(svr);
-	m_services.removeAll(svr);
+	RemoteService::Ptr tmpl(new RemoteService(name, type,domain));
+	RemoteService::Ptr found=find(tmpl, m_duringResolve);
+	if (!found.isNull()) {
+	    m_duringResolve.removeAll(found);
+	    return;
+	}
+	found=find(tmpl, m_services);
+	if (found.isNull()) return;
+	
+	emit m_parent->serviceRemoved(found);
+	m_services.removeAll(found);
 }
 void ServiceBrowserPrivate::browserFinished()
 {

@@ -117,11 +117,10 @@ QList<RemoteService::Ptr> ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
-RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s) const
+RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s, const QList<RemoteService::Ptr>& where) const
 {
-    Q_FOREACH (const RemoteService::Ptr& i, m_services) if (*s==*i) return i;
-    Q_FOREACH (const RemoteService::Ptr& i, m_duringResolve) if (*s==*i) return i;
-    return s;
+    Q_FOREACH (const RemoteService::Ptr& i, where) if (*s==*i) return i;
+    return RemoteService::Ptr();
 }
 
 
@@ -147,9 +146,16 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 		    }
 		}
 		else {
-		    svr=find(svr);
-		    emit m_parent->serviceRemoved(svr);
-		    m_services.removeAll(svr);
+
+                	RemoteService::Ptr found=find(svr, m_duringResolve);
+                	if (!found.isNull()) m_duringResolve.removeAll(found);
+                	else {
+                        	found=find(svr, m_services);
+                        	if (!found.isNull()) {
+	                        	emit m_parent->serviceRemoved(found);
+                        	        m_services.removeAll(found);
+                        	}
+                	}
 		}
 		m_finished = aev->m_last;
 		if (m_finished) queryFinished();
