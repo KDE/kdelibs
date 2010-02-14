@@ -128,7 +128,7 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                         ret += args.mid(pos - 1);
                         goto okret;
                     }
-                    cc = args[pos2++];
+                    cc = args.unicode()[pos2++];
                 } while (cc == QLatin1Char('_') ||
                        (cc >= QLatin1Char('A') && cc <= QLatin1Char('Z')) ||
                        (cc >= QLatin1Char('a') && cc <= QLatin1Char('z')) ||
@@ -170,7 +170,8 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                         goto metaerr;
                     cret += c;
                 }
-            } else if (c == QLatin1Char('$') && args[pos] == QLatin1Char('\'')) {
+            } else if (c == QLatin1Char('$') && pos < args.length() &&
+                       args.unicode()[pos] == QLatin1Char('\'')) {
                 pos++;
                 for (;;) {
                     if (pos >= args.length())
@@ -192,14 +193,20 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                         case 't': cret += QLatin1Char('\t'); break;
                         case '\\': cret += QLatin1Char('\\'); break;
                         case '\'': cret += QLatin1Char('\''); break;
-                        case 'c': cret += args[pos++].toAscii() & 31; break;
+                        case 'c':
+                            if (pos >= args.length())
+                                goto quoteerr;
+                            cret += args.unicode()[pos++].toAscii() & 31;
+                            break;
                         case 'x':
                           {
-                            int hv = fromHex( args[pos] );
-                            if (hv < 0) {
-                                cret += QLatin1String("\\x");
-                            } else {
-                                int hhv = fromHex( args[++pos] );
+                            if (pos >= args.length())
+                                goto quoteerr;
+                            int hv = fromHex( args.unicode()[pos++] );
+                            if (hv < 0)
+                                goto quoteerr;
+                            if (pos < args.length()) {
+                                int hhv = fromHex( args.unicode()[pos] );
                                 if (hhv > 0) {
                                     hv = hv * 16 + hhv;
                                     pos++;
@@ -213,7 +220,9 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                                 char cAscii = c.toAscii();
                                 int hv = cAscii - '0';
                                 for (int i = 0; i < 2; i++) {
-                                    c = args[pos];
+                                    if (pos >= args.length())
+                                        break;
+                                    c = args.unicode()[pos];
                                     if (c.toAscii() < '0' || c.toAscii() > '7')
                                         break;
                                     hv = hv * 8 + (c.toAscii() - '0');
