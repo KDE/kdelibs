@@ -523,6 +523,7 @@ DOMStringImpl* DOMStringImpl::substring(unsigned pos, unsigned len) const
 static const unsigned short amp[] = {'&', 'a', 'm', 'p', ';'};
 static const unsigned short lt[] =  {'&', 'l', 't', ';'};
 static const unsigned short gt[] =  {'&', 'g', 't', ';'};
+static const unsigned short nbsp[] =  {'&', 'n', 'b', 's', 'p', ';'};
 
 DOMStringImpl *DOMStringImpl::escapeHTML()
 {
@@ -532,6 +533,8 @@ DOMStringImpl *DOMStringImpl::escapeHTML()
             outL += 5; //&amp;
         else if (s[i] == '<' || s[i] == '>')
             outL += 4; //&gt;/&lt;
+        else if (s[i] == QChar::Nbsp)
+            outL += 6; //&nbsp;
         else
             ++outL;
     }
@@ -554,6 +557,9 @@ DOMStringImpl *DOMStringImpl::escapeHTML()
         } else if (s[i] == '>') {
             memcpy(&toRet->s[outP], gt, sizeof(gt));
             outP += 4;
+        } else if (s[i] == QChar::Nbsp) {
+            memcpy(&toRet->s[outP], nbsp, sizeof(nbsp));
+            outP += 6;
         } else {
             toRet->s[outP] = s[i];
             ++outP;
