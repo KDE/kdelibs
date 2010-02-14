@@ -121,7 +121,8 @@ void TestKHTML::setupActions()
     QDomElement fileMenu = document.documentElement().firstChild().childNodes().item( 0 ).toElement();
 
     QDomElement quitElement = document.createElement("action");
-    quitElement.setAttribute("name", "quit");
+    quitElement.setAttribute("name",
+                             KStandardAction::name(KStandardAction::Quit));
     fileMenu.appendChild(quitElement);
 
     QDomElement viewMenu = document.documentElement().firstChild().childNodes().item( 2 ).toElement();
@@ -151,11 +152,6 @@ void TestKHTML::setupActions()
     element.setAttribute("name", "print");
     toolBar.insertBefore(element, toolBar.firstChild());
 
-
-    KAction *quitAction = new KAction( i18n( "Quit" ), this );
-    m_part->actionCollection()->addAction( "quit", quitAction );
-    connect( quitAction, SIGNAL( triggered( bool ) ), kapp, SLOT( quit() ) );
-
     KAction *action = new KAction(KIcon("view-refresh"), "Reload", this );
     m_part->actionCollection()->addAction( "reload", action );
     connect(action, SIGNAL(triggered(bool)), this, SLOT(reload()));
@@ -178,7 +174,7 @@ void TestKHTML::setupActions()
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 
-    KStandardAction::quit( this, SLOT(kpp->quit()), m_part->actionCollection() );
+    KStandardAction::quit( kapp, SLOT(quit()), m_part->actionCollection() );
 
     guiFactory()->addClient(m_part);
 }
