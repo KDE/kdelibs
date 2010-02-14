@@ -316,6 +316,8 @@ void KStandarddirsTest::testSetXdgDataDirs()
         kDebug() << "ERROR:" << kdeDataApps << "not in" << dirs;
         kDebug() << "XDG_DATA_DIRS=" << qgetenv("XDG_DATA_DIRS");
         kDebug() << "installprefix=" << KStandardDirs::installPath("kdedir");
+        kDebug() << "installdir=" << KStandardDirs::installPath("xdgdata-apps");
+        kDebug() << "KStandardDirs::kfsstnd_xdg_data_prefixes=" << KGlobal::dirs()->kfsstnd_xdg_data_prefixes();
     }
     QVERIFY(dirs.contains(kdeDataApps));
 
