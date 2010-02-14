@@ -221,7 +221,7 @@ JSValue* JSValue::getByIndex(ExecState* exec, unsigned propertyName) const
     switch (type()) {
     case StringType: {
         UString s = static_cast<const StringImp*>(asCell())->value();
-        if (propertyName < s.size()) {
+        if (propertyName < static_cast<unsigned>(s.size())) {
             return jsString(s.substr(propertyName, 1));
         }
         // fall through
