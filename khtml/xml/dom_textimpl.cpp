@@ -564,20 +564,36 @@ DOMStringImpl* TextImpl::renderString() const
         return string();
 }
 
+static bool textNeedsEscaping( const NodeImpl *n )
+{
+    // Exceptions based on "Serializing HTML fragments" section of
+    // HTML 5 specification (with some adaptions to reality)
+    const NodeImpl *p = n->parentNode();
+    if ( !p )
+        return true;
+    switch ( p->id() ) {
+    case ID_IFRAME:
+        // follow deviating examples of FF 3.5.6 and Opera 9.6
+        // case ID_NOEMBED:
+        // case ID_NOFRAMES:
+    case ID_NOSCRIPT:
+    case ID_PLAINTEXT:
+    case ID_SCRIPT:
+    case ID_STYLE:
+    case ID_XMP:
+        return false;
+    default:
+        return true;
+    }
+}
+
 DOMString TextImpl::toString() const
 {
-    // FIXME: substitute entity references as needed!
-    bool escape = true;
-    for (NodeImpl* node = parentNode(); node; node = node->parentNode())
-        if (node->id() == ID_SCRIPT)
-            escape = false;
-    return escape ? escapeHTML( nodeValue() ) : nodeValue();
+    return textNeedsEscaping( this ) ? escapeHTML( nodeValue() ) : nodeValue();
 }
 
 DOMString TextImpl::toString(long long startOffset, long long endOffset) const
 {
-    // FIXME: substitute entity references as needed!
-
     DOMString str = nodeValue();
     if(endOffset >=0 || startOffset >0)
 	str = str.copy(); //we are going to modify this, so make a copy.  I hope I'm doing this right.
@@ -585,7 +601,7 @@ DOMString TextImpl::toString(long long startOffset, long long endOffset) const
         str.truncate(endOffset); 
     if(startOffset > 0)    //note the order of these 2 'if' statements so that it works right when n==m_startContainer==m_endContainer
         str.remove(0, startOffset);
-    return escapeHTML( str );
+    return textNeedsEscaping( this ) ? escapeHTML( str ) : str;
 }
 
 // ---------------------------------------------------------------------------
@@ -618,7 +634,6 @@ TextImpl *CDATASectionImpl::createNew(DOMStringImpl *_str)
 
 DOMString CDATASectionImpl::toString() const
 {
-    // FIXME: substitute entity references as needed!
     return DOMString("<![CDATA[") + nodeValue() + "]]>";
 }
 
