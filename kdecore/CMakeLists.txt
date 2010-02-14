@@ -344,7 +344,7 @@ install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEX
 # KAuth backend plugin
 
 set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
-kde4_add_library(kauth_backend_plugin SHARED ${KAUTH_BACKEND_SRCS})
+kde4_add_plugin(kauth_backend_plugin ${KAUTH_BACKEND_SRCS})
 target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
 install(TARGETS kauth_backend_plugin
         LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
@@ -356,7 +356,7 @@ install(TARGETS kauth_backend_plugin
 
 # KAuth helper plugin
 
-kde4_add_library(kauth_helper_plugin SHARED ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
+kde4_add_plugin(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
 target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
 install(TARGETS kauth_helper_plugin
         LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}

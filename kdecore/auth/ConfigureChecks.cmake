@@ -192,8 +192,8 @@ install( FILES auth/backends/dbus/dbus_policy.stub
          DESTINATION ${DATA_INSTALL_DIR}/kauth COMPONENT Devel)
 
 # Set the various directories
-set(KAUTH_HELPER_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/helper")
-set(KAUTH_BACKEND_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/backend")
-set(KAUTH_OTHER_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/plugins")
+set(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper" CACHE STRING "Where KAuth's helper plugin will be installed")
+set(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend" CACHE STRING "Where KAuth's backend plugin will be installed")
+#set(KAUTH_OTHER_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/plugins")
 
 ## End
