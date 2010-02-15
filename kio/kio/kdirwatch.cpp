@@ -500,6 +500,18 @@ QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(c
   return ret;
 }
 
+QDebug operator<<(QDebug debug, const KDirWatchPrivate::Entry &entry)
+{
+  debug.space() << entry.path << (entry.isDir ? "dir" : "file");
+  if (entry.m_status == KDirWatchPrivate::NonExistent)
+    debug << "NonExistent";
+  debug << "mode:" << entry.m_mode
+        << entry.m_clients.count() << "clients";
+  if (!entry.m_entries.isEmpty())
+    debug << entry.m_entries.count() << "nonexistent entries";
+  return debug;
+}
+
 KDirWatchPrivate::Entry* KDirWatchPrivate::entry(const QString& _path)
 {
 // we only support absolute paths
@@ -1257,19 +1269,22 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
     c->pending = NoChange;
     if (event == NoChange) continue;
 
+    // Emit the signals delayed, to avoid unexpected re-entrancy from the slots (#220153)
+    
     if (event & Deleted) {
-      c->instance->setDeleted(path);
+      QMetaObject::invokeMethod(c->instance, "setDeleted", Qt::QueuedConnection, Q_ARG(QString, path));
       // emit only Deleted event...
       continue;
     }
 
     if (event & Created) {
-      c->instance->setCreated(path);
+      QMetaObject::invokeMethod(c->instance, "setCreated", Qt::QueuedConnection, Q_ARG(QString, path));
       // possible emit Change event after creation
     }
 
-    if (event & Changed)
-      c->instance->setDirty(path);
+    if (event & Changed) {
+      QMetaObject::invokeMethod(c->instance, "setDirty", Qt::QueuedConnection, Q_ARG(QString, path));
+    }
   }
 }
 
@@ -1353,11 +1368,8 @@ void KDirWatchPrivate::slotRescan()
   QList<Entry*> dList, cList;
 #endif
 
-  // Make a copy of the list to avoid crashes during reentrancy from slots (#220153)
-  EntryMap mapEntries = m_mapEntries;
-
-  it = mapEntries.begin();
-  for( ; it != mapEntries.end(); ++it ) {
+  it = m_mapEntries.begin();
+  for( ; it != m_mapEntries.end(); ++it ) {
     // we don't check invalid entries (i.e. remove delayed)
     if (!(*it).isValid()) continue;
 

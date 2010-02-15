@@ -216,22 +216,6 @@ class KIO_EXPORT KDirWatch : public QObject
     */
    static void statistics();
 
-   /**
-    * Emits created().
-    * @param path the path of the file or directory
-    */
-   void setCreated( const QString &path );
-   /**
-    * Emits dirty().
-    * @param path the path of the file or directory
-    */
-   void setDirty( const QString &path );
-   /**
-    * Emits deleted().
-    * @param path the path of the file or directory
-    */
-   void setDeleted( const QString &path );
-
    enum Method { FAM, INotify, DNotify, Stat };
    /**
     * Returns the preferred internal method to
@@ -258,6 +242,26 @@ class KIO_EXPORT KDirWatch : public QObject
     * @see KDirWatch::self()
     */
    static bool exists();
+
+public Q_SLOTS: 
+
+   /**
+    * Emits created().
+    * @param path the path of the file or directory
+    */
+   void setCreated( const QString &path );
+    
+   /**
+    * Emits dirty().
+    * @param path the path of the file or directory
+    */
+   void setDirty( const QString &path );
+
+   /**
+    * Emits deleted().
+    * @param path the path of the file or directory
+    */
+   void setDeleted( const QString &path );
 
  Q_SIGNALS:
 
