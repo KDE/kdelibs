@@ -124,32 +124,36 @@ KIO::MetaData& AccessManager::sessionMetaData()
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
     KIO::SimpleJob *kioJob = 0;
+    const QUrl reqUrl (req.url());
 
-    if ( !d->isRequestAllowed(req.url()) ) {
-        kDebug( 7044 ) << "Blocked: " << req.url();
+    if ( !d->isRequestAllowed(reqUrl) ) {
+        kDebug( 7044 ) << "Blocked: " << reqUrl;
         /* if kioJob equals zero, the AccessManagerReply will block the request */
         return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
     }
 
     switch (op) {
         case HeadOperation: {
-            kDebug( 7044 ) << "HeadOperation:" << req.url();
-            kioJob = KIO::mimetype(req.url(), KIO::HideProgressInfo);
+            kDebug( 7044 ) << "HeadOperation:" << reqUrl;
+            kioJob = KIO::mimetype(reqUrl, KIO::HideProgressInfo);
             break;
         }
         case GetOperation: {
-            kDebug( 7044 ) << "GetOperation:" << req.url();
-            kioJob = KIO::get(req.url(), KIO::NoReload, KIO::HideProgressInfo);
+            kDebug( 7044 ) << "GetOperation:" << reqUrl;
+            if (!reqUrl.path().isEmpty() || reqUrl.host().isEmpty())
+                kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
+            else
+                kioJob = KIO::stat(reqUrl, KIO::HideProgressInfo);
             break;
         }
         case PutOperation: {
-            kDebug( 7044 ) << "PutOperation:" << req.url();
-            kioJob = KIO::put(req.url(), -1, KIO::HideProgressInfo);
+            kDebug( 7044 ) << "PutOperation:" << reqUrl;
+            kioJob = KIO::put(reqUrl, -1, KIO::HideProgressInfo);
             break;
         }
         case PostOperation: {
-            kDebug( 7044 ) << "PostOperation:" << req.url();
-            kioJob = KIO::http_post(req.url(), outgoingData->readAll(), KIO::HideProgressInfo);
+            kDebug( 7044 ) << "PostOperation:" << reqUrl;
+            kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
             break;
         }
         default:
