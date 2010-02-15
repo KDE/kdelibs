@@ -193,7 +193,7 @@ Compile Problems
 ----------------
 Often, KDE compile failures are not KDE's fault, but the fault of the
 compiler or the distribution used. For that reason, please have a look at
-http://developer.kde.org/build/compilationfaq.html for known issues in certain
+http://techbase.kde.org/Getting_Started/Build/FAQ for known issues in certain
 OS environments before reporting bugs or going mad :).
 
 KDE 4 requires gcc 3.3 or better as the compiler.
