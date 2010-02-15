@@ -266,5 +266,7 @@ public:
   bool _isStopped;
 };
 
+QDebug operator<<(QDebug debug, const KDirWatchPrivate::Entry &entry);
+
 #endif // KDIRWATCH_P_H
 
