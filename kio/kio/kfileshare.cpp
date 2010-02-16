@@ -215,7 +215,7 @@ void KFileShare::readShareList()
 
 bool KFileShare::isDirectoryShared( const QString& _path )
 {
-    if ( ! s_shareList )
+    if ( ! s_shareList.exists() )
         readShareList();
 
     QString path( _path );
