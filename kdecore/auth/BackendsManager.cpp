@@ -21,8 +21,13 @@
 
 #include "BackendsConfig.h"
 
+// Include fake backends
+#include "backends/fake/FakeBackend.h"
+#include "backends/fakehelper/FakeHelperProxy.h"
+
 #include <QPluginLoader>
 #include <QDir>
+#include <kdebug.h>
 
 namespace KAuth
 {
@@ -91,8 +96,24 @@ void BackendsManager::init()
         }
     }
 
-    Q_ASSERT_X(auth, __FUNCTION__, "No AuthBackend found.");
-    Q_ASSERT_X(helper, __FUNCTION__, "No HelperBackend found.");
+    if (!auth) {
+        // Load the fake auth backend then
+        auth = new FakeBackend;
+#ifndef KAUTH_COMPILING_FAKE_BACKEND
+        // Spit a fat warning
+        kWarning() << "WARNING: KAuth was compiled with a working backend, but was unable to load it! Check your installation!";
+#endif
+    }
+
+    if (!helper) {
+        // Load the fake helper backend then
+        helper = new FakeHelperProxy;
+#ifndef KAUTH_COMPILING_FAKE_BACKEND
+        // Spit a fat warning
+        kWarning() << "WARNING: KAuth was compiled with a working helper backend, but was unable to load it! "
+                      "Check your installation!";
+#endif
+    }
 }
 
 AuthBackend *BackendsManager::authBackend()

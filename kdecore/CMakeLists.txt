@@ -186,6 +186,8 @@ set(kdecore_LIB_SRCS
    auth/BackendsManager.cpp
    auth/HelperProxy.cpp
    auth/kauthhelpersupport.cpp
+   auth/backends/fake/FakeBackend.cpp
+   auth/backends/fakehelper/FakeHelperProxy.cpp
    services/kfoldermimetype.cpp
    services/kmimetypefactory.cpp
    services/kmimemagicrule.cpp
@@ -331,13 +333,17 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 
 # KAuth policy generator executable
 
-# KAUTH_POLICY_GEN_SRCS has been generated from auth/ConfigureChecks.cmake
-kde4_add_executable(kauth-policy-gen NOGUI ${KAUTH_POLICY_GEN_SRCS})
+# Compile only if fake backend has not been selected
 
-# KAUTH_POLICY_GEN_LIBRARIES has been generated from auth/ConfigureChecks.cmake
-target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
+if (NOT KDE4_AUTH_BACKEND_NAME STREQUAL "FAKE")
+    # KAUTH_POLICY_GEN_SRCS has been generated from auth/ConfigureChecks.cmake
+    kde4_add_executable(kauth-policy-gen NOGUI ${KAUTH_POLICY_GEN_SRCS})
 
-install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+    # KAUTH_POLICY_GEN_LIBRARIES has been generated from auth/ConfigureChecks.cmake
+    target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
+
+    install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+endif (NOT KDE4_AUTH_BACKEND_NAME STREQUAL "FAKE")
 
 ########### next target ###############
 

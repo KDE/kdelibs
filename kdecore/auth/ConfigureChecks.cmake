@@ -136,14 +136,8 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "FAKE")
     set (KAUTH_COMPILING_FAKE_BACKEND TRUE)
 
     message(STATUS "Building Fake KAuth backend")
-    message("WARNING: KAuth will be built with Fake backend. The library will not work properly unless compiled with
+    message("WARNING: No valid KAuth backends will be built. The library will not work properly unless compiled with
              a working backend")
-
-    set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS}
-       auth/backends/fake/FakeBackend.cpp
-    )
-
-    set(KAUTH_BACKEND_LIBS ${QT_QTCORE_LIBRARY})
 endif()
 
 # KAuth policy generator executable source probing
@@ -161,39 +155,65 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
 elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
   set(KAUTH_POLICY_GEN_SRCS ${KAUTH_POLICY_GEN_SRCS}
       auth/backends/polkit-1/kauth-policy-gen-polkit1.cpp )
-else()
-  set(KAUTH_POLICY_GEN_SRCS ${KAUTH_POLICY_GEN_SRCS}
-      auth/backends/fake/kauth-policy-gen-polkit.cpp )
 endif()
 
-# Helper backend
-# No selection, we have D-Bus only
+########################
+# Helper backend probing
 
-set (KAUTH_COMPILING_DBUS_HELPER_BACKEND TRUE)
+set(KDE4_AUTH_HELPER_BACKEND_NAME "" CACHE STRING "Specifies the KAuth helper backend to build. Current available options are
+                                   DBus, Fake. Not setting this variable will build the most appropriate backend for your system")
 
-qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
-                     auth/backends/dbus/org.kde.auth.xml
-                     auth/backends/dbus/DBusHelperProxy.h
-                     KAuth::DBusHelperProxy)
+set(KAUTH_HELPER_BACKEND ${KDE4_AUTH_HELPER_BACKEND_NAME})
 
-set(KAUTH_HELPER_BACKEND_SRCS
-   auth/backends/dbus/DBusHelperProxy.cpp
-   ${kauth_dbus_adaptor_SRCS}
-)
+if(NOT KAUTH_HELPER_BACKEND)
+    # No checks needed, just set the dbus backend
+    set(KAUTH_HELPER_BACKEND "DBus")
+    string(TOUPPER ${KAUTH_HELPER_BACKEND} KAUTH_HELPER_BACKEND_UPPER)
+    set (KAUTH_HELPER_BACKEND ${KAUTH_HELPER_BACKEND_UPPER})
+else(NOT KAUTH_HELPER_BACKEND)
+    # No checks needed here either
+    string(TOUPPER ${KAUTH_HELPER_BACKEND} KAUTH_HELPER_BACKEND_UPPER)
+    set (KAUTH_HELPER_BACKEND ${KAUTH_HELPER_BACKEND_UPPER})
+endif(NOT KAUTH_HELPER_BACKEND)
 
-set(KAUTH_HELPER_BACKEND_LIBS kdecore)
+set(KDE4_AUTH_HELPER_BACKEND_NAME ${KAUTH_HELPER_BACKEND} CACHE STRING "Specifies the KAuth helper backend to build. Current
+                                                            available options are DBus, Fake. Not setting this variable will
+                                                            build the most appropriate backend for your system" FORCE)
 
-# Install some files as well
-install( FILES auth/backends/dbus/org.kde.auth.conf
-         DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
+# Add the correct libraries/files depending on the backend
+if(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
+    set (KAUTH_COMPILING_DBUS_HELPER_BACKEND TRUE)
 
-install( FILES auth/backends/dbus/dbus_policy.stub
-               auth/backends/dbus/dbus_service.stub
-         DESTINATION ${DATA_INSTALL_DIR}/kauth COMPONENT Devel)
+    qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
+                        auth/backends/dbus/org.kde.auth.xml
+                        auth/backends/dbus/DBusHelperProxy.h
+                        KAuth::DBusHelperProxy)
 
-# Set the various directories
-set(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper" CACHE STRING "Where KAuth's helper plugin will be installed")
-set(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend" CACHE STRING "Where KAuth's backend plugin will be installed")
+    set(KAUTH_HELPER_BACKEND_SRCS
+        auth/backends/dbus/DBusHelperProxy.cpp
+        ${kauth_dbus_adaptor_SRCS}
+    )
+
+    set(KAUTH_HELPER_BACKEND_LIBS kdecore)
+
+    # Install some files as well
+    install( FILES auth/backends/dbus/org.kde.auth.conf
+             DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
+
+    install( FILES auth/backends/dbus/dbus_policy.stub
+                   auth/backends/dbus/dbus_service.stub
+             DESTINATION ${DATA_INSTALL_DIR}/kauth COMPONENT Devel)
+elseif(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "FAKE")
+    set (KAUTH_COMPILING_FAKE_HELPER_BACKEND TRUE)
+
+    message("WARNING: No valid KAuth helper backends will be built. The library will not work properly unless compiled with
+             a working backend")
+endif()
+
+
+# Set directories for plugins
+_set_fancy(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper" "Where KAuth's helper plugin will be installed")
+_set_fancy(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend" "Where KAuth's backend plugin will be installed")
 #set(KAUTH_OTHER_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/plugins")
 
 ## End
