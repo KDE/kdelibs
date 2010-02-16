@@ -1,6 +1,3 @@
-//Not a library
-//krazy:excludeall=license
-
 /* kgrantpty - helper program for KPty. */
 
 /* This program is based on the glibc2.1 pt_chmod.
