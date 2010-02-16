@@ -828,13 +828,11 @@ void KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStrin
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
-    dialog->setButtons( KDialog::Yes );
+    dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "error" );
     dialog->setModal( true );
-    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-    dialog->setButtonToolTip( KDialog::Yes, QString() );
-    dialog->setDefaultButton( KDialog::Yes );
-    dialog->setEscapeButton( KDialog::Yes );
+    dialog->setDefaultButton( KDialog::Ok );
+    dialog->setEscapeButton( KDialog::Ok );
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
@@ -860,12 +858,11 @@ void KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
-    dialog->setButtons( KDialog::Yes | KDialog::Details );
+    dialog->setButtons( KDialog::Ok | KDialog::Details );
     dialog->setObjectName( "error" );
     dialog->setModal( true );
-    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-    dialog->setDefaultButton( KDialog::Yes );
-    dialog->setEscapeButton( KDialog::Yes );
+    dialog->setDefaultButton( KDialog::Ok );
+    dialog->setEscapeButton( KDialog::Ok );
     if( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
@@ -905,12 +902,11 @@ void KMessageBox::sorryWId(WId parent_id, const QString &text,
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
-    dialog->setButtons( KDialog::Yes );
+    dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "sorry" );
     dialog->setModal( true );
-    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-    dialog->setDefaultButton( KDialog::Yes );
-    dialog->setEscapeButton( KDialog::Yes );
+    dialog->setDefaultButton( KDialog::Ok );
+    dialog->setEscapeButton( KDialog::Ok );
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
@@ -935,12 +931,11 @@ void KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
-    dialog->setButtons( KDialog::Yes | KDialog::Details );
+    dialog->setButtons( KDialog::Ok | KDialog::Details );
     dialog->setObjectName( "sorry" );
     dialog->setModal( true );
-    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-    dialog->setDefaultButton( KDialog::Yes );
-    dialog->setEscapeButton( KDialog::Yes );
+    dialog->setDefaultButton( KDialog::Ok );
+    dialog->setEscapeButton( KDialog::Ok );
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
@@ -980,12 +975,11 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Information") : caption );
-    dialog->setButtons( KDialog::Yes );
+    dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "information" );
     dialog->setModal( true );
-    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-    dialog->setDefaultButton( KDialog::Yes );
-    dialog->setEscapeButton( KDialog::Yes );
+    dialog->setDefaultButton( KDialog::Ok );
+    dialog->setEscapeButton( KDialog::Ok);
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
@@ -1046,12 +1040,11 @@ void KMessageBox::about(QWidget *parent, const QString &text,
 
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption );
-    dialog->setButtons( KDialog::Yes );
+    dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "about" );
     dialog->setModal( true );
-    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-    dialog->setDefaultButton( KDialog::Yes );
-    dialog->setEscapeButton( KDialog::Yes );
+    dialog->setDefaultButton( KDialog::Ok );
+    dialog->setEscapeButton( KDialog::Ok );
     if (qApp->windowIcon().isNull()) {
         QPixmap ret = QMessageBox::standardIcon(QMessageBox::Information);
         dialog->setWindowIcon(ret);
