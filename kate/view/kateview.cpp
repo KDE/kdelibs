@@ -264,8 +264,7 @@ KateView::~KateView()
       m_topViewBar=0;
     }
 
-  if (!m_doc->singleViewMode())
-    KatePartPluginManager::self()->removeView(this);
+  KatePartPluginManager::self()->removeView(this);
 
   m_doc->removeView( this );
 
