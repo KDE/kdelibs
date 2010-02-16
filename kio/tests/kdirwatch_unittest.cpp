@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDir>
 #include <kdebug.h>
 #include <ktempdir.h>
 #include <qtest_kde.h>
@@ -33,6 +34,7 @@ public:
     KDirWatch_UnitTest()
     {
         m_path = m_tempDir.name();
+        Q_ASSERT(m_path.endsWith('/'));
     }
 
 private Q_SLOTS: // test methods
@@ -40,6 +42,7 @@ private Q_SLOTS: // test methods
     void watchAndModifyOneFile();
     void touch1000Files();
     void removeAndReAdd();
+    void watchNonExistent();
     void nestedEventLoop();
 
 protected Q_SLOTS: // internal slots
@@ -47,7 +50,10 @@ protected Q_SLOTS: // internal slots
     
 private:
     QList<QVariantList> waitForDirtySignal(KDirWatch& dw, int expected);
+    QList<QVariantList> waitForCreatedSignal(KDirWatch& dw, int expected);
+    void createFile(const QString& path);
     QString createFile(int num);
+    void appendToFile(const QString& path);
     void appendToFile(int num);
     
     KTempDir m_tempDir;
@@ -60,24 +66,36 @@ QTEST_KDEMAIN(KDirWatch_UnitTest, GUI)
 static const char s_filePrefix[] = "This_is_a_test_file_";
 
 // helper method
-QString KDirWatch_UnitTest::createFile(int num)
+void KDirWatch_UnitTest::createFile(const QString& path)
 {
-    const QString fileName = s_filePrefix + QString::number(num);
-    QFile file(m_path + fileName);
+    QFile file(path);
     bool ok = file.open(QIODevice::WriteOnly);
     Q_ASSERT(ok);
     file.write(QByteArray("foo"));
     file.close();
+}
+
+// helper method
+QString KDirWatch_UnitTest::createFile(int num)
+{
+    const QString fileName = s_filePrefix + QString::number(num);
+    createFile(m_path + fileName);
     return m_path + fileName;
+}
+
+// helper method
+void KDirWatch_UnitTest::appendToFile(const QString& path)
+{
+    QFile file(path);
+    QVERIFY(file.open(QIODevice::Append | QIODevice::WriteOnly));
+    file.write(QByteArray("foobar"));
+    file.close();
 }
 
 void KDirWatch_UnitTest::appendToFile(int num)
 {
     const QString fileName = s_filePrefix + QString::number(num);
-    QFile file(m_path + fileName);
-    QVERIFY(file.open(QIODevice::Append | QIODevice::WriteOnly));
-    file.write(QByteArray("foobar"));
-    file.close();
+    appendToFile(m_path + fileName);
 }
 
 // helper method
@@ -94,6 +112,21 @@ QList<QVariantList> KDirWatch_UnitTest::waitForDirtySignal(KDirWatch& watch, int
         QTest::qWait(200);
     }
     return spyDirty;
+}
+
+QList<QVariantList> KDirWatch_UnitTest::waitForCreatedSignal(KDirWatch& watch, int expected)
+{
+    QSignalSpy spyCreated(&watch, SIGNAL(created(QString)));
+    int numTries = 0;
+    // Give time for KDirWatch to notify us
+    while (spyCreated.count() < expected) {
+        if (++numTries > 10) {
+            kWarning() << "Timeout waiting for KDirWatch. Got" << spyCreated.count() << "created() signals, expected" << expected;
+            return spyCreated;
+        }
+        QTest::qWait(200);
+    }
+    return spyCreated;
 }
 
 void KDirWatch_UnitTest::touchOneFile() // watch a dir, create a file in it
@@ -157,6 +190,36 @@ void KDirWatch_UnitTest::removeAndReAdd()
     spy = waitForDirtySignal(watch, 1);
     QVERIFY(spy.count() >= 1);
     QCOMPARE(spy[0][0].toString(), file1);
+}
+
+void KDirWatch_UnitTest::watchNonExistent()
+{
+    KDirWatch watch;
+    const QString subdir = m_path + "subdir";
+    watch.addDir(subdir);
+    watch.startScan();
+    
+    QDir().mkdir(subdir);
+
+    QList<QVariantList> spyDir = waitForCreatedSignal(watch, 1);
+    QCOMPARE(spyDir.count(), 1);
+    QCOMPARE(spyDir[0][0].toString(), subdir);
+
+    watch.addDir(subdir);
+    watch.removeDir(subdir);
+    watch.addDir(subdir);
+    const QString file = subdir + "/0";
+    watch.addFile(file); // doesn't exist yet
+
+    createFile(file);
+    spyDir = waitForCreatedSignal(watch, 1);
+    QCOMPARE(spyDir.count(), 1);
+    QCOMPARE(spyDir[0][0].toString(), file);
+
+    appendToFile(file);
+    QList<QVariantList> spy = waitForDirtySignal(watch, 1);
+    QVERIFY(spy.count() >= 1);
+    QCOMPARE(spy[0][0].toString(), file);
 }
 
 void KDirWatch_UnitTest::nestedEventLoop() // #220153: watch two files, and modify 2nd while in slot for 1st

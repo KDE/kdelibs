@@ -72,7 +72,7 @@
 
 #include <sys/utsname.h>
 
-#define NO_NOTIFY (time_t) 0
+// #define DEBUG_KDIRWATCH
 
 static KDirWatchPrivate* dwp_self = 0;
 static KDirWatchPrivate* createPrivate() {
@@ -305,8 +305,11 @@ void KDirWatchPrivate::inotifyEventReceived()
             //e->wd = -1;
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
-            //kDebug(7001) << "-->got CREATE signal for" << (e->path+'/'+path);
             Entry* sub_entry = e->findSubEntry(e->path + '/' + path);
+#ifdef DEBUG_KDIRWATCH
+            kDebug(7001) << "-->got CREATE signal for" << (e->path+'/'+path) << "sub_entry=" << sub_entry;
+            kDebug() << *e;
+#endif
 
             if (sub_entry /*&& sub_entry->isDir*/) {
               removeEntry(0, e, sub_entry);
@@ -344,6 +347,9 @@ void KDirWatchPrivate::inotifyEventReceived()
             }
           }
           if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
+#ifdef DEBUG_KDIRWATCH
+            kDebug(7001) << "-->got DELETE signal for" << (e->path+'/'+path);
+#endif
             if ((e->isDir) && (!e->m_clients.empty())) {
               Client* client = 0;
               // A file in this directory has been removed.  It wasn't an explicitly
@@ -372,6 +378,9 @@ void KDirWatchPrivate::inotifyEventReceived()
           }
           if (event->mask & (IN_MODIFY|IN_ATTRIB)) {
             if ((e->isDir) && (!e->m_clients.empty())) {
+#ifdef DEBUG_KDIRWATCH
+              kDebug(7001) << "-->got MODIFY signal for" << (e->path+'/'+path);
+#endif
               // A file in this directory has been changed.  No
               // addEntry/ removeEntry bookkeeping should be required.
               // Add the path to the list of pending file changes if
@@ -502,13 +511,19 @@ QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(c
 
 QDebug operator<<(QDebug debug, const KDirWatchPrivate::Entry &entry)
 {
-  debug.space() << entry.path << (entry.isDir ? "dir" : "file");
+  debug.nospace() << "[ Entry for " << entry.path << ", " << (entry.isDir ? "dir, " : "file, ");
   if (entry.m_status == KDirWatchPrivate::NonExistent)
-    debug << "NonExistent";
-  debug << "mode:" << entry.m_mode
-        << entry.m_clients.count() << "clients";
-  if (!entry.m_entries.isEmpty())
-    debug << entry.m_entries.count() << "nonexistent entries";
+    debug << "non-existent, ";
+  debug << "mode=" << entry.m_mode << " ";
+  debug << "has " << entry.m_clients.count() << " clients,";
+  debug.space();
+  if (!entry.m_entries.isEmpty()) {
+    QStringList subEntries;
+    Q_FOREACH(KDirWatchPrivate::Entry* subEntry, entry.m_entries)
+      subEntries << subEntry->path;
+    debug << "nonexistent subentries:" << subEntries.join(", ");
+  }
+  debug << ']';
   return debug;
 }
 
@@ -628,7 +643,9 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
                                     QFile::encodeName( e->path ), mask) ) >= 0)
   {
-    //kDebug (7001) << "inotify successfully used for monitoring" << e->path << "wd=" << e->wd;
+#ifdef DEBUG_KDIRWATCH
+    //kDebug(7001) << "inotify successfully used for monitoring" << e->path << "wd=" << e->wd;
+#endif
     return true;
   }
 
@@ -806,7 +823,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #if defined(HAVE_SYS_INOTIFY_H)
     if (e->m_mode == INotifyMode || (e->m_mode == UnknownMode && m_preferredMethod == INotify)  )
     {
-        kDebug (7001) << "Ignoring WatchFiles directive - this is implicit with inotify";
+        //kDebug(7001) << "Ignoring WatchFiles directive - this is implicit with inotify";
         // Placing a watch on individual files is redundant with inotify
         // (inotify gives us WatchFiles functionality "for free") and indeed
         // actively harmful, so prevent it.  WatchSubDirs is necessary, though.
@@ -880,7 +897,9 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
                                    const QString& _path,
                                    Entry* sub_entry)
 {
-  //kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
+#ifdef DEBUG_KDIRWATCH
+  kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
+#endif
   Entry* e = entry(_path);
   if (!e) {
     kWarning(7001) << "doesn't know" << _path;
@@ -955,9 +974,11 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
     }
   }
 
-  //kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
-  //   << " for " << (sub_entry ? sub_entry->path : "")
-  //   << " [" << (instance ? instance->objectName() : "") << "]";
+#ifdef DEBUG_KDIRWATCH
+  kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
+     << " for " << (sub_entry ? sub_entry->path : "")
+     << " [" << (instance ? instance->objectName() : "") << "]";
+#endif
   m_mapEntries.remove( e->path ); // <e> not valid any more
 }
 
@@ -1251,6 +1272,10 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
 #endif
   }
 
+#ifdef DEBUG_KDIRWATCH
+  kDebug(7001) << event << path << e->m_clients.count() << "clients";
+#endif
+  
   foreach(Client* c, e->m_clients)
   {
     if (c->instance==0 || c->count==0) continue;
@@ -1339,12 +1364,14 @@ void KDirWatchPrivate::slotRescan()
   // People can do very long things in the slot connected to dirty(),
   // like showing a message box. We don't want to keep polling during
   // that time, otherwise the value of 'delayRemove' will be reset.
+  // ### TODO: now the emitEvent delays emission, this can be cleaned up
   bool timerRunning = timer.isActive();
   if ( timerRunning )
     timer.stop();
 
   // We delay deletions of entries this way.
   // removeDir(), when called in slotDirty(), can cause a crash otherwise
+  // ### TODO: now the emitEvent delays emission, this can be cleaned up
   delayRemove = true;
 
   if (rescan_all)
