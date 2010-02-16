@@ -101,6 +101,7 @@ void IconInserterPlugin::addView (KTextEditor::View *view)
 
 void IconInserterPlugin::addActionToMenu(KTextEditor::View *view, QMenu *menu)
 {
+	kDebug() << "Called";
 	menu->addAction (createAction (view));
 	disconnect(view, SIGNAL(contextMenuAboutToShow(KTextEditor::View*, QMenu*)), this, SLOT(addActionToMenu(KTextEditor::View*, QMenu*)));
 }
