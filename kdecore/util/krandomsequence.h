@@ -107,12 +107,14 @@ public:
    * @note modifies the list in place
    */
   template<typename T> void randomize(QList<T>& list) {
-	QList<T> l;
+      if (!list.isEmpty()) {
+            QList<T> l;
 
-	l.append(list.takeFirst());
-	while (list.count())
-		l.insert(int(getLong(l.count()+1)), list.takeFirst());
-	list = l;
+            l.append(list.takeFirst());
+            while (list.count())
+                    l.insert(int(getLong(l.count()+1)), list.takeFirst());
+            list = l;
+      }
   }
 
 
