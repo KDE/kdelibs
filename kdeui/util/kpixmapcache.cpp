@@ -170,7 +170,7 @@ KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) 
     mAvailable = available;
     mPos = 0;
 
-    open(QIODevice::ReadWrite); // krazy:exclude=syscalls
+    this->open(QIODevice::ReadWrite);
 
     // Load up-to-date size from the memory
     *mSize = mHeader->size;
