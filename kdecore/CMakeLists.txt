@@ -349,26 +349,30 @@ endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
 
 # KAuth backend plugin
 
-set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
-kde4_add_plugin(kauth_backend_plugin ${KAUTH_BACKEND_SRCS})
-target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
-install(TARGETS kauth_backend_plugin
-        LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-        ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-        RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-)
+if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+    set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
+    kde4_add_plugin(kauth_backend_plugin ${KAUTH_BACKEND_SRCS})
+    target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
+    install(TARGETS kauth_backend_plugin
+            LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+            ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+            RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+    )
+endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
 
 ########### next target ###############
 
 # KAuth helper plugin
 
-kde4_add_plugin(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
-target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
-install(TARGETS kauth_helper_plugin
-        LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-        ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-        RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-)
+if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+    kde4_add_plugin(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
+    target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
+    install(TARGETS kauth_helper_plugin
+            LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+            ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+            RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+    )
+endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
 
 ########### next target ###############
 
