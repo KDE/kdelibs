@@ -297,7 +297,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
                 entry.setStatus(cacheEntry.status());
             }
             cacheEntry = entry;
-            entries << cacheEntry;
         }
         d->cachedEntries.append(entry);
 
