@@ -23,10 +23,10 @@
 #include "downloaddialog.h"
 #include "downloaddialog_p.h"
 
-
-#include <QtGui/QSortFilterProxyModel>
 #include <QtCore/QTimer>
+#include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QScrollBar>
+#include <QtGui/QKeyEvent>
 
 #include <kmessagebox.h>
 #include <kcomponentdata.h>
@@ -72,6 +72,9 @@ void DownloadDialog::init(const QString& configFile)
     d->ui.closeButton->setGuiItem(KStandardGuiItem::Close);
     connect(d->ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
 
+    // let the search line edit trap the enter key, otherwise it closes the dialog
+    d->ui.m_searchEdit->setTrapReturnKey(true);
+
     d->init(configFile);
 
     // load the last size from config
@@ -108,5 +111,6 @@ Entry::List DownloadDialog::installedEntries()
     }
     return entries;
 }
+
 
 #include "downloaddialog.moc"
