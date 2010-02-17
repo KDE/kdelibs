@@ -225,4 +225,6 @@ Time::Time() : UnitCategory(TimeCategory)
       ki18nc("amount in units (real)", "%1 year"),
       ki18ncp("amount in units (integer)", "%1 year", "%1 years")
     );
+
+    setMostCommonUnits(QList<int>() << Second << Minute << Day << Week << Year);
 }

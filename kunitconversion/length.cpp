@@ -232,5 +232,8 @@ Length::Length() : UnitCategory(LengthCategory)
       ki18nc("amount in units (real)", "%1 astronomical units"),
       ki18ncp("amount in units (integer)", "%1 astronomical unit", "%1 astronomical units")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            Kilometer << Meter << Centimeter << Millimeter << Mile << Yard << Foot << Inch);
 }
 

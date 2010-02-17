@@ -74,4 +74,7 @@ FuelEfficiency::FuelEfficiency() : UnitCategory(FuelEfficiencyCategory)
       ki18nc("amount in units (real)", "%1 kilometers per liter"),
       ki18ncp("amount in units (integer)", "%1 kilometer per liter", "%1 kilometers per liter")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            LitersPer100Kilometers << MilePerUsGallon << MilePerImperialGallon);
 }

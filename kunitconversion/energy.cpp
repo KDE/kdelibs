@@ -204,4 +204,7 @@ Energy::Energy() : UnitCategory(EnergyCategory)
       ki18nc("amount in units (real)", "%1 kilocalories"),
       ki18ncp("amount in units (integer)", "%1 kilocalorie", "%1 kilocalories")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            Joule << Kilojoule << Kilocalorie << GuidelineDailyAmount);
 }

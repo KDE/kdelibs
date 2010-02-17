@@ -39,6 +39,7 @@ public:
     QMap<QString, UnitPtr> unitMap;
     QMap<int, UnitPtr> idMap;
     QList<UnitPtr> units;
+    QList<UnitPtr> mostCommonUnits;
     QString description;
     KUrl url;
     KLocalizedString symbolStringFormat;
@@ -69,6 +70,19 @@ KLocalizedString UnitCategory::symbolStringFormat() const
 QList<UnitPtr> UnitCategory::units() const
 {
     return d->units;
+}
+
+QList<UnitPtr> UnitCategory::mostCommonUnits() const
+{
+    return d->mostCommonUnits;
+}
+
+void UnitCategory::setMostCommonUnits(const QList<int>& units)
+{
+    d->mostCommonUnits.clear();
+    foreach (int u, units) {
+        d->mostCommonUnits.append(unit(u));
+    }
 }
 
 QStringList UnitCategory::allUnits() const

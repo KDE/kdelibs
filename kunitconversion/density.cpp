@@ -104,4 +104,7 @@ Density::Density() : UnitCategory(DensityCategory)
       ki18nc("amount in units (real)", "%1 pounds per cubic yard"),
       ki18ncp("amount in units (integer)", "%1 pound per cubic yard", "%1 pounds per cubic yard")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            KilogramsPerCubicMeter << KilogramPerLiter << OuncePerCubicInch);
 }

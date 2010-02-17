@@ -103,4 +103,7 @@ Velocity::Velocity() : UnitCategory(VelocityCategory)
       ki18nc("amount in units (real)", "%1 on the Beaufort scale"),
       ki18ncp("amount in units (integer)", "%1 on the Beaufort scale", "%1 on the Beaufort scale")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            MeterPerSecond << KilometerPerHour << MilePerHour << Knot << Mach);
 }

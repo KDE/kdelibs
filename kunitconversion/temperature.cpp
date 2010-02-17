@@ -121,4 +121,6 @@ Temperature::Temperature() : UnitCategory(TemperatureCategory)
       ki18nc("amount in units (real)", "%1 degrees Rømer"),
       ki18ncp("amount in units (integer)", "%1 degree Rømer", "%1 degrees Rømer")
     );
+
+    setMostCommonUnits(QList<int>() << Kelvin << Celsius << Fahrenheit);
 }

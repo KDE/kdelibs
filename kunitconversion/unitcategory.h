@@ -89,6 +89,13 @@ public:
     QList<UnitPtr> units() const;
 
     /**
+     * Return most common units in this category.
+     *
+     * @return list of units.
+     **/
+    QList<UnitPtr> mostCommonUnits() const;
+
+    /**
      * Return all unit names, short names and unit synonyms in this category.
      *
      * @return list of units.
@@ -120,6 +127,7 @@ protected:
     void setDescription(const QString& desc);
     void setUrl(const KUrl& url);
     void setSymbolStringFormat(const KLocalizedString& symbolStringFormat);
+    void setMostCommonUnits(const QList<int>& units);
     KLocalizedString symbolStringFormat() const;
 
 private:

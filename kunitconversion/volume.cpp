@@ -398,4 +398,7 @@ Volume::Volume() : UnitCategory(VolumeCategory)
       ki18nc("amount in units (real)", "%1 pints (imperial)"),
       ki18ncp("amount in units (integer)", "%1 pint (imperial)", "%1 pints (imperial)")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            Deciliter << Liter << GallonUS << FluidOunce << CubicMeter << Cup << PintImperial);
 }

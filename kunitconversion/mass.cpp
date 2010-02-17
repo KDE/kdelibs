@@ -229,4 +229,7 @@ Mass::Mass() : UnitCategory(MassCategory)
       ki18nc("amount in units (real)", "%1 kilonewton"),
       ki18ncp("amount in units (integer)", "%1 kilonewton", "%1 kilonewton")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            Kilogram << Gram << Microgram << Ton << Pound << Ounce);
 }

@@ -241,4 +241,7 @@ Area::Area() : UnitCategory(AreaCategory)
       ki18nc("amount in units (real)", "%1 square miles"),
       ki18ncp("amount in units (integer)", "%1 square mile", "%1 square miles")
     );
+
+    setMostCommonUnits(QList<int>() <<
+            SquareKilometer << SquareMeter << SquareHectometer << Acre << SquareFoot << SquareMile);
 }
