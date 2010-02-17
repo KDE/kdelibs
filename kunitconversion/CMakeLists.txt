@@ -22,6 +22,7 @@ set(kunitconversion_LIB_SRCS
     density.cpp
     acceleration.cpp
     force.cpp
+    angle.cpp
 )
 
 set(kunitconversion_HEADERS

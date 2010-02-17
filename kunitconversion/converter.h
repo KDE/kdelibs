@@ -121,7 +121,10 @@ enum UnitId {
     Yottanewton = 15000, Zettanewton, Exanewton, Petanewton, Teranewton, Giganewton, Meganewton,
     KilonewtonForce, Hectonewton, Decanewton, Newton, Decinewton, Centinewton, Millinewton, Micronewton,
     Nanonewton, Piconewton, Femtonewton, Attonewton, Zeptonewton, Yoctonewton, Dyne, Kilopond,
-    PoundForce, Poundal
+    PoundForce, Poundal,
+
+    // Angle
+    Degree, Radian, Gradian, ArcMinute, ArcSecond
 };
 
 class UnitCategory;
