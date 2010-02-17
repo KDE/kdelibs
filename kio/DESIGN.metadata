@@ -45,8 +45,8 @@ Charsets        string          Charset(s) send in the "Accept-Charset:" HTTP Re
 
 Languages       string          Language(s) send in the "Accept-Language:" HTTP Request Header.
 
-content-
-disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
+content-disposition-type      string Type of Content-Disposition from a HTTP Header Response.
+content-disposition-filename  string Suggested name to save a file as returned by a HTTP Header Response.
 
 request-id	number              Sequence number to identify requests in a MultiGet command.
 
