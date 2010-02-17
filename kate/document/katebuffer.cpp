@@ -462,7 +462,7 @@ KateBuffer::KateBuffer(KateDocument *doc)
  : QObject (doc),
    editSessionNumber (0),
    editIsRunning (false),
-   editTagLineStart (0xffffffff),
+   editTagLineStart (INT_MAX),
    editTagLineEnd (0),
    editTagLineFrom (false),
    editChangesDone (false),
