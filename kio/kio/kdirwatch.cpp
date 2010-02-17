@@ -1100,6 +1100,9 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
         }
         e->m_nlink = stat_buf.st_nlink;
         e->m_ino = stat_buf.st_ino;
+
+        // Same as in scanEntry: ensure no subentry in parent dir
+        removeEntry(0, e->parentDirectory(), e);
       }
       else {
         e->m_ctime = invalid_ctime;
@@ -1212,6 +1215,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       if (s_verboseDebug) {
         kDebug(7001) << "Setting status to Normal for just created" << e << e->path;
       }
+      // We need to make sure the entry isn't listed in its parent's subentries... (#222974, testMoveTo)
+      removeEntry(0, e->parentDirectory(), e);
 
       return Created;
     }
