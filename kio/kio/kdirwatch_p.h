@@ -151,6 +151,7 @@ public:
 
     int msecLeft, freq;
 
+    QString parentDirectory() const;
     void addClient(KDirWatch*, KDirWatch::WatchModes);
     void removeClient(KDirWatch*);
     int clients();

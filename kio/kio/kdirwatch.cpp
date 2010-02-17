@@ -478,6 +478,11 @@ int KDirWatchPrivate::Entry::clients()
   return clients;
 }
 
+QString KDirWatchPrivate::Entry::parentDirectory() const
+{
+  return QDir::cleanPath(path + "/..");
+}
+
 QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QString& tpath, bool* isDir) const
 {
   QList<Client *> ret;
@@ -1061,7 +1066,9 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
 #endif
         e->m_status = Normal;
         e->m_nlink = stat_buf.st_nlink;
-		e->m_ino = stat_buf.st_ino;
+        e->m_ino = stat_buf.st_ino;
+        // Same as in scanEntry: ensure no subentry in parent dir
+        removeEntry(0, e->parentDirectory(), e);
       }
       else {
         e->m_ctime = invalid_ctime;
@@ -1168,6 +1175,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       e->m_status = Normal;
       e->m_nlink = stat_buf.st_nlink;
       e->m_ino = stat_buf.st_ino;
+      // We need to make sure the entry isn't listed in its parent's subentries... (#222974, testMoveTo)
+      removeEntry(0, e->parentDirectory(), e);
       return Created;
     }
 
