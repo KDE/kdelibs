@@ -202,7 +202,7 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
     m_groundingOccurence = 0;
 
     // when we are being deleted the value of m_mainType is not important
-    // andmore. Also since ResourceManager is a global static it might be
+    // anymore. Also since ResourceManager is a global static it might be
     // deleted after the global static behind Soprano::Vocabulary::RDFS
     // which results in a crash.
     if( !isDelete )
@@ -706,11 +706,12 @@ bool Nepomuk::ResourceData::determineUri()
             if( !m_uri.isEmpty() ) {
                 QMutexLocker rmlock(&m_rm->mutex);
 
-                if( !m_rm->m_initializedData.contains( m_uri ) ) {
+                ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
+                if( it == m_rm->m_initializedData.end() ) {
                     m_rm->m_initializedData.insert( m_uri, this );
                 }
                 else {
-                    m_proxyData = m_rm->m_initializedData.value( m_uri );
+                    m_proxyData = it.value();
                     m_proxyData->ref();
                 }
             }
