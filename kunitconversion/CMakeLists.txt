@@ -20,6 +20,8 @@ set(kunitconversion_LIB_SRCS
     timeunit.cpp
     fuel_efficiency.cpp
     density.cpp
+    acceleration.cpp
+    force.cpp
 )
 
 set(kunitconversion_HEADERS

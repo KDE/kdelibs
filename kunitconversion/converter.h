@@ -29,7 +29,8 @@ namespace KUnitConversion
 enum CategoryId {
     InvalidCategory = -1, LengthCategory, AreaCategory, VolumeCategory, TemperatureCategory,
     VelocityCategory, MassCategory, PressureCategory, EnergyCategory, CurrencyCategory,
-    PowerCategory, TimeCategory, FuelEfficiencyCategory, DensityCategory
+    PowerCategory, TimeCategory, FuelEfficiencyCategory, DensityCategory, AccelerationCategory,
+    AngleCategory, FrequencyCategory, ForceCategory
 };
 enum UnitId {
     InvalidUnit = -1, NoUnit = 0, Percent = 1,
@@ -111,7 +112,16 @@ enum UnitId {
     AttokilogramsPerCubicMeter, ZeptokilogramsPerCubicMeter, YoctokilogramsPerCubicMeter,
     KilogramPerLiter, GramPerLiter, GramPerMilliliter,
     OuncePerCubicInch, OuncePerCubicFoot, OuncePerCubicYard,
-    PoundPerCubicInch, PoundPerCubicFoot, PoundPerCubicYard
+    PoundPerCubicInch, PoundPerCubicFoot, PoundPerCubicYard,
+
+    // Acceleration
+    MetresPerSecondSquared = 14000, FeetPerSecondSquared, StandardGravity,
+
+    // Force
+    Yottanewton = 15000, Zettanewton, Exanewton, Petanewton, Teranewton, Giganewton, Meganewton,
+    KilonewtonForce, Hectonewton, Decanewton, Newton, Decinewton, Centinewton, Millinewton, Micronewton,
+    Nanonewton, Piconewton, Femtonewton, Attonewton, Zeptonewton, Yoctonewton, Dyne, Kilopond,
+    PoundForce, Poundal
 };
 
 class UnitCategory;

@@ -37,6 +37,8 @@
 #include "unit.h"
 #include "velocity.h"
 #include "volume.h"
+#include "acceleration.h"
+#include "force.h"
 
 namespace KUnitConversion
 {
@@ -76,6 +78,8 @@ public:
         categories[TimeCategory] = new Time;
         categories[FuelEfficiencyCategory] = new FuelEfficiency;
         categories[DensityCategory] = new Density;
+        categories[AccelerationCategory] = new Acceleration;
+        categories[ForceCategory] = new Force;
     };
 
     ~ConverterPrivate()
