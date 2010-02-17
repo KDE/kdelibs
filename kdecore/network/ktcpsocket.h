@@ -308,11 +308,6 @@ public:
     EncryptionMode encryptionMode() const;
 
 Q_SIGNALS:
-    //from QIODevice
-    void aboutToClose();
-    void bytesWritten(qint64 bytes);
-    void readyRead();
-
     //from QAbstractSocket
     void connected();
     void disconnected();
