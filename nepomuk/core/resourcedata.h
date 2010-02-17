@@ -87,6 +87,11 @@ namespace Nepomuk {
          */
         bool hasType( const QUrl& uri );
 
+        /**
+         * Check the type without loading data from the store.
+         */
+        bool constHasType( const QUrl& type ) const;
+
         Variant property( const QUrl& uri );
 
         /**
@@ -151,7 +156,6 @@ namespace Nepomuk {
         ResourceData* proxy() const { return m_proxyData; }
 
     private:
-        bool constHasType( const QUrl& type ) const;
         void loadType( const QUrl& type );
 
         /// Will reset this instance to 0 as if constructed without parameters

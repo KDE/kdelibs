@@ -129,15 +129,16 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
-        //
-        // We need to cache both m_uriKickoffData and m_idKickoffData since they might be changed
-        // in the loop by ResourceData::type()
-        //
         QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
         for( QList<ResourceData*>::iterator rdIt = rdl.begin();
              rdIt != rdl.end(); ++rdIt ) {
             ResourceData* rd = *rdIt;
-            if( rd->type() == type ) {
+            //
+            // make sure we do not trigger a load here since
+            // 1. that could result in the deletion of values from the iterated list (m_cache.clear() in ResourceData::load)
+            // 2. We only need to check non-existing resources anyway, since the rest is queried from the db below
+            //
+            if( rd->constHasType( type ) ) {
                 l.append( rd );
             }
         }
@@ -155,9 +156,19 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWi
 
     //
     // We need to cache both m_uriKickoffData and m_idKickoffData since they might be changed
-    // in the loop by ResourceData::type()
+    // in the loop by ResourceData::load()
     //
     QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
+
+    //
+    // make sure none of the ResourceData objects are deleted by ResourceData::load below
+    // which would result in a crash since we have them cached.
+    //
+    QList<Resource> tmp;
+    foreach( ResourceData* rd, rdl ) {
+        tmp << Resource( rd );
+    }
+
     for( QList<ResourceData*>::iterator rdIt = rdl.begin();
          rdIt != rdl.end(); ++rdIt ) {
         ResourceData* rd = *rdIt;
