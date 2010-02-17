@@ -67,7 +67,7 @@ enum UnitId {
     Kilopascal, Hectopascal, Decapascal, Pascal, Decipascal, Centipascal, Millipascal,
     Micropascal, Nanopascal, Picopascal, Femtopascal, Attopascal, Zeptopascal, Yoctopascal,
     Bar, Millibar, Decibar, Torr, TechnicalAtmosphere, Atmosphere, PoundForcePerSquareInch,
-    InchesOfMercury,
+    InchesOfMercury, MillimetersOfMercury,
 
     // Temperature
     Kelvin = 6000, Celsius, Fahrenheit, Rankine, Delisle, TemperatureNewton, Reaumur, Romer,

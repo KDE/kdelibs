@@ -222,8 +222,8 @@ Pressure::Pressure() : UnitCategory(PressureCategory)
       i18nc("pressure unit symbol", "psi"),
       i18nc("unit description in lists", "pound-force per square inch"),
       i18nc("unit synonyms for matching user input",
-            "pound-force per square inch;pound-force per square inch;psi"),
-      ki18nc("amount in units (real)", "%1 pound-force per square inch"),
+            "pound-force per square inch;pound-force per square inches;psi"),
+      ki18nc("amount in units (real)", "%1 pound-force per square inches"),
       ki18ncp("amount in units (integer)",
               "%1 pound-force per square inch", "%1 pound-force per square inch")
     );
@@ -232,8 +232,17 @@ Pressure::Pressure() : UnitCategory(PressureCategory)
       i18nc("pressure unit symbol", "inHg"),
       i18nc("unit description in lists", "inches of mercury"),
       i18nc("unit synonyms for matching user input",
-            "inches of mercury;inches of mercury;inHg;in\""),
+            "inch of mercury;inches of mercury;inHg;in\""),
       ki18nc("amount in units (real)", "%1 inches of mercury"),
       ki18ncp("amount in units (integer)", "%1 inches of mercury", "%1 inches of mercury")
+    );
+    // http://en.wikipedia.org/wiki/MmHg#mmHg
+    U(MillimetersOfMercury, 133.322,
+      i18nc("pressure unit symbol", "mmHg"),
+      i18nc("unit description in lists", "millimeters of mercury"),
+      i18nc("unit synonyms for matching user input",
+            "millimeter of mercury;millimeters of mercury;mmHg"),
+      ki18nc("amount in units (real)", "%1 millimeters of mercury"),
+      ki18ncp("amount in units (integer)", "%1 millimeters of mercury", "%1 millimeters of mercury")
     );
 }
