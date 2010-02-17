@@ -72,7 +72,8 @@
 
 #include <sys/utsname.h>
 
-// #define DEBUG_KDIRWATCH
+// set this to true for much more verbose debug output
+static const bool s_verboseDebug = false;
 
 static KDirWatchPrivate* dwp_self = 0;
 static KDirWatchPrivate* createPrivate() {
@@ -293,12 +294,14 @@ void KDirWatchPrivate::inotifyEventReceived()
           e->dirty = true;
 
           if( event->mask & IN_DELETE_SELF) {
-            kDebug(7001) << "-->got deleteself signal for" << e->path;
+            if (s_verboseDebug) {
+              kDebug(7001) << "-->got deleteself signal for" << e->path;
+            }
             e->m_status = NonExistent;
             if (e->isDir)
-              addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
+              addEntry(0, e->parentDirectory(), e, true /*isDir*/);
             else
-              addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
+              addEntry(0, QFileInfo(e->path).absolutePath(), e, true /*isDir*/);
           }
           if ( event->mask & IN_IGNORED ) {
             // Causes bug #207361 with kernels 2.6.31 and 2.6.32!
@@ -306,10 +309,11 @@ void KDirWatchPrivate::inotifyEventReceived()
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
             Entry* sub_entry = e->findSubEntry(e->path + '/' + path);
-#ifdef DEBUG_KDIRWATCH
-            kDebug(7001) << "-->got CREATE signal for" << (e->path+'/'+path) << "sub_entry=" << sub_entry;
-            kDebug() << *e;
-#endif
+
+            if (s_verboseDebug) {
+              kDebug(7001) << "-->got CREATE signal for" << (e->path+'/'+path) << "sub_entry=" << sub_entry;
+              kDebug(7001) << *e;
+            }
 
             if (sub_entry /*&& sub_entry->isDir*/) {
               removeEntry(0, e, sub_entry);
@@ -347,9 +351,9 @@ void KDirWatchPrivate::inotifyEventReceived()
             }
           }
           if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
-#ifdef DEBUG_KDIRWATCH
-            kDebug(7001) << "-->got DELETE signal for" << (e->path+'/'+path);
-#endif
+            if (s_verboseDebug) {
+              kDebug(7001) << "-->got DELETE signal for" << (e->path+'/'+path);
+            }
             if ((e->isDir) && (!e->m_clients.empty())) {
               Client* client = 0;
               // A file in this directory has been removed.  It wasn't an explicitly
@@ -378,9 +382,9 @@ void KDirWatchPrivate::inotifyEventReceived()
           }
           if (event->mask & (IN_MODIFY|IN_ATTRIB)) {
             if ((e->isDir) && (!e->m_clients.empty())) {
-#ifdef DEBUG_KDIRWATCH
-              kDebug(7001) << "-->got MODIFY signal for" << (e->path+'/'+path);
-#endif
+              if (s_verboseDebug) {
+                kDebug(7001) << "-->got MODIFY signal for" << (e->path+'/'+path);
+              }
               // A file in this directory has been changed.  No
               // addEntry/ removeEntry bookkeeping should be required.
               // Add the path to the list of pending file changes if
@@ -478,13 +482,18 @@ void KDirWatchPrivate::Entry::removeClient(KDirWatch* instance)
 }
 
 /* get number of clients */
-int KDirWatchPrivate::Entry::clients()
+int KDirWatchPrivate::Entry::clientCount() const
 {
   int clients = 0;
   foreach(Client* client, m_clients)
     clients += client->count;
 
   return clients;
+}
+
+QString KDirWatchPrivate::Entry::parentDirectory() const
+{
+  return QDir::cleanPath(path + "/..");
 }
 
 QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QString& tpath, bool* isDir) const
@@ -518,10 +527,9 @@ QDebug operator<<(QDebug debug, const KDirWatchPrivate::Entry &entry)
   debug << "has " << entry.m_clients.count() << " clients,";
   debug.space();
   if (!entry.m_entries.isEmpty()) {
-    QStringList subEntries;
+    debug << "nonexistent subentries:";
     Q_FOREACH(KDirWatchPrivate::Entry* subEntry, entry.m_entries)
-      subEntries << subEntry->path;
-    debug << "nonexistent subentries:" << subEntries.join(", ");
+      debug << subEntry << subEntry->path;
   }
   debug << ']';
   return debug;
@@ -576,7 +584,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
   if (e->isDir) {
     if (e->m_status == NonExistent) {
       // If the directory does not exist we watch the parent directory
-      addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
+      addEntry(0, e->parentDirectory(), e, true);
     }
     else {
       int res =FAMMonitorDirectory(&fc, QFile::encodeName(e->path),
@@ -633,7 +641,7 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   e->m_mode = INotifyMode;
 
   if ( e->m_status == NonExistent ) {
-    addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
+    addEntry(0, e->parentDirectory(), e, true);
     return true;
   }
 
@@ -643,9 +651,9 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
                                     QFile::encodeName( e->path ), mask) ) >= 0)
   {
-#ifdef DEBUG_KDIRWATCH
-    //kDebug(7001) << "inotify successfully used for monitoring" << e->path << "wd=" << e->wd;
-#endif
+    if (s_verboseDebug) {
+      kDebug(7001) << "inotify successfully used for monitoring" << e->path << "wd=" << e->wd;
+    }
     return true;
   }
 
@@ -659,7 +667,7 @@ bool KDirWatchPrivate::useQFSWatch(Entry* e)
   e->dirty = false;
 
   if ( e->m_status == NonExistent ) {
-    addEntry( 0, QDir::cleanPath( e->path + "/.." ), e, true );
+    addEntry(0, e->parentDirectory(), e, true /*isDir*/);
     return true;
   }
 
@@ -718,8 +726,10 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   {
     if (sub_entry) {
        (*it).m_entries.append(sub_entry);
-       kDebug(7001) << "Added already watched Entry" << path
-                    << "(for" << sub_entry->path << ")";
+       if (s_verboseDebug) {
+         kDebug(7001) << "Added already watched Entry" << path
+                      << "(for" << sub_entry->path << ")";
+       }
 #ifdef HAVE_SYS_INOTIFY_H
        Entry* e = &(*it);
        if( (e->m_mode == INotifyMode) && (e->wd >= 0) ) {
@@ -738,9 +748,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     }
     else {
        (*it).addClient(instance, watchModes);
-       kDebug(7001) << "Added already watched Entry" << path
-		     << "(now" <<  (*it).clients() << "clients)"
-		     << QString("[%1]").arg(instance->objectName());
+       if (s_verboseDebug) {
+         kDebug(7001) << "Added already watched Entry" << path
+                      << "(now" <<  (*it).clientCount() << "clients)"
+                      << QString("[%1]").arg(instance->objectName());
+       }
     }
     return;
   }
@@ -897,9 +909,9 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
                                    const QString& _path,
                                    Entry* sub_entry)
 {
-#ifdef DEBUG_KDIRWATCH
-  kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
-#endif
+  if (s_verboseDebug) {
+    kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
+  }
   Entry* e = entry(_path);
   if (!e) {
     kWarning(7001) << "doesn't know" << _path;
@@ -938,7 +950,7 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
     }
     else {
       if (e->isDir)
-	removeEntry(0, QDir::cleanPath(e->path+"/.."), e);
+	removeEntry(0, e->parentDirectory(), e);
       else
 	removeEntry(0, QFileInfo(e->path).absolutePath(), e);
     }
@@ -949,12 +961,14 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
   if (e->m_mode == INotifyMode) {
     if ( e->m_status == Normal ) {
       (void) inotify_rm_watch( m_inotify_fd, e->wd );
-      kDebug(7001).nospace() << "Cancelled INotify (fd " << m_inotify_fd << ", "
-                             << e->wd << ") for " << e->path;
+      if (s_verboseDebug) {
+        kDebug(7001).nospace() << "Cancelled INotify (fd " << m_inotify_fd << ", "
+                               << e->wd << ") for " << e->path;
+      }
     }
     else {
       if (e->isDir)
-        removeEntry(0, QDir::cleanPath(e->path+"/.."), e);
+        removeEntry(0, e->parentDirectory(), e);
       else
         removeEntry(0, QFileInfo(e->path).absolutePath(), e);
     }
@@ -974,11 +988,11 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
     }
   }
 
-#ifdef DEBUG_KDIRWATCH
-  kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
-     << " for " << (sub_entry ? sub_entry->path : "")
-     << " [" << (instance ? instance->objectName() : "") << "]";
-#endif
+  if (s_verboseDebug) {
+    kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
+                           << " for " << (sub_entry ? sub_entry->path : "")
+                           << " [" << (instance ? instance->objectName() : "") << "]";
+  }
   m_mapEntries.remove( e->path ); // <e> not valid any more
 }
 
@@ -1081,13 +1095,19 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
         e->m_ctime = stat_buf.st_ctime;
 #endif
         e->m_status = Normal;
+        if (s_verboseDebug) {
+          kDebug(7001) << "Setting status to Normal for" << e << e->path;
+        }
         e->m_nlink = stat_buf.st_nlink;
-		e->m_ino = stat_buf.st_ino;
+        e->m_ino = stat_buf.st_ino;
       }
       else {
         e->m_ctime = invalid_ctime;
         e->m_status = NonExistent;
         e->m_nlink = 0;
+        if (s_verboseDebug) {
+          kDebug(7001) << "Setting status to NonExistent for" << e << e->path;
+        }
       }
     }
     e->msecLeft = 0;
@@ -1189,6 +1209,10 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       e->m_status = Normal;
       e->m_nlink = stat_buf.st_nlink;
       e->m_ino = stat_buf.st_ino;
+      if (s_verboseDebug) {
+        kDebug(7001) << "Setting status to Normal for just created" << e << e->path;
+      }
+
       return Created;
     }
 
@@ -1240,16 +1264,14 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
   // dir/file doesn't exist
 
+  e->m_nlink = 0;
+  e->m_status = NonExistent;
+
   if (e->m_ctime == invalid_ctime) {
-    e->m_nlink = 0;
-    e->m_status = NonExistent;
     return NoChange;
   }
 
   e->m_ctime = invalid_ctime;
-  e->m_nlink = 0;
-  e->m_status = NonExistent;
-
   return Deleted;
 }
 
@@ -1263,18 +1285,19 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
   if (!fileName.isEmpty()) {
     if (!QDir::isRelativePath(fileName))
       path = fileName;
-    else
+    else {
 #ifdef Q_OS_UNIX
       path += '/' + fileName;
 #elif defined(Q_WS_WIN)
       //current drive is passed instead of /
       path += QDir::currentPath().left(2) + '/' + fileName;
 #endif
+    }
   }
 
-#ifdef DEBUG_KDIRWATCH
-  kDebug(7001) << event << path << e->m_clients.count() << "clients";
-#endif
+  if (s_verboseDebug) {
+    kDebug(7001) << event << path << e->m_clients.count() << "clients";
+  }
   
   foreach(Client* c, e->m_clients)
   {
@@ -1398,40 +1421,40 @@ void KDirWatchPrivate::slotRescan()
   it = m_mapEntries.begin();
   for( ; it != m_mapEntries.end(); ++it ) {
     // we don't check invalid entries (i.e. remove delayed)
-    if (!(*it).isValid()) continue;
+    Entry* entry = &(*it);
+    if (!entry->isValid()) continue;
 
-    int ev = scanEntry( &(*it) );
+    const int ev = scanEntry(entry);
 
 #ifdef HAVE_SYS_INOTIFY_H
-    if ((*it).m_mode == INotifyMode) {
+    if (entry->m_mode == INotifyMode) {
       if ( ev == Deleted ) {
-        addEntry(0, QDir::cleanPath( ( *it ).path+"/.."), &*it, true);
+        addEntry(0, entry->parentDirectory(), entry, true);
       }
     }
-    if ((*it).m_mode == INotifyMode && ev == Created && (*it).wd < 0) {
-      cList.append( &(*it) );
-      if (! useINotify( &(*it) )) {
-        useStat( &(*it) );
+    if (entry->m_mode == INotifyMode && ev == Created && entry->wd < 0) {
+      cList.append(entry);
+      if (!useINotify(entry)) {
+        useStat(entry);
       }
     }
 
-    if ((*it).isDir)
-    {
+    if (entry->isDir) {
       // Report and clear the the list of files that have changed in this directory.
       // Remove duplicates by changing to set and back again:
       // we don't really care about preserving the order of the
       // original changes.
-      QList<QString> pendingFileChanges = (*it).m_pendingFileChanges.toSet().toList();
+      QList<QString> pendingFileChanges = entry->m_pendingFileChanges.toSet().toList();
       Q_FOREACH(const QString &changedFilename, pendingFileChanges )
       {
-        emitEvent(&(*it), Changed, changedFilename);
+        emitEvent(entry, Changed, changedFilename);
       }
-      (*it).m_pendingFileChanges.clear();
+      entry->m_pendingFileChanges.clear();
     }
 #endif
 
     if ( ev != NoChange )
-      emitEvent( &(*it), ev);
+      emitEvent(entry, ev);
   }
 
   if ( timerRunning )
@@ -1440,7 +1463,7 @@ void KDirWatchPrivate::slotRescan()
 #ifdef HAVE_SYS_INOTIFY_H
   // Remove watch of parent of new created directories
   Q_FOREACH(Entry* e, cList)
-    removeEntry(0, QDir::cleanPath( e->path+"/.."), e);
+    removeEntry(0, e->parentDirectory(), e);
 #endif
 
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
@@ -1563,7 +1586,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
                         << FAMREQUEST_GETREQNUM(&(e->fr))
                         << "for" << e->path;
           // Scan parent for a new creation
-          addEntry(0, QDir::cleanPath( e->path+"/.."), e, true);
+          addEntry(0, e->parentDirectory(), e, true);
         }
         break;
 
@@ -1650,7 +1673,10 @@ void KDirWatchPrivate::statistics()
       if (e->m_entries.count()>0) {
         kDebug(7001) << "    dependent entries:";
         foreach(Entry *d, e->m_entries) {
-          kDebug(7001) << "      " << d->path;
+          kDebug(7001) << "      " << d << d->path << (d->m_status == NonExistent ? "NonExistent" : "EXISTS!!! ERROR!");
+          if (s_verboseDebug) {
+            Q_ASSERT(d->m_status == NonExistent); // it doesn't belong here otherwise
+          }
         }
       }
     }
@@ -1672,7 +1698,7 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
       emitEvent(e, ev);
     if(ev == Deleted) {
       if (e->isDir)
-        addEntry(0, QDir::cleanPath(e->path + "/.."), e, true);
+        addEntry(0, e->parentDirectory(), e, true);
       else
         addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
     } else
