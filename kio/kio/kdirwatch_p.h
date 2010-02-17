@@ -151,9 +151,10 @@ public:
 
     int msecLeft, freq;
 
+    QString parentDirectory() const;
     void addClient(KDirWatch*, KDirWatch::WatchModes);
     void removeClient(KDirWatch*);
-    int clients();
+    int clientCount() const;
     bool isValid() { return m_clients.count() || m_entries.count(); }
 
     Entry* findSubEntry(const QString& path) const {
