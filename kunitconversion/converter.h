@@ -124,7 +124,12 @@ enum UnitId {
     PoundForce, Poundal,
 
     // Angle
-    Degree, Radian, Gradian, ArcMinute, ArcSecond
+    Degree = 16000, Radian, Gradian, ArcMinute, ArcSecond,
+
+    // Frequency
+    Yottahertz = 17000, Zettahertz, Exahertz, Petahertz, Terahertz, Gigahertz, Megahertz,
+    Kilohertz, Hectohertz, Decahertz, Hertz, Decihertz, Centihertz, Millihertz, Microhertz,
+    Nanohertz, Picohertz, Femtohertz, Attohertz, Zeptohertz, Yoctohertz, RPM
 };
 
 class UnitCategory;

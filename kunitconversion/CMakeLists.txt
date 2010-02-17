@@ -23,6 +23,7 @@ set(kunitconversion_LIB_SRCS
     acceleration.cpp
     force.cpp
     angle.cpp
+    frequency.cpp
 )
 
 set(kunitconversion_HEADERS

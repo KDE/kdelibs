@@ -40,6 +40,7 @@
 #include "acceleration.h"
 #include "force.h"
 #include "angle.h"
+#include "frequency.h"
 
 namespace KUnitConversion
 {
@@ -82,6 +83,7 @@ public:
         categories[AccelerationCategory] = new Acceleration;
         categories[ForceCategory] = new Force;
         categories[AngleCategory] = new Angle;
+        categories[FrequencyCategory] = new Frequency;
     };
 
     ~ConverterPrivate()
