@@ -84,20 +84,12 @@ void KGraphicsWebView::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (d->mouseReleased(event->pos().toPoint())) {
+    if (d->mouseReleased(event->pos().toPoint()) || d->handleUrlPasteFromClipboard(event)) {
         event->accept();
         return;
     }
 
-    // WORKAROUND: Let the page handle the event first so that middle clicking
-    // on scroll bars does not result in navigation to url from the selection
-    // clipboard.
-    page()->event(event);
-    if (event->isAccepted())
-        return;
-
-    if (d->handleUrlPasteFromClipboard())
-        event->accept();
+    QGraphicsWebView::mouseReleaseEvent(event);
 }
 
 #include "kgraphicswebview.moc"

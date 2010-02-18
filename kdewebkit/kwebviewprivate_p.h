@@ -27,6 +27,7 @@
 #ifndef KWEBVIEW_KWEBVIEWPRIVATE_P_H
 #define KWEBVIEW_KWEBVIEWPRIVATE_P_H
 
+#include <QtCore/QEvent>
 #include <QtGui/QClipboard>
 #include <QtGui/QApplication>
 #include <QtWebKit/QWebFrame>
@@ -97,13 +98,24 @@ public:
         return false;
     }
 
-    bool handleUrlPasteFromClipboard()
+    bool handleUrlPasteFromClipboard(QEvent* event)
     {
-        if ((pressedButtons & Qt::MidButton) && !hitTest.isContentEditable() && q->page() && !q->page()->isModified()) {
-            QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
-            if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
-                emit q->selectionClipboardUrlPasted(KUrl(clipboardText));
+        QWebPage *page = q->page();
+        if ((pressedButtons & Qt::MidButton) && page) {
+
+            // WORKAROUND: Let the page handle the event first so that middle clicking
+            // on scroll bars does not result in navigation to url from the selection
+            // clipboard.
+            page->event(event);
+            if (event->isAccepted())
                 return true;
+
+            if (!hitTest.isContentEditable() && !page->isModified()) {
+                QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
+                if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
+                    emit q->selectionClipboardUrlPasted(KUrl(clipboardText));
+                    return true;
+                }
             }
         }
 
