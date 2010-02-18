@@ -30,6 +30,9 @@
 #include <time.h>
 #include <kde_file.h>
 
+// Debugging notes: to see which inotify signals are emitted, either set s_verboseDebug=true
+// at the top of kdirwatch.cpp, or use the command-line tool "inotifywait -m /path"
+
 // Note that kdirlistertest and kdirmodeltest also exercise KDirWatch quite a lot.
 
 class KDirWatch_UnitTest : public QObject
@@ -50,6 +53,7 @@ private Q_SLOTS: // test methods
     void initTestCase() {
         // By creating the files upfront, we save waiting a full second for an mtime change
         createFile(m_path + "ExistingFile");
+        createFile(m_path + "TestFile");
         createFile(m_path + "nested_0");
         createFile(m_path + "nested_1");
     }
@@ -60,10 +64,11 @@ private Q_SLOTS: // test methods
     void watchNonExistent();
     void testMoveTo();
     void nestedEventLoop();
+    void testHardlinkChange();
 
 protected Q_SLOTS: // internal slots
     void nestedEventLoopSlot();
-    
+
 private:
     void waitUntilMTimeChange(const QString& path);
     QList<QVariantList> waitForDirtySignal(KDirWatch& watch, int expected);
@@ -74,7 +79,7 @@ private:
     QString createFile(int num);
     void appendToFile(const QString& path);
     void appendToFile(int num);
-    
+
     KTempDir m_tempDir;
     QString m_path;
 };
@@ -122,7 +127,7 @@ void KDirWatch_UnitTest::waitUntilMTimeChange(const QString& path)
     QCOMPARE(KDE::stat(path, &stat_buf), 0);
     int totalWait = 0;
     struct timeval now_tv;
-    
+
     Q_FOREVER {
         gettimeofday(&now_tv, NULL);
         // The mtime only has a granularity of a second, that's the whole issue;
@@ -233,7 +238,7 @@ void KDirWatch_UnitTest::touchOneFile() // watch a dir, create a file in it
     KDirWatch watch;
     watch.addDir(m_path);
     watch.startScan();
-    
+
     waitUntilMTimeChange(m_path);
 
     const QString file0 = createFile(0);
@@ -349,7 +354,7 @@ void KDirWatch_UnitTest::testMoveTo()
     // Atomic rename of "temp" to "file1", much like KAutoSave would do when saving file1 again
     const QString filetemp = m_path + "temp";
     createFile(filetemp);
-    ::rename(QFile::encodeName(filetemp), QFile::encodeName(file1)); // overwrite file1 with the tempfile
+    QVERIFY(KDE::rename(filetemp, file1) == 0); // overwrite file1 with the tempfile
 
     QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), file1));
 
@@ -411,6 +416,40 @@ void KDirWatch_UnitTest::nestedEventLoopSlot()
     const QString file0 = m_path + "nested_0";
     watch->removeFile(file0);
     watch->addFile(file0);
+}
+
+void KDirWatch_UnitTest::testHardlinkChange()
+{
+#ifdef Q_OS_UNIX
+
+    // The unittest for the "detecting hardlink change to /etc/localtime" problem
+    // described on kde-core-devel (2009-07-03).
+    // It shows that watching a specific file doesn't inform us that the file is
+    // being recreated. Better watch the directory, for that.
+
+    const QString existingFile = m_path + "ExistingFile";
+    KDirWatch watch;
+    //not working: watch.addFile(existingFile);
+    watch.addDir(m_path);
+    watch.startScan();
+
+    //not working: waitUntilMTimeChange(existingFile);
+    waitUntilMTimeChange(m_path);
+
+    QFile::remove(existingFile);
+    const QString testFile = m_path + "TestFile";
+    ::link(QFile::encodeName(testFile), QFile::encodeName(existingFile)); // make ExistingFile "point" to TestFile
+    QVERIFY(QFile::exists(existingFile));
+    //not working: QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), existingFile));
+    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
+
+    waitUntilMTimeChange(existingFile);
+    appendToFile(existingFile);
+    //not working: QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), existingFile));
+    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
+#else
+    QSKIP("Unix-specific");
+#endif
 }
 
 #include "kdirwatch_unittest.moc"
