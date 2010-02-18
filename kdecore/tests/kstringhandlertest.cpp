@@ -104,6 +104,11 @@ void KStringHandlerTest::naturalCompare()
     // bug 181211
     QCOMPARE(KStringHandler::naturalCompare("queen__radio_ga_ga.mp3", "queen__somebody_to_love_live.mp3", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("queen__somebody_to_love_live.mp3", "queens_of_the_stone_age__no_one_knows.mp3", Qt::CaseSensitive), -1);
+
+    // bug 201101
+    QCOMPARE(KStringHandler::naturalCompare("text", "text.txt", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("text.txt", "text1", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("text1", "text1.txt", Qt::CaseSensitive), -1);
 }
 
 void KStringHandlerTest::obscure()
