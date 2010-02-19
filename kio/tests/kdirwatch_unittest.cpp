@@ -62,6 +62,7 @@ private Q_SLOTS: // test methods
     void watchAndModifyOneFile();
     void removeAndReAdd();
     void watchNonExistent();
+    void testDeleteAndRecreate();
     void testMoveTo();
     void nestedEventLoop();
     void testHardlinkChange();
@@ -127,22 +128,30 @@ void KDirWatch_UnitTest::waitUntilMTimeChange(const QString& path)
     QCOMPARE(KDE::stat(path, &stat_buf), 0);
     int totalWait = 0;
     struct timeval now_tv;
+    time_t ctime;
 
     Q_FOREVER {
         gettimeofday(&now_tv, NULL);
         // The mtime only has a granularity of a second, that's the whole issue;
-        // We can't just QTest::qWait(now_tv.tv_sec - stat_buf.st_mtime), that would
+        // We can't just QTest::qWait(now_tv.tv_sec - stat_buf.st_ctime), that would
         // be a full second every time.
-        if (now_tv.tv_sec == stat_buf.st_mtime) {
+#ifdef Q_OS_WIN
+        // ctime is the 'creation time' on windows - use mtime instead
+        ctime = stat_buf.st_mtime;
+#else
+        ctime = stat_buf.st_ctime;
+#endif
+
+        if (now_tv.tv_sec == ctime) {
             totalWait += 50;
             QTest::qWait(50);
         } else {
-            Q_ASSERT(now_tv.tv_sec > stat_buf.st_mtime); // can't go back in time ;)
+            Q_ASSERT(now_tv.tv_sec > ctime); // can't go back in time ;)
             break;
         }
     }
-    if (totalWait > 0)
-        kDebug() << "File has mtime" << printableTime(stat_buf.st_mtime) << ", so I waited" << totalWait << "ms, now is" << printableTime(now_tv.tv_sec);
+    //if (totalWait > 0)
+        kDebug() << "File has ctime" << printableTime(stat_buf.st_ctime) << ", so I waited" << totalWait << "ms, now is" << printableTime(now_tv.tv_sec);
 }
 
 // helper method: modifies a file
@@ -153,11 +162,11 @@ void KDirWatch_UnitTest::appendToFile(const QString& path)
     //const QString directory = QDir::cleanPath(path+"/..");
     //waitUntilMTimeChange(directory);
 
-    KDE_struct_stat stat_buf;
-    QCOMPARE(KDE::stat(path, &stat_buf), 0);
-    //kDebug() << "After append: file mtime=" << printableTime(stat_buf.st_mtime);
+    //KDE_struct_stat stat_buf;
+    //QCOMPARE(KDE::stat(path, &stat_buf), 0);
+    //kDebug() << "After append: file ctime=" << printableTime(stat_buf.st_ctime);
     //QCOMPARE(KDE::stat(directory, &stat_buf), 0);
-    //kDebug() << "After append: directory mtime=" << printableTime(stat_buf.st_mtime);
+    //kDebug() << "After append: directory mtime=" << printableTime(stat_buf.st_ctime);
 
     QFile file(path);
     QVERIFY(file.open(QIODevice::Append | QIODevice::WriteOnly));
@@ -322,12 +331,33 @@ void KDirWatch_UnitTest::watchNonExistent()
     // Create the file after all; we're not watching for it, but the dir will emit dirty
     createFile(file1);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), subdir));
+}
+
+void KDirWatch_UnitTest::testDeleteAndRecreate()
+{
+    const QString subdir = m_path + "subdir";
+    QDir().mkdir(subdir);
+    const QString file1 = subdir + "/1";
+    if (!QFile::exists(file1))
+        createFile(file1);
+    waitUntilMTimeChange(file1);
 
     // Watch the file, then delete it, KDirWatch will emit deleted (and possibly dirty for the dir, if mtime changed)
+    KDirWatch watch;
     watch.addFile(file1);
+
     QFile::remove(file1);
-    QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), file1));
+    // And recreate immediately, to try and fool KDirWatch with unchanged ctime/mtime ;)
+    createFile(file1);
+    //QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), file1));
     //QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), subdir));
+    QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), file1));
+
+    waitUntilMTimeChange(file1);
+    //KDirWatch::statistics();
+
+    appendToFile(file1);
+    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), file1));
 }
 
 void KDirWatch_UnitTest::testMoveTo()
@@ -429,24 +459,23 @@ void KDirWatch_UnitTest::testHardlinkChange()
 
     const QString existingFile = m_path + "ExistingFile";
     KDirWatch watch;
-    //not working: watch.addFile(existingFile);
-    watch.addDir(m_path);
+    watch.addFile(existingFile);
     watch.startScan();
 
-    //not working: waitUntilMTimeChange(existingFile);
-    waitUntilMTimeChange(m_path);
+    //waitUntilMTimeChange(existingFile);
+    //waitUntilMTimeChange(m_path);
 
     QFile::remove(existingFile);
     const QString testFile = m_path + "TestFile";
     ::link(QFile::encodeName(testFile), QFile::encodeName(existingFile)); // make ExistingFile "point" to TestFile
     QVERIFY(QFile::exists(existingFile));
-    //not working: QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), existingFile));
-    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
+    //QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), existingFile));
+    QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), existingFile));
 
-    waitUntilMTimeChange(existingFile);
+    //KDirWatch::statistics();
+
     appendToFile(existingFile);
-    //not working: QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), existingFile));
-    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
+    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), existingFile));
 #else
     QSKIP("Unix-specific");
 #endif
