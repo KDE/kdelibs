@@ -79,6 +79,7 @@
 <!ENTITY vertaling.kristof      "<para>Dit document is vertaald in het Nederlands door &Kristof.Bal;.</para>">
 <!ENTITY vertaling.wendy        "<para>Dit document is vertaald in het Nederlands door &Wendy.Van.Craen;.</para>">
 <!ENTITY vertaling.freek        "<para>Dit document is vertaald in het Nederlands door &Freek.de.Kruijf;.</para>">
+<!ENTITY vertaling.hannie       "<para>Dit document is vertaald in het Nederlands door &Hannie.Lafeber-Dumoleyn;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
@@ -118,6 +119,7 @@
 <!ENTITY nagelezen.kristof    "<para>De vertaling werd nagelezen door &Kristof.Bal;.</para>">
 <!ENTITY nagelezen.wendy      "<para>De vertaling werd nagelezen door &Wendy.Van.Craen;.</para>">
 <!ENTITY nagelezen.freek      "<para>De vertaling werd nagelezen door &Freek.de.Kruijf;.</para>">
+<!ENTITY nagelezen.hannie     "<para>De vertaling werd nagelezen door &Hannie.Lafeber-Dumoleyn;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
