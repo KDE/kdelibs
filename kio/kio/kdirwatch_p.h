@@ -138,8 +138,6 @@ public:
     time_t m_ctime;
     // the last observed link count
     int m_nlink;
-    // last observed inode ( considering hard link changes )
-    ino_t m_ino;
     entryStatus m_status;
     entryMode m_mode;
     bool isDir;
@@ -221,9 +219,6 @@ public Q_SLOTS:
   void slotRemoveDelayed();
   void fswEventReceived(const QString &path);  // for QFileSystemWatcher
 
-private Q_SLOTS:  
-  void slotRewatchDelayed(); // used only when inotify is present
-  
 public:
   QTimer timer;
   EntryMap m_mapEntries;
@@ -238,7 +233,7 @@ public:
   // removeList is allowed to contain any entry at most once
   QSet<Entry *> removeList;
   bool delayRemove;
-  
+
   bool rescan_all;
   QTimer rescan_timer;
 
@@ -255,8 +250,7 @@ public:
   QSocketNotifier *mSn;
   bool supports_inotify;
   int m_inotify_fd;
-  Entry *m_delayedRelinkedEntry;
-  
+
   bool useINotify(Entry*);
 #endif
 #ifdef HAVE_QFILESYSTEMWATCHER
