@@ -29,8 +29,23 @@
 #include <QVariantList>
 
 #include <KAction>
+#include <kxmlguiclient.h>
 
 using namespace KTextEditor;
+
+class IconInserterPlugin;
+
+class IconInserterPluginView: public QObject, public KXMLGUIClient
+{
+	Q_OBJECT
+	public:
+		IconInserterPluginView(IconInserterPlugin *plugin, KTextEditor::View *view);
+		virtual ~IconInserterPluginView();
+	private slots:
+		void insertIcon();
+	private:
+		QPointer<KTextEditor::View> m_view;
+};
 
 class IconInserterPlugin: public Plugin
 {
@@ -39,22 +54,11 @@ class IconInserterPlugin: public Plugin
 		IconInserterPlugin (QObject *parent, const QVariantList & = QVariantList());
 		~IconInserterPlugin();
 		void addView (View *view);
+		void removeView(View *view);
 		virtual void readConfig (KConfig*) {}
 		virtual void writeConfig (KConfig*) {}
-	private slots:
-		void insertIcon();
-		void addActionToMenu (KTextEditor::View *view, QMenu *menu);
 	private:
-		inline KAction* createAction (QObject* parent)
-		{
-			KAction* action = new KAction (KIcon("kcoloredit"), i18n ("Insert KIcon-Code"), parent); // This icon was selected using this plugin ;) (in an earlier KDevelop-only-version)
-			action->setToolTip (i18n ("Insert Code for KIcon-Creation"));
-			action->setWhatsThis (i18n ("<b>IconInserter</b><p> Select an icon and use it as a KIcon in your source-code!"));
-			
-			connect (action, SIGNAL (triggered (bool)), this, SLOT (insertIcon()));
-			
-			return action;
-		}
+	QMap<KTextEditor::View*,IconInserterPluginView*> m_views;
 };
 
 K_PLUGIN_FACTORY_DECLARATION(IconInserterPluginFactory)

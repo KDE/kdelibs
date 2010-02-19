@@ -28,28 +28,35 @@
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
 #include <QMenu>
+#include <kactioncollection.h>
 
 
-//K_PLUGIN_FACTORY (KdevPlugFactory, registerPlugin<IconInserterPlugin>();)
-//K_EXPORT_PLUGIN (KdevPlugFactory (KAboutData ("IconInserter","IconInserter", ki18n ("Select an Icon to use it inside the Code"), "0.1", ki18n ("Insert Code for KIcon-Creation"), KAboutData::License_GPL)))
 
 K_PLUGIN_FACTORY_DEFINITION(IconInserterPluginFactory,
         registerPlugin<IconInserterPlugin>("ktexteditor_iconinserter");
         )
-K_EXPORT_PLUGIN(IconInserterPluginFactory(KAboutData ("IconInserter","IconInserter", ki18n ("Select an Icon to use it inside the Code"), "0.1", ki18n ("Insert Code for KIcon-Creation"), KAboutData::License_GPL)))
+K_EXPORT_PLUGIN(IconInserterPluginFactory(KAboutData ("ktexteditor_iconinserter","ktexteditor_iconinserter", ki18n ("Select an Icon to use it inside the Code"), "0.1", ki18n ("Insert Code for KIcon-Creation"), KAboutData::License_LGPL_V3)))
 
 
-IconInserterPlugin::IconInserterPlugin (QObject *parent, const QVariantList &)
-	: Plugin (parent)
+IconInserterPluginView::IconInserterPluginView(IconInserterPlugin *plugin, KTextEditor::View *view): QObject(plugin),KXMLGUIClient(view),m_view(view)
+{
+	setComponentData( IconInserterPluginFactory::componentData() );
+	setXMLFile("ktexteditor_iconinserterui.rc");
+	QAction *a=actionCollection()->addAction("iconinserter_inserticon",this,SLOT(insertIcon()));	
+	a->setIcon(KIcon("kcoloredit"));
+	a->setText(i18n ("Insert KIcon-Code"));
+	a->setToolTip (i18n ("Insert Code for KIcon-Creation"));
+	a->setWhatsThis (i18n ("<b>IconInserter</b><p> Select an icon and use it as a KIcon in your source-code!"));
+}
+
+IconInserterPluginView::~IconInserterPluginView()
 {
 }
 
-IconInserterPlugin::~IconInserterPlugin()
-{
-}
 
-void IconInserterPlugin::insertIcon()
+void IconInserterPluginView::insertIcon()
 {
+	if (m_view.isNull()) return;
 	QString iconName = KIconDialog::getIcon ( KIconLoader::Desktop,
 							KIconLoader::Application,
 							false,
@@ -61,8 +68,9 @@ void IconInserterPlugin::insertIcon()
 	if(iconName == "")
 		return;
 	
-	View *view = reinterpret_cast<View*>(sender()->parent());
-	Document *doc = view->document();
+	View *view=m_view.data();
+	Document *doc=view->document();
+	
 	
 	QString suffix = doc->url().url();
 	suffix = suffix.right(suffix.size() - suffix.lastIndexOf('.') - 1);
@@ -94,19 +102,28 @@ void IconInserterPlugin::insertIcon()
 	doc->insertText(view->cursorPosition(), code);
 }
 
-void IconInserterPlugin::addView (KTextEditor::View *view)
+
+
+
+IconInserterPlugin::IconInserterPlugin (QObject *parent, const QVariantList &)
+	: Plugin (parent)
 {
-	if(view->contextMenu() == 0)
-		connect(view, SIGNAL(contextMenuAboutToShow(KTextEditor::View*, QMenu*)), this, SLOT(addActionToMenu(KTextEditor::View*, QMenu*)));
-	else
-		view->contextMenu()->addAction (createAction (view));
 }
 
-void IconInserterPlugin::addActionToMenu(KTextEditor::View *view, QMenu *menu)
+IconInserterPlugin::~IconInserterPlugin()
 {
-	kDebug() << "Called";
-	menu->addAction (createAction (view));
-	disconnect(view, SIGNAL(contextMenuAboutToShow(KTextEditor::View*, QMenu*)), this, SLOT(addActionToMenu(KTextEditor::View*, QMenu*)));
+}
+
+
+void IconInserterPlugin::addView (KTextEditor::View *view)
+{
+	m_views.insert(view,new IconInserterPluginView(this,view));
+}
+
+void IconInserterPlugin::removeView(KTextEditor::View *view)
+{
+	kDebug();
+	delete m_views.take(view);
 }
 
 #include "iconinserterplugin.moc"
