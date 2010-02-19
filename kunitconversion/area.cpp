@@ -25,7 +25,7 @@ using namespace KUnitConversion;
 
 Area::Area() : UnitCategory(AreaCategory)
 {
-    setName(i18n("Area"));
+    setName(i18nc("Unit Category: two dimensional size of a surface", "Area"));
     // i18n: Used when converting to symbol string e.g. 2.34 m²
     setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (area)", "%1 %2"));
 
