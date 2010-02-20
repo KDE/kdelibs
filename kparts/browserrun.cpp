@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kstandarddirs.h>
+#include <kdatetime.h>
 #include "browseropenorsavequestion.h"
 #include <assert.h>
 
@@ -217,6 +218,11 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         //kDebug(1000) << "suggestedFileName=" << suggestedFileName;
         d->m_contentDisposition = job->queryMetaData("content-disposition-type");
 
+        const QString modificationTime = job->queryMetaData("content-disposition-modification-date");
+        if (!modificationTime.isEmpty()) {
+            d->m_args.metaData().insert(QLatin1String("content-disposition-modification-date"), modificationTime);
+        }
+
         QMapIterator<QString,QString> it (job->metaData());
         while (it.hasNext()) {
            it.next();
@@ -349,7 +355,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
 // Default implementation, overridden in KHTMLRun
 void BrowserRun::save( const KUrl & url, const QString & suggestedFileName )
 {
-    saveUrl(url, suggestedFileName, d->m_window, KParts::OpenUrlArguments());
+    saveUrl(url, suggestedFileName, d->m_window, d->m_args);
 }
 
 // static
@@ -431,6 +437,11 @@ void BrowserRun::saveUrlUsingKIO(const KUrl & srcUrl, const KUrl& destUrl,
                                  QWidget* window, const QMap<QString, QString> &metaData)
 {
     KIO::FileCopyJob *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
+
+    const QString modificationTime = metaData[QLatin1String("content-disposition-modification-date")];
+    if (!modificationTime.isEmpty()) {
+        job->setModificationTime(KDateTime::fromString(modificationTime, KDateTime::RFCDate).dateTime());
+    }
     job->setMetaData(metaData);
     job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
     job->addMetaData("cache", "cache"); // Use entry from cache if available.
