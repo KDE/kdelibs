@@ -1991,16 +1991,15 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent)
 {
     m_kwp->setIsRedirected( true );
-    if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
+
+    if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap)
         setLineWrapMode(QTextEdit::WidgetWidth);
-        setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-        setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
-    }
-    else {
+    else
         setLineWrapMode(QTextEdit::NoWrap);
-        setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-        setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-    }
+
+    setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+    setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+
     KCursor::setAutoHideCursor(viewport(), true);
     setAcceptRichText (false);
     setMouseTracking(true);
