@@ -8,7 +8,7 @@
 <xsl:include href="kde-style.xsl"/>
 <xsl:output encoding="utf-8"/>
 
-<xsl:variable name="KDE_VERSION">1.13</xsl:variable> 
+<xsl:variable name="KDE_VERSION">1.14</xsl:variable> 
 
 <xsl:template name="make-relative-filename">
   <xsl:param name="base.dir" select="'./'"/>
@@ -42,7 +42,7 @@
 <xsl:param name="use.extensions">0</xsl:param>
 <xsl:param name="admon.graphics">0</xsl:param>
 <xsl:param name="kde.common">/HEAD/common/</xsl:param>
-<xsl:param name="html.stylesheet" select="concat($kde.common,'kde-default.css')"/>
+<xsl:param name="html.stylesheet" select="concat($kde.common,'kde-default.css',' ',$kde.common,'kde-docs.css')"/>
 <xsl:param name="admon.graphics.path"><xsl:value-of select="kde.common"/></xsl:param>
 <xsl:param name="callout.graphics.path"><xsl:value-of select="kde.common"/></xsl:param>
 
