@@ -811,7 +811,8 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
     {
         KStyle::IconOption* iconOpts = extractOption<KStyle::IconOption*>(kOpt);
         QIcon::Mode mode;
-
+        QIcon::State iconState;
+        
         // Select the correct icon from the iconset
         if (flags & State_Enabled)
             if (iconOpts->active)
@@ -821,10 +822,15 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         else
             mode = QIcon::Disabled;
 
+        if(  (flags & State_On) || (flags & State_Sunken) ) 
+            iconState = QIcon::On;
+        else 
+            iconState = QIcon::Off;
+        
         QSize size = iconOpts->size;
         if(!size.isValid())
             size = QSize(pixelMetric(PM_SmallIconSize), pixelMetric(PM_SmallIconSize));
-        QPixmap icon = iconOpts->icon.pixmap(size, mode);
+        QPixmap icon = iconOpts->icon.pixmap(size, mode, iconState);
         p->drawPixmap(centerRect(r, icon.size()), icon);
     }
     else if (primitive == Generic::FocusIndicator)
