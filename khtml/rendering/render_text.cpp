@@ -326,11 +326,11 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         const int gray = qGray(color);
         const bool inverse = (gray < 100);
         const QRgb bgColor = (inverse) ? qRgb(255,255,255) : qRgb(0,0,0);
-        QPixmap pixmap(w, h);
-        pixmap.fill(bgColor);
+        QImage img(w, h, QImage::Format_RGB32);
+        img.fill(bgColor);
         QPainter p;
 
-        p.begin(&pixmap);
+        p.begin(&img);
         p.setPen(shadow->color);
         p.setFont(pt->font());
         f->drawText(&p, thickness, thickness+m_baseline, text->str->s, text->str->l,
@@ -338,7 +338,6 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                     m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 
         p.end();
-        QImage img = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
 
         int md = thickness*thickness; // max-dist^2
 
@@ -366,8 +365,9 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         float* amap = (float*)alloca(sizeof(float)*(h*w));
         memset(amap, 0, h*w*(sizeof(float)));
         for(int j=thickness; j<h-thickness; j++) {
+            const QRgb *line = (QRgb*)img.scanLine(j);
             for(int i=thickness; i<w-thickness; i++) {
-                QRgb col= img.pixel(i,j);
+                QRgb col= line[i];
                 if (col == bgColor) continue;
                 float g = qGray(col);
                 if (inverse)
@@ -394,10 +394,11 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         factor = 1.0/factor;
 
         for(int j=0; j<h; j++) {
+            QRgb *line = (QRgb*)res.scanLine(j);
             for(int i=0; i<w; i++) {
                 int a = (int)(amap[i+j*w] * factor * 255.0);
                 if (a > 255) a = 255;
-                res.setPixel(i,j, qRgba(r,g,b,a));
+                line[i] = qRgba(r,g,b,a);
             }
         }
 
