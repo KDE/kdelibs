@@ -335,7 +335,13 @@ public:
                         view->horizontalScrollBar()->maximum()-view->horizontalScrollBar()->value() : view->horizontalScrollBar()->value();
         contentsY = view->verticalScrollBar()->value();
     }
-
+    void scrollAccessKeys(int dx, int dy)
+    {
+        QList<QLabel*> wl = qFindChildren<QLabel*>(view->widget(), "KHTMLAccessKey");
+        foreach(QLabel* w, wl) {
+            w->move( w->pos() + QPoint(dx, dy) );
+        }
+    }
     void scrollExternalWidgets(int dx, int dy)
     {
         if (visibleWidgets.isEmpty())
@@ -2668,8 +2674,9 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
             }
             if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();
-	        QLabel *lab=new QLabel(accesskey,viewport());
+	        QLabel *lab=new QLabel(accesskey,widget());
 	        lab->setAttribute(Qt::WA_DeleteOnClose);
+	        lab->setObjectName("KHTMLAccessKey");
 	        connect( origview, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
 	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
 	        lab->setPalette(QToolTip::palette());
@@ -2712,10 +2719,10 @@ bool KHTMLView::isScrollingFromMouseWheel() const
 
 void KHTMLView::accessKeysTimeout()
 {
-d->accessKeysActivated=false;
-d->accessKeysPreActivate = false;
-m_part->setStatusBarText(QString(), KHTMLPart::BarOverrideText);
-emit hideAccessKeys();
+    d->accessKeysActivated=false;
+    d->accessKeysPreActivate = false;
+    m_part->setStatusBarText(QString(), KHTMLPart::BarOverrideText);
+    emit hideAccessKeys();
 }
 
 // Handling of the HTML accesskey attribute.
@@ -3996,6 +4003,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             // we can't avoid a full update
             widget()->update();
         }
+        if (d->accessKeysActivated)
+            d->scrollAccessKeys(dx, dy);
+        
         return;
     }
 
@@ -4010,6 +4020,8 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }
 
     d->scrollExternalWidgets(dx, dy);
+    if (d->accessKeysActivated)
+        d->scrollAccessKeys(dx, dy);
 }
 
 void KHTMLView::setupSmoothScrolling(int dx, int dy)
