@@ -46,22 +46,32 @@ install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### next target ###############
 
-set(meinproc_SRCS meinproc.cpp xslt.cpp )
-
-
-kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
-
-target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
-
 if(KDE4_ENABLE_FINAL)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 else(KDE4_ENABLE_FINAL)
    set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 endif(KDE4_ENABLE_FINAL)
 
-# "export" this target too so we can use the LOCATION property of the imported target in
-# FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
-install(TARGETS meinproc4  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+if (CMAKE_CROSSCOMPILING)
+   set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
+   include(${IMPORT_MEINPROC4_EXECUTABLE})
+
+else (CMAKE_CROSSCOMPILING)
+
+   set(meinproc_SRCS meinproc.cpp xslt.cpp )
+
+   kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
+
+   target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+
+   # "export" this target too so we can use the LOCATION property of the imported target in
+   # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
+   install(TARGETS meinproc4  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+   # export this binary for cross-compilation
+   EXPORT(TARGETS meinproc4 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)
+
+endif (CMAKE_CROSSCOMPILING)
 
 
 ########### next target ###############
