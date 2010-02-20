@@ -2290,10 +2290,13 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::KeyRelease:
 		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w)) {
 		    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
-		    if (e->type() == QEvent::KeyPress)
+		    if (e->type() == QEvent::KeyPress) {
 			keyPressEvent(ke);
-		    else
+			ke->accept();
+		    } else{
 			keyReleaseEvent(ke);
+			ke->accept();
+		    }
 		    block = true;
 		}
 
