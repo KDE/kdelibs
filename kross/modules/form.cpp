@@ -35,7 +35,6 @@
 //#include <QtGui/QProgressDialog>
 #include <QtGui/QTextBrowser>
 #include <QUiLoader>
-#include <QtDesigner/QFormBuilder>
 #include <QTextCursor>
 #include <QTextBlock>
 
@@ -734,7 +733,7 @@ QString FormModule::tr(const QString& str, const QString& comment)
 
 QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
 {
-    QFormBuilder builder;
+    QUiLoader loader;
 
     QDomDocument doc("mydocument");
     doc.setContent(xml.toUtf8());
@@ -762,7 +761,7 @@ QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
     QBuffer buffer(&ba);
     buffer.open(QIODevice::ReadOnly);
 
-    QWidget* widget = builder.load(&buffer, parent);
+    QWidget* widget = loader.load(&buffer, parent);
     if( widget && parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
