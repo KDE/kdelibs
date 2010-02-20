@@ -1007,6 +1007,20 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
 
+        if (ev.id() == EventImpl::MOUSEMOVE_EVENT && view()->mouseEventsTarget()) {
+            // mitigate the problem that mouse moves outside of the widget rect
+            // interrupt the selection process in textarea (#156574)
+            // e.g. when extending a selection upward to make a textarea scroll
+            // while selecting its content.
+            // We don't emulate properly what Qt does it seems,tough I verified
+            // the move event is properly forwarded to the textarea and has
+            // appropriate coordinates. Might be Enter/Leave issue. ### FIXME
+            // In the meantime, clamping the event to the widget rect
+            // will at least prevent the selection to be lost.
+            p.setX(qMin(qMax(0,p.x()),m_widget->width()));
+            p.setY(qMin(qMax(0,p.y()),m_widget->height()));
+        }
+
         QWidget* target = 0;
         target = m_widget->childAt(p);
 
@@ -1037,6 +1051,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         }
 
         if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
+            // ### is this one still necessary? it doubles every mouse event...
+            // I'd reckon it's no longer needed since Harri made the event propagation bubble
             QMouseEvent evt(QEvent::MouseMove, p, Qt::NoButton,
                             QApplication::mouseButtons(), QApplication::keyboardModifiers());
             QApplication::sendEvent(target, &evt);
