@@ -353,11 +353,11 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         }
 
         // find sequence of characters ending at the first non-character
-        while (!currA->isNull() && !currA->isDigit()) {
+        while (!currA->isNull() && !currA->isDigit() && !currA->isPunct() && !currA->isSpace()) {
             ++currA;
         }
 
-        while (!currB->isNull() && !currB->isDigit()) {
+        while (!currB->isNull() && !currB->isDigit() && !currB->isPunct() && !currB->isSpace()) {
             ++currB;
         }
 
@@ -371,6 +371,15 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
 
         if (currA->isNull() || currB->isNull()) {
             break;
+        }
+
+        // find sequence of characters ending at the first non-character
+        while (currA->isPunct() || currA->isSpace()) {
+            ++currA;
+        }
+
+        while (currB->isPunct() || currB->isSpace()) {
+            ++currB;
         }
 
         // now some digits follow...
