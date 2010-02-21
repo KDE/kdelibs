@@ -3455,7 +3455,6 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
 
     bool mayCache = m_request.cacheTag.ioMode != NoCache;
 
-    m_request.cacheTag.lastModifiedDate = -1;
     TokenIterator tIt = tokenizer.iterator("last-modified");
     if (tIt.hasNext()) {
         m_request.cacheTag.lastModifiedDate =
