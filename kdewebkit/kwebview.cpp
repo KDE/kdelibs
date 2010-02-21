@@ -31,8 +31,6 @@
 #include <kurl.h>
 #include <kdebug.h>
 #include <kio/global.h>
-#include <kparts/part.h>
-#include <kparts/browserextension.h>
 #include <kdeversion.h>
 
 #include <QtGui/QApplication>
