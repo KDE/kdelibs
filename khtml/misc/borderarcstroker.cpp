@@ -335,6 +335,10 @@ QPainterPath BorderArcStroker::createStroke(qreal *nextOffset) const
     const QRectF outerRect = rect;
     const QRectF innerRect = rect.adjusted(hlw, vlw, -hlw, -vlw);
 
+    // Avoid hitting the assert below if the radius is smaller than the border width
+    if (!outerRect.isValid() || !innerRect.isValid())
+        return QPainterPath();
+
     QPainterPath innerPath, outerPath;
     innerPath.arcMoveTo(innerRect, angle);
     outerPath.arcMoveTo(outerRect, angle);
