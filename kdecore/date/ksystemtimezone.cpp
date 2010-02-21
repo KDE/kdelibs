@@ -44,6 +44,7 @@
 #include <QtCore/QTextStream>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusReply>
 
 #include <kglobal.h>
@@ -51,6 +52,7 @@
 #include <kcodecs.h>
 #include <kstringhandler.h>
 #include <ktemporaryfile.h>
+#include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include "ktzfiletimezone.h"
@@ -283,6 +285,8 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         // A KSystemTimeZones instance is required only to catch D-Bus signals.
         m_parent = new KSystemTimeZones;
         // Ensure that the KDED time zones module has initialized. The call loads the module on demand.
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded"))
+            KToolInvocation::klauncher();   // this calls startKdeinit, and blocks until it returns
         QDBusInterface *ktimezoned = new QDBusInterface("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
         QDBusReply<void> reply = ktimezoned->call("initialize", false);
         if (!reply.isValid())
