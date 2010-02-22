@@ -203,9 +203,7 @@ void InlineFlowBox::deleteLine(RenderArena* arena)
     while (child) {
         assert(this == child->parent());
         next = child->nextOnLine();
-#ifndef NDEBUG
         child->setParent(0);
-#endif
         child->deleteLine(arena);
         child = next;
     }
