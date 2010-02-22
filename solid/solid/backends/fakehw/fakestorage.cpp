@@ -114,4 +114,9 @@ bool FakeStorage::isHotpluggable() const
     return fakeDevice()->property("isHotpluggable").toBool();
 }
 
+qulonglong FakeStorage::size() const
+{
+    return fakeDevice()->property("size").toULongLong();
+}
+
 #include "backends/fakehw/fakestorage.moc"

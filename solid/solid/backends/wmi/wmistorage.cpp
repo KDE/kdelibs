@@ -114,4 +114,9 @@ bool Storage::isHotpluggable() const
     return m_device->property("storage.hotpluggable").toBool();
 }
 
+qulonglong Storage::size() const
+{
+    return m_device->property("storage.size").toULongLong();
+}
+
 #include "backends/wmi/wmistorage.moc"

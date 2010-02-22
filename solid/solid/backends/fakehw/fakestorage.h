@@ -44,6 +44,7 @@ public Q_SLOTS:
 
     virtual bool isRemovable() const;
     virtual bool isHotpluggable() const;
+    virtual qulonglong size() const;
 };
 }
 }

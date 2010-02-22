@@ -43,6 +43,7 @@ namespace Solid
         Q_PROPERTY(DriveType driveType READ driveType)
         Q_PROPERTY(bool removable READ isRemovable)
         Q_PROPERTY(bool hotpluggable READ isHotpluggable)
+        Q_PROPERTY(qulonglong size READ size)
         Q_DECLARE_PRIVATE(StorageDrive)
         friend class Device;
 
@@ -137,6 +138,13 @@ namespace Solid
          */
         bool isHotpluggable() const;
 
+	/**
+	* Retrieves this drives size in bytes.
+	*
+	* @return the size of this drive
+	*/
+	qulonglong size() const;
+	
     protected:
         /**
          * @internal

@@ -63,5 +63,11 @@ bool Solid::StorageDrive::isHotpluggable() const
     return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, isHotpluggable());
 }
 
+qulonglong Solid::StorageDrive::size() const
+{
+    Q_D(const StorageDrive);
+    return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, size());
+}
+
 #include "storagedrive.moc"
 
