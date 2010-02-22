@@ -203,7 +203,9 @@ void InlineFlowBox::deleteLine(RenderArena* arena)
     while (child) {
         assert(this == child->parent());
         next = child->nextOnLine();
+#ifndef NDEBUG
         child->setParent(0);
+#endif
         child->deleteLine(arena);
         child = next;
     }
@@ -250,7 +252,7 @@ void InlineBox::deleteLine(RenderArena* arena)
 {
     if (!m_extracted && m_object->isBox())
         static_cast<RenderBox*>(m_object)->setPlaceHolderBox(0);
-    detach(arena);
+    detach(arena, true /*no remove*/);
 }
 
 void InlineBox::extractLine()
