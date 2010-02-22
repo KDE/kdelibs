@@ -42,18 +42,9 @@
 
 #include <solid/genericinterface.h>
 
-using namespace Solid::Backends::Fake;
+#include "fakedevice_p.h"
 
-class FakeDevice::Private
-{
-public:
-    QString udi;
-    QMap<QString, QVariant> propertyMap;
-    QStringList interfaceList;
-    bool locked;
-    QString lockReason;
-    bool broken;
-};
+using namespace Solid::Backends::Fake;
 
 FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &propertyMap)
     : Solid::Ifaces::Device(), d(new Private)
@@ -76,11 +67,24 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
         Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType(interface);
         createDeviceInterface(type);
     }
+
+    connect(d.data(), SIGNAL(propertyChanged(const QMap<QString,int> &)),
+            this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
+    connect(d.data(), SIGNAL(conditionRaised(const QString &, const QString &)),
+            this, SIGNAL(conditionRaised(const QString &, const QString &)));
+}
+
+FakeDevice::FakeDevice(const FakeDevice& dev)
+    : Solid::Ifaces::Device(), d(dev.d)
+{
+    connect(d.data(), SIGNAL(propertyChanged(const QMap<QString,int> &)),
+            this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
+    connect(d.data(), SIGNAL(conditionRaised(const QString &, const QString &)),
+            this, SIGNAL(conditionRaised(const QString &, const QString &)));
 }
 
 FakeDevice::~FakeDevice()
 {
-    delete d;
 }
 
 QString FakeDevice::udi() const
@@ -175,7 +179,7 @@ bool FakeDevice::setProperty(const QString &key, const QVariant &value)
     QMap<QString,int> change;
     change[key] = change_type;
 
-    emit propertyChanged(change);
+    emit d->propertyChanged(change);
 
     return true;
 }
@@ -189,7 +193,7 @@ bool FakeDevice::removeProperty(const QString &key)
     QMap<QString,int> change;
     change[key] = Solid::GenericInterface::PropertyRemoved;
 
-    emit propertyChanged(change);
+    emit d->propertyChanged(change);
 
     return true;
 }
@@ -236,7 +240,7 @@ QString FakeDevice::lockReason() const
 
 void FakeDevice::raiseCondition(const QString &condition, const QString &reason)
 {
-    emit conditionRaised(condition, reason);
+    emit d->conditionRaised(condition, reason);
 }
 
 bool FakeDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
@@ -325,3 +329,4 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 }
 
 #include "backends/fakehw/fakedevice.moc"
+#include "backends/fakehw/fakedevice_p.moc"

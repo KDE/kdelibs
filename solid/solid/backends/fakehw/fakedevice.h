@@ -22,6 +22,7 @@
 #include <solid/ifaces/device.h>
 
 #include <QtCore/QMap>
+#include <QtCore/QSharedPointer>
 
 namespace Solid
 {
@@ -34,6 +35,7 @@ class FakeDevice : public Solid::Ifaces::Device
     Q_OBJECT
 public:
     FakeDevice(const QString &udi, const QMap<QString, QVariant> &propertyMap);
+    FakeDevice(const FakeDevice& dev);
     ~FakeDevice();
 
 public Q_SLOTS:
@@ -71,7 +73,7 @@ Q_SIGNALS:
 
 private:
     class Private;
-    Private *d;
+    QSharedPointer<Private> d;
 };
 }
 }

@@ -113,7 +113,7 @@ QObject *FakeManager::createDevice(const QString &udi)
 {
     if (d->loadedDevices.contains(udi))
     {
-        return d->loadedDevices[udi];
+        return new FakeDevice(*d->loadedDevices[udi]);
     }
 
     return 0;
@@ -206,8 +206,8 @@ void FakeManager::parseMachineFile()
         if (!tempElement.isNull() && tempElement.tagName() == QLatin1String("device"))
         {
             FakeDevice *tempDevice = parseDeviceElement(tempElement);
-            if(tempDevice)
-            {
+            if(tempDevice) {
+                Q_ASSERT(!d->loadedDevices.contains(tempDevice->udi()));
                 d->loadedDevices.insert(tempDevice->udi(), tempDevice);
                 emit deviceAdded(tempDevice->udi());
             }
