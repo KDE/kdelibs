@@ -56,6 +56,8 @@
 #include "misc/htmltags.h"
 #include <kdebug.h>
 
+//#define IN_PLACE_WIDGET_PAINTING
+
 bool khtml::allowWidgetPaintEvents = false;
 
 using namespace khtml;
@@ -667,21 +669,25 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
  
     QPoint thePoint(tx, ty);
     QTransform t = p->worldTransform();
-    bool vte = p->viewTransformEnabled();
-    bool wme = p->worldMatrixEnabled();
-    QRect w = p->window();
-    QRect v = p->viewport();
+
     if (!buffered && t.isTranslating()) {
         thePoint.setX( thePoint.x()+ static_cast<int>(t.dx()) );
         thePoint.setY( thePoint.y()+ static_cast<int>(t.dy()) );
     }
-    QRegion rg = p->clipRegion();
-    QPaintDevice *d = p->device();
-    QPaintDevice *x = d;
-    qreal op = p->opacity();
     QPixmap* pm = 0;
+    QPaintDevice *d = p->device();
+#ifdef IN_PLACE_WIDGET_PAINTING
+    QPaintDevice *x = d;
+    bool vte = p->viewTransformEnabled();
+    bool wme = p->worldMatrixEnabled();
+    QRect w = p->window();
+    QRect v = p->viewport();
+    QRegion rg = p->clipRegion();
+    qreal op = p->opacity();
     QPen pen = p->pen();
     QBrush brush = p->brush();
+    QPainter::RenderHints rh = p->renderHints();
+#endif
     if (buffered) {
         if (!widget->size().isValid())
             return;
@@ -711,18 +717,23 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     setInPaintEventFlag( widget );
 
     if (!buffered) {
+#ifdef IN_PLACE_WIDGET_PAINTING
         p->begin(x);
         p->setWorldTransform(t);
         p->setWindow(w);
         p->setViewport(v);
         p->setViewTransformEnabled( vte );
         p->setWorldMatrixEnabled( wme );
+        p->setRenderHints( rh );
         if (!rg.isEmpty())
             p->setClipRegion(rg);
         if (op < 1.0f)
             p->setOpacity(op);
         p->setPen(pen);
         p->setBrush(brush);
+#else
+        assert(false);
+#endif
     } else {
         // transfer results
         QPoint off(r.x(), r.y());
@@ -736,8 +747,12 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, Q
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    bool buffered = p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
-
+    bool buffered =
+#ifdef IN_PLACE_WIDGET_PAINTING
+    p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
+#else
+    true;
+#endif
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );

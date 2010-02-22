@@ -115,6 +115,7 @@ public:
          m_painter.setBrush( p->brush() );
          m_painter.setPen( p->pen() );
          m_painter.setBackground( p->background() );
+         m_painter.setRenderHints( p->renderHints() );
          // ### what else?
 
          m_origPainter = p;
