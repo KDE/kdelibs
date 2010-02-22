@@ -58,6 +58,9 @@ namespace KJS {
     void prepareMatch(const UString &s);
     void doneMatch();
 
+    static bool tryGrowingMaxStackSize;
+    static bool didIncreaseMaxStackSize;
+    static int availableStackSize;
   private:
 #ifdef HAVE_PCREPOSIX
     pcre *_regex;

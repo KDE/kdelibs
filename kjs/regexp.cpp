@@ -31,7 +31,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wtf/Vector.h>
+
+#if defined _WIN32 || defined _WIN64
+#undef HAVE_SYS_TIME_H
+#endif
+#if HAVE(SYS_TIME_H)
+#include <sys/time.h>
+#include <sys/resource.h>
+#endif
+
 using WTF::Vector;
+
+static const rlim_t sWantedStackSizeLimit = 32*1024*1024;
 
 // GCC cstring uses these automatically, but not all implementations do.
 using std::strlen;
@@ -243,6 +254,10 @@ static bool sanitizePatternExtensions(UString &p, WTF::Vector<int>* parenIdx)
       return false;
   }
 }
+
+bool RegExp::tryGrowingMaxStackSize = true;
+bool RegExp::didIncreaseMaxStackSize = false;
+int RegExp::availableStackSize = 8*1024*1024;
 
 RegExp::RegExp(const UString &p, char flags)
   : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
@@ -489,15 +504,29 @@ UString RegExp::match(const UString &s, bool *error, int i, int *pos, int **ovec
   pcre_config(PCRE_CONFIG_STACKRECURSE, (void*)&stackGlutton);
   pcre_extra limits;
   if (stackGlutton) {
+#if HAVE(SYS_TIME_H)
+    if (tryGrowingMaxStackSize) {
+      rlimit l;
+      getrlimit(RLIMIT_STACK, &l);
+      availableStackSize = l.rlim_cur;
+      if (l.rlim_cur < sWantedStackSizeLimit && 
+          (l.rlim_max > l.rlim_cur || l.rlim_max == RLIM_INFINITY)) {
+        l.rlim_cur = (l.rlim_max == RLIM_INFINITY) ? 
+                     sWantedStackSizeLimit : std::min(l.rlim_max, sWantedStackSizeLimit);
+        if ((didIncreaseMaxStackSize = !setrlimit( RLIMIT_STACK, &l)))
+          availableStackSize = l.rlim_cur;
+      }
+      tryGrowingMaxStackSize = false;
+    }
+#endif
+
     limits.flags = PCRE_EXTRA_MATCH_LIMIT_RECURSION;
     // libPCRE docs claim that it munches about 500 bytes per recursion.
     // The crash in #160792 actually showed pcre 7.4 using about 1300 bytes
     // (and I've measured 800 in an another instance)
-    // So the usual 8MiB rlimit on Linux produces about 6452 frames.
-    // We go somewhat conservative, and use about 2/3rds of that, for 4300
+    // We go somewhat conservative, and use about 3/4ths of that,
     // especially since we're not exactly light on the stack, either
-    // ### TODO: get some build system help to use getrlimit.
-    limits.match_limit_recursion = 4300;
+    limits.match_limit_recursion = (availableStackSize/1300)*3/4;
   }
   
   const int numMatches = pcre_exec(_regex, stackGlutton ? &limits : 0, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
