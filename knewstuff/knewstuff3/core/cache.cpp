@@ -200,8 +200,10 @@ void Cache::writeRegistry()
         return;
     }
 
-    QDomDocument doc;
+    QDomDocument doc("khotnewstuff3");
+    doc.appendChild(doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"" ));
     QDomElement root = doc.createElement("hotnewstuffregistry");
+    doc.appendChild(root);
 
     foreach (const EntryInternal& entry, cache) {
         // Write the entry, unless the policy is CacheNever and the entry is not installed.
@@ -212,7 +214,8 @@ void Cache::writeRegistry()
     }
 
     QTextStream metastream(&f);
-    metastream << root;
+    metastream << doc.toByteArray();
+    
     f.close();
 }
 
