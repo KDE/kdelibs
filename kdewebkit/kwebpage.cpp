@@ -63,28 +63,29 @@ public:
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
-{
+{   
     // KDE KParts integration for <embed> tag...
     if (!flags || (flags & KPartsIntegration))
         setPluginFactory(new KWebPluginFactory(this));
 
+    WId windowId = 0;
+    QWidget *widget = qobject_cast<QWidget*>(parent);
+    if (widget && widget->window())
+        windowId = widget->window()->winId();
+
     // KDE IO (KIO) integration...
     if (!flags || (flags & KIOIntegration)) {
         KIO::Integration::AccessManager *manager = new KIO::Integration::AccessManager(this);
-        // Disable QtWebKit's internal cache to avoid duplication with the one in KIO....
+        // Disable QtWebKit's internal cache to avoid duplication with the one in KIO...
         manager->setCache(0);
-        QWidget *widget = qobject_cast<QWidget*>(parent);
-        if (widget && widget->window())
-            manager->setCookieJarWindowId(widget->window()->winId());
+        manager->setCookieJarWindowId(windowId);
         setNetworkAccessManager(manager);
     }
 
     // KWallet integration...
     if (!flags || (flags & KWalletIntegration))
-        setWallet(new KWebWallet);
+        setWallet(new KWebWallet(0, windowId));
 
-    // TODO: If and when the upstream uses QIcon::fromTheme for setting
-    // icons and shortcuts, then code below can be removed...
     action(Back)->setIcon(KIcon("go-previous"));
     action(Forward)->setIcon(KIcon("go-next"));
     action(Reload)->setIcon(KIcon("view-refresh"));
@@ -113,7 +114,7 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     action(Back)->setShortcut(KStandardShortcut::back().primary());
     action(Forward)->setShortcut(KStandardShortcut::forward().primary());
     action(Reload)->setShortcut(KStandardShortcut::reload().primary());
-    action(Stop)->setShortcut(Qt::Key_Escape);
+    action(Stop)->setShortcut(QKeySequence(Qt::Key_Escape));
     action(Cut)->setShortcut(KStandardShortcut::cut().primary());
     action(Copy)->setShortcut(KStandardShortcut::copy().primary());
     action(Paste)->setShortcut(KStandardShortcut::paste().primary());
@@ -261,7 +262,7 @@ QString KWebPage::userAgentForUrl(const QUrl& _url) const
     return userAgent;
 }
 
-bool KWebPage::acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest & request, NavigationType type)
+bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
     kDebug() << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
 
