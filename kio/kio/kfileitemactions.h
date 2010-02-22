@@ -99,14 +99,19 @@ public:
      * This is basically a KMimeTypeTrader::query, but it supports multiple mimetypes, and
      * also cleans up "apparent" duplicates, such as the kde3 and kde4 applications with the same name.
      *
-     * Note that in general you should use KMimeTypeTrader instead, e.g. query() or
-     * preferredService().
+     * The list is sorted according to the user preferences for the given mimetype(s).
+     * In case multiple mimetypes appear in the url list, the logic is:
+     * applications that on average appear earlier on the associated applications
+     * list for the given mimetypes also appear earlier on the final applications list.
+     *
+     * Note that for a single mimetype there is no need to use this, you should use
+     * KMimeTypeTrader instead, e.g. query() or preferredService().
      *
      * Returns the applications associated with all the given mimetypes.
      * @param mimeTypeList the mimetypes
      * @param traderConstraint this optional constraint allows to exclude the current application
      * from the "open with" list. Example: "DesktopEntryName != 'kfmclient'".
-     * @return the list of services.
+     * @return the sorted list of services.
      * @since 4.4
      */
     static KService::List associatedApplications(const QStringList& mimeTypeList, const QString& traderConstraint);

@@ -35,6 +35,7 @@
 #include <kstandarddirs.h>
 #include <kservicetypetrader.h>
 #include <QFile>
+#include <QtAlgorithms>
 
 #include <QtDBus/QtDBus>
 
@@ -430,40 +431,57 @@ KService::List KFileItemActions::associatedApplications(const QStringList& mimeT
         return KService::List();
     }
 
-    QString constraint = traderConstraint;
-    const QString subConstraint = " and '%1' in ServiceTypes";
+    const KService::List firstOffers = KMimeTypeTrader::self()->query(mimeTypeList.first(), "Application", traderConstraint);
 
-    QStringList::ConstIterator it = mimeTypeList.constBegin();
-    const QStringList::ConstIterator end = mimeTypeList.constEnd();
-    QString firstMimeType = *it;
-    ++it;
-    for (; it != end ; ++it) {
-        constraint += subConstraint.arg(*it);
+    QList<KFileItemActionsPrivate::ServiceRank> rankings;
+    QStringList serviceList;
+
+    // This section does two things.  First, it determines which services are common to all the given mimetypes.
+    // Second, it ranks them based on their preference level in the associated applications list.
+    // The more often a service appear near the front of the list, the LOWER its score.
+
+    for (int i = 0; i < firstOffers.count(); ++i) {
+        KFileItemActionsPrivate::ServiceRank tempRank;
+        tempRank.service = firstOffers[i];
+        tempRank.score = i;
+        rankings << tempRank;
+        serviceList << tempRank.service->storageId();
     }
 
-    KService::List offers = KMimeTypeTrader::self()->query(firstMimeType, "Application", constraint);
-
-    QSet<QString> seenTexts;
-    for (KService::List::iterator it = offers.begin(); it != offers.end();) {
-        bool skipThisEntry = false;
-        // The offer list from the KTrader returns duplicate
-        // application entries (kde3 and kde4). Although this is a configuration
-        // problem, duplicated entries just will be skipped here.
-        const KService::Ptr service = (*it);
-        const QString appName(service->name());
-        if (!seenTexts.contains(appName)) {
-            seenTexts.insert(appName);
-        } else {
-            skipThisEntry = true;
+    for (int j = 1; j < mimeTypeList.count(); ++j) {
+        QStringList subservice; // list of services that support this mimetype
+        const KService::List offers = KMimeTypeTrader::self()->query(mimeTypeList[j], "Application", traderConstraint);
+        for (int i = 0; i != offers.count(); ++i) {
+            const QString serviceId = offers[i]->storageId();
+            subservice << serviceId;
+            const int idPos = serviceList.indexOf(serviceId);
+            if (idPos != -1) {
+                rankings[idPos].score += i;
+            } // else: we ignore the services that didn't support the previous mimetypes
         }
 
-        if (skipThisEntry) {
-            it = offers.erase(it);
-        } else {
-            ++it;
+        // Remove services which supported the previous mimetypes but don't support this one
+        for (int i = 0; i < serviceList.count(); ++i) {
+            if (!subservice.contains(serviceList[i])) {
+                serviceList.removeAt(i);
+                rankings.removeAt(i);
+                --i;
+            }
+        }
+        // Nothing left -> there is no common application for these mimetypes
+        if (rankings.isEmpty()) {
+            return KService::List();
         }
     }
-    return offers;
+
+    qSort(rankings.begin(), rankings.end(), KFileItemActionsPrivate::lessRank);
+
+    KService::List result;
+    Q_FOREACH(const KFileItemActionsPrivate::ServiceRank& tempRank, rankings) {
+        result << tempRank.service;
+    }
+
+    return result;
 }
 
 void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& traderConstraint)

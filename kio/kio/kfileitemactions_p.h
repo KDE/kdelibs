@@ -45,6 +45,18 @@ public:
     KService::List associatedApplications(const QString& traderConstraint);
     KAction* createAppAction(const KService::Ptr& service, bool singleOffer);
 
+    struct ServiceRank
+    {
+        int score;
+        KService::Ptr service;
+    };
+
+    // Inline function for sorting lists of ServiceRank
+    static bool lessRank(const ServiceRank& id1, const ServiceRank& id2)
+    {
+        return id1.score < id2.score;
+    }
+
 private Q_SLOTS:
     // For servicemenus
     void slotExecuteService(QAction* act);
