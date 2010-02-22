@@ -477,7 +477,7 @@ void KDirWatch_UnitTest::testHardlinkChange()
     appendToFile(existingFile);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), existingFile));
 #else
-    QSKIP("Unix-specific");
+    QSKIP("Unix-specific", SkipAll);
 #endif
 }
 
