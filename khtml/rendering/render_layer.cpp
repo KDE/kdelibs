@@ -716,6 +716,9 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
         if (y > maxY) y = maxY;
     }
 
+    if ((m_scrollX == x - m_scrollXOrigin) && m_scrollY == y)
+        return; // nothing to do
+
     // FIXME: Eventually, we will want to perform a blit.  For now never
     // blit, since the check for blitting is going to be very
     // complicated (since it will involve testing whether our layer
