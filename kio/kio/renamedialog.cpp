@@ -26,6 +26,7 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QFileInfo>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtCore/QDir>
@@ -55,19 +56,18 @@ class RenameDialog::RenameDialogPrivate
  public:
   RenameDialogPrivate(){
     bCancel = 0;
-    bRename = bSkip = bAutoSkip = bOverwrite = bOverwriteAll = 0;
-    bResume = bResumeAll = bSuggestNewName = 0;
+    bRename = bSkip = bOverwrite = 0;
+    bResume = bSuggestNewName = 0;
+    bApplyAll = 0;
     m_pLineEdit = 0;
   }
   KPushButton *bCancel;
   QPushButton *bRename;
   QPushButton *bSkip;
-  QPushButton *bAutoSkip;
   QPushButton *bOverwrite;
-  QPushButton *bOverwriteAll;
   QPushButton *bResume;
-  QPushButton *bResumeAll;
   QPushButton *bSuggestNewName;
+  QCheckBox *bApplyAll;
   KLineEdit* m_pLineEdit;
   KUrl src;
   KUrl dest;
@@ -98,6 +98,14 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     d->bCancel = new KPushButton( KStandardGuiItem::cancel(), this );
     connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
+
+    if (_mode & M_MULTI) {
+        d->bApplyAll = new QCheckBox(i18n("Appl&y to All"), this);
+        d->bApplyAll->setToolTip((_mode & M_ISDIR) ? i18n("When this is checked the button pressed will be applied to all subsequent folder conflicts for the remainder of the current job.\nUnless you press Skip you will still be prompted in case of a conflict with an existing file in the directory.")
+                                                      : i18n("When this is checked the button pressed will be applied to all subsequent conflicts for the remainder of the current job."));
+        connect(d->bApplyAll, SIGNAL(clicked()), this, SLOT(applyAllPressed()));
+    }
+
     if ( ! (_mode & M_NORENAME ) ) {
         d->bRename = new QPushButton( i18n( "&Rename" ), this );
         d->bRename->setEnabled(false);
@@ -111,11 +119,6 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         d->bSkip->setToolTip((_mode & M_ISDIR) ? i18n("Do not copy or move this folder, skip to the next item instead")
                              : i18n("Do not copy or move this file, skip to the next item instead"));
         connect(d->bSkip, SIGNAL(clicked()), this, SLOT(skipPressed()));
-
-        d->bAutoSkip = new QPushButton( i18n( "&Auto Skip" ), this );
-        d->bAutoSkip->setToolTip((_mode & M_ISDIR) ? i18n("Do not copy or move any folder that already exists in the destination folder.\nYou will be prompted again in case of a conflict with an existing file though.")
-                                 : i18n("Do not copy or move any file that already exists in the destination folder.\nYou will be prompted again in case of a conflict with an existing directory though."));
-        connect(d->bAutoSkip, SIGNAL(clicked()), this, SLOT(autoSkipPressed()));
     }
 
     if ( _mode & M_OVERWRITE ) {
@@ -123,24 +126,11 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         d->bOverwrite = new QPushButton(text, this);
         d->bOverwrite->setToolTip(i18n("Files and folders will be copied into the existing directory, alongside its existing contents.\nYou will be prompted again in case of a conflict with an existing file in the directory."));
         connect(d->bOverwrite, SIGNAL(clicked()), this, SLOT(overwritePressed()));
-
-        if ( _mode & M_MULTI ) {
-            const QString textAll = (_mode & M_ISDIR) ? i18nc("Write files into any existing directory", "&Write Into All") : i18n("&Overwrite All");
-            d->bOverwriteAll = new QPushButton( textAll, this );
-            d->bOverwriteAll->setToolTip(i18n("Files and folders will be copied into any existing directory, alongside its existing contents.\nYou will be prompted again in case of a conflict with an existing file in a directory, but not in case of another existing directory."));
-            connect(d->bOverwriteAll, SIGNAL(clicked()), this, SLOT(overwriteAllPressed()));
-        }
     }
 
     if ( _mode & M_RESUME ) {
         d->bResume = new QPushButton( i18n( "&Resume" ), this );
         connect(d->bResume, SIGNAL(clicked()), this, SLOT(resumePressed()));
-
-        if ( _mode & M_MULTI )
-        {
-            d->bResumeAll = new QPushButton( i18n( "R&esume All" ), this );
-            connect(d->bResumeAll, SIGNAL(clicked()), this, SLOT(resumeAllPressed()));
-        }
     }
 
     QVBoxLayout* pLayout = new QVBoxLayout( this );
@@ -314,6 +304,10 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
     layout->addStretch(1);
 
+    if (d->bApplyAll) {
+        layout->addWidget(d->bApplyAll);
+        setTabOrder(d->bApplyAll, d->bCancel);
+    }
     if ( d->bRename )
     {
         layout->addWidget( d->bRename );
@@ -324,30 +318,15 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         layout->addWidget( d->bSkip );
         setTabOrder( d->bSkip, d->bCancel );
     }
-    if ( d->bAutoSkip )
-    {
-        layout->addWidget( d->bAutoSkip );
-        setTabOrder( d->bAutoSkip, d->bCancel );
-    }
     if ( d->bOverwrite )
     {
         layout->addWidget( d->bOverwrite );
         setTabOrder( d->bOverwrite, d->bCancel );
     }
-    if ( d->bOverwriteAll )
-    {
-        layout->addWidget( d->bOverwriteAll );
-        setTabOrder( d->bOverwriteAll, d->bCancel );
-    }
     if ( d->bResume )
     {
         layout->addWidget( d->bResume );
         setTabOrder( d->bResume, d->bCancel );
-    }
-    if ( d->bResumeAll )
-    {
-        layout->addWidget( d->bResumeAll );
-        setTabOrder( d->bResumeAll, d->bCancel );
     }
 
     d->bCancel->setDefault( true );
@@ -387,6 +366,15 @@ KUrl RenameDialog::newDestUrl()
   return newDest;
 }
 
+KUrl RenameDialog::autoDestUrl() const
+{
+    KUrl newDest(d->dest);
+    KUrl destDirectory(d->dest);
+    destDirectory.setPath(destDirectory.directory());
+    newDest.setFileName(suggestName(destDirectory, d->dest.fileName()));
+    return newDest;
+}
+
 void RenameDialog::cancelPressed()
 {
     done( R_CANCEL );
@@ -395,17 +383,21 @@ void RenameDialog::cancelPressed()
 // Rename
 void RenameDialog::renamePressed()
 {
-  if ( d->m_pLineEdit->text().isEmpty() )
-    return;
+    if (d->m_pLineEdit->text().isEmpty()) {
+        return;
+    }
 
-  KUrl u = newDestUrl();
-  if ( !u.isValid() )
-  {
-    KMessageBox::error( this, i18n( "Malformed URL\n%1" ,  u.url() ) );
-    return;
-  }
-
-  done( R_RENAME );
+    if (d->bApplyAll  && d->bApplyAll->isChecked()) {
+        done(R_AUTO_RENAME);
+    }
+    else {
+        KUrl u = newDestUrl();
+        if (!u.isValid()) {
+            KMessageBox::error(this, i18n("Malformed URL\n%1" ,  u.url()));
+            return;
+        }
+        done(R_RENAME);
+    }
 }
 
 QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
@@ -464,7 +456,12 @@ void RenameDialog::suggestNewNamePressed()
 
 void RenameDialog::skipPressed()
 {
-  done( R_SKIP );
+    if (d->bApplyAll  && d->bApplyAll->isChecked()) {
+        done(R_AUTO_SKIP);
+    }
+    else {
+        done(R_SKIP);
+    }
 }
 
 void RenameDialog::autoSkipPressed()
@@ -474,7 +471,12 @@ void RenameDialog::autoSkipPressed()
 
 void RenameDialog::overwritePressed()
 {
-  done( R_OVERWRITE );
+    if (d->bApplyAll  && d->bApplyAll->isChecked()) {
+        done(R_OVERWRITE_ALL);
+    }
+    else {
+        done(R_OVERWRITE);
+    }
 }
 
 void RenameDialog::overwriteAllPressed()
@@ -484,12 +486,32 @@ void RenameDialog::overwriteAllPressed()
 
 void RenameDialog::resumePressed()
 {
-  done( R_RESUME );
+    if (d->bApplyAll  && d->bApplyAll->isChecked()) {
+        done(R_RESUME_ALL);
+    }
+    else {
+        done(R_RESUME);
+    }
 }
 
 void RenameDialog::resumeAllPressed()
 {
   done( R_RESUME_ALL );
+}
+
+void RenameDialog::applyAllPressed()
+{
+    if (d->bApplyAll  && d->bApplyAll->isChecked()) {
+        d->m_pLineEdit->setText(KIO::decodeFileName(d->dest.fileName()));
+        d->bSuggestNewName->setEnabled(false);
+        d->m_pLineEdit->setEnabled(false);
+        d->bRename->setEnabled(true);
+    }
+    else {
+        d->bSuggestNewName->setEnabled(true);
+        d->m_pLineEdit->setEnabled(true);
+        d->bRename->setEnabled(false);
+    }
 }
 
 static QString mime( const KUrl& src )

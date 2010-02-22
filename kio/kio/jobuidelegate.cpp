@@ -81,7 +81,12 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                      mtimeDest);
     connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
-    newDest = dlg.newDestUrl().path();
+    if (res == R_AUTO_RENAME) {
+        newDest = dlg.autoDestUrl().path();
+    }
+    else {
+        newDest = dlg.newDestUrl().path();
+    }
     return res;
 }
 

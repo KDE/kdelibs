@@ -51,7 +51,7 @@ enum RenameDialog_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_
 /**
  * The result of open_RenameDialog().
  */
-enum RenameDialog_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
+enum RenameDialog_Result {R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_AUTO_RENAME = 8, R_CANCEL = 0};
 
 
 /**
@@ -97,6 +97,14 @@ public:
    */
   KUrl newDestUrl();
 
+
+  /**
+   * @return an automatically renamed destination
+   * @since 4.5
+   * valid always
+   */
+  KUrl autoDestUrl() const;
+
   /**
    * Given a directory path and a filename (which usually exists already),
    * this function returns a suggested name for a file that doesn't exist
@@ -118,6 +126,8 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
   void enableRenameButton(const QString &);
+private Q_SLOTS:
+    void applyAllPressed();
 private:
  class RenameDialogPrivate;
  RenameDialogPrivate* const d;

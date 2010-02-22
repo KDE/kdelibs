@@ -115,6 +115,8 @@ public:
         , m_bSingleFileCopy(false)
         , m_bOnlyRenames(mode==CopyJob::Move)
         , m_dest(dest)
+        , m_bAutoRenameFiles(false)
+        , m_bAutoRenameDirs(false)
         , m_bAutoSkipFiles( false )
         , m_bAutoSkipDirs( false )
         , m_bOverwriteAllFiles( false )
@@ -164,6 +166,8 @@ public:
     //
     QStringList m_skipList;
     QStringList m_overwriteList;
+    bool m_bAutoRenameFiles;
+    bool m_bAutoRenameDirs;
     bool m_bAutoSkipFiles;
     bool m_bAutoSkipDirs;
     bool m_bOverwriteAllFiles;
@@ -872,23 +876,73 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
                     dirs.erase( it ); // Move on to next dir
                 } else {
-                    if ( !q->isInteractive() ) {
-                        q->Job::slotResult( job ); // will set the error and emit result(this)
-                        return;
+                    if (m_bAutoRenameDirs) {
+                        KUrl newUrl((*it).uDest);
+                        QString oldPath = (*it).uDest.path(KUrl::AddTrailingSlash);
+
+                        QString newName = KIO::RenameDialog::suggestName((*it).uDest, (*it).uDest.fileName());
+
+                        newUrl.setFileName(newName);
+                        emit q->renamed(q, (*it).uDest, newUrl); // for e.g. kpropsdlg
+
+                        // Change the current one and strip the trailing '/'
+                        (*it).uDest.setPath(newUrl.path(KUrl::RemoveTrailingSlash));
+
+                        QString newPath = newUrl.path(KUrl::AddTrailingSlash); // With trailing slash
+                        QList<CopyInfo>::Iterator renamedirit = it;
+                        ++renamedirit;
+                        // Change the name of subdirectories inside the directory
+                        for(; renamedirit != dirs.end() ; ++renamedirit) {
+                            QString path = (*renamedirit).uDest.path();
+                            if (path.startsWith(oldPath)) {
+                                QString n = path;
+                                n.replace(0, oldPath.length(), newPath);
+                                kDebug(7007) << "dirs list:" << (*renamedirit).uSource.path()
+                                              << "was going to be" << path
+                                              << ", changed into" << n;
+                                (*renamedirit).uDest.setPath(n);
+                            }
+                        }
+                        // Change filenames inside the directory
+                        QList<CopyInfo>::Iterator renamefileit = files.begin();
+                        for(; renamefileit != files.end() ; ++renamefileit) {
+                            QString path = (*renamefileit).uDest.path();
+                            if (path.startsWith(oldPath)) {
+                                QString n = path;
+                                n.replace(0, oldPath.length(), newPath);
+                                kDebug(7007) << "files list:" << (*renamefileit).uSource.path()
+                                              << "was going to be" << path
+                                              << ", changed into" << n;
+                                (*renamefileit).uDest.setPath(n);
+                            }
+                        }
+                        if (!dirs.isEmpty()) {
+                            emit q->aboutToCreate(q, dirs);
+                        }
+                        if (!files.isEmpty()) {
+                            emit q->aboutToCreate(q, files);
+                        }
+
                     }
+                    else {
+                        if (!q->isInteractive()) {
+                            q->Job::slotResult(job); // will set the error and emit result(this)
+                            return;
+                        }
 
-                    assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
-                    q->removeSubjob( job );
-                    assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
+                        assert(((SimpleJob*)job)->url().url() == (*it).uDest.url());
+                        q->removeSubjob(job);
+                        assert (!q->hasSubjobs()); // We should have only one job at a time ...
 
-                    // We need to stat the existing dir, to get its last-modification time
-                    KUrl existingDest( (*it).uDest );
-                    SimpleJob * newJob = KIO::stat( existingDest, StatJob::DestinationSide, 2, KIO::HideProgressInfo );
-                    Scheduler::scheduleJob(newJob);
-                    kDebug(7007) << "KIO::stat for resolving conflict on " << existingDest;
-                    state = STATE_CONFLICT_CREATING_DIRS;
-                    q->addSubjob(newJob);
-                    return; // Don't move to next dir yet !
+                        // We need to stat the existing dir, to get its last-modification time
+                        KUrl existingDest((*it).uDest);
+                        SimpleJob * newJob = KIO::stat(existingDest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
+                        Scheduler::scheduleJob(newJob);
+                        kDebug(7007) << "KIO::stat for resolving conflict on " << existingDest;
+                        state = STATE_CONFLICT_CREATING_DIRS;
+                        q->addSubjob(newJob);
+                        return; // Don't move to next dir yet !
+                    }
                 }
             }
         }
@@ -965,6 +1019,9 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             q->setError( ERR_USER_CANCELED );
             q->emitResult();
             return;
+        case R_AUTO_RENAME:
+            m_bAutoRenameDirs = true;
+            // fall through
         case R_RENAME:
         {
             QString oldPath = (*it).uDest.path( KUrl::AddTrailingSlash );
@@ -1123,16 +1180,31 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                  || ( m_conflictError == ERR_DIR_ALREADY_EXIST )
                  || ( m_conflictError == ERR_IDENTICAL_FILES ) )
             {
-                q->removeSubjob( job );
-                assert ( !q->hasSubjobs() );
-                // We need to stat the existing file, to get its last-modification time
-                KUrl existingFile( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingFile, StatJob::DestinationSide, 2, KIO::HideProgressInfo );
-                Scheduler::scheduleJob(newJob);
-                kDebug(7007) << "KIO::stat for resolving conflict on " << existingFile;
-                state = STATE_CONFLICT_COPYING_FILES;
-                q->addSubjob(newJob);
-                return; // Don't move to next file yet !
+                if (m_bAutoRenameFiles) {
+                    QString newName = KIO::RenameDialog::suggestName((*it).uDest, (*it).uDest.fileName());
+
+                    KUrl newUrl((*it).uDest);
+                    newUrl.setFileName(newName);
+
+                    emit q->renamed(q, (*it).uDest, newUrl); // for e.g. kpropsdlg
+                    (*it).uDest = newUrl;
+
+                    QList<CopyInfo> files;
+                    files.append(*it);
+                    emit q->aboutToCreate(q, files);
+                }
+                else {
+                    q->removeSubjob(job);
+                    assert (!q->hasSubjobs());
+                    // We need to stat the existing file, to get its last-modification time
+                    KUrl existingFile((*it).uDest);
+                    SimpleJob * newJob = KIO::stat(existingFile, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
+                    Scheduler::scheduleJob(newJob);
+                    kDebug(7007) << "KIO::stat for resolving conflict on " << existingFile;
+                    state = STATE_CONFLICT_COPYING_FILES;
+                    q->addSubjob(newJob);
+                    return; // Don't move to next file yet !
+                }
             }
             else
             {
@@ -1284,6 +1356,9 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             q->setError( ERR_USER_CANCELED );
             q->emitResult();
             return;
+        case R_AUTO_RENAME:
+            m_bAutoRenameFiles = true;
+            // fall through
         case R_RENAME:
         {
             KUrl newUrl( (*it).uDest );
@@ -1746,6 +1821,17 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 return;
             } else if ((isDir && m_bOverwriteAllDirs) || (!isDir && m_bOverwriteAllFiles)) {
                 ; // nothing to do, stat+copy+del will overwrite
+            } else if ((isDir && m_bAutoRenameDirs) || (!isDir && m_bAutoRenameFiles)) {
+                KUrl destDirectory(m_dest);
+                destDirectory.setPath(destDirectory.directory());
+                QString newName = KIO::RenameDialog::suggestName(destDirectory, m_dest.fileName());
+
+                m_dest.setFileName(newName);
+                KIO::Job* job = KIO::stat(m_dest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
+                state = STATE_STATING;
+                destinationState = DEST_NOT_STATED;
+                q->addSubjob(job);
+                return;
             } else if ( q->isInteractive() ) {
                 QString newPath;
                 // we lack mtime info for both the src (not stated)
@@ -1815,6 +1901,14 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     q->emitResult();
                     return;
                 }
+                case R_AUTO_RENAME:
+                    if (isDir) {
+                        m_bAutoRenameDirs = true;
+                    }
+                    else {
+                        m_bAutoRenameFiles = true;
+                    }
+                    // fall through
                 case R_RENAME:
                 {
                     // Set m_dest to the chosen destination
