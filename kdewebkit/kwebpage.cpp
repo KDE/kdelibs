@@ -63,25 +63,28 @@ public:
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
-{
+{   
     // KDE KParts integration for <embed> tag...
     if (!flags || (flags & KPartsIntegration))
         setPluginFactory(new KWebPluginFactory(this));
+
+    WId windowId = 0;
+    QWidget *widget = qobject_cast<QWidget*>(parent);
+    if (widget && widget->window())
+        windowId = widget->window()->winId();
 
     // KDE IO (KIO) integration...
     if (!flags || (flags & KIOIntegration)) {
         KIO::Integration::AccessManager *manager = new KIO::Integration::AccessManager(this);
         // Disable QtWebKit's internal cache to avoid duplication with the one in KIO...
         manager->setCache(0);
-        QWidget *widget = qobject_cast<QWidget*>(parent);
-        if (widget && widget->window())
-            manager->setCookieJarWindowId(widget->window()->winId());
+        manager->setCookieJarWindowId(windowId);
         setNetworkAccessManager(manager);
     }
 
     // KWallet integration...
     if (!flags || (flags & KWalletIntegration))
-        setWallet(new KWebWallet);
+        setWallet(new KWebWallet(0, windowId));
 
     action(Back)->setIcon(KIcon("go-previous"));
     action(Forward)->setIcon(KIcon("go-next"));
