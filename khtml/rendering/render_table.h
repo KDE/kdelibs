@@ -281,8 +281,8 @@ public:
     //True if any of the cells has a span of 0
     bool containsSpansZero;
 
-    signed short cRow;
-    ushort cCol;
+    int cRow;
+    int cCol;
     bool needCellRecalc;
 
     void recalcCells();
@@ -434,8 +434,8 @@ protected:
     virtual int borderTopExtra() const { return _topExtra; }
     virtual int borderBottomExtra() const { return _bottomExtra; }
 
-    short _row;
-    short _col;
+    int _row;
+    int _col;
     ushort rSpan;
     ushort cSpan;
     int _topExtra;
