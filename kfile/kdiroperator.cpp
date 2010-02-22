@@ -494,7 +494,7 @@ void KDirOperator::sortReversed()
 
 void KDirOperator::toggleDirsFirst()
 {
-    // TODO: not offered yet
+    d->_k_slotToggleDirsFirst();
 }
 
 void KDirOperator::toggleIgnoreCase()
@@ -714,16 +714,8 @@ void KDirOperator::Private::_k_slotSortReversed(bool doReverse)
 
 void KDirOperator::Private::_k_slotToggleDirsFirst()
 {
-    // TODO: port to Qt4's QAbstractItemView
-    /*if ( !d->fileView )
-      return;
-
-    QDir::SortFlags sorting = d->fileView->sorting();
-    if ( !KFile::isSortDirsFirst( sorting ) )
-        d->fileView->setSorting( sorting | QDir::DirsFirst );
-    else
-        d->fileView->setSorting( sorting & ~QDir::DirsFirst );
-    d->sorting = d->fileView->sorting();*/
+    QDir::SortFlags s = (sorting ^ QDir::DirsFirst);
+    updateSorting(s);
 }
 
 void KDirOperator::Private::_k_slotToggleIgnoreCase()
@@ -1149,6 +1141,17 @@ void KDirOperator::Private::updateSorting(QDir::SortFlags sort)
     kDebug(kfile_area) << "changing sort flags from"  << sorting << "to" << sort;
     if (sort == sorting) {
         return;
+    }
+
+    if ((sorting ^ sort) & QDir::DirsFirst) {
+        // The "Folders First" setting has been changed.
+        // We need to make sure that the files and folders are really re-sorted.
+        // Without the following intermediate "fake resorting",
+        // QSortFilterProxyModel::sort(int column, Qt::SortOrder order)
+        // would do nothing because neither the column nor the sort order have been changed.
+        Qt::SortOrder tmpSortOrder = (sortOrder() == Qt::AscendingOrder ? Qt::DescendingOrder : Qt::AscendingOrder);
+        proxyModel->sort(sortOrder(), tmpSortOrder);
+        proxyModel->setSortFoldersFirst(sort & QDir::DirsFirst);
     }
 
     sorting = sort;
@@ -1904,6 +1907,10 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("descending", descendingAction);
     connect(descendingAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotSortReversed(bool)));
 
+    KToggleAction *dirsFirstAction = new KToggleAction(i18n("Folders First"), this);
+    d->actionCollection->addAction("dirs first", dirsFirstAction);
+    connect(dirsFirstAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotToggleDirsFirst()));
+
     QActionGroup* sortGroup = new QActionGroup(this);
     byNameAction->setActionGroup(sortGroup);
     bySizeAction->setActionGroup(sortGroup);
@@ -2014,6 +2021,7 @@ void KDirOperator::setupMenu(int whichActions)
     sortMenu->addAction(d->actionCollection->action("by type"));
     sortMenu->addSeparator();
     sortMenu->addAction(d->actionCollection->action("descending"));
+    sortMenu->addAction(d->actionCollection->action("dirs first"));
 
     // now plug everything into the popupmenu
     d->actionMenu->menu()->clear();
@@ -2070,6 +2078,7 @@ void KDirOperator::updateSortActions()
         d->actionCollection->action("by type")->setChecked(true);
     }
     d->actionCollection->action("descending")->setChecked(d->sorting & QDir::Reversed);
+    d->actionCollection->action("dirs first")->setChecked(d->sorting & QDir::DirsFirst);
 }
 
 void KDirOperator::updateViewActions()
@@ -2158,6 +2167,9 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
 
     configGroup.writeEntry(QLatin1String("Sort reversed"),
                            d->actionCollection->action("descending")->isChecked());
+
+    configGroup.writeEntry(QLatin1String("Sort directories first"),
+                           d->actionCollection->action("dirs first")->isChecked());
 
     // don't save the preview when an application specific preview is in use.
     bool appSpecificPreview = false;
