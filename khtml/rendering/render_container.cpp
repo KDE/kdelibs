@@ -156,7 +156,8 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
         // Repaint, so that the area exposed when the child
         // disappears gets repainted properly.
-        oldChild->repaint();
+        if (oldChild->height() && oldChild->width())
+            oldChild->repaint();
     }
     
     // detach the place holder box
