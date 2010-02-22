@@ -905,20 +905,24 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         // euhm? not supported by other browsers as far as I can see (Dirk)
         //addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
         break;
-    case ATTR_ROWSPAN:
-        rSpan = attr->val() ? attr->val()->toInt() : 1;
+    case ATTR_ROWSPAN: {
+        bool Ok = true;
+        rSpan = attr->val() ? attr->val()->toInt(&Ok) : 1;
         // limit this to something not causing an overflow with short int
-        if(rSpan < 0 || rSpan > 1024) rSpan = 1;
+        if(rSpan < 0 || rSpan > 1024 || !Ok || (!rSpan && document()->inCompatMode())) rSpan = 1;
         if (renderer())
             renderer()->updateFromElement();
         break;
-    case ATTR_COLSPAN:
-        cSpan = attr->val() ? attr->val()->toInt() : 1;
+      }
+    case ATTR_COLSPAN: {
+        bool Ok = true;
+        cSpan = attr->val() ? attr->val()->toInt(&Ok) : 1;
         // limit this to something not causing an overflow with short int
-        if(cSpan < 0 || cSpan > 1024) cSpan = 1;
+        if(cSpan < 0 || cSpan > 1024 || !Ok || (!cSpan && document()->inCompatMode())) cSpan = 1;
         if (renderer())
             renderer()->updateFromElement();
         break;
+     }
     case ATTR_NOWRAP:
         if (attr->val() != 0)
 	    addCSSProperty(CSS_PROP_WHITE_SPACE, CSS_VAL__KHTML_NOWRAP);
