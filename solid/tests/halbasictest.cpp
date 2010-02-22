@@ -76,10 +76,15 @@ void HalBasicTest::testBasic()
 
 void HalBasicTest::testDeviceCreation()
 {
-    Solid::Device dev("/org/freedesktop/Hal/devices/computer");
-    QVERIFY(dev.isValid());
-    dev = Solid::Device("ddd/ff");
-    QVERIFY(!dev.isValid());
+    // Uncomment to check if the "still reachable" number grows in
+    // valgrind, which probably indicates a memory leak.
+    //for (int i=0; i<1000; i++)
+    {
+        Solid::Device dev("/org/freedesktop/Hal/devices/computer");
+        QVERIFY(dev.isValid());
+        dev = Solid::Device("ddd/ff");
+        QVERIFY(!dev.isValid());
+    }
 }
 
 void HalBasicTest::testSignalHandling()
