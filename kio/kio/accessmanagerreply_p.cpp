@@ -124,7 +124,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
         // Set the encrypted attribute...
         setAttribute(QNetworkRequest::ConnectionEncryptedAttribute,
-                     QString::compare(job->queryMetaData("ssl_in_use"), QLatin1String("true"), Qt::CaseInsensitive));
+                     (QString::compare(job->queryMetaData("ssl_in_use"), QLatin1String("true"), Qt::CaseInsensitive) == 0));
 
         // Set the raw header information...
         const QString headers = job->queryMetaData("HTTP-Headers");
@@ -166,7 +166,7 @@ void AccessManagerReply::jobDone(KJob *kJob)
     {
         case 0:
             setError(QNetworkReply::NoError, errorString());
-            kDebug( 7044 ) << "0 -> QNetworkReply::NoError";
+            //kDebug( 7044 ) << "0 -> QNetworkReply::NoError";
             break;
         case KIO::ERR_COULD_NOT_CONNECT:
             setError(QNetworkReply::ConnectionRefusedError, errorString());
