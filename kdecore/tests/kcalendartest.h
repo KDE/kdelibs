@@ -39,6 +39,7 @@ private Q_SLOTS:
     void testFormatDate();
     void testReadDate();
     void testStringForms();
+    void testHebrewStrings();
     void testIsoWeekDate();
     void testDayOfYearDate();
     void testGregorian();

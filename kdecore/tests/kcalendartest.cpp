@@ -1,5 +1,7 @@
 #include "qtest_kde.h"
 
+#include "locale.h"
+
 #include "kcalendarsystem.h"
 #include "kglobal.h"
 #include "kdebug.h"
@@ -392,50 +394,50 @@ void KCalendarTest::testReadDate()
     QCOMPARE( calendar->readDate( "Wed 2004 Dec 01",            "%a %Y %b %d" ), QDate( 2004, 12,  1 ) );
 
     //Test ISO Week and Day-of-Week
-    QCOMPARE( calendar->readDate( "2004-W01-01", "%Y-W%V-%u" ), QDate( 2003, 12, 29 ) );
-    QCOMPARE( calendar->readDate( "2004-W01-02", "%Y-W%V-%u" ), QDate( 2003, 12, 30 ) );
-    QCOMPARE( calendar->readDate( "2004-W01-03", "%Y-W%V-%u" ), QDate( 2003, 12, 31 ) );
-    QCOMPARE( calendar->readDate( "2004-W01-04", "%Y-W%V-%u" ), QDate( 2004, 1, 1 ) );
-    QCOMPARE( calendar->readDate( "2004-W01-05", "%Y-W%V-%u" ), QDate( 2004, 1, 2 ) );
-    QCOMPARE( calendar->readDate( "2004-W01-06", "%Y-W%V-%u" ), QDate( 2004, 1, 3 ) );
-    QCOMPARE( calendar->readDate( "2004-W01-07", "%Y-W%V-%u" ), QDate( 2004, 1, 4 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-1", "%Y-W%V-%u" ), QDate( 2003, 12, 29 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-2", "%Y-W%V-%u" ), QDate( 2003, 12, 30 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-3", "%Y-W%V-%u" ), QDate( 2003, 12, 31 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-4", "%Y-W%V-%u" ), QDate( 2004, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-5", "%Y-W%V-%u" ), QDate( 2004, 1, 2 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-6", "%Y-W%V-%u" ), QDate( 2004, 1, 3 ) );
+    QCOMPARE( calendar->readDate( "2004-W01-7", "%Y-W%V-%u" ), QDate( 2004, 1, 4 ) );
 
-    QCOMPARE( calendar->readDate( "2004-W24-01", "%Y-W%V-%u" ), QDate( 2004, 6, 7 ) );
-    QCOMPARE( calendar->readDate( "2004-W24-02", "%Y-W%V-%u" ), QDate( 2004, 6, 8 ) );
-    QCOMPARE( calendar->readDate( "2004-W24-03", "%Y-W%V-%u" ), QDate( 2004, 6, 9 ) );
-    QCOMPARE( calendar->readDate( "2004-W24-04", "%Y-W%V-%u" ), QDate( 2004, 6, 10 ) );
-    QCOMPARE( calendar->readDate( "2004-W24-05", "%Y-W%V-%u" ), QDate( 2004, 6, 11 ) );
-    QCOMPARE( calendar->readDate( "2004-W24-06", "%Y-W%V-%u" ), QDate( 2004, 6, 12 ) );
-    QCOMPARE( calendar->readDate( "2004-W24-07", "%Y-W%V-%u" ), QDate( 2004, 6, 13 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-1", "%Y-W%V-%u" ), QDate( 2004, 6, 7 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-2", "%Y-W%V-%u" ), QDate( 2004, 6, 8 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-3", "%Y-W%V-%u" ), QDate( 2004, 6, 9 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-4", "%Y-W%V-%u" ), QDate( 2004, 6, 10 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-5", "%Y-W%V-%u" ), QDate( 2004, 6, 11 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-6", "%Y-W%V-%u" ), QDate( 2004, 6, 12 ) );
+    QCOMPARE( calendar->readDate( "2004-W24-7", "%Y-W%V-%u" ), QDate( 2004, 6, 13 ) );
 
-    QCOMPARE( calendar->readDate( "2004-W53-01", "%Y-W%V-%u" ), QDate( 2004, 12, 27 ) );
-    QCOMPARE( calendar->readDate( "2004-W53-02", "%Y-W%V-%u" ), QDate( 2004, 12, 28 ) );
-    QCOMPARE( calendar->readDate( "2004-W53-03", "%Y-W%V-%u" ), QDate( 2004, 12, 29 ) );
-    QCOMPARE( calendar->readDate( "2004-W53-04", "%Y-W%V-%u" ), QDate( 2004, 12, 30 ) );
-    QCOMPARE( calendar->readDate( "2004-W53-05", "%Y-W%V-%u" ), QDate( 2004, 12, 31 ) );
-    QCOMPARE( calendar->readDate( "2004-W53-06", "%Y-W%V-%u" ), QDate( 2005, 1, 1 ) );
-    QCOMPARE( calendar->readDate( "2004-W53-07", "%Y-W%V-%u" ), QDate( 2005, 1, 2 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-1", "%Y-W%V-%u" ), QDate( 2004, 12, 27 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-2", "%Y-W%V-%u" ), QDate( 2004, 12, 28 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-3", "%Y-W%V-%u" ), QDate( 2004, 12, 29 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-4", "%Y-W%V-%u" ), QDate( 2004, 12, 30 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-5", "%Y-W%V-%u" ), QDate( 2004, 12, 31 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-6", "%Y-W%V-%u" ), QDate( 2005, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004-W53-7", "%Y-W%V-%u" ), QDate( 2005, 1, 2 ) );
 
     //Need to fix each year!
-    QCOMPARE( calendar->readDate( "W46-05", "W%V-%u" ), QDate( 2010, 11, 19 ) );
+    QCOMPARE( calendar->readDate( "W46-5", "W%V-%u" ), QDate( 2010, 11, 19 ) );
 
-    QCOMPARE( calendar->readDate( "2004-W00-01", "%Y-W%V-%u" ), QDate() );
-    QCOMPARE( calendar->readDate( "2004-W01-00", "%Y-W%V-%u" ), QDate() );
-    QCOMPARE( calendar->readDate( "2004-W01-08", "%Y-W%V-%u" ), QDate() );
-    QCOMPARE( calendar->readDate( "2004-W54-01", "%Y-W%V-%u" ), QDate() );
+    QCOMPARE( calendar->readDate( "2004-W00-1", "%Y-W%V-%u" ), QDate() );
+    QCOMPARE( calendar->readDate( "2004-W01-0", "%Y-W%V-%u" ), QDate() );
+    QCOMPARE( calendar->readDate( "2004-W01-8", "%Y-W%V-%u" ), QDate() );
+    QCOMPARE( calendar->readDate( "2004-W54-1", "%Y-W%V-%u" ), QDate() );
 
     //Test all 3 options, should go with most accurate
-    QCOMPARE( calendar->readDate( "2004-01-01-365-W52-01", "%Y-%m-%d-%j-W%V-%u" ), QDate( 2004, 1, 1 ) );
-    QCOMPARE( calendar->readDate( "2004-001-W52-01",       "%Y-%j-W%V-%u" ),       QDate( 2004, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004-01-01-365-W52-1", "%Y-%m-%d-%j-W%V-%u" ), QDate( 2004, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004-001-W52-1",       "%Y-%j-W%V-%u" ),       QDate( 2004, 1, 1 ) );
 
     //Test spaces and literals
     QCOMPARE( calendar->readDate( "2004- 1-1",    "%Y-%m-%d" ), QDate( 2004, 1, 1 ) );
     QCOMPARE( calendar->readDate( "2004-1-1",     "%Y-%m-%e" ), QDate( 2004, 1, 1 ) );
     QCOMPARE( calendar->readDate( "2004 01 01",   "%Y %m %d" ), QDate( 2004, 1, 1 ) );
     QCOMPARE( calendar->readDate( "2004  01  01", "%Y %m %d" ), QDate( 2004, 1, 1 ) );
-    QCOMPARE( calendar->readDate( "2004W01-01",   "%YW%m-%d" ), QDate( 2004, 1, 1 ) );
-    QCOMPARE( calendar->readDate( "2004w01-01",   "%YW%m-%d" ), QDate( 2004, 1, 1 ) );
-    QCOMPARE( calendar->readDate( "2004W01-01",   "%Yw%m-%d" ), QDate( 2004, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004W01-1",    "%YW%m-%d" ), QDate( 2004, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004w01-1",    "%YW%m-%d" ), QDate( 2004, 1, 1 ) );
+    QCOMPARE( calendar->readDate( "2004W01-1",    "%Yw%m-%d" ), QDate( 2004, 1, 1 ) );
 
     //Test enums and non-strict version of readDate()
     locale->setDateFormat( "%d/%m/%Y" );
@@ -443,14 +445,14 @@ void KCalendarTest::testReadDate()
     QCOMPARE( calendar->readDate( "01/02/2004" ),  QDate( 2004, 2, 1 ) ); //KLocale::NormalFormat
     QCOMPARE( calendar->readDate( "2004/02/01" ),  QDate( 2004, 2, 1 ) ); //KLocale::ShortFormat
     QCOMPARE( calendar->readDate( "2004-02-01" ),  QDate( 2004, 2, 1 ) ); //KLocale::IsoFormat
-    QCOMPARE( calendar->readDate( "2004-W02-01" ), QDate( 2004, 1, 5 ) ); //KLocale::IsoWeekFormat
+    QCOMPARE( calendar->readDate( "2004-W02-1" ),  QDate( 2004, 1, 5 ) ); //KLocale::IsoWeekFormat
     QCOMPARE( calendar->readDate( "2004-001" ),    QDate( 2004, 1, 1 ) ); //KLocale::IsoOrdinalFormat
 
     //Test enums and strict version of readDate()
     QCOMPARE( calendar->readDate( "01/02/2004",  KLocale::NormalFormat ),     QDate( 2004, 2, 1 ) );
     QCOMPARE( calendar->readDate( "2004/02/01",  KLocale::ShortFormat ),      QDate( 2004, 2, 1 ) );
     QCOMPARE( calendar->readDate( "2004-02-01",  KLocale::IsoFormat ),        QDate( 2004, 2, 1 ) );
-    QCOMPARE( calendar->readDate( "2004-W02-01", KLocale::IsoWeekFormat ),    QDate( 2004, 1, 5 ) );
+    QCOMPARE( calendar->readDate( "2004-W02-1",  KLocale::IsoWeekFormat ),    QDate( 2004, 1, 5 ) );
     QCOMPARE( calendar->readDate( "2004-001",    KLocale::IsoOrdinalFormat ), QDate( 2004, 1, 1 ) );
 }
 
@@ -519,6 +521,57 @@ void KCalendarTest::testStrings( KLocale::DigitSet testDigitSet )
 
     //Test Days In Week String
     QCOMPARE( calendar->daysInWeekString( testDate ), locale->convertDigits( "7", locale->dateTimeDigitSet() ) );
+}
+
+void KCalendarTest::testHebrewStrings()
+{
+/*
+    Ref table for numbers to Hebrew chars
+
+    Value     1       2       3        4        5       6         7        8      9
+
+    x 1    Alef א  Bet  ב  Gimel ג  Dalet ד  He   ה  Vav  ו    Zayen ז  Het  ח  Tet  ט
+           0x05D0  0x05D1  0x05D2   0x05D3   0x05D4  0x05D5    0x05D6   0x05D7  0x05D8
+
+    x 10   Yod  י  Kaf  כ  Lamed ל  Mem  מ   Nun  נ  Samekh ס  Ayin ע   Pe   פ  Tzadi צ
+           0x05D9  0x05DB  0x05DC   0x05DE   0x05E0  0x05E1    0x05E2   0x05E4  0x05E6
+
+    x 100  Qof  ק  Resh ר  Shin ש   Tav  ת
+           0x05E7  0x05E8  0x05E9   0x05EA
+
+    Note special cases 15 = 9 + 6 טו and 16 = 9 + 7 טז
+*/
+
+    QString oldLocale = setlocale(LC_ALL, "he.utf8");
+    KLocale *locale = new KLocale( *KGlobal::locale() );
+    locale->setLanguage(QStringList() << "he");
+    locale->setDateFormat( "%d %B %Y" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( "hebrew", locale );
+    if ( locale->language() == "he" ) {
+        QDate testDate;
+        QString yearString, monthString, dayString, testString, resultString;
+        calendar->setDate( testDate, 5765, 1, 1 );
+        // Have to use unicode values, for some reason directly using the chars doesn't work?
+        yearString.append( QChar(0x05EA) ).append( QChar(0x05E9) ).append( QChar(0x05E1) ).append( QChar('\"') ).append( QChar(0x05D4) );
+        monthString = "תשרי";
+        dayString.append( QChar(0x05D0) ).append( QChar('\'') );
+        testString = yearString + ' ' + monthString + ' ' + dayString;
+        QCOMPARE( calendar->readDate( calendar->formatDate( testDate, KLocale::LongDate ), KLocale::NormalFormat ), testDate );
+        QCOMPARE( calendar->formatDate( testDate, "%Y" ), yearString );
+        // Skip month name for now as won't translate for some reason, confirmed works visually in GUI
+        //QCOMPARE( calendar->formatDate( testDate, "%B" ), monthString );
+        QCOMPARE( calendar->formatDate( testDate, "%d" ), dayString );
+        //QCOMPARE( calendar->formatDate( testDate,  locale->dateFormat() ), testString );
+        //QCOMPARE( calendar->readDate( testString ), testDate );
+        for ( int yy = 5400; yy <= 6400; ++yy ) {
+            kDebug() << yy;
+            calendar->setDate( testDate, yy, 1, 1 );
+            QCOMPARE( calendar->readDate( calendar->formatDate( testDate, KLocale::LongDate ), KLocale::NormalFormat ), testDate );
+        }
+    } else {
+        kDebug() << "Cannot set Hebrew language, please install and re-test!";
+    }
+    setlocale( LC_ALL, oldLocale.toLatin1() );
 }
 
 void KCalendarTest::testIsoWeekDate()

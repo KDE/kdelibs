@@ -150,104 +150,6 @@ static class h_date * gregorianToHebrew( int y, int m, int d )
     return( &h );
 }
 
-static QString num2heb( int num, bool includeMillenium )
-{
-    const QChar decade[] = {
-                               0x05D8, 0x05D9, 0x05DB, 0x05DC, 0x05DE,
-                               0x05E0, 0x05E1, 0x05E2, 0x05E4, 0x05E6
-                           };
-    QString result;
-
-    if ( num < 1 || num > 9999 ) {
-        return QString::number( num );
-    }
-
-    if ( num >= 1000 ) {
-        if ( includeMillenium || num % 1000 == 0 )
-            result += QChar( 0x05D0 - 1 + num / 1000 );
-        num %= 1000;
-    }
-
-    if ( num >= 100 ) {
-        while ( num >= 500 ) {
-            result += QChar( 0x05EA );
-            num -= 400;
-        }
-        result += QChar( 0x05E7 - 1 + num / 100 );
-        num %= 100;
-    }
-
-    if ( num >= 10 ) {
-        if ( num == 15 || num == 16 )
-            num -= 9;
-        result += decade[num / 10];
-        num %= 10;
-    }
-
-    if ( num > 0 ) {
-        result += QChar( 0x05D0 - 1 + num );
-    }
-
-    if ( result.length() == 1 ) {
-        result += '\'';
-    } else {
-        result.insert( result.length() - 1, '\"' );
-    }
-
-    return result;
-}
-
-static int heb2num( const QString &str, int &iLength )
-{
-    QChar c;
-    QString s = str;
-    int result = 0;
-    iLength = 0;
-    int decadeValues[14] = {10, 20, 20, 30, 40, 40, 50,
-                            50, 60, 70, 80, 80, 90, 90};
-
-    int pos;
-    for ( pos = 0 ; pos < s.length() ; pos++ ) {
-        c = s[pos];
-        if ( s.length() > pos && ( s[pos + 1] == QChar( '\'' ) ||
-                                   s[pos + 1] == QChar( '\"' ) ) ) {
-            iLength++;
-            s.remove( pos + 1, 1 );
-        }
-
-        if ( c >= QChar( 0x05D0 ) && c <= QChar( 0x05D7 ) ) {
-            if ( s.length() > pos && s[pos + 1] >= QChar( 0x05D0 ) &&
-                    s[pos + 1] <= QChar( 0x05EA ) ) {
-                result += ( c.unicode() - 0x05D0 + 1 ) * 1000;
-            } else {
-                result += c.unicode() - 0x05D0 + 1;
-            }
-        } else if ( c == QChar( 0x05D8 ) ) {
-            if ( s.length() > pos && s[pos + 1] >= QChar( 0x05D0 ) &&
-                    s[pos + 1] <= QChar( 0x05EA ) && s[pos + 1] != QChar( 0x05D5 ) &&
-                    s[pos + 1] != QChar( 0x05D6 ) ) {
-                result += 9000;
-            } else {
-                result += 9;
-            }
-        } else if ( c >= QChar( 0x05D9 ) && c <= QChar( 0x05E6 ) ) {
-            if ( s.length() > pos && s[pos + 1] >= QChar( 0x05D9 ) ) {
-                return -1;
-            } else {
-                result += decadeValues[c.unicode() - 0x05D9];
-            }
-        } else if ( c >= QChar( 0x05E7 ) && c <= QChar( 0x05EA ) ) {
-            result += ( c.unicode() - 0x05E7 + 1 ) * 100;
-        } else {
-            break;
-        }
-    }
-
-    iLength += pos;
-
-    return result;
-}
-
 /* constants, in 1/18th of minute */
 static const int HOUR = 1080;
 static const int DAY = 24*HOUR;
@@ -827,74 +729,47 @@ QString KCalendarSystemHebrew::weekDayName( const QDate &date, WeekDayNameFormat
     return weekDayName( dayOfWeek( date ), format );
 }
 
-QString KCalendarSystemHebrew::yearString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemHebrew::yearString( const QDate &date, StringFormat format ) const
 {
-    QString sResult;
-
-    // Only use hebrew numbers if the hebrew setting is selected
-    if ( locale()->language() == QLatin1String( "he" ) ) {
-        if ( format == ShortFormat ) {
-            sResult = num2heb( year( pDate ), false );
-        }
-    } else {
-        sResult = KCalendarSystem::yearString( pDate, format );
-    }
-
-    return sResult;
+    return KCalendarSystem::yearString( date, format );
 }
 
-QString KCalendarSystemHebrew::monthString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemHebrew::monthString( const QDate &date, StringFormat format ) const
 {
-    return KCalendarSystem::monthString( pDate, format );
+    return KCalendarSystem::monthString( date, format );
 }
 
-QString KCalendarSystemHebrew::dayString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemHebrew::dayString( const QDate &date, StringFormat format ) const
 {
-    QString sResult;
-
-    // Only use hebrew numbers if the hebrew setting is selected
-    if ( locale()->language() == QLatin1String( "he" ) ) {
-        sResult = num2heb( day( pDate ), false );
-    } else {
-        sResult = KCalendarSystem::dayString( pDate, format );
-    }
-
-    return sResult;
+    return KCalendarSystem::dayString( date, format );
 }
 
-int KCalendarSystemHebrew::yearStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemHebrew::yearStringToInteger( const QString &string, int &readLength ) const
 {
-    int iResult;
+    int result = KCalendarSystem::yearStringToInteger( string, readLength );
 
-    if ( locale()->language() == "he" ) {
-        iResult = heb2num( sNum, iLength );
-    } else {
-        iResult = KCalendarSystem::yearStringToInteger( sNum, iLength );
+    // Hebrew has no letter for 0, so 5 and 5000 are written the same
+    // Assume if less than 10 then we are in an exact multiple of 1000
+    if ( result < 10 ) {
+        result = result * 1000;
     }
 
-    if ( iResult < 1000 ) {
-        iResult += 5000; // assume we're in the 6th millenium (y6k bug)
+    // Not good just assuming, make configurable
+    if ( result < 1000 ) {
+        result += 5000; // assume we're in the 6th millenium (y6k bug)
     }
 
-    return iResult;
+    return result;
 }
 
-int KCalendarSystemHebrew::monthStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemHebrew::monthStringToInteger( const QString &string, int &readLength ) const
 {
-    return KCalendarSystem::monthStringToInteger( sNum, iLength );
+    return KCalendarSystem::monthStringToInteger( string, readLength );
 }
 
-int KCalendarSystemHebrew::dayStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemHebrew::dayStringToInteger( const QString &string, int &readLength ) const
 {
-    int iResult;
-
-    if ( locale()->language() == "he" ) {
-        iResult = heb2num( sNum, iLength );
-    } else {
-        iResult = KCalendarSystem::yearStringToInteger( sNum, iLength );
-    }
-
-    return iResult;
+    return KCalendarSystem::yearStringToInteger( string, readLength );
 }
 
 QString KCalendarSystemHebrew::formatDate( const QDate &date, KLocale::DateFormat format ) const
@@ -949,6 +824,7 @@ bool KCalendarSystemHebrew::isProleptic() const
 
 bool KCalendarSystemHebrew::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
+    Q_UNUSED( jd );
     year = -1;
     month = -1;
     day = -1;
@@ -957,6 +833,9 @@ bool KCalendarSystemHebrew::julianDayToDate( int jd, int &year, int &month, int 
 
 bool KCalendarSystemHebrew::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
+    Q_UNUSED( year );
+    Q_UNUSED( month );
+    Q_UNUSED( day );
     jd = -1;
     return false;
 }
