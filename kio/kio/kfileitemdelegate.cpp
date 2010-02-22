@@ -1402,10 +1402,24 @@ void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
     QRect r = d->labelRectangle(opt);
 
     // Use the full available width for the editor when maximumSize is set
-    if (d->verticalLayout(option) && !d->maximumSize.isEmpty()) {
-        int diff = qMax(r.width(), d->maximumSize.width()) - r.width();
-        if (diff > 1)
-            r.adjust(-(diff / 2), 0, diff / 2, 0);
+    if (!d->maximumSize.isEmpty()) {
+        if (d->verticalLayout(option)) {
+            int diff = qMax(r.width(), d->maximumSize.width()) - r.width();
+            if (diff > 1) {
+                r.adjust(-(diff / 2), 0, diff / 2, 0);
+            }
+        }
+        else {
+            int diff = qMax(r.width(), d->maximumSize.width() - opt.decorationSize.width()) - r.width();
+            if (diff > 0) {
+                if (opt.decorationPosition == QStyleOptionViewItem::Left) {
+                    r.adjust(0, 0, diff, 0);
+                }
+                else {
+                    r.adjust(-diff, 0, 0, 0);
+                }
+            }
+        }
     }
 
     KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
