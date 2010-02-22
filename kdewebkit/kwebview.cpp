@@ -28,14 +28,7 @@
 #include "kwebpage.h"
 #include "kwebviewprivate_p.h"
 
-#include <kurl.h>
-#include <kdebug.h>
-#include <kio/global.h>
-#include <kdeversion.h>
-
-#include <QtGui/QApplication>
 #include <QtGui/QMouseEvent>
-#include <QtNetwork/QNetworkRequest>
 
 
 KWebView::KWebView(QWidget *parent, bool createCustomPage)
