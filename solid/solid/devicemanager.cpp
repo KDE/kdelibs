@@ -185,7 +185,7 @@ void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
 
         if (dev) {
             Q_ASSERT(dev->backendObject()!=0);
-            delete dev->backendObject();
+            dev->setBackendObject(0);
             Q_ASSERT(dev->backendObject()==0);
         }
     }

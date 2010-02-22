@@ -266,7 +266,7 @@ Solid::DevicePrivate::~DevicePrivate()
     foreach (DeviceInterface *iface, m_ifaces) {
         delete iface->d_ptr->backendObject();
     }
-    qDeleteAll(m_ifaces);
+    setBackendObject(0);
 }
 
 void Solid::DevicePrivate::_k_destroyed(QObject *object)
@@ -277,6 +277,12 @@ void Solid::DevicePrivate::_k_destroyed(QObject *object)
 
 void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
 {
+
+    if (m_backendObject) {
+        m_backendObject.data()->disconnect(this);
+    }
+
+    delete m_backendObject.data();
     m_backendObject = object;
 
     if (object) {
@@ -286,7 +292,6 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
 
     if (!m_ifaces.isEmpty()) {
         foreach (DeviceInterface *iface, m_ifaces) {
-            delete iface->d_ptr->backendObject();
             delete iface;
             if (!ref.deref()) deleteLater();
         }
@@ -302,7 +307,8 @@ Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::T
 
 void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface)
 {
-    ref.ref();
+    if(m_ifaces.empty())
+        ref.ref();
     m_ifaces[type] = interface;
 }
 
