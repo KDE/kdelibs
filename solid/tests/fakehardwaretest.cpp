@@ -38,7 +38,8 @@ void FakeHardwareTest::testFakeBackend()
     Solid::Backends::Fake::FakeManager *fakeManager = new Solid::Backends::Fake::FakeManager(0, TEST_DATA);
 
     QVERIFY(!fakeManager->allDevices().isEmpty());
-    QVERIFY(fakeManager->createDevice("/org/kde/solid/fakehw/computer")!=0);
+    QObject *computer = fakeManager->createDevice("/org/kde/solid/fakehw/computer");
+    QVERIFY(computer!=0);
     QVERIFY(fakeManager->createDevice("/com/helloworld/troll/compiutor")==0);
 
     Solid::Backends::Fake::FakeDevice *device = static_cast<Solid::Backends::Fake::FakeDevice *>(fakeManager->createDevice("/org/kde/solid/fakehw/acpi_CPU0"));
@@ -65,6 +66,11 @@ void FakeHardwareTest::testFakeBackend()
     instructionsets |= Solid::Processor::IntelMmx;
     instructionsets |= Solid::Processor::IntelSse;
     QCOMPARE(processor->instructionSets(), instructionsets);
+
+    delete processor;
+    delete device;
+    delete computer;
+    delete fakeManager;
 }
 
 #include "fakehardwaretest.moc"
