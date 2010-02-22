@@ -150,6 +150,8 @@ CLEAR COOKIES
 CONFIG AcceptSessionCookies true
 COOKIE ACCEPT http://www.foobar.com Set-Cookie: from=foobar.com; domain=bar.com; Path="/"
 CHECK http://bar.com
+CLEAR CONFIG
+CLEAR COOKIES
 ## Check cookies with IP address hostnames
 COOKIE ASK http://192.168.0.1 Set-Cookie: name1=value1; Path="/"; expires=%NEXTYEAR%
 COOKIE ASK http://192.168.0.1 Set-Cookie: name11=value11; domain="test.local"; Path="/"; expires=%NEXTYEAR%
@@ -160,11 +162,12 @@ CHECK http://192.168.0.1:8080 Cookie: name2=value2
 CHECK https://192.168.0.1 Cookie: name1=value1; name11=value11; name3=value3
 CHECK http://192.168.0.10
 CHECK http://192.168.0
+CLEAR COOKIES
 ## Check expiration dates for the Y2K38 problem
 COOKIE ASK http://foo.bar Set-Cookie: name=value;expires=Tue, 06-Dec-2039 00:30:42 GMT;path="/"
 CHECK http://foo.bar Cookie: name=value
 CLEAR COOKIES
-## Check non-standard expiration dates (BR# 145244/amazon.com)
+## Check non-standard expiration dates (BR# 145244)
 COOKIE ASK http://foo.bar Set-Cookie: name=value; expires=Sat Sep 12 07:00:00 2020 GMT; path="/"
 COOKIE ASK http://foo.bar Set-Cookie: name1=value1; expires=Thu, 01 Jan 1970 00:00:00 GMT; path="/"
 COOKIE ASK http://foo.bar Set-Cookie: name2=value2; expires=Sat Sep 12 2020 07:00:00 GMT; path="/"
