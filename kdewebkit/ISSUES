@@ -2,10 +2,6 @@ Known Issues:
 =============
 * [QtWebKit] Crash browsing facebook. See https://bugs.webkit.org/show_bug.cgi?id=35204.
 
-* [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
-  tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
-  See https://bugs.webkit.org/show_bug.cgi?id=29899
-
 * [QtWebKit] HTML 5 <video> tag will not work properly until Qt 4.7 for most depending
   on how their distro created the Qt library package. Due to differences in the Phonon 
   library used by Qt and KDE, most distros disable support for Phonon when compiling 
@@ -22,6 +18,13 @@ Known Issues:
     ** Form completion like the one available for native widgets, e.g.
        QLineEdit and QComboBox.
     ** Spell checking for all input widgets.
+
+* [QtWebKit] No Java applet support. 
+
+* [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
+  tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
+  See https://bugs.webkit.org/show_bug.cgi?id=29899
+
 
 * [QtWebKit] Only <meta> tags that contain a "name" attribute are properly parsed
   and returned through QWebFrame::metaData.
