@@ -44,7 +44,6 @@
 
 <!-- A tool bar
   - Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
-  -             fullWidth: if true (default), the toolbar extends to the full width of the window
   -             position: the position of the toolbar in the window (only effective if the user
                           has never used the application before)
   -             iconText: whether to show icon or text or both
@@ -61,7 +60,6 @@
 <!ELEMENT ToolBar (text?, (Action | Separator | ActionList | Merge | MergeLocal | DefineGroup)*)>
 <!ATTLIST ToolBar
   name CDATA #REQUIRED
-  fullWidth (true|false) "true"
   position (top|bottom|left|right) "top"
   iconText (icononly|textonly|icontextright|icontextbottom) #IMPLIED
   iconSize CDATA #IMPLIED

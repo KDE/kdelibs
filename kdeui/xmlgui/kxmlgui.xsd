@@ -287,9 +287,6 @@
                             - name: a unique name for the toolbar, use mainToolBar for
                                     the main one
 
-                            - fullWidth: if true (default), the toolbar extends to the
-                                    full width of the window 
-
                             - position: the position of the toolbar in the window 
                             - iconText: whether to show icon or text or both 
                             - iconSize: the size of the icons (0 for default, or usually
@@ -329,7 +326,6 @@
                         </xsd:choice>
                         
                         <xsd:attribute name="name" type="identifier" />
-                        <xsd:attribute name="fullWidth" use="optional" type="xsd:boolean" default="true" />
                         <xsd:attribute name="position" use="optional" >
                             <xsd:simpleType>
                                 <xsd:restriction base="xsd:string">
