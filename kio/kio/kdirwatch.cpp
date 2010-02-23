@@ -55,7 +55,7 @@
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QTimer>
 
-#include <kapplication.h>
+#include <ksharedconfig.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kglobal.h>
