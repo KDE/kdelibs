@@ -63,7 +63,9 @@ static QList<QByteArray> readLines(const char* fileName = "kdebug.dbg")
     Q_ASSERT(!path.isEmpty());
     Q_ASSERT(QFile::exists(path));
     QFile file(path);
-    Q_ASSERT(file.open(QIODevice::ReadOnly));
+    const bool opened = file.open(QIODevice::ReadOnly);
+    Q_ASSERT(opened);
+    Q_UNUSED(opened);
     QList<QByteArray> lines;
     QByteArray line;
     do {

@@ -1152,7 +1152,9 @@ QList<QByteArray> KConfigTest::readLines(const char* fileName)
     const QString path = KStandardDirs::locateLocal("config", fileName);
     Q_ASSERT(!path.isEmpty());
     QFile file(path);
-    Q_ASSERT(file.open(QIODevice::ReadOnly));
+    const bool opened = file.open(QIODevice::ReadOnly);
+    Q_ASSERT(opened);
+    Q_UNUSED(opened);
     QList<QByteArray> lines;
     QByteArray line;
     do {
