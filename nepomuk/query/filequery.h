@@ -35,6 +35,8 @@ namespace Nepomuk {
          * results to files and the possibility to restrict the search to
          * specific folders via setIncludeFolders() and setExcludeFolders().
          *
+         * \warning %FileQuery does only return files and folders as results.
+         *
          * \author Sebastian Trueg <trueg@kde.org>
          *
          * \since 4.4
