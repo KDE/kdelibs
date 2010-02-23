@@ -1,6 +1,7 @@
-/* 
- * Copyright (C) 2008-2009 by Michel Ludwig (michel.ludwig@kdemail.net)
- * Copyright (C) 2009 by Joseph Wenninger (jowenn@kde.org)
+/*  This file is part of the KDE libraries and the Kate part.
+ *
+ *  Copyright (C) 2008-2010 by Michel Ludwig <michel.ludwig@kdemail.net>
+ *  Copyright (C) 2009 by Joseph Wenninger <jowenn@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -12,11 +13,11 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Library General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public License
- * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
-*/
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
+ */
 
 #ifndef ONTHEFLYCHECK_H
 #define ONTHEFLYCHECK_H
@@ -26,14 +27,16 @@
 #include <QObject>
 #include <QPair>
 #include <QString>
+#include <QSet>
 
-#include <ktexteditor/document.h>
-#include <ktexteditor/rangefeedback.h>
-#include <sonnet/backgroundchecker.h>
+#include <ktexteditor/smartrangewatcher.h>
 #include <sonnet/speller.h>
 
 #include "katedocument.h"
-#include "kateview.h"
+
+namespace Sonnet {
+  class BackgroundChecker;
+}
 
 class KateOnTheFlyChecker : public QObject, private KTextEditor::SmartRangeWatcher {
   Q_OBJECT
@@ -67,7 +70,6 @@ class KateOnTheFlyChecker : public QObject, private KTextEditor::SmartRangeWatch
     void refreshSpellCheck(const KTextEditor::Range &range = KTextEditor::Range::invalid());
 
     void updateInstalledSmartRanges(KateView *view);
-    void updateInstalledSmartRanges();
 
   protected:
     KateDocument *const m_document;
@@ -110,7 +112,7 @@ class KateOnTheFlyChecker : public QObject, private KTextEditor::SmartRangeWatch
     virtual void caretEnteredRange(KTextEditor::SmartRange *range, KTextEditor::View *view);
     virtual void caretExitedRange(KTextEditor::SmartRange *range, KTextEditor::View *view);
 
-    QList<KTextEditor::SmartRange*> m_eliminatedRanges;
+    QSet<KTextEditor::SmartRange*> m_eliminatedRanges;
 
     QMap<KTextEditor::View*, KTextEditor::Range> m_displayRangeMap;
     QList<KTextEditor::SmartRange*> m_myranges;
@@ -119,6 +121,7 @@ class KateOnTheFlyChecker : public QObject, private KTextEditor::SmartRangeWatch
 
     void deleteSmartRangeLater(KTextEditor::SmartRange *range);
     void deleteSmartRangesLater(const QList<KTextEditor::SmartRange*>& list);
+    void deleteSmartRangeQuickly(KTextEditor::SmartRange *range);
     void stopCurrentSpellCheck();
 
   protected Q_SLOTS:
