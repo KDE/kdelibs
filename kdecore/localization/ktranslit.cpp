@@ -340,6 +340,7 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTI2E_ENTRY("ил", "ел");
     SR_DICTI2E_ENTRY("ит", "ет");
     SR_DICTI2E_ENTRY("јел", "ео");
+    SR_DICTI2E_ENTRY("тн", "тњ");
     // derived mappings
     for (int i = 0; i < d->dictI2Es.size(); ++i) {
         QHash<QString, QString> &dictI2E = d->dictI2Es[i];
