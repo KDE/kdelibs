@@ -57,7 +57,6 @@
 #include <kconfiggroup.h>
 #include <kservice.h>
 #include <kdatetime.h>
-#include <kcodecs.h>
 #include <kcomponentdata.h>
 #include <krandom.h>
 #include <kmimetype.h>
@@ -3396,104 +3395,16 @@ try_again:
     return !authRequiresAnotherRoundtrip; // return true if no more credentials need to be sent
 }
 
-static void skipLWS(const QString &str, int &pos)
-{
-    while (pos < str.length() && (str[pos] == QLatin1Char(' ') || str[pos] == QLatin1Char('\t')))
-        ++pos;
-}
-
-// Extracts token-like input until terminator char or EOL.. Also skips over the terminator.
-// We don't try to be strict or anything..
-static QString extractUntil(const QString &str, QChar term, int &pos)
-{
-    QString out;
-    skipLWS(str, pos);
-    while (pos < str.length() && (str[pos] != term)) {
-        out += str[pos];
-        ++pos;
-    }
-
-    if (pos < str.length()) // Stopped due to finding term
-        ++pos;
-
-    // Remove trailing linear whitespace...
-    while (out.endsWith(QLatin1Char(' ')) || out.endsWith(QLatin1Char('\t')))
-        out.chop(1);
-
-    return out;
-}
-
-// As above, but also handles quotes..
-static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
-{
-    skipLWS(str, pos);
-
-    // Are we quoted?
-    if (pos < str.length() && str[pos] == QLatin1Char('"')) {
-        QString out;
-
-        // Skip the quote...
-        ++pos;
-
-        // Parse until trailing quote...
-        while (pos < str.length()) {
-            if (str[pos] == QLatin1Char('\\') && pos + 1 < str.length()) {
-                // quoted-pair = "\" CHAR
-                out += str[pos + 1];
-                pos += 2; // Skip both...
-            } else if (str[pos] == QLatin1Char('"')) {
-                ++pos;
-                break;
-            }  else {
-                out += str[pos];
-                ++pos;
-            }
-        }
-
-        // Skip until term..
-        while (pos < str.length() && (str[pos] != term))
-            ++pos;
-
-        if (pos < str.length()) // Stopped due to finding term
-            ++pos;
-
-        return out;
-    } else {
-        return extractUntil(str, term, pos);
-    }
-}
-
 void HTTPProtocol::parseContentDisposition(const QString &disposition)
 {
-    kDebug(7113) << "disposition: " << disposition;
-    QString strDisposition;
-    QString strFilename;
+    const QMap<QString, QString> parameters = contentDispositionParser(disposition);
 
-    int pos = 0;
-
-    strDisposition = extractUntil(disposition, QLatin1Char(';'), pos);
-
-    while (pos < disposition.length()) {
-        const QString key = extractUntil(disposition, QLatin1Char('='), pos);
-        const QString val = extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
-        if (key == QLatin1String("filename"))
-            strFilename = val;
+    QMap<QString, QString>::const_iterator i = parameters.constBegin();
+    while (i != parameters.constEnd()) {
+        setMetaData(QLatin1String("content-disposition-") + i.key(), i.value());
+        kDebug(7113) << "Content-Disposition: " << i.key() << "=" << i.value();
+        ++i;
     }
-
-    // Content-Disposition is not allowed to dictate directory
-    // path, thus we extract the filename only.
-    if ( !strFilename.isEmpty() )
-    {
-        int pos = strFilename.lastIndexOf( QLatin1Char('/') );
-
-        if( pos > -1 )
-            strFilename = strFilename.mid(pos+1);
-
-        kDebug(7113) << "Content-Disposition: filename=" << strFilename;
-    }
-    setMetaData(QLatin1String("content-disposition-type"), strDisposition);
-    if (!strFilename.isEmpty())
-        setMetaData(QLatin1String("content-disposition-filename"), KCodecs::decodeRFC2047String(strFilename));
 }
 
 void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)

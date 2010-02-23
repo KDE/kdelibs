@@ -22,6 +22,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QPair>
+#include <QtCore/QMap>
 
 struct HeaderField {
     HeaderField(bool multiValued)
