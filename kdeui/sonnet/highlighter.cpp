@@ -113,8 +113,9 @@ bool Highlighter::Private::cursorAtWord(int wordPosition)
         wordCursor.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,wordPosition);
         wordCursor.select(QTextCursor::WordUnderCursor);
         if (edit->textCursor().position() >= wordCursor.selectionStart() &&
-            edit->textCursor().position() <= wordCursor.selectionEnd())
+            edit->textCursor().position() <= wordCursor.selectionEnd()) {
             return true;
+          }
     }
     return false;
 }
@@ -325,26 +326,19 @@ void Highlighter::highlightBlock(const QString &text)
 {
     if (text.isEmpty() || !d->active || !d->spellCheckerFound)
         return;
-    QTextCursor cursor = d->edit->textCursor();
-    int index = cursor.position();
 
-    const int lengthPosition = text.length() - 1;
-
-    if ( index != lengthPosition ||
-         ( lengthPosition > 0 && !text[lengthPosition-1].isLetter() ) ) {
-        d->filter->setBuffer( text );
-        Word w = d->filter->nextWord();
-        while ( !w.end ) {
-            ++d->wordCount;
-            if (d->dict->isMisspelled(w.word) && !d->cursorAtWord(w.start)) {
-                ++d->errorCount;
-                setMisspelled(w.start, w.word.length());
-                if (d->suggestionListeners)
-                    emit newSuggestions(w.word, d->dict->suggest(w.word));
-            } else
-                unsetMisspelled(w.start, w.word.length());
-            w = d->filter->nextWord();
-        }
+    d->filter->setBuffer( text );
+    Word w = d->filter->nextWord();
+    while ( !w.end ) {
+        ++d->wordCount;
+        if (d->dict->isMisspelled(w.word) && !d->cursorAtWord(w.start)) {
+            ++d->errorCount;
+            setMisspelled(w.start, w.word.length());
+            if (d->suggestionListeners)
+                emit newSuggestions(w.word, d->dict->suggest(w.word));
+        } else
+            unsetMisspelled(w.start, w.word.length());
+        w = d->filter->nextWord();
     }
     //QTimer::singleShot( 0, this, SLOT(checkWords()) );
     setCurrentBlockState(0);
