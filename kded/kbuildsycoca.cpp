@@ -55,14 +55,6 @@
 #include <kcrash.h>
 #include <kmemfile.h>
 
-#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
-                        // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
-# include <qlabel.h>
-# include <kmessagebox.h>
-  bool silent;
-  bool showprogress;
-#endif
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
@@ -400,11 +392,6 @@ bool KBuildSycoca::recreate()
   {
     fprintf(stderr, "kbuildsycoca4: ERROR creating database '%s'! %s\n",
       path.toLocal8Bit().data(), database.errorString().toLocal8Bit().data());
-#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
-                        // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
-    if (!silent)
-      KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n", path.toLocal8Bit().data()), i18n("KBuildSycoca"));
-#endif
     return false;
   }
 
@@ -432,10 +419,6 @@ bool KBuildSycoca::recreate()
     {
       fprintf(stderr, "kbuildsycoca4: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
       fprintf(stderr, "kbuildsycoca4: Disk full?\n");
-#ifdef KBUILDSYCOCA_GUI
-      if (!silent)
-        KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n", path.toLocal8Bit().data()), i18n("KBuildSycoca"));
-#endif
       return false;
     }
   }
@@ -646,10 +629,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    options.add("global", ki18n("Create global database"));
    options.add("menutest", ki18n("Perform menu generation test run only"));
    options.add("track <menu-id>", ki18n("Track menu id for debug purposes"));
-#ifdef KBUILDSYCOCA_GUI
-   options.add("silent", ki18n("Silent - work without windows and stderr"));
-   options.add("showprogress", ki18n("Show progress information (even if 'silent' mode is on)"));
-#endif
 
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);
@@ -663,28 +642,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      setenv("KDEROOTHOME", "-", 1);
    }
 
-#ifdef KBUILDSYCOCA_GUI
-   KApplication k;
-   k.disableSessionManagement();
-#else
    QCoreApplication k(argc, argv);
    KComponentData mainComponent(d);
-#endif
-
-#ifdef KBUILDSYCOCA_GUI
-   silent = args->isSet("silent");
-   showprogress = args->isSet("showprogress");
-   QLabel progress( QString("<p><br><nobr>    %1    </nobr><br>").arg( i18n("Reloading KDE configuration, please wait...") ), 0, "", Qt::WType_Dialog | Qt::WStyle_DialogBorder  | Qt::WStyle_Customize| Qt::WStyle_Title );
-   QString capt = i18n("KDE Configuration Manager");
-   if (!silent) {
-     if (KMessageBox::No == KMessageBox::questionYesNo(0, i18n("Do you want to reload KDE configuration?"), capt, i18nc("Reload KDE configuration messagebox", "Reload"), i18n("Do Not Reload")))
-       return 0;
-   }
-   if (!silent || showprogress) {
-     progress.setCaption( capt );
-     progress.show();
-   }
-#endif
 
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
    KCrash::setEmergencySaveFunction(crashHandler);
@@ -821,10 +780,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       if (args->isSet("track"))
          sycoca->setTrackId(args->getOption("track"));
       if (!sycoca->recreate()) {
-#ifdef KBUILDSYCOCA_GUI
-        if (!silent || showprogress)
-          progress.close();
-#endif
         return -1;
       }
 
@@ -852,12 +807,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      }
    }
 
-#ifdef KBUILDSYCOCA_GUI
-   if (!silent) {
-     progress.close();
-     KMessageBox::information(0, i18n("Configuration information reloaded successfully."), capt);
-   }
-#endif
    return 0;
 }
 
