@@ -337,6 +337,8 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_TICKI2E_ENTRY("◃");
     SR_DICTI2E_ENTRY("ијел", "ео");
     SR_DICTI2E_ENTRY("ијен", "ењ");
+    SR_DICTI2E_ENTRY("ил", "ел");
+    SR_DICTI2E_ENTRY("ит", "ет");
     SR_DICTI2E_ENTRY("јел", "ео");
     // derived mappings
     for (int i = 0; i < d->dictI2Es.size(); ++i) {
