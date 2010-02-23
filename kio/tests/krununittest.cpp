@@ -92,6 +92,9 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
 
 void KRunUnitTest::testProcessDesktopExec()
 {
+    QString sh = KStandardDirs::findExe("sh");
+    if (sh.isEmpty()) sh = "/bin/sh";
+
     KUrl::List l0;
     static const char
         *execs[] = { "Exec=date -u", "Exec=echo $PWD" },
@@ -99,7 +102,7 @@ void KRunUnitTest::testProcessDesktopExec()
           *sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
         *rslts[] = {
             "/bin/date -u", // 0
-            /* sh */ " -c 'echo $PWD '", // 1
+            "/bin/sh -c 'echo $PWD '", // 1
             "x-term -T ' - just_a_test' -e /bin/date -u", // 2
             "x-term -T ' - just_a_test' -e /bin/sh -c 'echo $PWD '", // 3
             /* kdesu */ " -u sprallo -c '/bin/date -u'", // 4
@@ -112,11 +115,10 @@ void KRunUnitTest::testProcessDesktopExec()
             for (int ex = 0; ex < 2; ex++) {
                 int pt = ex+te*2+su*4;
                 QString exe;
-                if (pt == 1)
-                    exe = KStandardDirs::findExe("sh");
-                else if (pt == 4 || pt == 5)
+                if (pt == 4 || pt == 5)
                     exe = KStandardDirs::findExe("kdesu");
-                checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + rslts[pt]);
+                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", sh);
+                checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
 }
 
