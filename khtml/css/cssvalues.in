@@ -428,6 +428,12 @@ content
 padding
 
 #
+# CSS_PROP_BACKGROUND_SIZE
+#
+contain
+cover
+
+#
 # Not supported:
 #
 # CSS_PROP_BORDER_IMAGE

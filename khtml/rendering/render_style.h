@@ -368,6 +368,10 @@ enum EBackgroundRepeat {
     REPEAT, REPEAT_X, REPEAT_Y, NO_REPEAT
 };
 
+enum EBackgroundSizeType {
+    BGSLENGTH, BGSCONTAIN, BGSCOVER
+};
+
 enum EBackgroundAttachment {
     BGASCROLL, BGAFIXED, BGALOCAL
 };
@@ -390,6 +394,7 @@ public:
     EBackgroundBox backgroundOrigin() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgOrigin); }
     EBackgroundRepeat backgroundRepeat() const { return KDE_CAST_BF_ENUM(EBackgroundRepeat, m_bgRepeat); }
     LengthSize backgroundSize() const { return m_backgroundSize; }
+    EBackgroundSizeType backgroundSizeType() const { return KDE_CAST_BF_ENUM(EBackgroundSizeType, m_bgSizeType); }
 
     BackgroundLayer* next() const { return m_next; }
     BackgroundLayer* next() { return m_next; }
@@ -411,6 +416,7 @@ public:
     void setBackgroundOrigin(EBackgroundBox b) { m_bgOrigin = b; m_originSet = true; }
     void setBackgroundRepeat(EBackgroundRepeat r) { m_bgRepeat = r; m_repeatSet = true; }
     void setBackgroundSize(const LengthSize& b) { m_backgroundSize = b; m_backgroundSizeSet = true; }
+    void setBackgroundSizeType(EBackgroundSizeType t) { m_bgSizeType = t; m_backgroundSizeSet = true; }
 
     void clearBackgroundImage() { m_imageSet = false; }
     void clearBackgroundXPosition() { m_xPosSet = false; }
@@ -456,6 +462,7 @@ public:
     KDE_BF_ENUM(EBackgroundBox) m_bgClip : 2;
     KDE_BF_ENUM(EBackgroundBox) m_bgOrigin : 2;
     KDE_BF_ENUM(EBackgroundRepeat) m_bgRepeat : 2;
+    KDE_BF_ENUM(EBackgroundSizeType) m_bgSizeType : 2;
 
     LengthSize m_backgroundSize;
 
@@ -1418,6 +1425,7 @@ public:
     static EBackgroundBox initialBackgroundOrigin() { return BGPADDING; }
     static EBackgroundRepeat initialBackgroundRepeat() { return REPEAT; }
     static LengthSize initialBackgroundSize() { return LengthSize(); }
+    static EBackgroundSizeType initialBackgroundSizeType() { return BGSLENGTH; }
     static bool initialBorderCollapse() { return false; }
     static EBorderStyle initialBorderStyle() { return BNONE; }
     static ECaptionSide initialCaptionSide() { return CAPTOP; }

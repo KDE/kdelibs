@@ -110,6 +110,7 @@ BackgroundLayer::BackgroundLayer()
  m_bgClip(RenderStyle::initialBackgroundClip()),
  m_bgOrigin(RenderStyle::initialBackgroundOrigin()),
  m_bgRepeat(RenderStyle::initialBackgroundRepeat()),
+ m_bgSizeType(RenderStyle::initialBackgroundSizeType()),
  m_backgroundSize(RenderStyle::initialBackgroundSize()),
  m_next(0)
 {
@@ -128,6 +129,7 @@ BackgroundLayer::BackgroundLayer(const BackgroundLayer& o)
     m_bgOrigin = o.m_bgOrigin;
     m_bgRepeat = o.m_bgRepeat;
     m_backgroundSize = o.m_backgroundSize;
+    m_bgSizeType = o.m_bgSizeType;
     m_imageSet = o.m_imageSet;
     m_attachmentSet = o.m_attachmentSet;
     m_clipSet = o.m_clipSet;
@@ -157,6 +159,7 @@ BackgroundLayer& BackgroundLayer::operator=(const BackgroundLayer& o) {
     m_bgOrigin = o.m_bgOrigin;
     m_bgRepeat = o.m_bgRepeat;
     m_backgroundSize = o.m_backgroundSize;
+    m_bgSizeType = o.m_bgSizeType;
 
     m_imageSet = o.m_imageSet;
     m_attachmentSet = o.m_attachmentSet;
@@ -172,7 +175,7 @@ BackgroundLayer& BackgroundLayer::operator=(const BackgroundLayer& o) {
 bool BackgroundLayer::operator==(const BackgroundLayer& o) const {
     return m_image == o.m_image && m_xPosition == o.m_xPosition && m_yPosition == o.m_yPosition &&
            m_bgAttachment == o.m_bgAttachment && m_bgClip == o.m_bgClip && m_bgOrigin == o.m_bgOrigin && m_bgRepeat == o.m_bgRepeat &&
-           m_backgroundSize.width == o.m_backgroundSize.width && m_backgroundSize.height == o.m_backgroundSize.height &&
+           m_backgroundSize.width == o.m_backgroundSize.width && m_bgSizeType == o.m_bgSizeType && m_backgroundSize.height == o.m_backgroundSize.height &&
            m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet && m_repeatSet == o.m_repeatSet &&
            m_xPosSet == o.m_xPosSet && m_yPosSet == o.m_yPosSet && m_backgroundSizeSet == o.m_backgroundSizeSet &&
            ((m_next && o.m_next) ? *m_next == *o.m_next : m_next == o.m_next);
@@ -869,8 +872,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
         assert( other->position() != PSTATIC );                      // this style is positioned or relatively positioned
         if ( surround->hasSamePBMData(*other->surround.get()) &&    // padding/border/margin are identical
              (other->position() == PRELATIVE ||
-               !(other->left().isAuto() && other->right().isAuto()) &&  // X isn't static
-               !(other->top().isAuto() && other->bottom().isAuto()) ))   // neither is Y
+               (!(other->left().isAuto() && other->right().isAuto()) &&  // X isn't static
+                !(other->top().isAuto() && other->bottom().isAuto())) ))   // neither is Y
            // therefore only the offset is different
            return Position;
         return Layout;

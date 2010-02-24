@@ -1743,6 +1743,9 @@ CSSValueImpl* CSSParser::parseBackgroundSize()
     Value* value = valueList->current();
     CSSPrimitiveValueImpl* parsedValue1;
 
+    if (value->id == CSS_VAL_COVER || value->id == CSS_VAL_CONTAIN)
+        return new CSSPrimitiveValueImpl(value->id);
+
     if (value->id == CSS_VAL_AUTO)
         parsedValue1 = new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
     else {

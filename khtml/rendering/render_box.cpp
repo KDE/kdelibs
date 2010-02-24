@@ -472,36 +472,49 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
     CachedImage* bg = bgLayer->backgroundImage();
 
     if (bgLayer->isBackgroundSizeSet()) {
-        int w = scaledWidth;
-        int h = scaledHeight;
+        if (bgLayer->backgroundSizeType() == BGSLENGTH) {
+            int w = scaledWidth;
+            int h = scaledHeight;
 
-        Length bgWidth = bgLayer->backgroundSize().width;
-        Length bgHeight = bgLayer->backgroundSize().height;
+            Length bgWidth = bgLayer->backgroundSize().width;
+            Length bgHeight = bgLayer->backgroundSize().height;
 
-        if (bgWidth.isFixed())
-            w = bgWidth.value();
-        else if (bgWidth.isPercent())
-            w = bgWidth.width(scaledWidth);
+            if (bgWidth.isFixed())
+                w = bgWidth.value();
+            else if (bgWidth.isPercent())
+                w = bgWidth.width(scaledWidth);
 
-        if (bgHeight.isFixed())
-            h = bgHeight.value();
-        else if (bgHeight.isPercent())
-            h = bgHeight.width(scaledHeight);
+            if (bgHeight.isFixed())
+                h = bgHeight.value();
+            else if (bgHeight.isPercent())
+                h = bgHeight.width(scaledHeight);
 
-        // If one of the values is auto we have to use the appropriate
-        // scale to maintain our aspect ratio.
-        if (bgWidth.isAuto() && !bgHeight.isAuto())
-            w = bg->pixmap_size().width() * h / bg->pixmap_size().height();
-        else if (!bgWidth.isAuto() && bgHeight.isAuto())
-            h = bg->pixmap_size().height() * w / bg->pixmap_size().width();
-        else if (bgWidth.isAuto() && bgHeight.isAuto()) {
-            // If both width and height are auto, we just want to use the image's
-            // intrinsic size.
-            w = bg->pixmap_size().width();
-            h = bg->pixmap_size().height();
+            // If one of the values is auto we have to use the appropriate
+            // scale to maintain our aspect ratio.
+            if (bgWidth.isAuto() && !bgHeight.isAuto())
+                w = bg->pixmap_size().width() * h / bg->pixmap_size().height();
+            else if (!bgWidth.isAuto() && bgHeight.isAuto())
+                h = bg->pixmap_size().height() * w / bg->pixmap_size().width();
+            else if (bgWidth.isAuto() && bgHeight.isAuto()) {
+                // If both width and height are auto, we just want to use the image's
+                // intrinsic size.
+                w = bg->pixmap_size().width();
+                h = bg->pixmap_size().height();
+            }
+            scaledWidth = qMax(1, w);
+            scaledHeight = qMax(1, h);
+        } else {
+            // 'cover' and 'contain' scaling ratio
+            assert( bgLayer->backgroundSizeType() == BGSCONTAIN ||
+                    bgLayer->backgroundSizeType() == BGSCOVER);
+            float iw = bg->pixmap_size().width();
+            float ih = bg->pixmap_size().height();
+            float w = scaledWidth/iw;        
+            float h = scaledHeight/ih;
+            float r = (bgLayer->backgroundSizeType() == BGSCONTAIN) ? qMin(w,h) : qMax(w,h);
+            scaledWidth = qMax(1, static_cast<int>(iw*r));
+            scaledHeight = qMax(1, static_cast<int>(ih*r));
         }
-        scaledWidth = qMax(1, w);
-        scaledHeight = qMax(1, h);
     } else {
         scaledWidth = bg->pixmap_size().width();
         scaledHeight = bg->pixmap_size().height();
