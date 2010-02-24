@@ -87,6 +87,16 @@
 #include <kstartupinfo.h>
 #endif
 
+#ifdef Q_WS_X11
+static const char *extra_libs[] = {
+    "libkio.so.5",
+    "libkparts.so.4",
+#ifdef __KDE_HAVE_GCC_VISIBILITY
+    "libplasma.so.3"
+#endif
+};
+#endif
+
 // #define SKIP_PROCTITLE 1
 
 extern char **environ;
@@ -152,13 +162,6 @@ int kdeinit_xio_errhandler( Display * );
 int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 #endif
-
-/* These are to link libkparts even if 'smart' linker is used */
-#include <kparts/plugin.h>
-extern "C" KParts::Plugin* _kinit_init_kparts() { return new KParts::Plugin(); }
-/* These are to link libkio even if 'smart' linker is used */
-#include <kio/authinfo.h>
-extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
 
 #ifdef KDEINIT_OOM_PROTECT
 static int oom_pipe = -1;
@@ -1743,21 +1746,26 @@ int main(int argc, char **argv, char **envp)
       init_kdeinit_socket();
    }
 #ifdef Q_WS_X11
-   if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty())
-   {
-#ifdef __KDE_HAVE_GCC_VISIBILITY
-       QString extra = KStandardDirs::locate("lib", QLatin1String("libplasma.so.3"), *s_instance);
-#else
-       QString extra;
+    if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty()) {
+        const int extrasCount = sizeof(extra_libs)/sizeof(extra_libs[0]);
+        for (int i=0; i<extrasCount; i++) {
+            QString extra = KStandardDirs::locate("lib", QLatin1String(extra_libs[i]), *s_instance);
+
+            // can't use KLibLoader here as it would unload the library
+            // again
+            if (!extra.isEmpty()) {
+                QLibrary l(extra);
+                l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
+                l.load();
+            }
+#ifndef NDEBUG
+            else {
+                fprintf( stderr, "%s was not found.\n", extra_libs[i] );
+            }
 #endif
-       // can't use KLibLoader here as it would unload the library
-       // again
-       if (!extra.isEmpty()) {
-           QLibrary l(extra);
-           l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
-           l.load();
-       }
-   }
+
+        }
+    }
 #endif
    if (launch_klauncher)
    {
