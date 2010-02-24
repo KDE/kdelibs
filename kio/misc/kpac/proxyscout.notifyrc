@@ -1,6 +1,6 @@
 [Global]
-IconName=proxy
-Comment=Automatic Proxy Configuration
+IconName=preferences-system-network-proxy
+Comment=Network Proxy Configuration
 Comment[ar]=إعدادات الوكيل الآلية
 Comment[as]=স্বয়ংক্ৰিয় নিযুক্তকৰ বিন্যাস
 Comment[ast]=Configuración automática del proxy
