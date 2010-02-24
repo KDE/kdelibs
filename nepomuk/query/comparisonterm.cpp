@@ -176,7 +176,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Regexp ) {
                 QString v3 = qbd->uniqueVarName();
-                return QString::fromLatin1( "%1FILTER(REGEX(STR(%2)), '%3*', 'i') . " )
+                return QString::fromLatin1( "%1FILTER(REGEX(STR(%2)), '%3', 'i') . " )
                     .arg( pattern.arg(v3),
                           v3,
                           m_subTerm.toLiteralTerm().value().toString() );
