@@ -176,6 +176,7 @@ void FakeManager::unplug(const QString &udi)
         FakeDevice *dev = d->loadedDevices.take(udi);
         d->hiddenDevices[udi] = dev->allProperties();
         emit deviceRemoved(udi);
+        delete dev;
     }
 }
 
