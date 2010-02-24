@@ -50,6 +50,7 @@ KDEUI_UNIT_TESTS(
   klineedit_unittest
   ktextedit_unittest
   kcombobox_unittest
+  kdialog_unittest
   kreplacetest
   kshortcuttest
   kstandardactiontest
