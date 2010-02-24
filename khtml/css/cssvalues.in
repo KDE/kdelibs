@@ -417,6 +417,12 @@ ellipsis
 #
 # CSS_PROP_BACKGROUND_CLIP/ORIGIN
 #
+# border-box
+# content-box
+padding-box
+
+# for early implementation, of BACKGROUND_CLIP/ORIGIN
+# using khtml prefix
 border
 content
 padding
@@ -571,8 +577,9 @@ all
 
 # CSS_PROP_WRITING_MODE:
 lr-tb
-rl_tb
+rl-tb
 tb-rl
+tb-lr
 lr
 rl
 tb

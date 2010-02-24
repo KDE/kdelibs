@@ -4197,9 +4197,11 @@ void CSSStyleSelector::mapBackgroundClip(BackgroundLayer* layer, CSSValueImpl* v
     CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
     switch (primitiveValue->getIdent()) {
         case CSS_VAL_BORDER:
+        case CSS_VAL_BORDER_BOX:
             layer->setBackgroundClip(BGBORDER);
             break;
         case CSS_VAL_PADDING:
+        case CSS_VAL_PADDING_BOX:
             layer->setBackgroundClip(BGPADDING);
             break;
         default: // CSS_VAL_CONTENT
@@ -4219,9 +4221,11 @@ void CSSStyleSelector::mapBackgroundOrigin(BackgroundLayer* layer, CSSValueImpl*
     CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
     switch (primitiveValue->getIdent()) {
         case CSS_VAL_BORDER:
+        case CSS_VAL_BORDER_BOX:
             layer->setBackgroundOrigin(BGBORDER);
             break;
         case CSS_VAL_PADDING:
+        case CSS_VAL_PADDING_BOX:
             layer->setBackgroundOrigin(BGPADDING);
             break;
         default: // CSS_VAL_CONTENT
