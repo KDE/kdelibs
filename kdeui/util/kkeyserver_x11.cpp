@@ -814,11 +814,14 @@ uint accelModMaskX()
 
 bool xEventToQt( XEvent* e, int* keyQt )
 {
+    Q_ASSERT(e->type == KeyPress || e->type == KeyRelease);
+
     uchar keyCodeX = e->xkey.keycode;
     uint keyModX = e->xkey.state & (accelModMaskX() | MODE_SWITCH);
 
     KeySym keySym;
-    XLookupString( (XKeyEvent*) e, 0, 0, &keySym, 0 );
+    char buffer[16];
+    XLookupString( (XKeyEvent*) e, buffer, 15, &keySym, 0 );
     uint keySymX = (uint)keySym;
 
     // If numlock is active and a keypad key is pressed, XOR the SHIFT state.
