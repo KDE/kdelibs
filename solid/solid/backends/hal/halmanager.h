@@ -52,14 +52,12 @@ public:
 
     virtual QObject *createDevice(const QString &udi);
 
-private:
-    bool deviceExists(const QString &udi);
-
 private Q_SLOTS:
     void slotDeviceAdded(const QString &udi);
     void slotDeviceRemoved(const QString &udi);
 
 private:
+    bool deviceExists(const QString &udi);
     QStringList findDeviceStringMatch(const QString &key, const QString &value);
     QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
 
