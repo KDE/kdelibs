@@ -83,7 +83,7 @@ class K3PasswordDialog::K3PasswordDialogPrivate
 {
     public:
 	K3PasswordDialogPrivate()
-	 : m_MatchLabel( 0 ), iconName( 0 ), allowEmptyPasswords( false ),
+	 : m_MatchLabel( 0 ), allowEmptyPasswords( false ),
 	   minimumPasswordLength(0), maximumPasswordLength(K3PasswordEdit::PassLen - 1),
 	   passwordStrengthWarningLevel(1), m_strengthBar(0),
 	   reasonablePasswordLength(8)
