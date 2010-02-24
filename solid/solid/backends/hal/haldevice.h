@@ -55,14 +55,13 @@ public:
     virtual QStringList emblems() const;
     virtual QString description() const;
 
-    virtual QVariant property(const QString &key) const;
-
-    virtual QMap<QString, QVariant> allProperties() const;
-
-    virtual bool propertyExists(const QString &key) const;
-
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
     virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
+
+public:
+    QVariant property(const QString &key) const;
+    QMap<QString, QVariant> allProperties() const;
+    bool propertyExists(const QString &key) const;
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
