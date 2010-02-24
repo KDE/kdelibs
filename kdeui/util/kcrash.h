@@ -65,7 +65,7 @@ namespace KCrash
   /**
    * Install a function to be called when a crash occurs.
    * A crash occurs when one of the following signals is
-   * caught: SIGSEGV, SIGFPE, SIGILL, SIGABRT.
+   * caught: SIGSEGV, SIGBUS, SIGFPE, SIGILL, SIGABRT.
    * @param handler this can be one of:
    * @li null, in which case signal catching is disabled
    * (by setting the signal handler for the crash signals to SIG_DFL)
