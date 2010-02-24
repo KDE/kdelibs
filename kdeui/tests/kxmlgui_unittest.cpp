@@ -63,22 +63,22 @@ static void createXmlFile(QFile& file, int version, int flags, const QByteArray&
     file.write("</MenuBar>\n");
     if (flags & AddToolBars) {
         file.write(
-            "<ToolBar name=\"mainToolBar\" fullWidth=\"true\" >\n"
+            "<ToolBar name=\"mainToolBar\">\n"
             "  <text>Main Toolbar</text>\n"
             "  <Action name=\"print\" />\n"
             "</ToolBar>\n"
-            "<ToolBar name=\"bookmarkToolBar\" fullWidth=\"true\" >\n"
+            "<ToolBar name=\"bookmarkToolBar\">\n"
             "  <text>Bookmark Toolbar</text>\n"
             "</ToolBar>\n"
             );
     }
     if (flags & AddModifiedToolBars) {
         file.write(
-            "<ToolBar name=\"mainToolBar\" fullWidth=\"true\" >\n"
+            "<ToolBar name=\"mainToolBar\">\n"
             "  <text>Main Toolbar</text>\n"
             "  <Action name=\"home\" />\n"
             "</ToolBar>\n"
-            "<ToolBar name=\"bookmarkToolBar\" fullWidth=\"true\" >\n"
+            "<ToolBar name=\"bookmarkToolBar\">\n"
             "  <text>Modified toolbars</text>\n"
             "</ToolBar>\n"
             );
