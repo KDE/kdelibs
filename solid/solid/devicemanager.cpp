@@ -34,20 +34,21 @@ SOLID_GLOBAL_STATIC(Solid::DeviceManagerPrivate, globalDeviceManager)
 Solid::DeviceManagerPrivate::DeviceManagerPrivate()
     : m_nullDevice(new DevicePrivate(QString()))
 {
-    loadBackend();
+    loadBackends();
 
-    if (managerBackend()!=0) {
-        connect(managerBackend(), SIGNAL(deviceAdded(QString)),
+    QList<QObject*> backends = managerBackends();
+    foreach (QObject *backend, backends) {
+        connect(backend, SIGNAL(deviceAdded(QString)),
                 this, SLOT(_k_deviceAdded(QString)));
-        connect(managerBackend(), SIGNAL(deviceRemoved(QString)),
+        connect(backend, SIGNAL(deviceRemoved(QString)),
                 this, SLOT(_k_deviceRemoved(QString)));
     }
 }
 
 Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
 {
-    QObject *backend = managerBackend();
-    if (backend) {
+    QList<QObject*> backends = managerBackends();
+    foreach (QObject *backend, backends) {
         disconnect(backend, 0, this, 0);
     }
 
@@ -61,16 +62,18 @@ Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
 QList<Solid::Device> Solid::Device::allDevices()
 {
     QList<Device> list;
-    Ifaces::DeviceManager *backend
-        = qobject_cast<Ifaces::DeviceManager *>(globalDeviceManager->managerBackend());
+    QList<QObject*> backends = globalDeviceManager->managerBackends();
 
-    if (backend == 0) return list;
+    foreach (QObject *backendObj, backends) {
+        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager *>(backendObj);
 
-    QStringList udis = backend->allDevices();
+        if (backend == 0) continue;
 
-    foreach (const QString &udi, udis)
-    {
-        list.append(Device(udi));
+        QStringList udis = backend->allDevices();
+
+        foreach (const QString &udi, udis) {
+            list.append(Device(udi));
+        }
     }
 
     return list;
@@ -95,17 +98,19 @@ QList<Solid::Device> Solid::Device::listFromType(const DeviceInterface::Type &ty
                                                  const QString &parentUdi)
 {
     QList<Device> list;
+    QList<QObject*> backends = globalDeviceManager->managerBackends();
 
-    Ifaces::DeviceManager *backend
-        = qobject_cast<Ifaces::DeviceManager *>(globalDeviceManager->managerBackend());
+    foreach (QObject *backendObj, backends) {
+        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager *>(backendObj);
 
-    if (backend == 0) return list;
+        if (backend == 0) continue;
+        if (!backend->supportedInterfaces().contains(type)) continue;
 
-    QStringList udis = backend->devicesFromQuery(parentUdi, type);
+        QStringList udis = backend->devicesFromQuery(parentUdi, type);
 
-    foreach (const QString &udi, udis)
-    {
-        list.append(Device(udi));
+        foreach (const QString &udi, udis) {
+            list.append(Device(udi));
+        }
     }
 
     return list;
@@ -115,38 +120,44 @@ QList<Solid::Device> Solid::Device::listFromQuery(const Predicate &predicate,
                                                   const QString &parentUdi)
 {
     QList<Device> list;
+    QList<QObject*> backends = globalDeviceManager->managerBackends();
+    QSet<DeviceInterface::Type> usedTypes = predicate.usedTypes();
 
-    Ifaces::DeviceManager *backend
-        = qobject_cast<Ifaces::DeviceManager *>(globalDeviceManager->managerBackend());
+    foreach (QObject *backendObj, backends) {
+        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager *>(backendObj);
 
-    if (backend == 0) return list;
+        if (backend == 0) continue;
 
-    QSet<QString> udis;
-    if (predicate.isValid()) {
-        QSet<DeviceInterface::Type> types = predicate.usedTypes();
+        QSet<QString> udis;
+        if (predicate.isValid()) {
+            QSet<DeviceInterface::Type> supportedTypes = backend->supportedInterfaces();
+            if (supportedTypes.intersect(usedTypes).isEmpty()) {
+                continue;
+            }
 
-        foreach (DeviceInterface::Type type, types) {
-            udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, type));
-        }
-    } else {
-        udis+= QSet<QString>::fromList(backend->allDevices());
-    }
-
-    foreach (const QString &udi, udis)
-    {
-        Device dev(udi);
-
-        bool matches = false;
-
-        if(!predicate.isValid()) {
-            matches = true;
+            foreach (DeviceInterface::Type type, supportedTypes) {
+                udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, type));
+            }
         } else {
-            matches = predicate.matches(dev);
+            udis+= QSet<QString>::fromList(backend->allDevices());
         }
 
-        if (matches)
+        foreach (const QString &udi, udis)
         {
-            list.append(dev);
+            Device dev(udi);
+
+            bool matches = false;
+
+            if(!predicate.isValid()) {
+                matches = true;
+            } else {
+                matches = predicate.matches(dev);
+            }
+
+            if (matches)
+            {
+                list.append(dev);
+            }
         }
     }
 
@@ -227,19 +238,27 @@ Solid::DevicePrivate *Solid::DeviceManagerPrivate::findRegisteredDevice(const QS
 
 Solid::Ifaces::Device *Solid::DeviceManagerPrivate::createBackendObject(const QString &udi)
 {
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager *>(managerBackend());
-    Ifaces::Device *iface = 0;
+    QList<QObject*> backends = globalDeviceManager->managerBackends();
 
-    if (backend!= 0) {
+    foreach (QObject *backendObj, backends) {
+        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager *>(backendObj);
+
+        if (backend == 0) continue;
+        if (!udi.startsWith(backend->udiPrefix())) continue;
+
+        Ifaces::Device *iface = 0;
+
         QObject *object = backend->createDevice(udi);
         iface = qobject_cast<Ifaces::Device *>(object);
 
         if (iface==0) {
             delete object;
         }
+
+        return iface;
     }
 
-    return iface;
+    return 0;
 }
 
 #include "devicenotifier.moc"

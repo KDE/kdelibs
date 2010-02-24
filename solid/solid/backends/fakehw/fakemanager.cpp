@@ -39,6 +39,7 @@ public:
     QMap<QString, FakeDevice *> loadedDevices;
     QMap<QString, QMap<QString,QVariant> > hiddenDevices;
     QString xmlFile;
+    QSet<Solid::DeviceInterface::Type> supportedInterfaces;
 };
 
 FakeManager::FakeManager(QObject *parent, const QString &xmlFile)
@@ -50,6 +51,26 @@ FakeManager::FakeManager(QObject *parent, const QString &xmlFile)
     QDBusConnection::sessionBus().registerObject("/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots);
 
     parseMachineFile();
+
+    d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                           << Solid::DeviceInterface::Processor
+                           << Solid::DeviceInterface::Block
+                           << Solid::DeviceInterface::StorageAccess
+                           << Solid::DeviceInterface::StorageDrive
+                           << Solid::DeviceInterface::OpticalDrive
+                           << Solid::DeviceInterface::StorageVolume
+                           << Solid::DeviceInterface::OpticalDisc
+                           << Solid::DeviceInterface::Camera
+                           << Solid::DeviceInterface::PortableMediaPlayer
+                           << Solid::DeviceInterface::NetworkInterface
+                           << Solid::DeviceInterface::AcAdapter
+                           << Solid::DeviceInterface::Battery
+                           << Solid::DeviceInterface::Button
+                           << Solid::DeviceInterface::AudioInterface
+                           << Solid::DeviceInterface::DvbInterface
+                           << Solid::DeviceInterface::Video
+                           << Solid::DeviceInterface::SerialInterface
+                           << Solid::DeviceInterface::SmartCardReader;
 }
 
 FakeManager::~FakeManager()
@@ -58,6 +79,15 @@ FakeManager::~FakeManager()
     delete d;
 }
 
+QString FakeManager::udiPrefix() const
+{
+    return "/org/kde/solid/fakehw";
+}
+
+QSet<Solid::DeviceInterface::Type> FakeManager::supportedInterfaces() const
+{
+    return d->supportedInterfaces;
+}
 
 QStringList FakeManager::allDevices()
 {

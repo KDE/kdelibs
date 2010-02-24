@@ -42,6 +42,9 @@ public:
     HalManager(QObject *parent);
     virtual ~HalManager();
 
+    virtual QString udiPrefix() const ;
+    virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
+
     virtual QStringList allDevices();
     virtual bool deviceExists(const QString &udi);
 

@@ -42,6 +42,8 @@ public:
 
     static const char *typeToName(Solid::DeviceInterface::Type type);
     static QStringList devicesFromRegistry(io_iterator_t it);
+
+    QSet<Solid::DeviceInterface::Type> supportedInterfaces;
 };
 
 // gets all registry pathes from an iterator
@@ -119,6 +121,26 @@ IOKitManager::IOKitManager(QObject *parent)
     }
 
     CFRunLoopAddSource(CFRunLoopGetCurrent(), d->source, kCFRunLoopDefaultMode);
+
+    d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                           << Solid::DeviceInterface::Processor
+                           << Solid::DeviceInterface::Block
+                           << Solid::DeviceInterface::StorageAccess
+                           << Solid::DeviceInterface::StorageDrive
+                           << Solid::DeviceInterface::OpticalDrive
+                           << Solid::DeviceInterface::StorageVolume
+                           << Solid::DeviceInterface::OpticalDisc
+                           << Solid::DeviceInterface::Camera
+                           << Solid::DeviceInterface::PortableMediaPlayer
+                           << Solid::DeviceInterface::NetworkInterface
+                           << Solid::DeviceInterface::AcAdapter
+                           << Solid::DeviceInterface::Battery
+                           << Solid::DeviceInterface::Button
+                           << Solid::DeviceInterface::AudioInterface
+                           << Solid::DeviceInterface::DvbInterface
+                           << Solid::DeviceInterface::Video
+                           << Solid::DeviceInterface::SerialInterface
+                           << Solid::DeviceInterface::SmartCardReader;
 }
 
 IOKitManager::~IOKitManager()
@@ -129,6 +151,16 @@ IOKitManager::~IOKitManager()
         IONotificationPortDestroy(d->port);
 
     delete d;
+}
+
+QString IOKitManager::udiPrefix() const
+{
+    return QString(); //FIXME: We should probably use a prefix there... has to be tested on Mac
+}
+
+QSet<Solid::DeviceInterface::Type> IOKitManager::supportedInterfaces() const
+{
+    return d->supportedInterfaces;
 }
 
 QStringList IOKitManager::allDevices()

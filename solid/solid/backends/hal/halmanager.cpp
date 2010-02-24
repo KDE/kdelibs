@@ -40,6 +40,7 @@ public:
     QDBusInterface manager;
     QList<QString> devicesCache;
     bool cacheSynced;
+    QSet<Solid::DeviceInterface::Type> supportedInterfaces;
 };
 
 
@@ -57,11 +58,41 @@ HalManager::HalManager(QObject *parent)
                                      "org.freedesktop.Hal.Manager",
                                      "DeviceRemoved",
                                      this, SLOT(slotDeviceRemoved(const QString &)));
+
+    d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                           << Solid::DeviceInterface::Processor
+                           << Solid::DeviceInterface::Block
+                           << Solid::DeviceInterface::StorageAccess
+                           << Solid::DeviceInterface::StorageDrive
+                           << Solid::DeviceInterface::OpticalDrive
+                           << Solid::DeviceInterface::StorageVolume
+                           << Solid::DeviceInterface::OpticalDisc
+                           << Solid::DeviceInterface::Camera
+                           << Solid::DeviceInterface::PortableMediaPlayer
+                           << Solid::DeviceInterface::NetworkInterface
+                           << Solid::DeviceInterface::AcAdapter
+                           << Solid::DeviceInterface::Battery
+                           << Solid::DeviceInterface::Button
+                           << Solid::DeviceInterface::AudioInterface
+                           << Solid::DeviceInterface::DvbInterface
+                           << Solid::DeviceInterface::Video
+                           << Solid::DeviceInterface::SerialInterface
+                           << Solid::DeviceInterface::SmartCardReader;
 }
 
 HalManager::~HalManager()
 {
     delete d;
+}
+
+QString HalManager::udiPrefix() const
+{
+    return "/org/freedesktop/Hal";
+}
+
+QSet<Solid::DeviceInterface::Type> HalManager::supportedInterfaces() const
+{
+    return d->supportedInterfaces;
 }
 
 QStringList HalManager::allDevices()
@@ -125,7 +156,7 @@ QStringList HalManager::devicesFromQuery(const QString &parentUdi,
 
             foreach (const QString &match, matches) {
                 HalDevice device(match);
-                
+
                 if (device.queryDeviceInterface(type)) {
                     result << match;
                 }

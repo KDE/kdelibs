@@ -52,7 +52,17 @@ namespace Ifaces
          */
         virtual ~DeviceManager();
 
+        /**
+         * Retrieves the prefix used for the UDIs off all the devices
+         * reported by the device manager
+         */
+        virtual QString udiPrefix() const = 0;
 
+        /**
+         * Retrieves the prefix used for the UDIs off all the devices
+         * reported by the device manager
+         */
+        virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const = 0;
 
         /**
          * Retrieves the Universal Device Identifier (UDI) of all the devices

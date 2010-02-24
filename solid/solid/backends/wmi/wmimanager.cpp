@@ -34,26 +34,56 @@ public:
     {
     }
 
-    ~WmiManagerPrivate() 
+    ~WmiManagerPrivate()
     {
     }
-    
+
     WmiQuery::ItemList sendQuery( const QString &wql )
     {
 		return WmiQuery::instance().sendQuery( wql );
     }
+
+    QSet<Solid::DeviceInterface::Type> supportedInterfaces;
 };
 
 
 WmiManager::WmiManager(QObject *parent)
     : DeviceManager(parent),  d(new WmiManagerPrivate())
 {
-    
+    d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                           << Solid::DeviceInterface::Processor
+                           << Solid::DeviceInterface::Block
+                           << Solid::DeviceInterface::StorageAccess
+                           << Solid::DeviceInterface::StorageDrive
+                           << Solid::DeviceInterface::OpticalDrive
+                           << Solid::DeviceInterface::StorageVolume
+                           << Solid::DeviceInterface::OpticalDisc
+                           << Solid::DeviceInterface::Camera
+                           << Solid::DeviceInterface::PortableMediaPlayer
+                           << Solid::DeviceInterface::NetworkInterface
+                           << Solid::DeviceInterface::AcAdapter
+                           << Solid::DeviceInterface::Battery
+                           << Solid::DeviceInterface::Button
+                           << Solid::DeviceInterface::AudioInterface
+                           << Solid::DeviceInterface::DvbInterface
+                           << Solid::DeviceInterface::Video
+                           << Solid::DeviceInterface::SerialInterface
+                           << Solid::DeviceInterface::SmartCardReader;
 }
 
 WmiManager::~WmiManager()
 {
     delete d;
+}
+
+QString WmiManager::udiPrefix() const
+{
+    return QString(); //FIXME: We should probably use a prefix there... has to be tested on Windows
+}
+
+QSet<Solid::DeviceInterface::Type> WmiManager::supportedInterfaces() const
+{
+    return d->supportedInterfaces;
 }
 
 QStringList WmiManager::allDevices()

@@ -42,6 +42,9 @@ public:
     WmiManager(QObject *parent);
     virtual ~WmiManager();
 
+    virtual QString udiPrefix() const ;
+    virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
+
     virtual QStringList allDevices();
     virtual bool deviceExists(const QString &udi);
 

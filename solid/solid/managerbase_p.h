@@ -32,14 +32,12 @@ namespace Solid
     public:
         ManagerBasePrivate();
         virtual ~ManagerBasePrivate();
-        void loadBackend();
+        void loadBackends();
 
-        QObject *managerBackend() const;
-        QString errorText() const;
+        QList<QObject*> managerBackends() const;
 
     private:
-        QObject *m_backend;
-        QString m_errorText;
+        QList<QObject*> m_backends;
     };
 }
 

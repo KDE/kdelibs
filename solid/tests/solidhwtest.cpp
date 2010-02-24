@@ -46,7 +46,7 @@ void SolidHwTest::initTestCase()
     setenv("SOLID_FAKEHW", FAKE_COMPUTER_XML, 1);
     Solid::ManagerBasePrivate *manager
         = dynamic_cast<Solid::ManagerBasePrivate*>(Solid::DeviceNotifier::instance());
-    fakeManager = qobject_cast<Solid::Backends::Fake::FakeManager*>(manager->managerBackend());
+    fakeManager = qobject_cast<Solid::Backends::Fake::FakeManager*>(manager->managerBackends().first());
 }
 
 void SolidHwTest::testAllDevices()

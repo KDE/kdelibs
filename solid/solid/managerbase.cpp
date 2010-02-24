@@ -32,40 +32,34 @@
 #endif
 
 Solid::ManagerBasePrivate::ManagerBasePrivate()
-    : m_backend(0)
 {
 }
 
 Solid::ManagerBasePrivate::~ManagerBasePrivate()
 {
-    delete m_backend;
+    qDeleteAll(m_backends);
 }
 
-void Solid::ManagerBasePrivate::loadBackend()
+void Solid::ManagerBasePrivate::loadBackends()
 {
     QString solidFakeXml(QString::fromLocal8Bit(qgetenv("SOLID_FAKEHW")));
 
     if (!solidFakeXml.isEmpty()) {
-        m_backend = new Solid::Backends::Fake::FakeManager(0, solidFakeXml);
+        m_backends << new Solid::Backends::Fake::FakeManager(0, solidFakeXml);
     } else {
 #        if defined (Q_OS_MAC)
-            m_backend = new Solid::Backends::IOKit::IOKitManager(0);
+            m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 #        elif defined (Q_OS_UNIX)
-            m_backend = new Solid::Backends::Hal::HalManager(0);
+            m_backends << new Solid::Backends::Hal::HalManager(0);
 #        elif defined (_MSC_VER) // TODO: mingw
-            m_backend = new Solid::Backends::Wmi::WmiManager(0);
+            m_backends << new Solid::Backends::Wmi::WmiManager(0);
 #        endif
     }
 }
 
-QString Solid::ManagerBasePrivate::errorText() const
+QList<QObject*> Solid::ManagerBasePrivate::managerBackends() const
 {
-    return m_errorText;
-}
-
-QObject *Solid::ManagerBasePrivate::managerBackend() const
-{
-    return m_backend;
+    return m_backends;
 }
 
 
