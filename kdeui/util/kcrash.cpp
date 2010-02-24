@@ -21,12 +21,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*
- * This file is used to catch signals which would normally
- * crash the application (like segmentation fault, floating
- * point exception and such).
- */
-
 #include "kcrash.h"
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
@@ -87,10 +81,6 @@ namespace KCrash
   void startDirectly( const char* argv[], int argc );
 }
 
-
-// This function sets the function which should be called when the
-// application crashes and the
-// application is asked to try to save its data.
 void
 KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 {
@@ -185,8 +175,6 @@ bool KCrash::isDrKonqiEnabled()
     return s_launchDrKonqi;
 }
 
-// This function sets the function which should be responsible for
-// the application crash handling.
 void
 KCrash::setCrashHandler (HandlerType handler)
 {

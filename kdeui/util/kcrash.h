@@ -27,39 +27,57 @@
 class QString;
 
 /**
- * This class handles segmentation-faults.
- * By default it displays a  message-box saying the application crashed.
- * This default can be overridden by setting a custom crash handler with
- * setCrashHandler().
- * If a function is specified with setEmergencySaveFunction() it will
- * be called by the default crash handler, giving the application a chance
- * to save its data.
+ * This namespace contains functions to handle crashes.
+ * It allows you to set a crash handler function that will be called
+ * when your application crashes and also provides a default crash
+ * handler that implements the following functionality:
+ * @li Launches the KDE crash display application (DrKonqi) to let
+ * the user report the bug and/or debug it.
+ * @li Calls an emergency save function that you can set with
+ * setEmergencySaveFunction() to attempt to save the application's data.
+ * @li Autorestarts your application.
+ *
+ * @note All the above features are optional and you need to enable them
+ * explicitly. By default, the defaultCrashHandler() will not do anything.
+ * However, if you are using KApplication, it will by default enable launching
+ * DrKonqi on crashes, unless the --nocrashhandler argument was passed on
+ * the command line or the environment variable KDE_DEBUG is set to any value.
  */
 namespace KCrash
 {
   /**
    * The default crash handler.
+   * Do not call this function directly. Instead, use
+   * setCrashHandler() to set it as your application's crash handler.
    * @param signal the signal number
+   * @note If you implement your own crash handler, you will have to
+   * call this function from your implementation if you want to use the
+   * features of this namespace.
    */
   KDEUI_EXPORT void defaultCrashHandler (int signal);
 
   /**
-   * This function type is a pointer to a crash handler function.
+   * Typedef for a pointer to a crash handler function.
    * The function's argument is the number of the signal.
    */
   typedef void (*HandlerType)(int);
 
   /**
-   * Install a function to be called in case a SIGSEGV is caught.
-   * @param handler HandlerType handler can be one of
-   * @li null in which case signal-catching is disabled
-   *  (by calling signal(SIGSEGV, SIG_DFL))
-   * @li if handler is omitted the default crash handler is installed.
-   * @li an user defined function in the form:
+   * Install a function to be called when a crash occurs.
+   * A crash occurs when one of the following signals is
+   * caught: SIGSEGV, SIGFPE, SIGILL, SIGABRT.
+   * @param handler this can be one of:
+   * @li null, in which case signal catching is disabled
+   * (by setting the signal handler for the crash signals to SIG_DFL)
+   * @li a user defined function in the form:
    * static (if in a class) void myCrashHandler(int);
-   * @param handler the crash handler
+   * @li if handler is omitted, the default crash handler is installed
+   * @note If you use setDrKonqiEnabled(true), setEmergencySaveFunction(myfunc)
+   * or setFlags(AutoRestart), you do not need to call this function
+   * explicitly. The default crash handler is automatically installed by
+   * those functions if needed. However, if you set a custom crash handler,
+   * those functions will not change it.
    */
-
   KDEUI_EXPORT void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
@@ -69,48 +87,48 @@ namespace KCrash
   KDEUI_EXPORT HandlerType crashHandler();
 
   /**
-   * Installs a function which should try to save the applications data.
-   * It is the crash handler's responsibility to call this function.
+   * Installs a function which should try to save the application's data.
+   * @note It is the crash handler's responsibility to call this function.
    * Therefore, if no crash handler is set, the default crash handler
-   * is installed to ensure the save function is called.
+   * is installed to ensure the save function will be called.
    * @param saveFunction the handler to install
    */
   KDEUI_EXPORT void setEmergencySaveFunction (HandlerType saveFunction = 0);
 
   /**
-   * Return the currently set emergency save function.
+   * Returns the currently set emergency save function.
    * @return the emergency save function
    */
   KDEUI_EXPORT HandlerType emergencySaveFunction();
 
   /**
-   * Options to determine how KCrash should behave while firing up DrKonqi.
+   * Options to determine how the default crash handler should behave.
    */
   enum CrashFlag {
     KeepFDs = 1,          ///< don't close all file descriptors immediately
     SaferDialog = 2,      ///< start DrKonqi without arbitrary disk access
-    AlwaysDirectly = 4,   ///< never try to to start DrKonqi via kdeinit
+    AlwaysDirectly = 4,   ///< never try to to start DrKonqi via kdeinit. Use fork() and exec() instead.
     AutoRestart = 8       ///< autorestart this application. Only sensible for KUniqueApplications. @since 4.1.
   };
   Q_DECLARE_FLAGS(CrashFlags, CrashFlag)
 
   /**
-   * Set DrKonqi fire-up options.
+   * Set options to determine how the default crash handler should behave.
    * @param flags ORed together CrashFlags
    */
   KDEUI_EXPORT void setFlags( CrashFlags flags );
 
   /**
    * Sets the application @p path which should be passed to
-   * Dr. Konqi, our nice crash display application.
-   * @param path the application path.
+   * DrKonqi, our nice crash display application.
+   * @param path the application path
    */
   KDEUI_EXPORT void setApplicationPath (const QString &path);
 
   /**
-   * Sets the application name @p name which should be passed to
-   * Dr. Konqi, our nice crash display application.
-   * @param name the name of the application, as shown in Dr. Konqi
+   * Sets the application @p name which should be passed to
+   * DrKonqi, our nice crash display application.
+   * @param name the name of the application, as shown in DrKonqi
    */
   KDEUI_EXPORT void setApplicationName (const QString &name);
 
