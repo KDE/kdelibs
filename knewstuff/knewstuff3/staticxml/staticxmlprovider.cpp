@@ -3,7 +3,7 @@
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
-    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (C) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,6 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kio/job.h>
 
 namespace KNS3
 {
@@ -214,6 +213,8 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
         XmlLoader * loader = new XmlLoader(this);
         connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
+        
+        connect(loader, SIGNAL(jobStarted(KJob*)), SIGNAL(jobStarted(KJob*)));
         d->mFeedLoaders.insert(request.sortMode, loader);
 
         loader->load(url);

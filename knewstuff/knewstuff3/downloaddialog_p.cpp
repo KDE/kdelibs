@@ -4,7 +4,7 @@
     Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jpwhiting@kde.org>
-    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (C) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -175,9 +175,6 @@ void DownloadDialogPrivate::init(const QString& configFile)
 
     connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
 
-    // FIXME show download progress
-    connect(engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
-
     delegate = new ItemsViewDelegate(ui.m_listView);
     ui.m_listView->setItemDelegate(delegate);
     connect(delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)),
@@ -210,7 +207,6 @@ void DownloadDialogPrivate::init(const QString& configFile)
 
     connect(ui.m_categoryCombo, SIGNAL(activated(int)), SLOT(slotCategoryChanged(int)));
 
-
     ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
     "%1 Add-On Installer",
     KGlobal::activeComponent().aboutData()->programName()));
@@ -218,7 +214,7 @@ void DownloadDialogPrivate::init(const QString& configFile)
 
     connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
 
-    // FIXME connect(engine, SIGNAL(signalJobStarted(KJob*)), ui.progressIndicator, SLOT(addJob(KJob*)));
+    connect(engine, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
     connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
 }
 

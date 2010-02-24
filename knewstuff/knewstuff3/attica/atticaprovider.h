@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (c) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -81,6 +81,7 @@ namespace KNS3
         void authenticationCredentialsMissing(const Provider&);
         void votingFinished(Attica::BaseJob*);
         void becomeFanFinished(Attica::BaseJob* job);
+        void atticaJobStarted(QNetworkReply* reply);
 
     protected:
         AtticaProvider(AtticaProviderPrivate &dd);

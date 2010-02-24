@@ -2,7 +2,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2007 Jeremy Whiting <jpwhiting@kde.org>
-    Copyright (c) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (c) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -53,13 +53,14 @@ void ProgressIndicator::addJob(KJob* job, const QString& label)
     m_jobs.insert(job, label);
     connect(job, SIGNAL(finished(KJob *)), this, SLOT(jobFinished(KJob*)));
     ++m_total;
+    calculateAverage();
 }
 
 void ProgressIndicator::jobFinished(KJob* job)
 {
     m_jobs.remove(job);
-    calculateAverage();
     ++m_finished;
+    calculateAverage();
 }
 
 void ProgressIndicator::calculateAverage()

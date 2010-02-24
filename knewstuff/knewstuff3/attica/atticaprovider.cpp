@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (c) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,8 @@
 #include <attica/downloaditem.h>
 #include <attica/accountbalance.h>
 #include <attica/person.h>
+
+#include "atticajobwrapper.h"
 
 using namespace Attica;
 
@@ -150,10 +152,16 @@ void AtticaProvider::providerLoaded(const Attica::Provider& provider)
     d->m_provider = provider;
 
     Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
+    connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
     job->start();
 }
 
+void AtticaProvider::atticaJobStarted(QNetworkReply* reply)
+{
+    KJob* kJob(new AtticaJobWrapper(reply));
+    emit jobStarted(kJob);
+}
 
 void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
@@ -211,6 +219,7 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 
     ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, request.searchTerm, sorting, request.page, request.pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
+    connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
 
     d->entryJob = job;
     job->start();
@@ -313,6 +322,7 @@ void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
         // Ask for balance, then show information...
         ItemJob<AccountBalance>* job = d->m_provider.requestAccountBalance();
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(accountBalanceLoaded(Attica::BaseJob*)));
+        connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
         d->downloadLinkJobs[job] = entry;
         job->start();
 
@@ -320,6 +330,7 @@ void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
     } else {
         ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
+        connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
         d->downloadLinkJobs[job] = entry;
         job->start();
 
@@ -351,6 +362,7 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
                 "This items costs %1 %2.\nDo you want to buy it?")) == KMessageBox::Yes) {
             ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
             connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
+            connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
             d->downloadLinkJobs[job] = entry;
             job->start();
         } else {
@@ -399,6 +411,7 @@ void AtticaProvider::vote(const EntryInternal& entry, bool positiveVote)
 
     PostJob * job = d->m_provider.voteForContent(entry.uniqueId(), positiveVote);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(votingFinished(Attica::BaseJob*)));
+    connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     job->start();
 }
 
@@ -417,6 +430,7 @@ void AtticaProvider::becomeFan(const EntryInternal& entry)
 
     PostJob * job = d->m_provider.becomeFan(entry.uniqueId());
     connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(becomeFanFinished(Attica::BaseJob*)));
+    connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     job->start();
 }
 

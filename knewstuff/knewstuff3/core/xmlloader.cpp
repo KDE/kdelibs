@@ -3,6 +3,7 @@
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
+    Copyright (C) 2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -46,6 +47,8 @@ namespace KNS3
                 SLOT(slotJobResult(KJob *)));
         connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)),
                 SLOT(slotJobData(KIO::Job *, const QByteArray &)));
+	
+        emit jobStarted(job);
     }
 
     void XmlLoader::slotJobData(KIO::Job *, const QByteArray &data)

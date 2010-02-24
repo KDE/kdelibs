@@ -1,7 +1,7 @@
 /*
     knewstuff3/engine.h.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
-    Copyright (C) 2007-2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (C) 2007-2010 Frederik Gladhorn <gladhorn@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -151,7 +151,7 @@ Q_SIGNALS:
 
     void signalError(const QString& errorMessage);
 
-    void signalJobStarted(KJob*);
+    void jobStarted(KJob*, const QString&);
 
 private Q_SLOTS:
     // the .knsrc file was loaded
@@ -173,6 +173,8 @@ private Q_SLOTS:
     void slotEntryChanged(const KNS3::EntryInternal& entry);
     void slotInstallationFailed(const KNS3::EntryInternal& entry);
     void downloadLinkLoaded(const KNS3::EntryInternal& entry);
+    
+    void providerJobStarted(KJob*);
 
 private:
     /**

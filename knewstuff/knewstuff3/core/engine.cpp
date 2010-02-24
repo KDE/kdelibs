@@ -1,7 +1,7 @@
 /*
     knewstuff3/engine.cpp
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
-    Copyright (C) 2007-2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (C) 2007-2010 Frederik Gladhorn <gladhorn@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -253,6 +253,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)),
                 SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
         connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
+        connect(provider.data(), SIGNAL(jobStarted(KJob*)), this, SLOT(providerJobStarted(KJob*)));
 
         if (provider->setProviderXML(n)) {
             ProviderInformation providerInfo(provider);
@@ -260,6 +261,11 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         }
         n = n.nextSiblingElement();
     }
+}
+
+void Engine::providerJobStarted ( KJob* job )
+{
+    emit jobStarted(job, i18n("Loading data from provider"));
 }
 
 void Engine::slotProvidersFailed()

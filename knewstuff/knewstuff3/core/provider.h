@@ -27,6 +27,7 @@
 
 #include "entryinternal.h"
 
+class KJob;
 
 namespace KNS3
 {
@@ -146,6 +147,8 @@ namespace KNS3
 
         void payloadLinkLoaded(const KNS3::EntryInternal&);
 
+        void jobStarted(KJob*);
+        
     protected:
         QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;
         Provider(ProviderPrivate &dd);
