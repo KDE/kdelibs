@@ -79,7 +79,7 @@ static char *s_autoRestartCommand = 0;
 static char *s_appPath = 0;
 static char *s_drkonqiPath = 0;
 static KCrash::CrashFlags s_flags = 0;
-static bool s_launchDrKonqi = true;
+static bool s_launchDrKonqi = false;
 
 namespace KCrash
 {
@@ -101,7 +101,6 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
    * emergencySaveFunction to be called
    */
   if (s_emergencySaveFunction && !s_crashHandler) {
-      s_launchDrKonqi = false; // --nocrashhandler means "no drkonqi please", let's still honor that
       setCrashHandler(defaultCrashHandler);
   }
 }
@@ -142,7 +141,6 @@ KCrash::setFlags(KCrash::CrashFlags flags)
     if (s_flags & AutoRestart) {
         // We need at least the default crash handler for autorestart to work.
         if (!s_crashHandler) {
-            s_launchDrKonqi = false; // KDE_DEBUG=1 or --nocrashhandler means "no drkonqi please", let's still honor that
             KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
             if (!args->isSet("crashhandler")) // --nocrashhandler was passed, probably due to a crash, delay restart handler
                 new KCrashDelaySetHandler;
@@ -163,6 +161,28 @@ KCrash::setApplicationName(const QString& name)
 {
 	s_appName = qstrdup(name.toLatin1().constData());
         s_autoRestartCommand = qstrdup(QString(name + " --nocrashhandler &").toLatin1().constData());
+}
+
+void KCrash::setDrKonqiEnabled(bool enabled)
+{
+    s_launchDrKonqi = enabled;
+    if (s_launchDrKonqi && !s_drkonqiPath) {
+        s_drkonqiPath = qstrdup(KStandardDirs::findExe("drkonqi").toLatin1().constData());
+        if (!s_drkonqiPath) {
+            kError() << "Could not find drkonqi";
+            s_launchDrKonqi = false;
+        }
+    }
+
+    //we need at least the default crash handler to launch drkonqi
+    if (s_launchDrKonqi && !s_crashHandler) {
+        setCrashHandler(defaultCrashHandler);
+    }
+}
+
+bool KCrash::isDrKonqiEnabled()
+{
+    return s_launchDrKonqi;
 }
 
 // This function sets the function which should be responsible for
@@ -198,9 +218,6 @@ KCrash::setCrashHandler (HandlerType handler)
 #endif //Q_OS_UNIX
 
   s_crashHandler = handler;
-
-  if (!s_drkonqiPath && handler == defaultCrashHandler)
-    s_drkonqiPath = qstrdup(KStandardDirs::findExe("drkonqi").toLatin1().constData());
 }
 
 KCrash::HandlerType

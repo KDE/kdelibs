@@ -113,6 +113,24 @@ namespace KCrash
    * @param name the name of the application, as shown in Dr. Konqi
    */
   KDEUI_EXPORT void setApplicationName (const QString &name);
+
+  /**
+   * Enables or disables launching DrKonqi from the crash handler.
+   * By default, launching DrKonqi is disabled. However, KApplication
+   * will enable it in its constructor, so you don't need to call this
+   * function if you are using KApplication.
+   * @note It is the crash handler's responsibility to launch DrKonqi.
+   * Therefore, if no crash handler is set, this method also installs
+   * the default crash handler to ensure that DrKonqi will be launched.
+   * @since 4.5
+   */
+  KDEUI_EXPORT void setDrKonqiEnabled(bool enabled);
+
+  /**
+   * Returns true if DrKonqi is set to be launched from the crash handler or false otherwise.
+   * @since 4.5
+   */
+  KDEUI_EXPORT bool isDrKonqiEnabled();
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCrash::CrashFlags)

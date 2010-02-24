@@ -837,8 +837,8 @@ void KApplicationPrivate::parseCommandLine( )
     bool nocrashhandler = (!qgetenv("KDE_DEBUG").isEmpty());
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
-        // set default crash handler
-        KCrash::setCrashHandler(KCrash::defaultCrashHandler);
+        // enable drkonqi
+        KCrash::setDrKonqiEnabled(true);
     }
     // Always set the app name, can be usefuls for apps that call setEmergencySaveFunction or enable AutoRestart
     KCrash::setApplicationName(args->appName());
