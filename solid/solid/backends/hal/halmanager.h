@@ -46,13 +46,14 @@ public:
     virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
 
     virtual QStringList allDevices();
-    virtual bool deviceExists(const QString &udi);
 
     virtual QStringList devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type);
 
     virtual QObject *createDevice(const QString &udi);
 
+private:
+    bool deviceExists(const QString &udi);
 
 private Q_SLOTS:
     void slotDeviceAdded(const QString &udi);
