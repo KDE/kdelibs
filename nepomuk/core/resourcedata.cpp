@@ -534,11 +534,24 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 
 void Nepomuk::ResourceData::remove( bool recursive )
 {
+    // trueg: there is one problem we somehow need to work around:
+    // if we have a resource with URI X and indentifier Y and we
+    // create two ResourceData objects, one from X and one from Y
+    // without loading them.
+    // Then when we delete the latter the first will stay valid
+    // and hang around as zombie.
+    // The perfect solution would be to handle that in invalidateCache()
+    // but that would mean a lot of query work all the time.
+    // Thus, instead we make sure all ResourceData instances are loaded.
+    // That way the proxy handling will take care of the rest.
+    m_rm->determineAllUris();
+
     if( m_proxyData ) {
         m_proxyData->remove( recursive );
     }
     else {
         QMutexLocker lock(&m_modificationMutex);
+
 
         if ( determineUri() ) {
             MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
@@ -677,6 +690,10 @@ bool Nepomuk::ResourceData::determineUri()
                     //
                     // If there is no resource yet we create a new uri in store()
                     //
+
+                    //
+                    // We create a new dbus connection to protect us from multi-thread related crashes.
+                    //
                     KUrl resourceUri = QDBusReply<QString>( QDBusInterface(QLatin1String("org.kde.nepomuk.services.nepomukremovablestorageservice"),
                                                                            QLatin1String("/nepomukremovablestorageservice"),
                                                                            QLatin1String("org.kde.nepomuk.RemovableStorage"),
@@ -729,8 +746,6 @@ void Nepomuk::ResourceData::invalidateCache()
     // If a resource's identifier is deleted and this instance was created using exactly that then the id
     // is in m_rm->m_idKickoffData and this instance will be found again via that (now invalid) id!
     // The same is true for completely deleted resources which are found again via their ids and their urls!
-    //
-    // See kdebase/runtime/nepomuk/services/filewatch/metadatamover.cpp for details on this issue.
     //
     m_cacheDirty = true;
 }
