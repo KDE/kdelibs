@@ -138,13 +138,13 @@ namespace Solid
          */
         bool isHotpluggable() const;
 
-	/**
-	* Retrieves this drives size in bytes.
-	*
-	* @return the size of this drive
-	*/
-	qulonglong size() const;
-	
+       /**
+        * Retrieves this drives size in bytes.
+        *
+        * @return the size of this drive
+        */
+       qulonglong size() const;
+
     protected:
         /**
          * @internal
