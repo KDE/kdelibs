@@ -45,6 +45,11 @@ QList<Device> DeviceBrowser::devices() const
     return d->devices();
 }
 
+Device DeviceBrowser::device( const QString& udn ) const
+{
+    return d->device( udn );
+}
+
 QStringList DeviceBrowser::browsedDeviceTypes() const
 {
     return d->browsedDeviceTypes();

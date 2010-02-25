@@ -62,6 +62,7 @@ class KUPNP_EXPORT Device
     QString presentationUrl() const;
     QList<Service> services() const;
     Device parentDevice() const;
+    QString parentUdn() const;
     QList<Device> childDevices() const;
 
     bool hasParentDevice() const;

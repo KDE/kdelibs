@@ -50,6 +50,7 @@ QString Device::ipAddress() const { return d->ipAddress(); }
 int Device::ipPortNumber() const { return d->ipPortNumber(); }
 QString Device::presentationUrl() const { return d->presentationUrl(); }
 Device Device::parentDevice() const { return d->parentDevice(); }
+QString Device::parentUdn() const { return d->parentUdn(); }
 QList<Device> Device::childDevices() const { return d->childDevices(); }
 bool Device::hasParentDevice() const { return d->hasParentDevice(); }
 bool Device::isValid() const { return d->isValid(); }

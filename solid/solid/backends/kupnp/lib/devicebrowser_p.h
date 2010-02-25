@@ -48,6 +48,7 @@ class DeviceBrowserPrivate : public QObject
   public:
     QList<Device> devices() const;
     const QStringList& browsedDeviceTypes() const;
+    Device device( const QString& udn ) const;
 
   public:
     void init();

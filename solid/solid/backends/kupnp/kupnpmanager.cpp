@@ -122,9 +122,16 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
         if (type!=Solid::DeviceInterface::Unknown) {
             result << mUdiPrefix;
         }
-    } else if (parentUdi == mUdiPrefix) {
-        QList<UPnP::Device> devices = mDeviceBrowser->devices();
+    } else {
+        const QString parentUdn = udnFromUdi( parentUdi );
+        const QList<UPnP::Device> devices = mDeviceBrowser->devices();
+
         foreach( const UPnP::Device& device, devices ) {
+            if ((parentUdn.isEmpty() && device.hasParentDevice())
+                ||(! parentUdn.isEmpty() && device.parentDevice().udn() == parentUdn )) {
+                continue;
+            }
+
             if (type==Solid::DeviceInterface::StorageAccess) {
                 if (device.type() == QLatin1String("MediaServer1"))
                     result << udiFromUdn( device.udn() );

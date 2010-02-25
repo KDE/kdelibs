@@ -52,6 +52,7 @@ class DevicePrivate : public QSharedData
     const QString& dBusPath() const;
     const QList<Service>& services() const;
     Device parentDevice() const;
+    const QString& parentUdn() const;
     const QList<Device>& childDevices() const;
 
     bool hasParentDevice() const;
@@ -67,6 +68,7 @@ class DevicePrivate : public QSharedData
     void setDBusPath( const QString& dBusPath );
     void setServices( const QList<Service>& services );
     void setParentDevice( DevicePrivate* parentDevicePrivate );
+    void setParentUdn( const QString& parentUdn );
 
     void setInvalid();
 
@@ -82,6 +84,7 @@ class DevicePrivate : public QSharedData
     int mPortNumber;
     QString mPresentationUrl;
     QString mDBusPath;
+    QString mParentUdn;
 
     QList<Service> mServices;
 
@@ -104,8 +107,12 @@ inline const QString& DevicePrivate::presentationUrl() const { return mPresentat
 inline const QString& DevicePrivate::dBusPath() const { return mDBusPath; }
 inline const QList<Service>& DevicePrivate::services() const { return mServices; }
 inline Device DevicePrivate::parentDevice() const { return Device(mParentDevicePrivate); }
+inline const QString& DevicePrivate::parentUdn() const { return mParentUdn; }
 inline const QList<Device>& DevicePrivate::childDevices() const { return mChildDevices; }
-inline bool DevicePrivate::hasParentDevice() const { return (mParentDevicePrivate != 0); }
+inline bool DevicePrivate::hasParentDevice() const
+{
+    return (mParentDevicePrivate != 0) || !mParentUdn.isEmpty() ;
+}
 inline bool DevicePrivate::isValid() const { return ! mUdn.isEmpty(); }
 
 inline void DevicePrivate::setUdn( const QString& udn ) { mUdn = udn; }
@@ -122,6 +129,7 @@ inline void DevicePrivate::setParentDevice( DevicePrivate* parentDevicePrivate )
     if( mParentDevicePrivate )
         mParentDevicePrivate->addChildDevice( this );
 }
+inline void DevicePrivate::setParentUdn( const QString& parentUdn ) { mParentUdn = parentUdn; }
 
 inline void DevicePrivate::setInvalid() { mUdn.clear(); }
 

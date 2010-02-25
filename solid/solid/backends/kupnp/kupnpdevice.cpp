@@ -58,12 +58,20 @@ QString KUPnPDevice::udi() const
 
 QString KUPnPDevice::parentUdi() const
 {
-    return mDevice.isValid() ? QString::fromLatin1("/org/kde/KUPnP") : QString();
+    QString result =
+        ! mDevice.isValid() ?
+            QString() :
+        mDevice.hasParentDevice() ?
+            QString::fromLatin1("/org/kde/KUPnP") + '/' + mDevice.parentUdn() :
+        /* else */
+            QString::fromLatin1("/org/kde/KUPnP");
+qDebug() << mDevice.displayName()<< result;
+    return result;
 }
 
 QString KUPnPDevice::vendor() const
 {
-    return QString("UPnP vendor"); // TODO: expose vendor in UPnP::Device
+    return mDevice.isValid() ? QString("UPnP vendor") : QString(); // TODO: expose vendor in UPnP::Device
 }
 
 QString KUPnPDevice::product() const
@@ -79,7 +87,7 @@ QString KUPnPDevice::icon() const
         (mDevice.type() == QLatin1String("InternetGatewayDevice1")) ? "network-server" :
         (mDevice.type() == QLatin1String("WANConnectionDevice1")) ? "network-wireless" :
         (mDevice.type() == QLatin1String("WANDevice1")) ? "network-wireless" :
-        (mDevice.type() == QLatin1String("LANDevice1")) ? "network-server" :
+        (mDevice.type() == QLatin1String("LANDevice1")) ? "network-wired" :
                                                            "network-server";
 
     return QString::fromLatin1(iconName);

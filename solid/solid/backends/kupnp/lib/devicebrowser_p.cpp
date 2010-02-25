@@ -170,6 +170,7 @@ qDebug()<<"Adding: "<<device.displayName()<<udn;
 
         if( ! parentUdn.isEmpty() )
         {
+            devicePrivate->setParentUdn(parentUdn);
             if( mDevices.contains(parentUdn) )
             {
                 devicePrivate->setParentDevice( mDevices[parentUdn].dPtr() );
@@ -243,6 +244,11 @@ QList<Device> DeviceBrowserPrivate::devices() const
     }
 
     return result;
+}
+
+Device DeviceBrowserPrivate::device( const QString& udn ) const
+{
+    return mDevices.contains(udn) ? mDevices[udn] : Device();
 }
 
 void DeviceBrowserPrivate::onDeviceAdded( const QDBusVariant& dBusVariant, const QString& udn )

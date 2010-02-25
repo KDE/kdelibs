@@ -52,6 +52,7 @@ class KUPNP_EXPORT DeviceBrowser : public QObject
 
   public:
     QList<Device> devices() const;
+    Device device( const QString& udn ) const;
 
     QStringList browsedDeviceTypes() const;
 
