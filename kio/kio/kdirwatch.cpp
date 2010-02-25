@@ -296,6 +296,7 @@ void KDirWatchPrivate::inotifyEventReceived()
             e->m_status = NonExistent;
             e->wd = -1;
             e->m_ctime = invalid_ctime;
+            emitEvent(e, Deleted, e->path);
             // Add entry to parent dir to notice if the file gets recreated
             addEntry(0, e->parentDirectory(), e, true /*isDir*/);
           }
@@ -1360,8 +1361,7 @@ void KDirWatchPrivate::slotRescan()
       // we don't really care about preserving the order of the
       // original changes.
       QList<QString> pendingFileChanges = (*it).m_pendingFileChanges.toSet().toList();
-      Q_FOREACH(const QString &changedFilename, pendingFileChanges )
-      {
+      Q_FOREACH(const QString &changedFilename, pendingFileChanges) {
         emitEvent(entry, Changed, changedFilename);
       }
       (*it).m_pendingFileChanges.clear();

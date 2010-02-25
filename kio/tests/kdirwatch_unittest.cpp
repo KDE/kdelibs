@@ -62,6 +62,7 @@ private Q_SLOTS: // test methods
     void watchAndModifyOneFile();
     void removeAndReAdd();
     void watchNonExistent();
+    void testDelete();
     void testDeleteAndRecreate();
     void testMoveTo();
     void nestedEventLoop();
@@ -331,6 +332,26 @@ void KDirWatch_UnitTest::watchNonExistent()
     // Create the file after all; we're not watching for it, but the dir will emit dirty
     createFile(file1);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), subdir));
+}
+
+void KDirWatch_UnitTest::testDelete()
+{
+    const QString file1 = m_path + "del";
+    if (!QFile::exists(file1))
+        createFile(file1);
+    waitUntilMTimeChange(file1);
+
+    // Watch the file, then delete it, KDirWatch will emit deleted (and possibly dirty for the dir, if mtime changed)
+    KDirWatch watch;
+    watch.addFile(file1);
+
+    KDirWatch::statistics();
+
+    QSignalSpy spyDirty(&watch, SIGNAL(dirty(QString)));
+    QFile::remove(file1);
+    QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), file1));
+    QTest::qWait(40); // just in case delayed processing would emit it
+    QCOMPARE(spyDirty.count(), 0);
 }
 
 void KDirWatch_UnitTest::testDeleteAndRecreate()
