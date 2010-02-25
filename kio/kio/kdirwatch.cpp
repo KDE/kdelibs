@@ -303,6 +303,7 @@ void KDirWatchPrivate::inotifyEventReceived()
             e->m_status = NonExistent;
             e->wd = -1;
             e->m_ctime = invalid_ctime;
+            emitEvent(e, Deleted, e->path);
             // Add entry to parent dir to notice if the file gets recreated
             addEntry(0, e->parentDirectory(), e, true /*isDir*/);
           }
@@ -1402,6 +1403,8 @@ void KDirWatchPrivate::slotRescan()
 #ifdef HAVE_SYS_INOTIFY_H
     if (entry->m_mode == INotifyMode) {
       if ( ev == Deleted ) {
+        if (s_verboseDebug)
+          kDebug(7001) << "scanEntry says" << entry->path << "was deleted";
         addEntry(0, entry->parentDirectory(), entry, true);
       } else if (ev == Created) {
         if (s_verboseDebug)
@@ -1421,8 +1424,7 @@ void KDirWatchPrivate::slotRescan()
       // we don't really care about preserving the order of the
       // original changes.
       QList<QString> pendingFileChanges = entry->m_pendingFileChanges.toSet().toList();
-      Q_FOREACH(const QString &changedFilename, pendingFileChanges )
-      {
+      Q_FOREACH(const QString &changedFilename, pendingFileChanges) {
         if (s_verboseDebug) {
           kDebug(7001) << "processing pending file change for" << changedFilename;
         }
