@@ -169,10 +169,10 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
-                return QString::fromLatin1( "%1%2 bif:contains \"'%3*'\" . " )
+                return QString::fromLatin1( "%1%2 bif:contains \"'%3'\" . " )
                     .arg( pattern.arg(v3),
                           v3,
-                          m_subTerm.toLiteralTerm().value().toString() );
+                          static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );
             }
             else if ( m_comparator == ComparisonTerm::Regexp ) {
                 QString v3 = qbd->uniqueVarName();
