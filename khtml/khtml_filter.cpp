@@ -34,7 +34,7 @@ namespace khtml {
 void FilterSet::addFilter(const QString& filterStr)
 {
     QString filter = filterStr;
-    
+
     if (filter.startsWith(QLatin1Char('!')))
         return;
 
@@ -43,18 +43,18 @@ void FilterSet::addFilter(const QString& filterStr)
     int last  = filter.length() - 1;
     if (filter.startsWith(QLatin1String("@@")))
         first = 2;
-        
+
     // Strip options, we ignore them for now.
     int dollar = filter.lastIndexOf(QLatin1Char('$'));
     if (dollar != -1)
         last = dollar - 1;
-    
+
     // Perhaps nothing left?
     if (first > last)
         return;
-        
+
     filter = filter.mid(first, last - first + 1);
-    
+
     // Is it a regexp filter?
     if (filter.length()>2 && filter.startsWith(QLatin1Char('/')) && filter.endsWith(QLatin1Char('/')))
     {
@@ -67,24 +67,24 @@ void FilterSet::addFilter(const QString& filterStr)
     {
         // Nope, a wildcard one.
         // Note: For these, we also need to handle |.
-        
+
         // Strip wildcards at the ends
         first = 0;
         last  = filter.length() - 1;
-        
+
         while (first < filter.length() && filter[first] == QLatin1Char('*'))
             ++first;
-            
+
         while (last >= 0 && filter[last] == QLatin1Char('*'))
             --last;
-            
+
         if (first > last)
             filter = QLatin1String("*"); // erm... Well, they asked for it.
         else
             filter = filter.mid(first, last - first + 1);
-            
+
         // Now, do we still have any wildcard stuff left?
-        if (filter.contains("*") || filter.contains("?")) 
+        if (filter.contains("*") || filter.contains("?"))
         {
 //             qDebug() << "W:" << filter;
             // check if we can use RK first (and then check full RE for the rest) for better performance
@@ -99,7 +99,8 @@ void FilterSet::addFilter(const QString& filterStr)
                 QRegExp rx;
 
                 rx.setPatternSyntax(QRegExp::Wildcard);
-                rx.setPattern(filter.mid(pos));
+                // Pad the final r.e. with * so we can check for an exact match
+                rx.setPattern(filter.mid(pos) + QLatin1Char('*'));
 
                 stringFiltersMatcher.addWildedString(filter.mid(0, pos), rx);
 
@@ -264,11 +265,15 @@ bool StringsMatcher::isMatched(const QString& str, QString *by) const
                 } else {
                     index = -index - 1;
                     int flen = rePrefixes[index].length();
-                    if (k - 8 + flen < len && rePrefixes[index] == str.midRef(k - 7, flen) &&
-                            str.indexOf(reFilters[index], k - 7 + flen) == k - 7 + flen)
+                    if (k - 8 + flen < len && rePrefixes[index] == str.midRef(k - 7, flen))
                     {
-                        if (by != 0) *by = rePrefixes[index]+reFilters[index].pattern();
-                        return true;
+                        int remStart = k - 7 + flen;
+                        QString remainder = QString::fromRawData(str.unicode() + remStart,
+                                                                 str.length() - remStart);
+                        if (reFilters[index].exactMatch(remainder)) {
+                            if (by != 0) *by = rePrefixes[index]+reFilters[index].pattern();
+                            return true;
+                        }
                     }
                 }
             }
