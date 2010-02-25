@@ -220,6 +220,18 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 }
 
 
+void Nepomuk::ResourceManagerPrivate::determineAllUris()
+{
+    QMutexLocker lock( &mutex );
+    QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
+    for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+         rdIt != rdl.end(); ++rdIt ) {
+        ResourceData* data = *rdIt;
+        data->determineUri();
+    }
+}
+
+
 void Nepomuk::ResourceManagerPrivate::_k_storageServiceInitialized( bool success )
 {
     if( success ) {
