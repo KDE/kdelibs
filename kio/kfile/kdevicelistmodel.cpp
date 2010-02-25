@@ -58,6 +58,7 @@ public:
 KDeviceListModel::KDeviceListModel(QObject *parent)
     : QAbstractItemModel(parent), d(new Private(this))
 {
+    d->deviceItems[QString()] = d->rootItem;
     d->initialize(Solid::Predicate());
 }
 
@@ -123,10 +124,13 @@ QModelIndex KDeviceListModel::index(int row, int column, const QModelIndex &pare
     if (row<0 || column!=0)
         return QModelIndex();
 
-    if (!parent.isValid())
-        return createIndex(row, column, d->rootItem);
+    KDeviceListItem *parentItem;
+    if (parent.isValid()) {
+        parentItem = static_cast<KDeviceListItem*>(parent.internalPointer());
+    } else {
+        parentItem = d->rootItem;
+    }
 
-    KDeviceListItem *parentItem = static_cast<KDeviceListItem*>(parent.internalPointer());
     KDeviceListItem *childItem = parentItem->child(row);
 
     if (childItem) {
@@ -158,7 +162,7 @@ QModelIndex KDeviceListModel::parent(const QModelIndex &child) const
 int KDeviceListModel::rowCount(const QModelIndex &parent) const
 {
     if( !parent.isValid() )
-        return 1;
+        return d->rootItem->childCount();
 
     KDeviceListItem *item = static_cast<KDeviceListItem*>(parent.internalPointer());
 
@@ -222,23 +226,18 @@ void KDeviceListModel::Private::addDevice(const Solid::Device &device)
     }
     item->setDevice(device);
 
-    if (device.parentUdi().isEmpty()) { // We found the root !
-        rootItem=item;
-        emit q->dataChanged(q->rootIndex(), q->rootIndex());
-    } else {
-        KDeviceListItem *parent = rootItem;
+    KDeviceListItem *parent = rootItem;
 
-        if (!deviceItems.contains(device.parentUdi()) ) // The parent was not present, try to insert it in the model
-            addDevice( Solid::Device(device.parentUdi()) );
+    if (!deviceItems.contains(device.parentUdi()) ) // The parent was not present, try to insert it in the model
+        addDevice( Solid::Device(device.parentUdi()) );
 
-        if (deviceItems.contains(device.parentUdi())) // Update the parent if the device is now present
-            parent = deviceItems[device.parentUdi()];
+    if (deviceItems.contains(device.parentUdi())) // Update the parent if the device is now present
+        parent = deviceItems[device.parentUdi()];
 
-        if (item->parent()!=parent) { // If it's already our parent no need to signal the new row
-            q->beginInsertRows(indexForItem(parent), parent->childCount(), parent->childCount());
-            item->setParent(parent);
-            q->endInsertRows();
-        }
+    if (item->parent()!=parent) { // If it's already our parent no need to signal the new row
+        q->beginInsertRows(indexForItem(parent), parent->childCount(), parent->childCount());
+        item->setParent(parent);
+        q->endInsertRows();
     }
 }
 
@@ -278,7 +277,11 @@ void KDeviceListModel::Private::_k_deviceRemoved(const QString &udi)
 
 QModelIndex KDeviceListModel::Private::indexForItem(KDeviceListItem *item) const
 {
-    return q->createIndex(item->row(), 0, item);
+    if (item==rootItem) {
+        return QModelIndex();
+    } else {
+        return q->createIndex(item->row(), 0, item);
+    }
 }
 
 #include "kdevicelistmodel.moc"
