@@ -583,15 +583,15 @@ KHTMLPart::~KHTMLPart()
   {
     d->m_manager->removePart(this);
   }
-  if (manager()) // the PartManager that this part is in
-  {
-    manager()->removePart(this); // ~Part does this, but we have to do it before
-  }
 
   slotWalletClosed();
   if (!parentPart()) { // only delete it if the top khtml_part closes
     removeJSErrorExtension();
-    delete d->m_statusBarPopupLabel;
+  }
+
+  if (manager()) // the PartManager that this part is in
+  {
+    manager()->removePart(this); // ~Part does this, but we have to do it before
   }
 
   stopAutoScroll();
