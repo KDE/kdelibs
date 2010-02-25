@@ -1,7 +1,19 @@
 [Desktop Entry]
 Type=Service
 Name=Cookie Jar
+Name[es]=Almacén de cookies
+Name[pt]=Repositório de 'Cookies'
+Name[pt_BR]=Repositório de cookies
+Name[sv]=Kakburk
+Name[uk]=Глечик з куками
+Name[x-test]=xxCookie Jarxx
 Comment=Stores network cookies
+Comment[es]=Almacena cookies de la red
+Comment[pt]=Guarda os 'cookies' da rede
+Comment[pt_BR]=Armazena os cookies da rede
+Comment[sv]=Lagrar nätverkskakor
+Comment[uk]=Зберігання кук мережі
+Comment[x-test]=xxStores network cookiesxx
 X-KDE-ServiceTypes=KDEDModule
 Exec=kcookiejar4
 X-DBUS-StartupType=Unique

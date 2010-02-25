@@ -1,6 +1,12 @@
 [Desktop Entry]
 Type=Service
 Name=Network Proxy Configuration
+Name[es]=Configuración del proxy de la red
+Name[pt]=Configuração do 'Proxy' de Rede
+Name[pt_BR]=Configuração do proxy de rede
+Name[sv]=Inställning av nätverksproxy
+Name[uk]=Налаштування проксі-сервера мережі
+Name[x-test]=xxNetwork Proxy Configurationxx
 Comment=Automatic proxy configuration
 Comment[af]=Outomatiese proksie opstelling
 Comment[ar]=تهيئة آلية للخادم الوكيل
