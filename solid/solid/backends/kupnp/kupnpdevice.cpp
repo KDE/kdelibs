@@ -68,12 +68,21 @@ QString KUPnPDevice::vendor() const
 
 QString KUPnPDevice::product() const
 {
-    return mDevice.isValid() ? QString("UPnP product") : QString("UPnP products"); // TODO: expose product in UPnP::Device
+    return mDevice.isValid() ? mDevice.displayName()/*QString("UPnP product")*/ : QString("UPnP devices"); // TODO: expose product in UPnP::Device
 }
 
 QString KUPnPDevice::icon() const
 {
-    return QString::fromLatin1(mDevice.isValid() ? "folder-remote":"network-server");
+    const char* iconName =
+        !mDevice.isValid() ? "network-server" :
+        (mDevice.type() == QLatin1String("MediaServer1")) ? "folder-remote" :
+        (mDevice.type() == QLatin1String("InternetGatewayDevice1")) ? "network-server" :
+        (mDevice.type() == QLatin1String("WANConnectionDevice1")) ? "network-wireless" :
+        (mDevice.type() == QLatin1String("WANDevice1")) ? "network-wireless" :
+        (mDevice.type() == QLatin1String("LANDevice1")) ? "network-server" :
+                                                           "network-server";
+
+    return QString::fromLatin1(iconName);
 }
 
 QStringList KUPnPDevice::emblems() const
@@ -113,7 +122,7 @@ bool KUPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type)
     bool result = false;
 
     if (type==Solid::DeviceInterface::StorageAccess) {
-        result = mDevice.isValid();
+        result = (mDevice.type() == QLatin1String("MediaServer1"));
     }
 
     return result;
@@ -130,7 +139,9 @@ QObject* KUPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& 
     switch (type)
     {
     case Solid::DeviceInterface::StorageAccess:
-        interface = new StorageAccess(this);
+        if (mDevice.type() == QLatin1String("MediaServer1")) {
+            interface = new StorageAccess(this);
+        }
         break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:

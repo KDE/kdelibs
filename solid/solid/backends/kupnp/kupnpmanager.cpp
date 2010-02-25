@@ -43,7 +43,7 @@ static const int KUPnPUdiPrefixLength = sizeof( KUPnPUdiPrefix ); // count final
 
 KUPnPManager::KUPnPManager(QObject *parent)
   : DeviceManager(parent),
-    mDeviceBrowser( new UPnP::DeviceBrowser(QString::fromLatin1("MediaServer1"),this) ),
+    mDeviceBrowser( new UPnP::DeviceBrowser(QStringList(),this) ),
     mUdiPrefix( QString::fromLatin1(KUPnPUdiPrefix) )
 {
     connect( mDeviceBrowser, SIGNAL(deviceAdded( const UPnP::Device& )),
@@ -126,7 +126,8 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
         QList<UPnP::Device> devices = mDeviceBrowser->devices();
         foreach( const UPnP::Device& device, devices ) {
             if (type==Solid::DeviceInterface::StorageAccess) {
-                result << udiFromUdn( device.udn() );
+                if (device.type() == QLatin1String("MediaServer1"))
+                    result << udiFromUdn( device.udn() );
             }
         }
     }
