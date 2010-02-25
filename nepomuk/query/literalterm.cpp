@@ -78,9 +78,13 @@ QString Nepomuk::Query::LiteralTermPrivate::toString() const
 
 QString Nepomuk::Query::LiteralTermPrivate::queryText() const
 {
+    // Virtuoso 6 has a min of 4 leading chars before a wildcard.
+    // Thus, we do not use one with less chars.
+
     QString s = m_value.toString();
-    if( !s.endsWith(QLatin1String("*")) &&
-        !s.endsWith(QLatin1String("?")) ) {
+     if( s.length() > 3 &&
+         !s.endsWith(QLatin1String("*")) &&
+         !s.endsWith(QLatin1String("?")) ) {
         s += QLatin1String("*");
     }
     return s;
