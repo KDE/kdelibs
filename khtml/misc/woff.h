@@ -81,6 +81,6 @@ int getDecodedSize(const char* woffData, int woffLen, int* pStatus);
 void decodeToBuffer(const char* woffData, int woffLen, char * sfntData, int bufferLen,
                         int* pActualSfntLen, int* pStatus);
 
-};
+}
 
 #endif

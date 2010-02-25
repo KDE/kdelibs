@@ -33,7 +33,7 @@ namespace Fake
 class FakeDevice;
 class FakeDevice::Private : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     QString udi;
     QMap<QString, QVariant> propertyMap;

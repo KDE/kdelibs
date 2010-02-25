@@ -34,7 +34,7 @@ namespace DBusConnectionPool
  * around in Qt) this method can be dropped.
  */
 NEPOMUK_EXPORT QDBusConnection threadConnection();
-};
+}
 
 #endif
 
