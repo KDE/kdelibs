@@ -876,7 +876,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory += ')';
     }
 
-    if ( !isTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
+    if (!isTrash && (bDesktopFile || S_ISDIR(mode))
+        && !d->bMultiple // not implemented for multiple
+        && enableIconButton()) // #56857
     {
         KIconButton *iconButton = new KIconButton( d->m_frame );
         int bsize = 66 + 2 * iconButton->style()->pixelMetric(QStyle::PM_ButtonMargin);
@@ -899,8 +901,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Place );
         iconButton->setIcon(iconStr);
         d->iconArea = iconButton;
-        connect( iconButton, SIGNAL( iconChanged(const QString&) ),
-                 this, SLOT( slotIconChanged() ) );
+        connect(iconButton, SIGNAL(iconChanged(QString)),
+                this, SLOT(slotIconChanged()));
     } else {
         QLabel *iconLabel = new QLabel( d->m_frame );
         int bsize = 66 + 2 * iconLabel->style()->pixelMetric(QStyle::PM_ButtonMargin);
@@ -1114,6 +1116,19 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
 
     vbl->addStretch(1);
+}
+
+bool KFilePropsPlugin::enableIconButton() const
+{
+    bool iconEnabled = false;
+    const KFileItem item = properties->item();
+    // If the current item is a directory, check if it's writable,
+    // so we can create/update a .directory
+    // Current item is a file, same thing: check if it is writable
+    if (item.isWritable()) {
+        iconEnabled = true;
+    }
+    return iconEnabled;
 }
 
 // QString KFilePropsPlugin::tabName () const
