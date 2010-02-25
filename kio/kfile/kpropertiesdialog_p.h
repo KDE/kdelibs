@@ -92,6 +92,7 @@ private Q_SLOTS:
   void slotIconChanged();
 
 private:
+  bool enableIconButton() const;
   void determineRelativePath( const QString & path );
   void applyIconChanges();
 
