@@ -1,0 +1,116 @@
+<?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+<?xml-stylesheet type="text/xsl" href="introspect.xsl"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+  This file is part of ?
+  Found by introspection output via qdbusviewer
+
+  License
+-->
+
+<node>
+    <interface name="org.Coherence">
+        <method name="pin">
+            <arg direction="in" type="s" name="key" />
+            <arg direction="in" type="v" name="value" />
+        </method>
+        <method name="create_oob">
+            <arg direction="in" type="s" name="file" />
+            <arg direction="out" type="s" />
+        </method>
+        <signal name="DMR_added">
+            <arg type="v" name="device" />
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="import_resource">
+            <arg direction="in" type="s" name="device_id" />
+            <arg direction="in" type="s" name="source_uri" />
+            <arg direction="in" type="s" name="destination_uri" />
+            <arg direction="out" type="v" />
+        </method>
+        <signal name="DMS_added">
+            <arg type="v" name="device" />
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="get_device_with_id">
+            <arg direction="in" type="s" name="id" />
+            <arg direction="out" type="v" />
+        </method>
+        <method name="get_devices_async">
+            <arg direction="out" type="av" />
+        </method>
+        <method name="put_resource">
+            <arg direction="in" type="s" name="destination_uri" />
+            <arg direction="in" type="s" name="filepath" />
+            <arg direction="out" type="v" />
+        </method>
+        <method name="hostname">
+            <arg direction="out" type="s" />
+        </method>
+        <method name="version">
+            <arg direction="out" type="s" />
+        </method>
+        <signal name="DMS_removed">
+            <arg type="s" name="udn" />
+        </signal>
+        <signal name="UPnP_ControlPoint_MediaServer_removed">
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="create_object">
+            <arg direction="in" type="s" name="device_id" /> 
+            <arg direction="in" type="s" name="container_id" /> 
+            <arg direction="in" type="a{ss}" name="arguments" /> 
+            <arg direction="out" type="v" />
+            <annotation name="com.trolltech.QtDBus.QtTypeName.In2" value="QVariantMap"/>
+        </method> 
+        <signal name="DMR_removed">
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="remove_plugin">
+            <arg direction="in" type="s" name="uuid" />
+            <arg direction="out" type="s" />
+        </method>
+        <signal name="UPnP_ControlPoint_MediaRenderer_detected">
+            <arg type="v" name="device" />
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="add_plugin">
+            <arg direction="in" type="s" name="backend" />
+            <arg direction="in" type="a{ss}" name="arguments" />
+            <arg direction="out" type="s" />
+            <annotation name="com.trolltech.QtDBus.QtTypeName.In1" value="QVariantMap"/>
+        </method>
+        <signal name="UPnP_ControlPoint_MediaServer_detected">
+            <arg type="v" name="device" />
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="call_plugin">
+            <arg direction="in" type="s" name="uuid" />
+            <arg direction="in" type="s" name="method" />
+            <arg direction="in" type="a{ss}" name="arguments" />
+            <arg direction="out" type="s" />
+            <annotation name="com.trolltech.QtDBus.QtTypeName.In2" value="QVariantMap"/>
+        </method> 
+        <method name="get_devices">
+            <arg direction="out" type="av" />
+        </method>
+        <signal name="UPnP_ControlPoint_MediaRenderer_removed">
+            <arg type="s" name="udn" />
+        </signal>
+        <signal name="device_removed">
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="unpin">
+            <arg direction="in" type="s" name="key" />
+        </method>
+        <signal name="device_detected">
+            <arg type="v" name="device" />
+            <arg type="s" name="udn" />
+        </signal>
+        <method name="get_pin">
+            <arg direction="in" type="s" name="key" />
+            <arg direction="out" type="v" />
+        </method>
+    </interface>
+</node>

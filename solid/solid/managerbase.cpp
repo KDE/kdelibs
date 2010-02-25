@@ -27,6 +27,7 @@
 #include "backends/iokit/iokitmanager.h"
 #elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
+#include "backends/kupnp/kupnpmanager.h"
 #elif defined (_MSC_VER) // TODO: mingw
 #include "backends/wmi/wmimanager.h"
 #endif
@@ -50,7 +51,8 @@ void Solid::ManagerBasePrivate::loadBackends()
 #        if defined (Q_OS_MAC)
             m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 #        elif defined (Q_OS_UNIX)
-            m_backends << new Solid::Backends::Hal::HalManager(0);
+            m_backends << new Solid::Backends::Hal::HalManager(0)
+                       << new Solid::Backends::KUPnP::KUPnPManager(0);
 #        elif defined (_MSC_VER) // TODO: mingw
             m_backends << new Solid::Backends::Wmi::WmiManager(0);
 #        endif

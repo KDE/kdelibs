@@ -122,6 +122,22 @@ set(solid_LIB_SRCS
 )
 
 if(NOT WIN32 AND NOT APPLE)
+   message(STATUS "-- Building Solid KUPnP backend." )
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+
+   backends/kupnp/lib/service.cpp
+   backends/kupnp/lib/device.cpp
+   backends/kupnp/lib/devicebrowser_p.cpp
+   backends/kupnp/lib/devicebrowser.cpp
+   backends/kupnp/kupnpstorageaccess.cpp
+   backends/kupnp/kupnpdeviceinterface.cpp
+   backends/kupnp/kupnpdevice.cpp
+   backends/kupnp/kupnpmanager.cpp
+
+   )
+
+   qt4_add_dbus_interface( solid_LIB_SRCS  backends/kupnp/lib/org.Coherence.xml coherence_interface )
+
    message(STATUS "-- Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
