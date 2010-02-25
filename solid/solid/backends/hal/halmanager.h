@@ -45,6 +45,7 @@ public:
     virtual QString udiPrefix() const ;
     virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
 
+    bool deviceExists(const QString &udi);
     virtual QStringList allDevices();
 
     virtual QStringList devicesFromQuery(const QString &parentUdi,
@@ -57,7 +58,6 @@ private Q_SLOTS:
     void slotDeviceRemoved(const QString &udi);
 
 private:
-    bool deviceExists(const QString &udi);
     QStringList findDeviceStringMatch(const QString &key, const QString &value);
     QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
 

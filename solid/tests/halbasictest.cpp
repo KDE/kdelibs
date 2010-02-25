@@ -21,9 +21,7 @@
 
 #include <QtTest/QtTest>
 
-#define private public
 #include "solid/backends/hal/halmanager.h"
-#undef private
 
 #include <solid/device.h>
 #include <solid/ifaces/device.h>
