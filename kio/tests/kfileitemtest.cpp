@@ -134,9 +134,6 @@ void KFileItemTest::testBasic()
     QVERIFY(!fileItem.isDir());
     QVERIFY(!fileItem.isDesktopFile());
     QCOMPARE(fileItem.user(), KUser().loginName());
-#ifndef Q_OS_WIN
-    QCOMPARE(fileItem.group(), KUserGroup().name());
-#endif
 }
 
 void KFileItemTest::testRootDirectory()
