@@ -1048,6 +1048,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
         d->m_linkTargetLineEdit = new KLineEdit(item.linkDest(), d->m_frame );
         grid->addWidget(d->m_linkTargetLineEdit, curRow++, 2);
+        connect(d->m_linkTargetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setDirty()));
     }
 
     if (!d->bMultiple) // Dates for multiple don't make much sense...
