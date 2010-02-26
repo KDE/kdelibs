@@ -13,3 +13,7 @@ Name[sv]=SSL-certifikatpolicy
 Name[uk]=Правила для сертифікатів SSL
 Name[x-test]=xxSSL Certificate Policyxx
 Comment=Provides SSL certificate policy to applications
+Comment[pt]=Fornece uma política de certificados SSL às aplicações
+Comment[pt_BR]=Fornece uma política de certificados SSL aos aplicativos
+Comment[uk]=Правила роботи з сертифікатами SSL для програм
+Comment[x-test]=xxProvides SSL certificate policy to applicationsxx

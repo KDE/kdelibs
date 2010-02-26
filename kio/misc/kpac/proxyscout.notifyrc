@@ -1,6 +1,10 @@
 [Global]
 IconName=preferences-system-network-proxy
 Comment=Network Proxy Configuration
+Comment[pt]=Configuração do 'Proxy' de Rede
+Comment[pt_BR]=Configuração do proxy de rede
+Comment[uk]=Налаштування проксі-сервера мережі
+Comment[x-test]=xxNetwork Proxy Configurationxx
 
 [Event/script-error]
 Name=Invalid Proxy Script
