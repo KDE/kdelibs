@@ -181,6 +181,10 @@ KCrash::setCrashHandler (HandlerType handler)
   signal (SIGSEGV, handler);
   sigaddset(&mask, SIGSEGV);
 #endif
+#ifdef SIGBUS
+  signal (SIGBUS, handler);
+  sigaddset(&mask, SIGBUS);
+#endif
 #ifdef SIGFPE
   signal (SIGFPE, handler);
   sigaddset(&mask, SIGFPE);
