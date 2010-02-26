@@ -88,55 +88,44 @@ KUPnPDevice::~KUPnPDevice()
 
 QString KUPnPDevice::udi() const
 {
-    QString result = QString::fromLatin1("/org/kde/KUPnP");
-    if( mDevice.isValid() )
-        result += '/' + mDevice.udn();
-    return result;
+    return QString::fromLatin1("/org/kde/KUPnP/%1").arg( mDevice.udn() );
 }
 
 QString KUPnPDevice::parentUdi() const
 {
-    QString result =
-        ! mDevice.isValid() ?
-            QString() :
+    const QString result =
         mDevice.hasParentDevice() ?
-            QString::fromLatin1("/org/kde/KUPnP") + '/' + mDevice.parentUdn() :
-        /* else */
+            QString::fromLatin1("/org/kde/KUPnP/%1").arg( mDevice.parentUdn() ) :
             QString::fromLatin1("/org/kde/KUPnP");
-qDebug() << mDevice.displayName()<< result;
+
     return result;
 }
 
 QString KUPnPDevice::vendor() const
 {
-    return mDevice.isValid() ? QString("UPnP vendor") : QString(); // TODO: expose vendor in UPnP::Device
+    return QString("UPnP vendor"); // TODO: expose vendor in UPnP::Device
 }
 
 QString KUPnPDevice::product() const
 {
-    return mDevice.isValid() ? mDevice.displayName()/*QString("UPnP product")*/ : QString("UPnP devices"); // TODO: expose product in UPnP::Device
+    return mDevice.displayName(); // TODO: expose product in UPnP::Device
 }
 
 QString KUPnPDevice::icon() const
 {
     const char* result;
 
-    const bool isRootDevice = (!mDevice.isValid());
-    if (isRootDevice) {
+    const QString type = mDevice.type();
+    int i = 0;
+    for (;i<deviceDataCount; ++i ) {
+        const DeviceData& data = deviceData[i];
+        if (type == QLatin1String(data.type)) {
+            result = data.iconName;
+            break;
+        }
+    }
+    if (i==deviceDataCount) {
         result = "network-server";
-    } else {
-        const QString type = mDevice.type();
-        int i = 0;
-        for (;i<deviceDataCount; ++i ) {
-            const DeviceData& data = deviceData[i];
-            if (type == QLatin1String(data.type)) {
-                result = data.iconName;
-                break;
-            }
-        }
-        if (i==deviceDataCount) {
-            result = "network-server";
-        }
     }
 
     return QString::fromLatin1(result);

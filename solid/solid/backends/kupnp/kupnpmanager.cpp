@@ -23,9 +23,10 @@
 #include "kupnpmanager.h"
 
 // backend
+#include "kupnprootdevice.h"
+#include "kupnpdevice.h"
 #include "lib/devicebrowser.h"
 #include "lib/device.h"
-#include "kupnpdevice.h"
 // Qt
 #include <QtCore/QDebug>
 
@@ -99,7 +100,7 @@ QObject* KUPnPManager::createDevice(const QString &udi)
 
     const QString udn = udnFromUdi( udi );
     if( udn.isEmpty() ) {
-        result = new KUPnPDevice( UPnP::Device() );
+        result = new KUPnPRootDevice();
     } else {
         QList<UPnP::Device> devices = mDeviceBrowser->devices();
         foreach( const UPnP::Device& device, devices ) {
