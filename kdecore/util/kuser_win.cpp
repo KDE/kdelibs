@@ -40,8 +40,21 @@ class KUser::Private : public KShared
 
         Private(const QString &name, PSID sid_ = 0) : userInfo(0), sid(NULL)
         {
-            if (NetUserGetInfo(NULL, (LPCWSTR) name.utf16(), 11, (LPBYTE *) &userInfo) != NERR_Success)
+            LPBYTE servername;
+            NET_API_STATUS status = NetGetAnyDCName(0, 0, &servername);
+            if (status != NERR_Success)
+            {
+                servername = NULL;
+            }
+            
+            if (NetUserGetInfo((LPCWSTR) servername, (LPCWSTR) name.utf16(), 11, (LPBYTE *) &userInfo) != NERR_Success) {
                 goto error;
+            }
+            if (servername)
+            {
+                NetApiBufferFree(servername);
+                servername = 0;
+            }
 
             if (!sid_) {
                 DWORD size = 0;
@@ -88,6 +101,11 @@ class KUser::Private : public KShared
             if (userInfo) {
                 NetApiBufferFree(userInfo);
                 userInfo = 0;
+            }
+            if (servername) 
+            {
+                NetApiBufferFree(servername);
+                servername = 0;
             }
         }
 

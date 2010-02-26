@@ -119,6 +119,17 @@ void ProcessList::getProcessNameAndID( DWORD processID )
     // by default use the current process' uid
     KUser user;
     K_UID processSid;
+    K_UID userId = user.uid();
+
+    if(userId == NULL) {
+        return;
+    }
+
+    if(!IsValidSid(userId))
+    {
+        return;
+    }
+
     DWORD sidLength = GetLengthSid(user.uid());
     processSid = (PSID) malloc(sidLength);
     CopySid(sidLength, processSid, user.uid());
@@ -130,7 +141,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
                                    false, processID );
 
     // Get the process name.
-    int ret;
+    int ret = 0;
 
     if (NULL != hProcess )
     {
