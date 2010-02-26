@@ -27,7 +27,7 @@
 #include "kupnpdevice.h"
 // Solid
 #include <solid/ifaces/deviceinterface.h>
-
+// Qt
 #include <QtCore/QObject>
 
 
