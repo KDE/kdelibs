@@ -28,6 +28,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
 
+#define QI18N(x) x
 
 namespace Solid
 {
@@ -35,6 +36,43 @@ namespace Backends
 {
 namespace KUPnP
 {
+
+struct DeviceData
+{
+    const char* type;
+    const char* iconName;
+    const char* name;
+};
+
+static const
+DeviceData deviceData[] =
+{
+    {"BasicDevice1", "network-server", QI18N("UPnP Basic Device") },
+    {"WLANAccessPointDevice1", "network-wireless", QI18N("UPnP WLAN Access Point Device") },
+    {"InternetGatewayDevice1", "network-server", QI18N("UPnP Internet Gateway Device") },
+    {"PrinterBasic1", "printer", QI18N("UPnP Printer (Basic)") },
+    {"PrinterEnhanced1", "printer", QI18N("UPnP Printer (Enhanced)") },
+    {"Scanner1", "scanner", QI18N("UPnP Scanner") },
+    {"MediaServer1", "folder-remote", QI18N("UPnP Media Server") },
+    {"MediaRenderer1", "terminal", QI18N("UPnP Media Renderer") },
+    {"MediaServer2", "folder-remote", QI18N("UPnP Media Server") },
+    {"MediaRenderer2", "terminal", QI18N("UPnP Media Renderer") },
+    {"MediaServer3", "folder-remote", QI18N("UPnP Media Server") },
+    {"SolarProtectionBlind1", "device", QI18N("UPnP Solar Protection Blind") },
+    {"DigitalSecurityCamera1", "camera", QI18N("UPnP Digital Security Camera") },
+    {"HVAC1", "device", QI18N("UPnP HVAC") },
+    {"LightingControls1", "light", QI18N("UPnP Lighting Controls") },
+    {"RemoteUIClient1", "printer", QI18N("UPnP Remote UI Client") },
+    {"RemoteUIServer1", "printer", QI18N("UPnP Remote UI Server") },
+    {"Unknown", "device", QI18N("Unknown UPnP Device") },
+    {"LANDevice1", "network-wired", QI18N("UPnP LAN Device") },
+    {"WANDevice1", "network-wireless", QI18N("UPnP WAN Device") },
+    {"WANConnectionDevice1", "network-wireless", QI18N("UPnP WAN Connection Device") },
+    {"WFADevice1", "network-wireless", QI18N("UPnP Wi-Fi Alliance Device") }
+};
+
+static const int deviceDataCount = sizeof(deviceData) / sizeof(deviceData[0]);
+
 
 KUPnPDevice::KUPnPDevice(const UPnP::Device& device)
   : Device(),
@@ -81,16 +119,27 @@ QString KUPnPDevice::product() const
 
 QString KUPnPDevice::icon() const
 {
-    const char* iconName =
-        !mDevice.isValid() ? "network-server" :
-        (mDevice.type() == QLatin1String("MediaServer1")) ? "folder-remote" :
-        (mDevice.type() == QLatin1String("InternetGatewayDevice1")) ? "network-server" :
-        (mDevice.type() == QLatin1String("WANConnectionDevice1")) ? "network-wireless" :
-        (mDevice.type() == QLatin1String("WANDevice1")) ? "network-wireless" :
-        (mDevice.type() == QLatin1String("LANDevice1")) ? "network-wired" :
-                                                           "network-server";
+    const char* result;
 
-    return QString::fromLatin1(iconName);
+    const bool isRootDevice = (!mDevice.isValid());
+    if (isRootDevice) {
+        result = "network-server";
+    } else {
+        const QString type = mDevice.type();
+        int i = 0;
+        for (;i<deviceDataCount; ++i ) {
+            const DeviceData& data = deviceData[i];
+            if (type == QLatin1String(data.type)) {
+                result = data.iconName;
+                break;
+            }
+        }
+        if (i==deviceDataCount) {
+            result = "network-server";
+        }
+    }
+
+    return QString::fromLatin1(result);
 }
 
 QStringList KUPnPDevice::emblems() const
@@ -153,6 +202,7 @@ QObject* KUPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& 
         break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
+    default:
         break;
     }
 
