@@ -456,7 +456,7 @@ void KCrash::startDirectly( const char* argv[], int )
   default:
     alarm(0); // Seems we made it....
     // wait for child to exit
-    waitpid(pid, NULL, 0);
+    while(waitpid(-1, NULL, 0) != pid) {}
     _exit(253);
   }
 }
