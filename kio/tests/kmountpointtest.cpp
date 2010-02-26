@@ -90,7 +90,10 @@ void KMountPointTest::testCurrentMountPoints()
 void KMountPointTest::testPossibleMountPoints()
 {
     const KMountPoint::List mountPoints = KMountPoint::possibleMountPoints(KMountPoint::NeedRealDeviceName|KMountPoint::NeedMountOptions);
-    QVERIFY(!mountPoints.isEmpty());
+    if (mountPoints.isEmpty()) { // can happen in chroot jails
+        QSKIP("fstab is empty", SkipAll);
+        return;
+    }
     KMountPoint::Ptr mountWithDevice;
     foreach(KMountPoint::Ptr mountPoint, mountPoints) {
         kDebug() << "Possible mount: " << mountPoint->mountedFrom()
