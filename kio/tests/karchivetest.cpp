@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2006 David Faure <faure@kde.org>
+   Copyright (C) 2006, 2010 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -272,6 +272,21 @@ static const char s_tarGzMaxLengthFileName[] = "karchivetest-maxlength.tar.gz";
 static const char s_zipFileName[] = "karchivetest.zip";
 static const char s_zipMaxLengthFileName[] = "karchivetest-maxlength.zip";
 static const char s_zipLocaleFileName[] = "karchivetest-locale.zip";
+
+void KArchiveTest::initTestCase()
+{
+#ifndef Q_OS_WIN
+    // Prepare local symlink
+    QFile::remove("test3_symlink");
+    if (::symlink("test3", "test3_symlink") != 0) {
+        qDebug() << errno;
+        QVERIFY(false);
+    }
+#endif
+
+    // For better benchmarks: initialize KMimeTypeFactory magic here
+    KMimeType::findByContent(QByteArray("hello"));
+}
 
 void KArchiveTest::testCreateTar()
 {
@@ -713,17 +728,48 @@ void KArchiveTest::cleanupTestCase()
 #endif
 }
 
-void KArchiveTest::initTestCase()
+static bool writeFile(const QString& dirName, const QString& fileName, const QByteArray& data)
 {
-#ifndef Q_OS_WIN
-    // Prepare local symlink
-    QFile::remove("test3_symlink");
-    if (::symlink("test3", "test3_symlink") != 0) {
-        qDebug() << errno;
-        QVERIFY(false);
-    }
-#endif
+    Q_ASSERT(dirName.endsWith('/'));
+    QFile file(dirName + fileName);
+    if (!file.open(QIODevice::WriteOnly))
+        return false;
+    file.write(data);
+    return true;
+}
 
-    // For better benchmarks: initialize KMimeTypeFactory magic here
-    KMimeType::findByContent(QByteArray("hello"));
+void KArchiveTest::testZipAddLocalDirectory()
+{
+    // Prepare local dir
+    KTempDir tmpDir;
+    const QString dirName = tmpDir.name();
+
+    const QByteArray file1Data = "Hello Shantanu";
+    const QString file1 = QLatin1String("file1");
+    QVERIFY(writeFile(dirName, file1, file1Data));
+
+    {
+        KZip zip(s_zipFileName);
+
+        bool ok = zip.open(QIODevice::WriteOnly);
+        QVERIFY(ok);
+        ok = zip.addLocalDirectory(dirName, ".");
+        QVERIFY(ok);
+        ok = zip.close();
+        QVERIFY(ok);
+    }
+    {
+        KZip zip(s_zipFileName);
+
+        bool ok = zip.open(QIODevice::ReadOnly);
+        QVERIFY(ok);
+
+        const KArchiveDirectory* dir = zip.directory();
+        QVERIFY(dir != 0);
+
+        const KArchiveEntry* e = dir->entry(file1 );
+        QVERIFY(e && e->isFile());
+        const KArchiveFile* f = (KArchiveFile*)e;
+        QCOMPARE(f->data(), file1Data);
+    }
 }

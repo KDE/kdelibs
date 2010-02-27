@@ -44,6 +44,7 @@ private Q_SLOTS:
     void testZipCopyTo();
     void testZipMaxLength();
     void testZipWithNonLatinFileNames();
+    void testZipAddLocalDirectory();
 
     void cleanupTestCase();
 };
