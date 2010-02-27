@@ -95,6 +95,12 @@
 //authentication handlers
 #include "httpauthentication.cpp"
 
+
+// see filenameFromUrl(): a sha1 hash is 160 bits
+static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
+static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
+static const int s_hashedUrlBytes = s_hashedUrlBits / 8;
+
 using namespace KIO;
 
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
@@ -4386,7 +4392,7 @@ struct CacheCleanerCommand
     BinaryCacheFileHeader header;
     quint32 commandCode;
     // filename in ASCII, binary isn't worth the coding and decoding
-    quint8 filename[40];
+    quint8 filename[s_hashedUrlNibbles];
 };
 
 QByteArray HTTPProtocol::CacheTag::serialize() const
@@ -4668,10 +4674,10 @@ static QByteArray makeCacheCleanerCommand(const HTTPProtocol::CacheTag &cacheTag
     // append the filename
     QString fileName = cacheTag.file->fileName();
     int basenameStart = fileName.lastIndexOf(QLatin1Char('/')) + 1;
-    QByteArray baseName = fileName.mid(basenameStart, 40).toLatin1();
+    QByteArray baseName = fileName.mid(basenameStart, s_hashedUrlNibbles).toLatin1();
     stream.writeRawData(baseName.constData(), baseName.size());
 
-    Q_ASSERT(ret.size() == BinaryCacheFileHeader::size + sizeof(quint32) + 40);
+    Q_ASSERT(ret.size() == BinaryCacheFileHeader::size + sizeof(quint32) + s_hashedUrlNibbles);
     return ret;
 }
 
@@ -4702,7 +4708,7 @@ void HTTPProtocol::cacheFileClose()
             QString newName = oldName;
             int basenameStart = newName.lastIndexOf(QLatin1Char('/')) + 1;
             // remove the randomized name part added by QTemporaryFile
-            newName.chop(newName.length() - basenameStart - 40);
+            newName.chop(newName.length() - basenameStart - s_hashedUrlNibbles);
             kDebug(7113) << "Renaming temporary file" << oldName << "to" << newName;
 
             // on windows open files can't be renamed
@@ -4736,7 +4742,7 @@ void HTTPProtocol::cacheFileClose()
 void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
 {
     kDebug(7113);
-    Q_ASSERT(command.size() == BinaryCacheFileHeader::size + 40 + sizeof(quint32));
+    Q_ASSERT(command.size() == BinaryCacheFileHeader::size + s_hashedUrlNibbles + sizeof(quint32));
     int attempts = 0;
     while (m_cacheCleanerConnection.state() != QLocalSocket::ConnectedState && attempts < 6) {
         if (attempts == 2) {

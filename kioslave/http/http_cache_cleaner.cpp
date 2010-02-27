@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // KDE HTTP Cache cleanup tool
 
+#include <cstring>
 #include <time.h>
 #include <stdlib.h>
 #include <zlib.h>
@@ -57,9 +58,14 @@ static const char *appName = "kio_http_cache_cleaner";
 // !START OF SYNC!
 // Keep the following in sync with the cache code in http.cpp
 
+static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
+static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
+static const int s_hashedUrlBytes = s_hashedUrlBits / 8;
+
 static const char *version = "A\n";
 
-struct CacheFileInfo {
+// never instantiated, on-disk / wire format only
+struct SerializedCacheFileInfo {
 // from http.cpp
     quint8 version[2];
     quint8 compression; // for now fixed to 0
@@ -76,15 +82,68 @@ struct CacheFileInfo {
     QString etag;
     QString mimeType;
     QStringList responseHeaders; // including status response like "HTTP 200 OK"
-// end of from http.cpp
-    qint64 lastUsedDate;
-    QString baseName;
-    qint32 sizeOnDisk;
-    // we want to delete the least "useful" files and we'll have to sort a list for that...
-    bool operator<(const CacheFileInfo &other) const;
 };
 
-bool CacheFileInfo::operator<(const CacheFileInfo &other) const
+static QString dateString(qint64 date)
+{
+    KDateTime dt;
+    dt.setTime_t(date);
+    return dt.toString(KDateTime::ISODate);
+}
+
+struct MiniCacheFileInfo {
+// data from cache entry file, or from scoreboard file
+    qint32 useCount;
+// from filesystem
+    qint64 lastUsedDate;
+    qint32 sizeOnDisk;
+    // we want to delete the least "useful" files and we'll have to sort a list for that...
+    bool operator<(const MiniCacheFileInfo &other) const;
+    void debugPrint() const
+    {
+        kDebug(7113) << "useCount:" << useCount
+                     << "\nlastUsedDate:" << lastUsedDate
+                     << "\nsizeOnDisk:" << sizeOnDisk << '\n';
+    }
+};
+
+struct CacheFileInfo : MiniCacheFileInfo {
+    quint8 version[2];
+    quint8 compression; // for now fixed to 0
+    quint8 reserved;    // for now; also alignment
+
+
+    qint64 servedDate;
+    qint64 lastModifiedDate;
+    qint64 expireDate;
+    qint32 bytesCached;
+
+    QString baseName;
+    QString url;
+    QString etag;
+    QString mimeType;
+    QStringList responseHeaders; // including status response like "HTTP 200 OK"
+
+    void prettyPrint() const
+    {
+        QTextStream out(stdout, QIODevice::WriteOnly);
+        out << "File " << baseName << " version " << version[0] << version[1];
+        out << "\n cached bytes     " << bytesCached << " useCount " << useCount;
+        out << "\n servedDate       " << dateString(servedDate);
+        out << "\n lastModifiedDate " << dateString(lastModifiedDate);
+        out << "\n expireDate       " << dateString(expireDate);
+        out << "\n entity tag       " << etag;
+        out << "\n encoded URL      " << url;
+        out << "\n mimetype         " << mimeType;
+        out << "\nResponse headers follow...\n";
+        foreach (const QString &h, responseHeaders) {
+            out << h << '\n';
+        }
+    }
+};
+
+
+bool MiniCacheFileInfo::operator<(const MiniCacheFileInfo &other) const
 {
     const int thisUseful = useCount / qMax(g_currentDate - lastUsedDate, qint64(1));
     const int otherUseful = other.useCount / qMax(g_currentDate - other.lastUsedDate, qint64(1));
@@ -102,30 +161,6 @@ enum OperationMode {
     FileInfo
 };
 
-QString dateString(qint64 date)
-{
-    KDateTime dt;
-    dt.setTime_t(date);
-    return dt.toString(KDateTime::ISODate);
-}
-
-void printInfo(const CacheFileInfo &fi)
-{
-    QTextStream out(stdout, QIODevice::WriteOnly);
-    out << "File " << fi.baseName << " version " << fi.version[0] << fi.version[1];
-    out << "\n cached bytes     " << fi.bytesCached << " useCount " << fi.useCount;
-    out << "\n servedDate       " << dateString(fi.servedDate);
-    out << "\n lastModifiedDate " << dateString(fi.lastModifiedDate);
-    out << "\n expireDate       " << dateString(fi.expireDate);
-    out << "\n entity tag       " << fi.etag;
-    out << "\n encoded URL      " << fi.url;
-    out << "\n mimetype         " << fi.mimeType;
-    out << "\nResponse headers follow...\n";
-    foreach (const QString &h, fi.responseHeaders) {
-        out << h << '\n';
-    }
-}
-
 static bool timeSizeFits(qint64 intTime)
 {
     time_t tTime = static_cast<time_t>(intTime);
@@ -133,9 +168,9 @@ static bool timeSizeFits(qint64 intTime)
     return check == intTime;
 }
 
-bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
+static bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
 {
-    if (d.size() < CacheFileInfo::size) {
+    if (d.size() < SerializedCacheFileInfo::size) {
         kDebug(7113) << "readBinaryHeader(): file too small?";
         return false;
     }
@@ -163,18 +198,6 @@ bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
     return timeSizeOk;
 }
 
-static bool readLineChecked(QIODevice *dev, QByteArray *line)
-{
-    *line = dev->readLine(8192);
-    // if nothing read or the line didn't fit into 8192 bytes(!)
-    if (line->isEmpty() || !line->endsWith('\n')) {
-        return false;
-    }
-    // we don't actually want the newline!
-    line->chop(1);
-    return true;
-}
-
 static QString filenameFromUrl(const QByteArray &url)
 {
     QCryptographicHash hash(QCryptographicHash::Sha1);
@@ -191,7 +214,19 @@ static QString filePath(const QString &baseName)
     return cacheDirName + baseName;
 }
 
-bool readTextHeader(QFile *file, CacheFileInfo *fi, OperationMode mode)
+static bool readLineChecked(QIODevice *dev, QByteArray *line)
+{
+    *line = dev->readLine(8192);
+    // if nothing read or the line didn't fit into 8192 bytes(!)
+    if (line->isEmpty() || !line->endsWith('\n')) {
+        return false;
+    }
+    // we don't actually want the newline!
+    line->chop(1);
+    return true;
+}
+
+static bool readTextHeader(QFile *file, CacheFileInfo *fi, OperationMode mode)
 {
     bool ok = true;
     QByteArray readBuf;
@@ -233,7 +268,7 @@ enum CacheCleanerCommand {
     UpdateFileCommand
 };
 
-bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mode)
+static bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mode)
 {
     QFile file(filePath(baseName));
     file.open(QIODevice::ReadOnly);
@@ -242,7 +277,7 @@ bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mod
     }
     fi->baseName = baseName;
 
-    QByteArray header = file.read(CacheFileInfo::size);
+    QByteArray header = file.read(SerializedCacheFileInfo::size);
     // do *not* modify/delete the file if we're in file info mode.
     if (!(readBinaryHeader(header, fi) && readTextHeader(&file, fi, mode)) && mode != FileInfo) {
         kDebug(7113) << "read(Text|Binary)Header() returned false, deleting file" << baseName;
@@ -256,18 +291,103 @@ bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mod
     return true;
 }
 
-CacheCleanerCommand readCommand(const QByteArray &cmd, CacheFileInfo *fi)
+class Scoreboard;
+
+class CacheIndex
+{
+public:
+    explicit CacheIndex(const QString &baseName)
+    {
+        QByteArray ba = baseName.toLatin1();
+        const int sz = ba.size();
+        const char *input = ba.constData();
+        Q_ASSERT(sz == s_hashedUrlNibbles);
+
+        int translated = 0;
+        for (int i = 0; i < sz; i++) {
+            int c = input[i];
+
+            if (c >= '0' && c <= '9') {
+                translated |= c - '0';
+            } else if (c >= 'a' && c <= 'f') {
+                translated |= c - 'a' + 10;
+            } else {
+                Q_ASSERT(false);
+            }
+
+            if (i & 1) {
+                // odd index
+                m_index[i >> 1] = translated;
+                translated = 0;
+            } else  {
+                translated = translated << 4;
+            }
+        }
+
+        computeHash();
+    }
+
+    bool operator==(const CacheIndex &other) const
+    {
+        const bool isEqual = memcmp(m_index, other.m_index, s_hashedUrlBytes) == 0;
+        if (isEqual) {
+            Q_ASSERT(m_hash == other.m_hash);
+        }
+        return isEqual;
+    }
+
+private:
+    explicit CacheIndex(const QByteArray &index)
+    {
+        Q_ASSERT(index.length() >= s_hashedUrlBytes);
+        memcpy(m_index, index.constData(), s_hashedUrlBytes);
+        computeHash();
+    }
+
+    void computeHash()
+    {
+        uint hash = 0;
+        const int ints = s_hashedUrlBytes / sizeof(uint);
+        for (int i = 0; i < ints; i++) {
+            hash ^= reinterpret_cast<uint *>(&m_index[0])[i];
+        }
+        if (const int bytesLeft = s_hashedUrlBytes % sizeof(uint)) {
+            // dead code until a new url hash algorithm or architecture with sizeof(uint) != 4 appears.
+            // we have the luxury of ignoring endianness because the hash is never written to disk.
+            // just merge the bits into the the hash in some way.
+            const int offset = ints * sizeof(uint);
+            for (int i = 0; i < bytesLeft; i++) {
+                hash ^= static_cast<uint>(m_index[offset + i]) << (i * 8);
+            }
+        }
+        m_hash = hash;
+    }
+
+    friend uint qHash(const CacheIndex &);
+    friend class Scoreboard;
+
+    quint8 m_index[s_hashedUrlBytes]; // packed binary version of the hexadecimal name
+    uint m_hash;
+};
+
+uint qHash(const CacheIndex &ci)
+{
+    return ci.m_hash;
+}
+
+
+static CacheCleanerCommand readCommand(const QByteArray &cmd, CacheFileInfo *fi)
 {
     readBinaryHeader(cmd, fi);
     QDataStream stream(cmd);
-    stream.skipRawData(CacheFileInfo::size);
+    stream.skipRawData(SerializedCacheFileInfo::size);
 
     quint32 ret;
     stream >> ret;
 
     QByteArray baseName;
-    baseName.resize(40);
-    stream.readRawData(baseName.data(), 40);
+    baseName.resize(s_hashedUrlNibbles);
+    stream.readRawData(baseName.data(), s_hashedUrlNibbles);
     Q_ASSERT(stream.atEnd());
     fi->baseName = QString::fromLatin1(baseName);
 
@@ -275,50 +395,207 @@ CacheCleanerCommand readCommand(const QByteArray &cmd, CacheFileInfo *fi)
     return static_cast<CacheCleanerCommand>(ret);
 }
 
-// execute the command; return true if a new file was created, false otherwise.
-bool dispatchCommand(const QByteArray &cmd, CacheFileInfo *fi)
-{
-    Q_ASSERT(cmd.size() == 80);
-    CacheCleanerCommand ccc = readCommand(cmd, fi);
-    QString fileName = filePath(fi->baseName);
-    switch (ccc) {
-    case CreateFileNotificationCommand:
-        // NOTE: for now we're not keeping cache stats / a list of cache files in memory, so
-        //       this command does little. When we do a complete scan of the directory we will
-        //       find any new files anyway.
-        kDebug(7113) << "CreateNotificationCommand for" << fi->baseName;
-        return true;
-    case UpdateFileCommand: {
-        kDebug(7113) << "UpdateFileCommand for" << fi->baseName;
-        QFile file(fileName);
-        file.open(QIODevice::ReadWrite);
 
-        CacheFileInfo fiFromDisk;
-        QByteArray header = file.read(CacheFileInfo::size);
-        if (!readBinaryHeader(header, &fiFromDisk) || fiFromDisk.bytesCached != fi->bytesCached) {
+// never istantiated, on-disk format only
+struct ScoreboardEntry {
+// from scoreboard file
+    quint8 index[s_hashedUrlBytes];
+    static const int indexSize = s_hashedUrlBytes;
+    qint32 useCount;
+// from scoreboard file, but compared with filesystem to see if scoreboard has current data
+    qint64 lastUsedDate;
+    qint32 sizeOnDisk;
+    static const int size = 36;
+    // we want to delete the least "useful" files and we'll have to sort a list for that...
+    bool operator<(const MiniCacheFileInfo &other) const;
+};
+
+
+class Scoreboard
+{
+public:
+    Scoreboard()
+    {
+        // read in the scoreboard...
+        QFile sboard(filePath(QLatin1String("scoreboard")));
+        sboard.open(QIODevice::ReadOnly);
+        while (true) {
+            QByteArray baIndex = sboard.read(ScoreboardEntry::indexSize);
+            QByteArray baRest = sboard.read(ScoreboardEntry::size - ScoreboardEntry::indexSize);
+            if (baIndex.size() + baRest.size() != ScoreboardEntry::size) {
+                break;
+            }
+
+            const QString entryBasename = QString::fromLatin1(baIndex.toHex());
+            MiniCacheFileInfo mcfi;
+            if (readAndValidateMcfi(baRest, entryBasename, &mcfi)) {
+                m_scoreboard.insert(CacheIndex(baIndex), mcfi);
+            }
+        }
+    }
+
+    void writeOut()
+    {
+        // write out the scoreboard
+        QFile sboard(filePath(QLatin1String("scoreboard")));
+        sboard.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        QDataStream stream(&sboard);
+
+        QHash<CacheIndex, MiniCacheFileInfo>::ConstIterator it = m_scoreboard.constBegin();
+        for (; it != m_scoreboard.constEnd(); ++it) {
+            const char *indexData = reinterpret_cast<const char *>(it.key().m_index);
+            stream.writeRawData(indexData, s_hashedUrlBytes);
+
+            stream << it.value().useCount;
+            stream << it.value().lastUsedDate;
+            stream << it.value().sizeOnDisk;
+        }
+    }
+
+    bool fillInfo(const QString &baseName, MiniCacheFileInfo *mcfi)
+    {
+        QHash<CacheIndex, MiniCacheFileInfo>::ConstIterator it =
+                                       m_scoreboard.constFind(CacheIndex(baseName));
+        if (it == m_scoreboard.constEnd()) {
             return false;
         }
+        *mcfi = it.value();
+        return true;
+    }
 
-        // update the whole header according to the ioslave, except for the use count, to make sure
-        // that we actually count up.
-        quint32 newUseCount = fiFromDisk.useCount + 1;
-        QByteArray newHeader = cmd.mid(0, CacheFileInfo::size);
-        {
-            QDataStream stream(&newHeader, QIODevice::WriteOnly);
-            stream.skipRawData(CacheFileInfo::useCountOffset);
-            stream << newUseCount;
+    int runCommand(const QByteArray &cmd)
+    {
+        // execute the command; return number of bytes if a new file was created, zero otherwise.
+        Q_ASSERT(cmd.size() == 80);
+        CacheFileInfo fi;
+        const CacheCleanerCommand ccc = readCommand(cmd, &fi);
+        QString fileName = filePath(fi.baseName);
+
+        switch (ccc) {
+        case CreateFileNotificationCommand:
+            kDebug(7113) << "CreateNotificationCommand for" << fi.baseName;
+            if (!readBinaryHeader(cmd, &fi)) {
+                return 0;
+            }
+            break;
+
+        case UpdateFileCommand: {
+            kDebug(7113) << "UpdateFileCommand for" << fi.baseName;
+            QFile file(fileName);
+            file.open(QIODevice::ReadWrite);
+
+            CacheFileInfo fiFromDisk;
+            QByteArray header = file.read(SerializedCacheFileInfo::size);
+            if (!readBinaryHeader(header, &fiFromDisk) || fiFromDisk.bytesCached != fi.bytesCached) {
+                return 0;
+            }
+
+            // adjust the use count, to make sure that we actually count up. (slaves read the file
+            // asynchronously...)
+            const quint32 newUseCount = fiFromDisk.useCount + 1;
+            QByteArray newHeader = cmd.mid(0, SerializedCacheFileInfo::size);
+            {
+                QDataStream stream(&newHeader, QIODevice::WriteOnly);
+                stream.skipRawData(SerializedCacheFileInfo::useCountOffset);
+                stream << newUseCount;
+            }
+
+            file.seek(0);
+            file.write(newHeader);
+            file.close();
+
+            if (!readBinaryHeader(newHeader, &fi)) {
+                return 0;
+            }
+            break;
         }
 
-        file.seek(0);
-        file.write(newHeader);
-        return false;
+        default:
+            kDebug(7113) << "received invalid command";
+            return 0;
+        }
+
+        QFileInfo fileInfo(fileName);
+        fi.lastUsedDate = fileInfo.lastModified().toTime_t();
+        fi.sizeOnDisk = fileInfo.size();
+        fi.debugPrint();
+        // a CacheFileInfo is-a MiniCacheFileInfo which enables the following assignment...
+        add(fi);
+        // finally, return cache dir growth (only relevant if a file was actually created!)
+        return ccc == CreateFileNotificationCommand ? fi.sizeOnDisk : 0;
     }
-    default:
-        kDebug(7113) << "received invalid command";
-        break;
+
+    void add(const CacheFileInfo &fi)
+    {
+        m_scoreboard[CacheIndex(fi.baseName)] = fi;
     }
-    return false;
-}
+
+    void remove(const QString &basename)
+    {
+        m_scoreboard.remove(CacheIndex(basename));
+    }
+
+    // keep memory usage reasonably low - otherwise entries of nonexistent files don't hurt.
+    void maybeRemoveStaleEntries(const QList<CacheFileInfo *> &fiList)
+    {
+        // don't bother when there are a few bogus entries
+        if (m_scoreboard.count() < fiList.count() + 100) {
+            return;
+        }
+        kDebug(7113) << "we have too many fake/stale entries, cleaning up...";
+        QSet<CacheIndex> realFiles;
+        foreach (CacheFileInfo *fi, fiList) {
+            realFiles.insert(CacheIndex(fi->baseName));
+        }
+        QHash<CacheIndex, MiniCacheFileInfo>::Iterator it = m_scoreboard.begin();
+        while (it != m_scoreboard.end()) {
+            if (realFiles.contains(it.key())) {
+                ++it;
+            } else {
+                it = m_scoreboard.erase(it);
+            }
+        }
+    }
+
+private:
+    bool readAndValidateMcfi(const QByteArray &rawData, const QString &basename, MiniCacheFileInfo *mcfi)
+    {
+        QDataStream stream(rawData);
+        stream >> mcfi->useCount;
+        // check those against filesystem
+        stream >> mcfi->lastUsedDate;
+        stream >> mcfi->sizeOnDisk;
+
+        QFileInfo fileInfo(filePath(basename));
+        if (!fileInfo.exists()) {
+            return false;
+        }
+        bool ok = true;
+        ok = ok && fileInfo.lastModified().toTime_t() == mcfi->lastUsedDate;
+        ok = ok && fileInfo.size() == mcfi->sizeOnDisk;
+        if (!ok) {
+            // size or last-modified date not consistent with entry file; reload useCount
+            // note that avoiding to open the file is the whole purpose of the scoreboard - we only
+            // open the file if we really have to.
+            QFile entryFile(fileInfo.absoluteFilePath());
+            entryFile.open(QIODevice::ReadOnly);
+            if (entryFile.size() < SerializedCacheFileInfo::size) {
+                return false;
+            }
+            QDataStream stream(&entryFile);
+            stream.skipRawData(SerializedCacheFileInfo::useCountOffset);
+
+            stream >> mcfi->useCount;
+            mcfi->lastUsedDate = fileInfo.lastModified().toTime_t();
+            mcfi->sizeOnDisk = fileInfo.size();
+            ok = true;
+        }
+        return ok;
+    }
+
+    QHash<CacheIndex, MiniCacheFileInfo> m_scoreboard;
+};
+
 
 // Keep the above in sync with the cache code in http.cpp
 // !END OF SYNC!
@@ -353,7 +630,7 @@ public:
 
     // Delete some of the files that need to be deleted. Return true when done, false otherwise.
     // This makes interleaved cleaning / serving ioslaves possible.
-    bool processSlice()
+    bool processSlice(Scoreboard *scoreboard = 0)
     {
         QTime t;
         t.start();
@@ -361,19 +638,19 @@ public:
         if (!m_fileNameList.isEmpty()) {
             while (t.elapsed() < 100 && !m_fileNameList.isEmpty()) {
                 QString baseName = m_fileNameList.takeFirst();
-                // check if the filename is of the 40 letters, 0...f type
-                if (baseName.length() < 40) {
+                // check if the filename is of the $s_hashedUrlNibbles letters, 0...f type
+                if (baseName.length() < s_hashedUrlNibbles) {
                     continue;
                 }
                 bool nameOk = true;
-                for (int i = 0; i < 40 && nameOk; i++) {
+                for (int i = 0; i < s_hashedUrlNibbles && nameOk; i++) {
                     QChar c = baseName[i];
                     nameOk = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
                 }
                 if (!nameOk) {
                     continue;
                 }
-                if (baseName.length() > 40) {
+                if (baseName.length() > s_hashedUrlNibbles) {
                     if (g_currentDate - QFileInfo(filePath(baseName)).lastModified().toTime_t() > 15*60) {
                         // it looks like a temporary file that hasn't been touched in > 15 minutes...
                         QFile::remove(filePath(baseName));
@@ -383,7 +660,19 @@ public:
                 }
 
                 CacheFileInfo *fi = new CacheFileInfo();
-                if (readCacheFile(baseName, fi, CleanCache)) {
+                fi->baseName = baseName;
+
+                bool gotInfo = false;
+                if (scoreboard) {
+                    gotInfo = scoreboard->fillInfo(baseName, fi);
+                }
+                if (!gotInfo) {
+                    gotInfo = readCacheFile(baseName, fi, CleanCache);
+                    if (gotInfo && scoreboard) {
+                        scoreboard->add(*fi);
+                    }
+                }
+                if (gotInfo) {
                     m_fiList.append(fi);
                     m_totalSizeOnDisk += fi->sizeOnDisk;
                 } else {
@@ -404,14 +693,22 @@ public:
         // TODO: delete files larger than allowed for a single file
         while (t.elapsed() < 100) {
             if (m_totalSizeOnDisk <= g_maxCacheSize || m_fiList.isEmpty()) {
-                qDeleteAll(m_fiList);
                 kDebug(7113) << "total size of cache files after cleaning is" << m_totalSizeOnDisk;
+                if (scoreboard) {
+                    scoreboard->maybeRemoveStaleEntries(m_fiList);
+                    scoreboard->writeOut();
+                }
+                qDeleteAll(m_fiList);
+                m_fiList.clear();
                 return true;
             }
             CacheFileInfo *fi = m_fiList.takeFirst();
             QString filename = filePath(fi->baseName);
             if (QFile::remove(filename)) {
                 m_totalSizeOnDisk -= fi->sizeOnDisk;
+                if (scoreboard) {
+                    scoreboard->remove(fi->baseName);
+                }
             }
             delete fi;
         }
@@ -455,7 +752,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         if (!readCacheFile(args->getOption("file-info"), &fi, mode)) {
             return 1;
         }
-        printInfo(fi);
+        fi.prettyPrint();
         return 0;
     }
 
@@ -504,8 +801,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     QFile::remove(socketFileName);
     lServer.listen(socketFileName);
     QList<QLocalSocket *> sockets;
-    int newFilesCounter = 1000000;  // force cleaner run on startup
+    int newBytesCounter = INT_MAX;  // force cleaner run on startup
 
+    Scoreboard scoreboard;
     CacheCleaner *cleaner = 0;
     while (true) {
         g_currentDate = time(0);
@@ -530,7 +828,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         for (int i = 0; i < sockets.size(); i++) {
             QLocalSocket *sock = sockets[i];
             if (sock->state() != QLocalSocket::ConnectedState) {
-                sock->waitForDisconnected();
+                if (sock->state() != QLocalSocket::UnconnectedState) {
+                    sock->waitForDisconnected();
+                }
                 delete sock;
                 sockets.removeAll(sock);
                 i--;
@@ -543,26 +843,21 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                     break;
                 }
                 Q_ASSERT(recv.size() == 80);
-                //### not keeping the information, for now...
-                CacheFileInfo fi;
-                if (dispatchCommand(recv, &fi)) {
-                    newFilesCounter++;
-                }
+                newBytesCounter += scoreboard.runCommand(recv);
             }
         }
-        // TODO it makes more sense to keep track of cache size, which we can actually do
 
         // interleave cleaning with serving ioslaves to reduce "garbage collection pauses"
         if (cleaner) {
-            if (cleaner->processSlice()) {
+            if (cleaner->processSlice(&scoreboard)) {
                 // that was the last slice, done
                 delete cleaner;
                 cleaner = 0;
             }
-        } else if (newFilesCounter > 30) {
+        } else if (newBytesCounter > g_maxCacheSize / 8) {
             cacheDir.refresh();
             cleaner = new CacheCleaner(cacheDir);
-            newFilesCounter = 0;
+            newBytesCounter = 0;
         }
     }
     return 0;
