@@ -42,7 +42,7 @@
 // If we improve our stack usage, we can bump this number.
 #define KJS_MAX_STACK 100
 #else
-#define KJS_MAX_STACK 900
+#define KJS_MAX_STACK 700 // ### set system specific
 #endif
 
 
@@ -61,8 +61,9 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 
   if (++depth > KJS_MAX_STACK) {
     depth -= 11; //Give the debugger some room..
-    return throwError(exec, RangeError, "Maximum call stack size exceeded.");
+    JSValue *ret = throwError(exec, RangeError, "Maximum call stack size exceeded.");
     depth += 10; //Put it back..
+    return ret;
   }
 #endif
 
