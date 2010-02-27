@@ -2471,7 +2471,8 @@ void KHTMLPart::checkCompleted()
   setJSDefaultStatusBarText(QString());
 
 #ifdef SPEED_DEBUG
-  kDebug(6050) << "DONE: " <<d->m_parsetime.elapsed();
+  if (!parentPart())
+      kDebug(6080) << "DONE:" <<d->m_parsetime.elapsed();
 #endif
 }
 

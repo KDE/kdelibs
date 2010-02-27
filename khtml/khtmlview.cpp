@@ -113,13 +113,13 @@ using namespace DOM;
 using namespace khtml;
 
 #ifndef NDEBUG
-static const int sFirstLayoutDelay = 760;
-static const int sParsingLayoutsInterval = 420;
-static const int sLayoutAttemptDelay = 400;
+static const int sFirstLayoutDelay = 520;
+static const int sParsingLayoutsInterval = 380;
+static const int sLayoutAttemptDelay = 300;
 #else
-static const int sFirstLayoutDelay = 540;
-static const int sParsingLayoutsInterval = 360;
-static const int sLayoutAttemptDelay = 340;
+static const int sFirstLayoutDelay = 280;
+static const int sParsingLayoutsInterval = 320;
+static const int sLayoutAttemptDelay = 200;
 #endif
 static const int sLayoutAttemptIncrement = 20;
 static const int sParsingLayoutsIncrement = 60;
@@ -949,7 +949,11 @@ void KHTMLView::paintEvent( QPaintEvent *e )
                                               Qt::NoButton, Qt::NoButton, Qt::NoModifier );
         QApplication::postEvent(widget(), tempEvent);
     }
-
+#ifdef SPEED_DEBUG
+    if (d->firstRepaintPending && !m_part->parentPart()) {
+        kDebug(6080) << "FIRST PAINT:" << m_part->d->m_parsetime.elapsed();
+    }
+#endif
     d->painting = false;
     d->firstRepaintPending = false;
 }
