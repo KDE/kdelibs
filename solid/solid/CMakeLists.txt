@@ -132,6 +132,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/kupnp/kupnpstorageaccess.cpp
    backends/kupnp/kupnpdeviceinterface.cpp
    backends/kupnp/kupnpdevice.cpp
+   backends/kupnp/kupnprootdevice.cpp
    backends/kupnp/kupnpmanager.cpp
 
    )
