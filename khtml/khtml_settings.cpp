@@ -28,8 +28,14 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <khtml_filter_p.h>
+#include <kstandarddirs.h>
+#include <kjob.h>
+#include <kio/job.h>
 
+#include <QFile>
+#include <QFileInfo>
 #include <QtGui/QFontDatabase>
+#include <QByteArray>
 
 /**
  * @internal
@@ -64,7 +70,8 @@ struct KPerDomainSettings {
 QString *KHTMLSettings::avFamilies = 0;
 typedef QMap<QString,KPerDomainSettings> PolicyMap;
 
-class KHTMLSettingsPrivate
+// The "struct" that contains all the data. Must be copiable (no pointers).
+class KHTMLSettingsData
 {
 public:
     bool m_bChangeCursor : 1;
@@ -114,6 +121,81 @@ public:
     QList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
+class KHTMLSettingsPrivate : public QObject, public KHTMLSettingsData
+{
+    Q_OBJECT
+public:
+
+    void adblockFilterLoadList(const QString& filename)
+    {
+        kDebug(6000) << "Loading filter list from" << filename;
+        /** load list file and process each line */
+        QFile file(filename);
+        if (file.open(QIODevice::ReadOnly)) {
+            QTextStream ts(&file);
+            QString line = ts.readLine();
+#ifndef NDEBUG /// only count when compiled for debugging
+            int whiteCounter = 0, blackCounter = 0;
+#endif // NDEBUG
+            while (!line.isEmpty()) {
+                QChar firstChar = line.at(0);
+                /** white list lines start with "@@" */
+                if (line.startsWith(QLatin1String("@@")))
+                {
+#ifndef NDEBUG
+                    ++whiteCounter;
+#endif // NDEBUG
+                    adWhiteList.addFilter(line);
+                }
+                /** ignore special lines starting with "[", "!", "&", or "#" or contain "#"
+                    (those features are not supported by KHTML's AdBlock */
+                else if (firstChar != QLatin1Char('[') && firstChar != QLatin1Char('!') && firstChar != QLatin1Char('&') && firstChar != QLatin1Char('#') && !line.contains(QLatin1Char('#')))
+                {
+#ifndef NDEBUG
+                    ++blackCounter;
+#endif // NDEBUG
+                    adBlackList.addFilter(line);
+                }
+
+                line = ts.readLine();
+            }
+            file.close();
+
+#ifndef NDEBUG
+            kDebug(6000) << "Filter list loaded" << whiteCounter << "white list entries and" << blackCounter << "black list entries";
+#endif // NDEBUG
+        }
+    }
+
+public slots:
+    void adblockFilterResult(KJob *job)
+    {
+      KIO::StoredTransferJob *tJob = qobject_cast<KIO::StoredTransferJob*>(job);
+      Q_ASSERT(tJob);
+
+      if ( job->error() == KJob::NoError )
+      {
+          const QByteArray byteArray = tJob->data();
+          const QString localFileName = tJob->property( "khtmlsettings_adBlock_filename" ).toString();
+
+          QFile file(localFileName);
+          if ( file.open(QFile::WriteOnly) )
+          {
+              bool success = file.write(byteArray) == byteArray.size();
+              file.close();
+              if ( success )
+                  adblockFilterLoadList(localFileName);
+              else
+                  kDebug(6000) << "Could not write" << byteArray.size() << "to file" << localFileName;
+          }
+          else
+              kDebug(6000) << "Cannot open file" << localFileName << "for filter list";
+      }
+      else
+          kDebug(6000) << "Downloading" << tJob->url() << "failed with message:" << job->errorText();
+  }
+};
+
 
 /** Returns a writeable per-domains settings instance for the given domain
   * or a deep copy of the global settings if not existent.
@@ -122,7 +204,7 @@ static KPerDomainSettings &setup_per_domain_policy(
 				KHTMLSettingsPrivate* const d,
 				const QString &domain) {
   if (domain.isEmpty()) {
-    kWarning() << "setup_per_domain_policy: domain is empty";
+    kWarning(6000) << "setup_per_domain_policy: domain is empty";
   }
   const QString ldomain = domain.toLower();
   PolicyMap::iterator it = d->domainPolicy.find(ldomain);
@@ -268,7 +350,8 @@ KHTMLSettings::KHTMLSettings()
 KHTMLSettings::KHTMLSettings(const KHTMLSettings &other)
 	:d(new KHTMLSettingsPrivate())
 {
-  *d = *other.d;
+  KHTMLSettingsData* data = d;
+  *data = *other.d;
 }
 
 KHTMLSettings::~KHTMLSettings()
@@ -327,10 +410,16 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       d->adBlackList.clear();
       d->adWhiteList.clear();
 
+      /** read maximum age for filter list files, minimum is one day */
+      int htmlFilterListMaxAgeDays = cgFilter.readEntry(QString("HTMLFilterListMaxAgeDays")).toInt();
+      if (htmlFilterListMaxAgeDays < 1)
+          htmlFilterListMaxAgeDays = 1;
+
       QMap<QString,QString> entryMap = cgFilter.entryMap();
       QMap<QString,QString>::ConstIterator it;
       for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
       {
+          int id = -1;
           QString name = it.key();
           QString url = it.value();
 
@@ -340,6 +429,38 @@ void KHTMLSettings::init( KConfig * config, bool reset )
                   d->adWhiteList.addFilter(url);
               else
                   d->adBlackList.addFilter(url);
+          } else if (name.startsWith("HTMLFilterListName-") && (id = name.mid(19).toInt()) > 0)
+          {
+              /** check if entry is enabled */
+              bool filterEnabled = cgFilter.readEntry(QString("HTMLFilterListEnabled-").append(QString::number(id))) != QLatin1String("false");
+
+              /** get url for HTMLFilterList */
+              KUrl url(cgFilter.readEntry(QString("HTMLFilterListURL-").append(QString::number(id))));
+
+              if (filterEnabled && url.isValid()) {
+                  /** determine where to cache HTMLFilterList file */
+                  QString localFile = cgFilter.readEntry(QString("HTMLFilterListLocalFilename-").append(QString::number(id)));
+                  localFile = KStandardDirs::locateLocal("data", "khtml/" + localFile);
+
+                  /** determine existance and age of cache file */
+                  QFileInfo fileInfo(localFile);
+
+                  /** load cached file if it exists, irrespective of age */
+                  if (fileInfo.exists())
+                      d->adblockFilterLoadList( localFile );
+
+                  /** if no cache list file exists or if it is too old ... */
+                  if (!fileInfo.exists() || fileInfo.lastModified().daysTo(QDateTime::currentDateTime()) > htmlFilterListMaxAgeDays)
+                  {
+                      /** ... in this case, refetch list asynchronously */
+                      kDebug(6000) << "Asynchronously fetching filter list from" << url << "to" << localFile;
+
+                      KIO::StoredTransferJob *job = KIO::storedGet( url, KIO::Reload, KIO::HideProgressInfo );
+                      QObject::connect( job, SIGNAL( result(KJob *) ), d, SLOT( adblockFilterResult(KJob *) ) );
+                      /** for later reference, store name of cache file */
+                      job->setProperty("khtmlsettings_adBlock_filename", localFile);
+                  }
+              }
           }
       }
   }
@@ -765,7 +886,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
     KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::NoGlobals )->group( "Filter Settings" );
 
     QRegExp rx;
-    
+
     // Try compiling to avoid invalid stuff. Only support the basic syntax here...
     // ### refactor somewhat
     if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')
@@ -1089,3 +1210,5 @@ bool KHTMLSettings::jsPopupBlockerPassivePopup() const
 {
     return d->m_jsPopupBlockerPassivePopup;
 }
+
+#include "khtml_settings.moc"
