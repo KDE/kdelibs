@@ -65,6 +65,7 @@ namespace khtml {
     class CSSStyleSelector;
     class LineEditWidget;
     class CaretBox;
+    class HTMLTokenizer;
     class KHTMLWidgetPrivate;
     class KHTMLWidget
     {
@@ -114,6 +115,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class khtml::RenderBox;
     friend class khtml::CSSStyleSelector;
     friend class khtml::LineEditWidget;
+    friend class khtml::HTMLTokenizer;
     friend class KJS::WindowFunc;
     friend class KJS::ExternalFunc;
     friend void khtml::applyRule(DOM::CSSProperty *prop);
@@ -398,6 +400,8 @@ private:
 
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);
     void unscheduleRelayout();
+
+    bool hasLayoutPending();
 
     void scheduleRepaint(int x, int y, int w, int h, bool asap=false);
     void unscheduleRepaint();

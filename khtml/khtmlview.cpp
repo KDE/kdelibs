@@ -2396,6 +2396,11 @@ bool KHTMLView::widgetEvent(QEvent* e)
     return false;
 }
 
+bool KHTMLView::hasLayoutPending()
+{
+    return d->layoutTimerId && !d->firstLayoutPending; 
+}
+
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
     return d->underMouse;

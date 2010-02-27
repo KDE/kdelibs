@@ -178,6 +178,9 @@ public:
     virtual bool isWaitingForScripts() const;
     virtual bool isExecutingScript() const;
 
+
+    virtual void executeScriptsWaitingForStylesheets();
+
 protected:
     void reset();
     void addPending();
@@ -218,6 +221,7 @@ protected:
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
 
+    bool continueProcessingScripts(int);
 protected:
     // Internal buffers
     ///////////////////
@@ -384,6 +388,10 @@ protected:
     // true if we are executing a script while parsing a document. This causes the parsing of
     // the output of the script to be postponed until after the script has finished executing
     int m_executingScript;
+
+    int m_externalScriptsTimerId;
+    bool m_hasScriptsWaitingForStylesheets;
+
     QQueue<khtml::CachedScript*> cachedScript;
     // you can pause the tokenizer if you need to display a dialog or something
     bool onHold;

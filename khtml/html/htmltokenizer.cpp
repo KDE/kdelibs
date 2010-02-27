@@ -146,11 +146,13 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
     m_autoCloseTimer = 0;
+    m_externalScriptsTimerId = 0;
     m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
     m_yieldTimer = 0;
     m_prospectiveTokenizer = 0;
     onHold = false;
     m_documentTokenizer = true;
+    m_hasScriptsWaitingForStylesheets = false;
 
     reset();
 }
@@ -165,11 +167,13 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl 
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
     m_autoCloseTimer = 0;
+    m_externalScriptsTimerId = 0;
     m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
     m_yieldTimer = 0;
     m_prospectiveTokenizer = 0;
     onHold = false;
     m_documentTokenizer = false;
+    m_hasScriptsWaitingForStylesheets = false;
 
     reset();
 }
@@ -206,6 +210,11 @@ void HTMLTokenizer::reset()
     if (m_yieldTimer > 0) {
         killTimer(m_yieldTimer);
         m_yieldTimer = 0;
+    }
+
+    if (m_externalScriptsTimerId > 0) {
+        killTimer(m_externalScriptsTimerId);
+        m_externalScriptsTimerId = 0;
     }
     currToken.reset();
     doctypeToken.reset();
@@ -1898,6 +1907,15 @@ void HTMLTokenizer::timerEvent( QTimerEvent *e )
         write( TokenizerString(), true );
     } else if ( e->timerId() == m_autoCloseTimer && cachedScript.isEmpty() ) {
          finish();
+    } else if ( e->timerId() == m_externalScriptsTimerId ) {
+        if (view && view->hasLayoutPending()) {
+            // all stylesheets are loaded but the style modifications 
+            // they triggered have yet to be applied, BBIAB
+            return;
+        }
+        killTimer(m_externalScriptsTimerId);
+        m_externalScriptsTimerId = 0;
+        notifyFinished(0);
     }
 }
 
@@ -2084,13 +2102,24 @@ void HTMLTokenizer::enlargeRawContentBuffer(int len)
     rawContentMaxSize = newsize;
 }
 
-void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
+void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
 {
     assert(!cachedScript.isEmpty());
-    bool done = false;
-    while (!done && cachedScript.head()->isLoaded()) {
+    // Make external scripts wait for external stylesheets.
+    // FIXME: This needs to be done for inline scripts too.
+    m_hasScriptsWaitingForStylesheets = !parser->doc()->haveStylesheetsLoaded();
+    if (m_hasScriptsWaitingForStylesheets) {
+        kDebug( 6036 ) << "Delaying script execution until stylesheets have loaded.";
+        return;
+    }
+    kDebug( 6036 ) << (finishedObj ? "Processing an external script"  : 
+                                     "Continuing processing of delayed external scripts");
 
-        kDebug( 6036 ) << "Finished loading an external script";
+    bool done = false;
+    QTime t = QTime::currentTime();
+    while (!done && cachedScript.head()->isLoaded()) {
+        if (!continueProcessingScripts(t.elapsed()))
+            break;
 
         CachedScript* cs = cachedScript.dequeue();
         DOMString scriptSource = cs->script();
@@ -2123,6 +2152,24 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
             // access any members.
         }
     }
+}
+
+bool HTMLTokenizer::continueProcessingScripts(int t)
+{
+    if (m_externalScriptsTimerId)
+        return false;
+    if (t > m_tokenizerYieldDelay && m_documentTokenizer) {
+        if ( (m_externalScriptsTimerId = startTimer(0)) )
+            return false;
+    }
+    return true;
+}
+
+void HTMLTokenizer::executeScriptsWaitingForStylesheets()
+{
+    assert(parser->doc()->haveStylesheetsLoaded());
+    if (m_hasScriptsWaitingForStylesheets)
+        notifyFinished(0);
 }
 
 bool HTMLTokenizer::isWaitingForScripts() const
