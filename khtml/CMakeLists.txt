@@ -745,4 +745,4 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KHTMLPart.xml DESTINATION ${D
 
 install( FILES error.html DESTINATION ${DATA_INSTALL_DIR}/khtml )
 
-install( FILES khtmlrc DESTINATION ${CONFIG_INSTALL_DIR} )
+#install( FILES khtmlrc DESTINATION ${CONFIG_INSTALL_DIR} )
