@@ -54,7 +54,6 @@
 
 // default cache size
 #define DEFCACHESIZE 2096*1024
-#define MAX_JOB_COUNT 32
 
 //#include <qasyncio.h>
 //#include <qasyncimageio.h>
@@ -243,8 +242,12 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     m_hadError = false;
     m_wasBlocked = false;
     m_err = 0;
-    // load the file
-    Cache::loader()->load(dl, this, false, true /*highPriority*/);
+    // load the file.
+    // Style sheets block rendering, they are therefore the higher priority item.
+    // Do |not| touch the priority value unless you conducted thorough tests and
+    // can back your choice with meaningful data, testing page load time and
+    // time to first paint.
+    Cache::loader()->load(dl, this, false, -8);
     m_loading = true;
 }
 
@@ -349,8 +352,10 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheContro
     // But some websites think their scripts are <some wrong mimetype here>
     // and refuse to serve them if we only accept application/x-javascript.
     setAccept( QLatin1String("*/*") );
-    // load the file
-    Cache::loader()->load(dl, this, false);
+    // load the file.
+    // Scripts block document parsing. They are therefore second in our list of most
+    // desired resources.
+    Cache::loader()->load(dl, this, false/*incremental*/, -6);
     m_loading = true;
     m_hadError = false;
 }
@@ -652,18 +657,18 @@ QSize CachedImage::pixmap_size() const
 
 void CachedImage::imageHasGeometry(khtmlImLoad::Image* /*img*/, int width, int height)
 {
-#ifdef LOADER_DEBUG
+
     kDebug(6060) << this << " got geometry "<< width << "x" << height;
-#endif
+
     do_notify(QRect(0, 0, width, height));
 }
 
 void CachedImage::imageChange     (khtmlImLoad::Image* /*img*/, QRect region)
 {
-#ifdef LOADER_DEBUG
+
     kDebug(6060) << "Image " << this << " change " <<
         region.x() << "," << region.y() << ":" << region.width() << "x" << region.height() << endl;
-#endif
+
     //### this is overly conservative -- I guess we need to also specify reason,
     //e.g. repaint vs. changed !!!
     delete bg;
@@ -688,9 +693,9 @@ void CachedImage::imageError(khtmlImLoad::Image* /*img*/)
 
 void CachedImage::imageDone(khtmlImLoad::Image* /*img*/)
 {
-#ifdef LOADER_DEBUG
+//#ifdef LOADER_DEBUG
     kDebug(6060)<<"Image is done:" << this;
-#endif
+//#endif
     m_status = Persistent;
     m_loading = false;
     doNotifyFinished();
@@ -914,9 +919,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
             }
 
             // set size of image.
-#ifdef CACHE_DEBUG
+
             kDebug(6060) << "CachedImage::data(): image is null: " << p->isNull();
-#endif
+
             if(p->isNull())
             {
                 m_hadError = true;
@@ -964,7 +969,7 @@ CachedSound::CachedSound(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     : CachedObject(url, Sound, _cachePolicy, 0)
 {
     setAccept( QLatin1String("*/*") ); // should be whatever phonon would accept...
-    Cache::loader()->load(dl, this, false);
+    Cache::loader()->load(dl, this, false/*incremental*/, 2);
     m_loading = true;
 }
 
@@ -1006,7 +1011,10 @@ CachedFont::CachedFont(DocLoader* dl, const DOMString &url, KIO::CacheControl _c
     : CachedObject(url, Font, _cachePolicy, 0)
 {
     setAccept( QLatin1String("*/*") );
-    Cache::loader()->load(dl, this, true /*highPriority*/);
+    // Fonts are desired early because their absence will lead to a page being rendered
+    // with a default replacement, then the text being re-rendered with the new font when it arrives.
+    // This can be fairly disturbing for the reader - more than missing images for instance.
+    Cache::loader()->load(dl, this, false /*incremental*/, -4);
     m_loading = true;
 }
 
@@ -1033,6 +1041,7 @@ void CachedFont::data( QBuffer &buffer, bool eof )
     // handle decoding of WOFF fonts
     int woffStatus = eWOFF_ok;
     if (int need = WOFF::getDecodedSize( m_font.constData(), m_font.size(), &woffStatus)) {
+        kDebug(6040) << "***************************** Got WOFF FoNT";
         m_hadError = true;
         do {
             if (WOFF_FAILURE(woffStatus))
@@ -1051,7 +1060,7 @@ void CachedFont::data( QBuffer &buffer, bool eof )
     } else if (m_font.isEmpty()) {
         m_hadError = true;
     }
-
+    else kDebug(6040) << "******** #################### ********************* NON WOFF font";
     setSize(m_font.size());
 
     m_loading = false;
@@ -1075,11 +1084,12 @@ void CachedFont::error( int /*err*/, const char* /*text*/ )
 
 // ------------------------------------------------------------------------------------------
 
-Request::Request(DocLoader* dl, CachedObject *_object, bool _incremental)
+Request::Request(DocLoader* dl, CachedObject *_object, bool _incremental, int _priority)
 {
     object = _object;
     object->setRequest(this);
     incremental = _incremental;
+    priority = _priority;
     m_docLoader = dl;
 }
 
@@ -1247,7 +1257,7 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
     CachedImage* i = Cache::requestObject<CachedImage, CachedObject::Image>( this, fullURL, 0);
 
     if (i && i->status() == CachedObject::Unknown && autoloadImages())
-        Cache::loader()->load(this, i, true);
+        Cache::loader()->load(this, i, true /*incremental*/);
 
     return i;
 }
@@ -1313,7 +1323,7 @@ void DocLoader::setAutoloadImages( bool enable )
             if ( status != CachedObject::Unknown )
                 continue;
 
-            Cache::loader()->load(this, img, true);
+            Cache::loader()->load(this, img, true /*incremental*/);
         }
     }
 }
@@ -1367,85 +1377,52 @@ void DocLoader::resumeAnimations()
 
 Loader::Loader() : QObject()
 {
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT( servePendingRequests() ) );
-    m_highPriorityRequestPending = 0;
 }
 
 Loader::~Loader()
 {
-    delete m_highPriorityRequestPending;
-    qDeleteAll(m_requestsPending);
     qDeleteAll(m_requestsLoading);
 }
 
-void Loader::load(DocLoader* dl, CachedObject *object, bool incremental, bool highPriority)
+void Loader::load(DocLoader* dl, CachedObject *object, bool incremental, int priority)
 {
-    Request *req = new Request(dl, object, incremental);
-    if (highPriority && !m_highPriorityRequestPending) {
-        m_highPriorityRequestPending = req;
-    } else {
-        if (highPriority) {
-            m_requestsPending.prepend(req);
-        } else {
-            m_requestsPending.append(req);
-        }
-        highPriority = false;
-    }
-
+    Request *req = new Request(dl, object, incremental, priority);
+    scheduleRequest(req);
     emit requestStarted( req->m_docLoader, req->object );
-
-    if (highPriority) {
-        servePendingRequests();
-    } else {
-        m_timer.setSingleShot(true);
-        m_timer.start(0);
-    }
 }
 
-void Loader::servePendingRequests()
+void Loader::scheduleRequest(Request* req)
 {
-    while ( (m_highPriorityRequestPending != 0 || m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT) )
-    {
-        // get the first pending request
-        Request *req = m_highPriorityRequestPending ? m_highPriorityRequestPending : m_requestsPending.takeFirst();
-
 #ifdef LOADER_DEBUG
   kDebug( 6060 ) << "starting Loader url=" << req->object->url().string();
 #endif
 
-        KUrl u(req->object->url().string());
-        KIO::TransferJob* job = KIO::get( u, KIO::NoReload, KIO::HideProgressInfo /*no GUI*/);
+    KUrl u(req->object->url().string());
+    KIO::TransferJob* job = KIO::get( u, KIO::NoReload, KIO::HideProgressInfo /*no GUI*/);
 
-        job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
-        if (!req->object->accept().isEmpty())
-            job->addMetaData("accept", req->object->accept());
-        if ( req->m_docLoader )
+    job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
+    if (!req->object->accept().isEmpty())
+        job->addMetaData("accept", req->object->accept());
+    if ( req->m_docLoader )
+    {
+        job->addMetaData( "referrer",  req->m_docLoader->doc()->URL().url() );
+         KHTMLPart *part = req->m_docLoader->part();
+        if (part )
         {
-            job->addMetaData( "referrer",  req->m_docLoader->doc()->URL().url() );
-
-            KHTMLPart *part = req->m_docLoader->part();
-            if (part )
-            {
-                job->addMetaData( "cross-domain", part->toplevelURL().url() );
-                if (part->widget())
-                    job->ui()->setWindow (part->widget()->topLevelWidget());
-            }
-        }
-
-        connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotFinished( KJob * ) ) );
-        connect( job, SIGNAL( mimetype( KIO::Job *, const QString& ) ), this, SLOT( slotMimetype( KIO::Job *, const QString& ) ) );
-        connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
-                 SLOT( slotData( KIO::Job*, const QByteArray &)));
-
-        if ( req->object->schedule() )
-            KIO::Scheduler::scheduleJob( job );
-
-        m_requestsLoading.insertMulti(job, req);
-        if (m_highPriorityRequestPending) {
-            m_highPriorityRequestPending = 0;
-            break;
+            job->addMetaData( "cross-domain", part->toplevelURL().url() );
+            if (part->widget())
+                job->ui()->setWindow (part->widget()->topLevelWidget());
         }
     }
+
+    connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotFinished( KJob * ) ) );
+    connect( job, SIGNAL( mimetype( KIO::Job *, const QString& ) ), this, SLOT( slotMimetype( KIO::Job *, const QString& ) ) );
+    connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
+             SLOT( slotData( KIO::Job*, const QByteArray &)));
+
+    KIO::Scheduler::setJobPriority( job, req->priority );
+
+    m_requestsLoading.insertMulti(job, req);
 }
 
 void Loader::slotMimetype( KIO::Job *j, const QString& s )
@@ -1523,11 +1500,6 @@ void Loader::slotFinished( KJob* job )
 #endif
 
   delete r;
-
-  if ( (m_highPriorityRequestPending != 0 || m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT / 2) ) {
-      m_timer.setSingleShot(true);
-      m_timer.start(0);
-  }
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )
@@ -1550,13 +1522,6 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 int Loader::numRequests( DocLoader* dl ) const
 {
     int res = 0;
-    if (m_highPriorityRequestPending && m_highPriorityRequestPending->m_docLoader == dl)
-        res++;
-
-    foreach( Request* req, m_requestsPending )
-        if ( req->m_docLoader == dl )
-            res++;
-
     foreach( Request* req, m_requestsLoading)
         if ( req->m_docLoader == dl )
             res++;
@@ -1566,27 +1531,6 @@ int Loader::numRequests( DocLoader* dl ) const
 
 void Loader::cancelRequests( DocLoader* dl )
 {
-    if (m_highPriorityRequestPending && m_highPriorityRequestPending->m_docLoader == dl) {
-        CDEBUG << "canceling high priority pending request for " << m_highPriorityRequestPending->object->url().string() << endl;
-        Cache::removeCacheEntry( m_highPriorityRequestPending->object );
-        delete m_highPriorityRequestPending;
-        m_highPriorityRequestPending = 0;
-    }
-
-    QMutableLinkedListIterator<Request*> pIt( m_requestsPending );
-    while ( pIt.hasNext() ) {
-        Request* cur = pIt.next();
-        if ( cur->m_docLoader == dl )
-        {
-            CDEBUG << "canceling pending request for " << cur->object->url().string() << endl;
-            Cache::removeCacheEntry( cur->object );
-            pIt.remove();
-            delete cur;
-        }
-    }
-
-    //kDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests";
-
     QMutableHashIterator<KIO::Job*,Request*> lIt( m_requestsLoading );
     while ( lIt.hasNext() )
     {

@@ -163,7 +163,6 @@ namespace khtml
 
 	bool isExpired() const;
 
-        virtual bool schedule() const { return false; }
 	virtual void finish();
 
         /**
@@ -229,7 +228,6 @@ namespace khtml
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 
-        virtual bool schedule() const { return true; }
         void setCharsetHint( const QString& charset ) { m_charsetHint = charset; }
         void setCharset( const QString& charset ) { m_charset = charset; }
         QString checkCharset(const QByteArray& buffer ) const;
@@ -260,8 +258,6 @@ namespace khtml
 
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
-
-        virtual bool schedule() const { return false; }
 
 	void checkNotify();
 
@@ -317,8 +313,6 @@ namespace khtml
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
         void pauseAnimations();
         void resumeAnimations();
-
-        virtual bool schedule() const { return true; }
 
 	virtual void finish();
 
@@ -379,7 +373,6 @@ namespace khtml
 	virtual void ref(CachedObjectClient *consumer);
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
-        virtual bool schedule() const { return false; }
 
 	void checkNotify();
 
@@ -402,7 +395,6 @@ namespace khtml
 	virtual void ref(CachedObjectClient *consumer);
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
-        virtual bool schedule() const { return false; }
 
 	void checkNotify();
 
@@ -475,9 +467,10 @@ namespace khtml
     class Request
     {
     public:
-	Request(DocLoader* dl, CachedObject *_object, bool _incremental);
+	Request(DocLoader* dl, CachedObject *_object, bool _incremental, int priority);
 	~Request();
 	bool incremental;
+	int priority; // -10 to 10, smaller values mean higher priority
 	QBuffer m_buffer;
 	CachedObject *object;
         DocLoader* m_docLoader;
@@ -495,7 +488,7 @@ namespace khtml
 	Loader();
 	~Loader();
 
-	void load(DocLoader* dl, CachedObject *object, bool incremental = true, bool highPriority = false);
+	void load(DocLoader* dl, CachedObject *object, bool incremental = true, int priority = 0);
 
         int numRequests( DocLoader* dl ) const;
         void cancelRequests( DocLoader* dl );
@@ -512,13 +505,11 @@ namespace khtml
 	void slotFinished( KJob * );
 	void slotMimetype( KIO::Job *, const QString& s);
 	void slotData( KIO::Job *, const QByteArray & );
-	void servePendingRequests();
 
     protected:
-	QLinkedList<Request*> m_requestsPending;
-	Request* m_highPriorityRequestPending;
+        void scheduleRequest(Request* req);
+
 	QHash<KIO::Job*,Request*> m_requestsLoading;
-        QTimer m_timer;     
     };
 
         /**
