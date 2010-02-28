@@ -1443,8 +1443,8 @@ QList<QString> KLocalePrivate::dialectUnitsList(KLocale::BinaryUnitDialect diale
     QString s; // Used in CACHE_BYTE_FMT macro defined shortly
 
     // Adds a given translation to the binaryUnits list.
-#define CACHE_BYTE_FMT(ctxt, x) \
-        translate_priv(ctxt, x, 0, 0, 0, &s); \
+#define CACHE_BYTE_FMT(ctxt_text) \
+        translate_priv(ctxt_text, 0, 0, 0, &s); \
         binaryUnits.append(s);
 
     // Do not remove i18n: comments below, they are used by the
@@ -1452,65 +1452,65 @@ QList<QString> KLocalePrivate::dialectUnitsList(KLocale::BinaryUnitDialect diale
 
     // This prefix is shared by all current dialects.
     // i18n: Dumb message, avoid any markup or scripting.
-    CACHE_BYTE_FMT("size in bytes", I18N_NOOP2("size in bytes", "%1 B"));
+    CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in bytes", "%1 B"));
 
     switch (dialect) {
     case KLocale::MetricBinaryDialect:
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 1000 bytes", I18N_NOOP2("size in 1000 bytes", "%1 kB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 1000 bytes", "%1 kB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^6 bytes", I18N_NOOP2("size in 10^6 bytes", "%1 MB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^6 bytes", "%1 MB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^9 bytes", I18N_NOOP2("size in 10^9 bytes", "%1 GB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^9 bytes", "%1 GB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^12 bytes", I18N_NOOP2("size in 10^12 bytes", "%1 TB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^12 bytes", "%1 TB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^15 bytes", I18N_NOOP2("size in 10^15 bytes", "%1 PB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^15 bytes", "%1 PB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^18 bytes", I18N_NOOP2("size in 10^18 bytes", "%1 EB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^18 bytes", "%1 EB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^21 bytes", I18N_NOOP2("size in 10^21 bytes", "%1 ZB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^21 bytes", "%1 ZB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 10^24 bytes", I18N_NOOP2("size in 10^24 bytes", "%1 YB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 10^24 bytes", "%1 YB"));
         break;
 
     case KLocale::JEDECBinaryDialect:
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 1024 bytes", I18N_NOOP2("memory size in 1024 bytes", "%1 KB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 1024 bytes", "%1 KB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^20 bytes", I18N_NOOP2("memory size in 2^20 bytes", "%1 MB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^20 bytes", "%1 MB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^30 bytes", I18N_NOOP2("memory size in 2^30 bytes", "%1 GB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^30 bytes", "%1 GB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^40 bytes", I18N_NOOP2("memory size in 2^40 bytes", "%1 TB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^40 bytes", "%1 TB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^40 bytes", I18N_NOOP2("memory size in 2^40 bytes", "%1 PB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^50 bytes", "%1 PB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^50 bytes", I18N_NOOP2("memory size in 2^50 bytes", "%1 EB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^60 bytes", "%1 EB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^60 bytes", I18N_NOOP2("memory size in 2^60 bytes", "%1 ZB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^70 bytes", "%1 ZB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("memory size in 2^70 bytes", I18N_NOOP2("memory size in 2^70 bytes", "%1 YB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("memory size in 2^80 bytes", "%1 YB"));
         break;
 
     case KLocale::IECBinaryDialect:
     default:
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 1024 bytes", I18N_NOOP2("size in 1024 bytes", "%1 KiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 1024 bytes", "%1 KiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^20 bytes", I18N_NOOP2("size in 2^20 bytes", "%1 MiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^20 bytes", "%1 MiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^30 bytes", I18N_NOOP2("size in 2^30 bytes", "%1 GiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^30 bytes", "%1 GiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^40 bytes", I18N_NOOP2("size in 2^40 bytes", "%1 TiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^40 bytes", "%1 TiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^40 bytes", I18N_NOOP2("size in 2^40 bytes", "%1 PiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^50 bytes", "%1 PiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^50 bytes", I18N_NOOP2("size in 2^50 bytes", "%1 EiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^60 bytes", "%1 EiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^60 bytes", I18N_NOOP2("size in 2^60 bytes", "%1 ZiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^70 bytes", "%1 ZiB"));
         // i18n: Dumb message, avoid any markup or scripting.
-        CACHE_BYTE_FMT("size in 2^70 bytes", I18N_NOOP2("size in 2^70 bytes", "%1 YiB"));
+        CACHE_BYTE_FMT(I18N_NOOP2_NOSTRIP("size in 2^80 bytes", "%1 YiB"));
         break;
     }
 
