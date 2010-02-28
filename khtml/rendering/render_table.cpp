@@ -2353,9 +2353,7 @@ int RenderTableRow::offsetHeight() const
     if (!child)
         return 0;
 
-    return child->offsetHeight() +
-                  static_cast<RenderTableCell*>(child)->cellTopExtra() +
-                  static_cast<RenderTableCell*>(child)->cellBottomExtra();
+    return child->offsetHeight();
 }
 
 short RenderTableRow::offsetWidth() const
