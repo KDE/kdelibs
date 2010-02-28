@@ -353,6 +353,26 @@ void KConfigTest::testLocale()
     QCOMPARE(group.readEntry("stringEntry1", QString()), Untranslated);
 }
 
+void KConfigTest::testEncoding()
+{
+    QString groupstr = QString::fromUtf8("UTF-8:\xc3\xb6l");
+
+    KConfig c( "kconfigtestencodings" );
+    KConfigGroup cg(&c, groupstr);
+    cg.writeEntry("key", "value");
+    c.sync();
+
+    QList<QByteArray> lines = readLines("kconfigtestencodings");
+    QCOMPARE(lines.count(), 2);
+    QCOMPARE(lines.first(), QByteArray("[UTF-8:\xc3\xb6l]\n"));
+
+    KConfig c2( "kconfigtestencodings" );
+    KConfigGroup cg2(&c2, groupstr);
+    QVERIFY(cg2.readEntry("key") == QByteArray("value"));
+
+    QVERIFY(c2.groupList().contains(groupstr));
+}
+
 void KConfigTest::testLists()
 {
   KConfig sc2( "kconfigtest" );
