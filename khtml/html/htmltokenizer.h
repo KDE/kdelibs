@@ -221,7 +221,7 @@ protected:
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
 
-    bool continueProcessingScripts(int);
+    bool continueProcessingScripts();
 protected:
     // Internal buffers
     ///////////////////
@@ -411,6 +411,7 @@ protected:
     int m_tokenizerYieldDelay;
     int m_yieldTimer;
     QTime m_time;
+    QTime m_scriptTime;
 
     // Set true if this tokenizer is used for documents and not fragments
     bool m_documentTokenizer; 

@@ -2107,7 +2107,7 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
     assert(!cachedScript.isEmpty());
     // Make external scripts wait for external stylesheets.
     // FIXME: This needs to be done for inline scripts too.
-    m_hasScriptsWaitingForStylesheets = !parser->doc()->haveStylesheetsLoaded();
+    m_hasScriptsWaitingForStylesheets = false; // !parser->doc()->haveStylesheetsLoaded();
     if (m_hasScriptsWaitingForStylesheets) {
         kDebug( 6036 ) << "Delaying script execution until stylesheets have loaded.";
         return;
@@ -2116,9 +2116,9 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
                                      "Continuing processing of delayed external scripts");
 
     bool done = false;
-    QTime t = QTime::currentTime();
+    m_scriptTime.start();
     while (!done && cachedScript.head()->isLoaded()) {
-        if (!continueProcessingScripts(t.elapsed()))
+        if (!continueProcessingScripts())
             break;
 
         CachedScript* cs = cachedScript.dequeue();
@@ -2136,10 +2136,16 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
 	scriptExecution( scriptSource.string(), cachedScriptUrl );
 
         done = cachedScript.isEmpty();
-
+        if (done) {
+            assert(!m_hasScriptsWaitingForStylesheets);
+        } else if (m_hasScriptsWaitingForStylesheets) {
+            // flag has changed during the script execution,
+            // so we need to wait for stylesheets again.
+             done = true;
+        }
         // 'script' is true when we are called synchronously from
         // scriptHandler(). In that case scriptHandler() will take care
-        // of 'scriptOutput'.
+        // of the pending queue.
         if ( !script ) {
             while (pendingQueue.count() > 1) {
                TokenizerString t = pendingQueue.pop();
@@ -2154,11 +2160,11 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
     }
 }
 
-bool HTMLTokenizer::continueProcessingScripts(int t)
+bool HTMLTokenizer::continueProcessingScripts()
 {
     if (m_externalScriptsTimerId)
         return false;
-    if (t > m_tokenizerYieldDelay && m_documentTokenizer) {
+    if (m_scriptTime.elapsed() > m_tokenizerYieldDelay && m_documentTokenizer) {
         if ( (m_externalScriptsTimerId = startTimer(0)) )
             return false;
     }
