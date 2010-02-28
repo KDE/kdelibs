@@ -62,6 +62,15 @@ class QMouseEvent;
  *   given by the URL navigator.
  * - Connect to the signal KUrlNavigator::urlChanged() and synchronize the content of
  *   QAbstractItemView with the URL given by the URL navigator.
+ *
+ * It is recommended, that the application remembers the state of the QAbstractItemView
+ * when the URL has been changed. This allows to restore the view state when going back in history.
+ * KUrlNavigator offers support for remembering the view state:
+ * - The signal urlAboutToBeChanged() will be emitted before the URL change takes places.
+ *   This allows the application to store the view state by KUrlNavigator::saveLocationState().
+ * - The signal urlChanged() will be emitted after the URL change took place. This allows
+ *   the application to restore the view state by getting the values from
+ *   KUrlNavigator::locationState().
  */
 class KFILE_EXPORT KUrlNavigator : public QWidget
 {
@@ -317,6 +326,7 @@ public Q_SLOTS:
     /**
      * Activates the URL navigator (KUrlNavigator::isActive() will return true)
      * and emits the signal KUrlNavigator::activated().
+     * @see KUrlNavigator::setActive()
      */
     void requestActivation();
 
@@ -344,7 +354,8 @@ public Q_SLOTS:
 Q_SIGNALS:
     /**
      * Is emitted, if the URL navigator has been activated by
-     * a user interaction.
+     * an user interaction
+     * @see KUrlNavigator::setActive()
      */
     void activated();
 
@@ -375,15 +386,6 @@ Q_SIGNALS:
      * the history is changed if a new URL has been selected.
      */
     void historyChanged();
-
-    /**
-     * Is emitted if the URLs \a urls have been dropped
-     * to the destination \a destination.
-     */
-    // KDE5: remove, as the signal has been replaced by
-    // urlsDropped(const KUrl& destination, QDropEvent* event)
-    void urlsDropped(const KUrl::List& urls,
-                     const KUrl& destination);
                      
     /**
      * Is emitted if a dropping has been done above the destination
@@ -404,6 +406,18 @@ Q_SIGNALS:
      * @since 4.5
      */
     void tabRequested(const KUrl& url);
+
+    /**
+     * Is emitted if the URLs \a urls have been dropped
+     * to the destination \a destination.
+     * @deprecated Use
+     * KUrlNavigator::urlsDropped(const KUrl& destination, QDropEvent* event)
+     * instead.
+     */
+    // KDE5: remove, as the signal has been replaced by
+    // urlsDropped(const KUrl& destination, QDropEvent* event)
+    KDE_DEPRECATED void urlsDropped(const KUrl::List& urls,
+                                    const KUrl& destination);
 
 protected:
     /*
