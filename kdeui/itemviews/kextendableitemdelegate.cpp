@@ -110,7 +110,7 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 
     QPersistentModelIndex persistentIndex = d->extenderIndices.take(extender);
     d->extenders.remove(persistentIndex);
-    
+
     d->deletionQueue.insert(extender, persistentIndex);
 
     d->scheduleUpdateViewLayout();
@@ -312,7 +312,7 @@ QRect KExtendableItemDelegate::extenderRect(QWidget *extender, const QStyleOptio
     QRect rect(option.rect);
     rect.setTop(rect.bottom() + 1 - extender->sizeHint().height());
 
-    rect.setLeft(0);
+    int indentation = 0;
     if (QTreeView *tv = qobject_cast<QTreeView *>(parent())) {
         int indentSteps = 0;
         for (QModelIndex idx(index.parent()); idx.isValid(); idx = idx.parent()) {
@@ -321,12 +321,18 @@ QRect KExtendableItemDelegate::extenderRect(QWidget *extender, const QStyleOptio
         if (tv->rootIsDecorated()) {
             indentSteps++;
         }
-        rect.setLeft(indentSteps * tv->indentation());
+        indentation = indentSteps * tv->indentation();
     }
 
     QAbstractScrollArea *container = qobject_cast<QAbstractScrollArea *>(parent());
     Q_ASSERT(container);
-    rect.setRight(container->viewport()->width() - 1);
+    if (qApp->isLeftToRight()) {
+        rect.setLeft(indentation);
+        rect.setRight(container->viewport()->width() - 1);
+    } else {
+        rect.setRight(container->viewport()->width() - 1 - indentation);
+        rect.setLeft(0);
+    }
     return rect;
 }
 
