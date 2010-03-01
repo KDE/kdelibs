@@ -81,8 +81,7 @@ static bool s_launchDrKonqi = false;
 
 namespace KCrash
 {
-  void startDrKonqi( const char* argv[], int argc );
-  void startDirectly( const char* argv[], int argc );
+    void startProcess(int argc, const char *argv[], bool waitAndExit);
 }
 
 void
@@ -154,7 +153,7 @@ KCrash::setApplicationPath(const QString& path)
     if (s_appName) {
         free(s_autoRestartCommand);
         QFileInfo appExecutable(QDir(path), QFile::decodeName(s_appName));
-        QByteArray cmd = QFile::encodeName(appExecutable.absoluteFilePath()) + " --nocrashhandler &";
+        QByteArray cmd = QFile::encodeName(appExecutable.absoluteFilePath());
         s_autoRestartCommand = qstrdup(cmd.constData());
     }
 }
@@ -169,11 +168,11 @@ KCrash::setApplicationName(const QString& name)
     if (s_appPath) {
         //if we have appPath, make autoRestartCommand be in the form "absolutePath/appName"...
         QFileInfo appExecutable(QDir(QFile::decodeName(s_appPath)), name);
-        QByteArray cmd = QFile::encodeName(appExecutable.absoluteFilePath()) + " --nocrashhandler &";
+        QByteArray cmd = QFile::encodeName(appExecutable.absoluteFilePath());
         s_autoRestartCommand = qstrdup(cmd.constData());
     } else {
         //...else just use the appName for the autoRestartCommand
-        s_autoRestartCommand = qstrdup(QByteArray(s_appName) + " --nocrashhandler &");
+        s_autoRestartCommand = qstrdup(s_appName);
     }
 }
 
@@ -274,8 +273,8 @@ KCrash::defaultCrashHandler (int sig)
     }
     if ((s_flags & AutoRestart) && s_autoRestartCommand) {
         sleep(1);
-        setCrashHandler(0); // make sure the new process doesn't inherit SIG_IGN from us
-        system(s_autoRestartCommand);
+        const char *restartArgv[3] = { s_autoRestartCommand, "--nocrashhandler", NULL };
+        startProcess(2, restartArgv, false);
     }
     crashRecursionCounter++; //
   }
@@ -385,11 +384,7 @@ KCrash::defaultCrashHandler (int sig)
           // NULL terminated list
           argv[i] = NULL;
 
-          if (!(s_flags & AlwaysDirectly)) {
-            startDrKonqi( argv, i );
-            fprintf( stderr, "KCrash cannot reach kdeinit, launching directly.\n" );
-          }
-          startDirectly( argv, i );
+          startProcess(i, argv, true);
     }
 
     if (crashRecursionCounter < 4)
@@ -403,19 +398,63 @@ KCrash::defaultCrashHandler (int sig)
 
 #ifdef Q_OS_UNIX
 
-// Since we can't fork() in the crashhandler, we cannot execute any external code
-// (there can be functions registered to be performed before fork(), for example
-// handling of malloc locking, which doesn't work when malloc crashes because of heap corruption).
-
+static bool startProcessInternal(int argc, const char *argv[], bool waitAndExit, bool directly);
+static pid_t startFromKdeinit(int argc, const char *argv[]);
+static pid_t startDirectly(const char *argv[]);
 static int write_socket(int sock, char *buffer, int len);
 static int read_socket(int sock, char *buffer, int len);
 static int openSocket();
 
-void KCrash::startDrKonqi( const char* argv[], int argc )
+void KCrash::startProcess(int argc, const char *argv[], bool waitAndExit)
+{
+    bool startDirectly = true;
+
+    // First try to start the app via kdeinit, if the AlwaysDirectly flag hasn't been specified.
+    // This is done because it is dangerous to use fork() in the crash handler
+    // (there can be functions registered to be performed before fork(), for example handling
+    // of malloc locking, which doesn't work when malloc crashes because of heap corruption).
+    if (!(s_flags & AlwaysDirectly)) {
+        startDirectly = !startProcessInternal(argc, argv, waitAndExit, false);
+    }
+
+    // If we can't reach kdeinit, we can still at least try to fork()
+    if (startDirectly) {
+        startProcessInternal(argc, argv, waitAndExit, true);
+    }
+}
+
+static bool startProcessInternal(int argc, const char *argv[], bool waitAndExit, bool directly)
+{
+    fprintf(stderr, "KCrash: Attempting to start %s %s\n", argv[0], directly ? "directly" : "from kdeinit");
+
+    pid_t pid = directly ? startDirectly(argv) : startFromKdeinit(argc, argv);
+
+    if (pid > 0 && waitAndExit) {
+        // Seems we made it....
+        alarm(0); //stop the pending alarm that was set at the top of the defaultCrashHandler
+
+        // Wait forever until the started process exits. This code path is executed
+        // when launching drkonqi. Note that drkonqi will stop this process in the meantime.
+        if (directly) {
+            //if the process was started directly, use waitpid(), as it's a child...
+            while(waitpid(-1, NULL, 0) != pid) {}
+        } else {
+            //...else poll its status using kill()
+            while(kill(pid, 0) >= 0) {
+                sleep(1);
+            }
+        }
+        _exit(253);
+    }
+
+    return (pid > 0); //return true on success
+}
+
+static pid_t startFromKdeinit(int argc, const char *argv[])
 {
   int socket = openSocket();
   if( socket < -1 )
-    return;
+    return 0;
   klauncher_header header;
   header.cmd = LAUNCHER_EXEC_NEW;
   const int BUFSIZE = 8192; // make sure this is big enough
@@ -432,7 +471,7 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
     if( pos + len >= BUFSIZE )
     {
       fprintf( stderr, "BUFSIZE in KCrash not big enough!\n" );
-      return;
+      return 0;
     }
     memcpy( buffer + pos, argv[ i ], len );
     pos += len;
@@ -449,44 +488,31 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
   if( read_socket( socket, (char *) &header, sizeof(header)) < 0
       || header.cmd != LAUNCHER_OK )
   {
-    return;
+    return 0;
   }
   long pid;
   read_socket(socket, buffer, header.arg_length);
   pid = *((long *) buffer);
-
-  alarm(0); // Seems we made it....
-
-  for(;;)
-  {
-    if( kill( pid, 0 ) < 0 )
-      _exit(253);
-    sleep( 1 ); // the debugger should stop this process anyway
-  }
+  return static_cast<pid_t>(pid);
 }
 
-// If we can't reach kdeinit we can still at least try to fork()
-void KCrash::startDirectly( const char* argv[], int )
+static pid_t startDirectly(const char *argv[])
 {
   pid_t pid = fork();
   switch (pid)
   {
   case -1:
     fprintf( stderr, "KCrash failed to fork(), errno = %d\n", errno );
-    _exit(253);
+    return 0;
   case 0:
     if (setgid(getgid()) < 0 || setuid(getuid()) < 0)
       _exit(253); // This cannot happen. Theoretically.
-    if (s_flags & KeepFDs)
-      closeAllFDs();
-    execvp(s_drkonqiPath, const_cast< char** >( argv ));
+    closeAllFDs(); // We are in the child now. Close FDs unconditionally.
+    execvp(argv[0], const_cast< char** >(argv));
     fprintf( stderr, "KCrash failed to exec(), errno = %d\n", errno );
     _exit(253);
   default:
-    alarm(0); // Seems we made it....
-    // wait for child to exit
-    while(waitpid(-1, NULL, 0) != pid) {}
-    _exit(253);
+    return pid;
   }
 }
 
