@@ -41,7 +41,11 @@ void TabConnectedWidget::paintEvent(QPaintEvent *e)
     pen.setWidth(6);
     p.setPen(pen);
     p.drawLine(0, 0, width(), 0);
-    p.drawLine(0, 0, 0, height());
+    if (qApp->isLeftToRight()) {
+        p.drawLine(0, 0, 0, height());
+    } else {
+        p.drawLine(width(), 0, width(), height());
+    }
 }
 
 ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
@@ -55,7 +59,7 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
     m_defaultRadio = new QRadioButton(i18n("Default:"), this);
     m_defaultLabel = new QLabel(i18nc("No shortcut defined", "None"), this);
     QString defaultText = defaultSeq.toString(QKeySequence::NativeText);
-    if (defaultText.isEmpty()) 
+    if (defaultText.isEmpty())
         defaultText = i18nc("No shortcut defined", "None");
     m_defaultLabel->setText(defaultText);
 
@@ -112,7 +116,7 @@ void ShortcutEditWidget::defaultToggled(bool checked)
 }
 
 
-void ShortcutEditWidget::setCheckActionCollections( 
+void ShortcutEditWidget::setCheckActionCollections(
         const QList<KActionCollection*> checkActionCollections)
 {
     // We just forward them to out KKeySequenceWidget.
