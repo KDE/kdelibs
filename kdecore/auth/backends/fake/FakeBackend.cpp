@@ -19,8 +19,6 @@
 
 #include "FakeBackend.h"
 
-#include <syslog.h>
-
 namespace KAuth
 {
 

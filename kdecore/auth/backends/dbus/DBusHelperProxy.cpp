@@ -20,6 +20,7 @@
 
 #include "DBusHelperProxy.h"
 
+#include <QtCore/qplugin.h>
 #include <QObject>
 #include <QMap>
 #include <QtDBus/QDBusMessage>
@@ -170,8 +171,7 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     if (type == ActionStarted) {
         emit actionStarted(action);
     } else if (type == ActionPerformed) {
-        ActionReply reply;
-        stream >> reply;
+        ActionReply reply = ActionReply::deserialize(blob);
 
         m_actionsInProgress.removeOne(action);
         emit actionPerformed(action, reply);
@@ -329,3 +329,5 @@ void debugMessageReceived(int t, const QString &message)
 }
 
 } // namespace Auth
+
+Q_EXPORT_PLUGIN2(kauth_helper_backend, KAuth::DBusHelperProxy)

@@ -20,6 +20,8 @@
 #include "AuthServicesBackend.h"
 #include <Security/Security.h>
 
+#include <QtCore/qplugin.h>
+
 namespace KAuth
 {
 
@@ -120,3 +122,5 @@ bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray c
 }
 
 }; // namespace KAuth
+
+Q_EXPORT_PLUGIN2(kauth_backend, KAuth::AuthServicesBackend)
