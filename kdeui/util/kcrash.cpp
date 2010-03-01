@@ -101,7 +101,7 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 KCrash::HandlerType
 KCrash::emergencySaveFunction()
 {
-	return s_emergencySaveFunction;
+    return s_emergencySaveFunction;
 }
 
 // Set the default crash handler in 10 seconds
@@ -238,7 +238,7 @@ KCrash::setCrashHandler (HandlerType handler)
 KCrash::HandlerType
 KCrash::crashHandler()
 {
-	return s_crashHandler;
+    return s_crashHandler;
 }
 
 static void
@@ -255,50 +255,48 @@ void
 KCrash::defaultCrashHandler (int sig)
 {
 #ifdef Q_OS_UNIX
-  // WABA: Do NOT use kDebug() in this function because it is much too risky!
-  // Handle possible recursions
-  static int crashRecursionCounter = 0;
-  crashRecursionCounter++; // Nothing before this, please !
+    // WABA: Do NOT use kDebug() in this function because it is much too risky!
+    // Handle possible recursions
+    static int crashRecursionCounter = 0;
+    crashRecursionCounter++; // Nothing before this, please !
 
-  signal(SIGALRM, SIG_DFL);
-  alarm(3); // Kill me... (in case we deadlock in malloc)
+    signal(SIGALRM, SIG_DFL);
+    alarm(3); // Kill me... (in case we deadlock in malloc)
 
 #ifdef Q_OS_SOLARIS
-  (void) printstack(2 /* stderr, assuming it's still open. */);
+    (void) printstack(2 /* stderr, assuming it's still open. */);
 #endif
 
-  if (crashRecursionCounter < 2) {
-    if (s_emergencySaveFunction) {
-      s_emergencySaveFunction (sig);
+    if (crashRecursionCounter < 2) {
+        if (s_emergencySaveFunction) {
+            s_emergencySaveFunction (sig);
+        }
+        if ((s_flags & AutoRestart) && s_autoRestartCommand) {
+            sleep(1);
+            const char *restartArgv[3] = { s_autoRestartCommand, "--nocrashhandler", NULL };
+            startProcess(2, restartArgv, false);
+        }
+        crashRecursionCounter++;
     }
-    if ((s_flags & AutoRestart) && s_autoRestartCommand) {
-        sleep(1);
-        const char *restartArgv[3] = { s_autoRestartCommand, "--nocrashhandler", NULL };
-        startProcess(2, restartArgv, false);
-    }
-    crashRecursionCounter++; //
-  }
 
-  if (!(s_flags & KeepFDs))
-    closeAllFDs();
+    if (!(s_flags & KeepFDs))
+        closeAllFDs();
 #if defined(Q_WS_X11)
-  else if (QX11Info::display())
-    close(ConnectionNumber(QX11Info::display()));
+    else if (QX11Info::display())
+        close(ConnectionNumber(QX11Info::display()));
 #endif
 
-  // this code is leaking, but this should not hurt cause we will do a
-  // exec() afterwards. exec() is supposed to clean up.
     if (crashRecursionCounter < 3)
     {
 #ifndef NDEBUG
         fprintf(stderr, "KCrash: crashing... crashRecursionCounter = %d\n",
-		crashRecursionCounter);
+                crashRecursionCounter);
         fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %d\n",
-		s_appName ? s_appName : "<unknown>" ,
-		s_appPath ? s_appPath : "<unknown>", getpid());
+                s_appName ? s_appName : "<unknown>" ,
+                s_appPath ? s_appPath : "<unknown>", getpid());
 #else
         fprintf(stderr, "KCrash: Application '%s' crashing...\n",
-		s_appName ? s_appName : "<unknown>");
+                s_appName ? s_appName : "<unknown>");
 #endif
 
         if (!s_launchDrKonqi) {
@@ -307,84 +305,84 @@ KCrash::defaultCrashHandler (int sig)
             return;
         }
 
-          const char * argv[25]; // don't forget to update this
-          int i = 0;
+        const char * argv[25]; // don't forget to update this
+        int i = 0;
 
-          // argument 0 has to be drkonqi
-          argv[i++] = s_drkonqiPath;
+        // argument 0 has to be drkonqi
+        argv[i++] = s_drkonqiPath;
 
 #if defined Q_WS_X11
-          // start up on the correct display
-          argv[i++] = "-display";
-          if ( QX11Info::display() )
+        // start up on the correct display
+        argv[i++] = "-display";
+        if ( QX11Info::display() )
             argv[i++] = XDisplayString(QX11Info::display());
-          else
+        else
             argv[i++] = getenv("DISPLAY");
 #elif defined(Q_WS_QWS)
-          // start up on the correct display
-          argv[i++] = "-display";
-          argv[i++] = getenv("QWS_DISPLAY");
+        // start up on the correct display
+        argv[i++] = "-display";
+        argv[i++] = getenv("QWS_DISPLAY");
 #endif
 
-          argv[i++] = "--appname";
-          argv[i++] = s_appName ? s_appName : "<unknown>";
+        argv[i++] = "--appname";
+        argv[i++] = s_appName ? s_appName : "<unknown>";
 
-          if (KApplication::loadedByKdeinit)
+        if (KApplication::loadedByKdeinit)
             argv[i++] = "--kdeinit";
 
-          // only add apppath if it's not NULL
-          if (s_appPath && *s_appPath) {
+        // only add apppath if it's not NULL
+        if (s_appPath && *s_appPath) {
             argv[i++] = "--apppath";
             argv[i++] = s_appPath;
-          }
+        }
 
-          // signal number -- will never be NULL
-          char sigtxt[ 10 ];
-          sprintf( sigtxt, "%d", sig );
-          argv[i++] = "--signal";
-          argv[i++] = sigtxt;
+        // signal number -- will never be NULL
+        char sigtxt[ 10 ];
+        sprintf( sigtxt, "%d", sig );
+        argv[i++] = "--signal";
+        argv[i++] = sigtxt;
 
-          char pidtxt[ 10 ];
-          sprintf( pidtxt, "%d", getpid());
-          argv[i++] = "--pid";
-          argv[i++] = pidtxt;
+        char pidtxt[ 10 ];
+        sprintf( pidtxt, "%d", getpid());
+        argv[i++] = "--pid";
+        argv[i++] = pidtxt;
 
-          const KComponentData componentData = KGlobal::mainComponent();
-          const KAboutData *about = componentData.isValid() ? componentData.aboutData() : 0;
-          if (about) {
+        const KComponentData componentData = KGlobal::mainComponent();
+        const KAboutData *about = componentData.isValid() ? componentData.aboutData() : 0;
+        if (about) {
             if (about->internalVersion()) {
-              argv[i++] = "--appversion";
-              argv[i++] = about->internalVersion();
+                argv[i++] = "--appversion";
+                argv[i++] = about->internalVersion();
             }
 
             if (about->internalProgramName()) {
-              argv[i++] = "--programname";
-              argv[i++] = about->internalProgramName();
+                argv[i++] = "--programname";
+                argv[i++] = about->internalProgramName();
             }
 
             if (about->internalBugAddress()) {
-              argv[i++] = "--bugaddress";
-              argv[i++] = about->internalBugAddress();
+                argv[i++] = "--bugaddress";
+                argv[i++] = about->internalBugAddress();
             }
-          }
+        }
 
-          char sidtxt[256];
-          if ( kapp && !kapp->startupId().isNull()) {
+        char sidtxt[256];
+        if ( kapp && !kapp->startupId().isNull()) {
             argv[i++] = "--startupid";
             strlcpy(sidtxt, kapp->startupId().constData(), sizeof(sidtxt));
             argv[i++] = sidtxt;
-          }
+        }
 
-          if ( s_flags & SaferDialog )
+        if ( s_flags & SaferDialog )
             argv[i++] = "--safer";
 
-          if ((s_flags & AutoRestart) && s_autoRestartCommand)
+        if ((s_flags & AutoRestart) && s_autoRestartCommand)
             argv[i++] = "--restarted"; //tell drkonqi if the app has been restarted
 
-          // NULL terminated list
-          argv[i] = NULL;
+        // NULL terminated list
+        argv[i] = NULL;
 
-          startProcess(i, argv, true);
+        startProcess(i, argv, true);
     }
 
     if (crashRecursionCounter < 4)
@@ -393,7 +391,7 @@ KCrash::defaultCrashHandler (int sig)
     }
 #endif //Q_OS_UNIX
 
-  _exit(255);
+    _exit(255);
 }
 
 #ifdef Q_OS_UNIX
