@@ -330,7 +330,7 @@ void PartMonitor::finishTimers()
 
     KJS::Window *w = KJS::Window::retrieveWindow( m_part );
     --m_timer_waits;
-    if ( m_timer_waits && (w && w->winq->hasTimers() || m_part->inProgress())) {
+    if ( m_timer_waits && ((w && w->winq->hasTimers()) || m_part->inProgress())) {
         // wait a bit
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;
@@ -683,11 +683,12 @@ int main(int argc, char *argv[])
 
         for (size_t fp=0; fp < sizeof(fontpaths)/sizeof(*fontpaths); ++fp)
             for (size_t fd=0; fd < sizeof(fontdirs)/sizeof(*fontdirs); ++fd)
-                if (QFile::exists(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd])))
+                if (QFile::exists(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd]))) {
                     if (strcmp(fontdirs[fd] , "Type1"))
                         fpaths.append(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd])+":unscaled");
                     else
                         fpaths.append(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd]));
+		}
 
         xvfb = fork();
         if ( !xvfb ) {
@@ -1084,9 +1085,10 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
 			outputStream << endl;
 			QString frameName = static_cast<DOM::HTMLFrameElementImpl *>( node.handle() )->name.string();
 			KHTMLPart* frame = part->findFrame( frameName );
-			Q_ASSERT( frame );
 			if ( frame )
 			    getPartDOMOutput( outputStream, frame, indent );
+			else
+			    outputStream << "(FRAME NOT FOUND)";
 		}
 		break;
 	    }
