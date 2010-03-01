@@ -47,7 +47,7 @@ class KParts::StatusBarItem {
 
     void ensureItemShown( KStatusBar * sb )
     {
-      if ( !m_visible )
+      if ( m_widget && !m_visible )
       {
         if ( m_permanent )
             sb->addPermanentWidget( m_widget, m_stretch );
@@ -59,7 +59,7 @@ class KParts::StatusBarItem {
     }
     void ensureItemHidden( KStatusBar * sb )
     {
-      if ( m_visible )
+      if ( m_widget && m_visible )
       {
         sb->removeWidget( m_widget );
         m_visible = false;
@@ -67,7 +67,7 @@ class KParts::StatusBarItem {
       }
     }
   private:
-    QWidget * m_widget;
+    QPointer<QWidget> m_widget;
     int m_stretch;
     bool m_permanent;
     bool m_visible;  // true when the item has been added to the statusbar
