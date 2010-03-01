@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -97,11 +97,19 @@ namespace Nepomuk {
              * Result::requestProperties(). This map will be constructed automatically when using
              * query(const Query&).
              *
-             * Example:
+             * \section sparql_query_examples Examples:
+             *
+             * Select a simple request property as can also be done via Query::Query:
+             *
              * \code
-             * QString query = "select ?r ?mtime where { ?r a nfo:FileDataObject . ?r nie:lastModified ?mtime . }";
+             * QString query = "select ?r ?mtime where { "
+             *                 "?r a nfo:FileDataObject . "
+             *                 "?r nie:lastModified ?mtime . "
+             *                 "}";
+             *
              * QueryServiceClient::RequestPropertyMap requestPropertyMap;
              * requestPropertyMap.insert( "mtime", Vocabulary::NIE::lastModified() );
+             *
              * sparqlQuery( query, requestPropertyMap );
              * \endcode
              *
@@ -112,6 +120,21 @@ namespace Nepomuk {
              * void handleResult( const Query::Result& results ) {
              *     QDateTime lastModified = result.requestProperty( Vocabulary::NIE::lastModified() ).toDateTime();
              *     [...]
+             * \endcode
+             *
+             * While using Query::Query restricts to request properties to diret properties of the
+             * results using a custom SPARQL query allows to use any binding as request property.
+             * The used property URI in the mapping does not even need to match anything in the query:
+             *
+             * \code
+             * QString query = "select ?r ?phone where { "
+             *                 "?r a nco:PersonContact . "
+             *                 "?r nco:hasPhoneNumber ?n . "
+             *                 "?n nco:phoneNumber ?phone . "
+             *                 "}";
+             *
+             * QueryServiceClient::RequestPropertyMap requestPropertyMap;
+             * requestPropertyMap.insert( "phone", Vocabulary::NCO::hasPhoneNumber() );
              * \endcode
              *
              * \sa Query::requestPropertyMap()
