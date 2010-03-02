@@ -885,38 +885,15 @@ QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
 {
-    const QLatin1String currentStyleName(qApp->style()->metaObject()->className());
-
-    if (kde_overrideStyle.isEmpty()) {
-        const QString &defaultStyle = KStyle::defaultStyle();
-        const KConfigGroup pConfig(KGlobal::config(), "General");
-        const QString &styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
-
-        if (styleStr.isEmpty() ||
-                // check whether we already use the correct style to return then
-                // (workaround for Qt misbehavior to avoid double style initialization)
-                0 == (QString(styleStr + QLatin1String("Style"))).compare(currentStyleName, Qt::CaseInsensitive) ||
-                0 == styleStr.compare(currentStyleName, Qt::CaseInsensitive)) {
-            return;
-        }
-
-        QStyle* sp = QStyleFactory::create( styleStr );
-        if (sp && currentStyleName == sp->metaObject()->className()) {
-            delete sp;
-            return;
-        }
-
-        // If there is no default style available, try falling back any available style
-        if ( !sp && styleStr != defaultStyle)
-            sp = QStyleFactory::create( defaultStyle );
-        if ( !sp )
-            sp = QStyleFactory::create( QStyleFactory::keys().first() );
-        qApp->setStyle(sp);
-    } else if (0 != kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) &&
+    if (!kde_overrideStyle.isEmpty()) {
+        const QLatin1String currentStyleName(qApp->style()->metaObject()->className());
+        if (0 != kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) &&
             0 != (QString(kde_overrideStyle + QLatin1String("Style"))).compare(currentStyleName, Qt::CaseInsensitive)) {
-        qApp->setStyle(kde_overrideStyle);
+            qApp->setStyle(kde_overrideStyle);
+        }
+    } else {
+        emit q->kdisplayStyleChanged();
     }
-    emit q->kdisplayStyleChanged();
 }
 
 QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
