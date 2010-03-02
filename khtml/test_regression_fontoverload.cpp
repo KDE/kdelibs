@@ -39,10 +39,6 @@
 #include <QtGlobal>
 #include <kdebug.h>
 
-#if QT_VERSION >= 0x040500
-  #define QT_45
-#endif
-
 struct MetricsInfo {
     const char* name;
     int ascent;
@@ -58,7 +54,7 @@ static int dimToInt(QtFontDim dim) {
 }
 
 
-static MetricsInfo compatMetrics[] = {
+static const MetricsInfo compatMetrics[] = {
     {"-Adobe-Courier-Medium-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
     {"-Adobe-Courier-Medium-O-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
     {"-Adobe-Courier-Bold-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
@@ -158,7 +154,7 @@ static MetricsInfo compatMetrics[] = {
     {0, 0, 0, 0}
 };
 
-static MetricsInfo* grabMetrics(QString name)
+static const MetricsInfo* grabMetrics(QString name)
 {
     for (int pos = 0; compatMetrics[pos].name; ++pos)
         if (name == QLatin1String(compatMetrics[pos].name))
@@ -191,7 +187,6 @@ public:
         return fbw;
     }
 
-#ifdef QT_45
     void recalcAdvances(QGlyphLayout *glyphs, QTextEngine::ShaperFlags flags) const
     {
         QFontEngineXLFD::recalcAdvances(glyphs, flags);
@@ -205,24 +200,6 @@ public:
                 glyphs->advances_x[c] = fbw;
         }
     }
-#else
-    void recalcAdvances(int len, QGlyphLayout *glyphs, QTextEngine::ShaperFlags flags) const
-    {
-        QFontEngineXLFD::recalcAdvances(len, glyphs, flags);
-
-        // Go through the glyhs with glyph 0 and fix up their x advance
-        // to make sense (or at least match Qt3)
-        QtFontDim fbw = fallBackWidth();
-
-        QGlyphLayout* g = glyphs + len;
-        while (g != glyphs) {
-            --g;
-            if (!g->glyph) {
-                g->advance.x = fbw;
-            }
-        }
-    }
-#endif
 
     Type type() const
     {
@@ -272,12 +249,7 @@ class KDE_EXPORT QX11PaintEngine: public QPaintEngine
 
 void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
 {
-#ifdef QT_45
     int cnt = si.glyphs.numGlyphs;
-#else
-    int cnt = si.num_glyphs;
-#endif
-
 
     if (!cnt) return;
 
@@ -301,11 +273,7 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
     {
         QRect rect;
 
-#ifdef QT_45
         switch (si.chars[pos].unicode())
-#else
-        switch (si.glyphs[pos].glyph)
-#endif
         {
         case ' ':
             rect = QRect();
@@ -339,7 +307,7 @@ QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     this->name = QLatin1String(name);
     ahem = this->name.contains("ahem");
 
-    MetricsInfo* metrics = grabMetrics(name);
+    const MetricsInfo* metrics = grabMetrics(name);
     if (metrics)
     {
         haveMetrics = true;
