@@ -436,6 +436,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_async = true;
     m_hadLoadError = false;
     m_docLoading = false;
+    m_bVariableLength = false;
     m_inSyncLoad = 0;
     m_loadingXMLDoc = 0;
     m_documentElement = 0;

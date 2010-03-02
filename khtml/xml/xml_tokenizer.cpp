@@ -537,7 +537,7 @@ void XMLTokenizer::finish()
                 stream.readLine();
             line = stream.readLine();
 
-            for (unsigned long colno = 0; colno < m_handler.errorCol-1; colno++)
+            for (long colno = 0; colno < m_handler.errorCol-1; colno++)
                 errorLocPtr += ' ';
             errorLocPtr += '^';
         }
