@@ -460,7 +460,7 @@ void KMimeTypeTest::testAllMimeTypes()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    const KMimeType::List lst = KMimeType::allMimeTypes();
+    const KMimeType::List lst = KMimeType::allMimeTypes(); // does NOT include aliases
     QVERIFY( !lst.isEmpty() );
 
     for ( KMimeType::List::ConstIterator it = lst.begin();
@@ -474,7 +474,7 @@ void KMimeTypeTest::testAllMimeTypes()
 
         const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
         QVERIFY( lookedupMime ); // not null
-        QCOMPARE( lookedupMime->name(), name );
+        QCOMPARE( lookedupMime->name(), name ); // if this fails, you have an alias defined as a real mimetype too!
     }
 }
 
@@ -485,7 +485,7 @@ void KMimeTypeTest::testAlias()
 
     const KMimeType::Ptr canonical = KMimeType::mimeType( "application/xml" );
     QVERIFY( canonical );
-    KMimeType::Ptr alias = KMimeType::mimeType( "text/xml" );
+    KMimeType::Ptr alias = KMimeType::mimeType("text/xml", KMimeType::DontResolveAlias);
     QVERIFY( !alias );
     alias = KMimeType::mimeType( "text/xml", KMimeType::ResolveAliases );
     QVERIFY( alias );
@@ -493,6 +493,10 @@ void KMimeTypeTest::testAlias()
 
     QVERIFY(alias->is("application/xml"));
     QVERIFY(canonical->is("text/xml"));
+
+    // Test for bug 197346: does nspluginscan see that audio/mp3 already exists?
+    bool mustWriteMimeType = KMimeType::mimeType("audio/mp3").isNull();
+    QVERIFY(!mustWriteMimeType);
 }
 
 void KMimeTypeTest::testMimeTypeParent()
