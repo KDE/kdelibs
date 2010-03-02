@@ -237,6 +237,11 @@ namespace Kross {
     QScriptValue createGridLayout(QScriptContext *context, QScriptEngine *engine) {
         return createLayout(context, engine, new QGridLayout());
     }
+    QScriptValue includeFunction(QScriptContext *context, QScriptEngine *engine) {
+        if (context->argumentCount() < 1)
+            return engine->nullValue();
+        return engine->importExtension(context->argument(0).toString());
+    }
 
     /**
     * Initialize some core functionality like common used types we like
@@ -267,6 +272,9 @@ namespace Kross {
 
         // register the Kross::Object::Ptr wrapper
         qScriptRegisterMetaType< Kross::Object::Ptr >(engine, toObjPtr,      fromObjPtr);
+
+        // register the include function that allows to importExtension
+        global.setProperty("include", engine->newFunction(includeFunction));
     }
 
     /**
