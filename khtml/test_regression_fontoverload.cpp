@@ -154,7 +154,7 @@ static const MetricsInfo compatMetrics[] = {
     {0, 0, 0, 0}
 };
 
-static const MetricsInfo* grabMetrics(QString name)
+static const MetricsInfo* grabMetrics(const QString &name)
 {
     for (int pos = 0; compatMetrics[pos].name; ++pos)
         if (name == QLatin1String(compatMetrics[pos].name))
@@ -196,7 +196,9 @@ public:
         QtFontDim fbw = fallBackWidth();
 
         for (int c = 0; c < glyphs->numGlyphs; ++c) {
-            if (!glyphs->glyphs[c])
+            if (glyphs->glyphs[c] == 0x200B) // ZERO WIDTH SPACE
+                glyphs->advances_x[c] = 0;
+            else if (!glyphs->glyphs[c])
                 glyphs->advances_x[c] = fbw;
         }
     }
@@ -241,7 +243,6 @@ public:
 
 //OK. This is evil. Since we don't use Xft, we hijack the FreeType painting hook in the X11 engine
 //for ahem, as unfortunately the drawing is in the paint engine, and not the font engine in Qt4
-class QPaintEngine;
 class KDE_EXPORT QX11PaintEngine: public QPaintEngine
 {
     void drawFreetype(const QPointF &p, const QTextItemInt &si);
@@ -276,8 +277,11 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
         switch (si.chars[pos].unicode())
         {
         case ' ':
+        case 0x00A0: // NON-BREAKING SPACE
             rect = QRect();
             break;
+        case 0x200B: // ZERO WIDTH SPACE
+            continue;
         case 'p':
             //Below the baseline, including it
             rect = QRect(x, y, pixS, descent + 1);
