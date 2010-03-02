@@ -62,6 +62,8 @@ HostnamePollInterval=5000
 CheckSycoca=true
 CheckUpdates=true
 CheckHostname=true
+CheckFileStamps=true
+DelayedCheck=false
 
 If FAM or DNOTIFY is not available, the filesystem will be polled at regular interval for any changes. Under the [DirWatch] group in the kdeglobals file
 the following options are available to adjust the polling frequency:
