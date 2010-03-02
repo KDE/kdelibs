@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QHash>
 #include <kserviceoffer.h>
+class KMimeTypeFactory;
 class KConfigGroup;
 
 struct ServiceTypeOffersData {
@@ -61,7 +62,7 @@ private:
 class KMimeAssociations
 {
 public:
-    explicit KMimeAssociations(KOfferHash& offerHash);
+    explicit KMimeAssociations(KOfferHash& offerHash, KMimeTypeFactory* mimeTypeFactory);
 
     // Read mimeapps.list files
     bool parseAllMimeAppsList();
@@ -73,6 +74,7 @@ private:
     void parseRemovedAssociations(const KConfigGroup& group, const QString& file);
 
     KOfferHash& m_offerHash;
+    KMimeTypeFactory* m_mimeTypeFactory;
 };
 
 #endif /* KMIMEASSOCIATIONS_H */

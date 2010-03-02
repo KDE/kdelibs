@@ -19,6 +19,8 @@
  */
 
 #include "kmimeassociations.h"
+#include <kmimetype.h>
+#include <kmimetypefactory.h>
 #include <kservice.h>
 #include <kconfiggroup.h>
 #include <kconfig.h>
@@ -26,8 +28,8 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-KMimeAssociations::KMimeAssociations(KOfferHash& offerHash)
-    : m_offerHash(offerHash)
+KMimeAssociations::KMimeAssociations(KOfferHash& offerHash, KMimeTypeFactory* mimeTypeFactory)
+    : m_offerHash(offerHash), m_mimeTypeFactory(mimeTypeFactory)
 {
 }
 
@@ -80,16 +82,22 @@ void KMimeAssociations::parseMimeAppsList(const QString& file, int basePreferenc
 
 void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const QString& file, int basePreference)
 {
-    Q_FOREACH(const QString& mime, group.keyList()) {
+    Q_FOREACH(const QString& mimeName, group.keyList()) {
+        const QStringList services = group.readXdgListEntry(mimeName);
+        KMimeType::Ptr mime = m_mimeTypeFactory->findMimeTypeByName(mimeName, KMimeType::ResolveAliases);
+        if (!mime) {
+            kDebug(7021) << file << "specifies unknown mimetype" << mimeName;
+            continue;
+        }
+        const QString resolvedMimeName = mime->name();
         int pref = basePreference;
-        const QStringList services = group.readXdgListEntry(mime);
         Q_FOREACH(const QString &service, services) {
             KService::Ptr pService = KService::serviceByStorageId(service);
             if (!pService) {
                 kDebug(7021) << file << "specifies unknown service" << service << "in" << group.name();
             } else {
-                //kDebug(7021) << "adding mime" << mime << "to service" << pService->entryPath() << "pref=" << pref;
-                m_offerHash.addServiceOffer(mime, KServiceOffer(pService, pref, 0, pService->allowAsDefault()));
+                //kDebug(7021) << "adding mime" << resolvedMimeName << "to service" << pService->entryPath() << "pref=" << pref;
+                m_offerHash.addServiceOffer(resolvedMimeName, KServiceOffer(pService, pref, 0, pService->allowAsDefault()));
                 --pref;
             }
         }
