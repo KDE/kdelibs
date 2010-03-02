@@ -19,7 +19,7 @@ set(KDE_DEFAULT_HOME \"${KDE_DEFAULT_HOME}\")
 
 # we need the absolute directories where stuff will be installed too
 # but since the variables which contain the destinations can be relative
-# or absolute paths, we need this macro to make them all absoulte, Alex
+# or absolute paths, we need this macro to make them all absolute, Alex
 macro(MAKE_INSTALL_PATH_ABSOLUTE out in)
    if (IS_ABSOLUTE "${in}")    # IS_ABSOLUTE is new since cmake 2.4.8
       set(${out} "${in}")
@@ -93,7 +93,7 @@ set(KDE4_TARGET_PREFIX ${KDE4_TARGET_PREFIX} )
 ")
 
 
-# write the library dependencies
+# write library dependencies
 
 if (WIN32)
    file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake"
@@ -101,9 +101,9 @@ if (WIN32)
    set (QT_INSTALL_DIR \"${QT_INSTALL_DIR}\")
 endif (NOT QT_INSTALL_DIR)
 ")
-   # replace hard codes paths by variables
+   # replace hard coded paths by variables
    # !!! the following stuff does not work because export_library_dependencies
-   # !!! does not wait until the file is written completly
+   # !!! does not wait until the file is written completely
 #        export_library_dependencies(${CMAKE_BINARY_DIR}/tmpdeps.cmake)
 #        file(READ ${CMAKE_BINARY_DIR}/tmpdeps.cmake _deps)
 #        string(REPLACE "${QT_INSTALL_DIR}" "\${QT_INSTALL_DIR}" __deps "${_deps}")
