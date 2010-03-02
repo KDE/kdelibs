@@ -842,17 +842,6 @@ public:
                           SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                           kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
 
-          // During startup kdesktop waits for KDED to finish.
-          // Send a notifyDatabaseChanged signal even if the database hasn't
-          // changed.
-          // If the database changed, kbuildsycoca's signal didn't go anywhere
-          // anyway, because it was too early, so let's send this signal
-          // unconditionnally (David)
-
-          QDBusMessage msg = QDBusMessage::createSignal("/kbuildsycoca", "org.kde.KSycoca", "notifyDatabaseChanged" );
-          msg << QStringList();
-          QDBusConnection::sessionBus().send(msg);
-
           kded->initModules();
        } else
           runBuildSycoca();
