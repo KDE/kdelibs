@@ -135,7 +135,6 @@ public:
     virtual bool isExecutingScript() const = 0;
     virtual void setNormalYieldDelay() {}
     virtual void abort() {}
-    virtual void setAutoClose(bool b=true) = 0;
 
     virtual void executeScriptsWaitingForStylesheets() = 0;
 
@@ -176,7 +175,6 @@ public:
     virtual void write( const TokenizerString &str, bool );
     virtual void end();
     virtual void finish();
-    virtual void setAutoClose(bool b=true) { qWarning("XMLTokenizer::setAutoClose: stub."); (void)b; }
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
