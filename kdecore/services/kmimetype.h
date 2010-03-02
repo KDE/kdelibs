@@ -118,7 +118,7 @@ public:
      *         0 if not found
      * @see KServiceType::serviceType
      */
-    static Ptr mimeType( const QString& name, FindByNameOption options = DontResolveAlias );
+    static Ptr mimeType( const QString& name, FindByNameOption options = ResolveAliases );
 
     /**
      * Finds a KMimeType with the given @p url.

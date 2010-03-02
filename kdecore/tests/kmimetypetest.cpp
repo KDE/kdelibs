@@ -193,9 +193,13 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";
 
     // Can't use KIconLoader since this is a "without GUI" test.
-    QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
-    QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
-    QTest::newRow("png image") << fh << "image/png";
+    if (!KStandardDirs::locate("icon", "oxygen/").isEmpty()) {
+        QString fh = KStandardDirs::locate("icon", "oxygen/22x22/places/folder.png");
+        QVERIFY(!fh.isEmpty()); // if the file doesn't exist, please fix the above to point to an existing icon
+        QTest::newRow("png image") << fh << "image/png";
+    } else {
+        kWarning() << "oxygen icon theme not found";
+    }
 
     QString exePath = KStandardDirs::findExe( "kioexec" );
     if ( exePath.isEmpty() )
@@ -466,7 +470,7 @@ void KMimeTypeTest::testAlias()
 
     const KMimeType::Ptr canonical = KMimeType::mimeType( "application/xml" );
     QVERIFY( canonical );
-    KMimeType::Ptr alias = KMimeType::mimeType( "text/xml" );
+    KMimeType::Ptr alias = KMimeType::mimeType("text/xml", KMimeType::DontResolveAlias);
     QVERIFY( !alias );
     alias = KMimeType::mimeType( "text/xml", KMimeType::ResolveAliases );
     QVERIFY( alias );
