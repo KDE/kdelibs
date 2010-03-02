@@ -67,6 +67,8 @@ KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long prop
         properties |= NET::WMStrut; // will be used as fallback
     if( properties & NET::WMWindowType )
         properties2 |= NET::WM2TransientFor; // will be used when type is not set
+    if( ( properties & NET::WMDesktop ) && KWindowSystem::mapViewport() )
+	properties |= NET::WMGeometry; // for viewports, the desktop (workspace) is determined from the geometry
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
     d->info = new NETWinInfo( QX11Info::display(), _win, QX11Info::appRootWindow(), props, 2 );
@@ -298,13 +300,7 @@ bool KWindowInfo::isOnDesktop( int _desktop ) const
     if( KWindowSystem::mapViewport()) {
         if( onAllDesktops())
             return true;
-        Window dummy;
-        int x, y;
-        unsigned int w, h, b, dp;
-        XGetGeometry( QX11Info::display(), d->win_, &dummy, &x, &y, &w, &h, &b, &dp );
-        // get global position
-        XTranslateCoordinates( QX11Info::display(), d->win_, QX11Info::appRootWindow(), 0, 0, &x, &y, &dummy );
-        return KWindowSystem::viewportWindowToDesktop( QRect( x, y, w, h )) == _desktop;
+        return KWindowSystem::viewportWindowToDesktop( d->geometry_ ) == _desktop;
     }
     return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
 }
@@ -333,11 +329,7 @@ int KWindowInfo::desktop() const
     if( KWindowSystem::mapViewport()) {
         if( onAllDesktops())
             return NET::OnAllDesktops;
-        Window r;
-        int x, y;
-        unsigned int w, h, b, dp;
-        XGetGeometry( QX11Info::display(), d->win_, &r, &x, &y, &w, &h, &b, &dp );
-        return KWindowSystem::viewportWindowToDesktop( QRect( x, y, w, h ));
+        return KWindowSystem::viewportWindowToDesktop( d->geometry_ );
     }
     return d->info->desktop();
 }
