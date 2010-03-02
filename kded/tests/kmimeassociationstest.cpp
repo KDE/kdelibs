@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kmimetypefactory.h>
 #include <kprocess.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
@@ -163,6 +164,8 @@ private Q_SLOTS:
                                "text/html=kde4-kfmclient_html.desktop;\n"
                                // konsole.desktop is without kde4- to test fallback lookup
                                "text/plain=kde4-kate.desktop;kde4-kwrite.desktop;konsole.desktop;idontexist.desktop;\n"
+                               // test alias resolution
+                               "application/x-pdf=fakejpegapplication.desktop;\n"
                                "[Added KParts/ReadOnlyPart Associations]\n"
                                "text/plain=katepart.desktop;\n"
                                "[Removed Associations]\n"
@@ -170,6 +173,7 @@ private Q_SLOTS:
                                "text/html=kde4-dolphin.desktop;kde4-kwrite.desktop;\n";
         // Expected results
         preferredApps["image/jpeg"] << "fakejpegapplication.desktop";
+        preferredApps["application/pdf"] << "fakejpegapplication.desktop";
         preferredApps["text/plain"] << "kde4-kate.desktop" << "kde4-kwrite.desktop";
         preferredApps["text/html"] << "kde4-kfmclient_html.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
@@ -189,7 +193,7 @@ private Q_SLOTS:
     void testParseSingleFile()
     {
         KOfferHash offerHash;
-        KMimeAssociations parser(offerHash);
+        KMimeAssociations parser(offerHash, KMimeTypeFactory::self());
 
         KTemporaryFile tempFile;
         QVERIFY(tempFile.open());
@@ -230,7 +234,7 @@ private Q_SLOTS:
     void testGlobalAndLocalFiles()
     {
         KOfferHash offerHash;
-        KMimeAssociations parser(offerHash);
+        KMimeAssociations parser(offerHash, KMimeTypeFactory::self());
 
         // Write global file
         KTemporaryFile tempFileGlobal;

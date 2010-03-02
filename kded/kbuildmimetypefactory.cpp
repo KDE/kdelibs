@@ -267,7 +267,13 @@ void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
             const QString parentTypeName = line.mid(pos+1);
             Q_ASSERT(!aliasTypeName.isEmpty());
             Q_ASSERT(!parentTypeName.isEmpty());
-            aliasMap.insert(aliasTypeName, parentTypeName);
+
+            const KMimeType::Ptr realMimeType =
+                findMimeTypeByName(aliasTypeName, KMimeType::DontResolveAlias);
+            if (realMimeType)
+                kDebug(7021) << "Ignoring alias" << aliasTypeName << "because also defined as a real mimetype";
+            else
+                aliasMap.insert(aliasTypeName, parentTypeName);
         }
     }
 }

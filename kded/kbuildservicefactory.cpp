@@ -286,7 +286,7 @@ void KBuildServiceFactory::populateServiceTypes()
     }
 
     // Read user preferences (added/removed associations) and add/remove serviceoffers to m_offerHash
-    KMimeAssociations mimeAssociations(m_offerHash);
+    KMimeAssociations mimeAssociations(m_offerHash, m_mimeTypeFactory);
     mimeAssociations.parseAllMimeAppsList();
 
     // Now for each mimetype, collect services from parent mimetypes
