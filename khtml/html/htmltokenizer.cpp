@@ -145,7 +145,6 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
-    m_autoCloseTimer = 0;
     m_externalScriptsTimerId = 0;
     m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
     m_yieldTimer = 0;
@@ -166,7 +165,6 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl 
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
-    m_autoCloseTimer = 0;
     m_externalScriptsTimerId = 0;
     m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
     m_yieldTimer = 0;
@@ -201,11 +199,6 @@ void HTMLTokenizer::reset()
         KHTML_DELETE_QCHAR_VEC(rawContent);
     rawContent = 0;
     rawContentSize = rawContentMaxSize = rawContentResync = 0;
-
-    if (m_autoCloseTimer > 0) {
-        killTimer(m_autoCloseTimer);
-        m_autoCloseTimer = 0;
-    }
 
     if (m_yieldTimer > 0) {
         killTimer(m_yieldTimer);
@@ -1635,12 +1628,13 @@ inline bool HTMLTokenizer::continueProcessing(int& processedCount)
     return true;
 }
 
+
+#include "khtmlpart_p.h"
 void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
 #ifdef TOKEN_DEBUG
     kDebug( 6036 ) << this << " Tokenizer::write(\"" << str.toString() << "\"," << appendData << ")";
 #endif
-
     if ( !buffer )
         return;
 
@@ -1905,8 +1899,6 @@ void HTMLTokenizer::timerEvent( QTimerEvent *e )
         killTimer(m_yieldTimer);
         m_yieldTimer = 0;
         write( TokenizerString(), true );
-    } else if ( e->timerId() == m_autoCloseTimer && cachedScript.isEmpty() ) {
-         finish();
     } else if ( e->timerId() == m_externalScriptsTimerId ) {
         if (view && view->hasLayoutPending()) {
             // all stylesheets are loaded but the style modifications 
@@ -1917,13 +1909,6 @@ void HTMLTokenizer::timerEvent( QTimerEvent *e )
         m_externalScriptsTimerId = 0;
         notifyFinished(0);
     }
-}
-
-void HTMLTokenizer::setAutoClose( bool b ) {
-    killTimer( m_autoCloseTimer );
-    m_autoCloseTimer = 0;
-    if ( b )
-        m_autoCloseTimer = startTimer(100);
 }
 
 void HTMLTokenizer::end()
@@ -1948,10 +1933,6 @@ void HTMLTokenizer::end()
 
 void HTMLTokenizer::finish()
 {
-    if ( m_autoCloseTimer ) {
-        killTimer( m_autoCloseTimer );
-        m_autoCloseTimer = 0;
-    }
     // The purpose of this iteration is to recover from 'raw content' tokenizing mode.
     // In this mode, any error such as the lack of a closing tag (for the considered element) or of a closing comment,
     // would result in the entire document being absorbed in one node.

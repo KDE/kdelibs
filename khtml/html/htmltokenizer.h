@@ -174,7 +174,6 @@ public:
     void setNormalYieldDelay();
     virtual void setOnHold(bool _onHold);
     void abort() { m_abort = true; }
-    virtual void setAutoClose(bool b=true);
     virtual bool isWaitingForScripts() const;
     virtual bool isExecutingScript() const;
 
@@ -405,9 +404,6 @@ protected:
     // line number at which the current <script> started
     int scriptStartLineno;
     int tagStartLineno;
-    // autoClose mode is used when the tokenizer was created by a script document.writing
-    // on an already loaded document
-    int m_autoCloseTimer;
     int m_tokenizerYieldDelay;
     int m_yieldTimer;
     QTime m_time;

@@ -404,6 +404,9 @@ public:
     void setParsing(bool b) { m_bParsing = b; }
     bool parsing() const { return m_bParsing; }
 
+    void setHasVariableLength(bool b=true) { m_bVariableLength = b; }
+    bool hasVariableLength() const { return m_bVariableLength; }
+
     void setTextColor( QColor color ) { m_textColor = color; }
     QColor textColor() const { return m_textColor; }
 
@@ -676,6 +679,7 @@ protected:
     bool m_async;
     bool m_hadLoadError;
     bool m_docLoading;
+    bool m_bVariableLength;
 
     QEventLoop* m_inSyncLoad;
 

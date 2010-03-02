@@ -1647,7 +1647,11 @@ HTMLElementImpl* DocumentImpl::body() const
 
 void DocumentImpl::close(  )
 {
-    if (parsing() || !m_tokenizer) return;
+    if (parsing() && hasVariableLength() && m_tokenizer) {
+        m_tokenizer->finish();
+        assert(!parsing());
+    } else if (parsing() || !m_tokenizer)
+        return;
 
     if ( m_render )
         m_render->close();
@@ -1675,7 +1679,7 @@ void DocumentImpl::write( const QString &text )
         open();
         if (m_view)
             m_view->part()->resetFromScript();
-        m_tokenizer->setAutoClose();
+        setHasVariableLength();
     }
     m_tokenizer->write(text, false);
 }
