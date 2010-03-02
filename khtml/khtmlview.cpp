@@ -1374,7 +1374,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     khtml::RenderObject* r = target ? target->renderer() : 0;
     bool setCursor = true;
     bool forceDefault = false;
-    if (r && r->isWidget()) { 
+    if (r && r->isWidget()) {
         RenderWidget* rw = static_cast<RenderWidget*>(r);
         KHTMLWidget* kw = qobject_cast<KHTMLView*>(rw->widget())? dynamic_cast<KHTMLWidget*>(rw->widget()) : 0;
         if (kw && kw->m_kwp->isRedirected())
@@ -1395,7 +1395,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     LinkCursor linkCursor = LINK_NORMAL;
     switch (!forceDefault ? (style ? style->cursor() : CURSOR_AUTO) : CURSOR_DEFAULT) {
     case CURSOR_AUTO:
-        if ( r && r->isText() && ((m_part->d->m_bMousePressed && m_part->d->editor_context.m_beganSelectingText) || 
+        if ( r && r->isText() && ((m_part->d->m_bMousePressed && m_part->d->editor_context.m_beganSelectingText) ||
                                    !r->isPointInsideSelection(xm, ym, m_part->caret())) )
             c = QCursor(Qt::IBeamCursor);
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
@@ -2398,7 +2398,7 @@ bool KHTMLView::widgetEvent(QEvent* e)
 
 bool KHTMLView::hasLayoutPending()
 {
-    return d->layoutTimerId && !d->firstLayoutPending; 
+    return d->layoutTimerId && !d->firstLayoutPending;
 }
 
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
@@ -3171,8 +3171,8 @@ namespace {
        explicit QPointerDeleter(QObject* o) : obj(o) {}
        ~QPointerDeleter() { delete obj; }
    private:
-       const QPointer<QObject> obj; 
-   }; 
+       const QPointer<QObject> obj;
+   };
 }
 
 void KHTMLView::print(bool quick)
@@ -4015,7 +4015,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         }
         if (d->accessKeysActivated)
             d->scrollAccessKeys(dx, dy);
-        
+
         return;
     }
 
@@ -4115,7 +4115,7 @@ void KHTMLView::scrollTick() {
     scrollContentsBy(ddx, ddy);
 
     // only consider decelerating if we aren't too far behind schedule
-    if (d->smoothScrollStopwatch.elapsed() < 2*sSmoothScrollTick) { 
+    if (d->smoothScrollStopwatch.elapsed() < 2*sSmoothScrollTick) {
         // update scrolling speed
         int dddx = d->dddx;
         int dddy = d->dddy;
@@ -4127,7 +4127,7 @@ void KHTMLView::scrollTick() {
         d->ddy -= dddy;
         d->smoothScrollMissedDeadlines = 0;
     } else {
-        if (d->smoothScrollMissedDeadlines != sWayTooMany && 
+        if (d->smoothScrollMissedDeadlines != sWayTooMany &&
                 (!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->parsing())) {
             d->smoothScrollMissedDeadlines++;
             if (d->smoothScrollMissedDeadlines >= sMaxMissedDeadlines) {
