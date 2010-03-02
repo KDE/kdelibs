@@ -460,6 +460,7 @@ textarea {
         font-family: monospace;
         border: 2px -khtml-native;
         cursor: text;
+        overflow-y: scroll;
 }
 
 /*

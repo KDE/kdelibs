@@ -2205,6 +2205,19 @@ void RenderTextArea::setStyle(RenderStyle* _style)
     scrollbarsStyled = false;
 
     element()->m_unsubmittedFormChange = unsubmittedFormChange;
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    if (style()->overflowX() == OSCROLL)
+        w->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+    else if (style()->overflowX() == OHIDDEN)
+        w->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    else
+        w->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+    if (style()->overflowY() == OSCROLL)
+        w->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+    else if(style()->overflowY() == OHIDDEN)
+        w->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    else
+        w->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 }
 
 void RenderTextArea::layout()
