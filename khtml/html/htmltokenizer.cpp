@@ -2107,7 +2107,7 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
     assert(!cachedScript.isEmpty());
     // Make external scripts wait for external stylesheets.
     // FIXME: This needs to be done for inline scripts too.
-    m_hasScriptsWaitingForStylesheets = false; // !parser->doc()->haveStylesheetsLoaded();
+    m_hasScriptsWaitingForStylesheets = !parser->doc()->haveStylesheetsLoaded();
     if (m_hasScriptsWaitingForStylesheets) {
         kDebug( 6036 ) << "Delaying script execution until stylesheets have loaded.";
         return;

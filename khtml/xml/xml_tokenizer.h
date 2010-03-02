@@ -137,6 +137,8 @@ public:
     virtual void abort() {}
     virtual void setAutoClose(bool b=true) = 0;
 
+    virtual void executeScriptsWaitingForStylesheets() = 0;
+
 Q_SIGNALS:
     void finishedParsing();
 
@@ -178,6 +180,8 @@ public:
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
+
+    void executeScriptsWaitingForStylesheets() {}
 
     virtual bool isWaitingForScripts() const;
     virtual bool isExecutingScript() const { return m_executingScript; }

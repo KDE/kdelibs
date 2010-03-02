@@ -2127,6 +2127,8 @@ void DocumentImpl::styleSheetLoaded()
 
   m_pendingStylesheets--;
   updateStyleSelector();
+  if (!m_pendingStylesheets && m_tokenizer)
+      m_tokenizer->executeScriptsWaitingForStylesheets();
 }
 
 void DocumentImpl::addPendingSheet()
@@ -2834,8 +2836,9 @@ void DocumentImpl::dispatchImageLoadEventsNow()
     m_imageLoadEventDispatchingList.clear();
 }
 
-void DocumentImpl::timerEvent(QTimerEvent *)
+void DocumentImpl::timerEvent(QTimerEvent *e)
 {
+    assert(e->timerId() == m_imageLoadEventTimer);
     dispatchImageLoadEventsNow();
 }
 
