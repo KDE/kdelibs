@@ -66,8 +66,8 @@ DeviceData deviceData[] =
     {"RemoteUIServer1", "printer", QI18N("UPnP Remote UI Server") },
     {"Unknown", "device", QI18N("Unknown UPnP Device") },
     {"LANDevice1", "network-wired", QI18N("UPnP LAN Device") },
-    {"WANDevice1", "network-wireless", QI18N("UPnP WAN Device") },
-    {"WANConnectionDevice1", "network-wireless", QI18N("UPnP WAN Connection Device") },
+    {"WANDevice1", "network-wired", QI18N("UPnP WAN Device") },
+    {"WANConnectionDevice1", "network-wired", QI18N("UPnP WAN Connection Device") },
     {"WFADevice1", "network-wireless", QI18N("UPnP Wi-Fi Alliance Device") }
 };
 
