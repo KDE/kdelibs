@@ -486,7 +486,7 @@ namespace KGlobal
      */
     template<typename T>
     inline T findDirectChild(const QObject* object) {
-        return static_cast<T>(findDirectChild_helper(object, ((T)0)->staticMetaObject));
+        return static_cast<T>(findDirectChild_helper(object, (static_cast<T>(0))->staticMetaObject));
     }
 
     /**
