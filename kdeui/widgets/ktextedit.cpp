@@ -29,6 +29,7 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <QTextCursor>
+#include <QTextDocumentFragment>
 #include <QDBusInterface>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -132,8 +133,7 @@ class KTextEdit::Private
 
     bool checkSpellingEnabled : 1;
     bool findReplaceEnabled: 1;
-    QString originalBuffer;
-    QString originalHtml;
+    QTextDocumentFragment originalDoc;
     QString spellCheckingConfigFileName;
     QString spellCheckingLanguage;
     Sonnet::Highlighter *highlighter;
@@ -147,11 +147,10 @@ class KTextEdit::Private
 
 void KTextEdit::Private::spellCheckerCanceled()
 {
-    parent->selectAll();
-    if(parent->acceptRichText ())
-      parent->setHtml(originalHtml);
-    else
-      parent->setPlainText(originalBuffer);
+    QTextDocument *doc = parent->document();
+    doc->clear();
+    QTextCursor cursor(doc);
+    cursor.insertFragment(originalDoc);
     spellCheckerFinished();
 }
 
@@ -806,10 +805,8 @@ void KTextEdit::checkSpelling()
           this,SIGNAL(spellCheckStatus(const QString &)));
   connect(spellDialog, SIGNAL(languageChanged(const QString &)),
           this, SIGNAL(languageChanged(const QString &)));
-  d->originalBuffer = toPlainText();
-  if(acceptRichText ())
-    d->originalHtml = toHtml();
-  spellDialog->setBuffer(d->originalBuffer);
+  d->originalDoc = QTextDocumentFragment(document());
+  spellDialog->setBuffer(toPlainText());
   spellDialog->show();
 }
 
