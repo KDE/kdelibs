@@ -25,7 +25,6 @@
 #include <kurl.h>
 
 #include <knewstuff3/knewstuff_export.h>
-#include <attica/provider.h>
 
 class KComboBox;
 class KLineEdit;
@@ -34,6 +33,7 @@ class KTextEdit;
 
 namespace Attica {
     class BaseJob;
+    class Provider;
 }
 
 namespace KNS3
