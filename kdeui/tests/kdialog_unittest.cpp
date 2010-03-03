@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kdebug.h>
+#include <QCheckBox>
 #include <qtest_kde.h>
 #include <kdialog.h>
 #include <kpushbutton.h>
@@ -62,8 +64,63 @@ private Q_SLOTS:
         dialog.setDefaultButton(KDialog::NoDefault);
         testNoDefaultButton(dialog, KDialog::NoDefault);
     }
+
+    // Test what happens with giving focus to widgets before the window is shown
+    // This is mostly Qt experimentation, unrelated to KDialog's own code
+    void testFocus()
+    {
+        KDialog dialog;
+        dialog.setButtons(KDialog::Ok | KDialog::Cancel);
+        QCheckBox* checkBox = new QCheckBox("Hello world !", &dialog);
+        QPushButton* okButton = dialog.button(KDialog::Ok);
+        okButton->setFocus();
+        QVERIFY(!okButton->hasFocus()); // confusing, heh?
+        QCOMPARE(dialog.focusWidget(), static_cast<QWidget*>(okButton));
+        checkBox->setFocus();
+        QVERIFY(!checkBox->hasFocus()); // confusing, heh?
+        QCOMPARE(dialog.focusWidget(), static_cast<QWidget*>(checkBox));
+    }
+
+    // Ensure that only the defaultButton() receives the keyEvent
+    // (it should get the focus)
+    void testKeyPressEvents()
+    {
+        KDialog dialog;
+        QSignalSpy qCancelClickedSpy(&dialog, SIGNAL(cancelClicked()));
+        QSignalSpy qOkClickedSpy(&dialog, SIGNAL(okClicked()));
+        dialog.setButtons(KDialog::Ok | KDialog::Cancel);
+        dialog.setDefaultButton(KDialog::Cancel);
+        dialog.show();
+        // Necessary after show(), otherwise dialog.focusWidget() returns NULL
+        QApplication::setActiveWindow(&dialog);
+        QVERIFY(dialog.focusWidget());
+        // Graphically always the focused widget receives the keyEvent
+        // (otherwises it does not make sense)
+        QTest::keyClick(dialog.focusWidget(), Qt::Key_Return);
+        QCOMPARE(qCancelClickedSpy.count(), 1);
+        QCOMPARE(qOkClickedSpy.count(), 0);
+    }
+
+    void testCheckBoxKeepsFocus()
+    {
+        KDialog dialog;
+        QCheckBox checkBox("Hello world !", &dialog);
+        QSignalSpy qCancelClickedSpy(&dialog, SIGNAL(cancelClicked()));
+        dialog.setButtons(KDialog::Ok | KDialog::Cancel);
+        checkBox.setFocus();
+        dialog.setMainWidget(&checkBox);
+        dialog.setDefaultButton(KDialog::Cancel);
+        dialog.show();
+        QApplication::setActiveWindow(&dialog);
+        QVERIFY(checkBox.hasFocus());
+        QVERIFY(!dialog.button(KDialog::Cancel)->hasFocus());
+        QCOMPARE(dialog.focusWidget(), &checkBox);
+        QTest::keyClick(dialog.focusWidget(), Qt::Key_Return);
+        QCOMPARE(qCancelClickedSpy.count(), 1);
+    }
+
     // Test if buttons labels are correctly handled
-    // assuming that the previous test passed
+    // assuming that testButtonDefault() passed
     void testButtonText()
     {
         KDialog dialog;

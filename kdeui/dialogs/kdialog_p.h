@@ -49,7 +49,6 @@ class KDialogPrivate
         KDialog *q_ptr;
 
         void setupLayout();
-        void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
         void appendButton( KDialog::ButtonCode code , const KGuiItem &item );
         KPushButton *button( KDialog::ButtonCode code ) const;
 
