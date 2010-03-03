@@ -243,9 +243,11 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
                 continue;
             }
         }
+
         // we possibly reserved an accel, but we won't set it as it looks silly
-        if ( qobject_cast<QGroupBox*>( it->m_widget ) )
-             continue;
+        QGroupBox *groupBox = qobject_cast<QGroupBox*>(it->m_widget);
+        if (groupBox && !groupBox->isCheckable())
+            continue;
 
         int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
@@ -391,9 +393,17 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
         if (qobject_cast<QPushButton*>(w) || qobject_cast<QCheckBox*>(w) || qobject_cast<QRadioButton*>(w) || qobject_cast<QLabel*>(w))
             weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
-        // don't put weight on group boxes, as usually the contents are more important
-        if (qobject_cast<QGroupBox*>(w))
-            weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
+        // don't put weight on non-checkable group boxes,
+        // as usually the contents are more important
+        QGroupBox *groupBox = qobject_cast<QGroupBox*>(w);
+        if (groupBox)
+        {
+            if (groupBox->isCheckable())
+                weight = KAccelManagerAlgorithm::CHECKABLE_GROUP_BOX_WEIGHT;
+            else
+                weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
+        }
+
         i->m_content = KAccelString(content, weight);
         item->addChild(i);
     }
