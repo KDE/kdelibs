@@ -2,6 +2,9 @@
 Type=Service
 Name=Network Proxy Configuration
 Name[es]=Configuración del proxy de la red
+Name[hr]=Podešavanje mrežnog proxyja
+Name[is]=Stillingar milliþjóna (proxy)
+Name[nb]=Oppsett for mellomtjener
 Name[pt]=Configuração do 'Proxy' de Rede
 Name[pt_BR]=Configuração do proxy de rede
 Name[sv]=Inställning av nätverksproxy
