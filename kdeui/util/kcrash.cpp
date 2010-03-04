@@ -151,7 +151,7 @@ KCrash::setApplicationPath(const QString& path)
 
     //if the appName has also been specified, update s_autoRestartCommand to be in the form "absolutePath/appName"
     if (s_appName) {
-        free(s_autoRestartCommand);
+        delete[] s_autoRestartCommand;
         QFileInfo appExecutable(QDir(path), QFile::decodeName(s_appName));
         QByteArray cmd = QFile::encodeName(appExecutable.absoluteFilePath());
         s_autoRestartCommand = qstrdup(cmd.constData());
@@ -164,7 +164,7 @@ KCrash::setApplicationName(const QString& name)
     s_appName = qstrdup(QFile::encodeName(name).constData());
 
     //update the autoRestartCommand
-    free(s_autoRestartCommand);
+    delete[] s_autoRestartCommand;
     if (s_appPath) {
         //if we have appPath, make autoRestartCommand be in the form "absolutePath/appName"...
         QFileInfo appExecutable(QDir(QFile::decodeName(s_appPath)), name);
