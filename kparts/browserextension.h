@@ -627,7 +627,7 @@ public:  // yes, those signals are public; don't tell moc or doxygen :)
    * @param actionGroups named groups of actions which should be inserted into the popup, see ActionGroupMap
    */
   void popupMenu( const QPoint &global, const KUrl &url,
-                  mode_t mode = (mode_t)-1,
+                  mode_t mode = static_cast<mode_t>(-1),
                   const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
                   const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments(),
                   KParts::BrowserExtension::PopupFlags flags = KParts::BrowserExtension::DefaultPopupItems,

@@ -45,7 +45,7 @@ class KFileItemPrivate;
 class KIO_EXPORT KFileItem
 {
 public:
-    enum { Unknown = (mode_t) - 1 };
+    enum { Unknown = static_cast<mode_t>(-1) };
 
     /**
      * The timestamps associated with a file.
