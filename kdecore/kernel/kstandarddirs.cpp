@@ -1215,10 +1215,19 @@ static QString getBundle( const QString& path, bool ignore )
     QString bundle = path;
     bundle += ".app/Contents/MacOS/" + bundle.section('/', -1);
     info.setFile( bundle );
-    if ( info.exists() && ( ignore || info.isExecutable() )
-         && ( info.isFile() || info.isSymLink() ) ) {
-        kDebug(180) << "getBundle(): returning " << bundle;
-        return bundle;
+    FILE *file;
+    if (file = fopen(info.absoluteFilePath().toUtf8().constData(), "r")) {
+        fclose(file);
+        struct stat _stat;
+        if ((stat(info.absoluteFilePath().toUtf8().constData(), &_stat)) < 0) {
+            return QString();
+        }
+        if ( ignore || (_stat.st_mode & S_IXUSR) ) {
+            if ( ((_stat.st_mode & S_IFMT) == S_IFREG) || ((_stat.st_mode & S_IFMT) == S_IFLNK) ) {
+                kDebug(180) << "getBundle(): returning " << bundle;
+                return bundle;
+            }
+        }
     }
     return QString();
 }
@@ -1235,6 +1244,23 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
 #endif
     QFileInfo info( path );
     QFileInfo orig = info;
+#if defined(Q_OS_DARWIN) || defined(Q_OS_MAC)
+    FILE *file;
+    if (file = fopen(orig.absoluteFilePath().toUtf8().constData(), "r")) {
+        fclose(file);
+        struct stat _stat;
+        if ((stat(orig.absoluteFilePath().toUtf8().constData(), &_stat)) < 0) {
+            return QString();
+        }
+        if ( ignoreExecBit || (_stat.st_mode & S_IXUSR) ) {
+            if ( ((_stat.st_mode & S_IFMT) == S_IFREG) || ((_stat.st_mode & S_IFMT) == S_IFLNK) ) {
+                orig.makeAbsolute();
+                return orig.filePath();
+            }
+        }
+    }
+    return QString();
+#else
     if( info.exists() && info.isSymLink() )
         info = QFileInfo( info.canonicalFilePath() );
     if( info.exists() && ( ignoreExecBit || info.isExecutable() ) && info.isFile() ) {
@@ -1246,6 +1272,7 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
     }
     //kDebug(180) << "checkExecutable(): failed, returning empty string";
     return QString();
+#endif
 }
 
 QString KStandardDirs::findExe( const QString& appname,
