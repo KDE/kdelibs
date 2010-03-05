@@ -66,7 +66,7 @@
 #  endif
 #endif
 
-#ifdef Q_WS_MAC
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
 #include <kkernel_mac.h>
 #endif
 
@@ -116,16 +116,10 @@ KUniqueApplication::start(StartFlags flags)
   s_kuniqueapplication_startCalled = true;
 
   addCmdLineOptions(); // Make sure to add cmd line options
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
   Private::s_nofork = true;
 #else
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
-#ifdef Q_WS_MACX
-  // avoid focus loss caused by extra fork when launched from Finder
-  if(args->isSet("psn"))
-     Private::s_nofork = true;
-  else
-#endif
   Private::s_nofork = !args->isSet("fork");
 #endif
 
@@ -140,14 +134,15 @@ KUniqueApplication::start(StartFlags flags)
         appName.prepend(s);
      }
 
-#ifdef Q_WS_MAC
-  mac_initialize_dbus();
-#endif
-
   bool forceNewProcess = Private::s_multipleInstances || flags & NonUniqueInstance;
 
   if (Private::s_nofork)
   {
+
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
+     mac_initialize_dbus();
+#endif
+
      QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
 
      QString pid = QString::number(getpid());
@@ -178,7 +173,7 @@ KUniqueApplication::start(StartFlags flags)
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
 
-#ifdef Q_WS_MACX
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
   } else {
     mac_fork_and_reexec_self();
 #endif
