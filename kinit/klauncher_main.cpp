@@ -48,6 +48,10 @@ static void sig_handler(int sig_num)
 }
 #endif
 
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
+#include <kkernel_mac.h>
+#endif
+
 extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 {
 #ifndef Q_WS_WIN
@@ -59,6 +63,10 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
                                  "klauncher: It is started automatically by kdeinit4.\n").toLocal8Bit().data());
       return 1;
    }
+#endif
+
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
+   mac_initialize_dbus();
 #endif
 
    KComponentData componentData("klauncher", "kdelibs4");
