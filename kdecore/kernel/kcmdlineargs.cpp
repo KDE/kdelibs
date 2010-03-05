@@ -737,10 +737,6 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       argument = opt.mid(j+1);
       opt = opt.left(j);
    }
-#ifdef Q_WS_MACX
-   if(opt.startsWith("psn_")) // krazy:exclude=strings
-      opt = "psn";
-#endif
 
    bool enabled = true;
    int result = 0;
@@ -801,10 +797,6 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
    {
       if (s->ignoreUnknown)
          return;
-#ifdef Q_WS_MACX
-		if (_opt.startsWith("psn_")) // krazy:exclude=strings
-			return;
-#endif
       KCmdLineArgs::enable_i18n();
       KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
    }
@@ -821,10 +813,6 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       {
          if (s->ignoreUnknown)
             return;
-#ifdef Q_WS_MACX
-			if (_opt.startsWith("psn_")) // krazy:exclude=strings
-				return;
-#endif
          KCmdLineArgs::enable_i18n();
          KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
       }
@@ -889,6 +877,13 @@ KCmdLineArgsStatic::parseAllArgs()
          {
             KCmdLineArgs::usage(option.mid(5));
          }
+#ifdef Q_WS_MAC
+         // skip the finder -psn_* hint
+         else if (option.startsWith("psn_")) // krazy:exclude=strings
+         {
+            continue;
+         }
+#endif
          else if ((option == "version") || (option == "v"))
          {
             KCmdLineArgs::enable_i18n();
