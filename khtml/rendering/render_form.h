@@ -43,10 +43,6 @@ class QWidget;
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
-class KFindDialog;
-class KReplaceDialog;
-class KFind;
-class KReplace;
 class KAction;
 class KUrlRequester;
 class KdeUiProxyStyle;
