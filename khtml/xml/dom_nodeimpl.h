@@ -512,10 +512,15 @@ public:
         return m_regdListeners.listeners;
     }
 
+
+    DOMString lookupNamespaceURI( const DOMString& prefix );
+
 private: // members
     khtml::DocPtr<DocumentImpl> m_document;
     NodeImpl *m_previous;
     NodeImpl *m_next;
+
+    NodeImpl* findNextElementAncestor( NodeImpl* node );
 protected:
     khtml::RenderObject *m_render;
     RegisteredListenerList m_regdListeners;

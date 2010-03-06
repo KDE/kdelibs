@@ -71,7 +71,7 @@ public:
         CHILD_NODES,
         LAST_NODE_LIST = CHILD_NODES
     };
-    
+
     struct CacheKey
     {
         NodeImpl* baseNode;
@@ -101,13 +101,13 @@ public:
         static Cache* makeStructuralOnly();
         static Cache* makeNameOrID();
         static Cache* makeClassName();
-        
+
         Cache(unsigned short relSecondaryVer);
 
         CacheKey key;//### We must store this in here due to QCache in Qt3 sucking
 
         unsigned int version; // structural version.
-        unsigned int secondaryVersion; 
+        unsigned int secondaryVersion;
         union
         {
             NodeImpl*    node;
@@ -207,6 +207,13 @@ private:
     virtual bool nodeMatches(NodeImpl *testNode, bool& doRecurse) const;
 
     ClassNames m_classNames;
+};
+
+
+class StaticNodeListImpl : public khtml::Shared<StaticNodeListImpl>
+{
+public:
+
 };
 
 } //namespace

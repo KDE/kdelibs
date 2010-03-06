@@ -390,7 +390,8 @@ public:
         DOCUMENT_NODE = 9,
         DOCUMENT_TYPE_NODE = 10,
         DOCUMENT_FRAGMENT_NODE = 11,
-        NOTATION_NODE = 12
+        NOTATION_NODE = 12,
+        XPATH_NAMESPACE_NODE = 13 //< Part of DOM L3 XPath, @since 4.5
     };
 
     /**
@@ -854,18 +855,18 @@ public:
      * textual content.
      */
     DOMString textContent() const;
-        
+
     /**
      * see textContent()
-     * 
+     *
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
      */
     void setTextContent(const DOMString& text);
-    
+
     /**
      * Introduced in DOM Level 3.
-     * 
+     *
      * These constants represent bitflags returned by the compareDocumentPosition
      * method.
      *
@@ -879,19 +880,19 @@ public:
 	DOCUMENT_POSITION_CONTAINED_BY = 0x10,
 	DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20
     };
-    
+
     /**
      * Introduced in DOM Level 3.
-     * 
+     *
      * This method compares the current node's position with that of 'other'
      * and returns it as a combination of DocumentPosition bitfields.
-     * Here DOCUMENT_POSITION_FOLLOWING means that the 'other' is 
+     * Here DOCUMENT_POSITION_FOLLOWING means that the 'other' is
      * after the current.
      *
      * The notion of order here is a logical one; for example attributes
      * are viewed as if they were children of an element inserted
      * right before the real children. The method will also assign
-     * some total order even if the nodes are not connected. 
+     * some total order even if the nodes are not connected.
      *
      * @since 4.2.4
      */

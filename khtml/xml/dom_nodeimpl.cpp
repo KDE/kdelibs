@@ -1407,6 +1407,89 @@ void NodeImpl::setDocument(DocumentImpl* doc)
 #endif
 }
 
+DOM::DOMString DOM::NodeImpl::lookupNamespaceURI(const DOM::DOMString& prefix)
+{
+    //for details see http://www.w3.org/TR/DOM-Level-3-Core/namespaces-algorithms.html#lookupNamespaceURIAlgo
+    switch( this->nodeType() ) {
+        case Node::ELEMENT_NODE:
+            if( !this->namespaceURI().isNull() && this->prefix() == prefix ) {
+                return this->namespaceURI();
+            }
+            if( this->hasAttributes() ) {
+                ElementImpl* node = static_cast<ElementImpl*>(this);
+                
+                NamedAttrMapImpl* attributes = node->attributes( true /*readonly*/);
+                LocalName pln = LocalName::fromString(prefix);
+                PrefixName xmlns = PrefixName::fromString("xmlns");
+
+                DOM::DOMString result = attributes->getValue(pln.id(), xmlns);
+                if( !result.isNull() ) {
+                    return result;
+                }
+
+                if( prefix.isNull() ) {
+                    pln = LocalName::fromString("xmlns");
+                    result = attributes->getValue(pln.id());
+                    if( !result.isEmpty() ) {
+                        return result;
+                    }
+                }
+            }
+            {
+                NodeImpl* ancestor = findNextElementAncestor(this);
+                if( ancestor ) {
+                    return ancestor->lookupNamespaceURI(prefix);
+                }
+            }
+            return DOM::DOMString();
+
+        case Node::DOCUMENT_NODE:
+        {
+            DocumentImpl* node = static_cast<DocumentImpl*>(this);
+            return node->documentElement()->lookupNamespaceURI(prefix);
+        }
+
+        case Node::ATTRIBUTE_NODE:
+        {
+            NodeImpl* ancestor = this->parentNode();
+            if( ancestor ) {
+                return ancestor->lookupNamespaceURI(prefix);
+            }
+            else {
+                return DOM::DOMString();
+            }
+        }
+
+        case Node::ENTITY_NODE: 
+        case Node::NOTATION_NODE: 
+        case Node::DOCUMENT_TYPE_NODE: 
+        case Node::DOCUMENT_FRAGMENT_NODE: 
+           return DOM::DOMString();
+
+        default:
+        {
+            NodeImpl* ancestor = findNextElementAncestor(this);
+            if( ancestor ) {
+                return ancestor->lookupNamespaceURI(prefix);
+            }
+            return DOM::DOMString();
+        }
+    }
+}
+
+DOM::NodeImpl* DOM::NodeImpl::findNextElementAncestor( NodeImpl* node )
+{
+    NodeImpl* iterator = node->parentNode();
+    while( iterator ) {
+        if( iterator->nodeType() == Node::ELEMENT_NODE ) {
+            return iterator;
+        }
+        iterator = iterator->parentNode();
+    }
+    return 0;
+}
+
+
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::~NodeBaseImpl()

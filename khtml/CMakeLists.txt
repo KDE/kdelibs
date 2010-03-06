@@ -193,6 +193,7 @@ set(khtmldom_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_events.cpp
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_views.cpp
   ${CMAKE_SOURCE_DIR}/khtml/dom/QualifiedName.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/dom/dom3_xpath.cpp
 )
 
 #set_source_files_properties(${khtmldom_STAT_SRCS} PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
@@ -371,7 +372,7 @@ set(khtmlcss_STAT_SRCS
 set(khtmlxml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_docimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodeimpl.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodelistimpl.cpp  
+  ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodelistimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_textimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_elementimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_stringimpl.cpp
@@ -413,6 +414,22 @@ set(decoders_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/imload/decoders/qimageioloader.cpp
 )
 
+# khtml/xpath/
+set(xpath_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/expression.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/functions.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/parsedstatement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/path.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/predicate.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/step.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/tokenizer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/parser.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/util.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/variablereference.cpp
+
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/XPathNSResolverImpl.cpp
+)
+
 add_subdirectory( css )
 add_subdirectory( pics )
 add_subdirectory( ecma )
@@ -438,6 +455,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/platform
   ${CMAKE_CURRENT_SOURCE_DIR}/compat
   ${CMAKE_CURRENT_SOURCE_DIR}/css
+  ${CMAKE_CURRENT_SOURCE_DIR}/xpath
 )
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/misc
@@ -483,6 +501,7 @@ set(khtml_LIB_SRCS
    khtml_iface.cc
    khtmlimage.cpp
    kjserrordlg.cpp
+#   ${xpath_STAT_SRCS}
    ${khtmlfind_STAT_SRCS}
    ${passwordbar_STAT_SRCS}
    ${khtmlxml_STAT_SRCS}
