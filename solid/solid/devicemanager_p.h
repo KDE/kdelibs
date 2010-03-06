@@ -27,6 +27,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QWeakPointer>
 #include <QtCore/QSharedData>
+#include <QtCore/QThreadStorage>
 
 namespace Solid
 {
@@ -57,6 +58,20 @@ namespace Solid
         QExplicitlySharedDataPointer<DevicePrivate> m_nullDevice;
         QMap<QString, QWeakPointer<DevicePrivate> > m_devicesMap;
         QMap<QObject *, QString> m_reverseMap;
+    };
+
+    class DeviceManagerStorage
+    {
+    public:
+        DeviceManagerStorage();
+
+        QList<QObject*> managerBackends();
+        DeviceNotifier *notifier();
+
+    private:
+        void ensureManagerCreated();
+
+        QThreadStorage<DeviceManagerPrivate*> m_storage;
     };
 }
 

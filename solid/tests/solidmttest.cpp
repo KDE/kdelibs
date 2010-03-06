@@ -27,6 +27,8 @@
 #include <solid/device.h>
 #include <solid/predicate.h>
 #include <solid/storagevolume.h>
+#include <solid/storagedrive.h>
+#include <solid/genericinterface.h>
 
 
 class SolidMtTest : public QObject
@@ -44,6 +46,11 @@ protected:
     virtual void run()
     {
         Solid::Device dev("/org/freedesktop/Hal/devices/computer");
+
+        QList<Solid::Device> driveList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
+        foreach (const Solid::Device &solidDevice, driveList) {
+            const Solid::StorageDrive* solidDrive = solidDevice.as<Solid::StorageDrive>();
+        }
     }
 };
 
@@ -65,9 +72,16 @@ QTEST_MAIN(SolidMtTest)
 void SolidMtTest::testWorkerThread()
 {
     Solid::Device dev("/org/freedesktop/Hal/devices/acpi_ADP1");
+
     WorkerThread *wt = new WorkerThread;
     wt->start();
     wt->wait();
+
+    const QList<Solid::Device> driveList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
+    foreach (const Solid::Device &solidDevice, driveList) {
+        const Solid::GenericInterface* solidDrive = solidDevice.as<Solid::GenericInterface>();
+    }
+
     delete wt;
 }
 
