@@ -116,7 +116,7 @@ public:
    *
    * @see KCModule::buttons @see KCModule::setButtons
    */
-  enum Button { NoAdditionalButton=0, Help=1, Default=2, Apply=4 };
+  enum Button { NoAdditionalButton=0, Help=1, Default=2, Apply=4, Export=8 };
   Q_DECLARE_FLAGS( Buttons, Button )
 
 #ifdef KDE3_SUPPORT
@@ -359,6 +359,11 @@ protected Q_SLOTS:
    * The status of the auth action, if one, has changed
    */
    void authStatusChanged(int);
+   
+   /**
+   * Called when export text button has been called
+   */
+   virtual QString exportText();
 
 protected:
 

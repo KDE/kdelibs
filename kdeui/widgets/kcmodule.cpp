@@ -179,6 +179,11 @@ void KCModule::authStatusChanged(int status)
     qDebug() << useRootOnlyMessage();
 }
 
+QString KCModule::exportText()
+{
+  return QString();
+}
+
 KCModule::~KCModule()
 {
     qDeleteAll(d->managers);
