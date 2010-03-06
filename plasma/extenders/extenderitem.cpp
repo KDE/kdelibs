@@ -263,10 +263,11 @@ void ExtenderItem::setExtender(Extender *extender, const QPointF &pos)
     //and notify the applet of the item being detached, after the config has been moved.
     emit d->extender->itemDetached(this);
 
+    setParentItem(extender);
+    setParent(extender);
     d->extender = extender;
 
     //change parent.
-    setParentItem(extender);
     extender->d->addExtenderItem(this, pos);
 
     //cancel the timer.
@@ -587,7 +588,7 @@ void ExtenderItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     pixmap.fill(Qt::transparent);
     QPainter p(&pixmap);
 
-    //the following is necesarry to avoid having an offset when rendering the widget into the
+    //the following is necessary to avoid having an offset when rendering the widget into the
     //pixmap.
     view.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -598,9 +599,10 @@ void ExtenderItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     view.setSceneRect(sceneBoundingRect());
     view.render(&p, QRectF(QPointF(0, 0), pixmap.size()), QRect(QPoint(0, 0), screenSize));
 
-    //create the necesarry mimedata.
+    //create the necessary mimedata.
     ExtenderItemMimeData *mimeData = new ExtenderItemMimeData();
     mimeData->setExtenderItem(this);
+    mimeData->setPointerOffset(d->mousePos);
 
     //Hide empty internal extender containers when we drag the last item away. Avoids having
     //an ugly empty applet on the desktop temporarily.
@@ -610,10 +612,6 @@ void ExtenderItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         extenderApplet->formFactor() != Plasma::Vertical) {
         kDebug() << "leaving the internal extender container, so hide the applet and it's handle.";
         extenderApplet->hide();
-        AppletHandle *handle = dynamic_cast<AppletHandle*>(extenderApplet->parentItem());
-        if (handle) {
-            handle->hide();
-        }
     }
 
     ExtenderGroup *group = qobject_cast<ExtenderGroup*>(this);
@@ -632,9 +630,17 @@ void ExtenderItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     Qt::DropAction action = drag->exec();
 
     corona->removeOffscreenWidget(this);
+    d->dragStarted = false;
 
     if (!action || !drag->target()) {
         //we weren't moved, so reinsert the item in our current layout.
+        //TODO: make it into a stand-alone window?
+        d->themeChanged();
+        d->extender->itemAddedEvent(this, curPos);
+        if (extenderApplet) {
+            extenderApplet->show();
+        }
+
         d->extender->itemAddedEvent(this, curPos);
     }
 
@@ -642,7 +648,6 @@ void ExtenderItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         group->expandGroup();
     }
 
-    d->dragStarted = false;
 }
 
 void ExtenderItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -845,12 +850,9 @@ void ExtenderItemPrivate::themeChanged()
 {
     if (dragStarted) {
         background->setImagePath("opaque/widgets/extender-background");
-    } else {
-        background->setImagePath("widgets/extender-background");
-    }
-    if (dragStarted) {
         background->setEnabledBorders(FrameSvg::AllBorders);
     } else {
+        background->setImagePath("widgets/extender-background");
         background->setEnabledBorders(extender->enabledBordersForItem(q));
     }
     background->getMargins(bgLeft, bgTop, bgRight, bgBottom);
