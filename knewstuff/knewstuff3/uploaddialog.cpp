@@ -97,11 +97,22 @@ void UploadDialog::setUploadFile(const KUrl& payloadFile)
 {
     d->uploadFile = payloadFile;
     d->ui.mFileNameLabel->setText(payloadFile.url());
+
+    QFile file(d->uploadFile.toLocalFile());
+    if (!file.open(QIODevice::ReadOnly)) {
+        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url()), i18n("Upload Failed"));
+        return;
+    }
 }
 
 void UploadDialog::setUploadName(const QString& name)
 {
     d->ui.mNameEdit->setText(name);
+}
+
+void UploadDialog::selectCategory(const QString& category)
+{
+    d->ui.mCategoryCombo->setCurrentIndex(d->ui.mCategoryCombo->findText(category, Qt::MatchFixedString));
 }
 
 bool UploadDialog::init(const QString &configfile)
@@ -153,6 +164,12 @@ bool UploadDialog::init(const QString &configfile)
     }
 
     d->categoryNames = group.readEntry("UploadCategories", QStringList());
+    if (d->categoryNames.size() > 1) {
+        d->ui.mCategoryCombo->addItems(d->categoryNames);
+    } else {
+        d->ui.mCategoryLabel->setVisible(false);
+        d->ui.mCategoryCombo->setVisible(false);
+    }
 
     kDebug() << "Categories: " << d->categoryNames;
 
@@ -194,13 +211,28 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
             kDebug() << "found category: " << category.name();
         }
         else {
-            kDebug() << "found invalid category: " << category.name();
+            //kDebug() << "found invalid category: " << category.name();
         }
     }
-    // only enable the ok button if we have at least one category
-    if (d->categories.count() > 0) {
-        button(Ok)->setEnabled(true);
+
+    // at least one category is needed
+    if (d->categories.count() == 0) {
+        if (d->categoryNames.size() > 0) {
+            KMessageBox::error(this,
+                               i18n("The server does not know the category that you try to upload: %1", d->categoryNames.join(", ")),
+                               i18n("Error"));
+            // close the dialog
+            reject();
+        } else {
+            kWarning() << "No category was set in knsrc file. Adding all categories.";
+            Q_FOREACH(const Attica::Category &category, categories) {
+                d->ui.mCategoryCombo->addItem(category.name());
+                d->categoryNames.append(category.name());
+            }
+        }
     }
+
+    button(Ok)->setEnabled(true);
     d->ui.mProgressLabel->clear();
 }
 
@@ -249,7 +281,24 @@ void UploadDialog::accept()
         // content.addAttribute("downloadbuyreason1", "the description why is content is not for free");
     }
 
-    Attica::ItemPostJob<Attica::Content>* job = d->provider.addNewContent(d->categories.first(), content);
+    QString categoryName = d->ui.mCategoryCombo->currentText();
+
+    QList<Attica::Category>::const_iterator iter = d->categories.constBegin();
+    Attica::Category category;
+    while (iter != d->categories.constEnd()) {
+        if (iter->name() == categoryName) {
+            category = *iter;
+            break;
+        }
+        ++iter;
+    }
+
+    if (!category.isValid()) {
+        KMessageBox::error(this, i18n("The selected category \"%1\" is invalid.", categoryName), i18n("Upload Failed"));
+        return;
+    }
+
+    Attica::ItemPostJob<Attica::Content>* job = d->provider.addNewContent(category, content);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(contentAdded(Attica::BaseJob*)));
     job->start();
 }
@@ -275,7 +324,6 @@ void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
         return;
     }
 
-
     d->ui.mProgressLabel->setText(i18n("Uploading preview and content..."));
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
@@ -298,7 +346,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::information(this, i18n("Upload"), i18n("File not found: %1",d->uploadFile.url()));
+        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url(), i18n("Upload Failed"));
         return;
     }
 

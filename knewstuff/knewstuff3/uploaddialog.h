@@ -81,6 +81,13 @@ public:
     */
     void setUploadName(const QString& name);
 
+    /**
+      Set the suggested category for the upload (the .knsrc file may contain multiple upload categories)
+
+      @param category the suggested category for the upload
+    */
+    void selectCategory(const QString& category);
+
 public Q_SLOTS:
     virtual void accept();
 
