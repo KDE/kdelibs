@@ -289,6 +289,11 @@ public Q_SLOTS:
    * very end of your reimplementation.
    */
   virtual void defaults();
+  
+  /**
+   * Called when export text button has been called
+   */
+  virtual QString exportText();
 
 protected:
   /**
@@ -360,11 +365,6 @@ protected Q_SLOTS:
    */
    void authStatusChanged(int);
    
-   /**
-   * Called when export text button has been called
-   */
-   virtual QString exportText();
-
 protected:
 
   /**
