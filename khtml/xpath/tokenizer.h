@@ -36,6 +36,10 @@
 #include "util.h"
 #include "parser.h"
 
+namespace khtml {
+namespace XPath {
+
+
 struct Token
 {
 	int     type;
@@ -97,6 +101,11 @@ public:
 int xpathyylex();
 void xpathyyerror(const char *str);
 void initTokenizer(QString string);
+
+} // namespace XPath
+
+} // namespace khtml
+
 
 #endif
 // kate: indent-width 4; replace-tabs off; tab-width 4; indent-spaces: off;

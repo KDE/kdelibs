@@ -30,7 +30,6 @@
 #include "xpath/expression.h"
 #include "xpath/parsedstatement.h"
 
-
 namespace DOM {
     class DOMStringImpl;
     class NodeImpl;
@@ -42,24 +41,24 @@ class XPathResultImpl : public Shared<XPathResultImpl>
 {
 	public:
 		XPathResultImpl();
-		XPathResultImpl( const Value &value );
+		XPathResultImpl( const XPath::Value &value );
 
 		void convertTo( unsigned short type, int &exceptioncode );
 
 		unsigned short resultType() const;
 
 		double numberValue( int &exceptioncode ) const;
-		DOMStringImpl *stringValue( int &exceptioncode ) const;
+		DOM::DOMString stringValue( int &exceptioncode ) const;
 		bool booleanValue( int &exceptioncode ) const;
-		NodeImpl *singleNodeValue( int &exceptioncode ) const;
+		DOM::NodeImpl *singleNodeValue( int &exceptioncode ) const;
 
 		bool invalidIteratorState() const;
 		unsigned long snapshotLength( int &exceptioncode ) const;
-		NodeImpl *iterateNext( int &exceptioncode );
-		NodeImpl *snapshotItem( unsigned long index, int &exceptioncode );
+		DOM::NodeImpl *iterateNext( int &exceptioncode );
+		DOM::NodeImpl *snapshotItem( unsigned long index, int &exceptioncode );
 
 	private:
-		Value m_value;
+		XPath::Value m_value;
 		DomNodeList::Iterator m_nodeIterator;
 		unsigned short m_resultType;
 };
@@ -67,10 +66,10 @@ class XPathResultImpl : public Shared<XPathResultImpl>
 class XPathExpressionImpl : public Shared<XPathExpressionImpl>
 {
 	public:
-		XPathExpressionImpl( DOMStringImpl *expression,
+		XPathExpressionImpl( const DOM::DOMString &expression,
 		                     XPathNSResolverImpl *resolver );
 
-		XPathResultImpl *evaluate( NodeImpl *contextNode,
+		XPathResultImpl *evaluate( DOM::NodeImpl *contextNode,
 		                           unsigned short type,
 		                           XPathResultImpl *result,
 		                           int &exceptioncode );
@@ -88,26 +87,28 @@ class XPathNSResolverImpl : public khtml::Shared<XPathNSResolverImpl>
 			Default,
 			JS,
 			CPP
-		}
+		};
 
-		virtual DOMString lookupNamespaceURI( const DOM::DOMString& prefix ) = 0;
-		virtual Type      type() = 0;
+		virtual DOM::DOMString lookupNamespaceURI( const DOM::DOMString& prefix ) = 0;
+		virtual Type type() = 0;
+		virtual ~XPathNSResolverImpl() {}
 };
 
 // This is the default implementation, used by createNSResolver
 class DefaultXPathNSResolverImpl : public XPathNSResolverImpl
 {
 	public:
-		DefaultXPathNSResolverImpl( NodeImpl *node );
+		DefaultXPathNSResolverImpl( DOM::NodeImpl *node );
 
-		virtual DOMString lookupNamespaceURI( const DOM::DOMString& prefix );
-		virtual Type      type() { return Default; }
+		virtual DOM::DOMString lookupNamespaceURI( const DOM::DOMString& prefix );
+		virtual Type type() { return Default; }
 
 	private:
-		NodeImpl *m_node;
+		SharedPtr<DOM::NodeImpl> m_node;
 };
 
 
+#if 0 // ### I'll kill this class off
 class XPathEvaluatorImpl
 {
 	public:
@@ -122,7 +123,7 @@ class XPathEvaluatorImpl
 		                                   XPathResultImpl *result,
 		                                   int &exceptioncode );
 };
-
+#endif
 
 
 

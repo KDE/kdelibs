@@ -4,13 +4,13 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -26,13 +26,19 @@
 #define UTIL_H
 
 #include <QList>
+#include <misc/shared.h>
 
 namespace DOM {
 	class NodeImpl;
+	class StaticNodeListImpl;
 }
 
-typedef QList<DOM::NodeImpl *> DomNodeList;
-typedef QString DomString;
+namespace khtml {
+namespace XPath {
+
+// ### removeme
+typedef SharedPtr<DOM::StaticNodeListImpl> DomNodeList;
+
 
 /* @return whether the given node is the root node.
  */
@@ -41,15 +47,20 @@ bool isRootDomNode( DOM::NodeImpl *node );
 /* @return the 'string-value' of the given node as specified by
    http://www.w3.org/TR/xpath
  */
-DomString stringValue( DOM::NodeImpl *node );
+DOM::DOMString stringValue( DOM::NodeImpl *node );
 
-/* @return all ancestor nodes of the given node, in document order.
+/* @return all descendant nodes of the given node, in document order.
  */
 DomNodeList getChildrenRecursively( DOM::NodeImpl *node );
 
 /* @return whether the given node is a valid context node
  */
 bool isValidContextNode( DOM::NodeImpl *node );
+
+} // namespace XPath
+
+} // namespace khtml
+
 
 #endif // UTIL_H
 

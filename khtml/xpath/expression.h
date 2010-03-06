@@ -31,6 +31,7 @@
 #include <QList>
 
 #include <dom/dom_string.h>
+#include <misc/shared.h>
 
 namespace DOM {
 	class NodeImpl;
@@ -79,7 +80,7 @@ class Value
 		const DomNodeList &toNodeset() const;
 		bool toBoolean() const;
 		double toNumber() const;
-		DomString toString() const;
+		DOM::DOMString toString() const;
 
 		QString dump() const;
 

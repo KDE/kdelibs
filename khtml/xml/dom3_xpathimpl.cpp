@@ -25,6 +25,8 @@
  */
 #include <dom/dom3_xpath.h>
 #include <xml/dom3_xpathimpl.h>
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_nodelistimpl.h>
 
 #include "xpath/expression.h"
 #include "xpath/util.h"
@@ -32,6 +34,7 @@
 using namespace DOM;
 using namespace khtml;
 using namespace khtml::XPath;
+using namespace DOM::XPath;
 
 XPathResultImpl::XPathResultImpl()
 {
@@ -97,25 +100,25 @@ unsigned short XPathResultImpl::resultType() const
 double XPathResultImpl::numberValue(int &exceptioncode) const
 {
 	if ( resultType() != NUMBER_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0.0;
 	}
 	return m_value.toNumber();
 }
 
-DOMStringImpl *XPathResultImpl::stringValue(int &exceptioncode) const
+DOM::DOMString XPathResultImpl::stringValue(int &exceptioncode) const
 {
 	if ( resultType() != STRING_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
-		return 0;
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
+		return DOMString();
 	}
-	return new DOMStringImpl( m_value.toString() );
+	return m_value.toString();
 }
 
 bool XPathResultImpl::booleanValue(int &exceptioncode) const
 {
 	if ( resultType() != BOOLEAN_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return false;
 	}
 	return m_value.toBoolean();
@@ -125,7 +128,7 @@ NodeImpl *XPathResultImpl::singleNodeValue(int &exceptioncode) const
 {
 	if ( resultType() != ANY_UNORDERED_NODE_TYPE &&
 	     resultType() != FIRST_ORDERED_NODE_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0;
 	}
 	DomNodeList nodes = m_value.toNodeset();
@@ -147,7 +150,7 @@ unsigned long XPathResultImpl::snapshotLength(int &exceptioncode) const
 {
 	if ( resultType() != UNORDERED_NODE_SNAPSHOT_TYPE &&
 	     resultType() != ORDERED_NODE_SNAPSHOT_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0;
 	}
 	return m_value.toNodeset().size();
@@ -157,7 +160,7 @@ NodeImpl *XPathResultImpl::iterateNext(int &exceptioncode)
 {
 	if ( resultType() != UNORDERED_NODE_ITERATOR_TYPE &&
 	     resultType() != ORDERED_NODE_ITERATOR_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0;
 	}
 	// XXX How to tell whether the document was changed since this
@@ -173,7 +176,7 @@ NodeImpl *XPathResultImpl::snapshotItem( unsigned long index, int &exceptioncode
 {
 	if ( resultType() != UNORDERED_NODE_SNAPSHOT_TYPE &&
 	     resultType() != ORDERED_NODE_SNAPSHOT_TYPE ) {
-		exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0;
 	}
 	DomNodeList nodes = m_value.toNodeset();
@@ -202,8 +205,9 @@ DOMString DefaultXPathNSResolverImpl::lookupNamespaceURI( const DOMString& prefi
 
 // ---------------------------------------------------------------------------
 
-// ### This needs to be assocated with the document. May be best to just
+// ### This needs to be assocated with the document. Will just
 // remove this class, and have it directly inside DocumentImpl.
+#if 0
 
 XPathExpressionImpl *XPathEvaluatorImpl::createExpression( DOMStringImpl *expression,
                                                            XPathNSResolverImpl *resolver,
@@ -244,6 +248,7 @@ XPathResultImpl *XPathEvaluatorImpl::evaluate( DOMStringImpl *expression,
 	}
 	return res;
 }
+#endif
 
 // ---------------------------------------------------------------------------
 XPathExpressionImpl::XPathExpressionImpl( DOMStringImpl *expression, XPathNSResolverImpl *resolver )
@@ -264,6 +269,7 @@ XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
 
 	XPathResultImpl *result = result_ ? result_ : new XPathResultImpl;
 
+	// ### FIX THIS!
 	//*result = XPathResultImpl( m_statement.evaluate( contextNode ) );
 	if ( type != ANY_TYPE ) {
 		result->convertTo( type, exceptioncode );
