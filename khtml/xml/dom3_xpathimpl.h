@@ -1,5 +1,6 @@
 /*
- * XPathResultImpl.h - Copyright 2005 Frerich Raabe <raabe@kde.org>
+ * dom3_xpathimpl.h - Copyright 2005 Frerich Raabe <raabe@kde.org>
+ *                      Copyright 2010 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,7 +27,9 @@
 #define XPATHRESULTIMPL_H
 
 #include "misc/shared.h"
-#include "impl/expression.h"
+#include "xpath/expression.h"
+#include "xpath/parsedstatement.h"
+
 
 namespace DOM {
     class DOMStringImpl;
@@ -61,9 +64,69 @@ class XPathResultImpl : public Shared<XPathResultImpl>
 		unsigned short m_resultType;
 };
 
-}
+class XPathExpressionImpl : public Shared<XPathExpressionImpl>
+{
+	public:
+		XPathExpressionImpl( DOMStringImpl *expression,
+		                     XPathNSResolverImpl *resolver );
 
-}
+		XPathResultImpl *evaluate( NodeImpl *contextNode,
+		                           unsigned short type,
+		                           XPathResultImpl *result,
+		                           int &exceptioncode );
+
+
+	private:
+		XPath::ParsedStatement m_statement;
+};
+
+// This is the base class for resolver interfaces
+class XPathNSResolverImpl : public khtml::Shared<XPathNSResolverImpl>
+{
+	public:
+		enum Type {
+			Default,
+			JS,
+			CPP
+		}
+
+		virtual DOMString lookupNamespaceURI( const DOM::DOMString& prefix ) = 0;
+		virtual Type      type() = 0;
+};
+
+// This is the default implementation, used by createNSResolver
+class DefaultXPathNSResolverImpl : public XPathNSResolverImpl
+{
+	public:
+		DefaultXPathNSResolverImpl( NodeImpl *node );
+
+		virtual DOMString lookupNamespaceURI( const DOM::DOMString& prefix );
+		virtual Type      type() { return Default; }
+
+	private:
+		NodeImpl *m_node;
+};
+
+
+class XPathEvaluatorImpl
+{
+	public:
+		static XPathExpressionImpl *createExpression( DOMStringImpl *expression,
+		                                              XPathNSResolverImpl *resolver,
+		                                              int &exceptioncode );
+		static XPathNSResolverImpl *createNSResolver( NodeImpl *nodeResolver );
+		static XPathResultImpl *evaluate( DOMStringImpl *expression,
+		                                   NodeImpl *contextNode,
+		                                   XPathNSResolverImpl *resolver,
+		                                   unsigned short type,
+		                                   XPathResultImpl *result,
+		                                   int &exceptioncode );
+};
+
+
+
+
+} // namespace khtml
 
 #endif // XPATHRESULTIMPL_H
 

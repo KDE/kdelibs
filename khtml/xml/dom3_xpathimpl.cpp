@@ -1,16 +1,17 @@
 /*
- * XPathResultImpl.cpp - Copyright 2005 Frerich Raabe <raabe@kde.org>
+ * dom3_xpathimpl.cpp - Copyright 2005 Frerich Raabe <raabe@kde.org>
+ *                      Copyright 2010 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -22,16 +23,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "XPathResultImpl.h"
-#include "XPathExceptionImpl.h"
+#include <dom/dom3_xpath.h>
+#include <xml/dom3_xpathimpl.h>
 
-#include "kdomxpath.h"
+#include "xpath/expression.h"
+#include "xpath/util.h"
 
-#include "DOMStringImpl.h"
-#include "NodeImpl.h"
-
-using namespace KDOM;
-using namespace KDOM::XPath;
+using namespace DOM;
+using namespace khtml;
+using namespace khtml::XPath;
 
 XPathResultImpl::XPathResultImpl()
 {
@@ -182,4 +182,98 @@ NodeImpl *XPathResultImpl::snapshotItem( unsigned long index, int &exceptioncode
 	}
 	return nodes.at( index );
 }
+
+// ---------------------------------------------------------------------------
+
+DefaultXPathNSResolverImpl::XPathNSResolverImpl( NodeImpl *node )
+	: m_node( node )
+{
+}
+
+DOMString DefaultXPathNSResolverImpl::lookupNamespaceURI( const DOMString& prefix )
+{
+	// Apparently Node::lookupNamespaceURI doesn't do this.
+	// ### check
+	if ( prefix.string() == "xml" ) {
+		return DOMString( "http://www.w3.org/XML/1998/namespace" );
+	}
+	return m_node->lookupNamespaceURI( prefix );
+}
+
+// ---------------------------------------------------------------------------
+
+// ### This needs to be assocated with the document. May be best to just
+// remove this class, and have it directly inside DocumentImpl.
+
+XPathExpressionImpl *XPathEvaluatorImpl::createExpression( DOMStringImpl *expression,
+                                                           XPathNSResolverImpl *resolver,
+                                                           int & )
+{
+	return new XPathExpressionImpl( expression, resolver );
+}
+
+XPathNSResolverImpl *XPathEvaluatorImpl::createNSResolver( NodeImpl *nodeResolver )
+{
+	return new XPathNSResolverImpl( nodeResolver );
+}
+
+XPathResultImpl *XPathEvaluatorImpl::evaluate( DOMStringImpl *expression,
+                                               NodeImpl *contextNode,
+                                               XPathNSResolverImpl *resolver,
+                                               unsigned short type,
+                                               XPathResultImpl *result,
+                                               int &exceptioncode )
+{
+	if ( !isValidContextNode( contextNode ) ) {
+		exceptioncode = NOT_SUPPORTED_ERR;
+		return 0;
+	}
+
+	XPathExpressionImpl *expr = createExpression( expression, resolver, exceptioncode );
+	if ( exceptioncode )
+		return 0;
+
+	XPathResultImpl *res = expr->evaluate( contextNode, type, result, exceptioncode );
+	if ( exceptioncode )
+		return 0;
+
+	delete expr;
+	if ( result ) {
+		result = res;
+		result->ref(); //### looks dubious
+	}
+	return res;
+}
+
+// ---------------------------------------------------------------------------
+XPathExpressionImpl::XPathExpressionImpl( DOMStringImpl *expression, XPathNSResolverImpl *resolver )
+{
+	Expression::evaluationContext().resolver = resolver;
+	m_statement.parse( expression->string() );
+}
+
+XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
+                                                unsigned short type,
+                                                XPathResultImpl *result_,
+                                                int &exceptioncode )
+{
+	if ( !isValidContextNode( contextNode ) ) {
+		exceptioncode = NOT_SUPPORTED_ERR;
+		return 0;
+	}
+
+	XPathResultImpl *result = result_ ? result_ : new XPathResultImpl;
+
+	//*result = XPathResultImpl( m_statement.evaluate( contextNode ) );
+	if ( type != ANY_TYPE ) {
+		result->convertTo( type, exceptioncode );
+		if( exceptioncode )
+			return 0;
+	}
+
+	return result;
+}
+
+
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
 
