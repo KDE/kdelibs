@@ -346,7 +346,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url(), i18n("Upload Failed"));
+        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url(), i18n("Upload Failed")));
         return;
     }
 
