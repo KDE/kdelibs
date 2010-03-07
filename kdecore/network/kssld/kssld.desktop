@@ -24,5 +24,6 @@ Comment[is]=Gefur út stefnu fyrir SSL-skilríki til forrita
 Comment[nb]=Forsyner programmer med praksis for SSL-sertifikater
 Comment[pt]=Fornece uma política de certificados SSL às aplicações
 Comment[pt_BR]=Fornece uma política de certificados SSL aos aplicativos
+Comment[sv]=Tillhandahåller SSL-certifikatpolicyn till program
 Comment[uk]=Правила роботи з сертифікатами SSL для програм
 Comment[x-test]=xxProvides SSL certificate policy to applicationsxx
