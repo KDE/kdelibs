@@ -22,6 +22,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
+#include "config.h" // for HAVE_TM_GMTOFF
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"
@@ -283,7 +284,7 @@ void KTimeZonesTest::currentOffset()
     // Find the current offset of a time zone
     time_t now = time(0);
     tm *tnow = localtime(&now);
-#ifndef _WIN32
+#if defined(HAVE_TM_GMTOFF)
     int offset = tnow->tm_gmtoff;
 #else
     int offset = 0;
