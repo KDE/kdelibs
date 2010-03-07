@@ -101,7 +101,6 @@ void UploadDialog::setUploadFile(const KUrl& payloadFile)
     QFile file(d->uploadFile.toLocalFile());
     if (!file.open(QIODevice::ReadOnly)) {
         KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url()), i18n("Upload Failed"));
-        return;
     }
 }
 
@@ -164,9 +163,9 @@ bool UploadDialog::init(const QString &configfile)
     }
 
     d->categoryNames = group.readEntry("UploadCategories", QStringList());
-    if (d->categoryNames.size() > 1) {
-        d->ui.mCategoryCombo->addItems(d->categoryNames);
-    } else {
+    d->ui.mCategoryCombo->addItems(d->categoryNames);
+
+    if (d->categoryNames.size() == 1) {
         d->ui.mCategoryLabel->setVisible(false);
         d->ui.mCategoryCombo->setVisible(false);
     }
@@ -174,14 +173,15 @@ bool UploadDialog::init(const QString &configfile)
     kDebug() << "Categories: " << d->categoryNames;
 
     connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(priceToggled(bool)));
+    priceToggled(false);
 
     return true;
 }
 
 void UploadDialog::priceToggled(bool priceEnabled)
 {
-    d->ui.priceLabel->setEnabled(priceEnabled);
-    d->ui.priceSpinBox->setEnabled(priceEnabled);
+    d->ui.priceLabel->setVisible(priceEnabled);
+    d->ui.priceSpinBox->setVisible(priceEnabled);
 }
 
 void UploadDialog::providerAdded(const Attica::Provider& provider)
@@ -249,15 +249,29 @@ void UploadDialog::accept()
     }
 
     if (d->ui.mNameEdit->text().isEmpty()) {
-        KMessageBox::error(this, i18n("Please put in a name."));
+        KMessageBox::error(this, i18n("Please fill out the name field."));
         return;
     }
 
-    d->ui.mProgress->setVisible(true);
-    d->ui.mProgress->setMinimum(0);
-    d->ui.mProgress->setMaximum(0);
+    // check the category
+    QString categoryName = d->ui.mCategoryCombo->currentText();
+    QList<Attica::Category>::const_iterator iter = d->categories.constBegin();
+    Attica::Category category;
+    while (iter != d->categories.constEnd()) {
+        if (iter->name() == categoryName) {
+            category = *iter;
+            break;
+        }
+        ++iter;
+    }
+    if (!category.isValid()) {
+        KMessageBox::error(this, i18n("The selected category \"%1\" is invalid.", categoryName), i18n("Upload Failed"));
+        return;
+    }
+
+    // go to the next page
+    d->ui.stackedWidget->setCurrentIndex(1);
     d->ui.mProgressLabel->setText(i18n("Creating Content on Server..."));
-    d->ui.uploadGroup->setEnabled(false);
 
     // fill in the content object
     Attica::Content content;
@@ -279,23 +293,6 @@ void UploadDialog::accept()
         content.addAttribute("downloadbuyprice1", QString::number(d->ui.priceSpinBox->value()));
         // TODO in the next version:
         // content.addAttribute("downloadbuyreason1", "the description why is content is not for free");
-    }
-
-    QString categoryName = d->ui.mCategoryCombo->currentText();
-
-    QList<Attica::Category>::const_iterator iter = d->categories.constBegin();
-    Attica::Category category;
-    while (iter != d->categories.constEnd()) {
-        if (iter->name() == categoryName) {
-            category = *iter;
-            break;
-        }
-        ++iter;
-    }
-
-    if (!category.isValid()) {
-        KMessageBox::error(this, i18n("The selected category \"%1\" is invalid.", categoryName), i18n("Upload Failed"));
-        return;
     }
 
     Attica::ItemPostJob<Attica::Content>* job = d->provider.addNewContent(category, content);
@@ -324,7 +321,7 @@ void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
         return;
     }
 
-    d->ui.mProgressLabel->setText(i18n("Uploading preview and content..."));
+    d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + '\n' + i18n("Uploading preview and content..."));
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
@@ -333,11 +330,11 @@ void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
 
     d->contentId = id;
 
-    d->ui.mProgressLabel->setText(i18n("Uploading content..."));
+    d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + '\n' + i18n("Uploading content..."));
     doUpload(QString(), d->uploadFile.toLocalFile());
 
     if (!d->previewFile.isEmpty()) {
-        d->ui.mProgressLabel->setText(i18n("Uploading preview image and content..."));
+        d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + '\n' + i18n("Uploading preview image and content..."));
         doUpload("1", d->previewFile.toLocalFile());
     }
 }
@@ -347,6 +344,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
         KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url(), i18n("Upload Failed")));
+        reject();
         return;
     }
 
@@ -370,8 +368,7 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 
 void UploadDialog::fileUploadFinished(Attica::BaseJob* )
 {
-    KMessageBox::information(0, i18n("Content Added"), i18n("File Uploaded"));
-    d->ui.mProgressLabel->setText(i18n("Content successfully uploaded"));
+    d->ui.mProgressLabel->setText(i18n(d->ui.mProgressLabel->text() + "\n\n" + "Content successfully uploaded."));
     d->ui.mProgress->setVisible(false);
     d->finished = true;
     setButtons(KDialog::Ok);
