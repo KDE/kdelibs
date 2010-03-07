@@ -993,7 +993,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        KService::Ptr service = KService::serviceByDesktopName(desktopName);
        if (service)
            send_service_startup_info(request, service,
-                                     request->startup_id, QStringList());
+                                     request->startup_id, envs);
        else // no .desktop file, no startup info
            cancel_service_startup_info(request, request->startup_id, envs);
    }
