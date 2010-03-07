@@ -22,6 +22,9 @@
 
 #include "kupnpstorageaccess.h"
 
+// backend
+#include "kupnpdevice.h"
+
 
 namespace Solid
 {

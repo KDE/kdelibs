@@ -22,6 +22,10 @@
 
 #include "kupnpdeviceinterface.h"
 
+// backend
+#include "kupnpdevice.h"
+
+
 namespace Solid
 {
 namespace Backends

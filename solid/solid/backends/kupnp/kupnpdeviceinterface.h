@@ -23,8 +23,6 @@
 #ifndef SOLID_BACKENDS_KUPNP_DEVICEINTERFACE_H
 #define SOLID_BACKENDS_KUPNP_DEVICEINTERFACE_H
 
-// backend
-#include "kupnpdevice.h"
 // Solid
 #include <solid/ifaces/deviceinterface.h>
 // Qt
@@ -37,6 +35,8 @@ namespace Backends
 {
 namespace KUPnP
 {
+class KUPnPDevice;
+
 
 class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {
