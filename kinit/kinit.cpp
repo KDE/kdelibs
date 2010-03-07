@@ -1671,6 +1671,10 @@ int main(int argc, char **argv, char **envp)
 
    cleanup_fds();
 
+   // Redirect stdout to stderr. We have no reason to use stdout anyway.
+   // This minimizes our impact on commands used in pipes.
+   (void)dup2(2, 1);
+
    if (do_fork) {
 #ifdef Q_WS_MACX
       mac_fork_and_reexec_self();
