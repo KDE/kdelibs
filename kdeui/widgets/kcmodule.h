@@ -240,6 +240,16 @@ public:
    */
   KAuth::Action *authAction() const;
 
+  /**
+   * Returns the value set by setExportText();
+   */
+  QString exportText() const;
+  
+  /**
+   * Sets the export QString value, used for exporting data. 
+   */
+  void setExportText(const QString &);
+  
 public Q_SLOTS:
   /**
    * Load the configuration data into the module.
@@ -289,11 +299,6 @@ public Q_SLOTS:
    * very end of your reimplementation.
    */
   virtual void defaults();
-  
-  /**
-   * Called when export text button has been called
-   */
-  virtual QString exportText();
 
 protected:
   /**

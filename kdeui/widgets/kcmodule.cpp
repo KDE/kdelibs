@@ -60,6 +60,7 @@ public:
     QString _rootOnlyMessage;
     QList<KConfigDialogManager*> managers;
     QString _quickHelp;
+    QString m_ExportText;
     bool _useRootOnlyMessage : 1;
     bool _firstshow : 1;
 
@@ -179,11 +180,6 @@ void KCModule::authStatusChanged(int status)
     qDebug() << useRootOnlyMessage();
 }
 
-QString KCModule::exportText()
-{
-  return QString();
-}
-
 KCModule::~KCModule()
 {
     qDeleteAll(d->managers);
@@ -279,6 +275,16 @@ void KCModule::changed()
 KComponentData KCModule::componentData() const
 {
     return d->_componentData;
+}
+
+QString KCModule::exportText() const
+{
+  return d->m_ExportText;
+}
+
+void KCModule::setExportText(const QString& text) 
+{
+  d->m_ExportText = text;
 }
 
 void KCModule::setQuickHelp( const QString& help )
