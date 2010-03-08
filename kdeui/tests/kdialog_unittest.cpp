@@ -114,7 +114,7 @@ private Q_SLOTS:
         QApplication::setActiveWindow(&dialog);
         QVERIFY(checkBox.hasFocus());
         QVERIFY(!dialog.button(KDialog::Cancel)->hasFocus());
-        QCOMPARE(dialog.focusWidget(), &checkBox);
+        QCOMPARE(dialog.focusWidget(), static_cast<QWidget*>(&checkBox));
         QTest::keyClick(dialog.focusWidget(), Qt::Key_Return);
         QCOMPARE(qCancelClickedSpy.count(), 1);
     }
