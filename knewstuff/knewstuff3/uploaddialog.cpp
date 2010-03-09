@@ -2,7 +2,7 @@
     knewstuff3/ui/uploaddialog.cpp.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
-    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (C) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 */
 
 #include "uploaddialog.h"
+#include "uploaddialog_p.h"
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -26,56 +27,96 @@
 #include <QtCore/QString>
 
 #include <kaboutdata.h>
-#include <kcombobox.h>
 #include <kcomponentdata.h>
-#include <kconfig.h>
-#include <kglobal.h>
-#include <klineedit.h>
-#include <klocale.h>
 #include <kmessagebox.h>
-#include <ktextedit.h>
-#include <kurlrequester.h>
-#include <kuser.h>
 #include <kstandarddirs.h>
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
-#include <attica/providermanager.h>
-#include <attica/provider.h>
-#include <attica/category.h>
-#include <attica/content.h>
-#include <attica/listjob.h>
-#include <attica/postjob.h>
-
-#include "ui_uploaddialog.h"
-
-namespace KNS3 {
-    class UploadDialog::Private
-    {
-    public:
-        Ui::UploadDialog ui;
-
-        Attica::ProviderManager providerManager;
-        Attica::Provider provider;
-        Attica::Category::List categories;
-        KUrl uploadFile;
-        KUrl previewFile;
-        QStringList categoryNames;
-        QString contentId;
-        bool finished;
-
-        Private()
-            :finished(false)
-        {
-        }
-    };
-}
-
 using namespace KNS3;
 
+void UploadDialog::Private::showPage(int page)
+{
+    ui.stackedWidget->setCurrentIndex(page);
+
+    switch (ui.stackedWidget->currentIndex()) {
+    case UserPasswordPage:
+        ui.username->setFocus();
+        break;
+    case Details1Page:
+        ui.mNameEdit->setFocus();
+        break;
+    case FileNewUpdatePage:
+        ui.uploadButton->setFocus();
+        break;
+    }
+    updatePage();
+}
+
+void UploadDialog::Private::updatePage()
+{
+    bool firstPage = ui.stackedWidget->currentIndex() == 0;
+    q->enableButton(BackButton, !firstPage);
+
+    bool nextEnabled = false;
+    switch (ui.stackedWidget->currentIndex()) {
+    case UserPasswordPage:
+        // FIXME: actually validate login
+        if (ui.providerComboBox->count() > 0 && !ui.username->text().isEmpty() && !ui.password->text().isEmpty()) {
+            if (currentProvider().saveCredentials(ui.username->text(), ui.password->text())) {
+                nextEnabled = true;
+            } else {
+                KMessageBox::error(q, i18n("Could not save login information."), i18n("Error"));
+            }
+        }
+        break;
+
+    case FileNewUpdatePage:
+        // FIXME: check if the file requester contains a valid file
+        if (!uploadFile.isEmpty() || !ui.uploadFileRequester->url().isLocalFile()) {
+            nextEnabled = true;
+        }
+        break;
+
+    case Details1Page:
+        if (!ui.mNameEdit->text().isEmpty()) {
+            nextEnabled = true;
+        }
+        break;
+
+    case Details2Page:
+        if (ui.copyrightCheckBox->isChecked()) {
+            nextEnabled = true;
+        }
+        break;
+
+    case UploadFinalPage:
+        break;
+    }
+
+    q->enableButton(NextButton, nextEnabled);
+    q->enableButton(FinishButton, finished);
+
+    q->setDefaultButton(nextEnabled ? NextButton : FinishButton);
+
+    if (nextEnabled && q->button(KDialog::Cancel)->hasFocus()) {
+        q->button(NextButton)->setFocus();
+    }
+}
+
+void UploadDialog::Private::backPage()
+{
+    showPage(ui.stackedWidget->currentIndex()-1);
+}
+
+void UploadDialog::Private::nextPage()
+{
+    showPage(ui.stackedWidget->currentIndex()+1);
+}
+
 UploadDialog::UploadDialog(QWidget *parent)
-    : KDialog(parent), d(new Private)
+    : KDialog(parent), d(new Private(this))
 {
     KComponentData component = KGlobal::activeComponent();
     QString name = component.componentName();
@@ -83,7 +124,7 @@ UploadDialog::UploadDialog(QWidget *parent)
 }
 
 UploadDialog::UploadDialog(const QString& configFile, QWidget *parent)
-    : KDialog(parent), d(new Private)
+    : KDialog(parent), d(new Private(this))
 {
     init(configFile);
 }
@@ -91,27 +132,6 @@ UploadDialog::UploadDialog(const QString& configFile, QWidget *parent)
 UploadDialog::~UploadDialog()
 {
     delete d;
-}
-
-void UploadDialog::setUploadFile(const KUrl& payloadFile)
-{
-    d->uploadFile = payloadFile;
-    d->ui.mFileNameLabel->setText(payloadFile.url());
-
-    QFile file(d->uploadFile.toLocalFile());
-    if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url()), i18n("Upload Failed"));
-    }
-}
-
-void UploadDialog::setUploadName(const QString& name)
-{
-    d->ui.mNameEdit->setText(name);
-}
-
-void UploadDialog::selectCategory(const QString& category)
-{
-    d->ui.mCategoryCombo->setCurrentIndex(d->ui.mCategoryCombo->findText(category, Qt::MatchFixedString));
 }
 
 bool UploadDialog::init(const QString &configfile)
@@ -126,18 +146,35 @@ bool UploadDialog::init(const QString &configfile)
     d->providerManager.loadDefaultProviders();
 
     setCaption(i18n("Share Hot New Stuff"));
-    setButtons(Ok | Cancel);
-    showButtonSeparator(true);
 
-    setButtonText(Ok, i18n("Upload..."));
-    button(Ok)->setEnabled(false);
+    setButtons(KDialog::Cancel | KDialog::User1 | KDialog::User2 | KDialog::User3 | KDialog::Help);
+    setButtonGuiItem( BackButton, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
+
+    setButtonText( NextButton, i18nc("Opposite to Back", "Next") );
+    setButtonIcon( NextButton, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
+    setButtonText(FinishButton, i18n("Finish"));
+    setButtonIcon( FinishButton, KIcon("dialog-ok-apply") );
+    setDefaultButton(NextButton);
+    showButtonSeparator(true);
+    d->updatePage();
+
+    connect(d->ui.username, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
+    connect(d->ui.password, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
+    connect(d->ui.mNameEdit, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
+    connect(d->ui.copyrightCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateButtons()));
+    connect(d->ui.uploadFileRequester, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
+    connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(priceToggled(bool)));
+
+    connect(d->ui.uploadButton, SIGNAL(clicked()), this, SLOT(startUpload()));
+
+    connect(this, SIGNAL(user3Clicked()), this, SLOT(back()));
+    connect(this, SIGNAL(user2Clicked()), this, SLOT(next()));
+    connect(this, SIGNAL(user1Clicked()), this, SLOT(accept()));
 
     d->ui.mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
                                  "%1 Add-On Uploader",
                                  KGlobal::activeComponent().aboutData()->programName()));
     d->ui.mTitleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
-    d->ui.mProgress->setVisible(false);
-    d->ui.mProgressLabel->setText(i18n("Fetching provider information..."));
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -172,30 +209,73 @@ bool UploadDialog::init(const QString &configfile)
 
     kDebug() << "Categories: " << d->categoryNames;
 
-    connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(priceToggled(bool)));
-    priceToggled(false);
+
+    d->showPage(0);
 
     return true;
 }
 
+void UploadDialog::next()
+{
+    d->nextPage();
+}
+
+void UploadDialog::back()
+{
+    d->backPage();
+}
+
+void UploadDialog::updateButtons()
+{
+    d->updatePage();
+}
+
+void UploadDialog::setUploadFile(const KUrl& payloadFile)
+{
+    d->uploadFile = payloadFile;
+
+    d->ui.uploadFileLabel->setVisible(false);
+    d->ui.uploadFileRequester->setVisible(false);
+
+    QFile file(d->uploadFile.toLocalFile());
+    if (!file.open(QIODevice::ReadOnly)) {
+        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url()), i18n("Upload Failed"));
+    }
+}
+
+void UploadDialog::setUploadName(const QString& name)
+{
+    d->ui.mNameEdit->setText(name);
+}
+
+void UploadDialog::selectCategory(const QString& category)
+{
+    d->ui.mCategoryCombo->setCurrentIndex(d->ui.mCategoryCombo->findText(category, Qt::MatchFixedString));
+}
+
 void UploadDialog::priceToggled(bool priceEnabled)
 {
-    d->ui.priceLabel->setVisible(priceEnabled);
-    d->ui.priceSpinBox->setVisible(priceEnabled);
+    d->ui.priceGroupBox->setEnabled(priceEnabled);
 }
 
 void UploadDialog::providerAdded(const Attica::Provider& provider)
 {
-    // we only care about opendesktop for now
-    if (provider.baseUrl() != QUrl("https://api.opendesktop.org/v1/")) {
-        return;
-    }
-    d->provider = provider;
-    Attica::ListJob<Attica::Category>* job = d->provider.requestCategories();
+    d->providers.insert(provider.name(), provider);
+    d->ui.providerComboBox->addItem(provider.name());
+    d->updatePage(); // manually
+
+    Attica::ListJob<Attica::Category>* job = d->providers[provider.name()].requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoriesLoaded(Attica::BaseJob*)));
     job->start();
 
-    d->ui.mServerNameLabel->setText(d->provider.name());
+    if (d->providers[provider.name()].hasCredentials()) {
+        QString user;
+        QString pass;
+        if (d->providers[provider.name()].loadCredentials(user, pass)) {
+            d->ui.username->setText(user);
+            d->ui.password->setText(pass);
+        }
+    }
 }
 
 void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
@@ -229,29 +309,28 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
                 d->ui.mCategoryCombo->addItem(category.name());
                 d->categoryNames.append(category.name());
             }
+            d->categories = categories;
         }
     }
-
-    button(Ok)->setEnabled(true);
-    d->ui.mProgressLabel->clear();
 }
 
 void UploadDialog::accept()
 {
-    if (d->finished) {
-        KDialog::accept();
-        return;
-    }
+    KDialog::accept();
+}
 
-    if (!d->provider.isValid()) {
-        KMessageBox::error(this, i18n("Provider could not be initialized."));
-        return;
-    }
+void UploadDialog::startUpload()
+{
+    // FIXME: this only works if categories are set in the .knsrc file
+    // TODO: ask for confirmation when closing the dialog
 
-    if (d->ui.mNameEdit->text().isEmpty()) {
-        KMessageBox::error(this, i18n("Please fill out the name field."));
-        return;
-    }
+    button(BackButton)->setEnabled(false);
+    d->ui.uploadButton->setEnabled(false);
+
+    // idle back and forth, we need a fix in attica to get at real progress values
+    d->ui.uploadProgressBar->setMinimum(0);
+    d->ui.uploadProgressBar->setMaximum(0);
+    d->ui.uploadProgressBar->setValue(0);
 
     // check the category
     QString categoryName = d->ui.mCategoryCombo->currentText();
@@ -269,8 +348,6 @@ void UploadDialog::accept()
         return;
     }
 
-    // go to the next page
-    d->ui.stackedWidget->setCurrentIndex(1);
     d->ui.mProgressLabel->setText(i18n("Creating Content on Server..."));
 
     // fill in the content object
@@ -280,9 +357,9 @@ void UploadDialog::accept()
     content.addAttribute("description", summary);
     content.addAttribute("version", d->ui.mVersionEdit->text());
     content.addAttribute("license", d->ui.mLicenseCombo->currentText());
+    content.addAttribute("changelog", d->ui.changelog->toPlainText());
 
     // TODO: add additional attributes
-    //content.addAttribute("changelog", ui.changelog->text());
     //content.addAttribute("downloadlink1", ui.link1->text());
     //content.addAttribute("downloadlink2", ui.link2->text());
     //content.addAttribute("homepage1", ui.homepage->text());
@@ -291,11 +368,10 @@ void UploadDialog::accept()
     if (d->ui.priceCheckBox->isChecked()) {
         content.addAttribute("downloadbuy1", "1");
         content.addAttribute("downloadbuyprice1", QString::number(d->ui.priceSpinBox->value()));
-        // TODO in the next version:
-        // content.addAttribute("downloadbuyreason1", "the description why is content is not for free");
+        content.addAttribute("downloadbuyreason1", d->ui.priceReasonLineEdit->text());
     }
 
-    Attica::ItemPostJob<Attica::Content>* job = d->provider.addNewContent(category, content);
+    Attica::ItemPostJob<Attica::Content>* job = d->currentProvider().addNewContent(category, content);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(contentAdded(Attica::BaseJob*)));
     job->start();
 }
@@ -325,7 +401,7 @@ void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
-    //QMessageBox::information(0, i18n("Content Added"), id);
+
     kDebug() << "content added " << id;
 
     d->contentId = id;
@@ -356,10 +432,10 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 
     Attica::PostJob* job;
     if (index.isEmpty()) {
-        job = d->provider.setDownloadFile(d->contentId, fileName, fileContents);
+        job = d->currentProvider().setDownloadFile(d->contentId, fileName, fileContents);
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(fileUploadFinished(Attica::BaseJob*)));
     } else {
-        job = d->provider.setPreviewImage(d->contentId, index, fileName, fileContents);
+        job = d->currentProvider().setPreviewImage(d->contentId, index, fileName, fileContents);
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(previewUploadFinished(Attica::BaseJob*)));
     }
 
@@ -369,10 +445,12 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 void UploadDialog::fileUploadFinished(Attica::BaseJob* )
 {
     d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + "\n\n" + i18n("Content successfully uploaded."));
-    d->ui.mProgress->setVisible(false);
     d->finished = true;
-    setButtons(KDialog::Ok);
-}
 
+    d->ui.uploadProgressBar->setMinimum(0);
+    d->ui.uploadProgressBar->setMaximum(100);
+    d->ui.uploadProgressBar->setValue(100);
+    d->updatePage();
+}
 
 #include "uploaddialog.moc"

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>374</width>
-    <height>437</height>
+    <width>299</width>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,161 +18,296 @@
     <widget class="KTitleWidget" name="mTitleWidget"/>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="uploadingLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Uploading file:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Server:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="mServerNameLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Loading Server Information...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="mFileNameLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
-     <widget class="QWidget" name="page">
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QGroupBox" name="uploadGroup">
-         <property name="title">
-          <string>Upload</string>
+     <widget class="QWidget" name="page_3">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="3" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>205</width>
+           <height>183</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <widget class="KLineEdit" name="password">
+         <property name="passwordMode">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Password:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Username:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="providerComboBox"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="KLineEdit" name="username"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Provider:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_5">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="uploadFileLabel">
+         <property name="text">
+          <string>File to upload:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KUrlRequester" name="uploadFileRequester"/>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="text">
+          <string>New Upload</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton_2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Update</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="listWidget">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>My last upload</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>zoopahcoolstuff</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="5" column="2" colspan="2">
+        <widget class="KTextEdit" name="mSummaryEdit"/>
+       </item>
+       <item row="4" column="2" colspan="2">
+        <widget class="KComboBox" name="mLicenseCombo">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>GPL</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>LGPL</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>BSD</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Description:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>mSummaryEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="priceLabel_2">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Changelog:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Version:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>mVersionEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>License:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>mLicenseCombo</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="4">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Please fill out the information about your upload in English.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2" colspan="2">
+        <widget class="KLineEdit" name="mVersionEdit"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Title:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>mNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="KTextEdit" name="changelog"/>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="mCategoryLabel">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Category:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>mNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="KLineEdit" name="mNameEdit">
+         <property name="toolTip">
+          <string>Name of the file as it will appear on the website</string>
+         </property>
+         <property name="whatsThis">
+          <string>This should clearly describe the file content. It can be the same text as the title of the kvtml file.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" colspan="2">
+        <widget class="KComboBox" name="mCategoryCombo"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_4">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Preview</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
           <item row="0" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="whatsThis">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Title:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>mNameEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="2">
-           <widget class="KLineEdit" name="mNameEdit">
-            <property name="toolTip">
-             <string>Name of the file as it will appear on the website</string>
-            </property>
-            <property name="whatsThis">
-             <string>This should clearly describe the file content. It can be the same text as the title of the kvtml file.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Version:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>mVersionEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="2">
-           <widget class="KLineEdit" name="mVersionEdit"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>License:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>mLicenseCombo</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1" colspan="2">
-           <widget class="KComboBox" name="mLicenseCombo">
-            <property name="editable">
-             <bool>true</bool>
-            </property>
-            <item>
-             <property name="text">
-              <string>GPL</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>LGPL</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>BSD</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="4" column="0">
            <widget class="QLabel" name="label_7">
             <property name="text">
              <string>Preview Image:</string>
@@ -185,26 +320,10 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="0" column="1">
            <widget class="KUrlRequester" name="mPreviewUrl"/>
           </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Description:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>mSummaryEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1" colspan="2">
-           <widget class="KTextEdit" name="mSummaryEdit"/>
-          </item>
-          <item row="4" column="2">
+          <item row="1" column="1">
            <widget class="QLabel" name="mImagePreview">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -226,23 +345,32 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1" colspan="2">
-           <widget class="QDoubleSpinBox" name="priceSpinBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-            <property name="value">
-             <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="priceCheckBox">
+         <property name="text">
+          <string>Set a price for this item</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="priceGroupBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="title">
+          <string>Price</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
            <widget class="QLabel" name="priceLabel">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>Price:</string>
@@ -252,68 +380,61 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="mCategoryLabel">
-            <property name="toolTip">
-             <string/>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="priceSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
             </property>
-            <property name="whatsThis">
-             <string/>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
             </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="priceCurrency">
             <property name="text">
-             <string>Category:</string>
+             <string>USD</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="priceReasonLabel">
+            <property name="text">
+             <string>Reason for price:</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
-            <property name="buddy">
-             <cstring>mNameEdit</cstring>
-            </property>
            </widget>
           </item>
           <item row="1" column="1" colspan="2">
-           <widget class="KComboBox" name="mCategoryCombo"/>
-          </item>
-          <item row="6" column="0" colspan="3">
-           <widget class="QCheckBox" name="priceCheckBox">
-            <property name="text">
-             <string>Set a price for this item</string>
-            </property>
-           </widget>
+           <widget class="KLineEdit" name="priceReasonLineEdit"/>
           </item>
          </layout>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_12">
+        <widget class="QLabel" name="label">
          <property name="text">
-          <string>Please fill out the information about your upload in English.</string>
+          <string>I ensure that this content does not violate any existing copyright, law or trademark. I agree that my IP address is logged. Distributing content where you don't have the permission from the copyright holder is illegal!</string>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="page_2">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QProgressBar" name="mProgress">
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="value">
-          <number>0</number>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="mProgressLabel">
+        <widget class="QCheckBox" name="copyrightCheckBox">
          <property name="text">
-          <string/>
+          <string>I agree</string>
          </property>
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
+        <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -324,6 +445,60 @@
           </size>
          </property>
         </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_2">
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="mProgressLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>91</width>
+           <height>199</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="uploadButton">
+         <property name="text">
+          <string>Start Upload</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QProgressBar" name="uploadProgressBar">
+         <property name="maximum">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>-1</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -358,6 +533,27 @@
    <header>ktextedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>providerComboBox</tabstop>
+  <tabstop>username</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>uploadFileRequester</tabstop>
+  <tabstop>radioButton</tabstop>
+  <tabstop>radioButton_2</tabstop>
+  <tabstop>listWidget</tabstop>
+  <tabstop>mNameEdit</tabstop>
+  <tabstop>mCategoryCombo</tabstop>
+  <tabstop>mVersionEdit</tabstop>
+  <tabstop>mLicenseCombo</tabstop>
+  <tabstop>mSummaryEdit</tabstop>
+  <tabstop>changelog</tabstop>
+  <tabstop>mPreviewUrl</tabstop>
+  <tabstop>priceCheckBox</tabstop>
+  <tabstop>priceSpinBox</tabstop>
+  <tabstop>priceReasonLineEdit</tabstop>
+  <tabstop>copyrightCheckBox</tabstop>
+  <tabstop>uploadButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
