@@ -85,6 +85,28 @@ class KDECORE_EXPORT KCmdLineOptions
      * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
      * @endcode
      *
+     * Here are some more examples showing various features:
+     *
+     * @code
+     *  KCmdLineOptions options;
+     *  options.add("a", ki18n("A short binary option"));
+     *  options.add("b \<file>", ki18n("A short option which takes an argument"));
+     *  options.add("c \<speed>", ki18n("As above but with a default value"), "9600");
+     *  options.add("option1", ki18n("A long binary option, off by default"));
+     *  options.add("nooption2", ki18n("A long binary option, on by default"));
+     *  options.add(":", ki18n("Extra options:"));
+     *  options.add("option3 \<file>", ki18n("A long option which takes an argument"));
+     *  options.add("option4 \<speed>", ki18n("A long option which takes an argument, defaulting to 9600"), "9600");
+     *  options.add("d").add("option5", ki18n("A long option which has a short option as alias"));
+     *  options.add("e").add("nooption6", ki18n("Another long option with an alias"));
+     *  options.add("f").add("option7 \<speed>", ki18n("'--option7 speed' is the same as '-f speed'"));
+     *  options.add("!option8 \<cmd>", ki18n("All options following this one will be treated as arguments"));
+     *  options.add("+file", ki18n("A required argument 'file'"));
+     *  options.add("+[arg1]", ki18n("An optional argument 'arg1'"));
+     *  options.add("!+command", ki18n("A required argument 'command', that can contain multiple words, even starting with '-'"));
+     *  options.add("", ki18n("Additional help text not associated with any particular option"));
+     * @endcode
+     *
      * @param name option name
      * @param description option description, made available for translation;
      *                    can be left off
