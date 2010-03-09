@@ -1083,7 +1083,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   if (hasQuery()) {
     result += QLatin1Char('?');
-    result += toPrettyPercentEncoding(QUrl::fromPercentEncoding(encodedQuery()), true);
+    result += encodedQuery();
   }
 
   if (hasFragment()) {

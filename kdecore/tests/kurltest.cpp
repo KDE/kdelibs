@@ -701,8 +701,10 @@ void KUrlTest::testPrettyURL()
   QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html") );
   QCOMPARE( url15581.url(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
 
-  KUrl notPretty4("http://localhost/?a=foo%0A%0Abar%20baz&b=foo%0Abar%21%3F");
-  QCOMPARE( notPretty4.prettyUrl(), QString("http://localhost/?a=foo%0A%0Abar baz&b=foo%0Abar!?") );
+  KUrl newLineInQuery("http://localhost/?a=foo%0A%0Abar%20baz&b=foo%0Abar%21%3F");
+  QCOMPARE( newLineInQuery.prettyUrl(), QString("http://localhost/?a=foo%0A%0Abar%20baz&b=foo%0Abar%21%3F") );
+  KUrl nonUtf8Query("http://kde.org/?a=test%C2%A0foo%A0%A0%A0%A0bar");
+  QCOMPARE( nonUtf8Query.prettyUrl(), QString("http://kde.org/?a=test%C2%A0foo%A0%A0%A0%A0bar") );
 
   // KDE3 test was for parsing "percentage%in%url.html", but this is not supported; too broken.
   KUrl url15581bis("http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
