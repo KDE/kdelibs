@@ -198,10 +198,11 @@ public:
    *           "" ( empty string ) is the default
    * @param noWait if set, the function does not wait till the service is running.
    * @return an error code indicating success (== 0) or failure (> 0).
+   * @deprecated Use startServiceByDesktopName or startServiceByDesktopPath
    */
-  static int startServiceByName( const QString& _name, const QString &URL,
-                                 QString *error=0, QString *serviceName=0, int *pid=0,
-                                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
+  KDE_DEPRECATED static int startServiceByName( const QString& _name, const QString &URL,
+                                                QString *error=0, QString *serviceName=0, int *pid=0,
+                                                const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -222,10 +223,11 @@ public:
    *           "" ( empty string ) is the default
    * @param noWait if set, the function does not wait till the service is running.
    * @return an error code indicating success (== 0) or failure (> 0).
+   * @deprecated Use startServiceByDesktopName or startServiceByDesktopPath
    */
-  static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QString *serviceName=0, int *pid=0,
-                const QByteArray &startup_id = QByteArray(), bool noWait = false );
+  KDE_DEPRECATED static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
+                                                QString *error=0, QString *serviceName=0, int *pid=0,
+                                                const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
