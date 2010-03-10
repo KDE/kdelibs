@@ -38,6 +38,13 @@ using namespace KNS3;
 
 void UploadDialog::Private::init()
 {
+    QWidget* _mainWidget = new QWidget(q);
+    q->setMainWidget(_mainWidget);
+    ui.setupUi(_mainWidget);
+    q->connect(&providerManager, SIGNAL(providerAdded(const Attica::Provider&)), q, SLOT(_k_providerAdded(const Attica::Provider&)));
+    providerManager.loadDefaultProviders();
+
+    q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
 }
 
@@ -66,7 +73,7 @@ void UploadDialog::Private::_k_showPage(int page)
 void UploadDialog::Private::_k_updatePage()
 {
     bool firstPage = ui.stackedWidget->currentIndex() == 0;
-    q->enableButton(BackButton, !firstPage);
+    q->enableButton(BackButton, !firstPage && !finished);
 
     bool nextEnabled = false;
     switch (ui.stackedWidget->currentIndex()) {
@@ -124,6 +131,9 @@ void UploadDialog::Private::_k_nextPage()
     // TODO: validate credentials after user name/password have been entered
     if (ui.stackedWidget->currentIndex() == UserPasswordPage) {
         q->button(NextButton)->setEnabled(false);
+        ui.providerComboBox->setEnabled(false);
+        ui.username->setEnabled(false);
+        ui.password->setEnabled(false);
         Attica::PostJob* checkLoginJob = currentProvider().checkLogin(ui.username->text(), ui.password->text());
         q->connect(checkLoginJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_checkCredentialsFinished(Attica::BaseJob*)));
         checkLoginJob->start();
@@ -134,6 +144,10 @@ void UploadDialog::Private::_k_nextPage()
 
 void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob)
 {
+    ui.providerComboBox->setEnabled(true);
+    ui.username->setEnabled(true);
+    ui.password->setEnabled(true);
+
     if (baseJob->metadata().error() == Attica::Metadata::NoError) {
         currentProvider().saveCredentials(ui.username->text(), ui.password->text());
         _k_showPage(FileNewUpdatePage);
@@ -166,14 +180,7 @@ UploadDialog::~UploadDialog()
 
 bool UploadDialog::init(const QString &configfile)
 {
-    // populate dialog with stuff
-    QWidget* _mainWidget = new QWidget(this);
-    setMainWidget(_mainWidget);
-    d->ui.setupUi(_mainWidget);
-    connect(d->ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), SLOT(previewChanged(const KUrl&)));
-
-    connect(&d->providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(_k_providerAdded(const Attica::Provider&)));
-    d->providerManager.loadDefaultProviders();
+    d->init();
 
     setCaption(i18n("Share Hot New Stuff"));
 
@@ -194,7 +201,7 @@ bool UploadDialog::init(const QString &configfile)
     connect(d->ui.mNameEdit, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
     connect(d->ui.copyrightCheckBox, SIGNAL(stateChanged(int)), this, SLOT(_k_updatePage()));
     connect(d->ui.uploadFileRequester, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
-    connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(priceToggled(bool)));
+    connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(_k_priceToggled(bool)));
 
     connect(d->ui.uploadButton, SIGNAL(clicked()), this, SLOT(_k_startUpload()));
 
@@ -269,9 +276,9 @@ void UploadDialog::selectCategory(const QString& category)
     d->ui.mCategoryCombo->setCurrentIndex(d->ui.mCategoryCombo->findText(category, Qt::MatchFixedString));
 }
 
-void UploadDialog::priceToggled(bool priceEnabled)
+void UploadDialog::Private::_k_priceToggled(bool priceEnabled)
 {
-    d->ui.priceGroupBox->setEnabled(priceEnabled);
+    ui.priceGroupBox->setEnabled(priceEnabled);
 }
 
 void UploadDialog::Private::_k_providerAdded(const Attica::Provider& provider)
@@ -339,10 +346,14 @@ void UploadDialog::accept()
 
 void UploadDialog::Private::_k_startUpload()
 {
+    kDebug() << "Starting upload";
+
     // FIXME: this only works if categories are set in the .knsrc file
     // TODO: ask for confirmation when closing the dialog
 
     q->button(BackButton)->setEnabled(false);
+    q->button(KDialog::Cancel)->setEnabled(false);
+
     ui.uploadButton->setEnabled(false);
 
     // idle back and forth, we need a fix in attica to get at real progress values
@@ -390,55 +401,55 @@ void UploadDialog::Private::_k_startUpload()
     }
 
     Attica::ItemPostJob<Attica::Content>* job = currentProvider().addNewContent(category, content);
-    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(contentAdded(Attica::BaseJob*)));
+    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_contentAdded(Attica::BaseJob*)));
     job->start();
 }
 
-void UploadDialog::previewChanged(const KUrl& url)
+void UploadDialog::Private::_k_previewChanged(const KUrl& url)
 {
-    d->previewFile = url;
+    previewFile = url;
     QPixmap img(url.toLocalFile());
-    d->ui.mImagePreview->setPixmap(img.scaled(d->ui.mImagePreview->size(), Qt::KeepAspectRatio));
+    ui.mImagePreview->setPixmap(img.scaled(ui.mImagePreview->size(), Qt::KeepAspectRatio));
 }
 
-void UploadDialog::contentAdded(Attica::BaseJob* baseJob)
+void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
 {
     if (baseJob->metadata().error()) {
         if (baseJob->metadata().error() == Attica::Metadata::NetworkError) {
-            KMessageBox::error(this, i18n("There was a network error."), i18n("Uploading Failed"));
+            KMessageBox::error(q, i18n("There was a network error."), i18n("Uploading Failed"));
             return;
         }
         if (baseJob->metadata().error() == Attica::Metadata::OcsError) {
             if (baseJob->metadata().statusCode() == 102)
-            KMessageBox::error(this, i18n("Authentication error."), i18n("Uploading Failed"));
+            KMessageBox::error(q, i18n("Authentication error."), i18n("Uploading Failed"));
         }
         return;
     }
 
-    d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + '\n' + i18n("Uploading preview and content..."));
+    ui.mProgressLabel->setText(ui.mProgressLabel->text() + '\n' + i18n("Uploading preview and content..."));
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
 
     kDebug() << "content added " << id;
 
-    d->contentId = id;
+    contentId = id;
 
-    d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + '\n' + i18n("Uploading content..."));
-    doUpload(QString(), d->uploadFile.toLocalFile());
+    ui.mProgressLabel->setText(ui.mProgressLabel->text() + '\n' + i18n("Uploading content..."));
+    doUpload(QString(), uploadFile.toLocalFile());
 
-    if (!d->previewFile.isEmpty()) {
-        d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + '\n' + i18n("Uploading preview image and content..."));
-        doUpload("1", d->previewFile.toLocalFile());
+    if (!previewFile.isEmpty()) {
+        ui.mProgressLabel->setText(ui.mProgressLabel->text() + '\n' + i18n("Uploading preview image and content..."));
+        doUpload("1", previewFile.toLocalFile());
     }
 }
 
-void UploadDialog::doUpload(const QString& index, const QString& path)
+void UploadDialog::Private::doUpload(const QString& index, const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url(), i18n("Upload Failed")));
-        reject();
+        KMessageBox::error(q, i18n("File not found: %1",uploadFile.url(), i18n("Upload Failed")));
+        q->reject();
         return;
     }
 
@@ -450,25 +461,40 @@ void UploadDialog::doUpload(const QString& index, const QString& path)
 
     Attica::PostJob* job;
     if (index.isEmpty()) {
-        job = d->currentProvider().setDownloadFile(d->contentId, fileName, fileContents);
-        connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(fileUploadFinished(Attica::BaseJob*)));
+        job = currentProvider().setDownloadFile(contentId, fileName, fileContents);
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_fileUploadFinished(Attica::BaseJob*)));
     } else {
-        job = d->currentProvider().setPreviewImage(d->contentId, index, fileName, fileContents);
-        connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(previewUploadFinished(Attica::BaseJob*)));
+        job = currentProvider().setPreviewImage(contentId, index, fileName, fileContents);
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_previewUploadFinished(Attica::BaseJob*)));
     }
 
     job->start();
 }
 
-void UploadDialog::fileUploadFinished(Attica::BaseJob* )
+void UploadDialog::Private::_k_fileUploadFinished(Attica::BaseJob* )
 {
-    d->ui.mProgressLabel->setText(d->ui.mProgressLabel->text() + "\n\n" + i18n("Content successfully uploaded."));
-    d->finished = true;
+    ui.mProgressLabel->setText(ui.mProgressLabel->text() + "\n\n" + i18n("Content file successfully uploaded."));
+    finishedContents = true;
 
-    d->ui.uploadProgressBar->setMinimum(0);
-    d->ui.uploadProgressBar->setMaximum(100);
-    d->ui.uploadProgressBar->setValue(100);
-    d->_k_updatePage();
+    uploadFileFinished();
+}
+
+void UploadDialog::Private::_k_previewUploadFinished(Attica::BaseJob* )
+{
+    ui.mProgressLabel->setText(ui.mProgressLabel->text() + "\n\n" + i18n("Preview image successfully uploaded."));
+    finishedPreview = true;
+
+    uploadFileFinished();
+}
+
+void UploadDialog::Private::uploadFileFinished()
+{
+    if (finishedContents && finishedPreview) {
+        ui.uploadProgressBar->setMinimum(0);
+        ui.uploadProgressBar->setMaximum(100);
+        ui.uploadProgressBar->setValue(100);
+        _k_updatePage();
+    }
 }
 
 #include "uploaddialog.moc"

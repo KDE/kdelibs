@@ -36,7 +36,7 @@ namespace KNS3 {
     {
     public:
         Private(UploadDialog* q)
-            :q(q), currentPage(UserPasswordPage), finished(false)
+            :q(q), currentPage(UserPasswordPage), finished(false), finishedPreview(false), finishedContents(false)
         {
         }
 
@@ -70,6 +70,8 @@ namespace KNS3 {
         QStringList categoryNames;
         QString contentId;
         bool finished;
+        bool finishedPreview;
+        bool finishedContents;
 
         void init();
 
@@ -93,6 +95,15 @@ namespace KNS3 {
         void _k_checkCredentialsFinished(Attica::BaseJob*);
         void _k_categoriesLoaded(Attica::BaseJob* job);
         void _k_providerAdded(const Attica::Provider& provider);
+
+        void _k_contentAdded(Attica::BaseJob*);
+        void _k_fileUploadFinished(Attica::BaseJob*);
+        void _k_previewUploadFinished(Attica::BaseJob*);
+
+        void uploadFileFinished();
+        void doUpload(const QString& index, const QString& filePath);
+        void _k_previewChanged(const KUrl&);
+        void _k_priceToggled(bool);
 
     };
 }
