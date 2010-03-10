@@ -299,7 +299,9 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
     if (d->categories.count() == 0) {
         if (d->categoryNames.size() > 0) {
             KMessageBox::error(this,
-                               i18n("The server does not know the category that you try to upload: %1", d->categoryNames.join(", ")),
+                               i18np("The server does not recognize the category %2 to which you are trying to upload.",
+                                     "The server does not recognize any of the categories to which you are trying to upload: %2",
+                                     d->categoryNames.size(), d->categoryNames.join(", ")),
                                i18n("Error"));
             // close the dialog
             reject();
