@@ -36,7 +36,12 @@
 
 using namespace KNS3;
 
-void UploadDialog::Private::showPage(int page)
+void UploadDialog::Private::init()
+{
+    q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
+}
+
+void UploadDialog::Private::_k_showPage(int page)
 {
     ui.stackedWidget->setCurrentIndex(page);
 
@@ -44,17 +49,24 @@ void UploadDialog::Private::showPage(int page)
     case UserPasswordPage:
         ui.username->setFocus();
         break;
+
+    case FileNewUpdatePage:
+        // FIXME: actually validate login
+        if (ui.providerComboBox->count() > 0 && !ui.username->text().isEmpty() && !ui.password->text().isEmpty()) {
+            currentProvider().saveCredentials(ui.username->text(), ui.password->text());
+        }
+        ui.uploadButton->setFocus();
+        break;
+
     case Details1Page:
         ui.mNameEdit->setFocus();
         break;
-    case FileNewUpdatePage:
-        ui.uploadButton->setFocus();
-        break;
     }
-    updatePage();
+
+    _k_updatePage();
 }
 
-void UploadDialog::Private::updatePage()
+void UploadDialog::Private::_k_updatePage()
 {
     bool firstPage = ui.stackedWidget->currentIndex() == 0;
     q->enableButton(BackButton, !firstPage);
@@ -62,13 +74,8 @@ void UploadDialog::Private::updatePage()
     bool nextEnabled = false;
     switch (ui.stackedWidget->currentIndex()) {
     case UserPasswordPage:
-        // FIXME: actually validate login
-        if (ui.providerComboBox->count() > 0 && !ui.username->text().isEmpty() && !ui.password->text().isEmpty()) {
-            if (currentProvider().saveCredentials(ui.username->text(), ui.password->text())) {
-                nextEnabled = true;
-            } else {
-                KMessageBox::error(q, i18n("Could not save login information."), i18n("Error"));
-            }
+        if (currentProvider().isValid() && currentProvider().hasCredentials()) {
+            nextEnabled = true;
         }
         break;
 
@@ -105,14 +112,19 @@ void UploadDialog::Private::updatePage()
     }
 }
 
-void UploadDialog::Private::backPage()
+void UploadDialog::Private::_k_providerChanged(const QString& providerName)
 {
-    showPage(ui.stackedWidget->currentIndex()-1);
+    // TODO: update username/password
 }
 
-void UploadDialog::Private::nextPage()
+void UploadDialog::Private::_k_backPage()
 {
-    showPage(ui.stackedWidget->currentIndex()+1);
+    _k_showPage(ui.stackedWidget->currentIndex()-1);
+}
+
+void UploadDialog::Private::_k_nextPage()
+{
+    _k_showPage(ui.stackedWidget->currentIndex()+1);
 }
 
 UploadDialog::UploadDialog(QWidget *parent)
@@ -156,19 +168,20 @@ bool UploadDialog::init(const QString &configfile)
     setButtonIcon( FinishButton, KIcon("dialog-ok-apply") );
     setDefaultButton(NextButton);
     showButtonSeparator(true);
-    d->updatePage();
+    d->_k_updatePage();
 
-    connect(d->ui.username, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
-    connect(d->ui.password, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
-    connect(d->ui.mNameEdit, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
-    connect(d->ui.copyrightCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateButtons()));
-    connect(d->ui.uploadFileRequester, SIGNAL(textChanged(QString)), this, SLOT(updateButtons()));
+    connect(d->ui.username, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
+
+    connect(d->ui.password, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
+    connect(d->ui.mNameEdit, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
+    connect(d->ui.copyrightCheckBox, SIGNAL(stateChanged(int)), this, SLOT(_k_updatePage()));
+    connect(d->ui.uploadFileRequester, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
     connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(priceToggled(bool)));
 
-    connect(d->ui.uploadButton, SIGNAL(clicked()), this, SLOT(startUpload()));
+    connect(d->ui.uploadButton, SIGNAL(clicked()), this, SLOT(_k_startUpload()));
 
-    connect(this, SIGNAL(user3Clicked()), this, SLOT(back()));
-    connect(this, SIGNAL(user2Clicked()), this, SLOT(next()));
+    connect(this, SIGNAL(user3Clicked()), this, SLOT(_k_backPage()));
+    connect(this, SIGNAL(user2Clicked()), this, SLOT(_k_nextPage()));
     connect(this, SIGNAL(user1Clicked()), this, SLOT(accept()));
 
     d->ui.mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
@@ -210,24 +223,9 @@ bool UploadDialog::init(const QString &configfile)
     kDebug() << "Categories: " << d->categoryNames;
 
 
-    d->showPage(0);
+    d->_k_showPage(0);
 
     return true;
-}
-
-void UploadDialog::next()
-{
-    d->nextPage();
-}
-
-void UploadDialog::back()
-{
-    d->backPage();
-}
-
-void UploadDialog::updateButtons()
-{
-    d->updatePage();
 }
 
 void UploadDialog::setUploadFile(const KUrl& payloadFile)
@@ -262,13 +260,13 @@ void UploadDialog::providerAdded(const Attica::Provider& provider)
 {
     d->providers.insert(provider.name(), provider);
     d->ui.providerComboBox->addItem(provider.name());
-    d->updatePage(); // manually
+    d->_k_updatePage(); // manually
 
     Attica::ListJob<Attica::Category>* job = d->providers[provider.name()].requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoriesLoaded(Attica::BaseJob*)));
     job->start();
 
-    if (d->providers[provider.name()].hasCredentials()) {
+    if (d->currentProvider().name() == provider.name() && d->providers[provider.name()].hasCredentials()) {
         QString user;
         QString pass;
         if (d->providers[provider.name()].loadCredentials(user, pass)) {
@@ -321,24 +319,24 @@ void UploadDialog::accept()
     KDialog::accept();
 }
 
-void UploadDialog::startUpload()
+void UploadDialog::Private::_k_startUpload()
 {
     // FIXME: this only works if categories are set in the .knsrc file
     // TODO: ask for confirmation when closing the dialog
 
-    button(BackButton)->setEnabled(false);
-    d->ui.uploadButton->setEnabled(false);
+    q->button(BackButton)->setEnabled(false);
+    ui.uploadButton->setEnabled(false);
 
     // idle back and forth, we need a fix in attica to get at real progress values
-    d->ui.uploadProgressBar->setMinimum(0);
-    d->ui.uploadProgressBar->setMaximum(0);
-    d->ui.uploadProgressBar->setValue(0);
+    ui.uploadProgressBar->setMinimum(0);
+    ui.uploadProgressBar->setMaximum(0);
+    ui.uploadProgressBar->setValue(0);
 
     // check the category
-    QString categoryName = d->ui.mCategoryCombo->currentText();
-    QList<Attica::Category>::const_iterator iter = d->categories.constBegin();
+    QString categoryName = ui.mCategoryCombo->currentText();
+    QList<Attica::Category>::const_iterator iter = categories.constBegin();
     Attica::Category category;
-    while (iter != d->categories.constEnd()) {
+    while (iter != categories.constEnd()) {
         if (iter->name() == categoryName) {
             category = *iter;
             break;
@@ -346,20 +344,20 @@ void UploadDialog::startUpload()
         ++iter;
     }
     if (!category.isValid()) {
-        KMessageBox::error(this, i18n("The selected category \"%1\" is invalid.", categoryName), i18n("Upload Failed"));
+        KMessageBox::error(q, i18n("The selected category \"%1\" is invalid.", categoryName), i18n("Upload Failed"));
         return;
     }
 
-    d->ui.mProgressLabel->setText(i18n("Creating Content on Server..."));
+    ui.mProgressLabel->setText(i18n("Creating Content on Server..."));
 
     // fill in the content object
     Attica::Content content;
-    content.setName(d->ui.mNameEdit->text());
-    QString summary = d->ui.mSummaryEdit->toPlainText();
+    content.setName(ui.mNameEdit->text());
+    QString summary = ui.mSummaryEdit->toPlainText();
     content.addAttribute("description", summary);
-    content.addAttribute("version", d->ui.mVersionEdit->text());
-    content.addAttribute("license", d->ui.mLicenseCombo->currentText());
-    content.addAttribute("changelog", d->ui.changelog->toPlainText());
+    content.addAttribute("version", ui.mVersionEdit->text());
+    content.addAttribute("license", ui.mLicenseCombo->currentText());
+    content.addAttribute("changelog", ui.changelog->toPlainText());
 
     // TODO: add additional attributes
     //content.addAttribute("downloadlink1", ui.link1->text());
@@ -367,14 +365,14 @@ void UploadDialog::startUpload()
     //content.addAttribute("homepage1", ui.homepage->text());
     //content.addAttribute("blog1", ui.blog->text());
 
-    if (d->ui.priceCheckBox->isChecked()) {
+    if (ui.priceCheckBox->isChecked()) {
         content.addAttribute("downloadbuy1", "1");
-        content.addAttribute("downloadbuyprice1", QString::number(d->ui.priceSpinBox->value()));
-        content.addAttribute("downloadbuyreason1", d->ui.priceReasonLineEdit->text());
+        content.addAttribute("downloadbuyprice1", QString::number(ui.priceSpinBox->value()));
+        content.addAttribute("downloadbuyreason1", ui.priceReasonLineEdit->text());
     }
 
-    Attica::ItemPostJob<Attica::Content>* job = d->currentProvider().addNewContent(category, content);
-    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(contentAdded(Attica::BaseJob*)));
+    Attica::ItemPostJob<Attica::Content>* job = currentProvider().addNewContent(category, content);
+    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(contentAdded(Attica::BaseJob*)));
     job->start();
 }
 
@@ -452,7 +450,7 @@ void UploadDialog::fileUploadFinished(Attica::BaseJob* )
     d->ui.uploadProgressBar->setMinimum(0);
     d->ui.uploadProgressBar->setMaximum(100);
     d->ui.uploadProgressBar->setValue(100);
-    d->updatePage();
+    d->_k_updatePage();
 }
 
 #include "uploaddialog.moc"

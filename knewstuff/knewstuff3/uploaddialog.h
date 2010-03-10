@@ -101,22 +101,28 @@ private Q_SLOTS:
     void doUpload(const QString& index, const QString& filePath);
 
     void providerAdded(const Attica::Provider& provider);
+
     void categoriesLoaded(Attica::BaseJob* job);
 
     void previewChanged(const KUrl&);
 
     void priceToggled(bool);
 
-    void next();
-    void back();
-    void updateButtons();
-    void startUpload();
 
 private:
     bool init(const QString &configfile);
 
     class Private;
     Private *const d;
+
+    Q_PRIVATE_SLOT( d, void _k_nextPage() )
+    Q_PRIVATE_SLOT( d, void _k_backPage() )
+    Q_PRIVATE_SLOT( d, void _k_updatePage() )
+
+    Q_PRIVATE_SLOT( d, void _k_providerChanged(QString) )
+    Q_PRIVATE_SLOT( d, void _k_startUpload() )
+
+    Q_DISABLE_COPY( UploadDialog )
 };
 
 }

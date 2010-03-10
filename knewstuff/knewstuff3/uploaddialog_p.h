@@ -71,15 +71,24 @@ namespace KNS3 {
         QString contentId;
         bool finished;
 
+        void init();
+
         // change to page, set the focus also calls updatePage()
-        void showPage(int page);
+        void _k_showPage(int page);
 
         // check after user input - for example enable the next button
-         void updatePage();
+        void _k_updatePage();
 
-        void nextPage();
-        void backPage();
-        void finish();
+        // next wizard page (next button clicked)
+        void _k_nextPage();
+        // go back one page
+        void _k_backPage();
+
+        // after all has been done and said, do the uploading
+        void _k_startUpload();
+
+        void _k_providerChanged(const QString& providerName);
+
     };
 }
 
