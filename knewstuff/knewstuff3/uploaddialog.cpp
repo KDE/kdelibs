@@ -281,7 +281,7 @@ void UploadDialog::Private::_k_providerAdded(const Attica::Provider& provider)
     _k_updatePage(); // manually
 
     Attica::ListJob<Attica::Category>* job = providers[provider.name()].requestCategories();
-    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(categoriesLoaded(Attica::BaseJob*)));
+    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_categoriesLoaded(Attica::BaseJob*)));
     job->start();
 
     if (currentProvider().name() == provider.name() && providers[provider.name()].hasCredentials()) {
