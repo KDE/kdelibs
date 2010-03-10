@@ -322,7 +322,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   //NOTE this test should be ran in UTF8 locale
   KUrl percentEncodedQuery( "http://mail.yandex.ru/message_part/%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar" );
-  QCOMPARE( percentEncodedQuery.prettyUrl(), QString::fromUtf8("http://mail.yandex.ru/message_part/Критерии оценивания орловой.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=Критерии оценивания орловой.rar"));
+  QCOMPARE( percentEncodedQuery.prettyUrl(), QString::fromUtf8("http://mail.yandex.ru/message_part/Критерии оценивания орловой.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar"));
 
 #ifdef Q_WS_WIN
 #ifdef Q_CC_MSVC
@@ -1105,7 +1105,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QVERIFY(dxOffEagle.isValid());
   //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
-  QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?[{\"foo: bar\"}]") );
+  QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
 
   // QtSw issue 243557
   QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
