@@ -120,6 +120,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_updatePage() )
 
     Q_PRIVATE_SLOT( d, void _k_providerChanged(QString) )
+    Q_PRIVATE_SLOT( d, void _k_checkCredentialsFinished(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_startUpload() )
 
     Q_DISABLE_COPY( UploadDialog )

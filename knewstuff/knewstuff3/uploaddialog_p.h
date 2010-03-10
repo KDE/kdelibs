@@ -89,6 +89,9 @@ namespace KNS3 {
 
         void _k_providerChanged(const QString& providerName);
 
+        // validation of login is done, go to next page if successfull, otherwise ask again
+        void _k_checkCredentialsFinished(Attica::BaseJob*);
+
     };
 }
 

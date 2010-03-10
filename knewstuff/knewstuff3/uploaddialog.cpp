@@ -51,10 +51,7 @@ void UploadDialog::Private::_k_showPage(int page)
         break;
 
     case FileNewUpdatePage:
-        // FIXME: actually validate login
-        if (ui.providerComboBox->count() > 0 && !ui.username->text().isEmpty() && !ui.password->text().isEmpty()) {
-            currentProvider().saveCredentials(ui.username->text(), ui.password->text());
-        }
+        currentProvider().saveCredentials(ui.username->text(), ui.password->text());
         ui.uploadButton->setFocus();
         break;
 
@@ -74,7 +71,7 @@ void UploadDialog::Private::_k_updatePage()
     bool nextEnabled = false;
     switch (ui.stackedWidget->currentIndex()) {
     case UserPasswordPage:
-        if (currentProvider().isValid() && currentProvider().hasCredentials()) {
+        if (ui.providerComboBox->count() > 0 && !ui.username->text().isEmpty() && !ui.password->text().isEmpty()) {
             nextEnabled = true;
         }
         break;
@@ -124,7 +121,28 @@ void UploadDialog::Private::_k_backPage()
 
 void UploadDialog::Private::_k_nextPage()
 {
-    _k_showPage(ui.stackedWidget->currentIndex()+1);
+    // TODO: validate credentials after user name/password have been entered
+    if (ui.stackedWidget->currentIndex() == UserPasswordPage) {
+        q->button(NextButton)->setEnabled(false);
+        Attica::PostJob* checkLoginJob = currentProvider().checkLogin(ui.username->text(), ui.password->text());
+        q->connect(checkLoginJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_checkCredentialsFinished(Attica::BaseJob*)));
+        checkLoginJob->start();
+    } else {
+        _k_showPage(ui.stackedWidget->currentIndex()+1);
+    }
+}
+
+void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob)
+{
+    if (baseJob->metadata().error() == Attica::Metadata::NoError) {
+        currentProvider().saveCredentials(ui.username->text(), ui.password->text());
+        _k_showPage(FileNewUpdatePage);
+
+
+    } else {
+        // TODO check what the actual error is
+        KMessageBox::error(q, i18n("Could not verify login, please try again."), i18n("Error"));
+    }
 }
 
 UploadDialog::UploadDialog(QWidget *parent)
