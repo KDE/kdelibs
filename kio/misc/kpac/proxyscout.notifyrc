@@ -2,6 +2,7 @@
 IconName=preferences-system-network-proxy
 Comment=Network Proxy Configuration
 Comment[de]=Netzwerk-Proxy-Einrichtung
+Comment[en_GB]=Network Proxy Configuration
 Comment[es]=Configuración del proxy de la red
 Comment[hr]=Podešavanje mrežnog proxyja
 Comment[is]=Stillingar milliþjóna (proxy)

@@ -2,6 +2,7 @@
 Type=Service
 Name=Cookie Jar
 Name[de]=Cookie-Behälter
+Name[en_GB]=Cookie Jar
 Name[es]=Almacén de cookies
 Name[hr]=Cookie Jar
 Name[is]=Smákökukrukka
@@ -13,6 +14,7 @@ Name[uk]=Глечик з куками
 Name[x-test]=xxCookie Jarxx
 Comment=Stores network cookies
 Comment[de]=Netzwerk-Cookies speichern
+Comment[en_GB]=Stores network cookies
 Comment[es]=Almacena cookies de la red
 Comment[hr]=Sprema mrežne kolačiće
 Comment[is]=Geymir smákökur af netum
