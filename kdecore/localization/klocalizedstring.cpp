@@ -232,25 +232,22 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
                               .arg(shortenMessage(QString::fromUtf8(msg)));
 
     // Get raw translation.
-    QString lang, rawtrans, lscr, ctry;
-    if (locale != NULL)
-    {
-        if (!ctxt.isEmpty() && !plural.isEmpty())
-            locale->translateRaw(ctxt, msg, plural, number, &lang, &rawtrans);
-        else if (!plural.isEmpty())
-            locale->translateRaw(msg, plural, number, &lang, &rawtrans);
-        else if (!ctxt.isEmpty())
-            locale->translateRaw(ctxt, msg, &lang, &rawtrans);
-        else
-            locale->translateRaw(msg, &lang, &rawtrans);
-
+    QString rawlang, rawtrans, lang, lscr, ctry;
+    if (locale != NULL) {
+        if (!ctxt.isEmpty() && !plural.isEmpty()) {
+            locale->translateRaw(ctxt, msg, plural, number, &rawlang, &rawtrans);
+        } else if (!plural.isEmpty()) {
+            locale->translateRaw(msg, plural, number, &rawlang, &rawtrans);
+        } else if (!ctxt.isEmpty()) {
+            locale->translateRaw(ctxt, msg, &rawlang, &rawtrans);
+        } else {
+            locale->translateRaw(msg, &rawlang, &rawtrans);
+        }
         ctry = locale->country();
-
-        // Find any higher priority writing script for the current language.
-        lscr = KTranslit::higherPriorityScript(lang, locale);
-    }
-    else
-    {
+        // Split language into base language and script,
+        // if such split is defined for this language.
+        KTranslit::splitToBaseAndScript(rawlang, locale, lang, lscr);
+    } else {
         lang = KLocale::defaultLanguage();
         ctry = 'C';
         rawtrans = selectForEnglish();
