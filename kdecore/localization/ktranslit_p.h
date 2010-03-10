@@ -70,13 +70,13 @@ class KTranslit
     static QStringList fallbackList (const QString &lang);
 
     /**
-     * Returns possible higher priority script for given language.
+     * Split given language to more basic variant plus target script.
      *
-     * @param lang language to check scripts for
-     * @return higher priority script if found, empty string otherwise
+     * @param lang language to split
      */
-    static QString higherPriorityScript (const QString &lang,
-                                         const KLocale *locale);
+    static void splitToBaseAndScript (const QString &lang,
+                                      const KLocale *locale,
+                                      QString &blang, QString &lscr);
 
     /**
      * Transliterates string to given script.

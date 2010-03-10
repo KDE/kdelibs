@@ -75,37 +75,25 @@ void splitLangScript (const QString &lang, QString &ln, QString &scr)
     }
 }
 
-QString KTranslit::higherPriorityScript (const QString &lang,
-                                         const KLocale *locale)
+void KTranslit::splitToBaseAndScript (const QString &lang,
+                                      const KLocale *locale,
+                                      QString &blang, QString &lscr)
 {
-    if (locale == NULL) {
-        return QString();
-    }
+    blang = lang;
+    lscr = "";
 
-    // Split into pure language and script part.
-    QString ln, scr;
-    splitLangScript(lang, ln, scr);
-
-    // Search through higher priority languages.
-    QString finalScrHi;
-    if (lang != KLocale::defaultLanguage()) {
-        foreach (const QString &langHi, locale->languageList()) {
-            // Don't search lower priority languages.
-            if (langHi == lang)
-                break;
-
-            // Split current spec into pure language and script parts.
-            QString lnHi, scrHi;
-            splitLangScript(langHi, lnHi, scrHi);
-
-            // Return current script if languages match.
-            if (lnHi == ln) {
-                finalScrHi = scrHi;
-                break;
+    if (lang == QString::fromAscii("sr") || lang.startsWith(QString::fromAscii("sr@"))) {
+        QString langHi = lang;
+        if (locale) {
+            foreach (const QString &l, locale->languageList()) {
+                if (l.startsWith(QString::fromAscii("sr@"))) {
+                    langHi = l;
+                    break;
+                }
             }
         }
+        splitLangScript(langHi, blang, lscr);
     }
-    return finalScrHi;
 }
 
 QString KTranslit::transliterate (const QString &str,
