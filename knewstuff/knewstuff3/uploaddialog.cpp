@@ -172,7 +172,7 @@ bool UploadDialog::init(const QString &configfile)
     d->ui.setupUi(_mainWidget);
     connect(d->ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), SLOT(previewChanged(const KUrl&)));
 
-    connect(&d->providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerAdded(const Attica::Provider&)));
+    connect(&d->providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(_k_providerAdded(const Attica::Provider&)));
     d->providerManager.loadDefaultProviders();
 
     setCaption(i18n("Share Hot New Stuff"));
@@ -274,36 +274,36 @@ void UploadDialog::priceToggled(bool priceEnabled)
     d->ui.priceGroupBox->setEnabled(priceEnabled);
 }
 
-void UploadDialog::providerAdded(const Attica::Provider& provider)
+void UploadDialog::Private::_k_providerAdded(const Attica::Provider& provider)
 {
-    d->providers.insert(provider.name(), provider);
-    d->ui.providerComboBox->addItem(provider.name());
-    d->_k_updatePage(); // manually
+    providers.insert(provider.name(), provider);
+    ui.providerComboBox->addItem(provider.name());
+    _k_updatePage(); // manually
 
-    Attica::ListJob<Attica::Category>* job = d->providers[provider.name()].requestCategories();
-    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoriesLoaded(Attica::BaseJob*)));
+    Attica::ListJob<Attica::Category>* job = providers[provider.name()].requestCategories();
+    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(categoriesLoaded(Attica::BaseJob*)));
     job->start();
 
-    if (d->currentProvider().name() == provider.name() && d->providers[provider.name()].hasCredentials()) {
+    if (currentProvider().name() == provider.name() && providers[provider.name()].hasCredentials()) {
         QString user;
         QString pass;
-        if (d->providers[provider.name()].loadCredentials(user, pass)) {
-            d->ui.username->setText(user);
-            d->ui.password->setText(pass);
+        if (providers[provider.name()].loadCredentials(user, pass)) {
+            ui.username->setText(user);
+            ui.password->setText(pass);
         }
     }
 }
 
-void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
+void UploadDialog::Private::_k_categoriesLoaded(Attica::BaseJob* job)
 {
-    kDebug() << "Loading Categories..." << d->categoryNames;
+    kDebug() << "Loading Categories..." << categoryNames;
 
     Attica::ListJob<Attica::Category>* listJob = static_cast<Attica::ListJob<Attica::Category>*>(job);
-    Attica::Category::List categories = listJob->itemList();
+    Attica::Category::List newCategories = listJob->itemList();
 
-    Q_FOREACH(const Attica::Category &category, categories) {
-        if (d->categoryNames.contains(category.name())) {
-            d->categories.append(category);
+    Q_FOREACH(const Attica::Category &category, newCategories) {
+        if (categoryNames.contains(category.name())) {
+            categories.append(category);
             kDebug() << "found category: " << category.name();
         }
         else {
@@ -312,22 +312,22 @@ void UploadDialog::categoriesLoaded(Attica::BaseJob* job)
     }
 
     // at least one category is needed
-    if (d->categories.count() == 0) {
-        if (d->categoryNames.size() > 0) {
-            KMessageBox::error(this,
+    if (newCategories.count() == 0) {
+        if (categoryNames.size() > 0) {
+            KMessageBox::error(q,
                                i18np("The server does not recognize the category %2 to which you are trying to upload.",
                                      "The server does not recognize any of the categories to which you are trying to upload: %2",
-                                     d->categoryNames.size(), d->categoryNames.join(", ")),
+                                     categoryNames.size(), categoryNames.join(", ")),
                                i18n("Error"));
             // close the dialog
-            reject();
+            q->reject();
         } else {
             kWarning() << "No category was set in knsrc file. Adding all categories.";
-            Q_FOREACH(const Attica::Category &category, categories) {
-                d->ui.mCategoryCombo->addItem(category.name());
-                d->categoryNames.append(category.name());
+            Q_FOREACH(const Attica::Category &category, newCategories) {
+                ui.mCategoryCombo->addItem(category.name());
+                categoryNames.append(category.name());
             }
-            d->categories = categories;
+            categories = newCategories;
         }
     }
 }

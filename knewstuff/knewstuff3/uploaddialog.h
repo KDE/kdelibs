@@ -100,10 +100,6 @@ private Q_SLOTS:
 
     void doUpload(const QString& index, const QString& filePath);
 
-    void providerAdded(const Attica::Provider& provider);
-
-    void categoriesLoaded(Attica::BaseJob* job);
-
     void previewChanged(const KUrl&);
 
     void priceToggled(bool);
@@ -122,6 +118,10 @@ private:
     Q_PRIVATE_SLOT( d, void _k_providerChanged(QString) )
     Q_PRIVATE_SLOT( d, void _k_checkCredentialsFinished(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_startUpload() )
+
+    Q_PRIVATE_SLOT( d, void _k_providerAdded(Attica::Provider) )
+    Q_PRIVATE_SLOT( d, void _k_categoriesLoaded(Attica::BaseJob*) )
+
 
     Q_DISABLE_COPY( UploadDialog )
 };

@@ -91,6 +91,8 @@ namespace KNS3 {
 
         // validation of login is done, go to next page if successfull, otherwise ask again
         void _k_checkCredentialsFinished(Attica::BaseJob*);
+        void _k_categoriesLoaded(Attica::BaseJob* job);
+        void _k_providerAdded(const Attica::Provider& provider);
 
     };
 }
