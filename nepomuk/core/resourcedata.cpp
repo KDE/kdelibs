@@ -641,7 +641,7 @@ bool Nepomuk::ResourceData::determineUri()
                 // Check if the kickoffUriOrId is a resource identifier or a resource URI
                 //
                 else {
-                    QString query = QString::fromLatin1("select distinct ?r ?o where { { ?r %1 %2 . } UNION { %3 ?p ?o . } . }")
+                    QString query = QString::fromLatin1("select distinct ?r ?o where { { ?r %1 %2 . } UNION { %3 ?p ?o . } . } LIMIT 1")
                                     .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::identifier()) )
                                     .arg( Soprano::Node::literalToN3(m_kickoffId) )
                                     .arg( Soprano::Node::resourceToN3(KUrl(m_kickoffId)) );
