@@ -6,6 +6,7 @@ include_directories(${KDE4_INCLUDES} ${KDE4_KIO_INCLUDES}  ${CMAKE_CURRENT_SOURC
 
 set(knewstuff3_SRCS
     downloaddialog.cpp
+    downloadwidget.cpp
     downloaddialog_p.cpp
     entry.cpp
     knewstuffbutton.cpp
@@ -56,6 +57,7 @@ install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAUL
 
 install(FILES
   downloaddialog.h
+  downloadwidget.h
   uploaddialog.h
   entry.h
   knewstuff_export.h

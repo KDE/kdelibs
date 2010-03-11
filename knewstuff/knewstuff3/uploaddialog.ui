@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
-    <height>325</height>
+    <width>467</width>
+    <height>358</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -369,9 +369,6 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="priceLabel">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
             <property name="text">
              <string>Price:</string>
             </property>
@@ -382,9 +379,6 @@
           </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="priceSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
             <property name="singleStep">
              <double>0.010000000000000</double>
             </property>

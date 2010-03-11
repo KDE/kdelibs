@@ -92,7 +92,7 @@ public:
     bool hasWebService() const;
 
 Q_SIGNALS:
-    void jobStarted(KJob*, const QString& label);
+    void jobStarted(KJob*, const QString& label) const;
 
 public slots:
     void slotEntryChanged(const EntryInternal& entry);
