@@ -89,13 +89,6 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
         if (m_previewImages.contains(entry.previewSmall())) {
             return m_previewImages[entry.previewSmall()];
         }
-            
-        if (!entry.previewSmall().isEmpty()) {
-            ImageLoader *pix = new ImageLoader(entry.previewSmall(), const_cast<ItemsModel*>(this));
-            emit jobStarted(pix->job(), i18n("Loading preview..."));
-            connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
-                    this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
-        }
         break;
     case kLargePreviewPixmap:
         if (m_largePreviewImages.contains(entry.previewBig())) {
@@ -132,19 +125,26 @@ void ItemsModel::slotEntriesLoaded(EntryInternal::List entries)
 
 void ItemsModel::addEntry(const EntryInternal& entry)
 {
-    //kDebug(551) << "adding entry " << entry.name() << " to the model";
-    beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
-    m_entries.append(entry);
-    endInsertRows();
-    
     QString preview = entry.previewSmall();
     if (!preview.isEmpty()) {
         m_hasPreviewImages = true;
         if (rowCount() > 0) {
             emit dataChanged(index(0,0), index(rowCount()-1,0));
         }
-        m_imageIndexes.insert(entry.previewSmall(), index(rowCount()-1, 0));
-    }  
+    }
+
+    //kDebug(551) << "adding entry " << entry.name() << " to the model";
+    beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
+    m_entries.append(entry);
+    endInsertRows();
+
+    if (!preview.isEmpty()) {
+        m_imageIndexes.insert(preview, index(m_entries.count() - 1, 0));
+        ImageLoader *pix = new ImageLoader(preview, this);
+        emit jobStarted(pix->job(), i18n("Loading preview..."));
+        connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
+                this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
+    }
 }
 
 void ItemsModel::removeEntry(const EntryInternal& entry)
@@ -191,7 +191,7 @@ void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
     }
 
     QModelIndex thisIndex = m_imageIndexes[url];
-    kDebug() << "Data Changed: " << thisIndex.row();
+
     emit dataChanged(thisIndex, thisIndex);
 }
 
