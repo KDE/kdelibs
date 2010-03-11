@@ -2941,6 +2941,8 @@ void KateDocument::paste ( KateView* view, QClipboard::Mode mode )
   KTextEditor::Cursor pos = view->cursorPosition();
   if (!view->config()->persistentSelection() && view->selection()) {
     pos = view->selectionRange().start();
+    if (view->blockSelection())
+      pos = rangeOnLine(view->selectionRange(), pos.line()).start();
     view->removeSelectedText();
   }
 
