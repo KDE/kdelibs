@@ -17,7 +17,7 @@
 */
 
 #include "nepomukservice.h"
-#include "nepomukmainmodel.h"
+#include "resourcemanager.h"
 
 #include <QtCore/QTimer>
 
@@ -25,7 +25,6 @@
 class Nepomuk::Service::Private
 {
 public:
-    MainModel* model;
 };
 
 
@@ -33,7 +32,6 @@ Nepomuk::Service::Service( QObject* parent, bool delayedInitialization )
     : QObject( parent ),
       d( new Private() )
 {
-    d->model = 0;
     if ( !delayedInitialization ) {
         setServiceInitialized( true );
     }
@@ -42,17 +40,13 @@ Nepomuk::Service::Service( QObject* parent, bool delayedInitialization )
 
 Nepomuk::Service::~Service()
 {
-    delete d->model;
     delete d;
 }
 
 
 Soprano::Model* Nepomuk::Service::mainModel()
 {
-    if ( !d->model ) {
-        d->model = new MainModel( this );
-    }
-    return d->model;
+    return ResourceManager::instance()->mainModel();
 }
 
 
