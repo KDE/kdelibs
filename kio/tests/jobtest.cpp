@@ -322,6 +322,19 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
         QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
     }
 #endif
+
+    // Do it again, with Overwrite.
+    // Use copyAs, we don't want a subdir inside d.
+    job = KIO::copyAs(u, d, KIO::HideProgressInfo | KIO::Overwrite);
+    job->setUiDelegate(0);
+    ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY( ok );
+
+    // Do it again, without Overwrite (should fail).
+    job = KIO::copyAs(u, d, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY( !ok );
 }
 
 void JobTest::copyFileToSamePartition()
@@ -345,11 +358,12 @@ void JobTest::copyDirectoryToSamePartition()
 void JobTest::copyDirectoryToExistingDirectory()
 {
     kDebug() ;
-    // just the same as copyDirectoryToSamePartition, but it means that
-    // this time dest exists.
+    // just the same as copyDirectoryToSamePartition, but this time dest exists.
+    // So we get a subdir, "dirFromHome_copy/dirFromHome"
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     createTestDirectory( src );
+    createTestDirectory( dest );
     copyLocalDirectory( src, dest, AlreadyExists );
 }
 
@@ -367,10 +381,7 @@ void JobTest::copyDirectoryToOtherPartition()
     kDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_copied";
-    // src is already created by copyDirectoryToSamePartition()
-    // so this is just in case someone calls this method only
-    if ( !QFile::exists( src ) )
-        createTestDirectory( src );
+    createTestDirectory( src );
     copyLocalDirectory( src, dest );
 }
 

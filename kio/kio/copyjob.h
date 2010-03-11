@@ -266,7 +266,11 @@ namespace KIO {
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here
+     * @param flags: copy() supports HideProgressInfo and Overwrite.
+     * Note: Overwrite has the meaning of both "write into existing directories" and
+     * "overwrite existing files". However if "dest" exists, then src is copied
+     * into a subdir of dest, just like "cp" does. Use copyAs if you don't want that.
+     *
      * @return the job handling the operation
      * @see copyAs()
      */
@@ -278,12 +282,16 @@ namespace KIO {
      *
      * As opposed to copy(), this doesn't emulate cp, but is the only
      * way to copy a directory, giving it a new name and getting an error
-     * box if a directory already exists with the same name.
+     * box if a directory already exists with the same name (or writing the
+     * contents of @p src into @p dest, when using Overwrite).
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here
-     * @return the job handling the operation
+     * @param flags: copyAs() supports HideProgressInfo and Overwrite.
+     * Note: Overwrite has the meaning of both "write into existing directories" and
+     * "overwrite existing files".
+     *
+     * * @return the job handling the operation
      */
     KIO_EXPORT CopyJob *copyAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
 
@@ -292,7 +300,10 @@ namespace KIO {
      *
      * @param src the list of files and/or directories
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here
+     * @param flags: copy() supports HideProgressInfo and Overwrite.
+     * Note: Overwrite has the meaning of both "write into existing directories" and
+     * "overwrite existing files". However if "dest" exists, then src is copied
+     * into a subdir of dest, just like "cp" does.
      * @return the job handling the operation
      */
     KIO_EXPORT CopyJob *copy( const KUrl::List& src, const KUrl& dest, JobFlags flags = DefaultFlags );
@@ -302,7 +313,10 @@ namespace KIO {
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here
+     * @param flags: move() supports HideProgressInfo and Overwrite.
+     * Note: Overwrite has the meaning of both "write into existing directories" and
+     * "overwrite existing files". However if "dest" exists, then src is copied
+     * into a subdir of dest, just like "cp" does.
      * @return the job handling the operation
      * @see copy()
      * @see moveAs()
@@ -310,11 +324,14 @@ namespace KIO {
     KIO_EXPORT CopyJob *move( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
     /**
      * Moves a file or directory @p src to the given destination @p dest. Unlike move()
-     * this operation will fail when the directory already exists.
+     * this operation will not move @p src into @p dest when @p dest exists: it will
+     * either fail, or move the contents of @p src into it if Overwrite is set.
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here
+     * @param flags: moveAs() supports HideProgressInfo and Overwrite.
+     * Note: Overwrite has the meaning of both "write into existing directories" and
+     * "overwrite existing files".
      * @return the job handling the operation
      * @see copyAs()
      */
@@ -324,7 +341,10 @@ namespace KIO {
      *
      * @param src the list of files or directories to copy
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here
+     * @param flags: move() supports HideProgressInfo and Overwrite.
+     * Note: Overwrite has the meaning of both "write into existing directories" and
+     * "overwrite existing files". However if "dest" exists, then src is copied
+     * into a subdir of dest, just like "cp" does.
      * @return the job handling the operation
      * @see copy()
      */
@@ -337,7 +357,7 @@ namespace KIO {
      *
      * @param src The existing file or directory, 'target' of the link.
      * @param destDir Destination directory where the link will be created.
-     * @param flags: We support HideProgressInfo here
+     * @param flags: link() supports HideProgressInfo only
      * @return the job handling the operation
      */
     KIO_EXPORT CopyJob *link( const KUrl& src, const KUrl& destDir, JobFlags flags = DefaultFlags );
@@ -349,7 +369,7 @@ namespace KIO {
      *
      * @param src The existing files or directories, 'targets' of the link.
      * @param destDir Destination directory where the links will be created.
-     * @param flags: We support HideProgressInfo here
+     * @param flags: link() supports HideProgressInfo only
      * @return the job handling the operation
      * @see link()
      */
@@ -363,7 +383,7 @@ namespace KIO {
      *
      * @param src The existing file or directory, 'target' of the link.
      * @param dest Destination directory where the link will be created.
-     * @param flags: We support HideProgressInfo here
+     * @param flags: linkAs() supports HideProgressInfo only
      * @return the job handling the operation
      * @see link ()
      * @see copyAs()
@@ -376,7 +396,7 @@ namespace KIO {
      * Use "KUrl src; src.setPath( path );" to create a URL from a path.
      *
      * @param src file to delete
-     * @param flags: We support HideProgressInfo here
+     * @param flags: trash() supports HideProgressInfo only
      * @return the job handling the operation
      */
     KIO_EXPORT CopyJob *trash( const KUrl& src, JobFlags flags = DefaultFlags );
@@ -386,7 +406,7 @@ namespace KIO {
      * This is currently only supported for local files and directories.
      *
      * @param src the files to delete
-     * @param flags: We support HideProgressInfo here
+     * @param flags: trash() supports HideProgressInfo only
      * @return the job handling the operation
      */
     KIO_EXPORT CopyJob *trash( const KUrl::List& src, JobFlags flags = DefaultFlags );

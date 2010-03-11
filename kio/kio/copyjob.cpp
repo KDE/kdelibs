@@ -235,6 +235,10 @@ public:
         job->setUiDelegate(new JobUiDelegate);
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
+        if (flags & KIO::Overwrite) {
+            job->d_func()->m_bOverwriteAllDirs = true;
+            job->d_func()->m_bOverwriteAllFiles = true;
+        }
         return job;
     }
 };
