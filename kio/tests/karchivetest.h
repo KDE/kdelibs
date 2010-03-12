@@ -30,6 +30,7 @@ private Q_SLOTS:
 
     void testCreateTar();
     void testCreateTarGz();
+    void testCreateTarBz2();
     void testReadTar();
     void testUncompress();
     void testTarFileData();

@@ -268,6 +268,7 @@ static void testCopyTo( KArchive* archive )
 
 static const char s_tarFileName[] = "karchivetest.tar";
 static const char s_tarGzFileName[]  = "karchivetest.tar.gz";
+static const char s_tarBz2FileName[]  = "karchivetest.tar.bz2";
 static const char s_tarGzMaxLengthFileName[] = "karchivetest-maxlength.tar.gz";
 static const char s_zipFileName[] = "karchivetest.zip";
 static const char s_zipMaxLengthFileName[] = "karchivetest-maxlength.zip";
@@ -335,6 +336,24 @@ void KArchiveTest::testCreateTarGz()
     QVERIFY( fileInfo.size() > 350 );
 
     }
+}
+
+void KArchiveTest::testCreateTarBz2()
+{
+    KTar tar( s_tarBz2FileName );
+
+    bool ok = tar.open( QIODevice::WriteOnly );
+    QVERIFY( ok );
+
+    writeTestFilesToArchive( &tar );
+
+    ok = tar.close();
+    QVERIFY( ok );
+
+    QFileInfo fileInfo( QFile::encodeName( s_tarBz2FileName ) );
+    QVERIFY( fileInfo.exists() );
+    // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
+    QVERIFY( fileInfo.size() > 350 );
 }
 
 void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
