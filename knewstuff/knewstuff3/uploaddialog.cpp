@@ -61,6 +61,7 @@ void UploadDialog::Private::_k_showPage(int page)
     case FileNewUpdatePage:
         currentProvider().saveCredentials(ui.username->text(), ui.password->text());
         ui.uploadButton->setFocus();
+        fetchLicenses();
         break;
 
     case Details1Page:
@@ -171,6 +172,24 @@ void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob
     } else {
         // TODO check what the actual error is
         KMessageBox::error(q, i18n("Could not verify login, please try again."), i18n("Error"));
+    }
+}
+
+void UploadDialog::Private::fetchLicenses()
+{
+    // TODO       
+    Attica::ListJob<Attica::License> *licenseJob = currentProvider().requestLicenses();
+    q->connect(licenseJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_licensesFetched(Attica::BaseJob*)));
+    licenseJob->start();
+}
+
+void UploadDialog::Private::_k_licensesFetched(Attica::BaseJob* baseJob)
+{
+    Attica::ListJob<Attica::License>* licenseList = static_cast<Attica::ListJob<Attica::License>*>(baseJob);
+    kDebug() << "Licenses size: " << licenseList->itemList().size();
+    
+    foreach(Attica::License license, licenseList->itemList()) {
+        kDebug() << license.id() << license.name() << license.url();
     }
 }
 
@@ -472,13 +491,10 @@ void UploadDialog::Private::_k_startUpload()
     //content.addAttribute("homepage1", ui.homepage->text());
     //content.addAttribute("blog1", ui.blog->text());
 
-    if (ui.priceCheckBox->isChecked()) {
-        content.addAttribute("downloadbuy1", "1");
-        content.addAttribute("downloadbuyprice1", QString::number(ui.priceSpinBox->value()));
-        content.addAttribute("downloadbuyreason1", ui.priceReasonLineEdit->text());
-    }
-
-
+    content.addAttribute("downloadbuy1", ui.priceCheckBox->isChecked() ? "1" : "0");
+    content.addAttribute("downloadbuyprice1", QString::number(ui.priceSpinBox->value()));
+    content.addAttribute("downloadbuyreason1", ui.priceReasonLineEdit->text());
+    
     if (ui.radioNewUpload->isChecked()) {
         // upload a new content
         Attica::ItemPostJob<Attica::Content>* job = currentProvider().addNewContent(category, content);

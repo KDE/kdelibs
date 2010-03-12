@@ -23,6 +23,7 @@
 #include <attica/category.h>
 #include <attica/content.h>
 #include <attica/listjob.h>
+#include <attica/license.h>
 #include <attica/postjob.h>
 
 #include "ui_uploaddialog.h"
@@ -109,6 +110,9 @@ namespace KNS3 {
         void _k_userContentListLoaded(Attica::BaseJob* baseJob);
 
         void _k_updatedContentFetched(Attica::BaseJob* baseJob);
+        
+        void fetchLicenses();
+        void _k_licensesFetched(Attica::BaseJob* baseJob);
     };
 }
 

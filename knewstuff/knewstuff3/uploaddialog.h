@@ -181,6 +181,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_updateContentsToggled(bool update) )
     Q_PRIVATE_SLOT( d, void _k_userContentListLoaded(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_licensesFetched(Attica::BaseJob*) )
 
     Q_DISABLE_COPY( UploadDialog )
 };
