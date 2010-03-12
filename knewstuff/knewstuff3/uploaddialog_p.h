@@ -105,6 +105,10 @@ namespace KNS3 {
         void _k_previewChanged(const KUrl&);
         void _k_priceToggled(bool);
 
+        void _k_updateContentsToggled(bool update);
+        void _k_userContentListLoaded(Attica::BaseJob* baseJob);
+
+        void _k_updatedContentFetched(Attica::BaseJob* baseJob);
     };
 }
 

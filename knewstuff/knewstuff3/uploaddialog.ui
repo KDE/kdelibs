@@ -20,7 +20,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -113,7 +113,7 @@
         <widget class="KUrlRequester" name="uploadFileRequester"/>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton">
+        <widget class="QRadioButton" name="radioNewUpload">
          <property name="text">
           <string>New Upload</string>
          </property>
@@ -123,9 +123,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_2">
+        <widget class="QRadioButton" name="radioUpdate">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Update</string>
@@ -133,20 +133,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget">
+        <widget class="QListWidget" name="userContentList">
          <property name="enabled">
           <bool>false</bool>
          </property>
-         <item>
-          <property name="text">
-           <string>My last upload</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>zoopahcoolstuff</string>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>
@@ -532,9 +522,9 @@
   <tabstop>username</tabstop>
   <tabstop>password</tabstop>
   <tabstop>uploadFileRequester</tabstop>
-  <tabstop>radioButton</tabstop>
-  <tabstop>radioButton_2</tabstop>
-  <tabstop>listWidget</tabstop>
+  <tabstop>radioNewUpload</tabstop>
+  <tabstop>radioUpdate</tabstop>
+  <tabstop>userContentList</tabstop>
   <tabstop>mNameEdit</tabstop>
   <tabstop>mCategoryCombo</tabstop>
   <tabstop>mVersionEdit</tabstop>

@@ -46,6 +46,7 @@ void UploadDialog::Private::init()
 
     q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
+    q->connect(ui.radioUpdate, SIGNAL(toggled(bool)), q, SLOT(_k_updateContentsToggled(bool)));
 }
 
 void UploadDialog::Private::_k_showPage(int page)
@@ -63,6 +64,16 @@ void UploadDialog::Private::_k_showPage(int page)
         break;
 
     case Details1Page:
+        // TODO check if old contents should be updated!
+
+        if (ui.radioUpdate->isChecked()) {
+            // Fetch
+            Attica::ItemJob<Attica::Content> *contentJob = currentProvider().requestContent(ui.userContentList->currentItem()->data(Qt::UserRole).toString());
+            kDebug() << "get contents... " << ui.userContentList->currentItem()->data(Qt::UserRole).toString();
+            q->connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_updatedContentFetched(Attica::BaseJob*)));
+            contentJob->start();
+        }
+
         ui.mNameEdit->setFocus();
         break;
     }
@@ -152,11 +163,52 @@ void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob
         currentProvider().saveCredentials(ui.username->text(), ui.password->text());
         _k_showPage(FileNewUpdatePage);
 
+        // in case of updates we need the list of stuff that has been uploaded by the user before
+        Attica::ListJob<Attica::Content>* userContent = currentProvider().searchContentsByPerson(categories, ui.username->text());
+        q->connect(userContent, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_userContentListLoaded(Attica::BaseJob*)));
+        userContent->start();
 
     } else {
         // TODO check what the actual error is
         KMessageBox::error(q, i18n("Could not verify login, please try again."), i18n("Error"));
     }
+}
+
+void UploadDialog::Private::_k_userContentListLoaded(Attica::BaseJob* baseJob)
+{
+    Attica::ListJob<Attica::Content>* contentList = static_cast<Attica::ListJob<Attica::Content>*>(baseJob);
+    kDebug() << "Content size: " << contentList->itemList().size();
+
+    foreach(Attica::Content content, contentList->itemList()) {
+        kDebug() << content.name();
+        QListWidgetItem *contentItem = new QListWidgetItem(content.name());
+        contentItem->setData(Qt::UserRole, content.id());
+        ui.userContentList->addItem(contentItem);
+    }
+}
+
+void UploadDialog::Private::_k_updatedContentFetched(Attica::BaseJob* baseJob)
+{
+    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
+    Attica::Content content = contentItemJob->result();
+
+    kDebug() << "Content " << content.name();
+
+    // fill in ui
+    ui.mNameEdit->setText(content.name());
+
+    ui.mSummaryEdit->setText(content.description());
+    ui.mVersionEdit->setText(content.version());
+    ui.mLicenseCombo->setEditText(content.license());
+    ui.changelog->setText(content.changelog());
+    ui.priceCheckBox->setChecked(content.attribute("downloadbuy1") == "1");
+    ui.priceSpinBox->setValue(content.attribute("downloadbuyprice1").toDouble());
+    ui.priceReasonLineEdit->setText(content.attribute("downloadbuyreason1"));
+}
+
+void UploadDialog::Private::_k_updateContentsToggled(bool update)
+{
+    ui.userContentList->setEnabled(update);
 }
 
 UploadDialog::UploadDialog(QWidget *parent)
@@ -276,6 +328,32 @@ void UploadDialog::selectCategory(const QString& category)
     d->ui.mCategoryCombo->setCurrentIndex(d->ui.mCategoryCombo->findText(category, Qt::MatchFixedString));
 }
 
+void UploadDialog::setChangelog(const QString& changelog)
+{
+    d->ui.changelog->setText(changelog);
+}
+
+void UploadDialog::setDescription(const QString& description)
+{
+    d->ui.mSummaryEdit->setText(description);
+}
+
+void UploadDialog::setPrice(double price)
+{
+    d->ui.priceCheckBox->setEnabled(true);
+    d->ui.priceSpinBox->setValue(price);
+}
+
+void UploadDialog::setPriceReason(const QString& reason)
+{
+    d->ui.priceReasonLineEdit->setText(reason);
+}
+
+void UploadDialog::setVersion(const QString& version)
+{
+    d->ui.mVersionEdit->setText(version);
+}
+
 void UploadDialog::Private::_k_priceToggled(bool priceEnabled)
 {
     ui.priceGroupBox->setEnabled(priceEnabled);
@@ -285,7 +363,7 @@ void UploadDialog::Private::_k_providerAdded(const Attica::Provider& provider)
 {
     providers.insert(provider.name(), provider);
     ui.providerComboBox->addItem(provider.name());
-    _k_updatePage(); // manually
+    _k_updatePage();
 
     Attica::ListJob<Attica::Category>* job = providers[provider.name()].requestCategories();
     q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_categoriesLoaded(Attica::BaseJob*)));
@@ -400,9 +478,18 @@ void UploadDialog::Private::_k_startUpload()
         content.addAttribute("downloadbuyreason1", ui.priceReasonLineEdit->text());
     }
 
-    Attica::ItemPostJob<Attica::Content>* job = currentProvider().addNewContent(category, content);
-    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_contentAdded(Attica::BaseJob*)));
-    job->start();
+
+    if (ui.radioNewUpload->isChecked()) {
+        // upload a new content
+        Attica::ItemPostJob<Attica::Content>* job = currentProvider().addNewContent(category, content);
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_contentAdded(Attica::BaseJob*)));
+        job->start();
+    } else {
+        // update old content
+        Attica::ItemPostJob<Attica::Content>* job = currentProvider().editContent(category, ui.userContentList->currentItem()->data(Qt::UserRole).toString(), content);
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_contentAdded(Attica::BaseJob*)));
+        job->start();
+    }
 }
 
 void UploadDialog::Private::_k_previewChanged(const KUrl& url)
@@ -425,8 +512,6 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
         }
         return;
     }
-
-    ui.mProgressLabel->setText(ui.mProgressLabel->text() + '\n' + i18n("Uploading preview and content..."));
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
@@ -489,7 +574,8 @@ void UploadDialog::Private::_k_previewUploadFinished(Attica::BaseJob* )
 
 void UploadDialog::Private::uploadFileFinished()
 {
-    if (finishedContents && finishedPreview) {
+    if (finishedContents && (previewFile.isEmpty() || finishedPreview)) {
+        finished = true;
         ui.uploadProgressBar->setMinimum(0);
         ui.uploadProgressBar->setMaximum(100);
         ui.uploadProgressBar->setValue(100);

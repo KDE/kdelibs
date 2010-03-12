@@ -55,11 +55,17 @@ class KNEWSTUFF_EXPORT UploadDialog : public KDialog
     Q_OBJECT
 public:
     /**
-      Constructor.
+      Create a new upload dialog.
 
       @param parent the parent window
     */
     explicit UploadDialog(QWidget *parent = 0);
+
+    /**
+      Create a new upload dialog.
+
+      @param parent the parent window
+    */
     explicit UploadDialog(const QString& configFile, QWidget *parent = 0);
 
     /**
@@ -69,13 +75,14 @@ public:
 
     /**
       Set the file to be uploaded.
+      This has to be set for the dialog to work, before displaying the dialog.
 
       @param payloadFile the payload data file
     */
     void setUploadFile(const KUrl& payloadFile);
 
     /**
-      Set the suggested name for the upload.
+      Set the suggested title for the upload.
       The application can suggest a title which can then be edited by the user before uploading.
       The name field will be left empty if no title was set.
 
@@ -84,7 +91,59 @@ public:
     void setUploadName(const QString& name);
 
     /**
-      Set the suggested category for the upload (the .knsrc file may contain multiple upload categories)
+      Set the suggested version displayed in the upload dialog.
+      The user can still change this.
+      @param version
+      */
+    void setVersion(const QString& version);
+
+    /**
+      Set the suggested description displayed in the upload dialog.
+      The user can still change this.
+      @param description
+      */
+    void setDescription(const QString& description);
+
+    /**
+      Set the suggested changelog displayed in the upload dialog.
+      The user can still change this.
+      @param version version
+      */
+    void setChangelog(const QString& changelog);
+
+    /* *
+      Set the suggested license displayed in the upload dialog.
+      The user can still change this.
+      @param version version
+      */
+    // enum License {}; // see fd.o api spec
+    // void setLicense(License license);
+
+    /* *
+      Set the suggested version displayed in the upload dialog.
+      The user can still change this.
+      @param version version
+      */
+    // void setPreviewImageFile(const KUrl& version);
+
+    /**
+      Set the suggested price displayed in the upload dialog.
+      The user can still change this.
+      @param version version
+      */
+    void setPrice(double price);
+
+    /**
+      Set the suggested rationale why this item costs something to download.
+      The user can still change this.
+      @param version version
+      */
+    void setPriceReason(const QString& reason);
+
+    /**
+      Set the suggested category for the upload.
+      The .knsrc file may contain multiple upload categories, this sets which one is pre-selected.
+      It does not add any new category to the list of available categories.
 
       @param category the suggested category for the upload
     */
@@ -119,6 +178,9 @@ private:
 
     Q_PRIVATE_SLOT( d, void _k_previewChanged(const KUrl&) )
     Q_PRIVATE_SLOT( d, void _k_priceToggled(bool) )
+    Q_PRIVATE_SLOT( d, void _k_updateContentsToggled(bool update) )
+    Q_PRIVATE_SLOT( d, void _k_userContentListLoaded(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::BaseJob*) )
 
     Q_DISABLE_COPY( UploadDialog )
 };
