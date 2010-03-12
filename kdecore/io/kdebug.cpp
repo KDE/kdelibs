@@ -413,7 +413,7 @@ struct KDebugPrivate
 
         if (num == 0) { // area 0 is special, it becomes the named area "appname"
             static bool s_firstDebugFromApplication = true;
-            if (s_firstDebugFromApplication) {
+            if (s_firstDebugFromApplication && !m_disableAll) {
                 s_firstDebugFromApplication = false;
                 writeGroupForNamedArea(it->name, enableByDefault);
             }

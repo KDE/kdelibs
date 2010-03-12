@@ -174,6 +174,26 @@ void KDebugTest::testDisabledDynamicArea()
     kDebug(verboseArea) << "TEST DEBUG using verboseArea" << verboseArea;
 }
 
+static void disableAll(bool dis)
+{
+    KConfig config("kdebugrc");
+    config.group(QString()).writeEntry("DisableAll", dis);
+    config.sync();
+    kClearDebugConfig();
+}
+
+void KDebugTest::testDisableAll()
+{
+    // Some people really don't like debug output :-)
+    disableAll(true);
+    QFile::remove("kdebug.dbg");
+    kDebug() << "Should not appear";
+    kDebug(123465) << "Unknown area, should not appear either";
+    QVERIFY(!QFile::exists("kdebug.dbg"));
+    // Repair
+    disableAll(false);
+}
+
 #include <QThreadPool>
 #include <qtconcurrentrun.h>
 
