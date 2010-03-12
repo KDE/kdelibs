@@ -22,20 +22,19 @@
 
 #include "kdirsortfilterproxymodel.h"
 
+#include <kdatetime.h>
 #include <kdirmodel.h>
 #include <kfileitem.h>
-#include <kdatetime.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
 #include <kstringhandler.h>
 
-#include <Qt>
 
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
 public:
     KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q);
-    
+
     int compare(const QString&, const QString&, Qt::CaseSensitivity caseSensitivity  = Qt::CaseSensitive) const;
     void slotNaturalSortingChanged();
 
@@ -154,7 +153,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     switch (left.column()) {
     case KDirModel::Name: {
-        return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+        return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
     }
 
     case KDirModel::Size: {
@@ -171,7 +170,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
             // their names. So we have always everything ordered. We also check
             // if we are taking in count their cases.
             if (leftCount == rightCount) {
-                return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+                return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
             }
 
             // If one of them has unknown child items, place them on the end. If we
@@ -194,7 +193,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
         // If what we are measuring is two files and they have the same size,
         // sort them by their file names.
         if (leftFileItem.size() == rightFileItem.size()) {
-            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
         // If their sizes are different, sort them by their sizes, as expected.
@@ -206,7 +205,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
         KDateTime rightModifiedTime = rightFileItem.time(KFileItem::ModificationTime).toLocalZone();
 
         if (leftModifiedTime == rightModifiedTime) {
-            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
         return leftModifiedTime < rightModifiedTime;
@@ -221,7 +220,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
         int rightPermissionsPoints = pointsForPermissions(rightFileInfo);
 
         if (leftPermissionsPoints == rightPermissionsPoints) {
-            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
         return leftPermissionsPoints > rightPermissionsPoints;
@@ -229,7 +228,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     case KDirModel::Owner: {
         if (leftFileItem.user() == rightFileItem.user()) {
-            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
         return d->compare(leftFileItem.user(), rightFileItem.user()) < 0;
@@ -237,7 +236,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     case KDirModel::Group: {
         if (leftFileItem.group() == rightFileItem.group()) {
-            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
         return d->compare(leftFileItem.group(), rightFileItem.group()) < 0;
@@ -245,7 +244,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     case KDirModel::Type: {
         if (leftFileItem.mimetype() == rightFileItem.mimetype()) {
-            return d->compare(leftFileItem.name(), rightFileItem.name(), sortCaseSensitivity()) < 0;
+            return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
         return d->compare(leftFileItem.mimeComment(), rightFileItem.mimeComment()) < 0;
