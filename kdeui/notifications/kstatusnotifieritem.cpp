@@ -40,6 +40,8 @@
 #include <kwindowsystem.h>
 #include <kmessagebox.h>
 #include <kactioncollection.h>
+#include <kstandarddirs.h>
+#include <kglobal.h>
 
 #include <netinet/in.h>
 
@@ -611,6 +613,12 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
 
     if (!extraId.isEmpty()) {
         id.append('_').append(extraId);
+    }
+
+    // Init iconThemePath to the app folder for now
+    QStringList dirs = KGlobal::dirs()->findDirs("appdata", "icons");
+    if (!dirs.isEmpty()) {
+        iconThemePath = dirs.first();
     }
 
     registerToDaemon();

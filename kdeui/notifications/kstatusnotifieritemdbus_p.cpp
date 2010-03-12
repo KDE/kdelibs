@@ -253,6 +253,11 @@ KDbusToolTipStruct KStatusNotifierItemDBus::ToolTip() const
     return toolTip;
 }
 
+QString KStatusNotifierItemDBus::IconThemePath() const
+{
+    return m_statusNotifierItem->d->iconThemePath;
+}
+
 //Interaction
 
 void KStatusNotifierItemDBus::ContextMenu(int x, int y)

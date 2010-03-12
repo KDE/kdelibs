@@ -73,16 +73,22 @@ void KStatusNotifierItemTest::setPassive()
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData( "KStatusNotifierItemtest", 0 , ki18n("KStatusNotifierItemtest"), "1.0" );
+    KAboutData aboutData( "kstatusnotifieritemtest", 0 , ki18n("KStatusNotifierItemtest"), "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
+    KCmdLineOptions options;
+    options.add("active-icon <name>", ki18n("Name of active icon"), "konqueror");
+    KCmdLineArgs::addCmdLineOptions(options);
+
     KApplication app;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
     QLabel *l = new QLabel("System Tray Main Window", 0L);
     KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
     new KStatusNotifierItemTest(0, tray);
 
     tray->setTitle("DBus System tray test");
-    tray->setIconByName("konqueror");
+    tray->setIconByName(args->getOption("active-icon"));
     //tray->setImage(KIcon("konqueror"));
     //tray->setAttentionIconByName("kmail");
     tray->setOverlayIconByName("emblem-important");

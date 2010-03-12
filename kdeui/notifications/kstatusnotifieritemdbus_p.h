@@ -64,6 +64,7 @@ class KStatusNotifierItemDBus : public QObject
     Q_PROPERTY(KDbusImageVector AttentionIconPixmap READ AttentionIconPixmap)
     Q_PROPERTY(QString AttentionMovieName READ AttentionMovieName)
     Q_PROPERTY(KDbusToolTipStruct ToolTip READ ToolTip)
+    Q_PROPERTY(QString IconThemePath READ IconThemePath)
 
     friend class KStatusNotifierItem;
 public:
@@ -146,6 +147,10 @@ public:
      */
     KDbusToolTipStruct ToolTip() const;
 
+    /**
+     * @return path to extra icon theme, to load application specific icons
+     */
+    QString IconThemePath() const;
 
 public Q_SLOTS:
     //interaction

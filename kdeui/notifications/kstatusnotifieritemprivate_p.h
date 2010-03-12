@@ -120,6 +120,7 @@ public:
     QIcon toolTipIcon;
     QString toolTipTitle;
     QString toolTipSubTitle;
+    QString iconThemePath;
 
     KMenu *menu;
     KActionCollection* actionCollection;
