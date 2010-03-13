@@ -424,7 +424,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     // Finished setting up the chooser layout.
 
     // lets initialize the display if possible
-    setFont( KGlobalSettings::generalFont(), d->usingFixed );
+    setFont( d->usingFixed ? KGlobalSettings::fixedFont() : KGlobalSettings::generalFont(), d->usingFixed );
 
     // check or uncheck or gray out the "relative" checkbox
     if( sizeIsRelativeState && d->sizeIsRelativeCheckBox )
