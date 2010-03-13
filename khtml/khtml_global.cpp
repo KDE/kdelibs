@@ -28,6 +28,7 @@
 #include "html/html_imageimpl.h"
 #include "rendering/render_style.h"
 #include "rendering/break_lines.h"
+#include "misc/htmlnames.h"
 #include "misc/loader.h"
 #include "misc/arena.h"
 #include "misc/paintbuffer.h"
@@ -69,7 +70,7 @@ KHTMLGlobal::KHTMLGlobal()
     khtml::LocalNameFactory::initIdTable();
     DOM::emptyLocalName = DOM::LocalName::fromId(0);
     DOM::emptyPrefixName = DOM::PrefixName::fromId(0);
-    DOM::emptyNamespaceName = DOM::NamespaceName::fromId(0);
+    DOM::emptyNamespaceName = DOM::NamespaceName::fromId(DOM::emptyNamespace);
     WebCore::SVGNames::init();
 }
 
