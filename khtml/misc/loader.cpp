@@ -657,17 +657,19 @@ QSize CachedImage::pixmap_size() const
 
 void CachedImage::imageHasGeometry(khtmlImLoad::Image* /*img*/, int width, int height)
 {
-
+#ifdef LOADER_DEBUG
     kDebug(6060) << this << " got geometry "<< width << "x" << height;
+#endif
 
     do_notify(QRect(0, 0, width, height));
 }
 
 void CachedImage::imageChange     (khtmlImLoad::Image* /*img*/, QRect region)
 {
-
+#ifdef LOADER_DEBUG
     kDebug(6060) << "Image " << this << " change " <<
         region.x() << "," << region.y() << ":" << region.width() << "x" << region.height() << endl;
+#endif
 
     //### this is overly conservative -- I guess we need to also specify reason,
     //e.g. repaint vs. changed !!!
@@ -693,9 +695,9 @@ void CachedImage::imageError(khtmlImLoad::Image* /*img*/)
 
 void CachedImage::imageDone(khtmlImLoad::Image* /*img*/)
 {
-//#ifdef LOADER_DEBUG
+#ifdef LOADER_DEBUG
     kDebug(6060)<<"Image is done:" << this;
-//#endif
+#endif
     m_status = Persistent;
     m_loading = false;
     doNotifyFinished();
