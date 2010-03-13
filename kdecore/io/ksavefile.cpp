@@ -114,13 +114,17 @@ bool KSaveFile::open(OpenMode flags)
     
     // if we're overwriting an existing file, ensure temp file's
     // permissions are the same as existing file so the existing
-    // file's permissions are preserved. this will succeed only if we
-    // are the same owner and group - or allmighty root.
+    // file's permissions are preserved. this will succeed completely
+    // only if we are the same owner and group - or allmighty root.
     QFileInfo fi ( d->realFileName );
     if (fi.exists()) {
         //Qt apparently has no way to change owner/group of file :(
-        if (!fchown(tempFile.handle(), fi.ownerId(), fi.groupId()))
-            tempFile.setPermissions(fi.permissions());
+        if (fchown(tempFile.handle(), fi.ownerId(), fi.groupId())) {
+            // failed to set user and group => try to restore group only.
+            fchown(tempFile.handle(), -1, fi.groupId());
+        }
+
+        tempFile.setPermissions(fi.permissions());
     }
     else {
         mode_t umsk = KGlobal::umask();
