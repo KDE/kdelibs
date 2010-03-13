@@ -78,6 +78,10 @@ private Q_SLOTS:
         pix = iconLoader.loadIcon("this-icon-does-not-exist", KIconLoader::Desktop, 16);
         QVERIFY(!pix.isNull());
         QCOMPARE(pix.size(), QSize(16, 16));
+
+        pix = iconLoader.loadIcon("#crazyname", KIconLoader::NoGroup, 1600);
+        QVERIFY(!pix.isNull());
+        QCOMPARE(pix.size(), QSize(1600, 1600));
     }
 
     void testAppPicsDir()
