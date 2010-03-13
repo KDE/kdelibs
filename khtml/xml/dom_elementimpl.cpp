@@ -799,8 +799,6 @@ DOMString ElementImpl::nodeName() const
 
 DOMString ElementImpl::namespaceURI() const
 {
-   if (m_htmlCompat)
-        return DOMString();
    return NamespaceName::fromId(namespacePart(id())).toString();
 }
 

@@ -110,8 +110,7 @@ bool HTMLElementImpl::isInline() const
 
 DOMString HTMLElementImpl::namespaceURI() const
 {
-    return (!m_htmlCompat) ?
-        DOMString(XHTML_NAMESPACE) : DOMString();
+    return DOMString(XHTML_NAMESPACE);
 }
 
 void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
@@ -660,6 +659,12 @@ HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, ushort i)
 {
     m_localName = LocalName::fromId(i);
 }
+
+HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, LocalName l)
+    : HTMLElementImpl(doc),
+      m_localName(l)
+{}
+
 
 HTMLGenericElementImpl::~HTMLGenericElementImpl()
 {

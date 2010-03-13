@@ -75,6 +75,7 @@ class HTMLGenericElementImpl : public HTMLElementImpl
 {
 public:
     HTMLGenericElementImpl(DocumentImpl *doc, ushort i);
+    HTMLGenericElementImpl(DocumentImpl *doc, LocalName name);
 
     virtual ~HTMLGenericElementImpl();
 

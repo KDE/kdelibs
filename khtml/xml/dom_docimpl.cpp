@@ -754,18 +754,15 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     }
 
     if ((isHTMLDocument() && _namespaceURI.isNull()) ||
-        (strcasecmp(_namespaceURI, XHTML_NAMESPACE) == 0 && localName == localName.lower())) {
+        (strcasecmp(_namespaceURI, XHTML_NAMESPACE) == 0)) {
         e = createHTMLElement(localName);
-        if (e) {
-            int _exceptioncode = 0;
-            if (!prefix.isNull())
-                e->setPrefix(prefix, _exceptioncode);
-            if ( _exceptioncode ) {
-                 if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
-                 delete e;
-                 return 0;
-            }
-            e->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
+        int _exceptioncode = 0;
+        if (!prefix.isNull())
+            e->setPrefix(prefix, _exceptioncode);
+        if ( _exceptioncode ) {
+                if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
+                delete e;
+                return 0;
         }
     }
     if (!e) {
@@ -885,7 +882,8 @@ unsigned short DocumentImpl::nodeType() const
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
-    LocalName localname = LocalName::fromString(name.lower());
+    LocalName localname = LocalName::fromString(name,
+                                  htmlMode() != XHtml ? IDS_NormalizeLower : IDS_CaseSensitive);
     uint id = localname.id();
 
     ElementImpl *n = 0;
@@ -1165,8 +1163,10 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
 
     default:
+        n = new HTMLGenericElementImpl(docPtr(), localname);
         break;
     }
+    assert(n);
     return n;
 }
 

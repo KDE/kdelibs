@@ -182,12 +182,12 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 
 ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
-    ElementImpl *e = createHTMLElement(name);
-    if ( e ) {
-        e->setHTMLCompat( htmlMode() != XHtml );
-        return e;
+    if (pExceptioncode && !Element::khtmlValidQualifiedName(name)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
     }
-    return DocumentImpl::createElement(name, pExceptioncode);
+
+    return createHTMLElement(name);
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()
