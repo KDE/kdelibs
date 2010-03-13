@@ -243,7 +243,7 @@ public:
     virtual bool isHTMLDocument() const { return false; }
     virtual bool isSVGDocument() const;
 
-    virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
+    virtual ElementImpl *createHTMLElement ( const DOMString &tagName, bool caseInsensitive = true );
     // SVG
     virtual ElementImpl *createSVGElement(const QualifiedName& name);
 

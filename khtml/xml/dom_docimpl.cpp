@@ -676,7 +676,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	NamedAttrMapImpl *otherMap = static_cast<ElementImpl *>(importedNode)->attributes(true);
 
 	ElementImpl *tempElementImpl;
-	tempElementImpl = createElementNS(otherElem->namespaceURI(),otherElem->nodeName());
+	tempElementImpl = createElementNS(otherElem->namespaceURI(),otherElem->nonCaseFoldedTagName());
 	tempElementImpl->setHTMLCompat(htmlMode() != XHtml && otherElem->htmlCompat());
 	result = tempElementImpl;
 
@@ -753,9 +753,12 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         }
     }
 
-    if ((isHTMLDocument() && _namespaceURI.isNull()) ||
-        (strcasecmp(_namespaceURI, XHTML_NAMESPACE) == 0)) {
-        e = createHTMLElement(localName);
+    // Regardless of document type (even for HTML), this method will only create HTML
+    // elements if given the namespace explicitly. Further, this method is always
+    // case sensitive, again, even in HTML; however .tagName will case-normalize
+    // in HTML regardless
+    if (_namespaceURI == XHTML_NAMESPACE) {
+        e = createHTMLElement(localName, false /* case sensitive */);
         int _exceptioncode = 0;
         if (!prefix.isNull())
             e->setPrefix(prefix, _exceptioncode);
@@ -880,10 +883,10 @@ unsigned short DocumentImpl::nodeType() const
     return Node::DOCUMENT_NODE;
 }
 
-ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
+ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name, bool caseInsensitive )
 {
     LocalName localname = LocalName::fromString(name,
-                                  htmlMode() != XHtml ? IDS_NormalizeLower : IDS_CaseSensitive);
+                                  caseInsensitive ? IDS_NormalizeLower : IDS_CaseSensitive);
     uint id = localname.id();
 
     ElementImpl *n = 0;

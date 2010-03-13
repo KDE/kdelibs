@@ -187,7 +187,7 @@ ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExcep
         return 0;
     }
 
-    return createHTMLElement(name);
+    return createHTMLElement(name, hMode != XHtml);
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()

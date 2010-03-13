@@ -481,12 +481,7 @@ unsigned short ElementImpl::nodeType() const
 
 DOMString ElementImpl::localName() const
 {
-    DOMString tn = LocalName::fromId(id()).toString();
-
-    if ( m_htmlCompat )
-        tn = tn.upper();
-
-    return tn;
+    return LocalName::fromId(id()).toString();
 }
 
 DOMString ElementImpl::tagName() const
@@ -495,6 +490,17 @@ DOMString ElementImpl::tagName() const
 
     if ( m_htmlCompat )
         tn = tn.upper();
+
+    DOMString prefix = m_prefix.toString();
+    if (!prefix.isEmpty())
+        return prefix + ":" + tn;
+
+    return tn;
+}
+
+DOMString ElementImpl::nonCaseFoldedTagName() const
+{
+    DOMString tn = LocalName::fromId(id()).toString();
 
     DOMString prefix = m_prefix.toString();
     if (!prefix.isEmpty())
@@ -587,7 +593,7 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 WTF::PassRefPtr<NodeImpl> ElementImpl::cloneNode(bool deep)
 {
     WTF::RefPtr<ElementImpl> clone; // Make sure to guard...
-    clone = document()->createElementNS( namespaceURI(), nodeName() /* includes prefix*/ );
+    clone = document()->createElementNS( namespaceURI(), nonCaseFoldedTagName() /* includes prefix*/ );
     if (!clone) return 0;
     finishCloneNode( clone.get(), deep );
     return clone;

@@ -241,6 +241,11 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const;
     virtual DOMString localName() const;
+
+    // Internal version of tagName for elements that doesn't
+    // do case normalization
+    DOMString nonCaseFoldedTagName() const;
+    
     virtual unsigned short nodeType() const;
     virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
     virtual DOMString nodeName() const;
