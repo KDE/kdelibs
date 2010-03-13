@@ -1131,44 +1131,6 @@ bool KHTMLPart::metaRefreshEnabled() const
   return d->m_metaRefreshEnabled;
 }
 
-// Define this to disable dlopening kjs_html, when directly linking to it.
-// You need to edit khtml/Makefile.am to add ./ecma/libkjs_html.la to LIBADD
-// and to edit khtml/ecma/Makefile.am to s/kjs_html/libkjs_html/, remove libkhtml from LIBADD,
-//        remove LDFLAGS line, and replace kde_module with either lib (shared) or noinst (static)
-//        Also, change the order of "ecma" and "." in khtml's SUBDIRS line.
-// OK - that's the default now, use the opposite of the above instructions to go back
-// to "dlopening it" - but it breaks exception catching in kjs_binding.cpp
-#define DIRECT_LINKAGE_TO_ECMA
-
-#ifdef DIRECT_LINKAGE_TO_ECMA
-extern "C" { KJSProxy *kjs_html_init(khtml::ChildFrame * childframe); }
-#endif
-
-static bool createJScript(khtml::ChildFrame *frame)
-{
-#ifndef DIRECT_LINKAGE_TO_ECMA
-  KLibrary *lib = KLibLoader::self()->library(QLatin1String("kjs_html"));
-  if ( !lib ) {
-    setJScriptEnabled( false );
-    return false;
-  }
-  // look for plain C init function
-  void *sym = lib->symbol("kjs_html_init");
-  if ( !sym ) {
-    lib->unload();
-    setJScriptEnabled( false );
-    return false;
-  }
-  typedef KJSProxy* (*initFunction)(khtml::ChildFrame *);
-  initFunction initSym = (initFunction) sym;
-  frame->m_jscript = (*initSym)(d->m_frame);
-  frame->m_kjs_lib = lib;
-#else
-  frame->m_jscript = kjs_html_init(frame);
-#endif
-  return true;
-}
-
 KJSProxy *KHTMLPart::jScript()
 {
   if (!jScriptEnabled()) return 0;
@@ -1191,9 +1153,8 @@ KJSProxy *KHTMLPart::jScript()
         return 0;
   }
   if ( !d->m_frame->m_jscript )
-    if (!createJScript(d->m_frame))
-      return 0;
-   d->m_frame->m_jscript->setDebugEnabled(d->m_bJScriptDebugEnabled);
+     d->m_frame->m_jscript = new KJSProxy(d->m_frame);
+  d->m_frame->m_jscript->setDebugEnabled(d->m_bJScriptDebugEnabled);
 
   return d->m_frame->m_jscript;
 }
@@ -1786,10 +1747,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
   write( data.data(), data.size() );
-
-  if (d->m_frame && d->m_frame->m_jscript)
-    d->m_frame->m_jscript->dataReceived();
-
 }
 
 void KHTMLPart::slotRestoreData(const QByteArray &data )
@@ -1977,8 +1934,6 @@ void KHTMLPart::slotFinished( KJob * job )
   //kDebug( 6050 ) << "slotFinished";
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
-  if (d->m_frame && d->m_frame->m_jscript)
-    d->m_frame->m_jscript->dataReceived();
 
   if ( d->m_doc && d->m_doc->docLoader()->expireDate() && url().protocol().toLower().startsWith("http"))
       KIO::http_update_cache(url(), false, d->m_doc->docLoader()->expireDate());
@@ -5205,12 +5160,14 @@ KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
   FrameIt it = d->m_frames.begin();
   const FrameIt itEnd = d->m_frames.end();
 
-  for (; it != itEnd; ++it)
-    if (framePart == (*it)->m_part) {
-      if (!(*it)->m_jscript)
-        createJScript(*it);
-      return (*it)->m_jscript;
+  for (; it != itEnd; ++it) {
+    khtml::ChildFrame* frame = *it;
+    if (framePart == frame->m_part) {
+      if (!frame->m_jscript)
+        frame->m_jscript = new KJSProxy(frame);
+      return frame->m_jscript;
     }
+  }
   return 0L;
 }
 

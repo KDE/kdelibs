@@ -25,6 +25,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QString>
 #include <sys/time.h>
+#include <wtf/RefPtr.h>
 
 class KHTMLPart;
 
@@ -39,6 +40,11 @@ namespace KJS {
   class List;
   class Interpreter;
   class Completion;
+  class ScriptInterpreter;
+}
+
+namespace KJSDebugger {
+  class DebugWindow;
 }
 
 namespace khtml {
@@ -52,28 +58,43 @@ namespace khtml {
  */
 class KJSProxy {
 public:
-  KJSProxy() { m_handlerLineno = 0; }
-  virtual ~KJSProxy() { }
-  virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
-			    KJS::Completion *completion = 0) = 0;
-  virtual void clear() = 0;
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl* node, bool svg = false) = 0;
-  virtual void finishedWithEvent(const DOM::Event &event) = 0;
-  virtual KJS::Interpreter *interpreter() = 0;
+  KJSProxy(khtml::ChildFrame* frame);
+  ~KJSProxy();
+  
+  QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
+			    KJS::Completion *completion = 0);
+  void clear();
+  
+  DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl* node, bool svg = false);
+  void finishedWithEvent(const DOM::Event &event);
+  KJS::Interpreter *interpreter();
 
-  virtual void setDebugEnabled(bool enabled) = 0;
-  virtual bool debugEnabled() const = 0;
-  virtual void showDebugWindow(bool show=true) = 0;
-  virtual bool paused() const = 0;
-  virtual void dataReceived() = 0;
+  bool isRunningScript();
+
+  void setDebugEnabled(bool enabled);
+  bool debugEnabled() const;
+  void showDebugWindow(bool show = true);
+  
+  bool paused() const;
 
   void setEventHandlerLineno(int lineno) { m_handlerLineno = lineno; }
+
+  // Helper method, to access the private KHTMLPart::jScript()
+  static KJSProxy *proxy( KHTMLPart *part );
+private:
+  void initScript();
+  void applyUserAgent();
 
   khtml::ChildFrame *m_frame;
   int m_handlerLineno;
 
-  // Helper method, to access the private KHTMLPart::jScript()
-  static KJSProxy *proxy( KHTMLPart *part );
+  KJS::ScriptInterpreter* m_script;
+  WTF::RefPtr<KJSDebugger::DebugWindow> m_debugWindow;
+  bool m_debugEnabled;
+  int m_running;
+#ifndef NDEBUG
+  static int s_count;
+#endif
 };
 
 

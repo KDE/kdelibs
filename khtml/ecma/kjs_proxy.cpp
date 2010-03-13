@@ -42,71 +42,38 @@
 using namespace KJS;
 using namespace KJSDebugger;
 
-extern "C" {
-  KJSProxy *kjs_html_init(khtml::ChildFrame *childframe);
-}
-
-namespace KJS {
-
-class KJSProxyImpl : public KJSProxy {
-public:
-  KJSProxyImpl(khtml::ChildFrame *frame);
-  virtual ~KJSProxyImpl();
-  virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
-			    Completion *completion = 0);
-  virtual void clear();
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node, bool svg = false);
-  virtual void finishedWithEvent(const DOM::Event &event);
-  virtual KJS::Interpreter *interpreter();
-
-  virtual void setDebugEnabled(bool enabled);
-  virtual bool debugEnabled() const;
-  virtual void showDebugWindow(bool show=true);
-  virtual bool paused() const;
-  virtual void dataReceived();
-
-  void initScript();
-  void applyUserAgent();
-private:
-  KJS::ScriptInterpreter* m_script;
-  WTF::RefPtr<DebugWindow> m_debugWindow;
-  bool m_debugEnabled;
-#ifndef NDEBUG
-  static int s_count;
-#endif
-};
-
-} // namespace KJS
 
 #ifndef NDEBUG
-int KJSProxyImpl::s_count = 0;
+int KJSProxy::s_count = 0;
 #endif
 
-KJSProxyImpl::KJSProxyImpl(khtml::ChildFrame *frame)
+KJSProxy::KJSProxy(khtml::ChildFrame *frame)
 {
   m_script = 0;
   m_frame = frame;
   m_debugEnabled = false;
+  m_running = 0;
+  m_handlerLineno = 0;
 #ifndef NDEBUG
   s_count++;
 #endif
 }
 
-KJSProxyImpl::~KJSProxyImpl()
+KJSProxy::~KJSProxy()
 {
   if ( m_script ) {
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp();
+    //kDebug() << "KJSProxy::~KJSProxyImpl clearing global object " << m_script->globalObject().imp();
     // This allows to delete the global-object properties, like all the protos
     m_script->globalObject()->clearProperties();
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting";
+    //kDebug() << "KJSProxy::~KJSProxyImpl garbage collecting";
 
     JSLock::lock();
     while (Interpreter::collect())
 	    ;
     JSLock::unlock();
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script;
+    //kDebug() << "KJSProxy::~KJSProxyImpl deleting interpreter " << m_script;
     delete m_script;
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again";
+    //kDebug() << "KJSProxy::~KJSProxyImpl garbage collecting again";
     // Garbage collect - as many times as necessary
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
@@ -126,8 +93,9 @@ KJSProxyImpl::~KJSProxyImpl()
 #endif
 }
 
-QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
+QVariant KJSProxy::evaluate(QString filename, int baseLine,
                                 const QString&str, const DOM::Node &n, Completion *completion) {
+  ++m_running;
   // evaluate code. Returns the JS return value or an invalid QVariant
   // if there was none, an error occurred or the type couldn't be converted.
 
@@ -137,7 +105,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   // expected value in all cases.
   // See smart window.open policy for where this is used.
   bool inlineCode = filename.isNull();
-  //kDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode;
+  //kDebug(6070) << "KJSProxy::evaluate inlineCode=" << inlineCode;
 
 #ifdef KJS_DEBUGGER
     if (inlineCode)
@@ -158,7 +126,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   Completion comp = m_script->evaluate(filename, baseLine, code, thisNode);
   m_script->stopCPUGuard();
 
-  bool success = ( comp.complType() == Normal ) || ( comp.complType() == ReturnValue );
+  bool success = ( comp.complType() == KJS::Normal ) || ( comp.complType() == ReturnValue );
 
   if (completion)
     *completion = comp;
@@ -168,6 +136,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 #endif
 
   window->afterScriptExecution();
+
+  --m_running;
 
   // let's try to convert the return value
   if (success && comp.value())
@@ -181,6 +151,11 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     }
     return QVariant();
   }
+}
+
+bool KJSProxy::isRunningScript()
+{
+  return m_running != 0;
 }
 
 // Implementation of the debug() function
@@ -197,10 +172,10 @@ JSValue *TestFunctionImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/
   return jsUndefined();
 }
 
-void KJSProxyImpl::clear() {
-  // clear resources allocated by the interpreter, and make it ready to be used by another page
-  // We have to keep it, so that the Window object for the part remains the same.
-  // (we used to delete and re-create it, previously)
+void KJSProxy::clear() {
+    // clear resources allocated by the interpreter, and make it ready to be used by another page
+    // We have to keep it, so that the Window object for the part remains the same.
+    // (we used to delete and re-create it, previously)
     if (m_script) {
 #ifdef KJS_DEBUGGER
         if (m_debugWindow)
@@ -235,9 +210,9 @@ void KJSProxyImpl::clear() {
 #endif
 }
 
-DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node, bool svg)
+DOM::EventListener *KJSProxy::createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node, bool svg)
 {
-  initScript();
+    initScript();
 
 #ifdef KJS_DEBUGGER
     if (m_debugWindow)
@@ -246,11 +221,11 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
     Q_UNUSED(sourceUrl);
 #endif
 
-  return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(
+    return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(
         code, sourceUrl, m_handlerLineno, name, node, svg);
 }
 
-void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)
+void KJSProxy::finishedWithEvent(const DOM::Event &event)
 {
   // This is called when the DOM implementation has finished with a particular event. This
   // is the case in sitations where an event has been created just for temporary usage,
@@ -259,14 +234,14 @@ void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)
   ScriptInterpreter::forgetDOMObject(event.handle());
 }
 
-KJS::Interpreter *KJSProxyImpl::interpreter()
+KJS::Interpreter *KJSProxy::interpreter()
 {
   if (!m_script)
     initScript();
   return m_script;
 }
 
-void KJSProxyImpl::setDebugEnabled(bool enabled)
+void KJSProxy::setDebugEnabled(bool enabled)
 {
 #ifdef KJS_DEBUGGER
   m_debugEnabled = enabled;
@@ -280,7 +255,7 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
 #endif
 }
 
-bool KJSProxyImpl::debugEnabled() const
+bool KJSProxy::debugEnabled() const
 {
 #ifdef KJS_DEBUGGER
   return m_debugEnabled;
@@ -289,7 +264,7 @@ bool KJSProxyImpl::debugEnabled() const
 #endif
 }
 
-void KJSProxyImpl::showDebugWindow(bool /*show*/)
+void KJSProxy::showDebugWindow(bool /*show*/)
 {
 #ifdef KJS_DEBUGGER
     if (m_debugWindow)
@@ -299,7 +274,7 @@ void KJSProxyImpl::showDebugWindow(bool /*show*/)
 #endif
 }
 
-bool KJSProxyImpl::paused() const
+bool KJSProxy::paused() const
 {
 #ifdef KJS_DEBUGGER
     // if (DebugWindow::window())
@@ -308,17 +283,9 @@ bool KJSProxyImpl::paused() const
     return false;
 }
 
-void KJSProxyImpl::dataReceived()
-{
-#ifdef KJS_DEBUGGER
-    // if (DebugWindow::window() && m_frame->m_part)
-    //    DebugWindow::window()->sourceChanged(m_script, m_frame->m_part->url().url());
-#endif
-}
-
 KJS_QT_UNICODE_IMPL
 
-void KJSProxyImpl::initScript()
+void KJSProxy::initScript()
 {
   if (m_script)
     return;
@@ -340,7 +307,7 @@ void KJSProxyImpl::initScript()
   applyUserAgent();
 }
 
-void KJSProxyImpl::applyUserAgent()
+void KJSProxy::applyUserAgent()
 {
   assert( m_script );
   QString host = m_frame->m_part->url().isLocalFile() ? "localhost" : m_frame->m_part->url().host();
@@ -372,10 +339,3 @@ KJSProxy * KJSProxy::proxy( KHTMLPart *part )
 {
     return part->jScript();
 }
-
-// initialize HTML module
-KJSProxy *kjs_html_init(khtml::ChildFrame *childframe)
-{
-  return new KJSProxyImpl(childframe);
-}
-
