@@ -13,7 +13,7 @@
    in the file /usr/src/lib/libc/gen/getgrouplist.c on FreeBSD is out
    of date, as it has incorrect copyright years and still names the
    4-clause BSD license -- however, the Regents of the University of
-   California at Berkeley have declared that clause 4 is void; only 
+   California at Berkeley have declared that clause 3 is void; only
    clauses 1,2 and 4 apply. See the full license text below.
    Copyright (c) 1991, 1993
         The Regents of the University of California.  All rights reserved.
