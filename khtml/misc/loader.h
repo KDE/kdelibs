@@ -311,8 +311,6 @@ namespace khtml
 #endif
 
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
-        void pauseAnimations();
-        void resumeAnimations();
 
 	virtual void finish();
 
@@ -341,20 +339,9 @@ namespace khtml
         QString m_suggestedTitle;
 #endif
         QPixmap* bg;
-	QPixmap* scaled;
+        QPixmap* scaled;
         QRgb bgColor;
         QSize bgSize;
-
-        ImageSource* imgSource;
-        const char* formatType;  // Is the name of the movie format type
-
-	int width;
-	int height;
-
-	// Is set if movie format type ( incremental/animation) was checked
-	bool typeChecked : 1;
-        bool isFullyTransparent : 1;
-        bool monochrome : 1;
 
         friend class Cache;
         friend class ::KHTMLPart;
@@ -434,8 +421,6 @@ namespace khtml
         void setAutoloadImages( bool );
         void setCachePolicy( KIO::CacheControl cachePolicy ) { m_cachePolicy = cachePolicy; }
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
-        void pauseAnimations();
-        void resumeAnimations();
         void insertCachedObject( CachedObject* o ) const;
         void removeCachedObject( CachedObject* o) const { m_docObjects.remove( o ); }
         void clearPreloads();

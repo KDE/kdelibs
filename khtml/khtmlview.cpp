@@ -657,15 +657,11 @@ void KHTMLView::clear()
 void KHTMLView::hideEvent(QHideEvent* e)
 {
     QScrollArea::hideEvent(e);
-    if ( m_part && m_part->xmlDocImpl() )
-        m_part->xmlDocImpl()->docLoader()->pauseAnimations();
 }
 
 void KHTMLView::showEvent(QShowEvent* e)
 {
     QScrollArea::showEvent(e);
-    if ( m_part && m_part->xmlDocImpl() )
-        m_part->xmlDocImpl()->docLoader()->resumeAnimations();
 }
 
 void KHTMLView::setMouseEventsTarget( QWidget* w )
