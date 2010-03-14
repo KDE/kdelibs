@@ -2513,9 +2513,15 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
 {
     switch (hint)
     {
+        case SH_ComboBox_ListMouseTracking:
+            return true;
+
         case SH_MenuBar_MouseTracking:
         case SH_Menu_MouseTracking:
             return true;
+
+        case SH_Menu_SubMenuPopupDelay:
+            return 96; // Motif-like delay...
 
         case SH_TitleBar_NoBorder:
             return widgetLayoutProp(WT_Window, Window::NoTitleFrame, option, widget);
