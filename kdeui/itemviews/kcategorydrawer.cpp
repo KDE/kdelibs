@@ -257,12 +257,12 @@ KCategorizedView *KCategoryDrawerV3::view() const
     return d->view;
 }
 
-void KCategoryDrawerV3::mouseButtonPressed(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawerV3::buttonPressed(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }
 
-void KCategoryDrawerV3::mouseButtonReleased(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawerV3::buttonReleased(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }
@@ -272,7 +272,7 @@ void KCategoryDrawerV3::mouseMoved(const QModelIndex&, const QRect&, QMouseEvent
     event->ignore();
 }
 
-void KCategoryDrawerV3::mouseButtonDoubleClicked(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawerV3::buttonDoubleClicked(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }

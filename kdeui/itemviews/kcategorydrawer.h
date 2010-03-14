@@ -115,14 +115,14 @@ public:
     /**
       * @deprecated
       *
-      * @warning Use mouseButtonPressed from KCategoryDrawerV3 instead.
+      * @warning Use buttonPressed from KCategoryDrawerV3 instead.
       */
     virtual KDEUI_EXPORT_DEPRECATED void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
 
     /**
       * @deprecated
       *
-      * @warning Use mouseButtonReleased from KCategoryDrawerV3 instead.
+      * @warning Use buttonReleased from KCategoryDrawerV3 instead.
       */
     virtual KDEUI_EXPORT_DEPRECATED void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
 
@@ -136,7 +136,7 @@ public:
     /**
       * @deprecated
       *
-      * @warning Use mouseButtonDoubleClicked from KCategoryDrawerV3 isntead.
+      * @warning Use buttonDoubleClicked from KCategoryDrawerV3 isntead.
       */
     virtual KDEUI_EXPORT_DEPRECATED void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
 
@@ -181,7 +181,7 @@ protected:
       * @param blockRect The rect occupied by the block of items.
       * @param event The mouse event.
       */
-    virtual void mouseButtonPressed(const QModelIndex &index, const QRect &blockRect, QMouseEvent *event);
+    virtual void buttonPressed(const QModelIndex &index, const QRect &blockRect, QMouseEvent *event);
 
     /**
       * Method called when the mouse button has been released.
@@ -190,7 +190,7 @@ protected:
       * @param blockRect The rect occupied by the block of items.
       * @param event The mouse event.
       */
-    virtual void mouseButtonReleased(const QModelIndex &index, const QRect &blockRect, QMouseEvent *event);
+    virtual void buttonReleased(const QModelIndex &index, const QRect &blockRect, QMouseEvent *event);
 
     /**
       * Method called when the mouse has been moved.
@@ -208,7 +208,7 @@ protected:
       * @param blockRect The rect occupied by the block of items.
       * @param event The mouse event.
       */
-    virtual void mouseButtonDoubleClicked(const QModelIndex &index, const QRect &blockRect, QMouseEvent *event);
+    virtual void buttonDoubleClicked(const QModelIndex &index, const QRect &blockRect, QMouseEvent *event);
 
     /**
       * Method called when the mouse button has left this block.
