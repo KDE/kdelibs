@@ -23,6 +23,8 @@
 
 class KCategorizedSortFilterProxyModel;
 class KCategoryDrawer;
+class KCategoryDrawerV2;
+class KCategoryDrawerV3;
 
 /**
   * @internal
@@ -36,7 +38,15 @@ public:
     Private(KCategorizedView *q);
     ~Private();
 
+    /**
+      * @return whether this view has all required elements to be categorized.
+      */
     bool isCategorized() const;
+
+    /**
+      * @return the block rect for the representative @p representative.
+      */
+    QStyleOptionViewItemV4 blockRect(const QModelIndex &representative);
 
     /**
       * Returns the first and last element that intersects with rect.
@@ -123,43 +133,25 @@ public:
                                const Block &block, const QPoint &blockPos) const;
 
     /**
-      * If the provided QPoint is in a category drawer (category title),
-      * returns the index of the first item in the category.
-      * Otherwise returns an invalid index.
+      * Called when expand or collapse has been clicked on the category drawer.
       */
-    QModelIndex drawerIndexAt(const QPoint &point);
-
-    /**
-      * Selects all of items provided in the list of indices.
-      * This should not remove the existing selection,
-      * but that has not been well-tested.
-      */
-    void listSelect(const QModelIndexList &indexList) const;
-
-    /**
-      * Determines if all the items are selected in a
-      * linear range defined starting at firstIndex and
-      * continuing for the number of row defined by rowCount.
-      * Since this is part of KCategorizedView, only the
-      * rows are varied.
-      */
-    bool rangeSelected(const QModelIndex &firstIndex, const int &rowCount) const;
-
     void _k_slotCollapseOrExpandClicked(QModelIndex);
 
     KCategorizedView *q;
     KCategorizedSortFilterProxyModel *proxyModel;
     KCategoryDrawer *categoryDrawer;
     KCategoryDrawerV2 *categoryDrawerV2;
+    KCategoryDrawerV3 *categoryDrawerV3;
     int categorySpacing;
     bool alternatingBlockColors;
     bool collapsibleBlocks;
 
+    Block *hoveredBlock;
+    QString hoveredCategory;
     QModelIndex hoveredIndex;
 
     QPoint pressedPosition;
     QRect rubberBandRect;
-    QModelIndexList pastSelected;
 
     QHash<QString, Block> blocks;
 };

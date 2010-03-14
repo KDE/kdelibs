@@ -25,6 +25,7 @@
 #include <QApplication>
 
 #include <kiconloader.h>
+#include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
 
 #define HORIZONTAL_HINT 3
@@ -70,7 +71,6 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
     QFont font(QApplication::font());
     font.setBold(true);
     const QFontMetrics fontMetrics = QFontMetrics(font);
-    //const int height = categoryHeight(index, option);
 
     QColor outlineColor = option.palette.text().color();
     outlineColor.setAlphaF(0.35);
@@ -206,24 +206,79 @@ KCategoryDrawerV2::~KCategoryDrawerV2()
 {
 }
 
-void KCategoryDrawerV2::mouseButtonPressed(const QModelIndex &index, QMouseEvent *)
+void KCategoryDrawerV2::mouseButtonPressed(const QModelIndex&, QMouseEvent *event)
 {
-    Q_UNUSED(index)
+    event->ignore();
 }
 
-void KCategoryDrawerV2::mouseButtonReleased(const QModelIndex &index, QMouseEvent *)
+void KCategoryDrawerV2::mouseButtonReleased(const QModelIndex&, QMouseEvent *event)
 {
-    Q_UNUSED(index)
+    event->ignore();
 }
 
-void KCategoryDrawerV2::mouseButtonMoved(const QModelIndex &index, QMouseEvent *)
+void KCategoryDrawerV2::mouseButtonMoved(const QModelIndex&, QMouseEvent *event)
 {
-    Q_UNUSED(index)
+    event->ignore();
 }
 
-void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *)
+void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex&, QMouseEvent *event)
 {
-    Q_UNUSED(index)
+    event->ignore();
+}
+
+class KCategoryDrawerV3::Private
+{
+public:
+    Private(KCategorizedView *view)
+        : view(view)
+    {
+    }
+
+    ~Private()
+    {
+    }
+
+    KCategorizedView *view;
+};
+
+KCategoryDrawerV3::KCategoryDrawerV3(KCategorizedView *view)
+    : KCategoryDrawerV2(view)
+    , d(new Private(view))
+{
+}
+
+KCategoryDrawerV3::~KCategoryDrawerV3()
+{
+    delete d;
+}
+
+KCategorizedView *KCategoryDrawerV3::view() const
+{
+    return d->view;
+}
+
+void KCategoryDrawerV3::mouseButtonPressed(const QModelIndex&, const QRect&, QMouseEvent *event)
+{
+    event->ignore();
+}
+
+void KCategoryDrawerV3::mouseButtonReleased(const QModelIndex&, const QRect&, QMouseEvent *event)
+{
+    event->ignore();
+}
+
+void KCategoryDrawerV3::mouseMoved(const QModelIndex&, const QRect&, QMouseEvent *event)
+{
+    event->ignore();
+}
+
+void KCategoryDrawerV3::mouseButtonDoubleClicked(const QModelIndex&, const QRect&, QMouseEvent *event)
+{
+    event->ignore();
+}
+
+void KCategoryDrawerV3::mouseLeft(const QModelIndex&, const QRect&)
+{
 }
 
 #include "kcategorydrawer.moc"

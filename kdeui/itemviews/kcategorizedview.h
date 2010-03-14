@@ -91,6 +91,9 @@ public:
       */
     virtual void setModel(QAbstractItemModel *model);
 
+    /**
+      * Calls to setGridSizeOwn().
+      */
     void setGridSize(const QSize &size);
 
     /**
@@ -137,34 +140,60 @@ public:
     void setCategoryDrawer(KCategoryDrawer *categoryDrawer);
 
     /**
+      * @return Category spacing. The spacing between categories.
+      *
       * @since 4.4
       */
     int categorySpacing() const;
 
     /**
+      * Stablishes the category spacing. This is the spacing between categories.
+      *
       * @since 4.4
       */
     void setCategorySpacing(int categorySpacing);
 
     /**
+      * @return Whether blocks should be drawn with alternating colors.
+      *
       * @since 4.4
       */
     bool alternatingBlockColors() const;
 
     /**
+      * Sets whether blocks should be drawn with alternating colors.
+      *
       * @since 4.4
       */
     void setAlternatingBlockColors(bool enable);
 
     /**
+      * @return Whether blocks can be collapsed or not.
+      *
       * @since 4.4
       */
     bool collapsibleBlocks() const;
 
     /**
+      * Sets whether blocks can be collapsed or not.
+      *
       * @since 4.4
       */
     void setCollapsibleBlocks(bool enable);
+
+    /**
+      * @return Block of indexes that are into @p category.
+      *
+      * @since 4.5
+      */
+    QModelIndexList block(const QString &category);
+
+    /**
+      * @return Block of indexes that are represented by @p representative.
+      *
+      * @since 4.5
+      */
+    QModelIndexList block(const QModelIndex &representative);
 
     /**
       * Reimplemented from QAbstractItemView.
