@@ -637,7 +637,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     styleListBox->addItems(filteredStyles);
 
     // Try to set the current style in the listbox to that previous.
-    int listPos = styles.indexOf(selectedStyle);
+    int listPos = filteredStyles.indexOf(selectedStyle.isEmpty() ?  i18nc("@item font", "Regular") : selectedStyle);
     if (listPos < 0) {
         // Make extra effort to have Italic selected when Oblique was chosen,
         // and vice versa, as that is what the user would probably want.
@@ -648,7 +648,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
             if (pos >= 0) {
                 QString style = selectedStyle;
                 style.replace(pos, styleIt.length(), styleOb);
-                listPos = styles.indexOf(style);
+                listPos = filteredStyles.indexOf(style);
                 if (listPos >= 0) break;
             }
             qSwap(styleIt, styleOb);
