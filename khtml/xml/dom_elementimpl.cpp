@@ -1421,6 +1421,10 @@ void XMLElementImpl::parseAttribute(AttributeImpl *attr)
         setHasID();
         document()->incDOMTreeVersion(DocumentImpl::TV_IDNameHref);
     }
+
+    // Note: we do not want to handle ATTR_CLASS here, since the
+    // class concept applies only to specific languages, like
+    // HTML and SVG, not generic XML.
 }
 
 // -------------------------------------------------------------------------
