@@ -188,8 +188,10 @@ void UploadDialog::Private::_k_licensesFetched(Attica::BaseJob* baseJob)
     Attica::ListJob<Attica::License>* licenseList = static_cast<Attica::ListJob<Attica::License>*>(baseJob);
     kDebug() << "Licenses size: " << licenseList->itemList().size();
     
+    ui.mLicenseCombo->clear();
+
     foreach(Attica::License license, licenseList->itemList()) {
-        kDebug() << license.id() << license.name() << license.url();
+        ui.mLicenseCombo->addItem(license.name(), license.id());
     }
 }
 
@@ -482,7 +484,17 @@ void UploadDialog::Private::_k_startUpload()
     QString summary = ui.mSummaryEdit->toPlainText();
     content.addAttribute("description", summary);
     content.addAttribute("version", ui.mVersionEdit->text());
-    content.addAttribute("license", ui.mLicenseCombo->currentText());
+
+    // for the license, if one of the licenses coming from the server was used, pass its id, otherwise the string
+    QString licenseId = ui.mLicenseCombo->itemData(ui.mLicenseCombo->currentIndex()).toString();
+    if (licenseId.isEmpty()) {
+        // use other as type and add the string as text
+        content.addAttribute("licensetype", "0");
+        content.addAttribute("license", ui.mLicenseCombo->currentText());
+    } else {
+        content.addAttribute("licensetype", licenseId);
+    }
+
     content.addAttribute("changelog", ui.changelog->toPlainText());
 
     // TODO: add additional attributes
