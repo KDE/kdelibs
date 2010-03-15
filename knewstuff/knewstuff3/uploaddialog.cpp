@@ -51,7 +51,6 @@ void UploadDialog::Private::init()
     q->connect(ui.radioUpdate, SIGNAL(toggled(bool)), q, SLOT(_k_updateContentsToggled(bool)));
 
     //Busy widget
-
     busyWidget = new KPixmapSequenceWidget();
     busyWidget->setSequence(KPixmapSequence("process-working", 22));
     busyWidget->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
@@ -125,7 +124,9 @@ void UploadDialog::Private::_k_updatePage()
     case FileNewUpdatePage:
         // FIXME: check if the file requester contains a valid file
         if (!uploadFile.isEmpty() || !ui.uploadFileRequester->url().isLocalFile()) {
-            nextEnabled = true;
+            if (ui.radioNewUpload->isChecked() || ui.userContentList->currentRow() >= 0) {
+                nextEnabled = true;
+            }
         }
         break;
 
@@ -235,6 +236,7 @@ void UploadDialog::Private::_k_userContentListLoaded(Attica::BaseJob* baseJob)
         contentItem->setData(Qt::UserRole, content.id());
         ui.userContentList->addItem(contentItem);
     }
+    ui.userContentList->setCurrentRow(0);
 }
 
 void UploadDialog::Private::_k_updatedContentFetched(Attica::BaseJob* baseJob)
