@@ -46,6 +46,7 @@ void UploadDialog::Private::init()
 
     atticaHelper = new AtticaHelper(q);
     q->connect(atticaHelper, SIGNAL(providersLoaded(QStringList)), q, SLOT(_k_providersLoaded(QStringList)));
+    q->connect(atticaHelper, SIGNAL(licensesLoaded(Attica::License::List)), q, SLOT(_k_licensesLoaded(Attica::License::List)));
     q->connect(atticaHelper, SIGNAL(categoriesLoaded(Attica::Category::List)), q, SLOT(_k_categoriesLoaded(Attica::Category::List)));
     q->connect(atticaHelper, SIGNAL(contentByCurrentUserLoaded(Attica::Content::List)), q, SLOT(_k_contentByCurrentUserLoaded(Attica::Content::List)));
     atticaHelper->init();
@@ -211,10 +212,12 @@ void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob
     }
 }
 
-void UploadDialog::Private::_k_licensesLoaded(const QStringList& licenses)
+void UploadDialog::Private::_k_licensesLoaded(const Attica::License::List& licenses)
 {
     ui.mLicenseCombo->clear();
-    ui.mLicenseCombo->addItems(licenses);
+    foreach (Attica::License license, licenses) {
+        ui.mLicenseCombo->addItem(license.name(), license.id());
+    }
 }
 
 void UploadDialog::Private::_k_contentByCurrentUserLoaded(const Attica::Content::List& contentList)

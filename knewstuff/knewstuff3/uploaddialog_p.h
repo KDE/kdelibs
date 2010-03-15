@@ -97,6 +97,7 @@ namespace KNS3 {
         // validation of login is done, go to next page if successfull, otherwise ask again
         void _k_checkCredentialsFinished(Attica::BaseJob*);
         void _k_categoriesLoaded(const Attica::Category::List& loadedCategories);
+        void _k_licensesLoaded(const Attica::License::List& licenses);
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
 
         void _k_contentAdded(Attica::BaseJob*);
@@ -113,7 +114,6 @@ namespace KNS3 {
 
         void _k_updatedContentFetched(Attica::BaseJob* baseJob);
 
-        void _k_licensesLoaded(const QStringList& licenses);
 
         void setBusy(const QString& message);
         void setIdle(const QString& message);
