@@ -28,6 +28,8 @@ set(knewstuff3_SRCS
     ui/ratingwidget.cpp
     attica/atticaprovider.cpp
     attica/atticajobwrapper.cpp
+
+    upload/atticahelper.cpp
     uploaddialog.cpp
 )
 

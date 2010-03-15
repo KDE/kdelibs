@@ -18,6 +18,9 @@
 #ifndef KNEWSTUFF3_UI_UPLOADDIALOG_P_H
 #define KNEWSTUFF3_UI_UPLOADDIALOG_P_H
 
+#include "upload/atticahelper.h"
+#include "ui_uploaddialog.h"
+
 #include <attica/providermanager.h>
 #include <attica/provider.h>
 #include <attica/category.h>
@@ -26,7 +29,6 @@
 #include <attica/license.h>
 #include <attica/postjob.h>
 
-#include "ui_uploaddialog.h"
 
 #define FinishButton KDialog::User1
 #define NextButton KDialog::User2
@@ -45,11 +47,7 @@ namespace KNS3 {
 
         Attica::Provider currentProvider()
         {
-            QString name(ui.providerComboBox->currentText());
-            if (name.isEmpty()) {
-                return Attica::Provider();
-            }
-            return providers[name];
+            return atticaHelper->provider();
         }
 
         UploadDialog* q;
@@ -66,12 +64,12 @@ namespace KNS3 {
         Ui::UploadDialog ui;
         KPixmapSequenceWidget* busyWidget;
 
-        Attica::ProviderManager providerManager;
-        QHash<QString, Attica::Provider> providers;
-        Attica::Category::List categories;
+        AtticaHelper* atticaHelper;
+
         KUrl uploadFile;
         KUrl previewFile;
         QStringList categoryNames;
+        Attica::Category::List categories;
         QString contentId;
         bool finished;
         bool finishedPreview;
@@ -93,12 +91,13 @@ namespace KNS3 {
         // after all has been done and said, do the uploading
         void _k_startUpload();
 
+        void _k_providersLoaded(const QStringList& providerNames);
         void _k_providerChanged(const QString& providerName);
 
         // validation of login is done, go to next page if successfull, otherwise ask again
         void _k_checkCredentialsFinished(Attica::BaseJob*);
-        void _k_categoriesLoaded(Attica::BaseJob* job);
-        void _k_providerAdded(const Attica::Provider& provider);
+        void _k_categoriesLoaded(const Attica::Category::List& loadedCategories);
+        void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
 
         void _k_contentAdded(Attica::BaseJob*);
         void _k_fileUploadFinished(Attica::BaseJob*);
@@ -110,18 +109,20 @@ namespace KNS3 {
         void _k_priceToggled(bool);
 
         void _k_updateContentsToggled(bool update);
-        void _k_userContentListLoaded(Attica::BaseJob* baseJob);
+
 
         void _k_updatedContentFetched(Attica::BaseJob* baseJob);
-        
-        void fetchLicenses();
-        void _k_licensesFetched(Attica::BaseJob* baseJob);
+
+        void _k_licensesLoaded(const QStringList& licenses);
 
         void setBusy(const QString& message);
         void setIdle(const QString& message);
 
         void fetchDownloadLink(const QString& contentId);
         void _k_downloadLinkFetched(Attica::BaseJob* baseJob);
+
+        void getAccountBalance();
+        void _k_accountBalanceFetched(Attica::BaseJob* baseJob);
     };
 }
 

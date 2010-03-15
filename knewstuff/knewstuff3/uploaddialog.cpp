@@ -43,8 +43,12 @@ void UploadDialog::Private::init()
     QWidget* _mainWidget = new QWidget(q);
     q->setMainWidget(_mainWidget);
     ui.setupUi(_mainWidget);
-    q->connect(&providerManager, SIGNAL(providerAdded(const Attica::Provider&)), q, SLOT(_k_providerAdded(const Attica::Provider&)));
-    providerManager.loadDefaultProviders();
+
+    atticaHelper = new AtticaHelper(q);
+    q->connect(atticaHelper, SIGNAL(providersLoaded(QStringList)), q, SLOT(_k_providersLoaded(QStringList)));
+    q->connect(atticaHelper, SIGNAL(categoriesLoaded(Attica::Category::List)), q, SLOT(_k_categoriesLoaded(Attica::Category::List)));
+    q->connect(atticaHelper, SIGNAL(contentByCurrentUserLoaded(Attica::Content::List)), q, SLOT(_k_contentByCurrentUserLoaded(Attica::Content::List)));
+    atticaHelper->init();
 
     q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
@@ -82,9 +86,8 @@ void UploadDialog::Private::_k_showPage(int page)
         break;
 
     case FileNewUpdatePage:
-        currentProvider().saveCredentials(ui.username->text(), ui.password->text());
+        atticaHelper->loadLicenses();
         ui.uploadButton->setFocus();
-        fetchLicenses();
         setBusy(i18n("Fetching license data from server..."));
         break;
 
@@ -165,6 +168,7 @@ void UploadDialog::Private::_k_updatePage()
 void UploadDialog::Private::_k_providerChanged(const QString& providerName)
 {
     // TODO: update username/password
+    atticaHelper->setCurrentProvider(providerName);
 }
 
 void UploadDialog::Private::_k_backPage()
@@ -196,13 +200,10 @@ void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob
     ui.password->setEnabled(true);
 
     if (baseJob->metadata().error() == Attica::Metadata::NoError) {
-        currentProvider().saveCredentials(ui.username->text(), ui.password->text());
+        atticaHelper->saveCredentials(ui.username->text(), ui.password->text());
         _k_showPage(FileNewUpdatePage);
 
-        // in case of updates we need the list of stuff that has been uploaded by the user before
-        Attica::ListJob<Attica::Content>* userContent = currentProvider().searchContentsByPerson(categories, ui.username->text());
-        q->connect(userContent, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_userContentListLoaded(Attica::BaseJob*)));
-        userContent->start();
+        atticaHelper->loadCategories(categoryNames);
         setBusy(i18n("Fetching your previously updated content..."));
     } else {
         // TODO check what the actual error is
@@ -210,34 +211,17 @@ void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob
     }
 }
 
-void UploadDialog::Private::fetchLicenses()
+void UploadDialog::Private::_k_licensesLoaded(const QStringList& licenses)
 {
-    // TODO       
-    Attica::ListJob<Attica::License> *licenseJob = currentProvider().requestLicenses();
-    q->connect(licenseJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_licensesFetched(Attica::BaseJob*)));
-    licenseJob->start();
-}
-
-void UploadDialog::Private::_k_licensesFetched(Attica::BaseJob* baseJob)
-{
-    Attica::ListJob<Attica::License>* licenseList = static_cast<Attica::ListJob<Attica::License>*>(baseJob);
-    kDebug() << "Licenses size: " << licenseList->itemList().size();
-    
     ui.mLicenseCombo->clear();
-
-    foreach(Attica::License license, licenseList->itemList()) {
-        ui.mLicenseCombo->addItem(license.name(), license.id());
-    }
+    ui.mLicenseCombo->addItems(licenses);
 }
 
-void UploadDialog::Private::_k_userContentListLoaded(Attica::BaseJob* baseJob)
+void UploadDialog::Private::_k_contentByCurrentUserLoaded(const Attica::Content::List& contentList)
 {
     setIdle(i18n("Fetching your previously updated content finished."));
-    Attica::ListJob<Attica::Content>* contentList = static_cast<Attica::ListJob<Attica::Content>*>(baseJob);
-    kDebug() << "Content size: " << contentList->itemList().size();
 
-    foreach(Attica::Content content, contentList->itemList()) {
-        kDebug() << content.name();
+    foreach(Attica::Content content, contentList) {
         QListWidgetItem *contentItem = new QListWidgetItem(content.name());
         contentItem->setData(Qt::UserRole, content.id());
         ui.userContentList->addItem(contentItem);
@@ -432,62 +416,44 @@ void UploadDialog::Private::_k_priceToggled(bool priceEnabled)
     ui.priceGroupBox->setEnabled(priceEnabled);
 }
 
-void UploadDialog::Private::_k_providerAdded(const Attica::Provider& provider)
+void UploadDialog::Private::_k_providersLoaded(const QStringList& providers)
 {
-    providers.insert(provider.name(), provider);
-    ui.providerComboBox->addItem(provider.name());
-    _k_updatePage();
-
-    Attica::ListJob<Attica::Category>* job = providers[provider.name()].requestCategories();
-    q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_categoriesLoaded(Attica::BaseJob*)));
-    job->start();
-
-    if (currentProvider().name() == provider.name() && providers[provider.name()].hasCredentials()) {
-        QString user;
-        QString pass;
-        if (providers[provider.name()].loadCredentials(user, pass)) {
-            ui.username->setText(user);
-            ui.password->setText(pass);
-        }
+    if (providers.size() == 0) {
+        kWarning() << "Could not load providers.";
+        return;
     }
+    ui.providerComboBox->addItems(providers);
+    ui.providerComboBox->setCurrentIndex(0);
+    atticaHelper->setCurrentProvider(providers.at(0));
+
+    QString user;
+    QString pass;
+    if (atticaHelper->loadCredentials(user, pass)) {
+        ui.username->setText(user);
+        ui.password->setText(pass);
+    }
+    _k_updatePage();
 }
 
-void UploadDialog::Private::_k_categoriesLoaded(Attica::BaseJob* job)
+void UploadDialog::Private::_k_categoriesLoaded(const Attica::Category::List& loadedCategories)
 {
-    kDebug() << "Loading Categories..." << categoryNames;
-
-    Attica::ListJob<Attica::Category>* listJob = static_cast<Attica::ListJob<Attica::Category>*>(job);
-    Attica::Category::List newCategories = listJob->itemList();
-
-    Q_FOREACH(const Attica::Category &category, newCategories) {
-        if (categoryNames.contains(category.name())) {
-            categories.append(category);
-            kDebug() << "found category: " << category.name();
-        }
-        else {
-            //kDebug() << "found invalid category: " << category.name();
-        }
-    }
+    categories = loadedCategories;
 
     // at least one category is needed
-    if (newCategories.count() == 0) {
-        if (categoryNames.size() > 0) {
+    if (categories.count() == 0) {
             KMessageBox::error(q,
-                               i18np("The server does not recognize the category %2 to which you are trying to upload.",
-                                     "The server does not recognize any of the categories to which you are trying to upload: %2",
-                                     categoryNames.size(), categoryNames.join(", ")),
-                               i18n("Error"));
+                     i18np("The server does not recognize the category %2 to which you are trying to upload.",
+                           "The server does not recognize any of the categories to which you are trying to upload: %2",
+                           categoryNames.size(), categoryNames.join(", ")),
+                           i18n("Error"));
             // close the dialog
             q->reject();
-        } else {
-            kWarning() << "No category was set in knsrc file. Adding all categories.";
-            Q_FOREACH(const Attica::Category &category, newCategories) {
-                ui.mCategoryCombo->addItem(category.name());
-                categoryNames.append(category.name());
-            }
-            categories = newCategories;
-        }
+            return;
     }
+    foreach(Attica::Category c, categories) {
+        ui.mCategoryCombo->addItem(c.name(), c.id());
+    }
+    atticaHelper->loadContentByCurrentUser();
 }
 
 void UploadDialog::accept()

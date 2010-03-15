@@ -164,20 +164,21 @@ private:
 
     Q_PRIVATE_SLOT( d, void _k_providerChanged(QString) )
     Q_PRIVATE_SLOT( d, void _k_checkCredentialsFinished(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_startUpload() )
-
-    Q_PRIVATE_SLOT( d, void _k_providerAdded(Attica::Provider) )
-    Q_PRIVATE_SLOT( d, void _k_categoriesLoaded(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_contentAdded(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_fileUploadFinished(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_previewUploadFinished(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_contentByCurrentUserLoaded(Attica::Content::List) )
+    Q_PRIVATE_SLOT( d, void _k_providersLoaded(QStringList) )
+    Q_PRIVATE_SLOT( d, void _k_categoriesLoaded(Attica::Category::List) )
+    Q_PRIVATE_SLOT( d, void _k_licensesLoaded(QStringList) )
 
     Q_PRIVATE_SLOT( d, void _k_previewChanged(const KUrl&) )
     Q_PRIVATE_SLOT( d, void _k_priceToggled(bool) )
     Q_PRIVATE_SLOT( d, void _k_updateContentsToggled(bool update) )
-    Q_PRIVATE_SLOT( d, void _k_userContentListLoaded(Attica::BaseJob*) )
+
+    Q_PRIVATE_SLOT( d, void _k_startUpload() )
+    Q_PRIVATE_SLOT( d, void _k_contentAdded(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_fileUploadFinished(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_previewUploadFinished(Attica::BaseJob*) )
+
     Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_licensesFetched(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_downloadLinkFetched(Attica::BaseJob* baseJob) )
 
     Q_DISABLE_COPY( UploadDialog )
