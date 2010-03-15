@@ -991,7 +991,7 @@ void KCategorizedView::mousePressEvent(QMouseEvent *event)
         const QPoint mousePos = viewport()->mapFromGlobal(QCursor::pos());
         if (option.rect.contains(mousePos)) {
             if (d->categoryDrawerV3) {
-                d->categoryDrawerV3->buttonPressed(categoryIndex, option.rect, event);
+                d->categoryDrawerV3->mouseButtonPressed(categoryIndex, option.rect, event);
             } else {
                 d->categoryDrawerV2->mouseButtonPressed(categoryIndex, event);
             }
@@ -1022,7 +1022,7 @@ void KCategorizedView::mouseReleaseEvent(QMouseEvent *event)
         const QPoint mousePos = viewport()->mapFromGlobal(QCursor::pos());
         if (option.rect.contains(mousePos)) {
             if (d->categoryDrawerV3) {
-                d->categoryDrawerV3->buttonReleased(categoryIndex, option.rect, event);
+                d->categoryDrawerV3->mouseButtonReleased(categoryIndex, option.rect, event);
             } else {
                 d->categoryDrawerV2->mouseButtonReleased(categoryIndex, event);
             }
