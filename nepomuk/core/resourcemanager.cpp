@@ -478,7 +478,15 @@ QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
         QString uuid = QUuid::createUuid().toString();
         uuid = uuid.mid(1, uuid.length()-2);
         QUrl uri = QUrl( QLatin1String("nepomuk:/") + type + QLatin1String("/") + uuid );
-        if ( !model->executeQuery( QString::fromLatin1("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
+        if ( !model->executeQuery( QString::fromLatin1("ask where { "
+                                                       "{ <%1> ?p1 ?o1 . } "
+                                                       "UNION "
+                                                       "{ ?s2 <%1> ?o2 . } "
+                                                       "UNION "
+                                                       "{ ?s3 ?p3 <%1> . } "
+                                                       "UNION "
+                                                       "{ graph <%1> { ?s4 ?4 ?o4 . } . } "
+                                                       "}")
                                    .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
             return uri;
         }
