@@ -253,11 +253,20 @@ void UploadDialog::Private::_k_updatedContentFetched(Attica::BaseJob* baseJob)
 
     ui.mSummaryEdit->setText(content.description());
     ui.mVersionEdit->setText(content.version());
-    ui.mLicenseCombo->setEditText(content.license());
     ui.changelog->setText(content.changelog());
     ui.priceCheckBox->setChecked(content.attribute("downloadbuy1") == "1");
     ui.priceSpinBox->setValue(content.attribute("downloadbuyprice1").toDouble());
     ui.priceReasonLineEdit->setText(content.attribute("downloadbuyreason1"));
+
+    bool conversionOk = false;
+    int licenseNumber = content.license().toInt(&conversionOk);
+    if (conversionOk) {
+        // check if that int is in list
+        int row = ui.mLicenseCombo->findData(licenseNumber, Qt::UserRole);
+        ui.mLicenseCombo->setCurrentIndex(row);
+    } else {
+        ui.mLicenseCombo->setEditText(content.license());
+    }
 }
 
 void UploadDialog::Private::_k_updateContentsToggled(bool update)
