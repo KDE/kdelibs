@@ -119,6 +119,9 @@ namespace KNS3 {
 
         void setBusy(const QString& message);
         void setIdle(const QString& message);
+
+        void fetchDownloadLink(const QString& contentId);
+        void _k_downloadLinkFetched(Attica::BaseJob* baseJob);
     };
 }
 

@@ -152,10 +152,6 @@ public:
 public Q_SLOTS:
     virtual void accept();
 
-private Q_SLOTS:
-
-
-
 private:
     bool init(const QString &configfile);
 
@@ -182,6 +178,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_userContentListLoaded(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_licensesFetched(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_downloadLinkFetched(Attica::BaseJob* baseJob) )
 
     Q_DISABLE_COPY( UploadDialog )
 };

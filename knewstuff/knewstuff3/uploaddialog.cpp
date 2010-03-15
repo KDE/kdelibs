@@ -94,7 +94,6 @@ void UploadDialog::Private::_k_showPage(int page)
         if (ui.radioUpdate->isChecked()) {
             // Fetch
             Attica::ItemJob<Attica::Content> *contentJob = currentProvider().requestContent(ui.userContentList->currentItem()->data(Qt::UserRole).toString());
-            kDebug() << "get contents... " << ui.userContentList->currentItem()->data(Qt::UserRole).toString();
             q->connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_updatedContentFetched(Attica::BaseJob*)));
             contentJob->start();
 
@@ -102,6 +101,13 @@ void UploadDialog::Private::_k_showPage(int page)
         }
 
         ui.mNameEdit->setFocus();
+        break;
+
+    case UploadFinalPage:
+        if (previewFile.isEmpty()) {
+            ui.uploadPreviewImageLabel->setVisible(false);
+            ui.uploadPreviewLabel->setVisible(false);
+        }
         break;
     }
 
@@ -267,6 +273,10 @@ void UploadDialog::Private::_k_updatedContentFetched(Attica::BaseJob* baseJob)
     } else {
         ui.mLicenseCombo->setEditText(content.license());
     }
+
+    ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + content.detailpage().toString() + QLatin1String("\">")
+                                       + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
+    ui.fetchContentLinkImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
 }
 
 void UploadDialog::Private::_k_updateContentsToggled(bool update)
@@ -518,8 +528,6 @@ void UploadDialog::Private::_k_startUpload()
         return;
     }
 
-    ui.mProgressLabel->setText(i18n("Creating Content on Server..."));
-
     // fill in the content object
     Attica::Content content;
     content.setName(ui.mNameEdit->text());
@@ -583,6 +591,8 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
         return;
     }
 
+    ui.createContentImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
+
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     QString id = job->result().id();
 
@@ -590,12 +600,14 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
 
     contentId = id;
 
-    ui.mProgressLabel->setText(ui.mProgressLabel->text() + '\n' + i18n("Uploading content..."));
     doUpload(QString(), uploadFile.toLocalFile());
 
     if (!previewFile.isEmpty()) {
-        ui.mProgressLabel->setText(ui.mProgressLabel->text() + '\n' + i18n("Uploading preview image and content..."));
         doUpload("1", previewFile.toLocalFile());
+    }
+
+    if (ui.radioNewUpload->isChecked()) {
+        fetchDownloadLink(contentId);
     }
 }
 
@@ -628,17 +640,15 @@ void UploadDialog::Private::doUpload(const QString& index, const QString& path)
 
 void UploadDialog::Private::_k_fileUploadFinished(Attica::BaseJob* )
 {
-    ui.mProgressLabel->setText(ui.mProgressLabel->text() + "\n\n" + i18n("Content file successfully uploaded."));
+    ui.uploadContentImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
     finishedContents = true;
-
     uploadFileFinished();
 }
 
 void UploadDialog::Private::_k_previewUploadFinished(Attica::BaseJob* )
 {
-    ui.mProgressLabel->setText(ui.mProgressLabel->text() + "\n\n" + i18n("Preview image successfully uploaded."));
+    ui.uploadPreviewImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
     finishedPreview = true;
-
     uploadFileFinished();
 }
 
@@ -651,6 +661,27 @@ void UploadDialog::Private::uploadFileFinished()
         ui.uploadProgressBar->setValue(100);
         _k_updatePage();
     }
+}
+
+void UploadDialog::Private::fetchDownloadLink(const QString& contentId)
+{
+    kDebug() << "link for  " << contentId;
+    Attica::ItemJob<Attica::Content> *contentJob = currentProvider().requestContent(contentId);
+    q->connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_downloadLinkFetched(Attica::BaseJob*)));
+    contentJob->start();
+}
+
+void UploadDialog::Private::_k_downloadLinkFetched(Attica::BaseJob* baseJob)
+{
+
+    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
+    Attica::Content content = contentItemJob->result();
+
+    kDebug() << "link done " << content.detailpage().toString();
+
+    ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + content.detailpage().toString() + QLatin1String("\">")
+                                       + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
+    ui.fetchContentLinkImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
 }
 
 #include "uploaddialog.moc"
