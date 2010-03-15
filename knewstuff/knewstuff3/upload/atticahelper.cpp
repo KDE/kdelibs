@@ -17,7 +17,7 @@
 
 #include "atticahelper.h"
 
-#include <KDebug>
+#include <kdebug.h>
 
 #include <attica/listjob.h>
 #include <attica/postjob.h>
