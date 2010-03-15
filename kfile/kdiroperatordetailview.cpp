@@ -85,6 +85,13 @@ bool KDirOperatorDetailView::setViewMode(KFile::FileView viewMode)
     
     setRootIsDecorated(tree);
     setItemsExpandable(tree);
+    // This allows to have a horizontal scrollbar in case this view is used as
+    // a plain treeview instead of cutting off filenames, especially useful when
+    // using KDirOperator in horizontally limited parts of an app.
+    if( tree && m_hideDetailColumns ) {
+        header()->setResizeMode( QHeaderView::ResizeToContents );
+        header()->setStretchLastSection( false );
+    }
     
     return true;
 }
