@@ -41,23 +41,29 @@ public:
 
     Attica::Provider provider();
 
+    void checkLogin(const QString& name, const QString& password);
     bool loadCredentials(QString& name, QString& password);
     bool saveCredentials(const QString& name, const QString& password);
     void loadCategories(const QStringList& configuredCategories);
     void loadContentByCurrentUser();
     void loadLicenses();
+    void loadDetailsLink(const QString& contentId);
 
 Q_SIGNALS:
+    void loginChecked(bool);
     void providersLoaded(const QStringList&);
     void categoriesLoaded(Attica::Category::List);
     void contentByCurrentUserLoaded(const Attica::Content::List&);
     void licensesLoaded(const Attica::License::List&);
+    void detailsLinkLoaded(const QUrl& url);
 
 private Q_SLOTS:
+    void checkLoginFinished(Attica::BaseJob* baseJob);
     void defaultProvidersLoaded();
     void categoriesLoaded(Attica::BaseJob* baseJob);
     void contentByCurrentUserLoaded(Attica::BaseJob* baseJob);
     void licensesLoaded(Attica::BaseJob* baseJob);
+    void detailsLinkLoaded(Attica::BaseJob* baseJob);
 
 private:
     Attica::ProviderManager providerManager;

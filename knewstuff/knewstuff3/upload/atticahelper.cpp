@@ -59,6 +59,18 @@ Attica::Provider AtticaHelper::provider()
     return currentProvider;
 }
 
+void AtticaHelper::checkLogin(const QString &name, const QString &password)
+{
+    Attica::PostJob* checkLoginJob = currentProvider.checkLogin(name, password);
+    connect(checkLoginJob, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(checkLoginFinished(Attica::BaseJob*)));
+    checkLoginJob->start();
+}
+
+void AtticaHelper::checkLoginFinished(Attica::BaseJob* baseJob)
+{
+    emit loginChecked(baseJob->metadata().error() == Attica::Metadata::NoError);
+}
+
 bool AtticaHelper::loadCredentials(QString &name, QString &password)
 {
     if (currentProvider.isValid() && currentProvider.hasCredentials()) {
@@ -131,6 +143,22 @@ void AtticaHelper::licensesLoaded(Attica::BaseJob* baseJob)
 {
     Attica::ListJob<Attica::License>* licenseList = static_cast<Attica::ListJob<Attica::License>*>(baseJob);
     emit licensesLoaded(licenseList->itemList());
+}
+
+
+void AtticaHelper::loadDetailsLink(const QString& contentId)
+{
+    Attica::ItemJob<Attica::Content> *contentJob = currentProvider.requestContent(contentId);
+    connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(detailsLinkLoaded(Attica::BaseJob*)));
+    contentJob->start();
+}
+
+void AtticaHelper::detailsLinkLoaded(Attica::BaseJob* baseJob)
+{
+    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
+    Attica::Content content = contentItemJob->result();
+
+    emit detailsLinkLoaded(content.detailpage());
 }
 
 #include "atticahelper.moc"

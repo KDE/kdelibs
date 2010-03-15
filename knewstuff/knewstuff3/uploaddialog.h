@@ -163,7 +163,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_updatePage() )
 
     Q_PRIVATE_SLOT( d, void _k_providerChanged(QString) )
-    Q_PRIVATE_SLOT( d, void _k_checkCredentialsFinished(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_checkCredentialsFinished(bool) )
     Q_PRIVATE_SLOT( d, void _k_contentByCurrentUserLoaded(Attica::Content::List) )
     Q_PRIVATE_SLOT( d, void _k_providersLoaded(QStringList) )
     Q_PRIVATE_SLOT( d, void _k_categoriesLoaded(Attica::Category::List) )
@@ -179,7 +179,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_previewUploadFinished(Attica::BaseJob*) )
 
     Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_downloadLinkFetched(Attica::BaseJob* baseJob) )
+    Q_PRIVATE_SLOT( d, void _k_detailsLinkLoaded(QUrl) )
 
     Q_DISABLE_COPY( UploadDialog )
 };

@@ -46,9 +46,11 @@ void UploadDialog::Private::init()
 
     atticaHelper = new AtticaHelper(q);
     q->connect(atticaHelper, SIGNAL(providersLoaded(QStringList)), q, SLOT(_k_providersLoaded(QStringList)));
+    q->connect(atticaHelper, SIGNAL(loginChecked(bool)), q, SLOT(_k_checkCredentialsFinished(bool)));
     q->connect(atticaHelper, SIGNAL(licensesLoaded(Attica::License::List)), q, SLOT(_k_licensesLoaded(Attica::License::List)));
     q->connect(atticaHelper, SIGNAL(categoriesLoaded(Attica::Category::List)), q, SLOT(_k_categoriesLoaded(Attica::Category::List)));
     q->connect(atticaHelper, SIGNAL(contentByCurrentUserLoaded(Attica::Content::List)), q, SLOT(_k_contentByCurrentUserLoaded(Attica::Content::List)));
+    q->connect(atticaHelper, SIGNAL(detailsLinkLoaded(QUrl)), q, SLOT(_k_detailsLinkLoaded(QUrl)));
     atticaHelper->init();
 
     q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
@@ -186,21 +188,19 @@ void UploadDialog::Private::_k_nextPage()
         ui.providerComboBox->setEnabled(false);
         ui.username->setEnabled(false);
         ui.password->setEnabled(false);
-        Attica::PostJob* checkLoginJob = currentProvider().checkLogin(ui.username->text(), ui.password->text());
-        q->connect(checkLoginJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_checkCredentialsFinished(Attica::BaseJob*)));
-        checkLoginJob->start();
+        atticaHelper->checkLogin(ui.username->text(), ui.password->text());
     } else {
         _k_showPage(ui.stackedWidget->currentIndex()+1);
     }
 }
 
-void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob)
+void UploadDialog::Private::_k_checkCredentialsFinished(bool success)
 {
     ui.providerComboBox->setEnabled(true);
     ui.username->setEnabled(true);
     ui.password->setEnabled(true);
 
-    if (baseJob->metadata().error() == Attica::Metadata::NoError) {
+    if (success) {
         atticaHelper->saveCredentials(ui.username->text(), ui.password->text());
         _k_showPage(FileNewUpdatePage);
 
@@ -576,7 +576,7 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
     }
 
     if (ui.radioNewUpload->isChecked()) {
-        fetchDownloadLink(contentId);
+        atticaHelper->loadDetailsLink(contentId);
     }
 }
 
@@ -632,23 +632,9 @@ void UploadDialog::Private::uploadFileFinished()
     }
 }
 
-void UploadDialog::Private::fetchDownloadLink(const QString& contentId)
+void UploadDialog::Private::_k_detailsLinkLoaded(const QUrl& url)
 {
-    kDebug() << "link for  " << contentId;
-    Attica::ItemJob<Attica::Content> *contentJob = currentProvider().requestContent(contentId);
-    q->connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_downloadLinkFetched(Attica::BaseJob*)));
-    contentJob->start();
-}
-
-void UploadDialog::Private::_k_downloadLinkFetched(Attica::BaseJob* baseJob)
-{
-
-    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
-    Attica::Content content = contentItemJob->result();
-
-    kDebug() << "link done " << content.detailpage().toString();
-
-    ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + content.detailpage().toString() + QLatin1String("\">")
+    ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + url.toString() + QLatin1String("\">")
                                        + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
     ui.fetchContentLinkImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
 }

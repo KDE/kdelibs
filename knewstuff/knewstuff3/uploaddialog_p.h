@@ -45,10 +45,6 @@ namespace KNS3 {
         {
         }
 
-        Attica::Provider currentProvider()
-        {
-            return atticaHelper->provider();
-        }
 
         UploadDialog* q;
 
@@ -60,6 +56,10 @@ namespace KNS3 {
             UploadFinalPage
         };
         WizardPage currentPage;
+
+        Attica::Provider currentProvider() {
+            return atticaHelper->provider();
+        }
 
         Ui::UploadDialog ui;
         KPixmapSequenceWidget* busyWidget;
@@ -95,7 +95,7 @@ namespace KNS3 {
         void _k_providerChanged(const QString& providerName);
 
         // validation of login is done, go to next page if successfull, otherwise ask again
-        void _k_checkCredentialsFinished(Attica::BaseJob*);
+        void _k_checkCredentialsFinished(bool);
         void _k_categoriesLoaded(const Attica::Category::List& loadedCategories);
         void _k_licensesLoaded(const Attica::License::List& licenses);
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
@@ -118,8 +118,7 @@ namespace KNS3 {
         void setBusy(const QString& message);
         void setIdle(const QString& message);
 
-        void fetchDownloadLink(const QString& contentId);
-        void _k_downloadLinkFetched(Attica::BaseJob* baseJob);
+        void _k_detailsLinkLoaded(const QUrl& url);
 
         void getAccountBalance();
         void _k_accountBalanceFetched(Attica::BaseJob* baseJob);
