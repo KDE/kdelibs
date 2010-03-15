@@ -30,6 +30,8 @@
 #include <kcomponentdata.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
+#include <kpixmapsequence.h>
+#include <kpixmapsequencewidget.h>
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
@@ -47,11 +49,33 @@ void UploadDialog::Private::init()
     q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
     q->connect(ui.radioUpdate, SIGNAL(toggled(bool)), q, SLOT(_k_updateContentsToggled(bool)));
+
+    //Busy widget
+
+    busyWidget = new KPixmapSequenceWidget();
+    busyWidget->setSequence(KPixmapSequence("process-working", 22));
+    busyWidget->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    ui.busyWidget->setLayout(new QHBoxLayout());
+    ui.busyWidget->layout()->addWidget(busyWidget);
+    busyWidget->setVisible(false);
+}
+
+void UploadDialog::Private::setBusy(const QString& message)
+{
+    ui.busyLabel->setText(message);
+    busyWidget->setVisible(true);
+}
+
+void UploadDialog::Private::setIdle(const QString& message)
+{
+    ui.busyLabel->setText(message);
+    busyWidget->setVisible(false);
 }
 
 void UploadDialog::Private::_k_showPage(int page)
 {
     ui.stackedWidget->setCurrentIndex(page);
+    setIdle(QString());
 
     switch (ui.stackedWidget->currentIndex()) {
     case UserPasswordPage:
@@ -62,6 +86,7 @@ void UploadDialog::Private::_k_showPage(int page)
         currentProvider().saveCredentials(ui.username->text(), ui.password->text());
         ui.uploadButton->setFocus();
         fetchLicenses();
+        setBusy(i18n("Fetching license data from server..."));
         break;
 
     case Details1Page:
@@ -73,6 +98,8 @@ void UploadDialog::Private::_k_showPage(int page)
             kDebug() << "get contents... " << ui.userContentList->currentItem()->data(Qt::UserRole).toString();
             q->connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_updatedContentFetched(Attica::BaseJob*)));
             contentJob->start();
+
+            setBusy(i18n("Fetching content data from server..."));
         }
 
         ui.mNameEdit->setFocus();
@@ -142,6 +169,7 @@ void UploadDialog::Private::_k_nextPage()
 {
     // TODO: validate credentials after user name/password have been entered
     if (ui.stackedWidget->currentIndex() == UserPasswordPage) {
+        setBusy(i18n("Checking login..."));
         q->button(NextButton)->setEnabled(false);
         ui.providerComboBox->setEnabled(false);
         ui.username->setEnabled(false);
@@ -168,10 +196,10 @@ void UploadDialog::Private::_k_checkCredentialsFinished(Attica::BaseJob* baseJob
         Attica::ListJob<Attica::Content>* userContent = currentProvider().searchContentsByPerson(categories, ui.username->text());
         q->connect(userContent, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_userContentListLoaded(Attica::BaseJob*)));
         userContent->start();
-
+        setBusy(i18n("Fetching your previously updated content..."));
     } else {
         // TODO check what the actual error is
-        KMessageBox::error(q, i18n("Could not verify login, please try again."), i18n("Error"));
+        setIdle(i18n("Could not verify login, please try again."));
     }
 }
 
@@ -197,6 +225,7 @@ void UploadDialog::Private::_k_licensesFetched(Attica::BaseJob* baseJob)
 
 void UploadDialog::Private::_k_userContentListLoaded(Attica::BaseJob* baseJob)
 {
+    setIdle(i18n("Fetching your previously updated content finished."));
     Attica::ListJob<Attica::Content>* contentList = static_cast<Attica::ListJob<Attica::Content>*>(baseJob);
     kDebug() << "Content size: " << contentList->itemList().size();
 
@@ -210,6 +239,8 @@ void UploadDialog::Private::_k_userContentListLoaded(Attica::BaseJob* baseJob)
 
 void UploadDialog::Private::_k_updatedContentFetched(Attica::BaseJob* baseJob)
 {
+    setIdle(i18n("Fetching content data from server finished."));
+
     Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
     Attica::Content content = contentItemJob->result();
 

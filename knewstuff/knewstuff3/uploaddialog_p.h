@@ -32,6 +32,8 @@
 #define NextButton KDialog::User2
 #define BackButton KDialog::User3
 
+class KPixmapSequenceWidget;
+
 namespace KNS3 {
     class UploadDialog::Private
     {
@@ -62,6 +64,7 @@ namespace KNS3 {
         WizardPage currentPage;
 
         Ui::UploadDialog ui;
+        KPixmapSequenceWidget* busyWidget;
 
         Attica::ProviderManager providerManager;
         QHash<QString, Attica::Provider> providers;
@@ -113,6 +116,9 @@ namespace KNS3 {
         
         void fetchLicenses();
         void _k_licensesFetched(Attica::BaseJob* baseJob);
+
+        void setBusy(const QString& message);
+        void setIdle(const QString& message);
     };
 }
 
