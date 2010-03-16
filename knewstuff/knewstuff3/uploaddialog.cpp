@@ -168,10 +168,38 @@ void UploadDialog::Private::_k_updatePage()
     }
 }
 
+void UploadDialog::Private::_k_providersLoaded(const QStringList& providers)
+{
+    if (providers.size() == 0) {
+        kWarning() << "Could not load providers.";
+        return;
+    }
+    ui.providerComboBox->addItems(providers);
+    ui.providerComboBox->setCurrentIndex(0);
+    atticaHelper->setCurrentProvider(providers.at(0));
+
+    QString user;
+    QString pass;
+    if (atticaHelper->loadCredentials(user, pass)) {
+        ui.username->setText(user);
+        ui.password->setText(pass);
+    }
+    _k_updatePage();
+}
+
 void UploadDialog::Private::_k_providerChanged(const QString& providerName)
 {
-    // TODO: update username/password
     atticaHelper->setCurrentProvider(providerName);
+    ui.username->clear();
+    ui.password->clear();
+    QString user;
+    QString pass;
+    if (atticaHelper->loadCredentials(user, pass)) {
+        ui.username->setText(user);
+        ui.password->setText(pass);
+    }
+    _k_updatePage();
+
 }
 
 void UploadDialog::Private::_k_backPage()
@@ -417,25 +445,6 @@ void UploadDialog::setVersion(const QString& version)
 void UploadDialog::Private::_k_priceToggled(bool priceEnabled)
 {
     ui.priceGroupBox->setEnabled(priceEnabled);
-}
-
-void UploadDialog::Private::_k_providersLoaded(const QStringList& providers)
-{
-    if (providers.size() == 0) {
-        kWarning() << "Could not load providers.";
-        return;
-    }
-    ui.providerComboBox->addItems(providers);
-    ui.providerComboBox->setCurrentIndex(0);
-    atticaHelper->setCurrentProvider(providers.at(0));
-
-    QString user;
-    QString pass;
-    if (atticaHelper->loadCredentials(user, pass)) {
-        ui.username->setText(user);
-        ui.password->setText(pass);
-    }
-    _k_updatePage();
 }
 
 void UploadDialog::Private::_k_categoriesLoaded(const Attica::Category::List& loadedCategories)
