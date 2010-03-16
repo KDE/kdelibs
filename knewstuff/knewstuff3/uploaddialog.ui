@@ -53,7 +53,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -413,7 +413,7 @@
           <item row="0" column="2">
            <widget class="QLabel" name="priceCurrency">
             <property name="text">
-             <string>USD</string>
+             <string/>
             </property>
            </widget>
           </item>

@@ -98,6 +98,7 @@ namespace KNS3 {
         void _k_checkCredentialsFinished(bool);
         void _k_categoriesLoaded(const Attica::Category::List& loadedCategories);
         void _k_licensesLoaded(const Attica::License::List& licenses);
+        void _k_currencyLoaded(const QString& currency);
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
         void _k_updatedContentFetched(const Attica::Content& content);
 

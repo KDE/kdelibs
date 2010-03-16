@@ -21,6 +21,7 @@
 
 #include <attica/listjob.h>
 #include <attica/postjob.h>
+#include <attica/accountbalance.h>
 
 using namespace KNS3;
 
@@ -174,5 +175,18 @@ void AtticaHelper::contentLoaded(Attica::BaseJob* baseJob)
     emit contentLoaded(contentItemJob->result());
 }
 
+void AtticaHelper::loadCurrency()
+{
+    Attica::ItemJob<Attica::AccountBalance> *job = currentProvider.requestAccountBalance();
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(currencyLoaded(Attica::BaseJob*)));
+    job->start();
+}
+
+void AtticaHelper::currencyLoaded(Attica::BaseJob *baseJob)
+{
+    Attica::ItemJob<Attica::AccountBalance>* balanceJob = static_cast<Attica::ItemJob<Attica::AccountBalance>* >(baseJob);
+    Attica::AccountBalance balance = balanceJob->result();
+    emit currencyLoaded(balance.currency());
+}
 
 #include "atticahelper.moc"

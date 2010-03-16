@@ -49,6 +49,7 @@ public:
     void loadLicenses();
     void loadDetailsLink(const QString& contentId);
     void loadContent(const QString& contentId);
+    void loadCurrency();
 
 Q_SIGNALS:
     void loginChecked(bool);
@@ -56,8 +57,9 @@ Q_SIGNALS:
     void categoriesLoaded(Attica::Category::List);
     void contentByCurrentUserLoaded(const Attica::Content::List&);
     void licensesLoaded(const Attica::License::List&);
-    void detailsLinkLoaded(const QUrl& url);
+    void detailsLinkLoaded(const QUrl&);
     void contentLoaded(const Attica::Content&);
+    void currencyLoaded(const QString&);
 
 private Q_SLOTS:
     void checkLoginFinished(Attica::BaseJob* baseJob);
@@ -67,6 +69,7 @@ private Q_SLOTS:
     void licensesLoaded(Attica::BaseJob* baseJob);
     void detailsLinkLoaded(Attica::BaseJob* baseJob);
     void contentLoaded(Attica::BaseJob* baseJob);
+    void currencyLoaded(Attica::BaseJob* baseJob);
 
 private:
     Attica::ProviderManager providerManager;

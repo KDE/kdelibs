@@ -52,6 +52,7 @@ void UploadDialog::Private::init()
     q->connect(atticaHelper, SIGNAL(contentByCurrentUserLoaded(Attica::Content::List)), q, SLOT(_k_contentByCurrentUserLoaded(Attica::Content::List)));
     q->connect(atticaHelper, SIGNAL(contentLoaded(Attica::Content)), q, SLOT(_k_updatedContentFetched(Attica::Content)));
     q->connect(atticaHelper, SIGNAL(detailsLinkLoaded(QUrl)), q, SLOT(_k_detailsLinkLoaded(QUrl)));
+    q->connect(atticaHelper, SIGNAL(currencyLoaded(QString)), q, SLOT(_k_currencyLoaded(QString)));
     atticaHelper->init();
 
     q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
@@ -91,6 +92,7 @@ void UploadDialog::Private::_k_showPage(int page)
 
     case FileNewUpdatePage:
         atticaHelper->loadLicenses();
+        atticaHelper->loadCurrency();
         ui.uploadButton->setFocus();
         setBusy(i18n("Fetching license data from server..."));
         break;
@@ -243,6 +245,11 @@ void UploadDialog::Private::_k_licensesLoaded(const Attica::License::List& licen
     foreach (Attica::License license, licenses) {
         ui.mLicenseCombo->addItem(license.name(), license.id());
     }
+}
+
+void UploadDialog::Private::_k_currencyLoaded(const QString& currency)
+{
+    ui.priceCurrency->setText(currency);
 }
 
 void UploadDialog::Private::_k_contentByCurrentUserLoaded(const Attica::Content::List& contentList)

@@ -168,6 +168,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_providersLoaded(QStringList) )
     Q_PRIVATE_SLOT( d, void _k_categoriesLoaded(Attica::Category::List) )
     Q_PRIVATE_SLOT( d, void _k_licensesLoaded(Attica::License::List) )
+    Q_PRIVATE_SLOT( d, void _k_currencyLoaded(QString) )
 
     Q_PRIVATE_SLOT( d, void _k_previewChanged(const KUrl&) )
     Q_PRIVATE_SLOT( d, void _k_priceToggled(bool) )
