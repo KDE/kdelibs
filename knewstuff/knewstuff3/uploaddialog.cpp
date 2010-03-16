@@ -50,6 +50,7 @@ void UploadDialog::Private::init()
     q->connect(atticaHelper, SIGNAL(licensesLoaded(Attica::License::List)), q, SLOT(_k_licensesLoaded(Attica::License::List)));
     q->connect(atticaHelper, SIGNAL(categoriesLoaded(Attica::Category::List)), q, SLOT(_k_categoriesLoaded(Attica::Category::List)));
     q->connect(atticaHelper, SIGNAL(contentByCurrentUserLoaded(Attica::Content::List)), q, SLOT(_k_contentByCurrentUserLoaded(Attica::Content::List)));
+    q->connect(atticaHelper, SIGNAL(contentLoaded(Attica::Content)), q, SLOT(_k_updatedContentFetched(Attica::Content)));
     q->connect(atticaHelper, SIGNAL(detailsLinkLoaded(QUrl)), q, SLOT(_k_detailsLinkLoaded(QUrl)));
     atticaHelper->init();
 
@@ -99,10 +100,7 @@ void UploadDialog::Private::_k_showPage(int page)
 
         if (ui.radioUpdate->isChecked()) {
             // Fetch
-            Attica::ItemJob<Attica::Content> *contentJob = currentProvider().requestContent(ui.userContentList->currentItem()->data(Qt::UserRole).toString());
-            q->connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_updatedContentFetched(Attica::BaseJob*)));
-            contentJob->start();
-
+            atticaHelper->loadContent(ui.userContentList->currentItem()->data(Qt::UserRole).toString());
             setBusy(i18n("Fetching content data from server..."));
         }
 
@@ -199,7 +197,6 @@ void UploadDialog::Private::_k_providerChanged(const QString& providerName)
         ui.password->setText(pass);
     }
     _k_updatePage();
-
 }
 
 void UploadDialog::Private::_k_backPage()
@@ -260,18 +257,12 @@ void UploadDialog::Private::_k_contentByCurrentUserLoaded(const Attica::Content:
     ui.userContentList->setCurrentRow(0);
 }
 
-void UploadDialog::Private::_k_updatedContentFetched(Attica::BaseJob* baseJob)
+void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& content)
 {
     setIdle(i18n("Fetching content data from server finished."));
 
-    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
-    Attica::Content content = contentItemJob->result();
-
-    kDebug() << "Content " << content.name();
-
     // fill in ui
     ui.mNameEdit->setText(content.name());
-
     ui.mSummaryEdit->setText(content.description());
     ui.mVersionEdit->setText(content.version());
     ui.changelog->setText(content.changelog());
@@ -386,7 +377,6 @@ bool UploadDialog::init(const QString &configfile)
     }
 
     kDebug() << "Categories: " << d->categoryNames;
-
 
     d->_k_showPage(0);
 

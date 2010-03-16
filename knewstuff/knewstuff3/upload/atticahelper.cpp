@@ -161,4 +161,18 @@ void AtticaHelper::detailsLinkLoaded(Attica::BaseJob* baseJob)
     emit detailsLinkLoaded(content.detailpage());
 }
 
+void AtticaHelper::loadContent(const QString& contentId)
+{
+    Attica::ItemJob<Attica::Content> *contentJob = currentProvider.requestContent(contentId);
+    connect(contentJob, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(contentLoaded(Attica::BaseJob*)));
+    contentJob->start();
+}
+
+void AtticaHelper::contentLoaded(Attica::BaseJob* baseJob)
+{
+    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
+    emit contentLoaded(contentItemJob->result());
+}
+
+
 #include "atticahelper.moc"

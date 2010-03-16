@@ -178,7 +178,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_fileUploadFinished(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_previewUploadFinished(Attica::BaseJob*) )
 
-    Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::Content) )
     Q_PRIVATE_SLOT( d, void _k_detailsLinkLoaded(QUrl) )
 
     Q_DISABLE_COPY( UploadDialog )

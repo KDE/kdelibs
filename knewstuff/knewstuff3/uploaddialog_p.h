@@ -99,6 +99,7 @@ namespace KNS3 {
         void _k_categoriesLoaded(const Attica::Category::List& loadedCategories);
         void _k_licensesLoaded(const Attica::License::List& licenses);
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
+        void _k_updatedContentFetched(const Attica::Content& content);
 
         void _k_contentAdded(Attica::BaseJob*);
         void _k_fileUploadFinished(Attica::BaseJob*);
@@ -112,7 +113,6 @@ namespace KNS3 {
         void _k_updateContentsToggled(bool update);
 
 
-        void _k_updatedContentFetched(Attica::BaseJob* baseJob);
 
 
         void setBusy(const QString& message);
