@@ -578,20 +578,13 @@ KHTMLPart::~KHTMLPart()
   KConfigGroup config( KGlobal::config(), "HTML Settings" );
   config.writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
 
-  // avoid side-effects from setFocus calls in the rest of the dtor (#194850)
-  if (d->m_manager) // the PartManager for this part's children
-  {
+  if (d->m_manager) { // the PartManager for this part's children
     d->m_manager->removePart(this);
   }
 
   slotWalletClosed();
   if (!parentPart()) { // only delete it if the top khtml_part closes
     removeJSErrorExtension();
-  }
-
-  if (manager()) // the PartManager that this part is in
-  {
-    manager()->removePart(this); // ~Part does this, but we have to do it before
   }
 
   stopAutoScroll();
