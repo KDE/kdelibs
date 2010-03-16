@@ -60,10 +60,11 @@ K_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf)
 
 class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
-    KBookmarkMap( KBookmarkManager * );
-    void update();
+    KBookmarkMap() : m_mapNeedsUpdate(true) {}
+    void setNeedsUpdate() { m_mapNeedsUpdate = true; }
+    void update(KBookmarkManager*);
     QList<KBookmark> find( const QString &url ) const
-    { return m_bk_map[url]; }
+    { return m_bk_map.value(url); }
 private:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &) { ; }
@@ -71,35 +72,18 @@ private:
 private:
     typedef QList<KBookmark> KBookmarkList;
     QMap<QString, KBookmarkList> m_bk_map;
-    KBookmarkManager *m_manager;
+    bool m_mapNeedsUpdate;
 };
 
-class KBookmarkMapStatic
+void KBookmarkMap::update(KBookmarkManager *manager)
 {
-public:
-    KBookmarkMapStatic()
-        : map( 0 )
-    {
+    if (m_mapNeedsUpdate) {
+        m_mapNeedsUpdate = false;
+
+        m_bk_map.clear();
+        KBookmarkGroup root = manager->root();
+        traverse(root);
     }
-    ~KBookmarkMapStatic()
-    {
-        delete map;
-    }
-
-    KBookmarkMap *map;
-};
-
-K_GLOBAL_STATIC(KBookmarkMapStatic, s_bk)
-
-KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) {
-    m_manager = manager;
-}
-
-void KBookmarkMap::update()
-{
-    m_bk_map.clear();
-    KBookmarkGroup root = m_manager->root();
-    traverse(root);
 }
 
 void KBookmarkMap::visit(const KBookmark &bk)
@@ -123,13 +107,12 @@ public:
       , m_browserEditor(false)
       , m_typeExternal(false)
       , m_kDirWatch(0)
-
     {}
 
     ~Private() {
         delete m_kDirWatch;
-    }    
-    
+    }
+
     mutable QDomDocument m_doc;
     mutable QDomDocument m_toolbarDoc;
     QString m_bookmarksFile;
@@ -139,10 +122,11 @@ public:
 
     bool m_browserEditor;
     QString m_editorCaption;
-    
+
     bool m_typeExternal;
     KDirWatch * m_kDirWatch;  // for external bookmark files
 
+    KBookmarkMap m_map;
 };
 
 // ################
@@ -155,7 +139,7 @@ static KBookmarkManager* lookupExisting(const QString& bookmarksFile)
         if ( (*bmit)->path() == bookmarksFile )
             return *bmit;
     }
-    return 0; 
+    return 0;
 }
 
 
@@ -165,7 +149,7 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
     {
         QReadLocker readLock(&s_pSelf->lock);
         mgr = lookupExisting(bookmarksFile);
-        if (mgr) { 
+        if (mgr) {
             return mgr;
         }
     }
@@ -187,7 +171,7 @@ KBookmarkManager* KBookmarkManager::managerForExternalFile( const QString& bookm
     {
         QReadLocker readLock(&s_pSelf->lock);
         mgr = lookupExisting(bookmarksFile);
-        if (mgr) { 
+        if (mgr) {
             return mgr;
         }
     }
@@ -277,7 +261,7 @@ KBookmarkManager::KBookmarkManager(const QString & bookmarksFile)
     QObject::connect( d->m_kDirWatch, SIGNAL(deleted(const QString&)),
             this, SLOT(slotFileChanged(const QString&)));
     kDebug(7043) << "starting KDirWatch for " << d->m_bookmarksFile;
-}  
+}
 
 KBookmarkManager::KBookmarkManager( )
     : d(new Private(true))
@@ -313,7 +297,7 @@ void KBookmarkManager::slotFileChanged(const QString& path)
         parse();
         // Tell our GUI
         // (emit where group is "" to directly mark the root menu as dirty)
-        emit changed( "", QString() );      
+        emit changed( "", QString() );
     }
 }
 
@@ -390,9 +374,8 @@ void KBookmarkManager::parse() const
     d->m_doc.insertBefore( pi, docElem );
 
     file.close();
-    if ( !s_bk->map )
-        s_bk->map = new KBookmarkMap( const_cast<KBookmarkManager*>( this ) );
-    s_bk->map->update();
+
+    d->m_map.setNeedsUpdate();
 }
 
 bool KBookmarkManager::save( bool toolbarCache ) const
@@ -636,12 +619,8 @@ void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 ///////
 bool KBookmarkManager::updateAccessMetadata( const QString & url )
 {
-    if (!s_bk->map) {
-        s_bk->map = new KBookmarkMap(this);
-        s_bk->map->update();
-    }
-
-    QList<KBookmark> list = s_bk->map->find(url);
+    d->m_map.update(this);
+    QList<KBookmark> list = d->m_map.find(url);
     if ( list.count() == 0 )
         return false;
 
@@ -654,14 +633,8 @@ bool KBookmarkManager::updateAccessMetadata( const QString & url )
 
 void KBookmarkManager::updateFavicon( const QString &url, const QString &faviconurl )
 {
-    Q_UNUSED(faviconurl);
-
-    if (!s_bk->map) {
-        s_bk->map = new KBookmarkMap(this);
-        s_bk->map->update();
-    }
-
-    QList<KBookmark> list = s_bk->map->find(url);
+    d->m_map.update(this);
+    QList<KBookmark> list = d->m_map.find(url);
     for ( QList<KBookmark>::iterator it = list.begin();
           it != list.end(); ++it )
     {
