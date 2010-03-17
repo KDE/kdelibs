@@ -1,11 +1,13 @@
 [Desktop Entry]
 Type=Service
 Name=Network Proxy Configuration
+Name[bg]=Настройки на мрежови посредник
 Name[de]=Netzwerk-Proxy-Einrichtung
 Name[en_GB]=Network Proxy Configuration
 Name[es]=Configuración del proxy de la red
 Name[hr]=Podešavanje mrežnog proxyja
 Name[is]=Stillingar milliþjóna (proxy)
+Name[km]=ការ​កំណត់​រចនាសម្ព័ន្ធ​ប្រូកស៊ី​បណ្ដាញ
 Name[nb]=Oppsett for mellomtjener
 Name[pt]=Configuração do 'Proxy' de Rede
 Name[pt_BR]=Configuração do proxy de rede
@@ -20,7 +22,7 @@ Comment[as]=স্বয়ংক্ৰিয় নিযুক্তকৰ বিন
 Comment[ast]=Configuración automática del proxy
 Comment[be]=Аўтаматычнае настаўленне проксі
 Comment[be@latin]=Aŭtamatyčnaje naładžvańnie proxy
-Comment[bg]=Автоматично настройване на прокси сървъра
+Comment[bg]=Автоматично настройване на мрежови посредник
 Comment[bn]=স্বয়ংক্রিয় প্রক্সি কনফিগারেশন
 Comment[bn_IN]=স্বয়ংক্রিয় প্রক্সি কনফিগারেশন ব্যবস্থা
 Comment[br]=Kefluniadur emgefreekh ar proksi
