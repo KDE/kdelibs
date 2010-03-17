@@ -337,6 +337,9 @@ set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kg
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
 install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
+set(knotify_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.KNotify.xml)
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
+
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY})

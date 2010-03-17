@@ -31,12 +31,14 @@
 #include <kconfig.h>
 #include <klocale.h>
 
+#include "knotify_interface.h"
+
 typedef QHash<QString,QString> Dict;
 
 struct KNotificationManager::Private
 {
     QHash<int , KNotification*> notifications;
-    QDBusInterface *knotify;
+    org::kde::KNotify *knotify;
 };
 
 KNotificationManager * KNotificationManager::self()
@@ -58,16 +60,11 @@ KNotificationManager::KNotificationManager()
         }
     }
     d->knotify =
-        new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"), QLatin1String("org.kde.KNotify"), QDBusConnection::sessionBus(), this);
-    d->knotify->connection().connect(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
-                           QLatin1String("org.kde.KNotify"),
-                           QLatin1String("notificationClosed"),
+        new org::kde::KNotify(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"), QDBusConnection::sessionBus(), this);
+    connect(d->knotify, SIGNAL(notificationClosed(int)),
                            this, SLOT(notificationClosed(int)));
-    d->knotify->connection().connect(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
-                           QLatin1String("org.kde.KNotify"),
-                           QLatin1String("notificationActivated"),
+    connect(d->knotify, SIGNAL(notificationActivated(int,int)),
                            this, SLOT(notificationActivated(int,int)));
-
 }
 
 
@@ -105,7 +102,7 @@ void KNotificationManager::close( int id, bool force )
 	if(force || d->notifications.contains(id)) {
 		d->notifications.remove(id);
 		kDebug( 299 ) << id;
-		d->knotify->call(QDBus::NoBlock, "closeNotification", id);
+		d->knotify->closeNotification(id);
 	}
 }
 
@@ -161,7 +158,7 @@ void KNotificationManager::update(KNotification * n, int id)
         n->pixmap().save(&buffer, "PNG");
     }
 
-	d->knotify->call(QDBus::NoBlock, "update", id, n->title(), n->text(), pixmapData , n->actions() );
+    d->knotify->update(id, n->title(), n->text(), pixmapData , n->actions() );
 }
 
 void KNotificationManager::reemit(KNotification * n, int id)
@@ -176,7 +173,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 		contextList << vl;
 	}
 
-	d->knotify->call(QDBus::NoBlock, "reemit", id, contextList);
+	d->knotify->reemit(id, contextList);
 }
 
 

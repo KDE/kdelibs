@@ -1,0 +1,41 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.KNotify">
+    <signal name="notificationClosed">
+      <arg name="id" type="i" direction="out"/>
+    </signal>
+    <signal name="notificationActivated">
+      <arg name="id" type="i" direction="out"/>
+      <arg name="action" type="i" direction="out"/>
+    </signal>
+    <method name="reconfigure">
+    </method>
+    <method name="closeNotification">
+      <arg name="id" type="i" direction="in"/>
+    </method>
+    <method name="event">
+      <arg type="i" direction="out"/>
+      <arg name="event" type="s" direction="in"/>
+      <arg name="fromApp" type="s" direction="in"/>
+      <arg name="contexts" type="av" direction="in"/>
+      <arg name="title" type="s" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+      <arg name="pixmap" type="ay" direction="in"/>
+      <arg name="actions" type="as" direction="in"/>
+      <arg name="timeout" type="i" direction="in"/>
+      <arg name="winId" type="x" direction="in"/>
+    </method>
+    <method name="update">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="title" type="s" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+      <arg name="pixmap" type="ay" direction="in"/>
+      <arg name="actions" type="as" direction="in"/>
+    </method>
+    <method name="reemit">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="contexts" type="av" direction="in"/>
+    </method>
+  </interface>
+</node>
