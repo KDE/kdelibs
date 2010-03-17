@@ -1325,9 +1325,8 @@ void KCategorizedView::updateGeometries()
 {
     const int verticalOff = verticalOffset();
 
-    QListView::updateGeometries();
-
     if (!d->isCategorized()) {
+        QListView::updateGeometries();
         return;
     }
 
