@@ -170,19 +170,21 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
         QString authorName = index.data(ItemsModel::kAuthorName).toString();
         QString email = index.data(ItemsModel::kAuthorEmail).toString();
+        QString authorPage = index.data(ItemsModel::kAuthorHomepage).toString();
+
         if (!authorName.isEmpty()) {
-            if (email.isEmpty()) {
-                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + "</p>\n";
-            } else {
+            if (!authorPage.isEmpty()) {
+                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", " <a href=\"" + authorPage + "\">" + authorName + "</a></p>\n");
+            } else if (!email.isEmpty()) {
                 text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + " <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
+            } else {
+                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + "</p>\n";
             }
         }
 
         QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
             Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
         text += summary;
-
-
 
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
         if (downloads > 0) {

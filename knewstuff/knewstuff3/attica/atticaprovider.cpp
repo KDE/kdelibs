@@ -283,6 +283,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setLicense(content.license());
         Author author;
         author.setName(content.author());
+        author.setHomepage(content.attribute("profilepage"));
         entry.setAuthor(author);
 
         entry.setSource(KNS3::EntryInternal::Online);
