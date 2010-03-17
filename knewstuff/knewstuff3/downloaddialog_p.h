@@ -66,6 +66,8 @@ public:
     QSet<QString> categories;
     QSet<QString> providers;
 
+    QString m_configFile;
+
     DownloadDialogPrivate();
     ~DownloadDialogPrivate();
     void init(const QString& configFile);
@@ -88,6 +90,8 @@ public Q_SLOTS:
     void slotInfo(QString provider, QString server, QString version);
     void slotError(const QString& message);
     void scrollbarValueChanged(int value);
+
+    void slotUpload();
 
 Q_SIGNALS:
     void signalRequestMoreData();

@@ -32,6 +32,8 @@
 #include <ktitlewidget.h>
 #include <kdebug.h>
 
+#include <knewstuff3/uploaddialog.h>
+
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
 
@@ -163,6 +165,7 @@ void DownloadDialogPrivate::scrollbarValueChanged(int value)
 
 void DownloadDialogPrivate::init(const QString& configFile)
 {
+    m_configFile = configFile;
     engine->init(configFile);
 
     // Entries have been fetched and should be shown:
@@ -216,6 +219,7 @@ void DownloadDialogPrivate::init(const QString& configFile)
 
     connect(engine, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
     connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
+    connect(ui.m_uploadButton, SIGNAL(clicked()), this, SLOT(slotUpload()));
 }
 
 void DownloadDialogPrivate::slotEntriesLoaded(const EntryInternal::List& entries)
@@ -247,6 +251,13 @@ void DownloadDialogPrivate::displayMessage(const QString & msg, KTitleWidget::Me
         //kDebug(551) << "starting the message timer for " << timeOutMs;
         messageTimer->start(timeOutMs);
     }
+}
+
+void DownloadDialogPrivate::slotUpload()
+{
+    kDebug() << "do upload";
+    UploadDialog dialog(m_configFile, ui.m_uploadButton);
+    dialog.exec();
 }
 
 #include "downloaddialog_p.moc"
