@@ -53,7 +53,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -324,30 +324,17 @@
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Preview</string>
+          <string>Preview Images</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Preview Image:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>mPreviewUrl</cstring>
-            </property>
-           </widget>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="2" column="0">
+           <widget class="KUrlRequester" name="previewUrl1"/>
           </item>
-          <item row="0" column="1">
-           <widget class="KUrlRequester" name="mPreviewUrl"/>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="mImagePreview">
+          <item row="1" column="0">
+           <widget class="QLabel" name="previewImage1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>100</horstretch>
@@ -360,13 +347,81 @@
               <height>50</height>
              </size>
             </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="previewImage2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>100</horstretch>
+              <verstretch>100</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="previewImage3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>100</horstretch>
+              <verstretch>100</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="KUrlRequester" name="previewUrl2"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="KUrlRequester" name="previewUrl3"/>
           </item>
          </layout>
         </widget>
@@ -508,7 +563,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="uploadPreviewImageLabel">
+          <widget class="QLabel" name="uploadPreview1ImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>22</horstretch>
@@ -526,7 +581,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="fetchContentLinkImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -551,7 +606,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="5" column="1">
           <widget class="QLabel" name="contentWebsiteLinkLabel">
            <property name="text">
             <string>Fetch content link from server</string>
@@ -585,7 +640,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLabel" name="uploadPreviewLabel">
+          <widget class="QLabel" name="uploadPreview1Label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -593,11 +648,11 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Upload preview</string>
+            <string>Upload first preview</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="6" column="1">
           <widget class="QLabel" name="contentWebsiteLink">
            <property name="text">
             <string/>
@@ -607,7 +662,7 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="8" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -620,13 +675,77 @@
            </property>
           </spacer>
          </item>
-         <item row="5" column="1">
+         <item row="7" column="1">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Note: You and edit, update and delete your content on the website.</string>
+            <string>Note: You can edit, update and delete your content on the website.</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="uploadPreview2Label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Upload second preview</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="uploadPreview3Label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Upload third preview</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="uploadPreview2ImageLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>22</horstretch>
+             <verstretch>22</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>22</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="uploadPreview3ImageLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>22</horstretch>
+             <verstretch>22</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>22</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
@@ -713,7 +832,7 @@
   <tabstop>mLicenseCombo</tabstop>
   <tabstop>mSummaryEdit</tabstop>
   <tabstop>changelog</tabstop>
-  <tabstop>mPreviewUrl</tabstop>
+  <tabstop>previewUrl1</tabstop>
   <tabstop>priceCheckBox</tabstop>
   <tabstop>priceSpinBox</tabstop>
   <tabstop>priceReasonLineEdit</tabstop>

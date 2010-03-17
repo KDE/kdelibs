@@ -41,7 +41,13 @@ namespace KNS3 {
     {
     public:
         Private(UploadDialog* q)
-            :q(q), currentPage(UserPasswordPage), finished(false), finishedPreview(false), finishedContents(false)
+            : q(q)
+            , currentPage(UserPasswordPage)
+            , finished(false)
+            , finishedPreview1(false)
+            , finishedPreview2(false)
+            , finishedPreview3(false)
+            , finishedContents(false)
         {
         }
 
@@ -67,15 +73,21 @@ namespace KNS3 {
         AtticaHelper* atticaHelper;
 
         KUrl uploadFile;
-        KUrl previewFile;
+        KUrl previewFile1;
+        KUrl previewFile2;
+        KUrl previewFile3;
         QStringList categoryNames;
         Attica::Category::List categories;
         QString contentId;
         bool finished;
-        bool finishedPreview;
+        bool finishedPreview1;
+        bool finishedPreview2;
+        bool finishedPreview3;
         bool finishedContents;
 
         void init();
+        void setBusy(const QString& message);
+        void setIdle(const QString& message);
 
         // change to page, set the focus also calls updatePage()
         void _k_showPage(int page);
@@ -102,23 +114,21 @@ namespace KNS3 {
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
         void _k_updatedContentFetched(const Attica::Content& content);
 
+        void _k_preview1Changed(const KUrl&);
+        void _k_preview2Changed(const KUrl&);
+        void _k_preview3Changed(const KUrl&);
+        void _k_preview1UploadFinished(Attica::BaseJob*);
+        void _k_preview2UploadFinished(Attica::BaseJob*);
+        void _k_preview3UploadFinished(Attica::BaseJob*);
+
         void _k_contentAdded(Attica::BaseJob*);
         void _k_fileUploadFinished(Attica::BaseJob*);
-        void _k_previewUploadFinished(Attica::BaseJob*);
 
         void uploadFileFinished();
-        void doUpload(const QString& index, const QString& filePath);
-        void _k_previewChanged(const KUrl&);
+        void doUpload(const QString& index, const KUrl& filePath);
+
         void _k_priceToggled(bool);
-
         void _k_updateContentsToggled(bool update);
-
-
-
-
-        void setBusy(const QString& message);
-        void setIdle(const QString& message);
-
         void _k_detailsLinkLoaded(const QUrl& url);
 
         void getAccountBalance();

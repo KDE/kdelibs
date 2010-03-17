@@ -55,7 +55,10 @@ void UploadDialog::Private::init()
     q->connect(atticaHelper, SIGNAL(currencyLoaded(QString)), q, SLOT(_k_currencyLoaded(QString)));
     atticaHelper->init();
 
-    q->connect(ui.mPreviewUrl, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_previewChanged(const KUrl&)));
+    q->connect(ui.previewUrl1, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_preview1Changed(const KUrl&)));
+    q->connect(ui.previewUrl2, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_preview2Changed(const KUrl&)));
+    q->connect(ui.previewUrl3, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_preview3Changed(const KUrl&)));
+
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
     q->connect(ui.radioUpdate, SIGNAL(toggled(bool)), q, SLOT(_k_updateContentsToggled(bool)));
 
@@ -98,8 +101,6 @@ void UploadDialog::Private::_k_showPage(int page)
         break;
 
     case Details1Page:
-        // TODO check if old contents should be updated!
-
         if (ui.radioUpdate->isChecked()) {
             // Fetch
             atticaHelper->loadContent(ui.userContentList->currentItem()->data(Qt::UserRole).toString());
@@ -110,9 +111,17 @@ void UploadDialog::Private::_k_showPage(int page)
         break;
 
     case UploadFinalPage:
-        if (previewFile.isEmpty()) {
-            ui.uploadPreviewImageLabel->setVisible(false);
-            ui.uploadPreviewLabel->setVisible(false);
+        if (previewFile1.isEmpty()) {
+            ui.uploadPreview1ImageLabel->setVisible(false);
+            ui.uploadPreview1Label->setVisible(false);
+        }
+        if (previewFile2.isEmpty()) {
+            ui.uploadPreview2ImageLabel->setVisible(false);
+            ui.uploadPreview2Label->setVisible(false);
+        }
+        if (previewFile3.isEmpty()) {
+            ui.uploadPreview3ImageLabel->setVisible(false);
+            ui.uploadPreview3Label->setVisible(false);
         }
         break;
     }
@@ -135,7 +144,7 @@ void UploadDialog::Private::_k_updatePage()
 
     case FileNewUpdatePage:
         // FIXME: check if the file requester contains a valid file
-        if (!uploadFile.isEmpty() || !ui.uploadFileRequester->url().isLocalFile()) {
+        if (!uploadFile.isEmpty() || ui.uploadFileRequester->url().isLocalFile()) {
             if (ui.radioNewUpload->isChecked() || ui.userContentList->currentRow() >= 0) {
                 nextEnabled = true;
             }
@@ -399,7 +408,7 @@ void UploadDialog::setUploadFile(const KUrl& payloadFile)
 
     QFile file(d->uploadFile.toLocalFile());
     if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::error(this, i18n("File not found: %1",d->uploadFile.url()), i18n("Upload Failed"));
+        KMessageBox::error(this, i18n("File not found: %1", d->uploadFile.url()), i18n("Upload Failed"));
     }
 }
 
@@ -472,8 +481,6 @@ void UploadDialog::accept()
 
 void UploadDialog::Private::_k_startUpload()
 {
-    kDebug() << "Starting upload";
-
     // FIXME: this only works if categories are set in the .knsrc file
     // TODO: ask for confirmation when closing the dialog
 
@@ -545,11 +552,25 @@ void UploadDialog::Private::_k_startUpload()
     }
 }
 
-void UploadDialog::Private::_k_previewChanged(const KUrl& url)
+void UploadDialog::Private::_k_preview1Changed(const KUrl& url)
 {
-    previewFile = url;
+    previewFile1 = url;
     QPixmap img(url.toLocalFile());
-    ui.mImagePreview->setPixmap(img.scaled(ui.mImagePreview->size(), Qt::KeepAspectRatio));
+    ui.previewImage1->setPixmap(img.scaled(ui.previewImage1->size(), Qt::KeepAspectRatio));
+}
+
+void UploadDialog::Private::_k_preview2Changed(const KUrl& url)
+{
+    previewFile2 = url;
+    QPixmap img(url.toLocalFile());
+    ui.previewImage2->setPixmap(img.scaled(ui.previewImage2->size(), Qt::KeepAspectRatio));
+}
+
+void UploadDialog::Private::_k_preview3Changed(const KUrl& url)
+{
+    previewFile3 = url;
+    QPixmap img(url.toLocalFile());
+    ui.previewImage3->setPixmap(img.scaled(ui.previewImage3->size(), Qt::KeepAspectRatio));
 }
 
 void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
@@ -575,10 +596,21 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
 
     contentId = id;
 
-    doUpload(QString(), uploadFile.toLocalFile());
+    if (!uploadFile.isEmpty()) {
+        doUpload(QString(), uploadFile);
+    } else {
+        doUpload(QString(), ui.uploadFileRequester->url());
+    }
 
-    if (!previewFile.isEmpty()) {
-        doUpload("1", previewFile.toLocalFile());
+    // FIXME: status labels need to accomodate 3 previews
+    if (!previewFile1.isEmpty()) {
+        doUpload("1", previewFile1);
+    }
+    if (!previewFile2.isEmpty()) {
+        doUpload("2", previewFile2);
+    }
+    if (!previewFile3.isEmpty()) {
+        doUpload("3", previewFile3);
     }
 
     if (ui.radioNewUpload->isChecked()) {
@@ -586,11 +618,11 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
     }
 }
 
-void UploadDialog::Private::doUpload(const QString& index, const QString& path)
+void UploadDialog::Private::doUpload(const QString& index, const KUrl& path)
 {
-    QFile file(path);
+    QFile file(path.toLocalFile());
     if (!file.open(QIODevice::ReadOnly)) {
-        KMessageBox::error(q, i18n("File not found: %1",uploadFile.url(), i18n("Upload Failed")));
+        KMessageBox::error(q, i18n("File not found: %1", uploadFile.url(), i18n("Upload Failed")));
         q->reject();
         return;
     }
@@ -599,15 +631,21 @@ void UploadDialog::Private::doUpload(const QString& index, const QString& path)
     fileContents.append(file.readAll());
     file.close();
 
-    QString fileName = QFileInfo(path).fileName();
+    QString fileName = QFileInfo(path.toLocalFile()).fileName();
 
     Attica::PostJob* job;
     if (index.isEmpty()) {
         job = currentProvider().setDownloadFile(contentId, fileName, fileContents);
         q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_fileUploadFinished(Attica::BaseJob*)));
-    } else {
+    } else if (index == QLatin1String("1")) {
         job = currentProvider().setPreviewImage(contentId, index, fileName, fileContents);
-        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_previewUploadFinished(Attica::BaseJob*)));
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_preview1UploadFinished(Attica::BaseJob*)));
+    } else if (index == QLatin1String("2")) {
+        job = currentProvider().setPreviewImage(contentId, index, fileName, fileContents);
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_preview2UploadFinished(Attica::BaseJob*)));
+    } else if (index == QLatin1String("3")) {
+        job = currentProvider().setPreviewImage(contentId, index, fileName, fileContents);
+        q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_preview3UploadFinished(Attica::BaseJob*)));
     }
 
     job->start();
@@ -620,16 +658,33 @@ void UploadDialog::Private::_k_fileUploadFinished(Attica::BaseJob* )
     uploadFileFinished();
 }
 
-void UploadDialog::Private::_k_previewUploadFinished(Attica::BaseJob* )
+void UploadDialog::Private::_k_preview1UploadFinished(Attica::BaseJob* )
 {
-    ui.uploadPreviewImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
-    finishedPreview = true;
+    ui.uploadPreview1ImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
+    finishedPreview1 = true;
+    uploadFileFinished();
+}
+
+void UploadDialog::Private::_k_preview2UploadFinished(Attica::BaseJob* )
+{
+    ui.uploadPreview2ImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
+    finishedPreview2 = true;
+    uploadFileFinished();
+}
+
+void UploadDialog::Private::_k_preview3UploadFinished(Attica::BaseJob* )
+{
+    ui.uploadPreview3ImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
+    finishedPreview3 = true;
     uploadFileFinished();
 }
 
 void UploadDialog::Private::uploadFileFinished()
 {
-    if (finishedContents && (previewFile.isEmpty() || finishedPreview)) {
+    // FIXME multiple previews
+    if (finishedContents && (previewFile1.isEmpty() || finishedPreview1)
+            && (previewFile2.isEmpty() || finishedPreview2)
+            && (previewFile3.isEmpty() || finishedPreview3)) {
         finished = true;
         ui.uploadProgressBar->setMinimum(0);
         ui.uploadProgressBar->setMaximum(100);

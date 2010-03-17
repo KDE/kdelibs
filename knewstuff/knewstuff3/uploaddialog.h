@@ -170,14 +170,18 @@ private:
     Q_PRIVATE_SLOT( d, void _k_licensesLoaded(Attica::License::List) )
     Q_PRIVATE_SLOT( d, void _k_currencyLoaded(QString) )
 
-    Q_PRIVATE_SLOT( d, void _k_previewChanged(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_preview1Changed(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_preview2Changed(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_preview3Changed(const KUrl&) )
     Q_PRIVATE_SLOT( d, void _k_priceToggled(bool) )
     Q_PRIVATE_SLOT( d, void _k_updateContentsToggled(bool update) )
 
     Q_PRIVATE_SLOT( d, void _k_startUpload() )
     Q_PRIVATE_SLOT( d, void _k_contentAdded(Attica::BaseJob*) )
     Q_PRIVATE_SLOT( d, void _k_fileUploadFinished(Attica::BaseJob*) )
-    Q_PRIVATE_SLOT( d, void _k_previewUploadFinished(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_preview1UploadFinished(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_preview2UploadFinished(Attica::BaseJob*) )
+    Q_PRIVATE_SLOT( d, void _k_preview3UploadFinished(Attica::BaseJob*) )
 
     Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::Content) )
     Q_PRIVATE_SLOT( d, void _k_detailsLinkLoaded(QUrl) )
