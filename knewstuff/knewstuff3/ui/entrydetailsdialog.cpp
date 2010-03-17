@@ -87,11 +87,14 @@ void EntryDetailsDialog::init()
 
     ui.previewSmallGroup->setVisible(false);
 
-    ui.authorLabel->setText(m_entry.author().name());
+    if (!m_entry.author().homepage().isEmpty()) {
+        ui.authorLabel->setText("<a href=\"" + m_entry.author().homepage() + "\">" + m_entry.author().name() + "</a>");
+    } else {
+        ui.authorLabel->setText(m_entry.author().name());
+    }
     ui.descriptionLabel->setText(m_entry.summary());
     ui.homepageLabel->setText("<a href=\"" + m_entry.homepage().url() + "\">" +
                               i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage...") + "</a>");
-
 
     ui.ratingWidget->setMaxRating(10);
     ui.ratingWidget->setHalfStepsEnabled(true);
