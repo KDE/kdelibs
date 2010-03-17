@@ -106,8 +106,12 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
             kError() << "Couldn't start kglobalaccel from kglobalaccel.desktop: " << error << endl;
         }
     }
-    QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
-                     q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher(iface.service(),
+                                                           QDBusConnection::sessionBus(),
+                                                           QDBusServiceWatcher::WatchForOwnerChange,
+                                                           q);
+    q->connect(watcher, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+                     q, SLOT(_k_serviceOwnerChanged(QString,QString,QString)));
 }
 
 
@@ -427,7 +431,8 @@ void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QStr
 {
     Q_UNUSED(oldOwner);
     if (name == QLatin1String("org.kde.kglobalaccel") && !newOwner.isEmpty()) {
-        // kded was restarted (what? you mean it crashes sometimes?)
+        // kglobalaccel was restarted
+        kDebug(123) << "detected kglobalaccel restarting, re-registering all shortcut keys";
         reRegisterAll();
     }
 }
