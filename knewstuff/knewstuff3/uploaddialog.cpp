@@ -396,6 +396,11 @@ bool UploadDialog::init(const QString &configfile)
     }
 
     d->categoryNames = group.readEntry("UploadCategories", QStringList());
+    // fall back to download categories
+    if (d->categoryNames.isEmpty()) {
+        d->categoryNames = group.readEntry("Categories", QStringList());
+    }
+
     d->ui.mCategoryCombo->addItems(d->categoryNames);
 
     if (d->categoryNames.size() == 1) {
