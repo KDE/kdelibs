@@ -283,6 +283,7 @@ void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& cont
 {
     setIdle(i18n("Fetching content data from server finished."));
 
+    contentId = content.id();
     // fill in ui
     ui.mNameEdit->setText(content.name());
     ui.mSummaryEdit->setText(content.description());
@@ -600,11 +601,16 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
     ui.createContentImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
+    if (job->metadata().error() != Attica::Metadata::NoError) {
+        KMessageBox::error(q, i18n("Upload failed: %1", job->metadata().message()));
+        return;
+    }
+
+    // only when adding new content we get an id returned, otherwise stick with the old one
     QString id = job->result().id();
-
-    kDebug() << "content added " << id;
-
-    contentId = id;
+    if (!id.isEmpty()) {
+        contentId = id;
+    }
 
     if (!uploadFile.isEmpty()) {
         doUpload(QString(), uploadFile);
