@@ -25,9 +25,11 @@
 #include <QtGui/QLayout>
 #include <QtGui/QDoubleSpinBox>
 #include <QtCore/QString>
+#include <QtCore/QSignalMapper>
 
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
+#include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kpixmapsequence.h>
@@ -55,9 +57,9 @@ void UploadDialog::Private::init()
     q->connect(atticaHelper, SIGNAL(currencyLoaded(QString)), q, SLOT(_k_currencyLoaded(QString)));
     atticaHelper->init();
 
-    q->connect(ui.previewUrl1, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_preview1Changed(const KUrl&)));
-    q->connect(ui.previewUrl2, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_preview2Changed(const KUrl&)));
-    q->connect(ui.previewUrl3, SIGNAL(urlSelected(const KUrl&)), q, SLOT(_k_preview3Changed(const KUrl&)));
+    q->connect(ui.changePreview1Button, SIGNAL(clicked()), q, SLOT(_k_changePreview1()));
+    q->connect(ui.changePreview2Button, SIGNAL(clicked()), q, SLOT(_k_changePreview2()));
+    q->connect(ui.changePreview3Button, SIGNAL(clicked()), q, SLOT(_k_changePreview3()));
 
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
     q->connect(ui.radioUpdate, SIGNAL(toggled(bool)), q, SLOT(_k_updateContentsToggled(bool)));
@@ -69,6 +71,10 @@ void UploadDialog::Private::init()
     ui.busyWidget->setLayout(new QHBoxLayout());
     ui.busyWidget->layout()->addWidget(busyWidget);
     busyWidget->setVisible(false);
+
+    ui.previewImage1->showPreview(KUrl("invalid"));
+    ui.previewImage2->showPreview(KUrl("invalid"));
+    ui.previewImage3->showPreview(KUrl("invalid"));
 }
 
 void UploadDialog::Private::setBusy(const QString& message)
@@ -285,6 +291,10 @@ void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& cont
     ui.priceCheckBox->setChecked(content.attribute("downloadbuy1") == "1");
     ui.priceSpinBox->setValue(content.attribute("downloadbuyprice1").toDouble());
     ui.priceReasonLineEdit->setText(content.attribute("downloadbuyreason1"));
+
+    ui.previewImage1->showPreview(content.smallPreviewPicture("1"));
+    ui.previewImage2->showPreview(content.smallPreviewPicture("2"));
+    ui.previewImage3->showPreview(content.smallPreviewPicture("3"));
 
     bool conversionOk = false;
     int licenseNumber = content.license().toInt(&conversionOk);
@@ -552,25 +562,25 @@ void UploadDialog::Private::_k_startUpload()
     }
 }
 
-void UploadDialog::Private::_k_preview1Changed(const KUrl& url)
+void UploadDialog::Private::_k_changePreview1()
 {
+    KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile1 = url;
-    QPixmap img(url.toLocalFile());
-    ui.previewImage1->setPixmap(img.scaled(ui.previewImage1->size(), Qt::KeepAspectRatio));
+    ui.previewImage1->showPreview(url);
 }
 
-void UploadDialog::Private::_k_preview2Changed(const KUrl& url)
+void UploadDialog::Private::_k_changePreview2()
 {
+    KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile2 = url;
-    QPixmap img(url.toLocalFile());
-    ui.previewImage2->setPixmap(img.scaled(ui.previewImage2->size(), Qt::KeepAspectRatio));
+    ui.previewImage2->showPreview(url);
 }
 
-void UploadDialog::Private::_k_preview3Changed(const KUrl& url)
+void UploadDialog::Private::_k_changePreview3()
 {
+    KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile3 = url;
-    QPixmap img(url.toLocalFile());
-    ui.previewImage3->setPixmap(img.scaled(ui.previewImage3->size(), Qt::KeepAspectRatio));
+    ui.previewImage3->showPreview(url);
 }
 
 void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)

@@ -170,9 +170,9 @@ private:
     Q_PRIVATE_SLOT( d, void _k_licensesLoaded(Attica::License::List) )
     Q_PRIVATE_SLOT( d, void _k_currencyLoaded(QString) )
 
-    Q_PRIVATE_SLOT( d, void _k_preview1Changed(const KUrl&) )
-    Q_PRIVATE_SLOT( d, void _k_preview2Changed(const KUrl&) )
-    Q_PRIVATE_SLOT( d, void _k_preview3Changed(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_changePreview1() )
+    Q_PRIVATE_SLOT( d, void _k_changePreview2() )
+    Q_PRIVATE_SLOT( d, void _k_changePreview3() )
     Q_PRIVATE_SLOT( d, void _k_priceToggled(bool) )
     Q_PRIVATE_SLOT( d, void _k_updateContentsToggled(bool update) )
 

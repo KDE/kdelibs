@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>299</width>
-    <height>355</height>
+    <height>366</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,7 +53,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -330,98 +330,35 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
-          <item row="2" column="0">
-           <widget class="KUrlRequester" name="previewUrl1"/>
+          <item row="0" column="0">
+           <widget class="KImageFilePreview" name="previewImage1"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="KImageFilePreview" name="previewImage2"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="KImageFilePreview" name="previewImage3"/>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="previewImage1">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>100</horstretch>
-              <verstretch>100</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
-            </property>
+           <widget class="QPushButton" name="changePreview1Button">
             <property name="text">
-             <string/>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <string>Change...</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLabel" name="previewImage2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>100</horstretch>
-              <verstretch>100</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
-            </property>
+           <widget class="QPushButton" name="changePreview2Button">
             <property name="text">
-             <string/>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <string>Change...</string>
             </property>
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QLabel" name="previewImage3">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>100</horstretch>
-              <verstretch>100</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
-            </property>
+           <widget class="QPushButton" name="changePreview3Button">
             <property name="text">
-             <string/>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <string>Change...</string>
             </property>
            </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="KUrlRequester" name="previewUrl2"/>
-          </item>
-          <item row="2" column="2">
-           <widget class="KUrlRequester" name="previewUrl3"/>
           </item>
          </layout>
         </widget>
@@ -798,6 +735,11 @@
    <header>kurlrequester.h</header>
   </customwidget>
   <customwidget>
+   <class>KImageFilePreview</class>
+   <extends>QWidget</extends>
+   <header>kimagefilepreview.h</header>
+  </customwidget>
+  <customwidget>
    <class>KTitleWidget</class>
    <extends>QWidget</extends>
    <header>ktitlewidget.h</header>
@@ -832,7 +774,6 @@
   <tabstop>mLicenseCombo</tabstop>
   <tabstop>mSummaryEdit</tabstop>
   <tabstop>changelog</tabstop>
-  <tabstop>previewUrl1</tabstop>
   <tabstop>priceCheckBox</tabstop>
   <tabstop>priceSpinBox</tabstop>
   <tabstop>priceReasonLineEdit</tabstop>

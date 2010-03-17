@@ -114,9 +114,9 @@ namespace KNS3 {
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
         void _k_updatedContentFetched(const Attica::Content& content);
 
-        void _k_preview1Changed(const KUrl&);
-        void _k_preview2Changed(const KUrl&);
-        void _k_preview3Changed(const KUrl&);
+        void _k_changePreview1();
+        void _k_changePreview2();
+        void _k_changePreview3();
         void _k_preview1UploadFinished(Attica::BaseJob*);
         void _k_preview2UploadFinished(Attica::BaseJob*);
         void _k_preview3UploadFinished(Attica::BaseJob*);
