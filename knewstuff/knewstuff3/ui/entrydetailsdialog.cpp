@@ -101,7 +101,7 @@ void EntryDetailsDialog::init()
     ui.ratingWidget->setEditable(false);
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
 
-    connect(m_engine, SIGNAL(signalEntryChanged(const KNS3::Entry&)), this, SLOT(entryChanged(const KNS3::Entry&)));
+    connect(m_engine, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), this, SLOT(entryChanged(const KNS3::EntryInternal&)));
     updateButtons();
     connect(ui.installButton, SIGNAL(clicked()), this, SLOT(install()));
     connect(ui.uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
