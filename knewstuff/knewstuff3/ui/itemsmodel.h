@@ -35,7 +35,7 @@ class ItemsModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit ItemsModel(QObject * parent = NULL, bool hasWebService = false);
+    explicit ItemsModel(QObject * parent = 0);
     ~ItemsModel();
 
     enum EntryRoles {
@@ -109,7 +109,6 @@ private:
     QMap<QString, QImage> m_largePreviewImages;
     QMap<QString, QModelIndex> m_imageIndexes;
     bool m_hasPreviewImages;
-    bool m_hasWebService;
 };
 
 } // end KNS namespace

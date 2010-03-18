@@ -27,8 +27,8 @@
 
 namespace KNS3
 {
-ItemsModel::ItemsModel(QObject * parent, bool hasWebService)
-        : QAbstractListModel(parent), m_hasPreviewImages(false), m_hasWebService(hasWebService)
+ItemsModel::ItemsModel(QObject * parent)
+        : QAbstractListModel(parent), m_hasPreviewImages(false)
 {
 }
 
@@ -198,11 +198,6 @@ void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
 bool ItemsModel::hasPreviewImages() const
 {
     return m_hasPreviewImages;
-}
-
-bool ItemsModel::hasWebService() const
-{
-    return m_hasWebService;
 }
 
 } // end KNS namespace
