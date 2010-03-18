@@ -382,7 +382,6 @@ public:
     //void setIdNumber(int number);
     //int idNumber() const;
 
-
     Entry toEntry() const;
 
 private:

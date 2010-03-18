@@ -32,7 +32,6 @@
 #include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
-#include <ktitlewidget.h>
 #include <kdebug.h>
 
 #include "ui/itemsmodel.h"
@@ -296,7 +295,6 @@ void DownloadWidgetPrivate::displayMessage(const QString & msg, KTitleWidget::Me
         messageTimer = new QTimer;
         messageTimer->setSingleShot(true);
         q->connect(messageTimer, SIGNAL(timeout()), q, SLOT(slotResetMessage()));
-        kDebug() << "FIXMEFIXME";
     }
     // stop the pending timer if present
     messageTimer->stop();

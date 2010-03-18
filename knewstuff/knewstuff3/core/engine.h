@@ -28,13 +28,13 @@
 #include "provider.h"
 #include "entryinternal.h"
 
+class QTimer;
 class KJob;
 
 namespace KNS3
 {
-
+class Cache;
 class Installation;
-class EnginePrivate;
 
 /**
  * KNewStuff engine.
@@ -187,12 +187,37 @@ private:
 
     bool entryChanged(const EntryInternal& oldentry, const EntryInternal& entry);
 
-    class Private;
-    Private* const d;
+    // If the provider is ready to be used
+    bool m_initialized;
+    // handle installation of entries
+    Installation* m_installation;
+    // read/write cache of entries
+    Cache* m_cache;
+    QTimer* m_searchTimer;
+    // The url of the file containing information about content providers
+    QString m_providerFileUrl;
+    // Categories from knsrc file
+    QStringList m_categories;
+
+    QHash<QString, QSharedPointer<KNS3::Provider> > m_providers;
+
+    // the name of the app that uses hot new stuff
+    QString m_applicationName;
+
+    QMap<EntryInternal, QString> m_previewfiles; // why not in entry?
+
+    QMap<KJob*, EntryInternal> m_previewPictureJobs;
+
+    // the current request from providers
+    Provider::SearchRequest m_currentRequest;
+
+    // the page that is currently displayed, so it is not requested repeatedly
+    int m_currentPage;
+
+    // when requesting entries from a provider, how many to ask for
+    int m_pageSize;
 
     Q_DISABLE_COPY(Engine)
-
-    class ProviderInformation;
 };
 
 }

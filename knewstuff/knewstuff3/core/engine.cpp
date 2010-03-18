@@ -56,92 +56,34 @@
 #include "core/cache.h"
 #include "staticxml/staticxmlprovider.h"
 
-class KNS3::Engine::ProviderInformation {
-public:
-    QSharedPointer<Provider>  provider;
-    int pagesInCurrentRequest;
-
-    ProviderInformation()
-        :provider(0)
-    {}
-
-    ProviderInformation(QSharedPointer<Provider>  p)
-        :provider(p)
-    {
-        pagesInCurrentRequest = -1;
-    }
-};
-
-class KNS3::Engine::Private {
-    public:
-        // If the provider is ready to be used
-        bool initialized;
-        // handle installation of entries
-        Installation* installation;
-        // read/write cache of entries
-        Cache* cache;
-        QTimer* searchTimer;
-        // The url of the file containing information about content providers
-        QString providerFileUrl;
-        // Categories from knsrc file
-        QStringList categories;
-
-        QHash<QString, ProviderInformation> providers;
-
-        // the name of the app that uses hot new stuff
-        QString applicationName;
-
-        QMap<EntryInternal, QString> previewfiles; // why not in entry?
-
-        QMap<KJob*, EntryInternal> previewPictureJobs;
-
-        // the current request from providers
-        Provider::SearchRequest currentRequest;
-
-        // the page that is currently displayed, so it is not requested repeatedly
-        int currentPage;
-
-        // when requesting entries from a provider, how many to ask for
-        int pageSize;
-
-        Private()
-            : initialized(false)
-            , installation(new Installation)
-            , cache(new Cache)
-            , searchTimer(new QTimer)
-            , currentPage(-1)
-            , pageSize(20)
-        {
-            searchTimer->setSingleShot(true);
-            searchTimer->setInterval(1000);
-        }
-
-        ~Private()
-        {
-            delete searchTimer;
-            delete installation;
-            delete cache;
-        }
-};
-
 using namespace KNS3;
 
 Engine::Engine(QObject* parent)
-        : QObject(parent), d(new Engine::Private)
+    : QObject(parent)
+    , m_initialized(false)
+    , m_installation(new Installation)
+    , m_cache(new Cache)
+    , m_searchTimer(new QTimer)
+    , m_currentPage(-1)
+    , m_pageSize(20)
 {
-    connect(d->searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
-    connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), d->cache, SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
+    m_searchTimer->setSingleShot(true);
+    m_searchTimer->setInterval(1000);
+    connect(m_searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
+    connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), m_cache, SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
 }
 
 Engine::~Engine()
 {
-    d->cache->writeRegistry();
-    delete d;
+    m_cache->writeRegistry();
+    delete m_searchTimer;
+    delete m_installation;
+    delete m_cache;
 }
 
 bool Engine::init(const QString &configfile)
 {
-    kDebug() << "Initializing KNS::Engine from '" << configfile << "'";
+    kDebug() << "Initializing KNS3::Engine from '" << configfile << "'";
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -169,23 +111,23 @@ bool Engine::init(const QString &configfile)
         return false;
     }
 
-    d->categories = group.readEntry("Categories", QStringList());
+    m_categories = group.readEntry("Categories", QStringList());
 
-    kDebug() << "Categories: " << d->categories;
-    d->providerFileUrl = group.readEntry("ProvidersUrl", QString());
-    d->applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
+    kDebug() << "Categories: " << m_categories;
+    m_providerFileUrl = group.readEntry("ProvidersUrl", QString());
+    m_applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
 
     // let installation read install specific config
-    if (!d->installation->readConfig(group)) {
+    if (!m_installation->readConfig(group)) {
         return false;
     }
 
-    connect(d->installation, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), SLOT(slotEntryChanged(const KNS3::EntryInternal&)));
+    connect(m_installation, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), SLOT(slotEntryChanged(const KNS3::EntryInternal&)));
 
-    d->cache->setRegistryFileName(d->applicationName.split(':')[0]);
-    d->cache->readRegistry();
+    m_cache->setRegistryFileName(m_applicationName.split(':')[0]);
+    m_cache->readRegistry();
 
-    d->initialized = true;
+    m_initialized = true;
 
     // load the providers
     loadProviders();
@@ -195,23 +137,23 @@ bool Engine::init(const QString &configfile)
 
 QStringList Engine::categories() const
 {
-    return d->categories;
+    return m_categories;
 }
 
 QStringList Engine::categoriesFilter() const
 {
-    return d->currentRequest.categories;
+    return m_currentRequest.categories;
 }
 
 void Engine::loadProviders()
 {
-    kDebug(550) << "loading providers from " << d->providerFileUrl;
+    kDebug(550) << "loading providers from " << m_providerFileUrl;
 
     XmlLoader * loader = new XmlLoader(this);
     connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProviderFileLoaded(const QDomDocument&)));
     connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
-    loader->load(KUrl(d->providerFileUrl));
+    loader->load(KUrl(m_providerFileUrl));
 }
 
 void Engine::slotProviderFileLoaded(const QDomDocument& doc)
@@ -227,7 +169,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         isAtticaProviderFile = true;
     } else if (providers.tagName() != "ghnsproviders" && providers.tagName() != "knewstuffproviders") {
         kWarning(550) << "No document in providers.xml.";
-        emit signalError(i18n("Could not load get hot new stuff providers from file: %1", d->providerFileUrl));
+        emit signalError(i18n("Could not load get hot new stuff providers from file: %1", m_providerFileUrl));
         return;
     }
 
@@ -237,7 +179,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
         QSharedPointer<KNS3::Provider> provider;
         if (isAtticaProviderFile || n.attribute("type").toLower() == "rest") {
-            provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(d->categories));
+            provider = QSharedPointer<KNS3::Provider> (new AtticaProvider(m_categories));
         } else {
             provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
         }
@@ -249,8 +191,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         connect(provider.data(), SIGNAL(jobStarted(KJob*)), this, SLOT(providerJobStarted(KJob*)));
 
         if (provider->setProviderXML(n)) {
-            ProviderInformation providerInfo(provider);
-            d->providers.insert(provider->id(), providerInfo);
+            m_providers.insert(provider->id(), provider);
         }
         n = n.nextSiblingElement();
     }
@@ -263,52 +204,52 @@ void Engine::providerJobStarted ( KJob* job )
 
 void Engine::slotProvidersFailed()
 {
-    emit signalError(i18n("Loading of providers from file: %1 failed", d->providerFileUrl));
+    emit signalError(i18n("Loading of providers from file: %1 failed", m_providerFileUrl));
 }
 
 void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name();
-    p->setCachedEntries(d->cache->registryForProvider(p->id()));
+    p->setCachedEntries(m_cache->registryForProvider(p->id()));
 
-    p->loadEntries(d->currentRequest);
+    p->loadEntries(m_currentRequest);
 }
 
 void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS3::EntryInternal::List entries)
 {
-    d->currentPage = qMax<int>(request.page, d->currentPage);
-    kDebug() << "loaded page " << request.page << "current page" << d->currentPage;
+    m_currentPage = qMax<int>(request.page, m_currentPage);
+    kDebug() << "loaded page " << request.page << "current page" << m_currentPage;
 
-    d->cache->insertRequest(request, entries);
+    m_cache->insertRequest(request, entries);
     emit signalEntriesLoaded(entries);
 }
 
 void Engine::reloadEntries()
 {
     emit signalResetView();
-    d->currentPage = -1;
-    d->currentRequest.page = 0;
+    m_currentPage = -1;
+    m_currentRequest.page = 0;
 
-    foreach (const ProviderInformation &p, d->providers) {
-        if (p.provider->isInitialized()) {
-            if (d->currentRequest.sortMode == Provider::Installed) {
+    foreach (const QSharedPointer<KNS3::Provider> &p, m_providers) {
+        if (p->isInitialized()) {
+            if (m_currentRequest.sortMode == Provider::Installed) {
                 // when asking for installed entries, never use the cache
-                p.provider->loadEntries(d->currentRequest);
+                p->loadEntries(m_currentRequest);
             } else {
                 // take entries from cache until there are no more
-                EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
+                EntryInternal::List cache = m_cache->requestFromCache(m_currentRequest);
                 while (!cache.isEmpty()) {
                     kDebug() << "From cache";
                     emit signalEntriesLoaded(cache);
 
-                    d->currentPage = d->currentRequest.page;
-                    ++d->currentRequest.page;
-                    cache = d->cache->requestFromCache(d->currentRequest);
+                    m_currentPage = m_currentRequest.page;
+                    ++m_currentRequest.page;
+                    cache = m_cache->requestFromCache(m_currentRequest);
                 }
                 // if the cache was empty, request data from provider
-                if (d->currentPage == -1) {
+                if (m_currentPage == -1) {
                     kDebug() << "From provider";
-                    p.provider->loadEntries(d->currentRequest);
+                    p->loadEntries(m_currentRequest);
                 }
             }
         }
@@ -317,28 +258,28 @@ void Engine::reloadEntries()
 
 void Engine::setCategoriesFilter(const QStringList& categories)
 {
-    d->currentRequest.categories = categories;
+    m_currentRequest.categories = categories;
     reloadEntries();
 }
 
 void Engine::setSortMode(Provider::SortMode mode)
 {
-    if (d->currentRequest.sortMode != mode) {
-        d->currentRequest.page = -1;
+    if (m_currentRequest.sortMode != mode) {
+        m_currentRequest.page = -1;
     }
-    d->currentRequest.sortMode = mode;
+    m_currentRequest.sortMode = mode;
     reloadEntries();
 }
 
 void Engine::setSearchTerm(const QString& searchString)
 {
-    d->searchTimer->stop();
-    d->currentRequest.searchTerm = searchString;
-    EntryInternal::List cache = d->cache->requestFromCache(d->currentRequest);
+    m_searchTimer->stop();
+    m_currentRequest.searchTerm = searchString;
+    EntryInternal::List cache = m_cache->requestFromCache(m_currentRequest);
     if (!cache.isEmpty()) {
         reloadEntries();
     } else {
-        d->searchTimer->start();
+        m_searchTimer->start();
     }
 }
 
@@ -349,17 +290,17 @@ void Engine::slotSearchTimerExpired()
 
 void Engine::requestMoreData()
 {
-    kDebug() << "Get more data! current page: " << d->currentPage  << " requested: " << d->currentRequest.page;
+    kDebug() << "Get more data! current page: " << m_currentPage  << " requested: " << m_currentRequest.page;
 
-    if (d->currentPage < d->currentRequest.page) {
+    if (m_currentPage < m_currentRequest.page) {
         return;
     }
 
-    d->currentRequest.page++;
+    m_currentRequest.page++;
 
-    foreach (const ProviderInformation &p, d->providers) {
-        if (p.provider->isInitialized()) {
-            p.provider->loadEntries(d->currentRequest);
+    foreach (const QSharedPointer<KNS3::Provider> &p, m_providers) {
+        if (p->isInitialized()) {
+            p->loadEntries(m_currentRequest);
         }
     }
 }
@@ -459,16 +400,16 @@ void Engine::slotPreviewResult(KJob *job)
         kError() << "Cannot load preview file." << endl;
         kError() << job->errorString() << endl;
 
-        d->previewPictureJobs.remove(job);
+        m_previewPictureJobs.remove(job);
         emit signalPreviewFailed();
     } else {
         KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
 
-        if (d->previewPictureJobs.contains(job)) {
+        if (m_previewPictureJobs.contains(job)) {
             // now, assign temporary filename to entry and update entry cache
-            EntryInternal entry = d->previewPictureJobs[job];
-            d->previewPictureJobs.remove(job);
-            d->previewfiles[entry] = fcjob->destUrl().path();
+            EntryInternal entry = m_previewPictureJobs[job];
+            m_previewPictureJobs.remove(job);
+            m_previewfiles[entry] = fcjob->destUrl().path();
         }
         // FIXME: ignore if not? shouldn't happen...
 
@@ -498,15 +439,15 @@ void Engine::install(KNS3::EntryInternal entry)
 
     kDebug() << "Install " << entry.name()
         << " from: " << entry.providerId();
-    ProviderInformation i = d->providers.value(entry.providerId());
-    if (i.provider) {
-        i.provider->loadPayloadLink(entry);
+    QSharedPointer<Provider> p = m_providers.value(entry.providerId());
+    if (p) {
+        p->loadPayloadLink(entry);
     }
 }
 
 void Engine::downloadLinkLoaded(const KNS3::EntryInternal& entry)
 {
-    d->installation->install(entry);
+    m_installation->install(entry);
 }
 
 void Engine::uninstall(KNS3::EntryInternal entry)
@@ -514,7 +455,7 @@ void Engine::uninstall(KNS3::EntryInternal entry)
     // FIXME: change the status?
     entry.setStatus(EntryInternal::Installing);
     emit signalEntryChanged(entry);
-    d->installation->uninstall(entry);
+    m_installation->uninstall(entry);
 }
 
 void Engine::slotEntryChanged(const KNS3::EntryInternal& entry)
@@ -530,25 +471,25 @@ void Engine::slotInstallationFailed(const KNS3::EntryInternal& entry)
 
 bool Engine::userCanVote(const EntryInternal& entry)
 {
-    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     return p->userCanVote();
 }
 
 void Engine::vote(const EntryInternal& entry, bool positiveVote)
 {
-    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     p->vote(entry, positiveVote);
 }
 
 bool Engine::userCanBecomeFan(const EntryInternal& entry)
 {
-    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     return p->userCanBecomeFan();
 }
 
 void Engine::becomeFan(const EntryInternal& entry)
 {
-    QSharedPointer<Provider> p = d->providers.value(entry.providerId()).provider;
+    QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     p->becomeFan(entry);
 }
 

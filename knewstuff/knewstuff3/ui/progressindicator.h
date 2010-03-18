@@ -28,7 +28,6 @@
 class KJob;
 class QVBoxLayout;
 class QProgressBar;
-class QPushButton;
 
 namespace KNS3 {
 

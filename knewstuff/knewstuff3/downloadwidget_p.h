@@ -30,7 +30,6 @@
 #include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
-#include <ktitlewidget.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
