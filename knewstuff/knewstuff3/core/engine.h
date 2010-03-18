@@ -51,7 +51,6 @@ public:
 
     enum EntryAction {
         ContactEmail,
-        ContactJabber,
         Uninstall,
         Install,
         ShowDetails

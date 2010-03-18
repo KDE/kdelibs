@@ -37,7 +37,6 @@ const char * EntryDetailsConfigGroup = "EntryDetailsDialog Settings";
 using namespace KNS3;
 
 
-
 EntryDetailsDialog::EntryDetailsDialog(Engine* engine, const EntryInternal& entry, QWidget* parent)
     : KDialog(parent), m_engine(engine), m_entry(entry)
 {

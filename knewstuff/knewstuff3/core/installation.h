@@ -32,12 +32,6 @@ class KJob;
 namespace KNS3
 {
 
-struct InstallationPrivate;
-
-// FIXME: maybe it's smarter to let this class perform the installation
-// so we can reduce the size of KNS::CoreEngine a bit?
-// +1 ;)
-
 /**
  * @short KNewStuff entry installation.
  *
@@ -56,11 +50,6 @@ public:
      * Constructor.
      */
     Installation(QObject* parent = 0);
-
-    /**
-     * Destructor.
-     */
-    ~Installation();
 
     enum Policy {
         CheckNever,
@@ -136,8 +125,32 @@ private:
 
     static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
 
+    // applications can set this if they want the installed files/directories to be piped into a shell command
+    QString postInstallationCommand;
+    // a custom command to run for the uninstall
+    QString uninstallCommand;
+    // compression policy
+    QString uncompression;
+
+    // only one of the four below can be set, that will be the target install path/file name
+    // FIXME: check this when reading the config and make one path out of it if possible?
+    QString standardResourceDirectory;
+    QString targetDirectory;
+    QString installPath;
+    QString absoluteInstallPath;
+
+    // policies whether verification needs to be done
+    Policy checksumPolicy;
+    Policy signaturePolicy;
+    // scope: install into user or system dirs
+    Scope scope;
+
+    // FIXME this throws together a file name from entry name and version - why would anyone want that?
+    bool customName;
+
+    QMap<KJob*, EntryInternal> entry_jobs;
+
     Q_DISABLE_COPY(Installation)
-    InstallationPrivate * const d;
 };
 
 }
