@@ -21,72 +21,44 @@
 
 using namespace KNS3;
 
-struct KNS3::AuthorPrivate {
-    QString mName;
-    QString mEmail;
-    QString mJabber;
-    QString mHomepage;
-};
-
-Author::Author()
-        : d(new AuthorPrivate)
-{
-}
-
-Author::Author(const Author& other)
-        : d(new AuthorPrivate(*other.d))
-
-{
-}
-
-Author& Author::operator=(const Author & other)
-{
-    *this->d = *other.d;
-    return *this;
-}
-
-Author::~Author()
-{
-    delete d;
-}
 
 void Author::setName(const QString& _name)
 {
-    d->mName = _name;
+    mName = _name;
 }
 
 QString Author::name() const
 {
-    return d->mName;
+    return mName;
 }
 
 void Author::setEmail(const QString& _email)
 {
-    d->mEmail = _email;
+    mEmail = _email;
 }
 
 QString Author::email() const
 {
-    return d->mEmail;
+    return mEmail;
 }
 
 void Author::setJabber(const QString& _jabber)
 {
-    d->mJabber = _jabber;
+    mJabber = _jabber;
 }
 
 QString Author::jabber() const
 {
-    return d->mJabber;
+    return mJabber;
 }
 
 void Author::setHomepage(const QString& _homepage)
 {
-    d->mHomepage = _homepage;
+    mHomepage = _homepage;
 }
 
 QString Author::homepage() const
 {
-    return d->mHomepage;
+    return mHomepage;
 }
 

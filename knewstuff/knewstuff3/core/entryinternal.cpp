@@ -350,15 +350,13 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
             // TODO maybe do something with the language attribute? QString lang = e.attribute("lang");
             d->mName = e.text().trimmed();
         } else if (e.tagName() == "author") {
-            Author author;
             QString email = e.attribute("email");
             QString jabber = e.attribute("im");
             QString homepage = e.attribute("homepage");
-            author.setName(e.text().trimmed());
-            author.setEmail(email);
-            author.setJabber(jabber);
-            author.setHomepage(homepage);
-            d->mAuthor = author;
+            d->mAuthor.setName(e.text().trimmed());
+            d->mAuthor.setEmail(email);
+            d->mAuthor.setJabber(jabber);
+            d->mAuthor.setHomepage(homepage);
         } else if (e.tagName() == "providerid") {
             d->mProviderId = e.text();
         } else if (e.tagName() == "homepage") {

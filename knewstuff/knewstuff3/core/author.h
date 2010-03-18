@@ -38,19 +38,6 @@ class Author
 {
 public:
     /**
-     * Constructor.
-     */
-    Author();
-
-    Author(const Author& other);
-    Author& operator=(const Author& other);
-
-    /**
-     * Destructor.
-     */
-    ~Author();
-
-    /**
      * Sets the full name of the author.
      */
     void setName(const QString& name);
@@ -99,7 +86,10 @@ public:
     QString homepage() const;
 
 private:
-    struct AuthorPrivate * const d;
+    QString mName;
+    QString mEmail;
+    QString mJabber;
+    QString mHomepage;
 };
 
 }
