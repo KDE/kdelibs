@@ -10,10 +10,10 @@
 
 <!-- Needed for chunker.xsl (for now): -->
 <xsl:param name="chunker.output.method" select="'text'"/>
-<xsl:param name="chunker.output.encoding" select="'ISO-8859-1'"/>
+<xsl:param name="chunker.output.encoding" select="'UTF-8'"/>
 
 <xsl:output method="text"
-            encoding="ISO-8859-1"
+            encoding="UTF-8"
             indent="no"/>
 
 <!--
