@@ -133,13 +133,6 @@ Engine::Engine(QObject* parent)
     connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), d->cache, SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
 }
 
-/* maybe better to disable copying alltogether?
-Engine::Engine(const KNS3::Engine& other)
-    : QObject(other.parent()), d(other.d)
-{
-}
-*/
-
 Engine::~Engine()
 {
     d->cache->writeRegistry();

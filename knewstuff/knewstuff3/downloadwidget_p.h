@@ -20,11 +20,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_P_H
-#define KNEWSTUFF3_UI_DOWNLOADDIALOG_P_H
-
-
-#include "downloaddialog.h"
+#ifndef KNEWSTUFF3_UI_DOWNLOADWIDGET_P_H
+#define KNEWSTUFF3_UI_DOWNLOADWIDGET_P_H
 
 #include <QtGui/QSortFilterProxyModel>
 #include <QtCore/QTimer>
@@ -40,14 +37,14 @@
 
 #include "ui_downloaddialog.h"
 
-
 namespace KNS3 {
+class DownloadWidget;
 
-class DownloadDialogPrivate :public QObject {
-
-    Q_OBJECT
-
+class DownloadWidgetPrivate
+{
 public:
+    DownloadWidget* q;
+
     Ui::DownloadDialog ui;
     // The engine that does all the work
     Engine *engine;
@@ -68,12 +65,11 @@ public:
 
     QString m_configFile;
 
-    DownloadDialogPrivate();
-    ~DownloadDialogPrivate();
+    DownloadWidgetPrivate(DownloadWidget* q);
+    ~DownloadWidgetPrivate();
     void init(const QString& configFile);
     void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0);
 
-public Q_SLOTS:
     void slotEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void slotEntryChanged(const KNS3::EntryInternal& entry);
 
@@ -92,9 +88,6 @@ public Q_SLOTS:
     void scrollbarValueChanged(int value);
 
     void slotUpload();
-
-Q_SIGNALS:
-    void signalRequestMoreData();
 };
 
 }

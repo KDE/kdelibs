@@ -20,19 +20,20 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "downloaddialog_p.h"
+#include "downloadwidget.h"
+#include "downloadwidget_p.h"
+#include "uploaddialog.h"
 
-#include <QtGui/QSortFilterProxyModel>
 #include <QtCore/QTimer>
+#include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QScrollBar>
+#include <QtGui/QKeyEvent>
 
 #include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
-
-#include <knewstuff3/uploaddialog.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
@@ -42,16 +43,69 @@
 
 using namespace KNS3;
 
-DownloadDialogPrivate::DownloadDialogPrivate()
-: engine(new Engine), model(new ItemsModel)
-, sortingProxyModel(new QSortFilterProxyModel) , messageTimer(0)
+DownloadWidget::DownloadWidget(QWidget* parent)
+    : QWidget(parent)
+    , d(new DownloadWidgetPrivate(this))
+{
+    KComponentData component = KGlobal::activeComponent();
+    QString name = component.componentName();
+    init(name + ".knsrc");
+}
+
+DownloadWidget::DownloadWidget(const QString& configFile, QWidget * parent)
+        : QWidget(parent)
+        , d(new DownloadWidgetPrivate(this))
+{
+    init(configFile);
+}
+
+void DownloadWidget::init(const QString& configFile)
+{
+    d->ui.setupUi(this);
+
+    d->ui.m_titleWidget->setVisible(false);
+    d->init(configFile);
+}
+
+DownloadWidget::~DownloadWidget()
+{
+    delete d;
+}
+
+Entry::List DownloadWidget::changedEntries()
+{
+    Entry::List entries;
+    foreach (const EntryInternal &e, d->changedEntries) {
+        entries.append(e.toEntry());
+    }
+    return entries;
+}
+
+Entry::List DownloadWidget::installedEntries()
+{
+    Entry::List entries;
+    foreach (const EntryInternal &e, d->changedEntries) {
+        if (e.status() == EntryInternal::Installed) {
+            entries.append(e.toEntry());
+        }
+    }
+    return entries;
+}
+
+
+DownloadWidgetPrivate::DownloadWidgetPrivate(DownloadWidget* q)
+: q(q)
+, engine(new Engine)
+, model(new ItemsModel)
+, sortingProxyModel(new QSortFilterProxyModel)
+, messageTimer(0)
 {
     sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
     sortingProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     sortingProxyModel->setSourceModel(model);
 }
 
-DownloadDialogPrivate::~DownloadDialogPrivate()
+DownloadWidgetPrivate::~DownloadWidgetPrivate()
 {
     delete messageTimer;
     delete delegate;
@@ -60,17 +114,17 @@ DownloadDialogPrivate::~DownloadDialogPrivate()
     delete engine;
 }
 
-void DownloadDialogPrivate::slotResetMessage() // SLOT
+void DownloadWidgetPrivate::slotResetMessage() // SLOT
 {
     ui.m_titleWidget->setComment(QString());
 }
 
-void DownloadDialogPrivate::slotNetworkTimeout() // SLOT
+void DownloadWidgetPrivate::slotNetworkTimeout() // SLOT
 {
     displayMessage(i18n("Timeout. Check Internet connection."), KTitleWidget::ErrorMessage);
 }
 
-void DownloadDialogPrivate::sortingChanged()
+void DownloadWidgetPrivate::sortingChanged()
 {
     Provider::SortMode sortMode = Provider::Newest;
     if (ui.ratingRadio->isChecked()) {
@@ -90,7 +144,7 @@ void DownloadDialogPrivate::sortingChanged()
     engine->setSortMode(sortMode);
 }
 
-void DownloadDialogPrivate::slotUpdateSearch()
+void DownloadWidgetPrivate::slotUpdateSearch()
 {
     if (searchTerm == ui.m_searchEdit->text().trimmed()) {
         return;
@@ -98,7 +152,7 @@ void DownloadDialogPrivate::slotUpdateSearch()
     searchTerm = ui.m_searchEdit->text().trimmed();
 }
 
-void DownloadDialogPrivate::slotSearchTextChanged()
+void DownloadWidgetPrivate::slotSearchTextChanged()
 {
     if (searchTerm == ui.m_searchEdit->text().trimmed()) {
         return;
@@ -107,7 +161,7 @@ void DownloadDialogPrivate::slotSearchTextChanged()
     engine->setSearchTerm(ui.m_searchEdit->text().trimmed());
 }
 
-void DownloadDialogPrivate::slotCategoryChanged(int idx)
+void DownloadWidgetPrivate::slotCategoryChanged(int idx)
 {
     if (idx == 0) {
         // All Categories item selected, reset filter
@@ -122,7 +176,7 @@ void DownloadDialogPrivate::slotCategoryChanged(int idx)
     }
 }
 
-void DownloadDialogPrivate::slotInfo(QString provider, QString server, QString version)
+void DownloadWidgetPrivate::slotInfo(QString provider, QString server, QString version)
 {
     QString link = QString("<a href=\"%1\">%1</a>").arg(server);
     QString infostring = i18n("Server: %1", link);
@@ -134,64 +188,64 @@ void DownloadDialogPrivate::slotInfo(QString provider, QString server, QString v
                              i18n("Provider information"));
 }
 
-void DownloadDialogPrivate::slotEntryChanged(const EntryInternal& entry)
+void DownloadWidgetPrivate::slotEntryChanged(const EntryInternal& entry)
 {
     changedEntries.insert(entry);
     model->slotEntryChanged(entry);
 }
 
-void DownloadDialogPrivate::slotPayloadFailed(const EntryInternal& entry)
+void DownloadWidgetPrivate::slotPayloadFailed(const EntryInternal& entry)
 {
     KMessageBox::error(0, i18n("Could not install %1", entry.name()),
                        i18n("Get Hot New Stuff!"));
 }
 
-void DownloadDialogPrivate::slotPayloadLoaded(KUrl url)
+void DownloadWidgetPrivate::slotPayloadLoaded(KUrl url)
 {
     Q_UNUSED(url)
 }
 
-void DownloadDialogPrivate::slotError(const QString& message)
+void DownloadWidgetPrivate::slotError(const QString& message)
 {
     KMessageBox::error(0, message, i18n("Get Hot New Stuff"));
 }
 
-void DownloadDialogPrivate::scrollbarValueChanged(int value)
+void DownloadWidgetPrivate::scrollbarValueChanged(int value)
 {
     if ((double)value/ui.m_listView->verticalScrollBar()->maximum() > 0.9) {
         engine->requestMoreData();
     }
 }
 
-void DownloadDialogPrivate::init(const QString& configFile)
+void DownloadWidgetPrivate::init(const QString& configFile)
 {
     m_configFile = configFile;
     engine->init(configFile);
 
     // Entries have been fetched and should be shown:
-    connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), this, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
+    q->connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), q, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
 
-    connect(engine, SIGNAL(signalError(const QString&)), SLOT(slotError(const QString&)));
+    q->connect(engine, SIGNAL(signalError(const QString&)), q, SLOT(slotError(const QString&)));
 
     // An entry has changes - eg because it was installed
-    connect(engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), SLOT(slotEntryChanged(KNS3::EntryInternal)));
+    q->connect(engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), q, SLOT(slotEntryChanged(KNS3::EntryInternal)));
 
-    connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
+    q->connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
 
     delegate = new ItemsViewDelegate(ui.m_listView);
     ui.m_listView->setItemDelegate(delegate);
-    connect(delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)),
+    q->connect(delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)),
             engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)));
 
     ui.m_listView->setModel(sortingProxyModel);
 
-    connect(ui.newestRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    connect(ui.ratingRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    connect(ui.mostDownloadsRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
-    connect(ui.installedRadio,  SIGNAL(clicked()), this, SLOT(sortingChanged()));
+    q->connect(ui.newestRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
+    q->connect(ui.ratingRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
+    q->connect(ui.mostDownloadsRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
+    q->connect(ui.installedRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
 
-    connect(ui.m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
-    connect(ui.m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
+    q->connect(ui.m_searchEdit, SIGNAL(textChanged(const QString &)), q, SLOT(slotSearchTextChanged()));
+    q->connect(ui.m_searchEdit, SIGNAL(editingFinished()), q, SLOT(slotUpdateSearch()));
 
     ui.m_providerLabel->setVisible(false);
     ui.m_providerCombo->setVisible(false);
@@ -208,21 +262,24 @@ void DownloadDialogPrivate::init(const QString& configFile)
         }
     }
 
-    connect(ui.m_categoryCombo, SIGNAL(activated(int)), SLOT(slotCategoryChanged(int)));
+    q->connect(ui.m_categoryCombo, SIGNAL(activated(int)), q, SLOT(slotCategoryChanged(int)));
 
     ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
     "%1 Add-On Installer",
     KGlobal::activeComponent().aboutData()->programName()));
     ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
+    // let the search line edit trap the enter key, otherwise it closes the dialog
+    ui.m_searchEdit->setTrapReturnKey(true);
 
-    connect(engine, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
-    connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
-    connect(ui.m_uploadButton, SIGNAL(clicked()), this, SLOT(slotUpload()));
+    q->connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), q, SLOT(scrollbarValueChanged(int)));
+
+    q->connect(engine, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
+    q->connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
+    q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
 }
 
-void DownloadDialogPrivate::slotEntriesLoaded(const EntryInternal::List& entries)
+void DownloadWidgetPrivate::slotEntriesLoaded(const EntryInternal::List& entries)
 {
     foreach(const KNS3::EntryInternal &entry, entries) {
         if (!categories.contains(entry.category())) {
@@ -233,12 +290,13 @@ void DownloadDialogPrivate::slotEntriesLoaded(const EntryInternal::List& entries
     model->slotEntriesLoaded(entries);
 }
 
-void DownloadDialogPrivate::displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs)
+void DownloadWidgetPrivate::displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs)
 {
     if (!messageTimer) {
         messageTimer = new QTimer;
         messageTimer->setSingleShot(true);
-        connect(messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
+        q->connect(messageTimer, SIGNAL(timeout()), q, SLOT(slotResetMessage()));
+        kDebug() << "FIXMEFIXME";
     }
     // stop the pending timer if present
     messageTimer->stop();
@@ -253,11 +311,11 @@ void DownloadDialogPrivate::displayMessage(const QString & msg, KTitleWidget::Me
     }
 }
 
-void DownloadDialogPrivate::slotUpload()
+void DownloadWidgetPrivate::slotUpload()
 {
     kDebug() << "do upload";
     UploadDialog dialog(m_configFile, ui.m_uploadButton);
     dialog.exec();
 }
 
-#include "downloaddialog_p.moc"
+#include "downloadwidget.moc"

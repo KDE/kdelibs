@@ -187,12 +187,10 @@ private:
 
     bool entryChanged(const EntryInternal& oldentry, const EntryInternal& entry);
 
-    /**
-     * Private copy constructor
-     */
-    Engine(const Engine& other);
     class Private;
     Private* const d;
+
+    Q_DISABLE_COPY(Engine)
 
     class ProviderInformation;
 };

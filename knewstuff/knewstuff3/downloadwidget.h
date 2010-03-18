@@ -20,17 +20,17 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_H
-#define KNEWSTUFF3_UI_DOWNLOADDIALOG_H
+#ifndef KNEWSTUFF3_UI_DOWNLOADWIDGET_H
+#define KNEWSTUFF3_UI_DOWNLOADWIDGET_H
 
-#include <kdialog.h>
+#include <QtGui/QWidget>
 
 #include "knewstuff_export.h"
 #include "entry.h"
 
 namespace KNS3
 {
-class DownloadDialogPrivate;
+class DownloadWidgetPrivate;
 
 /**
  * KNewStuff download dialog.
@@ -68,7 +68,7 @@ class DownloadDialogPrivate;
  *
  * @since 4.4
  */
-class KNEWSTUFF_EXPORT DownloadDialog :public KDialog
+class KNEWSTUFF_EXPORT DownloadWidget :public QWidget
 {
     Q_OBJECT
 
@@ -80,7 +80,7 @@ public:
      *
      * @param parent the parent of the dialog
      */
-    explicit DownloadDialog(QWidget * parent = 0);
+    explicit DownloadWidget(QWidget * parent = 0);
 
     /**
      * Create a DownloadDialog that lets the user install, update and uninstall
@@ -90,12 +90,12 @@ public:
      * @param configFile the name of the configuration file
      * @param parent the parent of the dialog
      */
-    explicit DownloadDialog(const QString& configFile, QWidget * parent = 0);
-
+    explicit DownloadWidget(const QString& configFile, QWidget * parent = 0);
+    
     /**
      * destructor
      */
-    ~DownloadDialog();
+    ~DownloadWidget();
 
     /**
      * The list of entries with changed status (installed/uninstalled)
@@ -112,8 +112,26 @@ public:
 private:
     void init(const QString& configFile);
 
-    DownloadDialogPrivate *const d;
-    Q_DISABLE_COPY(DownloadDialog)
+    DownloadWidgetPrivate *const d;
+    Q_DISABLE_COPY(DownloadWidget)
+
+    Q_PRIVATE_SLOT( d, void slotEntriesLoaded(const KNS3::EntryInternal::List& entries) )
+    Q_PRIVATE_SLOT( d, void slotEntryChanged(const KNS3::EntryInternal& entry) )
+
+    Q_PRIVATE_SLOT( d, void slotPayloadFailed(const EntryInternal& entry) )
+    Q_PRIVATE_SLOT( d, void slotPayloadLoaded(KUrl url) )
+
+    Q_PRIVATE_SLOT( d, void slotResetMessage() )
+    Q_PRIVATE_SLOT( d, void slotNetworkTimeout() )
+    Q_PRIVATE_SLOT( d, void sortingChanged() )
+    Q_PRIVATE_SLOT( d, void slotSearchTextChanged() )
+    Q_PRIVATE_SLOT( d, void slotUpdateSearch() )
+    Q_PRIVATE_SLOT( d, void slotCategoryChanged(int) )
+
+    Q_PRIVATE_SLOT( d, void slotInfo(QString provider, QString server, QString version) )
+    Q_PRIVATE_SLOT( d, void slotError(const QString& message) )
+    Q_PRIVATE_SLOT( d, void scrollbarValueChanged(int value) )
+    Q_PRIVATE_SLOT( d, void slotUpload() )
 };
 
 }

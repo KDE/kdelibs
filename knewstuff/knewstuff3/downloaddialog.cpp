@@ -4,7 +4,7 @@
     Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jpwhiting@kde.org>
-    Copyright (C) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (C) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@
 */
 
 #include "downloaddialog.h"
-#include "downloaddialog_p.h"
 
 #include <QtCore/QTimer>
 #include <QtGui/QSortFilterProxyModel>
@@ -31,14 +30,25 @@
 #include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
+#include <kpushbutton.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
 
-#include "ui/itemsmodel.h"
-#include "ui/itemsviewdelegate.h"
+#include "downloadwidget.h"
 
-#include "ui_downloaddialog.h"
 
+namespace KNS3 {
+class DownloadDialogPrivate
+{
+public:
+    ~DownloadDialogPrivate()
+    {
+        delete downloadWidget;
+    }
+
+    DownloadWidget* downloadWidget;
+};
+}
 
 using namespace KNS3;
 
@@ -61,28 +71,20 @@ DownloadDialog::DownloadDialog(const QString& configFile, QWidget * parent)
     init(configFile);
 }
 
-
 void DownloadDialog::init(const QString& configFile)
 {
-    setButtons(KDialog::None);
-    QWidget* _mainWidget = new QWidget(this);
-    setMainWidget(_mainWidget);
-    d->ui.setupUi(_mainWidget);
-
-    d->ui.closeButton->setGuiItem(KStandardGuiItem::Close);
-    connect(d->ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
-
-    // let the search line edit trap the enter key, otherwise it closes the dialog
-    d->ui.m_searchEdit->setTrapReturnKey(true);
-
-    d->init(configFile);
-
     // load the last size from config
     KConfigGroup group(KGlobal::config(), ConfigGroup);
     restoreDialogSize(group);
     setMinimumSize(700, 400);
 
     setCaption(i18n("Get Hot New Stuff"));
+
+    setButtons(KDialog::Ok);
+    button(KDialog::Ok)->setGuiItem(KStandardGuiItem::Close);
+
+    d->downloadWidget = new DownloadWidget(configFile ,this);
+    setMainWidget(d->downloadWidget);
 }
 
 DownloadDialog::~DownloadDialog()
@@ -94,22 +96,12 @@ DownloadDialog::~DownloadDialog()
 
 Entry::List DownloadDialog::changedEntries()
 {
-    Entry::List entries;
-    foreach (const EntryInternal &e, d->changedEntries) {
-        entries.append(e.toEntry());
-    }
-    return entries;
+    return d->downloadWidget->changedEntries();
 }
 
 Entry::List DownloadDialog::installedEntries()
 {
-    Entry::List entries;
-    foreach (const EntryInternal &e, d->changedEntries) {
-        if (e.status() == EntryInternal::Installed) {
-            entries.append(e.toEntry());
-        }
-    }
-    return entries;
+    return d->downloadWidget->installedEntries();
 }
 
 
