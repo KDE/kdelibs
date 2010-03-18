@@ -69,17 +69,6 @@ void Cache::readRegistry()
         cache.insert(e);
         stuff = stuff.nextSiblingElement("stuff");
     }
-    /*
-    if (root.hasAttribute("previewfile")) {
-        d->previewfiles[e] = root.attribute("previewfile");
-        // FIXME: check here for a [ -f previewfile ]
-    }
-    */
-
-    if (root.hasAttribute("payloadfile")) {
-        // FIXME d->payloadfiles[e] = root.attribute("payloadfile");
-        // FIXME: check here for a [ -f payloadfile ]
-    }
 
     kDebug() << "Cache read... entries: " << cache.size();
 }
