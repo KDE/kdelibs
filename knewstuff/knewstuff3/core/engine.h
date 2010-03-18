@@ -48,19 +48,12 @@ class Engine : public QObject
 {
     Q_OBJECT
 public:
+
     enum EntryAction {
-        ViewInfo,
-        Comments,
-        Changes,
         ContactEmail,
         ContactJabber,
-        CollabTranslate,
-        CollabRemoval,
-        CollabSubscribe,
         Uninstall,
         Install,
-        AddComment,
-        Rate,
         ShowDetails
     };
 
