@@ -364,7 +364,6 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {
-            //QString lang = e.attribute("lang");
             //kDebug() << "adding " << e.tagName() << " to summary as language " << lang;
             d->mSummary = e.text().trimmed();
         } else if (e.tagName() == "version") {
@@ -372,10 +371,10 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "releasedate") {
             d->mReleaseDate = QDate::fromString(e.text().trimmed(), Qt::ISODate);
         } else if (e.tagName() == "preview") {
-            //QString lang = e.attribute("lang");
             d->mPreview = e.text().trimmed();
+        } else if (e.tagName() == "previewBig") {
+            d->mPreviewBig = e.text().trimmed();
         } else if (e.tagName() == "payload") {
-            //QString lang = e.attribute("lang");
             d->mPayload = e.text().trimmed();
         } else if (e.tagName() == "rating") {
             d->mRating = e.text().toInt();
@@ -475,13 +474,10 @@ QDomElement KNS3::EntryInternal::entryXML() const
     (void)addElement(doc, el, "releasedate",
                      d->mReleaseDate.toString(Qt::ISODate));
 
-    QString summary = d->mSummary;
-    QString preview = d->mPreview;
-    QString payload = d->mPayload;
-
-    e = addElement(doc, el, "summary", summary);
-    e = addElement(doc, el, "preview", KUrl(preview).fileName());
-    e = addElement(doc, el, "payload", KUrl(payload).fileName());
+    e = addElement(doc, el, "summary", d->mSummary);
+    e = addElement(doc, el, "preview", d->mPreview);
+    e = addElement(doc, el, "previewBig", d->mPreviewBig);
+    e = addElement(doc, el, "payload", d->mPayload);
 
     if (d->mStatus == Installed) {
         (void)addElement(doc, el, "status", "installed");
