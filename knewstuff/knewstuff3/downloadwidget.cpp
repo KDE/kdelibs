@@ -231,7 +231,7 @@ void DownloadWidgetPrivate::init(const QString& configFile)
 
     q->connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
 
-    delegate = new ItemsViewDelegate(ui.m_listView);
+    delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
     ui.m_listView->setItemDelegate(delegate);
     q->connect(delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)),
             engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)));

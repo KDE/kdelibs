@@ -48,14 +48,6 @@ class Engine : public QObject
 {
     Q_OBJECT
 public:
-
-    enum EntryAction {
-        ContactEmail,
-        Uninstall,
-        Install,
-        ShowDetails
-    };
-
     /**
      * Constructor.
      */
@@ -105,6 +97,11 @@ public:
     void reloadEntries();
     void requestMoreData();
 
+    /**
+     * Try to contact the author of the entry by email or showing their homepage.
+     */
+    void contactAuthor(const EntryInternal& entry);
+
     bool userCanVote(const EntryInternal& entry);
     void vote(const EntryInternal& entry, bool positiveVote);
     bool userCanBecomeFan(const EntryInternal& entry);
@@ -112,9 +109,6 @@ public:
 
     QStringList categories() const;
     QStringList categoriesFilter() const;
-
-public Q_SLOTS:
-    void slotPerformAction(KNS3::Engine::EntryAction action, KNS3::EntryInternal entry);
 
 Q_SIGNALS:
     /**

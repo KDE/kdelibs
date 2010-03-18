@@ -23,7 +23,6 @@
 #include "entry.h"
 #include "core/installation.h"
 #include "core/xmlloader.h"
-#include "ui/entrydetailsdialog.h"
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -305,31 +304,6 @@ void Engine::requestMoreData()
     }
 }
 
-void Engine::slotPerformAction(KNS3::Engine::EntryAction action, EntryInternal entry)
-{
-    kDebug(551) << "perform action: " << action;
-
-    switch (action) {
-
-    case ContactEmail:
-        // invoke mail with the address of the author
-        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name()));
-        break;
-    case Uninstall:
-        uninstall(entry);
-        break;
-    case Install:
-        install(entry);
-        break;
-
-    case ShowDetails: {
-        EntryDetailsDialog dialog(this, entry, 0);
-        dialog.exec();
-        break;
-    }
-    }
-}
-
 void Engine::slotProgress(KJob *job, unsigned long percent)
 {
     QString url;
@@ -409,6 +383,16 @@ void Engine::uninstall(KNS3::EntryInternal entry)
     entry.setStatus(EntryInternal::Installing);
     emit signalEntryChanged(entry);
     m_installation->uninstall(entry);
+}
+
+void Engine::contactAuthor(const EntryInternal &entry)
+{
+    if (!entry.author().email().isEmpty()) {
+        // invoke mail with the address of the author
+        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name()));
+    } else if (!entry.author().homepage().isEmpty()) {
+        KToolInvocation::invokeBrowser(entry.author().homepage());
+    }
 }
 
 void Engine::slotEntryChanged(const KNS3::EntryInternal& entry)

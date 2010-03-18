@@ -35,12 +35,13 @@
 namespace KNS3
 {
     class ItemsModel;
+    class Engine;
 
 class ItemsViewDelegate: public KWidgetItemDelegate
 {
     Q_OBJECT
 public:
-    explicit ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
+    explicit ItemsViewDelegate(QAbstractItemView* itemView, Engine* engine, QObject* parent = 0);
     ~ItemsViewDelegate();
 
 
@@ -57,9 +58,6 @@ public:
 
     virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
-signals:
-    void performAction(KNS3::Engine::EntryAction action, KNS3::EntryInternal entry);
-
 private slots:
     bool eventFilter(QObject *watched, QEvent *event);
     void slotInstallClicked();
@@ -72,6 +70,7 @@ private:
 
     QList<KIcon> m_statusicons;
     QImage m_frameImage;
+    Engine* m_engine;
 };
 }
 

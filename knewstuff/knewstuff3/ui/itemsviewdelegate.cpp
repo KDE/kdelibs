@@ -31,6 +31,7 @@
 #include <kpushbutton.h>
 
 #include "itemsmodel.h"
+#include "entrydetailsdialog.h"
 #include "ratingwidget.h"
 #include "ratingpainter.h"
 
@@ -41,8 +42,9 @@ namespace KNS3
     static const int DelegateDetailsButton = 2;
     static const int DelegateRatingWidget = 3;
 
-ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)
+ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
+        , m_engine(engine)
 {
     QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");
 
@@ -313,12 +315,8 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
 bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
 {
    if (event->type() == QEvent::MouseButtonDblClick) {
-        QModelIndex index = focusedIndex();
-        Q_ASSERT(index.isValid());
-
-        KNS3::EntryInternal entry = entryForIndex(index);
-
-        performAction(Engine::ShowDetails, entry);
+       slotDetailsClicked();
+       return true;
    }
 
    return KWidgetItemDelegate::eventFilter(watched, event);
@@ -343,7 +341,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
     Q_ASSERT(index.isValid());
 
     KNS3::EntryInternal entry = entryForIndex(index);
-    emit performAction(Engine::ContactEmail, entry);
+    m_engine->contactAuthor(entry);
 }
 
 void ItemsViewDelegate::slotInstallClicked()
@@ -360,9 +358,9 @@ void ItemsViewDelegate::slotInstallClicked()
         }
 
         if (entry.status() == EntryInternal::Installed) {
-            emit performAction(Engine::Uninstall, entry);
+            m_engine->uninstall(entry);
         } else {
-            emit performAction(Engine::Install, entry);
+            m_engine->install(entry);
         }
     }
 }
@@ -380,7 +378,8 @@ void ItemsViewDelegate::slotDetailsClicked()
         if ( !entry.isValid() )
             return;
 
-        emit performAction(Engine::ShowDetails, entry);
+        EntryDetailsDialog dialog(m_engine, entry);
+        dialog.exec();
     }
 }
 
