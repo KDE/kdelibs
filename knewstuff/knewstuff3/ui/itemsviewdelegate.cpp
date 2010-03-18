@@ -385,3 +385,5 @@ void ItemsViewDelegate::slotDetailsClicked()
 }
 
 }
+
+#include "itemsviewdelegate.moc"
