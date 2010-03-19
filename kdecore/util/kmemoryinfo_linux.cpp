@@ -57,7 +57,7 @@ static bool fillMemoryInfo(KMemoryInfoData *data)
             char buffer[100];
             char *end = 0;
             while(fgets(buffer, sizeof(buffer) - 1, meminfo)) {
-                if (strstr(buffer, "Cached:") == buffer) {
+                if (memcmp(buffer, "Cached:", 7) == 0) {
                     data->cachedRam = strtol(buffer + 7, &end, 10);
                     break;
                 }
