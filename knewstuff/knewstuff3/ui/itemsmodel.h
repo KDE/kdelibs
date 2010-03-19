@@ -74,7 +74,9 @@ public:
         /** the number of downloads for the entry */
         kDownloads,
         /** the status of this entry */
-        kStatus
+        kStatus,
+
+        NumberFans
     };
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;

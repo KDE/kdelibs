@@ -305,6 +305,9 @@ public:
      */
     int downloads() const;
 
+    void setNumberFans(int fans);
+    int numberFans() const;
+
     // FIXME: below here, everything under consideration
 
     QString providerId() const;

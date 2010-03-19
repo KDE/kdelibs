@@ -49,8 +49,6 @@ public:
     Engine *engine;
     // Model to show the entries
     ItemsModel* model;
-    // sort items according to sort combo
-    QSortFilterProxyModel * sortingProxyModel;
     // Timeout for messge display
     QTimer* messageTimer;
 

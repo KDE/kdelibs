@@ -188,9 +188,20 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
         text += summary;
 
+        unsigned int fans = index.data(ItemsModel::NumberFans).toUInt();
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
+
+        if (fans > 0) {
+            text += i18n("<p>%1 fans</p>", fans);
+        }
+        if (downloads > 0 && fans > 0) {
+            text += QLatin1String(", ");
+        }
         if (downloads > 0) {
-            text += i18n("<p>Downloads: %1</p>\n", downloads);
+            text += i18n("<p>%1 downloads</p>", downloads);
+        }
+        if (downloads > 0 || fans > 0) {
+            text += QLatin1Char('\n');
         }
 
         text += "</body></html>";

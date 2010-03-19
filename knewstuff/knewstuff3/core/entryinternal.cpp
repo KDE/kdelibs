@@ -37,6 +37,7 @@ class EntryInternal::Private : public QSharedData
         : mReleaseDate(QDate::currentDate())
         , mRating(0)
         , mDownloads(0)
+        , mNumberFans(0)
         , mStatus(EntryInternal::Invalid)
         , mSource(EntryInternal::Online)
         {}
@@ -61,6 +62,7 @@ class EntryInternal::Private : public QSharedData
         Author mAuthor;
         int mRating;
         int mDownloads;
+        int mNumberFans;
         QString mSummary;
         QString mPayload;
         QString mPreview;
@@ -278,6 +280,16 @@ int EntryInternal::downloads() const
 void EntryInternal::setDownloads(int downloads)
 {
     d->mDownloads = downloads;
+}
+
+int EntryInternal::numberFans() const
+{
+    return d->mNumberFans;
+}
+
+void EntryInternal::setNumberFans(int fans)
+{
+    d->mNumberFans = fans;
 }
 
 /*

@@ -25,7 +25,6 @@
 #include "uploaddialog.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QScrollBar>
 #include <QtGui/QKeyEvent>
 
@@ -96,19 +95,14 @@ DownloadWidgetPrivate::DownloadWidgetPrivate(DownloadWidget* q)
 : q(q)
 , engine(new Engine)
 , model(new ItemsModel)
-, sortingProxyModel(new QSortFilterProxyModel)
 , messageTimer(0)
 {
-    sortingProxyModel->setFilterRole(ItemsModel::kNameRole);
-    sortingProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    sortingProxyModel->setSourceModel(model);
 }
 
 DownloadWidgetPrivate::~DownloadWidgetPrivate()
 {
     delete messageTimer;
     delete delegate;
-    delete sortingProxyModel;
     delete model;
     delete engine;
 }
@@ -233,10 +227,7 @@ void DownloadWidgetPrivate::init(const QString& configFile)
 
     delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
     ui.m_listView->setItemDelegate(delegate);
-    q->connect(delegate, SIGNAL(performAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)),
-            engine, SLOT(slotPerformAction(KNS3::Engine::EntryAction, const KNS3::EntryInternal&)));
-
-    ui.m_listView->setModel(sortingProxyModel);
+    ui.m_listView->setModel(model);
 
     q->connect(ui.newestRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
     q->connect(ui.ratingRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));

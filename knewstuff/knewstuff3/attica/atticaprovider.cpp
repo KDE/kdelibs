@@ -278,6 +278,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setHomepage(content.detailpage());
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
+        entry.setNumberFans(content.attribute("fans").toInt());
         entry.setPreviewSmall(content.smallPreviewPicture("1"));
         entry.setPreviewBig(content.previewPicture("1"));
         entry.setLicense(content.license());

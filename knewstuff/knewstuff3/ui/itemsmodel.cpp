@@ -104,6 +104,8 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
     case kStatus:
         return entry.status();
         break;
+    case NumberFans:
+        return entry.numberFans();
     }
     return QVariant();
 }
