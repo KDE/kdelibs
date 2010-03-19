@@ -292,6 +292,7 @@ set(kdecore_LIB_SRCS
    util/klibloader.cpp
    util/klibrary.cpp
    util/kmacroexpander.cpp
+   util/kmemoryinfo.cpp
    util/kpluginfactory.cpp
    util/kpluginloader.cpp
    util/kshell.cpp
@@ -523,6 +524,7 @@ install( FILES
    util/klibloader.h
    util/klibrary.h
    util/kmacroexpander.h
+   util/kmemoryinfo.h
    util/kexportplugin.h
    util/kpluginfactory.h
    util/kpluginloader.h

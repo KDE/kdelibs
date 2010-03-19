@@ -59,6 +59,7 @@ KDECORE_UNIT_TESTS(
  ksycocathreadtest
  kdebug_unittest
  kencodingdetectortest
+ kmemoryinfotest
 )
 
 if(UNIX)
