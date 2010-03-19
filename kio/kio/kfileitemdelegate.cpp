@@ -1,7 +1,8 @@
 /*
    This file is part of the KDE project
-
+   Copyright (C) 2009 Shaun Reich <shaun.reich@kdemail.net>
    Copyright © 2006-2007, 2008 Fredrik Höglund <fredrik@kde.org>
+
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -38,6 +39,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
 #include <kdirmodel.h>
@@ -114,6 +116,8 @@ class KFileItemDelegate::Private
 
         void gotNewIcon(const QModelIndex& index);
 
+        void paintJobTransfers(QPainter* painter, const qreal& jobAnimationAngle, const QPoint& iconPos, QStyleOptionViewItemV4 opt);
+
     public:
         KFileItemDelegate::InformationList informationList;
         QColor shadowColor;
@@ -122,6 +126,8 @@ class KFileItemDelegate::Private
         QSize maximumSize;
         bool showToolTipWhenElided;
         QTextOption::WrapMode wrapMode;
+        bool jobTransfersVisible;
+        KIcon downArrowIcon;
 
     private:
         KFileItemDelegate * const q;
@@ -134,8 +140,8 @@ class KFileItemDelegate::Private
 
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
      : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2), maximumSize(0, 0),
-       showToolTipWhenElided(true), wrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere ), q(parent),
-       animationHandler(new KIO::DelegateAnimationHandler(parent)), activeMargins(0)
+       showToolTipWhenElided(true), wrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere ), jobTransfersVisible(false),
+       q(parent), animationHandler(new KIO::DelegateAnimationHandler(parent)), activeMargins(0)
 {
 }
 
@@ -542,11 +548,13 @@ QPixmap KFileItemDelegate::Private::applyHoverEffect(const QPixmap &icon) const
     return icon;
 }
 
-void KFileItemDelegate::Private::gotNewIcon(const QModelIndex& index) {
+void KFileItemDelegate::Private::gotNewIcon(const QModelIndex& index)
+{
     animationHandler->gotNewIcon(index);
 }
 
-void KFileItemDelegate::Private::restartAnimation(KIO::AnimationState* state) {
+void KFileItemDelegate::Private::restartAnimation(KIO::AnimationState* state)
+{
     animationHandler->restartAnimation(state);
 }
 
@@ -820,12 +828,45 @@ void KFileItemDelegate::Private::initStyleOption(QStyleOptionViewItemV4 *option,
     option->showDecorationSelected = true;
 }
 
+void KFileItemDelegate::Private::paintJobTransfers(QPainter *painter, const qreal &jobAnimationAngle, const QPoint &iconPos, QStyleOptionViewItemV4 opt)
+{
+    painter->save();
+    QSize iconSize = opt.icon.actualSize(opt.decorationSize);
+    QPixmap downArrow = downArrowIcon.pixmap(iconSize * 0.30);
+    //corner (less x and y than bottom-right corner) that we will center the painter around
+    QPoint bottomRightCorner = QPoint(iconPos.x() + iconSize.width() * 0.75, iconPos.y() + iconSize.height() * 0.60);
 
+    QPainter pixmapPainter(&downArrow);
+    //make the icon transparent and such
+    pixmapPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    pixmapPainter.fillRect(downArrow.rect(), QColor(255, 255, 255, 110));
+
+
+    painter->translate(bottomRightCorner);
+
+    painter->drawPixmap(-downArrow.size().width() * .50, -downArrow.size().height() * .50, downArrow);
+
+    //animate the circles by rotating the painter around the center point..
+    painter->rotate(jobAnimationAngle);
+    painter->setPen(QColor(20, 20, 20, 80));
+    painter->setBrush(QColor(250, 250, 250, 90));
+
+    int radius = iconSize.width() * 0.04;
+    int spacing = radius * 4.5;
+
+    //left
+    painter->drawEllipse(QPoint(-spacing, 0), radius, radius);
+    //right
+    painter->drawEllipse(QPoint(spacing, 0), radius, radius);
+    //up
+    painter->drawEllipse(QPoint(0, -spacing), radius, radius);
+    //down
+    painter->drawEllipse(QPoint(0, spacing), radius, radius);
+    painter->restore();
+}
 
 
 // ---------------------------------------------------------------------------
-
-
 
 
 KFileItemDelegate::KFileItemDelegate(QObject *parent)
@@ -1005,10 +1046,12 @@ bool KFileItemDelegate::showToolTipWhenElided() const
     return d->showToolTipWhenElided;
 }
 
+
 void KFileItemDelegate::setWrapMode(QTextOption::WrapMode wrapMode)
 {
     d->wrapMode = wrapMode;
 }
+
 
 QTextOption::WrapMode KFileItemDelegate::wrapMode() const
 {
@@ -1020,6 +1063,19 @@ QRect KFileItemDelegate::iconRect(const QStyleOptionViewItem &option, const QMod
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
     return QRect(d->iconPosition(opt), opt.icon.actualSize(opt.decorationSize));
+}
+
+
+void KFileItemDelegate::setJobTransfersVisible(bool jobTransfersVisible)
+{
+    d->downArrowIcon = KIcon("go-down");
+    d->jobTransfersVisible = jobTransfersVisible;
+}
+
+
+bool KFileItemDelegate::jobTransfersVisible() const
+{
+    return d->jobTransfersVisible;
 }
 
 
@@ -1176,13 +1232,19 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     KIO::AnimationState *state = d->animationState(opt, index, view);
     KIO::CachedRendering *cache = 0;
     qreal progress = ((opt.state & QStyle::State_MouseOver) &&
-                index.column() == KDirModel::Name) ? 1.0 : 0.0;
-    if (state)
+    index.column() == KDirModel::Name) ? 1.0 : 0.0;
+    const QPoint iconPos   = d->iconPosition(opt);
+    QIcon::Mode iconMode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
+    QIcon::State iconState = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+    QPixmap icon           = opt.icon.pixmap(opt.decorationSize, iconMode, iconState);
+
+    if (state && !state->hasJobAnimation())
     {
         cache    = state->cachedRendering();
         progress = state->hoverProgress();
         // Clear the mouse over bit temporarily
         opt.state &= ~QStyle::State_MouseOver;
+
 
         // If we have a cached rendering, draw the item from the cache
         if (cache)
@@ -1200,6 +1262,11 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                     pixmap = d->transition(fadeFromPixmap, pixmap, state->fadeProgress());
                 }
                 painter->drawPixmap(option.rect.topLeft(), pixmap);
+                if (d->jobTransfersVisible && index.column() == 0) {
+                    if (index.data(KDirModel::HasJobRole).toBool()) {
+                        d->paintJobTransfers(painter, state->jobAnimationAngle(), iconPos, opt);
+                    }
+                }
                 return;
             }
 
@@ -1230,13 +1297,9 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Compute the metrics, and lay out the text items
     // ========================================================================
-    const QPoint iconPos   = d->iconPosition(opt);
-    QIcon::Mode iconMode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
-    QIcon::State iconState = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-    QPixmap icon           = opt.icon.pixmap(opt.decorationSize, iconMode, iconState);
     const QPen pen         = QPen(d->foregroundBrush(opt, index), 0);
 
-    ///### Apply the selection effect to the icon when the item is selected and
+    //### Apply the selection effect to the icon when the item is selected and
     //     showDecorationSelected is false.
 
     QTextLayout labelLayout, infoLayout;
@@ -1299,6 +1362,12 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
 
         painter->drawPixmap(option.rect.topLeft(), pixmap);
+        painter->setRenderHint(QPainter::Antialiasing);
+        if (d->jobTransfersVisible && index.column() == 0) {
+            if (index.data(KDirModel::HasJobRole).toBool()) {
+                d->paintJobTransfers(painter, state->jobAnimationAngle(), iconPos, opt);
+            }
+        }
         return;
     }
 
@@ -1317,9 +1386,15 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
     painter->drawPixmap(iconPos, icon);
+
     d->drawTextItems(painter, labelLayout, infoLayout, textBoundingRect);
     d->drawFocusRect(painter, opt, focusRect);
 
+    if (d->jobTransfersVisible && index.column() == 0 && state) {
+        if (index.data(KDirModel::HasJobRole).toBool()) {
+            d->paintJobTransfers(painter, state->jobAnimationAngle(), iconPos, opt);
+        }
+    }
     painter->restore();
 }
 
@@ -1563,6 +1638,7 @@ bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
         return false;
     } // switch (event->type())
 }
+
 
 
 #include "kfileitemdelegate.moc"

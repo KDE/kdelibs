@@ -27,6 +27,7 @@
 #include <kio/copyjob.h>
 #include <kio/fileundomanager.h>
 #include <kio/jobuidelegate.h>
+#include <kio/joburlcache.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <QMimeData>
@@ -129,7 +130,7 @@ public:
     KDirModelPrivate( KDirModel* model )
         : q(model), m_dirLister(0),
           m_rootNode(new KDirModelDirNode(0, KFileItem())),
-          m_dropsAllowed(KDirModel::NoDrops)
+          m_dropsAllowed(KDirModel::NoDrops), m_jobTransfersVisible(false)
     {
     }
     ~KDirModelPrivate() {
@@ -141,6 +142,7 @@ public:
     void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
     void _k_slotClear();
     void _k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl);
+    void _k_slotJobUrlsChanged(const QStringList& urlList);
 
     void clear() {
         delete m_rootNode;
@@ -181,10 +183,12 @@ public:
     KDirLister* m_dirLister;
     KDirModelDirNode* m_rootNode;
     KDirModel::DropsAllowed m_dropsAllowed;
+    bool m_jobTransfersVisible;
     // key = current known parent node (always a KDirModelDirNode but KDirModelNode is more convenient),
     // value = final url[s] being fetched
     QMap<KDirModelNode*, KUrl::List> m_urlsBeingFetched;
     QHash<KUrl, KDirModelNode *> m_nodeHash; // global node hash: url -> node
+    QStringList m_allCurrentDestUrls; //list of all dest urls that have jobs on them (e.g. copy, download)
 };
 
 KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const // O(1), well, O(length of url as a string)
@@ -611,6 +615,11 @@ void KDirModelPrivate::_k_slotClear()
     //emit layoutChanged();
 }
 
+void KDirModelPrivate::_k_slotJobUrlsChanged(const QStringList& urlList)
+{
+    m_allCurrentDestUrls = urlList;
+}
+
 void KDirModel::itemChanged( const QModelIndex& index )
 {
     // This method is really a itemMimeTypeChanged(), it's mostly called by KMimeTypeResolver.
@@ -740,6 +749,13 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 }
                 return count;
             }
+        case HasJobRole:
+            if (d->m_jobTransfersVisible && d->m_allCurrentDestUrls.isEmpty() == false) {
+                KDirModelNode* node = d->nodeForIndex(index);
+                const QString url = node->item().url().url();
+                //return whether or not there are job dest urls visible in the view, so the delegate knows which ones to paint.
+                return QVariant(d->m_allCurrentDestUrls.contains(url));
+            }
         }
     }
     return QVariant();
@@ -830,8 +846,27 @@ static bool lessThan(const KUrl &left, const KUrl &right)
     return left.url().compare(right.url()) < 0;
 }
 
-void KDirModel::requestSequenceIcon(const QModelIndex& index, int sequenceIndex) {
+void KDirModel::requestSequenceIcon(const QModelIndex& index, int sequenceIndex)
+{
     emit needSequenceIcon(index, sequenceIndex);
+}
+
+void KDirModel::setJobTransfersVisible(bool value)
+{
+    if(value) {
+        d->m_jobTransfersVisible = true;
+        connect(&JobUrlCache::instance(), SIGNAL(jobUrlsChanged(QStringList)), this, SLOT(_k_slotJobUrlsChanged(QStringList)), Qt::UniqueConnection);
+
+        JobUrlCache::instance().requestJobUrlsChanged();
+    } else {
+        disconnect(this, SLOT(_k_slotJobUrlsChanged(QStringList)));
+    }
+
+}
+
+bool KDirModel::jobTransfersVisible() const
+{
+    return d->m_jobTransfersVisible;
 }
 
 KUrl::List KDirModel::simplifiedUrlList(const KUrl::List &urls)

@@ -65,6 +65,12 @@ public:
     qreal hoverProgress() const;
     //Progress of the icon fading animation
     qreal fadeProgress() const;
+    //Angle of the painter, to paint the animation for a file job on an item
+    qreal jobAnimationAngle() const;
+
+    void setJobAnimation(bool value);
+    bool hasJobAnimation() const;
+
     CachedRendering *cachedRendering() const { return renderCache; }
     //The previous render-cache is deleted, if there was one
     void setCachedRendering(CachedRendering *rendering) { delete renderCache; renderCache = rendering; }
@@ -84,8 +90,10 @@ private:
     QPersistentModelIndex index;
     QTimeLine::Direction direction;
     bool animating;
+    bool jobAnimation;
     qreal progress;
     qreal m_fadeProgress;
+    qreal m_jobAnimationAngle;
     QTime time;
     QTime creationTime;
     CachedRendering *renderCache;

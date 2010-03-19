@@ -85,7 +85,8 @@ void CachedRendering::modelReset()
 
 AnimationState::AnimationState(const QModelIndex &index)
         : index(index), direction(QTimeLine::Forward),
-          animating(false), progress(0.0), m_fadeProgress(1.0), renderCache(NULL), fadeFromRenderCache(NULL)
+          animating(false), progress(0.0), m_fadeProgress(1.0),
+          m_jobAnimationAngle(0.0), renderCache(NULL), fadeFromRenderCache(NULL)
 {
     creationTime.start();
 }
@@ -125,9 +126,30 @@ bool AnimationState::update()
             setCachedRenderingFadeFrom(0);
     }
 
-    return !animating;
-}
+    if (jobAnimation)
+    {
+        m_jobAnimationAngle += 1.0;
+        if (m_jobAnimationAngle == 360)
+            m_jobAnimationAngle = 0;
 
+        if (index.model()->data(index, KDirModel::HasJobRole).toBool())
+        {
+            animating = true;
+            //there is a job here still...
+            return false;
+        }
+        else
+        {
+            animating = false;
+            //there's no job here anymore, return true so we stop painting this.
+            return true;
+        }
+    }
+    else
+    {
+        return !animating;
+    }
+}
 
 qreal AnimationState::hoverProgress() const
 {
@@ -140,6 +162,21 @@ qreal AnimationState::hoverProgress() const
 qreal AnimationState::fadeProgress() const
 {
     return qRound(255.0 * std::sin(m_fadeProgress * M_PI_2)) / 255.0;
+}
+
+qreal AnimationState::jobAnimationAngle() const
+{
+    return m_jobAnimationAngle;
+}
+
+bool AnimationState::hasJobAnimation() const
+{
+    return jobAnimation;
+}
+
+void AnimationState::setJobAnimation(bool value)
+{
+    jobAnimation = value;
 }
 
 // ---------------------------------------------------------------------------
@@ -231,6 +268,7 @@ void DelegateAnimationHandler::eventuallyStartIteration(QModelIndex index)
     setSequenceIndex(1);
 //      }
 }
+
 AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &option,
                                                          const QModelIndex &index,
                                                          const QAbstractItemView *view)
@@ -299,6 +337,14 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
             eventuallyStartIteration(index);
         }
     }
+    else if (!state && index.model()->data(index, KDirModel::HasJobRole).toBool())
+    {
+        state = new AnimationState(index);
+        addAnimationState(state, view);
+        startAnimation(state);
+        state->setJobAnimation(true);
+    }
+
     return state;
 }
 

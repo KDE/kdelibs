@@ -127,6 +127,13 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
      */
     Q_PROPERTY(bool showToolTipWhenElided READ showToolTipWhenElided WRITE setShowToolTipWhenElided)
 
+    /**
+     * This property determines if there are KIO jobs on a destination URL visible, then
+     * they will have a small animation overlay displayed on them.
+     * @since 4.5
+     */
+    Q_PROPERTY(bool jobTransfersVisible READ jobTransfersVisible WRITE setJobTransfersVisible)
+
     Q_ENUMS(Information)
 
 
@@ -377,7 +384,7 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * @since 4.2
          */
         bool showToolTipWhenElided() const;
-        
+
         /**
          * Returns the rectangle of the icon that is aligned inside the decoration
          * rectangle.
@@ -402,10 +409,34 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
         QTextOption::WrapMode wrapMode() const;
 
         /**
+         * Enable/Disable the displaying of an animated overlay that is shown for any destination
+         * urls (in the view). When enabled, the animations (if any) will be drawn automatically.
+         *
+         * Only the files/folders that are visible and have jobs associated with them
+         * will display the animation.
+         * You would likely not want this enabled if you perform some kind of custom painting
+         * that takes up a whole item, and will just make this(and what you paint) look funky.
+         *
+         * Default is disabled.
+         *
+         * Note: The model (KDirModel) needs to have it's method called with the same
+         * value, when you make the call to this method.
+         *
+         * @since 4.5
+         */
+        void setJobTransfersVisible(bool jobTransfersVisible);
+
+        /**
+         * Returns whether or not the displaying of job transfers is enabled.
+         * @see setJobTransfersVisible()
+         * @since 4.5
+         */
+        bool jobTransfersVisible() const;
+
+        /**
          * Reimplemented from @ref QAbstractItemDelegate.
          */
         virtual bool eventFilter(QObject *object, QEvent *event);
-
 
     public Q_SLOTS:
         /**
@@ -418,7 +449,6 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * The returned region can be used for precise hit testing of the item.
          */
         QRegion shape(const QStyleOptionViewItem &option, const QModelIndex &index);
-
 
     private:
         class Private;

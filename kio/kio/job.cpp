@@ -1797,6 +1797,7 @@ public:
         //kDebug(7007) << src << "->" << dest;
         FileCopyJob *job = new FileCopyJob(
             *new FileCopyJobPrivate(src, dest, permissions, move, flags));
+        job->setProperty("destUrl", dest.url());
         job->setUiDelegate(new JobUiDelegate);
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);

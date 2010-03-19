@@ -67,6 +67,7 @@ set(kiocore_STAT_SRCS
   kio/imagefilter.cpp
   kio/job.cpp
   kio/jobuidelegate.cpp
+  kio/joburlcache.cpp
   kio/kacl.cpp
   kio/kar.cpp
   kio/karchive.cpp
@@ -130,6 +131,8 @@ set(kiocore_STAT_SRCS
 )
 
 qt4_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
+
+qt4_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.kuiserver.xml kuiserver_interface)
 
 set_source_files_properties(kio/org.kde.KPasswdServer.xml
    PROPERTIES INCLUDE kio/authinfo.h

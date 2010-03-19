@@ -246,6 +246,7 @@ public:
 CopyJob::CopyJob(CopyJobPrivate &dd)
     : Job(dd)
 {
+    setProperty("destUrl", d_func()->m_dest.url());
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 

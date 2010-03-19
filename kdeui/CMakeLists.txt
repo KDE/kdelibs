@@ -317,7 +317,9 @@ install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
+
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewV2.xml jobviewifacev2 )
 
 set(statusnotifierwatcher_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierWatcher.xml)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${statusnotifierwatcher_xml} statusnotifierwatcher_interface)
@@ -612,6 +614,7 @@ install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Ro
 install( FILES
   jobs/org.kde.JobViewServer.xml
   jobs/org.kde.JobView.xml
+  jobs/org.kde.JobViewV2.xml
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install(FILES
