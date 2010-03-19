@@ -51,6 +51,7 @@ static bool fillMemoryInfo(KMemoryInfoData *data)
 
     // open meminfo only for reading "cached"
     if (data->details & KMemoryInfo::CachedRam) {
+        data->cachedRam = 0;
         FILE *meminfo = fopen("/proc/meminfo", "r");
         if (meminfo) {
             char buffer[100];
