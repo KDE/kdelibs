@@ -59,8 +59,9 @@ public:
         FreeRam = 2,
         SharedRam = 4,
         BufferRam = 8,
-        TotalSwap = 16,
-        FreeSwap = 32
+        CachedRam = 16,
+        TotalSwap = 32,
+        FreeSwap = 64
     };
     Q_DECLARE_FLAGS(MemoryDetails, MemoryDetail)
 

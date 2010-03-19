@@ -46,6 +46,7 @@ void KMemoryInfoTest::testNull()
     QCOMPARE(mi.detail(KMemoryInfo::FreeRam), qint64(-1));
     QCOMPARE(mi.detail(KMemoryInfo::SharedRam), qint64(-1));
     QCOMPARE(mi.detail(KMemoryInfo::BufferRam), qint64(-1));
+    QCOMPARE(mi.detail(KMemoryInfo::CachedRam), qint64(-1));
     QCOMPARE(mi.detail(KMemoryInfo::TotalSwap), qint64(-1));
     QCOMPARE(mi.detail(KMemoryInfo::FreeSwap), qint64(-1));
 }
@@ -69,6 +70,7 @@ void KMemoryInfoTest::testDetails()
     QVERIFY(mi.detail(KMemoryInfo::FreeRam) != -1);
     QVERIFY(mi.detail(KMemoryInfo::SharedRam) == -1);
     QVERIFY(mi.detail(KMemoryInfo::BufferRam) == -1);
+    QVERIFY(mi.detail(KMemoryInfo::CachedRam) == -1);
     QVERIFY(mi.detail(KMemoryInfo::TotalSwap) == -1);
     QVERIFY(mi.detail(KMemoryInfo::FreeSwap) == -1);
 
@@ -78,6 +80,7 @@ void KMemoryInfoTest::testDetails()
     QVERIFY(mi.detail(KMemoryInfo::FreeRam) == -1);
     QVERIFY(mi.detail(KMemoryInfo::SharedRam) == -1);
     QVERIFY(mi.detail(KMemoryInfo::BufferRam) == -1);
+    QVERIFY(mi.detail(KMemoryInfo::CachedRam) == -1);
     QVERIFY(mi.detail(KMemoryInfo::TotalSwap) != -1);
     QVERIFY(mi.detail(KMemoryInfo::FreeSwap) != -1);
 
@@ -88,7 +91,7 @@ void KMemoryInfoTest::benchmark()
     KMemoryInfo mi;
     const KMemoryInfo::MemoryDetails details =
         KMemoryInfo::TotalRam | KMemoryInfo::FreeRam | KMemoryInfo::SharedRam | KMemoryInfo::BufferRam
-        | KMemoryInfo::TotalSwap | KMemoryInfo::FreeSwap;
+        | KMemoryInfo::CachedRam | KMemoryInfo::TotalSwap | KMemoryInfo::FreeSwap;
 
     QBENCHMARK {
         mi.update(details);

@@ -35,12 +35,15 @@ static bool fillMemoryInfo(KMemoryInfoData *data)
     if (data->details & KMemoryInfo::FreeRam) {
         data->freeRam = stat.ullAvailPhys;
     }
-    // the following two are not available
+    // the following three are not available
     if (data->details & KMemoryInfo::SharedRam) {
         data->sharedRam = 0;
     }
     if (data->details & KMemoryInfo::BufferRam) {
         data->bufferRam = 0;
+    }
+    if (data->details & KMemoryInfo::CachedRam) {
+        data->cachedRam = 0;
     }
     // instead of the size of the swap partition, use the page file instead
     if (data->details & KMemoryInfo::TotalSwap) {

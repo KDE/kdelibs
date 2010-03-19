@@ -37,6 +37,7 @@ struct KMemoryInfoData
     qint64 freeRam;
     qint64 sharedRam;
     qint64 bufferRam;
+    qint64 cachedRam;
     qint64 totalSwap;
     qint64 freeSwap;
 };
@@ -47,6 +48,7 @@ void KMemoryInfoData::clear()
     freeRam = -1;
     sharedRam = -1;
     bufferRam = -1;
+    cachedRam = -1;
     totalSwap = -1;
     freeSwap = -1;
 }
@@ -88,6 +90,8 @@ qint64 KMemoryInfo::detail(KMemoryInfo::MemoryDetail detail) const
         return d->sharedRam;
     case KMemoryInfo::BufferRam:
         return d->bufferRam;
+    case KMemoryInfo::CachedRam:
+        return d->cachedRam;
     case KMemoryInfo::TotalSwap:
         return d->totalSwap;
     case KMemoryInfo::FreeSwap:

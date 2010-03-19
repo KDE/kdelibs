@@ -18,6 +18,9 @@
 */
 
 #include <sys/sysinfo.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static bool fillMemoryInfo(KMemoryInfoData *data)
 {
@@ -44,6 +47,22 @@ static bool fillMemoryInfo(KMemoryInfoData *data)
     }
     if (data->details & KMemoryInfo::FreeSwap) {
         data->freeSwap = unit * info.freeswap;
+    }
+
+    // open meminfo only for reading "cached"
+    if (data->details & KMemoryInfo::CachedRam) {
+        FILE *meminfo = fopen("/proc/meminfo", "r");
+        if (meminfo) {
+            char buffer[100];
+            char *end = 0;
+            while(fgets(buffer, sizeof(buffer) - 1, meminfo)) {
+                if (strstr(buffer, "Cached:") == buffer) {
+                    data->cachedRam = strtol(buffer + 7, &end, 10);
+                    break;
+                }
+            }
+            fclose(meminfo);
+        }
     }
 
     return true;
