@@ -2,6 +2,7 @@
 #include <config-kdoctools.h>
 #include <config.h>
 #include "xslt.h"
+#include "meinproc_common.h"
 
 #include <QCoreApplication>
 #include <QtCore/QString>
@@ -120,34 +121,23 @@ int main(int argc, char **argv) {
 
     LIBXML_TEST_VERSION
 
-    QString checkFilename = args->arg( 0 );
-    QFileInfo checkFile(checkFilename);
-    if (!checkFile.exists())
+    const QString checkFilename = args->arg( 0 );
+    CheckFileResult ckr = checkFile( checkFilename );
+    if ( ckr != CheckFileSuccess )
     {
-        kError() << "File '" << checkFilename << "' does not exist." << endl;
-        return ( 2 );
-    }
-    if (!checkFile.isFile())
-    {
-        kError() << "'" << checkFilename << "' is not a file." << endl;
-        return ( 2 );
-    }
-    if (!checkFile.isReadable())
-    {
-        kError() << "File '" << checkFilename << "' is not readable." << endl;
+        if ( ckr == CheckFileDoesNotExist ) kError() << "File '" << checkFilename << "' does not exist.";
+        else if ( ckr == CheckFileIsNotFile ) kError() << "'" << checkFilename << "' is not a file.";
+        else if ( ckr == CheckFileIsNotReadable ) kError() << "File '" << checkFilename << "' is not readable.";
         return ( 2 );
     }
 
     if ( args->isSet( "check" ) ) {
-        QString pwd_buffer = QDir::currentPath();
-        QFileInfo file( args->arg( 0 ) );
 
         QByteArray catalogs;
         catalogs += KUrl::fromLocalFile( KStandardDirs::locate( "dtd", "customization/catalog.xml" ) ).toEncoded();
         catalogs += ' ';
         catalogs += KUrl::fromLocalFile( KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/catalog.xml" ) ).toEncoded();
 
-        setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
         QString exe;
 #if defined( XMLLINT )
         exe = XMLLINT;
@@ -157,31 +147,12 @@ int main(int argc, char **argv) {
             if (exe.isEmpty())
                 exe = KStandardDirs::locate( "exe", "xmllint" );
         }
-        if ( QFileInfo( exe ).isExecutable() ) {
-            QDir::setCurrent( file.absolutePath() );
-            QString cmd = exe;
-            cmd += " --valid --noout ";
-#ifdef Q_OS_WIN
-            cmd += file.fileName();
-#else
-            cmd += KShell::quoteArg(file.fileName());
-#endif
-            cmd += " 2>&1";
-            FILE *xmllint = popen( QFile::encodeName( cmd ).constData(), "r" );
-            char buf[ 512 ];
-            bool noout = true;
-            unsigned int n;
-            while ( ( n = fread(buf, 1, sizeof( buf ) - 1, xmllint ) ) ) {
-                noout = false;
-                buf[ n ] = '\0';
-                fputs( buf, stderr );
-            }
-            pclose( xmllint );
-            QDir::setCurrent( pwd_buffer );
-            if ( !noout )
-                return 1;
-        } else {
-            kWarning() << "couldn't find xmllint";
+
+        CheckResult cr = check( checkFilename, exe, catalogs );
+        if ( cr != CheckSuccess )
+        {
+            if ( cr == CheckNoXmllint ) kWarning() << "couldn't find xmllint";
+            return 1;
         }
     }
 
@@ -224,6 +195,10 @@ int main(int argc, char **argv) {
         tss = "customization/htdig_index.xsl" ;
 
     tss = KStandardDirs::locate( "dtd", tss );
+    const QString cache = args->getOption( "cache" );
+    const bool usingStdOut = args->isSet( "stdout" );
+    const bool usingOutput = args->isSet("output");
+    const QString outputOption = args->getOption( "output" );
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =
@@ -231,7 +206,7 @@ int main(int argc, char **argv) {
 
         if (style_sheet != NULL) {
 
-            xmlDocPtr doc = xmlParseFile( QFile::encodeName( args->arg( 0 ) ).constData() );
+            xmlDocPtr doc = xmlParseFile( QFile::encodeName( checkFilename ).constData() );
 
             xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, &params[0]);
 
@@ -254,20 +229,19 @@ int main(int argc, char **argv) {
 
                 xmlFreeDoc(res);
             } else {
-                kDebug() << "couldn't parse document " << args->arg( 0 );
+                kDebug() << "couldn't parse document " << checkFilename;
             }
         } else {
             kDebug() << "couldn't parse style sheet " << tss;
         }
 
     } else {
-        QString output = transform(args->arg( 0 ) , tss, params);
+        QString output = transform(checkFilename , tss, params);
         if (output.isEmpty()) {
-            fprintf(stderr, "unable to parse %s\n", args->arg( 0 ).toLocal8Bit().data());
+            fprintf(stderr, "unable to parse %s\n", checkFilename.toLocal8Bit().data());
             return(1);
         }
 
-        QString cache = args->getOption( "cache" );
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
                 kError() << i18n( "Could not write to cache file %1." ,  cache ) << endl;
@@ -275,49 +249,7 @@ int main(int argc, char **argv) {
             goto end;
         }
 
-        if (output.indexOf( "<FILENAME " ) == -1 || args->isSet( "stdout" ) || args->isSet("output") )
-        {
-            QFile file;
-            if (args->isSet( "stdout" ) ) {
-                file.open( stdout, QIODevice::WriteOnly );
-            } else {
-                if (args->isSet( "output" ) )
-                   file.setFileName( args->getOption( "output" ));
-                else
-                   file.setFileName( "index.html" );
-                file.open(QIODevice::WriteOnly);
-            }
-            replaceCharsetHeader( output );
-#ifdef Q_WS_WIN
-            QByteArray data = output.toUtf8();
-#else
-            QByteArray data = output.toLocal8Bit();
-#endif
-            file.write(data.data(), data.length());
-            file.close();
-        } else {
-            int index = 0;
-            while (true) {
-                index = output.indexOf("<FILENAME ", index);
-                if (index == -1)
-                    break;
-                int filename_index = index + strlen("<FILENAME filename=\"");
-
-                QString filename = output.mid(filename_index,
-                                              output.indexOf("\"", filename_index) -
-                                              filename_index);
-
-                QString filedata = splitOut(output, index);
-                QFile file(filename);
-                file.open(QIODevice::WriteOnly);
-                replaceCharsetHeader( filedata );
-                QByteArray data = fromUnicode( filedata );
-                file.write(data.data(), data.length());
-                file.close();
-
-                index += 8;
-            }
-        }
+        doOutput(output, usingStdOut, usingOutput, outputOption, true /* replaceCharset */);
     }
  end:
     xmlCleanupParser();

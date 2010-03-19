@@ -24,6 +24,7 @@
 
 #include "kio_help.h"
 #include "xslt.h"
+#include "xslt_help.h"
 
 #include <kdebug.h>
 #include <kde_file.h>

@@ -22,6 +22,8 @@ set(kio_help_PART_SRCS
    kio_help.cpp
    main.cpp
    xslt.cpp
+   xslt_help.cpp
+   xslt_kde.cpp
 )
 
 
@@ -34,7 +36,7 @@ install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### next target ###############
 
-set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt.cpp )
+set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt.cpp xslt_help.cpp xslt_kde.cpp )
 
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
@@ -58,7 +60,7 @@ if (CMAKE_CROSSCOMPILING)
 
 else (CMAKE_CROSSCOMPILING)
 
-   set(meinproc_SRCS meinproc.cpp xslt.cpp )
+   set(meinproc_SRCS meinproc.cpp meinproc_common.cpp xslt.cpp xslt_kde.cpp )
 
    kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
 
@@ -73,6 +75,24 @@ else (CMAKE_CROSSCOMPILING)
 
 endif (CMAKE_CROSSCOMPILING)
 
+########### next target ###############
+
+if(KDE4_ENABLE_FINAL)
+   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_simple_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+else(KDE4_ENABLE_FINAL)
+   set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+endif(KDE4_ENABLE_FINAL)
+
+if (NOT CMAKE_CROSSCOMPILING)
+   set(meinproc_qt_SRCS meinproc_simple.cpp meinproc_common.cpp xslt.cpp )
+
+   kde4_add_executable(meinproc4_simple NOGUI ${meinproc_qt_SRCS})
+
+   target_link_libraries(meinproc4_simple ${QT_QTCORE_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+
+   install(TARGETS meinproc4_simple ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+endif (NOT CMAKE_CROSSCOMPILING)
 
 ########### next target ###############
 
