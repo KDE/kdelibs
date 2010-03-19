@@ -91,7 +91,19 @@ void EntryDetailsDialog::init()
     } else {
         ui.authorLabel->setText(m_entry.author().name());
     }
-    ui.descriptionLabel->setText(m_entry.summary());
+
+    // TODO: create function to replace bb codes (also use that in delegate)
+    QString summary = m_entry.summary();
+    summary.replace("[b]", "<b>");
+    summary.replace("[/b]", "</b>");
+    summary.replace("[i]", "<i>");
+    summary.replace("[/i]", "</i>");
+    summary.replace("[u]", "<i>");
+    summary.replace("[/u]", "</i>");
+    summary.remove("[url]");
+    summary.remove("[/url]");
+    summary.replace("\\\'", "\'");
+    ui.descriptionLabel->setText(summary);
     ui.homepageLabel->setText("<a href=\"" + m_entry.homepage().url() + "\">" +
                               i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage...") + "</a>");
 

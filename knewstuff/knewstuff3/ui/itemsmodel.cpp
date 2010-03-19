@@ -45,77 +45,20 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
 {
     EntryInternal entry = m_entries[index.row()];
     switch (role) {
-    case Qt::DisplayRole:
-    case kNameRole:
-        return entry.name();
-        break;
-    case kCategory:
-        return entry.category();
-        break;
-    case kHomepage:
-        return entry.homepage();
-        break;
-    case kAuthorName:
-        return entry.author().name();
-        break;
-    case kAuthorEmail:
-        return entry.author().email();
-        break;
-    case kAuthorJabber:
-        return entry.author().jabber();
-        break;
-    case kAuthorHomepage:
-        return entry.author().homepage();
-        break;
-    case kLicense:
-        return entry.license();
-        break;
-    case kSummary:
-        return entry.summary();
-        break;
-    case kVersion:
-        return entry.version();
-        break;
-    case kReleaseDate:
-        return entry.releaseDate();
-        break;
-    case kPayload:
-        return entry.payload();
-        break;
-    case kPreview:
-        return entry.previewSmall();
-        break;
-    case kPreviewPixmap:
+    case EntryRole:
+        return QVariant::fromValue(entry);
+    case PreviewSmall:
         if (m_previewImages.contains(entry.previewSmall())) {
             return m_previewImages[entry.previewSmall()];
         }
         break;
-    case kLargePreviewPixmap:
+    case PreviewLarge:
         if (m_largePreviewImages.contains(entry.previewBig())) {
             return m_largePreviewImages[entry.previewBig()];
         }
         break;
-    case kRating:
-        return entry.rating();
-        break;
-    case kDownloads:
-        return entry.downloads();
-        break;
-    case kStatus:
-        return entry.status();
-        break;
-    case NumberFans:
-        return entry.numberFans();
     }
     return QVariant();
-}
-
-KNS3::EntryInternal ItemsModel::entryForIndex(const QModelIndex & index) const
-{
-    if (index.row() < 0)
-        return EntryInternal();
-    else
-        return m_entries[index.row()];
 }
 
 void ItemsModel::slotEntriesLoaded(EntryInternal::List entries)

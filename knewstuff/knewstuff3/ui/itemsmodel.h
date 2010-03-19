@@ -35,49 +35,14 @@ class ItemsModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
+    enum EntryRoles {
+        EntryRole = Qt::UserRole,
+        PreviewSmall,
+        PreviewLarge
+    };
+
     explicit ItemsModel(QObject * parent = 0);
     ~ItemsModel();
-
-    enum EntryRoles {
-        /** the name of the entry */
-        kNameRole = Qt::UserRole,
-        /** the category of the entry */
-        kCategory,
-        /** homepage of the entry */
-        kHomepage,
-        /** the name of the author of the entry */
-        kAuthorName,
-        /** the e-mail address of the author */
-        kAuthorEmail,
-        /** the jabber of the author */
-        kAuthorJabber,
-        /** the authors homepage */
-        kAuthorHomepage,
-        /** the license of the entry */
-        kLicense,
-        /** a summary of the entry */
-        kSummary,
-        /** a string of the version e.g. "v1.0 alpha" */
-        kVersion,
-        /** the release date */
-        kReleaseDate,
-        /** the payload */
-        kPayload,
-        /** the preview url */
-        kPreview,
-        /** the preview image */
-        kPreviewPixmap,
-        /** the unscaled preview image */
-        kLargePreviewPixmap,
-        /** the rating of the entry */
-        kRating,
-        /** the number of downloads for the entry */
-        kDownloads,
-        /** the status of this entry */
-        kStatus,
-
-        NumberFans
-    };
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
 
@@ -87,8 +52,6 @@ public:
 
     void removeEntry(const EntryInternal& entry);
 
-    EntryInternal entryForIndex(const QModelIndex & index) const;
-
     bool hasPreviewImages() const;
 
     bool hasWebService() const;
@@ -96,13 +59,14 @@ public:
 Q_SIGNALS:
     void jobStarted(KJob*, const QString& label);
 
-public slots:
+public Q_SLOTS:
     void slotEntryChanged(const EntryInternal& entry);
     void slotEntriesLoaded(KNS3::EntryInternal::List entries);
     void clearEntries();
 
-private slots:
+private Q_SLOTS:
     void slotEntryPreviewLoaded(const QString &url, const QImage & pix);
+
 private:
 
     // the list of entries
@@ -114,5 +78,7 @@ private:
 };
 
 } // end KNS namespace
+
+Q_DECLARE_METATYPE(KNS3::EntryInternal)
 
 #endif

@@ -65,11 +65,9 @@ private slots:
     void slotDetailsClicked();
 
 private:
-    const ItemsModel* modelFromIndex(const QModelIndex& index) const;
-    KNS3::EntryInternal entryForIndex(const QModelIndex& index) const;
-
     QList<KIcon> m_statusicons;
-    QImage m_frameImage;
+    QPixmap m_frameImage;
+    QPixmap m_noImage;
     Engine* m_engine;
 };
 }

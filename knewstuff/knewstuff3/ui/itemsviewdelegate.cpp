@@ -47,9 +47,9 @@ ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, Engine* engine
         , m_engine(engine)
 {
     QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");
+    m_frameImage = QPixmap(framefile);
 
-    m_frameImage = QPixmap(framefile).toImage();
-
+    m_noImage = SmallIcon( "image-missing", KIconLoader::SizeLarge, KIconLoader::DisabledState );
     // Invalid
     m_statusicons << KIcon("dialog-error");
     // Downloadable
@@ -64,34 +64,6 @@ ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, Engine* engine
 
 ItemsViewDelegate::~ItemsViewDelegate()
 {
-}
-
-const ItemsModel* ItemsViewDelegate::modelFromIndex(const QModelIndex& index) const
-{
-    // FIXME:
-    // Different people report either cast to not work. Why would we sometimes get the proxy, sometimes the real thing?
-    const QSortFilterProxyModel* proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
-    if (proxyModel) {
-        //kDebug() << "Got a proxy model.";
-        return qobject_cast<const ItemsModel*>(proxyModel->sourceModel());
-    } else {
-        //kDebug() << "Got the base model.";
-        return qobject_cast<const ItemsModel*>(index.model());
-    }
-}
-
-KNS3::EntryInternal ItemsViewDelegate::entryForIndex(const QModelIndex& index) const
-{
-    const QSortFilterProxyModel* proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
-    if (proxyModel) {
-        kDebug() << "Got a proxy model.";
-        const ItemsModel* model = qobject_cast<const ItemsModel*>(proxyModel->sourceModel());
-        return model->entryForIndex(proxyModel->mapToSource(index));
-    } else {
-        kDebug() << "Got the base model.";
-        const ItemsModel* model = qobject_cast<const ItemsModel*>(index.model());
-        return model->entryForIndex(index);
-    }
 }
 
 QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
@@ -130,11 +102,13 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         const QStyleOptionViewItem &option,
         const QPersistentModelIndex &index) const
 {
-    const ItemsModel * model = modelFromIndex(index);
+    const ItemsModel * model = qobject_cast<const ItemsModel*>(index.model());
     if (!model) {
         kDebug() << "WARNING - INVALID MODEL!";
         return;
     }
+
+    EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
 
     // setup the install button
     int margin = option.fontMetrics.height() / 2;
@@ -161,18 +135,18 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
             "</style></head><body><p><b>";
 
-        KUrl link = qvariant_cast<KUrl>(index.data(ItemsModel::kHomepage));
+        KUrl link = qvariant_cast<KUrl>(entry.homepage());
         if (!link.isEmpty()) {
-            text += "<p><a href=\"" + link.url() + "\">" + index.data(ItemsModel::kNameRole).toString() + "</a></p>\n";
+            text += "<p><a href=\"" + link.url() + "\">" + entry.name() + "</a></p>\n";
         } else {
-            text += index.data(ItemsModel::kNameRole).toString();
+            text += entry.name();
         }
 
         text += "</b></p>\n";
 
-        QString authorName = index.data(ItemsModel::kAuthorName).toString();
-        QString email = index.data(ItemsModel::kAuthorEmail).toString();
-        QString authorPage = index.data(ItemsModel::kAuthorHomepage).toString();
+        QString authorName = entry.author().name();
+        QString email = entry.author().email();
+        QString authorPage = entry.author().homepage();
 
         if (!authorName.isEmpty()) {
             if (!authorPage.isEmpty()) {
@@ -184,24 +158,27 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             }
         }
 
-        QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
+        QString summary = "<p>" + option.fontMetrics.elidedText(entry.summary(),
             Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
         text += summary;
 
-        unsigned int fans = index.data(ItemsModel::NumberFans).toUInt();
-        unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
+        unsigned int fans = entry.numberFans();
+        unsigned int downloads = entry.downloads();
 
+        QString fanString;
+        QString downloadString;
         if (fans > 0) {
-            text += i18n("<p>%1 fans</p>", fans);
-        }
-        if (downloads > 0 && fans > 0) {
-            text += QLatin1String(", ");
+            fanString = i18np("1 fan", "%1 fans", fans);
         }
         if (downloads > 0) {
-            text += i18n("<p>%1 downloads</p>", downloads);
+            downloadString = i18np("1 download", "%1 downloads", downloads);
         }
         if (downloads > 0 || fans > 0) {
-            text += QLatin1Char('\n');
+            text += "<p>" + downloadString;
+            if (downloads > 0 && fans > 0) {
+                text += ", ";
+            }
+            text += fanString + QLatin1String("</p>\n");
         }
 
         text += "</body></html>";
@@ -219,11 +196,10 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
     KPushButton * installButton = qobject_cast<KPushButton*>(widgets.at(DelegateInstallButton));
     if (installButton != 0) {
-        EntryInternal::Status status = EntryInternal::Status(model->data(index, ItemsModel::kStatus).toUInt());
         installButton->resize(size);
         installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
 
-        switch (status) {
+        switch (entry.status()) {
             case EntryInternal::Installed:
             installButton->setText(i18n("Uninstall"));
             installButton->setEnabled(true);
@@ -265,16 +241,16 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
     RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
-        rating->setToolTip(i18n("Rating: %1%", model->data(index, ItemsModel::kRating).toString()));
-        // assume all entries come with rating 0..100 but most are in the range 20 - 80, so 20 is 0 stars, 80 is 5 stars
-        int ratingValue = model->data(index, ItemsModel::kRating).toInt();
-        if (ratingValue <= 0) {
+        if (entry.rating() > 0) {
+            rating->setToolTip(i18n("Rating: %1%", entry.rating()));
+            // assume all entries come with rating 0..100 but most are in the range 20 - 80, so 20 is 0 stars, 80 is 5 stars
+            rating->setRating((entry.rating()-20)*10/60);
+            // put the rating label below the install button
+            rating->move(right - installButton->width() - margin, option.rect.height()/2 + installButton->height()/2);
+            rating->resize(size);
+        } else {
             rating->setVisible(false);
         }
-        rating->setRating((ratingValue-20)*10/60);
-        // put the rating label below the install button
-        rating->move(right - installButton->width() - margin, option.rect.height()/2 + installButton->height()/2);
-        rating->resize(size);
     }
 }
 
@@ -295,27 +271,33 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
         painter->setPen(QPen(option.palette.text().color()));
     }
 
-    const ItemsModel * realmodel = modelFromIndex(index);
+    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
 
     if (realmodel->hasPreviewImages()) {
         int height = option.rect.height();
         QPoint point(option.rect.left() + margin, option.rect.top() + ((height - PreviewHeight) / 2));
 
-        if (index.data(ItemsModel::kPreview).toString().isEmpty()) {
-            QRect rect(point, QSize(PreviewWidth, PreviewHeight));
-            painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("No Preview"));
+        KNS3::EntryInternal entry = index.data(ItemsModel::EntryRole).value<KNS3::EntryInternal>();
+        if (entry.previewSmall().isEmpty()) {
+            // paint the no preview icon
+            point.setX((PreviewWidth - m_noImage.width())/2 + 5);
+            point.setY(option.rect.top() + ((height - m_noImage.height()) / 2));
+            painter->drawPixmap(point, m_noImage);
         } else {
-            QImage image = index.data(ItemsModel::kPreviewPixmap).value<QImage>();
+            QImage image = index.data(ItemsModel::PreviewSmall).value<QImage>();
             if (!image.isNull()) {
+                point.setX((PreviewWidth - image.width())/2 + 5);
                 point.setY(option.rect.top() + ((height - image.height()) / 2));
                 painter->drawImage(point, image);
+
                 QPoint framePoint(point.x() - 5, point.y() - 5);
-                painter->drawImage(framePoint, m_frameImage.scaled(image.width() + 10, image.height() + 10));
+                painter->drawPixmap(framePoint, m_frameImage.scaled(image.width() + 10, image.height() + 10));
             } else {
                 QRect rect(point, QSize(PreviewWidth, PreviewHeight));
                 painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("Loading Preview"));
             }
         }
+
     }
 
     // TODO: get the right rect and use the painter? QRect rect(100, 100, 200, 120);
@@ -351,7 +333,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
     QModelIndex index = focusedIndex();
     Q_ASSERT(index.isValid());
 
-    KNS3::EntryInternal entry = entryForIndex(index);
+    KNS3::EntryInternal entry = index.data(ItemsModel::EntryRole).value<KNS3::EntryInternal>();
     m_engine->contactAuthor(entry);
 }
 
@@ -359,10 +341,7 @@ void ItemsViewDelegate::slotInstallClicked()
 {
     QModelIndex index = focusedIndex();
     if (index.isValid()) {
-
-        const ItemsModel * model = modelFromIndex(index);
-        kDebug() << model;
-        KNS3::EntryInternal entry = model->entryForIndex(index);
+        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if (!entry.isValid()) {
             kDebug() << "Invalid entry: " << entry.name();
             return;
@@ -381,11 +360,8 @@ void ItemsViewDelegate::slotDetailsClicked()
     QModelIndex index = focusedIndex();
     kDebug() << index;
 
-    if (index.isValid()) {        
-        const ItemsModel * realmodel = modelFromIndex(index);
-        kDebug() << realmodel;
-        //KNS3::EntryInternal entry = realmodel->entryForIndex(model->mapToSource(index));
-        KNS3::EntryInternal entry = realmodel->entryForIndex(index);
+    if (index.isValid()) {
+        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if ( !entry.isValid() )
             return;
 
