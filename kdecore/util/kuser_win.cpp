@@ -375,7 +375,9 @@ bool KUserGroup::isValid() const
 
 QString KUserGroup::name() const
 {
-    return QString::fromUtf16((ushort *) d->groupInfo->grpi0_name);
+    if(d && d->groupInfo)
+        return QString::fromUtf16((ushort *) d->groupInfo->grpi0_name);
+    return QString();
 }
 
 QList<KUser> KUserGroup::users() const
