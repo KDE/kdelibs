@@ -428,7 +428,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>I ensure that this content does not violate any existing copyright, law or trademark. I agree that my IP address is logged. Distributing content where you don't have the permission from the copyright holder is illegal!</string>
+          <string>I ensure that this content does not violate any existing copyright, law or trademark. I agree for my IP address to be logged. (Distributing content without the permission of the copyright holder is illegal.)</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
