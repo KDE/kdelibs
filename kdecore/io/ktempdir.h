@@ -25,7 +25,7 @@
 
 /**
  * \class KTempDir ktempdir.h <KTempDir>
- * 
+ *
  * @brief Create a unique directory for temporary use.
  *
  * The KTempDir class creates a unique directory for temporary use.
@@ -42,7 +42,7 @@
  * in the "tmp" resource, one should use:
  * KTempDir(KStandardDirs::locateLocal("tmp", prefix));
  *
- * KTempDir does not create any missing directories, but 
+ * KTempDir does not create any missing directories, but
  * KStandardDirs::locateLocal() does.
  *
  * @see KStandardDirs
@@ -56,7 +56,9 @@ public:
     * Creates a temporary directory with the name:
     *  \p \<directoryPrefix\>\<six letters\>
     *
-    * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname"
+    * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname", i.e.
+    * as returned by KStandardDirs::locateLocal("tmp", KGlobal::mainComponent().componentName())
+    *
     * @param directoryPrefix the prefix of the file name, or
     *        QString() for the default value
     * @param mode the file permissions,
