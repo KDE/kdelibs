@@ -213,7 +213,14 @@ private:
 class StaticNodeListImpl : public khtml::Shared<StaticNodeListImpl>
 {
 public:
+    StaticNodeListImpl();
+    ~StaticNodeListImpl();
 
+    void append(NodeImpl* n);
+    NodeImpl* at(int);
+    int       size();
+private:
+    WTF::Vector<SharedPtr<NodeImpl> > m_kids;
 };
 
 } //namespace

@@ -4,13 +4,13 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -24,6 +24,7 @@
  */
 #include "expression.h"
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_nodelistimpl.h"
 //#include "xml/dom_stringimpl.h"
 
 #ifndef __USE_ISOC99
@@ -34,6 +35,8 @@
 #include <cmath>
 
 using namespace DOM;
+using namespace khtml;
+using namespace khtml::XPath;
 using namespace std;
 
 Value::Value()
@@ -43,7 +46,7 @@ Value::Value()
 Value::Value( NodeImpl *value )
 	: m_type( Nodeset )
 {
-	m_nodeset.append( value );
+	m_nodeset->append( value );
 }
 
 Value::Value( const DomNodeList &value )
@@ -64,7 +67,7 @@ Value::Value( double value )
 {
 }
 
-Value::Value( const DomString &value )
+Value::Value( const DOMString &value )
 	: m_type( String ),
 	m_string( value )
 {
@@ -115,7 +118,7 @@ bool Value::toBoolean() const
 {
 	switch ( m_type ) {
 		case Nodeset:
-			return !m_nodeset.isEmpty();
+			return m_nodeset->size() != 0;
 		case Boolean:
 			return m_bool;
 		case Number:
@@ -149,7 +152,7 @@ double Value::toNumber() const
 	return double();
 }
 
-DomString Value::toString() const
+DOMString Value::toString() const
 {
 	switch ( m_type ) {
 		case Nodeset:
@@ -176,7 +179,7 @@ DomString Value::toString() const
 			return m_bool ? QLatin1String( "true" )
 			              : QLatin1String( "false" );
 	}
-	return DomString();
+	return DOMString();
 }
 
 QString Value::dump() const

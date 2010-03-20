@@ -3814,6 +3814,25 @@ void KHTMLPart::slotViewPageInfo()
   } else {
     ui._encoding->setText(enc);
   }
+
+  if (!xmlDocImpl() || xmlDocImpl()->parseMode() == DOM::DocumentImpl::Unknown) {
+    ui._mode->hide();
+    ui._modeLabel->hide();
+  } else {
+    switch (xmlDocImpl()->parseMode()) {
+      case DOM::DocumentImpl::Compat:
+        ui._mode->setText(i18nc("HTML rendering mode (see http://en.wikipedia.org/wiki/Quirks_mode)", "Quirks"));
+        break;
+      case DOM::DocumentImpl::Transitional:
+        ui._mode->setText(i18nc("HTML rendering mode (see http://en.wikipedia.org/wiki/Quirks_mode)", "Almost standards"));
+        break;
+      case DOM::DocumentImpl::Strict:
+      default: // others handled above
+        ui._mode->setText(i18nc("HTML rendering mode (see http://en.wikipedia.org/wiki/Quirks_mode)", "Strict"));
+        break;
+    }
+  }
+
   /* populate the list view now */
   const QStringList headers = d->m_httpHeaders.split("\n");
 

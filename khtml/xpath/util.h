@@ -27,6 +27,7 @@
 
 #include <QList>
 #include <misc/shared.h>
+#include <dom/dom_string.h>
 
 namespace DOM {
 	class NodeImpl;
