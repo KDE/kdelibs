@@ -89,6 +89,9 @@ if (NOT CMAKE_CROSSCOMPILING)
    kde4_add_executable(meinproc4_simple NOGUI ${meinproc_qt_SRCS})
 
    target_link_libraries(meinproc4_simple ${QT_QTCORE_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+   IF(WIN32)
+     target_link_libraries(meinproc4_simple ${KDE4_KDECORE_LIBS})
+   ENDIF(WIN32)
 
    install(TARGETS meinproc4_simple ${INSTALL_TARGETS_DEFAULT_ARGS})
 
