@@ -424,9 +424,9 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
 {
     K3Icon icon;
     QString path;
-    int delta = -1000;  // current icon size delta of 'icon'
-    int dw = 1000;      // icon size delta of current directory
-    int dirSize = 1000; // directory size of 'icon'
+    int delta = -INT_MAX;  // current icon size delta of 'icon'
+    int dw = INT_MAX;      // icon size delta of current directory
+    int dirSize = INT_MAX; // directory size of 'icon'
     KIconThemeDir *dir;
 
     const int dirCount = d->mDirs.size();
