@@ -321,7 +321,7 @@ struct KDebugPrivate
         return groupName;
     }
 
-    OutputMode areaOutputMode(QtMsgType type, unsigned int area)
+    OutputMode areaOutputMode(QtMsgType type, unsigned int area, bool enableByDefault)
     {
         if (!config)
             return QtOutput;
@@ -347,7 +347,7 @@ struct KDebugPrivate
         }
 
         const KConfigGroup cg(config, groupNameForArea(area));
-        const int mode = cg.readEntry(key, int(DefaultOutput));
+        const int mode = cg.readEntry(key, int(enableByDefault ? DefaultOutput : NoOutput));
         return OutputMode(mode);
     }
 
@@ -422,7 +422,7 @@ struct KDebugPrivate
         const int lev = level(type);
         //qDebug() << "in cache for" << num << ":" << it->mode[lev];
         if (it->mode[lev] == Unknown)
-            it->mode[lev] = areaOutputMode(type, num);
+            it->mode[lev] = areaOutputMode(type, num, enableByDefault);
         if (it->mode[lev] == FileOutput && it->logFileName[lev].isEmpty())
             it->logFileName[lev] = logFileName(type, num);
 

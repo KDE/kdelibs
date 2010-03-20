@@ -194,6 +194,33 @@ void KDebugTest::testDisableAll()
     disableAll(false);
 }
 
+void KDebugTest::testHasNullOutput()
+{
+    // When compiling in debug mode:
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 0, true), false);
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 180, true), false);
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 293, true), false);
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, true), false);
+
+    kClearDebugConfig(); // force dropping the cache
+
+    // When compiling in release mode:
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 0, false), false); // controlled by "InfoOutput" key
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 180, false), false); // controlled by "InfoOutput" key
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 293, false), true); // no config -> the default is being used
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, false), false); // unknown area -> area 0 is being used
+
+    // And if we really have no config for area 0 (the app name)
+    KConfig config("kdebugrc");
+    config.deleteGroup("qttest");
+    config.sync();
+    kClearDebugConfig();
+
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 0, false), true);
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 293, false), true);
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, false), true);
+}
+
 #include <QThreadPool>
 #include <qtconcurrentrun.h>
 
