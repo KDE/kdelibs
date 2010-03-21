@@ -71,7 +71,7 @@ static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const ch
 		if (url.startsWith(i.key()))
 		{
 			url.replace(i.key(),i.value());
-			kDebug() << "converted" << _URL << "to" << url;
+			qDebug() << "converted" << _URL << "to" << url;
 		}
 	}
 	char URL[1024]; 
@@ -98,7 +98,7 @@ static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const ch
         if (ret != NULL) {
             if (warning != NULL)
                 ctxt->sax->warning = warning;
-            kDebug() << "Loaded URL=\"" << URL << "\" ID=\"" << ID << "\"";
+            qDebug() << "Loaded URL=\"" << URL << "\" ID=\"" << ID << "\"";
             return(ret);
         }
     }
@@ -113,7 +113,7 @@ static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const ch
         if (ret != NULL) {
             if (warning != NULL)
                 ctxt->sax->warning = warning;
-                kDebug() << "Loaded URL=\"" << newURL << "\" ID=\"" << ID << "\"";
+                qDebug() << "Loaded URL=\"" << newURL << "\" ID=\"" << ID << "\"";
                 xmlFree(newURL);
                 return(ret);
             }
@@ -143,7 +143,7 @@ QString transform( const QString &pat, const QString& tss,
     defaultEntityLoader = xmlGetExternalEntityLoader();
     xmlSetExternalEntityLoader(xsltprocExternalEntityLoader);         
 	
-	QString dataPath = KStandardDirs::installPath("data");
+	QString dataPath = QDir::cleanPath( QCoreApplication::applicationDirPath() + QLatin1String("/../share/apps") );
 	replaceURLList[QLatin1String("http://www.oasis-open.org/docbook/xml/4.1.2")] = QString("file:///%1/ksgmltools2/docbook/xml-dtd-4.1.2").arg(dataPath);
 	replaceURLList[QLatin1String("http://www.oasis-open.org/docbook/xml/4.2")] = QString("file:///%1/ksgmltools2/docbook/xml-dtd-4.2").arg(dataPath);
 #endif
