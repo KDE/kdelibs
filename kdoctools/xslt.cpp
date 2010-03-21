@@ -7,23 +7,14 @@
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
 #include <libxml/catalog.h>
-#include <kdebug.h>
-#include <kstandarddirs.h>
 #include <QtCore/QDate>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
-#include <kcomponentdata.h>
-#include <klocale.h>
 #include <assert.h>
-#include <kfilterbase.h>
-#include <kfilterdev.h>
 #include <QtCore/QTextCodec>
 #include <stdlib.h>
 #include <config.h>
 #include <stdarg.h>
-#include <klibloader.h>
-#include <kcharsets.h>
-#include <kurl.h>
 
 
 #if !defined( SIMPLE_XSLT )
