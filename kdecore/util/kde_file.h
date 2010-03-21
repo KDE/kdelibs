@@ -161,6 +161,8 @@ namespace KDE
   KDECORE_EXPORT int access(const QString &path, int mode);
   /** replacement for ::chmod() to handle filenames in a platform independent way */
   KDECORE_EXPORT int chmod(const QString &path, mode_t mode);
+  /** replacement for ::fopen()/::fopen64() to handle filenames in a platform independent way */
+  KDECORE_EXPORT FILE *fopen(const QString &pathname, const char *mode);
   /** replacement for ::lstat()/::lstat64() to handle filenames in a platform independent way */
   KDECORE_EXPORT int lstat(const QString &path, KDE_struct_stat *buf);
   /** replacement for ::mkdir() to handle pathnames in a platform independent way */
@@ -181,6 +183,10 @@ namespace KDE
   inline int chmod(const QString &path, mode_t mode)
   {
     return ::chmod( QFile::encodeName(path).constData(), mode );
+  }
+  inline FILE *fopen(const QString &pathname, const char *mode)
+  {
+    return KDE_fopen( QFile::encodeName(pathname).constData(), mode );
   }
   inline int lstat(const QString &path, KDE_struct_stat *buf)
   {

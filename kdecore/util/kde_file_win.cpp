@@ -140,6 +140,11 @@ namespace KDE
     return _wchmod( CONV(path), mode );
   }
 
+  FILE *fopen(const QString &pathname, const char *mode)
+  {
+    return _wfopen( CONV(pathname), CONV(QString::fromAscii( mode )) );
+  }
+
   int lstat(const QString &path, KDE_struct_stat *buf)
   {
     return KDE::stat( path, buf );

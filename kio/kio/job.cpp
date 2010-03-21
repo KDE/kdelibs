@@ -2888,7 +2888,7 @@ QFile *CacheInfo::cachedFile()
    const char *mode = (readWrite ? "r+" : "r");
 #endif
 
-   FILE *fs = KDE_fopen(QFile::encodeName(CEF), mode); // Open for reading and writing
+   FILE *fs = KDE::fopen(CEF, mode); // Open for reading and writing
    if (!fs)
       return 0;
 
