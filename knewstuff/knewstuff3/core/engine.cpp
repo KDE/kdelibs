@@ -448,7 +448,7 @@ void Engine::slotProgress(KJob *job, unsigned long percent)
         url = transferJob->url().fileName();
     }
 
-    QString message = QString("loading %1").arg(url);
+    QString message = i18n("loading %1", url);
     emit signalProgress(message, percent);
 }
 
