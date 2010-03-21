@@ -58,32 +58,6 @@ static QHash<QString,QString> replaceURLList;
 * Entity loading control and customization.
 * taken from xsltproc.c
 */
-static void parsePath(const xmlChar *path) 
-{
-    const xmlChar *cur;
-
-    if (path == NULL)
-        return;
-    while (*path != 0) {
-        if (nbpaths >= MAX_PATHS) {
-            kDebug() << "MAX_PATHS reached: too many paths";
-            return;
-        }
-        cur = path;
-        while ((*cur == ' ') || (*cur == ':'))
-            cur++;
-        path = cur;
-        while ((*cur != 0) && (*cur != ' ') && (*cur != ':'))
-            cur++;
-        if (cur != path) {
-            paths[nbpaths] = xmlStrndup(path, cur - path);
-            if (paths[nbpaths] != NULL)
-                nbpaths++;
-            path = cur;
-        }
-    }
-} 
-
 static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const char *ID,xmlParserCtxtPtr ctxt) 
 {
     xmlParserInputPtr ret;
