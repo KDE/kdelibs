@@ -173,8 +173,9 @@ void ModelSpy::rowsAboutToBeMoved(const QModelIndex &srcParent, int start, int e
 {
   append(QVariantList() << RowsAboutToBeMoved << QVariant::fromValue(srcParent) << start << end << QVariant::fromValue(destParent) << destStart);
 
-  if (m_lazyPersist)
-    doPersist();
+  // Don't do a lazy persist here. That will be done on the layoutAboutToBeChanged signal.
+//   if (m_lazyPersist)
+//     doPersist();
 }
 
 void ModelSpy::rowsMoved(const QModelIndex &srcParent, int start, int end, const QModelIndex &destParent, int destStart)
