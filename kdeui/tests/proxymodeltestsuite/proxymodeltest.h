@@ -65,6 +65,11 @@ private:
   virtual void testMoveFromRootData() = 0;
   virtual void testMoveFromTopLevelData() = 0;
   virtual void testMoveFromSecondLevelData() = 0;
+
+  virtual void testModifyInRootData() = 0;
+  virtual void testModifyInTopLevelData() = 0;
+  virtual void testModifyInSecondLevelData() = 0;
+
 };
 
 class BuiltinTestInterface : BuiltinTestDataInterface
@@ -102,6 +107,15 @@ private:
   virtual void testMoveFromSecondLevel_data() = 0;
   virtual void testMoveFromSecondLevel() = 0;
 
+  virtual void testModifyInRoot_data() = 0;
+  virtual void testModifyInRoot() = 0;
+
+  virtual void testModifyInTopLevel_data() = 0;
+  virtual void testModifyInTopLevel() = 0;
+
+  virtual void testModifyInSecondLevel_data() = 0;
+  virtual void testModifyInSecondLevel() = 0;
+
 };
 
 class ProxyModelTest : public QObject, protected BuiltinTestInterface
@@ -125,6 +139,8 @@ public:
   { return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end; }
   QVariantList getSignal(SignalType type, IndexFinder srcFinder, int start, int end, IndexFinder destFinder, int destStart) const
   { return QVariantList() << type << QVariant::fromValue(srcFinder) << start << end << QVariant::fromValue(destFinder) << destStart; }
+  QVariantList getSignal(SignalType type, IndexFinder topLeftFinder, IndexFinder bottomRightFinder) const
+  { return QVariantList() << type << QVariant::fromValue(topLeftFinder) << QVariant::fromValue(bottomRightFinder); }
 
 protected:
   virtual QAbstractProxyModel* getProxy() = 0;
@@ -145,6 +161,10 @@ signals:
   void testMoveFromRootData();
   void testMoveFromTopLevelData();
   void testMoveFromSecondLevelData();
+
+  void testModifyInRootData();
+  void testModifyInTopLevelData();
+  void testModifyInSecondLevelData();
 
 protected slots:
   void testMappings();
@@ -190,6 +210,15 @@ private slots:
 
   void testMoveFromSecondLevel_data() { testMoveFromSecondLevelData(); }
   void testMoveFromSecondLevel() { doTest(); }
+
+  void testModifyInRoot_data() { testModifyInRootData(); }
+  void testModifyInRoot() { doTest(); }
+
+  void testModifyInTopLevel_data() { testModifyInTopLevelData(); }
+  void testModifyInTopLevel() { doTest(); }
+
+  void testModifyInSecondLevel_data() { testModifyInSecondLevelData(); }
+  void testModifyInSecondLevel() { doTest(); }
 
 protected:
   void connectTestSignals(QObject *reciever);
@@ -322,6 +351,20 @@ protected:
     newMoveTest("move05", srcFinder, 9, 9, 10, destFinder, 0);
   }
 
+  void testForwardingModifyData(const IndexFinder &parentFinder)
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    newModifyTest("modify01", parentFinder, 0, 0);
+    newModifyTest("modify02", parentFinder, 0, 4);
+    newModifyTest("modify03", parentFinder, 9, 9);
+    newModifyTest("modify04", parentFinder, 5, 9);
+    newModifyTest("modify05", parentFinder, 4, 4);
+    newModifyTest("modify06", parentFinder, 3, 7);
+    newModifyTest("modify07", parentFinder, 0, 9);
+  }
+
   void newInsertTest(const QString &name, const IndexFinder &indexFinder, int start, int end, int rowCount)
   {
     processTestName(name);
@@ -390,6 +433,23 @@ protected:
     }
 
     QTest::newRow(name.toAscii()) << signalList << persistentList;
+  }
+
+  void newModifyTest(const QString &name, const IndexFinder &parentFinder, int top, int bottom)
+  {
+    processTestName(name);
+
+    SignalList signalList;
+
+    IndexFinder topLeftFinder = parentFinder;
+    topLeftFinder.appendRow( top );
+
+    IndexFinder bottomRightFinder = parentFinder;
+    bottomRightFinder.appendRow( bottom );
+
+    signalList << m_proxyModelTest->getSignal(DataChanged, topLeftFinder, bottomRightFinder);
+
+    QTest::newRow(name.toAscii()) << signalList << PersistentChangeList();
   }
 
   void noop_testInsertWhenEmptyData()
@@ -486,6 +546,31 @@ protected:
   void noop_testMoveFromSecondLevelData()
   {
     noop_testMoveFromRootData();
+  }
+
+  void noop_testModifyInRootData()
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    noopTest("modify01");
+    noopTest("modify02");
+    noopTest("modify03");
+    noopTest("modify04");
+    noopTest("modify05");
+    noopTest("modify06");
+    noopTest("modify07");
+  }
+
+  void noop_testModifyInTopLevelData()
+  {
+    // Same test names etc.
+    noop_testModifyInRootData();
+  }
+
+  void noop_testModifyInSecondLevelData()
+  {
+    noop_testModifyInRootData();
   }
 
   ProxyModelTest *m_proxyModelTest;

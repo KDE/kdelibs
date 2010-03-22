@@ -118,6 +118,21 @@ void ModelCommander::init_testMoveFromTopLevel(const QString& dataTag)
   initTestModel(dataTag);
 }
 
+void ModelCommander::init_testModifyInRoot(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
+void ModelCommander::init_testModifyInTopLevel(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
+void ModelCommander::init_testModifyInSecondLevel(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
 void ModelCommander::initTestModel(const QString &dataTag)
 {
   Q_UNUSED(dataTag);
@@ -216,6 +231,21 @@ QStringList ModelCommander::execute_testMoveFromTopLevel(const QString &dataTag)
 QStringList ModelCommander::execute_testMoveFromSecondLevel(const QString &dataTag)
 {
   return executeTestMove(QList<int>() << 5 << 5, dataTag);
+}
+
+QStringList ModelCommander::execute_testModifyInRoot(const QString &dataTag)
+{
+  return executeTestModify(QList<int>(), dataTag);
+}
+
+QStringList ModelCommander::execute_testModifyInTopLevel(const QString &dataTag)
+{
+  return executeTestModify(QList<int>() << 5, dataTag);
+}
+
+QStringList ModelCommander::execute_testModifyInSecondLevel(const QString &dataTag)
+{
+  return executeTestModify(QList<int>() << 5 << 5, dataTag);
 }
 
 void ModelCommander::execute(ModelChangeCommand* command)
@@ -318,6 +348,67 @@ QStringList ModelCommander::executeTestMove(QList<int> rowAncestors, const QStri
     move->setDestRow(0);
   }
   execute(move);
+  return testData;
+}
+
+QStringList ModelCommander::executeTestModify(QList<int> rowAncestors, const QString &dataTag)
+{
+  static const QStringList testData = QStringList() << "modify01"
+                                                    << "modify02"
+                                                    << "modify03"
+                                                    << "modify04"
+                                                    << "modify05"
+                                                    << "modify06"
+                                                    << "modify07";
+
+  if(dataTag.isEmpty())
+    return testData;
+
+  ModelDataChangeCommand *modify = new ModelDataChangeCommand(m_model, this);
+  if (dataTag == testData.at(0))
+  {
+    // Modify a single item at the top.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(0);
+    modify->setEndRow(0);
+  } else if (dataTag == testData.at(1))
+  {
+    // Modify four items at the top.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(0);
+    modify->setEndRow(4);
+  } else if (dataTag == testData.at(2))
+  {
+    // Modify a single item at the bottom.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(m_model->rowCount() - 1);
+    modify->setEndRow(m_model->rowCount() - 1);
+  } else if (dataTag == testData.at(3))
+  {
+    // Modify four items at the bottom.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(m_model->rowCount() - 5);
+    modify->setEndRow(m_model->rowCount() - 1);
+  } else if (dataTag == testData.at(4))
+  {
+    // Modify a single item in the middle.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(4);
+    modify->setEndRow(4);
+  } else if (dataTag == testData.at(5))
+  {
+    // Modify four items in the middle.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(3);
+    modify->setEndRow(7);
+  } else if (dataTag == testData.at(6))
+  {
+    // Modify all items.
+    modify->setAncestorRowNumbers(rowAncestors);
+    modify->setStartRow(0);
+    modify->setEndRow(m_model->rowCount() - 1);
+  }
+  execute(modify);
   return testData;
 }
 

@@ -102,6 +102,21 @@ public slots:
     dummyTestData();
   }
 
+  void testModifyInRootData()
+  {
+    dummyTestData();
+  }
+
+  void testModifyInTopLevelData()
+  {
+    dummyTestData();
+  }
+
+  void testModifyInSecondLevelData()
+  {
+    dummyTestData();
+  }
+
 protected slots:
   void modelDestroyed() {
     m_model = 0;

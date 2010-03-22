@@ -103,6 +103,10 @@ public:
   /* reimp */ void testMoveFromRootData() { SelectorStrategy::testMoveFromRootData(); }
   /* reimp */ void testMoveFromTopLevelData() { SelectorStrategy::testMoveFromTopLevelData(); }
   /* reimp */ void testMoveFromSecondLevelData() { SelectorStrategy::testMoveFromSecondLevelData(); }
+
+  /* reimp */ void testModifyInRootData() { SelectorStrategy::testModifyInRootData(); }
+  /* reimp */ void testModifyInTopLevelData() { SelectorStrategy::testModifyInTopLevelData(); }
+  /* reimp */ void testModifyInSecondLevelData() { SelectorStrategy::testModifyInSecondLevelData(); }
 };
 
 /**

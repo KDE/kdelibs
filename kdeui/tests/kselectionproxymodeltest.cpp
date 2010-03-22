@@ -54,6 +54,10 @@ public:
   void testMoveFromTopLevelData() { noop_testMoveFromTopLevelData(); }
   void testMoveFromSecondLevelData() { noop_testMoveFromSecondLevelData(); }
 
+  void testModifyInRootData() { noop_testModifyInRootData(); }
+  void testModifyInTopLevelData() { noop_testModifyInTopLevelData(); }
+  void testModifyInSecondLevelData() { noop_testModifyInSecondLevelData(); }
+
 private:
   ProxyModelTest *m_proxyModelTest;
 };
@@ -161,6 +165,35 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExa
   noop_testMoveFromSecondLevelData();
 }
 
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testModifyInRootData()
+{
+  noop_testModifyInRootData();
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testModifyInTopLevelData()
+{
+  QTest::addColumn<SignalList>("signalList");
+  QTest::addColumn<PersistentChangeList>("changeList");
+
+  IndexFinder parentFinder;
+
+  newModifyTest("modify01", parentFinder, 0, 0);
+  newModifyTest("modify02", parentFinder, 0, 4);
+  newModifyTest("modify03", parentFinder, 9, 9);
+  newModifyTest("modify04", parentFinder, 5, 9);
+  newModifyTest("modify05", parentFinder, 4, 4);
+  newModifyTest("modify06", parentFinder, 3, 7);
+  newModifyTest("modify07", parentFinder, 0, 9);
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testModifyInSecondLevelData()
+{
+  noop_testModifyInSecondLevelData();
+}
+
 //END ChildrenOfExactSelection
 
 //BEGIN ExactSelection
@@ -243,6 +276,32 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelectio
   noopTest("move05");
 }
 
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testModifyInRootData()
+{
+  QTest::addColumn<SignalList>("signalList");
+  QTest::addColumn<PersistentChangeList>("changeList");
+  noopTest("modify01");
+  noopTest("modify02");
+  noopTest("modify03");
+  newModifyTest("modify04", IndexFinder(), 0, 0 );
+  noopTest("modify05");
+  newModifyTest("modify06", IndexFinder(), 0, 0 );
+  newModifyTest("modify07", IndexFinder(), 0, 0 );
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testModifyInTopLevelData()
+{
+  noop_testModifyInTopLevelData();
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testModifyInSecondLevelData()
+{
+  noop_testModifyInSecondLevelData();
+}
+
 //END ExactSelection
 
 //BEGIN SubTrees
@@ -311,6 +370,32 @@ template<>
 void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testMoveFromSecondLevelData()
 {
   testForwardingMoveData(IndexFinder(QList<int>() << 0 << 5), IndexFinder(QList<int>() << 0 << 5));
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testModifyInRootData()
+{
+  QTest::addColumn<SignalList>("signalList");
+  QTest::addColumn<PersistentChangeList>("changeList");
+  noopTest("modify01");
+  noopTest("modify02");
+  noopTest("modify03");
+  newModifyTest("modify04", IndexFinder(), 0, 0 );
+  noopTest("modify05");
+  newModifyTest("modify06", IndexFinder(), 0, 0 );
+  newModifyTest("modify07", IndexFinder(), 0, 0 );
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testModifyInTopLevelData()
+{
+  testForwardingModifyData(IndexFinder(QList<int>() << 0));
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testModifyInSecondLevelData()
+{
+  testForwardingModifyData(IndexFinder(QList<int>() << 0 << 5));
 }
 
 //END SubTrees
