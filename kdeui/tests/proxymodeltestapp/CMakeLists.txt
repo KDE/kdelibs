@@ -19,6 +19,7 @@ set(proxymodeltestapp_SRCS
 #     proxymodeltestwidget.cpp
     lessthanwidget.cpp
     dynamictreewidget.cpp
+    modelcommanderwidget.cpp
 #    scriptablereparentingwidget.cpp
     matchcheckingwidget.cpp
 )
