@@ -80,4 +80,55 @@ private:
   ModelSelector *m_modelSelector;
 };
 
+template<typename SelectorStrategy, KSelectionProxyModel::FilterBehavior _filterBehaviour>
+class TestData : public SelectorStrategy
+{
+public:
+  TestData(ProxyModelTest *proxyModelTest)
+      : SelectorStrategy(proxyModelTest)
+  {
+  }
+
+  /* reimp */ KSelectionProxyModel::FilterBehavior filterBehaviour() { return _filterBehaviour; }
+
+  /* reimp */ void testInsertWhenEmptyData() { SelectorStrategy::testInsertWhenEmptyData(); }
+  /* reimp */ void testInsertInRootData() { SelectorStrategy::testInsertInRootData(); }
+  /* reimp */ void testInsertInTopLevelData() { SelectorStrategy::testInsertInTopLevelData(); }
+  /* reimp */ void testInsertInSecondLevelData() { SelectorStrategy::testInsertInSecondLevelData(); }
+};
+
+/**
+  @brief Selects only one item in the source model which does not change
+*/
+template< int num1 = 0,
+          int num2 = 0,
+          int num3 = 0,
+          int num4 = 0,
+          int num5 = 0>
+class ImmediateSelectionStrategy : public ModelSelector
+{
+public:
+  ImmediateSelectionStrategy(ProxyModelTest* parent = 0)
+      : ModelSelector(parent)
+  {
+    if (num1 > 0)
+      m_selectedRows << num1;
+    if (num2 > 0)
+      m_selectedRows << num2;
+    if (num3 > 0)
+      m_selectedRows << num3;
+    if (num4 > 0)
+      m_selectedRows << num4;
+    if (num5 > 0)
+      m_selectedRows << num5;
+  }
+};
+
+/**
+  For testing the proxy when it has no selection.
+*/
+typedef ImmediateSelectionStrategy<0, 0, 0, 0, 0> NoSelectionStrategy;
+
+
+
 #endif
