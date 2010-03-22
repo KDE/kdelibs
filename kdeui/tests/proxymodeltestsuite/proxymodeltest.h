@@ -57,6 +57,11 @@ private:
   virtual void testInsertInRootData() = 0;
   virtual void testInsertInTopLevelData() = 0;
   virtual void testInsertInSecondLevelData() = 0;
+
+  virtual void testRemoveFromRootData() = 0;
+  virtual void testRemoveFromTopLevelData() = 0;
+  virtual void testRemoveFromSecondLevelData() = 0;
+
 };
 
 class BuiltinTestInterface : BuiltinTestDataInterface
@@ -75,6 +80,15 @@ private:
 
   virtual void testInsertInSecondLevel_data() = 0;
   virtual void testInsertInSecondLevel() = 0;
+
+  virtual void testRemoveFromRoot_data() = 0;
+  virtual void testRemoveFromRoot() = 0;
+
+  virtual void testRemoveFromTopLevel_data() = 0;
+  virtual void testRemoveFromTopLevel() = 0;
+
+  virtual void testRemoveFromSecondLevel_data() = 0;
+  virtual void testRemoveFromSecondLevel() = 0;
 };
 
 class ProxyModelTest : public QObject, protected BuiltinTestInterface
@@ -109,6 +123,10 @@ signals:
   void testInsertInTopLevelData();
   void testInsertInSecondLevelData();
 
+  void testRemoveFromRootData();
+  void testRemoveFromTopLevelData();
+  void testRemoveFromSecondLevelData();
+
 protected slots:
   void testMappings();
   void verifyModel(const QModelIndex &parent, int start, int end);
@@ -135,6 +153,15 @@ private slots:
 
   void testInsertInSecondLevel_data() { testInsertInSecondLevelData(); }
   void testInsertInSecondLevel() { doTest(); }
+
+  void testRemoveFromRoot_data() { testRemoveFromRootData(); }
+  void testRemoveFromRoot() { doTest(); }
+
+  void testRemoveFromTopLevel_data() { testRemoveFromTopLevelData(); }
+  void testRemoveFromTopLevel() { doTest(); }
+
+  void testRemoveFromSecondLevel_data() { testRemoveFromSecondLevelData(); }
+  void testRemoveFromSecondLevel() { doTest(); }
 
 protected:
   void connectTestSignals(QObject *reciever);
@@ -233,6 +260,16 @@ protected:
     newInsertTest("insert18", rows, 0, 4, 0);
   }
 
+  void testForwardingRemoveData(const IndexFinder &indexFinder)
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    newRemoveTest("remove01", indexFinder, 0, 0, 10);
+    newRemoveTest("remove02", indexFinder, 0, 4, 10);
+    newRemoveTest("remove03", indexFinder, 9, 9, 10);
+  }
+
   void newInsertTest(const QString &name, const IndexFinder &indexFinder, int start, int end, int rowCount)
   {
     processTestName(name);
@@ -245,6 +282,25 @@ protected:
 
     if (rowCount - 1 + ( end - start + 1 ) > end)
       persistentList << m_proxyModelTest->getChange( indexFinder, start, rowCount - 1, end - start + 1 );
+
+    QTest::newRow(name.toAscii()) << signalList << persistentList;
+  }
+
+  void newRemoveTest(const QString &name, const IndexFinder &indexFinder, int start, int end, int rowCount)
+  {
+    processTestName(name);
+
+    SignalList signalList;
+    PersistentChangeList persistentList;
+
+    signalList << m_proxyModelTest->getSignal(RowsAboutToBeRemoved, indexFinder, start, end);
+    signalList << m_proxyModelTest->getSignal(RowsRemoved, indexFinder, start, end);
+
+    persistentList << m_proxyModelTest->getChange( indexFinder, start, end, -1, true );
+    if (rowCount - 1 != end)
+    {
+      persistentList << m_proxyModelTest->getChange( indexFinder, end + 1, rowCount - 1, -1 * (end - start + 1) );
+    }
 
     QTest::newRow(name.toAscii()) << signalList << persistentList;
   }
@@ -295,6 +351,29 @@ protected:
   void noop_testInsertInSecondLevelData()
   {
     noop_testInsertInRootData();
+  }
+
+  void noop_testRemoveFromRootData()
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    // These commands have no effect because this model shows children of selection.
+
+    noopTest("remove01");
+    noopTest("remove02");
+    noopTest("remove03");
+  }
+
+  void noop_testRemoveFromTopLevelData()
+  {
+    // Same test names etc.
+    noop_testRemoveFromRootData();
+  }
+
+  void noop_testRemoveFromSecondLevelData()
+  {
+    noop_testRemoveFromRootData();
   }
 
   ProxyModelTest *m_proxyModelTest;

@@ -95,6 +95,10 @@ public:
   /* reimp */ void testInsertInRootData() { SelectorStrategy::testInsertInRootData(); }
   /* reimp */ void testInsertInTopLevelData() { SelectorStrategy::testInsertInTopLevelData(); }
   /* reimp */ void testInsertInSecondLevelData() { SelectorStrategy::testInsertInSecondLevelData(); }
+
+  /* reimp */ void testRemoveFromRootData() { SelectorStrategy::testRemoveFromRootData(); }
+  /* reimp */ void testRemoveFromTopLevelData() { SelectorStrategy::testRemoveFromTopLevelData(); }
+  /* reimp */ void testRemoveFromSecondLevelData() { SelectorStrategy::testRemoveFromSecondLevelData(); }
 };
 
 /**

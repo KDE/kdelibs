@@ -46,6 +46,10 @@ public:
   void testInsertInTopLevelData() { noop_testInsertInTopLevelData(); }
   void testInsertInSecondLevelData() { noop_testInsertInSecondLevelData(); }
 
+  void testRemoveFromRootData() { noop_testRemoveFromRootData(); }
+  void testRemoveFromTopLevelData() { noop_testRemoveFromTopLevelData(); }
+  void testRemoveFromSecondLevelData() { noop_testRemoveFromSecondLevelData(); }
+
 private:
   ProxyModelTest *m_proxyModelTest;
 };
@@ -101,6 +105,31 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExa
   noop_testInsertInSecondLevelData();
 }
 
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testRemoveFromRootData()
+{
+  noop_testRemoveFromRootData();
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testRemoveFromTopLevelData()
+{
+  QTest::addColumn<SignalList>("signalList");
+  QTest::addColumn<PersistentChangeList>("changeList");
+
+  IndexFinder indexFinder;
+
+  newRemoveTest("remove01", indexFinder, 0, 0, 10);
+  newRemoveTest("remove02", indexFinder, 0, 4, 10);
+  newRemoveTest("remove03", indexFinder, 9, 9, 10);
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testRemoveFromSecondLevelData()
+{
+  noop_testRemoveFromSecondLevelData();
+}
+
 //END ChildrenOfExactSelection
 
 //BEGIN ExactSelection
@@ -134,6 +163,24 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelectio
 {
   noop_testInsertInSecondLevelData();
 }
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testRemoveFromRootData()
+{
+  noop_testRemoveFromRootData();
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testRemoveFromTopLevelData()
+{
+  noop_testRemoveFromTopLevelData();
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testRemoveFromSecondLevelData()
+{
+  noop_testRemoveFromSecondLevelData();
+}
 //END ExactSelection
 
 //BEGIN SubTrees
@@ -166,6 +213,24 @@ template<>
 void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testInsertInSecondLevelData()
 {
   testForwardingInsertData(IndexFinder(QList<int>() << 0 << 5));
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testRemoveFromRootData()
+{
+  noop_testRemoveFromRootData();
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testRemoveFromTopLevelData()
+{
+  testForwardingRemoveData(IndexFinder(QList<int>() << 0));
+}
+
+template<>
+void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::testRemoveFromSecondLevelData()
+{
+  testForwardingRemoveData(IndexFinder(QList<int>() << 0 << 5));
 }
 
 //END SubTrees

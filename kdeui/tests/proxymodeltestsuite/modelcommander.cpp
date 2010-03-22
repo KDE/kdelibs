@@ -88,6 +88,21 @@ void ModelCommander::init_testInsertInSecondLevel(const QString &dataTag)
   initTestModel(dataTag);
 }
 
+void ModelCommander::init_testRemoveFromRoot(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
+void ModelCommander::init_testRemoveFromSecondLevel(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
+void ModelCommander::init_testRemoveFromTopLevel(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
 void ModelCommander::initTestModel(const QString &dataTag)
 {
   Q_UNUSED(dataTag);
@@ -158,6 +173,21 @@ QStringList ModelCommander::execute_testInsertInSecondLevel(const QString &dataT
   return executeTestInsert(QList<int>() << 5 << 5, dataTag);
 }
 
+QStringList ModelCommander::execute_testRemoveFromRoot(const QString &dataTag)
+{
+  return executeTestRemove(QList<int>(), dataTag);
+}
+
+QStringList ModelCommander::execute_testRemoveFromTopLevel(const QString &dataTag)
+{
+  return executeTestRemove(QList<int>() << 5, dataTag);
+}
+
+QStringList ModelCommander::execute_testRemoveFromSecondLevel(const QString &dataTag)
+{
+  return executeTestRemove(QList<int>() << 5 << 5, dataTag);
+}
+
 void ModelCommander::execute(ModelChangeCommand* command)
 {
   m_currentCommand = command;
@@ -169,6 +199,39 @@ void ModelCommander::execute(ModelChangeCommand* command)
 ModelChangeCommand* ModelCommander::currentCommand()
 {
   return m_currentCommand;
+}
+
+QStringList ModelCommander::executeTestRemove(QList<int> rowAncestors, const QString &dataTag)
+{
+  static const QStringList testData = QStringList() << "remove01"
+                                                    << "remove02"
+                                                    << "remove03";
+
+  if(dataTag.isEmpty())
+    return testData;
+
+  ModelRemoveCommand *rem = new ModelRemoveCommand(m_model, this);
+  if (dataTag == testData.at(0))
+  {
+    // Remove a single item from the top.
+    rem->setAncestorRowNumbers(rowAncestors);
+    rem->setStartRow(0);
+    rem->setEndRow(0);
+  } else if (dataTag == testData.at(1))
+  {
+    // Remove four items form the top.
+    rem->setAncestorRowNumbers(rowAncestors);
+    rem->setStartRow(0);
+    rem->setEndRow(4);
+  } else if (dataTag == testData.at(2))
+  {
+    // Remove a single item from the bottom.
+    rem->setAncestorRowNumbers(rowAncestors);
+    rem->setStartRow(m_model->rowCount() - 1);
+    rem->setEndRow(m_model->rowCount() - 1);
+  }
+  execute(rem);
+  return testData;
 }
 
 QStringList ModelCommander::executeTestInsert(QList<int> rowAncestors, const QString &dataTag)

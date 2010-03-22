@@ -40,13 +40,23 @@ public slots:
   void init_testInsertInTopLevel(const QString &dataTag);
   void init_testInsertInSecondLevel(const QString &dataTag);
 
+  void init_testRemoveFromRoot(const QString &dataTag);
+  void init_testRemoveFromTopLevel(const QString &dataTag);
+  void init_testRemoveFromSecondLevel(const QString &dataTag);
+
   QStringList execute_testInsertWhenEmpty(const QString &dataTag);
   QStringList execute_testInsertInRoot(const QString &dataTag);
   QStringList execute_testInsertInTopLevel(const QString &dataTag);
   QStringList execute_testInsertInSecondLevel(const QString &dataTag);
 
+  QStringList execute_testRemoveFromRoot(const QString &dataTag);
+  QStringList execute_testRemoveFromTopLevel(const QString &dataTag);
+  QStringList execute_testRemoveFromSecondLevel(const QString &dataTag);
+
 private:
   QStringList executeTestInsert(QList<int> rowAncestors, const QString &dataTag);
+  QStringList executeTestRemove(QList<int> rowAncestors, const QString &dataTag);
+
   void initTestModel(const QString &dataTag);
 
   void execute(ModelChangeCommand *command);
