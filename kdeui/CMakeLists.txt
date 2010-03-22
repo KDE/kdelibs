@@ -376,8 +376,8 @@ endif(X11_Xrender_FOUND)
 
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY})
 
-set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                                       SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 
+set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
+                                       SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                        )
 
 install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -608,7 +608,7 @@ if (Q_WS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
-install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors 
+install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors
          DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 install( FILES
