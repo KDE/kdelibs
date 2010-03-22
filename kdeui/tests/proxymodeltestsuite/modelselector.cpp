@@ -20,28 +20,32 @@
 
 #include "modelselector.h"
 
-#include "proxymodeltest.h"
-
-
-ModelSelector::ModelSelector(ModelSpy* parent)
-    : QObject(parent), m_modelSpy(parent)
+ModelSelector::ModelSelector(ProxyModelTest* parent)
+  : ProxyModelTestData(parent),
+    m_model(0),
+    m_selectionModel(0),
+    m_rootModel(0)
 {
-
+  Q_ASSERT(parent);
 }
 
 void ModelSelector::setWatchedModel(QAbstractItemModel* model)
 {
   m_model = model;
+  connect(m_model, SIGNAL(destroyed(QObject*)), SLOT(modelDestroyed()));
 }
 
 void ModelSelector::setSelectionModel(QItemSelectionModel* selectionModel)
 {
+  if (selectionModel)
+    Q_ASSERT(!selectionModel->hasSelection());
   m_selectionModel = selectionModel;
+  connect(m_selectionModel, SIGNAL(destroyed(QObject*)), SLOT(modelDestroyed()));
 }
 
-QItemSelectionModel* ModelSelector::selectionModel() const
+void ModelSelector::setRootModel(DynamicTreeModel* rootModel)
 {
-  return m_selectionModel;
+  m_rootModel = rootModel;
 }
 
 void ModelSelector::setWatch(bool watch)
@@ -56,134 +60,28 @@ void ModelSelector::setWatch(bool watch)
     Q_ASSERT(m_model);
     connect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
             SLOT(rowsInserted(const QModelIndex &, int, int)));
+    if (m_model->hasChildren())
+      rowsInserted(QModelIndex(), 0, m_model->rowCount() - 1);
   }
 }
 
-QModelIndex ModelSelector::findNumber(const QModelIndex& start, int num)
+void ModelSelector::rowsInserted(const QModelIndex &parent, int start, int end)
 {
-  QModelIndex idx;
-  QModelIndexList list = m_model->match(start, Qt::DisplayRole, num, 1, Qt::MatchExactly);
-  if (list.size() > 0)
-  {
-    return list.at(0);
-  }
-  for ( int row = 0; row < m_model->rowCount( start ); ++row )
-  {
-    idx = findNumber(m_model->index(row, 0, start), num );
-    if (idx.isValid())
-      return idx;
-  }
+  Q_ASSERT(end >= start);
+  Q_ASSERT(m_selectionModel);
 
-  return QModelIndex();
-}
-
-void ModelSelector::deselectNumbers(QList< int > numbers)
-{
-  QModelIndex idx;
-  foreach (int num, numbers)
-  {
-    idx = findNumber(QModelIndex(), num);
-    if (!idx.isValid())
-      continue;
-
-    // TODO: Group these into a QItemSelection where possible.
-    m_selectionModel->select(idx, QItemSelectionModel::Deselect);
-  }
-}
-
-void ModelSelector::selectSiliently(QSet< int > numbers)
-{
-  m_silentNumbers.unite( numbers );
-  m_selectedNumbers.subtract( numbers );
-  processNumbers( numbers );
-}
-
-void ModelSelector::processNumbers(QSet< int > numbers)
-{
-  QModelIndex idx;
-  foreach (int num, numbers)
-  {
-    idx = findNumber(QModelIndex(), num);
-    if (!idx.isValid())
-      continue;
-
-    bool spyingState = m_modelSpy->isSpying();
-    // TODO: Group these into a QItemSelection where possible.
-    if (m_silentNumbers.contains(num))
-      m_modelSpy->stopSpying();
-    m_selectionModel->select(idx, QItemSelectionModel::SelectCurrent);
-    if (m_silentNumbers.contains(num) && spyingState)
-      m_modelSpy->startSpying();
-  }
-}
-
-void ModelSelector::selectNumbers(QSet< int > numbers)
-{
-  m_selectedNumbers.unite(numbers);
-  m_silentNumbers.subtract(numbers);
-  processNumbers( numbers );
-}
-
-void ModelSelector::rowsInserted(const QModelIndex& parent, int start, int end)
-{
   int row = start;
-  const int column = 0;
+  static const int column = 0;
   QModelIndex idx = m_model->index(row, column, parent);
 
   while (idx.isValid() && row <= end)
   {
     int item = idx.data().toInt();
-    if (m_silentNumbers.contains( item ) )
-    {
-      bool spyingState = m_modelSpy->isSpying();
-      m_modelSpy->stopSpying();
-      m_selectionModel->select(idx, QItemSelectionModel::SelectCurrent);
-      if (spyingState)
-        m_modelSpy->startSpying();
-    } else if (m_selectedNumbers.contains( item ) )
+    if (m_selectedRows.contains(item))
     {
       m_selectionModel->select(idx, QItemSelectionModel::SelectCurrent);
     }
     idx = idx.sibling(++row, column);
   }
 }
-
-void ModelSelector::makeSelections(const QString &testName)
-{
-  if ( testName == "insert01" )
-  {
-    selectNumbers( QSet<int>() << 1 );
-  } else if ( testName == "insert02" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "insert03" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "insert04" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "insert05" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "insert06" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "insert07" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "insert08" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else if ( testName == "change01" )
-  {
-    selectSiliently( QSet<int>() << 1 );
-  } else
-  {
-    selectSiliently( QSet<int>() << 1 );
-  }
-
-}
-
-
-
 

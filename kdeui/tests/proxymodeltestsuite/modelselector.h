@@ -22,43 +22,69 @@
 
 #include <QItemSelectionModel>
 
+#include <kselectionproxymodel.h>
+
+#include "proxymodeltest.h"
+
 class ModelSpy;
 
-class ModelSelector : public QObject
+class OnlySelectedChildrenTest;
+
+class ModelSelector : public ProxyModelTestData
 {
   Q_OBJECT
 public:
-  ModelSelector(ModelSpy *parent);
+  ModelSelector(ProxyModelTest *ProxyModelTest = 0);
 
   void setWatchedModel(QAbstractItemModel *model);
 
   void setSelectionModel(QItemSelectionModel *selectionModel);
 
-  QItemSelectionModel* selectionModel() const;
+  void setRootModel(DynamicTreeModel *rootModel);
+
+  QItemSelectionModel* selectionModel() const { return m_selectionModel; }
+  QAbstractItemModel *watchedModel() { return m_model; }
 
   void setWatch(bool watch);
 
-  QModelIndex findNumber(const QModelIndex &start, int num);
-
-  void deselectNumbers(QList<int> numbers);
-
-  void selectSiliently( QSet<int> numbers );
-
-  void processNumbers(QSet<int> numbers);
-
-  void selectNumbers(QSet<int> numbers);
-
-  virtual void makeSelections(const QString &testName);
+  virtual KSelectionProxyModel::FilterBehavior filterBehaviour() = 0;
 
 public slots:
   void rowsInserted(const QModelIndex &parent, int start, int end);
 
-private:
+  void testInsertWhenEmptyData()
+  {
+    dummyTestData();
+  }
+
+  void testInsertInRootData()
+  {
+    dummyTestData();
+  }
+
+  void testInsertInTopLevelData()
+  {
+    dummyTestData();
+  }
+
+  void testInsertInSecondLevelData()
+  {
+    dummyTestData();
+  }
+
+protected slots:
+  void modelDestroyed() {
+    m_model = 0;
+    m_selectionModel = 0;
+  }
+
+protected:
   QAbstractItemModel *m_model;
   QItemSelectionModel *m_selectionModel;
+  DynamicTreeModel *m_rootModel;
   ModelSpy *m_modelSpy;
-  QSet<int> m_selectedNumbers;
-  QSet<int> m_silentNumbers;
+
+  QList<int> m_selectedRows;
 };
 
 #endif
