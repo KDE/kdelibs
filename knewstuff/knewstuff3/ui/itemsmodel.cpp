@@ -22,13 +22,15 @@
 #include "klocalizedstring.h"
 
 #include "core/entryinternal.h"
-
+#include "core/engine.h"
 #include "imageloader.h"
 
 namespace KNS3
 {
-ItemsModel::ItemsModel(QObject * parent)
-        : QAbstractListModel(parent), m_hasPreviewImages(false)
+ItemsModel::ItemsModel(Engine* engine, QObject* parent)
+        : QAbstractListModel(parent)
+        , m_engine(engine)
+        , m_hasPreviewImages(false)
 {
 }
 
@@ -47,16 +49,6 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
     switch (role) {
     case EntryRole:
         return QVariant::fromValue(entry);
-    case PreviewSmall:
-        if (m_previewImages.contains(entry.previewSmall())) {
-            return m_previewImages[entry.previewSmall()];
-        }
-        break;
-    case PreviewLarge:
-        if (m_largePreviewImages.contains(entry.previewBig())) {
-            return m_largePreviewImages[entry.previewBig()];
-        }
-        break;
     }
     return QVariant();
 }
@@ -70,8 +62,8 @@ void ItemsModel::slotEntriesLoaded(EntryInternal::List entries)
 
 void ItemsModel::addEntry(const EntryInternal& entry)
 {
-    QString preview = entry.previewSmall();
-    if (!preview.isEmpty()) {
+    QString preview = entry.previewUrl(EntryInternal::PreviewSmall1);
+    if (!m_hasPreviewImages && !preview.isEmpty()) {
         m_hasPreviewImages = true;
         if (rowCount() > 0) {
             emit dataChanged(index(0,0), index(rowCount()-1,0));
@@ -83,12 +75,8 @@ void ItemsModel::addEntry(const EntryInternal& entry)
     m_entries.append(entry);
     endInsertRows();
 
-    if (!preview.isEmpty()) {
-        m_imageIndexes.insert(preview, index(m_entries.count() - 1, 0));
-        ImageLoader *pix = new ImageLoader(preview, this);
-        emit jobStarted(pix->job(), i18n("Loading preview..."));
-        connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
-                this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
+    if (!preview.isEmpty() && entry.previewImage(EntryInternal::PreviewSmall1).isNull()) {
+        m_engine->loadPreview(entry, EntryInternal::PreviewSmall1);
     }
 }
 
@@ -116,10 +104,23 @@ void ItemsModel::clearEntries()
     reset();
 }
 
+void ItemsModel::slotEntryPreviewLoaded(const EntryInternal& entry, EntryInternal::PreviewType type)
+{
+    kDebug() << entry.name() << type;
+    // we only care about the first small preview in the list
+    if (type != EntryInternal::PreviewSmall1) {
+        return;
+    }
+    slotEntryChanged(entry);
+}
+
+/*
 void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
 {
-    if( pix.isNull())
+    if (pix.isNull()) {
         return;
+    }
+
     QImage image = pix;
     m_largePreviewImages.insert(url, image);
     if (image.width() > PreviewWidth || image.height() > PreviewHeight) {
@@ -138,7 +139,7 @@ void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
     QModelIndex thisIndex = m_imageIndexes[url];
 
     emit dataChanged(thisIndex, thisIndex);
-}
+}*/
 
 bool ItemsModel::hasPreviewImages() const
 {

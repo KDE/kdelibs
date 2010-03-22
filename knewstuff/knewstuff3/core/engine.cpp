@@ -23,6 +23,7 @@
 #include "entry.h"
 #include "core/installation.h"
 #include "core/xmlloader.h"
+#include "ui/imageloader.h"
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -319,32 +320,6 @@ void Engine::slotProgress(KJob *job, unsigned long percent)
     emit signalProgress(message, percent);
 }
 
-// FIXME: this should be handled more internally to return a (cached) preview image
-// kio caches images already (?) but running jobs should be stopped if no longer neeeded...
-void Engine::slotPreviewResult(KJob *job)
-{
-    if (job->error()) {
-        kError() << "Cannot load preview file." << endl;
-        kError() << job->errorString() << endl;
-
-        m_previewPictureJobs.remove(job);
-        emit signalPreviewFailed();
-    } else {
-        KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-
-        if (m_previewPictureJobs.contains(job)) {
-            // now, assign temporary filename to entry and update entry cache
-            EntryInternal entry = m_previewPictureJobs[job];
-            m_previewPictureJobs.remove(job);
-            m_previewfiles[entry] = fcjob->destUrl().path();
-        }
-        // FIXME: ignore if not? shouldn't happen...
-
-        emit signalPreviewLoaded(fcjob->destUrl());
-    }
-}
-
-
 bool Engine::entryChanged(const EntryInternal& oldentry, const EntryInternal& entry)
 {
     // possibly return true if the status changed? depends on when this is called
@@ -353,7 +328,6 @@ bool Engine::entryChanged(const EntryInternal& oldentry, const EntryInternal& en
         return true;
     return false;
 }
-
 
 void Engine::install(KNS3::EntryInternal entry)
 {
@@ -383,6 +357,19 @@ void Engine::uninstall(KNS3::EntryInternal entry)
     entry.setStatus(EntryInternal::Installing);
     emit signalEntryChanged(entry);
     m_installation->uninstall(entry);
+}
+
+void Engine::loadPreview(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
+{
+    ImageLoader* l = new ImageLoader(entry, type, this);
+    connect(l, SIGNAL(signalPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)), this, SLOT(slotPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
+    l->start();
+}
+
+void Engine::slotPreviewLoaded(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
+{
+    kDebug() << "loaded: " << entry.name();
+    emit signalEntryPreviewLoaded(entry, type);
 }
 
 void Engine::contactAuthor(const EntryInternal &entry)

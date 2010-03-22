@@ -278,13 +278,13 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
         QPoint point(option.rect.left() + margin, option.rect.top() + ((height - PreviewHeight) / 2));
 
         KNS3::EntryInternal entry = index.data(ItemsModel::EntryRole).value<KNS3::EntryInternal>();
-        if (entry.previewSmall().isEmpty()) {
+        if (entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
             // paint the no preview icon
-            point.setX((PreviewWidth - m_noImage.width())/2 + 5);
-            point.setY(option.rect.top() + ((height - m_noImage.height()) / 2));
-            painter->drawPixmap(point, m_noImage);
+            //point.setX((PreviewWidth - m_noImage.width())/2 + 5);
+            //point.setY(option.rect.top() + ((height - m_noImage.height()) / 2));
+            //painter->drawPixmap(point, m_noImage);
         } else {
-            QImage image = index.data(ItemsModel::PreviewSmall).value<QImage>();
+            QImage image = entry.previewImage(EntryInternal::PreviewSmall1);
             if (!image.isNull()) {
                 point.setX((PreviewWidth - image.width())/2 + 5);
                 point.setY(option.rect.top() + ((height - image.height()) / 2));

@@ -56,6 +56,13 @@ void EntryDetailsDialog::init()
     setMainWidget(_mainWidget);
     ui.setupUi(_mainWidget);
 
+    connect(m_engine, SIGNAL(details()), SLOT(details()));
+    //m_engine->fetchAllDetails(m_entry);
+
+    ui.previewSmall1->setVisible(false);
+    ui.previewSmall2->setVisible(false);
+    ui.previewSmall3->setVisible(false);
+
     if (!m_engine->userCanVote(m_entry)) {
         ui.voteGoodButton->setEnabled(false);
         ui.voteBadButton->setEnabled(false);
@@ -83,8 +90,6 @@ void EntryDetailsDialog::init()
     setCaption(i18n("Get Hot New Stuff"));
     ui.m_titleWidget->setText(i18n("Details for %1", m_entry.name()));
     ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
-
-    ui.previewSmallGroup->setVisible(false);
 
     if (!m_entry.author().homepage().isEmpty()) {
         ui.authorLabel->setText("<a href=\"" + m_entry.author().homepage() + "\">" + m_entry.author().name() + "</a>");
@@ -123,18 +128,25 @@ void EntryDetailsDialog::init()
     ui.updateButton->setIcon(KIcon("system-software-update"));
     ui.uninstallButton->setIcon(KIcon("edit-delete"));
 
-    if(m_entry.previewSmall().isEmpty() && m_entry.previewBig().isEmpty()) {
-        ui.previewBig->setVisible(false);
-    } else {
-        QString url = m_entry.previewBig();
-        if (url.isEmpty()) {
-            url = m_entry.previewSmall();
-        }
-        ui.previewBig->setText(i18n("Loading preview..."));
-        ImageLoader *pix = new ImageLoader(url, this);
-        connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
-                this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
+    connect(m_engine, SIGNAL(signalEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)),
+            this, SLOT(slotEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
 
+    for (int type = EntryInternal::PreviewSmall1; type < EntryInternal::PreviewBig3; ++type) {
+        kDebug() << "LOAD: " << type;
+
+        if (m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
+            ui.previewBig->setVisible(false);
+        } else
+
+        if (m_entry.previewImage((EntryInternal::PreviewType)type).isNull()) {
+            m_engine->loadPreview(m_entry, (EntryInternal::PreviewType)type);
+        } else {
+            slotEntryPreviewLoaded(m_entry, (EntryInternal::PreviewType)type);
+        }
+    }
+
+    if(!m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty() && !m_entry.previewUrl(EntryInternal::PreviewBig1).isEmpty()) {
+        ui.previewBig->setText(i18n("Loading preview..."));
         ui.previewBig->installEventFilter(this);
     }
 }
@@ -198,18 +210,43 @@ void EntryDetailsDialog::uninstall()
     m_engine->uninstall(m_entry);
 }
 
-void EntryDetailsDialog::slotEntryPreviewLoaded(const QString &, const QImage& image)
+void EntryDetailsDialog::slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type)
 {
-    m_previewBig1 = image;
-    ui.previewBig->setPixmap(QPixmap::fromImage(image.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+    if (!(entry == m_entry)) {
+        return;
+    }
+
+    kDebug() << "entry preview loaded : " << type << entry.name();
+    switch (type) {
+    case EntryInternal::PreviewSmall1:
+        ui.previewSmall1->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewSmall1).scaled(ui.previewSmall1->size(), Qt::KeepAspectRatio)));
+        break;
+    case EntryInternal::PreviewSmall2:
+        ui.previewSmall2->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewSmall2).scaled(ui.previewSmall2->size(), Qt::KeepAspectRatio)));
+        break;
+    case EntryInternal::PreviewSmall3:
+        ui.previewSmall3->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewSmall3).scaled(ui.previewSmall3->size(), Qt::KeepAspectRatio)));
+        break;
+    case EntryInternal::PreviewBig1:
+        kDebug() << "preview big 1";
+        m_currentPreview = entry.previewImage(EntryInternal::PreviewBig1);
+        ui.previewBig->setPixmap(QPixmap::fromImage(m_currentPreview.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+        break;
+    case EntryInternal::PreviewBig2:
+        kDebug() << "preview big 2";
+        ui.previewBig->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewBig2).scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+        break;
+    case EntryInternal::PreviewBig3:
+        kDebug() << "preview big 3";
+        ui.previewBig->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewBig3).scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+        break;
+    }
 }
 
 bool EntryDetailsDialog::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::Resize) {
-        kDebug() << "Resize";
-        ui.previewBig->setPixmap(QPixmap::fromImage(m_previewBig1.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
-
+        ui.previewBig->setPixmap(QPixmap::fromImage(m_currentPreview.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
     }
     return KDialog::eventFilter(obj, event);
 }

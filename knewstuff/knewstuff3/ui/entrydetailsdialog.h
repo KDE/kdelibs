@@ -39,7 +39,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private Q_SLOTS:
-    void slotEntryPreviewLoaded(const QString &, const QImage&);
+    void slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
     void install();
     void uninstall();
 
@@ -55,7 +55,7 @@ private:
     Ui::EntryDetailsDialog ui;
     Engine *m_engine;
     EntryInternal m_entry;
-    QImage m_previewBig1;
+    QImage m_currentPreview;
 };
 
 }

@@ -23,6 +23,10 @@
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 
+#include <kdebug.h>
+
+#include "core/entryinternal.h"
+
 class KJob;
 namespace KIO
 {
@@ -44,12 +48,12 @@ namespace KNS3 {
  *
  * @internal
  */
-class ImageLoader : public QObject, public QImage
+class ImageLoader : public QObject
 {
     Q_OBJECT
 public:
-    ImageLoader(const QString& url, QObject* parent);
-
+    ImageLoader(const EntryInternal& entry, EntryInternal::PreviewType type, QObject* parent);
+    void start();
     /**
      * Get the job doing the image loading in the background (to have progress information available)
      * @return the job
@@ -57,14 +61,15 @@ public:
     KJob* job();
 
 Q_SIGNALS:
-    void signalLoaded(const QString & url, const QImage& pix);
+    void signalPreviewLoaded(const KNS3::EntryInternal&, KNS3::EntryInternal::PreviewType);
 
 private Q_SLOTS:
     void slotDownload(KJob *job);
     void slotData(KIO::Job* job, const QByteArray& buf);
 
 private:
-    QString m_url;
+    EntryInternal m_entry;
+    EntryInternal::PreviewType m_previewType;
     QByteArray m_buffer;
     KIO::TransferJob *m_job;
 };

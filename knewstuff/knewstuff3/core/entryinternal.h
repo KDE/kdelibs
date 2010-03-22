@@ -33,6 +33,8 @@
 
 namespace KNS3
 {
+    static const int PreviewWidth = 96;
+    static const int PreviewHeight = 72;
 
 /**
  * @short KNewStuff data entry container.
@@ -77,6 +79,15 @@ public:
         Deleted,
         Installing,  // this item is being installed right now
         Updating
+    };
+
+    enum PreviewType {
+        PreviewSmall1,
+        PreviewSmall2,
+        PreviewSmall3,
+        PreviewBig1,
+        PreviewBig2,
+        PreviewBig3
     };
 
     /**
@@ -227,27 +238,20 @@ public:
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    void setPreviewSmall(const QString& url);
+    void setPreviewUrl(const QString& url, PreviewType type = PreviewSmall1);
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
      *
      * @return object preview filename
      */
-    QString previewSmall() const;
+    QString previewUrl(PreviewType type = PreviewSmall1) const;
 
     /**
-    * Sets the object's preview file, if available. This should be a
-    * picture file.
-    */
-    void setPreviewBig(const QString& url);
-
-    /**
-    * Retrieve the file name of an image containing a preview of the object.
-    *
-    * @return object preview filename
-    */
-    QString previewBig() const;
+     * This will not be loaded automatically, instead use Engine to load the actual images.
+     */
+    QImage previewImage(PreviewType type = PreviewSmall1) const;
+    void setPreviewImage(const QImage& image, PreviewType type = PreviewSmall1);
 
     /**
      * Set the files that have been installed by the install command.
@@ -366,7 +370,6 @@ public:
      */
     //void setSignature(const QString& signature);
 
-
     /**
      * Sets the entry's status. If no status is set, the default will be
      * \ref Invalid.
@@ -392,11 +395,9 @@ private:
     QExplicitlySharedDataPointer<Private> d;
 };
 
-
 inline uint qHash(const KNS3::EntryInternal& entry) {
     return qHash(entry.uniqueId());
 }
-
 
 }
 

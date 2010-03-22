@@ -91,6 +91,8 @@ public:
      */
     void uninstall(KNS3::EntryInternal entry);
 
+    void loadPreview(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type);
+
     void setSortMode(Provider::SortMode mode);
     void setCategoriesFilter(const QStringList& categories);
     void setSearchTerm(const QString& searchString);
@@ -122,7 +124,7 @@ Q_SIGNALS:
     // a new search result is there, clear the list of items
     void signalResetView();
 
-    void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
+    void signalEntryPreviewLoaded(const KNS3::EntryInternal&, KNS3::EntryInternal::PreviewType);
     void signalPreviewFailed();
 
     void signalEntryUploadFinished();
@@ -149,8 +151,7 @@ private Q_SLOTS:
     void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(const KNS3::Provider::SearchRequest&, KNS3::EntryInternal::List);
-
-    void slotPreviewResult(KJob *job);
+    void slotPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
 
     void slotSearchTimerExpired();
 
@@ -189,10 +190,6 @@ private:
 
     // the name of the app that uses hot new stuff
     QString m_applicationName;
-
-    QMap<EntryInternal, QString> m_previewfiles; // why not in entry?
-
-    QMap<KJob*, EntryInternal> m_previewPictureJobs;
 
     // the current request from providers
     Provider::SearchRequest m_currentRequest;

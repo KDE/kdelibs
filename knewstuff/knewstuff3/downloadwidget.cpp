@@ -94,7 +94,7 @@ Entry::List DownloadWidget::installedEntries()
 DownloadWidgetPrivate::DownloadWidgetPrivate(DownloadWidget* q)
 : q(q)
 , engine(new Engine)
-, model(new ItemsModel)
+, model(new ItemsModel(engine))
 , messageTimer(0)
 {
 }
@@ -224,6 +224,8 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), q, SLOT(slotEntryChanged(KNS3::EntryInternal)));
 
     q->connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
+    q->connect(engine, SIGNAL(signalEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)),
+               model, SLOT(slotEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
 
     delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
     ui.m_listView->setItemDelegate(delegate);

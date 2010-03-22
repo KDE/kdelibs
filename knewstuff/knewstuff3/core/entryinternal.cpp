@@ -21,6 +21,7 @@
 #include "entryinternal.h"
 
 #include <QtCore/QStringList>
+#include <QtGui/QImage>
 #include <kdebug.h>
 
 #include "core/xmlloader.h"
@@ -65,8 +66,6 @@ class EntryInternal::Private : public QSharedData
         int mNumberFans;
         QString mSummary;
         QString mPayload;
-        QString mPreview;
-        QString mPreviewBig;
         QStringList mInstalledFiles;
         QString mProviderId;
         QStringList mUnInstalledFiles;
@@ -75,6 +74,9 @@ class EntryInternal::Private : public QSharedData
         QString mSignature;
         EntryInternal::Status mStatus;
         EntryInternal::Source mSource;
+
+        QString mPreviewUrl[6];
+        QImage mPreviewImage[6];
 };
 
 EntryInternal::EntryInternal()
@@ -242,24 +244,24 @@ void EntryInternal::setUpdateVersion(const QString& version)
     d->mUpdateVersion = version;
 }
 
-QString EntryInternal::previewSmall() const
+QString EntryInternal::previewUrl(PreviewType type) const
 {
-    return d->mPreview;
+    return d->mPreviewUrl[type];
 }
 
-void EntryInternal::setPreviewSmall(const QString& url)
+void EntryInternal::setPreviewUrl(const QString& url, PreviewType type)
 {
-    d->mPreview = url;
+    d->mPreviewUrl[type] = url;
 }
 
-QString EntryInternal::previewBig() const
+QImage EntryInternal::previewImage(PreviewType type) const
 {
-    return d->mPreviewBig;
+    return d->mPreviewImage[type];
 }
 
-void EntryInternal::setPreviewBig(const QString& url)
+void EntryInternal::setPreviewImage(const QImage& image, PreviewType type)
 {
-    d->mPreviewBig = url;
+    d->mPreviewImage[type] = image;
 }
 
 int EntryInternal::rating() const
@@ -383,9 +385,10 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "releasedate") {
             d->mReleaseDate = QDate::fromString(e.text().trimmed(), Qt::ISODate);
         } else if (e.tagName() == "preview") {
-            d->mPreview = e.text().trimmed();
+            // TODO support for all 6 image links
+            d->mPreviewUrl[PreviewSmall1] = e.text().trimmed();
         } else if (e.tagName() == "previewBig") {
-            d->mPreviewBig = e.text().trimmed();
+            d->mPreviewUrl[PreviewBig1] = e.text().trimmed();
         } else if (e.tagName() == "payload") {
             d->mPayload = e.text().trimmed();
         } else if (e.tagName() == "rating") {
@@ -487,8 +490,8 @@ QDomElement KNS3::EntryInternal::entryXML() const
                      d->mReleaseDate.toString(Qt::ISODate));
 
     e = addElement(doc, el, "summary", d->mSummary);
-    e = addElement(doc, el, "preview", d->mPreview);
-    e = addElement(doc, el, "previewBig", d->mPreviewBig);
+    e = addElement(doc, el, "preview", d->mPreviewUrl[PreviewSmall1]);
+    e = addElement(doc, el, "previewBig", d->mPreviewUrl[PreviewBig1]);
     e = addElement(doc, el, "payload", d->mPayload);
 
     if (d->mStatus == Installed) {

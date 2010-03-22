@@ -28,8 +28,7 @@ class KJob;
 
 namespace KNS3
 {
-    static const int PreviewWidth = 96;
-    static const int PreviewHeight = 72;
+    class Engine;
 
 class ItemsModel: public QAbstractListModel
 {
@@ -37,43 +36,33 @@ class ItemsModel: public QAbstractListModel
 public:
     enum EntryRoles {
         EntryRole = Qt::UserRole,
-        PreviewSmall,
-        PreviewLarge
     };
 
-    explicit ItemsModel(QObject * parent = 0);
+    explicit ItemsModel(Engine* engine, QObject * parent = 0);
     ~ItemsModel();
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
-
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
     void addEntry(const EntryInternal& entry);
-
     void removeEntry(const EntryInternal& entry);
 
     bool hasPreviewImages() const;
-
     bool hasWebService() const;
 
 Q_SIGNALS:
     void jobStarted(KJob*, const QString& label);
 
 public Q_SLOTS:
-    void slotEntryChanged(const EntryInternal& entry);
+    void slotEntryChanged(const KNS3::EntryInternal& entry);
     void slotEntriesLoaded(KNS3::EntryInternal::List entries);
     void clearEntries();
-
-private Q_SLOTS:
-    void slotEntryPreviewLoaded(const QString &url, const QImage & pix);
+    void slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
 
 private:
-
+    Engine* m_engine;
     // the list of entries
     QList<EntryInternal> m_entries;
-    QMap<QString, QImage> m_previewImages;
-    QMap<QString, QImage> m_largePreviewImages;
-    QMap<QString, QModelIndex> m_imageIndexes;
     bool m_hasPreviewImages;
 };
 

@@ -279,8 +279,15 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
         entry.setRating(content.rating());
         entry.setDownloads(content.downloads());
         entry.setNumberFans(content.attribute("fans").toInt());
-        entry.setPreviewSmall(content.smallPreviewPicture("1"));
-        entry.setPreviewBig(content.previewPicture("1"));
+
+        entry.setPreviewUrl(content.smallPreviewPicture("1"), EntryInternal::PreviewSmall1);
+        entry.setPreviewUrl(content.smallPreviewPicture("2"), EntryInternal::PreviewSmall2);
+        entry.setPreviewUrl(content.smallPreviewPicture("3"), EntryInternal::PreviewSmall3);
+
+        entry.setPreviewUrl(content.previewPicture("1"), EntryInternal::PreviewBig1);
+        entry.setPreviewUrl(content.previewPicture("2"), EntryInternal::PreviewBig2);
+        entry.setPreviewUrl(content.previewPicture("3"), EntryInternal::PreviewBig3);
+
         entry.setLicense(content.license());
         Author author;
         author.setName(content.author());

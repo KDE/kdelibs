@@ -29,11 +29,18 @@
 
 using namespace KNS3;
 
-ImageLoader::ImageLoader(const QString& url, QObject* parent)
-        : QObject(parent), QImage(), m_url(url)
+ImageLoader::ImageLoader(const EntryInternal& entry, EntryInternal::PreviewType type, QObject* parent)
+    : QObject(parent)
+    , m_entry(entry)
+    , m_previewType(type)
 {
-    if (!m_url.isEmpty()) {
-        m_job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
+}
+
+void ImageLoader::start()
+{
+    KUrl url(m_entry.previewUrl(m_previewType));
+    if (!url.isEmpty()) {
+        m_job = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
         connect(m_job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
         connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotData(KIO::Job*, const QByteArray&)));
         KIO::Scheduler::scheduleJob(m_job);
@@ -57,9 +64,28 @@ void ImageLoader::slotDownload(KJob *job)
         m_buffer.clear();
         return;
     }
-    loadFromData(m_buffer);
+    QImage image;
+    image.loadFromData(m_buffer);
     m_buffer.clear();
-    emit signalLoaded(m_url, *this);
+
+    if (m_previewType == EntryInternal::PreviewSmall1
+            || m_previewType == EntryInternal::PreviewSmall2
+            || m_previewType == EntryInternal::PreviewSmall3) {
+        if (image.width() > PreviewWidth || image.height() > PreviewHeight) {
+            // if the preview is really big, first scale fast to a smaller size, then smooth to desired size
+            if (image.width() > 4 * PreviewWidth || image.height() > 4 * PreviewHeight) {
+                image = image.scaled(2 * PreviewWidth, 2 * PreviewHeight, Qt::KeepAspectRatio, Qt::FastTransformation);
+            }
+            image = image.scaled(PreviewWidth, PreviewHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        } else if (image.width() <= PreviewWidth / 2 && image.height() <= PreviewHeight / 2) {
+            // upscale tiny previews to double size
+            image = image.scaled(2 * image.width(), 2 * image.height());
+        }
+    }
+
+    m_entry.setPreviewImage(image, m_previewType);
+    emit signalPreviewLoaded(m_entry, m_previewType);
+    deleteLater();
 }
 
 #include "imageloader.moc"
