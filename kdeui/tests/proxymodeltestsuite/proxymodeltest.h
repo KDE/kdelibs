@@ -94,6 +94,7 @@ public:
   ModelSpy* modelSpy() const { return m_modelSpy; }
 
   PersistentIndexChange getChange(IndexFinder sourceFinder, int start, int end, int difference, bool toInvalid = false);
+  QVariantList noSignal() const { return QVariantList() << NoSignal; }
   QVariantList getSignal(SignalType type, IndexFinder parentFinder, int start, int end) const
   { return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end; }
 

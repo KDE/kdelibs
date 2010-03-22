@@ -19,6 +19,8 @@
 
 #include "modelspy.h"
 
+#include <kdebug.h>
+
 ModelSpy::ModelSpy(QObject *parent)
   : QObject(parent), QList<QVariantList>(), m_model(0), m_isSpying(false), m_lazyPersist(false)
 {
@@ -27,7 +29,6 @@ ModelSpy::ModelSpy(QObject *parent)
 
 void ModelSpy::setModel(QAbstractItemModel *model)
 {
-  Q_ASSERT(model);
   stopSpying();
   m_model = model;
 }
@@ -106,7 +107,7 @@ void ModelSpy::stopSpying()
   disconnect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
           this, SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
 
-  disconnect(m_model, SIGNAL(destroyed()), this, SLOT(modelDestroyed()));
+  disconnect(m_model, SIGNAL(destroyed(QObject *)), this, SLOT(modelDestroyed()));
 }
 
 void ModelSpy::rowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
@@ -164,6 +165,7 @@ void ModelSpy::modelReset()
 
 void ModelSpy::modelDestroyed()
 {
+  stopSpying();
   m_model = 0;
 }
 
@@ -265,9 +267,10 @@ void ModelSpy::doPersist()
 
     Q_ASSERT(change.startRow >= 0);
     Q_ASSERT(change.startRow <= change.endRow);
-#if 0
-    kDebug() << parent << change.startRow << change.endRow << parent.data() << m_proxyModel->rowCount(parent);
-#endif
+
+    if (change.endRow >= m_model->rowCount(parent))
+      kDebug() << m_model << parent << change.startRow << change.endRow << parent.data() << m_model->rowCount(parent);
+
     Q_ASSERT(change.endRow < m_model->rowCount(parent));
 
     QModelIndex topLeft = m_model->index( change.startRow, 0, parent );

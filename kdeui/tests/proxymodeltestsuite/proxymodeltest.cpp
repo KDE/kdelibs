@@ -86,9 +86,11 @@ void ProxyModelTest::cleanup()
 {
   QVERIFY(m_modelSpy->isEmpty());
   m_modelSpy->stopSpying();
+  m_modelSpy->setModel(0);
   m_proxyModel->setSourceModel(0);
   delete m_proxyModel;
   m_proxyModel = 0;
+  QVERIFY(m_modelSpy->isEmpty());
 }
 
 void ProxyModelTest::cleanupTestCase()
@@ -99,6 +101,8 @@ void ProxyModelTest::cleanupTestCase()
   m_sourceModel = m_rootModel;
   delete m_intermediateProxyModel;
   m_intermediateProxyModel = 0;
+
+  m_modelSpy->clear();
 }
 
 PersistentIndexChange ProxyModelTest::getChange(IndexFinder parentFinder, int start, int end, int difference, bool toInvalid)
@@ -239,6 +243,7 @@ void ProxyModelTest::testEmptyModel()
 
 void ProxyModelTest::testSourceReset()
 {
+  m_modelSpy->stopSpying();
   ModelInsertCommand *ins = new ModelInsertCommand(m_rootModel, this);
   ins->setStartRow(0);
   ins->interpret(
@@ -254,13 +259,14 @@ void ProxyModelTest::testSourceReset()
     "- - 10"
   );
   ins->doCommand();
-
   // The proxymodel should reset any internal state it holds when the source model is reset.
   QPersistentModelIndex pmi = m_proxyModel->index(0, 0);
   testMappings();
   m_rootModel->clear(); // Resets the model.
   testMappings(); // Calls some rowCount() etc which should test internal structures in the proxy.
   m_proxyModel->setSourceModel(0);
+
+  m_modelSpy->startSpying();
 }
 
 void ProxyModelTest::testDestroyModel()
@@ -284,16 +290,14 @@ void ProxyModelTest::testDestroyModel()
   );
   ins->doCommand();
 
-  m_proxyModel = getProxy();
-  connectProxy(m_proxyModel);
+  QAbstractProxyModel *proxyModel = getProxy();
+  connectProxy(proxyModel);
 
-  if(m_proxyModel->hasChildren())
+  if(proxyModel->hasChildren())
   {
     m_modelSpy->startSpying();
-
     delete m_sourceModel;
     m_sourceModel = 0;
-
     m_modelSpy->stopSpying();
     testMappings();
     QCOMPARE(m_modelSpy->size(), 1);
@@ -304,6 +308,8 @@ void ProxyModelTest::testDestroyModel()
 
 void ProxyModelTest::doTestMappings(const QModelIndex &parent)
 {
+  if (!m_proxyModel)
+    return;
   QModelIndex idx;
   QModelIndex srcIdx;
   for (int column = 0; column < m_proxyModel->columnCount(parent); ++column)
@@ -409,6 +415,7 @@ void ProxyModelTest::connectProxy(QAbstractProxyModel *proxyModel)
   }
 
   m_proxyModel = proxyModel;
+  QVERIFY(m_modelSpy->isEmpty());
   m_modelSpy->setModel(m_proxyModel);
 
   QVERIFY(m_modelSpy->isEmpty());
