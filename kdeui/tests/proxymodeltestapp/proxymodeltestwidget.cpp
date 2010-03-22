@@ -44,7 +44,7 @@ ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f)
 
   m_rootModel = new DynamicTreeModel(this);
 
-  ModelCommanderWidget *modelCommanderWidget = new ModelCommanderWidget(m_rootModel, splitter);
+  (void) new ModelCommanderWidget(m_rootModel, splitter);
 
 
   QTreeView *rootModelView = new QTreeView(splitter);

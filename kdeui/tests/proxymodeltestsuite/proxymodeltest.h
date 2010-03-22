@@ -402,6 +402,7 @@ protected:
 
   void newMoveTest(const QString &name, const IndexFinder &srcFinder, int start, int end, int rowCount, const IndexFinder &destFinder, int destStart)
   {
+    Q_UNUSED(rowCount)
     processTestName(name);
 
     SignalList signalList;
