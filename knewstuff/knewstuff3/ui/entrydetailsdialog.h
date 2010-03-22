@@ -46,7 +46,10 @@ private Q_SLOTS:
     void voteGood();
     void voteBad();
     void becomeFan();
+    // more details loaded
     void entryChanged(const KNS3::EntryInternal& entry);
+    // installed/updateable etc
+    void entryStatusChanged(const KNS3::EntryInternal& entry);
     void updateButtons();
 
 private:

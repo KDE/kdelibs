@@ -131,6 +131,7 @@ namespace KNS3
          * Note: the engine connects to loadingFinished() signal to get the result
          */
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request) = 0;
+        virtual void loadEntryDetails(const KNS3::EntryInternal&) {}
         virtual void loadPayloadLink(const EntryInternal& entry) = 0;
 
         virtual bool userCanVote() {return false;}
@@ -145,6 +146,7 @@ namespace KNS3
         void loadingFinished(const KNS3::Provider::SearchRequest&, const KNS3::EntryInternal::List&) const;
         void loadingFailed(const KNS3::Provider::SearchRequest&);
 
+        void entryDetailsLoaded(const KNS3::EntryInternal&);
         void payloadLinkLoaded(const KNS3::EntryInternal&);
 
         void jobStarted(KJob*);

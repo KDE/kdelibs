@@ -92,6 +92,7 @@ public:
     void uninstall(KNS3::EntryInternal entry);
 
     void loadPreview(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type);
+    void loadDetails(const KNS3::EntryInternal& entry);
 
     void setSortMode(Provider::SortMode mode);
     void setCategoriesFilter(const QStringList& categories);
@@ -120,6 +121,7 @@ Q_SIGNALS:
 
     void signalEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void signalEntryChanged(const KNS3::EntryInternal& entry);
+    void signalEntryDetailsLoaded(const KNS3::EntryInternal& entry);
 
     // a new search result is there, clear the list of items
     void signalResetView();
@@ -151,6 +153,7 @@ private Q_SLOTS:
     void providerInitialized(KNS3::Provider*);
 
     void slotEntriesLoaded(const KNS3::Provider::SearchRequest&, KNS3::EntryInternal::List);
+    void slotEntryDetailsLoaded(const KNS3::EntryInternal& entry);
     void slotPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
 
     void slotSearchTimerExpired();

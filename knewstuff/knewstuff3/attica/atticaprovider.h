@@ -63,6 +63,7 @@ namespace KNS3
         virtual bool isInitialized() const;
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request);
+        virtual void loadEntryDetails(const KNS3::EntryInternal& entry);
         virtual void loadPayloadLink(const EntryInternal& entry);
 
         virtual bool userCanVote() {return true;}
@@ -82,6 +83,7 @@ namespace KNS3
         void votingFinished(Attica::BaseJob*);
         void becomeFanFinished(Attica::BaseJob* job);
         void atticaJobStarted(QNetworkReply* reply);
+        void detailsLoaded(Attica::BaseJob* job);
 
     protected:
         AtticaProvider(AtticaProviderPrivate &dd);
@@ -89,6 +91,8 @@ namespace KNS3
     private:
         EntryInternal::List installedEntries() const;
         Attica::Provider::SortMode atticaSortMode(const SortMode& sortMode);
+
+        EntryInternal entryFromAtticaContent(const Attica::Content&);
         Q_DECLARE_PRIVATE(AtticaProvider)
     };
 

@@ -56,29 +56,6 @@ void EntryDetailsDialog::init()
     setMainWidget(_mainWidget);
     ui.setupUi(_mainWidget);
 
-    connect(m_engine, SIGNAL(details()), SLOT(details()));
-    //m_engine->fetchAllDetails(m_entry);
-
-    ui.previewSmall1->setVisible(false);
-    ui.previewSmall2->setVisible(false);
-    ui.previewSmall3->setVisible(false);
-
-    if (!m_engine->userCanVote(m_entry)) {
-        ui.voteGoodButton->setEnabled(false);
-        ui.voteBadButton->setEnabled(false);
-    }
-    else {
-        connect(ui.voteGoodButton, SIGNAL(clicked()), this, SLOT(voteGood()));
-        connect(ui.voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
-    }
-    
-    if (!m_engine->userCanBecomeFan(m_entry)) {
-        ui.becomeFanButton->setEnabled(false);
-    }
-    else {
-        connect(ui.becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
-    }
-
     ui.closeButton->setGuiItem(KStandardGuiItem::Close);
     connect(ui.closeButton, SIGNAL(clicked()), SLOT(accept()));
 
@@ -88,9 +65,56 @@ void EntryDetailsDialog::init()
     setMinimumSize(700, 400);
 
     setCaption(i18n("Get Hot New Stuff"));
-    ui.m_titleWidget->setText(i18n("Details for %1", m_entry.name()));
     ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
+    // catch resize events
+    ui.previewBig->installEventFilter(this);
+
+    ui.ratingWidget->setMaxRating(10);
+    ui.ratingWidget->setHalfStepsEnabled(true);
+    ui.ratingWidget->setEditable(false);
+
+    updateButtons();
+    connect(ui.installButton, SIGNAL(clicked()), this, SLOT(install()));
+    connect(ui.uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
+    // updating is the same as installing
+    connect(ui.updateButton, SIGNAL(clicked()), this, SLOT(install()));
+
+    connect(ui.voteGoodButton, SIGNAL(clicked()), this, SLOT(voteGood()));
+    connect(ui.voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
+    connect(ui.becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
+
+    ui.installButton->setIcon(KIcon("dialog-ok"));
+    ui.updateButton->setIcon(KIcon("system-software-update"));
+    ui.uninstallButton->setIcon(KIcon("edit-delete"));
+
+    connect(m_engine, SIGNAL(signalEntryDetailsLoaded(KNS3::EntryInternal)),
+            this, SLOT(entryChanged(KNS3::EntryInternal)));
+    connect(m_engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)),
+            this, SLOT(entryStatusChanged(KNS3::EntryInternal)));
+    connect(m_engine, SIGNAL(signalEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)),
+            this, SLOT(slotEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
+
+    // immediately show something
+    entryChanged(m_entry);
+    // fetch more preview images
+    m_engine->loadDetails(m_entry);
+}
+
+void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
+{
+    m_entry = entry;
+    kDebug() << "entry changed!!!!!!!!!1111111eleven" << entry.name();
+
+    if (!m_engine->userCanVote(m_entry)) {
+        ui.voteGoodButton->setEnabled(false);
+        ui.voteBadButton->setEnabled(false);
+    }
+    if (!m_engine->userCanBecomeFan(m_entry)) {
+        ui.becomeFanButton->setEnabled(false);
+    }
+
+    ui.m_titleWidget->setText(i18n("Details for %1", m_entry.name()));
     if (!m_entry.author().homepage().isEmpty()) {
         ui.authorLabel->setText("<a href=\"" + m_entry.author().homepage() + "\">" + m_entry.author().name() + "</a>");
     } else {
@@ -112,24 +136,11 @@ void EntryDetailsDialog::init()
     ui.homepageLabel->setText("<a href=\"" + m_entry.homepage().url() + "\">" +
                               i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage...") + "</a>");
 
-    ui.ratingWidget->setMaxRating(10);
-    ui.ratingWidget->setHalfStepsEnabled(true);
-    ui.ratingWidget->setEditable(false);
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
 
-    connect(m_engine, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), this, SLOT(entryChanged(const KNS3::EntryInternal&)));
-    updateButtons();
-    connect(ui.installButton, SIGNAL(clicked()), this, SLOT(install()));
-    connect(ui.uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
-    // updating is the same as installing
-    connect(ui.updateButton, SIGNAL(clicked()), this, SLOT(install()));
-
-    ui.installButton->setIcon(KIcon("dialog-ok"));
-    ui.updateButton->setIcon(KIcon("system-software-update"));
-    ui.uninstallButton->setIcon(KIcon("edit-delete"));
-
-    connect(m_engine, SIGNAL(signalEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)),
-            this, SLOT(slotEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
+//    ui.previewSmall1->setVisible(false);
+//    ui.previewSmall2->setVisible(false);
+//    ui.previewSmall3->setVisible(false);
 
     for (int type = EntryInternal::PreviewSmall1; type < EntryInternal::PreviewBig3; ++type) {
         kDebug() << "LOAD: " << type;
@@ -145,14 +156,13 @@ void EntryDetailsDialog::init()
         }
     }
 
-    if(!m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty() && !m_entry.previewUrl(EntryInternal::PreviewBig1).isEmpty()) {
+    if(m_entry.previewImage(EntryInternal::PreviewBig1).isNull() && !m_entry.previewUrl(EntryInternal::PreviewBig1).isEmpty()) {
         ui.previewBig->setText(i18n("Loading preview..."));
-        ui.previewBig->installEventFilter(this);
     }
+    updateButtons();
 }
 
-
-void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
+void EntryDetailsDialog::entryStatusChanged(const KNS3::EntryInternal& entry)
 {
     Q_UNUSED(entry);
     updateButtons();

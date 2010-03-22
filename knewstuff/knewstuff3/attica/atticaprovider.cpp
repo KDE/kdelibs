@@ -225,6 +225,22 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
     job->start();
 }
 
+void AtticaProvider::loadEntryDetails(const KNS3::EntryInternal& entry)
+{
+    Q_D(AtticaProvider);
+    ItemJob<Content>* job = d->m_provider.requestContent(entry.uniqueId());
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(detailsLoaded(Attica::BaseJob*)));
+    job->start();
+}
+
+void AtticaProvider::detailsLoaded(BaseJob* job)
+{
+    ItemJob<Content>* contentJob = static_cast<ItemJob<Content>*>(job);
+    Content content = contentJob->result();
+    EntryInternal entry = entryFromAtticaContent(content);
+    emit entryDetailsLoaded(entry);
+}
+
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
     Q_D(AtticaProvider);
@@ -250,54 +266,7 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 
     Q_FOREACH(const Content &content, contents) {
         d->cachedContent.insert(content.id(), content);
-
-        EntryInternal entry;
-        entry.setProviderId(id());
-        entry.setUniqueId(content.id());
-        entry.setStatus(KNS3::EntryInternal::Downloadable);
-        entry.setVersion(content.version());
-        entry.setReleaseDate(content.updated().date());
-
-        int index = d->cachedEntries.indexOf(entry);
-
-        if (index >= 0) {
-            EntryInternal cacheEntry = d->cachedEntries.at(index);
-            // check if updateable
-            if ((cacheEntry.status() == EntryInternal::Installed) &&
-                ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
-                cacheEntry.setStatus(EntryInternal::Updateable);
-                cacheEntry.setUpdateVersion(entry.version());
-                cacheEntry.setUpdateReleaseDate(entry.releaseDate());
-            }
-            entry = cacheEntry;
-        } else {
-            d->cachedEntries.append(entry);
-        }
-
-        entry.setName(content.name());
-        entry.setHomepage(content.detailpage());
-        entry.setRating(content.rating());
-        entry.setDownloads(content.downloads());
-        entry.setNumberFans(content.attribute("fans").toInt());
-
-        entry.setPreviewUrl(content.smallPreviewPicture("1"), EntryInternal::PreviewSmall1);
-        entry.setPreviewUrl(content.smallPreviewPicture("2"), EntryInternal::PreviewSmall2);
-        entry.setPreviewUrl(content.smallPreviewPicture("3"), EntryInternal::PreviewSmall3);
-
-        entry.setPreviewUrl(content.previewPicture("1"), EntryInternal::PreviewBig1);
-        entry.setPreviewUrl(content.previewPicture("2"), EntryInternal::PreviewBig2);
-        entry.setPreviewUrl(content.previewPicture("3"), EntryInternal::PreviewBig3);
-
-        entry.setLicense(content.license());
-        Author author;
-        author.setName(content.author());
-        author.setHomepage(content.attribute("profilepage"));
-        entry.setAuthor(author);
-
-        entry.setSource(KNS3::EntryInternal::Online);
-        entry.setSummary(content.description());
-
-        entries.append(entry);
+        entries.append(entryFromAtticaContent(content));
     }
 
     kDebug() << "loaded: " << d->currentRequest.hashForRequest() << " count: " << entries.size();
@@ -452,6 +421,57 @@ void AtticaProvider::becomeFanFinished(Attica::BaseJob* job)
     }
 }
 
+EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& content)
+{
+    Q_D(AtticaProvider);
+    EntryInternal entry;
+
+    entry.setProviderId(id());
+    entry.setUniqueId(content.id());
+    entry.setStatus(KNS3::EntryInternal::Downloadable);
+    entry.setVersion(content.version());
+    entry.setReleaseDate(content.updated().date());
+
+    int index = d->cachedEntries.indexOf(entry);
+    if (index >= 0) {
+        EntryInternal cacheEntry = d->cachedEntries.at(index);
+        // check if updateable
+        if ((cacheEntry.status() == EntryInternal::Installed) &&
+            ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
+            cacheEntry.setStatus(EntryInternal::Updateable);
+            cacheEntry.setUpdateVersion(entry.version());
+            cacheEntry.setUpdateReleaseDate(entry.releaseDate());
+        }
+        entry = cacheEntry;
+    } else {
+        d->cachedEntries.append(entry);
+    }
+
+    entry.setName(content.name());
+    entry.setHomepage(content.detailpage());
+    entry.setRating(content.rating());
+    entry.setDownloads(content.downloads());
+    entry.setNumberFans(content.attribute("fans").toInt());
+
+    entry.setPreviewUrl(content.smallPreviewPicture("1"), EntryInternal::PreviewSmall1);
+    entry.setPreviewUrl(content.smallPreviewPicture("2"), EntryInternal::PreviewSmall2);
+    entry.setPreviewUrl(content.smallPreviewPicture("3"), EntryInternal::PreviewSmall3);
+
+    entry.setPreviewUrl(content.previewPicture("1"), EntryInternal::PreviewBig1);
+    entry.setPreviewUrl(content.previewPicture("2"), EntryInternal::PreviewBig2);
+    entry.setPreviewUrl(content.previewPicture("3"), EntryInternal::PreviewBig3);
+
+    entry.setLicense(content.license());
+    Author author;
+    author.setName(content.author());
+    author.setHomepage(content.attribute("profilepage"));
+    entry.setAuthor(author);
+
+    entry.setSource(KNS3::EntryInternal::Online);
+    entry.setSummary(content.description());
+
+    return entry;
+}
 
 } // namespace
 

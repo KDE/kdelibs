@@ -187,6 +187,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
         connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)),
                 SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
+        connect(provider.data(), SIGNAL(entryDetailsLoaded(KNS3::EntryInternal)), SLOT(slotEntryDetailsLoaded(KNS3::EntryInternal)));
         connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
         connect(provider.data(), SIGNAL(jobStarted(KJob*)), this, SLOT(providerJobStarted(KJob*)));
 
@@ -346,6 +347,11 @@ void Engine::install(KNS3::EntryInternal entry)
     }
 }
 
+void Engine::slotEntryDetailsLoaded(const KNS3::EntryInternal& entry)
+{
+    emit signalEntryDetailsLoaded(entry);
+}
+
 void Engine::downloadLinkLoaded(const KNS3::EntryInternal& entry)
 {
     m_installation->install(entry);
@@ -357,6 +363,12 @@ void Engine::uninstall(KNS3::EntryInternal entry)
     entry.setStatus(EntryInternal::Installing);
     emit signalEntryChanged(entry);
     m_installation->uninstall(entry);
+}
+
+void Engine::loadDetails(const KNS3::EntryInternal &entry)
+{
+    QSharedPointer<Provider> p = m_providers.value(entry.providerId());
+    p->loadEntryDetails(entry);
 }
 
 void Engine::loadPreview(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
