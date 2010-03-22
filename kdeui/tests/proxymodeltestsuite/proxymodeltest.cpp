@@ -52,22 +52,8 @@ void ProxyModelTest::setUseIntermediateProxy(SourceModel sourceModel)
   m_sourceModel = m_intermediateProxyModel;
 }
 
-void ProxyModelTest::doInitTestCase()
-{
-  m_commandNames = m_modelCommander->commandNames();
-  QVERIFY( !m_commandNames.isEmpty() );
-}
-
-void ProxyModelTest::doCleanupTestCase()
-{
-  if (qApp->arguments().isEmpty())
-    QVERIFY( m_commandNames.isEmpty() );
-}
-
 void ProxyModelTest::init()
 {
-  m_modelCommander->setDefaultCommands();
-
   QVERIFY(m_modelSpy->isEmpty());
   bool spyingState = m_modelSpy->isSpying();
   m_modelSpy->stopSpying();
@@ -84,11 +70,27 @@ void ProxyModelTest::init()
   connectProxy(proxyModel);
 
   // Get the model into the state it is expected to be in.
-  m_modelCommander->executeUntil(currentTag);
   if (spyingState)
     m_modelSpy->startSpying();
+}
 
+void ProxyModelTest::cleanup()
+{
   QVERIFY(m_modelSpy->isEmpty());
+  m_modelSpy->stopSpying();
+  m_proxyModel->setSourceModel(0);
+  delete m_proxyModel;
+  m_proxyModel = 0;
+}
+
+void ProxyModelTest::cleanupTestCase()
+{
+  if (!m_intermediateProxyModel)
+    return;
+
+  m_sourceModel = m_rootModel;
+  delete m_intermediateProxyModel;
+  m_intermediateProxyModel = 0;
 }
 
 PersistentIndexChange ProxyModelTest::getChange(IndexFinder parentFinder, int start, int end, int difference, bool toInvalid)
@@ -460,18 +462,6 @@ void ProxyModelTest::connectProxy(QAbstractProxyModel *proxyModel)
 
 }
 
-void ProxyModelTest::testData()
-{
-
-}
-
-void ProxyModelTest::doInit()
-{
-  // ProxyModelTest::init is a private slot and needs to remain so.
-  // This method allows subclasses to initialize the class properly.
-  ProxyModelTest::init();
-}
-
 void ProxyModelTest::doTest()
 {
   QFETCH( SignalList, signalList );
@@ -485,7 +475,6 @@ void ProxyModelTest::doTest()
 
   Q_ASSERT(m_modelSpy->isEmpty());
   m_modelSpy->startSpying();
-  m_modelCommander->executeNextCommand();
 
   if (modelSpy()->isEmpty())
     QVERIFY(signalList.isEmpty());
@@ -560,7 +549,3 @@ void ProxyModelTest::doTest()
   m_modelSpy->clearTestData();
 }
 
-void ProxyModelTest::setCommands(QList<QPair<QString, ModelChangeCommandList> > commands)
-{
-  m_modelCommander->setCommands(commands);
-}

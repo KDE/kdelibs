@@ -33,10 +33,6 @@
 #include "modelspy.h"
 #include "persistentchangelist.h"
 
-typedef QList<ModelChangeCommand*> CommandList;
-
-Q_DECLARE_METATYPE( CommandList )
-
 typedef QList<QVariantList> SignalList;
 
 Q_DECLARE_METATYPE( SignalList )
@@ -73,17 +69,15 @@ public:
   { return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end; }
 
 protected:
-  virtual void doInitTestCase();
-  virtual void doInit();
-  virtual void testData();
-  virtual void doCleanupTestCase();
   virtual QAbstractProxyModel* getProxy() = 0;
+
+  void doCleanupTestCase() { cleanupTestCase(); }
+  void doCleanup() { cleanup(); }
 
   void testEmptyModel();
   void doTestMappings(const QModelIndex &parent);
   void testSourceReset();
   void testDestroyModel();
-
 
 protected slots:
   void testMappings();
@@ -93,9 +87,8 @@ protected slots:
 
 private slots:
   void init();
-
-  void testProxyModel_data() { testData(); }
-  void testProxyModel() { doTest(); }
+  void cleanup();
+  void cleanupTestCase();
 
 protected:
   void connectProxy(QAbstractProxyModel *proxyModel);
@@ -105,8 +98,6 @@ protected:
   QVariantList getResultSignal();
   int getChange(bool sameParent, int start, int end, int currentPosition, int destinationStart);
 
-  void setCommands(QList<QPair<QString, ModelChangeCommandList> >  commands);
-
 private:
   DynamicTreeModel *m_rootModel;
   QAbstractItemModel *m_sourceModel;
@@ -114,7 +105,6 @@ private:
   QAbstractProxyModel *m_intermediateProxyModel;
   ModelSpy *m_modelSpy;
   ModelCommander *m_modelCommander;
-  QStringList m_commandNames;
 
 };
 
