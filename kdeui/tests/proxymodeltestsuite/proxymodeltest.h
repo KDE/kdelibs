@@ -124,16 +124,16 @@ private slots:
   void testSourceReset();
   void testDestroyModel();
 
-  void testInsertWhenEmpty_data() { clearDataTags(); testInsertWhenEmptyData(); }
+  void testInsertWhenEmpty_data() { testInsertWhenEmptyData(); }
   void testInsertWhenEmpty() { doTest(); }
 
-  void testInsertInRoot_data() { clearDataTags(); testInsertInRootData(); }
+  void testInsertInRoot_data() { testInsertInRootData(); }
   void testInsertInRoot() { doTest(); }
 
-  void testInsertInTopLevel_data() { clearDataTags(); testInsertInTopLevelData(); }
+  void testInsertInTopLevel_data() { testInsertInTopLevelData(); }
   void testInsertInTopLevel() { doTest(); }
 
-  void testInsertInSecondLevel_data() { clearDataTags(); testInsertInSecondLevelData(); }
+  void testInsertInSecondLevel_data() { testInsertInSecondLevelData(); }
   void testInsertInSecondLevel() { doTest(); }
 
 protected:
@@ -148,8 +148,8 @@ protected:
   void handleSignal(QVariantList expected);
   QVariantList getResultSignal();
   int getChange(bool sameParent, int start, int end, int currentPosition, int destinationStart);
-  void clearDataTags() { m_dataTags.clear(); }
   QStringList dataTags() const { return m_dataTags; }
+  void verifyExecutedTests();
 
 private:
   DynamicTreeModel *m_rootModel;
@@ -159,6 +159,8 @@ private:
   ModelSpy *m_modelSpy;
   ModelCommander *m_modelCommander;
   QStringList m_dataTags;
+  QStringList m_modelCommanderTags;
+  QString m_currentTest;
 };
 
 class ProxyModelTestData : public QObject, BuiltinTestDataInterface
@@ -219,6 +221,16 @@ protected:
     newInsertTest("insert10", indexFinder, 0, 4, 10);
     newInsertTest("insert11", indexFinder, 10, 14, 10);
     newInsertTest("insert12", indexFinder, 4, 8, 10);
+    QList<int> rows = indexFinder.rows();
+    rows.append(0);
+    newInsertTest("insert13", rows, 0, 0, 0);
+    newInsertTest("insert14", rows, 0, 9, 0);
+    newInsertTest("insert15", rows, 0, 4, 0);
+    rows = indexFinder.rows();
+    rows.append(9);
+    newInsertTest("insert16", rows, 0, 0, 0);
+    newInsertTest("insert17", rows, 0, 9, 0);
+    newInsertTest("insert18", rows, 0, 4, 0);
   }
 
   void newInsertTest(const QString &name, const IndexFinder &indexFinder, int start, int end, int rowCount)
@@ -266,6 +278,12 @@ protected:
     noopTest("insert10");
     noopTest("insert11");
     noopTest("insert12");
+    noopTest("insert13");
+    noopTest("insert14");
+    noopTest("insert15");
+    noopTest("insert16");
+    noopTest("insert17");
+    noopTest("insert18");
   }
 
   void noop_testInsertInTopLevelData()

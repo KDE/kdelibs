@@ -87,6 +87,12 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExa
   newInsertTest("insert10", indexFinder, 0, 4, 10);
   newInsertTest("insert11", indexFinder, 10, 14, 10);
   newInsertTest("insert12", indexFinder, 4, 8, 10);
+  noopTest("insert13");
+  noopTest("insert14");
+  noopTest("insert15");
+  noopTest("insert16");
+  noopTest("insert17");
+  noopTest("insert18");
 }
 
 template<>

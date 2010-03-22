@@ -59,6 +59,23 @@ void ProxyModelTest::initRootModel(DynamicTreeModel *rootModel, const QString &c
   QMetaObject::invokeMethod(m_modelCommander, QString("init_" + currentTest).toAscii(), Q_ARG(QString, currentTag));
 }
 
+void ProxyModelTest::verifyExecutedTests()
+{
+  QSet<QString> unimplemented = m_modelCommanderTags.toSet().subtract(m_dataTags.toSet());
+  QString unimplementedTestsString("(");
+  foreach(const QString &test, unimplemented)
+    unimplementedTestsString.append(test + ",");
+  unimplementedTestsString.append(")");
+
+  if (!unimplemented.isEmpty())
+  {
+    QString failString = QString("Some tests in %1 were not implemented: %2").arg(m_currentTest, unimplementedTestsString);
+    m_dataTags.clear();
+    m_currentTest = QTest::currentTestFunction();
+    QFAIL(failString.toAscii());
+  }
+}
+
 void ProxyModelTest::init()
 {
   QVERIFY(m_modelSpy->isEmpty());
@@ -80,6 +97,16 @@ void ProxyModelTest::init()
   // Get the model into the state it is expected to be in.
   m_modelSpy->startSpying();
   QVERIFY(m_modelSpy->isEmpty());
+
+  if (m_currentTest != currentTest)
+  {
+    verifyExecutedTests();
+    m_dataTags.clear();
+    QString metaMethod = QString("execute_" + QLatin1String(currentTest));
+    QMetaObject::invokeMethod(m_modelCommander, metaMethod.toAscii(), Q_RETURN_ARG(QStringList, m_modelCommanderTags), Q_ARG(QString, QString()));
+    m_currentTest = currentTest;
+  }
+  m_dataTags.append(currentTag);
 }
 
 void ProxyModelTest::cleanup()
@@ -95,6 +122,8 @@ void ProxyModelTest::cleanup()
 
 void ProxyModelTest::cleanupTestCase()
 {
+  verifyExecutedTests();
+  m_modelCommanderTags.clear();
   if (!m_intermediateProxyModel)
     return;
 

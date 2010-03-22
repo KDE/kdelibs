@@ -35,6 +35,9 @@ QStringList ModelCommander::execute_testInsertWhenEmpty(const QString &dataTag)
                                                     << "insert02"
                                                     << "insert03";
 
+  if(dataTag.isEmpty())
+    return testData;
+
   if (dataTag == testData.at(0))
   {
     // Insert a single item at the top.
@@ -58,7 +61,7 @@ QStringList ModelCommander::execute_testInsertWhenEmpty(const QString &dataTag)
       " - - 9"
     );
   } else {
-    qDebug() << dataTag;
+    kDebug() << dataTag;
     return testData;
   }
   execute(ins);
@@ -181,8 +184,16 @@ QStringList ModelCommander::executeTestInsert(QList<int> rowAncestors, const QSt
                                                     << "insert09"
                                                     << "insert10"
                                                     << "insert11"
-                                                    << "insert12";
+                                                    << "insert12"
+                                                    << "insert13"
+                                                    << "insert14"
+                                                    << "insert15"
+                                                    << "insert16"
+                                                    << "insert17"
+                                                    << "insert18";
 
+  if(dataTag.isEmpty())
+    return testData;
 
   ModelInsertCommand *ins = new ModelInsertCommand(m_model, this);
   if (dataTag == testData.at(0))
@@ -299,6 +310,64 @@ QStringList ModelCommander::executeTestInsert(QList<int> rowAncestors, const QSt
     // Insert 5 items, some of which are parents in the middle
     ins->setAncestorRowNumbers(rowAncestors);
     ins->setStartRow(4);
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - 3"
+      " - 4"
+      " - - 5"
+      " - - 6"
+      " - - - 7"
+      " - 8"
+      " - 9"
+      " - - 10"
+    );
+  } else if (dataTag == testData.at(12))
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors << 0);
+    ins->setStartRow(0);
+    ins->setEndRow(0);
+  } else if (dataTag == testData.at(13))
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors << 0);
+    ins->setStartRow(0);
+    ins->setEndRow(9);
+  } else if (dataTag == testData.at(14))
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors << 0);
+    ins->setStartRow(0);
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - 3"
+      " - 4"
+      " - - 5"
+      " - - 6"
+      " - - - 7"
+      " - 8"
+      " - 9"
+      " - - 10"
+    );
+  } else if (dataTag == testData.at(15))
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors << 9);
+    ins->setStartRow(0);
+    ins->setEndRow(0);
+  } else if (dataTag == testData.at(16))
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors << 9);
+    ins->setStartRow(0);
+    ins->setEndRow(9);
+  } else if (dataTag == testData.at(17))
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors << 9);
+    ins->setStartRow(0);
     ins->interpret(
       " - 1"
       " - - 2"
