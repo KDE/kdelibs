@@ -364,12 +364,8 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
   // Deselecting an index in the selectionModel will cause it to
   // be removed from m_rootIndexList, so we don't need to clear
   // the list here manually.
-  while (m_rootIndexList.size() > 0)
-  {
-    QPersistentModelIndex idx = m_rootIndexList.first();
-    emit q->rootIndexAboutToBeRemoved(idx);
-    m_selectionModel->select(idx, QItemSelectionModel::Deselect);
-  }
+  // We also don't need to notify that an index is about to be removed.
+  m_selectionModel->clearSelection();
 
   q->beginResetModel();
   m_resetting = true;
