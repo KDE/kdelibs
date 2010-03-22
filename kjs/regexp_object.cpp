@@ -113,18 +113,21 @@ JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 
     bool didMatch = !match.isNull();
 
+    if (globalFlag) {
+      if (didMatch)
+        thisObj->put(exec, exec->propertyNames().lastIndex, jsNumber(foundIndex + match.size()), DontDelete | DontEnum);
+      else
+        thisObj->put(exec, exec->propertyNames().lastIndex, jsNumber(0), DontDelete | DontEnum);
+    }
+
     // Test
     if (id == Test)
       return jsBoolean(didMatch);
 
     // Exec
     if (didMatch) {
-      if (globalFlag)
-        thisObj->put(exec, exec->propertyNames().lastIndex, jsNumber(foundIndex + match.size()), DontDelete | DontEnum);
       return regExpObj->arrayOfMatches(exec, match);
     } else {
-      if (globalFlag)
-        thisObj->put(exec, exec->propertyNames().lastIndex, jsNumber(0), DontDelete | DontEnum);
       return jsNull();
     }
   }
