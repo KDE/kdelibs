@@ -48,7 +48,7 @@ class IndexFinder
       return parent;
     }
 
-    bool operator==( const IndexFinder &other )
+    bool operator==( const IndexFinder &other ) const
     {
       return (m_rows == other.m_rows && m_model == other.m_model );
     }
