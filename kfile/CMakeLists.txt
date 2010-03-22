@@ -85,7 +85,7 @@ install( FILES
   kfilepreviewgenerator.h
   kfiletreeview.h
   kfilewidget.h
-  kfilemetadataconfigurationdialog.h
+  kfilemetadataconfigurationwidget.h
   kfilemetadatawidget.h
   kurlnavigator.h
   knewfilemenu.h
