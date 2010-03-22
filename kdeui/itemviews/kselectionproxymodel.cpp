@@ -200,6 +200,46 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
   Q_Q(KSelectionProxyModel);
 
   QModelIndexList list = toNonPersistent(m_rootIndexList);
+
+  if (!m_startWithChildTrees && m_includeAllSelected)
+  {
+    QList<QPersistentModelIndex>::const_iterator it = m_rootIndexList.constBegin();
+    const QList<QPersistentModelIndex>::const_iterator end = m_rootIndexList.constEnd();
+
+    int startChangeRow = -1;
+    int endChangeRow = -1;
+    int count = 0;
+    int row;
+    int topLeftRow = topLeft.row();
+    int bottomRightRow = bottomRight.row();
+    QModelIndex parent = topLeft.parent();
+    for ( ; it != end; ++it, ++count )
+    {
+      row = it->row();
+      if ( ( row >= topLeftRow && row <= bottomRightRow ) && q->sourceModel()->parent( *it ) == parent )
+      {
+        if ( startChangeRow == -1 )
+        {
+          startChangeRow = count;
+          endChangeRow = count;
+        }
+        else
+          ++endChangeRow;
+      } else {
+        if (startChangeRow != -1)
+          break;
+      }
+    }
+
+    if ( startChangeRow != -1 )
+    {
+      QModelIndex proxyTopLeft = q->index( startChangeRow, 0 );
+      QModelIndex proxyBottomRight = q->index( endChangeRow, q->columnCount() - 1 );
+      emit q->dataChanged(proxyTopLeft, proxyBottomRight);
+    }
+    return;
+  }
+
   if (!m_rootIndexList.contains(topLeft) && isInModel(topLeft))
   {
     // The easy case. A contiguous block not at the root of our model.
