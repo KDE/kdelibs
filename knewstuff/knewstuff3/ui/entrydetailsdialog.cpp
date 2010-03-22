@@ -138,9 +138,12 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
 
-//    ui.previewSmall1->setVisible(false);
-//    ui.previewSmall2->setVisible(false);
-//    ui.previewSmall3->setVisible(false);
+    bool hideSmallPreviews = m_entry.previewUrl(EntryInternal::PreviewSmall2).isEmpty()
+           && m_entry.previewUrl(EntryInternal::PreviewSmall3).isEmpty();
+    ui.previewSmall1->setVisible(!hideSmallPreviews);
+    ui.previewSmall2->setVisible(!hideSmallPreviews);
+    ui.previewSmall3->setVisible(!hideSmallPreviews);
+
 
     for (int type = EntryInternal::PreviewSmall1; type < EntryInternal::PreviewBig3; ++type) {
         kDebug() << "LOAD: " << type;
