@@ -21,4 +21,4 @@
 
 #include "selectionproxymodeltest.h"
 
-
+#include "selectionproxymodeltest.moc"

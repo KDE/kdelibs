@@ -30,34 +30,54 @@ class SelectionProxyModelTest : public ProxyModelTest
   Q_OBJECT
 public:
   SelectionProxyModelTest(QObject *parent = 0)
-      : ProxyModelTest( parent ),
-      m_selectionModel(0)
+      : ProxyModelTest(parent),
+        m_selectionModel(0),
+        m_modelSelector(0)
   {
   }
 
-
-protected:
-  virtual void testData() = 0;
-
-  virtual void makeSelections()
+  void setTestData(ModelSelector *modelSelector)
   {
-    m_selMaker->setWatch(true);
-
-    QString currentTag = QTest::currentDataTag();
-
-    m_selMaker->makeSelections(currentTag);
-  }
-
-  void doInit()
-  {
-    ProxyModelTest::doInit();
-    makeSelections();
+    disconnectTestSignals(modelSelector);
+    m_modelSelector = modelSelector;
+    connectTestSignals(m_modelSelector);
   }
 
 protected:
+  /* reimp */ QAbstractProxyModel* getProxy()
+  {
+    Q_ASSERT(sourceModel());
+    m_selectionModel = new QItemSelectionModel(sourceModel());
+
+    m_modelSelector->setWatchedModel(sourceModel());
+    m_modelSelector->setSelectionModel(m_selectionModel);
+    m_modelSelector->setWatch(true);
+
+    m_proxyModel = new KSelectionProxyModel(m_selectionModel, this);
+    m_proxyModel->setFilterBehavior(m_modelSelector->filterBehaviour());
+    return m_proxyModel;
+  }
+
+private slots:
+  void cleanupTestCase()
+  {
+    doCleanupTestCase();
+    delete m_modelSelector;
+    m_modelSelector = 0;
+  }
+
+  void cleanup()
+  {
+    doCleanup();
+    if (m_modelSelector->selectionModel())
+      m_modelSelector->selectionModel()->clearSelection();
+    m_modelSelector->setWatch(false);
+  }
+
+private:
   QItemSelectionModel *m_selectionModel;
   KSelectionProxyModel *m_proxyModel;
-  ModelSelector *m_selMaker;
+  ModelSelector *m_modelSelector;
 };
 
 #endif

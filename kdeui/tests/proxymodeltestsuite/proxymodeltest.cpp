@@ -78,8 +78,7 @@ void ProxyModelTest::init()
   connectProxy(proxyModel);
 
   // Get the model into the state it is expected to be in.
-  if (spyingState)
-    m_modelSpy->startSpying();
+  m_modelSpy->startSpying();
   QVERIFY(m_modelSpy->isEmpty());
 }
 
