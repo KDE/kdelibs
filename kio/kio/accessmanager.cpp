@@ -273,9 +273,9 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
 
         if (reply.isValid()) {
             cookieList << reply.value().toUtf8();
-            //kDebug() << url.host() << reply.value();
+            //kDebug(7044) << url.host() << reply.value();
         } else {
-            kWarning() << "Unable to communicate with the cookiejar!";
+            kWarning(7044) << "Unable to communicate with the cookiejar!";
         }
     }
 
@@ -291,7 +291,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
             cookieHeader = "Set-Cookie: ";
             cookieHeader += cookie.toRawForm();
             kcookiejar.call("addCookies", url.toString(), cookieHeader, (qlonglong)d->windowId);
-            //kDebug() << "[" << d->windowId << "] Got Cookie: " << cookieHeader << " from " << url;
+            //kDebug(7044) << "[" << d->windowId << "] Got Cookie: " << cookieHeader << " from " << url;
         }
 
         return !kcookiejar.lastError().isValid();
