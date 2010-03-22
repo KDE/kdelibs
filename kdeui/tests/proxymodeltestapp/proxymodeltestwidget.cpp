@@ -33,22 +33,19 @@
 #if 0
 #include "kdescendantsproxymodel.h"
 #endif
+#include "modelcommanderwidget.h"
 
 
-ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): QWidget(parent, f)
+ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f)
+  : QWidget(parent, f)
 {
   QVBoxLayout *layout = new QVBoxLayout(this);
-  m_nextCommandButton = new QPushButton(this);
   QSplitter *splitter = new QSplitter(this);
-
-  connect(m_nextCommandButton, SIGNAL(clicked(bool)), this, SLOT(slotNextCommand()));
 
   m_rootModel = new DynamicTreeModel(this);
 
-  m_commander = new ModelCommander(m_rootModel, this);
+  ModelCommanderWidget *modelCommanderWidget = new ModelCommanderWidget(m_rootModel, splitter);
 
-  m_commander->executeNextCommand();
-  m_nextCommandButton->setText("Next (" + m_commander->nextCommand().first + ')');
 
   QTreeView *rootModelView = new QTreeView(splitter);
   rootModelView->setModel(m_rootModel);
@@ -58,9 +55,9 @@ ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): 
   selProxyModel->setSourceModel(m_rootModel);
   selProxyModel->setFilterBehavior(KSelectionProxyModel::ChildrenOfExactSelection);
 
+  QTreeView *selModelView = new QTreeView(splitter);
+  selModelView->setModel(selProxyModel);
 
-  QTreeView *selProxyModelView = new QTreeView(splitter);
-  selProxyModelView->setModel(selProxyModel);
 
 #if 0
   KDescendantsProxyModel *descProxyModel = new KDescendantsProxyModel(this);
@@ -68,33 +65,9 @@ ProxyModelTestWidget::ProxyModelTestWidget(QWidget* parent, Qt::WindowFlags f): 
   QTreeView *descProxyModelView = new QTreeView(splitter);
   descProxyModelView ->setModel(descProxyModel);
 #endif
+
   // Your Proxy Here?
 
-  layout->addWidget(m_nextCommandButton);
   layout->addWidget(splitter);
 
 }
-
-void ProxyModelTestWidget::slotNextCommand()
-{
-  m_commander->executeNextCommand();
-  if (!m_commander->hasNextCommand())
-  {
-    m_nextCommandButton->setText("Reset");
-    disconnect(m_nextCommandButton, SIGNAL(clicked(bool)), this, SLOT(slotNextCommand()));
-    connect(m_nextCommandButton, SIGNAL(clicked(bool)), this, SLOT(slotReset()));
-  } else {
-    m_nextCommandButton->setText("Next (" + m_commander->nextCommand().first + ')');
-  }
-}
-
-void ProxyModelTestWidget::slotReset()
-{
-  m_rootModel->clear();
-  m_commander->setDefaultCommands();
-  m_commander->executeNextCommand();
-  m_nextCommandButton->setText("Next (" + m_commander->nextCommand().first + ')');
-  disconnect(m_nextCommandButton, SIGNAL(clicked(bool)), this, SLOT(slotReset()));
-  connect(m_nextCommandButton, SIGNAL(clicked(bool)), this, SLOT(slotNextCommand()));
-}
-

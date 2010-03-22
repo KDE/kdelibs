@@ -42,7 +42,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
 //   ReparentingProxyModelWidget *reparentingProxyModelWidget = new ReparentingProxyModelWidget();
 //   RecursiveFilterProxyWidget *recursive = new RecursiveFilterProxyWidget();
-//   ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
+  ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
   LessThanWidget *lessThanWidget = new LessThanWidget();
   MatchCheckingWidget *matchCheckingWidget = new MatchCheckingWidget();
 
@@ -52,7 +52,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
 //   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");
 //   tabWidget->addTab(recursive, "Recursive Filter");
   tabWidget->addTab(lessThanWidget, "Less Than");
-//   tabWidget->addTab(proxyModelTestWidget, "Proxy Model Test");
+  tabWidget->addTab(proxyModelTestWidget, "Proxy Model Test");
 
   setCentralWidget( tabWidget );
 }

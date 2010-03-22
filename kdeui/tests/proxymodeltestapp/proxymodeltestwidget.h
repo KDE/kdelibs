@@ -35,15 +35,8 @@ class ProxyModelTestWidget : public QWidget
 public:
   explicit ProxyModelTestWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-protected slots:
-  void slotReset();
-  void slotNextCommand();
-  
 private:
   DynamicTreeModel *m_rootModel;
-  ModelCommander *m_commander;
-  QPushButton *m_nextCommandButton;
-
 };
 
 #endif
