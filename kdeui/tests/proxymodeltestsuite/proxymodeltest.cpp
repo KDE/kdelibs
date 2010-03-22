@@ -52,16 +52,24 @@ void ProxyModelTest::setUseIntermediateProxy(SourceModel sourceModel)
   m_sourceModel = m_intermediateProxyModel;
 }
 
+void ProxyModelTest::initRootModel(DynamicTreeModel *rootModel, const QString &currentTest, const QString &currentTag)
+{
+  Q_UNUSED(rootModel)
+  // Get the model into the state it is expected to be in.
+  QMetaObject::invokeMethod(m_modelCommander, QString("init_" + currentTest).toAscii(), Q_ARG(QString, currentTag));
+}
+
 void ProxyModelTest::init()
 {
   QVERIFY(m_modelSpy->isEmpty());
-  bool spyingState = m_modelSpy->isSpying();
-  m_modelSpy->stopSpying();
   m_rootModel->clear();
+
+  const char *currentTest = QTest::currentTestFunction();
   const char *currentTag = QTest::currentDataTag();
+  QVERIFY(currentTest != 0);
+  initRootModel(m_rootModel, currentTest, currentTag);
 
-  QVERIFY(currentTag != 0);
-
+  Q_ASSERT(sourceModel());
   QAbstractProxyModel *proxyModel = getProxy();
 
   Q_ASSERT(proxyModel);
@@ -72,6 +80,7 @@ void ProxyModelTest::init()
   // Get the model into the state it is expected to be in.
   if (spyingState)
     m_modelSpy->startSpying();
+  QVERIFY(m_modelSpy->isEmpty());
 }
 
 void ProxyModelTest::cleanup()
@@ -192,11 +201,12 @@ void ProxyModelTest::handleSignal(QVariantList expected)
 
 QVariantList ProxyModelTest::getResultSignal()
 {
-  return m_modelSpy->takeAt(0);
+  return m_modelSpy->takeFirst();
 }
 
 void ProxyModelTest::testEmptyModel()
 {
+  Q_ASSERT(sourceModel());
   QAbstractProxyModel *proxyModel = getProxy();
   // Many of these just check that the proxy does not crash when it does not have a source model.
   QCOMPARE(proxyModel->rowCount(), 0);
@@ -469,12 +479,17 @@ void ProxyModelTest::doTest()
 
   QVERIFY(m_modelSpy->isEmpty());
 
+  QString testName = QTest::currentTestFunction();
+  QString testDataTag = QTest::currentDataTag();
+
   m_modelSpy->preTestPersistIndexes(changeList);
 
   // Run the test.
 
   Q_ASSERT(m_modelSpy->isEmpty());
   m_modelSpy->startSpying();
+  QMetaObject::invokeMethod(m_modelCommander, QString("execute_" + testName).toAscii(), Q_ARG(QString, testDataTag));
+  m_modelSpy->stopSpying();
 
   if (modelSpy()->isEmpty())
     QVERIFY(signalList.isEmpty());
