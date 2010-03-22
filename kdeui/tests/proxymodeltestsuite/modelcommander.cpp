@@ -72,20 +72,20 @@ void ModelCommander::init_testInsertWhenEmpty(const QString &dataTag)
 
 void ModelCommander::init_testInsertInRoot(const QString &dataTag)
 {
-  initTestInsert(dataTag);
+  initTestModel(dataTag);
 }
 
 void ModelCommander::init_testInsertInTopLevel(const QString &dataTag)
 {
-  initTestInsert(dataTag);
+  initTestModel(dataTag);
 }
 
 void ModelCommander::init_testInsertInSecondLevel(const QString &dataTag)
 {
-  initTestInsert(dataTag);
+  initTestModel(dataTag);
 }
 
-void ModelCommander::initTestInsert(const QString &dataTag)
+void ModelCommander::initTestModel(const QString &dataTag)
 {
   Q_UNUSED(dataTag);
 

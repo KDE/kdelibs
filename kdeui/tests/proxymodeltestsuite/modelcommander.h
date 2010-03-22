@@ -47,7 +47,7 @@ public slots:
 
 private:
   QStringList executeTestInsert(QList<int> rowAncestors, const QString &dataTag);
-  void initTestInsert(const QString &dataTag);
+  void initTestModel(const QString &dataTag);
 
   void execute(ModelChangeCommand *command);
 
