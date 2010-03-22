@@ -36,7 +36,7 @@ class TestData<NoSelectionStrategy, _filterBehaviour> : public NoSelectionStrate
 {
 public:
   TestData(ProxyModelTest *proxyModelTest)
-  : NoSelectionStrategy(proxyModelTest), m_proxyModelTest(proxyModelTest)
+    : NoSelectionStrategy(proxyModelTest), m_proxyModelTest(proxyModelTest)
   { }
 
   KSelectionProxyModel::FilterBehavior filterBehaviour() { return _filterBehaviour; }
