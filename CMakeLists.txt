@@ -217,18 +217,6 @@ configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 include(ConfigureChecks.cmake)
 
-# now create config headers
-configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
-configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
-configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
-configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
-configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
-
-# these two calls here should go somewhere else, Alex
-check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
-check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
-
-
 # Actually nepomuk is not optional, without it other KDE modules don't build,
 # so this must be fixed. Alex
 if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
@@ -236,6 +224,18 @@ if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
   include(SopranoAddOntology)
   add_subdirectory(nepomuk)
 endif(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
+
+# now create config headers
+configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
+configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
+configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
+configure_file(config-nepomuk.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-nepomuk.h )
+configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+
+# these two calls here should go somewhere else, Alex
+check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
+check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 ################# list the subdirectories #################
 
@@ -293,6 +293,7 @@ include(CreateKDELibsDependenciesFile.cmake)
 ################# install files #################
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config-nepomuk.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 
 

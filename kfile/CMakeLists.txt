@@ -24,8 +24,12 @@ set(kfile_LIB_SRCS
   kfileplacesview.cpp
   kfileplaceeditdialog.cpp
   kfilepreviewgenerator.cpp
+  kfilemetadataconfigurationwidget.cpp
+  kfilemetadataprovider.cpp
+  kfilemetadatawidget.cpp
   knameandurlinputdialog.cpp
   knewfilemenu.cpp
+  knfotranslator.cpp
   kprotocolcombo.cpp
   kurlbutton.cpp
   kurldropdownbutton.cpp
@@ -34,6 +38,16 @@ set(kfile_LIB_SRCS
   kurltogglebutton.cpp
   kurlnavigatormenu.cpp
 )
+
+if(HAVE_NEPOMUK)
+  set(kfile_LIB_SRCS
+    ${kfile_LIB_SRCS}
+    kcommentwidget.cpp
+    kedittagsdialog.cpp
+    kloadfilemetadatathread.cpp
+    ktaggingwidget.cpp
+  )
+endif(HAVE_NEPOMUK)
 
 kde4_add_library(kfile SHARED ${kfile_LIB_SRCS})
 target_link_libraries(kfile
@@ -44,6 +58,10 @@ target_link_libraries(kfile
    ${KDE4_SOLID_LIBS}
    ${X11_LIBRARIES}
 )
+
+if(HAVE_NEPOMUK)
+  target_link_libraries(kfile ${KDE4_NEPOMUK_LIBRARY})
+endif(HAVE_NEPOMUK)
 
 if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
@@ -67,6 +85,8 @@ install( FILES
   kfilepreviewgenerator.h
   kfiletreeview.h
   kfilewidget.h
+  kfilemetadataconfigurationdialog.h
+  kfilemetadatawidget.h
   kurlnavigator.h
   knewfilemenu.h
   knameandurlinputdialog.h

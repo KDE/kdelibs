@@ -29,12 +29,12 @@
 #include <QtCore/QPair>
 #include <QtCore/QTimer>
 
-#include "resource.h"
-#include "variant.h"
+#include <nepomuk/core/resource.h>
+#include <nepomuk/core/variant.h>
 
 
 namespace Nepomuk {
-    class MassUpdateJob : public KJob
+    class NEPOMUK_EXPORT MassUpdateJob : public KJob
     {
         Q_OBJECT
 
@@ -66,6 +66,7 @@ namespace Nepomuk {
 
         static MassUpdateJob* tagResources( const QList<Nepomuk::Resource>&, const QList<Nepomuk::Tag>& tags );
         static MassUpdateJob* rateResources( const QList<Nepomuk::Resource>&, int rating );
+        static MassUpdateJob* commentResources( const QList<Nepomuk::Resource>&, const QString& comment);
 
     protected:
         bool doKill();

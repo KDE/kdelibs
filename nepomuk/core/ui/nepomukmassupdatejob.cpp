@@ -153,4 +153,12 @@ Nepomuk::MassUpdateJob* Nepomuk::MassUpdateJob::rateResources( const QList<Nepom
     return job;
 }
 
+Nepomuk::MassUpdateJob* Nepomuk::MassUpdateJob::commentResources( const QList<Nepomuk::Resource>& rl, const QString& comment )
+{
+    Nepomuk::MassUpdateJob* job = new Nepomuk::MassUpdateJob();
+    job->setResources( rl );
+    job->setProperties( QList<QPair<QUrl,Nepomuk::Variant> >() << qMakePair( QUrl( Nepomuk::Resource::descriptionUri() ), Nepomuk::Variant( comment ) ) );
+    return job;
+}
+
 #include "nepomukmassupdatejob.moc"
