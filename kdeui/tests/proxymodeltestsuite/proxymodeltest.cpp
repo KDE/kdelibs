@@ -549,3 +549,37 @@ void ProxyModelTest::doTest()
   m_modelSpy->clearTestData();
 }
 
+void ProxyModelTest::connectTestSignals(QObject *reciever)
+{
+  if (!reciever)
+    return;
+  for (int methodIndex = 0; methodIndex < metaObject()->methodCount(); ++methodIndex) {
+    QMetaMethod mm = metaObject()->method(methodIndex);
+    if (mm.methodType() == QMetaMethod::Signal
+      && QString(mm.signature()).startsWith("test")
+      && QString(mm.signature()).endsWith("Data()"))
+      {
+        int slotIndex = reciever->metaObject()->indexOfSlot(mm.signature());
+        Q_ASSERT(slotIndex >= 0);
+        metaObject()->connect(this, methodIndex, reciever, slotIndex);
+      }
+  }
+}
+
+void ProxyModelTest::disconnectTestSignals(QObject *reciever)
+{
+  if (!reciever)
+    return;
+  for (int methodIndex = 0; methodIndex < metaObject()->methodCount(); ++methodIndex) {
+    QMetaMethod mm = metaObject()->method(methodIndex);
+    if (mm.methodType() == QMetaMethod::Signal
+      && QString(mm.signature()).startsWith("test")
+      && QString(mm.signature()).endsWith("Data()"))
+    {
+      int slotIndex = reciever->metaObject()->indexOfSlot(mm.signature());
+      Q_ASSERT(slotIndex >= 0);
+      metaObject()->disconnect(this, methodIndex, reciever, slotIndex);
+    }
+  }
+}
+

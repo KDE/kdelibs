@@ -91,6 +91,9 @@ private slots:
   void cleanupTestCase();
 
 protected:
+  void connectTestSignals(QObject *reciever);
+  void disconnectTestSignals(QObject *reciever);
+
   void connectProxy(QAbstractProxyModel *proxyModel);
 
   void doTest();
