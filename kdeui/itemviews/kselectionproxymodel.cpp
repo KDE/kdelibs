@@ -170,8 +170,10 @@ public:
 
   struct PendingMove
   {
-    bool srcInModel;
-    bool destInModel;
+    PendingMove() : doMove(false), doInsert(false), doRemove(false) {}
+    bool doMove;
+    bool doInsert;
+    bool doRemove;
   };
 
   QStack<PendingMove> m_pendingMoves;
@@ -627,6 +629,61 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
   if (!m_selectionModel->hasSelection())
     return;
 
+  PendingMove pendingMove;
+  if (m_includeAllSelected && !m_startWithChildTrees)
+  {
+    int destMoveRow = -1;
+
+    QList<QPersistentModelIndex>::const_iterator it = m_rootIndexList.constBegin();
+    const QList<QPersistentModelIndex>::const_iterator end = m_rootIndexList.constEnd();
+
+    int startMoveRow = -1;
+    int endMoveRow = -1;
+    int count = 0;
+    int row;
+    for ( ; it != end; ++it, ++count )
+    {
+      row = it->row();
+      if ( ( row >= srcStart && row <= srcEnd ) && q->sourceModel()->parent( *it ) == srcParent )
+      {
+        if ( startMoveRow == -1 )
+        {
+          startMoveRow = count;
+          endMoveRow = count;
+
+          if ( destMoveRow == -1 )
+          {
+            if ( destParent.isValid() )
+              destMoveRow = getRootListRow(toNonPersistent(m_rootIndexList), destParent);
+            else
+              destMoveRow = it->row();
+          }
+        }
+        else
+          ++endMoveRow;
+      } else {
+        if ( row < destRow && q->sourceModel()->parent( *it ) == destParent )
+        {
+          if ( destMoveRow == -1 )
+            if ( destParent.isValid() )
+              destMoveRow = getRootListRow(toNonPersistent(m_rootIndexList), destParent);
+            else
+              destMoveRow = it->row();
+          else
+            ++destMoveRow;
+        }
+      }
+    }
+    if ( startMoveRow != -1 && ( destMoveRow < startMoveRow || destMoveRow > endMoveRow ) )
+    {
+      Q_ASSERT( destMoveRow != -1 );
+      q->beginMoveRows(QModelIndex(), startMoveRow, endMoveRow, QModelIndex(), destMoveRow );
+      pendingMove.doMove = true;
+    }
+    m_pendingMoves.push(pendingMove);
+    return;
+  }
+
   bool srcInModel = (!m_startWithChildTrees && isInModel(srcParent)) || (m_startWithChildTrees && m_rootIndexList.contains(srcParent));
   bool destInModel = (!m_startWithChildTrees && isInModel(destParent)) || (m_startWithChildTrees && m_rootIndexList.contains(destParent));
 
@@ -638,10 +695,15 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
       bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
       Q_UNUSED( allowMove ); // prevent warning in release builds.
       Q_ASSERT( allowMove );
+
+      pendingMove.doMove = true;
+      m_pendingMoves.push(pendingMove);
     } else {
       // source is in the proxy, but dest isn't.
       // Emit a remove
       q->beginRemoveRows(srcParent, srcStart, srcEnd);
+      pendingMove.doRemove = true;
+      m_pendingMoves.push(pendingMove);
     }
   } else {
     if (destInModel)
@@ -649,12 +711,10 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
       // dest is in proxy, but source is not.
       // Emit an insert
       q->beginInsertRows(destParent, destRow, destRow + (srcEnd - srcStart));
+      pendingMove.doInsert = true;
+      m_pendingMoves.push(pendingMove);
     }
   }
-
-  PendingMove pendingMove;
-  pendingMove.srcInModel = srcInModel;
-  pendingMove.destInModel = destInModel;
   m_pendingMoves.push(pendingMove);
 }
 
@@ -674,19 +734,14 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
 
   PendingMove pendingMove = m_pendingMoves.pop();
 
-  if (pendingMove.srcInModel)
-  {
-    if (pendingMove.destInModel)
-    {
-      // The easy case.
-      q->endMoveRows();
-      return;
-    } else {
-      q->endRemoveRows();
-    }
-  } else if (pendingMove.destInModel) {
+  if (pendingMove.doMove)
+    q->endMoveRows();
+
+  if (pendingMove.doRemove)
+    q->endRemoveRows();
+
+  if (pendingMove.doInsert)
     q->endInsertRows();
-  }
 }
 
 bool KSelectionProxyModelPrivate::isDescendantOf(QModelIndexList &list, const QModelIndex &idx) const
@@ -911,6 +966,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
 
 int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, const QModelIndex &index) const
 {
+  if (!index.isValid())
+    return -1;
 
   if (list.isEmpty())
     return 0;
