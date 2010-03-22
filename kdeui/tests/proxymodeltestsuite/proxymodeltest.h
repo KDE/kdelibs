@@ -22,7 +22,6 @@
 
 #include <QtTest>
 #include <QtCore>
-#include <qtest_kde.h>
 #include <qtestevent.h>
 #include <QItemSelectionRange>
 #include <QAbstractProxyModel>
@@ -285,5 +284,72 @@ protected:
   QSet<QString> m_testNames;
 };
 
+#define PROXYMODELTEST(TestData, TemplateArg, IntermediateProxy, LazyPersistence, Config) \
+  if (testObjects.isEmpty() || testObjects.contains(testNum)) { \
+    proxyModelTestClass->setTestData(new TestData<TemplateArg>(proxyModelTestClass)); \
+    proxyModelTestClass->setUseIntermediateProxy(IntermediateProxy); \
+    proxyModelTestClass->setLazyPersistence(LazyPersistence); \
+    qDebug()  << "\n   Running" << proxyModelTestClass->objectName().toAscii() << testNum << ":\n" \
+              << "  Source Model:      " << #IntermediateProxy << "\n" \
+              << "  Persistence:       " << #LazyPersistence << "\n" \
+              Config; \
+    result = QTest::qExec(proxyModelTestClass, arguments); \
+    if (result != 0) \
+      return result; \
+  } \
+  ++testNum; \
+
+#define PROXYMODELTEST_CUSTOM(TestData, IntermediateProxy, LazyPersistence, Config) \
+  if (testObjects.isEmpty() || testObjects.contains(testNum)) { \
+    proxyModelTestClass->setTestData(TestData); \
+    proxyModelTestClass->setUseIntermediateProxy(IntermediateProxy); \
+    proxyModelTestClass->setLazyPersistence(LazyPersistence); \
+    qDebug()  << "\n   Running" << proxyModelTestClass->objectName().toAscii() << testNum << ":\n" \
+              << "  Source Model:      " << #IntermediateProxy << "\n" \
+              << "  Persistence:       " << #LazyPersistence << "\n" \
+              Config; \
+    result = QTest::qExec(proxyModelTestClass, arguments); \
+    if (result != 0) \
+      return result; \
+  } \
+  ++testNum; \
+
+// The DynamicTreeModel uses a unique internalId for the first column of each row.
+// In the QSortFilterProxyModel the internalId is shared between all rows of the same parent.
+// We test the proxy on top of both so that we know it is not using the internalId of its source model
+// which will be different each time the test is run.
+#define COMPLETETEST(TestData, TemplateArg, Config) \
+  PROXYMODELTEST(TestData, TemplateArg, DynamicTree, ImmediatePersistence, Config) \
+  PROXYMODELTEST(TestData, TemplateArg, IntermediateProxy, ImmediatePersistence, Config) \
+  PROXYMODELTEST(TestData, TemplateArg, DynamicTree, LazyPersistence, Config) \
+  PROXYMODELTEST(TestData, TemplateArg, IntermediateProxy, LazyPersistence, Config) \
+
+#define PROXYMODELTEST_MAIN(TestClass, Body) \
+  int main(int argc, char *argv[]) \
+  { \
+    QApplication app(argc, argv); \
+    QList<int> testObjects; \
+    QStringList arguments; \
+    bool ok; \
+    foreach(const QString &arg, app.arguments()) \
+    { \
+      int testObject = arg.toInt(&ok); \
+      if (!ok) \
+      { \
+        arguments.append(arg); \
+        continue; \
+      } \
+      testObjects.append(testObject); \
+    } \
+    TestClass *proxyModelTestClass = new TestClass(); \
+    proxyModelTestClass->setObjectName( #TestClass ); \
+    int result = 0; \
+    int testNum = 1; \
+     \
+    Body \
+     \
+    delete proxyModelTestClass; \
+    return result; \
+    } \
 
 #endif

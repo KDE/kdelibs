@@ -129,6 +129,46 @@ public:
 */
 typedef ImmediateSelectionStrategy<0, 0, 0, 0, 0> NoSelectionStrategy;
 
+#define SELECTIONPROXYTESTDATA(SelectionStrategy, num1, num2, num3, num4, num5, Type) \
+  new TestData<SelectionStrategy<num1, num2, num3, num4, num5>, Type>(proxyModelTestClass)
 
+#define SELECTIONPROXYTESTCONFIG(SelectionStrategy, num1, num2, num3, num4, num5, Type) \
+  << "  FilterBehavior:    " << #Type << "\n" \
+  << "  SelectionStrategy: " << #SelectionStrategy << (num1 > 0 ? #num1 : "") \
+                                                   << (num2 > 0 ? #num2 : "") \
+                                                   << (num3 > 0 ? #num3 : "") \
+                                                   << (num4 > 0 ? #num4 : "") \
+                                                   << (num5 > 0 ? #num5 : "") << "\n"; \
+
+#define SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, LazyPersistence) \
+  PROXYMODELTEST_CUSTOM(SELECTIONPROXYTESTDATA(SelectionStrategy, num1, num2, num3, num4, num5, Type), IntermediateProxy, LazyPersistence, SELECTIONPROXYTESTCONFIG(SelectionStrategy, num1, num2, num3, num4, num5, Type))
+
+// #define SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, num3, num4, num5, Type) \
+//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, ImmediatePersistence) \
+//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, ImmediatePersistence) \
+//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, LazyPersistence) \
+//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, LazyPersistence) \
+
+#define SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, num3, num4, num5, Type) \
+  SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, ImmediatePersistence) \
+  SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, LazyPersistence) \
+
+#define SIMPLETESTDATA(SelectionStrategy, Type) \
+  new TestData<SelectionStrategy, Type>(proxyModelTestClass)
+
+#define SELECTIONPROXYMODELSIMPLETEST(SelectionStrategy, Type) \
+PROXYMODELTEST_CUSTOM(SIMPLETESTDATA(SelectionStrategy, Type), DynamicTree, LazyPersistence, SELECTIONPROXYTESTCONFIG(SelectionStrategy, 0, 0, 0, 0, 0, Type))
+
+#define SELECTIONCOMPLETETEST1(SelectionStrategy, num1, Type) \
+  SELECTIONCOMPLETETEST(SelectionStrategy, num1, 0, 0, 0, 0, Type) \
+
+#define SELECTIONCOMPLETETEST2(SelectionStrategy, num1, num2, Type) \
+  SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, 0, 0, 0, Type) \
+
+#define SELECTIONCOMPLETETEST3(SelectionStrategy, num1, num2, num3, Type) \
+  SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, num3, 0, 0, Type) \
+
+#define SELECTIONCOMPLETETEST4(SelectionStrategy, num1, num2, num3, num4, Type) \
+  SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, num3, num4, 0, Type) \
 
 #endif
