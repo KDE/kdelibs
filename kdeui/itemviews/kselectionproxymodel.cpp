@@ -35,7 +35,9 @@ public:
       m_omitDescendants(false),
       m_includeAllSelected(false),
       m_rowsRemoved(false),
-      m_resetting(false)
+      m_resetting(false),
+      m_ignoreNextLayoutAboutToBeChanged(false),
+      m_ignoreNextLayoutChanged(false)
   {
 
   }
@@ -163,6 +165,8 @@ public:
   bool m_includeAllSelected;
   bool m_rowsRemoved;
   bool m_resetting;
+  bool m_ignoreNextLayoutAboutToBeChanged;
+  bool m_ignoreNextLayoutChanged;
 
   struct PendingMove
   {
@@ -246,6 +250,12 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
   Q_Q(KSelectionProxyModel);
 
+  if ( m_ignoreNextLayoutAboutToBeChanged )
+  {
+    m_ignoreNextLayoutAboutToBeChanged = false;
+    return;
+  }
+
   emit q->layoutAboutToBeChanged();
 
   if (!m_selectionModel->hasSelection())
@@ -266,6 +276,12 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 {
   Q_Q(KSelectionProxyModel);
 
+  if ( m_ignoreNextLayoutChanged )
+  {
+    m_ignoreNextLayoutChanged = false;
+    return;
+  }
+
   if (!m_selectionModel->hasSelection())
   {
     emit q->layoutChanged();
@@ -273,9 +289,8 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
   }
 
   for(int i = 0; i < m_proxyIndexes.size(); ++i)
-  {
     q->changePersistentIndex(m_proxyIndexes.at(i), q->mapFromSource(m_layoutChangePersistentIndexes.at(i)));
-  }
+
 
   m_layoutChangePersistentIndexes.clear();
   m_proxyIndexes.clear();
@@ -605,6 +620,10 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
 {
   Q_Q(KSelectionProxyModel);
 
+  // layout{,AboutToBe}Changed signals are emitted by QAIM for backward compatibility reasons when rows are moved.
+  // Processing them is expensive so we do our best to avoid them.
+  m_ignoreNextLayoutAboutToBeChanged = true;
+
   if (!m_selectionModel->hasSelection())
     return;
 
@@ -647,6 +666,8 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
   Q_UNUSED(srcEnd);
   Q_UNUSED(destParent)
   Q_UNUSED(destRow);
+
+  m_ignoreNextLayoutChanged = true;
 
   if (!m_selectionModel->hasSelection())
     return;
