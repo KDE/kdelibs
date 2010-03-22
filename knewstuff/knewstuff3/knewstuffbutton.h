@@ -83,7 +83,7 @@ Q_SIGNALS:
     /**
      * emitted when the Hot New Stuff dialog has been closed
      */
-    void dialogFinished(const Entry::List& changedEntries);
+    void dialogFinished(const KNS3::Entry::List& changedEntries);
 
 protected Q_SLOTS:
     void showDialog();
