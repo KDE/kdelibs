@@ -81,6 +81,10 @@ void ModelSelector::rowsInserted(const QModelIndex &parent, int start, int end)
     {
       m_selectionModel->select(idx, QItemSelectionModel::SelectCurrent);
     }
+    if (m_model->hasChildren(idx))
+    {
+      rowsInserted(idx, 0, m_model->rowCount(idx) - 1);
+    }
     idx = idx.sibling(++row, column);
   }
 }
