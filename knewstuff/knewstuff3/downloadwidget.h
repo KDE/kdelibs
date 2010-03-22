@@ -132,6 +132,8 @@ private:
     Q_PRIVATE_SLOT( d, void slotError(const QString& message) )
     Q_PRIVATE_SLOT( d, void scrollbarValueChanged(int value) )
     Q_PRIVATE_SLOT( d, void slotUpload() )
+
+    friend class DownloadDialog;
 };
 
 }

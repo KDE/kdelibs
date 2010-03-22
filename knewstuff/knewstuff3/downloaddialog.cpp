@@ -35,7 +35,7 @@
 #include <kdebug.h>
 
 #include "downloadwidget.h"
-
+#include "downloadwidget_p.h"
 
 namespace KNS3 {
 class DownloadDialogPrivate
@@ -79,12 +79,19 @@ void DownloadDialog::init(const QString& configFile)
     setMinimumSize(700, 400);
 
     setCaption(i18n("Get Hot New Stuff"));
-
-    setButtons(KDialog::Ok);
-    button(KDialog::Ok)->setGuiItem(KStandardGuiItem::Close);
+    setButtons(KDialog::None);
 
     d->downloadWidget = new DownloadWidget(configFile ,this);
     setMainWidget(d->downloadWidget);
+
+    d->downloadWidget->d->ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
+        "%1 Add-On Installer",
+        KGlobal::activeComponent().aboutData()->programName()));
+    d->downloadWidget->d->ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
+    d->downloadWidget->d->ui.m_titleWidget->setVisible(true);
+    d->downloadWidget->d->ui.closeButton->setVisible(true);
+    d->downloadWidget->d->ui.closeButton->setGuiItem(KStandardGuiItem::Close);
+    connect(d->downloadWidget->d->ui.closeButton, SIGNAL(clicked()), this, SLOT(accept()));
 }
 
 DownloadDialog::~DownloadDialog()

@@ -60,7 +60,7 @@ DownloadWidget::DownloadWidget(const QString& configFile, QWidget * parent)
 void DownloadWidget::init(const QString& configFile)
 {
     d->ui.setupUi(this);
-
+    d->ui.closeButton->setVisible(false);
     d->ui.m_titleWidget->setVisible(false);
     d->init(configFile);
 }
@@ -257,11 +257,6 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     }
 
     q->connect(ui.m_categoryCombo, SIGNAL(activated(int)), q, SLOT(slotCategoryChanged(int)));
-
-    ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
-    "%1 Add-On Installer",
-    KGlobal::activeComponent().aboutData()->programName()));
-    ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
     // let the search line edit trap the enter key, otherwise it closes the dialog
     ui.m_searchEdit->setTrapReturnKey(true);
