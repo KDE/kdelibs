@@ -33,9 +33,9 @@ namespace KNS3
 class DownloadWidgetPrivate;
 
 /**
- * KNewStuff download dialog.
+ * KNewStuff download widget.
  *
- * The download dialog will present items to the user
+ * The download widget will present items to the user
  * for installation, updates and removal.
  * Preview images as well as other meta information can be seen.
  *
@@ -66,7 +66,7 @@ class DownloadWidgetPrivate;
  *           This is what KStandardDirs::locateLocal("data", name) will return.</li>
  *   </ol>
  *
- * @since 4.4
+ * @since 4.5
  */
 class KNEWSTUFF_EXPORT DownloadWidget :public QWidget
 {
@@ -74,7 +74,7 @@ class KNEWSTUFF_EXPORT DownloadWidget :public QWidget
 
 public:
     /**
-     * Create a DownloadDialog that lets the user install, update and uninstall
+     * Create a download widget that lets the user install, update and uninstall
      * contents. It will try to find a appname.knsrc file with the configuration.
      * Appname is the name of your application as provided in the about data->
      *
@@ -83,7 +83,7 @@ public:
     explicit DownloadWidget(QWidget * parent = 0);
 
     /**
-     * Create a DownloadDialog that lets the user install, update and uninstall
+     * Create a download widget that lets the user install, update and uninstall
      * contents. Manually specify the name of a .knsrc file where the
      * KHotNewStuff configuration can be found.
      *
