@@ -32,25 +32,30 @@ class ModelCommander : public QObject
 public:
   explicit ModelCommander(DynamicTreeModel *model, QObject *parent);
 
-  void setCommands(QList<QPair<QString, ModelChangeCommandList> > commands);
-  void setDefaultCommands();
+  ModelChangeCommand* currentCommand();
 
-  void executeUntil(const QString &stopBefore = QString());
-  bool hasNextCommand();
-  void executeNextCommand();
-  QPair<QString, ModelChangeCommandList> nextCommand();
+public slots:
+  void init_testInsertWhenEmpty(const QString &dataTag);
+  void init_testInsertInRoot(const QString &dataTag);
+  void init_testInsertInTopLevel(const QString &dataTag);
+  void init_testInsertInSecondLevel(const QString &dataTag);
 
-  QStringList commandNames() const;
+  void execute_testInsertWhenEmpty(const QString &dataTag);
+  void execute_testInsertInRoot(const QString &dataTag);
+  void execute_testInsertInTopLevel(const QString &dataTag);
+  void execute_testInsertInSecondLevel(const QString &dataTag);
 
-  void clear();
+private:
+  void executeTestInsert(QList<int> rowAncestors, const QString &dataTag);
+  void initTestInsert(const QString &dataTag);
 
-  void setCommand(const QString &name, ModelChangeCommandList list);
+  void execute(ModelChangeCommand *command);
 
 private:
   int m_counter;
   DynamicTreeModel *m_model;
-  QList<QPair<QString, ModelChangeCommandList> > m_commands;
-
+  ModelChangeCommand *m_currentCommand;
+  QSet<QString> m_testsSeen;
 };
 
 #endif

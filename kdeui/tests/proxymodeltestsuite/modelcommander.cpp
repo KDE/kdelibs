@@ -22,390 +22,275 @@
 
 
 ModelCommander::ModelCommander(DynamicTreeModel* model, QObject *parent)
-: QObject(parent), m_counter(0), m_model(model)
+  : QObject(parent), m_model(model)
 {
-  setDefaultCommands();
 }
 
-void ModelCommander::setCommands(QList<QPair<QString, ModelChangeCommandList> > commands)
+void ModelCommander::execute_testInsertWhenEmpty(const QString &dataTag)
 {
-  m_commands = commands;
-}
-
-void ModelCommander::clear()
-{
-  m_commands.clear();
-  m_counter = 0;
-}
-
-void ModelCommander::executeUntil(const QString& stopBefore)
-{
-  while(hasNextCommand())
+  ModelInsertCommand *ins = new ModelInsertCommand(m_model, this);
+  ins->setStartRow(0);
+  if (dataTag == "insert01")
   {
-    QPair<QString, ModelChangeCommandList> nextChangeCommand = nextCommand();
-    if (nextChangeCommand.first == stopBefore)
-    {
-      return;
-    }
-    executeNextCommand();
-  }
-}
-
-void ModelCommander::executeNextCommand()
-{
-  if (!hasNextCommand())
+    // Insert a single item at the top.
+    ins->setEndRow(0);
+  } else if (dataTag == "insert02")
+  {
+    // Insert 10 items.
+    ins->setEndRow(9);
+  } else if (dataTag == "insert03")
+  {
+    // Insert 5 items, some of which are parents
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - 3"
+      " - 4"
+      " - - 5"
+      " - - - 6"
+      " - 7"
+      " - 8"
+      " - - 9"
+    );
+  } else {
+    qDebug() << dataTag;
     return;
-  QPair<QString, ModelChangeCommandList> nextChangeCommand = nextCommand();
-
-  ++m_counter;
-
-  foreach(ModelChangeCommand *command, nextChangeCommand.second)
-  {
-    command->doCommand();
   }
+  execute(ins);
 }
 
-bool ModelCommander::hasNextCommand()
+void ModelCommander::init_testInsertWhenEmpty(const QString &dataTag)
 {
-  return m_commands.size() > m_counter;
+  Q_UNUSED(dataTag);
 }
 
-QPair<QString, ModelChangeCommandList> ModelCommander::nextCommand()
+void ModelCommander::init_testInsertInRoot(const QString &dataTag)
 {
-  return m_commands.at(m_counter);
+  initTestInsert(dataTag);
 }
 
-QStringList ModelCommander::commandNames() const
+void ModelCommander::init_testInsertInTopLevel(const QString &dataTag)
 {
-  QStringList list;
-
-  for (int i = 0; i < m_commands.size(); ++i)
-  {
-    list << m_commands.at(i).first;
-  }
-
-  return list;
+  initTestInsert(dataTag);
 }
 
-void ModelCommander::setDefaultCommands()
+void ModelCommander::init_testInsertInSecondLevel(const QString &dataTag)
 {
-  m_counter = 0;
+  initTestInsert(dataTag);
+}
 
-  // Insert a single item at the top.
-  ModelInsertCommand *ins;
-  ins = new ModelInsertCommand(m_model, this);
+void ModelCommander::initTestInsert(const QString &dataTag)
+{
+  Q_UNUSED(dataTag);
+
+  // A standard initial model for all these tests.
+  ModelInsertCommand *ins = new ModelInsertCommand(m_model, this);
   ins->setStartRow(0);
-  ins->setEndRow(0);
-
-  ModelChangeCommandList commandList;
-
-  commandList << ins;
-
-  setCommand("insert01", commandList);
-  commandList.clear();
-
-  // Give the top level item 10 children.
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 0 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-
-  commandList << ins;
-  setCommand("insert02", commandList);
-  commandList.clear();
-
-  // Give the top level item 10 'older' siblings.
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-
-  commandList << ins;
-  setCommand("insert03", commandList);
-  commandList.clear();
-
-  ModelMoveLayoutChangeCommand *moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
-  moveCommand->setAncestorRowNumbers(QList<int>() << 10);
-  moveCommand->setStartRow(0);
-  moveCommand->setEndRow(0);
-  moveCommand->setDestAncestors(QList<int>() << 10);
-  moveCommand->setDestRow(5);
-
-  commandList << moveCommand;
-
-  setCommand("move01", commandList);
-  commandList.clear();
-
-  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
-  moveCommand->setAncestorRowNumbers(QList<int>() << 10);
-  moveCommand->setStartRow(4);
-  moveCommand->setEndRow(4);
-  moveCommand->setDestAncestors(QList<int>() << 10);
-  moveCommand->setDestRow(0);
-
-  commandList << moveCommand;
-
-  setCommand("move02", commandList);
-  commandList.clear();
-
-  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
-  moveCommand->setStartRow(0);
-  moveCommand->setEndRow(0);
-  // At the beginning of the move, the target parent is row index 10
-  moveCommand->setDestAncestors(QList<int>() << 10);
-  // Because one of the parents 'older' siblings is moved, the target becomes row index 9
-  moveCommand->setEndOfMoveDestAncestors(QList<int>() << 9);
-  moveCommand->setDestRow(5);
-
-  commandList << moveCommand;
-
-
-  setCommand("move03", commandList);
-  commandList.clear();
-
-  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
-  moveCommand->setAncestorRowNumbers(QList<int>() << 9);
-  moveCommand->setEndOfMoveSourceAncestors(QList<int>() << 10);
-  moveCommand->setStartRow(5);
-  moveCommand->setEndRow(5);
-  moveCommand->setDestRow(0);
-
-  commandList << moveCommand;
-
-  setCommand("move04", commandList);
-  commandList.clear();
-
-  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
-  moveCommand->setStartRow(4);
-  moveCommand->setEndRow(4);
-  moveCommand->setDestAncestors(QList<int>() << 10);
-  moveCommand->setEndOfMoveDestAncestors(QList<int>() << 9);
-  moveCommand->setDestRow(0);
-
-  commandList << moveCommand;
-
-  setCommand("move05", commandList);
-  commandList.clear();
-
-  moveCommand = new ModelMoveLayoutChangeCommand(m_model, this);
-  moveCommand->setAncestorRowNumbers(QList<int>() << 9);
-  moveCommand->setEndOfMoveSourceAncestors(QList<int>() << 10);
-  moveCommand->setStartRow(0);
-  moveCommand->setEndRow(0);
-  moveCommand->setDestRow(4);
-
-  commandList << moveCommand;
-
-  setCommand("move06", commandList);
-  commandList.clear();
-
-  // Give the top level item 10 'younger' siblings.
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setStartRow(11);
-  ins->setEndRow(20);
-
-  commandList << ins;
-  setCommand("insert04", commandList);
-  commandList.clear();
-
-  // Add more children to the top level item.
-  // First 'older'
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-
-  commandList << ins;
-
-  setCommand("insert05", commandList);
-  commandList.clear();
-
-  // Then younger
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 );
-  ins->setStartRow(20);
-  ins->setEndRow(29);
-
-  commandList << ins;
-
-  setCommand("insert06", commandList);
-  commandList.clear();
-
-  // Then somewhere in the middle.
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 );
-  ins->setStartRow(10);
-  ins->setEndRow(19);
-
-  commandList << ins;
-
-  setCommand("insert07", commandList);
-  commandList.clear();
-
-  // Add some more items for removing later.
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 << 5 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-  commandList << ins;
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 << 5 << 5 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-  commandList << ins;
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 << 5 << 5 << 5 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-  commandList << ins;
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 << 6 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-  commandList << ins;
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setAncestorRowNumbers(QList<int>() << 10 << 7 );
-  ins->setStartRow(0);
-  ins->setEndRow(9);
-  commandList << ins;
-
-  setCommand("insert08", commandList);
-  commandList.clear();
-
-  // Insert a tree of items in one go.
-  ins = new ModelInsertCommand(m_model, this);
-  ins->setStartRow(0);
-  ins->setAncestorRowNumbers(QList<int>() << 10 << 2 );
   ins->interpret(
     " - 1"
-    " - 1"
-    " - - 1"
-    " - - 1"
-    " - - - 1"
-    " - - 1"
-    " - 1"
-    " - 1"
-    " - 1"
-    " - 1"
-    " - - 1"
-    " - - - 1"
-    " - - 1"
-    " - - - 1"
-    " - 1"
-    " - 1"
-    " - 1"
-    " - 1"
+    " - 2"
+    " - - 3"
+    " - - 4"
+    " - - 5"
+    " - 6"
+    " - 7"
+    " - 8"
+    " - 9"
+    " - - 10"
+    " - - 11"
+    " - - - 12"
+    " - - - 13"
+    " - - 14"
+    " - - 15"
+    " - - 16"
+    " - - 17"
+    " - - - 18"
+    " - - - 19"
+    " - - - - 20"
+    " - - - - 21"
+    " - - - 22"
+    " - - - 23"
+    " - - - 24"
+    " - - - 25"
+    " - - - - 26"
+    " - - - - 27"
+    " - - - 28"
+    " - - - 29"
+    " - - - - 30"
+    " - - - 31"
+    " - - - 32"
+    " - - 33"
+    " - - 34"
+    " - - - 35"
+    " - - 36"
+    " - - 37"
+    " - 38"
+    " - 39"
+    " - - 40"
+    " - - 41"
+    " - 42"
+    " - 43"
   );
-
-  commandList << ins;
-
-  setCommand("insert09", commandList);
-  commandList.clear();
-
-  ModelDataChangeCommand *dataChange = new ModelDataChangeCommand(m_model, this);
-
-  dataChange->setAncestorRowNumbers(QList<int>() << 10 );
-  dataChange->setStartRow(0);
-  dataChange->setEndRow(0);
-
-  commandList << dataChange;
-
-  setCommand("change01", commandList);
-  commandList.clear();
-
-  dataChange = new ModelDataChangeCommand(m_model, this);
-  dataChange->setAncestorRowNumbers(QList<int>() << 10);
-  dataChange->setStartRow(4);
-  dataChange->setEndRow(7);
-
-  commandList << dataChange;
-
-  setCommand("change02", commandList);
-  commandList.clear();
-
-  ModelRemoveCommand *rem;
-
-  // Remove a single item without children.
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 );
-  rem->setStartRow(0);
-  rem->setEndRow(0);
-
-  commandList << rem;
-
-  setCommand("remove01", commandList);
-  commandList.clear();
-
-  // Remove a single item with 10 children.
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 );
-  rem->setStartRow(6);
-  rem->setEndRow(6);
-
-  commandList << rem;
-
-  setCommand("remove02", commandList);
-  commandList.clear();
-
-  // Remove a single item with no children from the top.
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 << 5 );
-  rem->setStartRow(0);
-  rem->setEndRow(0);
-
-  commandList << rem;
-
-  setCommand("remove03", commandList);
-  commandList.clear();
-
-  // Remove a single second level item with no children from the bottom.
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 << 5 );
-  rem->setStartRow(8);
-  rem->setEndRow(8);
-
-  commandList << rem;
-
-  setCommand("remove04", commandList);
-  commandList.clear();
-
-  // Remove a single second level item with no children from the middle.
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 << 5 );
-  rem->setStartRow(3);
-  rem->setEndRow(3);
-
-  commandList << rem;
-
-  setCommand("remove05", commandList);
-  commandList.clear();
-
-  // clear the children of a second level item.
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 << 5 );
-  rem->setStartRow(0);
-  rem->setEndRow(6);
-
-  commandList << rem;
-
-  setCommand("remove06", commandList);
-  commandList.clear();
-
-  // Clear a sub-tree;
-  rem = new ModelRemoveCommand(m_model, this);
-  rem->setAncestorRowNumbers(QList<int>() << 10 );
-  rem->setStartRow(4);
-  rem->setEndRow(4);
-
-  commandList << rem;
-
-  setCommand("remove07", commandList);
-  commandList.clear();
+  execute(ins);
 }
 
-
-void ModelCommander::setCommand(const QString &name, ModelChangeCommandList list)
+void ModelCommander::execute_testInsertInRoot(const QString &dataTag)
 {
-  QPair<QString, ModelChangeCommandList> pair = qMakePair(name, list);
+  executeTestInsert(QList<int>(), dataTag);
+}
 
-  m_commands.append(pair);
+void ModelCommander::execute_testInsertInTopLevel(const QString &dataTag)
+{
+  executeTestInsert(QList<int>() << 5, dataTag);
+}
+
+void ModelCommander::execute_testInsertInSecondLevel(const QString &dataTag)
+{
+  executeTestInsert(QList<int>() << 5 << 5, dataTag);
+}
+
+void ModelCommander::execute(ModelChangeCommand* command)
+{
+  m_currentCommand = command;
+  command->doCommand();
+  delete command;
+  command = 0;
+}
+
+ModelChangeCommand* ModelCommander::currentCommand()
+{
+  return m_currentCommand;
+}
+
+void ModelCommander::executeTestInsert(QList<int> rowAncestors, const QString &dataTag)
+{
+  ModelInsertCommand *ins = new ModelInsertCommand(m_model, this);
+  if (dataTag == "insert01")
+  {
+    // Insert a single item at the top.
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(0);
+    ins->setEndRow(0);
+  } else if (dataTag == "insert02")
+  {
+    // Insert 10 items at the top.
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(0);
+    ins->setEndRow(9);
+  } else if (dataTag == "insert03")
+  {
+    // Insert a single item at the bottom.
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(m_model->rowCount());
+    ins->setEndRow(m_model->rowCount());
+  } else if (dataTag == "insert04")
+  {
+    // Insert a 10 items at the bottom.
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(m_model->rowCount());
+    ins->setEndRow(m_model->rowCount() + 9);
+  } else if (dataTag == "insert05")
+  {
+    // Insert a single item in the middle
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(4);
+    ins->setEndRow(4);
+  } else if (dataTag == "insert06")
+  {
+    // Insert 10 items in the middle
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(4);
+    ins->setEndRow(13);
+  } else if (dataTag == "insert07")
+  {
+    // Insert a single item at with children at the top
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(0);
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - - - 3"
+      " - - - - 4"
+      " - - 5"
+    );
+  } else if (dataTag == "insert08")
+  {
+    // Insert a single item at with children at the bottom
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(m_model->rowCount());
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - - - 3"
+      " - - - - 4"
+      " - - 5"
+    );
+  } else if (dataTag == "insert09")
+  {
+    // Insert a single item at with children in the middle
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(4);
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - - - 3"
+      " - - - - 4"
+      " - - 5"
+    );
+  }
+  else if (dataTag == "insert10")
+  {
+    // Insert 5 items, some of which are parents at the top
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(0);
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - 3"
+      " - 4"
+      " - - 5"
+      " - - 6"
+      " - - - 7"
+      " - 8"
+      " - 9"
+      " - - 10"
+    );
+  }
+  else if (dataTag == "insert11")
+  {
+    // Insert 5 items, some of which are parents at the bottom
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(m_model->rowCount());
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - 3"
+      " - 4"
+      " - - 5"
+      " - - 6"
+      " - - - 7"
+      " - 8"
+      " - 9"
+      " - - 10"
+    );
+  }
+  else if (dataTag == "insert12")
+  {
+    // Insert 5 items, some of which are parents in the middle
+    ins->setAncestorRowNumbers(rowAncestors);
+    ins->setStartRow(4);
+    ins->interpret(
+      " - 1"
+      " - - 2"
+      " - 3"
+      " - 4"
+      " - - 5"
+      " - - 6"
+      " - - - 7"
+      " - 8"
+      " - 9"
+      " - - 10"
+    );
+  }
+  execute(ins);
 }
