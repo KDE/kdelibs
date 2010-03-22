@@ -23,6 +23,8 @@
 
 #include "ui_entrydetailsdialog.h"
 
+class QListWidgetItem;
+
 namespace KNS3
 {
     class Engine;
@@ -51,6 +53,7 @@ private Q_SLOTS:
     // installed/updateable etc
     void entryStatusChanged(const KNS3::EntryInternal& entry);
     void updateButtons();
+    void previewSelected(int current);
 
 private:
     void init();
@@ -59,6 +62,9 @@ private:
     Engine *m_engine;
     EntryInternal m_entry;
     QImage m_currentPreview;
+    QListWidgetItem* m_previewItem1;
+    QListWidgetItem* m_previewItem2;
+    QListWidgetItem* m_previewItem3;
 };
 
 }
