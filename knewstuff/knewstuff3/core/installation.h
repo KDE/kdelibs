@@ -112,6 +112,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void signalEntryChanged(const KNS3::EntryInternal& entry);
+    void signalInstallationFinished();
+    void signalInstallationFailed(const QString& message);
 
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
     void signalPayloadFailed(const KNS3::EntryInternal& entry);

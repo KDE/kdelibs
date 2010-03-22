@@ -135,13 +135,12 @@ Q_SIGNALS:
     void signalProvidersFinished();
     void signalEntriesFinished();
 
-    void signalProgress(const QString & message, int percentage);
-
     void signalDownloadDialogDone(KNS3::EntryInternal::List);
+    void jobStarted(KJob*,const QString&);
 
-    void signalError(const QString& errorMessage);
-
-    void jobStarted(KJob*, const QString&);
+    void signalError(const QString&);
+    void signalBusy(const QString&);
+    void signalIdle(const QString&);
 
 private Q_SLOTS:
     // the .knsrc file was loaded
@@ -158,10 +157,9 @@ private Q_SLOTS:
 
     void slotSearchTimerExpired();
 
-    void slotProgress(KJob *job, unsigned long percent);
-
     void slotEntryChanged(const KNS3::EntryInternal& entry);
-    void slotInstallationFailed(const KNS3::EntryInternal& entry);
+    void slotInstallationFinished();
+    void slotInstallationFailed(const QString& message);
     void downloadLinkLoaded(const KNS3::EntryInternal& entry);
     
     void providerJobStarted(KJob*);
@@ -176,6 +174,8 @@ private:
     void loadRegistry();
 
     bool entryChanged(const EntryInternal& oldentry, const EntryInternal& entry);
+
+    void updateStatus();
 
     // If the provider is ready to be used
     bool m_initialized;
@@ -202,6 +202,10 @@ private:
 
     // when requesting entries from a provider, how many to ask for
     int m_pageSize;
+
+    int m_numDataJobs;
+    int m_numPictureJobs;
+    int m_numInstallJobs;
 
     Q_DISABLE_COPY(Engine)
 };

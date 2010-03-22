@@ -29,52 +29,48 @@
 #include "kdebug.h"
 
 #include <kiconloader.h>
+#include <kpixmapsequencewidget.h>
 
 using namespace KNS3;
 
 ProgressIndicator::ProgressIndicator(QWidget *parent)
         : QFrame(parent)
+        , m_busyPixmap(KPixmapSequence("process-working", 22))
+        , m_errorPixmap(KPixmapSequence("dialog-error", 22))
 {
     setFrameStyle(QFrame::NoFrame);
-
-    m_finished = 0;
-    m_total = 0;
-
-    m_pb = new QProgressBar();
-    m_pb->setVisible(false);
-
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setMargin(0);
-    hbox->addWidget(m_pb);
+
+    //Busy widget
+    busyWidget = new KPixmapSequenceWidget(this);
+    busyWidget->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+
+    busyWidget->setVisible(false);
+    hbox->addWidget(busyWidget);
+
+    m_statusLabel = new QLabel();
+    hbox->addWidget(m_statusLabel);
 }
 
-void ProgressIndicator::addJob(KJob* job, const QString& label)
+void ProgressIndicator::busy(const QString &message)
 {
-    m_jobs.insert(job, label);
-    connect(job, SIGNAL(finished(KJob *)), this, SLOT(jobFinished(KJob*)));
-    ++m_total;
-    calculateAverage();
+    m_statusLabel->setText(message);
+    busyWidget->setVisible(true);
+    busyWidget->setSequence(m_busyPixmap);
 }
 
-void ProgressIndicator::jobFinished(KJob* job)
+void ProgressIndicator::error(const QString &message)
 {
-    m_jobs.remove(job);
-    ++m_finished;
-    calculateAverage();
+    m_statusLabel->setText(message);
+    busyWidget->setVisible(true);
+    busyWidget->setSequence(m_errorPixmap);
 }
 
-void ProgressIndicator::calculateAverage()
+void ProgressIndicator::idle(const QString &message)
 {
-    if (m_jobs.isEmpty()) {
-        m_pb->setVisible(false);
-        m_total = 0;
-        m_finished = 0;
-        return;
-    }
-
-    m_pb->setVisible(true);
-    m_pb->setMaximum(m_total);
-    m_pb->setValue(m_finished);
+    m_statusLabel->setText(message);
+    busyWidget->setVisible(false);
 }
 
 #include "progressindicator.moc"

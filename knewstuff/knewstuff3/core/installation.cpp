@@ -177,9 +177,6 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
     connect(job,
             SIGNAL(result(KJob*)),
             SLOT(slotPayloadResult(KJob*)));
-    connect(job,
-            SIGNAL(percent(KJob*, unsigned long)),
-            SLOT(slotProgress(KJob*, unsigned long)));
 
     entry_jobs[job] = entry;
 }
@@ -196,6 +193,7 @@ void Installation::slotPayloadResult(KJob *job)
             kError() << "Cannot load payload file." << endl;
             kError() << job->errorString() << endl;
 
+            // FIXME: use signalError
             emit signalPayloadFailed(entry);
         } else {
             KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
@@ -265,6 +263,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
             entry.setStatus(EntryInternal::Updateable);
         }
         emit signalEntryChanged(entry);
+        emit signalInstallationFailed(i18n("Could not install \"%1\": File not found"));
         return;
     }
 
@@ -303,6 +302,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
 
     entry.setStatus(EntryInternal::Installed);
     emit signalEntryChanged(entry);
+    emit signalInstallationFinished();
 }
 
 QString Installation::targetInstallationPath(const QString& payloadfile)

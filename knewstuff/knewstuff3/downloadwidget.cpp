@@ -213,12 +213,14 @@ void DownloadWidgetPrivate::scrollbarValueChanged(int value)
 void DownloadWidgetPrivate::init(const QString& configFile)
 {
     m_configFile = configFile;
+
+    q->connect(engine, SIGNAL(signalBusy(const QString&)), ui.progressIndicator, SLOT(busy(const QString&)));
+    q->connect(engine, SIGNAL(signalError(const QString&)), ui.progressIndicator, SLOT(error(const QString&)));
+    q->connect(engine, SIGNAL(signalIdle(const QString&)), ui.progressIndicator, SLOT(idle(const QString&)));
     engine->init(configFile);
 
     // Entries have been fetched and should be shown:
     q->connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), q, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
-
-    q->connect(engine, SIGNAL(signalError(const QString&)), q, SLOT(slotError(const QString&)));
 
     // An entry has changes - eg because it was installed
     q->connect(engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), q, SLOT(slotEntryChanged(KNS3::EntryInternal)));
@@ -265,9 +267,6 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     ui.m_searchEdit->setTrapReturnKey(true);
 
     q->connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), q, SLOT(scrollbarValueChanged(int)));
-
-    q->connect(engine, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
-    q->connect(model, SIGNAL(jobStarted(KJob*, const QString&)), ui.progressIndicator, SLOT(addJob(KJob*, const QString&)));
     q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
 }
 

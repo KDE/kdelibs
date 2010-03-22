@@ -66,11 +66,17 @@ Engine::Engine(QObject* parent)
     , m_searchTimer(new QTimer)
     , m_currentPage(-1)
     , m_pageSize(20)
+    , m_numDataJobs(0)
+    , m_numPictureJobs(0)
+    , m_numInstallJobs(0)
 {
     m_searchTimer->setSingleShot(true);
     m_searchTimer->setInterval(1000);
     connect(m_searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
     connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), m_cache, SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
+    connect(m_installation, SIGNAL(signalInstallationFinished()), this, SLOT(slotInstallationFinished()));
+    connect(m_installation, SIGNAL(signalInstallationFailed(QString)), this, SLOT(slotInstallationFailed(QString)));
+
 }
 
 Engine::~Engine()
@@ -84,6 +90,8 @@ Engine::~Engine()
 bool Engine::init(const QString &configfile)
 {
     kDebug() << "Initializing KNS3::Engine from '" << configfile << "'";
+
+    emit signalBusy(i18n("Initializing"));
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -148,6 +156,7 @@ QStringList Engine::categoriesFilter() const
 void Engine::loadProviders()
 {
     kDebug(550) << "loading providers from " << m_providerFileUrl;
+    emit signalBusy(i18n("Loading provider information"));
 
     XmlLoader * loader = new XmlLoader(this);
     connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProviderFileLoaded(const QDomDocument&)));
@@ -196,6 +205,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
         }
         n = n.nextSiblingElement();
     }
+    emit signalBusy(i18n("Loading data"));
 }
 
 void Engine::providerJobStarted ( KJob* job )
@@ -214,6 +224,9 @@ void Engine::providerInitialized(Provider* p)
     p->setCachedEntries(m_cache->registryForProvider(p->id()));
 
     p->loadEntries(m_currentRequest);
+
+    ++m_numDataJobs;
+    updateStatus();
 }
 
 void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS3::EntryInternal::List entries)
@@ -223,6 +236,9 @@ void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS
 
     m_cache->insertRequest(request, entries);
     emit signalEntriesLoaded(entries);
+
+    --m_numDataJobs;
+    updateStatus();
 }
 
 void Engine::reloadEntries()
@@ -230,6 +246,7 @@ void Engine::reloadEntries()
     emit signalResetView();
     m_currentPage = -1;
     m_currentRequest.page = 0;
+    m_numDataJobs = 0;
 
     foreach (const QSharedPointer<KNS3::Provider> &p, m_providers) {
         if (p->isInitialized()) {
@@ -251,6 +268,9 @@ void Engine::reloadEntries()
                 if (m_currentPage == -1) {
                     kDebug() << "From provider";
                     p->loadEntries(m_currentRequest);
+
+                    ++m_numDataJobs;
+                    updateStatus();
                 }
             }
         }
@@ -302,23 +322,10 @@ void Engine::requestMoreData()
     foreach (const QSharedPointer<KNS3::Provider> &p, m_providers) {
         if (p->isInitialized()) {
             p->loadEntries(m_currentRequest);
+            ++m_numDataJobs;
+            updateStatus();
         }
     }
-}
-
-void Engine::slotProgress(KJob *job, unsigned long percent)
-{
-    QString url;
-    KIO::FileCopyJob * copyJob = qobject_cast<KIO::FileCopyJob*>(job);
-    KIO::TransferJob * transferJob = qobject_cast<KIO::TransferJob*>(job);
-    if (copyJob != NULL) {
-        url = copyJob->srcUrl().fileName();
-    } else if (transferJob != NULL) {
-        url = transferJob->url().fileName();
-    }
-
-    QString message = i18n("loading %1",url);
-    emit signalProgress(message, percent);
 }
 
 bool Engine::entryChanged(const EntryInternal& oldentry, const EntryInternal& entry)
@@ -344,7 +351,22 @@ void Engine::install(KNS3::EntryInternal entry)
     QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     if (p) {
         p->loadPayloadLink(entry);
+
+        ++m_numInstallJobs;
+        updateStatus();
     }
+}
+
+void Engine::slotInstallationFinished()
+{
+    --m_numInstallJobs;
+    updateStatus();
+}
+
+void Engine::slotInstallationFailed(const QString& message)
+{
+    --m_numInstallJobs;
+    emit signalError(message);
 }
 
 void Engine::slotEntryDetailsLoaded(const KNS3::EntryInternal& entry)
@@ -376,12 +398,16 @@ void Engine::loadPreview(const KNS3::EntryInternal& entry, EntryInternal::Previe
     ImageLoader* l = new ImageLoader(entry, type, this);
     connect(l, SIGNAL(signalPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)), this, SLOT(slotPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
     l->start();
+    ++m_numPictureJobs;
+    updateStatus();
 }
 
 void Engine::slotPreviewLoaded(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
 {
     kDebug() << "loaded: " << entry.name();
     emit signalEntryPreviewLoaded(entry, type);
+    --m_numPictureJobs;
+    updateStatus();
 }
 
 void Engine::contactAuthor(const EntryInternal &entry)
@@ -397,12 +423,6 @@ void Engine::contactAuthor(const EntryInternal &entry)
 void Engine::slotEntryChanged(const KNS3::EntryInternal& entry)
 {
     emit signalEntryChanged(entry);
-}
-
-void Engine::slotInstallationFailed(const KNS3::EntryInternal& entry)
-{
-    kDebug() << "Installation failed: " << entry.name();
-    // FIXME implement warning?
 }
 
 bool Engine::userCanVote(const EntryInternal& entry)
@@ -427,6 +447,19 @@ void Engine::becomeFan(const EntryInternal& entry)
 {
     QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     p->becomeFan(entry);
+}
+
+void Engine::updateStatus()
+{
+    if (m_numDataJobs > 0) {
+        emit signalBusy(i18n("Loading data"));
+    } else if (m_numPictureJobs > 0) {
+        emit signalBusy(i18np("Loading one preview", "Loading %1 previews", m_numPictureJobs));
+    } else if (m_numInstallJobs > 0) {
+        emit signalBusy(i18n("Installing"));
+    } else {
+        emit signalIdle(i18n("Ready"));
+    }
 }
 
 #include "engine.moc"

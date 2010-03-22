@@ -22,12 +22,12 @@
 #define KNEWSTUFF3_UI_PROGRESSINDICATOR_H
 
 #include <QtGui/QFrame>
-#include <QtCore/QHash>
-#include <QtCore/QString>
+#include <kpixmapsequence.h>
 
-class KJob;
 class QVBoxLayout;
-class QProgressBar;
+class QLabel;
+class QString;
+class KPixmapSequenceWidget;
 
 namespace KNS3 {
 
@@ -46,21 +46,17 @@ public:
     ProgressIndicator(QWidget *parent);
 
 public Q_SLOTS:
-     void addJob(KJob*, const QString& label);
-
-private Q_SLOTS:
-    void jobFinished(KJob*);
+    void busy(const QString& message);
+    void error(const QString& message);
+    void idle(const QString& message);
 
 private:
-    void calculateAverage();
-
-    QHash<KJob*, QString> m_jobs;
-
     QVBoxLayout *m_detailsvbox;
-    QProgressBar *m_pb;
+    QLabel* m_statusLabel;
+    KPixmapSequenceWidget* busyWidget;
 
-    uint m_finished;
-    uint m_total;
+    KPixmapSequence m_busyPixmap;
+    KPixmapSequence m_errorPixmap;
 };
 }
 
