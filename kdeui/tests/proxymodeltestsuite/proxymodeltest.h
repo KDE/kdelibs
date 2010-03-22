@@ -62,6 +62,9 @@ private:
   virtual void testRemoveFromTopLevelData() = 0;
   virtual void testRemoveFromSecondLevelData() = 0;
 
+  virtual void testMoveFromRootData() = 0;
+  virtual void testMoveFromTopLevelData() = 0;
+  virtual void testMoveFromSecondLevelData() = 0;
 };
 
 class BuiltinTestInterface : BuiltinTestDataInterface
@@ -89,6 +92,16 @@ private:
 
   virtual void testRemoveFromSecondLevel_data() = 0;
   virtual void testRemoveFromSecondLevel() = 0;
+
+  virtual void testMoveFromRoot_data() = 0;
+  virtual void testMoveFromRoot() = 0;
+
+  virtual void testMoveFromTopLevel_data() = 0;
+  virtual void testMoveFromTopLevel() = 0;
+
+  virtual void testMoveFromSecondLevel_data() = 0;
+  virtual void testMoveFromSecondLevel() = 0;
+
 };
 
 class ProxyModelTest : public QObject, protected BuiltinTestInterface
@@ -110,6 +123,8 @@ public:
   QVariantList noSignal() const { return QVariantList() << NoSignal; }
   QVariantList getSignal(SignalType type, IndexFinder parentFinder, int start, int end) const
   { return QVariantList() << type << QVariant::fromValue(parentFinder) << start << end; }
+  QVariantList getSignal(SignalType type, IndexFinder srcFinder, int start, int end, IndexFinder destFinder, int destStart) const
+  { return QVariantList() << type << QVariant::fromValue(srcFinder) << start << end << QVariant::fromValue(destFinder) << destStart; }
 
 protected:
   virtual QAbstractProxyModel* getProxy() = 0;
@@ -126,6 +141,10 @@ signals:
   void testRemoveFromRootData();
   void testRemoveFromTopLevelData();
   void testRemoveFromSecondLevelData();
+
+  void testMoveFromRootData();
+  void testMoveFromTopLevelData();
+  void testMoveFromSecondLevelData();
 
 protected slots:
   void testMappings();
@@ -162,6 +181,15 @@ private slots:
 
   void testRemoveFromSecondLevel_data() { testRemoveFromSecondLevelData(); }
   void testRemoveFromSecondLevel() { doTest(); }
+
+  void testMoveFromRoot_data() { testMoveFromRootData(); }
+  void testMoveFromRoot() { doTest(); }
+
+  void testMoveFromTopLevel_data() { testMoveFromTopLevelData(); }
+  void testMoveFromTopLevel() { doTest(); }
+
+  void testMoveFromSecondLevel_data() { testMoveFromSecondLevelData(); }
+  void testMoveFromSecondLevel() { doTest(); }
 
 protected:
   void connectTestSignals(QObject *reciever);
@@ -231,6 +259,18 @@ protected:
     QTest::newRow(name.toAscii()) << SignalList() << PersistentChangeList();
   }
 
+  void noopLayoutChangeTest(const QString &name)
+  {
+    processTestName(name);
+
+    SignalList signalList;
+
+    signalList << ( QVariantList() << LayoutAboutToBeChanged );
+    signalList << ( QVariantList() << LayoutChanged );
+
+    QTest::newRow(name.toAscii()) << signalList << PersistentChangeList();
+  }
+
   void testForwardingInsertData(const IndexFinder &indexFinder)
   {
     QTest::addColumn<SignalList>("signalList");
@@ -270,6 +310,18 @@ protected:
     newRemoveTest("remove03", indexFinder, 9, 9, 10);
   }
 
+  void testForwardingMoveData(const IndexFinder &srcFinder, const IndexFinder &destFinder)
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    newMoveTest("move01", srcFinder, 0, 0, 10, destFinder, 5);
+    newMoveTest("move02", srcFinder, 4, 4, 10, destFinder, 0);
+    newMoveTest("move03", srcFinder, 4, 4, 10, destFinder, 10);
+    newMoveTest("move04", srcFinder, 9, 9, 10, destFinder, 4);
+    newMoveTest("move05", srcFinder, 9, 9, 10, destFinder, 0);
+  }
+
   void newInsertTest(const QString &name, const IndexFinder &indexFinder, int start, int end, int rowCount)
   {
     processTestName(name);
@@ -300,6 +352,41 @@ protected:
     if (rowCount - 1 != end)
     {
       persistentList << m_proxyModelTest->getChange( indexFinder, end + 1, rowCount - 1, -1 * (end - start + 1) );
+    }
+
+    QTest::newRow(name.toAscii()) << signalList << persistentList;
+  }
+
+  void newMoveTest(const QString &name, const IndexFinder &srcFinder, int start, int end, int rowCount, const IndexFinder &destFinder, int destStart)
+  {
+    processTestName(name);
+
+    SignalList signalList;
+    PersistentChangeList persistentList;
+
+    signalList << m_proxyModelTest->getSignal(RowsAboutToBeMoved, srcFinder, start, end, destFinder, destStart);
+    signalList << ( QVariantList() << LayoutAboutToBeChanged );
+    signalList << m_proxyModelTest->getSignal(RowsMoved, srcFinder, start, end, destFinder, destStart);
+    signalList << ( QVariantList() << LayoutChanged );
+
+    const bool sameParent = (srcFinder == destFinder);
+    const bool movingUp = (start > destStart);
+
+    if ( sameParent )
+    {
+      if ( movingUp )
+      {
+        persistentList << m_proxyModelTest->getChange( srcFinder, destStart, start -1, end - start + 1 );
+        persistentList << m_proxyModelTest->getChange( srcFinder, start, end, -1 * (start - destStart) );
+      } else {
+        persistentList << m_proxyModelTest->getChange( srcFinder, start, end, destStart - end - 1 );
+        persistentList << m_proxyModelTest->getChange( srcFinder, end + 1, destStart - 1, -1 * (end - start + 1) );
+      }
+    } else {
+      if ( movingUp )
+      {
+        // TODO
+      }
     }
 
     QTest::newRow(name.toAscii()) << signalList << persistentList;
@@ -374,6 +461,31 @@ protected:
   void noop_testRemoveFromSecondLevelData()
   {
     noop_testRemoveFromRootData();
+  }
+
+  void noop_testMoveFromRootData()
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    // These commands have no effect because this model shows children of selection.
+
+    noopTest("move01");
+    noopTest("move02");
+    noopTest("move03");
+    noopTest("move04");
+    noopTest("move05");
+  }
+
+  void noop_testMoveFromTopLevelData()
+  {
+    // Same test names etc.
+    noop_testMoveFromRootData();
+  }
+
+  void noop_testMoveFromSecondLevelData()
+  {
+    noop_testMoveFromRootData();
   }
 
   ProxyModelTest *m_proxyModelTest;

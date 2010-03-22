@@ -99,6 +99,10 @@ public:
   /* reimp */ void testRemoveFromRootData() { SelectorStrategy::testRemoveFromRootData(); }
   /* reimp */ void testRemoveFromTopLevelData() { SelectorStrategy::testRemoveFromTopLevelData(); }
   /* reimp */ void testRemoveFromSecondLevelData() { SelectorStrategy::testRemoveFromSecondLevelData(); }
+
+  /* reimp */ void testMoveFromRootData() { SelectorStrategy::testMoveFromRootData(); }
+  /* reimp */ void testMoveFromTopLevelData() { SelectorStrategy::testMoveFromTopLevelData(); }
+  /* reimp */ void testMoveFromSecondLevelData() { SelectorStrategy::testMoveFromSecondLevelData(); }
 };
 
 /**

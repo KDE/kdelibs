@@ -103,6 +103,21 @@ void ModelCommander::init_testRemoveFromTopLevel(const QString& dataTag)
   initTestModel(dataTag);
 }
 
+void ModelCommander::init_testMoveFromRoot(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
+void ModelCommander::init_testMoveFromSecondLevel(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
+void ModelCommander::init_testMoveFromTopLevel(const QString& dataTag)
+{
+  initTestModel(dataTag);
+}
+
 void ModelCommander::initTestModel(const QString &dataTag)
 {
   Q_UNUSED(dataTag);
@@ -188,6 +203,21 @@ QStringList ModelCommander::execute_testRemoveFromSecondLevel(const QString &dat
   return executeTestRemove(QList<int>() << 5 << 5, dataTag);
 }
 
+QStringList ModelCommander::execute_testMoveFromRoot(const QString &dataTag)
+{
+  return executeTestMove(QList<int>(), dataTag);
+}
+
+QStringList ModelCommander::execute_testMoveFromTopLevel(const QString &dataTag)
+{
+  return executeTestMove(QList<int>() << 5, dataTag);
+}
+
+QStringList ModelCommander::execute_testMoveFromSecondLevel(const QString &dataTag)
+{
+  return executeTestMove(QList<int>() << 5 << 5, dataTag);
+}
+
 void ModelCommander::execute(ModelChangeCommand* command)
 {
   m_currentCommand = command;
@@ -231,6 +261,63 @@ QStringList ModelCommander::executeTestRemove(QList<int> rowAncestors, const QSt
     rem->setEndRow(m_model->rowCount() - 1);
   }
   execute(rem);
+  return testData;
+}
+
+QStringList ModelCommander::executeTestMove(QList<int> rowAncestors, const QString &dataTag)
+{
+  static const QStringList testData = QStringList() << "move01"
+                                                    << "move02"
+                                                    << "move03"
+                                                    << "move04"
+                                                    << "move05";
+
+  if(dataTag.isEmpty())
+    return testData;
+
+  ModelMoveCommand *move = new ModelMoveCommand(m_model, this);
+  if (dataTag == testData.at(0))
+  {
+    // Move a single item from the top to the middle in the same parent.
+    move->setAncestorRowNumbers(rowAncestors);
+    move->setStartRow(0);
+    move->setEndRow(0);
+    move->setDestAncestors(rowAncestors);
+    move->setDestRow(5);
+  } else if (dataTag == testData.at(1))
+  {
+    // Move a single item from the middle to the top in the same parent.
+    move->setAncestorRowNumbers(rowAncestors);
+    move->setStartRow(4);
+    move->setEndRow(4);
+    move->setDestAncestors(rowAncestors);
+    move->setDestRow(0);
+  } else if (dataTag == testData.at(2))
+  {
+    // Move a single item from the middle to the bottom in the same parent.
+    move->setAncestorRowNumbers(rowAncestors);
+    move->setStartRow(4);
+    move->setEndRow(4);
+    move->setDestAncestors(rowAncestors);
+    move->setDestRow(10);
+  } else if (dataTag == testData.at(3))
+  {
+    // Move a single item from the bottom to the middle in the same parent.
+    move->setAncestorRowNumbers(rowAncestors);
+    move->setStartRow(9);
+    move->setEndRow(9);
+    move->setDestAncestors(rowAncestors);
+    move->setDestRow(4);
+  } else if (dataTag == testData.at(4))
+  {
+    // Move a single item from the bottom to the top in the same parent.
+    move->setAncestorRowNumbers(rowAncestors);
+    move->setStartRow(9);
+    move->setEndRow(9);
+    move->setDestAncestors(rowAncestors);
+    move->setDestRow(0);
+  }
+  execute(move);
   return testData;
 }
 
