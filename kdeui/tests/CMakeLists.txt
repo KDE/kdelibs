@@ -22,7 +22,7 @@ MACRO(KDEUI_EXECUTABLE_TESTS)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 SET(proxyModelTestSources
-  selectionproxymodeltest.cpp
+  kselectionproxymodeltestsuite.cpp
 )
 
 add_subdirectory(proxymodeltestsuite)

@@ -19,6 +19,6 @@
 
 
 
-#include "selectionproxymodeltest.h"
+#include "kselectionproxymodeltestsuite.h"
 
-#include "selectionproxymodeltest.moc"
+#include "kselectionproxymodeltestsuite.moc"
