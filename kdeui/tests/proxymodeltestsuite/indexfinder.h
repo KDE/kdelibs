@@ -54,6 +54,7 @@ class IndexFinder
     }
 
     QList<int> rows() const { return m_rows; }
+    void appendRow(int row) { m_rows.append(row); }
     void setRows( const QList<int> &rows ) { m_rows = rows; }
     void setModel(QAbstractItemModel *model) { m_model = model; }
 
