@@ -389,9 +389,9 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {
-            d->mSummary = e.text().trimmed();
+            d->mSummary = e.text();
         } else if (e.tagName() == "changelog") {
-            d->mChangelog = e.text().trimmed();
+            d->mChangelog = e.text();
         } else if (e.tagName() == "version") {
             d->mVersion = e.text().trimmed();
         } else if (e.tagName() == "releasedate") {
@@ -551,5 +551,5 @@ QString KNS3::replaceBBCode(const QString& unformattedText)
     text.replace("\\\'", "\'");
     text.remove("[url]");
     text.remove("[/url]");
-    return text.simplified();
+    return text;
 }

@@ -182,7 +182,8 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
 
         text += "</body></html>";
-        text = replaceBBCode(text);
+        // use simplified to get rid of newlines etc
+        text = replaceBBCode(text).simplified();
         infoLabel->setText(text);
     }
 

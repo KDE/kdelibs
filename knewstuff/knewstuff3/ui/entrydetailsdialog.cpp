@@ -109,8 +109,6 @@ void EntryDetailsDialog::init()
 void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 {
     m_entry = entry;
-    kDebug() << "entry changed!!!!!!!!!1111111eleven" << entry.name();
-
     if (!m_engine->userCanVote(m_entry)) {
         ui.voteGoodButton->setEnabled(false);
         ui.voteBadButton->setEnabled(false);
@@ -126,7 +124,6 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
         ui.authorLabel->setText(m_entry.author().name());
     }
 
-    // TODO: create function to replace bb codes (also use that in delegate)
     QString summary = replaceBBCode(m_entry.summary());
     QString changelog = replaceBBCode(m_entry.changelog());
     ui.descriptionLabel->setText(summary + '\n' + changelog);
