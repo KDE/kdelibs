@@ -12,19 +12,19 @@ Known Issues:
 * [QtWebKit] Does not have support "Content-Disposition". Specifically
   when it contains the keyword "attachement" the content returned is not
   supposed to be rendered. Test case site: http://greenbytes.de/tech/tc2231/
+  See https://bugs.webkit.org/show_bug.cgi?id=36395.
+
+* [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
+    tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
+    See https://bugs.webkit.org/show_bug.cgi?id=29899
 
 * [QtWebKit] No access to the input/control widgets making it very difficult to
   add very useful features such as:
     ** Form completion like the one available for native widgets, e.g.
        QLineEdit and QComboBox.
-    ** Spell checking for all input widgets.
+    ** Spell checking specially for <textarea> widgets.
 
 * [QtWebKit] No Java applet support. 
-
-* [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
-  tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
-  See https://bugs.webkit.org/show_bug.cgi?id=29899
-
 
 * [QtWebKit] Only <meta> tags that contain a "name" attribute are properly parsed
   and returned through QWebFrame::metaData.
