@@ -65,6 +65,7 @@ class EntryInternal::Private : public QSharedData
         int mDownloads;
         int mNumberFans;
         QString mSummary;
+        QString mChangelog;
         QString mPayload;
         QStringList mInstalledFiles;
         QString mProviderId;
@@ -192,6 +193,16 @@ QString EntryInternal::summary() const
 void EntryInternal::setSummary(const QString& summary)
 {
     d->mSummary = summary;
+}
+
+void EntryInternal::setChangelog(const QString& changelog)
+{
+    d->mChangelog = changelog;
+}
+
+QString EntryInternal::changelog() const
+{
+    return d->mChangelog;
 }
 
 QString EntryInternal::version() const
@@ -378,8 +389,9 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {
-            //kDebug() << "adding " << e.tagName() << " to summary as language " << lang;
             d->mSummary = e.text().trimmed();
+        } else if (e.tagName() == "changelog") {
+            d->mChangelog = e.text().trimmed();
         } else if (e.tagName() == "version") {
             d->mVersion = e.text().trimmed();
         } else if (e.tagName() == "releasedate") {
@@ -490,6 +502,7 @@ QDomElement KNS3::EntryInternal::entryXML() const
                      d->mReleaseDate.toString(Qt::ISODate));
 
     e = addElement(doc, el, "summary", d->mSummary);
+    e = addElement(doc, el, "changelog", d->mChangelog);
     e = addElement(doc, el, "preview", d->mPreviewUrl[PreviewSmall1]);
     e = addElement(doc, el, "previewBig", d->mPreviewUrl[PreviewBig1]);
     e = addElement(doc, el, "payload", d->mPayload);

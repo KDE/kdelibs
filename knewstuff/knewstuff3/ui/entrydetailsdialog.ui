@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>569</width>
-    <height>479</height>
+    <width>388</width>
+    <height>309</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -144,7 +144,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>description</string>
+        <string/>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -177,7 +177,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Author Name</string>
+        <string/>
        </property>
        <property name="openExternalLinks">
         <bool>true</bool>

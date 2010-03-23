@@ -128,7 +128,8 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 
     // TODO: create function to replace bb codes (also use that in delegate)
     QString summary = replaceBBCode(m_entry.summary());
-    ui.descriptionLabel->setText(summary);
+    QString changelog = replaceBBCode(m_entry.changelog());
+    ui.descriptionLabel->setText(summary + '\n' + changelog);
     ui.homepageLabel->setText("<a href=\"" + m_entry.homepage().url() + "\">" +
                               i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage...") + "</a>");
 

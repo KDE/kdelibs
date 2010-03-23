@@ -469,6 +469,7 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
 
     entry.setSource(KNS3::EntryInternal::Online);
     entry.setSummary(content.description());
+    entry.setChangelog(content.changelog());
 
     return entry;
 }

@@ -180,6 +180,12 @@ public:
     QString summary() const;
 
     /**
+     * The user written changelog
+     */
+    void setChangelog(const QString& changelog);
+    QString changelog() const;
+
+    /**
      * Sets the version number.
      */
     void setVersion(const QString& version);
