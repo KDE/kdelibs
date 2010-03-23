@@ -358,8 +358,11 @@ void ItemsViewDelegate::slotInstallClicked()
 void ItemsViewDelegate::slotDetailsClicked()
 {
     QModelIndex index = focusedIndex();
-    kDebug() << index;
+    slotDetailsClicked(index);
+}
 
+void ItemsViewDelegate::slotDetailsClicked(const QModelIndex& index)
+{
     if (index.isValid()) {
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if ( !entry.isValid() )
@@ -370,6 +373,6 @@ void ItemsViewDelegate::slotDetailsClicked()
     }
 }
 
-}
+} // namespace
 
 #include "itemsviewdelegate.moc"

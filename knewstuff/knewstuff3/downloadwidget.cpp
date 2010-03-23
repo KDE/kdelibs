@@ -263,6 +263,8 @@ void DownloadWidgetPrivate::init(const QString& configFile)
 
     q->connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), q, SLOT(scrollbarValueChanged(int)));
     q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
+
+    q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
 }
 
 void DownloadWidgetPrivate::slotEntriesLoaded(const EntryInternal::List& entries)

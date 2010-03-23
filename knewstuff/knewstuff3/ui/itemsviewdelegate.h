@@ -62,6 +62,7 @@ private slots:
     bool eventFilter(QObject *watched, QEvent *event);
     void slotInstallClicked();
     void slotLinkClicked(const QString & url);
+    void slotDetailsClicked(const QModelIndex& index);
     void slotDetailsClicked();
 
 private:
