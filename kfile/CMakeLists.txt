@@ -2,8 +2,13 @@ project(kfile)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}
+  ${CMAKE_SOURCE_DIR}/nepomuk/
+  ${CMAKE_SOURCE_DIR}/nepomuk/core/
+  ${CMAKE_SOURCE_DIR}/nepomuk/core/ontology/    
+  ${CMAKE_SOURCE_DIR}/nepomuk/core/ui/
   ${CMAKE_SOURCE_DIR}/solid
   ${CMAKE_BINARY_DIR}/solid
+  ${SOPRANO_INCLUDE_DIR}
 )
 
 add_subdirectory(tests)

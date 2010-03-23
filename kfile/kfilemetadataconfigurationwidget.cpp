@@ -30,10 +30,10 @@
 #include <config-nepomuk.h>
 #ifdef HAVE_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
-    #include <nepomuk/resource.h>
-    #include <nepomuk/resourcemanager.h>
-    #include <nepomuk/property.h>
-    #include <nepomuk/variant.h>
+    #include "resource.h"
+    #include "resourcemanager.h"
+    #include "property.h"
+    #include "variant.h"
 #endif
 
 #include <QEvent>

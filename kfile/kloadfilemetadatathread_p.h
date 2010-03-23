@@ -21,9 +21,9 @@
 #define KLOADFILEMETADATATHREAD_H
 
 #define DISABLE_NEPOMUK_LEGACY
-#include <nepomuk/property.h>
-#include <nepomuk/tag.h>
-#include <nepomuk/variant.h>
+#include <property.h>
+#include <tag.h>
+#include <variant.h>
 
 #include <kurl.h>
 #include <QList>

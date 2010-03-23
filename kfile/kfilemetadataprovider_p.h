@@ -29,7 +29,7 @@
 #include <config-nepomuk.h>
 #ifdef HAVE_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
-    #include <nepomuk/variant.h>
+    #include <variant.h>
 #endif
 
 class KFileItemList;
