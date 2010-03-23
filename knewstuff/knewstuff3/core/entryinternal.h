@@ -36,6 +36,11 @@ namespace KNS3
     static const int PreviewWidth = 96;
     static const int PreviewHeight = 72;
 
+    /**
+     function to remove bb code formatting that opendesktop sends
+     */
+    QString replaceBBCode(const QString& unformattedText);
+
 /**
  * @short KNewStuff data entry container.
  *

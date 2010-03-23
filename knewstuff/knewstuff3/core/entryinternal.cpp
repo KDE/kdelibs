@@ -524,3 +524,19 @@ Entry EntryInternal::toEntry() const
 
     return e;
 }
+
+QString KNS3::replaceBBCode(const QString& unformattedText)
+{
+    QString text(unformattedText);
+    text.replace("[b]", "<b>");
+    text.replace("[/b]", "</b>");
+    text.replace("[i]", "<i>");
+    text.replace("[/i]", "</i>");
+    text.replace("[u]", "<i>");
+    text.replace("[/u]", "</i>");
+    text.replace("\\\"", "\"");
+    text.replace("\\\'", "\'");
+    text.remove("[url]");
+    text.remove("[/url]");
+    return text.simplified();
+}

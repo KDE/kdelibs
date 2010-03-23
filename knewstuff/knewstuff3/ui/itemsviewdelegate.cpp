@@ -182,16 +182,8 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         }
 
         text += "</body></html>";
-        text.replace("[b]", "<b>");
-        text.replace("[/b]", "</b>");
-        text.replace("[i]", "<i>");
-        text.replace("[/i]", "</i>");
-        text.replace("[u]", "<i>");
-        text.replace("[/u]", "</i>");
-        text.remove("[url]");
-        text.remove("[/url]");
-        text.replace("\\\'", "\'");
-        infoLabel->setText(text.simplified());
+        text = replaceBBCode(text);
+        infoLabel->setText(text);
     }
 
     KPushButton * installButton = qobject_cast<KPushButton*>(widgets.at(DelegateInstallButton));
