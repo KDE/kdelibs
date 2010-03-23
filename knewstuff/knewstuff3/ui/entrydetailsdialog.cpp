@@ -136,9 +136,7 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
            && m_entry.previewUrl(EntryInternal::PreviewSmall3).isEmpty();
     ui.previewSmall->setVisible(!hideSmallPreviews);
 
-    for (int type = EntryInternal::PreviewSmall1; type < EntryInternal::PreviewBig3; ++type) {
-        kDebug() << "LOAD: " << type;
-
+    for (int type = EntryInternal::PreviewSmall1; type <= EntryInternal::PreviewBig3; ++type) {
         if (m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
             ui.previewBig->setVisible(false);
         } else
