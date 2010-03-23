@@ -263,7 +263,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
             entry.setStatus(EntryInternal::Updateable);
         }
         emit signalEntryChanged(entry);
-        emit signalInstallationFailed(i18n("Could not install \"%1\": file not found."));
+        emit signalInstallationFailed(i18n("Could not install \"%1\": file not found.", entry.name()));
         return;
     }
 
