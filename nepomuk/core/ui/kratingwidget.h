@@ -69,7 +69,7 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
 
     /**
      * The layout direction. If RTL the stars
-     * representing the rating value will be drawn from the 
+     * representing the rating value will be drawn from the
      * right.
      *
      * \sa setLayoutDirection
@@ -104,21 +104,20 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
 
  Q_SIGNALS:
     /**
-     * Emitted if the rating is changed by user interaction (ie. mouse click).
-     * A call to setRating does not trigger this signal.
+     * This signal is emitted when the rating is changed.
      */
     void ratingChanged( unsigned int rating );
     void ratingChanged( int rating );
 
  public Q_SLOTS:
     /**
-     * Set the current rating. Calling this method will NOT trigger the
-     * ratingChanged signal.
+     * Set the current rating. Calling this method will trigger the
+     * ratingChanged signal if @p rating is different from the previous rating.
      */
     void setRating( int rating );
 
     /**
-     * \deprecated use setRating( int max )
+     * \deprecated use setRating( int rating )
      */
     KDE_DEPRECATED void setRating( unsigned int rating );
 
