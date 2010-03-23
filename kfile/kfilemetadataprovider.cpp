@@ -27,10 +27,10 @@
 #include <config-nepomuk.h>
 #ifdef HAVE_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
-    #include "core/ui/nepomukmassupdatejob.h"
+    #include <nepomukmassupdatejob.h>
     #include "kratingwidget.h"
-    #include "resource.h"
-    #include "resourcemanager.h"
+    #include <resource.h>
+    #include <resourcemanager.h>
 
     #include "kcommentwidget_p.h"
     #include "ktaggingwidget_p.h"

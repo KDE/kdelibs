@@ -40,8 +40,8 @@
 #ifdef HAVE_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
 
-    #include <nepomuk/property.h>
-    #include <nepomuk/tag.h>
+    #include <property.h>
+    #include <tag.h>
 
     #include <QMutex>
     #include <QSpacerItem>

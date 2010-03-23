@@ -20,7 +20,7 @@
 #ifndef TAGGING_WIDGET_H
 #define TAGGING_WIDGET_H
 
-#include <nepomuk/tag.h>
+#include <tag.h>
 #include <QString>
 #include <QWidget>
 

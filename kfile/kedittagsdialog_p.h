@@ -20,7 +20,7 @@
 #define KEDIT_TAGS_DIALOG_H
 
 #include <kdialog.h>
-#include <nepomuk/tag.h>
+#include <tag.h>
 
 class KLineEdit;
 class QListWidget;

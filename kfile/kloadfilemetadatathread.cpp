@@ -29,8 +29,8 @@
 #include "kfilemetadataprovider_p.h"
 #include <kprotocolinfo.h>
 
-#include <nepomuk/resource.h>
-#include <nepomuk/resourcemanager.h>
+#include <resource.h>
+#include <resourcemanager.h>
 
 #include <QMutexLocker>
 
