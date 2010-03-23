@@ -198,7 +198,8 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
                 SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
         connect(provider.data(), SIGNAL(entryDetailsLoaded(KNS3::EntryInternal)), SLOT(slotEntryDetailsLoaded(KNS3::EntryInternal)));
         connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
-        connect(provider.data(), SIGNAL(jobStarted(KJob*)), this, SLOT(providerJobStarted(KJob*)));
+        connect(provider.data(), SIGNAL(signalError(QString)), this, SIGNAL(signalError(QString)));
+        connect(provider.data(), SIGNAL(signalInformation(QString)), this, SIGNAL(signalIdle(QString)));
 
         if (provider->setProviderXML(n)) {
             m_providers.insert(provider->id(), provider);
@@ -404,7 +405,7 @@ void Engine::loadPreview(const KNS3::EntryInternal& entry, EntryInternal::Previe
 
 void Engine::slotPreviewLoaded(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
 {
-    kDebug() << "loaded: " << entry.name();
+    //kDebug() << "loaded: " << entry.name();
     emit signalEntryPreviewLoaded(entry, type);
     --m_numPictureJobs;
     updateStatus();

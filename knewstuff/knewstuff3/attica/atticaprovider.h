@@ -72,7 +72,6 @@ namespace KNS3
         virtual bool userCanBecomeFan() {return true;}
         virtual void becomeFan(const EntryInternal& entry);
 
-
     private Q_SLOTS:
         void providerLoaded(const Attica::Provider& provider);
         void listOfCategoriesLoaded(Attica::BaseJob*);
@@ -82,7 +81,6 @@ namespace KNS3
         void authenticationCredentialsMissing(const Provider&);
         void votingFinished(Attica::BaseJob*);
         void becomeFanFinished(Attica::BaseJob* job);
-        void atticaJobStarted(QNetworkReply* reply);
         void detailsLoaded(Attica::BaseJob* job);
 
     protected:
@@ -90,6 +88,8 @@ namespace KNS3
 
     private:
         EntryInternal::List installedEntries() const;
+        bool jobSuccess(Attica::BaseJob* job) const;
+
         Attica::Provider::SortMode atticaSortMode(const SortMode& sortMode);
 
         EntryInternal entryFromAtticaContent(const Attica::Content&);

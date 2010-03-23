@@ -149,8 +149,9 @@ namespace KNS3
         void entryDetailsLoaded(const KNS3::EntryInternal&);
         void payloadLinkLoaded(const KNS3::EntryInternal&);
 
-        void jobStarted(KJob*);
-        
+        void signalInformation(const QString&) const;
+        void signalError(const QString&) const;
+
     protected:
         QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;
         Provider(ProviderPrivate &dd);

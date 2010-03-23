@@ -152,19 +152,13 @@ void AtticaProvider::providerLoaded(const Attica::Provider& provider)
     d->m_provider = provider;
 
     Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
-    connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
     job->start();
 }
 
-void AtticaProvider::atticaJobStarted(QNetworkReply* reply)
-{
-    KJob* kJob(new AtticaJobWrapper(reply));
-    emit jobStarted(kJob);
-}
-
 void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
+    if (!jobSuccess(listJob)) return;
     Q_D(AtticaProvider);
     kDebug() << "loading categories: " << d->categoryMap.keys();
 
@@ -235,6 +229,7 @@ void AtticaProvider::loadEntryDetails(const KNS3::EntryInternal& entry)
 
 void AtticaProvider::detailsLoaded(BaseJob* job)
 {
+    if (!jobSuccess(job)) return;
     ItemJob<Content>* contentJob = static_cast<ItemJob<Content>*>(job);
     Content content = contentJob->result();
     EntryInternal entry = entryFromAtticaContent(content);
@@ -244,6 +239,7 @@ void AtticaProvider::detailsLoaded(BaseJob* job)
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
     Q_D(AtticaProvider);
+    if (!jobSuccess(job)) return;
 
     // FIXME: create a function to handel errors and enable after string freeze!
     /*
@@ -319,15 +315,10 @@ void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
 void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
 {
     Q_D(AtticaProvider);
+    if (!jobSuccess(baseJob)) return;
 
     ItemJob<AccountBalance>* job = static_cast<ItemJob<AccountBalance>*>(baseJob);
     AccountBalance item = job->result();
-
-    if (job->metadata().error() != Metadata::NoError) {
-        kDebug() << job->metadata().error() << job->metadata().statusCode();
-        KMessageBox::error(0, i18n("Could not get account balance."));
-        return;
-    }
 
     EntryInternal entry = d->downloadLinkJobs.take(job);
     Content content = d->cachedContent.value(entry.uniqueId());
@@ -357,14 +348,10 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
 void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
 {
     Q_D(AtticaProvider);
+    if (!jobSuccess(baseJob)) return;
 
     ItemJob<DownloadItem>* job = static_cast<ItemJob<DownloadItem>*>(baseJob);
     DownloadItem item = job->result();
-    if (job->metadata().error() != Metadata::NoError) {
-        kDebug() << job->metadata().error() << job->metadata().statusCode();
-        KMessageBox::error(0, i18n("Could not get download link."));
-        return;
-    }
 
     EntryInternal entry = d->downloadLinkJobs.take(job);
     entry.setPayload(QString(item.url().toString()));
@@ -395,11 +382,8 @@ void AtticaProvider::vote(const EntryInternal& entry, bool positiveVote)
 
 void AtticaProvider::votingFinished(Attica::BaseJob* job)
 {
-    if (job->metadata().error() == Attica::Metadata::NoError) {
-        KMessageBox::information(0, i18n("Your vote was successful."));
-    } else {
-        KMessageBox::information(0, i18n("Voting failed."));
-    }
+    if (!jobSuccess(job)) return;
+    emit signalInformation(i18nc("voting for an item (good/bad)", "Your vote was recorded."));
 }
 
 void AtticaProvider::becomeFan(const EntryInternal& entry)
@@ -414,11 +398,28 @@ void AtticaProvider::becomeFan(const EntryInternal& entry)
 
 void AtticaProvider::becomeFanFinished(Attica::BaseJob* job)
 {
+    if (!jobSuccess(job)) return;
+    emit signalInformation(i18n("You are now a fan."));
+}
+
+bool AtticaProvider::jobSuccess(Attica::BaseJob* job) const
+{
     if (job->metadata().error() == Attica::Metadata::NoError) {
-        KMessageBox::information(0, i18n("You are now a fan."));
-    } else {
-        KMessageBox::information(0, i18n("Could not make you a fan."));
+        return true;
     }
+    kDebug() << "job error: " << job->metadata().error() << " status code: " << job->metadata().statusCode();
+
+    if (job->metadata().error() == Attica::Metadata::NetworkError) {
+        emit signalError(i18n("Network error. (%1)", job->metadata().statusCode()));
+    }
+    if (job->metadata().error() == Attica::Metadata::OcsError) {
+        if (job->metadata().statusCode() == 200) {
+            emit signalError(i18n("Too many requests to server. Please try again in a few minutes."));
+        } else {
+            emit signalError(i18n("Unknown Open Collaboration Service API error. (%1)", job->metadata().statusCode()));
+        }
+    }
+    return false;
 }
 
 EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& content)
@@ -470,6 +471,12 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setSource(KNS3::EntryInternal::Online);
     entry.setSummary(content.description());
     entry.setChangelog(content.changelog());
+
+    /*
+    QList<Attica::DownloadDescription> descs = content.downloadUrlDescriptions();
+    foreach (Attica::DownloadDescription desc, descs) {
+        kDebug() << "Got a description: " << desc.name() << desc.priceAmount() << desc.isDownloadtypLink() << desc.distributionType() << desc.link();
+    }*/
 
     return entry;
 }

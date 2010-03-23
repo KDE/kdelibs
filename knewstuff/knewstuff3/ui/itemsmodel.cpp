@@ -106,7 +106,6 @@ void ItemsModel::clearEntries()
 
 void ItemsModel::slotEntryPreviewLoaded(const EntryInternal& entry, EntryInternal::PreviewType type)
 {
-    kDebug() << entry.name() << type;
     // we only care about the first small preview in the list
     if (type != EntryInternal::PreviewSmall1) {
         return;
