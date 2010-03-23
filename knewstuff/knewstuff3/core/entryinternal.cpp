@@ -549,6 +549,8 @@ QString KNS3::replaceBBCode(const QString& unformattedText)
     text.replace("[/u]", "</i>");
     text.replace("\\\"", "\"");
     text.replace("\\\'", "\'");
+    text.replace("[li]", "* "); // TODO: better replacement for list elements?
+    text.remove("[/li]");
     text.remove("[url]");
     text.remove("[/url]");
     return text;
