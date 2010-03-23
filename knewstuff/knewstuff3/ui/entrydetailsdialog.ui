@@ -177,7 +177,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Autor Name</string>
+        <string>Author Name</string>
        </property>
        <property name="openExternalLinks">
         <bool>true</bool>
