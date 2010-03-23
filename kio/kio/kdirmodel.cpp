@@ -27,7 +27,7 @@
 #include <kio/copyjob.h>
 #include <kio/fileundomanager.h>
 #include <kio/jobuidelegate.h>
-#include <kio/joburlcache.h>
+#include <kio/joburlcache_p.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <QMimeData>

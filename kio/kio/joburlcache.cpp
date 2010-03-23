@@ -17,7 +17,7 @@
 *  If not, see <http://www.gnu.org/licenses/>.                               *
 *****************************************************************************/
 
-#include "joburlcache.h"
+#include "joburlcache_p.h"
 #include "kuiserver_interface.h"
 
 #include <kglobal.h>
@@ -64,4 +64,4 @@ void JobUrlCache::requestJobUrlsChanged()
     emit jobUrlsChanged(m_destUrls);
 }
 
-#include "joburlcache.moc"
+#include "joburlcache_p.moc"
