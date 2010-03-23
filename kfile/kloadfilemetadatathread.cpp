@@ -32,7 +32,10 @@
 #include <nepomuk/resource.h>
 #include <nepomuk/resourcemanager.h>
 
+#include <QMutexLocker>
+
 KLoadFileMetaDataThread::KLoadFileMetaDataThread() :
+    m_mutex(),
     m_data(),
     m_urls(),
     m_canceled(false)
@@ -46,6 +49,7 @@ KLoadFileMetaDataThread::~KLoadFileMetaDataThread()
 
 void KLoadFileMetaDataThread::load(const KUrl::List& urls)
 {
+    QMutexLocker locker(&m_mutex);
     m_urls = urls;
     m_canceled = false;
     start();
@@ -53,6 +57,7 @@ void KLoadFileMetaDataThread::load(const KUrl::List& urls)
 
 QHash<KUrl, Nepomuk::Variant> KLoadFileMetaDataThread::data() const
 {
+    QMutexLocker locker(&m_mutex);
     return m_data;
 }
 
@@ -65,15 +70,20 @@ void KLoadFileMetaDataThread::cancel()
 
 void KLoadFileMetaDataThread::run()
 {
+    QMutexLocker locker(&m_mutex);
+    const KUrl::List urls = m_urls;
+    locker.unlock(); // no shared member is accessed until locker.relock()
+
     KConfig config("kmetainformationrc", KConfig::NoGlobals);
     KConfigGroup settings = config.group("Show");
 
     unsigned int rating = 0;
     QString comment;
     QList<Nepomuk::Tag> tags;
+    QHash<KUrl, Nepomuk::Variant> data;
 
     bool first = true;
-    foreach (const KUrl& url, m_urls) {
+    foreach (const KUrl& url, urls) {
         if (m_canceled) {
             return;
         }
@@ -101,7 +111,7 @@ void KLoadFileMetaDataThread::run()
             tags = file.tags();
         }
 
-        if (first && (m_urls.count() == 1)) {
+        if (first && (urls.count() == 1)) {
             // get cached meta data by checking the indexed files
             QHash<QUrl, Nepomuk::Variant> variants = file.properties();
             QHash<QUrl, Nepomuk::Variant>::const_iterator it = variants.constBegin();
@@ -109,7 +119,7 @@ void KLoadFileMetaDataThread::run()
                 Nepomuk::Types::Property prop(it.key());
                 const QString uriString = prop.uri().toString();
                 if (settings.readEntry(uriString, true)) {
-                    m_data.insert(uriString, formatValue(it.value()));
+                    data.insert(uriString, formatValue(it.value()));
                 }
                 ++it;
             }
@@ -117,13 +127,13 @@ void KLoadFileMetaDataThread::run()
             if (variants.isEmpty()) {
                 // the file has not been indexed, query the meta data
                 // directly from the file
-                KFileMetaInfo metaInfo(m_urls.first());
+                KFileMetaInfo metaInfo(urls.first());
                 const QHash<QString, KFileMetaInfoItem> metaInfoItems = metaInfo.items();
                 foreach (const KFileMetaInfoItem& metaInfoItem, metaInfoItems) {
                     const QString uriString = metaInfoItem.name();
                     if (settings.readEntry(uriString, true)) {
                         const Nepomuk::Variant value(metaInfoItem.value());
-                        m_data.insert(uriString, formatValue(value));
+                        data.insert(uriString, formatValue(value));
                     }
                 }
             }
@@ -134,15 +144,18 @@ void KLoadFileMetaDataThread::run()
 
     const bool isNepomukActivated = (Nepomuk::ResourceManager::instance()->init() == 0);
     if (isNepomukActivated) {
-        m_data.insert(KUrl("kfileitem#rating"), rating);
-        m_data.insert(KUrl("kfileitem#comment"), comment);
+        data.insert(KUrl("kfileitem#rating"), rating);
+        data.insert(KUrl("kfileitem#comment"), comment);
 
         QList<Nepomuk::Variant> tagVariants;
         foreach (const Nepomuk::Tag& tag, tags) {
             tagVariants.append(Nepomuk::Variant(tag));
         }
-        m_data.insert(KUrl("kfileitem#tags"), tagVariants);
+        data.insert(KUrl("kfileitem#tags"), tagVariants);
     }
+
+    locker.relock();
+    m_data = data;
 }
 
 void KLoadFileMetaDataThread::slotLoadingFinished()

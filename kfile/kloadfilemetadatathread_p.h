@@ -27,6 +27,7 @@
 
 #include <kurl.h>
 #include <QList>
+#include <QMutex>
 #include <QThread>
 
 /**
@@ -94,8 +95,10 @@ private:
     QString formatValue(const Nepomuk::Variant& value);
 
 private:
+    mutable QMutex m_mutex;
     QHash<KUrl, Nepomuk::Variant> m_data;
     KUrl::List m_urls;
+
     volatile bool m_canceled;
 };
 #endif
