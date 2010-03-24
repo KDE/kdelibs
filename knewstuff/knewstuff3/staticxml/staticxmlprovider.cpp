@@ -331,7 +331,7 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) co
     return false;
 }
 
-void StaticXmlProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
+void StaticXmlProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int)
 {
     kDebug() << "Payload: " << entry.payload();
     emit payloadLinkLoaded(entry);

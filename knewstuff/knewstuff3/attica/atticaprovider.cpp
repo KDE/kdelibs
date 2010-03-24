@@ -268,26 +268,24 @@ Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMo
     return Attica::Provider::Rating;
 }
 
-void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry)
+void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int linkId)
 {
     Q_D(AtticaProvider);
 
     Attica::Content content = d->cachedContent.value(entry.uniqueId());
-    DownloadDescription desc = content.downloadUrlDescription(0);
+    DownloadDescription desc = content.downloadUrlDescription(linkId);
 
     if (desc.hasPrice()) {
         // Ask for balance, then show information...
         ItemJob<AccountBalance>* job = d->m_provider.requestAccountBalance();
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(accountBalanceLoaded(Attica::BaseJob*)));
-        connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
         d->downloadLinkJobs[job] = entry;
         job->start();
 
         kDebug() << "get account balance";
     } else {
-        ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
+        ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId(), QString::number(linkId));
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
-        connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
         d->downloadLinkJobs[job] = entry;
         job->start();
 

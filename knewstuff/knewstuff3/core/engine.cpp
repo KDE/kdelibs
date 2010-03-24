@@ -338,7 +338,7 @@ bool Engine::entryChanged(const EntryInternal& oldentry, const EntryInternal& en
     return false;
 }
 
-void Engine::install(KNS3::EntryInternal entry)
+void Engine::install(KNS3::EntryInternal entry, int linkId)
 {
     if (entry.status() == EntryInternal::Updateable) {
         entry.setStatus(EntryInternal::Updating);
@@ -351,7 +351,7 @@ void Engine::install(KNS3::EntryInternal entry)
         << " from: " << entry.providerId();
     QSharedPointer<Provider> p = m_providers.value(entry.providerId());
     if (p) {
-        p->loadPayloadLink(entry);
+        p->loadPayloadLink(entry, linkId);
 
         ++m_numInstallJobs;
         updateStatus();

@@ -71,11 +71,14 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     infoLabel->installEventFilter(delegate);
     list << infoLabel;
 
-    KPushButton * installButton = new KPushButton();
+    QToolButton * installButton = new QToolButton();
+    installButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    installButton->setPopupMode(QToolButton::InstantPopup);
     list << installButton;
     setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
+    connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
 
     KPushButton* detailsButton = new KPushButton();
     list << detailsButton;
@@ -181,43 +184,71 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         infoLabel->setText(text);
     }
 
-    KPushButton * installButton = qobject_cast<KPushButton*>(widgets.at(DelegateInstallButton));
+    QToolButton * installButton = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
     if (installButton != 0) {
         installButton->resize(size);
         installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
 
+        if (installButton->menu()) {
+            QMenu* buttonMenu = installButton->menu();
+            buttonMenu->clear();
+            installButton->setMenu(0);
+            buttonMenu->deleteLater();
+        }
+
+        bool installable = false;
+        bool enabled = true;
+        QString text;
+        KIcon icon;
+
         switch (entry.status()) {
-            case EntryInternal::Installed:
-            installButton->setText(i18n("Uninstall"));
-            installButton->setEnabled(true);
-            installButton->setIcon(m_iconDelete);
+        case EntryInternal::Installed:
+            text = i18n("Uninstall");
+            icon = m_iconDelete;
             break;
         case EntryInternal::Updateable:
-            installButton->setText(i18n("Update"));
-            installButton->setEnabled(true);
-            installButton->setIcon(m_iconUpdate);
-            break;
-        case EntryInternal::Deleted:
-            installButton->setText(i18n("Install again"));
-            installButton->setEnabled(true);
-            installButton->setIcon(m_iconInstall);
+            text = i18n("Update");
+            icon = m_iconUpdate;
+            installable = true;
             break;
         case EntryInternal::Installing:
-            installButton->setText(i18n("Installing"));
-            installButton->setEnabled(false);
-            installButton->setIcon(m_iconUpdate);
+            text = i18n("Installing");
+            enabled = false;
+            icon = m_iconUpdate;
             break;
         case EntryInternal::Updating:
-            installButton->setText(i18n("Updating"));
-            installButton->setEnabled(false);
-            installButton->setIcon(m_iconUpdate);
+            text = i18n("Updating");
+            enabled = false;
+            icon = m_iconUpdate;
+            break;
+        case EntryInternal::Downloadable:
+            text = i18n("Install");
+            icon = m_iconInstall;
+            installable = true;
+            break;
+        case EntryInternal::Deleted:
+            text = i18n("Install again");
+            icon = m_iconInstall;
+            installable = true;
             break;
         default:
-            installButton->setText(i18n("Install"));
-            installButton->setEnabled(true);
-            installButton->setIcon(m_iconInstall);
+            text = i18n("Install");
         }
+        installButton->setText(text);
+        installButton->setEnabled(enabled);
+        installButton->setIcon(icon);
+        if (installable && entry.downloadLinkCount() > 1) {
+            KMenu * installMenu = new KMenu(installButton);
+            foreach (EntryInternal::DownloadLinkInformation info, entry.downloadLinkInformationList()) {
+                QAction* installAction = installMenu->addAction(m_iconInstall, info.name + " (" + info.distributionType.trimmed() + ")");
+                installAction->setData(info.id);
+            }
+            installButton->setMenu(installMenu);
+        }
+
     }
+
+    //kDebug() << " size hint: " << installButton->sizeHint() << " size " << installButton->size() << " size old " << size;
 
     KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
     if (detailsButton) {
@@ -241,8 +272,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     }
 }
 
-// draw the entry based on what
-// paint the item at index with all it's attributes shown
+// draws the preview
 void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
     int margin = option.fontMetrics.height() / 2;
@@ -339,6 +369,15 @@ void ItemsViewDelegate::slotInstallClicked()
         } else {
             m_engine->install(entry);
         }
+    }
+}
+
+void ItemsViewDelegate::slotInstallActionTriggered(QAction* action)
+{
+    QModelIndex index = focusedIndex();
+    if (index.isValid()) {
+        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
+        m_engine->install(entry, action->data().toInt());
     }
 }
 

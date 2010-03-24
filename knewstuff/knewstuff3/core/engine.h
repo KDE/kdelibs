@@ -81,7 +81,7 @@ public:
      * @see signalInstallationFinished
      * @see signalInstallationFailed
      */
-    void install(KNS3::EntryInternal entry);
+    void install(KNS3::EntryInternal entry, int linkId = 1);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed

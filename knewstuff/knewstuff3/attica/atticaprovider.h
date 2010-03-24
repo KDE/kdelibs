@@ -64,7 +64,7 @@ namespace KNS3
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request);
         virtual void loadEntryDetails(const KNS3::EntryInternal& entry);
-        virtual void loadPayloadLink(const EntryInternal& entry);
+        virtual void loadPayloadLink(const EntryInternal& entry, int linkId);
 
         virtual bool userCanVote() {return true;}
         virtual void vote(const EntryInternal& entry, bool positiveVote);

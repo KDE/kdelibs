@@ -69,7 +69,7 @@ namespace KNS3
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
 
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request);
-        virtual void loadPayloadLink(const KNS3::EntryInternal& entry);
+        virtual void loadPayloadLink(const KNS3::EntryInternal& entry, int);
 
     private:
         bool searchIncludesEntry(const EntryInternal& entry) const;

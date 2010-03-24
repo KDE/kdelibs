@@ -132,7 +132,7 @@ namespace KNS3
          */
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request) = 0;
         virtual void loadEntryDetails(const KNS3::EntryInternal&) {}
-        virtual void loadPayloadLink(const EntryInternal& entry) = 0;
+        virtual void loadPayloadLink(const EntryInternal& entry, int linkId) = 0;
 
         virtual bool userCanVote() {return false;}
         virtual void vote(const EntryInternal& entry, bool positiveVote) { Q_UNUSED(entry) Q_UNUSED(positiveVote) }
