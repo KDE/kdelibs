@@ -984,6 +984,8 @@ void KateSearchBar::findAll(Range inputRange, const QString * replacement) {
         }
     }
 
+    } while (block && ++line <= inputRange.end().line());
+
     // After last match
     if (matchCounter > 0) {
         if (replacement != NULL) {
