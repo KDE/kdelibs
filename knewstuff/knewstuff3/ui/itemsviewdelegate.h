@@ -75,6 +75,7 @@ private:
     KIcon m_iconDelete;
     QPixmap m_frameImage;
     QPixmap m_noImage;
+    QSize m_buttonSize;
 };
 }
 

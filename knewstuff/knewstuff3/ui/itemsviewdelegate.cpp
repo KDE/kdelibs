@@ -109,11 +109,89 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
     // setup the install button
     int margin = option.fontMetrics.height() / 2;
-
     int right = option.rect.width();
-    //int bottom = option.rect.height();
 
-    QSize size(option.fontMetrics.height() * 7, widgets.at(DelegateInstallButton)->sizeHint().height());
+    QToolButton * installButton = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
+    if (installButton != 0) {
+
+        if (installButton->menu()) {
+            QMenu* buttonMenu = installButton->menu();
+            buttonMenu->clear();
+            installButton->setMenu(0);
+            buttonMenu->deleteLater();
+        }
+
+        bool installable = false;
+        bool enabled = true;
+        QString text;
+        KIcon icon;
+
+        switch (entry.status()) {
+        case EntryInternal::Installed:
+            text = i18n("Uninstall");
+            icon = m_iconDelete;
+            break;
+        case EntryInternal::Updateable:
+            text = i18n("Update");
+            icon = m_iconUpdate;
+            installable = true;
+            break;
+        case EntryInternal::Installing:
+            text = i18n("Installing");
+            enabled = false;
+            icon = m_iconUpdate;
+            break;
+        case EntryInternal::Updating:
+            text = i18n("Updating");
+            enabled = false;
+            icon = m_iconUpdate;
+            break;
+        case EntryInternal::Downloadable:
+            text = i18n("Install");
+            icon = m_iconInstall;
+            installable = true;
+            break;
+        case EntryInternal::Deleted:
+            text = i18n("Install again");
+            icon = m_iconInstall;
+            installable = true;
+            break;
+        default:
+            text = i18n("Install");
+        }
+        installButton->setText(text);
+        installButton->setEnabled(enabled);
+        installButton->setIcon(icon);
+        if (installable && entry.downloadLinkCount() > 1) {
+            KMenu * installMenu = new KMenu(installButton);
+            foreach (EntryInternal::DownloadLinkInformation info, entry.downloadLinkInformationList()) {
+                QString text = info.name;
+                if (!info.distributionType.trimmed().isEmpty()) {
+                    text + " (" + info.distributionType.trimmed() + ")";
+                }
+                QAction* installAction = installMenu->addAction(m_iconInstall, text);
+                installAction->setData(info.id);
+            }
+            installButton->setMenu(installMenu);
+        }
+
+    }
+
+    KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
+    if (detailsButton) {
+        detailsButton->setText(i18n("Details..."));
+        detailsButton->setIcon(KIcon("documentinfo"));
+    }
+
+    if (m_buttonSize.width() < installButton->sizeHint().width()) {
+        const_cast<QSize&>(m_buttonSize) = installButton->sizeHint();
+    }
+
+    //QSize size(qMax(option.fontMetrics.height() * 7, installButton->sizeHint().width()), widgets.at(DelegateInstallButton)->sizeHint().height());
+    installButton->resize(m_buttonSize);
+    installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
+    detailsButton->resize(m_buttonSize);
+    detailsButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()/2);
 
     QLabel * infoLabel = qobject_cast<QLabel*>(widgets.at(DelegateLabel));
     infoLabel->setWordWrap(true);
@@ -121,11 +199,11 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         if (model->hasPreviewImages()) {
             // move the text right by kPreviewWidth + margin pixels to fit the preview
             infoLabel->move(PreviewWidth + margin * 2, 0);
-            infoLabel->resize(QSize(option.rect.width() - PreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
+            infoLabel->resize(QSize(option.rect.width() - PreviewWidth - (margin * 6) - m_buttonSize.width(), option.fontMetrics.height() * 7));
 
         } else {
             infoLabel->move(margin, 0);
-            infoLabel->resize(QSize(option.rect.width() - (margin * 4) - size.width(), option.fontMetrics.height() * 7));
+            infoLabel->resize(QSize(option.rect.width() - (margin * 4) - m_buttonSize.width(), option.fontMetrics.height() * 7));
         }
 
         QString text = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -184,79 +262,6 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         infoLabel->setText(text);
     }
 
-    QToolButton * installButton = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
-    if (installButton != 0) {
-        installButton->resize(size);
-        installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
-
-        if (installButton->menu()) {
-            QMenu* buttonMenu = installButton->menu();
-            buttonMenu->clear();
-            installButton->setMenu(0);
-            buttonMenu->deleteLater();
-        }
-
-        bool installable = false;
-        bool enabled = true;
-        QString text;
-        KIcon icon;
-
-        switch (entry.status()) {
-        case EntryInternal::Installed:
-            text = i18n("Uninstall");
-            icon = m_iconDelete;
-            break;
-        case EntryInternal::Updateable:
-            text = i18n("Update");
-            icon = m_iconUpdate;
-            installable = true;
-            break;
-        case EntryInternal::Installing:
-            text = i18n("Installing");
-            enabled = false;
-            icon = m_iconUpdate;
-            break;
-        case EntryInternal::Updating:
-            text = i18n("Updating");
-            enabled = false;
-            icon = m_iconUpdate;
-            break;
-        case EntryInternal::Downloadable:
-            text = i18n("Install");
-            icon = m_iconInstall;
-            installable = true;
-            break;
-        case EntryInternal::Deleted:
-            text = i18n("Install again");
-            icon = m_iconInstall;
-            installable = true;
-            break;
-        default:
-            text = i18n("Install");
-        }
-        installButton->setText(text);
-        installButton->setEnabled(enabled);
-        installButton->setIcon(icon);
-        if (installable && entry.downloadLinkCount() > 1) {
-            KMenu * installMenu = new KMenu(installButton);
-            foreach (EntryInternal::DownloadLinkInformation info, entry.downloadLinkInformationList()) {
-                QAction* installAction = installMenu->addAction(m_iconInstall, info.name + " (" + info.distributionType.trimmed() + ")");
-                installAction->setData(info.id);
-            }
-            installButton->setMenu(installMenu);
-        }
-
-    }
-
-    //kDebug() << " size hint: " << installButton->sizeHint() << " size " << installButton->size() << " size old " << size;
-
-    KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
-    if (detailsButton) {
-        detailsButton->setText(i18n("Details..."));
-        detailsButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()/2);
-        detailsButton->resize(size);
-    }
-
     RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
         if (entry.rating() > 0) {
@@ -265,7 +270,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             rating->setRating((entry.rating()-20)*10/60);
             // put the rating label below the install button
             rating->move(right - installButton->width() - margin, option.rect.height()/2 + installButton->height()/2);
-            rating->resize(size);
+            rating->resize(m_buttonSize);
         } else {
             rating->setVisible(false);
         }
