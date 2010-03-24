@@ -187,11 +187,14 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         const_cast<QSize&>(m_buttonSize) = installButton->sizeHint();
     }
 
-    //QSize size(qMax(option.fontMetrics.height() * 7, installButton->sizeHint().width()), widgets.at(DelegateInstallButton)->sizeHint().height());
-    installButton->resize(m_buttonSize);
-    installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
-    detailsButton->resize(m_buttonSize);
-    detailsButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()/2);
+    if (installButton) {
+        installButton->resize(m_buttonSize);
+        installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
+    }
+    if (detailsButton) {
+        detailsButton->resize(m_buttonSize);
+        detailsButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()/2);
+    }
 
     QLabel * infoLabel = qobject_cast<QLabel*>(widgets.at(DelegateLabel));
     infoLabel->setWordWrap(true);
