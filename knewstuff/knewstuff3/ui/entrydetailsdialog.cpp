@@ -126,7 +126,13 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 
     QString summary = replaceBBCode(m_entry.summary()).replace("\n", "<br/>");
     QString changelog = replaceBBCode(m_entry.changelog()).replace("\n", "<br/>");
-    ui.descriptionLabel->setText("<html><body>" + summary + "\n\n" + changelog + "</body></html>");
+
+    QString description = "<html><body>" + summary;
+    if (!changelog.isEmpty()) {
+        description += "<br/><p><b>" + i18n("Changelog:") + "</b><br/>" + changelog + "</p>";
+    }
+    description += "</body></html>";
+    ui.descriptionLabel->setText(description);
     ui.homepageLabel->setText("<a href=\"" + m_entry.homepage().url() + "\">" +
                               i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage...") + "</a>");
 
