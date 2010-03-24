@@ -21,6 +21,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QApplication>
+#include <QtGui/QToolButton>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -45,21 +46,14 @@ namespace KNS3
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
         , m_engine(engine)
+        , m_iconInvalid(KIcon("dialog-error"))
+        , m_iconInstall(KIcon("dialog-ok"))
+        , m_iconUpdate(KIcon("system-software-update"))
+        , m_iconDelete(KIcon("edit-delete"))
+        , m_noImage(SmallIcon( "image-missing", KIconLoader::SizeLarge, KIconLoader::DisabledState ))
 {
     QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");
     m_frameImage = QPixmap(framefile);
-
-    m_noImage = SmallIcon( "image-missing", KIconLoader::SizeLarge, KIconLoader::DisabledState );
-    // Invalid
-    m_statusicons << KIcon("dialog-error");
-    // Downloadable
-    m_statusicons << KIcon();
-    //Installed
-    m_statusicons << KIcon("dialog-ok");
-    //Updateable
-    m_statusicons << KIcon("system-software-update");
-    //Deleted
-    m_statusicons << KIcon("edit-delete");
 }
 
 ItemsViewDelegate::~ItemsViewDelegate()
@@ -196,32 +190,32 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             case EntryInternal::Installed:
             installButton->setText(i18n("Uninstall"));
             installButton->setEnabled(true);
-            installButton->setIcon(m_statusicons[EntryInternal::Deleted]);
+            installButton->setIcon(m_iconDelete);
             break;
         case EntryInternal::Updateable:
             installButton->setText(i18n("Update"));
             installButton->setEnabled(true);
-            installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
+            installButton->setIcon(m_iconUpdate);
             break;
         case EntryInternal::Deleted:
             installButton->setText(i18n("Install again"));
             installButton->setEnabled(true);
-            installButton->setIcon(m_statusicons[EntryInternal::Installed]);
+            installButton->setIcon(m_iconInstall);
             break;
         case EntryInternal::Installing:
             installButton->setText(i18n("Installing"));
             installButton->setEnabled(false);
-            installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
+            installButton->setIcon(m_iconUpdate);
             break;
         case EntryInternal::Updating:
             installButton->setText(i18n("Updating"));
             installButton->setEnabled(false);
-            installButton->setIcon(m_statusicons[EntryInternal::Updateable]);
+            installButton->setIcon(m_iconUpdate);
             break;
         default:
             installButton->setText(i18n("Install"));
             installButton->setEnabled(true);
-            installButton->setIcon(m_statusicons[EntryInternal::Installed]);
+            installButton->setIcon(m_iconInstall);
         }
     }
 

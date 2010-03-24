@@ -78,6 +78,8 @@ class EntryInternal::Private : public QSharedData
 
         QString mPreviewUrl[6];
         QImage mPreviewImage[6];
+
+        QList<EntryInternal::DownloadLinkInformation> mDownloadLinkInformationList;
 };
 
 EntryInternal::EntryInternal()
@@ -359,6 +361,21 @@ QStringList KNS3::EntryInternal::uninstalledFiles() const
     return d->mUnInstalledFiles;
 }
 
+int KNS3::EntryInternal::downloadLinkCount() const
+{
+    return d->mDownloadLinkInformationList.size();
+}
+
+QList<KNS3::EntryInternal::DownloadLinkInformation> KNS3::EntryInternal::downloadLinkInformationList() const
+{
+    return d->mDownloadLinkInformationList;
+}
+
+void KNS3::EntryInternal::appendDownloadLinkInformation(const KNS3::EntryInternal::DownloadLinkInformation& info)
+{
+    d->mDownloadLinkInformationList.append(info);
+}
+
 bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
 {
     if (xmldata.tagName() != "stuff") {
@@ -429,7 +446,6 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
     }
 
     // Validation
-
     if (d->mName.isEmpty()) {
         kWarning(550) << "Entry: no name given";
         return false;

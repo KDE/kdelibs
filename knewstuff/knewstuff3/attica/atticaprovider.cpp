@@ -455,11 +455,18 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setSummary(content.description());
     entry.setChangelog(content.changelog());
 
-    /*
+
     QList<Attica::DownloadDescription> descs = content.downloadUrlDescriptions();
     foreach (Attica::DownloadDescription desc, descs) {
-        kDebug() << "Got a description: " << desc.name() << desc.priceAmount() << desc.isDownloadtypLink() << desc.distributionType() << desc.link();
-    }*/
+        EntryInternal::DownloadLinkInformation info;
+        info.name = desc.name();
+        info.priceAmount = desc.priceAmount();
+        info.distributionType = desc.distributionType();
+        info.descriptionLink = desc.link();
+        info.id = desc.id();
+        info.isDownloadtypeLink = desc.isDownloadtypLink();
+        entry.appendDownloadLinkInformation(info);
+    }
 
     return entry;
 }

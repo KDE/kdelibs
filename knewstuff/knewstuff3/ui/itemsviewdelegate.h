@@ -66,10 +66,14 @@ private slots:
     void slotDetailsClicked();
 
 private:
-    QList<KIcon> m_statusicons;
+    Engine* m_engine;
+    KIcon m_iconInvalid;
+    KIcon m_iconDownloadable;
+    KIcon m_iconInstall;
+    KIcon m_iconUpdate;
+    KIcon m_iconDelete;
     QPixmap m_frameImage;
     QPixmap m_noImage;
-    Engine* m_engine;
 };
 }
 

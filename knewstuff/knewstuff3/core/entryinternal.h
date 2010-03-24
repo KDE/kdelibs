@@ -95,6 +95,15 @@ public:
         PreviewBig3
     };
 
+    struct DownloadLinkInformation {
+        QString name;
+        QString priceAmount;
+        QString distributionType;
+        QString descriptionLink;
+        int id;
+        bool isDownloadtypeLink;
+    };
+
     /**
      * Constructor.
      */
@@ -323,10 +332,21 @@ public:
     void setNumberFans(int fans);
     int numberFans() const;
 
-    // FIXME: below here, everything under consideration
+    int downloadLinkCount() const;
+    QList<DownloadLinkInformation> downloadLinkInformationList() const;
+    void appendDownloadLinkInformation(const DownloadLinkInformation& info);
 
+    /**
+      The id of the provider this entry belongs to
+      */
     QString providerId() const;
     void setProviderId(const QString& id);
+
+    /**
+      The source of this entry can be Cache, Registry or Online - @see source
+      */
+    void setSource(Source source);
+    Source source() const;
 
     /**
      * set the xml for the entry
@@ -343,9 +363,6 @@ public:
     * get the xml string for the entry
     */
     QDomElement entryXML() const;
-
-    void setSource(Source source);
-    Source source() const;
 
     /**
      * Returns the checksum for the entry.
