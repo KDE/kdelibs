@@ -148,14 +148,14 @@ void Installation::install(EntryInternal entry)
 void Installation::downloadPayload(const KNS3::EntryInternal& entry)
 {
     if(!entry.isValid()) {
-        emit signalPayloadFailed(entry);
+        emit signalInstallationFailed(i18n("Invalid item."));
         return;
     }
     KUrl source = KUrl(entry.payload());
 
     if (!source.isValid()) {
         kError() << "The entry doesn't have a payload." << endl;
-        emit signalPayloadFailed(entry);
+        emit signalInstallationFailed(i18n("Download of item failed: no download url for \"%1\"", entry.name()));
         return;
     }
 
@@ -190,16 +190,10 @@ void Installation::slotPayloadResult(KJob *job)
         entry_jobs.remove(job);
 
         if (job->error()) {
-            kError() << "Cannot load payload file." << endl;
-            kError() << job->errorString() << endl;
-
-            // FIXME: use signalError
-            emit signalPayloadFailed(entry);
+            emit signalInstallationFailed(i18n("Download of \"%1\" failed, error: %2", entry.name(), job->errorString()));
         } else {
             KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-
             install(entry, fcjob->destUrl().pathOrUrl());
-
             emit signalPayloadLoaded(fcjob->destUrl());
         }
     }

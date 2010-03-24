@@ -116,7 +116,6 @@ Q_SIGNALS:
     void signalInstallationFailed(const QString& message);
 
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
-    void signalPayloadFailed(const KNS3::EntryInternal& entry);
 
 private:
     void install(KNS3::EntryInternal entry, const QString& downloadedFile);
