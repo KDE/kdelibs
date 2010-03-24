@@ -152,7 +152,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             installable = true;
             break;
         case EntryInternal::Deleted:
-            text = i18n("Install again");
+            text = i18n("Install Again");
             icon = m_iconInstall;
             installable = true;
             break;
