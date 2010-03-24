@@ -376,7 +376,7 @@ QList<Nepomuk::Types::Property> Nepomuk::Query::QueryParser::matchProperty( cons
                                  "{ "
                                  "?p a %1 . "
                                  "?p %2 ?l . "
-                                 "?l bif:contains \"'%3*'\" . "
+                                 "FILTER(REGEX(STR(?l),'%3*','i')) . "
                                  "} "
                                  "UNION "
                                  "{ "
