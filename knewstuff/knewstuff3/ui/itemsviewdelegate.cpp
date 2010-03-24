@@ -163,7 +163,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         text += summary;
 
         unsigned int fans = entry.numberFans();
-        unsigned int downloads = entry.downloads();
+        unsigned int downloads = entry.downloadCount();
 
         QString fanString;
         QString downloadString;

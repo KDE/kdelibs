@@ -310,7 +310,7 @@ public:
      *
      * @internal
      */
-    void setDownloads(int downloads);
+    void setDownloadCount(int downloads);
 
     /**
      * Retrieve the download count for the object, which has been determined
@@ -318,7 +318,7 @@ public:
      *
      * @return object download count
      */
-    int downloads() const;
+    int downloadCount() const;
 
     void setNumberFans(int fans);
     int numberFans() const;

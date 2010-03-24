@@ -37,7 +37,7 @@ class EntryInternal::Private : public QSharedData
         Private()
         : mReleaseDate(QDate::currentDate())
         , mRating(0)
-        , mDownloads(0)
+        , mDownloadCount(0)
         , mNumberFans(0)
         , mStatus(EntryInternal::Invalid)
         , mSource(EntryInternal::Online)
@@ -62,7 +62,7 @@ class EntryInternal::Private : public QSharedData
 
         Author mAuthor;
         int mRating;
-        int mDownloads;
+        int mDownloadCount;
         int mNumberFans;
         QString mSummary;
         QString mChangelog;
@@ -285,14 +285,14 @@ void EntryInternal::setRating(int rating)
     d->mRating = rating;
 }
 
-int EntryInternal::downloads() const
+int EntryInternal::downloadCount() const
 {
-    return d->mDownloads;
+    return d->mDownloadCount;
 }
 
-void EntryInternal::setDownloads(int downloads)
+void EntryInternal::setDownloadCount(int downloads)
 {
-    d->mDownloads = downloads;
+    d->mDownloadCount = downloads;
 }
 
 int EntryInternal::numberFans() const
@@ -406,7 +406,7 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "rating") {
             d->mRating = e.text().toInt();
         } else if (e.tagName() == "downloads") {
-            d->mDownloads = e.text().toInt();
+            d->mDownloadCount = e.text().toInt();
         } else if (e.tagName() == "category") {
             d->mCategory = e.text();
         } else if (e.tagName() == "signature") {
@@ -481,9 +481,9 @@ QDomElement KNS3::EntryInternal::entryXML() const
     addElement(doc, el, "homepage", d->mHomepage.url());
     (void)addElement(doc, el, "licence", d->mLicense); // krazy:exclude=spelling
     (void)addElement(doc, el, "version", d->mVersion);
-    if ((d->mRating > 0) || (d->mDownloads > 0)) {
+    if ((d->mRating > 0) || (d->mDownloadCount > 0)) {
         (void)addElement(doc, el, "rating", QString::number(d->mRating));
-        (void)addElement(doc, el, "downloads", QString::number(d->mDownloads));
+        (void)addElement(doc, el, "downloads", QString::number(d->mDownloadCount));
     }
     if (!d->mSignature.isEmpty()) {
         (void)addElement(doc, el, "signature", d->mSignature);

@@ -213,7 +213,6 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 
     ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, request.searchTerm, sorting, request.page, request.pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
-    connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
 
     d->entryJob = job;
     job->start();
@@ -241,32 +240,16 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
     Q_D(AtticaProvider);
     if (!jobSuccess(job)) return;
 
-    // FIXME: create a function to handel errors and enable after string freeze!
-    /*
-    if (job->metadata().error()) {
-        if (job->metadata().error() == Attica::Metadata::NetworkError) {
-            KMessageBox::error(0, i18n("Network error."), i18n("Get hot new stuff"));
-        } else {
-            if (job->metadata().statusCode() == 200) { // Attica::Metadata::)
-                KMessageBox::error(0, i18n("Too many requests to server."), i18n("Get hot new stuff"));
-            }
-        }
-
-    }
-    */
-
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
     Content::List contents = listJob->itemList();
 
     EntryInternal::List entries;
-
     Q_FOREACH(const Content &content, contents) {
         d->cachedContent.insert(content.id(), content);
         entries.append(entryFromAtticaContent(content));
     }
 
     kDebug() << "loaded: " << d->currentRequest.hashForRequest() << " count: " << entries.size();
-
     emit loadingFinished(d->currentRequest, entries);
     d->entryJob = 0;
 }
@@ -451,7 +434,7 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setName(content.name());
     entry.setHomepage(content.detailpage());
     entry.setRating(content.rating());
-    entry.setDownloads(content.downloads());
+    entry.setDownloadCount(content.downloads());
     entry.setNumberFans(content.attribute("fans").toInt());
 
     entry.setPreviewUrl(content.smallPreviewPicture("1"), EntryInternal::PreviewSmall1);

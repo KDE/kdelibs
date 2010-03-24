@@ -396,6 +396,7 @@ void Engine::loadDetails(const KNS3::EntryInternal &entry)
 
 void Engine::loadPreview(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
 {
+    kDebug() << "START  preview: " << entry.name() << type;
     ImageLoader* l = new ImageLoader(entry, type, this);
     connect(l, SIGNAL(signalPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)), this, SLOT(slotPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
     l->start();
@@ -405,7 +406,7 @@ void Engine::loadPreview(const KNS3::EntryInternal& entry, EntryInternal::Previe
 
 void Engine::slotPreviewLoaded(const KNS3::EntryInternal& entry, EntryInternal::PreviewType type)
 {
-    //kDebug() << "loaded: " << entry.name();
+    kDebug() << "FINISH preview: " << entry.name() << type;
     emit signalEntryPreviewLoaded(entry, type);
     --m_numPictureJobs;
     updateStatus();
