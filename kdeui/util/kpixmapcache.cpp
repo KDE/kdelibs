@@ -680,6 +680,8 @@ int KPixmapCache::Private::findOffset(const QString& key)
 
         // Load the found entry and check if it's the one we're looking for.
         device->seek(nodeoffset);
+        stream >> fkey;
+
         if (fkey == key) {
             // Read offset and statistics
             qint32 foffset;
