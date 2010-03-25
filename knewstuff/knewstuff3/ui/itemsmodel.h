@@ -34,10 +34,6 @@ class ItemsModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
-    enum EntryRoles {
-        EntryRole = Qt::UserRole
-    };
-
     explicit ItemsModel(Engine* engine, QObject * parent = 0);
     ~ItemsModel();
 

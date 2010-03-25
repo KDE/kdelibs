@@ -45,12 +45,11 @@ int ItemsModel::rowCount(const QModelIndex & /*parent*/) const
 
 QVariant ItemsModel::data(const QModelIndex & index, int role) const
 {
-    EntryInternal entry = m_entries[index.row()];
-    switch (role) {
-    case EntryRole:
-        return QVariant::fromValue(entry);
+    if (role != Qt::UserRole) {
+        return QVariant();
     }
-    return QVariant();
+    EntryInternal entry = m_entries[index.row()];
+    return QVariant::fromValue(entry);
 }
 
 void ItemsModel::slotEntriesLoaded(EntryInternal::List entries)

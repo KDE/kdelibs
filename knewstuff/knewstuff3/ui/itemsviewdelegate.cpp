@@ -302,7 +302,7 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
         int height = option.rect.height();
         QPoint point(option.rect.left() + margin, option.rect.top() + ((height - PreviewHeight) / 2));
 
-        KNS3::EntryInternal entry = index.data(ItemsModel::EntryRole).value<KNS3::EntryInternal>();
+        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if (entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
             // paint the no preview icon
             //point.setX((PreviewWidth - m_noImage.width())/2 + 5);
@@ -358,7 +358,7 @@ void ItemsViewDelegate::slotLinkClicked(const QString & url)
     QModelIndex index = focusedIndex();
     Q_ASSERT(index.isValid());
 
-    KNS3::EntryInternal entry = index.data(ItemsModel::EntryRole).value<KNS3::EntryInternal>();
+    KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
     m_engine->contactAuthor(entry);
 }
 
