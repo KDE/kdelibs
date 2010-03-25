@@ -79,9 +79,10 @@ public:
 
     /**
      * Parses the configuration file "kmetainformationrc" and
-     * updates the visibility of all rows.
+     * updates the visibility of all rows that got their data
+     * from KFileItem.
      */
-    void updateRowsVisibility();
+    void updateFileItemRowsVisibility();
 
     void slotLoadingFinished();
     void slotMetaDataUpdateDone();
@@ -285,12 +286,10 @@ void KFileMetaDataWidget::Private::initMetaInfoSettings()
     }
 }
 
-void KFileMetaDataWidget::Private::updateRowsVisibility()
+void KFileMetaDataWidget::Private::updateFileItemRowsVisibility()
 {
     KConfig config("kmetainformationrc", KConfig::NoGlobals);
     KConfigGroup settings = config.group("Show");
-
-    // TODO: check for isItemVisible()
 
     setRowVisible(m_typeInfo, settings.readEntry("kfileitem#type", true));
 
@@ -319,6 +318,8 @@ void KFileMetaDataWidget::Private::updateRowsVisibility()
 void KFileMetaDataWidget::Private::slotLoadingFinished()
 {
 #ifdef HAVE_NEPOMUK
+    updateFileItemRowsVisibility();
+
     // Show the remaining meta information as text. The number
     // of required rows may very. Existing rows are reused to
     // prevent flickering and to increase the performance.
@@ -529,7 +530,7 @@ bool KFileMetaDataWidget::event(QEvent* event)
         // slotLoadingFinished()).
         d->m_fixedRowCount = d->m_rows.count();
 
-        d->updateRowsVisibility();
+        d->updateFileItemRowsVisibility();
     }
 
     return QWidget::event(event);
