@@ -34,6 +34,7 @@
 #include <klibloader.h>
 #include <kservice.h>
 
+class QDBusServiceWatcher;
 class KDirWatch;
 
 // No need for this in libkio - apps only get readonly access
@@ -152,7 +153,7 @@ public Q_SLOTS:
    /**
     * An application unregistered itself from DBus
     */
-   void slotApplicationRemoved(const QString&, const QString&, const QString&);
+   void slotApplicationRemoved(const QString&);
 
    /**
     * A KDEDModule is about to get destroyed.
@@ -200,9 +201,12 @@ protected:
    QHash<QString,KDEDModule *> m_modules;
     //QHash<QString,KLibrary *> m_libs;
    QHash<QString,QObject *> m_dontLoad;
-   QHash<QString,QList<qlonglong> > m_windowIdList;
 
+   //window id tracking, with a QDBusServiceWatcher to remove them as needed
+   QDBusServiceWatcher *m_serviceWatcher;
+   QHash<QString,QList<qlonglong> > m_windowIdList;
    QSet<long> m_globalWindowIdList;
+
    QStringList m_allResourceDirs;
    bool m_needDelayedCheck;
 

@@ -116,6 +116,12 @@ Kded::Kded()
 {
   _self = this;
 
+  m_serviceWatcher = new QDBusServiceWatcher(this);
+  m_serviceWatcher->setConnection(QDBusConnection::sessionBus());
+  m_serviceWatcher->setWatchMode(QDBusServiceWatcher::WatchForUnregistration);
+  QObject::connect(m_serviceWatcher, SIGNAL(serviceUnregistered(QString)),
+                   this, SLOT(slotApplicationRemoved(QString)));
+
   new KBuildsycocaAdaptor(this);
   new KdedAdaptor(this);
 
@@ -413,8 +419,7 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
   //   lib->unload();
 }
 
-void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,
-                                  const QString &newOwner)
+void Kded::slotApplicationRemoved(const QString &name)
 {
 #if 0 // see kdedmodule.cpp (KDED_OBJECTS)
   foreach( KDEDModule* module, m_modules )
@@ -422,9 +427,7 @@ void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,
      module->removeAll(appId);
   }
 #endif
-  if (oldOwner.isEmpty() || !newOwner.isEmpty())
-     return;
-
+  m_serviceWatcher->removeWatchedService(name);
   const QList<qlonglong> windowIds = m_windowIdList.value(name);
   for( QList<qlonglong>::ConstIterator it = windowIds.begin();
        it != windowIds.end(); ++it)
@@ -632,6 +635,10 @@ bool Kded::isWindowRegistered(long windowId) const
 
 void Kded::registerWindowId(qlonglong windowId, const QString &sender)
 {
+  if (!m_windowIdList.contains(sender)) {
+      m_serviceWatcher->addWatchedService(sender);
+  }
+
   m_globalWindowIdList.insert(windowId);
   QList<qlonglong> windowIds = m_windowIdList.value(sender);
   windowIds.append(windowId);
@@ -651,10 +658,12 @@ void Kded::unregisterWindowId(qlonglong windowId, const QString &sender)
   if (!windowIds.isEmpty())
   {
      windowIds.removeAll(windowId);
-     if (windowIds.isEmpty())
+     if (windowIds.isEmpty()) {
+        m_serviceWatcher->removeWatchedService(sender);
         m_windowIdList.remove(sender);
-     else
+     } else {
         m_windowIdList.insert(sender, windowIds);
+     }
   }
 
   foreach( KDEDModule* module, m_modules )
@@ -836,10 +845,6 @@ public:
 
           if (bCheckHostname)
             (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
-
-          QObject::connect(QDBusConnection::sessionBus().interface(),
-                          SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-                          kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
 
           kded->initModules();
        } else
