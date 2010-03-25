@@ -497,15 +497,10 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		void emitWalletAsyncOpenError();
 
-		/**
-		 *  @internal
-		 *  Used to detect when the wallet service dies.
-		 */
-		void slotServiceOwnerChanged(const QString&,const QString&,const QString&);
-
 	private:
 		class WalletPrivate;
 		WalletPrivate* const d;
+		Q_PRIVATE_SLOT(d, void walletServiceUnregistered())
 
 	protected:
 		/**

@@ -109,9 +109,13 @@ const QString Wallet::FormDataFolder() {
 class Wallet::WalletPrivate
 {
 public:
-    WalletPrivate(int h, const QString &n)
-     : name(n), handle(h)
+    WalletPrivate(Wallet *wallet, int h, const QString &n)
+     : q(wallet), name(n), handle(h)
     {}
+
+    void walletServiceUnregistered();
+
+    Wallet *q;
     QString name;
     QString folder;
     int handle;
@@ -132,13 +136,15 @@ private:
 
 K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
-Wallet::Wallet(int handle, const QString& name)
-    : QObject(0L), d(new WalletPrivate(handle, name)) {
+static const QString s_kwalletdServiceName("org.kde.kwalletd");
 
-    connect(QDBusConnection::sessionBus().interface(),
-            SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-            this,
-            SLOT(slotServiceOwnerChanged(QString,QString,QString)));
+Wallet::Wallet(int handle, const QString& name)
+    : QObject(0L), d(new WalletPrivate(this, handle, name))
+{
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher(s_kwalletdServiceName, QDBusConnection::sessionBus(),
+                                                           QDBusServiceWatcher::WatchForUnregistration, this);
+    connect(watcher, SIGNAL(serviceUnregistered(QString)),
+            this, SLOT(walletServiceUnregistered()));
 
     connect(&walletLauncher->getInterface(), SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
     connect(&walletLauncher->getInterface(), SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
@@ -688,17 +694,16 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 }
 
 
-void Wallet::slotServiceOwnerChanged(const QString& name,const QString& oldOwner,const QString& newOwner) {
-    Q_UNUSED(oldOwner);
-    if (newOwner.isEmpty() && name == "org.kde.kwalletd") {
-        // if openWallet() waits for the DBUS reply, prevent it from waiting forever:
-        if ( d->loop )
-            d->loop->quit();
-        if( d->handle >= 0 )
-            slotWalletClosed(d->handle);
+void Wallet::WalletPrivate::walletServiceUnregistered()
+{
+    if (loop) {
+        loop->quit();
+    }
+
+    if (handle >= 0) {
+        q->slotWalletClosed(handle);
     }
 }
-
 
 void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder) {
     if (d->name == wallet) {
@@ -757,7 +762,7 @@ void Wallet::virtual_hook(int, void*) {
 }
 
 KWalletDLauncher::KWalletDLauncher()
-    : m_wallet("org.kde.kwalletd", "/modules/kwalletd", QDBusConnection::sessionBus()),
+    : m_wallet(s_kwalletdServiceName, "/modules/kwalletd", QDBusConnection::sessionBus()),
       m_cgroup(KSharedConfig::openConfig("kwalletrc", KConfig::NoGlobals)->group("Wallet"))
 {
 }
@@ -769,7 +774,7 @@ KWalletDLauncher::~KWalletDLauncher()
 org::kde::KWallet &KWalletDLauncher::getInterface()
 {
     // check if kwalletd is already running
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kwalletd"))
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(s_kwalletdServiceName))
     {
         // not running! check if it is enabled.
         bool walletEnabled = m_cgroup.readEntry("Enabled", true);
@@ -782,7 +787,8 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
                 kError(285) << "Couldn't start kwalletd: " << error << endl;
             }
 
-            if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kwalletd")) {
+            if
+                (!QDBusConnection::sessionBus().interface()->isServiceRegistered(s_kwalletdServiceName)) {
                 kDebug(285) << "The kwalletd service is still not registered";
             } else {
                 kDebug(285) << "The kwalletd service has been registered";
