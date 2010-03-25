@@ -929,9 +929,16 @@ void KateSearchBar::findAll(Range inputRange, const QString * replacement) {
     // Before first match
     resetHighlights();
 
-    SmartRange * const workingRange = view()->doc()->newSmartRange(inputRange);
+    SmartRange * workingRange = view()->doc()->newSmartRange(inputRange);
     QList<Range> highlightRanges;
     int matchCounter = 0;
+
+    bool block = view()->selection() && view()->blockSelection();
+    int line = inputRange.start().line();
+    do {
+    if (block)
+        workingRange = view()->doc()->newSmartRange(view()->doc()->rangeOnLine(inputRange, line));
+
     for (;;) {
         const QVector<Range> resultRanges = view()->doc()->searchText(*workingRange, searchPattern(), enabledOptions);
         Range match = resultRanges[0];
