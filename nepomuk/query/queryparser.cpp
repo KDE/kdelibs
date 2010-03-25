@@ -372,16 +372,16 @@ QList<Nepomuk::Types::Property> Nepomuk::Query::QueryParser::matchProperty( cons
     else {
         QList<Nepomuk::Types::Property> results;
 
+        //
+        // Due to the limited number of properties in the database a REGEX filter
+        // is actually faster than a fulltext query via bif:contains (this is what
+        // experiments showed).
+        //
         QString query = QString( "select distinct ?p where { "
-                                 "{ "
+                                 "graph ?g { "
                                  "?p a %1 . "
                                  "?p %2 ?l . "
-                                 "FILTER(REGEX(STR(?l),'%3*','i')) . "
-                                 "} "
-                                 "UNION "
-                                 "{ "
-                                 "?p a %1 . "
-                                 "FILTER(REGEX(STR(?p),'%3*','i')) . "
+                                 "FILTER(REGEX(STR(?l),'%3*','i') || REGEX(STR(?p),'%3*','i')) . "
                                  "} "
                                  "}" )
                         .arg( Soprano::Node::resourceToN3( Soprano::Vocabulary::RDF::Property() ) )
