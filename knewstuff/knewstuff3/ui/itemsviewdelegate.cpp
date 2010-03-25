@@ -183,15 +183,15 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         detailsButton->setIcon(KIcon("documentinfo"));
     }
 
-    if (m_buttonSize.width() < installButton->sizeHint().width()) {
-        const_cast<QSize&>(m_buttonSize) = installButton->sizeHint();
-    }
-
-    if (installButton) {
+    if (installButton && detailsButton) {
+        if (m_buttonSize.width() < installButton->sizeHint().width()) {
+            const_cast<QSize&>(m_buttonSize) = QSize(
+                    qMax(option.fontMetrics.height() * 7,
+                         qMax(installButton->sizeHint().width(), detailsButton->sizeHint().width())),
+                    installButton->sizeHint().height());
+        }
         installButton->resize(m_buttonSize);
         installButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()*1.5);
-    }
-    if (detailsButton) {
         detailsButton->resize(m_buttonSize);
         detailsButton->move(right - installButton->width() - margin, option.rect.height()/2 - installButton->height()/2);
     }
