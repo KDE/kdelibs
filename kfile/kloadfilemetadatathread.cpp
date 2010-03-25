@@ -20,8 +20,6 @@
 
 #include "kloadfilemetadatathread_p.h"
 
-#include <kconfig.h>
-#include <kconfiggroup.h>
 #include <kfilemetainfo.h>
 #include <kfilemetainfoitem.h>
 #include <kglobal.h>
@@ -74,9 +72,6 @@ void KLoadFileMetaDataThread::run()
     const KUrl::List urls = m_urls;
     locker.unlock(); // no shared member is accessed until locker.relock()
 
-    KConfig config("kmetainformationrc", KConfig::NoGlobals);
-    KConfigGroup settings = config.group("Show");
-
     unsigned int rating = 0;
     QString comment;
     QList<Nepomuk::Tag> tags;
@@ -118,9 +113,7 @@ void KLoadFileMetaDataThread::run()
             while (it != variants.constEnd()) {
                 Nepomuk::Types::Property prop(it.key());
                 const QString uriString = prop.uri().toString();
-                if (settings.readEntry(uriString, true)) {
-                    data.insert(uriString, formatValue(it.value()));
-                }
+                data.insert(uriString, formatValue(it.value()));
                 ++it;
             }
 
@@ -131,10 +124,8 @@ void KLoadFileMetaDataThread::run()
                 const QHash<QString, KFileMetaInfoItem> metaInfoItems = metaInfo.items();
                 foreach (const KFileMetaInfoItem& metaInfoItem, metaInfoItems) {
                     const QString uriString = metaInfoItem.name();
-                    if (settings.readEntry(uriString, true)) {
-                        const Nepomuk::Variant value(metaInfoItem.value());
-                        data.insert(uriString, formatValue(value));
-                    }
+                    const Nepomuk::Variant value(metaInfoItem.value());
+                    data.insert(uriString, formatValue(value));
                 }
             }
         }

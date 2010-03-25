@@ -324,9 +324,24 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
     // prevent flickering and to increase the performance.
     int rowIndex = m_fixedRowCount;
 
-    const QHash<KUrl, Nepomuk::Variant> data = m_provider->data();
-    const QList<KUrl> keys = sortedKeys(data);
+    QHash<KUrl, Nepomuk::Variant> data = m_provider->data();
 
+    // Remove all items, that are marked as hidden in kmetainformationrc
+    KConfig config("kmetainformationrc", KConfig::NoGlobals);
+    KConfigGroup settings = config.group("Show");
+    QHash<KUrl, Nepomuk::Variant>::iterator it = data.begin();
+    while (it != data.end()) {
+        const QString uriString = it.key().url();
+        if (!settings.readEntry(uriString, true)) {
+            it = data.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Iterate through all remaining items embed the label
+    // and the value as new row in the widget
+    const QList<KUrl> keys = sortedKeys(data);
     foreach (const KUrl& key, keys) {
         const Nepomuk::Variant value = data[key];
         const QString itemLabel = m_provider->label(key);
