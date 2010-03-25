@@ -216,6 +216,7 @@ private:
      */
     static void clearCaches();
     friend class KBuildSycoca;
+    friend class Kded;
 
     Q_DISABLE_COPY(KSycoca)
     friend class KSycocaPrivate;
