@@ -31,7 +31,8 @@
 #include "kio/job.h"
 #include "krandom.h"
 #include "kshell.h"
-#include "kmessagebox.h"
+#include "kmessagebox.h" // TODO get rid of message box
+#include "ktoolinvocation.h" // TODO remove, this was only for my playing round
 #include "klocalizedstring.h"
 #include "kdebug.h"
 
@@ -49,6 +50,7 @@ Installation::Installation(QObject* parent)
     , signaturePolicy(Installation::CheckIfPossible)
     , scope(Installation::ScopeUser)
     , customName(false)
+    , acceptHtml(false)
 {
 }
 
@@ -73,6 +75,7 @@ bool Installation::readConfig(const KConfigGroup& group)
     installPath = group.readEntry("InstallPath", QString());
     absoluteInstallPath = group.readEntry("AbsoluteInstallPath", QString());
     customName = group.readEntry("CustomName", false);
+    acceptHtml = group.readEntry("AcceptHtmlDownloads", false);
 
     if (standardResourceDirectory.isEmpty() &&
             targetDirectory.isEmpty() &&
@@ -193,6 +196,22 @@ void Installation::slotPayloadResult(KJob *job)
             emit signalInstallationFailed(i18n("Download of \"%1\" failed, error: %2", entry.name(), job->errorString()));
         } else {
             KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+
+            // check if the app likes html files - disabled by default as too many bad links have been submitted to opendesktop.org
+            if (!acceptHtml) {
+                KMimeType::Ptr mimeType = KMimeType::findByPath(fcjob->destUrl().pathOrUrl());
+                if (mimeType->name() == "text/html") {
+                    if (KMessageBox::questionYesNo(0, i18n("The downloaded file is a html file. This indicates a link to a website instead of the actual download. Would you like to open the site with a browser instead?"), i18n("Possibly bad download link"))
+                        == KMessageBox::Yes) {
+                        KToolInvocation::invokeBrowser(fcjob->srcUrl().url());
+                        emit signalInstallationFailed(i18n("Downloaded file was a HTML file. Opened in browser."));
+                        entry.setStatus(EntryInternal::Invalid);
+                        emit signalEntryChanged(entry);
+                        return;
+                    }
+                }
+            }
+
             install(entry, fcjob->destUrl().pathOrUrl());
             emit signalPayloadLoaded(fcjob->destUrl());
         }

@@ -148,6 +148,7 @@ private:
 
     // FIXME this throws together a file name from entry name and version - why would anyone want that?
     bool customName;
+    bool acceptHtml;
 
     QMap<KJob*, EntryInternal> entry_jobs;
 
