@@ -77,7 +77,7 @@ public:
 
     void init(const QString &extraId);
     void registerToDaemon();
-    void serviceChange(const QString& name, const QString& oldOwner, const QString& newOwner);
+    void serviceChange(const QString &name, const QString &oldOwner, const QString &newOwner);
     void setLegacySystemTrayEnabled(bool enabled);
     void syncLegacySystemTrayIcon();
     void contextMenuAboutToShow();
@@ -85,6 +85,8 @@ public:
     void minimizeRestore();
     void minimizeRestore(bool show);
     void hideMenu();
+    void setLegacyMode(bool legacy);
+    void checkForRegisteredHosts();
     void legacyWheelEvent(int delta);
     void legacyActivated(QSystemTrayIcon::ActivationReason reason);
 

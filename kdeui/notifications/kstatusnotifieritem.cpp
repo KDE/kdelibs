@@ -47,6 +47,8 @@
 
 #include "statusnotifieritemadaptor.h"
 
+static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
+
 KStatusNotifierItem::KStatusNotifierItem(QObject *parent)
       : QObject(parent),
         d(new KStatusNotifierItemPrivate(this))
@@ -598,7 +600,11 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
     statusNotifierItemDBus = new KStatusNotifierItemDBus(q);
     q->setAssociatedWidget(qobject_cast<QWidget*>(q->parent()));
 
-    QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher(s_statusNotifierWatcherServiceName,
+                                                           QDBusConnection::sessionBus(),
+                                                           QDBusServiceWatcher::WatchForOwnerChange,
+                                                           q);
+    QObject::connect(watcher, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                      q, SLOT(serviceChange(QString,QString,QString)));
 
     //create a default menu, just like in KSystemtrayIcon
@@ -628,9 +634,10 @@ void KStatusNotifierItemPrivate::registerToDaemon()
 {
     kDebug(299) << "Registering a client interface to the KStatusNotifierWatcher";
     if (!statusNotifierWatcher) {
-        QString interface("org.kde.StatusNotifierWatcher");
-        statusNotifierWatcher = new org::kde::StatusNotifierWatcher(interface, "/StatusNotifierWatcher",
-                                                                        QDBusConnection::sessionBus());
+        statusNotifierWatcher = new org::kde::StatusNotifierWatcher(s_statusNotifierWatcherServiceName, "/StatusNotifierWatcher",
+                                                                    QDBusConnection::sessionBus());
+        QObject::connect(statusNotifierWatcher, SIGNAL(StatusNotifierItemUnregistered(QString&)),
+                         q, SLOT(checkForRegisteredHosts()));
     }
 
     if (statusNotifierWatcher->isValid() &&
@@ -644,33 +651,27 @@ void KStatusNotifierItemPrivate::registerToDaemon()
     }
 }
 
-void KStatusNotifierItemPrivate::serviceChange(const QString& name, const QString& oldOwner, const QString& newOwner)
+void KStatusNotifierItemPrivate::serviceChange(const QString &name, const QString &oldOwner, const QString &newOwner)
 {
-    bool legacy = false;
-    if (name == "org.kde.StatusNotifierWatcher") {
-        if (newOwner.isEmpty()) {
-            //unregistered
-            kDebug(299) << "Connection to the KStatusNotifierWatcher lost";
-            legacy = true;
-        } else if (oldOwner.isEmpty()) {
-            //registered
-            legacy = false;
-        }
-    } else if (name.startsWith(QLatin1String("org.kde.StatusNotifierHost-"))) {
-        if (newOwner.isEmpty() && (!statusNotifierWatcher ||
-                                   !statusNotifierWatcher->property("IsStatusNotifierHostRegistered").toBool())) {
-            kDebug(299)<<"Connection to the last KStatusNotifierHost lost";
-            legacy = true;
-        } else if (oldOwner.isEmpty()) {
-            kDebug(299)<<"New KStatusNotifierHost";
-            legacy = false;
-        }
-    } else {
-        return;
+    Q_UNUSED(name)
+    if (newOwner.isEmpty()) {
+        //unregistered
+        kDebug(299) << "Connection to the KStatusNotifierWatcher lost";
+        setLegacyMode(true);
+    } else if (oldOwner.isEmpty()) {
+        //registered
+       setLegacyMode(false);
     }
+}
 
-    kDebug(299) << "Service " << name << "status change, old owner:" << oldOwner << "new:" << newOwner;
+void KStatusNotifierItemPrivate::checkForRegisteredHosts()
+{
+    setLegacyMode(!statusNotifierWatcher ||
+                  !statusNotifierWatcher->property("IsStatusNotifierHostRegistered").toBool());
+}
 
+void KStatusNotifierItemPrivate::setLegacyMode(bool legacy)
+{
     if (legacy == (systemTrayIcon != 0)) {
         return;
     }
