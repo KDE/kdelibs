@@ -26,11 +26,6 @@
 
 #include <knewstuff3/knewstuff_export.h>
 
-class KComboBox;
-class KLineEdit;
-class KUrlRequester;
-class KTextEdit;
-
 namespace Attica {
     class BaseJob;
     class Provider;
