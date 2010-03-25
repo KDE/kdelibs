@@ -45,8 +45,9 @@ public:
 
 public Q_SLOTS:
     void slotQueryResult(qlonglong requestId, qlonglong seqNr, const KIO::AuthInfo &authInfo);
-    void slotServiceOwnerChanged(const QString &name, const QString &oldOwner,
-                                 const QString &newOwner);
+
+private Q_SLOTS:
+    void kdedServiceUnregistered();
 
 private:
     qlonglong m_requestId;

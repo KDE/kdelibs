@@ -22,17 +22,17 @@
 #include "kpasswdserverloop_p.h"
 
 #include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusConnectionInterface>
+#include <QtDBus/QDBusServiceWatcher>
 
 namespace KIO
 {
 
 KPasswdServerLoop::KPasswdServerLoop() : m_seqNr(-1)
 {
-    connect(QDBusConnection::sessionBus().interface(),
-            SIGNAL(serviceOwnerChanged(QString, QString, QString)),
-            this,
-            SLOT(slotServiceOwnerChanged(QString, QString, QString)));
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.kded", QDBusConnection::sessionBus(),
+                                                           QDBusServiceWatcher::WatchForUnregistration, this);
+    connect(watcher, SIGNAL(serviceUnregistered(QString)),
+            this, SLOT(kdedServiceUnregistered()));
 }
 
 KPasswdServerLoop::~KPasswdServerLoop()
@@ -67,14 +67,9 @@ void KPasswdServerLoop::slotQueryResult(qlonglong requestId, qlonglong seqNr,
     }
 }
 
-void KPasswdServerLoop::slotServiceOwnerChanged(const QString &name, const QString &oldOwner,
-                                               const QString &newOwner)
+void KPasswdServerLoop::kdedServiceUnregistered()
 {
-    Q_UNUSED(oldOwner);
-
-    if (newOwner.isEmpty() && name == "org.kde.kded") {
-        exit(-1);
-    }
+    exit(-1);
 }
 
 }
