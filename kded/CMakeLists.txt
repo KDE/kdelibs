@@ -59,17 +59,6 @@ install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
 install(TARGETS kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
-########### next target ###############
-
-set(kdontchangethehostname_SRCS khostname.cpp )
-
-
-kde4_add_executable(kdontchangethehostname NOGUI ${kdontchangethehostname_SRCS})
-
-target_link_libraries(kdontchangethehostname  ${KDE4_KDECORE_LIBS} )
-
-install(TARGETS kdontchangethehostname DESTINATION ${LIBEXEC_INSTALL_DIR} )
-
 ########### install files ###############
 if (WIN32)
 install( FILES applications.menu  DESTINATION  ${SHARE_INSTALL_PREFIX}/xdg/menus )
