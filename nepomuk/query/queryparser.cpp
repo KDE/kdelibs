@@ -168,6 +168,11 @@ namespace {
         }
 
 
+        case Nepomuk::Query::Term::Negation: {
+            return Nepomuk::Query::NegationTerm::negateTerm( resolveFields( term.toNegationTerm().subTerm(), parser ) );
+        }
+
+
         case Nepomuk::Query::Term::Comparison: {
             Nepomuk::Query::ComparisonTerm newTerm;
             newTerm.setComparator( term.toComparisonTerm().comparator() );
