@@ -328,16 +328,25 @@ public:
   QAction* takeAction(QAction *action);
 
   /**
-   * Creates a new standard action, adds it to the collection and connects the action's triggered() signal to the
-   * specified receiver/member. The newly created action is also returned.
+   * Creates a new standard action, adds it to the collection and connects the
+   * action's triggered(bool) signal to the specified receiver/member. The
+   * newly created action is also returned.
+   *
+   * Note: Using KStandardAction::OpenRecent will cause a different signal than
+   * triggered(bool) to be used, see KStandardAction for more information.
    *
    * The action can be retrieved later from the collection by its standard name as per
    * KStandardAction::stdName.
    */
   KAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
+
   /**
-   * Creates a new standard action, adds to the collection under the given name and connects the action's triggered() signal to the
-   * specified receiver/member. The newly created action is also returned.
+   * Creates a new standard action, adds to the collection under the given name
+   * and connects the action's triggered(bool) signal to the specified
+   * receiver/member. The newly created action is also returned.
+   *
+   * Note: Using KStandardAction::OpenRecent will cause a different signal than
+   * triggered(bool) to be used, see KStandardAction for more information.
    *
    * The action can be retrieved later from the collection by the specified name.
    */
@@ -345,8 +354,12 @@ public:
                      const QObject *receiver = 0, const char *member = 0);
 
   /**
-   * Creates a new action under the given name to the collection and connects the action's triggered()
-   * signal to the specified receiver/member. The newly created action is returned.
+   * Creates a new action under the given name to the collection and connects
+   * the action's triggered(bool) signal to the specified receiver/member. The
+   * newly created action is returned.
+   *
+   * NOTE: KDE prior to 4.2 used the triggered() signal instead of the triggered(bool)
+   * signal.
    *
    * Inserting an action that was previously inserted under a different name will replace the
    * old entry, i.e. the action will not be available under the old name anymore but only under

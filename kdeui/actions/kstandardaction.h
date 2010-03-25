@@ -164,8 +164,20 @@ namespace KStandardAction
   };
 
   /**
-   * Creates an action corresponding to the
-   * KStandardAction::StandardAction enum.
+   * Creates an action corresponding to one of the
+   * KStandardAction::StandardAction actions, which is connected to the given
+   * object and @p slot, and is owned by @p parent.
+   *
+   * The signal that is connected to @p slot is triggered(bool), except for the case of
+   * OpenRecent standard action, which uses the urlSelected(const KUrl &) signal of
+   * KRecentFilesAction.
+   *
+   * @param id The StandardAction identifier to create a KAction for.
+   * @param recvr The QObject to receive the signal, or 0 if no notification
+   *              is needed.
+   * @param slot  The slot to connect the signal to (remember to use the SLOT() macro).
+   * @param parent The QObject that should own the created KAction, or 0 if no parent will
+   *               own the KAction returned (ensure you delete it manually in this case).
    */
   KDEUI_EXPORT KAction* create(StandardAction id, const QObject *recvr, const char *slot,
                                 QObject *parent);
