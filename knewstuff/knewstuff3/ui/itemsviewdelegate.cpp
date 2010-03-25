@@ -170,7 +170,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
                     text + " (" + info.distributionType.trimmed() + ")";
                 }
                 QAction* installAction = installMenu->addAction(m_iconInstall, text);
-                installAction->setData(info.id);
+                installAction->setData(QPoint(index.row(), info.id));
             }
             installButton->setMenu(installMenu);
         }
@@ -382,10 +382,12 @@ void ItemsViewDelegate::slotInstallClicked()
 
 void ItemsViewDelegate::slotInstallActionTriggered(QAction* action)
 {
-    QModelIndex index = focusedIndex();
+    QPoint rowDownload = action->data().toPoint();
+    int row = rowDownload.x();
+    QModelIndex index = focusedIndex().model()->index(row, 0);
     if (index.isValid()) {
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-        m_engine->install(entry, action->data().toInt());
+        m_engine->install(entry, rowDownload.y());
     }
 }
 
