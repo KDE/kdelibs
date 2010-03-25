@@ -40,8 +40,7 @@ namespace Nepomuk {
             QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
             QString toString() const;
 
-            /// The text that is to be used in the bif:contains pattern. A '*' wildcard will be
-            /// added if it does not exist yet.
+            /// The text that is to be used in the bif:contains pattern.
             QString queryText() const;
 
             Soprano::LiteralValue m_value;

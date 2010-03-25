@@ -63,7 +63,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     // 1.1. operator =
     //      use a single pattern like: ?r <prop> "value"
     // 1.2. operator :
-    //      use two patterns: ?r <prop> ?v . ?v bif:contains "'value*'"
+    //      use two patterns: ?r <prop> ?v . ?v bif:contains "'value'"
     // 1.3. operator <,>,<=,>=
     //      use two patterns: ?r <prop> ?v . FILTER(?v < value)
     // fail if subterm is not a literal term
@@ -78,7 +78,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     //        use one pattern and the subpattern: ?r <prop> ?v . subpattern(?v)
     // 2.2. operator :
     // 2.2.1. literal subterm
-    //        use 3 pattern: ?r <prop> ?v . ?v rdfs:label ?l . ?l bif:contains "'value*'"
+    //        use 3 pattern: ?r <prop> ?v . ?v rdfs:label ?l . ?l bif:contains "'value'"
     // 2.2.2. resource subterm
     //        same as =
     // 2.2.3. subterm type and, or, comparision
@@ -98,7 +98,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             QString v = qbd->uniqueVarName();
-            return QString( "%1 %2 %3 . %3 bif:contains \"'%4'\" . " )
+            return QString( "%1 %2 %3 . %3 bif:contains \"%4\" . " )
                 .arg( resourceVarName,
                       Soprano::Node::resourceToN3( m_property.uri() ),
                       v,
@@ -130,7 +130,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             kDebug() << "Incompatible property range:" << m_property.range().uri();
 
         //
-        // The core pattern is always the same: we match to resource that have a certain
+        // The core pattern is always the same: we match to resources that have a certain
         // property defined. The value of that property is filled in below.
         //
         QString corePattern;
@@ -169,7 +169,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
-                return QString::fromLatin1( "%1%2 bif:contains \"'%3'\" . " )
+                return QString::fromLatin1( "%1%2 bif:contains \"%3\" . " )
                     .arg( pattern.arg(v3),
                           v3,
                           static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );

@@ -56,9 +56,9 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
     QString v3 = qbd->uniqueVarName();
     QString v4 = qbd->uniqueVarName();
     // { ?r ?v1 ?v2 . ?v2 bif:contains XXX . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 rdfs:subPropertyOf rdfs:label . ?v2 bif:contains XXX . } .
-    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"'%4'\" . } "
+    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"%4\" . } "
                                 "UNION "
-                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"'%4'\" . } . " )
+                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"%4\" . } . " )
         .arg( resourceVarName,
               v1,
               v2,
@@ -78,15 +78,42 @@ QString Nepomuk::Query::LiteralTermPrivate::toString() const
 
 QString Nepomuk::Query::LiteralTermPrivate::queryText() const
 {
-    // Virtuoso 6 has a min of 4 leading chars before a wildcard.
-    // Thus, we do not use one with less chars.
+    //
+    // we try to be a little smart about creating the query text
+    // by following a few simple rules:
+    //
+    // 1. multiple terms need to be enclosed in quotes
+    // 2. quotes in search terms are not handled. replace them with spaces
+    // 3. replace double quotes with single quotes
+    // [4. wildcards can only be used if they are preceeded by at least 4 chars]
+    //
 
-    QString s = m_value.toString();
-     if( s.length() > 3 &&
-         !s.endsWith(QLatin1String("*")) &&
-         !s.endsWith(QLatin1String("?")) ) {
-        s += QLatin1String("*");
+    QString s = m_value.toString().simplified();
+    if( s.isEmpty() )
+        return s;
+
+    bool haveQuotes = false;
+
+    // strip quotes
+    if( s[0] == '"' || s[0] == '\'' ) {
+        haveQuotes = true;
+        s = s.mid(1);
     }
+    if( !s.isEmpty() &&
+        ( s[s.length()-1] == '"' || s[s.length()-1] == '\'' ) ) {
+        haveQuotes = true;
+        s.truncate(s.length()-1);
+    }
+
+    // replace quotes with spaces
+    s.replace( '"', ' ' );
+    s.replace( '\'', ' ' );
+
+    bool needQuotes = s.contains( ' ' ) || s.contains( '*' ) || s.contains( '?' );
+
+    if( needQuotes || haveQuotes )
+        s = '\'' + s + '\'';
+
     return s;
 }
 

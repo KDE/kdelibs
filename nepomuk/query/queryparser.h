@@ -99,12 +99,50 @@ namespace Nepomuk {
             ~QueryParser();
 
             /**
+             * Flags to change the behaviour of the parser.
+             *
+             * \since 4.5
+             */
+            enum ParserFlag {
+                /**
+                 * No flags. Default for parse()
+                 */
+                NoParserFlags = 0x0,
+
+                /**
+                 * Make each full text term use a '*' wildcard
+                 * to match longer strings ('foobar' is matched
+                 * by 'foob*').
+                 *
+                 * Be aware that the query engine needs at least
+                 * 4 chars to do globbing though.
+                 *
+                 * This is disabled by default.
+                 */
+                QueryTermGlobbing = 0x1
+            };
+            Q_DECLARE_FLAGS( ParserFlags, ParserFlag )
+
+            /**
              * Parse a user query.
              *
              * \return The parsed query or an invalid Query object
              * in case the parsing failed.
              */
             Query parse( const QString& query ) const;
+
+            /**
+             * Parse a user query.
+             *
+             * \param query The query string to parse
+             * \param flags a set of flags influencing the parsing process.
+             *
+             * \return The parsed query or an invalid Query object
+             * in case the parsing failed.
+             *
+             * \since 4.5
+             */
+            Query parse( const QString& query, ParserFlags flags ) const;
 
             /**
              * Try to match a field name as used in a query string to actual
@@ -139,5 +177,7 @@ namespace Nepomuk {
         };
     }
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Nepomuk::Query::QueryParser::ParserFlags )
 
 #endif

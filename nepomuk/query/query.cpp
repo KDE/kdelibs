@@ -297,24 +297,30 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 
     // actually build the SPARQL query string
     QueryBuilderData qbd( flags );
-    QString termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
-    if( !termGraphPattern.isEmpty() ) {
-        QString query = QString::fromLatin1( "select %1 %2 where { %3 %4 %5 }" )
-                        .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
-                              d->buildRequestPropertyVariableList(),
-                              termGraphPattern,
-                              d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
-                              d->buildRequestPropertyPatterns() );
-        if ( d->m_offset > 0 )
-            query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
-        if ( d->m_limit > 0 )
-            query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
-        return query;
+    QString termGraphPattern;
+    if( term.isValid() ) {
+        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
+        if( termGraphPattern.isEmpty() ) {
+            kDebug() << "Got no valid SPARQL pattern from" << term;
+            return QString();
+        }
     }
     else {
-        kDebug() << "Got no valid SPARQL pattern from" << term;
-        return QString();
+        // create the "all resources query"
+        termGraphPattern = QLatin1String("graph ?g { ?r a ?t . } . ?g a ?gt . ?gt rdfs:subClassOf nrl:InstanceBase . ");
     }
+
+    QString query = QString::fromLatin1( "select %1 %2 where { %3 %4 %5 }" )
+                    .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
+                          d->buildRequestPropertyVariableList(),
+                          termGraphPattern,
+                          d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
+                          d->buildRequestPropertyPatterns() );
+    if ( d->m_offset > 0 )
+        query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
+    if ( d->m_limit > 0 )
+        query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
+    return query.simplified();
 }
 
 

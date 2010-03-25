@@ -62,6 +62,23 @@ namespace Nepomuk {
          * The example above will match all resources that have a property with a value containing
          * the string "nepomuk".
          *
+         * \section literalterm_examples Examples
+         *
+         * <pre>LiteralTerm("nepomuk")</pre> searches for the term "nepomuk".
+         *
+         * <pre>LiteralTerm("'nepomuk*'")</pre> searches for the terms starting with "nepomuk".
+         *
+         * <pre>LiteralTerm("'nepomuk kde'")</pre> searches for the term "nepomuk kde".
+         *
+         * <pre>LiteralTerm("'nepomuk* kde'")</pre> searches for terms matching "nepomuk* kde".
+         *
+         * %LiteralTerm always tries to normalize the query terms as best as possible. This includes
+         * automatically adding quotes as needed.
+         *
+         * \warning Be aware that the examples above apply to using %LiteralTerm as a stand-alone term
+         * or in a ComparisonTerm::Contains term. When using ComparisonTerm::Regexp the test as specified
+         * will be used as-is to create the regular expression.
+         *
          * \author Sebastian Trueg <trueg@kde.org>
          *
          * \since 4.4

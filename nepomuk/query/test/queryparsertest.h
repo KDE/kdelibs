@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,25 @@
 #define _NEPOMUK_QUERY_PARSER_TEST_H_
 
 #include <QtCore/QObject>
+#include "ktempdir.h"
+
+#include <Soprano/Model>
 
 class QueryParserTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
     void testQueryParser_data();
     void testQueryParser();
+    void testQueryParserWithGlobbing_data();
+    void testQueryParserWithGlobbing();
+
+private:
+    KTempDir* m_storageDir;
+    Soprano::Model* m_model;
 };
 
 #endif

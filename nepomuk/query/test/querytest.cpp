@@ -40,6 +40,7 @@
 #include <Soprano/Vocabulary/RDFS>
 
 #include <kdebug.h>
+#include <qtest_kde.h>
 
 Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 
@@ -54,9 +55,24 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "simple literal query" )
         << Query( LiteralTerm( "Hello" ) )
-        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello*'\" . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello*'\" . } . }" )
+        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . ?v2 bif:contains \"Hello\" . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"Hello\" . } . }" )
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
+
+    QString helloWorldQuery = QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello World'\" . } "
+                                                   "UNION "
+                                                   "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello World'\" . } . }" )
+                              .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
+                                    Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
+    QTest::newRow( "simple literal query with space" )
+        << Query( LiteralTerm( "Hello World" ) )
+        << helloWorldQuery;
+    QTest::newRow( "simple literal query with space and quotes" )
+        << Query( LiteralTerm( "'Hello World'" ) )
+        << helloWorldQuery;
+    QTest::newRow( "simple literal query with space and quotes" )
+        << Query( LiteralTerm( "\"Hello World\"" ) )
+        << helloWorldQuery;
 
     QTest::newRow( "type query" )
         << Query( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) )
@@ -73,7 +89,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "hastag with literal term" )
         << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( QLatin1String("nepomuk")) ) )
-        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . ?v3 bif:contains \"'nepomuk*'\" . }")
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . ?v3 bif:contains \"nepomuk\" . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()))
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()))
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()));
@@ -123,6 +139,6 @@ void QueryTest::testOptimization()
     QVERIFY(optimized.isLiteralTerm());
 }
 
-QTEST_MAIN( QueryTest )
+QTEST_KDEMAIN_CORE( QueryTest )
 
 #include "querytest.moc"

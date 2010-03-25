@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -106,12 +106,16 @@ namespace {
         }
     }
 
-    QString stripQuotes( const QString& s ) {
+    QString stripQuotes( const QString& s, bool* hadQuotes = 0 ) {
         if ( s[0] == '\'' ||
              s[0] == '\"' ) {
+            if( hadQuotes )
+                *hadQuotes = true;
             return s.mid( 1 ).left( s.length()-2 );
         }
         else {
+            if( hadQuotes )
+                *hadQuotes = false;
             return s;
         }
     }
@@ -125,7 +129,9 @@ namespace {
         }
     }
 
-    Soprano::LiteralValue createLiteral( const QString& s ) {
+    Soprano::LiteralValue createLiteral( const QString& s_, bool globbing ) {
+        bool hadQuotes = false;
+        QString s = stripQuotes( s_, &hadQuotes );
         bool b = false;
         int i = s.toInt( &b );
         if ( b )
@@ -133,10 +139,17 @@ namespace {
         double d = s.toDouble( &b );
         if ( b )
             return Soprano::LiteralValue( d );
-        return s;
+
+        //
+        // we can only do query term globbing for strings longer than 3 chars
+        //
+        if( !hadQuotes && globbing && s.length() > 3 && !s.endsWith('*') && !s.endsWith('?') )
+            return s + '*';
+        else
+            return s;
     }
 
-    bool positiveTerm( const QString& s) {
+    bool positiveTerm( const QString& s ) {
         if(s.isEmpty())
             return true;
         else if(s == "+")
@@ -165,6 +178,11 @@ namespace {
                 return Nepomuk::Query::AndTerm( newSubTerms );
             else
                 return Nepomuk::Query::OrTerm( newSubTerms );
+        }
+
+
+        case Nepomuk::Query::Term::Negation: {
+            return Nepomuk::Query::NegationTerm::negateTerm( resolveFields( term.toNegationTerm().subTerm(), parser ) );
         }
 
 
@@ -406,6 +424,12 @@ QList<Nepomuk::Types::Property> Nepomuk::Query::QueryParser::matchProperty( cons
 
 Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query ) const
 {
+    return parse( query, NoParserFlags );
+}
+
+
+Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, ParserFlags flags ) const
+{
     // TODO: a "real" parser which can handle all of the Xesam user language
     //       This one for example does not handle nesting at all.
 
@@ -441,7 +465,7 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query )
                 kDebug() << "matched property term at" << pos << s_propertyRx.cap( 0 );
                 ComparisonTerm ct;
                 ct.setProperty( tryToBeIntelligentAboutParsingUrl( s_propertyRx.cap( 2 ) ) );
-                ct.setSubTerm( LiteralTerm( createLiteral( stripQuotes( s_propertyRx.cap( 4 ) ) ) ) );
+                ct.setSubTerm( LiteralTerm( createLiteral( s_propertyRx.cap( 4 ), flags&QueryTermGlobbing ) ) );
                 QString comparator = s_propertyRx.cap( 3 );
                 ct.setComparator( fieldTypeRelationFromString( comparator ) );
                 pos += s_propertyRx.matchedLength();
@@ -467,7 +491,7 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query )
                 QString comparator = s_fieldFieldRx.cap( 4 );
                 ct.setComparator( fieldTypeRelationFromString( comparator ) );
                 ct.setSubTerm( ComparisonTerm( QUrl(stripQuotes( s_fieldFieldRx.cap( 5 ) )),
-                                               LiteralTerm( s_fieldFieldRx.cap( 8 ) ),
+                                               LiteralTerm( createLiteral( s_fieldFieldRx.cap( 8 ), flags&QueryTermGlobbing ) ),
                                                fieldTypeRelationFromString( s_fieldFieldRx.cap( 7 ) ) ) );
                 pos += s_fieldFieldRx.matchedLength();
 
@@ -494,7 +518,7 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query )
                 else {
                     ComparisonTerm ct;
                     ct.setProperty( QUrl( stripQuotes( s_fieldRx.cap( 2 ) ) ) );
-                    ct.setSubTerm( LiteralTerm( createLiteral( stripQuotes( s_fieldRx.cap( 5 ) ) ) ) );
+                    ct.setSubTerm( LiteralTerm( createLiteral( s_fieldRx.cap( 5 ), flags&QueryTermGlobbing ) ) );
                     QString comparator = s_fieldRx.cap( 4 );
                     ct.setComparator( fieldTypeRelationFromString( comparator ) );
                     pos += s_fieldRx.matchedLength();
@@ -510,7 +534,7 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query )
             }
 
             else if ( s_plainTermRx.indexIn( query, pos ) == pos ) {
-                QString value = stripQuotes( s_plainTermRx.cap( 2 ) );
+                QString value = s_plainTermRx.cap( 2 );
                 if ( d->orKeywords.contains( value.toLower() ) ) {
                     inOrBlock = true;
                 }
@@ -519,7 +543,7 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query )
                 }
                 else {
                     kDebug() << "matched literal at" << pos << value;
-                    term = LiteralTerm( Soprano::LiteralValue( value ) );
+                    term = LiteralTerm( createLiteral( value, flags&QueryTermGlobbing ) );
                     if ( !positiveTerm(s_plainTermRx.cap( 1 ) ) ) {
                         term = NegationTerm::negateTerm( term );
                     }

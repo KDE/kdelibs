@@ -34,6 +34,7 @@ namespace Nepomuk {
         public:
             ComparisonTermPrivate() {
                 m_type = Term::Comparison;
+                m_inverted = false;
             }
 
             TermPrivate* clone() const { return new ComparisonTermPrivate( *this ); }
@@ -45,6 +46,8 @@ namespace Nepomuk {
 
             Types::Property m_property;
             ComparisonTerm::Comparator m_comparator;
+
+            bool m_inverted;
         };
     }
 }
