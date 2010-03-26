@@ -20,13 +20,11 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
-#define SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
+#ifndef SOLID_BACKENDS_KUPnP_MEDIASERVER1_H
+#define SOLID_BACKENDS_KUPnP_MEDIASERVER1_H
 
 // KUPnP
-#include "lib/device.h"
-// Solid
-#include <solid/ifaces/device.h>
+#include "kupnpdevice.h"
 
 
 namespace Solid
@@ -36,35 +34,18 @@ namespace Backends
 namespace KUPnP
 {
 
-class KUPnPDevice : public Solid::Ifaces::Device
+class MediaServer1 : public KUPnPDevice
 {
-    Q_OBJECT
-
 public:
-    explicit KUPnPDevice(const UPnP::Device& device);
-    virtual ~KUPnPDevice();
+    explicit MediaServer1(const UPnP::Device& device);
+    virtual ~MediaServer1();
 
 public: // Solid::Ifaces::Device
-    virtual QString udi() const;
-    virtual QString parentUdi() const;
-
-    virtual QString vendor() const;
-    virtual QString product() const;
     virtual QString icon() const;
-    virtual QStringList emblems() const;
     virtual QString description() const;
 
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
     virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
-
-protected:
-    QString storageDescription() const;
-    QString volumeDescription() const;
-
-protected:
-    UPnP::Device mDevice;
-
-    KUPnPDevice* mParentDevice;
 };
 
 }

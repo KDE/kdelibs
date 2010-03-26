@@ -166,39 +166,18 @@ QString KUPnPDevice::description() const
 }
 
 
-bool KUPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
+bool KUPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    bool result = false;
+    Q_UNUSED( type );
 
-    if (type==Solid::DeviceInterface::StorageAccess) {
-        result = (mDevice.type() == QLatin1String("MediaServer1"));
-    }
-
-    return result;
+    return false;
 }
 
 QObject* KUPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& type)
 {
-    if (!queryDeviceInterface(type)) {
-        return 0;
-    }
+    Q_UNUSED( type );
 
-    DeviceInterface* interface = 0;
-
-    switch (type)
-    {
-    case Solid::DeviceInterface::StorageAccess:
-        if (mDevice.type() == QLatin1String("MediaServer1")) {
-            interface = new StorageAccess(this);
-        }
-        break;
-    case Solid::DeviceInterface::Unknown:
-    case Solid::DeviceInterface::Last:
-    default:
-        break;
-    }
-
-    return interface;
+    return 0;
 }
 
 QString KUPnPDevice::storageDescription() const

@@ -20,14 +20,10 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
-#define SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
+#include "mediaserver1.h"
 
-// KUPnP
-#include "lib/device.h"
 // Solid
-#include <solid/ifaces/device.h>
-
+#include "kupnpstorageaccess.h"
 
 namespace Solid
 {
@@ -36,39 +32,50 @@ namespace Backends
 namespace KUPnP
 {
 
-class KUPnPDevice : public Solid::Ifaces::Device
+
+MediaServer1::MediaServer1(const UPnP::Device& device)
+  : KUPnPDevice(device)
 {
-    Q_OBJECT
+}
 
-public:
-    explicit KUPnPDevice(const UPnP::Device& device);
-    virtual ~KUPnPDevice();
+MediaServer1::~MediaServer1()
+{
+}
 
-public: // Solid::Ifaces::Device
-    virtual QString udi() const;
-    virtual QString parentUdi() const;
+QString MediaServer1::icon() const
+{
+    return QString::fromLatin1("folder-remote");
+}
 
-    virtual QString vendor() const;
-    virtual QString product() const;
-    virtual QString icon() const;
-    virtual QStringList emblems() const;
-    virtual QString description() const;
 
-    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
-    virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
+QString MediaServer1::description() const
+{
+    return QObject::tr("UPnP Media Server");
+}
 
-protected:
-    QString storageDescription() const;
-    QString volumeDescription() const;
 
-protected:
-    UPnP::Device mDevice;
+bool MediaServer1::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
+{
+    bool result = false;
 
-    KUPnPDevice* mParentDevice;
-};
+    if (type==Solid::DeviceInterface::StorageAccess) {
+        result = true;
+    }
+
+    return result;
+}
+
+QObject* MediaServer1::createDeviceInterface(const Solid::DeviceInterface::Type& type)
+{
+    DeviceInterface* interface = 0;
+
+    if (type==Solid::DeviceInterface::StorageAccess) {
+        interface = new StorageAccess(this);
+    }
+
+    return interface;
+}
 
 }
 }
 }
-
-#endif

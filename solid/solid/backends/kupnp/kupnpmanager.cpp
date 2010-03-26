@@ -24,6 +24,7 @@
 
 // backend
 #include "kupnprootdevice.h"
+#include "mediaserver1.h"
 #include "kupnpdevice.h"
 #include "lib/devicebrowser.h"
 #include "lib/device.h"
@@ -43,7 +44,7 @@ static const int KUPnPUdiPrefixLength = sizeof( KUPnPUdiPrefix ); // count final
 
 
 KUPnPManager::KUPnPManager(QObject *parent)
-  : DeviceManager(parent),
+  : Solid::Ifaces::DeviceManager(parent),
     mDeviceBrowser( new UPnP::DeviceBrowser(QStringList(),this) ),
     mUdiPrefix( QString::fromLatin1(KUPnPUdiPrefix) )
 {
@@ -105,7 +106,11 @@ QObject* KUPnPManager::createDevice(const QString &udi)
         QList<UPnP::Device> devices = mDeviceBrowser->devices();
         foreach( const UPnP::Device& device, devices ) {
             if( device.udn() == udn ) {
-                result = new KUPnPDevice( device );
+                const QString deviceType = device.type();
+                if( deviceType == QLatin1String("MediaServer1") )
+                    result = new MediaServer1( device );
+                else
+                    result = new KUPnPDevice( device );
                 break;
             }
         }
@@ -134,7 +139,9 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
             }
 
             if (type==Solid::DeviceInterface::StorageAccess) {
-                if (device.type() == QLatin1String("MediaServer1"))
+                if (device.type() == QLatin1String("MediaServer1") ||
+                    device.type() == QLatin1String("MediaServer2") ||
+                    device.type() == QLatin1String("MediaServer3"))
                     result << udiFromUdn( device.udn() );
             }
         }
