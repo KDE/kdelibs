@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 add_definitions(-DDISABLE_NEPOMUK_LEGACY=1)
 
 kde4_add_unit_test(queryparsertest NOGUI queryparsertest.cpp)
-target_link_libraries(queryparsertest nepomukquery
+target_link_libraries(queryparsertest nepomuk nepomukquery
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
