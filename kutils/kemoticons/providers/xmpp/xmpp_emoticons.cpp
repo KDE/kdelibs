@@ -195,7 +195,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
 
 void XmppEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
+    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
 
     QFile fp(path + '/' + "icondef.xml");
 

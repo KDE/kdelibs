@@ -181,7 +181,7 @@ bool KdeEmoticons::loadTheme(const QString &path)
 
 void KdeEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
+    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
 
     QFile fp(path + '/' + "emoticons.xml");
 

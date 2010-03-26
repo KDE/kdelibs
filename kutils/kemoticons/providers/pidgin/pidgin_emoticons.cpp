@@ -195,7 +195,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
 
 void PidginEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
+    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
 
     QFile fp(path + '/' + "theme");
 
