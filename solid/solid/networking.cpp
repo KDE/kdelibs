@@ -28,15 +28,21 @@
 
 SOLID_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
 
-Solid::NetworkingPrivate::NetworkingPrivate() : netStatus( Solid::Networking::Unknown ), connectPolicy( Solid::Networking::Managed ), disconnectPolicy( Solid::Networking::Managed ), iface(
-        new OrgKdeSolidNetworkingClientInterface( "org.kde.kded",
+Solid::NetworkingPrivate::NetworkingPrivate()
+    : netStatus(Solid::Networking::Unknown),
+      connectPolicy(Solid::Networking::Managed),
+      disconnectPolicy(Solid::Networking::Managed),
+      iface(new OrgKdeSolidNetworkingClientInterface( "org.kde.kded",
             "/modules/networkstatus",
             QDBusConnection::sessionBus(),
-            this ) )
+            this))
 {
     //connect( iface, SIGNAL( statusChanged( uint ) ), globalNetworkManager, SIGNAL( statusChanged( Networking::Status ) ) );
-    connect( iface, SIGNAL(statusChanged(uint)), this, SLOT(serviceStatusChanged(uint)) );
-    connect( QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(const QString&, const QString&, const QString & ) ), SLOT(serviceOwnerChanged(const QString&, const QString&, const QString & ) ) );
+    connect(iface, SIGNAL(statusChanged(uint)), this, SLOT(serviceStatusChanged(uint)));
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.kded", QDBusConnection::sessionBus(),
+                                                           QDBusServiceWatcher::WatchForOwnerChange, this);
+    connect(watcher, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+            this, SLOT(serviceOwnerChanged(QString,QString,QString)));
 
     initialize();
 }
@@ -100,20 +106,17 @@ void Solid::NetworkingPrivate::serviceStatusChanged( uint status )
 
 void Solid::NetworkingPrivate::serviceOwnerChanged( const QString & name, const QString & oldOwner, const QString & newOwner )
 {
-  Q_UNUSED( oldOwner );
-  if ( name == "org.kde.kded" ) {
     if ( newOwner.isEmpty() ) {
-      // kded quit on us
-      netStatus = Solid::Networking::Unknown;
-      emit globalNetworkManager->statusChanged( netStatus );
+        // kded quit on us
+        netStatus = Solid::Networking::Unknown;
+        emit globalNetworkManager->statusChanged( netStatus );
 
     } else {
-      // kded was replaced or started
-      initialize();
-      emit globalNetworkManager->statusChanged( netStatus );
-      serviceStatusChanged( netStatus );
+        // kded was replaced or started
+        initialize();
+        emit globalNetworkManager->statusChanged( netStatus );
+        serviceStatusChanged( netStatus );
     }
-  }
 }
 
 Solid::Networking::ManagementPolicy Solid::Networking::connectPolicy()
