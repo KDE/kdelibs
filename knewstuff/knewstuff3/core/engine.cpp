@@ -460,7 +460,7 @@ void Engine::updateStatus()
     } else if (m_numInstallJobs > 0) {
         emit signalBusy(i18n("Installing"));
     } else {
-        emit signalIdle(i18n("Ready"));
+        emit signalIdle(QString());
     }
 }
 

@@ -41,6 +41,9 @@ EntryDetailsDialog::EntryDetailsDialog(Engine* engine, const EntryInternal& entr
     : KDialog(parent), m_engine(engine), m_entry(entry)
 {
     init();
+    connect(m_engine, SIGNAL(signalBusy(const QString&)), ui.progressIndicator, SLOT(busy(const QString&)));
+    connect(m_engine, SIGNAL(signalError(const QString&)), ui.progressIndicator, SLOT(error(const QString&)));
+    connect(m_engine, SIGNAL(signalIdle(const QString&)), ui.progressIndicator, SLOT(idle(const QString&)));
 }
 
 EntryDetailsDialog::~EntryDetailsDialog()
@@ -147,7 +150,8 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
             ui.previewBig->setVisible(false);
         } else
 
-        if (m_entry.previewImage((EntryInternal::PreviewType)type).isNull()) {
+        if (!m_entry.previewUrl((EntryInternal::PreviewType)type).isEmpty()
+            && m_entry.previewImage((EntryInternal::PreviewType)type).isNull()) {
             m_engine->loadPreview(m_entry, (EntryInternal::PreviewType)type);
         } else {
             slotEntryPreviewLoaded(m_entry, (EntryInternal::PreviewType)type);

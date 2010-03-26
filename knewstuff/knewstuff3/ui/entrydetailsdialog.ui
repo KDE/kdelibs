@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>388</width>
-    <height>309</height>
+    <width>423</width>
+    <height>358</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -143,7 +143,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>374</width>
+        <width>409</width>
         <height>61</height>
        </rect>
       </property>
@@ -254,6 +254,37 @@
       </widget>
      </item>
      <item>
+      <widget class="KNS3::ProgressIndicator" name="progressIndicator">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>20</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -288,6 +319,12 @@
    <class>KNS3::RatingWidget</class>
    <extends>QWidget</extends>
    <header>ui/ratingwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>KNS3::ProgressIndicator</class>
+   <extends>QFrame</extends>
+   <header>ui/progressindicator.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
