@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,7 @@
 #include <Soprano/Node>
 #include <Soprano/Vocabulary/NAO>
 #include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/XMLSchema>
 
 #include <kdebug.h>
 #include <qtest_kde.h>
@@ -102,6 +103,35 @@ void QueryTest::testToSparql_data()
     QTest::newRow( "negated hastag with resource" )
         << Query( NegationTerm::negateTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
         << QString::fromLatin1("select distinct ?r where { OPTIONAL { ?v1 %1 <nepomuk:/res/foobar> . FILTER(?v1=?r) . } . FILTER(!BOUND(?v1)) . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
+
+    QTest::newRow( "comparators <" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::Smaller ) )
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
+
+    QTest::newRow( "comparators <=" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::SmallerOrEqual ) )
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<=\"4\"^^%2) . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
+
+    QTest::newRow( "comparators >" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::Greater ) )
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1>\"4\"^^%2) . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
+
+    QTest::newRow( "comparators >=" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::GreaterOrEqual ) )
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1>=\"4\"^^%2) . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
+
+    QTest::newRow( "inverted comparisonterm" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) ).inverted() )
+        << QString::fromLatin1("select distinct ?r where { <nepomuk:/res/foobar> %1 ?r . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
 }
 

@@ -160,6 +160,52 @@ namespace Nepomuk {
              * \sa property
              */
             void setProperty( const Types::Property& );
+
+            /**
+             * \return \p true if the comparison is inverted.
+             * \sa setInverted
+             *
+             * \since 4.5
+             */
+            bool isInverted() const;
+
+            /**
+             * Invert the comparison, i.e. make the subterm the subject
+             * of the term and match to objects of the term.
+             *
+             * A typical example would be:
+             *
+             * \code
+             * select ?r where { <somefile> nao:hasTag ?r . }
+             * \endcode
+             *
+             * to get all tags attached to a file.
+             *
+             * Be aware that this does only make sense with
+             * sub terms that match to resources. When using
+             * LiteralTerm as a sub term \p invert is ignored.
+             *
+             * \since 4.5
+             */
+            void setInverted( bool invert );
+
+            /**
+             * Create an inverted copy of this %ComparisonTerm.
+             * This is a convenience method to allow inline creation of
+             * inverted comparison terms when creating queries in a
+             * single line of code.
+             *
+             * Be aware that calling this method twice wil result in
+             * a non-inverted comparison term:
+             *
+             * \code
+             * // always true:
+             * (term.inverted().inverted() == term);
+             * \endcode
+             *
+             * \since 4.5
+             */
+            ComparisonTerm inverted() const;
         };
     }
 }

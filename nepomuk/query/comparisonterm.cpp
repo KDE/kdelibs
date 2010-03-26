@@ -134,19 +134,29 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         // property defined. The value of that property is filled in below.
         //
         QString corePattern;
+        QString subject;
+        QString object;
+        if( m_inverted && !m_subTerm.isLiteralTerm() ) {
+            subject = QLatin1String("%1"); // funny way to have a resulting string which takes only one arg
+            object = resourceVarName;
+        }
+        else {
+            subject = resourceVarName;
+            object = QLatin1String("%1");
+        }
         if( qbd->flags() & Query::HandleInverseProperties &&
             m_property.inverseProperty().isValid() ) {
             corePattern = QString::fromLatin1("{ %1 %2 %3 . } UNION { %3 %4 %1 . } . ")
-                              .arg( resourceVarName,
+                              .arg( subject,
                                     Soprano::Node::resourceToN3( m_property.uri() ),
-                                    QLatin1String("%1"), // funny way to have a resulting string which takes only one arg
+                                    object,
                                     Soprano::Node::resourceToN3( m_property.inverseProperty().uri() ) );
         }
         else {
             corePattern = QString::fromLatin1("%1 %2 %3 . ")
-                              .arg( resourceVarName,
+                              .arg( subject,
                                     Soprano::Node::resourceToN3( m_property.uri() ),
-                                    QLatin1String("%1") ); // funny way to have a resulting string which takes only one arg
+                                    object );
         }
 
         if ( m_subTerm.isLiteralTerm() ) {
@@ -288,4 +298,26 @@ void Nepomuk::Query::ComparisonTerm::setProperty( const Types::Property& propert
 {
     N_D( ComparisonTerm );
     d->m_property = property;
+}
+
+
+bool Nepomuk::Query::ComparisonTerm::isInverted() const
+{
+    N_D_CONST( ComparisonTerm );
+    return d->m_inverted;
+}
+
+
+void Nepomuk::Query::ComparisonTerm::setInverted( bool invert )
+{
+    N_D( ComparisonTerm );
+    d->m_inverted = invert;
+}
+
+
+Nepomuk::Query::ComparisonTerm Nepomuk::Query::ComparisonTerm::inverted() const
+{
+    ComparisonTerm ct( *this );
+    ct.setInverted( !isInverted() );
+    return ct;
 }
