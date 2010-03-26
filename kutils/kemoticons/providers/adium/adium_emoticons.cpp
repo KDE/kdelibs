@@ -197,7 +197,7 @@ bool AdiumEmoticons::loadTheme(const QString &path)
 
 void AdiumEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
+    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
 
     QFile fp(path + '/' + "Emoticons.plist");
 
