@@ -5,7 +5,8 @@
     Copyright (C) 2007 Dirk Mueller <mueller@kde.org>
     Copyright (C) 2007-2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
-
+    Copyright (C) 2010 Reza Fatahilah Shah <rshah0385@kireihana.com>
+    
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -35,6 +36,7 @@
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
+#include "ui/itemsgridviewdelegate.h"
 
 #include "ui_downloaddialog.h"
 
@@ -232,6 +234,15 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     engine->init(configFile);
 
     delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
+
+#if 0
+    if (viewMode == QListView::IconMode) {
+        delegate = new ItemsGridViewDelegate(ui.m_listView, engine, q);
+        ui.m_listView->setViewMode(viewMode);
+        ui.m_listView->setResizeMode(QListView::Adjust);
+    }
+#endif
+
     ui.m_listView->setItemDelegate(delegate);
     ui.m_listView->setModel(model);
 

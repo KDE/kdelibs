@@ -1,9 +1,8 @@
 /*
-    This file is part of KNewStuff2.
     Copyright (C) 2008 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2010 Reza Fatahilah Shah <rshah0385@kireihana.com>
     Copyright (C) 2010 Frederik Gladhorn <gladhorn@kde.org>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -18,20 +17,24 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF3_UI_ITEMSVIEWDELEGATE_H
-#define KNEWSTUFF3_UI_ITEMSVIEWDELEGATE_H
+#ifndef KNEWSTUFF3_UI_ITEMSGRIDVIEWDELEGATE_H
+#define KNEWSTUFF3_UI_ITEMSGRIDVIEWDELEGATE_H
 
 #include "itemsviewbasedelegate.h"
+
+
+//#include <QtGui/QLabel>
+
 
 namespace KNS3
 {
 
-class ItemsViewDelegate: public ItemsViewBaseDelegate
+class ItemsGridViewDelegate: public ItemsViewBaseDelegate
 {
     Q_OBJECT
 public:
-    explicit ItemsViewDelegate(QAbstractItemView* itemView, Engine* engine, QObject* parent = 0);
-    ~ItemsViewDelegate();
+    explicit ItemsGridViewDelegate(QAbstractItemView* itemView, Engine* engine, QObject* parent = 0);
+    ~ItemsGridViewDelegate();
 
 
     // paint the item at index with all its attributes shown
@@ -46,6 +49,7 @@ public:
                                    const QPersistentModelIndex &index) const;
 
     virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    
 };
 }
 

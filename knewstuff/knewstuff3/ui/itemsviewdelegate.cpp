@@ -1,6 +1,8 @@
 /*
     This file is part of KNewStuff2.
     Copyright (C) 2008 Jeremy Whiting <jpwhiting@kde.org>
+    Copyright (C) 2010 Reza Fatahilah Shah <rshah0385@kireihana.com>
+    Copyright (C) 2010 Frederik Gladhorn <gladhorn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -22,13 +24,12 @@
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QApplication>
 #include <QtGui/QToolButton>
-
+#include <QMenu>
+#include <KMenu>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kicon.h>
 #include <klocale.h>
-#include <kmenu.h>
-#include <krun.h>
 #include <kpushbutton.h>
 
 #include "itemsmodel.h"
@@ -44,16 +45,8 @@ namespace KNS3
     static const int DelegateRatingWidget = 3;
 
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
-        : KWidgetItemDelegate(itemView, parent)
-        , m_engine(engine)
-        , m_iconInvalid(KIcon("dialog-error"))
-        , m_iconInstall(KIcon("dialog-ok"))
-        , m_iconUpdate(KIcon("system-software-update"))
-        , m_iconDelete(KIcon("edit-delete"))
-        , m_noImage(SmallIcon( "image-missing", KIconLoader::SizeLarge, KIconLoader::DisabledState ))
+        : ItemsViewBaseDelegate(itemView, engine, parent)
 {
-    QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");
-    m_frameImage = QPixmap(framefile);
 }
 
 ItemsViewDelegate::~ItemsViewDelegate()
@@ -330,16 +323,6 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     painter->restore();
 }
 
-bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
-{
-   if (event->type() == QEvent::MouseButtonDblClick) {
-       slotDetailsClicked();
-       return true;
-   }
-
-   return KWidgetItemDelegate::eventFilter(watched, event);
-}
-
 QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
     Q_UNUSED(option);
@@ -350,63 +333,6 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
     size.setWidth(option.fontMetrics.height() * 4);
     size.setHeight(qMax(option.fontMetrics.height() * 7, PreviewHeight)); // up to 6 lines of text, and two margins
     return size;
-}
-
-void ItemsViewDelegate::slotLinkClicked(const QString & url)
-{
-    Q_UNUSED(url)
-    QModelIndex index = focusedIndex();
-    Q_ASSERT(index.isValid());
-
-    KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-    m_engine->contactAuthor(entry);
-}
-
-void ItemsViewDelegate::slotInstallClicked()
-{
-    QModelIndex index = focusedIndex();
-    if (index.isValid()) {
-        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-        if (!entry.isValid()) {
-            kDebug() << "Invalid entry: " << entry.name();
-            return;
-        }
-
-        if (entry.status() == EntryInternal::Installed) {
-            m_engine->uninstall(entry);
-        } else {
-            m_engine->install(entry);
-        }
-    }
-}
-
-void ItemsViewDelegate::slotInstallActionTriggered(QAction* action)
-{
-    QPoint rowDownload = action->data().toPoint();
-    int row = rowDownload.x();
-    QModelIndex index = focusedIndex().model()->index(row, 0);
-    if (index.isValid()) {
-        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-        m_engine->install(entry, rowDownload.y());
-    }
-}
-
-void ItemsViewDelegate::slotDetailsClicked()
-{
-    QModelIndex index = focusedIndex();
-    slotDetailsClicked(index);
-}
-
-void ItemsViewDelegate::slotDetailsClicked(const QModelIndex& index)
-{
-    if (index.isValid()) {
-        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-        if ( !entry.isValid() )
-            return;
-
-        EntryDetailsDialog dialog(m_engine, entry);
-        dialog.exec();
-    }
 }
 
 } // namespace

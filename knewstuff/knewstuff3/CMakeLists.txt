@@ -23,6 +23,8 @@ set(knewstuff3_SRCS
     ui/imageloader.cpp
     ui/itemsmodel.cpp
     ui/itemsviewdelegate.cpp
+    ui/itemsgridviewdelegate.cpp
+    ui/itemsviewbasedelegate.cpp
     ui/progressindicator.cpp
     ui/ratingpainter.cpp
     ui/ratingwidget.cpp
