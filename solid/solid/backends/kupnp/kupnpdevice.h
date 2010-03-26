@@ -80,15 +80,17 @@ public: // Solid::Ifaces::Device API
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
     virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
 
-protected:
-    QString storageDescription() const;
-    QString volumeDescription() const;
+public:
+    const UPnP::Device& device() const;
 
 protected:
     UPnP::Device mDevice;
 
     KUPnPDevice* mParentDevice;
 };
+
+
+inline const UPnP::Device& KUPnPDevice::device() const { return mDevice; }
 
 }
 }

@@ -201,18 +201,6 @@ QObject* KUPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& 
     return 0;
 }
 
-QString KUPnPDevice::storageDescription() const
-{
-    QString description; //= QObject::tr("blah", "context");
-    return description;
-}
-
-QString KUPnPDevice::volumeDescription() const
-{
-    QString description;
-    return description;
-}
-
 }
 }
 }
