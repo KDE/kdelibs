@@ -50,7 +50,6 @@ public:
     Attica::Provider m_provider;
 
     KNS3::EntryInternal::List cachedEntries;
-
     QHash<QString, Attica::Content> cachedContent;
 
     // Associate job and entry, this is needed when fetching
@@ -61,9 +60,11 @@ public:
     // keep track of the current request
     Attica::BaseJob* entryJob;
     Provider::SearchRequest currentRequest;
+    bool initialized;
 
     AtticaProviderPrivate()
         : entryJob(0)
+        , initialized(false)
     {
     }
 };
@@ -171,13 +172,14 @@ void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
             d->categoryMap[category.name()] = category;
         }
     }
+    d->initialized = true;
     emit providerInitialized(this);
 }
 
 bool AtticaProvider::isInitialized() const
 {
     Q_D(const AtticaProvider);
-    return !d->m_providerManager.providers().isEmpty();
+    return d->initialized;
 }
 
 void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)

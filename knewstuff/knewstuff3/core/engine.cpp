@@ -223,11 +223,14 @@ void Engine::providerInitialized(Provider* p)
 {
     kDebug() << "providerInitialized" << p->name();
     p->setCachedEntries(m_cache->registryForProvider(p->id()));
-
-    p->loadEntries(m_currentRequest);
-
-    ++m_numDataJobs;
     updateStatus();
+
+    foreach (const QSharedPointer<KNS3::Provider> &p, m_providers) {
+        if (!p->isInitialized()) {
+            return;
+        }
+    }
+    emit signalProvidersLoaded();
 }
 
 void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS3::EntryInternal::List entries)

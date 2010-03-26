@@ -217,8 +217,8 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(engine, SIGNAL(signalBusy(const QString&)), ui.progressIndicator, SLOT(busy(const QString&)));
     q->connect(engine, SIGNAL(signalError(const QString&)), ui.progressIndicator, SLOT(error(const QString&)));
     q->connect(engine, SIGNAL(signalIdle(const QString&)), ui.progressIndicator, SLOT(idle(const QString&)));
-    engine->init(configFile);
 
+    q->connect(engine, SIGNAL(signalProvidersLoaded()), q, SLOT(slotProvidersLoaded()));
     // Entries have been fetched and should be shown:
     q->connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), q, SLOT(slotEntriesLoaded(KNS3::EntryInternal::List)));
 
@@ -228,6 +228,8 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(engine, SIGNAL(signalResetView()), model, SLOT(clearEntries()));
     q->connect(engine, SIGNAL(signalEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)),
                model, SLOT(slotEntryPreviewLoaded(KNS3::EntryInternal,KNS3::EntryInternal::PreviewType)));
+
+    engine->init(configFile);
 
     delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
     ui.m_listView->setItemDelegate(delegate);
@@ -265,6 +267,12 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
 
     q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
+}
+
+void DownloadWidgetPrivate::slotProvidersLoaded()
+{
+    kDebug() << "providers loaded";
+    engine->reloadEntries();
 }
 
 void DownloadWidgetPrivate::slotEntriesLoaded(const EntryInternal::List& entries)

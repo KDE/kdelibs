@@ -67,6 +67,8 @@ public:
     void init(const QString& configFile);
     void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0);
 
+    void slotProvidersLoaded();
+
     void slotEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void slotEntryChanged(const KNS3::EntryInternal& entry);
 

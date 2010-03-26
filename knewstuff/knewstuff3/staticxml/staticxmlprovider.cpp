@@ -214,7 +214,6 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
         connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
         
-        connect(loader, SIGNAL(jobStarted(KJob*)), SIGNAL(jobStarted(KJob*)));
         d->mFeedLoaders.insert(request.sortMode, loader);
 
         loader->load(url);

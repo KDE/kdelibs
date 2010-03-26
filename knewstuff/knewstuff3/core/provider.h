@@ -69,7 +69,7 @@ namespace KNS3
             int page;
             int pageSize;
 
-            SearchRequest(SortMode sortMode_ = Newest, const QString& searchTerm_ = QString(), const QStringList& categories_ = QStringList(), int page_ = 0, int pageSize_ = 20)
+            SearchRequest(SortMode sortMode_ = Newest, const QString& searchTerm_ = QString(), const QStringList& categories_ = QStringList(), int page_ = -1, int pageSize_ = 20)
                 :sortMode(sortMode_), searchTerm(searchTerm_), categories(categories_), page(page_), pageSize(pageSize_)
             {}
 

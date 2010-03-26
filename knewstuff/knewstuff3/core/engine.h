@@ -119,6 +119,7 @@ Q_SIGNALS:
      */
     void signalMessage(const QString& message);
 
+    void signalProvidersLoaded();
     void signalEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void signalEntryChanged(const KNS3::EntryInternal& entry);
     void signalEntryDetailsLoaded(const KNS3::EntryInternal& entry);
@@ -131,9 +132,6 @@ Q_SIGNALS:
 
     void signalEntryUploadFinished();
     void signalEntryUploadFailed();
-
-    void signalProvidersFinished();
-    void signalEntriesFinished();
 
     void signalDownloadDialogDone(KNS3::EntryInternal::List);
     void jobStarted(KJob*,const QString&);
