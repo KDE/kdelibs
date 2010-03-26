@@ -46,12 +46,18 @@ StorageAccess::~StorageAccess()
 
 bool StorageAccess::isAccessible() const
 {
-    return false;
+    return true;
 }
 
 QString StorageAccess::filePath() const
 {
     QString result;
+
+    const UPnP::Device& device = mDevice->device();
+
+    result = QString::fromLatin1("upnp://%1:%2/")
+        .arg( device.ipAddress() ).arg( device.ipPortNumber() );
+
     return result;
 }
 
