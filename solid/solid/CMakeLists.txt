@@ -237,7 +237,7 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY} wbemuuid)
 endif(WIN32)
 
 if(APPLE)
@@ -246,7 +246,7 @@ endif(APPLE)
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} wbemuuid)
+target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
 
 set_target_properties(solid PROPERTIES
