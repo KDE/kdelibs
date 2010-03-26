@@ -11,6 +11,7 @@ include_directories( ${KDE4_INCLUDES}
 set(proxymodeltestapp_SRCS
     main.cpp
     mainwindow.cpp
+    breadcrumbswidget.cpp
     selectionpmwidget.cpp
 #     recursivefilterpmwidget.cpp
     descendantpmwidget.cpp
