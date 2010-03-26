@@ -930,10 +930,10 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
     }
   }
 
-  QItemSelection newRanges = getRootRanges(selected);
-
+  QItemSelection newRanges;
   if (!m_includeAllSelected)
   {
+    newRanges = getRootRanges(selected);
     QMutableListIterator<QItemSelectionRange> i(newRanges);
     while (i.hasNext())
     {
@@ -945,6 +945,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         i.remove();
       }
     }
+  } else {
+    newRanges = selected;
   }
 
   QModelIndexList newIndexes;
