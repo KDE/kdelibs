@@ -30,6 +30,8 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 #include <QtCore/QSet>
+#include <QtCore/QVector>
+
 
 namespace UPnP {
 class DeviceBrowser;
@@ -42,6 +44,8 @@ namespace Backends
 {
 namespace KUPnP
 {
+class AbstractDeviceFactory;
+
 
 class KUPnPManager : public Solid::Ifaces::DeviceManager
 {
@@ -72,6 +76,7 @@ private:
 private:
     QSet<Solid::DeviceInterface::Type> mSupportedInterfaces;
 
+    QVector<AbstractDeviceFactory*> mDeviceFactories;
     UPnP::DeviceBrowser* mDeviceBrowser;
     QString mUdiPrefix;
 };

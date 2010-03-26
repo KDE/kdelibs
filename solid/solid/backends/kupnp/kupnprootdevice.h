@@ -44,7 +44,7 @@ public:
     KUPnPRootDevice();
     virtual ~KUPnPRootDevice();
 
-public: // Solid::Ifaces::Device
+public: // Solid::Ifaces::Device API
     virtual QString udi() const;
     virtual QString parentUdi() const;
 

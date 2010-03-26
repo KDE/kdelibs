@@ -20,13 +20,11 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
-#define SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
+#ifndef SOLID_BACKENDS_KUPnP_MEDIASERVER2_H
+#define SOLID_BACKENDS_KUPnP_MEDIASERVER2_H
 
 // KUPnP
-#include "lib/device.h"
-// Solid
-#include <solid/ifaces/device.h>
+#include "kupnpdevice.h"
 
 
 namespace Solid
@@ -36,58 +34,31 @@ namespace Backends
 namespace KUPnP
 {
 
-class AbstractDeviceFactory
+class MediaServer2Factory : public AbstractDeviceFactory
 {
 public:
-    virtual ~AbstractDeviceFactory();
+    MediaServer2Factory();
 
-public:
+public: // AbstractDeviceFactory API
     virtual void addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const;
     virtual bool hasDeviceInterface( const UPnP::Device& device,
                                      Solid::DeviceInterface::Type type ) const;
-    virtual QObject* tryCreateDevice( const UPnP::Device& device ) const = 0;
-};
-
-
-class DeviceFactory : public AbstractDeviceFactory
-{
-public:
-    DeviceFactory();
-
-public: // AbstractDeviceFactory API
     virtual QObject* tryCreateDevice( const UPnP::Device& device ) const;
 };
 
 
-class KUPnPDevice : public Solid::Ifaces::Device
+class MediaServer2 : public KUPnPDevice
 {
-    Q_OBJECT
-
 public:
-    explicit KUPnPDevice(const UPnP::Device& device);
-    virtual ~KUPnPDevice();
+    explicit MediaServer2(const UPnP::Device& device);
+    virtual ~MediaServer2();
 
 public: // Solid::Ifaces::Device API
-    virtual QString udi() const;
-    virtual QString parentUdi() const;
-
-    virtual QString vendor() const;
-    virtual QString product() const;
     virtual QString icon() const;
-    virtual QStringList emblems() const;
     virtual QString description() const;
 
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
     virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
-
-protected:
-    QString storageDescription() const;
-    QString volumeDescription() const;
-
-protected:
-    UPnP::Device mDevice;
-
-    KUPnPDevice* mParentDevice;
 };
 
 }

@@ -20,7 +20,7 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "mediaserver1.h"
+#include "mediaserver3.h"
 
 // Solid
 #include "kupnpstorageaccess.h"
@@ -34,49 +34,49 @@ namespace Backends
 namespace KUPnP
 {
 
-MediaServer1Factory::MediaServer1Factory() {}
+MediaServer3Factory::MediaServer3Factory() {}
 
-void MediaServer1Factory::addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const
+void MediaServer3Factory::addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const
 {
     interfaces << Solid::DeviceInterface::StorageAccess;
 }
 
-bool MediaServer1Factory:: hasDeviceInterface( const UPnP::Device& device,
+bool MediaServer3Factory:: hasDeviceInterface( const UPnP::Device& device,
                                                Solid::DeviceInterface::Type type ) const
 {
     return type==Solid::DeviceInterface::StorageAccess
-           && device.type() == QLatin1String("MediaServer1");
+           && device.type() == QLatin1String("MediaServer3");
 }
 
-QObject* MediaServer1Factory::tryCreateDevice( const UPnP::Device& device ) const
+QObject* MediaServer3Factory::tryCreateDevice( const UPnP::Device& device ) const
 {
-    return ( device.type() == QLatin1String("MediaServer1") ) ?
-        new MediaServer1( device ) : 0;
+    return ( device.type() == QLatin1String("MediaServer3") ) ?
+        new MediaServer3( device ) : 0;
 }
 
 
-MediaServer1::MediaServer1(const UPnP::Device& device)
+MediaServer3::MediaServer3(const UPnP::Device& device)
   : KUPnPDevice(device)
 {
 }
 
-MediaServer1::~MediaServer1()
+MediaServer3::~MediaServer3()
 {
 }
 
-QString MediaServer1::icon() const
+QString MediaServer3::icon() const
 {
     return QString::fromLatin1("folder-remote");
 }
 
 
-QString MediaServer1::description() const
+QString MediaServer3::description() const
 {
-    return QObject::tr("UPnP Media Server v1");
+    return QObject::tr("UPnP Media Server v3");
 }
 
 
-bool MediaServer1::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
+bool MediaServer3::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
     bool result = false;
 
@@ -87,7 +87,7 @@ bool MediaServer1::queryDeviceInterface(const Solid::DeviceInterface::Type &type
     return result;
 }
 
-QObject* MediaServer1::createDeviceInterface(const Solid::DeviceInterface::Type& type)
+QObject* MediaServer3::createDeviceInterface(const Solid::DeviceInterface::Type& type)
 {
     DeviceInterface* interface = 0;
 

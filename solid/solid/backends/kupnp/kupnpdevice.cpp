@@ -49,15 +49,11 @@ DeviceData deviceData[] =
 {
     {"BasicDevice1", "network-server", QI18N("UPnP Basic Device") },
     {"WLANAccessPointDevice1", "network-wireless", QI18N("UPnP WLAN Access Point Device") },
-    {"InternetGatewayDevice1", "network-server", QI18N("UPnP Internet Gateway Device") },
     {"PrinterBasic1", "printer", QI18N("UPnP Printer (Basic)") },
     {"PrinterEnhanced1", "printer", QI18N("UPnP Printer (Enhanced)") },
     {"Scanner1", "scanner", QI18N("UPnP Scanner") },
-    {"MediaServer1", "folder-remote", QI18N("UPnP Media Server") },
     {"MediaRenderer1", "video-television", QI18N("UPnP Media Renderer") },
-    {"MediaServer2", "folder-remote", QI18N("UPnP Media Server") },
     {"MediaRenderer2", "video-television", QI18N("UPnP Media Renderer") },
-    {"MediaServer3", "folder-remote", QI18N("UPnP Media Server") },
     {"SolarProtectionBlind1", "device", QI18N("UPnP Solar Protection Blind") },
     {"DigitalSecurityCamera1", "camera", QI18N("UPnP Digital Security Camera") },
     {"HVAC1", "device", QI18N("UPnP HVAC") },
@@ -74,7 +70,32 @@ DeviceData deviceData[] =
     {"WFADevice1", "network-wireless", QI18N("UPnP Wi-Fi Alliance Device") }
 };
 
+
 static const int deviceDataCount = sizeof(deviceData) / sizeof(deviceData[0]);
+
+
+AbstractDeviceFactory::~AbstractDeviceFactory() {}
+
+DeviceFactory::DeviceFactory() {}
+
+void AbstractDeviceFactory::addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const
+{
+    Q_UNUSED( interfaces );
+}
+
+bool AbstractDeviceFactory:: hasDeviceInterface( const UPnP::Device& device,
+                                         Solid::DeviceInterface::Type type ) const
+{
+    Q_UNUSED( device );
+    Q_UNUSED( type );
+
+    return false;
+}
+
+QObject* DeviceFactory::tryCreateDevice( const UPnP::Device& device ) const
+{
+    return new KUPnPDevice( device );
+}
 
 
 KUPnPDevice::KUPnPDevice(const UPnP::Device& device)

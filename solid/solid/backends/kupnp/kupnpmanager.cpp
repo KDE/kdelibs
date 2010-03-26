@@ -25,6 +25,9 @@
 // backend
 #include "kupnprootdevice.h"
 #include "mediaserver1.h"
+#include "mediaserver2.h"
+#include "mediaserver3.h"
+#include "internetgatewaydevice1.h"
 #include "kupnpdevice.h"
 #include "lib/devicebrowser.h"
 #include "lib/device.h"
@@ -53,7 +56,16 @@ KUPnPManager::KUPnPManager(QObject *parent)
     connect( mDeviceBrowser, SIGNAL(deviceRemoved( const UPnP::Device& )),
              SLOT(onDeviceRemoved( const UPnP::Device& )) );
 
-    mSupportedInterfaces << Solid::DeviceInterface::StorageAccess;
+    mDeviceFactories
+        << new MediaServer1Factory()
+        << new MediaServer2Factory()
+        << new MediaServer3Factory()
+        << new InternetGatewayDevice1Factory()
+        // keep last:
+        << new DeviceFactory();
+
+    foreach( AbstractDeviceFactory* factory, mDeviceFactories )
+        factory->addSupportedInterfaces( mSupportedInterfaces );
 }
 
 
@@ -106,11 +118,11 @@ QObject* KUPnPManager::createDevice(const QString &udi)
         QList<UPnP::Device> devices = mDeviceBrowser->devices();
         foreach( const UPnP::Device& device, devices ) {
             if( device.udn() == udn ) {
-                const QString deviceType = device.type();
-                if( deviceType == QLatin1String("MediaServer1") )
-                    result = new MediaServer1( device );
-                else
-                    result = new KUPnPDevice( device );
+                foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+                    result = factory->tryCreateDevice( device );
+                    if( result != 0 )
+                        break;
+                }
                 break;
             }
         }
@@ -137,12 +149,11 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
                 ||(! parentUdn.isEmpty() && device.parentDevice().udn() == parentUdn )) {
                 continue;
             }
-
-            if (type==Solid::DeviceInterface::StorageAccess) {
-                if (device.type() == QLatin1String("MediaServer1") ||
-                    device.type() == QLatin1String("MediaServer2") ||
-                    device.type() == QLatin1String("MediaServer3"))
+            foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+                if( factory->hasDeviceInterface(device,type) ) {
                     result << udiFromUdn( device.udn() );
+                    break;
+                }
             }
         }
     }
@@ -154,10 +165,14 @@ QStringList KUPnPManager::findDeviceByDeviceInterface(const Solid::DeviceInterfa
 {
     QStringList result;
 
-    if (type == Solid::DeviceInterface::StorageAccess) {
-        QList<UPnP::Device> devices = mDeviceBrowser->devices();
-        foreach( const UPnP::Device& device, devices ) {
-            result << udiFromUdn( device.udn() );
+    const QList<UPnP::Device> devices = mDeviceBrowser->devices();
+
+    foreach( const UPnP::Device& device, devices ) {
+        foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+            if( factory->hasDeviceInterface(device,type) ) {
+                result << udiFromUdn( device.udn() );
+                break;
+            }
         }
     }
 
@@ -180,6 +195,7 @@ void KUPnPManager::onDeviceRemoved( const UPnP::Device& device )
 
 KUPnPManager::~KUPnPManager()
 {
+    qDeleteAll(mDeviceFactories);
 }
 
 }
