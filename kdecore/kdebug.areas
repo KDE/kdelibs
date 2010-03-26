@@ -52,6 +52,7 @@
 712        kutils (KCModuleInfo)
 713        kutils (KCModuleContainer)
 750        kde3support (kspell)
+800        kdewebkit
 912        ksmartcard (kdelibs)
 920        Solid (kdelibs)
 921        Solid Networking
