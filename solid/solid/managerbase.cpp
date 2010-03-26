@@ -28,7 +28,7 @@
 #elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
 #include "backends/kupnp/kupnpmanager.h"
-#elif defined (_MSC_VER) // TODO: mingw
+#elif defined (Q_WS_WIN) && defined(HAVE_WBEM)
 #include "backends/wmi/wmimanager.h"
 #endif
 
@@ -53,7 +53,7 @@ void Solid::ManagerBasePrivate::loadBackends()
 #        elif defined (Q_OS_UNIX)
             m_backends << new Solid::Backends::Hal::HalManager(0)
                        << new Solid::Backends::KUPnP::KUPnPManager(0);
-#        elif defined (_MSC_VER) // TODO: mingw
+#        elif defined (Q_WS_WIN) && defined(HAVE_WBEM)
             m_backends << new Solid::Backends::Wmi::WmiManager(0);
 #        endif
     }

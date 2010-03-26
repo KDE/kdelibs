@@ -40,7 +40,32 @@
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 
+#ifdef __GNUC__
+//temporarily place this here, it should be moved to kdewin lib
+BSTR BSTRFromCStr(UINT codePage, LPCSTR s)
+{
+    int wideLen = MultiByteToWideChar(codePage, 0, s, -1, NULL, 0);
+    if( wideLen > 0 )
+    {
+        WCHAR* wideStr = (WCHAR*)CoTaskMemAlloc(wideLen*sizeof(WCHAR));
+        if( NULL != wideStr )
+        {
+            BSTR bstr;
 
+            ZeroMemory(wideStr, wideLen*sizeof(WCHAR));
+            MultiByteToWideChar(codePage, 0, s, -1, wideStr, wideLen);
+            bstr = SysAllocStringLen(wideStr, wideLen-1);
+            CoTaskMemFree(wideStr);
+
+            return bstr;
+        }
+    }
+    return NULL;
+};
+
+#define _bstr_t(a) BSTRFromCStr(CP_UTF8, a)
+#define bstr_t _bstr_t
+#endif
 using namespace Solid::Backends::Wmi;
 
 /**
@@ -55,11 +80,24 @@ using namespace Solid::Backends::Wmi;
 QString WmiQuery::Item::getProperty(const QString &property )
 {
     qDebug() << "start property:" << property;
+    QString prop = property;
+    if (property == "voule.ignore")
+        return "false";
+    else if(property == "block.storage_device")
+        return "true";
+    else if (property == "volume.mount_point")
+        prop = "deviceid";
+    else if (property == "volume.is_mounted")
+        return "true";
     // todo check first if property is available
     VARIANT vtProp;
-    HRESULT hr = m_p->Get((LPCWSTR)property.utf16(), 0, &vtProp, 0, 0);
+    HRESULT hr = m_p->Get(bstr_t(qPrintable(prop)), 0, &vtProp, 0, 0);
+    QString result;
+    if (SUCCEEDED(hr)) {
+        result = QString((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
+    }
+
     VariantClear(&vtProp);
-    QString result((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
     m_p->Release();
     qDebug() << "end result:" << result;
     return result;
@@ -110,7 +148,7 @@ WmiQuery::WmiQuery()
     }
     if( !m_failed )
     {
-        hres = pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
+        hres = pLoc->ConnectServer( _bstr_t("ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
         if( FAILED(hres) )
         {
             qCritical() << "Could not connect. Error code = " << hres << endl;
@@ -165,6 +203,7 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
     }
 
     HRESULT hres;
+
     hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
                 WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
 
@@ -175,7 +214,7 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
     else
     { 
         ULONG uReturn = 0;
-   
+
         while( pEnumerator )
         {
             IWbemClassObject *pclsObj;

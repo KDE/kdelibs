@@ -68,7 +68,7 @@ public:
         
         // todo: add nicer implementation to detect device type
         if (m_wmiTable == getWMITable(Solid::DeviceInterface::OpticalDrive))
-            interfaceList << "Block" << "StorageDrive" << "OpticalDrive";
+            interfaceList << "Block" << "StorageDrive" << "OpticalDrive" << "StorageVolume";
     }
    
     const QString udi() const { return m_udi; }
@@ -129,11 +129,13 @@ public:
         case Solid::DeviceInterface::StorageAccess:
             break;
         case Solid::DeviceInterface::StorageDrive:
+            interfaceList << "Block" << "StorageDrive";
             break;
         case Solid::DeviceInterface::OpticalDrive:
             interfaceList << "Block" << "StorageDrive" << "OpticalDrive";
             break;
         case Solid::DeviceInterface::StorageVolume:
+            interfaceList << "Block" << "StorageVolume";
             break;
         case Solid::DeviceInterface::OpticalDisc:
             interfaceList << "Block" << "StorageDrive" << "OpticalDrive";
@@ -186,13 +188,15 @@ public:
         case Solid::DeviceInterface::Block:
             break;
         case Solid::DeviceInterface::StorageAccess:
+            wmiTable = "Win32_LogicalDisk";
             break;
         case Solid::DeviceInterface::StorageDrive:
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            wmiTable = "Win32_CDROMDrive";
+            wmiTable = "Win32_LogicalDisk";
             break;
         case Solid::DeviceInterface::StorageVolume:
+            wmiTable = "Win32_LogicalDisk";
             break;
         case Solid::DeviceInterface::OpticalDisc:
             wmiTable = "Win32_CDROMDrive";
@@ -437,7 +441,7 @@ QVariant WmiDevice::property(const QString &key) const
     WmiQuery::ItemList list = d->sendQuery();
     if (list.size() == 0)
         return QString();
-        
+
     QString result = list[0]->getProperty( key );
     return result;
 }
@@ -473,7 +477,7 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     } else if (type==Solid::DeviceInterface::StorageAccess) {
 #if 1
         qDebug() << " has to be implemented"; 
-        return false;
+        return true;
 #else
         return property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume")
             || property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto");

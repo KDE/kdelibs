@@ -190,35 +190,39 @@ if(APPLE)
    )
 endif(APPLE)
 
-# TODO: mingw
-if(MSVC)
-   message(STATUS "-- Building Solid WMI backend." )
+if(WIN32)
+   include(CheckIncludeFileCXX)
+   check_include_file_cxx(wbemidl.h HAVE_WBEM)
+   if(HAVE_WBEM)
+       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
+       message(STATUS "-- Building Solid WMI backend." )
 
-   set(solid_LIB_SRCS ${solid_LIB_SRCS}
-   backends/wmi/wmiacadapter.cpp
-   backends/wmi/wmiaudiointerface.cpp
-   backends/wmi/wmibattery.cpp
-   backends/wmi/wmiblock.cpp
-   backends/wmi/wmibutton.cpp
-   backends/wmi/wmicamera.cpp
-   backends/wmi/wmicdrom.cpp
-   backends/wmi/wmideviceinterface.cpp
-   backends/wmi/wmidvbinterface.cpp
-   backends/wmi/wmigenericinterface.cpp
-   backends/wmi/wmidevice.cpp
-   backends/wmi/wmimanager.cpp
-   backends/wmi/wminetworkinterface.cpp
-   backends/wmi/wmiopticaldisc.cpp
-   backends/wmi/wmiportablemediaplayer.cpp
-   backends/wmi/wmiprocessor.cpp
-   backends/wmi/wmiquery.cpp
-   backends/wmi/wmistorageaccess.cpp
-   backends/wmi/wmistorage.cpp
-   backends/wmi/wmivideo.cpp
-   backends/wmi/wmivolume.cpp
+       set(solid_LIB_SRCS ${solid_LIB_SRCS}
+       backends/wmi/wmiacadapter.cpp
+       backends/wmi/wmiaudiointerface.cpp
+       backends/wmi/wmibattery.cpp
+       backends/wmi/wmiblock.cpp
+       backends/wmi/wmibutton.cpp
+       backends/wmi/wmicamera.cpp
+       backends/wmi/wmicdrom.cpp
+       backends/wmi/wmideviceinterface.cpp
+       backends/wmi/wmidvbinterface.cpp
+       backends/wmi/wmigenericinterface.cpp
+       backends/wmi/wmidevice.cpp
+       backends/wmi/wmimanager.cpp
+       backends/wmi/wminetworkinterface.cpp
+       backends/wmi/wmiopticaldisc.cpp
+       backends/wmi/wmiportablemediaplayer.cpp
+       backends/wmi/wmiprocessor.cpp
+       backends/wmi/wmiquery.cpp
+       backends/wmi/wmistorageaccess.cpp
+       backends/wmi/wmistorage.cpp
+       backends/wmi/wmivideo.cpp
+       backends/wmi/wmivolume.cpp
 
-   )
-endif(MSVC)
+       )
+    endif(HAVE_WBEM)
+endif(WIN32)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
                              org.freedesktop.PowerManagement.Inhibit.xml
@@ -242,7 +246,7 @@ endif(APPLE)
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
+target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} wbemuuid)
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
 
 set_target_properties(solid PROPERTIES

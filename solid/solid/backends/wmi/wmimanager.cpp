@@ -170,6 +170,7 @@ QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
     case Solid::DeviceInterface::Block:
         break;
     case Solid::DeviceInterface::StorageAccess:
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageDrive:
         break;
