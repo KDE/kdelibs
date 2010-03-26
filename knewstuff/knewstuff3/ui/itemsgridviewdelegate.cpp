@@ -25,13 +25,14 @@
 #include <QLabel>
 #include <QToolButton>
 #include <QMenu>
-#include <KDebug>
-#include <KLocale>
-#include <KMenu>
 
 #include "itemsmodel.h"
 #include "ratingwidget.h"
 #include "ratingpainter.h"
+
+#include <kdebug.h>
+#include <klocale.h>
+#include <kmenu.h>
 
 namespace KNS3
 {

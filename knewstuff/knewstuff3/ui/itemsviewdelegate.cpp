@@ -25,11 +25,11 @@
 #include <QtGui/QApplication>
 #include <QtGui/QToolButton>
 #include <QMenu>
-#include <KMenu>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kicon.h>
 #include <klocale.h>
+#include <kmenu.h>
 #include <kpushbutton.h>
 
 #include "itemsmodel.h"

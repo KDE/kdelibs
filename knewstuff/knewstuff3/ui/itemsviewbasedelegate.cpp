@@ -18,12 +18,13 @@
 */
 #include "itemsviewbasedelegate.h"
 
-#include <KStandardDirs>
-#include <KIcon>
-#include <KIconLoader>
-#include <KDebug>
 #include "itemsmodel.h"
 #include "entrydetailsdialog.h"
+
+#include <kdebug.h>
+#include <kicon.h>
+#include <kiconloader.h>
+#include <kstandarddirs.h>
 
 namespace KNS3
 {

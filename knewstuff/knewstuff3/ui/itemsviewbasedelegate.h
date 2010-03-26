@@ -20,7 +20,6 @@
 #ifndef KNEWSTUFF3_UI_ITEMSVIEWBASEDELEGATE_H
 #define KNEWSTUFF3_UI_ITEMSVIEWBASEDELEGATE_H
 
-#include <KWidgetItemDelegate>
 #include <QList>
 #include <QtCore/QMap>
 #include <QtCore/QModelIndex>
@@ -31,6 +30,7 @@
 #include "core/entryinternal.h"
 
 #include <kicon.h>
+#include <kwidgetitemdelegate.h>
 
 namespace KNS3
 {
