@@ -237,7 +237,10 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY} wbemuuid)
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
+   if(HAVE_WBEM)
+      set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} wbemuuid)
+   endif(HAVE_WBEM)
 endif(WIN32)
 
 if(APPLE)
