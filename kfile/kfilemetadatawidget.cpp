@@ -46,11 +46,6 @@
     #include <QMutex>
     #include <QSpacerItem>
     #include <QThread>
-#else
-    namespace Nepomuk
-    {
-        typedef int Tag;
-    }
 #endif
 
 class KFileMetaDataWidget::Private

@@ -21,6 +21,7 @@
 
 #include <kfileitem.h>
 #include "knfotranslator_p.h"
+#include <klocale.h>
 #include <kurl.h>
 
 #include <config-nepomuk.h>
@@ -34,6 +35,11 @@
     #include "kcommentwidget_p.h"
     #include "kloadfilemetadatathread_p.h"
     #include "ktaggingwidget_p.h"
+#else
+    namespace Nepomuk
+    {
+        typedef int Tag;
+    }
 #endif
 
 class KFileMetaDataProvider::Private
