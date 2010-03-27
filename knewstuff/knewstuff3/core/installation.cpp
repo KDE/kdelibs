@@ -158,7 +158,7 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
 
     if (!source.isValid()) {
         kError() << "The entry doesn't have a payload." << endl;
-        emit signalInstallationFailed(i18n("Download of item failed: no download url for \"%1\"", entry.name()));
+        emit signalInstallationFailed(i18n("Download of item failed: no download URL for \"%1\".", entry.name()));
         return;
     }
 
