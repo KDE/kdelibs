@@ -254,6 +254,10 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
     d->m_fileItems = items;
 
 #ifdef HAVE_NEPOMUK
+    if (items.isEmpty()) {
+        return;
+    }
+
     QList<KUrl> urls;
     foreach (const KFileItem& item, items) {
         const KUrl url = item.nepomukUri();

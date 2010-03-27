@@ -463,7 +463,11 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
     }
 
     const int itemCount = items.count();
-    if (itemCount == 1) {
+    if (itemCount == 0) {
+        // Remove the outdated rows synchronously, as no asynchronous
+        // loading is done at all
+        d->removeOutdatedRows();
+    } else if (itemCount == 1) {
         // TODO: Handle case if remote URLs are used properly. isDir() does
         // not work, the modification date needs also to be adjusted...
         const KFileItem& item = items.first();
@@ -482,6 +486,8 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
         d->m_modifiedInfo->setText(KGlobal::locale()->formatDateTime(item.time(KFileItem::ModificationTime), KLocale::FancyLongDate));
         d->m_ownerInfo->setText(item.user());
         d->m_permissionsInfo->setText(item.permissionsString());
+
+        d->m_removeOutdatedRowsTimer->start();
     } else if (itemCount > 1) {
         // calculate the size of all items and show this
         // information to the user
@@ -495,9 +501,9 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
             }
         }
         d->m_sizeInfo->setText(KIO::convertSize(totalSize));
-    }
 
-    d->m_removeOutdatedRowsTimer->start();
+        d->m_removeOutdatedRowsTimer->start();
+    }
 }
 
 KFileItemList KFileMetaDataWidget::items() const
