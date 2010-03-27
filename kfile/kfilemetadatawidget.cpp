@@ -35,6 +35,7 @@
 #include <QList>
 #include <QSet>
 #include <QString>
+#include <QTimer>
 
 #include <config-nepomuk.h>
 #ifdef HAVE_NEPOMUK
@@ -80,7 +81,12 @@ public:
     void updateFileItemRowsVisibility();
 
     void slotLoadingFinished();
-    void slotMetaDataUpdateDone();
+
+    /**
+     * Removes all rows, that are outdated because the thread
+     * that provides the data did not respond within a short timeframe.
+     */
+    void removeOutdatedRows();
 
 #ifdef HAVE_NEPOMUK
     QList<KUrl> sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const;
@@ -102,6 +108,8 @@ public:
     QLabel* m_ownerInfo;
     QLabel* m_permissionsInfo;
 
+    QTimer* m_removeOutdatedRowsTimer;
+
 private:
     KFileMetaDataWidget* const q;
 };
@@ -119,6 +127,7 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     m_modifiedInfo(0),
     m_ownerInfo(0),
     m_permissionsInfo(0),
+    m_removeOutdatedRowsTimer(0),
     q(parent)
 {
     const QFontMetrics fontMetrics(KGlobalSettings::smallestReadableFont());
@@ -141,6 +150,17 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     m_provider = new KFileMetaDataProvider(q);
     connect(m_provider, SIGNAL(loadingFinished()), q, SLOT(slotLoadingFinished()));
     connect(m_provider, SIGNAL(urlActivated(KUrl)), q, SIGNAL(urlActivated(KUrl)));
+
+    // If meta data is requested for new items by KFileMetaDataWidget::setItems(),
+    // the rows containing invalid meta data must be removed. This is done asynchronously
+    // after 300 ms: This allows to reuse existing rows if the loading of the meta data
+    // could be done fast (which is the default case) and prevents a flickering of the
+    // widget.
+    m_removeOutdatedRowsTimer = new QTimer(q);
+    m_removeOutdatedRowsTimer->setSingleShot(true);
+    m_removeOutdatedRowsTimer->setInterval(300);
+    connect(m_removeOutdatedRowsTimer, SIGNAL(timeout()),
+            q, SLOT(removeOutdatedRows()));
 }
 
 KFileMetaDataWidget::Private::~Private()
@@ -312,6 +332,8 @@ void KFileMetaDataWidget::Private::updateFileItemRowsVisibility()
 
 void KFileMetaDataWidget::Private::slotLoadingFinished()
 {
+    m_removeOutdatedRowsTimer->stop();
+
 #ifdef HAVE_NEPOMUK
     updateFileItemRowsVisibility();
 
@@ -378,6 +400,15 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 #endif
 
     q->updateGeometry();
+}
+
+void KFileMetaDataWidget::Private::removeOutdatedRows()
+{
+    for (int i = m_rows.count() - 1; i >= m_fixedRowCount; --i) {
+        delete m_rows[i].label;
+        delete m_rows[i].defaultValueWidget;
+        m_rows.pop_back();
+    }
 }
 
 #ifdef HAVE_NEPOMUK
@@ -465,6 +496,8 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
         }
         d->m_sizeInfo->setText(KIO::convertSize(totalSize));
     }
+
+    d->m_removeOutdatedRowsTimer->start();
 }
 
 KFileItemList KFileMetaDataWidget::items() const
