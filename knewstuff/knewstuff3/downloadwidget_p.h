@@ -65,6 +65,7 @@ public:
 
     DownloadWidgetPrivate(DownloadWidget* q);
     ~DownloadWidgetPrivate();
+
     void init(const QString& configFile);
     void displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs = 0);
 
@@ -87,6 +88,9 @@ public:
     void scrollbarValueChanged(int value);
 
     void slotUpload();
+    void slotListViewListMode();
+    void slotListViewIconMode();
+    void setListViewMode(QListView::ViewMode mode);
 };
 
 }

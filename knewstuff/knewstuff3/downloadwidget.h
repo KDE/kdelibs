@@ -115,6 +115,9 @@ private:
     DownloadWidgetPrivate *const d;
     Q_DISABLE_COPY(DownloadWidget)
 
+    Q_PRIVATE_SLOT( d, void slotListViewListMode() )
+    Q_PRIVATE_SLOT( d, void slotListViewIconMode() )
+
     Q_PRIVATE_SLOT( d, void slotProvidersLoaded() )
     Q_PRIVATE_SLOT( d, void slotEntriesLoaded(const KNS3::EntryInternal::List& entries) )
     Q_PRIVATE_SLOT( d, void slotEntryChanged(const KNS3::EntryInternal& entry) )

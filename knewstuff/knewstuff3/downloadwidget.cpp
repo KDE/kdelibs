@@ -230,19 +230,15 @@ void DownloadWidgetPrivate::init(const QString& configFile)
 
     engine->init(configFile);
 
-#if 1
     delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
-#else
-    QListView::ViewMode viewMode = QListView::IconMode;
-    if (viewMode == QListView::IconMode) {
-        delegate = new ItemsGridViewDelegate(ui.m_listView, engine, q);
-        ui.m_listView->setViewMode(viewMode);
-        ui.m_listView->setResizeMode(QListView::Adjust);
-    }
-#endif
-
     ui.m_listView->setItemDelegate(delegate);
     ui.m_listView->setModel(model);
+
+    ui.iconViewButton->setIcon(KIcon("view-list-icons"));
+    ui.listViewButton->setIcon(KIcon("view-list-details"));
+
+    q->connect(ui.listViewButton, SIGNAL(clicked()), q, SLOT(slotListViewListMode()));
+    q->connect(ui.iconViewButton, SIGNAL(clicked()), q, SLOT(slotListViewIconMode()));
 
     q->connect(ui.newestRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
     q->connect(ui.ratingRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
@@ -276,6 +272,36 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
 
     q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
+}
+
+void DownloadWidgetPrivate::slotListViewListMode()
+{
+    setListViewMode(QListView::ListMode);
+}
+
+void DownloadWidgetPrivate::slotListViewIconMode()
+{
+    setListViewMode(QListView::IconMode);
+}
+
+void DownloadWidgetPrivate::setListViewMode(QListView::ViewMode mode)
+{
+    if (ui.m_listView->viewMode() == mode) {
+        return;
+    }
+
+    ItemsViewBaseDelegate* oldDelegate = delegate;
+    if (mode == QListView::ListMode) {
+        delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
+        ui.m_listView->setViewMode(QListView::ListMode);
+        ui.m_listView->setResizeMode(QListView::Fixed);
+    } else {
+        delegate = new ItemsGridViewDelegate(ui.m_listView, engine, q);
+        ui.m_listView->setViewMode(QListView::IconMode);
+        ui.m_listView->setResizeMode(QListView::Adjust);
+    }
+    ui.m_listView->setItemDelegate(delegate);
+    delete oldDelegate;
 }
 
 void DownloadWidgetPrivate::slotProvidersLoaded()
