@@ -31,6 +31,11 @@
 class QTimer;
 class KJob;
 
+namespace Attica {
+    class ProviderManager;
+    class Provider;
+}
+
 namespace KNS3
 {
 class Cache;
@@ -143,6 +148,9 @@ Q_SIGNALS:
 private Q_SLOTS:
     // the .knsrc file was loaded
     void slotProviderFileLoaded(const QDomDocument& doc);
+    // instead of getting providers from knsrc, use what was configured in ocs systemsettings
+    void atticaProviderLoaded(const Attica::Provider& provider);
+
     // loading the .knsrc file failed
     void slotProvidersFailed();
 
@@ -168,6 +176,11 @@ private:
      * creates providers based on their type and adds them to the list of providers
      */
     void loadProviders();
+
+    /**
+      Add a provider and connect it to the right slots
+     */
+    void addProvider(QSharedPointer<KNS3::Provider> provider);
 
     void loadRegistry();
 
@@ -204,6 +217,7 @@ private:
     int m_numDataJobs;
     int m_numPictureJobs;
     int m_numInstallJobs;
+    Attica::ProviderManager* m_atticaProviderManager;
 
     Q_DISABLE_COPY(Engine)
 };

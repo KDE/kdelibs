@@ -83,6 +83,18 @@ AtticaProvider::AtticaProvider(const QStringList& categories)
             SLOT(authenticationCredentialsMissing(const Provider&)));
 }
 
+AtticaProvider::AtticaProvider(const Attica::Provider& provider, const QStringList& categories)
+    : Provider(*new AtticaProviderPrivate)
+{
+    Q_D(AtticaProvider);
+
+    // init categories map with invalid categories
+    foreach (const QString& category, categories)
+        d->categoryMap.insert(category, Attica::Category());
+
+    providerLoaded(provider);
+}
+
 AtticaProvider::~AtticaProvider()
 {
     // d_ptr is deleted in base class!

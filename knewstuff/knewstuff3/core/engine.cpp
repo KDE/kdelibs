@@ -51,8 +51,11 @@
 #include <shlobj.h>
 #endif
 
-#include "attica/atticaprovider.h"
+// libattica
+#include <attica/providermanager.h>
 
+// own
+#include "attica/atticaprovider.h"
 #include "core/cache.h"
 #include "staticxml/staticxmlprovider.h"
 
@@ -69,6 +72,7 @@ Engine::Engine(QObject* parent)
     , m_numDataJobs(0)
     , m_numPictureJobs(0)
     , m_numInstallJobs(0)
+    , m_atticaProviderManager(0)
 {
     m_searchTimer->setSingleShot(true);
     m_searchTimer->setInterval(1000);
@@ -82,6 +86,7 @@ Engine::Engine(QObject* parent)
 Engine::~Engine()
 {
     m_cache->writeRegistry();
+    delete m_atticaProviderManager;
     delete m_searchTimer;
     delete m_installation;
     delete m_cache;
@@ -158,14 +163,22 @@ QStringList Engine::categoriesFilter() const
 
 void Engine::loadProviders()
 {
-    kDebug(550) << "loading providers from " << m_providerFileUrl;
-    emit signalBusy(i18n("Loading provider information"));
+    if (m_providerFileUrl.isEmpty()) {
+        // it would be nicer to move the attica stuff into its own class
+        kDebug(550) << "Using OCS default providers";
+        Attica::ProviderManager* m_atticaProviderManager = new Attica::ProviderManager;
+        connect(m_atticaProviderManager, SIGNAL(providerAdded(Attica::Provider)), this, SLOT(atticaProviderLoaded(Attica::Provider)));
+        m_atticaProviderManager->loadDefaultProviders();
+    } else {
+        kDebug(550) << "loading providers from " << m_providerFileUrl;
+        emit signalBusy(i18n("Loading provider information"));
 
-    XmlLoader * loader = new XmlLoader(this);
-    connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProviderFileLoaded(const QDomDocument&)));
-    connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
+        XmlLoader * loader = new XmlLoader(this);
+        connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProviderFileLoaded(const QDomDocument&)));
+        connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
-    loader->load(KUrl(m_providerFileUrl));
+        loader->load(KUrl(m_providerFileUrl));
+    }
 }
 
 void Engine::slotProviderFileLoaded(const QDomDocument& doc)
@@ -196,20 +209,33 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
             provider = QSharedPointer<KNS3::Provider> (new StaticXmlProvider);
         }
 
-        connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
-        connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)),
-                SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
-        connect(provider.data(), SIGNAL(entryDetailsLoaded(KNS3::EntryInternal)), SLOT(slotEntryDetailsLoaded(KNS3::EntryInternal)));
-        connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
-        connect(provider.data(), SIGNAL(signalError(QString)), this, SIGNAL(signalError(QString)));
-        connect(provider.data(), SIGNAL(signalInformation(QString)), this, SIGNAL(signalIdle(QString)));
-
         if (provider->setProviderXML(n)) {
-            m_providers.insert(provider->id(), provider);
+            addProvider(provider);
+        } else {
+            emit signalError(i18n("Error initializing provider."));
         }
         n = n.nextSiblingElement();
     }
     emit signalBusy(i18n("Loading data"));
+}
+
+void Engine::atticaProviderLoaded(const Attica::Provider& atticaProvider)
+{
+    QSharedPointer<KNS3::Provider> provider =
+            QSharedPointer<KNS3::Provider> (new AtticaProvider(atticaProvider, m_categories));
+    addProvider(provider);
+}
+
+void Engine::addProvider(QSharedPointer<KNS3::Provider> provider)
+{
+    m_providers.insert(provider->id(), provider);
+    connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
+    connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)),
+            SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
+    connect(provider.data(), SIGNAL(entryDetailsLoaded(KNS3::EntryInternal)), SLOT(slotEntryDetailsLoaded(KNS3::EntryInternal)));
+    connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
+    connect(provider.data(), SIGNAL(signalError(QString)), this, SIGNAL(signalError(QString)));
+    connect(provider.data(), SIGNAL(signalInformation(QString)), this, SIGNAL(signalIdle(QString)));
 }
 
 void Engine::providerJobStarted ( KJob* job )

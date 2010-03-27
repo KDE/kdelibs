@@ -45,6 +45,7 @@ namespace KNS3
         Q_OBJECT
     public:
         AtticaProvider(const QStringList& categories);
+        AtticaProvider(const Attica::Provider& provider, const QStringList& categories);
 
         ~AtticaProvider();
 
