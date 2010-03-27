@@ -256,7 +256,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         default:
             text = i18n("Install");
         }
-        installButton->setText(text);
+        installButton->setToolTip(text);
         installButton->setEnabled(enabled);
         installButton->setIcon(icon);
         if (installable && entry.downloadLinkCount() > 1) {
@@ -279,7 +279,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     //KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
     QToolButton * detailsButton = qobject_cast<QToolButton*>(widgets.at(DelegateDetailsButton));
     if (detailsButton != 0) {
-        detailsButton->setText(i18n("Details..."));
+        detailsButton->setToolTip(i18n("Details..."));
         detailsButton->setIcon(KIcon("documentinfo"));
         detailsButton->move(elementXPos-detailsButton->width()/2, elementYPos);
         if (installButton !=0) {
