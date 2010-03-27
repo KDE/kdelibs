@@ -95,6 +95,7 @@ bool Engine::init(const QString &configfile)
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
+        emit signalError(i18n("Configuration file not found: \"%1\"", configfile));
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
@@ -103,6 +104,7 @@ bool Engine::init(const QString &configfile)
     // - this needs to be looked at again until KConfig backend changes for KDE 4
     // the check below is a workaround
     if (KStandardDirs::locate("config", configfile).isEmpty()) {
+        emit signalError(i18n("Configuration file not found: \"%1\"", configfile));
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
@@ -115,6 +117,7 @@ bool Engine::init(const QString &configfile)
         kDebug() << "Loading KNewStuff2 config: " << configfile;
         group = conf.group("KNewStuff2");
     } else {
+        emit signalError(i18n("Configuration file is invalid: \"%1\"", configfile));
         kError() << "A knsrc file was found but it doesn't contain a KNewStuff3 section." << endl;
         return false;
     }
