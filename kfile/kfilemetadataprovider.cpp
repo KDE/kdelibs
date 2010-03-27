@@ -21,7 +21,6 @@
 
 #include <kfileitem.h>
 #include "knfotranslator_p.h"
-#include "kloadfilemetadatathread_p.h"
 #include <kurl.h>
 
 #include <config-nepomuk.h>
@@ -33,6 +32,7 @@
     #include <resourcemanager.h>
 
     #include "kcommentwidget_p.h"
+    #include "kloadfilemetadatathread_p.h"
     #include "ktaggingwidget_p.h"
 #endif
 
