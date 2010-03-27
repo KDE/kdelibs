@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmenu.h>
+#include <kpushbutton.h>
 
 namespace KNS3
 {
@@ -85,12 +86,14 @@ QList<QWidget*> ItemsGridViewDelegate::createItemWidgets() const
     rating->setEditable(false);
     m_widgetList << rating;
     
-    /*KPushButton* detailsButton = new KPushButton();
+    QToolButton * detailsButton = new QToolButton();
+    detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    detailsButton->setPopupMode(QToolButton::InstantPopup);
     m_widgetList << detailsButton;
     setBlockedEventTypes(detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(detailsButton, SIGNAL(clicked()), this, SLOT(slotDetailsClicked()));
-*/
+
     return m_widgetList;
 }
 
@@ -107,7 +110,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
     int margin = option.fontMetrics.height() / 2;
     int elementYPos = PreviewHeight + margin + frameThickness*2;
-    
+    int elementXPos = margin;
     //setup rating widget
     RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
@@ -268,7 +271,21 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             }
             installButton->setMenu(installMenu);
         }
-
+        installButton->move((ItemGridWidth-installButton->width())/2, elementYPos);
+        elementXPos = installButton->pos().x() + installButton->width();
+    }
+    elementXPos += margin;
+    
+    //KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
+    QToolButton * detailsButton = qobject_cast<QToolButton*>(widgets.at(DelegateDetailsButton));
+    if (detailsButton != 0) {
+        detailsButton->setText(i18n("Details..."));
+        detailsButton->setIcon(KIcon("documentinfo"));
+        detailsButton->move(elementXPos-detailsButton->width()/2, elementYPos);
+        if (installButton !=0) {
+            QPoint pos = installButton->pos();
+            installButton->move(pos.x()-installButton->width()/2, elementYPos);
+        }
     }
 }
 

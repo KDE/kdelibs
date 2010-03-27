@@ -233,9 +233,10 @@ void DownloadWidgetPrivate::init(const QString& configFile)
 
     engine->init(configFile);
 
+#if 1
     delegate = new ItemsViewDelegate(ui.m_listView, engine, q);
-
-#if 0
+#else
+    QListView::ViewMode viewMode = QListView::IconMode;
     if (viewMode == QListView::IconMode) {
         delegate = new ItemsGridViewDelegate(ui.m_listView, engine, q);
         ui.m_listView->setViewMode(viewMode);

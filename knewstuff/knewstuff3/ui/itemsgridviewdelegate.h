@@ -22,10 +22,6 @@
 
 #include "itemsviewbasedelegate.h"
 
-
-//#include <QtGui/QLabel>
-
-
 namespace KNS3
 {
 
