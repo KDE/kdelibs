@@ -73,7 +73,6 @@ AtticaProvider::AtticaProvider(const QStringList& categories)
     : Provider(*new AtticaProviderPrivate)
 {
     Q_D(AtticaProvider);
-    d->mName = QString("https://api.opendesktop.org/v1/");
 
     // init categories map with invalid categories
     foreach (const QString& category, categories)
@@ -105,22 +104,21 @@ void AtticaProvider::authenticationCredentialsMissing(const KNS3::Provider& )
 bool AtticaProvider::setProviderXML(const QDomElement & xmldata)
 {
     Q_D(AtticaProvider);
-    kDebug(550) << "setting provider xml";
 
     if (xmldata.tagName() != "provider")
         return false;
 
     // FIXME this is quite ugly, repackaging the xml into a string
     QDomDocument doc("temp");
+    kDebug(550) << "setting provider xml" << doc.toString();
+
     doc.appendChild(xmldata.cloneNode(true));
     d->m_providerManager.addProviderFromXml(doc.toString());
 
-    // FIXME I don't think the last is a good idea...
     if (!d->m_providerManager.providers().isEmpty()) {
         kDebug() << "base url of attica provider:" << d->m_providerManager.providers().last().baseUrl().toString();
-    }
-
-    if (d->m_providerManager.providers().isEmpty()) {
+    } else {
+        kError() << "Could not load provider.";
         return false;
     }
     return true;
@@ -135,11 +133,9 @@ void AtticaProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEnt
 void AtticaProvider::providerLoaded(const Attica::Provider& provider)
 {
     Q_D(AtticaProvider);
-    // TODO: check if this still works with multiple providers
-    // for now only use opendesktop
-    if (provider.baseUrl() != QUrl("https://api.opendesktop.org/v1/")) {
-        return;
-    }
+
+    d->mName = provider.name();
+    kDebug() << "Added provider: " << provider.name();
 
     d->m_provider = provider;
 
