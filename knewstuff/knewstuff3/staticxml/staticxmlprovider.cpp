@@ -139,42 +139,6 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
     return true;
 }
 
-QDomElement StaticXmlProvider::providerXML() const
-{
-    Q_D(const StaticXmlProvider);
-    QDomDocument doc;
-
-    QDomElement el = doc.createElement("provider");
-
-    QDomElement e;
-    e = addElement(doc, el, "title", d->mName);
-
-
-    /*if(provider.downloadUrl().isValid())
-    {
-      el.setAttribute("downloadurl", provider.downloadUrl().url());
-    }*/
-    if (d->mUploadUrl.isValid()) {
-        el.setAttribute("uploadurl", d->mUploadUrl.url());
-    }
-    if (d->mNoUploadUrl.isValid()) {
-        el.setAttribute("nouploadurl", d->mNoUploadUrl.url());
-    }
-    if (d->mIcon.isValid()) {
-        el.setAttribute("icon", d->mIcon.url());
-    }
-
-    const QStringList feeds = d->mDownloadUrls.keys();
-    for (QStringList::ConstIterator it = feeds.begin(); it != feeds.end(); ++it) {
-        if ((*it).isEmpty())
-            el.setAttribute("downloadurl", d->mDownloadUrls.value((*it)).url());
-        else
-            el.setAttribute("downloadurl-" + (*it), d->mDownloadUrls.value((*it)).url());
-    }
-
-    return el;
-}
-
 bool StaticXmlProvider::isInitialized() const
 {
     Q_D(const StaticXmlProvider);

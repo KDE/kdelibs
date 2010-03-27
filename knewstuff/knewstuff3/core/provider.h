@@ -99,11 +99,6 @@ namespace KNS3
          */
         virtual bool setProviderXML(const QDomElement & xmldata) = 0;
 
-        /**
-         * get the xml for the provider
-         */
-        virtual QDomElement providerXML() const = 0;
-
         virtual bool isInitialized() const = 0;
 
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries) = 0;

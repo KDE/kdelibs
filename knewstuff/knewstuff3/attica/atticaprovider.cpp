@@ -126,15 +126,6 @@ bool AtticaProvider::setProviderXML(const QDomElement & xmldata)
     return true;
 }
 
-QDomElement AtticaProvider::providerXML() const
-{
-    QDomDocument doc;
-
-    QDomElement el = doc.createElement("provider");
-    // FIXME if needed, create xml
-    return el;
-}
-
 void AtticaProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEntries)
 {
     Q_D(AtticaProvider);
