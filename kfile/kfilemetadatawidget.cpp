@@ -488,7 +488,8 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
         d->m_permissionsInfo->setText(item.permissionsString());
 
         d->m_removeOutdatedRowsTimer->start();
-    } else if (itemCount > 1) {
+    } else {
+        Q_ASSERT(itemCount > 1);
         // calculate the size of all items and show this
         // information to the user
         d->m_sizeLabel->setText(i18nc("@label", "Total Size:"));
