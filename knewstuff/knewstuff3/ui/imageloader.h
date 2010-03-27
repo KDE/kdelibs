@@ -16,8 +16,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KNEWSTUFF2_UI_QASYNCPIXMAP_H
-#define KNEWSTUFF2_UI_QASYNCPIXMAP_H
+#ifndef KNEWSTUFF3_IMAGELOADER_H
+#define KNEWSTUFF3_IMAGELOADER_H
 
 #include <QtGui/QImage>
 #include <QtCore/QObject>
