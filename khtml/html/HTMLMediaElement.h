@@ -105,6 +105,8 @@ public:
     bool muted() const;
     void setMuted(bool);
 
+    String pickMedia();
+
 protected:
     void checkIfSeekNeeded();
 

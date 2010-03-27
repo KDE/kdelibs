@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *           (C) 2009 Michael Howell <mhowell123@gmail.com>.
+ *           (C) 2010 Allan Sandfeld Jensen <sandfeld@kde.org>.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,6 +28,7 @@
 #include <wtf/Platform.h>
 
 #include "HTMLMediaElement.h"
+#include "HTMLSourceElement.h"
 #include "HTMLDocument.h"
 #include <misc/htmlhashes.h>
 #include "MediaError.h"
@@ -105,6 +107,8 @@ void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
         // change to src attribute triggers load()
         if (inDocument() && m_networkState == NETWORK_EMPTY)
             scheduleLoad();
+        if (renderer())
+            renderer()->updateFromElement();
     } if (attrId == ATTR_CONTROLS) {
         /*if (!isVideo() && attached() && (controls() != (renderer() != 0))) {
             detach();
@@ -176,14 +180,10 @@ String HTMLMediaElement::canPlayType(String type)
     // FIXME: Phonon doesn't provide the API to handle codec parameters yet
     if (hasParams)
         theType.truncate(paramsIdx);
-    while (1) {
-        if (Phonon::BackendCapabilities::isMimeTypeAvailable(theType))
-            return "probably";
-        if (theType == QLatin1String("audio/ogg") || theType == QLatin1String("video/ogg"))
-            theType = QLatin1String("application/ogg");
-        else
-            break;
-    }
+    if (theType == QLatin1String("audio/ogg") || theType == QLatin1String("video/ogg"))
+        theType = QLatin1String("application/ogg");
+    if (Phonon::BackendCapabilities::isMimeTypeAvailable(theType))
+        return "probably";
     if (theType == QLatin1String("application/octet-stream") && hasParams)
         return "";
     return "maybe";
@@ -395,6 +395,39 @@ void HTMLMediaElement::setMuted(bool muted)
     }
 }
 
+String HTMLMediaElement::pickMedia()
+{
+    // 3.14.9.2. Location of the media resource
+    String mediaSrc = getAttribute(ATTR_SRC);
+    String maybeSrc;
+    if (mediaSrc.isEmpty()) {
+        for (NodeImpl* n = firstChild(); n; n = n->nextSibling()) {
+            if (n->id() == ID_SOURCE) {
+                String match = "maybe";
+                HTMLSourceElement* source = static_cast<HTMLSourceElement*>(n);
+                if (!source->hasAttribute(ATTR_SRC))
+                    continue;
+                if (source->hasAttribute(ATTR_TYPE)) {
+                    String type = source->type();
+                    match = canPlayType(type);
+                }
+                if (match == "maybe" && maybeSrc.isEmpty())
+                    maybeSrc = source->src().string();
+                else
+                if (match == "probably") {
+                    mediaSrc = source->src().string();
+                    break;
+                }
+            }
+        }
+    }
+    if (mediaSrc.isEmpty())
+        mediaSrc = maybeSrc;
+    if (!mediaSrc.isEmpty())
+        mediaSrc = document()->completeURL(mediaSrc.string());
+    return mediaSrc;
+}
+
 void HTMLMediaElement::checkIfSeekNeeded()
 {
     // ###
@@ -451,8 +484,12 @@ void HTMLMediaElement::updatePlayState()
 {
     if (!m_player)
         return;
-
-    // ###
+    if (m_autoplaying)
+        return;
+    if (m_paused && !m_player->isPaused())
+        m_player->pause();
+    if (!m_paused && !m_player->isPlaying())
+        m_player->play();
 }
 
 }

@@ -95,7 +95,7 @@ void RenderMedia::updateFromElement()
 {
     RenderWidget::updateFromElement();
 
-    QUrl url = mediaElement()->src().string();
+    QUrl url = mediaElement()->pickMedia().string();
     if (player()->mediaObject()->currentSource().url() != url) {
         player()->stop();
 	player()->mediaObject()->setCurrentSource(url);
