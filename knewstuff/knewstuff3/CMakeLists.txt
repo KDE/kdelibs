@@ -36,7 +36,7 @@ set(knewstuff3_SRCS
 )
 
 kde4_add_ui_files(knewstuff3_SRCS
-    downloaddialog.ui
+    downloadwidget.ui
     uploaddialog.ui
     ui/entrydetailsdialog.ui
 )

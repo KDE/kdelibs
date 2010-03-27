@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DownloadDialog</class>
- <widget class="QWidget" name="DownloadDialog">
+ <class>DownloadWidget</class>
+ <widget class="QWidget" name="DownloadWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

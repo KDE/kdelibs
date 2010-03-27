@@ -38,9 +38,6 @@
 #include "ui/itemsviewdelegate.h"
 #include "ui/itemsgridviewdelegate.h"
 
-#include "ui_downloaddialog.h"
-
-
 using namespace KNS3;
 
 DownloadWidget::DownloadWidget(QWidget* parent)

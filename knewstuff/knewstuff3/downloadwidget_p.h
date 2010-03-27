@@ -35,7 +35,7 @@
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewbasedelegate.h"
 
-#include "ui_downloaddialog.h"
+#include "ui_downloadwidget.h"
 
 namespace KNS3 {
 class DownloadWidget;
@@ -45,7 +45,7 @@ class DownloadWidgetPrivate
 public:
     DownloadWidget* q;
 
-    Ui::DownloadDialog ui;
+    Ui::DownloadWidget ui;
     // The engine that does all the work
     Engine *engine;
     // Model to show the entries
