@@ -4,6 +4,11 @@
   <interface name="org.kde.kglobalaccel.Component">
     <property name="friendlyName" type="s" access="read"/>
     <property name="uniqueName" type="s" access="read"/>
+    <signal name="globalShortcutPressed">
+      <arg name="componentUnique" type="s" direction="out"/>
+      <arg name="actionUnique" type="s" direction="out"/>
+      <arg name="timestamp" type="x" direction="out"/>
+    </signal>
     <method name="cleanUp">
       <arg type="b" direction="out"/>
     </method>

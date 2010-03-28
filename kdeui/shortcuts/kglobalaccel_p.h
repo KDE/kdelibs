@@ -27,6 +27,7 @@
 
 #include "kcomponentdata.h"
 #include "kglobalaccel_interface.h"
+#include "kglobalaccel_component_interface.h"
 
 class KAction;
 class KShortcut;
@@ -66,7 +67,7 @@ public:
     void readComponentData(const KComponentData &component);
 
     //private slot implementations
-    void _k_invokeAction(const QStringList&,qlonglong);
+    void _k_invokeAction(const QString &, const QString &,qlonglong);
     void _k_shortcutGotChanged(const QStringList&, const QList<int>&);
     void _k_serviceOwnerChanged(const QString& name, const QString& oldOwner, const QString& newOwner);
     void reRegisterAll();
@@ -81,6 +82,16 @@ public:
     bool enabled;
 
     org::kde::KGlobalAccel iface;
+
+    //! Get the component @p componentUnique. If @p remember is true the instance is cached and we
+    //! subscribe to signals about changes to the component.
+    org::kde::kglobalaccel::Component *getComponent(const QString &componentUnique, bool remember);
+
+    //! Our owner
+    KGlobalAccel *q;
+
+    //! The components the application is using
+    QHash<QString, org::kde::kglobalaccel::Component *> components;
 };
 
 #endif

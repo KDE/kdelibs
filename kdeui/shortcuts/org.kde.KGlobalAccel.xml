@@ -2,10 +2,6 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.kde.KGlobalAccel">
-    <signal name="invokeAction">
-      <arg name="actionId" type="as" direction="out"/>
-      <arg name="timestamp" type="x" direction="out"/>
-    </signal>
     <signal name="yourShortcutGotChanged">
       <arg name="actionId" type="as" direction="out"/>
       <arg name="newKeys" type="ai" direction="out"/>

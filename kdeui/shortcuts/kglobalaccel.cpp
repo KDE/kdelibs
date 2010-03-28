@@ -40,11 +40,14 @@
 #include "kaction_p.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
-#include "kglobalaccel_component_interface.h"
-#include "kglobalaccel_interface.h"
 
-static org::kde::kglobalaccel::Component *getComponent(const QString &componentUnique)
-    {
+org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QString &componentUnique, bool remember = false)
+{
+    // Check if we already have this component
+    if (components.contains(componentUnique)) {
+        return components[componentUnique];
+    }
+
     // Connect to the kglobalaccel daemon
     org::kde::KGlobalAccel kglobalaccel(
             "org.kde.kglobalaccel",
@@ -74,13 +77,23 @@ static org::kde::kglobalaccel::Component *getComponent(const QString &componentU
     org::kde::kglobalaccel::Component *component = new org::kde::kglobalaccel::Component(
         "org.kde.kglobalaccel",
         reply.value().path(),
-        QDBusConnection::sessionBus());
+        QDBusConnection::sessionBus(),
+        q);
 
     // No component no cleaning
     if (!component->isValid()) {
         kDebug() << "Failed to get component" << componentUnique << QDBusConnection::sessionBus().lastError();
         return NULL;
     }
+
+    if (remember)
+        {
+        // Connect to the signals we are interested in.
+        q->connect(component, SIGNAL(globalShortcutPressed(const QString &, const QString &, qlonglong)),
+                SLOT(_k_invokeAction(const QString &, const QString &, qlonglong)));
+
+        components[componentUnique] = component;
+        }
 
     return component;
 }
@@ -90,7 +103,8 @@ static org::kde::kglobalaccel::Component *getComponent(const QString &componentU
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
      :  isUsingForeignComponentName(false),
         enabled(true),
-        iface("org.kde.kglobalaccel", "/kglobalaccel", QDBusConnection::sessionBus())
+        iface("org.kde.kglobalaccel", "/kglobalaccel", QDBusConnection::sessionBus()),
+        q(q)
 {
     // Make sure kded is running. The iface declaration above somehow
     // works anyway.
@@ -134,8 +148,6 @@ KGlobalAccel::KGlobalAccel()
     qDBusRegisterMetaType<KGlobalShortcutInfo>();
     qDBusRegisterMetaType<QList<KGlobalShortcutInfo> >();
 
-    connect(&d->iface, SIGNAL(invokeAction(const QStringList &, qlonglong)),
-            SLOT(_k_invokeAction(const QStringList &, qlonglong)));
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
             SLOT(_k_shortcutGotChanged(const QStringList &, const QList<int> &)));
 
@@ -166,8 +178,8 @@ void KGlobalAccel::activateGlobalShortcutContext(
 // static
 bool KGlobalAccel::cleanComponent(const QString &componentUnique)
 {
-    std::auto_ptr<org::kde::kglobalaccel::Component> component(getComponent(componentUnique));
-    if (!component.get()) return false;
+    org::kde::kglobalaccel::Component* component = self()->getComponent(componentUnique);
+    if (!component) return false;
 
     return component->cleanUp();
 }
@@ -176,8 +188,8 @@ bool KGlobalAccel::cleanComponent(const QString &componentUnique)
 // static
 bool KGlobalAccel::isComponentActive(const QString &componentUnique)
 {
-    std::auto_ptr<org::kde::kglobalaccel::Component> component(getComponent(componentUnique));
-    if (!component.get()) return false;
+    org::kde::kglobalaccel::Component* component = self()->getComponent(componentUnique);
+    if (!component) return false;
 
     return component->isActive();
 }
@@ -186,6 +198,12 @@ bool KGlobalAccel::isComponentActive(const QString &componentUnique)
 bool KGlobalAccel::isEnabled() const
 {
     return d->enabled;
+}
+
+
+org::kde::kglobalaccel::Component *KGlobalAccel::getComponent(const QString &componentUnique)
+{
+    return d->getComponent(componentUnique);
 }
 
 
@@ -297,6 +315,10 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
                 actionId,
                 intListFromShortcut(activeShortcut),
                 activeSetterFlags);
+
+        // Make sure we get informed about changes in the component by kglobalaccel
+        getComponent(componentUniqueForAction(action), true);
+
         // Create a shortcut from the result
         const KShortcut scResult(shortcutFromIntList(result));
 
@@ -375,7 +397,10 @@ QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 }
 
 
-void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong timestamp)
+void KGlobalAccelPrivate::_k_invokeAction(
+        const QString &componentUnique,
+        const QString &actionUnique,
+        qlonglong timestamp)
 {
     // If overrideMainComponentData() is active the app can only have
     // configuration actions.
@@ -384,9 +409,9 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong
     }
 
     KAction *action = 0;
-    QList<KAction *> candidates = nameToAction.values(actionId.at(KGlobalAccel::ActionUnique));
+    QList<KAction *> candidates = nameToAction.values(actionUnique);
     foreach (KAction *const a, candidates) {
-        if (componentUniqueForAction(a) == actionId.at(KGlobalAccel::ComponentUnique)) {
+        if (componentUniqueForAction(a) == componentUnique) {
             action = a;
         }
     }
@@ -395,8 +420,7 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong
     // - there is no action
     // - the action is not enabled
     // - the action is an configuration action
-    if (!action || !action->isEnabled()
-            || action->property("isConfigurationAction").toBool()) {
+    if (!action || !action->isEnabled() || action->property("isConfigurationAction").toBool()) {
         return;
     }
 
@@ -415,6 +439,7 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong
 
     action->trigger();
 }
+
 
 void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
                                                 const QList<int> &keys)

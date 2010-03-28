@@ -31,6 +31,7 @@
 class QWidget;
 class KShortcut;
 class KComponentData;
+class OrgKdeKglobalaccelComponentInterface;
 
 /**
  * @short Configurable global shortcut support
@@ -231,9 +232,12 @@ private:
     /// Destructor
     ~KGlobalAccel();
 
+    //! get component @p componentUnique
+    OrgKdeKglobalaccelComponentInterface* getComponent(const QString &componentUnique);
+
     class KGlobalAccelPrivate *const d;
 
-    Q_PRIVATE_SLOT(d, void _k_invokeAction(const QStringList&,qlonglong))
+    Q_PRIVATE_SLOT(d, void _k_invokeAction(const QString &, const QString &, qlonglong))
     Q_PRIVATE_SLOT(d, void _k_shortcutGotChanged(const QStringList&, const QList<int>&))
     Q_PRIVATE_SLOT(d, void _k_serviceOwnerChanged(const QString&, const QString&, const QString&))
 };
