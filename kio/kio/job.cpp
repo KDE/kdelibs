@@ -92,9 +92,9 @@ static bool domainSchemeMatch(const KUrl& u1, const KUrl& u2)
     return (u1List == u2List);
 }
 
-static void clearNonSSLMetaData(KIO::MetaData& metaData)
+static void clearNonSSLMetaData(KIO::MetaData *metaData)
 {
-    QMutableMapIterator<QString, QString> it(metaData);
+    QMutableMapIterator<QString, QString> it(*metaData);
     while (it.hasNext()) {
         it.next();
         if (!it.key().startsWith(QLatin1String("ssl_"), Qt::CaseInsensitive))
@@ -1035,25 +1035,25 @@ void TransferJob::slotRedirection( const KUrl &url)
 void TransferJob::slotFinished()
 {
     Q_D(TransferJob);
-    
+
     //kDebug(7007) << this << "," << m_url;
     if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid()) {
-      
+
         //kDebug(7007) << "Redirection to" << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
-        
+
         if (d->m_redirectionHandlingEnabled) {
             // Honour the redirection
             // We take the approach of "redirecting this same job"
             // Another solution would be to create a subjob, but the same problem
             // happens (unpacking+repacking)
-            d->staticData.truncate(0);            
+            d->staticData.truncate(0);
 
             // When appropriate, retain SSL meta-data information on redirection.
             if (d->m_incomingMetaData.contains("ssl_in_use") &&
                 domainSchemeMatch(d->m_url, d->m_redirectionURL)) {
-                clearNonSSLMetaData(d->m_incomingMetaData);
+                clearNonSSLMetaData(&d->m_incomingMetaData);
             } else {
                 d->m_incomingMetaData.clear();
             }
@@ -1099,7 +1099,7 @@ void TransferJob::slotFinished()
             return;
         }
     }
-    
+
     SimpleJob::slotFinished();
 }
 
@@ -1688,13 +1688,13 @@ void MimetypeJob::slotFinished( )
         emit TransferJob::mimetype( this, d->m_mimetype );
         setError( 0 );
     }
-    
+
     if ( !d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() && !error() )
     {
         //kDebug(7007) << "Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
-        
+
         if (d->m_redirectionHandlingEnabled)
         {
             d->staticData.truncate(0);
@@ -1707,9 +1707,9 @@ void MimetypeJob::slotFinished( )
             return;
         }
     }
-    
+
     // Return slave to the scheduler
-    TransferJob::slotFinished();    
+    TransferJob::slotFinished();
 }
 
 MimetypeJob *KIO::mimetype(const KUrl& url, JobFlags flags)
@@ -2782,7 +2782,7 @@ void MultiGetJob::slotFinished()
   // When appropriate, retain SSL meta-data information on redirection.
   if (d->m_incomingMetaData.contains("ssl_in_use") &&
       domainSchemeMatch(d->m_url, d->m_redirectionURL)) {
-      clearNonSSLMetaData(d->m_incomingMetaData);
+      clearNonSSLMetaData(&d->m_incomingMetaData);
   } else {
       d->m_incomingMetaData.clear();
   }
