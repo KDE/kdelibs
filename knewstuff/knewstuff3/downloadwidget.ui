@@ -225,10 +225,24 @@
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="KPushButton" name="iconViewButton"/>
+        <widget class="KPushButton" name="iconViewButton">
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="0" column="2">
-        <widget class="KPushButton" name="listViewButton"/>
+        <widget class="KPushButton" name="listViewButton">
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

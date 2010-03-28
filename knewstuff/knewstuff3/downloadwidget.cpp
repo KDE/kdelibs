@@ -276,11 +276,15 @@ void DownloadWidgetPrivate::init(const QString& configFile)
 
 void DownloadWidgetPrivate::slotListViewListMode()
 {
+    ui.listViewButton->setChecked(true);
+    ui.iconViewButton->setChecked(false);
     setListViewMode(QListView::ListMode);
 }
 
 void DownloadWidgetPrivate::slotListViewIconMode()
 {
+    ui.listViewButton->setChecked(false);
+    ui.iconViewButton->setChecked(true);
     setListViewMode(QListView::IconMode);
 }
 
