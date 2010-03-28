@@ -94,7 +94,7 @@ static bool domainSchemeMatch(const KUrl& u1, const KUrl& u2)
 
 static void clearNonSSLMetaData(KIO::MetaData& metaData)
 {
-    QMutableMapIterator it (metaData);
+    QMutableMapIterator<QString, QString> it(metaData);
     while (it.hasNext()) {
         it.next();
         if (!it.key().startsWith(QLatin1String("ssl_"), Qt::CaseInsensitive))
