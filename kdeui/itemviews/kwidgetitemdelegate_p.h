@@ -59,6 +59,7 @@ public:
     QAbstractItemView *itemView;
     KWidgetItemDelegatePool *widgetPool;
     QAbstractItemModel *model;
+    bool viewDestroyed;
 
     KWidgetItemDelegate *q;
 };

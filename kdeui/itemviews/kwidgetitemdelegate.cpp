@@ -56,12 +56,16 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , itemView(0)
     , widgetPool(new KWidgetItemDelegatePool(q))
     , model(0)
+    , viewDestroyed(false)
     , q(q)
 {
 }
 
 KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
 {
+    if (!viewDestroyed) {
+        widgetPool->fullClear();
+    }
     delete widgetPool;
 }
 
@@ -198,10 +202,16 @@ void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionView
 bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::Destroy) {
+        // we care for the view since it deletes the widgets (parentage).
+        // if the view hasn't been deleted, it might be that just the
+        // delegate is removed from it, in which case we need to remove the widgets
+        // manually, otherwise they still get drawn.
+        if (watched == itemView) {
+            viewDestroyed = true;
+        }
         return false;
     }
 
-    Q_UNUSED(watched);
     Q_ASSERT(itemView);
 
     if (model != itemView->model()) {
