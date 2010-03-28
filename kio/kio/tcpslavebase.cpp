@@ -154,7 +154,6 @@ public:
 
     TCPSlaveBase* q;
 
-    int timeout;
     bool isBlocking;
 
     KTcpSocket socket;
@@ -187,7 +186,6 @@ TCPSlaveBase::TCPSlaveBase(const QByteArray &protocol,
  : SlaveBase(protocol, poolSocket, appSocket),
    d(new TcpSlaveBasePrivate(this))
 {
-    d->timeout = KProtocolManager::connectTimeout();
     d->isBlocking = true;
     d->port = 0;
     d->serviceName = protocol;
@@ -348,7 +346,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
         }
 
         QListIterator<QHostAddress> it(addresses);
-        int timeout = d->timeout * 1000;
+        int timeout = connectTimeout() * 1000;
         QTime time;
         forever {
             time.start();
