@@ -22,62 +22,82 @@
 
 #include "kbreadcrumbselectionmodel.h"
 
-#include <QtGui/QItemSelectionModel>
-
-
 #include "kdebug.h"
 
-class KBreadcrumbsDecoratorBasePrivate
+class KBreadcrumbSelectionModelPrivate
 {
-  Q_DECLARE_PUBLIC(KBreadcrumbsDecoratorBase);
-  KBreadcrumbsDecoratorBase * const q_ptr;
+  Q_DECLARE_PUBLIC(KBreadcrumbSelectionModel);
+  KBreadcrumbSelectionModel * const q_ptr;
 public:
-  KBreadcrumbsDecoratorBasePrivate(KBreadcrumbsDecoratorBase *proxy)
-    : q_ptr(proxy), m_includeActualSelection(true), m_selectionDepth(-1)
+  KBreadcrumbSelectionModelPrivate(KBreadcrumbSelectionModel *breadcrumbSelector, QItemSelectionModel *selectionModel, KBreadcrumbSelectionModel::Direction direction)
+    : q_ptr(breadcrumbSelector),
+      m_includeActualSelection(true),
+      m_selectionDepth(-1),
+      m_showHiddenAscendantData(false),
+      m_selectionModel(selectionModel),
+      m_direction(direction),
+      m_ignoreCurrentChanged(false)
   {
 
   }
 
-  void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+  void sourceSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 
   bool m_includeActualSelection;
   int m_selectionDepth;
+  bool m_showHiddenAscendantData;
+  QItemSelectionModel *m_selectionModel;
+  KBreadcrumbSelectionModel::Direction m_direction;
+  bool m_ignoreCurrentChanged;
 };
 
-KBreadcrumbsDecoratorBase::KBreadcrumbsDecoratorBase()
-  : d_ptr(new KBreadcrumbsDecoratorBasePrivate(this))
+KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, QObject* parent)
+  : QItemSelectionModel(const_cast<QAbstractItemModel *>(selectionModel->model()), parent),
+    d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, Reverse))
+{
+}
+
+KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, Direction direction, QObject* parent)
+  : QItemSelectionModel(const_cast<QAbstractItemModel *>(selectionModel->model()), parent),
+    d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, direction))
+{
+  if ( direction != Reverse)
+    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+            this, SLOT(sourceSelectionChanged(const QItemSelection&,const QItemSelection&)));
+}
+
+KBreadcrumbSelectionModel::~KBreadcrumbSelectionModel()
 {
 
 }
 
-bool KBreadcrumbsDecoratorBase::includeActualSelection() const
+bool KBreadcrumbSelectionModel::includeActualSelection() const
 {
-  Q_D(const KBreadcrumbsDecoratorBase);
+  Q_D(const KBreadcrumbSelectionModel);
   return d->m_includeActualSelection;
 }
 
-void KBreadcrumbsDecoratorBase::setIncludeActualSelection(bool includeActualSelection)
+void KBreadcrumbSelectionModel::setIncludeActualSelection(bool includeActualSelection)
 {
-  Q_D(KBreadcrumbsDecoratorBase);
+  Q_D(KBreadcrumbSelectionModel);
   d->m_includeActualSelection = includeActualSelection;
 }
 
-int KBreadcrumbsDecoratorBase::selectionDepth() const
+int KBreadcrumbSelectionModel::selectionDepth() const
 {
-  Q_D(const KBreadcrumbsDecoratorBase);
+  Q_D(const KBreadcrumbSelectionModel);
   return d->m_selectionDepth;
 }
 
-void KBreadcrumbsDecoratorBase::setSelectionDepth(int selectionDepth)
+void KBreadcrumbSelectionModel::setSelectionDepth(int selectionDepth)
 {
-  Q_D(KBreadcrumbsDecoratorBase);
+  Q_D(KBreadcrumbSelectionModel);
   d->m_selectionDepth = selectionDepth;
 }
 
-QItemSelection KBreadcrumbsDecoratorBase::getBreadcrumbSelection(const QModelIndex& index)
+QItemSelection KBreadcrumbSelectionModel::getBreadcrumbSelection(const QModelIndex& index)
 {
-  kDebug() << index;
-  Q_D(KBreadcrumbsDecoratorBase);
+  Q_D(KBreadcrumbSelectionModel);
   QItemSelection breadcrumbSelection;
 
   if (d->m_includeActualSelection)
@@ -93,15 +113,13 @@ QItemSelection KBreadcrumbsDecoratorBase::getBreadcrumbSelection(const QModelInd
   return breadcrumbSelection;
 }
 
-QItemSelection KBreadcrumbsDecoratorBase::getBreadcrumbSelection(const QItemSelection& selection)
+QItemSelection KBreadcrumbSelectionModel::getBreadcrumbSelection(const QItemSelection& selection)
 {
-  Q_D(KBreadcrumbsDecoratorBase);
+  Q_D(KBreadcrumbSelectionModel);
   QItemSelection breadcrumbSelection;
 
   if (d->m_includeActualSelection)
     breadcrumbSelection = selection;
-
-  kDebug() << breadcrumbSelection;
 
   QItemSelection::const_iterator it = selection.constBegin();
   const QItemSelection::const_iterator end = selection.constEnd();
@@ -113,7 +131,6 @@ QItemSelection KBreadcrumbsDecoratorBase::getBreadcrumbSelection(const QItemSele
     bool includeAll = d->m_selectionDepth < 0;
     while (parent.isValid() && (includeAll || sumBreadcrumbs < d->m_selectionDepth))
     {
-      kDebug() << "inc bc" << parent << parent.data() << sumBreadcrumbs << d->m_selectionDepth;
       breadcrumbSelection.append(QItemSelectionRange(parent));
       parent = parent.parent();
       ++sumBreadcrumbs;
@@ -122,46 +139,65 @@ QItemSelection KBreadcrumbsDecoratorBase::getBreadcrumbSelection(const QItemSele
   return breadcrumbSelection;
 }
 
-#if 0
-class KBreadcrumbsProxyModelPrivate
+void KBreadcrumbSelectionModel::sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-  Q_DECLARE_PUBLIC(KBreadcrumbsProxyModel);
-  KBreadcrumbsProxyModel * const q_ptr;
-public:
-  KBreadcrumbsProxyModelPrivate(KBreadcrumbsProxyModel *proxy)
-    : q_ptr(proxy)
-  {
+  QItemSelection deselectedCrumbs = getBreadcrumbSelection(deselected);
+  QItemSelection selectedCrumbs = getBreadcrumbSelection(selected);
 
+  QItemSelection removed = deselectedCrumbs;
+  foreach(const QItemSelectionRange &range, selectedCrumbs)
+  {
+    removed.removeAll(range);
   }
 
-  void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+  QItemSelection added = selectedCrumbs;
+  foreach(const QItemSelectionRange &range, deselectedCrumbs)
+  {
+    added.removeAll(range);
+  }
 
-  bool m_includeActualSelection;
-
-};
-
-KBreadcrumbsProxyModel::KBreadcrumbsProxyModel(QItemSelectionModel* selectionModel, QObject* parent)
-  : KSelectionProxyModel(new ProxySelectionModel(selectionModel, selectionModel->model()), parent)
-{
-  setFilterBehavior(ExactSelection);
-  connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(selectionChanged(QItemSelection,QItemSelection)));
+  if (!removed.isEmpty())
+  {
+    QItemSelectionModel::select(removed, QItemSelectionModel::Deselect);
+  }
+  if (!added.isEmpty())
+  {
+    QItemSelectionModel::select(added, QItemSelectionModel::Select);
+  }
 }
 
-bool KBreadcrumbsProxyModel::includeActualSelection() const
+void KBreadcrumbSelectionModel::select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command)
 {
-  Q_D(const KBreadcrumbsProxyModel);
-  return d->m_includeActualSelection;
+  Q_D(KBreadcrumbSelectionModel);
+  // When an item is removed, the current index is set to the top index in the model.
+  // That causes a selectionChanged signal with a selection which we do not want.
+  if ( d->m_ignoreCurrentChanged )
+  {
+    d->m_ignoreCurrentChanged = false;
+    return;
+  }
+  if ( d->m_direction == Forward )
+  {
+    d->m_selectionModel->select(getBreadcrumbSelection(index), command);
+    QItemSelectionModel::select(index, command);
+  } else {
+    d->m_selectionModel->select(index, command);
+    QItemSelectionModel::select(getBreadcrumbSelection(index), command);
+  }
 }
 
-void KBreadcrumbsProxyModel::setIncludeActualSelection(bool includeActualSelection)
+void KBreadcrumbSelectionModel::select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command)
 {
-  Q_D(KBreadcrumbsProxyModel);
-  d->m_includeActualSelection = includeActualSelection;
+  Q_D(KBreadcrumbSelectionModel);
+  QItemSelection bcc = getBreadcrumbSelection(selection);
+  if ( d->m_direction == Forward )
+  {
+    d->m_selectionModel->select(selection, command);
+    QItemSelectionModel::select(bcc, command);
+  } else {
+    d->m_selectionModel->select(bcc, command);
+    QItemSelectionModel::select(selection, command);
+  }
 }
 
-void KBreadcrumbsProxyModelPrivate::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
-{
-
-}
-#endif
-
+#include "kbreadcrumbselectionmodel.moc"

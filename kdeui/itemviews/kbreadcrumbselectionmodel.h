@@ -27,101 +27,9 @@
 
 #include "kdeui_export.h"
 
-class KBreadcrumbsDecoratorBasePrivate;
+#include "kdebug.h"
 
-/**
-  @brief Base class for the Breadcrumbs decorator
-
-  This class exists to house the private implementation class of KBreadcrumbsDecorator
-*/
-class KDEUI_EXPORT KBreadcrumbsDecoratorBase
-{
-public:
-  KBreadcrumbsDecoratorBase();
-
-  /**
-    Returns whether the actual selection in included in the proxy.
-
-    The default is true.
-  */
-  bool includeActualSelection() const;
-
-  /**
-    Set whether the actual selection in included in the proxy to @p includeActualSelection.
-  */
-  void setIncludeActualSelection(bool includeActualSelection);
-
-  /**
-    Returns the depth that the breadcrumb selection should go to.
-  */
-  int selectionDepth() const;
-
-  /**
-    Sets the depth that the breadcrumb selection should go to.
-
-    If the @p selectionDepth is -1, all breadcrumbs are selected.
-    The default is -1
-  */
-  void setSelectionDepth(int selectionDepth);
-
-protected:
-  /**
-    Returns a selection containing the breadcrumbs for @p index
-  */
-  QItemSelection getBreadcrumbSelection(const QModelIndex &index);
-
-  /**
-    Returns a selection containing the breadcrumbs for @p selection
-  */
-  QItemSelection getBreadcrumbSelection(const QItemSelection &selection);
-
-protected:
-  KBreadcrumbsDecoratorBasePrivate * const d_ptr;
-
-private:
-  Q_DECLARE_PRIVATE(KBreadcrumbsDecoratorBase);
-};
-
-/**
-  @brief Decorator class for a QItemSelectionModel
-
-  This class automatically selects the ascendants of the selection in the QItemSelectionModel
-  passed into its constructor.
-
-  It uses the Curiously Recurring Template Pattern so that multiple decorators can be used to
-  manipulate the selection.
-  @code
-   typedef KBreadcrumbsDecorator<SomeOtherDecrator<QItemSelectionModel> > MySelectionModel;
-  @endcode
-
-  @see KBreadcrumbSelectionModel
-
-*/
-template <typename SelectionModel>
-class KDEUI_EXPORT KBreadcrumbsDecorator : public SelectionModel, public KBreadcrumbsDecoratorBase
-{
-public:
-  KBreadcrumbsDecorator(QItemSelectionModel *selectionModel, QAbstractItemModel *model, QObject *parent = 0)
-    : SelectionModel( model, parent), KBreadcrumbsDecoratorBase(), m_selectionModel(selectionModel)
-  {
-    Q_ASSERT(selectionModel->model() == model);
-  }
-
-public:
-  /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command)
-  {
-    m_selectionModel->select(getBreadcrumbSelection(index), command);
-    SelectionModel::select(index, command);
-  }
-
-  /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command)
-  {
-    m_selectionModel->select(getBreadcrumbSelection(selection), command);
-    SelectionModel::select(selection, command);
-  }
-private:
-  QItemSelectionModel *m_selectionModel;
-};
+class KBreadcrumbSelectionModelPrivate;
 
 /**
   @class KBreadcrumbSelectionModel kbreadcrumbselectionmodel.h
@@ -184,7 +92,7 @@ private:
 
     view1->setSelectionModel(breadcrumbProxySelector);
 
-    KSelectionProxyModel *breadcrumbSelectionProxyModel = new KSelectionProxyModel( breadcrumbProxySelector, this);
+    KSelectionProxyModel *breadcrumbSelectionProxyModel = new KSelectionProxyModel( breadcrumbSelectionModel, this);
     breadcrumbSelectionProxyModel->setSourceModel( rootModel );
     breadcrumbSelectionProxyModel->setFilterBehavior( KSelectionProxyModel::ExactSelection );
 
@@ -193,7 +101,75 @@ private:
 
   @image kbreadcrumbselectionmodel.png "KBreadcrumbSelectionModel in several configurations"
 
+  This can work in two directions. One option is for a single selection in the KBreadcrumbSelectionModel to invoke
+  the breadcrumb selection in its constructor argument.
+
+  The other is for a selection in the itemselectionmodel in the constructor argument to cause a breadcrumb selection
+  in @p this.
+
 */
-typedef KBreadcrumbsDecorator<QItemSelectionModel> KBreadcrumbSelectionModel;
+class KDEUI_EXPORT KBreadcrumbSelectionModel : public QItemSelectionModel
+{
+  Q_OBJECT
+public:
+  enum Direction
+  {
+    Forward,
+    Reverse
+  };
+
+  KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, QObject* parent = 0);
+  KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, Direction direction, QObject* parent = 0);
+  virtual ~KBreadcrumbSelectionModel();
+
+  /**
+    Returns whether the actual selection in included in the proxy.
+
+    The default is true.
+  */
+  bool includeActualSelection() const;
+
+  /**
+    Set whether the actual selection in included in the proxy to @p includeActualSelection.
+  */
+  void setIncludeActualSelection(bool includeActualSelection);
+
+  /**
+    Returns the depth that the breadcrumb selection should go to.
+  */
+  int selectionDepth() const;
+
+  /**
+    Sets the depth that the breadcrumb selection should go to.
+
+    If the @p selectionDepth is -1, all breadcrumbs are selected.
+    The default is -1
+  */
+  void setSelectionDepth(int selectionDepth);
+
+  /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
+
+  /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command);
+
+protected:
+  /**
+    Returns a selection containing the breadcrumbs for @p index
+  */
+  QItemSelection getBreadcrumbSelection(const QModelIndex &index);
+
+  /**
+    Returns a selection containing the breadcrumbs for @p selection
+  */
+  QItemSelection getBreadcrumbSelection(const QItemSelection &selection);
+
+private slots:
+  void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
+protected:
+  KBreadcrumbSelectionModelPrivate * const d_ptr;
+private:
+  Q_DECLARE_PRIVATE(KBreadcrumbSelectionModel)
+};
+
 
 #endif
