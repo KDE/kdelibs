@@ -1356,10 +1356,6 @@ KSelectionProxyModel::KSelectionProxyModel(QItemSelectionModel *selectionModel, 
   Q_D(KSelectionProxyModel);
 
   d->m_selectionModel = selectionModel;
-
-  connect( d->m_selectionModel, SIGNAL( selectionChanged( const QItemSelection &, const QItemSelection & ) ),
-      SLOT( selectionChanged( const QItemSelection &, const QItemSelection & ) ) );
-
 }
 
 KSelectionProxyModel::~KSelectionProxyModel()
@@ -1431,6 +1427,9 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *_sourceModel )
   Q_D(KSelectionProxyModel);
   if (_sourceModel == sourceModel())
     return;
+
+  connect( d->m_selectionModel, SIGNAL( selectionChanged( const QItemSelection &, const QItemSelection & ) ),
+      SLOT( selectionChanged( const QItemSelection &, const QItemSelection & ) ) );
 
   beginResetModel();
   d->m_resetting = true;
