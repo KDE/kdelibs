@@ -215,7 +215,7 @@
 <!ENTITY Antonio.Larrosa.Jimenez.mail '<email>larossa@kde.org</email>'>
 <!ENTITY David.Johnson '<personname><firstname>David</firstname><surname>Johnson</surname></personname>'>
 <!ENTITY David.Johnson.mail '<email>david@usermode.org</email>'>
-<!ENTITY Richard.Johnson '<personname><firstname>Richard</firstname><surname>Johnson</surname></personname>'>
+<!ENTITY Richard.Johnson '<personname><firstname>Richard</firstname><othername>A.</othername><surname>Johnson</surname></personname>'>
 <!ENTITY Richard.Johnson.mail '<email>rjohnson@kde.org</email>'>
 <!ENTITY Matt.Johnston '<personname><firstname>Matt</firstname><surname>Johnston</surname></personname>'>
 <!ENTITY Matt.Johnston.mail '<email>mattj@flashmail.com</email>'>
