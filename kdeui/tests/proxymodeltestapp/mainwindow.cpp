@@ -27,6 +27,7 @@
 #include "dynamictreemodel.h"
 
 #include "breadcrumbswidget.h"
+#include "breadcrumbnavigationwidget.h"
 #include "descendantpmwidget.h"
 #include "selectionpmwidget.h"
 #include "proxymodeltestwidget.h"
@@ -42,6 +43,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   DescendantProxyModelWidget *descPMWidget = new DescendantProxyModelWidget();
   SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
   BreadcrumbsWidget *breadcrumbsWidget = new BreadcrumbsWidget();
+  BreadcrumbNavigationWidget *breadcrumbNavigationWidget = new BreadcrumbNavigationWidget();
 //   ReparentingProxyModelWidget *reparentingProxyModelWidget = new ReparentingProxyModelWidget();
 //   RecursiveFilterProxyWidget *recursive = new RecursiveFilterProxyWidget();
   ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
@@ -52,6 +54,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   tabWidget->addTab(descPMWidget, "descendant PM");
   tabWidget->addTab(selProxyWidget, "selection PM");
   tabWidget->addTab(breadcrumbsWidget, "Breadcrumbs");
+  tabWidget->addTab(breadcrumbNavigationWidget, "Breadcrumb Navigation");
 //   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");
 //   tabWidget->addTab(recursive, "Recursive Filter");
   tabWidget->addTab(lessThanWidget, "Less Than");

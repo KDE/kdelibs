@@ -12,6 +12,7 @@ set(proxymodeltestapp_SRCS
     main.cpp
     mainwindow.cpp
     breadcrumbswidget.cpp
+    breadcrumbnavigationwidget.cpp
     selectionpmwidget.cpp
 #     recursivefilterpmwidget.cpp
     descendantpmwidget.cpp
