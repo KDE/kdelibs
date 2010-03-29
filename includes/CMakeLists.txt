@@ -1004,14 +1004,12 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
 
 
 install(FILES
-  Plasma/AbstractAnimation
   Plasma/AbstractRunner
   Plasma/AbstractToolBox
   Plasma/AccessAppletJob
   Plasma/AccessManager
   Plasma/Animation
   Plasma/AnimationDriver
-  Plasma/AnimationGroup
   Plasma/Animator
   Plasma/Applet
   Plasma/AppletScript
