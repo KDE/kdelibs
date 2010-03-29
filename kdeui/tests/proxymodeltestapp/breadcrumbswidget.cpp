@@ -32,49 +32,6 @@
 #include "kselectionproxymodel.h"
 #include "kbreadcrumbselectionmodel.h"
 
-CurrentItemLabel::CurrentItemLabel(QAbstractItemModel* model, QWidget* parent, Qt::WindowFlags f)
-  : QLabel(parent, f), m_model(model)
-{
-  connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(dataChanged(QModelIndex,QModelIndex)));
-  connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(rowsInserted(QModelIndex,int,int)));
-  connect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), SLOT(rowsRemoved(QModelIndex,int,int)));
-  connect(model, SIGNAL(modelReset()), SLOT(modelReset()));
-
-  if (!m_model->hasChildren())
-  {
-    setText("No selection");
-  }
-//   setText(m_model->index(0, 0).data().toString());
-}
-
-void CurrentItemLabel::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight)
-{
-  setText(m_model->index(0, 0).data().toString());
-}
-
-void CurrentItemLabel::rowsInserted(const QModelIndex& parent, int start, int end)
-{
-  setText(m_model->index(0, 0).data().toString());
-}
-
-void CurrentItemLabel::rowsRemoved(const QModelIndex& parent, int start, int end)
-{
-  if (!m_model->hasChildren())
-  {
-    setText("No selection");
-    return;
-  }
-  setText(m_model->index(0, 0).data().toString());
-}
-
-void CurrentItemLabel::modelReset()
-{
-  if (!m_model->hasChildren())
-  {
-    setText("No selection");
-  }
-  setText(m_model->index(0, 0).data().toString());
-}
 
 MultiSelectionModel::MultiSelectionModel(QAbstractItemModel* model, QList< QItemSelectionModel* > selectionModels, QObject *parent)
   : QItemSelectionModel(model, parent), m_selectionModels(selectionModels)
@@ -107,12 +64,35 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
 
   DynamicTreeWidget *dynamicTree = new DynamicTreeWidget(rootModel, splitter);
   dynamicTree->treeView()->setSelectionMode(QAbstractItemView::SingleSelection);
+  dynamicTree->setInitialTree(
+ "- 1"
+ "- - 2"
+ "- - 2"
+ "- - - 3"
+ "- - - - 4"
+ "- - - - - 5"
+ "- - 2"
+ "- 6"
+ "- 6"
+ "- 6"
+ "- - 7"
+ "- - - 8"
+ "- - - 8"
+ "- - - - 9"
+ "- - - - - 10"
+ "- - - 8"
+ "- - - 8"
+ "- - 8"
+ "- 16"
+ "- - 17"
+ "- - - 18"
+ "- - - - 19"
+ "- - - - - 20");
 
   QList<QItemSelectionModel*> selectionModelList;
-
   QItemSelectionModel *fullBreadcrumbSelectionModel = new QItemSelectionModel(rootModel, this);
 
-  KBreadcrumbSelectionModel *fullBreadcrumbProxySelector = new KBreadcrumbSelectionModel(fullBreadcrumbSelectionModel, rootModel, this);
+  KBreadcrumbSelectionModel *fullBreadcrumbProxySelector = new KBreadcrumbSelectionModel(fullBreadcrumbSelectionModel, this);
   selectionModelList << fullBreadcrumbProxySelector;
 
   KSelectionProxyModel *fullBreadCrumbSelectionProxyModel = new KSelectionProxyModel( fullBreadcrumbSelectionModel, this);
@@ -124,7 +104,7 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
 
   QItemSelectionModel *breadcrumbOnlySelectionModel = new QItemSelectionModel(rootModel, this);
 
-  KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector = new KBreadcrumbSelectionModel(breadcrumbOnlySelectionModel, rootModel, this);
+  KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector = new KBreadcrumbSelectionModel(breadcrumbOnlySelectionModel, this);
   breadcrumbOnlyProxySelector->setIncludeActualSelection(false);
   selectionModelList << breadcrumbOnlyProxySelector;
 
@@ -139,7 +119,7 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
 
   QItemSelectionModel *thisAndAscendantsSelectionModel = new QItemSelectionModel(rootModel, this);
 
-  KBreadcrumbSelectionModel *thisAndAscendantsProxySelector = new KBreadcrumbSelectionModel(thisAndAscendantsSelectionModel, rootModel, this);
+  KBreadcrumbSelectionModel *thisAndAscendantsProxySelector = new KBreadcrumbSelectionModel(thisAndAscendantsSelectionModel, this);
   thisAndAscendantsProxySelector->setSelectionDepth(selectionDepth);
   selectionModelList << thisAndAscendantsProxySelector;
 
@@ -152,7 +132,7 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
 
   QItemSelectionModel *ascendantsOnlySelectionModel = new QItemSelectionModel(rootModel, this);
 
-  KBreadcrumbSelectionModel *ascendantsOnlyProxySelector = new KBreadcrumbSelectionModel(ascendantsOnlySelectionModel, rootModel, this);
+  KBreadcrumbSelectionModel *ascendantsOnlyProxySelector = new KBreadcrumbSelectionModel(ascendantsOnlySelectionModel, this);
   ascendantsOnlyProxySelector->setIncludeActualSelection(false);
   ascendantsOnlyProxySelector->setSelectionDepth(selectionDepth);
   selectionModelList << ascendantsOnlyProxySelector;
@@ -166,22 +146,5 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
 
   MultiSelectionModel *multiSelectionModel = new MultiSelectionModel(rootModel, selectionModelList, this);
   dynamicTree->treeView()->setSelectionModel(multiSelectionModel);
-
-  QSplitter *vSplitter = new QSplitter(Qt::Vertical, splitter);
-  QListView *breadcrumbView = new QListView(vSplitter);
-//   breadcrumbView->setModel(fullBreadCrumbSelectionProxyModel);
-  breadcrumbView->setModel(breadcrumbOnlySelectionProxyModel);
-
-  KSelectionProxyModel *currentItemSelectionModel = new KSelectionProxyModel(multiSelectionModel, this);
-  currentItemSelectionModel->setFilterBehavior(KSelectionProxyModel::ExactSelection);
-  currentItemSelectionModel->setSourceModel(rootModel);
-
-  CurrentItemLabel *label = new CurrentItemLabel(currentItemSelectionModel, vSplitter);
-
-  QListView *selectionView = new QListView(vSplitter);
-  KSelectionProxyModel *selectedChildrenProxyModel = new KSelectionProxyModel( multiSelectionModel, this);
-  selectedChildrenProxyModel->setFilterBehavior( KSelectionProxyModel::ChildrenOfExactSelection );
-  selectedChildrenProxyModel->setSourceModel( rootModel );
-  selectionView->setModel(selectedChildrenProxyModel);
 }
 

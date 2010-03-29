@@ -25,22 +25,10 @@
 #include <QtGui/QWidget>
 #include <QItemSelection>
 #include <QLabel>
+#include <QListView>
+#include <kselectionproxymodel.h>
 
-class CurrentItemLabel : public QLabel
-{
-  Q_OBJECT
-public:
-  CurrentItemLabel(QAbstractItemModel *model, QWidget* parent = 0, Qt::WindowFlags f = 0);
-
-private slots:
-  void rowsInserted(const QModelIndex &parent, int start, int end);
-  void rowsRemoved(const QModelIndex &parent, int start, int end);
-  void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
-  void modelReset();
-
-private:
-  QAbstractItemModel *m_model;
-};
+#include "kproxyitemselectionmodel.h"
 
 class MultiSelectionModel : public QItemSelectionModel
 {
