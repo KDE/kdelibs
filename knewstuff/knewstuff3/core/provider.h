@@ -148,7 +148,7 @@ namespace KNS3
         void signalError(const QString&) const;
 
     protected:
-        QExplicitlySharedDataPointer<ProviderPrivate> const d_ptr;
+        ProviderPrivate * const d_ptr;
         Provider(ProviderPrivate &dd);
     private:
         Q_DECLARE_PRIVATE(Provider)

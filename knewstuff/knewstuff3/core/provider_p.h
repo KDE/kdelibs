@@ -29,6 +29,7 @@ namespace KNS3
     {
         public:
             ProviderPrivate() {}
+            virtual ~ProviderPrivate() {}
 
             QString mName;
             KUrl mIcon;
