@@ -30,6 +30,8 @@
 #include "dynamictreewidget.h"
 #include "kproxyitemselectionmodel.h"
 
+#define SON(object) object->setObjectName(#object)
+
 ProxyItemSelectionWidget::ProxyItemSelectionWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f)
 {
@@ -42,10 +44,15 @@ ProxyItemSelectionWidget::ProxyItemSelectionWidget(QWidget* parent, Qt::WindowFl
   DynamicTreeWidget *dynamicTreeWidget = new DynamicTreeWidget(rootModel, splitter);
 
   QSortFilterProxyModel *proxy1 = new QSortFilterProxyModel(this);
+  SON(proxy1);
   QSortFilterProxyModel *proxy2 = new QSortFilterProxyModel(this);
+  SON(proxy2);
   QSortFilterProxyModel *proxy3 = new QSortFilterProxyModel(this);
+  SON(proxy3);
   QSortFilterProxyModel *proxy4 = new QSortFilterProxyModel(this);
+  SON(proxy4);
   QSortFilterProxyModel *proxy5 = new QSortFilterProxyModel(this);
+  SON(proxy5);
 
   QTreeView *view1 = new QTreeView(splitter);
   QTreeView *view2 = new QTreeView(splitter);
@@ -63,9 +70,12 @@ ProxyItemSelectionWidget::ProxyItemSelectionWidget(QWidget* parent, Qt::WindowFl
   QItemSelectionModel *rootSelectionModel = dynamicTreeWidget->treeView()->selectionModel();
 
   KProxyItemSelectionModel *view1SelectionModel = new KProxyItemSelectionModel(view1->model(), rootSelectionModel, this );
-  KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel(view2->model(), rootSelectionModel, this );
-
   view1->setSelectionModel( view1SelectionModel );
+
+  KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel(view2->model(), view1->selectionModel(), this );
   view2->setSelectionModel( view2SelectionModel );
+
+  view1->expandAll();
+  view2->expandAll();
 }
 
