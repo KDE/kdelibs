@@ -1794,6 +1794,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     //kDebug(7007) << "Renaming" << _src << "to" << _tmp << "succeeded";
                     if (!QFile::exists( _dest ) && KDE::rename(_tmp, _dest) == 0) {
                         err = 0;
+                        org::kde::KDirNotify::emitFileRenamed(m_currentSrcURL.url(), dest.url());
                     } else {
                         kDebug(7007) << "Didn't manage to rename" << _tmp << "to" << _dest << ", reverting";
                         // Revert back to original name!
