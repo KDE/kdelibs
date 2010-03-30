@@ -141,7 +141,6 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
     case KDialog::User3:
       role = QDialogButtonBox::ActionRole;
       break;
-    case KDialog::NoDefault:
     default:
       role = QDialogButtonBox::InvalidRole;
       break;
@@ -280,6 +279,9 @@ void KDialog::setEscapeButton( ButtonCode id )
 
 void KDialog::setDefaultButton( ButtonCode newDefaultButton )
 {
+    if (newDefaultButton == None)
+        newDefaultButton = NoDefault; // #148969
+
     const KDialog::ButtonCode oldDefault = defaultButton();
 
     bool oldDefaultHadFocus = false;

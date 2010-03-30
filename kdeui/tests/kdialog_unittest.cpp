@@ -27,8 +27,8 @@
 class KDialog_UnitTest : public QObject
 {
     Q_OBJECT
-private:
-    void testNoDefaultButton(KDialog & dialog, KDialog::ButtonCode id)
+private: // helper methods
+    void checkOtherButtonsAreNotDefault(KDialog & dialog, KDialog::ButtonCode id)
     {
         KDialog::ButtonCode codes[] = { KDialog::Ok, KDialog::Apply, KDialog::Cancel,
             KDialog::No, KDialog::Yes };
@@ -40,13 +40,14 @@ private:
 	}
     }
 
-    void testButtonCode(KDialog & dialog, KDialog::ButtonCode id)
+    void checkSetDefaultButton(KDialog & dialog, KDialog::ButtonCode id)
     {
         dialog.setDefaultButton(id);
         QCOMPARE(dialog.defaultButton(), id);
         QVERIFY(dialog.button(id)->isDefault());
-        testNoDefaultButton(dialog, id);
+        checkOtherButtonsAreNotDefault(dialog, id);
     }
+
 private Q_SLOTS:
     // Test if buttons are correctly stored
     // in the KDialog, then try to get back them.
@@ -56,13 +57,15 @@ private Q_SLOTS:
         KDialog dialog;
         dialog.setButtons(KDialog::Ok | KDialog::Apply
             | KDialog::Cancel | KDialog::No | KDialog::Yes);
-        testButtonCode(dialog, KDialog::Ok);
-        testButtonCode(dialog, KDialog::Apply);
-        testButtonCode(dialog, KDialog::Cancel);
-        testButtonCode(dialog, KDialog::No);
-        testButtonCode(dialog, KDialog::Yes);
+        checkSetDefaultButton(dialog, KDialog::Ok);
+        checkSetDefaultButton(dialog, KDialog::Apply);
+        checkSetDefaultButton(dialog, KDialog::Cancel);
+        checkSetDefaultButton(dialog, KDialog::No);
         dialog.setDefaultButton(KDialog::NoDefault);
-        testNoDefaultButton(dialog, KDialog::NoDefault);
+        checkOtherButtonsAreNotDefault(dialog, KDialog::NoDefault);
+        checkSetDefaultButton(dialog, KDialog::Yes);
+        dialog.setDefaultButton(KDialog::None); // #148969
+        checkOtherButtonsAreNotDefault(dialog, KDialog::None);
     }
 
     // Test what happens with giving focus to widgets before the window is shown
