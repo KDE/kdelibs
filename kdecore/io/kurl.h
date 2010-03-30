@@ -1091,7 +1091,7 @@ private:
   QString toString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
   operator QString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
 private:
-  KUrlPrivate* const d;
+  KUrlPrivate* const d; // Don't ever use this, it would break clear() (which is in QUrl)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EncodedPathAndQueryOptions)
