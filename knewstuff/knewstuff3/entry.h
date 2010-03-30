@@ -121,6 +121,9 @@ public:
     */
     QString version() const;
 
+    QString id() const;
+    QString providerId() const;
+
 private:
     Entry();
 

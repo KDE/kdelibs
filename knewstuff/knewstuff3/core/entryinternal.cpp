@@ -536,6 +536,8 @@ QDomElement KNS3::EntryInternal::entryXML() const
 Entry EntryInternal::toEntry() const
 {
     Entry e;
+    e.d->mId = d->mUniqueId;
+    e.d->mProviderId = d->mProviderId;
     e.d->mName = d->mName;
     e.d->mCategory = d->mCategory;
     e.d->mLicense = d->mLicense;

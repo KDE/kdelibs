@@ -42,6 +42,16 @@ Entry::~Entry()
 {
 }
 
+QString Entry::id() const
+{
+    return d->mId;
+}
+
+QString Entry::providerId() const
+{
+    return d->mProviderId;
+}
+
 QString Entry::name() const
 {
     return d->mName;

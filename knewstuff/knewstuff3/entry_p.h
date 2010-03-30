@@ -29,6 +29,8 @@ class Entry::Private : public QSharedData
         : mStatus(Entry::Invalid)
         {}
 
+        QString mId;
+        QString mProviderId;
         QString mName;
         QString mCategory;
         QString mLicense;
