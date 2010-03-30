@@ -170,7 +170,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     // tab order
     q->setTabOrder(find, regExp);
     q->setTabOrder(regExp, regExpItem);
-    q->setTabOrder(regExpItem, replace);
+    q->setTabOrder(regExpItem, replace); //findExtension widgets are inserted in showEvent()
     q->setTabOrder(replace, backRef);
     q->setTabOrder(backRef, backRefItem);
     q->setTabOrder(backRefItem, caseSensitive);
@@ -264,6 +264,15 @@ void KFindDialog::showEvent( QShowEvent *e )
             d->find->lineEdit()->setText( d->pattern );
             d->find->lineEdit()->selectAll();
             d->pattern.clear();
+        }
+        //maintain a user-friendly tab order
+        if (d->findExtension) {
+            QWidget* prev=d->regExpItem;
+            foreach(QWidget* child, d->findExtension->findChildren<QWidget*>()) {
+                setTabOrder(prev, child);
+                prev=child;
+            }
+            setTabOrder(prev, d->replace);
         }
     }
     KDialog::showEvent(e);
