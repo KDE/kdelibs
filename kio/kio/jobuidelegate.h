@@ -100,10 +100,11 @@ public:
                                       const QString & error_text);
 
     /**
-     * The type of deletion: real deletion, or moving the files to the trash
+     * The type of deletion: real deletion, moving the files to the trash
+     * or emptying the trash
      * Used by askDeleteConfirmation.
      */
-    enum DeletionType { Delete, Trash };
+    enum DeletionType { Delete, Trash, EmptyTrash };
     /**
      * ForceConfirmation: always ask the user for confirmation
      * DefaultConfirmation: don't ask the user if he/she said "don't ask again".

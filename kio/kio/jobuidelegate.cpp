@@ -108,7 +108,19 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     bool ask = ( confirmationType == ForceConfirmation );
     if (!ask) {
         KSharedConfigPtr kioConfig = KSharedConfig::openConfig("kiorc", KConfig::NoGlobals);
-        keyName = (deletionType == Delete ? "ConfirmDelete" : "ConfirmTrash");
+
+	switch (deletionType ) {
+	case Delete:
+	    keyName = "ConfirmDelete" ;
+	    break;
+	case Trash:
+	    keyName = "ConfirmTrash" ;
+	    break;
+	case EmptyTrash:
+	    keyName = "ConfirmEmptyTrash" ;
+	    break;
+	}
+
         // The default value for confirmations is true (for both delete and trash)
         // If you change this, update kdebase/apps/konqueror/settings/konq/behaviour.cpp
         const bool defaultValue = true;
@@ -141,7 +153,16 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
 		KStandardGuiItem::cancel(),
 		keyName, KMessageBox::Notify);
             break;
-
+        case EmptyTrash:
+	    result = KMessageBox::warningContinueCancel(
+	        widget,
+		i18nc("@info", "Do you really want to empty the trash? All items will be deleted."),
+		QString(),
+		KGuiItem(i18nc("@action:button", "Empty Trash"),
+		KIcon("user-trash")),
+		KStandardGuiItem::cancel(),
+		keyName, KMessageBox::Notify);
+	    break;
         case Trash:
         default:
             result = KMessageBox::warningContinueCancelList(
