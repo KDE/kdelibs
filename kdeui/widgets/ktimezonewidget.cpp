@@ -80,20 +80,22 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 
   const KTimeZones::ZoneMap zones = db->zones();
   for ( KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it ) {
-    KTimeZone zone = it.value();
+    const KTimeZone zone = it.value();
     const QString continentCity = displayName( zone );
-    int separator = continentCity.lastIndexOf('/');
-    QString city = continentCity.right(continentCity.length() - separator - 1)
-                   + continentCity.left(separator);
-
-    cities.append( city );
-    zonesByCity.insert( city, zone );
+    const int separator = continentCity.lastIndexOf('/');
+    // Make up the localized key that will be used for sorting.
+    // Example: i18n(Asia/Tokyo) -> key = "i18n(Tokyo)|i18n(Asia)|Asia/Tokyo"
+    // The zone name is appended to ensure unicity even with equal translations (#174918)
+    const QString key = continentCity.mid(separator+1) + '|'
+                   + continentCity.left(separator) + '|' + zone.name();
+    cities.append( key );
+    zonesByCity.insert( key, zone );
   }
   qSort( cities.begin(), cities.end(), localeLessThan );
 
-  foreach ( const QString &city, cities ) {
-    KTimeZone zone = zonesByCity[city];
-    QString tzName = zone.name();
+  foreach ( const QString &key, cities ) {
+    const KTimeZone zone = zonesByCity.value(key);
+    const QString tzName = zone.name();
     QString comment = zone.comment();
 
     if ( !comment.isEmpty() )
@@ -143,7 +145,7 @@ bool KTimeZoneWidget::itemsCheckable() const
 
 QString KTimeZoneWidget::displayName( const KTimeZone &zone )
 {
-  return i18n( zone.name().toUtf8() ).replace( '_', ' ' );
+    return i18n( zone.name().toUtf8() ).replace( '_', ' ' );
 }
 
 QStringList KTimeZoneWidget::selection() const
