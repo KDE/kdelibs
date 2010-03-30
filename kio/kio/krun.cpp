@@ -567,6 +567,8 @@ static bool runCommandInternal(KProcess* proc, const KService* service, const QS
         if (window) {
             data.setLaunchedBy(window->winId());
         }
+        if(service)
+            data.setApplicationId(service->entryPath());
         KStartupInfo::sendStartup(id, data);
     }
     int pid = KProcessRunner::run(proc, executable, id);

@@ -924,6 +924,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
         data.setWMClass( wmclass );
     if( silent )
         data.setSilent( KStartupInfoData::Yes );
+    data.setApplicationId( service->entryPath());
     // the rest will be sent by kdeinit
     KStartupInfo::sendStartupX( dpy, id, data );
     if( mCached_dpy != dpy && mCached_dpy != NULL )

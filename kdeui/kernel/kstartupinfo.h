@@ -631,6 +631,19 @@ class KDEUI_EXPORT KStartupInfoData
          */
         void setLaunchedBy( WId window );
 
+        /**
+         * The .desktop file used to initiate this startup notification, or empty. This information
+         * should be used only to identify the application, not to read any additional information.
+         * @since 4.5
+         **/
+        QString applicationId() const;
+
+        /**
+         * Sets the .desktop file that was used to initiate the startup notification.
+         * @since 4.5
+         */
+        void setApplicationId( const QString& desktop );
+
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop
 	 * or the name, won't be rewritten if already set.

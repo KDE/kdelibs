@@ -54,6 +54,7 @@ DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <kapplication.h>
 #include <signal.h>
+#include <kstandarddirs.h>
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
 #include <kxmessages.h>
@@ -118,6 +119,7 @@ struct KStartupInfoData::Private
     int screen;
     int xinerama;
     WId launched_by;
+    QString application_id;
     };
 
 class KStartupInfo::Private
@@ -1215,6 +1217,8 @@ QString KStartupInfoData::Private::to_text() const
         ret += QString::fromLatin1( " XINERAMA=%1" ).arg( xinerama );
     if( launched_by != 0 )
         ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (long)launched_by );
+    if( !application_id.isEmpty())
+        ret += QString::fromLatin1( " APPLICATION_ID=%1" ).arg( application_id );
     return ret;
     }
 
@@ -1234,6 +1238,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P ) : d(new Private)
     const QString screen_str = QString::fromLatin1( "SCREEN=" );
     const QString xinerama_str = QString::fromLatin1( "XINERAMA=" );
     const QString launched_by_str = QString::fromLatin1( "LAUNCHED_BY=" );
+    const QString application_id_str = QString::fromLatin1( "APPLICATION_ID=" );
     for( QStringList::ConstIterator it = items.begin();
          it != items.end();
          ++it )
@@ -1270,6 +1275,8 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P ) : d(new Private)
             d->xinerama = get_num( *it );
         else if( ( *it ).startsWith( launched_by_str ))
             d->launched_by = ( WId ) get_num( *it );
+        else if( ( *it ).startsWith( application_id_str ))
+            d->application_id = get_str( *it );
         }
     }
 
@@ -1315,6 +1322,8 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         d->xinerama = data_P.xinerama();
     if( data_P.launchedBy() != 0 && launchedBy() != 0 ) // don't overwrite
         d->launched_by = data_P.launchedBy();
+    if( !data_P.applicationId().isEmpty() && applicationId().isEmpty()) // don't overwrite
+        d->application_id = data_P.applicationId();
     }
 
 KStartupInfoData::KStartupInfoData() : d(new Private)
@@ -1502,6 +1511,27 @@ void KStartupInfoData::setLaunchedBy( WId window )
 WId KStartupInfoData::launchedBy() const
     {
     return d->launched_by;
+    }
+
+void KStartupInfoData::setApplicationId( const QString& desktop )
+    {
+    if( desktop.startsWith( '/' ))
+        {
+        d->application_id = desktop;
+        return;
+        }
+    // the spec requires this is always a full path, in order for everyone to be able to find it
+    QString desk = KStandardDirs::locate( "apps", desktop );
+    if( desk.isEmpty())
+        desk = KStandardDirs::locate( "services", desktop );
+    if( desk.isEmpty())
+        return;
+    d->application_id = desk;
+    }
+
+QString KStartupInfoData::applicationId() const
+    {
+    return d->application_id;
     }
 
 static
