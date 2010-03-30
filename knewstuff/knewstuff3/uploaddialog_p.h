@@ -51,7 +51,6 @@ namespace KNS3 {
         {
         }
 
-
         UploadDialog* q;
 
         enum WizardPage {
@@ -113,6 +112,7 @@ namespace KNS3 {
         void _k_currencyLoaded(const QString& currency);
         void _k_contentByCurrentUserLoaded(const Attica::Content::List& contentList);
         void _k_updatedContentFetched(const Attica::Content& content);
+        void _k_previewLoaded(int index, const QImage& image);
 
         void _k_changePreview1();
         void _k_changePreview2();

@@ -164,6 +164,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_categoriesLoaded(Attica::Category::List) )
     Q_PRIVATE_SLOT( d, void _k_licensesLoaded(Attica::License::List) )
     Q_PRIVATE_SLOT( d, void _k_currencyLoaded(QString) )
+    Q_PRIVATE_SLOT( d, void _k_previewLoaded(int, QImage) )
 
     Q_PRIVATE_SLOT( d, void _k_changePreview1() )
     Q_PRIVATE_SLOT( d, void _k_changePreview2() )

@@ -55,6 +55,7 @@ void UploadDialog::Private::init()
     q->connect(atticaHelper, SIGNAL(contentLoaded(Attica::Content)), q, SLOT(_k_updatedContentFetched(Attica::Content)));
     q->connect(atticaHelper, SIGNAL(detailsLinkLoaded(QUrl)), q, SLOT(_k_detailsLinkLoaded(QUrl)));
     q->connect(atticaHelper, SIGNAL(currencyLoaded(QString)), q, SLOT(_k_currencyLoaded(QString)));
+    q->connect(atticaHelper, SIGNAL(previewLoaded(int, QImage)), q, SLOT(_k_previewLoaded(int, QImage)));
     atticaHelper->init();
 
     q->connect(ui.changePreview1Button, SIGNAL(clicked()), q, SLOT(_k_changePreview1()));
@@ -72,9 +73,9 @@ void UploadDialog::Private::init()
     ui.busyWidget->layout()->addWidget(busyWidget);
     busyWidget->setVisible(false);
 
-    ui.previewImage1->showPreview(KUrl("invalid"));
-    ui.previewImage2->showPreview(KUrl("invalid"));
-    ui.previewImage3->showPreview(KUrl("invalid"));
+    //ui.previewImage1->showPreview(KUrl("invalid"));
+    //ui.previewImage2->showPreview(KUrl("invalid"));
+    //ui.previewImage3->showPreview(KUrl("invalid"));
 }
 
 void UploadDialog::Private::setBusy(const QString& message)
@@ -276,7 +277,12 @@ void UploadDialog::Private::_k_contentByCurrentUserLoaded(const Attica::Content:
         contentItem->setData(Qt::UserRole, content.id());
         ui.userContentList->addItem(contentItem);
     }
-    ui.userContentList->setCurrentRow(0);
+
+    if (ui.userContentList->count() > 0) {
+        ui.userContentList->setCurrentRow(0);
+        _k_updatePage();
+    }
+
 }
 
 void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& content)
@@ -293,10 +299,6 @@ void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& cont
     ui.priceSpinBox->setValue(content.attribute("downloadbuyprice1").toDouble());
     ui.priceReasonLineEdit->setText(content.attribute("downloadbuyreason1"));
 
-    ui.previewImage1->showPreview(content.smallPreviewPicture("1"));
-    ui.previewImage2->showPreview(content.smallPreviewPicture("2"));
-    ui.previewImage3->showPreview(content.smallPreviewPicture("3"));
-
     bool conversionOk = false;
     int licenseNumber = content.license().toInt(&conversionOk);
     if (conversionOk) {
@@ -310,6 +312,21 @@ void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& cont
     ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + content.detailpage().toString() + QLatin1String("\">")
                                        + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
     ui.fetchContentLinkImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
+}
+
+void UploadDialog::Private::_k_previewLoaded(int index, const QImage& image)
+{
+    switch (index) {
+    case 1:
+        ui.previewImage1->setPixmap(QPixmap::fromImage(image));
+        break;
+    case 2:
+        ui.previewImage2->setPixmap(QPixmap::fromImage(image));
+        break;
+    case 3:
+        ui.previewImage3->setPixmap(QPixmap::fromImage(image));
+        break;
+    }
 }
 
 void UploadDialog::Private::_k_updateContentsToggled(bool update)
@@ -572,21 +589,25 @@ void UploadDialog::Private::_k_changePreview1()
 {
     KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile1 = url;
-    ui.previewImage1->showPreview(url);
+    kDebug() << "preview is: " << url.url();
+    QPixmap preview(url.toLocalFile());
+    ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
 }
 
 void UploadDialog::Private::_k_changePreview2()
 {
     KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile2 = url;
-    ui.previewImage2->showPreview(url);
+    QPixmap preview(url.toLocalFile());
+    ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
 }
 
 void UploadDialog::Private::_k_changePreview3()
 {
     KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile3 = url;
-    ui.previewImage3->showPreview(url);
+    QPixmap preview(url.toLocalFile());
+    ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
 }
 
 void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)

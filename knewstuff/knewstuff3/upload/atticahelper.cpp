@@ -19,6 +19,9 @@
 
 #include <kdebug.h>
 
+#include <kio/job.h>
+#include <kio/scheduler.h>
+
 #include <attica/listjob.h>
 #include <attica/postjob.h>
 #include <attica/accountbalance.h>
@@ -127,9 +130,7 @@ void AtticaHelper::loadContentByCurrentUser()
 void AtticaHelper::contentByCurrentUserLoaded(Attica::BaseJob *baseJob)
 {
     Attica::ListJob<Attica::Content>* contentList = static_cast<Attica::ListJob<Attica::Content>*>(baseJob);
-    kDebug() << "Content size: " << contentList->itemList().size();
     m_userCreatedContent = contentList->itemList();
-
     emit contentByCurrentUserLoaded(m_userCreatedContent);
 }
 
@@ -169,11 +170,6 @@ void AtticaHelper::loadContent(const QString& contentId)
     contentJob->start();
 }
 
-void AtticaHelper::contentLoaded(Attica::BaseJob* baseJob)
-{
-    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
-    emit contentLoaded(contentItemJob->result());
-}
 
 void AtticaHelper::loadCurrency()
 {
@@ -187,6 +183,56 @@ void AtticaHelper::currencyLoaded(Attica::BaseJob *baseJob)
     Attica::ItemJob<Attica::AccountBalance>* balanceJob = static_cast<Attica::ItemJob<Attica::AccountBalance>* >(baseJob);
     Attica::AccountBalance balance = balanceJob->result();
     emit currencyLoaded(balance.currency());
+}
+
+void AtticaHelper::contentLoaded(Attica::BaseJob* baseJob)
+{
+    Attica::ItemJob<Attica::Content>* contentItemJob = static_cast<Attica::ItemJob<Attica::Content>* >(baseJob);
+
+    const Attica::Content content(contentItemJob->result());
+    emit contentLoaded(content);
+
+    for (int previewNum = 1; previewNum <=3; ++previewNum) {
+        KUrl url = content.smallPreviewPicture(QString::number(previewNum));
+        if (! url.isEmpty()) {
+            m_previewJob[previewNum-1] = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
+            connect(m_previewJob[previewNum-1], SIGNAL(result(KJob*)), SLOT(slotPreviewDownload(KJob*)));
+            connect(m_previewJob[previewNum-1], SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotPreviewData(KIO::Job*, const QByteArray&)));
+            KIO::Scheduler::scheduleJob(m_previewJob[previewNum-1]);
+        }
+    }
+}
+
+void AtticaHelper::slotPreviewData(KIO::Job *job, const QByteArray& buf)
+{
+    if (job == m_previewJob[0]) {
+        m_previewBuffer[0].append(buf);
+    } else if (job == m_previewJob[1]) {
+        m_previewBuffer[1].append(buf);
+    } else if (job == m_previewJob[2]) {
+        m_previewBuffer[2].append(buf);
+    }
+}
+
+void AtticaHelper::slotPreviewDownload(KJob *job)
+{
+    int previewNum;
+    if (job == m_previewJob[0]) {
+        previewNum = 1;
+    } else if (job == m_previewJob[1]) {
+        previewNum = 2;
+    } else if (job == m_previewJob[2]) {
+        previewNum = 3;
+    }
+    if (job->error()) {
+        m_previewBuffer[previewNum-1].clear();
+        return;
+    }
+    QImage image;
+    image.loadFromData(m_previewBuffer[previewNum-1]);
+    m_previewBuffer[previewNum-1].clear();
+
+    emit previewLoaded(previewNum, image);
 }
 
 #include "atticahelper.moc"

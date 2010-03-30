@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>299</width>
-    <height>366</height>
+    <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -330,33 +330,90 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="KImageFilePreview" name="previewImage1"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="KImageFilePreview" name="previewImage2"/>
-          </item>
-          <item row="0" column="2">
-           <widget class="KImageFilePreview" name="previewImage3"/>
-          </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QPushButton" name="changePreview1Button">
             <property name="text">
              <string>Change...</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="3">
+           <widget class="QPushButton" name="changePreview3Button">
+            <property name="text">
+             <string>Change...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
            <widget class="QPushButton" name="changePreview2Button">
             <property name="text">
              <string>Change...</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QPushButton" name="changePreview3Button">
+          <item row="1" column="0">
+           <widget class="QLabel" name="previewImage1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>96</horstretch>
+              <verstretch>72</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>96</width>
+              <height>82</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Change...</string>
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="previewImage2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>96</horstretch>
+              <verstretch>72</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>96</width>
+              <height>82</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="previewImage3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>96</horstretch>
+              <verstretch>72</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>96</width>
+              <height>82</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -733,11 +790,6 @@
    <class>KUrlRequester</class>
    <extends>QFrame</extends>
    <header>kurlrequester.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KImageFilePreview</class>
-   <extends>QWidget</extends>
-   <header>kimagefilepreview.h</header>
   </customwidget>
   <customwidget>
    <class>KTitleWidget</class>

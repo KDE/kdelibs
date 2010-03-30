@@ -21,6 +21,7 @@ set(knewstuff3_SRCS
     staticxml/staticxmlprovider.cpp
     ui/entrydetailsdialog.cpp
     ui/imageloader.cpp
+    ui/imagepreviewwidget.cpp
     ui/itemsmodel.cpp
     ui/itemsviewdelegate.cpp
     ui/itemsgridviewdelegate.cpp
@@ -30,7 +31,6 @@ set(knewstuff3_SRCS
     ui/ratingwidget.cpp
     attica/atticaprovider.cpp
     attica/atticajobwrapper.cpp
-
     upload/atticahelper.cpp
     uploaddialog.cpp
 )

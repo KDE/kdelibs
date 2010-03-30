@@ -27,6 +27,12 @@
 #include <attica/content.h>
 #include <attica/license.h>
 
+class KJob;
+namespace KIO {
+    class Job;
+    class TransferJob;
+}
+
 namespace KNS3
 {
 
@@ -50,6 +56,7 @@ public:
     void loadDetailsLink(const QString& contentId);
     void loadContent(const QString& contentId);
     void loadCurrency();
+    void loadPreviews(const QString& contentId);
 
 Q_SIGNALS:
     void loginChecked(bool);
@@ -60,6 +67,7 @@ Q_SIGNALS:
     void detailsLinkLoaded(const QUrl&);
     void contentLoaded(const Attica::Content&);
     void currencyLoaded(const QString&);
+    void previewLoaded(int index, const QImage& image);
 
 private Q_SLOTS:
     void checkLoginFinished(Attica::BaseJob* baseJob);
@@ -71,6 +79,10 @@ private Q_SLOTS:
     void contentLoaded(Attica::BaseJob* baseJob);
     void currencyLoaded(Attica::BaseJob* baseJob);
 
+    void slotPreviewData(KIO::Job* job, const QByteArray& buf);
+    void slotPreviewDownload(KJob *job);
+
+
 private:
     Attica::ProviderManager providerManager;
     Attica::Provider currentProvider;
@@ -79,6 +91,9 @@ private:
     QString m_username;
     QStringList m_configuredCategories;
     Attica::Content::List m_userCreatedContent;
+
+    QByteArray m_previewBuffer[3];
+    KIO::TransferJob* m_previewJob[3];
 
     Q_DISABLE_COPY(AtticaHelper)
 };
