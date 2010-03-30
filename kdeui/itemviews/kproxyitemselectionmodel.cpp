@@ -155,8 +155,6 @@ KProxyItemSelectionModel::KProxyItemSelectionModel( QAbstractItemModel *model, Q
 
 QItemSelection KProxyItemSelectionModel::mapSelectionFromSource(const QModelIndex& sourceIndex) const
 {
-  Q_D(const KProxyItemSelectionModel);
-
   return mapSelectionFromSource(QItemSelection(sourceIndex, sourceIndex));
 }
 
@@ -178,34 +176,33 @@ QItemSelection KProxyItemSelectionModel::mapSelectionFromSource(const QItemSelec
   while (iDown.hasNext())
   {
     const QAbstractProxyModel *proxy = iDown.next();
-    seekSelection = proxy->mapSelectionToSource(seekSelection);
+    seekSelection = proxy->mapSelectionFromSource(seekSelection);
   }
 
+  Q_ASSERT( ( !seekSelection.isEmpty() && seekSelection.first().model() == d->m_proxySelector->model() ) || true );
   return seekSelection;
 }
 
 QItemSelection KProxyItemSelectionModel::mapSelectionToSource(const QModelIndex& sourceIndex) const
 {
-  Q_D(const KProxyItemSelectionModel);
-
   return mapSelectionToSource(QItemSelection(sourceIndex, sourceIndex));
 }
 
-QItemSelection KProxyItemSelectionModel::mapSelectionToSource(const QItemSelection& sourceSelection) const
+QItemSelection KProxyItemSelectionModel::mapSelectionToSource(const QItemSelection& proxySelection) const
 {
   Q_D(const KProxyItemSelectionModel);
 
-  QItemSelection seekSelection = sourceSelection;
+  QItemSelection seekSelection = proxySelection;
   QListIterator<const QAbstractProxyModel*> iDown(d->m_proxyChainDown);
 
   iDown.toBack();
   while (iDown.hasPrevious())
   {
     const QAbstractProxyModel *proxy = iDown.previous();
-    seekSelection = proxy->mapSelectionFromSource(seekSelection);
+    seekSelection = proxy->mapSelectionToSource(seekSelection);
   }
 
-  QListIterator<const QAbstractProxyModel*> iUp(d->m_proxyChainDown);
+  QListIterator<const QAbstractProxyModel*> iUp(d->m_proxyChainUp);
 
   iUp.toBack();
   while (iUp.hasPrevious())
@@ -213,6 +210,8 @@ QItemSelection KProxyItemSelectionModel::mapSelectionToSource(const QItemSelecti
     const QAbstractProxyModel *proxy = iUp.previous();
     seekSelection = proxy->mapSelectionFromSource(seekSelection);
   }
+
+  Q_ASSERT( ( !seekSelection.isEmpty() && seekSelection.first().model() == d->m_model ) || true );
   return seekSelection;
 }
 
@@ -245,9 +244,9 @@ void KProxyItemSelectionModel::select(const QItemSelection &selection, QItemSele
 
 void KProxyItemSelectionModel::sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-  Q_D(KProxyItemSelectionModel);
+  QItemSelection mappedDeselection = mapSelectionToSource(deselected);
+  QItemSelection mappedSelection = mapSelectionToSource(selected);
 
-  // TODO: Implement
-  qDebug() << selected << deselected;
-
+  QItemSelectionModel::select(mappedDeselection, Deselect);
+  QItemSelectionModel::select(mappedSelection, Select);
 }
