@@ -38,6 +38,9 @@ class KProxyItemSelectionModelPrivate;
 
   If there is a proxy model between the model and one of the views, or different proxy models in each, this class makes
   it possible to share the selection between the views.
+
+  @since 4.5
+
 */
 class KDEUI_EXPORT KProxyItemSelectionModel : public QItemSelectionModel
 {

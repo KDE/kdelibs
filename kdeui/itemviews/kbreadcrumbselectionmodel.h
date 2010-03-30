@@ -107,6 +107,8 @@ class KBreadcrumbSelectionModelPrivate;
   The other is for a selection in the itemselectionmodel in the constructor argument to cause a breadcrumb selection
   in @p this.
 
+  @since 4.5
+
 */
 class KDEUI_EXPORT KBreadcrumbSelectionModel : public QItemSelectionModel
 {
