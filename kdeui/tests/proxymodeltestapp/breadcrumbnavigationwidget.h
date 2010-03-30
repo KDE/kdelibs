@@ -90,7 +90,7 @@ class KForwardingItemSelectionModel : public QItemSelectionModel
 {
   Q_OBJECT
 public:
-  KForwardingItemSelectionModel(QItemSelectionModel *selectionModel, QAbstractItemModel* model);
+  KForwardingItemSelectionModel(QItemSelectionModel *selectionModel, QAbstractItemModel* model, QObject *parent = 0);
 
 //   virtual void select(QModelIndex& index, SelectionFlags command);
 //   virtual void select(QItemSelection& selection, SelectionFlags command);

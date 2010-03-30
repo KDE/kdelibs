@@ -166,8 +166,8 @@ QVariant KNavigatingProxyModel::data(const QModelIndex& index, int role) const
 }
 
 
-KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel* selectionModel, QAbstractItemModel* model)
-  : QItemSelectionModel(model), m_selectionModel(selectionModel)
+KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel* selectionModel, QAbstractItemModel* model, QObject *parent)
+  : QItemSelectionModel(model, parent), m_selectionModel(selectionModel)
 {
   Q_ASSERT(model == selectionModel->model());
   connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
@@ -190,29 +190,29 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
   DynamicTreeWidget *dynamicTree = new DynamicTreeWidget(rootModel, splitter);
   dynamicTree->treeView()->setSelectionMode(QAbstractItemView::SingleSelection);
   dynamicTree->setInitialTree(
- "- 1"
- "- - 2"
- "- - 2"
- "- - - 3"
- "- - - - 4"
- "- - - - - 5"
- "- - 2"
- "- 6"
- "- 6"
- "- 6"
- "- - 7"
- "- - - 8"
- "- - - 8"
- "- - - - 9"
- "- - - - - 10"
- "- - - 8"
- "- - - 8"
- "- - 8"
- "- 16"
- "- - 17"
- "- - - 18"
- "- - - - 19"
- "- - - - - 20");
+    "- 1"
+    "- - 2"
+    "- - 2"
+    "- - - 3"
+    "- - - - 4"
+    "- - - - - 5"
+    "- - 2"
+    "- 6"
+    "- 6"
+    "- 6"
+    "- - 7"
+    "- - - 8"
+    "- - - 8"
+    "- - - - 9"
+    "- - - - - 10"
+    "- - - 8"
+    "- - - 8"
+    "- - 8"
+    "- 16"
+    "- - 17"
+    "- - - 18"
+    "- - - - 19"
+    "- - - - - 20");
 
   QList<QItemSelectionModel*> selectionModelList;
 
@@ -223,7 +223,7 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
 
   dynamicTree->treeView()->setSelectionModel(rootSelectionModel);
 
-  KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector2 = new KBreadcrumbSelectionModel(rootSelectionModel /*, rootModel*/, KBreadcrumbSelectionModel::Forward, this);
+  KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector2 = new KBreadcrumbSelectionModel(rootSelectionModel, KBreadcrumbSelectionModel::Forward, this);
   SON(breadcrumbOnlyProxySelector2);
   breadcrumbOnlyProxySelector2->setIncludeActualSelection(false);
 
