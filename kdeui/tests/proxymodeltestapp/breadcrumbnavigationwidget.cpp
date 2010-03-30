@@ -236,7 +236,7 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
   breadcrumbView->setModel(breadcrumbNavigationModel);
 
   // This shouldn't operate on rootSelectionModel. It should operate on oneway instead?
-  KProxyItemSelectionModel *breadcrumbViewSelectionModel = new KProxyItemSelectionModel(rootSelectionModel, rootModel, breadcrumbNavigationModel, this);
+  KProxyItemSelectionModel *breadcrumbViewSelectionModel = new KProxyItemSelectionModel(breadcrumbNavigationModel, rootSelectionModel, this);
   breadcrumbView->setSelectionModel(breadcrumbViewSelectionModel);
   SON(breadcrumbViewSelectionModel);
 
@@ -258,7 +258,7 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
   navigatingProxyModel->setSourceModel( rootModel );
   selectionView->setModel(navigatingProxyModel);
 
-  KProxyItemSelectionModel *selectedChildrenSelectionModel = new KProxyItemSelectionModel(rootSelectionModel, rootModel, navigatingProxyModel, this);
+  KProxyItemSelectionModel *selectedChildrenSelectionModel = new KProxyItemSelectionModel(navigatingProxyModel, rootSelectionModel, this);
 
   selectionView->setSelectionModel(selectedChildrenSelectionModel);
 }

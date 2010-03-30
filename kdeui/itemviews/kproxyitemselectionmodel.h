@@ -46,7 +46,7 @@ public:
   /**
     Constructor.
   */
-  KProxyItemSelectionModel(QItemSelectionModel *proxySelector, QAbstractItemModel *model, QAbstractProxyModel *proxy, QObject *parent = 0);
+  KProxyItemSelectionModel( QAbstractItemModel *targetModel, QItemSelectionModel *proxySelector, QObject *parent = 0);
 
   /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
   /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command);

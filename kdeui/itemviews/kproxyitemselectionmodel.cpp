@@ -26,54 +26,129 @@ class KProxyItemSelectionModelPrivate
 {
 public:
   KProxyItemSelectionModelPrivate(KProxyItemSelectionModel *proxySelectionModel, QAbstractItemModel *model,
-                                          QAbstractProxyModel *proxy,
                                           QItemSelectionModel *selectionModel)
-    : q_ptr( proxySelectionModel ), m_model(model), m_proxy(proxy), m_proxySelector(selectionModel)
+    : q_ptr( proxySelectionModel ), m_model(model), m_proxySelector(selectionModel)
   {
     createProxyChain();
   }
 
   void createProxyChain();
 
+  bool assertValid();
+
   Q_DECLARE_PUBLIC(KProxyItemSelectionModel)
   KProxyItemSelectionModel * const q_ptr;
 
-  QList<const QAbstractProxyModel *> m_proxyChain;
+  QList<const QAbstractProxyModel *> m_proxyChainUp;
+  QList<const QAbstractProxyModel *> m_proxyChainDown;
 
   QAbstractItemModel *m_model;
-  QAbstractProxyModel *m_proxy;
   QItemSelectionModel *m_proxySelector;
   bool m_ignoreCurrentChanged;
 };
 
+/*
+
+  The idea here is that <tt>this</tt> selection model and proxySelectionModel might be in different parts of the
+  proxy chain. We need to build up to two chains of proxy models to create mappings between them.
+
+  Example 1:
+
+     Root model
+          |
+        /    \
+    Proxy 1   Proxy 3
+       |       |
+    Proxy 2   Proxy 4
+
+  Need Proxy 1 and Proxy 2 in one chain, and Proxy 3 and 4 in the other.
+
+  Example 2:
+
+     Root model
+          |
+        Proxy 1
+          |
+        Proxy 2
+        /     \
+    Proxy 3   Proxy 6
+       |       |
+    Proxy 4   Proxy 7
+       |
+    Proxy 5
+
+  We first build the chain from 1 to 5, then start building the chain from 7 to 1. We stop when we find that proxy 2 is
+  already in the first chain.
+
+  Stephen Kelly, 30 March 2010.
+*/
+
 void KProxyItemSelectionModelPrivate::createProxyChain()
 {
-  const QAbstractProxyModel *proxyModel = m_proxy;
+  const QAbstractItemModel *selectionTargetModel = m_proxySelector->model();
 
-  const QAbstractProxyModel *nextProxyModel;
+  if (m_model == selectionTargetModel)
+    return;
 
-  while (proxyModel)
+  QList<const QAbstractProxyModel *> proxyChainDown;
+
+  const QAbstractProxyModel *selectionTargetProxyModel = qobject_cast<const QAbstractProxyModel*>( selectionTargetModel );
+
+  while( selectionTargetProxyModel )
   {
-    if (proxyModel == m_model)
-      break;
+    proxyChainDown.prepend( selectionTargetProxyModel );
 
-    m_proxyChain << proxyModel;
+    selectionTargetProxyModel = qobject_cast<const QAbstractProxyModel*>(selectionTargetProxyModel->sourceModel());
 
-    nextProxyModel = qobject_cast<const QAbstractProxyModel*>(proxyModel->sourceModel());
-
-    if (!nextProxyModel)
+    if ( selectionTargetProxyModel == m_model )
     {
-      // It's the final model in the chain, so it is necessarily the sourceModel.
-      Q_ASSERT(qobject_cast<QAbstractItemModel*>(proxyModel->sourceModel()) == m_model);
-      break;
+      m_proxyChainDown = proxyChainDown;
+      return;
     }
-    proxyModel = nextProxyModel;
   }
+
+  const QAbstractItemModel *sourceModel = m_model;
+  const QAbstractProxyModel *sourceProxyModel = qobject_cast<const QAbstractProxyModel*>( sourceModel );
+
+  while( sourceProxyModel )
+  {
+    m_proxyChainUp.append( sourceProxyModel );
+
+    sourceProxyModel = qobject_cast<const QAbstractProxyModel*>(sourceProxyModel->sourceModel());
+
+    int targetIndex = proxyChainDown.indexOf(sourceProxyModel );
+
+    if ( targetIndex != -1 )
+    {
+      m_proxyChainDown = proxyChainDown.mid(targetIndex, proxyChainDown.size());
+      return;
+    }
+  }
+  m_proxyChainDown = proxyChainDown;
+  Q_ASSERT(assertValid());
 }
 
-KProxyItemSelectionModel::KProxyItemSelectionModel(QItemSelectionModel *proxySelector, QAbstractItemModel *model, QAbstractProxyModel *proxy, QObject *parent)
-  : QItemSelectionModel(proxy, parent),
-    d_ptr(new KProxyItemSelectionModelPrivate(this, model, proxy, proxySelector))
+bool KProxyItemSelectionModelPrivate::assertValid()
+{
+  qDebug() << m_proxyChainDown << m_proxyChainUp;
+  if ( m_proxyChainDown.isEmpty())
+  {
+    Q_ASSERT( !m_proxyChainUp.isEmpty() );
+    Q_ASSERT( m_proxyChainUp.last()->sourceModel() == m_proxySelector->model() );
+  }
+  else if ( m_proxyChainUp.isEmpty())
+  {
+    Q_ASSERT( !m_proxyChainDown.isEmpty() );
+    Q_ASSERT( m_proxyChainDown.first()->sourceModel() == m_model );
+  } else {
+    Q_ASSERT( m_proxyChainDown.first()->sourceModel() == m_proxyChainUp.last()->sourceModel() );
+  }
+  return true;
+}
+
+KProxyItemSelectionModel::KProxyItemSelectionModel( QAbstractItemModel *model, QItemSelectionModel *proxySelector, QObject *parent)
+  : QItemSelectionModel(model, parent),
+    d_ptr(new KProxyItemSelectionModelPrivate(this, model, proxySelector))
 {
   connect(proxySelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(sourceSelectionChanged(QItemSelection,QItemSelection)));
 }
@@ -90,11 +165,19 @@ QItemSelection KProxyItemSelectionModel::mapSelectionFromSource(const QItemSelec
   Q_D(const KProxyItemSelectionModel);
 
   QItemSelection seekSelection = sourceSelection;
-  QListIterator<const QAbstractProxyModel*> i(d->m_proxyChain);
+  QListIterator<const QAbstractProxyModel*> iUp(d->m_proxyChainUp);
 
-  while (i.hasNext())
+  while (iUp.hasNext())
   {
-    const QAbstractProxyModel *proxy = i.next();
+    const QAbstractProxyModel *proxy = iUp.next();
+    seekSelection = proxy->mapSelectionToSource(seekSelection);
+  }
+
+  QListIterator<const QAbstractProxyModel*> iDown(d->m_proxyChainDown);
+
+  while (iDown.hasNext())
+  {
+    const QAbstractProxyModel *proxy = iDown.next();
     seekSelection = proxy->mapSelectionToSource(seekSelection);
   }
 
@@ -113,12 +196,21 @@ QItemSelection KProxyItemSelectionModel::mapSelectionToSource(const QItemSelecti
   Q_D(const KProxyItemSelectionModel);
 
   QItemSelection seekSelection = sourceSelection;
-  QListIterator<const QAbstractProxyModel*> i(d->m_proxyChain);
+  QListIterator<const QAbstractProxyModel*> iDown(d->m_proxyChainDown);
 
-  i.toBack();
-  while (i.hasPrevious())
+  iDown.toBack();
+  while (iDown.hasPrevious())
   {
-    const QAbstractProxyModel *proxy = i.previous();
+    const QAbstractProxyModel *proxy = iDown.previous();
+    seekSelection = proxy->mapSelectionFromSource(seekSelection);
+  }
+
+  QListIterator<const QAbstractProxyModel*> iUp(d->m_proxyChainDown);
+
+  iUp.toBack();
+  while (iUp.hasPrevious())
+  {
+    const QAbstractProxyModel *proxy = iUp.previous();
     seekSelection = proxy->mapSelectionFromSource(seekSelection);
   }
   return seekSelection;
