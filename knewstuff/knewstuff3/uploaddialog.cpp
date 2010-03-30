@@ -280,6 +280,7 @@ void UploadDialog::Private::_k_contentByCurrentUserLoaded(const Attica::Content:
 
     if (ui.userContentList->count() > 0) {
         ui.userContentList->setCurrentRow(0);
+        ui.radioUpdate->setEnabled(true);
         _k_updatePage();
     }
 
