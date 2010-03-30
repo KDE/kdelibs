@@ -20,6 +20,7 @@
 */
 
 #include "copyjob.h"
+#include <errno.h>
 #include "kdirlister.h"
 #include "kfileitem.h"
 #include "deletejob.h"
@@ -1778,28 +1779,33 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             kDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls";
             const QString _src( m_currentSrcURL.toLocalFile() );
             const QString _dest( dest.toLocalFile() );
+            const QString _tmpPrefix = m_currentSrcURL.directory(KUrl::ObeyTrailingSlash|KUrl::AppendTrailingSlash);
             KTemporaryFile tmpFile;
-            tmpFile.setPrefix(m_currentSrcURL.directory(KUrl::ObeyTrailingSlash));
-            tmpFile.setAutoRemove(false);
-            tmpFile.open();
-            const QString _tmp( tmpFile.fileName() );
-            kDebug(7007) << "KTemporaryFile using" << _tmp << "as intermediary";
-            if ( KDE::rename( _src, _tmp ) == 0 )
-            {
-                if ( !QFile::exists( _dest ) && KDE::rename( _tmp, _dest ) == 0 )
-                {
-                    kDebug(7007) << "Success.";
-                    err = 0;
-                }
-                else
-                {
-                    // Revert back to original name!
-                    if ( KDE::rename( _tmp, _src ) != 0 ) {
-                        kError(7007) << "Couldn't rename" << _tmp << "back to" << _src << '!';
-                        // Severe error, abort
-                        q->Job::slotResult( job ); // will set the error and emit result(this)
-                        return;
+            tmpFile.setPrefix(_tmpPrefix);
+            const bool openOk = tmpFile.open();
+            if (!openOk) {
+                kWarning(7007) << "Couldn't open temp file in" << _tmpPrefix;
+            } else {
+                const QString _tmp( tmpFile.fileName() );
+                tmpFile.close();
+                tmpFile.remove();
+                kDebug(7007) << "KTemporaryFile using" << _tmp << "as intermediary";
+                if (KDE::rename( _src, _tmp ) == 0) {
+                    //kDebug(7007) << "Renaming" << _src << "to" << _tmp << "succeeded";
+                    if (!QFile::exists( _dest ) && KDE::rename(_tmp, _dest) == 0) {
+                        err = 0;
+                    } else {
+                        kDebug(7007) << "Didn't manage to rename" << _tmp << "to" << _dest << ", reverting";
+                        // Revert back to original name!
+                        if (KDE::rename( _tmp, _src ) != 0) {
+                            kError(7007) << "Couldn't rename" << _tmp << "back to" << _src << '!';
+                            // Severe error, abort
+                            q->Job::slotResult(job); // will set the error and emit result(this)
+                            return;
+                        }
                     }
+                } else {
+                    kDebug(7007) << "mv" << _src << _tmp << "failed:" << strerror(errno);
                 }
             }
         }
