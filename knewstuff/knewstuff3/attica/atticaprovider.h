@@ -17,8 +17,12 @@
 #ifndef KNEWSTUFF3_ATTICA_PROVIDER_H
 #define KNEWSTUFF3_ATTICA_PROVIDER_H
 
-#include "core/provider.h"
+#include <QtCore/QSet>
+
+#include <attica/providermanager.h>
 #include <attica/provider.h>
+
+#include "core/provider.h"
 
 namespace Attica {
     class BaseJob;
@@ -26,8 +30,6 @@ namespace Attica {
 
 namespace KNS3
 {
-    class AtticaProviderPrivate;
-
     /**
      * @short KNewStuff Attica Provider class.
      *
@@ -46,8 +48,6 @@ namespace KNS3
     public:
         AtticaProvider(const QStringList& categories);
         AtticaProvider(const Attica::Provider& provider, const QStringList& categories);
-
-        ~AtticaProvider();
 
         virtual QString id() const;
 
@@ -80,9 +80,6 @@ namespace KNS3
         void becomeFanFinished(Attica::BaseJob* job);
         void detailsLoaded(Attica::BaseJob* job);
 
-    protected:
-        AtticaProvider(AtticaProviderPrivate &dd);
-
     private:
         void checkForUpdates();
         EntryInternal::List installedEntries() const;
@@ -91,7 +88,30 @@ namespace KNS3
         Attica::Provider::SortMode atticaSortMode(const SortMode& sortMode);
 
         EntryInternal entryFromAtticaContent(const Attica::Content&);
-        Q_DECLARE_PRIVATE(AtticaProvider)
+        
+        // the attica categories we are interested in (e.g. Wallpaper, Application, Vocabulary File...)
+        QHash<QString, Attica::Category> mCategoryMap;
+        
+        Attica::ProviderManager m_providerManager;
+        Attica::Provider m_provider;
+        
+        KNS3::EntryInternal::List mCachedEntries;
+        QHash<QString, Attica::Content> mCachedContent;
+        
+        // Associate job and entry, this is needed when fetching
+        // download links or the account balance in order to continue
+        // when the result is there.
+        QHash<Attica::BaseJob*, EntryInternal> mDownloadLinkJobs;
+        
+        // keep track of the current request
+        Attica::BaseJob* mEntryJob;
+        Provider::SearchRequest mCurrentRequest;
+        
+        QSet<Attica::BaseJob*> m_updateJobs;
+        
+        bool mInitialized;
+        
+        Q_DISABLE_COPY(AtticaProvider)
     };
 
 }

@@ -24,7 +24,7 @@
 
 namespace KNS3
 {
-    class StaticXmlProviderPrivate;
+    class XmlLoader;
 
     /**
      * @short KNewStuff Base Provider class.
@@ -48,11 +48,6 @@ namespace KNS3
          */
         StaticXmlProvider();
 
-        /**
-         * Destructor.
-         */
-        virtual ~StaticXmlProvider();
-
         virtual QString id() const;
 
         /**
@@ -67,18 +62,28 @@ namespace KNS3
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request);
         virtual void loadPayloadLink(const KNS3::EntryInternal& entry, int);
 
+    private Q_SLOTS:
+        void slotFeedFileLoaded(const QDomDocument&);
+        void slotFeedFailed();
+
     private:
         bool searchIncludesEntry(const EntryInternal& entry) const;
         KUrl downloadUrl(SortMode mode) const;
         EntryInternal::List installedEntries() const;
-
-    protected:
-        StaticXmlProvider(StaticXmlProviderPrivate &dd);
-    private Q_SLOTS:
-        void slotFeedFileLoaded(const QDomDocument&);
-        void slotFeedFailed();
-    private:
-        Q_DECLARE_PRIVATE(StaticXmlProvider)
+        
+        // map of download urls to their feed name
+        QMap<QString, KUrl> mDownloadUrls;
+        KUrl mUploadUrl;
+        KUrl mNoUploadUrl;
+        
+        // cache of all entries known from this provider so far, mapped by their id
+        EntryInternal::List mCachedEntries;
+        QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
+        Provider::SearchRequest mCurrentRequest;
+        QString mId;
+        bool mInitialized;
+        
+        Q_DISABLE_COPY(StaticXmlProvider)
     };
 
 }

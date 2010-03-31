@@ -19,7 +19,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "core/provider_p.h"
 #include "provider.h"
 
 #include "xmlloader.h"
@@ -41,37 +40,19 @@ QString Provider::SearchRequest::hashForRequest() const
 }
 
 Provider::Provider()
-    :d_ptr(new ProviderPrivate)
 {}
 
 Provider::~Provider()
-{
-    delete d_ptr;
-}
-
-Provider::Provider(ProviderPrivate &dd)
-    : d_ptr(&dd)
-{
-    kDebug() << "copy provider dd";
-}
-
-Provider::Provider(const Provider &other)
-: QObject(),  d_ptr(other.d_ptr)
-{
-    kDebug() << "copy provider other";
-}
-
+{}
 
 QString Provider::name() const
 {
-    Q_D(const Provider);
-    return d->mName;
+    return mName;
 }
 
 KUrl Provider::icon() const
 {
-    Q_D(const Provider);
-    return d->mIcon;
+    return mIcon;
 }
 
 }

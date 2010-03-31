@@ -17,9 +17,6 @@
 
 #include "atticaprovider.h"
 
-#include "core/xmlloader.h"
-#include "core/provider_p.h"
-
 #include <kdebug.h>
 #include <klocale.h>
 #include <kio/job.h>
@@ -40,86 +37,43 @@ using namespace Attica;
 namespace KNS3
 {
 
-class AtticaProviderPrivate :public ProviderPrivate
-{
-public:
-    // the attica categories we are interested in (e.g. Wallpaper, Application, Vocabulary File...)
-    QHash<QString, Attica::Category> categoryMap;
-
-    Attica::ProviderManager m_providerManager;
-    Attica::Provider m_provider;
-
-    KNS3::EntryInternal::List cachedEntries;
-    QHash<QString, Attica::Content> cachedContent;
-
-    // Associate job and entry, this is needed when fetching
-    // download links or the account balance in order to continue
-    // when the result is there.
-    QHash<BaseJob*, EntryInternal> downloadLinkJobs;
-
-    // keep track of the current request
-    Attica::BaseJob* entryJob;
-    Provider::SearchRequest currentRequest;
-    
-    QSet<BaseJob*> m_updateJobs;
-    
-    bool initialized;
-
-    AtticaProviderPrivate()
-        : entryJob(0)
-        , initialized(false)
-    {
-    }
-};
-
 AtticaProvider::AtticaProvider(const QStringList& categories)
-    : Provider(*new AtticaProviderPrivate)
+    : mEntryJob(0)
+    , mInitialized(false)
 {
-    Q_D(AtticaProvider);
-
     // init categories map with invalid categories
     foreach (const QString& category, categories)
-        d->categoryMap.insert(category, Attica::Category());
+        mCategoryMap.insert(category, Attica::Category());
 
-    connect(&d->m_providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerLoaded(const Attica::Provider&)));
-    connect(&d->m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)),
+    connect(&m_providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerLoaded(const Attica::Provider&)));
+    connect(&m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)),
             SLOT(authenticationCredentialsMissing(const Provider&)));
 }
 
 AtticaProvider::AtticaProvider(const Attica::Provider& provider, const QStringList& categories)
-    : Provider(*new AtticaProviderPrivate)
+    : mEntryJob(0)
+    , mInitialized(false)
 {
-    Q_D(AtticaProvider);
-
     // init categories map with invalid categories
-    foreach (const QString& category, categories)
-        d->categoryMap.insert(category, Attica::Category());
-
+    foreach (const QString& category, categories) {
+        mCategoryMap.insert(category, Attica::Category());
+    }
     providerLoaded(provider);
-}
-
-AtticaProvider::~AtticaProvider()
-{
-    // d_ptr is deleted in base class!
 }
 
 QString AtticaProvider::id() const
 {
-    Q_D(const AtticaProvider);
-    return d->m_provider.baseUrl().toString();
+    return m_provider.baseUrl().toString();
 }
 
 void AtticaProvider::authenticationCredentialsMissing(const KNS3::Provider& )
 {
     kDebug() << "Authentication missing!";
-// FIXME Show autentication dialog
-
+    // FIXME Show autentication dialog
 }
 
 bool AtticaProvider::setProviderXML(const QDomElement & xmldata)
 {
-    Q_D(AtticaProvider);
-
     if (xmldata.tagName() != "provider")
         return false;
 
@@ -128,10 +82,10 @@ bool AtticaProvider::setProviderXML(const QDomElement & xmldata)
     kDebug(550) << "setting provider xml" << doc.toString();
 
     doc.appendChild(xmldata.cloneNode(true));
-    d->m_providerManager.addProviderFromXml(doc.toString());
+    m_providerManager.addProviderFromXml(doc.toString());
 
-    if (!d->m_providerManager.providers().isEmpty()) {
-        kDebug() << "base url of attica provider:" << d->m_providerManager.providers().last().baseUrl().toString();
+    if (!m_providerManager.providers().isEmpty()) {
+        kDebug() << "base url of attica provider:" << m_providerManager.providers().last().baseUrl().toString();
     } else {
         kError() << "Could not load provider.";
         return false;
@@ -141,20 +95,17 @@ bool AtticaProvider::setProviderXML(const QDomElement & xmldata)
 
 void AtticaProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEntries)
 {
-    Q_D(AtticaProvider);
-    d->cachedEntries = cachedEntries;
+    mCachedEntries = cachedEntries;
 }
 
 void AtticaProvider::providerLoaded(const Attica::Provider& provider)
 {
-    Q_D(AtticaProvider);
-
-    d->mName = provider.name();
+    mName = provider.name();
     kDebug() << "Added provider: " << provider.name();
 
-    d->m_provider = provider;
+    m_provider = provider;
 
-    Attica::ListJob<Attica::Category>* job = d->m_provider.requestCategories();
+    Attica::ListJob<Attica::Category>* job = m_provider.requestCategories();
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(listOfCategoriesLoaded(Attica::BaseJob*)));
     job->start();
 }
@@ -162,38 +113,35 @@ void AtticaProvider::providerLoaded(const Attica::Provider& provider)
 void AtticaProvider::listOfCategoriesLoaded(Attica::BaseJob* listJob)
 {
     if (!jobSuccess(listJob)) return;
-    Q_D(AtticaProvider);
-    kDebug() << "loading categories: " << d->categoryMap.keys();
+    
+    kDebug() << "loading categories: " << mCategoryMap.keys();
 
     Attica::ListJob<Attica::Category>* job = static_cast<Attica::ListJob<Attica::Category>*>(listJob);
     Category::List categoryList = job->itemList();
 
     foreach(const Category& category, categoryList) {
-        if (d->categoryMap.contains(category.name())) {
+        if (mCategoryMap.contains(category.name())) {
             kDebug() << "Adding category: " << category.name();
-            d->categoryMap[category.name()] = category;
+            mCategoryMap[category.name()] = category;
         }
     }
-    d->initialized = true;
+    mInitialized = true;
     emit providerInitialized(this);
 }
 
 bool AtticaProvider::isInitialized() const
 {
-    Q_D(const AtticaProvider);
-    return d->initialized;
+    return mInitialized;
 }
 
 void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 {
-    Q_D(AtticaProvider);
-
-    if (d->entryJob) {
-        d->entryJob->abort();
-        d->entryJob = 0;
+    if (mEntryJob) {
+        mEntryJob->abort();
+        mEntryJob = 0;
     }
 
-    d->currentRequest = request;
+    mCurrentRequest = request;
     if (request.sortMode == Installed) {
         if (request.page == 0) {
             emit loadingFinished(request, installedEntries());
@@ -213,28 +161,26 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 
     if (request.categories.isEmpty()) {
         // search in all categories
-        categoriesToSearch = d->categoryMap.values();
+        categoriesToSearch = mCategoryMap.values();
     } else {
         foreach (const QString& categoryName, request.categories) {
-            categoriesToSearch.append(d->categoryMap.value(categoryName));
+            categoriesToSearch.append(mCategoryMap.value(categoryName));
         }
     }
 
-    ListJob<Content>* job = d->m_provider.searchContents(categoriesToSearch, request.searchTerm, sorting, request.page, request.pageSize);
+    ListJob<Content>* job = m_provider.searchContents(categoriesToSearch, request.searchTerm, sorting, request.page, request.pageSize);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(categoryContentsLoaded(Attica::BaseJob*)));
 
-    d->entryJob = job;
+    mEntryJob = job;
     job->start();
 }
 
 void AtticaProvider::checkForUpdates()
 {
-    Q_D(AtticaProvider);
-    
-    foreach (const EntryInternal& e, d->cachedEntries) {
-        ItemJob<Content>* job = d->m_provider.requestContent(e.uniqueId());
+    foreach (const EntryInternal& e, mCachedEntries) {
+        ItemJob<Content>* job = m_provider.requestContent(e.uniqueId());
         connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(detailsLoaded(Attica::BaseJob*)));
-        d->m_updateJobs.insert(job);
+        m_updateJobs.insert(job);
         job->start();
         kDebug() << "Checking for update: " << e.name();
     }
@@ -242,17 +188,13 @@ void AtticaProvider::checkForUpdates()
 
 void AtticaProvider::loadEntryDetails(const KNS3::EntryInternal& entry)
 {
-    Q_D(AtticaProvider);
-    ItemJob<Content>* job = d->m_provider.requestContent(entry.uniqueId());
+    ItemJob<Content>* job = m_provider.requestContent(entry.uniqueId());
     connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(detailsLoaded(Attica::BaseJob*)));
     job->start();
 }
 
 void AtticaProvider::detailsLoaded(BaseJob* job)
 {
-    Q_D(AtticaProvider);
-
-    
     if (jobSuccess(job)) {
         ItemJob<Content>* contentJob = static_cast<ItemJob<Content>*>(job);
         Content content = contentJob->result();
@@ -261,21 +203,20 @@ void AtticaProvider::detailsLoaded(BaseJob* job)
         kDebug() << "check update finished: " << entry.name();
     }
 
-    if (d->m_updateJobs.remove(job) && d->m_updateJobs.isEmpty()) {
+    if (m_updateJobs.remove(job) && m_updateJobs.isEmpty()) {
         kDebug() << "check update finished.";
         QList<EntryInternal> updatable;
-        foreach(const EntryInternal& entry, d->cachedEntries) {
+        foreach(const EntryInternal& entry, mCachedEntries) {
             if (entry.status() == Entry::Updateable) {
                 updatable.append(entry);
             }
         }
-        emit loadingFinished(d->currentRequest, updatable);
+        emit loadingFinished(mCurrentRequest, updatable);
     }    
 }
 
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 {
-    Q_D(AtticaProvider);
     if (!jobSuccess(job)) return;
 
     ListJob<Content>* listJob = static_cast<ListJob<Content>*>(job);
@@ -283,13 +224,13 @@ void AtticaProvider::categoryContentsLoaded(BaseJob* job)
 
     EntryInternal::List entries;
     Q_FOREACH(const Content &content, contents) {
-        d->cachedContent.insert(content.id(), content);
+        mCachedContent.insert(content.id(), content);
         entries.append(entryFromAtticaContent(content));
     }
 
-    kDebug() << "loaded: " << d->currentRequest.hashForRequest() << " count: " << entries.size();
-    emit loadingFinished(d->currentRequest, entries);
-    d->entryJob = 0;
+    kDebug() << "loaded: " << mCurrentRequest.hashForRequest() << " count: " << entries.size();
+    emit loadingFinished(mCurrentRequest, entries);
+    mEntryJob = 0;
 }
 
 Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMode)
@@ -308,23 +249,21 @@ Attica::Provider::SortMode AtticaProvider::atticaSortMode(const SortMode& sortMo
 
 void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int linkId)
 {
-    Q_D(AtticaProvider);
-
-    Attica::Content content = d->cachedContent.value(entry.uniqueId());
+    Attica::Content content = mCachedContent.value(entry.uniqueId());
     DownloadDescription desc = content.downloadUrlDescription(linkId);
 
     if (desc.hasPrice()) {
         // Ask for balance, then show information...
-        ItemJob<AccountBalance>* job = d->m_provider.requestAccountBalance();
+        ItemJob<AccountBalance>* job = m_provider.requestAccountBalance();
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(accountBalanceLoaded(Attica::BaseJob*)));
-        d->downloadLinkJobs[job] = entry;
+        mDownloadLinkJobs[job] = entry;
         job->start();
 
         kDebug() << "get account balance";
     } else {
-        ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId(), QString::number(linkId));
+        ItemJob<DownloadItem>* job = m_provider.downloadLink(entry.uniqueId(), QString::number(linkId));
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
-        d->downloadLinkJobs[job] = entry;
+        mDownloadLinkJobs[job] = entry;
         job->start();
 
         kDebug() << " link for " << entry.uniqueId();
@@ -333,14 +272,13 @@ void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int linkI
 
 void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
 {
-    Q_D(AtticaProvider);
     if (!jobSuccess(baseJob)) return;
 
     ItemJob<AccountBalance>* job = static_cast<ItemJob<AccountBalance>*>(baseJob);
     AccountBalance item = job->result();
 
-    EntryInternal entry = d->downloadLinkJobs.take(job);
-    Content content = d->cachedContent.value(entry.uniqueId());
+    EntryInternal entry = mDownloadLinkJobs.take(job);
+    Content content = mCachedContent.value(entry.uniqueId());
     // TODO: at some point maybe support more than one download description
     if (content.downloadUrlDescription(1).priceAmount() < item.balance()) {
         kDebug() << "Your balance is greather than the price."
@@ -348,10 +286,10 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
         if (KMessageBox::questionYesNo(0,
                 i18nc("the price of a download item, parameter 1 is the currency, 2 is the price",
                 "This items costs %1 %2.\nDo you want to buy it?")) == KMessageBox::Yes) {
-            ItemJob<DownloadItem>* job = d->m_provider.downloadLink(entry.uniqueId());
+            ItemJob<DownloadItem>* job = m_provider.downloadLink(entry.uniqueId());
             connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
             connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
-            d->downloadLinkJobs[job] = entry;
+            mDownloadLinkJobs[job] = entry;
             job->start();
         } else {
             return;
@@ -366,22 +304,20 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
 
 void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
 {
-    Q_D(AtticaProvider);
     if (!jobSuccess(baseJob)) return;
 
     ItemJob<DownloadItem>* job = static_cast<ItemJob<DownloadItem>*>(baseJob);
     DownloadItem item = job->result();
 
-    EntryInternal entry = d->downloadLinkJobs.take(job);
+    EntryInternal entry = mDownloadLinkJobs.take(job);
     entry.setPayload(QString(item.url().toString()));
     emit payloadLinkLoaded(entry);
 }
 
 EntryInternal::List AtticaProvider::installedEntries() const
 {
-    Q_D(const AtticaProvider);
     EntryInternal::List entries;
-    foreach (const EntryInternal& entry, d->cachedEntries) {
+    foreach (const EntryInternal& entry, mCachedEntries) {
         if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
             entries.append(entry);
         }
@@ -391,9 +327,7 @@ EntryInternal::List AtticaProvider::installedEntries() const
 
 void AtticaProvider::vote(const EntryInternal& entry, bool positiveVote)
 {
-    Q_D(AtticaProvider);
-
-    PostJob * job = d->m_provider.voteForContent(entry.uniqueId(), positiveVote);
+    PostJob * job = m_provider.voteForContent(entry.uniqueId(), positiveVote);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(votingFinished(Attica::BaseJob*)));
     connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     job->start();
@@ -407,9 +341,7 @@ void AtticaProvider::votingFinished(Attica::BaseJob* job)
 
 void AtticaProvider::becomeFan(const EntryInternal& entry)
 {
-    Q_D(AtticaProvider);
-
-    PostJob * job = d->m_provider.becomeFan(entry.uniqueId());
+    PostJob * job = m_provider.becomeFan(entry.uniqueId());
     connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(becomeFanFinished(Attica::BaseJob*)));
     connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     job->start();
@@ -443,7 +375,6 @@ bool AtticaProvider::jobSuccess(Attica::BaseJob* job) const
 
 EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& content)
 {
-    Q_D(AtticaProvider);
     EntryInternal entry;
 
     entry.setProviderId(id());
@@ -452,9 +383,9 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setVersion(content.version());
     entry.setReleaseDate(content.updated().date());
 
-    int index = d->cachedEntries.indexOf(entry);
+    int index = mCachedEntries.indexOf(entry);
     if (index >= 0) {
-        EntryInternal cacheEntry = d->cachedEntries.at(index);
+        EntryInternal cacheEntry = mCachedEntries.at(index);
         // check if updateable
         if ((cacheEntry.status() == Entry::Installed) &&
             ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
@@ -464,7 +395,7 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
         }
         entry = cacheEntry;
     } else {
-        d->cachedEntries.append(entry);
+        mCachedEntries.append(entry);
     }
 
     entry.setName(content.name());

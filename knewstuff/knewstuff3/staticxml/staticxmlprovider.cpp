@@ -22,7 +22,6 @@
 #include "staticxmlprovider.h"
 
 #include "core/xmlloader.h"
-#include "core/provider_p.h"
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -30,72 +29,44 @@
 namespace KNS3
 {
 
-class StaticXmlProviderPrivate :public ProviderPrivate
-{
-public:
-    StaticXmlProviderPrivate()
-        :mInitialized(false)
-    {}
-
-    // map of download urls to their feed name
-    QMap<QString, KUrl> mDownloadUrls;
-    KUrl mUploadUrl;
-    KUrl mNoUploadUrl;
-
-    // cache of all entries known from this provider so far, mapped by their id
-    EntryInternal::List cachedEntries;
-    QMap<Provider::SortMode, XmlLoader*> mFeedLoaders;
-    Provider::SearchRequest currentRequest;
-    QString mId;
-    bool mInitialized;
-};
-
 StaticXmlProvider::StaticXmlProvider(   )
-    : Provider(*new StaticXmlProviderPrivate)
+    : mInitialized(false)
 {
-}
-
-StaticXmlProvider::~StaticXmlProvider()
-{
-    // d_ptr is deleted in base class!
 }
 
 QString StaticXmlProvider::id() const
 {
-    Q_D(const StaticXmlProvider);
-    return d->mId;
-
+    return mId;
 }
 
 bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
 {
-    Q_D(StaticXmlProvider);
     kDebug(550) << "setting provider xml";
 
     if (xmldata.tagName() != "provider")
         return false;
 
-    d->mUploadUrl = xmldata.attribute("uploadurl");
-    d->mNoUploadUrl = xmldata.attribute("nouploadurl");
+    mUploadUrl = xmldata.attribute("uploadurl");
+    mNoUploadUrl = xmldata.attribute("nouploadurl");
 
     QString url = xmldata.attribute("downloadurl");
     if (!url.isEmpty()) {
-        d->mDownloadUrls.insert(QString(), KUrl(url));
+        mDownloadUrls.insert(QString(), KUrl(url));
     }
 
     url = xmldata.attribute("downloadurl-latest");
     if (!url.isEmpty()) {
-        d->mDownloadUrls.insert("latest", KUrl(url));
+        mDownloadUrls.insert("latest", KUrl(url));
     }
 
     url = xmldata.attribute("downloadurl-score");
     if (!url.isEmpty()) {
-        d->mDownloadUrls.insert("score", KUrl(url));
+        mDownloadUrls.insert("score", KUrl(url));
     }
 
     url = xmldata.attribute("downloadurl-downloads");
     if (!url.isEmpty()) {
-        d->mDownloadUrls.insert("downloads", KUrl(url));
+        mDownloadUrls.insert("downloads", KUrl(url));
     }
 
     // FIXME: what exactly is the following condition supposed to do?
@@ -104,36 +75,35 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
     KUrl iconurl(xmldata.attribute("icon"));
     if (!iconurl.isValid())
         iconurl.setPath(xmldata.attribute("icon"));
-    d->mIcon = iconurl;
+    mIcon = iconurl;
 
     QDomNode n;
     for (n = xmldata.firstChild(); !n.isNull(); n = n.nextSibling()) {
         QDomElement e = n.toElement();
         if (e.tagName() == "title") {
             //QString lang = e.attribute("lang");
-            d->mName = e.text().trimmed();
+            mName = e.text().trimmed();
             kDebug() << "add name for provider ("<< this << "): " << e.text();
         }
     }
 
     // Validation
-
-    if ((d->mNoUploadUrl.isValid()) && (d->mUploadUrl.isValid())) {
+    if ((mNoUploadUrl.isValid()) && (mUploadUrl.isValid())) {
         kWarning(550) << "StaticXmlProvider: both uploadurl and nouploadurl given";
         return false;
     }
 
-    if ((!d->mNoUploadUrl.isValid()) && (!d->mUploadUrl.isValid())) {
+    if ((!mNoUploadUrl.isValid()) && (!mUploadUrl.isValid())) {
         kWarning(550) << "StaticXmlProvider: neither uploadurl nor nouploadurl given";
         return false;
     }
 
-    d->mId = d->mDownloadUrls[QString()].url();
-    if (d->mId.isEmpty()) {
-        d->mId = d->mDownloadUrls[d->mDownloadUrls.keys().first()].url();
+    mId = mDownloadUrls[QString()].url();
+    if (mId.isEmpty()) {
+        mId = mDownloadUrls[mDownloadUrls.keys().first()].url();
     }
 
-    d->mInitialized = true;
+    mInitialized = true;
 
     emit providerInitialized(this);
     return true;
@@ -141,22 +111,18 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
 
 bool StaticXmlProvider::isInitialized() const
 {
-    Q_D(const StaticXmlProvider);
-    return d->mInitialized;
+    return mInitialized;
 }
 
 void StaticXmlProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEntries)
 {
-    Q_D(StaticXmlProvider);
     kDebug() << "Set cached entries " << cachedEntries.size();
-    d->cachedEntries.append(cachedEntries);
+    mCachedEntries.append(cachedEntries);
 }
 
 void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
 {
-    Q_D(StaticXmlProvider);
-
-    d->currentRequest = request;
+    mCurrentRequest = request;
 
     // static providers only have on page containing everything
     if (request.page > 0) {
@@ -165,7 +131,7 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
     }
 
     if (request.sortMode == Installed) {
-        kDebug() << "Installed entries: " << d->mId << installedEntries().size();
+        kDebug() << "Installed entries: " << mId << installedEntries().size();
         emit loadingFinished(request, installedEntries());
         return;
     }
@@ -178,7 +144,7 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
         connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
         
-        d->mFeedLoaders.insert(request.sortMode, loader);
+        mFeedLoaders.insert(request.sortMode, loader);
 
         loader->load(url);
     } else {
@@ -188,38 +154,36 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
 
 KUrl StaticXmlProvider::downloadUrl(SortMode mode) const
 {
-    Q_D(const StaticXmlProvider);
     KUrl url;
     switch (mode) {
         case Installed: // should just query the registry and not end up here
         case Rating:
-            url = d->mDownloadUrls.value("score");
+            url = mDownloadUrls.value("score");
             break;
         case Alphabetical:
-            url = d->mDownloadUrls.value(QString());
+            url = mDownloadUrls.value(QString());
             break;
         case Updates:
         case Newest:
-            url = d->mDownloadUrls.value("latest");
+            url = mDownloadUrls.value("latest");
             break;
         case Downloads:
-            url = d->mDownloadUrls.value("downloads");
+            url = mDownloadUrls.value("downloads");
             break;
     }
     if (url.isEmpty()) {
-        url = d->mDownloadUrls.value(QString());
+        url = mDownloadUrls.value(QString());
     }
     return url;
 }
 
 void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 {
-    Q_D(StaticXmlProvider);
     XmlLoader * loader = qobject_cast<KNS3::XmlLoader*>(sender());
     if (!loader)
     {
         kWarning() << "Loader not found!";
-        emit loadingFailed(d->currentRequest);
+        emit loadingFailed(mCurrentRequest);
         return;
     }
 
@@ -227,8 +191,8 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     QStringList::ConstIterator it;
     SortMode mode;
 
-    foreach(const SortMode &sortMode, d->mFeedLoaders.keys()){
-        if (loader == d->mFeedLoaders.value(sortMode))
+    foreach(const SortMode &sortMode, mFeedLoaders.keys()){
+        if (loader == mFeedLoaders.value(sortMode))
         {
             mode = sortMode;
             break;
@@ -244,12 +208,12 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
         EntryInternal entry;
         entry.setEntryXML(n.toElement());
-        entry.setProviderId(d->mId);
+        entry.setProviderId(mId);
 
-        int index = d->cachedEntries.indexOf(entry);
+        int index = mCachedEntries.indexOf(entry);
         if (index >= 0) {
 
-            EntryInternal cacheEntry = d->cachedEntries.takeAt(index);
+            EntryInternal cacheEntry = mCachedEntries.takeAt(index);
             // check if updateable
             if ((cacheEntry.status() == Entry::Installed) &&
                  ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
@@ -263,35 +227,32 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
             }
             cacheEntry = entry;
         }
-        d->cachedEntries.append(entry);
+        mCachedEntries.append(entry);
 
         if (searchIncludesEntry(entry)) {
                 entries << entry;
         }
     }
-    emit loadingFinished(d->currentRequest, entries);
+    emit loadingFinished(mCurrentRequest, entries);
 }
 
 void StaticXmlProvider::slotFeedFailed()
 {
-    Q_D(const StaticXmlProvider);
-    emit loadingFailed(d->currentRequest);
+    emit loadingFailed(mCurrentRequest);
 }
 
 bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) const
 {
-    Q_D(const StaticXmlProvider);
-
-    if (d->currentRequest.sortMode == Updates) {
+    if (mCurrentRequest.sortMode == Updates) {
         if (entry.status() != Entry::Updateable) {
             return false;
         }
     }
     
-    if (d->currentRequest.searchTerm.isEmpty()) {
+    if (mCurrentRequest.searchTerm.isEmpty()) {
         return true;
     }
-    QString search = d->currentRequest.searchTerm;
+    QString search = mCurrentRequest.searchTerm;
     if (entry.name().contains(search, Qt::CaseInsensitive) ||
         entry.summary().contains(search, Qt::CaseInsensitive) ||
         entry.author().name().contains(search, Qt::CaseInsensitive)
@@ -310,9 +271,8 @@ void StaticXmlProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int)
 
 EntryInternal::List StaticXmlProvider::installedEntries() const
 {
-    Q_D(const StaticXmlProvider);
     EntryInternal::List entries;
-    foreach (const EntryInternal& entry, d->cachedEntries) {
+    foreach (const EntryInternal& entry, mCachedEntries) {
         if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
             entries.append(entry);
         }

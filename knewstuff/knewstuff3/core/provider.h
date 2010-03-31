@@ -31,8 +31,6 @@ class KJob;
 
 namespace KNS3
 {
-    class ProviderPrivate;
-
     /**
      * @short KNewStuff Base Provider class.
      *
@@ -81,8 +79,6 @@ namespace KNS3
          * Constructor.
          */
         Provider();
-        Provider(const Provider &other);
-
 
         /**
          * Destructor.
@@ -149,12 +145,12 @@ namespace KNS3
         void signalError(const QString&) const;
 
     protected:
-        ProviderPrivate * const d_ptr;
-        Provider(ProviderPrivate &dd);
+        QString mName;
+        KUrl mIcon;
+        
     private:
-        Q_DECLARE_PRIVATE(Provider)
+        Q_DISABLE_COPY(Provider)
     };
-
 }
 
 #endif
