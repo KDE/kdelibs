@@ -207,7 +207,7 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelectio
 
   noopTest("insert01");
   newInsertTest("insert02", indexFinder, 0, 0, 0);
-  noopTest("insert03");
+  newInsertTest("insert03", indexFinder, 0, 0, 0);
 }
 
 template<>
@@ -315,7 +315,7 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::te
 
   noopTest("insert01");
   newInsertTest("insert02", indexFinder, 0, 0, 0);
-  noopTest("insert03");
+  newInsertTest("insert03", indexFinder, 0, 0, 0);
 }
 
 template<>
