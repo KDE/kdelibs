@@ -60,6 +60,9 @@ public:
     // keep track of the current request
     Attica::BaseJob* entryJob;
     Provider::SearchRequest currentRequest;
+    
+    QSet<BaseJob*> m_updateJobs;
+    
     bool initialized;
 
     AtticaProviderPrivate()
@@ -199,6 +202,11 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
         }
         return;
     }
+    
+    if (request.sortMode == Updates) {
+        checkForUpdates();
+        return;
+    }
 
     Attica::Provider::SortMode sorting = atticaSortMode(request.sortMode);
     Attica::Category::List categoriesToSearch;
@@ -219,6 +227,19 @@ void AtticaProvider::loadEntries(const KNS3::Provider::SearchRequest& request)
     job->start();
 }
 
+void AtticaProvider::checkForUpdates()
+{
+    Q_D(AtticaProvider);
+    
+    foreach (const EntryInternal& e, d->cachedEntries) {
+        ItemJob<Content>* job = d->m_provider.requestContent(e.uniqueId());
+        connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(detailsLoaded(Attica::BaseJob*)));
+        d->m_updateJobs.insert(job);
+        job->start();
+        kDebug() << "Checking for update: " << e.name();
+    }
+}
+
 void AtticaProvider::loadEntryDetails(const KNS3::EntryInternal& entry)
 {
     Q_D(AtticaProvider);
@@ -229,11 +250,27 @@ void AtticaProvider::loadEntryDetails(const KNS3::EntryInternal& entry)
 
 void AtticaProvider::detailsLoaded(BaseJob* job)
 {
-    if (!jobSuccess(job)) return;
-    ItemJob<Content>* contentJob = static_cast<ItemJob<Content>*>(job);
-    Content content = contentJob->result();
-    EntryInternal entry = entryFromAtticaContent(content);
-    emit entryDetailsLoaded(entry);
+    Q_D(AtticaProvider);
+
+    
+    if (jobSuccess(job)) {
+        ItemJob<Content>* contentJob = static_cast<ItemJob<Content>*>(job);
+        Content content = contentJob->result();
+        EntryInternal entry = entryFromAtticaContent(content);
+        emit entryDetailsLoaded(entry);
+        kDebug() << "check update finished: " << entry.name();
+    }
+
+    if (d->m_updateJobs.remove(job) && d->m_updateJobs.isEmpty()) {
+        kDebug() << "check update finished.";
+        QList<EntryInternal> updatable;
+        foreach(const EntryInternal& entry, d->cachedEntries) {
+            if (entry.status() == Entry::Updateable) {
+                updatable.append(entry);
+            }
+        }
+        emit loadingFinished(d->currentRequest, updatable);
+    }    
 }
 
 void AtticaProvider::categoryContentsLoaded(BaseJob* job)
@@ -345,7 +382,7 @@ EntryInternal::List AtticaProvider::installedEntries() const
     Q_D(const AtticaProvider);
     EntryInternal::List entries;
     foreach (const EntryInternal& entry, d->cachedEntries) {
-        if (entry.status() == EntryInternal::Installed || entry.status() == EntryInternal::Updateable) {
+        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
             entries.append(entry);
         }
     }
@@ -389,7 +426,7 @@ bool AtticaProvider::jobSuccess(Attica::BaseJob* job) const
     if (job->metadata().error() == Attica::Metadata::NoError) {
         return true;
     }
-    kDebug() << "job error: " << job->metadata().error() << " status code: " << job->metadata().statusCode();
+    kDebug() << "job error: " << job->metadata().error() << " status code: " << job->metadata().statusCode() << job->metadata().message();
 
     if (job->metadata().error() == Attica::Metadata::NetworkError) {
         emit signalError(i18n("Network error. (%1)", job->metadata().statusCode()));
@@ -411,7 +448,7 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
 
     entry.setProviderId(id());
     entry.setUniqueId(content.id());
-    entry.setStatus(KNS3::EntryInternal::Downloadable);
+    entry.setStatus(KNS3::Entry::Downloadable);
     entry.setVersion(content.version());
     entry.setReleaseDate(content.updated().date());
 
@@ -419,9 +456,9 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     if (index >= 0) {
         EntryInternal cacheEntry = d->cachedEntries.at(index);
         // check if updateable
-        if ((cacheEntry.status() == EntryInternal::Installed) &&
+        if ((cacheEntry.status() == Entry::Installed) &&
             ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
-            cacheEntry.setStatus(EntryInternal::Updateable);
+            cacheEntry.setStatus(Entry::Updateable);
             cacheEntry.setUpdateVersion(entry.version());
             cacheEntry.setUpdateReleaseDate(entry.releaseDate());
         }

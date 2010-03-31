@@ -60,7 +60,9 @@ public:
         Downloadable,
         Installed,
         Updateable,
-        Deleted
+        Deleted,
+        Installing,
+        Updating
     };
 
     ~Entry();

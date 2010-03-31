@@ -178,34 +178,34 @@ void EntryDetailsDialog::updateButtons()
     ui.updateButton->setVisible(false);
 
     switch (m_entry.status()) {
-        case EntryInternal::Installed:
+        case Entry::Installed:
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(true);
             break;
-        case EntryInternal::Updateable:
+        case Entry::Updateable:
             ui.updateButton->setVisible(true);
             ui.updateButton->setEnabled(true);
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(true);
             break;
 
-        case EntryInternal::Invalid:
-        case EntryInternal::Downloadable:
+        case Entry::Invalid:
+        case Entry::Downloadable:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(true);
             break;
 
-        case EntryInternal::Installing:
+        case Entry::Installing:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(false);
             break;
-        case EntryInternal::Updating:
+        case Entry::Updating:
             ui.updateButton->setVisible(true);
             ui.updateButton->setEnabled(false);
             ui.uninstallButton->setVisible(true);
             ui.uninstallButton->setEnabled(false);
             break;
-        case EntryInternal::Deleted:
+        case Entry::Deleted:
             ui.installButton->setVisible(true);
             ui.installButton->setEnabled(true);
             break;

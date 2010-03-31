@@ -58,6 +58,7 @@ namespace KNS3
 
         virtual bool isInitialized() const;
         virtual void setCachedEntries(const KNS3::EntryInternal::List& cachedEntries);
+
         virtual void loadEntries(const KNS3::Provider::SearchRequest& request);
         virtual void loadEntryDetails(const KNS3::EntryInternal& entry);
         virtual void loadPayloadLink(const EntryInternal& entry, int linkId);
@@ -83,6 +84,7 @@ namespace KNS3
         AtticaProvider(AtticaProviderPrivate &dd);
 
     private:
+        void checkForUpdates();
         EntryInternal::List installedEntries() const;
         bool jobSuccess(Attica::BaseJob* job) const;
 

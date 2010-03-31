@@ -267,9 +267,13 @@ void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS
     m_currentPage = qMax<int>(request.page, m_currentPage);
     kDebug() << "loaded page " << request.page << "current page" << m_currentPage;
 
-    m_cache->insertRequest(request, entries);
-    emit signalEntriesLoaded(entries);
-
+    if (request.sortMode == Provider::Updates) {
+        emit signalUpdateableEntriesLoaded(entries);
+    } else {
+        m_cache->insertRequest(request, entries);
+        emit signalEntriesLoaded(entries);
+    }
+    
     --m_numDataJobs;
     updateStatus();
 }
@@ -361,21 +365,12 @@ void Engine::requestMoreData()
     }
 }
 
-bool Engine::entryChanged(const EntryInternal& oldentry, const EntryInternal& entry)
-{
-    // possibly return true if the status changed? depends on when this is called
-    if ((!oldentry.isValid()) || (entry.releaseDate() > oldentry.releaseDate())
-            || (entry.version() > oldentry.version()))
-        return true;
-    return false;
-}
-
 void Engine::install(KNS3::EntryInternal entry, int linkId)
 {
-    if (entry.status() == EntryInternal::Updateable) {
-        entry.setStatus(EntryInternal::Updating);
+    if (entry.status() == Entry::Updateable) {
+        entry.setStatus(Entry::Updating);
     } else  {
-        entry.setStatus(EntryInternal::Installing);
+        entry.setStatus(Entry::Installing);
     }
     emit signalEntryChanged(entry);
 
@@ -415,7 +410,7 @@ void Engine::downloadLinkLoaded(const KNS3::EntryInternal& entry)
 void Engine::uninstall(KNS3::EntryInternal entry)
 {
     // FIXME: change the status?
-    entry.setStatus(EntryInternal::Installing);
+    entry.setStatus(Entry::Installing);
     emit signalEntryChanged(entry);
     m_installation->uninstall(entry);
 }
@@ -493,6 +488,14 @@ void Engine::updateStatus()
         emit signalBusy(i18n("Installing"));
     } else {
         emit signalIdle(QString());
+    }
+}
+
+void Engine::checkForUpdates()
+{
+    foreach(QSharedPointer<Provider> p, m_providers) {
+        Provider::SearchRequest request(KNS3::Provider::Updates);
+        p->loadEntries(request);
     }
 }
 

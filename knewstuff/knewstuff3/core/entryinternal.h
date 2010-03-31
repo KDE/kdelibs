@@ -67,25 +67,6 @@ public:
         Registry
     };
 
-    /**
-    * Status of the entry. An entry will be downloadable from the provider's
-    * site prior to the download. Once downloaded and installed, it will
-    * be either installed or updateable, implying an out-of-date
-    * installation. Finally, the entry can be deleted and hence show up as
-    * downloadable again.
-    * Entries not taking part in this cycle, for example those in upload,
-    * have an invalid status.
-    */
-    enum Status {
-        Invalid,
-        Downloadable,
-        Installed,
-        Updateable,
-        Deleted,
-        Installing,  // this item is being installed right now
-        Updating
-    };
-
     enum PreviewType {
         PreviewSmall1,
         PreviewSmall2,
@@ -404,20 +385,21 @@ public:
      *
      * @param status New status of the entry
      */
-    void setStatus(Status status);
+    void setStatus(Entry::Status status);
 
     /**
      * Retrieves the entry's status.
      *
      * @return Current status of the entry
      */
-    Status status() const;
+    Entry::Status status() const;
 
     //void setIdNumber(int number);
     //int idNumber() const;
 
     Entry toEntry() const;
-
+    
+    static KNS3::EntryInternal fromEntry(const KNS3::Entry& entry);
 private:
     class Private;
     QExplicitlySharedDataPointer<Private> d;

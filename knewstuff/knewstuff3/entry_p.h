@@ -19,27 +19,14 @@
 #define KNEWSTUFF3_KNEWSTUFFENTRY_P_H
 
 #include <QtCore/QStringList>
+#include "core/entryinternal.h"
 
 namespace KNS3 {
 
 class Entry::Private : public QSharedData
 {
     public:
-        Private()
-        : mStatus(Entry::Invalid)
-        {}
-
-        QString mId;
-        QString mProviderId;
-        QString mName;
-        QString mCategory;
-        QString mLicense;
-        QString mVersion;
-        QString mSummary;
-        QStringList mInstalledFiles;
-        QStringList mUnInstalledFiles;
-
-        Entry::Status mStatus;
+        EntryInternal e;
 };
 }
 

@@ -39,7 +39,7 @@ class EntryInternal::Private : public QSharedData
         , mRating(0)
         , mDownloadCount(0)
         , mNumberFans(0)
-        , mStatus(EntryInternal::Invalid)
+        , mStatus(Entry::Invalid)
         , mSource(EntryInternal::Online)
         {}
 
@@ -73,7 +73,7 @@ class EntryInternal::Private : public QSharedData
 
         QString mChecksum;
         QString mSignature;
-        EntryInternal::Status mStatus;
+        Entry::Status mStatus;
         EntryInternal::Source mSource;
 
         QString mPreviewUrl[6];
@@ -331,12 +331,12 @@ void EntryInternal::setSource(Source source)
     d->mSource = source;
 }
 
-EntryInternal::Status EntryInternal::status() const
+Entry::Status EntryInternal::status() const
 {
     return d->mStatus;
 }
 
-void EntryInternal::setStatus(Status status)
+void EntryInternal::setStatus(Entry::Status status)
 {
     d->mStatus = status;
 }
@@ -438,9 +438,9 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
             QString statusText = e.text();
             if (statusText == "installed") {
                 kDebug() << "Found an installed entry in registry";
-                d->mStatus = EntryInternal::Installed;
+                d->mStatus = Entry::Installed;
             } else if (statusText == "updateable") {
-                d->mStatus = EntryInternal::Updateable;
+                d->mStatus = Entry::Updateable;
             }
         }
     }
@@ -523,10 +523,10 @@ QDomElement KNS3::EntryInternal::entryXML() const
     e = addElement(doc, el, "previewBig", d->mPreviewUrl[PreviewBig1]);
     e = addElement(doc, el, "payload", d->mPayload);
 
-    if (d->mStatus == Installed) {
+    if (d->mStatus == Entry::Installed) {
         (void)addElement(doc, el, "status", "installed");
     }
-    if (d->mStatus == Updateable) {
+    if (d->mStatus == Entry::Updateable) {
         (void)addElement(doc, el, "status", "updateable");
     }
 
@@ -536,23 +536,13 @@ QDomElement KNS3::EntryInternal::entryXML() const
 Entry EntryInternal::toEntry() const
 {
     Entry e;
-    e.d->mId = d->mUniqueId;
-    e.d->mProviderId = d->mProviderId;
-    e.d->mName = d->mName;
-    e.d->mCategory = d->mCategory;
-    e.d->mLicense = d->mLicense;
-    e.d->mVersion = d->mVersion;
-    e.d->mSummary = d->mSummary;
-    e.d->mInstalledFiles = d->mInstalledFiles;
-    e.d->mUnInstalledFiles = d->mUnInstalledFiles;
-
-    if (d->mStatus == Installing || d->mStatus == Updating) {
-        e.d->mStatus = Entry::Invalid;
-    } else  {
-        e.d->mStatus = (Entry::Status) d->mStatus;
-    }
-
+    e.d->e = *this;
     return e;
+}
+
+KNS3::EntryInternal EntryInternal::fromEntry(const KNS3::Entry& entry)
+{
+    return entry.d->e;
 }
 
 QString KNS3::replaceBBCode(const QString& unformattedText)

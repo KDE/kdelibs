@@ -82,7 +82,7 @@ Entry::List DownloadWidget::installedEntries()
 {
     Entry::List entries;
     foreach (const EntryInternal &e, d->changedEntries) {
-        if (e.status() == EntryInternal::Installed) {
+        if (e.status() == Entry::Installed) {
             entries.append(e.toEntry());
         }
     }

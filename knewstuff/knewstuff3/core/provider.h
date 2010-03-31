@@ -56,7 +56,8 @@ namespace KNS3
             Alphabetical,
             Rating,
             Downloads,
-            Installed // only installed items
+            Installed, // only installed items
+            Updates // entries that can be updated
         };
 
         /**

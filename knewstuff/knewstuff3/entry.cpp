@@ -44,51 +44,50 @@ Entry::~Entry()
 
 QString Entry::id() const
 {
-    return d->mId;
+    return d->e.uniqueId();
 }
 
 QString Entry::providerId() const
 {
-    return d->mProviderId;
+    return d->e.providerId();
 }
 
 QString Entry::name() const
 {
-    return d->mName;
+    return d->e.name();
 }
 
 QString Entry::category() const
 {
-    return d->mCategory;
+    return d->e.category();
 }
 
 QString Entry::license() const
 {
-    return d->mLicense;
+    return d->e.license();
 }
-
 
 QString Entry::summary() const
 {
-    return d->mSummary;
+    return d->e.summary();
 }
 
 QString Entry::version() const
 {
-    return d->mVersion;
+    return d->e.version();
 }
 
 Entry::Status Entry::status() const
 {
-    return d->mStatus;
+    return static_cast<Entry::Status>(d->e.status());
 }
 
 QStringList KNS3::Entry::installedFiles() const
 {
-    return d->mInstalledFiles;
+    return d->e.installedFiles();
 }
 
 QStringList KNS3::Entry::uninstalledFiles() const
 {
-    return d->mUnInstalledFiles;
+    return d->e.uninstalledFiles();
 }

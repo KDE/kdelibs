@@ -147,7 +147,7 @@ void Cache::readKns2MetaFiles()
                 continue;
             }
 
-            e.setStatus(EntryInternal::Installed);
+            e.setStatus(Entry::Installed);
 
             cache.insert(e);
             QDomDocument tmp("yay");
@@ -196,7 +196,7 @@ void Cache::writeRegistry()
 
     foreach (const EntryInternal& entry, cache) {
         // Write the entry, unless the policy is CacheNever and the entry is not installed.
-        if (entry.status() == EntryInternal::Installed || entry.status() == EntryInternal::Updateable) {
+        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
             QDomElement exml = entry.entryXML();
             root.appendChild(exml);
         }

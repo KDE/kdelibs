@@ -205,7 +205,7 @@ void Installation::slotPayloadResult(KJob *job)
                         == KMessageBox::Yes) {
                         KToolInvocation::invokeBrowser(fcjob->srcUrl().url());
                         emit signalInstallationFailed(i18n("Downloaded file was a HTML file. Opened in browser."));
-                        entry.setStatus(EntryInternal::Invalid);
+                        entry.setStatus(Entry::Invalid);
                         emit signalEntryChanged(entry);
                         return;
                     }
@@ -270,10 +270,10 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
     QStringList installedFiles = installDownloadedFileAndUncompress(entry, downloadedFile, targetPath);
 
     if (installedFiles.isEmpty()) {
-        if (entry.status() == EntryInternal::Installing) {
-            entry.setStatus(EntryInternal::Downloadable);
-        } else if (entry.status() == EntryInternal::Updating) {
-            entry.setStatus(EntryInternal::Updateable);
+        if (entry.status() == Entry::Installing) {
+            entry.setStatus(Entry::Downloadable);
+        } else if (entry.status() == Entry::Updating) {
+            entry.setStatus(Entry::Updateable);
         }
         emit signalEntryChanged(entry);
         emit signalInstallationFailed(i18n("Could not install \"%1\": file not found.", entry.name()));
@@ -304,7 +304,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
     sec->checkValidity(QString());
 
     // update version and release date to the new ones
-    if (entry.status() == EntryInternal::Updating) {
+    if (entry.status() == Entry::Updating) {
         if (!entry.updateVersion().isEmpty()) {
             entry.setVersion(entry.updateVersion());
         }
@@ -313,7 +313,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
         }
     }
 
-    entry.setStatus(EntryInternal::Installed);
+    entry.setStatus(Entry::Installed);
     emit signalEntryChanged(entry);
     emit signalInstallationFinished();
 }
@@ -463,7 +463,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
             bool success = true;
-            bool update = (entry.status() == EntryInternal::Updateable);
+            bool update = (entry.status() == Entry::Updateable);
 
             if (QFile::exists(installpath)) {
                 if (!update) {
@@ -507,7 +507,7 @@ void Installation::runPostInstallationCommand(const QString& installPath)
 
 void Installation::uninstall(EntryInternal entry)
 {
-    entry.setStatus(EntryInternal::Deleted);
+    entry.setStatus(Entry::Deleted);
 
     if (!uninstallCommand.isEmpty()) {
         KProcess process;

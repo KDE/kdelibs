@@ -198,6 +198,7 @@ KUrl StaticXmlProvider::downloadUrl(SortMode mode) const
         case Alphabetical:
             url = d->mDownloadUrls.value(QString());
             break;
+        case Updates:
         case Newest:
             url = d->mDownloadUrls.value("latest");
             break;
@@ -250,9 +251,9 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 
             EntryInternal cacheEntry = d->cachedEntries.takeAt(index);
             // check if updateable
-            if ((cacheEntry.status() == EntryInternal::Installed) &&
+            if ((cacheEntry.status() == Entry::Installed) &&
                  ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
-                entry.setStatus(EntryInternal::Updateable);
+                entry.setStatus(Entry::Updateable);
                 entry.setUpdateVersion(entry.version());
                 entry.setVersion(cacheEntry.version());
                 entry.setUpdateReleaseDate(entry.releaseDate());
@@ -273,14 +274,20 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
 
 void StaticXmlProvider::slotFeedFailed()
 {
-	// TODO: get the sortmode, searchstring and page from the loader somehow so we can pass them on
-	//emit loadingFailed();
+    Q_D(const StaticXmlProvider);
+    emit loadingFailed(d->currentRequest);
 }
 
 bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) const
 {
     Q_D(const StaticXmlProvider);
 
+    if (d->currentRequest.sortMode == Updates) {
+        if (entry.status() != Entry::Updateable) {
+            return false;
+        }
+    }
+    
     if (d->currentRequest.searchTerm.isEmpty()) {
         return true;
     }
@@ -306,7 +313,7 @@ EntryInternal::List StaticXmlProvider::installedEntries() const
     Q_D(const StaticXmlProvider);
     EntryInternal::List entries;
     foreach (const EntryInternal& entry, d->cachedEntries) {
-        if (entry.status() == EntryInternal::Installed || entry.status() == EntryInternal::Updateable) {
+        if (entry.status() == Entry::Installed || entry.status() == Entry::Updateable) {
             entries.append(entry);
         }
     }

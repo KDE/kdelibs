@@ -100,10 +100,16 @@ public:
     void loadDetails(const KNS3::EntryInternal& entry);
 
     void setSortMode(Provider::SortMode mode);
+
+    /**
+      Set the categories that will be included in searches
+      */
     void setCategoriesFilter(const QStringList& categories);
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
     void requestMoreData();
+
+    void checkForUpdates();
 
     /**
      * Try to contact the author of the entry by email or showing their homepage.
@@ -126,6 +132,7 @@ Q_SIGNALS:
 
     void signalProvidersLoaded();
     void signalEntriesLoaded(const KNS3::EntryInternal::List& entries);
+    void signalUpdateableEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void signalEntryChanged(const KNS3::EntryInternal& entry);
     void signalEntryDetailsLoaded(const KNS3::EntryInternal& entry);
 
@@ -181,10 +188,6 @@ private:
       Add a provider and connect it to the right slots
      */
     void addProvider(QSharedPointer<KNS3::Provider> provider);
-
-    void loadRegistry();
-
-    bool entryChanged(const EntryInternal& oldentry, const EntryInternal& entry);
 
     void updateStatus();
 

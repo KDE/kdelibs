@@ -75,7 +75,7 @@ void ItemsViewBaseDelegate::slotInstallClicked()
             return;
         }
 
-        if (entry.status() == EntryInternal::Installed) {
+        if (entry.status() == Entry::Installed) {
             m_engine->uninstall(entry);
         } else {
             m_engine->install(entry);

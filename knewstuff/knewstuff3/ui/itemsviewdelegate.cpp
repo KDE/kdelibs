@@ -120,31 +120,31 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         KIcon icon;
 
         switch (entry.status()) {
-        case EntryInternal::Installed:
+        case Entry::Installed:
             text = i18n("Uninstall");
             icon = m_iconDelete;
             break;
-        case EntryInternal::Updateable:
+        case Entry::Updateable:
             text = i18n("Update");
             icon = m_iconUpdate;
             installable = true;
             break;
-        case EntryInternal::Installing:
+        case Entry::Installing:
             text = i18n("Installing");
             enabled = false;
             icon = m_iconUpdate;
             break;
-        case EntryInternal::Updating:
+        case Entry::Updating:
             text = i18n("Updating");
             enabled = false;
             icon = m_iconUpdate;
             break;
-        case EntryInternal::Downloadable:
+        case Entry::Downloadable:
             text = i18n("Install");
             icon = m_iconInstall;
             installable = true;
             break;
-        case EntryInternal::Deleted:
+        case Entry::Deleted:
             text = i18n("Install Again");
             icon = m_iconInstall;
             installable = true;
