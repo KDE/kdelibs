@@ -23,7 +23,6 @@
 
 #include "core/engine.h"
 
-
 namespace KNS3 {
 class DownloadManager::Private
 {
@@ -36,15 +35,24 @@ public:
         , engine(new Engine)
         , isInitialized(false)
         , checkForUpdates(false)
+        , doSearch(false)
+        , page(0)
+        , pageSize(100)
     {}
     ~Private() { delete engine; }
     
     bool isInitialized;
     bool checkForUpdates;
-
+    bool doSearch;
+    
+    int page;
+    int pageSize;
+    
+    void init(const QString& configFile);
     void _k_slotProvidersLoaded();
     void _k_slotUpdatesLoaded(const KNS3::EntryInternal::List& entries);
     void _k_slotEntryStatusChanged(const KNS3::EntryInternal& entry);
+    void _k_slotEntriesLoaded(const KNS3::EntryInternal::List& entries);
 };
 }
 
@@ -56,22 +64,23 @@ DownloadManager::DownloadManager(QObject* parent)
 {
     KComponentData component = KGlobal::activeComponent();
     QString name = component.componentName();
-    init(name + ".knsrc");
+    d->init(name + ".knsrc");
 }
 
 DownloadManager::DownloadManager(const QString& configFile, QObject * parent)
         : QObject(parent)
         , d(new Private(this))
 {
-    init(configFile);
+    d->init(configFile);
 }
 
-void DownloadManager::init(const QString& configFile)
+void DownloadManager::Private::init(const QString& configFile)
 {
-    connect(d->engine, SIGNAL(signalProvidersLoaded()), this, SLOT(_k_slotProvidersLoaded()));
-    connect(d->engine, SIGNAL(signalUpdateableEntriesLoaded(KNS3::EntryInternal::List)), this, SLOT(_k_slotUpdatesLoaded(KNS3::EntryInternal::List)));
-    connect(d->engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), this, SLOT(_k_slotEntryStatusChanged(KNS3::EntryInternal)));
-    d->engine->init(configFile);
+    q->connect(engine, SIGNAL(signalProvidersLoaded()), q, SLOT(_k_slotProvidersLoaded()));
+    q->connect(engine, SIGNAL(signalUpdateableEntriesLoaded(KNS3::EntryInternal::List)), q, SLOT(_k_slotEntriesLoaded(KNS3::EntryInternal::List)));
+    q->connect(engine, SIGNAL(signalEntriesLoaded(KNS3::EntryInternal::List)), q, SLOT(_k_slotEntriesLoaded(KNS3::EntryInternal::List)));
+    q->connect(engine, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), q, SLOT(_k_slotEntryStatusChanged(KNS3::EntryInternal)));
+    engine->init(configFile);
 }
 
 DownloadManager::~DownloadManager()
@@ -85,6 +94,8 @@ void DownloadManager::Private::_k_slotProvidersLoaded()
     isInitialized = true;
     if (checkForUpdates) {
         engine->checkForUpdates();
+    } else if (doSearch) {
+        engine->requestData(page, pageSize);
     }
 }
 
@@ -97,7 +108,7 @@ void DownloadManager::checkForUpdates()
     }
 }
 
-void DownloadManager::Private::_k_slotUpdatesLoaded(const KNS3::EntryInternal::List& entries)
+void DownloadManager::Private::_k_slotEntriesLoaded(const KNS3::EntryInternal::List& entries)
 {
     KNS3::Entry::List result;
     foreach (const KNS3::EntryInternal& entry, entries) {
@@ -117,6 +128,41 @@ void DownloadManager::installEntry(const KNS3::Entry& entry)
     if (entryInternal.isValid()) {
         d->engine->install(entryInternal);
     }
+}
+
+void DownloadManager::search(int page, int pageSize)
+{
+    d->page = page;
+    d->pageSize = pageSize;
+
+    if (d->isInitialized) {
+        d->engine->requestData(page, pageSize);
+    } else {
+        d->doSearch = true;
+    }
+}
+
+void DownloadManager::setSearchOrder(DownloadManager::SortOrder order)
+{
+    switch (order) {
+        case Newest:
+            d->engine->setSortMode(Provider::Newest);
+            break;
+        case Rating:
+            d->engine->setSortMode(Provider::Rating);
+            break;
+        case Alphabetical:
+            d->engine->setSortMode(Provider::Alphabetical);
+            break;
+        case Downloads:
+            d->engine->setSortMode(Provider::Downloads);
+            break;
+    }
+}
+
+void DownloadManager::setSearchTerm(const QString& searchTerm)
+{
+    d->engine->setSearchTerm(searchTerm);
 }
 
 

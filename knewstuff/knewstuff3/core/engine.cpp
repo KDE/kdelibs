@@ -355,7 +355,18 @@ void Engine::requestMoreData()
     }
 
     m_currentRequest.page++;
+    doRequest();
+}
 
+void Engine::requestData(int page, int pageSize)
+{
+    m_currentRequest.page = page;
+    m_currentRequest.pageSize = pageSize;
+    doRequest();
+}
+
+void Engine::doRequest()
+{
     foreach (const QSharedPointer<KNS3::Provider> &p, m_providers) {
         if (p->isInitialized()) {
             p->loadEntries(m_currentRequest);

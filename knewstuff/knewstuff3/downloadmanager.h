@@ -36,10 +36,16 @@ class KNEWSTUFF_EXPORT DownloadManager :public QObject
     Q_OBJECT
 
 public:
+    enum SortOrder {
+        Newest,
+        Alphabetical,
+        Rating,
+        Downloads
+    };
 
     /**
      * Create a DownloadManager
-     * It will try to find a appname.knsrc file with the configuration.
+     * It will try to find a appname.knsrc file (using KComponentData).
      * Appname is the name of your application as provided in the about data->
      *
      * @param parent the parent of the dialog
@@ -59,10 +65,10 @@ public:
      */
     ~DownloadManager();
 
-    /*
+    /**
       Search for a list of entries. searchResult will be emitted with the requested list.    
     */
-    //void search(const QStringList& categories = QStringList(), const QString& searchTerm = QString(), int page = 0, int pageSize = 100);
+    void search(int page = 0, int pageSize = 100);
     
     /**
       Check for available updates.
@@ -76,6 +82,21 @@ public:
       */
     void installEntry(const KNS3::Entry& entry);
 
+    /**
+      Sets the search term to filter the results on the server.
+      Note that this function does not trigger a search. Use search after setting this.
+      @param searchTerm
+      */
+    void setSearchTerm(const QString& searchTerm);
+    
+    /**
+      Set the sort order of the results. This depends on the server.
+      Note that this function does not trigger a search. Use search after setting this.
+      @see SortOrder
+      @param order
+      */
+    void setSearchOrder(SortOrder order);
+    
 Q_SIGNALS:
     /**
       Returns the search result.
@@ -92,11 +113,9 @@ Q_SIGNALS:
     void entryStatusChanged(const KNS3::Entry& entry);
 
 private:
-    void init(const QString& configFile);
-
     Q_PRIVATE_SLOT( d, void _k_slotProvidersLoaded() )
     Q_PRIVATE_SLOT( d, void _k_slotEntryStatusChanged(const KNS3::EntryInternal& entry) )
-    Q_PRIVATE_SLOT( d, void _k_slotUpdatesLoaded(const KNS3::EntryInternal::List& entries) )
+    Q_PRIVATE_SLOT( d, void _k_slotEntriesLoaded(const KNS3::EntryInternal::List& entries) )
     class Private;
     Private *const d;
     Q_DISABLE_COPY(DownloadManager)

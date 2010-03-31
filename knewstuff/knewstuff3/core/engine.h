@@ -108,6 +108,7 @@ public:
     void setSearchTerm(const QString& searchString);
     void reloadEntries();
     void requestMoreData();
+    void requestData(int page, int pageSize);
 
     void checkForUpdates();
 
@@ -190,6 +191,8 @@ private:
     void addProvider(QSharedPointer<KNS3::Provider> provider);
 
     void updateStatus();
+    
+    void doRequest();
 
     // If the provider is ready to be used
     bool m_initialized;
