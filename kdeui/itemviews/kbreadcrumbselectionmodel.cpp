@@ -26,7 +26,7 @@
 
 class KBreadcrumbSelectionModelPrivate
 {
-  Q_DECLARE_PUBLIC(KBreadcrumbSelectionModel);
+  Q_DECLARE_PUBLIC(KBreadcrumbSelectionModel)
   KBreadcrumbSelectionModel * const q_ptr;
 public:
   KBreadcrumbSelectionModelPrivate(KBreadcrumbSelectionModel *breadcrumbSelector, QItemSelectionModel *selectionModel, KBreadcrumbSelectionModel::Direction direction)
