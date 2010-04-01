@@ -23,6 +23,7 @@ set(knewstuff3_SRCS
     ui/entrydetailsdialog.cpp
     ui/imageloader.cpp
     ui/itemsmodel.cpp
+    ui/itemsview.cpp
     ui/itemsviewdelegate.cpp
     ui/itemsgridviewdelegate.cpp
     ui/itemsviewbasedelegate.cpp

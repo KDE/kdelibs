@@ -17,7 +17,10 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QListView" name="m_listView">
+      <widget class="KNS3::ItemsView" name="m_listView">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>2</horstretch>
@@ -85,6 +88,9 @@
        </item>
        <item row="9" column="1" colspan="3">
         <widget class="QRadioButton" name="ratingRadio">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="text">
           <string>Rating</string>
          </property>
@@ -314,6 +320,11 @@
    <extends>QFrame</extends>
    <header>ui/progressindicator.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>KNS3::ItemsView</class>
+   <extends>QListView</extends>
+   <header>ui/itemsview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
