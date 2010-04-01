@@ -50,6 +50,7 @@ void ImagePreviewWidget::mousePressEvent(QMouseEvent* event)
 void ImagePreviewWidget::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
+    m_scaledImage = QImage();
     repaint();
 }
 
@@ -63,13 +64,19 @@ void ImagePreviewWidget::paintEvent(QPaintEvent *event)
     int margin = painter.fontMetrics().height() / 2;
     //painter.drawImage(contentsRect(), m_image);
     
+    int width = contentsRect().width();
     int height = contentsRect().height();
-    QPoint point(contentsRect().left() + margin, contentsRect().top() + ((height - PreviewHeight) / 2));
+    
+    if (m_scaledImage.isNull()) {
+        m_scaledImage = m_image.scaled(width - 2*margin, height - 2*margin, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+    
+    QPoint point;
 
-    point.setX((PreviewWidth - m_image.width())/2 + 5);
-    point.setY(contentsRect().top() + ((height - m_image.height()) / 2));
-    painter.drawImage(point, m_image);
+    point.setX(contentsRect().left() + ((width - m_scaledImage.width()) / 2));
+    point.setY(contentsRect().top() + ((height - m_scaledImage.height()) / 2));
     
     QPoint framePoint(point.x() - 5, point.y() - 5);
-    painter.drawPixmap(framePoint, m_frameImage.scaled(m_image.width() + 10, m_image.height() + 10));
+    painter.drawPixmap(framePoint, m_frameImage.scaled(m_scaledImage.width() + 10, m_scaledImage.height() + 10));
+    painter.drawImage(point, m_scaledImage);
 }

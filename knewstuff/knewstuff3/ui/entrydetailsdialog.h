@@ -37,9 +37,6 @@ public:
     EntryDetailsDialog(Engine* engine, const EntryInternal& entry, QWidget * parent = 0);
     ~EntryDetailsDialog();
 
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-
 private Q_SLOTS:
     void slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
     void install();

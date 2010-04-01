@@ -70,9 +70,6 @@ void EntryDetailsDialog::init()
     setCaption(i18n("Get Hot New Stuff"));
     ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    // catch resize events
-    ui.previewBig->installEventFilter(this);
-    
     connect(ui.preview1, SIGNAL(clicked()), this, SLOT(preview1Selected()));
     connect(ui.preview2, SIGNAL(clicked()), this, SLOT(preview2Selected()));
     connect(ui.preview3, SIGNAL(clicked()), this, SLOT(preview3Selected()));
@@ -171,7 +168,7 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
     }
 
     if(m_entry.previewImage(EntryInternal::PreviewBig1).isNull() && !m_entry.previewUrl(EntryInternal::PreviewBig1).isEmpty()) {
-        ui.previewBig->setText(i18n("Loading preview..."));
+// TODO        ui.previewBig->setText(i18n("Loading preview..."));
     }
     updateButtons();
 }
@@ -256,7 +253,7 @@ void EntryDetailsDialog::slotEntryPreviewLoaded(const KNS3::EntryInternal& entry
     case EntryInternal::PreviewBig1:
         kDebug() << "preview big 1";
         m_currentPreview = entry.previewImage(EntryInternal::PreviewBig1);
-        ui.previewBig->setPixmap(QPixmap::fromImage(m_currentPreview.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
+        ui.previewBig->setImage(m_currentPreview);
         break;
     case EntryInternal::PreviewBig2:
         kDebug() << "preview big 2";
@@ -288,15 +285,7 @@ void EntryDetailsDialog::previewSelected(int current)
 {
     EntryInternal::PreviewType type = static_cast<EntryInternal::PreviewType>(EntryInternal::PreviewBig1 + current);
     m_currentPreview = m_entry.previewImage(type);
-    ui.previewBig->setPixmap(QPixmap::fromImage(m_currentPreview.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
-}
-
-bool EntryDetailsDialog::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::Resize) {
-        ui.previewBig->setPixmap(QPixmap::fromImage(m_currentPreview.scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
-    }
-    return KDialog::eventFilter(obj, event);
+    ui.previewBig->setImage(m_currentPreview);
 }
 
 void EntryDetailsDialog::voteGood()
