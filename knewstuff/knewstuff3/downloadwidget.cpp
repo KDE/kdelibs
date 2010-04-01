@@ -235,7 +235,9 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     ui.m_listView->setModel(model);
 
     ui.iconViewButton->setIcon(KIcon("view-list-icons"));
+    ui.iconViewButton->setToolTip(i18n("Icons view mode"));
     ui.listViewButton->setIcon(KIcon("view-list-details"));
+    ui.listViewButton->setToolTip(i18n("Details view mode"));
 
     q->connect(ui.listViewButton, SIGNAL(clicked()), q, SLOT(slotListViewListMode()));
     q->connect(ui.iconViewButton, SIGNAL(clicked()), q, SLOT(slotListViewIconMode()));
