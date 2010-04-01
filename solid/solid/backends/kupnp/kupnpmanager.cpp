@@ -82,7 +82,9 @@ QSet<Solid::DeviceInterface::Type> KUPnPManager::supportedInterfaces() const
 QStringList KUPnPManager::allDevices()
 {
     QStringList result;
+
     result << mUdiPrefix; // group parent
+
     const QList<UPnP::Device> devices = mDeviceBrowser->devices();
     foreach( const UPnP::Device& device, devices )
         result << udiFromUdn( device.udn() );
@@ -94,17 +96,13 @@ QStringList KUPnPManager::allDevices()
 QStringList KUPnPManager::devicesFromQuery( const QString& parentUdi,
                                             Solid::DeviceInterface::Type type)
 {
-    QStringList result;
-    if (!parentUdi.isEmpty())
-    {
-        result = findDeviceByParent(parentUdi,type);
-    } else if (type!=Solid::DeviceInterface::Unknown) {
-        return findDeviceByDeviceInterface(type);
-    } else {
-        return allDevices();
-    }
-
-    return result;
+    return
+        (!parentUdi.isEmpty()) ?
+            findDeviceByParent(parentUdi,type) :
+        (type!=Solid::DeviceInterface::Unknown) ?
+            findDeviceByDeviceInterface(type) :
+        /* else */
+            allDevices();
 }
 
 QObject* KUPnPManager::createDevice(const QString &udi)
