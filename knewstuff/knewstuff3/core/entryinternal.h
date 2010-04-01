@@ -317,6 +317,9 @@ public:
     QList<DownloadLinkInformation> downloadLinkInformationList() const;
     void appendDownloadLinkInformation(const DownloadLinkInformation& info);
 
+    QString donationLink() const;
+    void setDonationLink(const QString& link);
+    
     /**
       The id of the provider this entry belongs to
       */

@@ -403,6 +403,7 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setRating(content.rating());
     entry.setDownloadCount(content.downloads());
     entry.setNumberFans(content.attribute("fans").toInt());
+    entry.setDonationLink(content.attribute("donationpage"));
 
     entry.setPreviewUrl(content.smallPreviewPicture("1"), EntryInternal::PreviewSmall1);
     entry.setPreviewUrl(content.smallPreviewPicture("2"), EntryInternal::PreviewSmall2);

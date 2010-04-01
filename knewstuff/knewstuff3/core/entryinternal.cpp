@@ -70,6 +70,7 @@ class EntryInternal::Private : public QSharedData
         QStringList mInstalledFiles;
         QString mProviderId;
         QStringList mUnInstalledFiles;
+        QString mDonationLink;
 
         QString mChecksum;
         QString mSignature;
@@ -305,6 +306,16 @@ int EntryInternal::numberFans() const
 void EntryInternal::setNumberFans(int fans)
 {
     d->mNumberFans = fans;
+}
+
+QString EntryInternal::donationLink() const
+{
+    return d->mDonationLink;
+}
+
+void EntryInternal::setDonationLink(const QString& link)
+{
+    d->mDonationLink = link;
 }
 
 /*

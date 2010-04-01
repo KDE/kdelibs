@@ -136,9 +136,15 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
     }
     description += "</body></html>";
     ui.descriptionLabel->setText(description);
-    ui.homepageLabel->setText("<a href=\"" + m_entry.homepage().url() + "\">" +
-                              i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage...") + "</a>");
+    QString homepageText("<a href=\"" + m_entry.homepage().url() + "\">" +
+                              i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage") + "</a>");
 
+    if (!m_entry.donationLink().isEmpty()) {
+        homepageText += " <a href=\"" + m_entry.donationLink() + "\">" + i18nc("A link to make a donation for a Get Hot New Stuff item (opens a web browser)", "Make a donation") + "</a>";
+    }
+    ui.homepageLabel->setText(homepageText);
+    ui.homepageLabel->setToolTip(i18nc("Tooltip for a link in a dialog", "Opens in a browser window"));
+    
     ui.ratingWidget->setRating((m_entry.rating()-20)/6);
 
     bool hideSmallPreviews = m_entry.previewUrl(EntryInternal::PreviewSmall2).isEmpty()
