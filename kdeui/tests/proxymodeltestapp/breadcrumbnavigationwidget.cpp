@@ -167,11 +167,36 @@ QVariant KNavigatingProxyModel::data(const QModelIndex& index, int role) const
 
 
 KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel* selectionModel, QAbstractItemModel* model, QObject *parent)
-  : QItemSelectionModel(model, parent), m_selectionModel(selectionModel)
+  : QItemSelectionModel(model, parent), m_selectionModel(selectionModel), m_direction(Forward)
 {
   Q_ASSERT(model == selectionModel->model());
   connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
           SLOT(navigationSelectionChanged(const QItemSelection&,const QItemSelection&)));
+}
+
+KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel* selectionModel, QAbstractItemModel* model, Direction direction, QObject *parent)
+  : QItemSelectionModel(model, parent), m_selectionModel(selectionModel), m_direction(direction)
+{
+  Q_ASSERT(model == selectionModel->model());
+  if (m_direction == Forward)
+    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+            SLOT(navigationSelectionChanged(const QItemSelection&,const QItemSelection&)));
+}
+
+void KForwardingItemSelectionModel::select(const QModelIndex& index, QItemSelectionModel::SelectionFlags command)
+{
+  if (m_direction == Reverse)
+    m_selectionModel->select(index, command);
+  else
+    QItemSelectionModel::select(index, command);
+}
+
+void KForwardingItemSelectionModel::select(const QItemSelection& selection, QItemSelectionModel::SelectionFlags command)
+{
+  if (m_direction == Reverse)
+    m_selectionModel->select(selection, command);
+  else
+    QItemSelectionModel::select(selection, command);
 }
 
 void KForwardingItemSelectionModel::navigationSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
@@ -233,11 +258,16 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
   breadcrumbNavigationModel->setFilterBehavior( KSelectionProxyModel::ExactSelection );
 
   QListView *breadcrumbView = new QListView(vSplitter);
+//   SON(breadcrumbNavigationModel);
   breadcrumbView->setModel(breadcrumbNavigationModel);
 
   // This shouldn't operate on rootSelectionModel. It should operate on oneway instead?
   KProxyItemSelectionModel *breadcrumbViewSelectionModel = new KProxyItemSelectionModel(breadcrumbNavigationModel, rootSelectionModel, this);
-  breadcrumbView->setSelectionModel(breadcrumbViewSelectionModel);
+
+  KForwardingItemSelectionModel *oneway2 = new KForwardingItemSelectionModel(breadcrumbViewSelectionModel, breadcrumbNavigationModel, KForwardingItemSelectionModel::Reverse);
+  SON(oneway2);
+
+  breadcrumbView->setSelectionModel(oneway2);
   SON(breadcrumbViewSelectionModel);
 
   KSelectionProxyModel *currentItemSelectionModel = new KSelectionProxyModel(rootSelectionModel, this);
