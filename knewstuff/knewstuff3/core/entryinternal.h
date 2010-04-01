@@ -310,8 +310,13 @@ public:
      */
     int downloadCount() const;
 
-    void setNumberFans(int fans);
     int numberFans() const;
+    void setNumberFans(int fans);
+    
+    int numberKnowledgebaseEntries() const;
+    void setNumberKnowledgebaseEntries(int num);
+    QString knowledgebaseLink() const;
+    void setKnowledgebaseLink(const QString& link);
 
     int downloadLinkCount() const;
     QList<DownloadLinkInformation> downloadLinkInformationList() const;

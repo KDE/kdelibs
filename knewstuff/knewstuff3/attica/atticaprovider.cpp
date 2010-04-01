@@ -404,7 +404,9 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setDownloadCount(content.downloads());
     entry.setNumberFans(content.attribute("fans").toInt());
     entry.setDonationLink(content.attribute("donationpage"));
-
+    entry.setKnowledgebaseLink(content.attribute("knowledgebasepage"));
+    entry.setNumberKnowledgebaseEntries(content.attribute("knowledgebaseentries").toInt());
+    
     entry.setPreviewUrl(content.smallPreviewPicture("1"), EntryInternal::PreviewSmall1);
     entry.setPreviewUrl(content.smallPreviewPicture("2"), EntryInternal::PreviewSmall2);
     entry.setPreviewUrl(content.smallPreviewPicture("3"), EntryInternal::PreviewSmall3);

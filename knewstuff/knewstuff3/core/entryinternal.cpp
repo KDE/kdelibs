@@ -39,6 +39,7 @@ class EntryInternal::Private : public QSharedData
         , mRating(0)
         , mDownloadCount(0)
         , mNumberFans(0)
+        , mNumberKnowledgebaseEntries(0)
         , mStatus(Entry::Invalid)
         , mSource(EntryInternal::Online)
         {}
@@ -64,6 +65,8 @@ class EntryInternal::Private : public QSharedData
         int mRating;
         int mDownloadCount;
         int mNumberFans;
+        int mNumberKnowledgebaseEntries;
+        QString mKnowledgebaseLink;
         QString mSummary;
         QString mChangelog;
         QString mPayload;
@@ -317,6 +320,25 @@ void EntryInternal::setDonationLink(const QString& link)
 {
     d->mDonationLink = link;
 }
+
+int EntryInternal::numberKnowledgebaseEntries() const
+{
+    return d->mNumberKnowledgebaseEntries;
+}
+void EntryInternal::setNumberKnowledgebaseEntries(int num)
+{
+    d->mNumberKnowledgebaseEntries = num;
+}
+
+QString EntryInternal::knowledgebaseLink() const
+{
+    return d->mKnowledgebaseLink;
+}
+void EntryInternal::setKnowledgebaseLink(const QString& link)
+{
+    d->mKnowledgebaseLink = link;
+}
+
 
 /*
 QString EntryInternal::checksum() const

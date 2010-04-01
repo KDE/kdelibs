@@ -137,10 +137,14 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
     description += "</body></html>";
     ui.descriptionLabel->setText(description);
     QString homepageText("<a href=\"" + m_entry.homepage().url() + "\">" +
-                              i18nc("A link to the description of this Get Hot New Stuff item", "Visit homepage") + "</a>");
+                              i18nc("A link to the description of this Get Hot New Stuff item", "Homepage") + "</a>");
 
     if (!m_entry.donationLink().isEmpty()) {
-        homepageText += " <a href=\"" + m_entry.donationLink() + "\">" + i18nc("A link to make a donation for a Get Hot New Stuff item (opens a web browser)", "Make a donation") + "</a>";
+        homepageText += "  <a href=\"" + m_entry.donationLink() + "\">" + i18nc("A link to make a donation for a Get Hot New Stuff item (opens a web browser)", "Make a donation") + "</a>";
+    }
+    if (!m_entry.knowledgebaseLink().isEmpty()) {
+        homepageText += "  <a href=\"" + m_entry.knowledgebaseLink() + "\">" 
+            + i18ncp("A link to the knowledgebase (like a forum) (opens a web browser)", "Knowledgebase (no entries)", "Knowledgebase (%1 entries)", m_entry.numberKnowledgebaseEntries()) + "</a>";
     }
     ui.homepageLabel->setText(homepageText);
     ui.homepageLabel->setToolTip(i18nc("Tooltip for a link in a dialog", "Opens in a browser window"));
