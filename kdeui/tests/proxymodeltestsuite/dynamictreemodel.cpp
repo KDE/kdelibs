@@ -910,4 +910,38 @@ void ModelMoveLayoutChangeCommand::emitPostSignal()
 
 }
 
+ModelResetCommand::ModelResetCommand(DynamicTreeModel* model, QObject* parent)
+  : ModelChangeCommand(model, parent)
+{
+
+}
+
+ModelResetCommand::~ModelResetCommand()
+{
+
+}
+
+void ModelResetCommand::setInitialTree(const QString& treeString)
+{
+  m_treeString = treeString;
+}
+
+void ModelResetCommand::doCommand()
+{
+  m_model->beginResetModel();
+  bool blocked = m_model->blockSignals(true);
+  m_model->clear();
+  if (!m_treeString.isEmpty())
+  {
+    ModelInsertCommand *ins = new ModelInsertCommand(m_model);
+    ins->setStartRow(0);
+    ins->interpret(m_treeString);
+    ins->doCommand();
+  }
+  m_model->blockSignals(blocked);
+  m_model->endResetModel();
+}
+
+
+
 

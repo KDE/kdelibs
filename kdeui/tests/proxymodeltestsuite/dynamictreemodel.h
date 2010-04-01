@@ -94,6 +94,7 @@ private:
   friend class ModelDataChangeCommand;
   friend class ModelMoveCommand;
   friend class ModelMoveLayoutChangeCommand;
+  friend class ModelResetCommand;
 //   friend class ModelSortIndexCommand;
   friend class ModelSortIndexLayoutChangeCommand;
   friend class ModelInsertAndRemoveQueuedCommand;
@@ -313,6 +314,20 @@ private:
   QList<int> m_endOfMoveSourceAncestors;
   QList<int> m_endOfMoveDestAncestors;
 
+};
+
+class ModelResetCommand : public ModelChangeCommand
+{
+  Q_OBJECT
+public:
+  ModelResetCommand(DynamicTreeModel* model, QObject* parent = 0);
+  virtual ~ModelResetCommand();
+
+  void setInitialTree(const QString &treeString);
+
+  /* reimp */ void doCommand();
+private:
+  QString m_treeString;
 };
 
 
