@@ -77,8 +77,8 @@ private Q_SLOTS:
     FakeDevice *parseDeviceElement(const QDomElement &element);
 
 private:
-    virtual QStringList findDeviceStringMatch(const QString &key, const QString &value);
-    virtual QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
+    QStringList findDeviceStringMatch(const QString &key, const QString &value);
+    QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
 
     class Private;
     Private *d;
