@@ -53,11 +53,15 @@ private Q_SLOTS:
     // installed/updateable etc
     void entryStatusChanged(const KNS3::EntryInternal& entry);
     void updateButtons();
-    void previewSelected(int current);
-
+    
+    void preview1Selected();
+    void preview2Selected();
+    void preview3Selected();
+    
 private:
     void init();
-
+    void previewSelected(int current);
+    
     Ui::EntryDetailsDialog ui;
     Engine *m_engine;
     EntryInternal m_entry;

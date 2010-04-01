@@ -22,6 +22,7 @@ set(knewstuff3_SRCS
     staticxml/staticxmlprovider.cpp
     ui/entrydetailsdialog.cpp
     ui/imageloader.cpp
+    ui/imagepreviewwidget.cpp
     ui/itemsmodel.cpp
     ui/itemsview.cpp
     ui/itemsviewdelegate.cpp

@@ -72,12 +72,11 @@ void EntryDetailsDialog::init()
 
     // catch resize events
     ui.previewBig->installEventFilter(this);
-    m_previewItem1 = new QListWidgetItem(ui.previewSmall);
-    m_previewItem2 = new QListWidgetItem(ui.previewSmall);
-    m_previewItem3 = new QListWidgetItem(ui.previewSmall);
-    connect(ui.previewSmall, SIGNAL(currentRowChanged(int)),
-            this, SLOT(previewSelected(int)));
-
+    
+    connect(ui.preview1, SIGNAL(clicked()), this, SLOT(preview1Selected()));
+    connect(ui.preview2, SIGNAL(clicked()), this, SLOT(preview2Selected()));
+    connect(ui.preview3, SIGNAL(clicked()), this, SLOT(preview3Selected()));
+    
     ui.ratingWidget->setMaxRating(10);
     ui.ratingWidget->setHalfStepsEnabled(true);
     ui.ratingWidget->setEditable(false);
@@ -153,7 +152,10 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
 
     bool hideSmallPreviews = m_entry.previewUrl(EntryInternal::PreviewSmall2).isEmpty()
            && m_entry.previewUrl(EntryInternal::PreviewSmall3).isEmpty();
-    ui.previewSmall->setVisible(!hideSmallPreviews);
+           
+    ui.preview1->setVisible(!hideSmallPreviews);
+    ui.preview2->setVisible(!hideSmallPreviews);
+    ui.preview3->setVisible(!hideSmallPreviews);
 
     for (int type = EntryInternal::PreviewSmall1; type <= EntryInternal::PreviewBig3; ++type) {
         if (m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
@@ -240,14 +242,16 @@ void EntryDetailsDialog::slotEntryPreviewLoaded(const KNS3::EntryInternal& entry
 
     switch (type) {
     case EntryInternal::PreviewSmall1:
-        m_previewItem1->setData(Qt::DecorationRole, entry.previewImage(EntryInternal::PreviewSmall1));
-       // m_previewItem1->setSizeHint(QSize(100, 100));
+        kDebug() << "preview 1 loaded";
+        ui.preview1->setImage(entry.previewImage(EntryInternal::PreviewSmall1));
         break;
     case EntryInternal::PreviewSmall2:
-        m_previewItem2->setData(Qt::DecorationRole, entry.previewImage(EntryInternal::PreviewSmall2));
+        kDebug() << "preview 2 loaded";
+        ui.preview2->setImage(entry.previewImage(EntryInternal::PreviewSmall2));
         break;
     case EntryInternal::PreviewSmall3:
-        m_previewItem3->setData(Qt::DecorationRole, entry.previewImage(EntryInternal::PreviewSmall3));
+        kDebug() << "preview 3 loaded";
+        ui.preview3->setImage(entry.previewImage(EntryInternal::PreviewSmall3));
         break;
     case EntryInternal::PreviewBig1:
         kDebug() << "preview big 1";
@@ -263,6 +267,21 @@ void EntryDetailsDialog::slotEntryPreviewLoaded(const KNS3::EntryInternal& entry
         //ui.previewBig->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewBig3).scaled(ui.previewBig->size(), Qt::KeepAspectRatio)));
         break;
     }
+}
+
+void EntryDetailsDialog::preview1Selected()
+{
+    previewSelected(0);
+}
+
+void EntryDetailsDialog::preview2Selected()
+{
+    previewSelected(1);
+}
+
+void EntryDetailsDialog::preview3Selected()
+{
+    previewSelected(2);
 }
 
 void EntryDetailsDialog::previewSelected(int current)
