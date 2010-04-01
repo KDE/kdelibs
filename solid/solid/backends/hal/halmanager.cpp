@@ -194,7 +194,7 @@ QStringList HalManager::findDeviceStringMatch(const QString &key, const QString 
     return reply;
 }
 
-QStringList HalManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
+QStringList HalManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
     QStringList cap_list = DeviceInterface::toStringList(type);
     QStringList result;

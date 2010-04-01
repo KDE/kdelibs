@@ -159,7 +159,7 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
     return result;
 }
 
-QStringList KUPnPManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
+QStringList KUPnPManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
     QStringList result;
 

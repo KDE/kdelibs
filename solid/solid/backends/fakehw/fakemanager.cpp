@@ -174,7 +174,7 @@ QStringList FakeManager::findDeviceStringMatch(const QString &key, const QString
     return result;
 }
 
-QStringList FakeManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
+QStringList FakeManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
     QStringList result;
     FakeDevice *device;

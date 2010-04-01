@@ -69,7 +69,7 @@ private Q_SLOTS:
 
 private:
     QStringList findDeviceByParent(const QString& parentUdi, Solid::DeviceInterface::Type type);
-    QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
+    QStringList findDeviceByDeviceInterface(Solid::DeviceInterface::Type type);
     QString udiFromUdn( const QString& udn ) const;
     QString udnFromUdi( const QString& udi ) const;
 

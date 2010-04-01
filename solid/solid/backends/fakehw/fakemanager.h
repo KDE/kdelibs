@@ -78,7 +78,7 @@ private Q_SLOTS:
 
 private:
     QStringList findDeviceStringMatch(const QString &key, const QString &value);
-    QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
+    QStringList findDeviceByDeviceInterface(Solid::DeviceInterface::Type type);
 
     class Private;
     Private *d;
