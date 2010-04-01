@@ -306,6 +306,8 @@ void DownloadWidgetPrivate::setListViewMode(QListView::ViewMode mode)
     }
     ui.m_listView->setItemDelegate(delegate);
     delete oldDelegate;
+    
+    q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
 }
 
 void DownloadWidgetPrivate::slotProvidersLoaded()
