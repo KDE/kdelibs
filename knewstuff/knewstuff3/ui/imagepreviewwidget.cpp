@@ -38,6 +38,7 @@ ImagePreviewWidget::ImagePreviewWidget(QWidget *parent) :
 void ImagePreviewWidget::setImage(const QImage &preview)
 {
     m_image = preview;
+    m_scaledImage = QImage();
     repaint();
 }
 
