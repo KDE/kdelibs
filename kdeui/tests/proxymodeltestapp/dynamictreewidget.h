@@ -50,6 +50,7 @@ private slots:
 
   void removeSelected();
   void insertSelected();
+  void resetModel();
 
 private:
   void stringToModel(const QString &treeString);

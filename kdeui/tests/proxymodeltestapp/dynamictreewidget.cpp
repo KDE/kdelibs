@@ -220,6 +220,10 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
 
   connect(m_insertButton, SIGNAL(clicked(bool)), SLOT(insertSelected()));
 
+  QPushButton *m_resetButton = new QPushButton("Reset", tabWidget);
+
+  connect(m_resetButton, SIGNAL(clicked(bool)), SLOT(resetModel()));
+
   viewLayout->addWidget(m_treeView);
 
   viewLayout->addWidget(m_removeButton);
@@ -230,6 +234,7 @@ DynamicTreeWidget::DynamicTreeWidget(DynamicTreeModel *rootModel, QWidget* paren
   viewLayout->addWidget(m_insertSiblingsAbove);
   viewLayout->addWidget(m_insertSiblingsBelow);
   viewLayout->addWidget(m_insertButton);
+  viewLayout->addWidget(m_resetButton);
 
   tabWidget->addTab(editContainer, "Edit");
   tabWidget->addTab(viewContainer, "View");
@@ -360,6 +365,14 @@ void DynamicTreeWidget::insertSelected()
   }
   ins->interpret(m_insertPatternTextEdit->toPlainText());
   ins->doCommand();
+}
+
+void DynamicTreeWidget::resetModel()
+{
+  ModelResetCommand *resetCommand = new ModelResetCommand(m_dynamicTreeModel, this);
+
+  resetCommand->setInitialTree(m_insertPatternTextEdit->toPlainText().trimmed());
+  resetCommand->doCommand();
 }
 
 void DynamicTreeWidget::setTreePredefine(int index)
