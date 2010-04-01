@@ -257,7 +257,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
             kDebug(6100) << "name=" << name << " value=" << value;
             if (!name.isEmpty()) {
                 const QString name_lower = name.toLower ();
-                if (name == "__KHTML__PLUGINBASEURL") {
+                if (name == "__KHTML__PLUGINBASEURL" ||
+                    name == "BASEURL") {
                     baseurl = KUrl (KUrl (value), QString (".")).url ();
                 } else if (name == "__KHTML__CODEBASE")
                     khtml_codebase = value;
