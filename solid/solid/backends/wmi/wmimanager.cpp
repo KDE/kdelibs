@@ -154,7 +154,7 @@ QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString 
     return result;
 }
 
-QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
+QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
     qDebug() << type;
     QStringList result;
