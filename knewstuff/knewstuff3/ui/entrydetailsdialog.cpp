@@ -132,6 +132,10 @@ void EntryDetailsDialog::entryChanged(const KNS3::EntryInternal& entry)
     }
     description += "</body></html>";
     ui.descriptionLabel->setText(description);
+    if (summary.isEmpty() && changelog.isEmpty()) {
+        ui.descriptionScrollArea->setVisible(false);
+    }
+    
     QString homepageText("<a href=\"" + m_entry.homepage().url() + "\">" +
                               i18nc("A link to the description of this Get Hot New Stuff item", "Homepage") + "</a>");
 

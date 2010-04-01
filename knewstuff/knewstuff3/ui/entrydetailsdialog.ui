@@ -138,7 +138,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QScrollArea" name="scrollArea">
+        <widget class="QScrollArea" name="descriptionScrollArea">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
