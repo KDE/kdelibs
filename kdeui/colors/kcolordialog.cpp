@@ -44,7 +44,7 @@
 #include <QtCore/QFile>
 #include <QtGui/QHeaderView>
 #include <QtGui/QImage>
-#include <QtGui/QItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QPainter>
@@ -67,6 +67,7 @@
 #include <kseparator.h>
 #include <kstandarddirs.h>
 #include <kcolorcollection.h>
+#include <kcolorutils.h>
 
 #include "kcolormimedata.h"
 #include <config.h>
@@ -148,10 +149,55 @@ public:
     bool inMouse;
 };
 
+class KColorCellsItemDelegate: public QStyledItemDelegate
+{
+public:
+    KColorCellsItemDelegate(KColorCells *parent): QStyledItemDelegate(parent) {}
+    virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+    {
+        QStyleOptionViewItemV4 opt(option);
+        initStyleOption(&opt,index);
+
+        //Get the current cell color
+        QColor backgroundColor = index.data(Qt::BackgroundRole).value<QColor>();
+        if (backgroundColor.isValid()) {
+            //Paint the general background
+            painter->fillRect(opt.rect, backgroundColor);
+            //Paint the selection mark (circle)
+            if (opt.state & QStyle::State_Selected) {
+                //Use black or white, depending on the contrast
+                QColor color = QColor(0, 0, 0, 220);
+                if (KColorUtils::contrastRatio(color, backgroundColor) < 5) {
+                    color = QColor(255, 255, 255, 220);
+                }
+                //Draw the selection (radiobutton-like) circle
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
+                painter->setPen(QPen(color, 1.2, Qt::SolidLine));
+                painter->setBrush(QBrush());
+                painter->drawEllipse(opt.rect.adjusted(2,2,-2,-2));
+                painter->restore();
+            }
+        } else {
+            //Paint the "X" (missing) cross on empty background color
+            backgroundColor = opt.palette.color(QPalette::Window);
+            painter->fillRect(opt.rect, backgroundColor);
+            painter->save();
+            QColor crossColor = qGray(backgroundColor.rgb()) > 192 ? backgroundColor.darker(106) :
+                                                                     backgroundColor.lighter(106);
+            painter->setPen(QPen(crossColor, 1.5));
+            painter->drawLine(opt.rect.topLeft(), opt.rect.bottomRight());
+            painter->drawLine(opt.rect.topRight(), opt.rect.bottomLeft());
+            painter->restore();
+        }
+    }
+};
+
 KColorCells::KColorCells(QWidget *parent, int rows, int cols)
         : QTableWidget(parent), d(new KColorCellsPrivate(this))
 {
-    setItemDelegate(new QItemDelegate(this));
+    setItemDelegate(new KColorCellsItemDelegate(this));
 
     setFrameShape(QFrame::NoFrame);
     d->shade = true;
