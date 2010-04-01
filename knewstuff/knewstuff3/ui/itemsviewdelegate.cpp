@@ -30,7 +30,6 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
-#include <kpushbutton.h>
 
 #include "itemsmodel.h"
 #include "entrydetailsdialog.h"
@@ -73,7 +72,8 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
 
-    KPushButton* detailsButton = new KPushButton();
+    QToolButton* detailsButton = new QToolButton();
+    detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
     list << detailsButton;
     setBlockedEventTypes(detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
@@ -167,10 +167,9 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             }
             installButton->setMenu(installMenu);
         }
-
     }
 
-    KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
+    QToolButton* detailsButton = qobject_cast<QToolButton*>(widgets.at(DelegateDetailsButton));
     if (detailsButton) {
         detailsButton->setText(i18n("Details..."));
         detailsButton->setIcon(KIcon("documentinfo"));
