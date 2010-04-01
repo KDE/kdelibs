@@ -95,8 +95,8 @@ public:
     Forward,
     Reverse
   };
-  KForwardingItemSelectionModel(QItemSelectionModel *selectionModel, QAbstractItemModel* model, QObject *parent = 0);
-  KForwardingItemSelectionModel(QItemSelectionModel *selectionModel, QAbstractItemModel* model, Direction direction, QObject *parent = 0);
+  KForwardingItemSelectionModel(QAbstractItemModel* model, QItemSelectionModel *selectionModel, QObject *parent = 0);
+  KForwardingItemSelectionModel(QAbstractItemModel* model, QItemSelectionModel *selectionModel, Direction direction, QObject *parent = 0);
 
   virtual void select(const QModelIndex& index, SelectionFlags command);
   virtual void select(const QItemSelection& selection, SelectionFlags command);

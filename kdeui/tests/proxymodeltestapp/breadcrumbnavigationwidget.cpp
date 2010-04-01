@@ -166,7 +166,7 @@ QVariant KNavigatingProxyModel::data(const QModelIndex& index, int role) const
 }
 
 
-KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel* selectionModel, QAbstractItemModel* model, QObject *parent)
+KForwardingItemSelectionModel::KForwardingItemSelectionModel(QAbstractItemModel* model, QItemSelectionModel* selectionModel, QObject *parent)
   : QItemSelectionModel(model, parent), m_selectionModel(selectionModel), m_direction(Forward)
 {
   Q_ASSERT(model == selectionModel->model());
@@ -174,7 +174,7 @@ KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel
           SLOT(navigationSelectionChanged(const QItemSelection&,const QItemSelection&)));
 }
 
-KForwardingItemSelectionModel::KForwardingItemSelectionModel(QItemSelectionModel* selectionModel, QAbstractItemModel* model, Direction direction, QObject *parent)
+KForwardingItemSelectionModel::KForwardingItemSelectionModel(QAbstractItemModel* model, QItemSelectionModel* selectionModel, Direction direction, QObject *parent)
   : QItemSelectionModel(model, parent), m_selectionModel(selectionModel), m_direction(direction)
 {
   Q_ASSERT(model == selectionModel->model());
@@ -263,12 +263,12 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
 
   // This shouldn't operate on rootSelectionModel. It should operate on oneway instead?
   KProxyItemSelectionModel *breadcrumbViewSelectionModel = new KProxyItemSelectionModel(breadcrumbNavigationModel, rootSelectionModel, this);
+  SON(breadcrumbViewSelectionModel);
 
-  KForwardingItemSelectionModel *oneway2 = new KForwardingItemSelectionModel(breadcrumbViewSelectionModel, breadcrumbNavigationModel, KForwardingItemSelectionModel::Reverse);
+  KForwardingItemSelectionModel *oneway2 = new KForwardingItemSelectionModel(breadcrumbNavigationModel, breadcrumbViewSelectionModel, KForwardingItemSelectionModel::Reverse);
   SON(oneway2);
 
   breadcrumbView->setSelectionModel(oneway2);
-  SON(breadcrumbViewSelectionModel);
 
   KSelectionProxyModel *currentItemSelectionModel = new KSelectionProxyModel(rootSelectionModel, this);
   currentItemSelectionModel->setFilterBehavior(KSelectionProxyModel::ExactSelection);
@@ -281,7 +281,7 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
 
   // Need a one-way connection from rootSelectionModel to rootSelectionModel2
 
-  KForwardingItemSelectionModel *oneway = new KForwardingItemSelectionModel(rootSelectionModel, rootModel);
+  KForwardingItemSelectionModel *oneway = new KForwardingItemSelectionModel(rootModel, rootSelectionModel);
 
   KNavigatingProxyModel *navigatingProxyModel = new KNavigatingProxyModel(oneway, this);
   SON(navigatingProxyModel);
