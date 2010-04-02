@@ -198,8 +198,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         elementYPos += downloadLabel->height();
     }
     elementYPos += ItemMargin;
-    
-    const_cast<int&>(m_elementYPos) = elementYPos;
+    m_elementYPos = elementYPos;
 }
 
 void ItemsGridViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const

@@ -60,7 +60,7 @@ public:
         QToolButton *m_installButton;
         
         QModelIndex m_oldIndex;
-        int m_elementYPos;
+        mutable int m_elementYPos;
 };
 }
 
