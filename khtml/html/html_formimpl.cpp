@@ -1085,7 +1085,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	    // handle tabbing out, either from a single or repeated key event.
 	    if ( evt->id() == EventImpl::KEYPRESS_EVENT && evt->isKeyRelatedEvent() ) {
 	        QKeyEvent* const k = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
-	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_Backtab) ) {
+	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_Backtab) &&
+                        (k->modifiers() & Qt::ControlModifier) == 0 ) {
 		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
 		    if (widget)
 			{
