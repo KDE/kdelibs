@@ -124,8 +124,8 @@ static const int sLayoutAttemptDelay = 200;
 static const int sLayoutAttemptIncrement = 20;
 static const int sParsingLayoutsIncrement = 60;
 
-static const int sSmoothScrollTime = 140;
-static const int sSmoothScrollTick = 14;
+static const int sSmoothScrollTime = 128;
+static const int sSmoothScrollTick = 16;
 static const int sSmoothScrollMinStaticPixels = 320*200;
 
 static const int sMaxMissedDeadlines = 12;
@@ -225,7 +225,8 @@ public:
         scrollingFromWheel = QPoint(-1,-1);
 	borderX = 30;
 	borderY = 30;
-	dx = dy = ddx = ddy = rdx = rdy = dddx = dddy = 0;
+        steps = 0;
+	dx = dy = 0;
         paged = false;
 	clickX = -1;
 	clickY = -1;
@@ -321,9 +322,7 @@ public:
     {
         smoothScrollTimer.stop();
         dx = dy = 0;
-        ddx = ddy = 0;
-        rdx = rdy = 0;
-        dddx = dddy = 0;
+        steps = 0;
         updateContentsXY();
         smoothScrolling = false;
         shouldSmoothScroll = false;
@@ -377,7 +376,8 @@ public:
 
     int zoomLevel;
     int borderX, borderY;
-    int dx, dy, ddx, ddy, rdx, rdy, dddx, dddy;
+    int dx, dy;
+    int steps;
     KConfig *formCompletions;
 
     int clickX, clickY, clickCount;
@@ -4032,44 +4032,33 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
 void KHTMLView::setupSmoothScrolling(int dx, int dy)
 {
+    // old or minimum speed
+    int ddx = qMax(d->steps ? d->dx/d->steps : 0,3);
+    int ddy = qMax(d->steps ? d->dy/d->steps : 0,3);
+    
     // full scroll is remaining scroll plus new scroll
     d->dx = d->dx + dx;
     d->dy = d->dy + dy;
 
-    if (d->dx == 0 && d->dy == 0) return;
-
-    int steps = sSmoothScrollTime/sSmoothScrollTick;
-
-    // average step size (stored in 1/16 px/step)
-    d->ddx = (d->dx*16)/(steps+1);
-    d->ddy = (d->dy*16)/(steps+1);
-
-    if (abs(d->ddx) < 64 && abs(d->ddy) < 64) {
-	// Don't move slower than average 4px/step in minimum one direction
-	if (d->ddx > 0) d->ddx = qMax(d->ddx, 64);
-	if (d->ddy > 0) d->ddy = qMax(d->ddy, 64);
-	if (d->ddx < 0) d->ddx = qMin(d->ddx, -64);
-	if (d->ddy < 0) d->ddy = qMin(d->ddy, -64);
-	// This means fewer than normal steps
-	steps = qMax(d->ddx ? (d->dx*16)/d->ddx : 0, d->ddy ? (d->dy*16)/d->ddy : 0);
-	if (steps < 1) steps = 1;
-	d->ddx = (d->dx*16)/(steps+1);
-	d->ddy = (d->dy*16)/(steps+1);
+    if (d->dx == 0 && d->dy == 0) {
+        d->stopScrolling();
+        return;
     }
 
-    // step size starts at double average speed and ends at 0
-    d->ddx *= 2;
-    d->ddy *= 2;
+    d->steps = (sSmoothScrollTime-1)/sSmoothScrollTick + 1;
 
-    // deacceleration speed
-    d->dddx = (d->ddx+1)/steps;
-    d->dddy = (d->ddy+1)/steps;
+    if (qMax(abs(d->dx), abs(d->dy)) / d->steps < qMax(ddx,ddy)) {
+        // Don't move slower than average 4px/step in minimum one direction
+        // This means fewer than normal steps
+        d->steps = qMax((d->dx-1)/ddx, (d->dy-1)/ddy)+1;
+        if (d->steps < 1) d->steps = 1;
+    }
 
+    d->smoothScrollStopwatch.start();
     if (!d->smoothScrolling) {
         d->startScrolling();
         scrollTick();
     }
-    d->smoothScrollStopwatch.start();
 }
 
 void KHTMLView::scrollTick() {
@@ -4078,49 +4067,32 @@ void KHTMLView::scrollTick() {
         return;
     }
 
-    // step size + remaining partial step
-    int tddx = d->ddx + d->rdx;
-    int tddy = d->ddy + d->rdy;
+    if (d->steps < 1) d->steps = 1;
+    int takesteps = d->smoothScrollStopwatch.restart() / sSmoothScrollTick;
+    int scroll_x = 0;
+    int scroll_y = 0;
+    if (takesteps < 1) takesteps = 1;
+    if (takesteps > d->steps) takesteps = d->steps;
+    for(int i = 0; i < takesteps; i++) {
+        int ddx = (((d->dx-1) / (d->steps+1))+1) * 2;
+        int ddy = (((d->dy-1) / (d->steps+1))+1) * 2;
 
-    // don't go under 1px/step
-    if (tddx > 0 && tddx < 16) tddx = 16;
-    if (tddy > 0 && tddy < 16) tddy = 16;
-    if (tddx < 0 && tddx > -16) tddx = -16;
-    if (tddy < 0 && tddy > -16) tddy = -16;
+        // limit step to requested scrolling distance
+        if (abs(ddx) > abs(d->dx)) ddx = d->dx;
+        if (abs(ddy) > abs(d->dy)) ddy = d->dy;
 
-    // full pixel steps to scroll in this step
-    int ddx = tddx / 16;
-    int ddy = tddy / 16;
-    // remaining partial step (this is especially needed for 1.x sized steps)
-    d->rdx = tddx % 16;
-    d->rdy = tddy % 16;
-
-    // limit step to requested scrolling distance
-    if (abs(ddx) > abs(d->dx)) ddx = d->dx;
-    if (abs(ddy) > abs(d->dy)) ddy = d->dy;
-
-    // Don't stop if deaccelerated too fast
-    if (!ddx) ddx = d->dx;
-    if (!ddy) ddy = d->dy;
-
-    // update remaining scroll
-    d->dx -= ddx;
-    d->dy -= ddy;
+        // update remaining scroll
+        d->dx -= ddx;
+        d->dy -= ddy;
+        scroll_x += ddx;
+        scroll_y += ddy;
+        d->steps--;
+    }
 
     d->shouldSmoothScroll = false;
-    scrollContentsBy(ddx, ddy);
+    scrollContentsBy(scroll_x, scroll_y);
 
-    // only consider decelerating if we aren't too far behind schedule
-    if (d->smoothScrollStopwatch.elapsed() < 2*sSmoothScrollTick) {
-        // update scrolling speed
-        int dddx = d->dddx;
-        int dddy = d->dddy;
-        // don't change direction
-        if (abs(dddx) > abs(d->ddx)) dddx = d->ddx;
-        if (abs(dddy) > abs(d->ddy)) dddy = d->ddy;
-
-        d->ddx -= dddx;
-        d->ddy -= dddy;
+    if (takesteps < 2) {
         d->smoothScrollMissedDeadlines = 0;
     } else {
         if (d->smoothScrollMissedDeadlines != sWayTooMany &&
@@ -4133,7 +4105,6 @@ void KHTMLView::scrollTick() {
             }
         }
     }
-    d->smoothScrollStopwatch.start();
 }
 
 
