@@ -102,6 +102,8 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     ui->m_titleWidget->setText(i18n("Details for %1", m_entry.name()));
     if (!m_entry.author().homepage().isEmpty()) {
         ui->authorLabel->setText("<a href=\"" + m_entry.author().homepage() + "\">" + m_entry.author().name() + "</a>");
+    } else if (!m_entry.author().email().isEmpty()) {
+        ui->authorLabel->setText("<a href=\"mailto:" + m_entry.author().email() + "\">" + m_entry.author().name() + "</a>");
     } else {
         ui->authorLabel->setText(m_entry.author().name());
     }
