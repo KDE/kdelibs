@@ -25,6 +25,8 @@
 #include <QLabel>
 #include <QToolButton>
 #include <QMenu>
+#include <QHBoxLayout>
+#include <QAbstractItemView>
 
 #include "itemsmodel.h"
 #include "ratingwidget.h"
@@ -33,22 +35,23 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmenu.h>
-#include <kpushbutton.h>
+#include <ksqueezedtextlabel.h>
 
 namespace KNS3
 {
     static const int DelegateTitleLabel = 0;
     static const int DelegateAuthorLabel = 1;
     static const int DelegateDownloadCounterLabel = 2;
-    static const int DelegateInstallButton = 3;
-    static const int DelegateRatingWidget = 4;
+    static const int DelegateRatingWidget = 3;
     //optional maybe not sure for now
     static const int DelegateDetailsButton = 5;
     static const int DelegateDescriptionLabel = 6;
     
 ItemsGridViewDelegate::ItemsGridViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : ItemsViewBaseDelegate(itemView, engine, parent)
+        ,m_elementYPos(0)
 {
+    createOperationBar();
 }
 
 ItemsGridViewDelegate::~ItemsGridViewDelegate()
@@ -58,42 +61,28 @@ ItemsGridViewDelegate::~ItemsGridViewDelegate()
 QList<QWidget*> ItemsGridViewDelegate::createItemWidgets() const
 {
     QList<QWidget*> m_widgetList;
-    QLabel * titleLabel = new QLabel();
+    KSqueezedTextLabel * titleLabel = new KSqueezedTextLabel();
     titleLabel->setOpenExternalLinks(true);
+    titleLabel->setTextElideMode(Qt::ElideRight);
     // not so nice - work around constness to install the event filter
     ItemsGridViewDelegate* delegate = const_cast<ItemsGridViewDelegate*>(this);
     titleLabel->installEventFilter(delegate);
     m_widgetList << titleLabel;
 
-    QLabel * authorLabel = new QLabel();
+    KSqueezedTextLabel * authorLabel = new KSqueezedTextLabel();
+    authorLabel->setTextElideMode(Qt::ElideRight);
     m_widgetList << authorLabel;
     
-    QLabel * downloadCounterLabel = new QLabel();
+    KSqueezedTextLabel * downloadCounterLabel = new KSqueezedTextLabel();
+    downloadCounterLabel->setTextElideMode(Qt::ElideRight);
     m_widgetList << downloadCounterLabel;
     
-    QToolButton * installButton = new QToolButton();
-    installButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
-    installButton->setPopupMode(QToolButton::InstantPopup);
-    m_widgetList << installButton;
-    setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
-                         << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
-    connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
-    connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
-
     RatingWidget* rating = new RatingWidget();
     rating->setMaxRating(10);
     rating->setHalfStepsEnabled(true);
     rating->setEditable(false);
     m_widgetList << rating;
     
-    QToolButton * detailsButton = new QToolButton();
-    detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
-    detailsButton->setPopupMode(QToolButton::InstantPopup);
-    m_widgetList << detailsButton;
-    setBlockedEventTypes(detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
-                         << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
-    connect(detailsButton, SIGNAL(clicked()), this, SLOT(slotDetailsClicked()));
-
     return m_widgetList;
 }
 
@@ -106,11 +95,11 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         kDebug() << "WARNING - INVALID MODEL!";
         return;
     }
-
+    
     EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-    int margin = option.fontMetrics.height() / 2;
-    int elementYPos = PreviewHeight + margin + frameThickness*2;
-    int elementXPos = margin;
+    int elementXPos = ItemMargin;
+    int elementYPos = PreviewHeight + ItemMargin + FrameThickness*2;
+    
     //setup rating widget
     RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
@@ -130,15 +119,16 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             rating->setVisible(false);
         }
     }
-    elementYPos += margin;
+    elementYPos += ItemMargin;
+    
     //setup title label
     QLabel * titleLabel = qobject_cast<QLabel*>(widgets.at(DelegateTitleLabel));
     if (titleLabel != NULL) {
         titleLabel->setWordWrap(true);
         titleLabel->setAlignment(Qt::AlignHCenter);
         //titleLabel->setFrameStyle(QFrame::Panel);
-        titleLabel->resize(QSize(option.rect.width() - (margin * 2), option.fontMetrics.height() * 2));
-        titleLabel->move((ItemGridWidth-titleLabel->width())/2,elementYPos);
+        titleLabel->resize(QSize(option.rect.width() - (ItemMargin * 2), option.fontMetrics.height() * 2));
+        titleLabel->move((ItemGridWidth-titleLabel->width())/2, elementYPos);
         
         QString title;
         KUrl link = qvariant_cast<KUrl>(entry.homepage());
@@ -155,7 +145,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     if (authorLabel != NULL) {
         authorLabel->setWordWrap(true);
         authorLabel->setAlignment(Qt::AlignHCenter);
-        authorLabel->resize(QSize(option.rect.width() - (margin * 2), option.fontMetrics.height()));
+        authorLabel->resize(QSize(option.rect.width() - (ItemMargin * 2), option.fontMetrics.height()));
         authorLabel->move((ItemGridWidth-authorLabel->width())/2,elementYPos);
         
         QString text;
@@ -175,13 +165,14 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         authorLabel->setText(text);
         elementYPos += authorLabel->height();
     }
-    elementYPos += margin;
+    elementYPos += ItemMargin;
+    
     //setup download label
     QLabel * downloadLabel = qobject_cast<QLabel*>(widgets.at(DelegateDownloadCounterLabel));
     if (downloadLabel != NULL) {
         downloadLabel->setWordWrap(true);
         downloadLabel->setAlignment(Qt::AlignHCenter);
-        downloadLabel->resize(QSize(option.rect.width() - (margin * 2), option.fontMetrics.height()));
+        downloadLabel->resize(QSize(option.rect.width() - (ItemMargin * 2), option.fontMetrics.height()));
         downloadLabel->move((ItemGridWidth-downloadLabel->width())/2,elementYPos);
         
         unsigned int fans = entry.numberFans();
@@ -206,18 +197,135 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         downloadLabel->setText(text);
         elementYPos += downloadLabel->height();
     }
-    elementYPos += margin;
+    elementYPos += ItemMargin;
     
-    QToolButton * installButton = qobject_cast<QToolButton*>(widgets.at(DelegateInstallButton));
-    if (installButton != 0) {
+    const_cast<int&>(m_elementYPos) = elementYPos;
+}
 
-        if (installButton->menu()) {
-            QMenu* buttonMenu = installButton->menu();
+void ItemsGridViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+{    
+    if (option.state & QStyle::State_MouseOver) {
+        QModelIndex focIndex = focusedIndex();
+        if (m_oldIndex != focIndex || !m_operationBar->isVisible()) {
+            ItemsGridViewDelegate* delegate = const_cast<ItemsGridViewDelegate*>(this);
+            
+            delegate->displayOperationBar(option.rect,index);
+            delegate->m_oldIndex = focIndex;
+        }
+    }
+    else
+    {
+        QModelIndex focindex = focusedIndex();
+        if(!focindex.isValid()){
+            //kDebug() << "INVALID hide selection";
+            m_operationBar->hide();
+        }
+    }
+    
+    QStyle *style = QApplication::style();
+    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
+    
+    painter->save();    
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(QPen(option.palette.highlightedText().color()));
+    } else {
+        painter->setPen(QPen(option.palette.text().color()));
+    }
+
+    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
+
+    if (realmodel->hasPreviewImages()) {
+        int height = option.rect.height();
+        int width = option.rect.width();
+
+        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
+        if (entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
+            ;
+        } else {
+            QPoint centralPoint(option.rect.left() + width/2,option.rect.top() + ItemMargin + FrameThickness + PreviewHeight/2);
+            QImage image = entry.previewImage(EntryInternal::PreviewSmall1);
+            if (!image.isNull()) {
+                QPoint previewPoint(centralPoint.x() - image.width()/2, centralPoint.y() - image.height()/2);
+                painter->drawImage(previewPoint, image);                
+                
+                QPixmap frameImageScaled = m_frameImage.scaled(image.width() + FrameThickness*2, image.height() + FrameThickness*2);
+                QPoint framePoint(centralPoint.x() - frameImageScaled.width()/2, centralPoint.y() - frameImageScaled.height()/2);
+                painter->drawPixmap(framePoint, frameImageScaled);
+            } else {
+                QPoint thumbnailPoint(option.rect.left() + ((width - PreviewWidth - FrameThickness*2) / 2), option.rect.top() + ItemMargin);
+                QRect rect(thumbnailPoint, QSize(PreviewWidth + FrameThickness*2, PreviewHeight + FrameThickness*2));
+                painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("Loading Preview"));
+            }
+        }
+    }
+
+    painter->restore();
+}
+
+QSize ItemsGridViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
+{
+    Q_UNUSED(option);
+    Q_UNUSED(index);
+
+    QSize size;
+
+    size.setWidth(ItemGridWidth);
+    size.setHeight(qMax(option.fontMetrics.height() * 13, ItemGridHeight)); // up to 6 lines of text, and two margins
+    return size;
+}
+
+void ItemsGridViewDelegate::createOperationBar()
+{
+    m_operationBar = new QWidget(this->itemView()->viewport());
+    
+    m_detailsButton = new QToolButton();
+    m_detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    m_detailsButton->setPopupMode(QToolButton::InstantPopup);
+    m_detailsButton->setToolTip(i18n("Details..."));
+    m_detailsButton->setIcon(KIcon("documentinfo"));
+    setBlockedEventTypes(m_detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
+                         << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+    connect(m_detailsButton, SIGNAL(clicked()), this, SLOT(slotDetailsClicked()));
+
+    m_installButton = new QToolButton();
+    m_installButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    m_installButton->setPopupMode(QToolButton::InstantPopup);
+    
+    setBlockedEventTypes(m_installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
+                         << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+    connect(m_installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
+    connect(m_installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
+
+    
+    if (m_installButton->menu()) {
+        QMenu* buttonMenu = m_installButton->menu();
+        buttonMenu->clear();
+        m_installButton->setMenu(0);
+        buttonMenu->deleteLater();
+    }
+    
+    QHBoxLayout* layout = new QHBoxLayout(m_operationBar);
+    
+    layout->setSpacing(1);
+    layout->addWidget(m_installButton);
+    layout->addWidget(m_detailsButton);
+    
+    m_operationBar->adjustSize();
+    m_operationBar->hide();
+}
+
+void ItemsGridViewDelegate::displayOperationBar(const QRect &rect,const QModelIndex & index)
+{
+    KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
+    if (m_installButton != 0) {
+        if (m_installButton->menu() != 0) {
+            QMenu* buttonMenu = m_installButton->menu();
             buttonMenu->clear();
-            installButton->setMenu(0);
+            m_installButton->setMenu(0);
             buttonMenu->deleteLater();
         }
-
+        
         bool installable = false;
         bool enabled = true;
         QString text;
@@ -256,95 +364,26 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         default:
             text = i18n("Install");
         }
-        installButton->setToolTip(text);
-        installButton->setEnabled(enabled);
-        installButton->setIcon(icon);
+        m_installButton->setToolTip(text);
+        m_installButton->setIcon(icon);
+        m_installButton->setEnabled(enabled);
         if (installable && entry.downloadLinkCount() > 1) {
-            KMenu * installMenu = new KMenu(installButton);
+            KMenu * installMenu = new KMenu(m_installButton);
             foreach (EntryInternal::DownloadLinkInformation info, entry.downloadLinkInformationList()) {
                 QString text = info.name;
                 if (!info.distributionType.trimmed().isEmpty()) {
                     text + " (" + info.distributionType.trimmed() + ")";
                 }
                 QAction* installAction = installMenu->addAction(m_iconInstall, text);
-                installAction->setData(info.id);
+                installAction->setData(QPoint(index.row(), info.id));
             }
-            installButton->setMenu(installMenu);
+            m_installButton->setMenu(installMenu);
         }
-        installButton->move((ItemGridWidth-installButton->width())/2, elementYPos);
-        elementXPos = installButton->pos().x() + installButton->width();
-    }
-    elementXPos += margin;
-    
-    //KPushButton* detailsButton = qobject_cast<KPushButton*>(widgets.at(DelegateDetailsButton));
-    QToolButton * detailsButton = qobject_cast<QToolButton*>(widgets.at(DelegateDetailsButton));
-    if (detailsButton != 0) {
-        detailsButton->setToolTip(i18n("Details..."));
-        detailsButton->setIcon(KIcon("documentinfo"));
-        detailsButton->move(elementXPos-detailsButton->width()/2, elementYPos);
-        if (installButton !=0) {
-            QPoint pos = installButton->pos();
-            installButton->move(pos.x()-installButton->width()/2, elementYPos);
-        }
+        
+        m_operationBar->move(rect.left()+(ItemGridWidth-m_operationBar->width())/2,rect.top() + m_elementYPos);
+        m_operationBar->show();
     }
 }
-
-void ItemsGridViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
-{    
-    int margin = option.fontMetrics.height() / 2;
-
-    QStyle *style = QApplication::style();
-    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
-
-    painter->save();
-
-    if (option.state & QStyle::State_Selected) {
-        kDebug() << "draw selected";
-        painter->setPen(QPen(option.palette.highlightedText().color()));
-    } else {
-        painter->setPen(QPen(option.palette.text().color()));
-    }
-
-    const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
-
-    if (realmodel->hasPreviewImages()) {
-        int height = option.rect.height();
-        int width = option.rect.width();
-        QPoint framePoint(option.rect.left() + ((width - PreviewWidth - frameThickness*2) / 2), option.rect.top() + margin);
-
-        KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-        if (entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
-            ;
-        } else {
-            QImage image = entry.previewImage(EntryInternal::PreviewSmall1);
-            if (!image.isNull()) {
-                //image always at the center of frame
-                painter->drawPixmap(framePoint, m_frameImage.scaled(PreviewWidth + 14, PreviewHeight + 14));
-                
-                QPoint previewPoint(framePoint.x() + 7 + (PreviewWidth - image.width())/2, framePoint.y() + 7 + (PreviewHeight - image.height())/2);
-                painter->drawImage(previewPoint, image);                
-            } else {
-                QRect rect(framePoint, QSize(PreviewWidth + frameThickness*2, PreviewHeight + frameThickness*2));
-                painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("Loading Preview"));
-            }
-        }
-    }
-
-    painter->restore();
-}
-
-QSize ItemsGridViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
-{
-    Q_UNUSED(option);
-    Q_UNUSED(index);
-
-    QSize size;
-
-    size.setWidth(ItemGridWidth);
-    size.setHeight(qMax(option.fontMetrics.height() * 17, ItemGridHeight)); // up to 6 lines of text, and two margins
-    return size;
-}
-
 }
 
 #include "itemsgridviewdelegate.moc"

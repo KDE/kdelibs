@@ -21,10 +21,14 @@
 #define KNEWSTUFF3_UI_ITEMSGRIDVIEWDELEGATE_H
 
 #include "itemsviewbasedelegate.h"
-
+class QToolButton;
 namespace KNS3
 {
-
+    static const int ItemGridHeight = 202;
+    static const int ItemGridWidth = 158;
+    
+    static const int FrameThickness = 5;
+    static const int ItemMargin = 2;
 class ItemsGridViewDelegate: public ItemsViewBaseDelegate
 {
     Q_OBJECT
@@ -46,6 +50,17 @@ public:
 
     virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
     
+    private:
+        void createOperationBar();
+        void displayOperationBar(const QRect &rect,const QModelIndex & index);
+        
+    private:
+        QWidget *m_operationBar;
+        QToolButton *m_detailsButton;
+        QToolButton *m_installButton;
+        
+        QModelIndex m_oldIndex;
+        int m_elementYPos;
 };
 }
 

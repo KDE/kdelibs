@@ -35,12 +35,7 @@
 namespace KNS3
 {
     class ItemsModel;
-    class Engine;
-    //not sure where to put
-    static const int ItemGridHeight = 260;
-    static const int ItemGridWidth = 200;
-    
-    static const int frameThickness = 7;
+    class Engine;    
     
 class ItemsViewBaseDelegate: public KWidgetItemDelegate
 {
