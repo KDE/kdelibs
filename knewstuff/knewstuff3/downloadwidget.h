@@ -121,6 +121,8 @@ private:
     Q_PRIVATE_SLOT( d, void slotProvidersLoaded() )
     Q_PRIVATE_SLOT( d, void slotEntriesLoaded(const KNS3::EntryInternal::List& entries) )
     Q_PRIVATE_SLOT( d, void slotEntryChanged(const KNS3::EntryInternal& entry) )
+    Q_PRIVATE_SLOT( d, void slotShowDetails(const KNS3::EntryInternal& entry) )
+    Q_PRIVATE_SLOT( d, void slotShowOverview() )
 
     Q_PRIVATE_SLOT( d, void slotPayloadFailed(const EntryInternal& entry) )
     Q_PRIVATE_SLOT( d, void slotPayloadLoaded(KUrl url) )

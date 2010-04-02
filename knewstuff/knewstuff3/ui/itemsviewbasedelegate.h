@@ -56,6 +56,9 @@ public:
 
     virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const = 0;
     
+Q_SIGNALS:
+    void signalShowDetails(const KNS3::EntryInternal& entry);
+    
 protected slots:
     bool eventFilter(QObject *watched, QEvent *event);
     void slotInstallClicked();

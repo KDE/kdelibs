@@ -18,10 +18,10 @@
 #ifndef KNEWSTUFF3_UI_ENTRYDETAILS_H
 #define KNEWSTUFF3_UI_ENTRYDETAILS_H
 
-#include <kdialog.h>
+#include <QtCore/QObject>
 #include <knewstuff3/core/entryinternal.h>
 
-#include "ui_entrydetailsdialog.h"
+#include "ui_downloadwidget.h"
 
 class QListWidgetItem;
 
@@ -29,14 +29,17 @@ namespace KNS3
 {
     class Engine;
 
-class EntryDetailsDialog :public KDialog
+class EntryDetails :public QObject
 {
     Q_OBJECT
 
 public:
-    EntryDetailsDialog(Engine* engine, const EntryInternal& entry, QWidget * parent = 0);
-    ~EntryDetailsDialog();
-
+    EntryDetails(Engine* engine, Ui::DownloadWidget* widget);
+    ~EntryDetails();
+    
+public Q_SLOTS:
+    void setEntry(const KNS3::EntryInternal& entry);
+    
 private Q_SLOTS:
     void slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
     void install();
@@ -59,8 +62,8 @@ private:
     void init();
     void previewSelected(int current);
     
-    Ui::EntryDetailsDialog ui;
     Engine *m_engine;
+    Ui::DownloadWidget* ui;
     EntryInternal m_entry;
     QImage m_currentPreview;
     QListWidgetItem* m_previewItem1;

@@ -41,7 +41,6 @@ set(knewstuff3_SRCS
 kde4_add_ui_files(knewstuff3_SRCS
     downloadwidget.ui
     uploaddialog.ui
-    ui/entrydetailsdialog.ui
 )
 
 kde4_add_library(knewstuff3 SHARED ${knewstuff3_SRCS} )

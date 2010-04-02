@@ -34,6 +34,7 @@
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewbasedelegate.h"
+#include "ui/entrydetailsdialog.h"
 
 #include "ui_downloadwidget.h"
 
@@ -44,10 +45,11 @@ class DownloadWidgetPrivate
 {
 public:
     DownloadWidget* q;
+    EntryDetails* details;
 
-    Ui::DownloadWidget ui;
     // The engine that does all the work
     Engine *engine;
+    Ui::DownloadWidget ui;
     // Model to show the entries
     ItemsModel* model;
     // Timeout for messge display
@@ -61,7 +63,9 @@ public:
     QSet<QString> categories;
     QSet<QString> providers;
 
+    QString titleText;
     QString m_configFile;
+    bool dialogMode;
 
     DownloadWidgetPrivate(DownloadWidget* q);
     ~DownloadWidgetPrivate();
@@ -72,6 +76,9 @@ public:
     void slotProvidersLoaded();
     void slotEntriesLoaded(const KNS3::EntryInternal::List& entries);
     void slotEntryChanged(const KNS3::EntryInternal& entry);
+    
+    void slotShowDetails(const KNS3::EntryInternal& entry);
+    void slotShowOverview();
 
     void slotPayloadFailed(const EntryInternal& entry);
     void slotPayloadLoaded(KUrl url);

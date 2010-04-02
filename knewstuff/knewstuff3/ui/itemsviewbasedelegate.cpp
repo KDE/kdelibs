@@ -106,9 +106,8 @@ void ItemsViewBaseDelegate::slotDetailsClicked(const QModelIndex& index)
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if ( !entry.isValid() )
             return;
-
-        EntryDetailsDialog dialog(m_engine, entry);
-        dialog.exec();
+kDebug() << "Details: " << entry.name();
+        emit signalShowDetails(entry);
     }
 }
 }

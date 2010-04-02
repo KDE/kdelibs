@@ -58,9 +58,6 @@ DownloadWidget::DownloadWidget(const QString& configFile, QWidget * parent)
 
 void DownloadWidget::init(const QString& configFile)
 {
-    d->ui.setupUi(this);
-    d->ui.closeButton->setVisible(false);
-    d->ui.m_titleWidget->setVisible(false);
     d->init(configFile);
 }
 
@@ -95,6 +92,7 @@ DownloadWidgetPrivate::DownloadWidgetPrivate(DownloadWidget* q)
 , engine(new Engine)
 , model(new ItemsModel(engine))
 , messageTimer(0)
+, dialogMode(false)
 {
 }
 
@@ -212,7 +210,13 @@ void DownloadWidgetPrivate::scrollbarValueChanged(int value)
 void DownloadWidgetPrivate::init(const QString& configFile)
 {
     m_configFile = configFile;
-
+    ui.setupUi(q);
+    ui.m_titleWidget->setVisible(false);
+    ui.closeButton->setVisible(false);
+    ui.backButton->setVisible(false);
+    ui.backButton->setGuiItem(KStandardGuiItem::Back);
+    q->connect(ui.backButton, SIGNAL(clicked()), q, SLOT(slotShowOverview()));
+    
     q->connect(engine, SIGNAL(signalBusy(const QString&)), ui.progressIndicator, SLOT(busy(const QString&)));
     q->connect(engine, SIGNAL(signalError(const QString&)), ui.progressIndicator, SLOT(error(const QString&)));
     q->connect(engine, SIGNAL(signalIdle(const QString&)), ui.progressIndicator, SLOT(idle(const QString&)));
@@ -274,6 +278,11 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
 
     q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
+    
+    details = new EntryDetails(engine, &ui);
+    q->connect(delegate, SIGNAL(signalShowDetails(KNS3::EntryInternal)), q, SLOT(slotShowDetails(KNS3::EntryInternal)));
+    
+    slotShowOverview();
 }
 
 void DownloadWidgetPrivate::slotListViewListMode()
@@ -310,6 +319,7 @@ void DownloadWidgetPrivate::setListViewMode(QListView::ViewMode mode)
     delete oldDelegate;
     
     q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
+    q->connect(delegate, SIGNAL(signalShowDetails(KNS3::EntryInternal)), q, SLOT(slotShowDetails(KNS3::EntryInternal)));
 }
 
 void DownloadWidgetPrivate::slotProvidersLoaded()
@@ -347,6 +357,34 @@ void DownloadWidgetPrivate::displayMessage(const QString & msg, KTitleWidget::Me
         //kDebug(551) << "starting the message timer for " << timeOutMs;
         messageTimer->start(timeOutMs);
     }
+}
+
+void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
+{
+    if (!entry.isValid()) {
+        kDebug() << "invalid entry";
+        return;
+    }
+    titleText = ui.m_titleWidget->text();
+    
+    details->setEntry(entry);
+    ui.closeButton->setVisible(false);
+    ui.backButton->setVisible(true);
+    ui.detailsStack->setCurrentIndex(1);
+}
+
+void DownloadWidgetPrivate::slotShowOverview()
+{
+    ui.backButton->setVisible(false);
+    ui.closeButton->setVisible(dialogMode);
+    
+    ui.updateButton->setVisible(false);
+    ui.installButton->setVisible(false);
+    ui.becomeFanButton->setVisible(false);
+    ui.uninstallButton->setVisible(false);
+    
+    ui.detailsStack->setCurrentIndex(0);
+    ui.m_titleWidget->setText(titleText);
 }
 
 void DownloadWidgetPrivate::slotUpload()
