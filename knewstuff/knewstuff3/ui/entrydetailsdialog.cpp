@@ -30,8 +30,6 @@
 #include <knewstuff3/core/engine.h>
 #include <knewstuff3/ui/imageloader.h>
 
-#include "ui_entrydetailsdialog.h"
-
 using namespace KNS3;
 
 EntryDetails::EntryDetails(Engine* engine, Ui::DownloadWidget* widget)
