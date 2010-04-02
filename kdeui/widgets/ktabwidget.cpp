@@ -536,6 +536,19 @@ void KTabWidget::mouseMiddleClick( int index )
   emit( mouseMiddleClick( widget( index ) ) );
 }
 
+// Helper: return true if w is inside parent (directly or indirectly)
+static bool isWidgetInside(QWidget* w, QWidget* parent)
+{
+  while (w) {
+      if (w == parent)
+          return true;
+      if (w->isWindow())
+          break;
+      w = w->parentWidget();
+  }
+  return false;
+}
+
 void KTabWidget::moveTab( int from, int to )
 {
   setUpdatesEnabled(false);
@@ -549,8 +562,17 @@ void KTabWidget::moveTab( int from, int to )
   const bool enabled = isTabEnabled( from );
 
   const bool blocked = blockSignals( true );
+
+  QWidget *fw = QApplication::focusWidget();
+
   removeTab( from );
   insertTab( to, w, tablabel );
+
+  // Don't lose focus due to moving the tab (#159295)
+  // (removeTab hides the widget, which gives focus to the "next in chain", could be anything)
+  if (isWidgetInside(fw, w)) {
+      fw->setFocus();
+  }
 
   setTabIcon( to, tabiconset );
   setTabText( to, tablabel );
@@ -585,9 +607,10 @@ void KTabWidget::removePage( QWidget *widget )
 void KTabWidget::removeTab( int index )
 {
   if ( d->m_automaticResizeTabs ) {
+    const bool wasUpdatesEnabled = updatesEnabled();
     setUpdatesEnabled(false);
     d->removeTab( index );
-    setUpdatesEnabled(true);
+    setUpdatesEnabled(wasUpdatesEnabled);
   } else {
     d->removeTab( index );
   }

@@ -22,6 +22,8 @@
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <ktabwidget.h>
+#include <klineedit.h>
+#include <QComboBox>
 #include <QtGui/QTabBar>
 
 class KTabWidget_UnitTest : public QObject
@@ -70,28 +72,55 @@ private Q_SLOTS:
     }
     void testMoveTab()
     {
-        // Test inspired by #170470 and #177036
-        KTabWidget w;
-        w.setAutomaticResizeTabs(true);
-        w.resize(300, 400);
-        QResizeEvent e(w.size(), QSize());
-        QApplication::sendEvent(&w, &e);
+        // Test inspired by #170470 and #177036 (title messup).
+        // Then expanded to include the problem of #159295 (focus loss).
+        QWidget topLevel;
+        QComboBox* combo = new QComboBox(&topLevel);
+        combo->setEditable(true);
+        KTabWidget* w = new KTabWidget(&topLevel);
+        w->setAutomaticResizeTabs(true);
+        w->resize(300, 400);
+        QResizeEvent e(w->size(), QSize());
+        QApplication::sendEvent(w, &e);
         QString prefix = "This is a long prefix for the tab title. ";
+        KLineEdit* lineEdits[4];
         for (int i = 0; i < 4; ++i) {
-            w.insertTab(i, new QWidget, prefix+QString::number(i));
-        //kDebug() << i << w.tabText(i);
+            QWidget* page = new QWidget;
+            page->setObjectName(QString::number(i));
+            lineEdits[i] = new KLineEdit(page); // a widget that can take focus
+            lineEdits[i]->setObjectName("LineEdit"+QString::number(i));
+            w->insertTab(i, page, prefix+QString::number(i));
+            //kDebug() << i << w->tabText(i);
         }
-        w.moveTab(0,3);
+        topLevel.show();
+        // Necessary after show(), otherwise topLevel.focusWidget() returns NULL
+        QApplication::setActiveWindow(&topLevel);
+
+        // Make sure the tab order is so that the combo gets focus after this tab
+        QWidget::setTabOrder(lineEdits[0], combo->lineEdit());
+        QWidget::setTabOrder(combo->lineEdit(), lineEdits[1]);
+
+        w->setCurrentIndex(0);
+        lineEdits[0]->setFocus();
+        QCOMPARE(topLevel.focusWidget(), lineEdits[0]);
+        QVERIFY(lineEdits[0]->isVisible());
+
+        w->moveTab(0,3);
         //for (int i = 0; i < 4; ++i)
-            //kDebug() << i << w.tabText(i);
-        QCOMPARE(w.tabText(0), prefix+QString::number(1));
-        QCOMPARE(w.tabText(1), prefix+QString::number(2));
-        QCOMPARE(w.tabText(2), prefix+QString::number(3));
-        QCOMPARE(w.tabText(3), prefix+QString::number(0));
-        w.moveTab(3,0);
+            //kDebug() << i << w->tabText(i);
+        QCOMPARE(w->tabText(0), prefix+QString::number(1));
+        QCOMPARE(w->tabText(1), prefix+QString::number(2));
+        QCOMPARE(w->tabText(2), prefix+QString::number(3));
+        QCOMPARE(w->tabText(3), prefix+QString::number(0));
+
+        // Did the focus switch to the lineEdit, due to removeTab+insertTab? Whoops.
+        QCOMPARE(topLevel.focusWidget()->objectName(), lineEdits[0]->objectName());
+
+        w->moveTab(3,0);
+        QCOMPARE(topLevel.focusWidget()->objectName(), lineEdits[0]->objectName());
         for (int i = 0; i < 4; ++i) {
-            //kDebug() << i << w.tabText(i);
-            QCOMPARE(w.tabText(i), prefix+QString::number(i));
+            //kDebug() << i << w->tabText(i);
+            QCOMPARE(w->tabText(i), prefix+QString::number(i));
         }
      }
 
