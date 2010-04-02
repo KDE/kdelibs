@@ -211,9 +211,7 @@ void ItemsGridViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem
             delegate->displayOperationBar(option.rect,index);
             delegate->m_oldIndex = focIndex;
         }
-    }
-    else
-    {
+    } else {
         QModelIndex focindex = focusedIndex();
         if(!focindex.isValid()){
             //kDebug() << "INVALID hide selection";
