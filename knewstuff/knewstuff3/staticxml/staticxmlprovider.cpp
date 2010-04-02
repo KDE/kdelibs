@@ -208,6 +208,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     for (n = element.firstChildElement(); !n.isNull(); n = n.nextSiblingElement()) {
         EntryInternal entry;
         entry.setEntryXML(n.toElement());
+        entry.setStatus(Entry::Downloadable);
         entry.setProviderId(mId);
 
         int index = mCachedEntries.indexOf(entry);
