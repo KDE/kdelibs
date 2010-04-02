@@ -44,8 +44,6 @@ EntryDetails::~EntryDetails()
 
 void EntryDetails::init()
 {
- // TODO   connect(ui->closeButton, SIGNAL(clicked()), SLOT(accept()));
-
     connect(ui->preview1, SIGNAL(clicked()), this, SLOT(preview1Selected()));
     connect(ui->preview2, SIGNAL(clicked()), this, SLOT(preview2Selected()));
     connect(ui->preview3, SIGNAL(clicked()), this, SLOT(preview3Selected()));
@@ -134,7 +132,16 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     ui->homepageLabel->setText(homepageText);
     ui->homepageLabel->setToolTip(i18nc("Tooltip for a link in a dialog", "Opens in a browser window"));
     
-    ui->ratingWidget->setRating((m_entry.rating()-20)/6);
+    if (m_entry.rating() > 0) {
+        ui->ratingWidget->setVisible(true);
+        ui->ratingWidget->setRating((m_entry.rating()-20)/6);
+    } else {
+        ui->ratingWidget->setVisible(false);
+    }
+    
+    bool userVote = m_engine->userCanVote(m_entry);
+    ui->voteGoodButton->setVisible(userVote);
+    ui->voteBadButton->setVisible(userVote);
 
     bool hideSmallPreviews = m_entry.previewUrl(EntryInternal::PreviewSmall2).isEmpty()
            && m_entry.previewUrl(EntryInternal::PreviewSmall3).isEmpty();
