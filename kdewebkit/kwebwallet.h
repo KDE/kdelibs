@@ -92,7 +92,7 @@ public:
      * @p frame.
      *
      * If the site currently rendered in @p frame does not contain any forms
-     * or there is not cached data for the forms found in @p frame, then this
+     * or there is no cached data for the forms found in @p frame, then this
      * function will return an empty list.
      *
      * Note that this function will only return the information about the forms
