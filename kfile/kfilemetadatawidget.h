@@ -39,7 +39,6 @@ class KUrl;
  * comment. The changes are stored automatically by the
  * meta data widget.
  *
- * @see KMetaDataConfigurationDialog
  * @since 4.5
  */
 class KFILE_EXPORT KFileMetaDataWidget : public QWidget
