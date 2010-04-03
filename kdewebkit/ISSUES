@@ -1,7 +1,5 @@
-Known Issues:
-=============
-* [QtWebKit] Crash browsing facebook. See https://bugs.webkit.org/show_bug.cgi?id=35204.
-
+Known Issues [OUTSTANDING]:
+===========================
 * [QtWebKit] HTML 5 <video> tag will not work properly until Qt 4.7 for most depending
   on how their distro created the Qt library package. Due to differences in the Phonon 
   library used by Qt and KDE, most distros disable support for Phonon when compiling 
@@ -9,22 +7,18 @@ Known Issues:
   support in Qt means no HTML 5 multimedia feature (<video> tag) support in the QtWebKit
   module. See https://bugs.webkit.org/show_bug.cgi?id=34631
 
-* [QtWebKit] Does not have support "Content-Disposition". Specifically
-  when it contains the keyword "attachement" the content returned is not
-  supposed to be rendered. Test case site: http://greenbytes.de/tech/tc2231/
-  See https://bugs.webkit.org/show_bug.cgi?id=36395.
+* [QtWebKit] No Java applet support.
+  See https://bugs.webkit.org/show_bug.cgi?id=36902.
 
 * [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
-    tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
-    See https://bugs.webkit.org/show_bug.cgi?id=29899
+  tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
+  See https://bugs.webkit.org/show_bug.cgi?id=29899
 
 * [QtWebKit] No access to the input/control widgets making it very difficult to
   add very useful features such as:
     ** Form completion like the one available for native widgets, e.g.
        QLineEdit and QComboBox. See https://bugs.webkit.org/show_bug.cgi?id=36668
     ** Spell checking specially for <textarea> widgets.
-
-* [QtWebKit] No Java applet support. 
 
 * [QtWebKit] Only <meta> tags that contain a "name" attribute are properly parsed
   and returned through QWebFrame::metaData.
@@ -33,3 +27,13 @@ Known Issues:
   connection to the same server to download a single request. The fix for this
   issue requires a new API addition to KIO that accepts QNetworkReply instead
   of KUrl as its data source.
+
+Known Issues [ADDRESSED]:
+=========================
+* [QtWebKit] Crash browsing facebook.
+  See https://bugs.webkit.org/show_bug.cgi?id=35204.
+
+* [QtWebKit] Does not have support "Content-Disposition". Specifically
+  when it contains the keyword "attachement" the content returned is not
+  supposed to be rendered. Test case site: http://greenbytes.de/tech/tc2231/
+  See https://bugs.webkit.org/show_bug.cgi?id=36395.
