@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KTextEditor/Plugin
+X-KDE-PluginInfo-Author=Joseph Wenninger
+X-KDE-PluginInfo-Email=jowenn@kde.org
+X-KDE-PluginInfo-Name=ktexteditorinsanehtml_le
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Website=http://www.kate-editor.org
+X-KDE-PluginInfo-Category=Editor
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=BSD
+X-KDE-PluginInfo-EnabledByDefault=false
+X-KDE-Library=ktexteditor_insanehtml_le
+X-KDE-Version=4.0
+Name=Insane (not ZEN) HTML coding (light edition)
+Comment=A plugin, which does zen-coding like selector completion
