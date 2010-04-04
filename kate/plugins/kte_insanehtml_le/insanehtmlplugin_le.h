@@ -36,8 +36,16 @@ class InsaneHTMLPluginLEView: public QObject, public KXMLGUIClient {
 public:
   InsaneHTMLPluginLEView(QObject *parent, KTextEditor::View *view);
   virtual ~InsaneHTMLPluginLEView();
+public Q_SLOTS:
+  void expand();
 private:
   KTextEditor::View *m_view;
+  QStringList m_emptyTags;
+  int find_region_start(int cursor_x, const QString& line);
+  int find_region_end(int cursor_x, const QString& line);
+  QStringList parse(const QString& input, int offset);
+  QString parseIdentifier(const QString& input, int *offset);
+  int parseNumber(const QString& input, int *offset);
 };
 
 class InsaneHTMLPluginLE: public KTextEditor::Plugin {

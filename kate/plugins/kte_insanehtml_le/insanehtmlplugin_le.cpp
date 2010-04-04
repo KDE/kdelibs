@@ -28,6 +28,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <kgenericfactory.h>
 #include <kaction.h>
 #include <kactioncollection.h>
+#include <kpassivepopup.h>
+#include <ktexteditor/document.h>
+
+#define IHP_DEBUG
 
 K_PLUGIN_FACTORY_DECLARATION(InsaneHTMLPluginLEFactory)
 K_PLUGIN_FACTORY_DEFINITION(InsaneHTMLPluginLEFactory,
@@ -56,15 +60,230 @@ InsaneHTMLPluginLEView::InsaneHTMLPluginLEView(QObject* parent,KTextEditor::View
     
     setComponentData(InsaneHTMLPluginLEFactory::componentData());
 
-    KAction *a=actionCollection()->addAction( "tools_insanehtml_le", this,SLOT(complete()) );
+    KAction *a=actionCollection()->addAction( "tools_insanehtml_le", this,SLOT(expand()) );
     a->setText(i18n("Insane HTML (LE) Expansion"));
     a->setShortcut( Qt::CTRL + Qt::Key_Period );
              
     setXMLFile( "insanehtml_le_ui.rc" );
     
     m_view->insertChildClient(this);
+
+    m_emptyTags<<"br"<<"hr"<<"img"<<"input"<<"meta"<<"link";
 }
 
 InsaneHTMLPluginLEView::~InsaneHTMLPluginLEView() {
   m_view->removeChildClient(this);
+}
+
+
+/*
+ We expect the cursor to be in them middle or at the end of a tag and don't allow attribute definitions on the right hand side, only quantifiers
+*/
+
+int InsaneHTMLPluginLEView::find_region_end(int cursor_x, const QString& line) {
+  int end_x=cursor_x;
+  const int len=line.length();
+  while (end_x<len) {
+    QChar c=line.at(end_x);
+    if (c.isLetter() || c.isDigit() || (c==QChar('*')) || (c==QChar('_')) || (c==QChar('-')) || (c==QChar(':')) || (c==QChar('.')) || (c==QChar('#')) )
+      end_x++;
+    else
+      break;
+  }
+  int tmp=end_x-1;
+  if ((tmp>=0) && (tmp<len))
+    if (line.at(tmp)==QChar('>')) return -1;
+  return end_x;  
+}
+
+
+/* everything is allowed in the front*/
+int InsaneHTMLPluginLEView::find_region_start(int cursor_x, const QString& line) {
+  int len=line.length();
+  int start_x=cursor_x;
+  bool in_attrib=false;
+  bool in_string=false;
+  while (start_x>0) {
+    int tmp_x=start_x-1;
+    if (tmp_x==-1) break;
+    QChar c=line.at(tmp_x);
+    if (c==QChar('"')) {
+      if (!in_attrib) break;
+      in_string=!in_string;
+      start_x=tmp_x;
+      continue;
+    }
+    if (in_string) {
+      start_x=tmp_x;
+      continue;
+    }
+    
+    if (c==QChar(']')) {
+      in_attrib=true;
+      start_x=tmp_x;
+      continue;
+    }
+    
+    if (c==QChar('[')) {
+      if (in_attrib) {
+	  in_attrib=false;
+	  start_x=tmp_x;
+	  continue;
+      } else {
+	break;
+      }
+    }
+    
+    if ( (c.isSpace() || c==QChar('=')) && (!in_attrib))
+      break;
+    
+    
+    if (c.isLetter() || c.isDigit() || (c==QChar('*')) || (c==QChar('_')) ||
+      (c==QChar('-')) || (c==QChar(':')) || (c==QChar('.')) || (c==QChar('#')) || 
+      (c==QChar('>')) || (c==QChar('$')) || (c==QChar('+')) ) {
+      start_x=tmp_x;
+      continue;
+    }
+    
+    break;
+  }
+  
+  if (in_attrib || in_string) return -1;
+  if (start_x>=len) return -1;
+  if (start_x>=0) {
+    if (!line.at(start_x).isLetter()) return -1;
+  }
+  return start_x;
+}
+
+
+QString InsaneHTMLPluginLEView::parseIdentifier(const QString& input, int *offset) {
+  int offset_tmp=*offset;
+  int len=input.length();
+  QString identifier;
+  if (offset_tmp<input.length()) {
+    if (input.at(offset_tmp).isDigit()) return QString();
+  }
+  while (offset_tmp<len) {
+    QChar c=input.at(offset_tmp);
+    if (! (
+      c.isDigit() || c.isLetter() || (c==QChar(':')) || (c==QChar('_')) || (c==QChar('-'))
+    )) break;
+    identifier+=c;
+    offset_tmp++;
+  }
+  *offset=offset_tmp;
+  return identifier;
+  
+}
+
+int InsaneHTMLPluginLEView::parseNumber(const QString& input, int *offset) {
+  int offset_tmp=*offset;
+  int len=input.length();
+  QString number;
+  if (offset_tmp<input.length()) {
+    if (!input.at(offset_tmp).isDigit()) return 1;
+  }
+  while (offset_tmp<len) {
+    QChar c=input.at(offset_tmp);
+    if (! (
+      c.isDigit()
+    )) break;
+    number+=c;
+    offset_tmp++;
+  }
+  *offset=offset_tmp;
+  return number.toInt();
+  
+}
+
+QStringList InsaneHTMLPluginLEView::parse(const QString& input, int offset) {
+  QString tag;
+  QStringList attributes;
+  QStringList classes;
+  QStringList sub;
+  QStringList relatives;
+  QString id;
+  int multiply=1;
+  bool error=false;
+  tag=parseIdentifier(input,&offset);
+  while (offset<input.length()) {
+    QChar c=input.at(offset);
+    if (c==QChar('.')){
+      offset++;
+      classes << parseIdentifier(input,&offset);
+    } else if (c==QChar('>')) {
+      offset++;
+      sub=parse(input,offset);
+      break;
+    } else if (c==QChar('+')) {
+      offset++;
+      relatives=parse(input,offset);
+      break;
+    } else if (c==QChar('*')) {
+      offset++;
+      multiply=parseNumber(input,&offset);
+    } else if (c==QChar('#')) {
+      offset++;
+      id=parseIdentifier(input,&offset);
+    } else {
+#ifdef IHP_DEBUG
+  KPassivePopup::message(i18n("error %1",c),m_view);
+#endif
+      
+      error=true;
+      break;
+    }
+  }
+  
+  if (!error) {
+    QStringList result;
+    QString idAttrib;
+    if (!id.isEmpty()) idAttrib=QString(" id=\"%1\"").arg(id);
+    QString classAttrib=classes.join(" ");
+    if (!classAttrib.isEmpty()) classAttrib=QString(" class=\"%1\"").arg(classAttrib);
+
+    if (!sub.isEmpty())
+      sub=sub.replaceInStrings(QRegExp("^"),"  ");
+    
+    for (int i=1;i<=multiply;i++) {
+      bool done=false;
+      if (sub.isEmpty()) {
+	if (m_emptyTags.contains(tag)) {
+	  result<<QString("<%1%2%3/>").arg(tag).arg(idAttrib).arg(classAttrib);
+	  done=true;
+	}
+      }   
+      if (!done){
+	if (!sub.isEmpty()) {
+	  result<<QString("<%1%2%3>").arg(tag).arg(idAttrib).arg(classAttrib);
+	  result<<sub;
+	  result<<QString("</%1>").arg(tag);
+	} else
+	  result<<QString("<%1%2%3></%1>").arg(tag).arg(idAttrib).arg(classAttrib);
+      }
+    }
+    if (!relatives.isEmpty())
+      result<<relatives;
+    return result;
+  }
+  return QStringList();
+}
+
+void InsaneHTMLPluginLEView::expand() {
+ KTextEditor::Cursor c=m_view->cursorPosition();
+ QString line=m_view->document()->line(c.line());
+ int start_x=find_region_start(c.column(),line);
+ int end_x=find_region_end(c.column(),line);
+ if ( (start_x<0) || (end_x<0) || (start_x==end_x) ) {
+   KPassivePopup::message(i18n("No valid Insane HTML markup detected at current cursor position"),m_view);
+   return;
+ }
+#ifdef IHP_DEBUG
+  KPassivePopup::message(i18n("This looks like valid Insane HTML markup: %1",line.mid(start_x,end_x-start_x)),m_view);
+#endif
+  QString result=parse(line.mid(start_x,end_x-start_x),0).join("\n");
+  KTextEditor::Document *doc=m_view->document();
+  KTextEditor::Range r(c.line(),start_x,c.line(),end_x);
+  doc->replaceText(r,result);
 }
