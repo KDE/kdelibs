@@ -25,6 +25,7 @@
 #include "functions.h"
 
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_nodelistimpl.h"
 #include "xml/dom_elementimpl.h"
 
 #include <QtDebug>
@@ -32,9 +33,9 @@
 #include <math.h>
 
 using namespace DOM;
-using namespace khtml;
-using namespace khtml::XPath;
 
+namespace khtml {
+namespace XPath {
 
 #define DEFINE_FUNCTION_CREATOR(Class) \
 static Function *create##Class() { return new Class; }
@@ -408,7 +409,7 @@ Value FunLocalName::doEvaluate() const
 	if ( argCount() > 0 ) {
 		Value a = arg( 0 )->evaluate();
 		if ( a.isNodeset() ) {
-			node = a.toNodeset().first();
+			node = a.toNodeset()->first();
 		}
 	}
 
@@ -430,7 +431,7 @@ Value FunNamespaceURI::doEvaluate() const
 	if ( argCount() > 0 ) {
 		Value a = arg( 0 )->evaluate();
 		if ( a.isNodeset() ) {
-			node = a.toNodeset().first();
+			node = a.toNodeset()->first();
 		}
 	}
 
@@ -452,7 +453,7 @@ Value FunName::doEvaluate() const
 	if ( argCount() > 0 ) {
 		Value a = arg( 0 )->evaluate();
 		if ( a.isNodeset() ) {
-			node = a.toNodeset().first();
+			node = a.toNodeset()->first();
 		}
 	}
 
@@ -474,7 +475,7 @@ Value FunCount::doEvaluate() const
 		qWarning( "count() expects <nodeset>" );
 		return Value( 0.0 );
 	}
-	return Value( double( a.toNodeset().count() ) );
+	return Value( double( a.toNodeset()->size() ) );
 }
 
 bool FunCount::isConstant() const
@@ -485,7 +486,7 @@ bool FunCount::isConstant() const
 Value FunString::doEvaluate() const
 {
 	if ( argCount() == 0 ) {
-		DomString s = Value( Expression::evaluationContext().node ).toString();
+		DOMString s = Value( Expression::evaluationContext().node ).toString();
 		return Value( s );
 	}
 	return Value( arg( 0 )->evaluate().toString() );
@@ -495,15 +496,15 @@ Value FunConcat::doEvaluate() const
 {
 	QString str;
 	for ( unsigned int i = 0; i < argCount(); ++i ) {
-		str.append( arg( i )->evaluate().toString() );
+		str.append( arg( i )->evaluate().toString().string() );
 	}
-	return Value( DomString( str ) );
+	return Value( DOMString( str ) );
 }
 
 Value FunStartsWith::doEvaluate() const
 {
-	DomString s1 = arg( 0 )->evaluate().toString();
-	DomString s2 = arg( 1 )->evaluate().toString();
+	DOMString s1 = arg( 0 )->evaluate().toString();
+	DOMString s2 = arg( 1 )->evaluate().toString();
 
 	if ( s2.isEmpty() ) {
 		return Value( true );
@@ -514,8 +515,8 @@ Value FunStartsWith::doEvaluate() const
 
 Value FunContains::doEvaluate() const
 {
-	DomString s1 = arg( 0 )->evaluate().toString();
-	DomString s2 = arg( 1 )->evaluate().toString();
+	QString s1 = arg( 0 )->evaluate().toString().string();
+	QString s2 = arg( 1 )->evaluate().toString().string();
 
 	if ( s2.isEmpty() ) {
 		return Value( true );
@@ -526,8 +527,8 @@ Value FunContains::doEvaluate() const
 
 Value FunSubstringBefore::doEvaluate() const
 {
-	QString s1 = arg( 0 )->evaluate().toString();
-	QString s2 = arg( 1 )->evaluate().toString();
+	QString s1 = arg( 0 )->evaluate().toString().string();
+	QString s2 = arg( 1 )->evaluate().toString().string();
 
 	if ( s2.isEmpty() ) {
 		return Value( "" );
@@ -538,13 +539,13 @@ Value FunSubstringBefore::doEvaluate() const
 		return Value( "" );
 	}
 
-	return Value( DomString( s1.left( i ) ) );
+	return Value( DOMString( s1.left( i ) ) );
 }
 
 Value FunSubstringAfter::doEvaluate() const
 {
-	QString s1 = arg( 0 )->evaluate().toString();
-	QString s2 = arg( 1 )->evaluate().toString();
+	QString s1 = arg( 0 )->evaluate().toString().string();
+	QString s2 = arg( 1 )->evaluate().toString().string();
 
 	if ( s2.isEmpty() ) {
 		return Value( s2 );
@@ -555,12 +556,12 @@ Value FunSubstringAfter::doEvaluate() const
 		return Value( "" );
 	}
 
-	return Value( DomString( s1.mid( i + 1 ) ) );
+	return Value( DOMString( s1.mid( i + 1 ) ) );
 }
 
 Value FunSubstring::doEvaluate() const
 {
-	QString s = arg( 0 )->evaluate().toString();
+	QString s = arg( 0 )->evaluate().toString().string();
 	long pos = long( qRound( arg( 1 )->evaluate().toNumber() ) );
 	bool haveLength = argCount() == 3;
 	long len = -1;
@@ -580,13 +581,13 @@ Value FunSubstring::doEvaluate() const
 		}
 	}
 
-	return Value( DomString( s.mid( pos - 1, len ) ) );
+	return Value( DOMString( s.mid( pos - 1, len ) ) );
 }
 
 Value FunStringLength::doEvaluate() const
 {
 	if ( argCount() == 0 ) {
-		DomString s = Value( Expression::evaluationContext().node ).toString();
+		DOMString s = Value( Expression::evaluationContext().node ).toString();
 		return Value( double( s.length() ) );
 	}
 
@@ -596,20 +597,20 @@ Value FunStringLength::doEvaluate() const
 Value FunNormalizeSpace::doEvaluate() const
 {
 	if ( argCount() == 0 ) {
-		DomString s = Value( Expression::evaluationContext().node ).toString();
-		return Value( DomString( s.simplified() ) );
+		DOMString s = Value( Expression::evaluationContext().node ).toString();
+		return Value( DOMString( s.string().simplified() ) );
 	}
 
-	QString s = arg( 0 )->evaluate().toString();
+	QString s = arg( 0 )->evaluate().toString().string();
 	s = s.simplified();
-	return Value( DomString( s ) );
+	return Value( DOMString( s ) );
 }
 
 Value FunTranslate::doEvaluate() const
 {
-	QString s1 = arg( 0 )->evaluate().toString();
-	QString s2 = arg( 1 )->evaluate().toString();
-	QString s3 = arg( 2 )->evaluate().toString();
+	QString s1 = arg( 0 )->evaluate().toString().string();
+	QString s2 = arg( 1 )->evaluate().toString().string();
+	QString s3 = arg( 2 )->evaluate().toString().string();
 	QString newString;
 
 	for ( int i1 = 0; i1 < s1.length(); ++i1 ) {
@@ -622,7 +623,7 @@ Value FunTranslate::doEvaluate() const
 		}
 	}
 
-	return Value( DomString( newString ) );
+	return Value( DOMString( newString ) );
 }
 
 Value FunBoolean::doEvaluate() const
@@ -645,15 +646,19 @@ bool FunTrue::isConstant() const
 	return true;
 }
 
+#ifdef __GNUC__
+#warning "This looks bogus"
+#endif
+
 Value FunLang::doEvaluate() const
 {
-	QString lang = arg( 0 )->evaluate().toString();
+	QString lang = arg( 0 )->evaluate().toString().string();
 
 	NodeImpl* node = evaluationContext().node;
 
     LocalName pln = LocalName::fromString("lang");
     PrefixName xmsnsURI = PrefixName::fromString("xms");
-    DOMStringImpl* langNodeValue;
+    DOMStringImpl* langNodeValue = 0;
 
     //NOTE: check this, is it nly ElementImpl or must use NodeImpl::findNextElementAncestor
 	while ( node ) {
@@ -707,7 +712,8 @@ Value FunSum::doEvaluate() const
 
 	double sum = 0.0;
 	const DomNodeList nodes = a.toNodeset();
-	foreach( NodeImpl *node, nodes ) {
+	for (int n = 0; n < nodes->size(); ++n) {
+		NodeImpl* node = nodes->at(n);
 		sum += Value( stringValue( node ) ).toNumber();
 	}
 	return Value( sum );
@@ -825,3 +831,5 @@ Function *FunctionLibrary::getFunction( const char *name,
 	return function;
 }
 
+} //namespace XPath
+} //namespace khtml

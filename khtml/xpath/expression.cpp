@@ -138,7 +138,7 @@ double Value::toNumber() const
 			return m_number;
 		case String: {
 			bool canConvert;
-			QString s = m_string.simplified();
+			QString s = m_string.string().simplified();
 			double value = s.toDouble( &canConvert );
 			if ( canConvert ) {
 				return value;
@@ -156,28 +156,28 @@ DOMString Value::toString() const
 {
 	switch ( m_type ) {
 		case Nodeset:
-			if ( m_nodeset.isEmpty() ) {
-				return QLatin1String( "" );
+			if ( m_nodeset->size() == 0 ) {
+				return DOMString( "" );
 			}
-			return stringValue( m_nodeset.first() );
+			return stringValue( m_nodeset->at(0) );
 		case String:
 			return m_string;
 		case Number:
 			if ( isnan( m_number ) ) {
-				return QLatin1String( "NaN" );
+				return DOMString( "NaN" );
 			} else if ( m_number == 0 ) {
-				return QLatin1String( "0" );
+				return DOMString( "0" );
 			} else if ( isinf( m_number ) ) {
 				if ( signbit( m_number ) == 0 ) {
-					return QLatin1String( "Infinity" );
+					return DOMString( "Infinity" );
 				} else {
-					return QLatin1String( "-Infinity" );
+					return DOMString( "-Infinity" );
 				}
 			}
 			return QString::number( m_number );
 		case Boolean:
-			return m_bool ? QLatin1String( "true" )
-			              : QLatin1String( "false" );
+			return m_bool ? DOMString( "true" )
+			              : DOMString( "false" );
 	}
 	return DOMString();
 }
@@ -199,7 +199,7 @@ QString Value::dump() const
 			s += "boolean";
 			break;
 	};
-	s += "\">" + toString() + "</value>";
+	s += "\">" + toString().string() + "</value>";
 	return s;
 }
 

@@ -26,22 +26,23 @@
 #include "path.h"
 
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_nodelistimpl.h"
 
 using namespace DOM;
-using namespace khtml;
-using namespace khtml::XPath;
 
+namespace khtml {
+namespace XPath {
 
 #warning Solve the linking in parsedstatment
 // extern Expression *parseStatement( const DomString &statement );
-Expression *parseStatement( const DomString &statement );
+Expression *parseStatement( const DOMString &statement );
 
 ParsedStatement::ParsedStatement()
 	: m_expr( 0 )
 {
 }
 
-ParsedStatement::ParsedStatement( const DomString &statement )
+ParsedStatement::ParsedStatement( const DOMString &statement )
 	: m_expr( 0 )
 {
 	parse( statement );
@@ -52,7 +53,7 @@ ParsedStatement::~ParsedStatement()
 	delete m_expr;
 }
 
-void ParsedStatement::parse( const DomString &statement )
+void ParsedStatement::parse( const DOMString &statement )
 {
 	delete m_expr;
 	m_expr = parseStatement( statement );
@@ -77,3 +78,5 @@ QString ParsedStatement::dump() const
 	return m_expr->dump();
 }
 
+} // namespace XPath
+} // namespace khtml

@@ -54,7 +54,7 @@ class Step
 
 		Step();
 		Step( AxisType axis,
-		      const DomString &nodeTest,
+		      const DOM::DOMString &nodeTest,
 		      const QList<Predicate *> &predicates = QList<Predicate *>() );
 		~Step();
 

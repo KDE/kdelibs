@@ -47,7 +47,7 @@ class Number : public Expression
 class String : public Expression
 {
 	public:
-		String( const DomString &value );
+		String( const DOM::DOMString &value );
 
 		bool isConstant() const;
 		virtual QString dump() const;
@@ -55,7 +55,7 @@ class String : public Expression
 	private:
 		virtual Value doEvaluate() const;
 
-		DomString m_value;
+		DOM::DOMString m_value;
 };
 
 class Negative : public Expression

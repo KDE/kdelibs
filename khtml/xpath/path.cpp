@@ -66,15 +66,16 @@ Value Filter::doEvaluate() const
 
 	DomNodeList inNodes = v.toNodeset(), outNodes;
 	foreach( Predicate *predicate, m_predicates ) {
-		outNodes.clear();
-		Expression::evaluationContext().size = inNodes.count();
-		Expression::evaluationContext().position = 0;
-		foreach( NodeImpl *node, inNodes ) {
+		outNodes = new StaticNodeListImpl();
+		Expression::evaluationContext().size = inNodes->size();
+
+		for ( int n = 0; n < inNodes->size(); ++n ) {
+			NodeImpl *node = inNodes->at(n);
 			Expression::evaluationContext().node = node;
-			++Expression::evaluationContext().position;
+			++Expression::evaluationContext().position = n;
 
 			if ( predicate->evaluate() ) {
-				outNodes.append( node );
+				outNodes->append( node );
 			}
 		}
 		inNodes = outNodes;
@@ -108,7 +109,8 @@ Value LocationPath::doEvaluate() const
 		qDebug( "Evaluating relative path expression with %i location steps.", m_steps.count() );
 	}
 
-	DomNodeList inDomNodes, outDomNodes;
+	DomNodeList inDomNodes  = new StaticNodeListImpl,
+	            outDomNodes;
 
 	/* For absolute location paths, the context node is ignored - the
 	 * document's root node is used instead.
@@ -120,18 +122,19 @@ Value LocationPath::doEvaluate() const
 		}
 	}
 
-	inDomNodes.append( context );
+	inDomNodes->append( context );
 
 	foreach( Step *step, m_steps ) {
-		for ( int i = 0; i < inDomNodes.count(); ++i ) {
-			DomNodeList matches = step->evaluate( inDomNodes.at( i ) );
-			outDomNodes += matches;
+		outDomNodes = new StaticNodeListImpl;
+		for ( int i = 0; i < inDomNodes->size(); ++i ) {
+			DomNodeList matches = step->evaluate( inDomNodes->at( i ) );
+			for ( int j = 0; j < matches->size(); ++j )
+				outDomNodes->append( matches->at( j ) );
 		}
 		inDomNodes = outDomNodes;
-		outDomNodes.clear();
 	}
 
-	return Value( inDomNodes );
+	return Value( outDomNodes );
 }
 
 QString LocationPath::dump() const
