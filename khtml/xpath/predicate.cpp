@@ -28,6 +28,7 @@
 #include <QString>
 
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_nodelistimpl.h"
 
 #include <math.h>
 
@@ -55,7 +56,7 @@ Value Number::doEvaluate() const
 	return Value( m_value );
 }
 
-String::String( const DomString &value )
+String::String( const DOMString &value )
 	: m_value( value )
 {
 }
@@ -67,7 +68,7 @@ bool String::isConstant() const
 
 QString String::dump() const
 {
-	return "<string>" + m_value + "</string>";
+	return "<string>" + m_value.string() + "</string>";
 }
 
 Value String::doEvaluate() const
@@ -269,13 +270,14 @@ Value Union::doEvaluate() const
 
 	DomNodeList lhsNodes = lhs.toNodeset();
 	DomNodeList rhsNodes = rhs.toNodeset();
-	DomNodeList result = lhsNodes;
-	foreach( NodeImpl *node, rhsNodes ) {
-		if ( !lhsNodes.contains( node ) ) {
-			result.append( node );
-		}
-	}
+	DomNodeList result = new StaticNodeListImpl;
 
+	for ( int n = 0; n < lhsNodes->size(); ++n )
+		result->append( lhsNodes->at( n ) );
+
+	for ( int n = 0; n < rhsNodes->size(); ++n )
+		result->append( rhsNodes->at( n ) );
+	
 	return Value( result );
 }
 
