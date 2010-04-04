@@ -1712,6 +1712,8 @@ void RenderSelect::updateFromElement()
                 if (text.isNull())
                     text = "";
 
+                text = text.implementation()->collapseWhiteSpace(false, false);
+
                 if(m_useListBox) {
                     QListWidgetItem *item = new QListWidgetItem(QString(text.implementation()->s, text.implementation()->l));
                     static_cast<KListWidget*>(m_widget)
@@ -1731,14 +1733,21 @@ void RenderSelect::updateFromElement()
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
-                QString text = optElem->text().string();
-                if (optElem->parentNode()->id() == ID_OPTGROUP)
-                {
+                
+                DOMString domText = optElem->text();
+                QString   text;
+                
+                if (optElem->parentNode()->id() == ID_OPTGROUP) {
                     // Prefer label if set
                     DOMString label = optElem->getAttribute(ATTR_LABEL);
                     if (!label.isEmpty())
-                        text = label.string();
-                    text = QLatin1String("    ")+text;
+                        domText = label.string();
+                    domText = domText.implementation()->collapseWhiteSpace(false, false);
+                        
+                    text = QLatin1String("    ") + domText.string();
+                } else {
+                    domText = domText.implementation()->collapseWhiteSpace(false, false);
+                    text = domText.string();
                 }
 
                 if(m_useListBox) {
