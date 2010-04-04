@@ -1281,39 +1281,8 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   if (getStaticOwnValueSlot(&DOMElementTable, this, propertyName, slot))
     return true;
 
-  // We have to check in DOMNode before giving access to attributes, otherwise
-  // onload="..." would make onload return the string (attribute value) instead of
-  // the listener object (function).
-  if (DOMNode::getOwnPropertySlot(exec, propertyName, slot))
-    return true;
-
-  //Check the prototype -before- the attribute thing
-  JSValue *proto = prototype();
-  if (proto->isObject() && static_cast<JSObject *>(proto)->getOwnPropertySlot(exec, propertyName, slot))
-    return true;
-
-#if 0 // IE-only feature
-  // Give access to attributes
-  ElementImpl &element = *static_cast<ElementImpl *>(impl());
-  if (element.hasAttribute(propertyName.domString())) {
-    slot.setCustom(this, attributeGetter);
-    return true;
-  }
-#endif
-
-  return false;
+  return DOMNode::getOwnPropertySlot(exec, propertyName, slot);
 }
-
-#if 0
-JSValue *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
-{
-  DOMElement *thisObj = static_cast<DOMElement *>(slot.slotBase());
-
-  ElementImpl *element = static_cast<ElementImpl *>(thisObj->impl());
-  DOM::DOMString attr = element->getAttribute(propertyName.domString());
-  return getStringOrNull(attr);
-}
-#endif
 
 JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
