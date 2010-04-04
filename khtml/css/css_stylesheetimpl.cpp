@@ -502,7 +502,7 @@ static DOMString parseMediaDescriptor(const DOMString& s)
             || (c == '-')))
             break;
     }
-    return s.implementation()->substring(0, len);
+    return s.implementation()->substring(0, i);
 }
 
 void MediaListImpl::deleteMedium(const DOMString& oldMedium, int& ec)
