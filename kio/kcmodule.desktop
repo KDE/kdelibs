@@ -102,6 +102,10 @@ Type=QString
 [PropertyDef::X-KDE-System-Settings-Parent-Category]
 Type=QString
 
+# the id of the parent category in the TreeList for KInfoCenter
+[PropertyDef::X-KDE-KInfoCenter-Category]
+Type=QString
+
 # sets the order of the modules in the TreeList/IconList
 [PropertyDef::X-KDE-Weight]
 Type=int
