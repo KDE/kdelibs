@@ -123,7 +123,19 @@ public:
     */
     QString version() const;
 
+    /**
+     * Id of this Entry. It is guaranteed to be unique for one provider.
+     * Id and ProviderId together identifiy this entry.
+     * @return the id
+     * @since 4.5
+     */
     QString id() const;
+
+    /**
+     * The Provider which is the source of the Entry.
+     * @return the Id of the Provider
+     * @since 4.5
+     */
     QString providerId() const;
 
 private:
