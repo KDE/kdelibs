@@ -334,8 +334,13 @@ void InsaneHTMLPluginLEView::expand() {
     if (tmp.trimmed().isEmpty())
       result_list.takeAt(i);
     else
-      result_list[i]=tmp;
+        result_list[i]=tmp;
   }
+  //prefix with indentation
+  QString line_prefix=line.left(start_x);
+  line_prefix.replace(QRegExp("\\S")," ");
+  for (int i=1;i<result_list.count();i++)
+    result_list[i]=line_prefix+result_list[i];
   QString result=result_list.join("\n");
   KTextEditor::Document *doc=m_view->document();
   KTextEditor::Range r(c.line(),start_x,c.line(),end_x);
