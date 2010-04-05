@@ -480,6 +480,8 @@ protected:
     bool m_ignoreSelectEvents;
     bool m_optionsChanged;
 
+    void clearItemFlags(int index, Qt::ItemFlags flags);
+
 protected Q_SLOTS:
     void slotSelected(int index);
     void slotSelectionChanged();

@@ -61,6 +61,7 @@
 #include <QStyleOptionButton>
 #include <QtGui/QLabel>
 #include <QtGui/QStyleOptionFrameV3>
+#include <QtGui/QStandardItemModel>
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
@@ -1661,6 +1662,20 @@ RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
     }
 }
 
+void RenderSelect::clearItemFlags(int index, Qt::ItemFlags flags)
+{
+    if(m_useListBox) {
+        QListWidgetItem* item = static_cast<KListWidget*>(m_widget)->item(index);
+        item->setFlags(item->flags() & ~flags);
+    } else {
+        KComboBox* combo = static_cast<KComboBox*>(m_widget);
+        if (QStandardItemModel* model = qobject_cast<QStandardItemModel*>(combo->model())) {
+            QStandardItem* item = model->item(index);
+            item->setFlags(item->flags() & ~flags);
+        }
+    }
+}
+
 void RenderSelect::updateFromElement()
 {
     m_ignoreSelectEvents = true;
@@ -1699,10 +1714,8 @@ void RenderSelect::updateFromElement()
         const QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
-        if(m_useListBox) {
+        if(m_useListBox)
             static_cast<KListWidget*>(m_widget)->clear();
-        }
-
         else
             static_cast<KComboBox*>(m_widget)->clear();
 
@@ -1714,28 +1727,18 @@ void RenderSelect::updateFromElement()
 
                 text = text.implementation()->collapseWhiteSpace(false, false);
 
-                bool disabled = !listItems[listIndex]->getAttribute(ATTR_DISABLED).isNull();
-
                 if(m_useListBox) {
                     QListWidgetItem *item = new QListWidgetItem(QString(text.implementation()->s, text.implementation()->l));
-                    static_cast<KListWidget*>(m_widget)
-                        ->insertItem(listIndex,item);
-
-                    if (disabled)
-                        item->setFlags(item->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
-                    else
-                        item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+                    static_cast<KListWidget*>(m_widget)->insertItem(listIndex,item);
+                } else {
+                    static_cast<KComboBox*>(m_widget)->insertItem(listIndex, QString(text.implementation()->s, text.implementation()->l));
                 }
-                else {
-                    static_cast<KComboBox*>(m_widget)
-                        ->insertItem(listIndex, QString(text.implementation()->s, text.implementation()->l));
-#ifdef __GNUC__
-  #warning "This needs fixing (though did it work in 3?)"
-#endif
-#if 0
-		    static_cast<KComboBox*>(m_widget)->listBox()->item(listIndex)->setSelectable(false);
-#endif
-		}
+
+                bool disabled = !listItems[listIndex]->getAttribute(ATTR_DISABLED).isNull();                
+                if (disabled)
+                    clearItemFlags(listIndex, Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                else
+                    clearItemFlags(listIndex, Qt::ItemIsSelectable);
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
@@ -1759,20 +1762,17 @@ void RenderSelect::updateFromElement()
                     text = domText.string();
                 }
 
-                if(m_useListBox) {
-                    KListWidget *l = static_cast<KListWidget*>(m_widget);
-                    l->insertItem(listIndex,text);
-
-                    bool disabled = !optElem->getAttribute(ATTR_DISABLED).isNull();
-                    if (parentOptGroup)
-                        disabled = disabled || !parentOptGroup->getAttribute(ATTR_DISABLED).isNull();
-
-                    if (disabled && l->item( listIndex )) {
-                        l->item( listIndex )->setFlags( l->item(listIndex)->flags()
-                                                            & ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled) );
-                    }
-                }  else
+                if(m_useListBox)
+                    static_cast<KListWidget*>(m_widget)->insertItem(listIndex,text);
+                else
                     static_cast<KComboBox*>(m_widget)->insertItem(listIndex, text);
+
+                bool disabled = !optElem->getAttribute(ATTR_DISABLED).isNull();
+                if (parentOptGroup)
+                    disabled = disabled || !parentOptGroup->getAttribute(ATTR_DISABLED).isNull();
+
+                if (disabled)
+                    clearItemFlags(listIndex, Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             }
             else
                 KHTMLAssert(false);
