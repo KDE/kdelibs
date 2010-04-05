@@ -88,7 +88,7 @@ void KUrlNavigatorButton::setText(const QString& text)
     }
     if (adjustedText.contains(QLatin1Char('\n'))) {
         // Assure that the button always consists of one line
-        adjustedText.replace(QLatin1Char('\n'), QString());
+        adjustedText.remove(QLatin1Char('\n'));
     }
 
     KUrlButton::setText(adjustedText);
