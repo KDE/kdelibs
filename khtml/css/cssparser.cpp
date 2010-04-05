@@ -1156,6 +1156,7 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
         else
             return parseFont(important);
+        break;
 
     case CSS_PROP_LIST_STYLE:
     {

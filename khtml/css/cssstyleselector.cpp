@@ -3931,6 +3931,51 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
 	    applyRule( CSS_PROP_LINE_HEIGHT, font->lineHeight );
 	    applyRule( CSS_PROP_FONT_FAMILY, font->family );
+	} else if (primitiveValue) {
+            // Handle system fonts. We extract out properties from a QFont
+            // into the RenderStyle. 
+            QFont f;
+            switch (primitiveValue->getIdent()) {
+            case CSS_VAL_ICON:
+                f = KGlobalSettings::toolBarFont();
+                break;
+
+            case CSS_VAL_MENU:
+                f = KGlobalSettings::menuFont();
+                break;
+
+            case CSS_VAL_SMALL_CAPTION:
+                f = KGlobalSettings::smallestReadableFont();
+                break;
+
+            case CSS_VAL_CAPTION:
+            case CSS_VAL_MESSAGE_BOX:
+            case CSS_VAL_STATUS_BAR:
+                f = KGlobalSettings::generalFont();
+                break;
+            default:
+                return;
+            }
+
+            FontDef fontDef = style->htmlFont().fontDef;
+            fontDef.family    = f.family();
+            fontDef.italic    = f.italic();
+            fontDef.smallCaps = (f.capitalization() == QFont::SmallCaps);
+            fontDef.weight    = f.weight();
+            fontDirty |= style->setFontDef( fontDef );
+
+            // Use applyRule to apply height, so it can convert
+            // point sizes, and cap pixel sizes appropriately.
+            if (f.pixelSize() != -1) {
+                CSSPrimitiveValueImpl size( f.pixelSize(), CSSPrimitiveValue::CSS_PX );
+                applyRule( CSS_PROP_FONT_SIZE, &size );
+            } else {
+                CSSPrimitiveValueImpl size( f.pointSize(), CSSPrimitiveValue::CSS_PT );
+                applyRule( CSS_PROP_FONT_SIZE, &size );
+            }
+
+            // line-height just gets default.
+            style->setLineHeight(RenderStyle::initialLineHeight());            
 	}
 	return;
 
