@@ -200,13 +200,13 @@ public:
      * @since 4.2
      */
     void setShowFullPath(bool show);
-    
+
     /**
      * @return True, if the full path of the URL should be shown in the breadcrumb view.
      * @since  4.2
      */
     bool showFullPath() const;
-    
+
     /**
      * Set the URL navigator to the active mode, if \a active
      * is true. The active mode is default. The inactive mode only differs
@@ -254,7 +254,7 @@ public:
      *          recent history entry.
      */
     int historyIndex() const;
-    
+
     /**
      * @return The used editor when the navigator is in the edit mode
      * @see    KUrlNavigator::setUrlEditable()
@@ -366,7 +366,7 @@ Q_SIGNALS:
      * @see KUrlNavigator::setUrl()
      */
     void urlChanged(const KUrl& url);
-    
+
     /**
      * Is emitted, before the location URL is going to be changed to \a newUrl.
      * The signal KUrlNavigator::urlChanged() will be emitted after the change
@@ -387,7 +387,7 @@ Q_SIGNALS:
      * the history is changed if a new URL has been selected.
      */
     void historyChanged();
-                     
+
     /**
      * Is emitted if a dropping has been done above the destination
      * \a destination. The receiver must accept the drop event if
@@ -437,7 +437,7 @@ protected:
 
     /* @see QWidget::resizeEvent() */
     virtual void resizeEvent(QResizeEvent* event);
-    
+
     virtual bool eventFilter(QObject* watched, QEvent* event);
 
 private:
@@ -447,7 +447,7 @@ private:
     Q_PRIVATE_SLOT(d, void switchView())
     Q_PRIVATE_SLOT(d, void dropUrls(const KUrl& destination, QDropEvent*))
     Q_PRIVATE_SLOT(d, void slotNavigatorButtonClicked(const KUrl& url, Qt::MouseButton button))
-    Q_PRIVATE_SLOT(d, void openContextMenu(const QPoint& pos))
+    Q_PRIVATE_SLOT(d, void openContextMenu())
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())

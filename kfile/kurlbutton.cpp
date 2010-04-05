@@ -40,17 +40,13 @@ KUrlButton::KUrlButton(QWidget* parent) :
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     setMinimumHeight(parent->minimumHeight());
-    setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this, SIGNAL(pressed()), parent, SLOT(requestActivation()));
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(activate()));
 }
 
 KUrlButton::~KUrlButton()
 {
 }
-
 
 void KUrlButton::setActive(bool active)
 {

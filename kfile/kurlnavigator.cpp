@@ -97,7 +97,7 @@ public:
      */
     void slotNavigatorButtonClicked(const KUrl& url, Qt::MouseButton button);
 
-    void openContextMenu(const QPoint& pos);
+    void openContextMenu();
 
     void updateContent();
 
@@ -264,6 +264,10 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_layout->setStretchFactor(m_host, 1);
     m_layout->addWidget(m_pathBox, 1);
     m_layout->addWidget(m_toggleEditableMode);
+
+    q->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(q, SIGNAL(customContextMenuRequested(QPoint)),
+            q, SLOT(openContextMenu()));
 }
 
 void KUrlNavigator::Private::initialize(const KUrl& url)
@@ -442,8 +446,10 @@ void KUrlNavigator::Private::slotNavigatorButtonClicked(const KUrl& url, Qt::Mou
     }
 }
 
-void KUrlNavigator::Private::openContextMenu(const QPoint& pos)
+void KUrlNavigator::Private::openContextMenu()
 {
+    q->setActive(true);
+
     KMenu popup(q);
 
     // provide 'Copy' action, which copies the current URL of
@@ -481,7 +487,7 @@ void KUrlNavigator::Private::openContextMenu(const QPoint& pos)
     showFullPathAction->setCheckable(true);
     showFullPathAction->setChecked(q->showFullPath());
 
-    QAction* activatedAction = popup.exec(pos);
+    QAction* activatedAction = popup.exec(QCursor::pos());
     if (activatedAction == copyAction) {
         QMimeData* mimeData = new QMimeData();
         mimeData->setText(q->locationUrl().pathOrUrl());
@@ -628,8 +634,6 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
                         q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
                 connect(button, SIGNAL(clicked(KUrl, Qt::MouseButton)),
                         q, SLOT(slotNavigatorButtonClicked(KUrl, Qt::MouseButton)));
-                connect(button, SIGNAL(customContextMenuRequested(QPoint)),
-                        q, SLOT(openContextMenu(QPoint)));
                 appendWidget(button);
             } else {
                 button = m_navButtons[idx - startIndex];
@@ -816,8 +820,8 @@ bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
     // Note: this list of MIME types depends on the protocols implemented by kio_archive
     return  mime->is("application/x-compressed-tar") ||
             mime->is("application/x-bzip-compressed-tar") ||
-	    mime->is("application/x-lzma-compressed-tar") ||
-	    mime->is("application/x-xz-compressed-tar") ||
+        mime->is("application/x-lzma-compressed-tar") ||
+        mime->is("application/x-xz-compressed-tar") ||
             mime->is("application/x-tar") ||
             mime->is("application/x-tarz") ||
             mime->is("application/x-tzo") || // (not sure KTar supports those?)
@@ -890,7 +894,7 @@ bool KUrlNavigator::goBack()
     if (d->m_historyIndex < count - 1) {
         const KUrl newUrl = locationUrl(d->m_historyIndex + 1);
         emit urlAboutToBeChanged(newUrl);
-        
+
         ++d->m_historyIndex;
         d->updateContent();
 
@@ -907,7 +911,7 @@ bool KUrlNavigator::goForward()
     if (d->m_historyIndex > 0) {
         const KUrl newUrl = locationUrl(d->m_historyIndex - 1);
         emit urlAboutToBeChanged(newUrl);
-        
+
         --d->m_historyIndex;
         d->updateContent();
 
