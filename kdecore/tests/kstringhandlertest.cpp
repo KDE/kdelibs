@@ -19,17 +19,17 @@ void KStringHandlerTest::tagURLs()
 {
     QString test = "Click on http://foo@bar:www.kde.org/yoyo/dyne.html#a1 for info.";
     QCOMPARE(KStringHandler::tagUrls(test),
-	    QString("Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info."));
+        QString("Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info."));
 
     test = "http://www.foo.org/story$806";
     QCOMPARE(KStringHandler::tagUrls(test),
-	    QString("<a href=\"http://www.foo.org/story$806\">http://www.foo.org/story$806</a>"));
+        QString("<a href=\"http://www.foo.org/story$806\">http://www.foo.org/story$806</a>"));
 
 #if 0
   // XFAIL - i.e. this needs to be fixed, but has never been
   test = "&lt;a href=www.foo.com&gt;";
   check( "tagURLs()", KStringHandler::tagURLs( test ),
-	 "&lt;a href=<a href=\"www.foo.com\">www.foo.com</a>&gt;" );
+     "&lt;a href=<a href=\"www.foo.com\">www.foo.com</a>&gt;" );
 #endif
 }
 
@@ -109,6 +109,13 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("text", "text.txt", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("text.txt", "text1", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("text1", "text1.txt", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("A B", "A.B", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("A.B", "A B", Qt::CaseSensitive), +1);
+
+    // bug 231445
+    QCOMPARE(KStringHandler::naturalCompare("1", "a", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a", "v01 1", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("v01 1", "v01 a", Qt::CaseSensitive), -1);
 }
 
 void KStringHandlerTest::obscure()
