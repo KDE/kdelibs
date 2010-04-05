@@ -80,14 +80,17 @@ InsaneHTMLPluginLEView::~InsaneHTMLPluginLEView() {
  We expect the cursor to be in them middle or at the end of a tag and don't allow attribute definitions on the right hand side, only quantifiers
 */
 
-int InsaneHTMLPluginLEView::find_region_end(int cursor_x, const QString& line) {
+int InsaneHTMLPluginLEView::find_region_end(int cursor_x, const QString& line, int *filtercount) {
   int end_x=cursor_x;
   const int len=line.length();
   while (end_x<len) {
     QChar c=line.at(end_x);
     if (c.isLetter() || c.isDigit() || (c==QChar('*')) || (c==QChar('_')) || (c==QChar('-')) || (c==QChar(':')) || (c==QChar('.')) || (c==QChar('#')) )
       end_x++;
-    else
+    else if (c==QChar('|')) {
+      end_x++;
+      (*filtercount)++;
+    } else
       break;
   }
   int tmp=end_x-1;
@@ -98,7 +101,7 @@ int InsaneHTMLPluginLEView::find_region_end(int cursor_x, const QString& line) {
 
 
 /* everything is allowed in the front*/
-int InsaneHTMLPluginLEView::find_region_start(int cursor_x, const QString& line) {
+int InsaneHTMLPluginLEView::find_region_start(int cursor_x, const QString& line, int *filtercount) {
   int len=line.length();
   int start_x=cursor_x;
   bool in_attrib=false;
@@ -140,7 +143,13 @@ int InsaneHTMLPluginLEView::find_region_start(int cursor_x, const QString& line)
     
     if (c.isLetter() || c.isDigit() || (c==QChar('*')) || (c==QChar('_')) ||
       (c==QChar('-')) || (c==QChar(':')) || (c==QChar('.')) || (c==QChar('#')) || 
-      (c==QChar('>')) || (c==QChar('$')) || (c==QChar('+')) ) {
+      (c==QChar('>')) || (c==QChar('$')) || (c==QChar('+'))) {
+      start_x=tmp_x;
+      continue;
+    }
+    
+    if (c==QChar('|')) {
+      (*filtercount)++;
       start_x=tmp_x;
       continue;
     }
@@ -167,7 +176,7 @@ QString InsaneHTMLPluginLEView::parseIdentifier(const QString& input, int *offse
   while (offset_tmp<len) {
     QChar c=input.at(offset_tmp);
     if (! (
-      c.isDigit() || c.isLetter() || (c==QChar(':')) || (c==QChar('_')) || (c==QChar('-'))
+      c.isDigit() || c.isLetter() || (c==QChar(':')) || (c==QChar('_')) || (c==QChar('-')) 
     )) break;
     identifier+=c;
     offset_tmp++;
@@ -270,11 +279,18 @@ QStringList InsaneHTMLPluginLEView::parse(const QString& input, int offset) {
   return QStringList();
 }
 
+void InsaneHTMLPluginLEView::apply_filter_e(QStringList *lines) {
+  lines->replaceInStrings("&","&amp;");
+  lines->replaceInStrings("<","&lt;");
+  lines->replaceInStrings(">","&gt;");
+}
+
 void InsaneHTMLPluginLEView::expand() {
  KTextEditor::Cursor c=m_view->cursorPosition();
  QString line=m_view->document()->line(c.line());
- int start_x=find_region_start(c.column(),line);
- int end_x=find_region_end(c.column(),line);
+ int filtercount=0;
+ int start_x=find_region_start(c.column(),line,&filtercount);
+ int end_x=find_region_end(c.column(),line,&filtercount);
  if ( (start_x<0) || (end_x<0) || (start_x==end_x) ) {
    KPassivePopup::message(i18n("No valid Insane HTML markup detected at current cursor position"),m_view);
    return;
@@ -282,8 +298,25 @@ void InsaneHTMLPluginLEView::expand() {
 #ifdef IHP_DEBUG
   KPassivePopup::message(i18n("This looks like valid Insane HTML markup: %1",line.mid(start_x,end_x-start_x)),m_view);
 #endif
-  QString result=parse(line.mid(start_x,end_x-start_x),0).join("\n");
+  QString region_text=line.mid(start_x,end_x-start_x);
+  QStringList filters;
+  while(filtercount>0) {
+    int li=region_text.lastIndexOf("|");
+    filters<<region_text.mid(li+1);
+    region_text=region_text.left(li);
+    filtercount--;
+  }
+  QStringList result_list=parse(region_text,0);
+  while(!filters.isEmpty()) {
+    //built_in_filters
+    QString filter=filters.takeLast();
+    if (filter=="e")
+      apply_filter_e(&result_list);
+  }
+  QString result=result_list.join("\n");
   KTextEditor::Document *doc=m_view->document();
   KTextEditor::Range r(c.line(),start_x,c.line(),end_x);
   doc->replaceText(r,result);
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

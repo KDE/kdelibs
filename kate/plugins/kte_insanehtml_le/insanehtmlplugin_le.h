@@ -41,11 +41,12 @@ public Q_SLOTS:
 private:
   KTextEditor::View *m_view;
   QStringList m_emptyTags;
-  int find_region_start(int cursor_x, const QString& line);
-  int find_region_end(int cursor_x, const QString& line);
+  int find_region_start(int cursor_x, const QString& line, int * filtercount);
+  int find_region_end(int cursor_x, const QString& line, int * filtercount);
   QStringList parse(const QString& input, int offset);
   QString parseIdentifier(const QString& input, int *offset);
   int parseNumber(const QString& input, int *offset);
+  void apply_filter_e(QStringList *lines);
 };
 
 class InsaneHTMLPluginLE: public KTextEditor::Plugin {
@@ -59,3 +60,5 @@ private:
   QMap<KTextEditor::View*,InsaneHTMLPluginLEView*> m_map;
 };
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
