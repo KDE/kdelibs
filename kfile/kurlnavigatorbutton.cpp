@@ -86,10 +86,8 @@ void KUrlNavigatorButton::setText(const QString& text)
     if (adjustedText.isEmpty()) {
         adjustedText = m_url.protocol();
     }
-    if (adjustedText.contains(QLatin1Char('\n'))) {
-        // Assure that the button always consists of one line
-        adjustedText.remove(QLatin1Char('\n'));
-    }
+    // Assure that the button always consists of one line
+    adjustedText.remove(QLatin1Char('\n'));
 
     KUrlButton::setText(adjustedText);
     updateMinimumWidth();
