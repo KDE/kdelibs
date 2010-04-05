@@ -47,6 +47,7 @@ private:
   QString parseIdentifier(const QString& input, int *offset);
   int parseNumber(const QString& input, int *offset);
   void apply_filter_e(QStringList *lines);
+  void apply_filter_c(QStringList *lines);
 };
 
 class InsaneHTMLPluginLE: public KTextEditor::Plugin {

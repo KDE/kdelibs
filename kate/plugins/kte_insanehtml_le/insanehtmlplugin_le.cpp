@@ -250,6 +250,8 @@ QStringList InsaneHTMLPluginLEView::parse(const QString& input, int offset) {
     QString idAttrib;
     if (!id.isEmpty()) idAttrib=QString(" id=\"%1\"").arg(id);
     QString classAttrib=classes.join(" ");
+    QString classComment;
+    if (!classAttrib.isEmpty()) classComment="."+classes.join(" .");
     if (!classAttrib.isEmpty()) classAttrib=QString(" class=\"%1\"").arg(classAttrib);
 
     if (!sub.isEmpty())
@@ -257,7 +259,9 @@ QStringList InsaneHTMLPluginLEView::parse(const QString& input, int offset) {
     
     for (int i=1;i<=multiply;i++) {
       bool done=false;
-      if (sub.isEmpty()) {
+      if (!idAttrib.isEmpty()) result<<QString("|c-#%1-c|").arg(id);
+      if (!classComment.isEmpty()) result<<QString("|c-%1-c|").arg(classComment);
+      if (sub.isEmpty()) {        
 	if (m_emptyTags.contains(tag)) {
 	  result<<QString("<%1%2%3/>").arg(tag).arg(idAttrib).arg(classAttrib);
 	  done=true;
@@ -271,6 +275,9 @@ QStringList InsaneHTMLPluginLEView::parse(const QString& input, int offset) {
 	} else
 	  result<<QString("<%1%2%3></%1>").arg(tag).arg(idAttrib).arg(classAttrib);
       }
+      
+      if (!idAttrib.isEmpty()) result<<QString("|c-/#%1-c|").arg(id);
+      if (!classComment.isEmpty()) result<<QString("|c-/%1-c|").arg(classComment);
     }
     if (!relatives.isEmpty())
       result<<relatives;
@@ -283,6 +290,11 @@ void InsaneHTMLPluginLEView::apply_filter_e(QStringList *lines) {
   lines->replaceInStrings("&","&amp;");
   lines->replaceInStrings("<","&lt;");
   lines->replaceInStrings(">","&gt;");
+}
+
+void InsaneHTMLPluginLEView::apply_filter_c(QStringList *lines) {
+  lines->replaceInStrings("|c-","<!-- ");
+  lines->replaceInStrings("-c|"," -->");
 }
 
 void InsaneHTMLPluginLEView::expand() {
@@ -312,6 +324,17 @@ void InsaneHTMLPluginLEView::expand() {
     QString filter=filters.takeLast();
     if (filter=="e")
       apply_filter_e(&result_list);
+    else if (filter=="c") apply_filter_c(&result_list);
+  }
+  //remove unwanted comment marks
+  QRegExp rcm("\\|c\\-.*\\-c\\|");
+  for (int i=result_list.count()-1;i>=0;i--) {
+    QString tmp=result_list[i];
+    tmp.remove(rcm);
+    if (tmp.trimmed().isEmpty())
+      result_list.takeAt(i);
+    else
+      result_list[i]=tmp;
   }
   QString result=result_list.join("\n");
   KTextEditor::Document *doc=m_view->document();
