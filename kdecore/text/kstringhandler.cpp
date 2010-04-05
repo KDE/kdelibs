@@ -366,7 +366,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         const QStringRef& subB(b.midRef(begSeqB - b.unicode(), currB - begSeqB));
         const int cmp = QStringRef::localeAwareCompare(subA, subB);
         if (cmp != 0) {
-            return cmp < 0 ? -1 : 1;
+            return cmp < 0 ? -1 : +1;
         }
 
         if (currA->isNull() || currB->isNull()) {
@@ -374,11 +374,11 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         }
 
         // find sequence of characters ending at the first non-character
-        while (currA->isPunct() || currA->isSpace()) {
+        while (currA->isPunct() || currA->isSpace() || currB->isPunct() || currB->isSpace()) {
+            if (*currA != *currB) {
+                return (*currA < *currB) ? -1 : +1;
+            }
             ++currA;
-        }
-
-        while (currB->isPunct() || currB->isSpace()) {
             ++currB;
         }
 
@@ -409,6 +409,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
             // value wins, but we can't know that it will until we've scanned
             // both numbers to know that they have the same magnitude.
 
+            bool isFirstRun = true;
             int weight = 0;
             while (1) {
                 if (!currA->isDigit() && !currB->isDigit()) {
@@ -417,9 +418,17 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                     }
                     break;
                 } else if (!currA->isDigit()) {
-                    return -1;
+                    if (isFirstRun) {
+                        return *currA < *currB ? + 1 : -1;
+                    } else {
+                        return -1;
+                    }
                 } else if (!currB->isDigit()) {
-                    return + 1;
+                    if (isFirstRun) {
+                        return *currA < *currB ? - 1 : +1;
+                    } else {
+                        return +1;
+                    }
                 } else if ((*currA < *currB) && (weight == 0)) {
                     weight = -1;
                 } else if ((*currA > *currB) && (weight == 0)) {
@@ -427,6 +436,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                 }
                 ++currA;
                 ++currB;
+                isFirstRun = false;
             }
         }
 
