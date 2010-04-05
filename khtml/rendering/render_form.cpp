@@ -1744,21 +1744,20 @@ void RenderSelect::updateFromElement()
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
                 
                 DOMString domText = optElem->text();
+                // Prefer label if set
+                DOMString label = optElem->getAttribute(ATTR_LABEL);
+                if (!label.isEmpty())
+                    domText = label.string();
+                domText = domText.implementation()->collapseWhiteSpace(false, false);
+
                 QString   text;
 
                 ElementImpl* parentOptGroup = optElem->parentNode()->id() == ID_OPTGROUP ?
                                                  static_cast<ElementImpl*>(optElem->parentNode()) : 0;
                 
-                if (parentOptGroup) {
-                    // Prefer label if set
-                    DOMString label = optElem->getAttribute(ATTR_LABEL);
-                    if (!label.isEmpty())
-                        domText = label.string();
-                    domText = domText.implementation()->collapseWhiteSpace(false, false);
-                        
+                if (parentOptGroup) {        
                     text = QLatin1String("    ") + domText.string();
                 } else {
-                    domText = domText.implementation()->collapseWhiteSpace(false, false);
                     text = domText.string();
                 }
 
