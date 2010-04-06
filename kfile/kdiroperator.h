@@ -638,6 +638,8 @@ protected:
 
     virtual void resizeEvent(QResizeEvent *event);
 
+    virtual void keyPressEvent(QKeyEvent * event);
+
     /**
      * Sets up all the actions. Called from the constructor, you usually
      * better not call this.

@@ -178,6 +178,13 @@ void KDirOperatorIconView::wheelEvent(QWheelEvent *event)
     }
 }
 
+void KDirOperator::keyPressEvent(QKeyEvent *e)
+{
+    if (!(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )) {
+        QWidget::keyPressEvent(e);
+    }
+}
+
 class KDirOperator::Private
 {
 public:
@@ -2370,7 +2377,7 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
 
     if (item.isDir()) {
         parent->selectDir(item);
-    } else if (!isSaving) {
+    } else {
         parent->selectFile(item);
     }
 }

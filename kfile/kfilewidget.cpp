@@ -1100,7 +1100,9 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
 
     // if we are saving, let another chance to the user before accepting the dialog (or trying to
     // accept). This way the user can choose a file and add a "_2" for instance to the filename
-    if (operationMode != KFileWidget::Saving) {
+    if (operationMode == KFileWidget::Saving) {
+        locationEdit->setFocus();
+    } else {
         q->slotOk();
     }
 }
