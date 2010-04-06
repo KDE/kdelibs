@@ -35,6 +35,7 @@ Comment[nb]=Forsyner programmer med praksis for SSL-sertifikater
 Comment[pt]=Fornece uma política de certificados SSL às aplicações
 Comment[pt_BR]=Fornece uma política de certificados SSL aos aplicativos
 Comment[sv]=Tillhandahåller SSL-certifikatpolicyn till program
+Comment[tg]=Сиёсати иҷозатномаи SSL-ро ба барномаҳо дастрас мекунад
 Comment[th]=กำหนดนโยบายการใช้ใบรับรอง SSL ให้กับโปรแกรมต่าง ๆ
 Comment[uk]=Правила роботи з сертифікатами SSL для програм
 Comment[x-test]=xxProvides SSL certificate policy to applicationsxx
