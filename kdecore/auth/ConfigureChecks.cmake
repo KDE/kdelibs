@@ -11,7 +11,7 @@ set(KAUTH_BACKEND ${KDE4_AUTH_BACKEND_NAME})
 ## 4.4: We leave polkit-0.9 having more priority over polkit-1. This will change from 4.5 on
 if(NOT KAUTH_BACKEND)
     # Look for the most appropriate backend
-    message(STATUS "No backend for KAuth was explicitely specified: probing system to find the best one available")
+    message(STATUS "No backend for KAuth was explicitly specified: probing system to find the best one available")
     if (APPLE)
         set (KAUTH_BACKEND "OSX")
     elseif (UNIX)
