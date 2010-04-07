@@ -226,14 +226,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
     if (entry.payload().isEmpty()) {
         kDebug() << "No payload associated with: " << entry.name();
         return;
-        // attica needs to get the downloadlink :(
-        // fix attica?
-        //Provider* provider = provider_index.value(entry.providerId());
     }
-
-
-    // FIXME: this is only so exposing the KUrl suffices for downloaded entries
-
 
     // FIXME: first of all, do the security stuff here
     // this means check sum comparison and signature verification

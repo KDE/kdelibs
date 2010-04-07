@@ -101,7 +101,7 @@ namespace KNS3
         // Associate job and entry, this is needed when fetching
         // download links or the account balance in order to continue
         // when the result is there.
-        QHash<Attica::BaseJob*, EntryInternal> mDownloadLinkJobs;
+        QHash<Attica::BaseJob*, QPair<EntryInternal, int> > mDownloadLinkJobs;
         
         // keep track of the current request
         Attica::BaseJob* mEntryJob;

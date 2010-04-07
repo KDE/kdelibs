@@ -256,14 +256,14 @@ void AtticaProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int linkI
         // Ask for balance, then show information...
         ItemJob<AccountBalance>* job = m_provider.requestAccountBalance();
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(accountBalanceLoaded(Attica::BaseJob*)));
-        mDownloadLinkJobs[job] = entry;
+        mDownloadLinkJobs[job] = qMakePair(entry, linkId);
         job->start();
 
         kDebug() << "get account balance";
     } else {
         ItemJob<DownloadItem>* job = m_provider.downloadLink(entry.uniqueId(), QString::number(linkId));
         connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
-        mDownloadLinkJobs[job] = entry;
+        mDownloadLinkJobs[job] = qMakePair(entry, linkId);
         job->start();
 
         kDebug() << " link for " << entry.uniqueId();
@@ -277,19 +277,21 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
     ItemJob<AccountBalance>* job = static_cast<ItemJob<AccountBalance>*>(baseJob);
     AccountBalance item = job->result();
 
-    EntryInternal entry = mDownloadLinkJobs.take(job);
+    QPair<EntryInternal, int> pair = mDownloadLinkJobs.take(job);
+    EntryInternal entry(pair.first);
     Content content = mCachedContent.value(entry.uniqueId());
-    // TODO: at some point maybe support more than one download description
-    if (content.downloadUrlDescription(1).priceAmount() < item.balance()) {
+    if (content.downloadUrlDescription(pair.second).priceAmount() < item.balance()) {
         kDebug() << "Your balance is greather than the price."
-                << content.downloadUrlDescription(0).priceAmount() << " balance: " << item.balance();
+                    << content.downloadUrlDescription(pair.second).priceAmount() << " balance: " << item.balance();
         if (KMessageBox::questionYesNo(0,
                 i18nc("the price of a download item, parameter 1 is the currency, 2 is the price",
-                "This items costs %1 %2.\nDo you want to buy it?")) == KMessageBox::Yes) {
-            ItemJob<DownloadItem>* job = m_provider.downloadLink(entry.uniqueId());
+                      "This items costs %1 %2.\nDo you want to buy it?",
+                      item.currency(), content.downloadUrlDescription(pair.second).priceAmount()
+                )) == KMessageBox::Yes) {
+            ItemJob<DownloadItem>* job = m_provider.downloadLink(entry.uniqueId(), QString::number(pair.second));
             connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(downloadItemLoaded(Attica::BaseJob*)));
             connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
-            mDownloadLinkJobs[job] = entry;
+            mDownloadLinkJobs[job] = qMakePair(entry, pair.second);
             job->start();
         } else {
             return;
@@ -309,7 +311,7 @@ void AtticaProvider::downloadItemLoaded(BaseJob* baseJob)
     ItemJob<DownloadItem>* job = static_cast<ItemJob<DownloadItem>*>(baseJob);
     DownloadItem item = job->result();
 
-    EntryInternal entry = mDownloadLinkJobs.take(job);
+    EntryInternal entry = mDownloadLinkJobs.take(job).first;
     entry.setPayload(QString(item.url().toString()));
     emit payloadLinkLoaded(entry);
 }

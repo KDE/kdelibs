@@ -234,7 +234,6 @@ void EntryDetails::updateButtons()
     }
 }
 
-
 void EntryDetails::install()
 {
     m_engine->install(m_entry);
