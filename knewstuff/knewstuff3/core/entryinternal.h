@@ -321,6 +321,7 @@ public:
     int downloadLinkCount() const;
     QList<DownloadLinkInformation> downloadLinkInformationList() const;
     void appendDownloadLinkInformation(const DownloadLinkInformation& info);
+    void clearDownloadLinkInformation();
 
     QString donationLink() const;
     void setDonationLink(const QString& link);

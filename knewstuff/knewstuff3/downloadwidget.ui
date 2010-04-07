@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>478</height>
+    <width>788</width>
+    <height>479</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="detailsStack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="overviewPage">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -261,7 +261,6 @@
         </layout>
        </item>
       </layout>
-      <zorder></zorder>
       <zorder>m_listView</zorder>
       <zorder></zorder>
      </widget>
@@ -400,8 +399,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>570</width>
-                <height>173</height>
+                <width>758</width>
+                <height>156</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -509,12 +508,15 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="installButton">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QToolButton" name="installButton">
        <property name="text">
         <string>Install</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::InstantPopup</enum>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonFollowStyle</enum>
        </property>
       </widget>
      </item>

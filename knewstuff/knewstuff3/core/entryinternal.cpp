@@ -409,6 +409,11 @@ void KNS3::EntryInternal::appendDownloadLinkInformation(const KNS3::EntryInterna
     d->mDownloadLinkInformationList.append(info);
 }
 
+void EntryInternal::clearDownloadLinkInformation()
+{
+    d->mDownloadLinkInformationList.clear();
+}
+
 bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
 {
     if (xmldata.tagName() != "stuff") {

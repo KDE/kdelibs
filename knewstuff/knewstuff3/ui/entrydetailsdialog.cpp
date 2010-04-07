@@ -17,14 +17,7 @@
 
 #include "entrydetailsdialog.h"
 
-#include <QtCore/QTimer>
-#include <QtGui/QSortFilterProxyModel>
-#include <QtGui/QScrollBar>
-
-#include <kmessagebox.h>
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
-#include <ktitlewidget.h>
+#include <kmenu.h>
 #include <kdebug.h>
 
 #include <knewstuff3/core/engine.h>
@@ -54,6 +47,7 @@ void EntryDetails::init()
 
     updateButtons();
     connect(ui->installButton, SIGNAL(clicked()), this, SLOT(install()));
+    connect(ui->installButton, SIGNAL(triggered(QAction*)), this, SLOT(slotInstallActionTriggered(QAction*)));
     connect(ui->uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
     // updating is the same as installing
     connect(ui->updateButton, SIGNAL(clicked()), this, SLOT(install()));
@@ -218,11 +212,37 @@ void EntryDetails::updateButtons()
             ui->installButton->setEnabled(true);
             break;
     }
+    
+    if (ui->installButton->menu()) {
+        QMenu* buttonMenu = ui->installButton->menu();
+        buttonMenu->clear();
+        ui->installButton->setMenu(0);
+        buttonMenu->deleteLater();
+    }
+    if (ui->installButton->isVisible() && m_entry.downloadLinkCount() > 1) {
+        KMenu * installMenu = new KMenu(ui->installButton);
+        foreach (EntryInternal::DownloadLinkInformation info, m_entry.downloadLinkInformationList()) {
+            QString text = info.name;
+            if (!info.distributionType.trimmed().isEmpty()) {
+                text + " (" + info.distributionType.trimmed() + ")";
+            }
+            QAction* installAction = installMenu->addAction(KIcon("dialog-ok"), text);
+            installAction->setData(info.id);
+        }
+        kDebug() << "links: " << m_entry.downloadLinkInformationList().size();
+        ui->installButton->setMenu(installMenu);
+    }
 }
+
 
 void EntryDetails::install()
 {
     m_engine->install(m_entry);
+}
+
+void EntryDetails::slotInstallActionTriggered(QAction* action)
+{
+    m_engine->install(m_entry, action->data().toInt());
 }
 
 void EntryDetails::uninstall()

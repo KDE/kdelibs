@@ -425,7 +425,7 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
     entry.setSummary(content.description());
     entry.setChangelog(content.changelog());
 
-
+    entry.clearDownloadLinkInformation();
     QList<Attica::DownloadDescription> descs = content.downloadUrlDescriptions();
     foreach (Attica::DownloadDescription desc, descs) {
         EntryInternal::DownloadLinkInformation info;
