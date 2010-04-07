@@ -214,6 +214,11 @@ const KAboutData *KComponentData::aboutData() const
     return &d->aboutData;
 }
 
+void KComponentData::setAboutData(const KAboutData &aboutData)
+{
+    d->aboutData = aboutData;
+}
+
 QString KComponentData::componentName() const
 {
     Q_ASSERT(d);

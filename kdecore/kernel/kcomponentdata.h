@@ -151,6 +151,13 @@ public:
     const KAboutData *aboutData() const;
 
     /**
+     * Sets the about data of this component.
+     *
+     * @since 4.5
+     */
+    void setAboutData(const KAboutData &aboutData);
+
+    /**
      * Returns the name of the component.
      *
      * @return The component name.

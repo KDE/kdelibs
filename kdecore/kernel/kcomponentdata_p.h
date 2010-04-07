@@ -79,7 +79,7 @@ public:
     void configInit(const KComponentData &component);  //call this only from lazyInit()!
 
     KStandardDirs *dirs;
-    const KAboutData aboutData;
+    KAboutData aboutData;
     QString configName;
     KSharedConfig::Ptr sharedConfig;
     bool syncing;
