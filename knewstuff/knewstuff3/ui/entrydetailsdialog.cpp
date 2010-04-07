@@ -172,6 +172,9 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
 void EntryDetails::entryStatusChanged(const KNS3::EntryInternal& entry)
 {
     Q_UNUSED(entry);
+    if (!ui->detailsStack->currentIndex() == 0) {
+        return;
+    }
     updateButtons();
 }
 
