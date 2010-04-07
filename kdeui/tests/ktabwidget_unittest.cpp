@@ -102,7 +102,7 @@ private Q_SLOTS:
 
         w->setCurrentIndex(0);
         lineEdits[0]->setFocus();
-        QCOMPARE(topLevel.focusWidget(), lineEdits[0]);
+        QCOMPARE(topLevel.focusWidget()->objectName(), lineEdits[0]->objectName());
         QVERIFY(lineEdits[0]->isVisible());
 
         w->moveTab(0,3);
