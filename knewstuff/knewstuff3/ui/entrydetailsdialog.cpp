@@ -85,7 +85,7 @@ void EntryDetails::setEntry(const KNS3::EntryInternal& entry)
 
 void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
 {
-    if (!ui->detailsStack->currentIndex() == 0) {
+    if (ui->detailsStack->currentIndex() == 0) {
         return;
     }
     m_entry = entry;
@@ -172,14 +172,14 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
 void EntryDetails::entryStatusChanged(const KNS3::EntryInternal& entry)
 {
     Q_UNUSED(entry);
-    if (!ui->detailsStack->currentIndex() == 0) {
-        return;
-    }
     updateButtons();
 }
 
 void EntryDetails::updateButtons()
 {
+    if (ui->detailsStack->currentIndex() == 0) {
+        return;
+    }
     kDebug() << "update buttons: " << m_entry.status();
     ui->installButton->setVisible(false);
     ui->uninstallButton->setVisible(false);
