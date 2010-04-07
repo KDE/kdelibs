@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef KWEBVIEW_KWEBVIEWPRIVATE_P_H
-#define KWEBVIEW_KWEBVIEWPRIVATE_P_H
+#ifndef KWEBVIEW_P_H
+#define KWEBVIEW_P_H
 
 #include <QtCore/QEvent>
 #include <QtGui/QClipboard>
@@ -128,4 +128,4 @@ public:
     QWebHitTestResult hitTest;
 };
 
-#endif
+#endif  // KWEBVIEW_P_H

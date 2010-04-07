@@ -26,7 +26,7 @@
 
 #include "kwebview.h"
 #include "kwebpage.h"
-#include "kwebviewprivate_p.h"
+#include "kwebview_p.h"
 
 #include <QtGui/QMouseEvent>
 

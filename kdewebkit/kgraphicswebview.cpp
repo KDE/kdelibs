@@ -26,7 +26,7 @@
 
 #include "kgraphicswebview.h"
 #include "kwebpage.h"
-#include "kwebviewprivate_p.h"
+#include "kwebview_p.h"
 
 #include <QtGui/QGraphicsSceneWheelEvent>
 #include <QtGui/QGraphicsSceneMouseEvent>
