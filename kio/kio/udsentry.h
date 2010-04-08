@@ -182,10 +182,10 @@ namespace KIO
             /// Name of the file where the link points to
             /// Allows to check for a symlink (don't use S_ISLNK !)
             UDS_LINK_DEST = 14 | UDS_STRING,
-            /// An alternative URL (If different from the caption)
-            /// WARNING: the use of UDS_URL is deprecated, since KDirModel requires
-            /// a hierarchical scheme in the urls used by kioslaves. Use UDS_DISPLAY_NAME
-            /// if you simply want to customize the user-visible filenames, or use
+            /// An alternative URL (If different from the caption).
+            /// Can be used to mix different hierarchies.
+            ///
+            /// Use UDS_DISPLAY_NAME if you simply want to customize the user-visible filenames, or use
             /// UDS_TARGET_URL if you want "links" to unrelated urls.
             UDS_URL = 15 | UDS_STRING,
             /// A mime type; the slave should set it if it's known.
@@ -232,6 +232,13 @@ namespace KIO
             ///
             /// @since 4.4
             UDS_NEPOMUK_URI = 25 | UDS_STRING,
+
+            /// A comma-separated list of supplementary icon overlays
+            /// which will be added to the list of overlays created
+            /// by KFileItem.
+            ///
+            /// @since 4.5
+            UDS_ICON_OVERLAY_NAMES = 26 | UDS_STRING,
 
             /// Extra data (used only if you specified Columns/ColumnsTypes)
             /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i

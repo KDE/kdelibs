@@ -809,7 +809,7 @@ QString KFileItem::iconName() const
 
 QStringList KFileItem::overlays() const
 {
-    QStringList names;
+    QStringList names = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_OVERLAY_NAMES ).split(',');
     if ( d->m_bLink ) {
         names.append("emblem-symbolic-link");
     }
