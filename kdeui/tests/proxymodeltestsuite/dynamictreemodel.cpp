@@ -140,6 +140,9 @@ QVariant DynamicTreeModel::data(const QModelIndex &index, int role) const
   if (!index.isValid())
     return QVariant();
 
+  if ( DynamicTreeModelId == role )
+    return index.internalId();
+
   if (Qt::DisplayRole == role || Qt::EditRole == role)
   {
     return m_items.value(index.internalId());
