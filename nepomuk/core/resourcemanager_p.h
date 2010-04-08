@@ -120,7 +120,7 @@ namespace Nepomuk {
         QList<ResourceData*> allResourceDataWithProperty( const QUrl& _uri, const Variant& v );
 
         void _k_storageServiceInitialized( bool );
-        void _k_dbusServiceOwnerChanged( const QString& name, const QString& oldOwner, const QString& newOwner );
+        void _k_dbusServiceUnregistered( const QString& serviceName );
 
     private:
         QUrl m_mainContext;

@@ -45,6 +45,7 @@
 #include <QtCore/QUuid>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
+#include <QtDBus/QDBusServiceWatcher>
 
 using namespace Soprano;
 
@@ -241,10 +242,9 @@ void Nepomuk::ResourceManagerPrivate::_k_storageServiceInitialized( bool success
 }
 
 
-void Nepomuk::ResourceManagerPrivate::_k_dbusServiceOwnerChanged( const QString& name, const QString&, const QString& newOwner )
+void Nepomuk::ResourceManagerPrivate::_k_dbusServiceUnregistered( const QString& serviceName )
 {
-    if( name == QLatin1String("org.kde.NepomukStorage") &&
-        newOwner.isEmpty() ) {
+    if( serviceName == QLatin1String("org.kde.NepomukStorage") ) {
         kDebug() << "Nepomuk Storage service went down.";
         emit m_manager->nepomukSystemStopped();
     }
@@ -270,10 +270,14 @@ Nepomuk::ResourceManager::ResourceManager()
                                            this,
                                            SLOT(_k_storageServiceInitialized(bool)) );
 
-    // connect to the ownerChanged signal to be able to connect the nepomukSystemStopped
+    // connect to the serviceUnregistered signal to be able to connect the nepomukSystemStopped
     // signal once the storage service goes away
-    connect( QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString, QString, QString)),
-             this, SLOT(_k_dbusServiceOwnerChanged(QString, QString, QString)) );
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher( QLatin1String("org.kde.NepomukStorage"),
+                                                            QDBusConnection::sessionBus(),
+                                                            QDBusServiceWatcher::WatchForUnregistration,
+                                                            this );
+    connect( watcher, SIGNAL(serviceUnregistered(QString)),
+             this, SLOT(_k_dbusServiceUnregistered(QString)) );
 
     init();
 }

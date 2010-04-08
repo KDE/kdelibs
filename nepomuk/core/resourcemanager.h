@@ -259,7 +259,7 @@ namespace Nepomuk {
         ResourceManagerPrivate* const d;
 
         Q_PRIVATE_SLOT( d, void _k_storageServiceInitialized(bool) )
-        Q_PRIVATE_SLOT( d, void _k_dbusServiceOwnerChanged(QString, QString, QString) )
+        Q_PRIVATE_SLOT( d, void _k_dbusServiceUnregistered(QString) )
     };
 }
 
