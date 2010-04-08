@@ -519,12 +519,14 @@ void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
 {
     QMutexLocker lock( &d->mutex );
 
-    d->overrideModel = model;
-    d->resourceFilterModel->setParentModel( model ? model : d->mainModel );
+    if( model != d->resourceFilterModel ) {
+        d->overrideModel = model;
+        d->resourceFilterModel->setParentModel( model ? model : d->mainModel );
 
-    // clear cache to make sure we do not mix data
-    Q_FOREACH( ResourceData* data, d->allResourceData()) {
-        data->invalidateCache();
+        // clear cache to make sure we do not mix data
+        Q_FOREACH( ResourceData* data, d->allResourceData()) {
+            data->invalidateCache();
+        }
     }
 }
 
