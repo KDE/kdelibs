@@ -110,6 +110,7 @@ set(kdeui_LIB_SRCS
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
+ itemviews/kviewstatesaver.cpp
  itemviews/kfilterproxysearchline.cpp
  itemviews/kextendableitemdelegate.cpp
  itemviews/kcategorizedsortfilterproxymodel.cpp
@@ -473,6 +474,7 @@ install( FILES
  itemviews/kproxyitemselectionmodel.h
 # itemviews/kdescendantsproxymodel.h
  itemviews/klistwidget.h
+ itemviews/kviewstatesaver.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
  itemviews/kfilterproxysearchline.h
