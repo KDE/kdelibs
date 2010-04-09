@@ -57,6 +57,12 @@ public:
     explicit KPrintPreview(QPrinter *printer, QWidget *parent = 0);
     virtual ~KPrintPreview();
 
+    /** 
+     * Returns true if the print preview system is available
+     * @since KDE 4.5
+     */
+    static bool isAvailable();
+
 protected:
     void showEvent(QShowEvent *event);
 

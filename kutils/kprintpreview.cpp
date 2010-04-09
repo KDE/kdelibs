@@ -162,6 +162,11 @@ void KPrintPreview::showEvent(QShowEvent *event)
     KDialog::showEvent(event);
 }
 
+bool KPrintPreview::isAvailable()
+{
+    return !KMimeTypeTrader::self()->query("application/pdf", "KParts/ReadOnlyPart").isEmpty();
+}
+
 #include "kprintpreview.moc"
 
 
