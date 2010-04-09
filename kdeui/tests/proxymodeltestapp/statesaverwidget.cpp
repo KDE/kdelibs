@@ -26,9 +26,10 @@
 #include <QTreeView>
 #include <QApplication>
 
-#include <KGlobal>
-#include <KConfig>
-#include <KConfigGroup>
+#include <kglobal.h>
+#include <kconfig.h>
+#include <kconfiggroup.h>
+#include <ksharedconfig.h>
 
 #include "dynamictreewidget.h"
 #include "dynamictreemodel.h"
