@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
+    <width>330</width>
     <height>385</height>
    </rect>
   </property>
@@ -53,7 +53,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -333,21 +333,21 @@
           <item row="2" column="0">
            <widget class="QPushButton" name="changePreview1Button">
             <property name="text">
-             <string>Change...</string>
+             <string>Select Preview...</string>
             </property>
            </widget>
           </item>
           <item row="2" column="3">
            <widget class="QPushButton" name="changePreview3Button">
             <property name="text">
-             <string>Change...</string>
+             <string>Select Preview...</string>
             </property>
            </widget>
           </item>
           <item row="2" column="2">
            <widget class="QPushButton" name="changePreview2Button">
             <property name="text">
-             <string>Change...</string>
+             <string>Select Preview...</string>
             </property>
            </widget>
           </item>
