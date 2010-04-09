@@ -600,7 +600,7 @@ void UploadDialog::Private::_k_changePreview2()
     KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile2 = url;
     QPixmap preview(url.toLocalFile());
-    ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
+    ui.previewImage2->setPixmap(preview.scaled(ui.previewImage1->size()));
 }
 
 void UploadDialog::Private::_k_changePreview3()
@@ -608,7 +608,7 @@ void UploadDialog::Private::_k_changePreview3()
     KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
     previewFile3 = url;
     QPixmap preview(url.toLocalFile());
-    ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
+    ui.previewImage3->setPixmap(preview.scaled(ui.previewImage1->size()));
 }
 
 void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
