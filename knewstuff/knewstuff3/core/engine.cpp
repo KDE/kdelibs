@@ -221,6 +221,10 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 
 void Engine::atticaProviderLoaded(const Attica::Provider& atticaProvider)
 {
+    if (!atticaProvider.hasContentService()) {
+        kDebug() << "Found provider: " << atticaProvider.baseUrl() << " but it does not support content"; 
+        return;
+    }
     QSharedPointer<KNS3::Provider> provider =
             QSharedPointer<KNS3::Provider> (new AtticaProvider(atticaProvider, m_categories));
     addProvider(provider);
