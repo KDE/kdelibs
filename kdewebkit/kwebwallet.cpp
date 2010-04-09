@@ -71,7 +71,7 @@ static int getWebFields(const QWebElement &formElement,
             fields << qMakePair(element.attribute(QL1S("name")), value);
     }
 
-    return count;
+    return fields.count();
 }
 
 class KWebWallet::KWebWalletPrivate
