@@ -307,6 +307,24 @@ public:
 
     EncryptionMode encryptionMode() const;
 
+    /**
+     * Returns the state of the socket @p option.
+     *
+     * @see QAbstractSocket::socketOption
+     *
+     * @since 4.5.0
+     */
+    QVariant socketOption(QAbstractSocket::SocketOption options) const;
+
+    /**
+     * Sets the socket @p option to @p value. 
+     *
+     * @see QAbstractSocket::setSocketOption
+     *
+     * @since 4.5.0
+     */
+    void setSocketOption(QAbstractSocket::SocketOption options, const QVariant &value);
+
 Q_SIGNALS:
     //from QAbstractSocket
     void connected();

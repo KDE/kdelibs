@@ -759,6 +759,15 @@ KTcpSocket::EncryptionMode KTcpSocket::encryptionMode() const
     return d->encryptionMode(d->sock.mode());
 }
 
+QVariant KTcpSocket::socketOption(QAbstractSocket::SocketOption options) const
+{
+    return d->sock.socketOption(options);
+}
+
+void KTcpSocket::setSocketOption(QAbstractSocket::SocketOption options, const QVariant &value)
+{
+    return d->sock.setSocketOption(options, value);
+}
 
 //slot
 void KTcpSocket::ignoreSslErrors()
