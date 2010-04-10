@@ -464,6 +464,7 @@ install( FILES
   KWebPage
   KWebView
   KWebPluginFactory
+  KWebWallet
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 
 if (UNIX)
