@@ -172,7 +172,8 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
         return;
     }
 
-    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10));
+    QString fileName(source.fileName());
+    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + '-' + fileName);
     kDebug() << "Downloading payload '" << source << "' to '" << destination << "'";
 
     // FIXME: check for validity
