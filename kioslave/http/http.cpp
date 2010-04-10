@@ -63,6 +63,7 @@
 #include <ktoolinvocation.h>
 #include <kstandarddirs.h>
 #include <kremoteencoding.h>
+#include <ktcpsocket.h>
 
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
@@ -2050,10 +2051,12 @@ bool HTTPProtocol::httpOpenConnection()
       return false;
   }
 
-#if 0                           // QTcpSocket doesn't support this
-  // Set our special socket option!!
-  socket().setNoDelay(true);
-#endif
+  // Disable Nagle's algorithm, i.e turn on TCP_NODELAY.
+  KTcpSocket *sock = qobject_cast<KTcpSocket *>(socket());
+  if (sock) {
+      kDebug(7113) << "TCP_NODELAY:" << sock->socketOption(QAbstractSocket::LowDelayOption);
+      sock->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+  }
 
   m_server.initFrom(m_request);
   connected();
@@ -3125,13 +3128,13 @@ try_again:
         }
     }
 
-  // We need to reread the header if we got a '100 Continue' or '102 Processing'
-  // This may be a non keepalive connection so we handle this kind of loop internally
-  if ( cont )
-  {
-    kDebug(7113) << "cont; returning to mark try_again";
-    goto try_again;
-  }
+    // We need to reread the header if we got a '100 Continue' or '102 Processing'
+    // This may be a non keepalive connection so we handle this kind of loop internally
+    if ( cont )
+    {
+      kDebug(7113) << "cont; returning to mark try_again";
+      goto try_again;
+    }
 
     if (!m_isChunked && (m_iSize == NO_SIZE) && m_request.isKeepAlive &&
         canHaveResponseBody(m_request.responseCode, m_request.method)) {
@@ -3167,7 +3170,9 @@ try_again:
         // See BR #215736
         QList<QByteArray> authTokens = tIt.all();
         if (authTokens.isEmpty()) {
+            kWarning(7113) << "No WWW-Authenticate header found! Ignoring invalid 401 Authorization request...";
             m_request.responseCode = 200; // Change back the response code...
+            authRequiresAnotherRoundtrip = false;
             //m_request.cacheTag.writeToCache = true;
             //mayCache = true;
         } else {
