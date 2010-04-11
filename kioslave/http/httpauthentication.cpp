@@ -496,18 +496,17 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
   auth += m_resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath).toLatin1();
 
   if (!info.algorithm.isEmpty()) {
-    auth += "\", algorithm=\"";
+    auth += "\", algorithm=";
     auth += info.algorithm;
-    auth +="\"";
   }
 
   if ( !info.qop.isEmpty() )
   {
-    auth += ", qop=\"";
+    auth += ", qop=";
     auth += info.qop;
-    auth += "\", cnonce=\"";
+    auth += ", cnonce=";
     auth += info.cnonce;
-    auth += "\", nc=";
+    auth += ", nc=";
     auth += info.nc;
   }
 
