@@ -50,9 +50,11 @@ bool isRootDomNode( DOM::NodeImpl *node );
  */
 DOM::DOMString stringValue( DOM::NodeImpl *node );
 
-/* @return all descendant nodes of the given node, in document order.
+/* @return append all descendant nodes of the given node, in document order,
+   to the given set
  */
-DomNodeList getChildrenRecursively( DOM::NodeImpl *node );
+void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
+                                 DOM::NodeImpl *root );
 
 /* @return whether the given node is a valid context node
  */

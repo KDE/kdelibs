@@ -59,7 +59,7 @@ class XPathResultImpl : public Shared<XPathResultImpl>
 
 	private:
 		XPath::Value m_value;
-		DomNodeList::Iterator m_nodeIterator;
+		int m_nodeIterator;
 		unsigned short m_resultType;
 };
 

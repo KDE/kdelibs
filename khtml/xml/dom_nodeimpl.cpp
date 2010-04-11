@@ -1357,7 +1357,7 @@ unsigned NodeImpl::compareDocumentPosition(const DOM::NodeImpl* other)
     
     bool thisAncLogical  = thisAnc->parentNode() == 0;
     bool otherAncLogical = otherAnc->parentNode() == 0;
-    kDebug() << thisAncLogical << otherAncLogical;
+    //kDebug() << thisAncLogical << otherAncLogical;
     
     if (thisAncLogical && otherAncLogical) {
         // First, try to order by nodeType.

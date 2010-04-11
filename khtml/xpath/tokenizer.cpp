@@ -24,8 +24,8 @@
  */
 #include "tokenizer.h"
 
-#include "kdomxpath.h"
-#include "XPathExceptionImpl.h"
+#include "xml/dom3_xpathimpl.h"
+#include "dom/dom3_xpath.h"
 
 #include <cstdio>
 
@@ -33,6 +33,8 @@ using namespace std;
 
 using namespace DOM;
 using namespace DOM::XPath;
+using namespace khtml;
+using namespace khtml::XPath;
 
 struct AxisNameMapping
 {
@@ -427,13 +429,13 @@ void Tokenizer::reset(QString data)
 	m_lastTokenType = 0;
 }
 
-int xpathyylex()
+int khtmlxpathyylex()
 {
 	Token tok = Tokenizer::self().nextToken();
 	if (!tok.value.isEmpty()) {
-		xpathyylval.str = new DomString(tok.value);
+		khtmlxpathyylval.str = new DOMString(tok.value);
 	} else if (tok.intValue) {
-		xpathyylval.num = tok.intValue;
+		khtmlxpathyylval.num = tok.intValue;
 	}
 	return tok.type;
 }
@@ -443,7 +445,7 @@ void initTokenizer(QString string)
 	Tokenizer::self().reset(string);
 }
 
-void xpathyyerror(const char *str)
+void khtmlxpathyyerror(const char *str)
 {
 	// XXX Clean xpathyylval.str up to avoid leaking it.
 	fprintf(stderr, "error: %s\n", str);

@@ -218,7 +218,10 @@ public:
 
     void append(NodeImpl* n);
     NodeImpl* at(int);
-    int       size();
+    int       size() const;
+
+    NodeImpl* first() { return at(0); }
+    bool      isEmpty() const { return size() == 0; }
 private:
     WTF::Vector<SharedPtr<NodeImpl> > m_kids;
 };

@@ -29,6 +29,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom3_xpathimpl.h"
 
 #include "step.h"
 
@@ -169,7 +170,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 
 DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 {
-	DomNodeList nodes;
+	DomNodeList nodes = new StaticNodeListImpl;
 	switch ( m_axis ) {
 		case ChildAxis: {
 			NodeImpl *n = context->firstChild();
@@ -179,8 +180,10 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			}
 			return nodes;
 		}
-		case DescendantAxis:
-			return getChildrenRecursively( context );
+		case DescendantAxis: {
+			collectChildrenRecursively( nodes, context );
+			return nodes;
+		}
 		case ParentAxis:
 			nodes->append( context->parentNode() );
 			return nodes;
@@ -194,7 +197,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		}
 		case FollowingSiblingAxis: {
 			if ( context->nodeType() == Node::ATTRIBUTE_NODE ||
-			     context->nodeType() == XPath::XPATH_NAMESPACE_NODE ) {
+			     context->nodeType() == Node::XPATH_NAMESPACE_NODE ) {
 				return DomNodeList();
 			}
 
@@ -207,7 +210,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		}
 		case PrecedingSiblingAxis: {
 			if ( context->nodeType() == Node::ATTRIBUTE_NODE ||
-			     context->nodeType() == XPath::XPATH_NAMESPACE_NODE ) {
+			     context->nodeType() == Node::XPATH_NAMESPACE_NODE ) {
 				return DomNodeList();
 			}
 
@@ -224,7 +227,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 				NodeImpl *n = p->nextSibling();
 				while ( n ) {
 					nodes->append( n );
-					nodes += getChildrenRecursively( n );
+					collectChildrenRecursively( nodes, n );
 					n = n->nextSibling();
 				}
 				p = p->parentNode();
@@ -237,7 +240,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 				NodeImpl *n = p->previousSibling();
 				while ( n ) {
 					nodes->append( n );
-					nodes += getChildrenRecursively( n );
+					collectChildrenRecursively( nodes, n );
 					n = n->previousSibling();
 				}
 				p = p->parentNode();
@@ -297,7 +300,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			return nodes;
 		case DescendantOrSelfAxis:
 			nodes->append( context );
-			nodes += getChildrenRecursively( context );
+			collectChildrenRecursively( nodes, context );
 			return nodes;
 		case AncestorOrSelfAxis: {
 			nodes->append( context );
@@ -317,20 +320,22 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 
 DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 {
-	QString ns = namespaceFromNodetest( m_nodeTest );
-	DomNodeList matches;
+	DOMString ns = namespaceFromNodetest( m_nodeTest );
+	DomNodeList matches = new StaticNodeListImpl;
 	if ( m_nodeTest == "*" ) {
-		foreach( NodeImpl *node, nodes ) {
+		for ( int n = 0; n < nodes->size(); ++n ) {
+			NodeImpl *node = nodes->at( n );
 			if ( node->nodeType() == primaryNodeType( m_axis ) ) {
 				if ( ns.isEmpty() ||
-				     node->namespaceURI().string() == ns ) {
+				     node->namespaceURI() == ns ) {
 					matches->append( node );
 				}
 			}
 		}
 		return nodes;
 	} else if ( m_nodeTest == "text()" ) {
-		foreach( NodeImpl *node, nodes ) {
+		for ( int n = 0; n < nodes->size(); ++n ) {
+			NodeImpl *node = nodes->at( n );
 			if ( node->nodeType() == Node::TEXT_NODE ||
 			     node->nodeType() == Node::CDATA_SECTION_NODE ) {
 				matches->append( node );
@@ -339,20 +344,22 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 
 		return compressTextNodes( matches );
 	} else if ( m_nodeTest == "comment()" ) {
-		foreach( NodeImpl *node, nodes ) {
+		for ( int n = 0; n < nodes->size(); ++n ) {
+			NodeImpl *node = nodes->at( n );
 			if ( node->nodeType() == Node::COMMENT_NODE ) {
 				matches->append( node );
 			}
 		}
 		return matches;
 	} else if ( m_nodeTest.startsWith( "processing-instruction" ) ) {
-		QString param;
-		const int space = m_nodeTest.indexOf( ' ' );
+		DOMString param;
+		const int space = m_nodeTest.find( ' ' );
 		if ( space > -1 ) {
-			param = m_nodeTest.mid( space + 1 );
+			param = m_nodeTest.substring( space + 1 );
 		}
 
-		foreach( NodeImpl *node, nodes ) {
+		for ( int n = 0; n < nodes->size(); ++n ) {
+			NodeImpl *node = nodes->at( n );
 			if ( node->nodeType() == Node::PROCESSING_INSTRUCTION_NODE ) {
 				if ( param.isEmpty() ||
 				     node->nodeName() == param ) {
@@ -364,12 +371,12 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 	} else if ( m_nodeTest == "node()" ) {
 		return nodes;
 	} else {
-		QString prefix;
-        QString localName;
-		const int colon = m_nodeTest.indexOf( ':' );
+		DOMString prefix;
+        DOMString localName;
+		const int colon = m_nodeTest.find( ':' );
 		if (  colon > -1 ) {
-			prefix = m_nodeTest.left( colon );
-			localName = m_nodeTest.mid( colon + 1 );
+			prefix = m_nodeTest.substring( 0, colon );
+			localName = m_nodeTest.substring( colon + 1 );
 		} else {
 			localName = m_nodeTest;
 		}
@@ -378,7 +385,11 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 			DOMString s( prefix );
             //FIXME: isNull or isEmpty?
 			if ( Expression::evaluationContext().resolver->lookupNamespaceURI( s ).isNull() ) {
-				throw new XPathExceptionImpl( DOMException::NAMESPACE_ERR );
+#ifdef __GNUC__
+	#warning "Critical FIXME --- EH --- don't forget!"
+#endif
+				return nodes;
+				//throw new XPathExceptionImpl( DOMException::NAMESPACE_ERR );
 			}
 		}
 
@@ -389,7 +400,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 				return matches;
 			}
 
-			foreach( NodeImpl *node, nodes ) {
+			for ( int n = 0; n < nodes->size(); ++n ) {
+				NodeImpl *node = nodes->at( n );
 				if ( node->nodeName() == localName ) {
 					matches->append( node );
 					break; // There can only be one.
@@ -397,9 +409,13 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 			}
 			return matches;
 		} else if ( m_axis == NamespaceAxis ) {
+#ifdef __GNUC__
+	#warning "Fix this"
+#endif
 			qWarning() << "Node test " << m_nodeTest << " on axis " << axisAsString( m_axis ) << " is not implemented yet.";
 		} else {
-			foreach( NodeImpl *node, nodes ) {
+			for ( int n = 0; n < nodes->size(); ++n ) {
+				NodeImpl *node = nodes->at( n );
 				if ( node->nodeType() == Node::ELEMENT_NODE &&
 				     node->nodeName() == localName ) {
 					matches->append( node );
@@ -422,7 +438,7 @@ void Step::optimize()
 
 QString Step::dump() const
 {
-	QString s = QString( "<step axis=\"%1\" nodetest=\"%2\">" ).arg( axisAsString( m_axis ) ).arg( m_nodeTest );
+	QString s = QString( "<step axis=\"%1\" nodetest=\"%2\">" ).arg( axisAsString( m_axis ) ).arg( m_nodeTest.string() );
 	foreach( Predicate *predicate, m_predicates ) {
 		s += predicate->dump();
 	}
@@ -430,14 +446,14 @@ QString Step::dump() const
 	return s;
 }
 
-QString Step::namespaceFromNodetest( const QString &nodeTest ) const
+DOMString Step::namespaceFromNodetest( const DOMString &nodeTest ) const
 {
-	int i = nodeTest.indexOf( ':' );
+	int i = nodeTest.find( ':' );
 	if ( i == -1 ) {
-		return QString();
+		return DOMString();
 	}
 
-	DOMString prefix( nodeTest.left( i ) );
+	DOMString prefix( nodeTest.substring( 0, i ) );
 	NodeImpl *ctxNode = Expression::evaluationContext().node;
 	DOMString uri = ctxNode->lookupNamespaceURI( prefix );
 	return uri.string();
@@ -449,8 +465,10 @@ unsigned int Step::primaryNodeType( AxisType axis ) const
 		case AttributeAxis:
 			return Node::ATTRIBUTE_NODE;
 		case NamespaceAxis:
-			return XPATH_NAMESPACE_NODE;
+			return Node::XPATH_NAMESPACE_NODE;
 		default:
 			return Node::ELEMENT_NODE;
 	}
 }
+
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

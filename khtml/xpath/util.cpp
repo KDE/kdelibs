@@ -30,12 +30,15 @@
 
 using namespace DOM;
 
-bool isRootDomNode( NodeImpl *node )
+namespace khtml {
+namespace XPath {
+
+static bool isRootDomNode( NodeImpl *node )
 {
 	return node && !node->parentNode();
 }
 
-DomString stringValue( NodeImpl *node )
+DOMString stringValue( NodeImpl *node )
 {
 	switch ( node->nodeType() ) {
 		case Node::ATTRIBUTE_NODE:
@@ -57,16 +60,17 @@ DomString stringValue( NodeImpl *node )
 	return DomString();
 }
 
-DomNodeList getChildrenRecursively( NodeImpl *node )
+void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
+                                 DOM::NodeImpl *root )
 {
-	DomNodeList nodes;
+	// ### probably beter to use traverseNext and the like
+	
 	NodeImpl *n = node->firstChild();
 	while ( n ) {
-		nodes.append( n );
-		nodes += getChildrenRecursively( n );
+		nodes->append( n );
+		collectChildrenRecursively( node, n );
 		n = n->nextSibling();
 	}
-	return nodes;
 }
 
 bool isValidContextNode( NodeImpl *node )
@@ -81,4 +85,7 @@ bool isValidContextNode( NodeImpl *node )
 	       node->nodeType() == Node::DOCUMENT_NODE ||
 	       node->nodeType() == XPath::XPATH_NAMESPACE_NODE );
 }
+
+} // namespace khtml
+} // namespace XPath
 

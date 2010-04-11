@@ -66,7 +66,7 @@ class Step
 	private:
 		DomNodeList nodesInAxis( DOM::NodeImpl *context ) const;
 		DomNodeList nodeTestMatches( const DomNodeList &nodes ) const;
-		QString namespaceFromNodetest( const QString &nodeTest ) const;
+		DOM::DOMString namespaceFromNodetest( const DOM::DOMString &nodeTest ) const;
 		unsigned int primaryNodeType( AxisType axis ) const;
 
 		AxisType m_axis;

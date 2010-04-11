@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.2.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -66,28 +65,28 @@
 typedef union YYSTYPE
 {
 
-/* Line 1676 of yacc.c  */
-#line 21 "parser.y"
+/* Line 1685 of yacc.c  */
+#line 36 "parser.y"
 
-	Step::AxisType axisType;
+	khtml::XPath::Step::AxisType axisType;
 	int        num;
-	DomString *str;
-	Expression *expr;
-	QList<Predicate *> *predList;
-	QList<Expression *> *argList;
-	Step *step;
-	LocationPath *locationPath;
+	DOM::DOMString *str;
+	khtml::XPath::Expression *expr;
+	QList<khtml::XPath::Predicate *> *predList;
+	QList<khtml::XPath::Expression *> *argList;
+	khtml::XPath::Step *step;
+	khtml::XPath::LocationPath *locationPath;
 
 
 
-/* Line 1676 of yacc.c  */
-#line 85 "parser.tab.h"
+/* Line 1685 of yacc.c  */
+#line 84 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
-extern YYSTYPE xpathyylval;
+extern YYSTYPE khtmlxpathyylval;
 
 

@@ -98,8 +98,8 @@ public:
 };
 
 // Interface to the parser
-int xpathyylex();
-void xpathyyerror(const char *str);
+int khtmlxpathyylex();
+void khtmlxpathyyerror(const char *str);
 void initTokenizer(QString string);
 
 } // namespace XPath

@@ -60,7 +60,7 @@ using namespace DOM;
 
 // -------------------------------------------------------------------------
 /* Source for DOMNodeConstantsTable.
-@begin DOMNodeConstantsTable 11
+@begin DOMNodeConstantsTable 21
   ELEMENT_NODE      DOM::Node::ELEMENT_NODE     DontDelete|ReadOnly
   ATTRIBUTE_NODE    DOM::Node::ATTRIBUTE_NODE       DontDelete|ReadOnly
   TEXT_NODE     DOM::Node::TEXT_NODE        DontDelete|ReadOnly
@@ -73,6 +73,7 @@ using namespace DOM;
   DOCUMENT_TYPE_NODE    DOM::Node::DOCUMENT_TYPE_NODE   DontDelete|ReadOnly
   DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE  DontDelete|ReadOnly
   NOTATION_NODE     DOM::Node::NOTATION_NODE        DontDelete|ReadOnly
+  XPATH_NAMESPACE_NODE	DOM::Node::XPATH_NAMESPACE_NODE         DontDelete|ReadOnly
   DOCUMENT_POSITION_DISCONNECTED                DOM::Node::DOCUMENT_POSITION_DISCONNECTED  DontDelete|ReadOnly
   DOCUMENT_POSITION_PRECEDING                   DOM::Node::DOCUMENT_POSITION_PRECEDING  DontDelete|ReadOnly
   DOCUMENT_POSITION_FOLLOWING                   DOM::Node::DOCUMENT_POSITION_FOLLOWING   DontDelete|ReadOnly

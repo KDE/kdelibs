@@ -5,13 +5,28 @@
 #include "util.h"
 #include "tokenizer.h"
 
+#include "expression.h"
+#include "util.h"
+#include "variablereference.h"
+
+#include "dom/dom_string.h"
+#include "dom/dom3_xpath.h"
+#include "xml/dom3_xpathimpl.h"
+
+using namespace DOM;
+using namespace DOM::XPath;
+using namespace khtml;
+using namespace khtml::XPath;
+
+
+
 #include <QList>
 #include <QPair>
 #include <QtDebug>
 
 #define YYDEBUG 1
 
-Expression *parseStatement( const DomString &statement );
+Expression * khtmlParseXPathStatement( const DOM::DOMString &statement );
 
 static Expression *_topExpr;
 
@@ -19,27 +34,17 @@ static Expression *_topExpr;
 
 %union
 {
-	Step::AxisType axisType;
+	khtml::XPath::Step::AxisType axisType;
 	int        num;
-	DomString *str;
-	Expression *expr;
-	QList<Predicate *> *predList;
-	QList<Expression *> *argList;
-	Step *step;
-	LocationPath *locationPath;
+	DOM::DOMString *str;
+	khtml::XPath::Expression *expr;
+	QList<khtml::XPath::Predicate *> *predList;
+	QList<khtml::XPath::Expression *> *argList;
+	khtml::XPath::Step *step;
+	khtml::XPath::LocationPath *locationPath;
 }
 
 %{
-#include "expression.h"
-#include "util.h"
-#include "variablereference.h"
-
-#include "XPathNSResolverImpl.h"
-#include "XPathExceptionImpl.h"
-#include "dom/dom_string.h"
-
-using namespace DOM;
-using namespace XPath;
 %}
 
 %left <num> MULOP RELOP EQOP
@@ -424,7 +429,7 @@ UnaryExpr:
 
 %%
 
-Expression *parseStatement( const DomString &statement )
+Expression *khtmlParseXPathStatement( const DOM::DOMString &statement )
 {
 //	qDebug() << "Parsing " << statement;
 	initTokenizer( statement );
