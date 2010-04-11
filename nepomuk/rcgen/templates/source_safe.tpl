@@ -87,7 +87,7 @@ Nepomuk::NEPOMUK_RESOURCENAME& Nepomuk::NEPOMUK_RESOURCENAME::operator=( const N
 
 QString Nepomuk::NEPOMUK_RESOURCENAME::resourceTypeUri()
 {
-    return "NEPOMUK_RESOURCETYPEURI";
+    return QLatin1String("NEPOMUK_RESOURCETYPEURI");
 }
 
 NEPOMUK_METHODS
