@@ -330,3 +330,23 @@ bool ClassNodeListImpl::nodeMatches(NodeImpl *testNode, bool& doRecurse) const
 
     return true;
 }
+
+// ---------------------------------------------------------------------------
+
+StaticNodeListImpl::StaticNodeListImpl() {}
+
+StaticNodeListImpl::~StaticNodeListImpl() {}
+
+void StaticNodeListImpl::append(NodeImpl* n) {
+    m_kids.append(n);
+}
+
+NodeImpl* StaticNodeListImpl::at(int p) {
+    return m_kids[p].get();
+}
+
+int StaticNodeListImpl::size() const {
+    return m_kids.size();
+}
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

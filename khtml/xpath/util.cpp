@@ -23,23 +23,23 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util.h"
-#include "xml/dom_nodeimpl.h" 
-// #include "DOMStringImpl.h"
-
-#include "../kdomxpath.h"
+#include "xml/dom_nodeimpl.h"
+#include "xml/dom_nodelistimpl.h" 
 
 using namespace DOM;
 
 namespace khtml {
 namespace XPath {
 
-static bool isRootDomNode( NodeImpl *node )
+bool isRootDomNode( NodeImpl *node )
 {
 	return node && !node->parentNode();
 }
 
-DOMString stringValue( NodeImpl *node )
+static QString stringValueImpl( NodeImpl *node )
 {
+	// ### how different is this from textContent?
+	// ### "The string-value of a namespace node is the namespace URI that is being bound to the namespace prefix; if it is relative, it must be resolved just like a namespace URI in an expanded-name."
 	switch ( node->nodeType() ) {
 		case Node::ATTRIBUTE_NODE:
 		case Node::PROCESSING_INSTRUCTION_NODE:
@@ -50,14 +50,19 @@ DOMString stringValue( NodeImpl *node )
 			if ( isRootDomNode( node )
 			     || node->nodeType() == Node::ELEMENT_NODE ) {
 				QString str;
-				DomNodeList nodes = getChildrenRecursively( node );
-				foreach ( NodeImpl *node, nodes ) {
-					str.append( stringValue( node ) );
+
+				for ( NodeImpl *cur = node; cur; cur = cur->traverseNextNode(node) ) {
+					str.append( stringValueImpl( node ) );
 				}
 				return str;
 			}
 	}
-	return DomString();
+	return QString();
+}
+
+DOMString stringValue( NodeImpl *node )
+{
+	return stringValueImpl( node );
 }
 
 void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
@@ -65,10 +70,10 @@ void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
 {
 	// ### probably beter to use traverseNext and the like
 	
-	NodeImpl *n = node->firstChild();
+	NodeImpl *n = root->firstChild();
 	while ( n ) {
-		nodes->append( n );
-		collectChildrenRecursively( node, n );
+		out->append( n );
+		collectChildrenRecursively( out, n );
 		n = n->nextSibling();
 	}
 }
@@ -83,7 +88,7 @@ bool isValidContextNode( NodeImpl *node )
 	       node->nodeType() == Node::PROCESSING_INSTRUCTION_NODE ||
 	       node->nodeType() == Node::COMMENT_NODE ||
 	       node->nodeType() == Node::DOCUMENT_NODE ||
-	       node->nodeType() == XPath::XPATH_NAMESPACE_NODE );
+	       node->nodeType() == Node::XPATH_NAMESPACE_NODE );
 }
 
 } // namespace khtml

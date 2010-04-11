@@ -37,6 +37,9 @@ using namespace DOM::XPath;
 using namespace khtml;
 using namespace khtml::XPath;
 
+namespace khtml {
+namespace XPath {
+
 struct AxisNameMapping
 {
 	const char *name;
@@ -445,5 +448,8 @@ void initTokenizer(const DOM::DOMString& string)
 {
 	Tokenizer::self().reset(string.string());
 }
+
+} // namespace XPath
+} // namespace khtml
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; indent-spaces: off;

@@ -27,7 +27,7 @@
 using namespace khtml;
 using namespace khtml::XPath;
 
-VariableReference::VariableReference( const DomString &name )
+VariableReference::VariableReference( const DOM::DOMString &name )
 	: m_name( name )
 {
 }
@@ -39,16 +39,16 @@ bool VariableReference::isConstant() const
 
 QString VariableReference::dump() const
 {
-	return QString() + "<variablereference name=\"" + m_name + "\"/>";
+	return QString() + "<variablereference name=\"" + m_name.string() + "\"/>";
 }
 
 Value VariableReference::doEvaluate() const
 {
-	QHash<QString, DOM::DOMStringImpl *> bindings = evaluationContext().variableBindings;
+	QHash<DOM::DOMString, DOM::DOMString>& bindings = evaluationContext().variableBindings;
 	if ( !bindings.contains( m_name ) ) {
 		// XXX What to do if an unknown variable is referenced?
 		return Value( "" );
 	}
-	return Value( bindings[ m_name ]->string() );
+	return Value( bindings[ m_name ] );
 }
 

@@ -416,18 +416,17 @@ set(decoders_STAT_SRCS
 
 # khtml/xpath/
 set(xpath_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/expression.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/functions.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/parsedstatement.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/path.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/predicate.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/step.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/tokenizer.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/parser.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/util.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/impl/variablereference.cpp
-
-  ${CMAKE_SOURCE_DIR}/khtml/xpath/XPathNSResolverImpl.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/expression.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/functions.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/parsedstatement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/path.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/predicate.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/step.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/tokenizer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/parser.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/util.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xpath/variablereference.cpp
+#  ${CMAKE_SOURCE_DIR}/khtml/xpath/XPathNSResolverImpl.cpp
 )
 
 add_subdirectory( css )
@@ -501,7 +500,7 @@ set(khtml_LIB_SRCS
    khtml_iface.cc
    khtmlimage.cpp
    kjserrordlg.cpp
-#   ${xpath_STAT_SRCS}
+   ${xpath_STAT_SRCS}
    ${khtmlfind_STAT_SRCS}
    ${passwordbar_STAT_SRCS}
    ${khtmlxml_STAT_SRCS}

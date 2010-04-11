@@ -31,6 +31,8 @@
 #include <QList>
 
 #include <dom/dom_string.h>
+#include <xml/dom_stringimpl.h>
+#include <xml/dom_nodelistimpl.h>
 #include <misc/shared.h>
 
 namespace DOM {
@@ -49,7 +51,7 @@ struct EvaluationContext
 	DOM::NodeImpl *node;
 	unsigned long size;
 	unsigned long position;
-	QHash<QString, DOM::DOMString> variableBindings;
+	QHash<DOM::DOMString, DOM::DOMString> variableBindings;
 	/* The function library is globally accessible through
 	 * FunctionLibrary::self()
 	 */

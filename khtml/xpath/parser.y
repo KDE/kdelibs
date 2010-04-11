@@ -434,6 +434,9 @@ UnaryExpr:
 
 %%
 
+namespace khtml {
+namespace XPath {
+
 Expression *khtmlParseXPathStatement( const DOM::DOMString &statement, int& ec )
 {
 //	qDebug() << "Parsing " << statement;
@@ -453,4 +456,6 @@ void khtmlxpathyyerror(const char *str)
 	xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
 }
 
+} // namespace XPath
+} // namespace khtml
 

@@ -33,9 +33,7 @@ using namespace DOM;
 namespace khtml {
 namespace XPath {
 
-#warning Solve the linking in parsedstatment
-// extern Expression *parseStatement( const DomString &statement );
-Expression *parseStatement( const DOMString &statement );
+Expression *khtmlParseXPathStatement( const DOMString &statement, int& ec );
 
 ParsedStatement::ParsedStatement()
 	: m_expr( 0 )
@@ -55,8 +53,12 @@ ParsedStatement::~ParsedStatement()
 
 void ParsedStatement::parse( const DOMString &statement )
 {
+	int ec = 0; 
 	delete m_expr;
-	m_expr = parseStatement( statement );
+	m_expr = khtmlParseXPathStatement( statement, ec );
+#ifdef __GNUC__
+	#warning "Propagate exception from here"
+#endif
 }
 
 void ParsedStatement::optimize()
