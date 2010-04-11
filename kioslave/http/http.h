@@ -159,6 +159,7 @@ public:
     QString id;
     DAVRequest davData;
     KUrl proxyUrl;
+    KUrl redirectUrl;
     bool isPersistentProxyConnection;
     bool allowTransferCompression;
     bool disablePassDialog;

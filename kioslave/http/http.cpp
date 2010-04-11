@@ -422,6 +422,7 @@ void HTTPProtocol::resetSessionSettings()
                  << m_request.isKeepAlive;
   }
 
+  m_request.redirectUrl = KUrl();
   m_request.useCookieJar = config()->readEntry("Cookies", false);
   m_request.cacheTag.useCache = config()->readEntry("UseCache", true);
   m_request.preferErrorPage = config()->readEntry("errorPage", true);
@@ -1359,6 +1360,24 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
 
   proceedUntilResponseHeader();
 
+  // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
+  // with webdav://host/directory, instead requiring webdav://host/directory/
+  // (strangely enough it accepts Destination: without a trailing slash)
+  // See BR# 209508 and BR#187970
+  if ( m_request.responseCode == 301) {
+    m_request.url = m_request.redirectUrl;
+    m_request.method = DAV_MOVE;
+    m_request.davData.desturl = newDest.url();
+    m_request.davData.overwrite = (flags & KIO::Overwrite);
+    m_request.url.setQuery(QString());
+    m_request.cacheTag.policy = CC_Reload;
+    if (m_wwwAuth) {  // force re-authentication...
+        delete m_wwwAuth;
+        m_wwwAuth = 0;
+    }
+    proceedUntilResponseHeader();
+  }
+
   if ( m_request.responseCode == 201 )
     davFinished();
   else
@@ -1378,6 +1397,22 @@ void HTTPProtocol::del( const KUrl& url, bool )
   m_request.cacheTag.policy = CC_Reload;
 
   proceedUntilResponseHeader();
+
+  // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
+  // with webdav://host/directory, instead requiring webdav://host/directory/
+  // (strangely enough it accepts Destination: without a trailing slash)
+  // See BR# 209508 and BR#187970.
+  if (m_request.responseCode == 301) {
+    m_request.url = m_request.redirectUrl;
+    m_request.method = HTTP_DELETE;
+    m_request.url.setQuery(QString());;
+    m_request.cacheTag.policy = CC_Reload;
+    if (m_wwwAuth) { // force re-authentication...
+        delete m_wwwAuth;
+        m_wwwAuth = 0;
+    }
+    proceedUntilResponseHeader();
+  }
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
@@ -2054,7 +2089,7 @@ bool HTTPProtocol::httpOpenConnection()
   // Disable Nagle's algorithm, i.e turn on TCP_NODELAY.
   KTcpSocket *sock = qobject_cast<KTcpSocket *>(socket());
   if (sock) {
-      kDebug(7113) << "TCP_NODELAY:" << sock->socketOption(QAbstractSocket::LowDelayOption);
+      // kDebug(7113) << "TCP_NODELAY:" << sock->socketOption(QAbstractSocket::LowDelayOption);
       sock->setSocketOption(QAbstractSocket::LowDelayOption, 1);
   }
 
@@ -3325,6 +3360,8 @@ try_again:
         }else if(u.protocol() == QLatin1String("https")){
             u.setProtocol(QString::fromLatin1("webdavs"));
         }
+
+        m_request.redirectUrl = u;
     }
 
     kDebug(7113) << "Re-directing from" << m_request.url.url()
