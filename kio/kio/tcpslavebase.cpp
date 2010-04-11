@@ -192,6 +192,10 @@ TCPSlaveBase::TCPSlaveBase(const QByteArray &protocol,
     d->usingSSL = false;
     d->autoSSL = autoSSL;
     d->sslNoUi = false;
+    // Limit the read buffer size to 14 MB (14*1024*1024) (based on the upload limit
+    // in TransferJob::slotDataReq). See the docs for QAbstractSocket::setReadBufferSize
+    // and the BR# 187876 to understand why setting this limit is necessary.
+    d->socket.setReadBufferSize(14680064);
 }
 
 
