@@ -30,6 +30,8 @@
 
 #include <QList>
 
+int khtmlxpathyyparse();
+
 namespace khtml {
 namespace XPath {
 
@@ -51,7 +53,7 @@ class Filter : public Expression
 
 class LocationPath : public Expression
 {
-	friend int yyparse();
+	friend int ::khtmlxpathyyparse();
 	public:
 		LocationPath();
 		virtual ~LocationPath();

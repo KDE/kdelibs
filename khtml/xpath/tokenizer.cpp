@@ -24,6 +24,7 @@
  */
 #include "tokenizer.h"
 
+#include "xml/dom_stringimpl.h"
 #include "xml/dom3_xpathimpl.h"
 #include "dom/dom3_xpath.h"
 
@@ -440,16 +441,9 @@ int khtmlxpathyylex()
 	return tok.type;
 }
 
-void initTokenizer(QString string)
+void initTokenizer(const DOM::DOMString& string)
 {
-	Tokenizer::self().reset(string);
-}
-
-void khtmlxpathyyerror(const char *str)
-{
-	// XXX Clean xpathyylval.str up to avoid leaking it.
-	fprintf(stderr, "error: %s\n", str);
-	throw new XPathExceptionImpl(INVALID_EXPRESSION_ERR);
+	Tokenizer::self().reset(string.string());
 }
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; indent-spaces: off;

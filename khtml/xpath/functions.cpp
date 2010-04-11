@@ -338,7 +338,7 @@ void Function::setArguments( const QList<Expression *> &args )
 	}
 }
 
-void Function::setName( const QString &name )
+void Function::setName( const DOM::DOMString &name )
 {
 	m_name = name;
 }
@@ -346,10 +346,10 @@ void Function::setName( const QString &name )
 QString Function::dump() const
 {
 	if ( argCount() == 0 ) {
-		return QString( "<function name=\"%1\"/>" ).arg( name() );
+		return QString( "<function name=\"%1\"/>" ).arg( name().string() );
 	}
 
-	QString s = QString( "<function name=\"%1\">" ).arg( name() );
+	QString s = QString( "<function name=\"%1\">" ).arg( name().string() );
 	for ( unsigned int i = 0; i < argCount(); ++i ) {
 		s += "<operand>" + arg( i )->dump() + "</operand>";
 	}
@@ -373,7 +373,7 @@ unsigned int Function::argCount() const
 	return subExprCount();
 }
 
-QString Function::name() const
+DOM::DOMString Function::name() const
 {
 	return m_name;
 }
@@ -807,7 +807,7 @@ FunctionLibrary::FunctionLibrary()
 	}
 }
 
-Function *FunctionLibrary::getFunction( const char *name,
+Function *FunctionLibrary::getFunction( const DOM::DOMString& name,
                                         const QList<Expression *> &args ) const
 {
 	if ( !m_functionDict.contains( name ) ) {

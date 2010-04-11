@@ -100,7 +100,7 @@ public:
 // Interface to the parser
 int khtmlxpathyylex();
 void khtmlxpathyyerror(const char *str);
-void initTokenizer(QString string);
+void initTokenizer(const DOM::DOMString& string);
 
 } // namespace XPath
 

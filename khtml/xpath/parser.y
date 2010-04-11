@@ -10,7 +10,9 @@
 #include "variablereference.h"
 
 #include "dom/dom_string.h"
+#include "dom/dom_exception.h"
 #include "dom/dom3_xpath.h"
+#include "xml/dom_stringimpl.h"
 #include "xml/dom3_xpathimpl.h"
 
 using namespace DOM;
@@ -26,9 +28,10 @@ using namespace khtml::XPath;
 
 #define YYDEBUG 1
 
-Expression * khtmlParseXPathStatement( const DOM::DOMString &statement );
+Expression * khtmlParseXPathStatement( const DOM::DOMString &statement, int& ec );
 
 static Expression *_topExpr;
+static int xpathParseException;
 
 %}
 
@@ -36,7 +39,9 @@ static Expression *_topExpr;
 {
 	khtml::XPath::Step::AxisType axisType;
 	int        num;
-	DOM::DOMString *str;
+	DOM::DOMString *str; // we use this and not DOMStringImpl*, so the
+	                     // memory management for this is entirely manual,
+	                     // and not an RC/manual hybrid
 	khtml::XPath::Expression *expr;
 	QList<khtml::XPath::Predicate *> *predList;
 	QList<khtml::XPath::Expression *> *argList;
@@ -182,30 +187,30 @@ AxisSpecifier:
 NodeTest:
 	NAMETEST
 	{
-		const int colon = $1->indexOf( ':' );
+		const int colon = $1->find( ':' );
 		if ( colon > -1 ) {
-			DOMStringImpl prefix( $1->left( colon ) );
+			DOMString prefix( $1->substring( 0, colon ) );
 			XPathNSResolverImpl *resolver = Expression::evaluationContext().resolver;
-			if ( !resolver || !resolver->lookupNamespaceURI( &prefix ) ) {
+			if ( !resolver || resolver->lookupNamespaceURI( prefix ).isNull() ) {
 				qWarning() << "Found unknown namespace prefix " << prefix.string();
-				//throw new XPathExceptionImpl( NAMESPACE_ERR );
-				// ### FIXME: abort parsing, return code.
+				xpathParseException = DOMException::NAMESPACE_ERR;
+				YYABORT;
 			}
 		}
 	}
 	|
 	NODETYPE '(' ')'
 	{
-		$$ = new DomString( *$1 + "()" );
+		$$ = new DOMString( *$1 + "()" );
 	}
 	|
 	PI '(' ')'
 	|
 	PI '(' LITERAL ')'
 	{
-		DomString s = *$1 + " " + *$3;
+		QString s = $1->string() + QLatin1Char(' ') + $3->string();
 		s = s.trimmed();
-		$$ = new DomString( s );
+		$$ = new DOMString( s );
 		delete $1;
 		delete $3;
 	}
@@ -270,7 +275,7 @@ PrimaryExpr:
 	|
 	NUMBER
 	{
-		$$ = new Number( $1->toDouble() );
+		$$ = new Number( $1->toFloat() );
 		delete $1;
 	}
 	|
@@ -280,13 +285,13 @@ PrimaryExpr:
 FunctionCall:
 	FUNCTIONNAME '(' ')'
 	{
-		$$ = FunctionLibrary::self().getFunction( $1->toLatin1() );
+		$$ = FunctionLibrary::self().getFunction( *$1 );
 		delete $1;
 	}
 	|
 	FUNCTIONNAME '(' ArgumentList ')'
 	{
-		$$ = FunctionLibrary::self().getFunction( $1->toLatin1(), *$3 );
+		$$ = FunctionLibrary::self().getFunction( *$1, *$3 );
 		delete $1;
 		delete $3;
 	}
@@ -429,11 +434,23 @@ UnaryExpr:
 
 %%
 
-Expression *khtmlParseXPathStatement( const DOM::DOMString &statement )
+Expression *khtmlParseXPathStatement( const DOM::DOMString &statement, int& ec )
 {
 //	qDebug() << "Parsing " << statement;
+	xpathParseException = 0;
 	initTokenizer( statement );
 	yyparse();
+
+	if (xpathParseException)
+		ec = xpathParseException;
 	return _topExpr;
 }
+
+void khtmlxpathyyerror(const char *str)
+{
+	// XXX Clean xpathyylval.str up to avoid leaking it.
+	fprintf(stderr, "error: %s\n", str);
+	xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
+}
+
 

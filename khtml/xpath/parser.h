@@ -66,11 +66,13 @@ typedef union YYSTYPE
 {
 
 /* Line 1685 of yacc.c  */
-#line 36 "parser.y"
+#line 39 "parser.y"
 
 	khtml::XPath::Step::AxisType axisType;
 	int        num;
-	DOM::DOMString *str;
+	DOM::DOMString *str; // we use this and not DOMStringImpl*, so the
+	                     // memory management for this is entirely manual,
+	                     // and not an RC/manual hybrid
 	khtml::XPath::Expression *expr;
 	QList<khtml::XPath::Predicate *> *predList;
 	QList<khtml::XPath::Expression *> *argList;
@@ -80,7 +82,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 84 "parser.tab.h"
+#line 86 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

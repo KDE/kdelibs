@@ -88,7 +88,9 @@
 #include "variablereference.h"
 
 #include "dom/dom_string.h"
+#include "dom/dom_exception.h"
 #include "dom/dom3_xpath.h"
+#include "xml/dom_stringimpl.h"
 #include "xml/dom3_xpathimpl.h"
 
 using namespace DOM;
@@ -104,14 +106,15 @@ using namespace khtml::XPath;
 
 #define YYDEBUG 1
 
-Expression * khtmlParseXPathStatement( const DOM::DOMString &statement );
+Expression * khtmlParseXPathStatement( const DOM::DOMString &statement, int& ec );
 
 static Expression *_topExpr;
+static int xpathParseException;
 
 
 
 /* Line 189 of yacc.c  */
-#line 115 "parser.tab.c"
+#line 118 "parser.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -166,11 +169,13 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 36 "parser.y"
+#line 39 "parser.y"
 
 	khtml::XPath::Step::AxisType axisType;
 	int        num;
-	DOM::DOMString *str;
+	DOM::DOMString *str; // we use this and not DOMStringImpl*, so the
+	                     // memory management for this is entirely manual,
+	                     // and not an RC/manual hybrid
 	khtml::XPath::Expression *expr;
 	QList<khtml::XPath::Predicate *> *predList;
 	QList<khtml::XPath::Expression *> *argList;
@@ -180,7 +185,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 184 "parser.tab.c"
+#line 189 "parser.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -191,12 +196,12 @@ typedef union YYSTYPE
 /* Copy the second part of user declarations.  */
 
 /* Line 264 of yacc.c  */
-#line 47 "parser.y"
+#line 52 "parser.y"
 
 
 
 /* Line 264 of yacc.c  */
-#line 200 "parser.tab.c"
+#line 205 "parser.tab.c"
 
 #ifdef short
 # undef short
@@ -502,13 +507,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    88,    88,    95,   100,   107,   112,   117,   125,   131,
-     136,   144,   150,   157,   163,   170,   174,   176,   183,   197,
-     202,   204,   215,   221,   228,   235,   242,   247,   254,   260,
-     265,   271,   277,   281,   287,   296,   302,   309,   314,   316,
-     325,   330,   335,   341,   350,   355,   362,   364,   371,   373,
-     380,   382,   389,   391,   398,   400,   405,   412,   414,   421,
-     423
+       0,    93,    93,   100,   105,   112,   117,   122,   130,   136,
+     141,   149,   155,   162,   168,   175,   179,   181,   188,   202,
+     207,   209,   220,   226,   233,   240,   247,   252,   259,   265,
+     270,   276,   282,   286,   292,   301,   307,   314,   319,   321,
+     330,   335,   340,   346,   355,   360,   367,   369,   376,   378,
+     385,   387,   394,   396,   403,   405,   410,   417,   419,   426,
+     428
 };
 #endif
 
@@ -1485,7 +1490,7 @@ yyreduce:
         case 2:
 
 /* Line 1464 of yacc.c  */
-#line 89 "parser.y"
+#line 94 "parser.y"
     {
 		_topExpr = (yyvsp[(1) - (1)].expr);
 	;}
@@ -1494,7 +1499,7 @@ yyreduce:
   case 3:
 
 /* Line 1464 of yacc.c  */
-#line 96 "parser.y"
+#line 101 "parser.y"
     {
 		(yyval.locationPath)->m_absolute = false;
 	;}
@@ -1503,7 +1508,7 @@ yyreduce:
   case 4:
 
 /* Line 1464 of yacc.c  */
-#line 101 "parser.y"
+#line 106 "parser.y"
     {
 		(yyval.locationPath)->m_absolute = true;
 	;}
@@ -1512,7 +1517,7 @@ yyreduce:
   case 5:
 
 /* Line 1464 of yacc.c  */
-#line 108 "parser.y"
+#line 113 "parser.y"
     {
 		(yyval.locationPath) = new LocationPath;
 	;}
@@ -1521,7 +1526,7 @@ yyreduce:
   case 6:
 
 /* Line 1464 of yacc.c  */
-#line 113 "parser.y"
+#line 118 "parser.y"
     {
 		(yyval.locationPath) = (yyvsp[(2) - (2)].locationPath);
 	;}
@@ -1530,7 +1535,7 @@ yyreduce:
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 118 "parser.y"
+#line 123 "parser.y"
     {
 		(yyval.locationPath) = (yyvsp[(2) - (2)].locationPath);
 		(yyval.locationPath)->m_steps.prepend( (yyvsp[(1) - (2)].step) );
@@ -1540,7 +1545,7 @@ yyreduce:
   case 8:
 
 /* Line 1464 of yacc.c  */
-#line 126 "parser.y"
+#line 131 "parser.y"
     {
 		(yyval.locationPath) = new LocationPath;
 		(yyval.locationPath)->m_steps.append( (yyvsp[(1) - (1)].step) );
@@ -1550,7 +1555,7 @@ yyreduce:
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 132 "parser.y"
+#line 137 "parser.y"
     {
 		(yyval.locationPath)->m_steps.append( (yyvsp[(3) - (3)].step) );
 	;}
@@ -1559,7 +1564,7 @@ yyreduce:
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 137 "parser.y"
+#line 142 "parser.y"
     {
 		(yyval.locationPath)->m_steps.append( (yyvsp[(2) - (3)].step) );
 		(yyval.locationPath)->m_steps.append( (yyvsp[(3) - (3)].step) );
@@ -1569,7 +1574,7 @@ yyreduce:
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 145 "parser.y"
+#line 150 "parser.y"
     {
 		(yyval.step) = new Step( Step::ChildAxis, *(yyvsp[(1) - (1)].str) );
 		delete (yyvsp[(1) - (1)].str);
@@ -1579,7 +1584,7 @@ yyreduce:
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 151 "parser.y"
+#line 156 "parser.y"
     {
 		(yyval.step) = new Step( Step::ChildAxis, *(yyvsp[(1) - (2)].str), *(yyvsp[(2) - (2)].predList) );
 		delete (yyvsp[(1) - (2)].str);
@@ -1590,7 +1595,7 @@ yyreduce:
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 158 "parser.y"
+#line 163 "parser.y"
     {
 		(yyval.step) = new Step( (yyvsp[(1) - (2)].axisType), *(yyvsp[(2) - (2)].str) );
 		delete (yyvsp[(2) - (2)].str);
@@ -1600,7 +1605,7 @@ yyreduce:
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 164 "parser.y"
+#line 169 "parser.y"
     {
 		(yyval.step) = new Step( (yyvsp[(1) - (3)].axisType), *(yyvsp[(2) - (3)].str),  *(yyvsp[(3) - (3)].predList) );
 		delete (yyvsp[(2) - (3)].str);
@@ -1611,7 +1616,7 @@ yyreduce:
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 177 "parser.y"
+#line 182 "parser.y"
     {
 		(yyval.axisType) = Step::AttributeAxis;
 	;}
@@ -1620,16 +1625,16 @@ yyreduce:
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 184 "parser.y"
+#line 189 "parser.y"
     {
-		const int colon = (yyvsp[(1) - (1)].str)->indexOf( ':' );
+		const int colon = (yyvsp[(1) - (1)].str)->find( ':' );
 		if ( colon > -1 ) {
-			DOMStringImpl prefix( (yyvsp[(1) - (1)].str)->left( colon ) );
+			DOMString prefix( (yyvsp[(1) - (1)].str)->substring( 0, colon ) );
 			XPathNSResolverImpl *resolver = Expression::evaluationContext().resolver;
-			if ( !resolver || !resolver->lookupNamespaceURI( &prefix ) ) {
+			if ( !resolver || resolver->lookupNamespaceURI( prefix ).isNull() ) {
 				qWarning() << "Found unknown namespace prefix " << prefix.string();
-				//throw new XPathExceptionImpl( NAMESPACE_ERR );
-				// ### FIXME: abort parsing, return code.
+				xpathParseException = DOMException::NAMESPACE_ERR;
+				YYABORT;
 			}
 		}
 	;}
@@ -1638,20 +1643,20 @@ yyreduce:
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 198 "parser.y"
+#line 203 "parser.y"
     {
-		(yyval.str) = new DomString( *(yyvsp[(1) - (3)].str) + "()" );
+		(yyval.str) = new DOMString( *(yyvsp[(1) - (3)].str) + "()" );
 	;}
     break;
 
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 205 "parser.y"
+#line 210 "parser.y"
     {
-		DomString s = *(yyvsp[(1) - (4)].str) + " " + *(yyvsp[(3) - (4)].str);
+		QString s = (yyvsp[(1) - (4)].str)->string() + QLatin1Char(' ') + (yyvsp[(3) - (4)].str)->string();
 		s = s.trimmed();
-		(yyval.str) = new DomString( s );
+		(yyval.str) = new DOMString( s );
 		delete (yyvsp[(1) - (4)].str);
 		delete (yyvsp[(3) - (4)].str);
 	;}
@@ -1660,7 +1665,7 @@ yyreduce:
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 216 "parser.y"
+#line 221 "parser.y"
     {
 		(yyval.predList) = new QList<Predicate *>;
 		(yyval.predList)->append( new Predicate( (yyvsp[(1) - (1)].expr) ) );
@@ -1670,7 +1675,7 @@ yyreduce:
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 222 "parser.y"
+#line 227 "parser.y"
     {
 		(yyval.predList)->append( new Predicate( (yyvsp[(2) - (2)].expr) ) );
 	;}
@@ -1679,7 +1684,7 @@ yyreduce:
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 229 "parser.y"
+#line 234 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(2) - (3)].expr);
 	;}
@@ -1688,7 +1693,7 @@ yyreduce:
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 236 "parser.y"
+#line 241 "parser.y"
     {
 		(yyval.step) = new Step( Step::DescendantOrSelfAxis, "node()" );
 	;}
@@ -1697,7 +1702,7 @@ yyreduce:
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 243 "parser.y"
+#line 248 "parser.y"
     {
 		(yyval.step) = new Step( Step::SelfAxis, "node()" );
 	;}
@@ -1706,7 +1711,7 @@ yyreduce:
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 248 "parser.y"
+#line 253 "parser.y"
     {
 		(yyval.step) = new Step( Step::ParentAxis, "node()" );
 	;}
@@ -1715,7 +1720,7 @@ yyreduce:
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 255 "parser.y"
+#line 260 "parser.y"
     {
 		(yyval.expr) = new VariableReference( *(yyvsp[(1) - (1)].str) );
 		delete (yyvsp[(1) - (1)].str);
@@ -1725,7 +1730,7 @@ yyreduce:
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 261 "parser.y"
+#line 266 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(2) - (3)].expr);
 	;}
@@ -1734,7 +1739,7 @@ yyreduce:
   case 30:
 
 /* Line 1464 of yacc.c  */
-#line 266 "parser.y"
+#line 271 "parser.y"
     {
 		(yyval.expr) = new String( *(yyvsp[(1) - (1)].str) );
 		delete (yyvsp[(1) - (1)].str);
@@ -1744,9 +1749,9 @@ yyreduce:
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 272 "parser.y"
+#line 277 "parser.y"
     {
-		(yyval.expr) = new Number( (yyvsp[(1) - (1)].str)->toDouble() );
+		(yyval.expr) = new Number( (yyvsp[(1) - (1)].str)->toFloat() );
 		delete (yyvsp[(1) - (1)].str);
 	;}
     break;
@@ -1754,9 +1759,9 @@ yyreduce:
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 282 "parser.y"
+#line 287 "parser.y"
     {
-		(yyval.expr) = FunctionLibrary::self().getFunction( (yyvsp[(1) - (3)].str)->toLatin1() );
+		(yyval.expr) = FunctionLibrary::self().getFunction( *(yyvsp[(1) - (3)].str) );
 		delete (yyvsp[(1) - (3)].str);
 	;}
     break;
@@ -1764,9 +1769,9 @@ yyreduce:
   case 34:
 
 /* Line 1464 of yacc.c  */
-#line 288 "parser.y"
+#line 293 "parser.y"
     {
-		(yyval.expr) = FunctionLibrary::self().getFunction( (yyvsp[(1) - (4)].str)->toLatin1(), *(yyvsp[(3) - (4)].argList) );
+		(yyval.expr) = FunctionLibrary::self().getFunction( *(yyvsp[(1) - (4)].str), *(yyvsp[(3) - (4)].argList) );
 		delete (yyvsp[(1) - (4)].str);
 		delete (yyvsp[(3) - (4)].argList);
 	;}
@@ -1775,7 +1780,7 @@ yyreduce:
   case 35:
 
 /* Line 1464 of yacc.c  */
-#line 297 "parser.y"
+#line 302 "parser.y"
     {
 		(yyval.argList) = new QList<Expression *>;
 		(yyval.argList)->append( (yyvsp[(1) - (1)].expr) );
@@ -1785,7 +1790,7 @@ yyreduce:
   case 36:
 
 /* Line 1464 of yacc.c  */
-#line 303 "parser.y"
+#line 308 "parser.y"
     {
 		(yyval.argList)->append( (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1794,7 +1799,7 @@ yyreduce:
   case 39:
 
 /* Line 1464 of yacc.c  */
-#line 317 "parser.y"
+#line 322 "parser.y"
     {
 		(yyval.expr) = new Union;
 		(yyval.expr)->addSubExpression( (yyvsp[(1) - (3)].expr) );
@@ -1805,7 +1810,7 @@ yyreduce:
   case 40:
 
 /* Line 1464 of yacc.c  */
-#line 326 "parser.y"
+#line 331 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(1) - (1)].locationPath);
 	;}
@@ -1814,7 +1819,7 @@ yyreduce:
   case 41:
 
 /* Line 1464 of yacc.c  */
-#line 331 "parser.y"
+#line 336 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(1) - (1)].expr);
 	;}
@@ -1823,7 +1828,7 @@ yyreduce:
   case 42:
 
 /* Line 1464 of yacc.c  */
-#line 336 "parser.y"
+#line 341 "parser.y"
     {
 		(yyvsp[(3) - (3)].locationPath)->m_absolute = true;
 		(yyval.expr) = new Path( static_cast<Filter *>( (yyvsp[(1) - (3)].expr) ), (yyvsp[(3) - (3)].locationPath) );
@@ -1833,7 +1838,7 @@ yyreduce:
   case 43:
 
 /* Line 1464 of yacc.c  */
-#line 342 "parser.y"
+#line 347 "parser.y"
     {
 		(yyvsp[(3) - (3)].locationPath)->m_steps.prepend( (yyvsp[(2) - (3)].step) );
 		(yyvsp[(3) - (3)].locationPath)->m_absolute = true;
@@ -1844,7 +1849,7 @@ yyreduce:
   case 44:
 
 /* Line 1464 of yacc.c  */
-#line 351 "parser.y"
+#line 356 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(1) - (1)].expr);
 	;}
@@ -1853,7 +1858,7 @@ yyreduce:
   case 45:
 
 /* Line 1464 of yacc.c  */
-#line 356 "parser.y"
+#line 361 "parser.y"
     {
 		(yyval.expr) = new Filter( (yyvsp[(1) - (2)].expr), *(yyvsp[(2) - (2)].predList) );
 	;}
@@ -1862,7 +1867,7 @@ yyreduce:
   case 47:
 
 /* Line 1464 of yacc.c  */
-#line 365 "parser.y"
+#line 370 "parser.y"
     {
 		(yyval.expr) = new LogicalOp( LogicalOp::OP_Or, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1871,7 +1876,7 @@ yyreduce:
   case 49:
 
 /* Line 1464 of yacc.c  */
-#line 374 "parser.y"
+#line 379 "parser.y"
     {
 		(yyval.expr) = new LogicalOp( LogicalOp::OP_And, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1880,7 +1885,7 @@ yyreduce:
   case 51:
 
 /* Line 1464 of yacc.c  */
-#line 383 "parser.y"
+#line 388 "parser.y"
     {
 		(yyval.expr) = new EqTestOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1889,7 +1894,7 @@ yyreduce:
   case 53:
 
 /* Line 1464 of yacc.c  */
-#line 392 "parser.y"
+#line 397 "parser.y"
     {
 		(yyval.expr) = new NumericOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1898,7 +1903,7 @@ yyreduce:
   case 55:
 
 /* Line 1464 of yacc.c  */
-#line 401 "parser.y"
+#line 406 "parser.y"
     {
 		(yyval.expr) = new NumericOp( NumericOp::OP_Add, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1907,7 +1912,7 @@ yyreduce:
   case 56:
 
 /* Line 1464 of yacc.c  */
-#line 406 "parser.y"
+#line 411 "parser.y"
     {
 		(yyval.expr) = new NumericOp( NumericOp::OP_Sub, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1916,7 +1921,7 @@ yyreduce:
   case 58:
 
 /* Line 1464 of yacc.c  */
-#line 415 "parser.y"
+#line 420 "parser.y"
     {
 		(yyval.expr) = new NumericOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1925,7 +1930,7 @@ yyreduce:
   case 60:
 
 /* Line 1464 of yacc.c  */
-#line 424 "parser.y"
+#line 429 "parser.y"
     {
 		(yyval.expr) = new Negative;
 		(yyval.expr)->addSubExpression( (yyvsp[(2) - (2)].expr) );
@@ -1935,7 +1940,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 1939 "parser.tab.c"
+#line 1944 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2147,15 +2152,27 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 430 "parser.y"
+#line 435 "parser.y"
 
 
-Expression *khtmlParseXPathStatement( const DOM::DOMString &statement )
+Expression *khtmlParseXPathStatement( const DOM::DOMString &statement, int& ec )
 {
 //	qDebug() << "Parsing " << statement;
+	xpathParseException = 0;
 	initTokenizer( statement );
 	yyparse();
+
+	if (xpathParseException)
+		ec = xpathParseException;
 	return _topExpr;
 }
+
+void khtmlxpathyyerror(const char *str)
+{
+	// XXX Clean xpathyylval.str up to avoid leaking it.
+	fprintf(stderr, "error: %s\n", str);
+	xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
+}
+
 
 

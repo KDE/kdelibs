@@ -30,6 +30,9 @@
 #include <QHash>
 #include <QList>
 
+#include "dom/dom_string.h"
+#include "xml/dom_stringimpl.h"
+
 namespace khtml {
 namespace XPath {
 
@@ -37,7 +40,7 @@ class Function : public Expression
 {
 	public:
 		void setArguments( const QList<Expression *> &args );
-		void setName( const QString &name );
+		void setName( const DOM::DOMString &name );
 
 		virtual QString dump() const;
 
@@ -45,10 +48,10 @@ class Function : public Expression
 		Expression *arg( int pos );
 		const Expression *arg( int pos ) const;
 		unsigned int argCount() const;
-		QString name() const;
+		DOM::DOMString name() const;
 
 	private:
-		QString m_name;
+		DOM::DOMString m_name;
 };
 
 class FunctionLibrary
@@ -57,7 +60,7 @@ class FunctionLibrary
 	public:
 		static FunctionLibrary &self();
 
-		Function *getFunction( const char *name,
+		Function *getFunction( const DOM::DOMString& name,
 		                       const QList<Expression *> &args = QList<Expression *>() ) const;
 
 	private:
@@ -67,7 +70,7 @@ class FunctionLibrary
 		FunctionLibrary( const FunctionLibrary &rhs );
 		FunctionLibrary &operator=( const FunctionLibrary &rhs );
 
-		QHash<QString, FunctionRec> m_functionDict;
+		QHash<DOM::DOMString, FunctionRec> m_functionDict;
 };
 
 } // namespace XPath
