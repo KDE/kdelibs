@@ -146,12 +146,14 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic, const QString& text,
 	: QPushButton(QIcon(pic), text, parent), m_id(id), d(0)
 {
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
-	setFlat(true);
 
-        // we can't see the focus, so don't take focus. #45557
-        // If keyboard navigation is wanted, then only the bar should take focus,
-        // and arrows could change the focused button; but generally, tabbars don't take focus anyway.
-        setFocusPolicy(Qt::NoFocus);
+	// a button with a QMenu can have another size. Make sure the button has always the same size.
+	setFixedWidth(height());
+
+	// we can't see the focus, so don't take focus. #45557
+	// If keyboard navigation is wanted, then only the bar should take focus,
+	// and arrows could change the focused button; but generally, tabbars don't take focus anyway.
+	setFocusPolicy(Qt::NoFocus);
 }
 
 KMultiTabBarButton::~KMultiTabBarButton()
@@ -184,6 +186,16 @@ void KMultiTabBarButton::showEvent( QShowEvent* he) {
 	QPushButton::showEvent(he);
 	KMultiTabBar *tb=dynamic_cast<KMultiTabBar*>(parentWidget());
 	if (tb) tb->updateSeparator();
+}
+
+void KMultiTabBarButton::paintEvent(QPaintEvent *) {
+	QStyleOptionButton opt;
+	opt.initFrom(this);
+	opt.icon = icon();
+	// removes the QStyleOptionButton::HasMenu ButtonFeature
+	opt.features = QStyleOptionButton::Flat;
+	QPainter painter(this);
+	style()->drawControl(QStyle::CE_PushButton, &opt, &painter, this);
 }
 
 // KMultiTabBarTab

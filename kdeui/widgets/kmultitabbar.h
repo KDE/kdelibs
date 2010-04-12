@@ -171,6 +171,7 @@ protected Q_SLOTS:
 protected:
     virtual void hideEvent( class QHideEvent*);
     virtual void showEvent( class QShowEvent*);
+    virtual void paintEvent( class QPaintEvent*);
 
     /** Should not be created directly. Use KMultiTabBar::appendButton
     */
