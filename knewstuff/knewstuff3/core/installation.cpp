@@ -386,14 +386,16 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             // FIXME: check for overwriting, malicious archive entries (../foo) etc.
             // FIXME: KArchive should provide "safe mode" for this!
             KArchive *archive = 0;
+    
 
-            if (mimeType->name() == "application/zip") {
+            if (mimeType->is("application/zip")) {
                 archive = new KZip(payloadfile);
-            } else if (mimeType->name() == "application/tar"
-                       || mimeType->name() == "application/x-gzip"
-                       || mimeType->name() == "application/x-bzip"
-                       || mimeType->name() == "application/x-lzma"
-                       || mimeType->name() == "application/x-xz") {
+            } else if (mimeType->is("application/tar")
+                       || mimeType->is("application/x-gzip")
+                       || mimeType->is("application/x-bzip")
+                       || mimeType->is("application/x-lzma")
+                       || mimeType->is("application/x-xz")
+                       || mimeType->is("application/x-bzip-compressed-tar") ) {
                 archive = new KTar(payloadfile);
             } else {
                 delete archive;
