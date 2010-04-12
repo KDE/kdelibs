@@ -104,8 +104,8 @@ public:
     bool succeeded;
     // If the file to create a thumb for was a temp file, this is its name
     QString tempName;
-    // Over that, it's too much
-    KIO::filesize_t maximumSize;
+    KIO::filesize_t maximumLocalSize;
+    KIO::filesize_t maximumRemoteSize;
     // the size for the icon overlay
     int iconSize;
     // the transparency of the blended mimetype icon
@@ -153,6 +153,8 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->thumbRoot = QDir::homePath() + "/.thumbnails/";
     d->ignoreMaximumSize = false;
     d->sequenceIndex = 0;
+    d->maximumLocalSize = 0;
+    d->maximumRemoteSize = 0;
 
     // Return to event loop first, determineNextFile() might delete this;
     QTimer::singleShot(0, this, SLOT(startPreview()));
@@ -252,8 +254,9 @@ void PreviewJobPrivate::startPreview()
         }
     }
 
-  // Read configuration value for the maximum allowed size
-    maximumSize = PreviewJob::maximumFileSize();
+    KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
+    maximumLocalSize = cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
+    maximumRemoteSize = cg.readEntry( "MaximumRemoteSize", 0 );
 
     if (bNeedCache)
     {
@@ -346,10 +349,14 @@ void PreviewJob::slotResult( KJob *job )
             }
             const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
             d->tOrig = entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, 0 );
-            if ( !d->ignoreMaximumSize &&
-                 (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 ) > d->maximumSize &&
-                 !d->currentItem.plugin->property("IgnoreMaximumSize").toBool()
-                ) {
+
+            const KIO::filesize_t maximumSize = d->currentItem.item.url().isLocalFile()
+                                                ? d->maximumLocalSize
+                                                : d->maximumRemoteSize;
+            const bool skipCurrentItem = !d->ignoreMaximumSize
+                && (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 ) > maximumSize
+                && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
+            if (skipCurrentItem) {
                 d->determineNextFile();
                 return;
             }
