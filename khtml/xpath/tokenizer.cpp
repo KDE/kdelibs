@@ -119,11 +119,11 @@ bool Tokenizer::isAxisName(QString name, Step::AxisType *type)
 			                        axisNames[p].type);
 	}
 
-	QHash<QString, Step::AxisType>::ConstIterator it = s_axisNamesDict->find(name);
-	if ( it != s_axisNamesDict->end() ) {
+	QHash<QString, Step::AxisType>::ConstIterator it = s_axisNamesDict->constFind(name);
+	if ( it != s_axisNamesDict->constEnd() ) {
 		*type = *it;
 	}
-	return it != s_axisNamesDict->end();
+	return it != s_axisNamesDict->constEnd();
 }
 
 bool Tokenizer::isNodeTypeName(QString name)
