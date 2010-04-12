@@ -219,6 +219,11 @@ void KDebugTest::testHasNullOutput()
     QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 0, false), true);
     QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 293, false), true);
     QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, false), true);
+
+    // Restore to normal for future tests
+    config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.sync();
+    kClearDebugConfig();
 }
 
 #include <QThreadPool>
