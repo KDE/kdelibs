@@ -17,6 +17,10 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${KDE4_KDEUI_INCLUDES}
+   ${CMAKE_SOURCE_DIR}/nepomuk/
+   ${CMAKE_SOURCE_DIR}/nepomuk/core/
+   ${CMAKE_SOURCE_DIR}/nepomuk/core/ontology/    
+   ${CMAKE_SOURCE_DIR}/nepomuk/core/ui/
    ${CMAKE_SOURCE_DIR}/solid
    ${CMAKE_BINARY_DIR}/solid
    ${KDE4_KDECORE_INCLUDES}/
@@ -180,11 +184,15 @@ set(kfile_STAT_SRCS
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
   kfile/kfiledialog.cpp
+  kfile/kfilemetadataconfigurationwidget.cpp
+  kfile/kfilemetadataprovider.cpp
+  kfile/kfilemetadatawidget.cpp
   kfile/kfilemetainfowidget.cpp
   kfile/kfilemetapreview.cpp
   kfile/kicondialog.cpp
   kfile/kimagefilepreview.cpp
   kfile/kmetaprops.cpp
+  kfile/knfotranslator.cpp
   kfile/kopenwithdialog.cpp
   kfile/kpreviewprops.cpp
   kfile/kpreviewwidgetbase.cpp
@@ -195,6 +203,16 @@ set(kfile_STAT_SRCS
   kfile/kurlrequester.cpp
   kfile/kurlrequesterdialog.cpp
 )
+if(HAVE_NEPOMUK)
+  set(kfile_STAT_SRCS
+    ${kfile_STAT_SRCS}
+    kfile/kcommentwidget.cpp
+    kfile/kedittagsdialog.cpp
+    kfile/kloadfilemetadatathread.cpp
+    kfile/ktaggingwidget.cpp
+  )
+endif(HAVE_NEPOMUK)
+
 if(NOT WIN32)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
@@ -256,6 +274,9 @@ install(FILES kssl/ksslcertificatemanager.upd
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
+if(HAVE_NEPOMUK)
+  target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY})
+endif(HAVE_NEPOMUK)
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${X11_LIBRARIES})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
@@ -402,6 +423,8 @@ install( FILES
   kfile/kfiledialog.h
   kfile/kicondialog.h
   kfile/kimagefilepreview.h
+  kfile/kfilemetadataconfigurationwidget.h
+  kfile/kfilemetadatawidget.h
   kfile/kopenwithdialog.h
   kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h

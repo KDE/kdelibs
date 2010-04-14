@@ -32,9 +32,6 @@ class KIO_EXPORT KFileMetaPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:
-  /**
-   * Constructor
-   */
   KFileMetaPropsPlugin( KPropertiesDialog *_props );
   virtual ~KFileMetaPropsPlugin();
 
@@ -46,22 +43,6 @@ public:
   static bool supports( const KFileItemList& _items );
 
 private:
-    void createLayout();
-
-    QWidget* makeBoolWidget(const KFileMetaInfoItem& item, QWidget* parent);
-    QWidget* makeIntWidget(const KFileMetaInfoItem& item, QWidget* parent,
-                                                    QString& valClass);
-    QWidget* makeStringWidget(const KFileMetaInfoItem& item, QWidget* parent,
-                                                       QString& valClass);
-    QWidget* makeDateTimeWidget(const KFileMetaInfoItem& item, QWidget* parent,
-                                                     QString& valClass);
-
-private Q_SLOTS:
-    // Code disabled until the "Add" button is implemented
-//    void slotAdd();
-
-private:
-
   class KFileMetaPropsPluginPrivate;
   KFileMetaPropsPluginPrivate* const d;
 };
