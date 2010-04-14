@@ -238,7 +238,7 @@ file's entry, 'make install', and kconf_update will happily run your script
 again, without you having to increase the version number.
 
 If you want to know what kconf_update has been up to lately, have a look
-at $KDEHOME/share/apps/kconf_update/update.log
+at $KDEHOME/share/apps/kconf_update/log/update.log
 
 
 Common Problems
