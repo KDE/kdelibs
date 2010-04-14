@@ -815,7 +815,7 @@ bool KateDocument::removeText ( const KTextEditor::Range &_range, bool block )
     int vc1 = toVirtualColumn(range.start());
     int vc2 = toVirtualColumn(range.end());
     for (int line = qMin(range.end().line(), lastLine()); line >= startLine; --line) {
-      Kate::TextLine tl = const_cast<KateDocument*>(this)->kateTextLine(line);
+      KateTextLine::Ptr tl = const_cast<KateDocument*>(this)->kateTextLine(line);
       int col1 = tl->fromVirtualColumn(vc1, config()->tabWidth());
       int col2 = tl->fromVirtualColumn(vc2, config()->tabWidth());
       editRemoveText(line, qMin(col1, col2), qAbs(col2 - col1));
