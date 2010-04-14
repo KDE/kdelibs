@@ -1,7 +1,7 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
 *   Copyright (C) 2009 Radek Novacek <rnovacek@redhat.com>
+*   Copyright (C) 2009-2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -30,9 +30,36 @@
 namespace KAuth
 {
 
+PolkitResultEventLoop::PolkitResultEventLoop(QObject* parent)
+    : QEventLoop(parent)
+{
+
+}
+
+PolkitResultEventLoop::~PolkitResultEventLoop()
+{
+
+}
+
+void PolkitResultEventLoop::requestQuit(const PolkitQt1::Authority::Result& result)
+{
+    m_result = result;
+    quit();
+}
+
+PolkitQt1::Authority::Result PolkitResultEventLoop::result() const
+{
+    return m_result;
+}
+
 Polkit1Backend::Polkit1Backend()
 {
     // Nothing to do here...
+}
+
+Polkit1Backend::~Polkit1Backend()
+{
+
 }
 
 Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
@@ -87,7 +114,13 @@ bool Polkit1Backend::isCallerAuthorized(const QString &action, QByteArray caller
     PolkitQt1::UnixProcessSubject subject(pid);
     PolkitQt1::Authority *authority = PolkitQt1::Authority::instance();
 
-    switch (authority->checkAuthorizationSync(action, &subject, PolkitQt1::Authority::AllowUserInteraction)) {
+    PolkitResultEventLoop e;
+    connect(authority, SIGNAL(checkAuthorizationFinished(PolkitQt1::Authority::Result)),
+            &e, SLOT(requestQuit(PolkitQt1::Authority::Result)));
+    authority->checkAuthorization(action, &subject, PolkitQt1::Authority::AllowUserInteraction);
+    e.exec();
+
+    switch (e.result()) {
     case PolkitQt1::Authority::Yes:
         return true;
     default:
