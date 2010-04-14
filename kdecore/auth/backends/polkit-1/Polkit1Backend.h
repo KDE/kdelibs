@@ -1,7 +1,7 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
 *   Copyright (C) 2009 Radek Novacek <rnovacek@redhat.com>
+*   Copyright (C) 2009-2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,11 @@
 #define POLKIT1BACKEND_H
 
 #include "AuthBackend.h"
+
 #include <QHash>
+#include <QEventLoop>
+
+#include <PolkitQt1/Authority>
 
 class QByteArray;
 
@@ -37,20 +41,34 @@ class Polkit1Backend : public AuthBackend
 
 public:
     Polkit1Backend();
+    virtual ~Polkit1Backend();
     virtual void setupAction(const QString&);
     virtual Action::AuthStatus authorizeAction(const QString&);
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
 
-Q_SIGNALS:
-    void actionStatusChanged(const QString &action, Action::AuthStatus status);
-
 private Q_SLOTS:
     void checkForResultChanged();
 
 private:
     QHash<QString, Action::AuthStatus> m_cachedResults;
+};
+
+class PolkitResultEventLoop : public QEventLoop
+{
+    Q_OBJECT
+public:
+    PolkitResultEventLoop(QObject* parent = 0);
+    virtual ~PolkitResultEventLoop();
+
+    PolkitQt1::Authority::Result result() const;
+
+public Q_SLOTS:
+    void requestQuit(const PolkitQt1::Authority::Result &result);
+
+private:
+    PolkitQt1::Authority::Result m_result;
 };
 
 } // namespace Auth

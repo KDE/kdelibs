@@ -1,6 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
+*   Copyright (C) 2009-2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -215,18 +215,18 @@ bool DBusHelperProxy::hasToStopAction()
 void DBusHelperProxy::performActions(QByteArray blob, const QByteArray &callerID)
 {
     QDataStream stream(&blob, QIODevice::ReadOnly);
-    QList<QPair<QString, QVariantMap> > actions;
+    QList< QPair< QString, QVariantMap > > actions;
 
     stream >> actions;
 
-    QList<QPair<QString, QVariantMap> >::const_iterator i = actions.constBegin();
+    QList< QPair< QString, QVariantMap > >::const_iterator i = actions.constBegin();
     while (i != actions.constEnd()) {
         QByteArray blob;
         QDataStream stream(&blob, QIODevice::WriteOnly);
 
         stream << i->second;
 
-        emit remoteSignal(ActionPerformed, i->first, performAction(i->first, callerID, blob));
+        performAction(i->first, callerID, blob);
 
         i++;
     }
@@ -246,10 +246,17 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
     QDataStream s(&arguments, QIODevice::ReadOnly);
     s >> args;
 
-    if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
-        QTimer *timer = responder->property("__KAuth_Helper_Shutdown_Timer").value<QTimer*>();
-        timer->stop();
+    m_currentAction = action;
+    emit remoteSignal(ActionStarted, action, QByteArray());
+    QEventLoop e;
+    e.processEvents(QEventLoop::AllEvents);
 
+    ActionReply retVal;
+
+    QTimer *timer = responder->property("__KAuth_Helper_Shutdown_Timer").value<QTimer*>();
+    timer->stop();
+
+    if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
         QString slotname = action;
         if (slotname.startsWith(m_name + '.')) {
             slotname = slotname.right(slotname.length() - m_name.length() - 1);
@@ -257,26 +264,25 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
         slotname.replace('.', '_');
 
-        ActionReply retVal;
+        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection,
+                                                 Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
 
-        m_currentAction = action;
-        emit remoteSignal(ActionStarted, action, QByteArray());
-        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
-        emit remoteSignal(ActionPerformed, action, retVal.serialized());
-        m_currentAction = "";
-        m_stopRequest = false;
-
-        timer->start();
-
-        if (success) {
-            return retVal.serialized();
-        } else {
-            return ActionReply::NoSuchActionReply.serialized();
+        if (!success) {
+            retVal = ActionReply::NoSuchActionReply;
         }
 
     } else {
-        return ActionReply::AuthorizationDeniedReply.serialized();
+        retVal = ActionReply::AuthorizationDeniedReply;
     }
+
+    timer->start();
+
+    emit remoteSignal(ActionPerformed, action, retVal.serialized());
+    e.processEvents(QEventLoop::AllEvents);
+    m_currentAction = "";
+    m_stopRequest = false;
+
+    return retVal.serialized();
 }
 
 void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
