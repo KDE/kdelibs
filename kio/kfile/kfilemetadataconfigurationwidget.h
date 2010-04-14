@@ -20,7 +20,7 @@
 #ifndef KFILEMETADATACONFIGURATIONWIDGET_H
 #define KFILEMETADATACONFIGURATIONWIDGET_H
 
-#include <kfile_export.h>
+#include <kio/kio_export.h>
 #include <kfileitem.h>
 
 #include <QWidget>
@@ -41,7 +41,7 @@
 // TODO: A signal is required which indicates configuration changes. Otherwise
 // it would not be possible for an application developer to enable/disable an
 // "Apply" button of a dialog.
-class KFILE_EXPORT KFileMetaDataConfigurationWidget : public QWidget
+class KIO_EXPORT KFileMetaDataConfigurationWidget : public QWidget
 {
     Q_OBJECT
 

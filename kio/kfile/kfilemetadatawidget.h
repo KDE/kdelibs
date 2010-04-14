@@ -21,7 +21,7 @@
 #ifndef KFILEMETADATAWIDGET_H
 #define KFILEMETADATAWIDGET_H
 
-#include <kfile_export.h>
+#include <kio/kio_export.h>
 #include <kfileitem.h>
 
 #include <QList>
@@ -41,7 +41,7 @@ class KUrl;
  *
  * @since 4.5
  */
-class KFILE_EXPORT KFileMetaDataWidget : public QWidget
+class KIO_EXPORT KFileMetaDataWidget : public QWidget
 {
     Q_OBJECT
 
