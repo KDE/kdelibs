@@ -80,20 +80,10 @@ adding lines with "# DELETE [group]key" in the output of the script.
 To delete a whole group use "# DELETEGROUP [group]".
 
 <script> should be installed into $(kde_datadir)/kconf_update, or
-kconf_update will not be able to find it. It is not portable to install
-binary applications in $kde_datadir, so you have to stick with interpreted
-scripts like sh or perl scripts. From KDE 3.2 onwards it's also possible
-to install kconf_update applications in $(kde_bindir)/kconf_update_bin,
-which opens the door to kconf_update applications that are written in C++
-and use Qt's powerful string API instead.
-
-A workaround for KDE 3.1.x and older is to install a .sh script in
-$(kde_datadir) that contains a simple exec:
-
-    exec "`kde-config --prefix`/bin/kconf_update_bin/my_update_app"
-
-This is equivalent to what KDE 3.2 can do directly, but of course the .upd
-file now points to the .sh script instead of the binary application.
+kconf_update will not be able to find it. It's also possible to install
+kconf_update applications in $(kde_bindir)/kconf_update_bin, which opens the
+door to kconf_update applications that are written in C++ and use Qt's
+powerful string API instead.
 
 If Script was issued after a "Group" command the behavior is slightly
 different:
@@ -105,9 +95,9 @@ To delete <oldgroup> use "# DELETEGROUP".
 
 <interpreter> can be something like "perl".
 
-Since KDE 3.3 it is also possible to have a Script without specifying
-<oldfile> or <newfile>. In that case the script is run but it will not be
-fed any input and its output will simply be discarded.
+It is also possible to have a Script without specifying <oldfile> or
+<newfile>. In that case the script is run but it will not be fed any input
+and its output will simply be discarded.
 
 ScriptArguments=<arguments>
 
