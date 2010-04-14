@@ -233,9 +233,11 @@ Instead it checks the affected config file every time a .upd file is added
 or changed. The reason it still doesn't run again on your config file lies
 in the traces kconf_update leaves behind: it adds a special config group
 '[$Version]' with a key 'update_info'. This key lists all kconf_update
-scripts that have already been run on this config file. Just remove your
-file's entry, 'make install', and kconf_update will happily run your script
-again, without you having to increase the version number.
+scripts that have already been run on this config file. It also adds a group
+for the script to $KDEHOME/share/config/kconf_updaterc. Just remove your
+script entries from both your rcfile and kconf_updaterc, 'make install',
+and kconf_update will happily run your script again, without you having to
+increase the version number.
 
 If you want to know what kconf_update has been up to lately, have a look
 at $KDEHOME/share/apps/kconf_update/log/update.log
