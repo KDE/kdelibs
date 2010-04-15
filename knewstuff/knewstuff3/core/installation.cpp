@@ -395,7 +395,8 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                        || mimeType->is("application/x-bzip")
                        || mimeType->is("application/x-lzma")
                        || mimeType->is("application/x-xz")
-                       || mimeType->is("application/x-bzip-compressed-tar") ) {
+                       || mimeType->is("application/x-bzip-compressed-tar")
+                       || mimeType->is("application/x-compressed-tar") ) {
                 archive = new KTar(payloadfile);
             } else {
                 delete archive;
