@@ -77,32 +77,36 @@ int main(int argc, char **argv)
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineOptions options;
     options.add("active-icon <name>", ki18n("Name of active icon"), "konqueror");
+    options.add("ksni-count <count>", ki18n("How many instances of KStatusNotifierItem to create"), "1");
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication app;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     QLabel *l = new QLabel("System Tray Main Window", 0L);
-    KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
-    new KStatusNotifierItemTest(0, tray);
+    int ksniCount = args->getOption("ksni-count").toInt();
+    for (int x=0; x < ksniCount; ++x) {
+        KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
-    tray->setTitle("DBus System tray test");
-    tray->setIconByName(args->getOption("active-icon"));
-    //tray->setImage(KIcon("konqueror"));
-    //tray->setAttentionIconByName("kmail");
-    tray->setOverlayIconByName("emblem-important");
-    tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
+        new KStatusNotifierItemTest(0, tray);
 
-    tray->setToolTipIconByName("konqueror");
-    tray->setToolTipTitle("DBus System tray test");
-    tray->setToolTipSubTitle("This is a test of the new systemtray specification");
+        tray->setTitle("DBus System tray test");
+        tray->setIconByName(args->getOption("active-icon"));
+        //tray->setImage(KIcon("konqueror"));
+        //tray->setAttentionIconByName("kmail");
+        tray->setOverlayIconByName("emblem-important");
+        tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
-    tray->setToolTip("konqueror", "DBus System tray test", "This is a test of the new systemtray specification");
+        tray->setToolTipIconByName("konqueror");
+        tray->setToolTipTitle("DBus System tray test");
+        tray->setToolTipSubTitle("This is a test of the new systemtray specification");
 
-    tray->showMessage("message test", "Test of the new systemtray notifications wrapper", "konqueror", 3000);
-    //tray->setStandardActionsEnabled(false);
+        tray->setToolTip("konqueror", QString("DBus System tray test #%1").arg(x + 1), "This is a test of the new systemtray specification");
 
+        tray->showMessage("message test", "Test of the new systemtray notifications wrapper", "konqueror", 3000);
+        //tray->setStandardActionsEnabled(false);
+    }
 
     return app.exec();
 }
