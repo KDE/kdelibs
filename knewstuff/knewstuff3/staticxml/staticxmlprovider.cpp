@@ -26,6 +26,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+#include <QtCore/QTimer>
+
 namespace KNS3
 {
 
@@ -103,10 +105,15 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
         mId = mDownloadUrls[mDownloadUrls.keys().first()].url();
     }
 
-    mInitialized = true;
+    QTimer::singleShot(0, this, SLOT(slotEmitProliderInitialized()));
 
-    emit providerInitialized(this);
     return true;
+}
+
+void StaticXmlProvider::slotEmitProliderInitialized()
+{
+    mInitialized = true;
+    emit providerInitialized(this);
 }
 
 bool StaticXmlProvider::isInitialized() const
