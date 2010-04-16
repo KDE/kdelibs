@@ -97,9 +97,9 @@ void KFileItemTest::testDetach()
 {
     KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
     fileItem.setExtraData(this, this);
-    QCOMPARE(fileItem.extraData(this), (void*)this);
+    QCOMPARE(fileItem.extraData(this), (const void*)this);
     KFileItem fileItem2(fileItem);
-    QCOMPARE(fileItem2.extraData(this), (void*)this);
+    QCOMPARE(fileItem2.extraData(this), (const void*)this);
     QVERIFY(fileItem == fileItem2);
     fileItem2.mark();
     QVERIFY(fileItem2.isMarked());
