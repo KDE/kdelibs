@@ -34,6 +34,9 @@
     <method name="getShortcutContexts">
       <arg type="as" direction="out"/>
     </method>
+    <method name="invokeShortcut">
+      <arg name="actionName" type="s" direction="in"/>
+    </method>
   </interface>
 </node>
 
