@@ -86,6 +86,11 @@ bool KCalendarSystemCopticPrivate::isLeapYear( int year ) const
     return false;
 }
 
+bool KCalendarSystemCopticPrivate::hasLeapMonths() const
+{
+    return false;
+}
+
 bool KCalendarSystemCopticPrivate::hasYearZero() const
 {
     return false;

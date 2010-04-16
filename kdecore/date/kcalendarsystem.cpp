@@ -218,6 +218,13 @@ bool KCalendarSystemPrivate::isLeapYear( int year ) const
 
 // Dummy version using Gregorian as an example
 // This method MUST be re-implemented in any new Calendar System
+bool KCalendarSystemPrivate::hasLeapMonths() const
+{
+    return false;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
 bool KCalendarSystemPrivate::hasYearZero() const
 {
     return false;
@@ -253,6 +260,189 @@ int KCalendarSystemPrivate::earliestValidYear() const
 int KCalendarSystemPrivate::latestValidYear() const
 {
     return 9999;
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+// Works for calendars with constant number of months, or where leap month is last month of year
+// Will not work for Hebrew or others where leap month is inserted in middle of year
+void KCalendarSystemPrivate::dateDifference( const QDate &fromDate, const QDate &toDate,
+                                             int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const
+{
+    // This could be optimised a little but is left in full as it's easier to understand
+    int dy = 0;
+    int dm = 0;
+    int dd = 0;
+    int dir = 1;
+
+    if ( toDate < fromDate ) {
+        dateDifference( toDate, fromDate, &dy, &dm, &dd, 0 );
+        dir = -1;
+    } else if ( toDate > fromDate ) {
+
+        int fromYear = q->year( fromDate );
+        int toYear = q->year( toDate );
+        int fromMonth = q->month( fromDate );
+        int toMonth = q->month( toDate );
+        int fromDay = q->day( fromDate );
+        int toDay = q->day( toDate );
+
+        int monthsInPrevYear = monthsInYear( addYears( toYear, -1 ) );
+        int daysInPrevMonth = q->daysInMonth( q->addMonths( toDate, -1 ) );
+        int daysInFromMonth = daysInMonth( fromYear, fromMonth );
+        int daysInToMonth = daysInMonth( toYear, toMonth );
+
+        // Calculate years difference
+        if ( toYear == fromYear ) {
+            dy = 0;
+        } else if ( toMonth > fromMonth ) {
+            dy = differenceYearNumbers( fromYear, toYear );
+        } else if ( toMonth < fromMonth ) {
+            dy = differenceYearNumbers( fromYear, toYear ) - 1;
+        } else { // toMonth == fromMonth
+            // Allow for last day of month to last day of month and leap days
+            // e.g. 2000-02-29 to 2001-02-28 is 1 year not 0 years
+            if ( ( toDay >= fromDay ) || ( fromDay == daysInFromMonth && toDay == daysInToMonth ) ) {
+                dy = differenceYearNumbers( fromYear, toYear );
+            } else {
+                dy = differenceYearNumbers( fromYear, toYear ) - 1;
+            }
+        }
+
+        // Calculate months and days difference
+        if ( toDay >= fromDay ) {
+            dm = ( monthsInPrevYear + toMonth - fromMonth ) % monthsInPrevYear;
+            dd = toDay - fromDay;
+        } else { // toDay < fromDay
+            // Allow for last day of month to last day of month and leap days
+            // e.g. 2010-03-31 to 2010-04-30 is 1 month
+            //      2000-02-29 to 2001-02-28 is 1 year
+            //      2000-02-29 to 2001-03-01 is 1 year 1 day
+            int prevMonth = q->month( q->addMonths( toDate, -1 ) );
+            if ( fromDay == daysInFromMonth && toDay == daysInToMonth ) {
+                dm = ( monthsInPrevYear + toMonth - fromMonth ) % monthsInPrevYear;
+                dd = 0;
+            } else if ( prevMonth == fromMonth && daysInPrevMonth < daysInFromMonth ) {
+                // Special case where fromDate = leap day and toDate in month following but non-leap year
+                // e.g. 2000-02-29 to 2001-03-01 needs to use 29 to calculate day number not 28
+                dm = ( monthsInPrevYear + toMonth - fromMonth - 1 ) % monthsInPrevYear;
+                dd = ( daysInFromMonth + toDay - fromDay ) % daysInFromMonth;
+            } else {
+                dm = ( monthsInPrevYear + toMonth - fromMonth - 1 ) % monthsInPrevYear;
+                dd = ( daysInPrevMonth + toDay - fromDay ) % daysInPrevMonth;
+            }
+        }
+
+    }
+
+    // Only return values if we have a valid pointer
+    if ( yearsDiff ) {
+        *yearsDiff = dy;
+    }
+    if ( monthsDiff ) {
+        *monthsDiff = dm;
+    }
+    if ( daysDiff ) {
+        *daysDiff = dd;
+    }
+    if ( direction ) {
+        *direction = dir;
+    }
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew
+// Allows for calendars with leap months at end of year but not during year
+int KCalendarSystemPrivate::yearsDifference( const QDate &fromDate, const QDate &toDate ) const
+{
+    // This could be optimised a little but is left in full as it's easier to understand
+    // Alternatively could just call dateDifference(), but this is slightly more efficient
+
+    if ( toDate < fromDate ) {
+        return 0 - yearsDifference( toDate, fromDate );
+    }
+
+    if ( toDate == fromDate ) {
+        return 0;
+    }
+
+    int fromYear = q->year( fromDate );
+    int toYear = q->year( toDate );
+
+    if ( toYear == fromYear ) {
+        return 0;
+    }
+
+    int fromMonth = q->month( fromDate );
+    int toMonth = q->month( toDate );
+
+    if ( toMonth > fromMonth ) {
+        return differenceYearNumbers( fromYear, toYear );
+    }
+
+    if ( toMonth < fromMonth ) {
+        return differenceYearNumbers( fromYear, toYear ) - 1;
+    }
+
+    // toMonth == fromMonth
+    int fromDay = q->day( fromDate );
+    int toDay = q->day( toDate );
+
+    // Adjust for month numbers in from and to year
+    // Allow for last day of month to last day of month and leap days
+    // e.g. 2000-02-29 to 2001-02-28 is 1 year not 0 years
+    if ( ( toDay >= fromDay ) ||
+         ( fromDay == daysInMonth( fromYear, fromMonth ) &&
+           toDay == daysInMonth( toYear, toMonth ) ) ) {
+        return differenceYearNumbers( fromYear, toYear );
+    } else {
+        return differenceYearNumbers( fromYear, toYear ) - 1;
+    }
+
+}
+
+// Reimplement if special maths handling required, e.g. maybe Hebrew?
+// Allows for calendars with leap months
+int KCalendarSystemPrivate::monthsDifference( const QDate &fromDate, const QDate &toDate ) const
+{
+    if ( toDate < fromDate ) {
+        return 0 - monthsDifference( toDate, fromDate );
+    }
+
+    if ( toDate == fromDate ) {
+        return 0;
+    }
+
+    int fromYear = q->year( fromDate );
+    int toYear = q->year( toDate );
+    int fromMonth = q->month( fromDate );
+    int toMonth = q->month( toDate );
+    int fromDay = q->day( fromDate );
+    int toDay = q->day( toDate );
+
+    int monthsInPreceedingYears;
+
+    // Calculate number of months in full years preceeding toYear
+    if ( toYear == fromYear ) {
+        monthsInPreceedingYears = 0;
+    } else if ( hasLeapMonths() ) {
+        monthsInPreceedingYears = 0;
+        for ( int y = fromYear; y < toYear; y = addYears( y, 1 ) ) {
+            monthsInPreceedingYears = monthsInPreceedingYears + monthsInYear( y );
+        }
+    } else {
+        monthsInPreceedingYears = differenceYearNumbers( fromYear, toYear ) * monthsInYear( toYear );
+    }
+
+    // Adjust for months in from and to year
+    // Allow for last day of month to last day of month and leap days
+    // e.g. 2010-03-31 to 2010-04-30 is 1 month not 0 months
+    // also 2000-02-29 to 2001-02-28 is 12 months not 11 months
+    if ( ( toDay >= fromDay ) ||
+         ( fromDay == daysInMonth( fromYear, fromMonth ) &&
+           toDay == daysInMonth( toYear, toMonth ) ) ) {
+        return monthsInPreceedingYears + toMonth - fromMonth;
+    } else {
+        return monthsInPreceedingYears + toMonth - fromMonth - 1;
+    }
 }
 
 // Reimplement if special string to integer handling required, e.g. Hebrew.
@@ -303,9 +493,9 @@ bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int d
     return true;
 }
 
-// Utility to correctly add year numbers together because some systems such as
+// Utility to correctly add years to a year number because some systems such as
 // Julian and Gregorian calendars don't have a year 0
-int KCalendarSystemPrivate::addYearNumber( int originalYear, int addYears ) const
+int KCalendarSystemPrivate::addYears( int originalYear, int addYears ) const
 {
     int newYear = originalYear + addYears;
 
@@ -318,6 +508,23 @@ int KCalendarSystemPrivate::addYearNumber( int originalYear, int addYears ) cons
     }
 
     return newYear;
+}
+
+// Utility to correctly return number of years between two year numbers because some systems such as
+// Julian and Gregorian calendars don't have a year 0
+int KCalendarSystemPrivate::differenceYearNumbers( int fromYear, int toYear ) const
+{
+    int dy = toYear - fromYear;
+
+    if ( !hasYearZero() ) {
+        if ( toYear > 0 && fromYear < 0 ) {
+            dy = dy - 1;
+        } else if ( toYear < 0 && fromYear > 0 ) {
+            dy = dy + 1;
+        }
+    }
+
+    return dy;
 }
 
 QDate KCalendarSystemPrivate::invalidDate() const
@@ -630,7 +837,7 @@ QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
         int originalYear, originalMonth, originalDay;
         julianDayToDate( date.toJulianDay(), originalYear, originalMonth, originalDay );
 
-        int newYear = d->addYearNumber( originalYear, numYears );
+        int newYear = d->addYears( originalYear, numYears );
         int newMonth = originalMonth;
         int newDay = originalDay;
 
@@ -660,16 +867,16 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
 
         int monthsInOriginalYear = d->monthsInYear( originalYear );
 
-        int newYear = d->addYearNumber( originalYear, ( originalMonth + numMonths ) / monthsInOriginalYear );
+        int newYear = d->addYears( originalYear, ( originalMonth + numMonths ) / monthsInOriginalYear );
         int newMonth = ( originalMonth + numMonths ) % monthsInOriginalYear;
         int newDay = originalDay;
 
         if ( newMonth == 0 ) {
-            newYear = d->addYearNumber( newYear, - 1 );
+            newYear = d->addYears( newYear, - 1 );
             newMonth = monthsInOriginalYear;
         }
         if ( newMonth < 0 ) {
-            newYear = d->addYearNumber( newYear, - 1 );
+            newYear = d->addYears( newYear, - 1 );
             newMonth = newMonth + monthsInOriginalYear;
         }
 
@@ -702,6 +909,51 @@ QDate KCalendarSystem::addDays( const QDate &date, int numDays ) const
     }
 
     return d->invalidDate();
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+void KCalendarSystem::dateDifference( const QDate &fromDate, const QDate &toDate,
+                                             int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( fromDate ) && isValid( toDate ) ) {
+        d->dateDifference( fromDate, toDate, yearsDiff, monthsDiff, daysDiff, direction );
+    }
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::yearsDifference( const QDate &fromDate, const QDate &toDate ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( fromDate ) && isValid( toDate ) ) {
+        return d->yearsDifference( fromDate, toDate );
+    }
+
+    return 0;
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::monthsDifference( const QDate &fromDate, const QDate &toDate ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( fromDate ) && isValid( toDate ) ) {
+        return d->monthsDifference( fromDate, toDate );
+    }
+
+    return 0;
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::daysDifference( const QDate &fromDate, const QDate &toDate ) const
+{
+    if ( isValid( fromDate ) && isValid( toDate ) ) {
+        return toDate.toJulianDay() - fromDate.toJulianDay();
+    }
+
+    return 0;
 }
 
 int KCalendarSystem::monthsInYear( const QDate &date ) const
@@ -866,9 +1118,9 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
         // our date in prev year's week
         if ( dayOfYear( date ) < dayOfWeek1InYear ) { 
             if ( yearNum ) {
-                *yearNum = d->addYearNumber( y, - 1 );
+                *yearNum = d->addYears( y, - 1 );
             }
-            return weeksInYear( d->addYearNumber( y, - 1 ) );
+            return weeksInYear( d->addYears( y, - 1 ) );
         }
 
         // let's check if its last week belongs to next year
@@ -878,7 +1130,7 @@ int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
         if ( ( dayOfYear( date ) >= d->daysInYear( y ) - dayOfWeek( lastDayOfYear ) + 1 )
              && dayOfWeek( lastDayOfYear ) < 4 ) {
             if ( yearNum ) {
-                * yearNum = d->addYearNumber( y, 1 );
+                * yearNum = d->addYears( y, 1 );
             }
              week = 1;
         } else {

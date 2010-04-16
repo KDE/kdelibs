@@ -323,6 +323,67 @@ public:
      */
     virtual QDate addDays( const QDate &date, int ndays ) const;
 
+    //KDE5 make virtual?
+    /**
+     * Returns the difference between two dates in years, months and days.
+     * The difference is always caculated from the earlier date to the later
+     * date in year, month and day order, with the @p direction parameter
+     * indicating which direction the difference is applied from the @p toDate.
+     *
+     * For example, the difference between 2010-06-10 and 2012-09-5 is 2 years,
+     * 2 months and 26 days.  Note that the difference between two last days of
+     * the month is always 1 month, e.g. 2010-01-31 to 2010-02-28 is 1 month
+     * not 28 days.
+     *
+     * @param fromDate The date to start from
+     * @param toDate The date to end at
+     * @param yearsDiff Returns number of years difference
+     * @param monthsDiff Returns number of months difference
+     * @param daysDiff Returns number of days difference
+     * @param direction Returns direction of difference, 1 if fromDate <= toDate, -1 otherwise
+     */
+    void dateDifference( const QDate &fromDate, const QDate &toDate,
+                         int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const;
+
+    //KDE5 make virtual?
+    /**
+    * Returns the difference between two dates in completed calendar years.
+    * The returned value will be negative if @p fromDate > @p toDate.
+    *
+    * For example, the difference between 2010-06-10 and 2012-09-5 is 2 years.
+    *
+    * @param fromDate The date to start from
+    * @param toDate The date to end at
+    * @return The number of years difference
+    */
+    int yearsDifference( const QDate &fromDate, const QDate &toDate ) const;
+
+    //KDE5 make virtual?
+    /**
+     * Returns the difference between two dates in completed calendar months
+     * The returned value will be negative if @p fromDate > @p toDate.
+     *
+     * For example, the difference between 2010-06-10 and 2012-09-5 is 26 months.
+     * Note that the difference between two last days of the month is always 1
+     * month, e.g. 2010-01-31 to 2010-02-28 is 1 month not 28 days.
+     *
+     * @param fromDate The date to start from
+     * @param toDate The date to end at
+     * @return The number of months difference
+     */
+    int monthsDifference( const QDate &fromDate, const QDate &toDate ) const;
+
+    //KDE5 make virtual?
+    /**
+     * Returns the difference between two dates in days
+     * The returned value will be negative if @p fromDate > @p toDate.
+     *
+     * @param fromDate The date to start from
+     * @param toDate The date to end at
+     * @return The number of days difference
+     */
+    int daysDifference( const QDate &fromDate, const QDate &toDate ) const;
+
     /**
      * Returns number of months in the given year
      *

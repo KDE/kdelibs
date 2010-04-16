@@ -45,6 +45,7 @@ public:
     virtual int daysInYear( int year ) const;
     virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
@@ -124,6 +125,11 @@ bool KCalendarSystemJalaliPrivate::isLeapYear( int year ) const
     } else {
         return false;
     }
+}
+
+bool KCalendarSystemJalaliPrivate::hasLeapMonths() const
+{
+    return false;
 }
 
 bool KCalendarSystemJalaliPrivate::hasYearZero() const

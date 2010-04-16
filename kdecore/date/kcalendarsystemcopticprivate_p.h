@@ -35,6 +35,7 @@ public:
     virtual int daysInYear( int year ) const;
     virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;

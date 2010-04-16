@@ -40,6 +40,7 @@ public:
     virtual int daysInYear( int year ) const;
     virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
@@ -104,6 +105,11 @@ bool KCalendarSystemIndianNationalPrivate::isLeapYear( int year ) const
     //Uses same rule as Gregorian, and is explicitly synchronized to Gregorian
     //so add 78 years to get Gregorian year and call Gregorian implementation
     return gregorian->isLeapYear( year + 78 );
+}
+
+bool KCalendarSystemIndianNationalPrivate::hasLeapMonths() const
+{
+    return false;
 }
 
 bool KCalendarSystemIndianNationalPrivate::hasYearZero() const

@@ -40,11 +40,19 @@ public:
     virtual int daysInYear( int year ) const;
     virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+
+    // Virtual methods to re-implement if special maths needed
+    // Currently only Hebrew may need special conversion, rest should be OK
+    int yearsDifference( const QDate &fromDate, const QDate &toDate ) const;
+    int monthsDifference( const QDate &fromDate, const QDate &toDate ) const;
+    void dateDifference( const QDate &fromDate, const QDate &toDate,
+                         int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const;
 
     // Virtual methods to re-implement if special number/string conversion needed
     // Currently only Hebrew needs special conversion, rest use KLocale DigitSet
@@ -54,7 +62,8 @@ public:
 
     // Utility functions
     bool setAnyDate( QDate &date, int year, int month, int day ) const;
-    int addYearNumber( int originalYear, int addYears ) const;
+    int addYears( int startYear, int yearsToAdd ) const;
+    int differenceYearNumbers( int fromYear, int toYear ) const;
     QDate invalidDate() const;
     QString simpleDateString( const QString &str ) const;
     QDate firstDayOfYear( int year ) const;

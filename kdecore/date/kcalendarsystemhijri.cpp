@@ -37,6 +37,7 @@ public:
     virtual int daysInYear( int year ) const;
     virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
@@ -118,6 +119,11 @@ bool KCalendarSystemHijriPrivate::isLeapYear( int year ) const
     // Variation used by Bohras / Sahifa with epoch 15 July 622 jd = 1948440
     // Years 2, 5, 8, 10, 13, 16, 19, 21, 24, 27, 29 of the 30 year cycle
     // if ( ( ( ( 11 * year ) + 1 ) % 30 ) < 11 ) {
+}
+
+bool KCalendarSystemHijriPrivate::hasLeapMonths() const
+{
+    return false;
 }
 
 bool KCalendarSystemHijriPrivate::hasYearZero() const

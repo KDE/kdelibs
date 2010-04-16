@@ -37,6 +37,15 @@ protected:
 
     void testStrings( KLocale::DigitSet testDigitSet );
     QDate setDayOfYearDate( const KCalendarSystem * calendar, int year, int dayOfYear );
+    void compareDateDifference( const KCalendarSystem *calendar,
+                                const QDate lowDate, const QDate highDate,
+                                int yearsDiff, int monthsDiff, int daysDiff );
+    void compareYearDifference( const KCalendarSystem *calendar,
+                                const QDate lowDate, const QDate highDate,
+                                int yearsDiff );
+    void compareMonthDifference( const KCalendarSystem *calendar,
+                                 const QDate lowDate, const QDate highDate,
+                                 int monthsDiff );
     QDate setIsoWeekDate( const KCalendarSystem * calendar, int year, int isoWeek, int dayOfWeek );
     void testRoundTrip( const KCalendarSystem *calendar );
 
@@ -49,6 +58,7 @@ private Q_SLOTS:
     void testHebrewStrings();
     void testIsoWeekDate();
     void testDayOfYearDate();
+    void testDateDifference();
     void testGregorian();
     void testHebrew();
     void testHijri();

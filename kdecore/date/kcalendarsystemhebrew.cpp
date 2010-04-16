@@ -248,6 +248,7 @@ public:
     virtual int daysInYear( int year ) const;
     virtual int daysInWeek() const;
     virtual bool isLeapYear( int year ) const;
+    virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
@@ -329,6 +330,11 @@ int KCalendarSystemHebrewPrivate::daysInWeek() const
 bool KCalendarSystemHebrewPrivate::isLeapYear( int year ) const
 {
     return ( ( ( ( 7 * year ) + 1 ) % 19 ) < 7 );
+}
+
+bool KCalendarSystemHebrewPrivate::hasLeapMonths() const
+{
+    return true;
 }
 
 bool KCalendarSystemHebrewPrivate::hasYearZero() const

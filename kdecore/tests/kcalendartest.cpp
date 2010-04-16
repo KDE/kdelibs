@@ -641,12 +641,12 @@ void KCalendarTest::testHebrewStrings()
     Note special cases 15 = 9 + 6 טו and 16 = 9 + 7 טז
 */
 
+    QString oldLocale = setlocale(LC_ALL, "he.utf8");
     KLocale *locale = new KLocale( *KGlobal::locale() );
+    locale->setLanguage(QStringList() << "he");
     locale->insertCatalog("kdecalendarsystems");
     locale->setDateFormat( "%d %B %Y" );
-    locale->setLanguage(QStringList() << "he");
     const KCalendarSystem *calendar = KCalendarSystem::create( "hebrew", locale );
-    QString oldLocale = setlocale(LC_ALL, "he.utf8");
     if ( locale->language() == "he" ) {
         QDate testDate;
         QString yearString, monthString, dayString, testString, resultString;
@@ -664,7 +664,6 @@ void KCalendarTest::testHebrewStrings()
         //QCOMPARE( calendar->formatDate( testDate,  locale->dateFormat() ), testString );
         //QCOMPARE( calendar->readDate( testString ), testDate );
         for ( int yy = 5400; yy <= 6400; ++yy ) {
-            kDebug() << yy;
             calendar->setDate( testDate, yy, 1, 1 );
             QCOMPARE( calendar->readDate( calendar->formatDate( testDate, KLocale::LongDate ), KLocale::NormalFormat ), testDate );
         }
@@ -728,6 +727,134 @@ QDate KCalendarTest::setDayOfYearDate( const KCalendarSystem * calendar, int yea
     QDate resultDate;
     calendar->setDate( resultDate, year, dayOfYear );
     return resultDate;
+}
+
+void KCalendarTest::testDateDifference()
+{
+    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    QDate testDate1, testDate2;
+
+    // Date Difference
+
+    compareDateDifference( calendar, QDate( 2010, 6,  1 ), QDate( 2010, 6,  1 ),  0,  0,  0 );
+    compareDateDifference( calendar, QDate( 2010, 6, 10 ), QDate( 2010, 6, 20 ),  0,  0, 10 );
+    compareDateDifference( calendar, QDate( 2010, 6,  1 ), QDate( 2010, 7,  1 ),  0,  1,  0 );
+    compareDateDifference( calendar, QDate( 2010, 6, 10 ), QDate( 2010, 7, 20 ),  0,  1, 10 );
+    compareDateDifference( calendar, QDate( 2010, 6, 20 ), QDate( 2010, 7, 10 ),  0,  0, 20 );
+    compareDateDifference( calendar, QDate( 2010, 6, 30 ), QDate( 2010, 7, 31 ),  0,  1,  1 );
+    compareDateDifference( calendar, QDate( 2010, 8, 31 ), QDate( 2010, 9, 30 ),  0,  1,  0 );
+    compareDateDifference( calendar, QDate( 2010, 7,  1 ), QDate( 2011, 6,  1 ),  0, 11,  0 );
+    compareDateDifference( calendar, QDate( 2010, 7, 10 ), QDate( 2011, 6, 20 ),  0, 11, 10 );
+    compareDateDifference( calendar, QDate( 2010, 7, 20 ), QDate( 2011, 6, 10 ),  0, 10, 21 );
+    compareDateDifference( calendar, QDate( 2010, 7, 31 ), QDate( 2011, 6, 30 ),  0, 11,  0 );
+    compareDateDifference( calendar, QDate( 2010, 8, 30 ), QDate( 2011, 7, 31 ),  0, 11,  1 );
+    compareDateDifference( calendar, QDate( 2010, 6, 10 ), QDate( 2011, 6, 10 ),  1,  0,  0 );
+    compareDateDifference( calendar, QDate( 2010, 6, 10 ), QDate( 2011, 6, 20 ),  1,  0, 10 );
+    compareDateDifference( calendar, QDate( 2010, 6, 10 ), QDate( 2011, 7, 10 ),  1,  1,  0 );
+    compareDateDifference( calendar, QDate( 2010, 6, 10 ), QDate( 2011, 7, 20 ),  1,  1, 10 );
+    compareDateDifference( calendar, QDate( 2010, 6, 20 ), QDate( 2011, 8, 10 ),  1,  1, 21 );
+    compareDateDifference( calendar, QDate( 2010, 6, 30 ), QDate( 2011, 7, 31 ),  1,  1,  1 );
+    compareDateDifference( calendar, QDate( 2010, 8, 31 ), QDate( 2011, 9, 30 ),  1,  1,  0 );
+    compareDateDifference( calendar, QDate( 2010, 7, 31 ), QDate( 2012, 6, 30 ),  1, 11,  0 );
+    compareDateDifference( calendar, QDate( 2010, 8, 30 ), QDate( 2012, 7, 31 ),  1, 11,  1 );
+    compareDateDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001, 2, 28 ),  1,  0,  0 );
+    compareDateDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001, 3,  1 ),  1,  0,  1 );
+    compareDateDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001, 4,  1 ),  1,  1,  3 );
+    calendar->setDate( testDate1, -1, 1, 1 );
+    calendar->setDate( testDate2,  1, 1, 1 );
+    compareDateDifference( calendar, testDate1, testDate2,  1,  0,  0 );
+
+    // Years Difference
+
+    compareYearDifference( calendar, QDate( 2010, 1,  1 ), QDate( 2010,  1,  1 ), 0 );
+    compareYearDifference( calendar, QDate( 2010, 1,  1 ), QDate( 2010, 12, 31 ), 0 );
+    compareYearDifference( calendar, QDate( 2010, 6,  1 ), QDate( 2010,  7,  1 ), 0 );
+    compareYearDifference( calendar, QDate( 2010, 6,  1 ), QDate( 2011,  5,  1 ), 0 );
+    compareYearDifference( calendar, QDate( 2010, 6,  1 ), QDate( 2011,  7,  1 ), 1 );
+    compareYearDifference( calendar, QDate( 2010, 6, 20 ), QDate( 2012,  6, 20 ), 2 );
+    compareYearDifference( calendar, QDate( 2010, 6, 20 ), QDate( 2012,  6, 30 ), 2 );
+    compareYearDifference( calendar, QDate( 2010, 6, 20 ), QDate( 2012,  6, 10 ), 1 );
+    compareYearDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001,  2, 28 ), 1 );
+    calendar->setDate( testDate1, -1, 12, 31 );
+    calendar->setDate( testDate2,  1,  1,  1 );
+    compareYearDifference( calendar, testDate1, testDate2, 0 );
+    calendar->setDate( testDate1, -1,  1,  1 );
+    compareYearDifference( calendar, testDate1, testDate2, 1 );
+
+    // Months Difference
+
+    compareMonthDifference( calendar, QDate( 2010, 1,  1 ), QDate( 2010,  1,  1 ), 0 );
+    compareMonthDifference( calendar, QDate( 2010, 1,  1 ), QDate( 2010,  2,  1 ), 1 );
+    compareMonthDifference( calendar, QDate( 2010, 1, 10 ), QDate( 2010,  2,  1 ), 0 );
+    compareMonthDifference( calendar, QDate( 2010, 1, 10 ), QDate( 2010,  2, 20 ), 1 );
+    compareMonthDifference( calendar, QDate( 2010, 1,  1 ), QDate( 2011,  1,  1 ), 12 );
+    compareMonthDifference( calendar, QDate( 2010, 1,  1 ), QDate( 2011,  2,  1 ), 13 );
+    compareMonthDifference( calendar, QDate( 2010, 1, 10 ), QDate( 2011,  2,  1 ), 12 );
+    compareMonthDifference( calendar, QDate( 2010, 1, 10 ), QDate( 2011,  2, 20 ), 13 );
+    compareMonthDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001,  2, 27 ), 11 );
+    compareMonthDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001,  2, 28 ), 12 );
+    compareMonthDifference( calendar, QDate( 2000, 2, 27 ), QDate( 2001,  2, 28 ), 12 );
+    compareMonthDifference( calendar, QDate( 2000, 2, 29 ), QDate( 2001,  3,  1 ), 12 );
+    calendar->setDate( testDate1, -1, 12, 31 );
+    calendar->setDate( testDate2,  1,  1,  1 );
+    compareMonthDifference( calendar, testDate1, testDate2, 0 );
+    calendar->setDate( testDate1, -1, 12,  1 );
+    compareMonthDifference( calendar, testDate1, testDate2, 1 );
+
+    // Days Difference
+
+    // Directly uses QDate::toJulianDay() so only basic testing needed
+    testDate1.setDate( 2010, 1, 1 );
+    testDate2.setDate( 2010, 1, 2 );
+    QCOMPARE( calendar->daysDifference( testDate1, testDate2 ), 1 );
+    QCOMPARE( calendar->daysDifference( testDate2, testDate1 ), -1 );
+
+    // Test for crossing Julian/Gregorian switch!!!
+}
+
+void KCalendarTest::compareDateDifference( const KCalendarSystem *calendar,
+                                           const QDate lowDate, const QDate highDate,
+                                           int yearsDiff, int monthsDiff, int daysDiff )
+{
+    int y, m, d, s;
+    if ( highDate >= lowDate ) {
+        calendar->dateDifference( lowDate, highDate, &y, &m, &d, &s );
+        QCOMPARE( y, yearsDiff);
+        QCOMPARE( m, monthsDiff);
+        QCOMPARE( d, daysDiff);
+        QCOMPARE( s, 1);
+    }
+    if ( highDate > lowDate ) {
+        calendar->dateDifference( highDate, lowDate, &y, &m, &d, &s );
+        QCOMPARE( y, yearsDiff );
+        QCOMPARE( m, monthsDiff );
+        QCOMPARE( d, daysDiff );
+        QCOMPARE( s, -1 );
+    }
+}
+
+void KCalendarTest::compareYearDifference( const KCalendarSystem *calendar,
+                                           const QDate lowDate, const QDate highDate,
+                                           int yearsDiff )
+{
+    if ( highDate >= lowDate ) {
+        QCOMPARE( calendar->yearsDifference( lowDate, highDate ), yearsDiff );
+    }
+    if ( highDate > lowDate ) {
+        QCOMPARE( calendar->yearsDifference( highDate, lowDate ), -yearsDiff );
+    }
+}
+
+void KCalendarTest::compareMonthDifference( const KCalendarSystem *calendar,
+                                            const QDate lowDate, const QDate highDate,
+                                            int monthsDiff )
+{
+    if ( highDate >= lowDate ) {
+        QCOMPARE( calendar->monthsDifference( lowDate, highDate ), monthsDiff );
+    }
+    if ( highDate > lowDate ) {
+        QCOMPARE( calendar->monthsDifference( highDate, lowDate ), -monthsDiff );
+    }
 }
 
 void KCalendarTest::testGregorian()
