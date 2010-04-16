@@ -88,8 +88,6 @@ protected:
 
     QString m_oldGroup;
     QString m_newGroup;
-    QString m_oldKey;
-    QString m_newKey;
 
     bool m_bCopy;
     bool m_bOverwrite;
@@ -542,16 +540,17 @@ void KonfUpdate::gotRemoveGroup(const QString &_group)
 
 void KonfUpdate::gotKey(const QString &_key)
 {
+    QString oldKey, newKey;
     int i = _key.indexOf(',');
     if (i == -1) {
-        m_oldKey = _key.trimmed();
-        m_newKey = m_oldKey;
+        oldKey = _key.trimmed();
+        newKey = oldKey;
     } else {
-        m_oldKey = _key.left(i).trimmed();
-        m_newKey = _key.mid(i + 1).trimmed();
+        oldKey = _key.left(i).trimmed();
+        newKey = _key.mid(i + 1).trimmed();
     }
 
-    if (m_oldKey.isEmpty() || m_newKey.isEmpty()) {
+    if (oldKey.isEmpty() || newKey.isEmpty()) {
         logFileError() << "Key specifies invalid key" << endl;
         return;
     }
@@ -560,17 +559,17 @@ void KonfUpdate::gotKey(const QString &_key)
         return;
     }
     KConfigGroup cg1(m_oldConfig1, m_oldGroup);
-    if (!cg1.hasKey(m_oldKey)) {
+    if (!cg1.hasKey(oldKey)) {
         return;
     }
-    QString value = cg1.readEntry(m_oldKey, QString());
+    QString value = cg1.readEntry(oldKey, QString());
     KConfigGroup newFGroup(m_newConfig, m_newGroup);
-    if (!m_bOverwrite && newFGroup.hasKey(m_newKey)) {
-        log() << m_currentFilename << ": Skipping " << m_newFileName << ":" << m_newGroup << ":" << m_newKey << ", already exists." << endl;
+    if (!m_bOverwrite && newFGroup.hasKey(newKey)) {
+        log() << m_currentFilename << ": Skipping " << m_newFileName << ":" << m_newGroup << ":" << newKey << ", already exists." << endl;
         return;
     }
-    log() << m_currentFilename << ": Updating " << m_newFileName << ":" << m_newGroup << ":" << m_newKey << " to '" << value << "'" << endl;
-    newFGroup.writeEntry(m_newKey, value);
+    log() << m_currentFilename << ": Updating " << m_newFileName << ":" << m_newGroup << ":" << newKey << " to '" << value << "'" << endl;
+    newFGroup.writeEntry(newKey, value);
 
     if (m_bCopy) {
         return; // Done.
@@ -579,12 +578,12 @@ void KonfUpdate::gotKey(const QString &_key)
     // Delete old entry
     if ((m_oldConfig2 == m_newConfig) &&
             (m_oldGroup == m_newGroup) &&
-            (m_oldKey == m_newKey)) {
+            (oldKey == newKey)) {
         return; // Don't delete!
     }
     KConfigGroup oldGroup2(m_oldConfig2, m_oldGroup);
-    oldGroup2.deleteEntry(m_oldKey);
-    log() << m_currentFilename << ": Removing " << m_oldFile << ":" << m_oldGroup << ":" << m_oldKey << ", moved." << endl;
+    oldGroup2.deleteEntry(oldKey);
+    log() << m_currentFilename << ": Removing " << m_oldFile << ":" << m_oldGroup << ":" << oldKey << ", moved." << endl;
     /*if (m_oldConfig2->deleteGroup(m_oldGroup, KConfig::Normal)) { // Delete group if empty.
        log() << m_currentFilename << ": Removing empty group " << m_oldFile << ":" << m_oldGroup << endl;
     }  (this should be automatic)  */
@@ -592,9 +591,9 @@ void KonfUpdate::gotKey(const QString &_key)
 
 void KonfUpdate::gotRemoveKey(const QString &_key)
 {
-    m_oldKey = _key.trimmed();
+    QString key = _key.trimmed();
 
-    if (m_oldKey.isEmpty()) {
+    if (key.isEmpty()) {
         logFileError() << "RemoveKey specifies invalid key" << endl;
         return;
     }
@@ -605,14 +604,14 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
     }
 
     KConfigGroup cg1(m_oldConfig1, m_oldGroup);
-    if (!cg1.hasKey(m_oldKey)) {
+    if (!cg1.hasKey(key)) {
         return;
     }
-    log() << m_currentFilename << ": RemoveKey removes " << m_oldFile << ":" << m_oldGroup << ":" << m_oldKey << endl;
+    log() << m_currentFilename << ": RemoveKey removes " << m_oldFile << ":" << m_oldGroup << ":" << key << endl;
 
     // Delete old entry
     KConfigGroup cg2(m_oldConfig2, m_oldGroup);
-    cg2.deleteEntry(m_oldKey);
+    cg2.deleteEntry(key);
     /*if (m_oldConfig2->deleteGroup(m_oldGroup, KConfig::Normal)) { // Delete group if empty.
        log() << m_currentFilename << ": Removing empty group " << m_oldFile << ":" << m_oldGroup << endl;
     }   (this should be automatic)*/
