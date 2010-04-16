@@ -23,7 +23,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kfileitem.h>
-#include <kglobalsettings.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include "kfilemetadataprovider_p.h"
@@ -130,11 +129,8 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     m_removeOutdatedRowsTimer(0),
     q(parent)
 {
-    const QFontMetrics fontMetrics(KGlobalSettings::smallestReadableFont());
-
     m_gridLayout = new QGridLayout(parent);
     m_gridLayout->setMargin(0);
-    m_gridLayout->setSpacing(fontMetrics.height() / 4);
 
     m_typeInfo = new QLabel(parent);
     m_sizeLabel = new QLabel(parent);
@@ -175,7 +171,6 @@ void KFileMetaDataWidget::Private::addRow(QLabel* label, QLabel* valueWidget)
     row.customValueWidget = 0;
     m_rows.append(row);
 
-    const QFont smallFont = KGlobalSettings::smallestReadableFont();
     // use a brighter color for the label and a small font size
     QPalette palette = label->palette();
     const QPalette::ColorRole role = q->foregroundRole();
@@ -184,19 +179,19 @@ void KFileMetaDataWidget::Private::addRow(QLabel* label, QLabel* valueWidget)
     palette.setColor(role, textColor);
     label->setPalette(palette);
     label->setForegroundRole(role);
-    label->setFont(smallFont);
+    label->setFont(q->font());
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop | Qt::AlignRight);
 
     valueWidget->setForegroundRole(role);
-    valueWidget->setFont(smallFont);
+    valueWidget->setFont(q->font());
     valueWidget->setWordWrap(true);
     valueWidget->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
     // add the row to grid layout
     const int rowIndex = m_rows.count() - 1;
     m_gridLayout->addWidget(label, rowIndex, 0, Qt::AlignRight);
-    const int spacerWidth = QFontMetrics(smallFont).size(Qt::TextSingleLine, " ").width();
+    const int spacerWidth = QFontMetrics(q->font()).size(Qt::TextSingleLine, " ").width();
     m_gridLayout->addItem(new QSpacerItem(spacerWidth, 1), rowIndex, 1);
     m_gridLayout->addWidget(valueWidget, rowIndex, 2, Qt::AlignLeft);
 }
@@ -551,8 +546,9 @@ bool KFileMetaDataWidget::event(QEvent* event)
 {
     if (event->type() == QEvent::Polish) {
         // The adding of rows is not done in the constructor. This allows the
-        // client of KFileMetaDataWidget to set a proper foreground role which
-        // will be respected by the rows.
+        // client of KFileMetaDataWidget to set a proper foreground role and
+        // font, which will be respected by the rows.
+        d->m_gridLayout->setSpacing(fontMetrics().height() / 4);
 
         d->addRow(new QLabel(i18nc("@label file type", "Type"), this), d->m_typeInfo);
         d->addRow(d->m_sizeLabel, d->m_sizeInfo);
