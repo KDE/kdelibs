@@ -48,6 +48,7 @@ public:
     QStringList findUpdateFiles(bool dirtyOnly);
 
     QTextStream &log();
+    QTextStream &logFileError();
 
     bool checkFile(const QString &filename);
     void checkGotFile(const QString &_file, const QString &id);
@@ -184,6 +185,12 @@ KonfUpdate::log()
     (*m_textStream) << QDateTime::currentDateTime().toString(Qt::ISODate) << " ";
 
     return *m_textStream;
+}
+
+QTextStream &
+KonfUpdate::logFileError()
+{
+    return log() << m_currentFilename << ':' << m_lineCount << ":'" << m_line << "': ";
 }
 
 QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
@@ -346,7 +353,7 @@ bool KonfUpdate::updateFile(const QString &filename)
             gotAllGroups();
             resetOptions();
         } else {
-            log() << m_currentFilename << ": parse error in line " << m_lineCount << " : '" << m_line << "'" << endl;
+            logFileError() << "Parse error" << endl;
         }
     }
     // Flush.
@@ -520,7 +527,7 @@ void KonfUpdate::gotRemoveGroup(const QString &_group)
     m_oldGroup = _group.trimmed();
 
     if (!m_oldConfig1) {
-        log() << m_currentFilename << ": !! RemoveGroup without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "RemoveGroup without previous File specification" << endl;
         return;
     }
 
@@ -545,11 +552,11 @@ void KonfUpdate::gotKey(const QString &_key)
     }
 
     if (m_oldKey.isEmpty() || m_newKey.isEmpty()) {
-        log() << m_currentFilename << ": !! Key specifies invalid key in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "Key specifies invalid key" << endl;
         return;
     }
     if (!m_oldConfig1) {
-        log() << m_currentFilename << ": !! Key without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "Key without previous File specification" << endl;
         return;
     }
     KConfigGroup cg1(m_oldConfig1, m_oldGroup);
@@ -588,12 +595,12 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
     m_oldKey = _key.trimmed();
 
     if (m_oldKey.isEmpty()) {
-        log() << m_currentFilename << ": !! RemoveKey specifies invalid key in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "RemoveKey specifies invalid key" << endl;
         return;
     }
 
     if (!m_oldConfig1) {
-        log() << m_currentFilename << ": !! Key without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "Key without previous File specification" << endl;
         return;
     }
 
@@ -614,7 +621,7 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
 void KonfUpdate::gotAllKeys()
 {
     if (!m_oldConfig1) {
-        log() << m_currentFilename << ": !! AllKeys without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "AllKeys without previous File specification" << endl;
         return;
     }
 
@@ -628,7 +635,7 @@ void KonfUpdate::gotAllKeys()
 void KonfUpdate::gotAllGroups()
 {
     if (!m_oldConfig1) {
-        log() << m_currentFilename << ": !! AllGroups without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "AllGroups without previous File specification" << endl;
         return;
     }
 
@@ -687,7 +694,7 @@ void KonfUpdate::gotScript(const QString &_script)
 
 
     if (script.isEmpty()) {
-        log() << m_currentFilename << ": !! Script fails to specify filename in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        logFileError() << "Script fails to specify filename";
         m_skip = true;
         return;
     }
@@ -701,7 +708,7 @@ void KonfUpdate::gotScript(const QString &_script)
         }
 
         if (path.isEmpty()) {
-            log() << m_currentFilename << ": !! Script '" << script << "' not found in line " << m_lineCount << " : '" << m_line << "'" << endl;
+            logFileError() << "Script '" << script << "' not found" << endl;
             m_skip = true;
             return;
         }
