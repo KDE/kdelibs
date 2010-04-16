@@ -20,7 +20,7 @@ install(TARGETS kconf_update DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### install files ###############
 
-
+add_subdirectory(tests)
 
 
 
