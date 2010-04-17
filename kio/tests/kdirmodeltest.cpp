@@ -215,7 +215,7 @@ void KDirModelTest::testIndex()
 
     // Index of the first file
     QVERIFY(m_fileIndex.isValid());
-    QCOMPARE(m_fileIndex.model(), m_dirModel);
+    QCOMPARE(m_fileIndex.model(), static_cast<const QAbstractItemModel*>(m_dirModel));
     //QCOMPARE(m_fileIndex.row(), 0);
     QCOMPARE(m_fileIndex.column(), 0);
     QVERIFY(!m_fileIndex.parent().isValid());
@@ -223,7 +223,7 @@ void KDirModelTest::testIndex()
 
     // Index of a directory
     QVERIFY(m_dirIndex.isValid());
-    QCOMPARE(m_dirIndex.model(), m_dirModel);
+    QCOMPARE(m_dirIndex.model(), static_cast<const QAbstractItemModel*>(m_dirModel));
     //QCOMPARE(m_dirIndex.row(), 3);
     QCOMPARE(m_dirIndex.column(), 0);
     QVERIFY(!m_dirIndex.parent().isValid());
@@ -231,7 +231,7 @@ void KDirModelTest::testIndex()
 
     // Index of a file inside a directory (subdir/testfile)
     QVERIFY(m_fileInDirIndex.isValid());
-    QCOMPARE(m_fileInDirIndex.model(), m_dirModel);
+    QCOMPARE(m_fileInDirIndex.model(), static_cast<const QAbstractItemModel*>(m_dirModel));
     //QCOMPARE(m_fileInDirIndex.row(), 0);
     QCOMPARE(m_fileInDirIndex.column(), 0);
     QVERIFY(m_fileInDirIndex.parent() == m_dirIndex);
@@ -239,7 +239,7 @@ void KDirModelTest::testIndex()
 
     // Index of subdir/subsubdir/testfile
     QVERIFY(m_fileInSubdirIndex.isValid());
-    QCOMPARE(m_fileInSubdirIndex.model(), m_dirModel);
+    QCOMPARE(m_fileInSubdirIndex.model(), static_cast<const QAbstractItemModel*>(m_dirModel));
     //QCOMPARE(m_fileInSubdirIndex.row(), 0);
     QCOMPARE(m_fileInSubdirIndex.column(), 0);
     QVERIFY(m_fileInSubdirIndex.parent().parent() == m_dirIndex);
