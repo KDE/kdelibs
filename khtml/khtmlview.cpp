@@ -4074,8 +4074,8 @@ void KHTMLView::scrollTick() {
     if (takesteps < 1) takesteps = 1;
     if (takesteps > d->steps) takesteps = d->steps;
     for(int i = 0; i < takesteps; i++) {
-        int ddx = (((d->dx-1) / (d->steps+1))+1) * 2;
-        int ddy = (((d->dy-1) / (d->steps+1))+1) * 2;
+        int ddx = (d->dx / (d->steps+1)) * 2;
+        int ddy = (d->dy / (d->steps+1)) * 2;
 
         // limit step to requested scrolling distance
         if (abs(ddx) > abs(d->dx)) ddx = d->dx;
@@ -4088,7 +4088,7 @@ void KHTMLView::scrollTick() {
         scroll_y += ddy;
         d->steps--;
     }
-
+    
     d->shouldSmoothScroll = false;
     scrollContentsBy(scroll_x, scroll_y);
 
