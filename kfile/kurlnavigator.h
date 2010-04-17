@@ -424,9 +424,9 @@ protected:
     /*
      * If the Escape key is pressed, the navigation bar should switch
      * to the breadcrumb view.
-     * @see QWidget::keyReleaseEvent()
+     * @see QWidget::keyPressEvent()
      */
-    virtual void keyReleaseEvent(QKeyEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event);
 
     /*
      * Paste the clipboard content as URL, if the middle mouse

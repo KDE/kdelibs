@@ -1152,11 +1152,12 @@ void KUrlNavigator::savePosition(int x, int y)
     d->m_history[d->m_historyIndex].pos = QPoint(x, y);
 }
 
-void KUrlNavigator::keyReleaseEvent(QKeyEvent* event)
+void KUrlNavigator::keyPressEvent(QKeyEvent* event)
 {
-    QWidget::keyReleaseEvent(event);
     if (isUrlEditable() && (event->key() == Qt::Key_Escape)) {
         setUrlEditable(false);
+    } else {
+        QWidget::keyPressEvent(event);
     }
 }
 
