@@ -4033,8 +4033,8 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 void KHTMLView::setupSmoothScrolling(int dx, int dy)
 {
     // old or minimum speed
-    int ddx = qMax(d->steps ? d->dx/d->steps : 0,3);
-    int ddy = qMax(d->steps ? d->dy/d->steps : 0,3);
+    int ddx = qMax(d->steps ? abs(d->dx)/d->steps : 0,3);
+    int ddy = qMax(d->steps ? abs(d->dy)/d->steps : 0,3);
     
     // full scroll is remaining scroll plus new scroll
     d->dx = d->dx + dx;
@@ -4050,7 +4050,7 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
     if (qMax(abs(d->dx), abs(d->dy)) / d->steps < qMax(ddx,ddy)) {
         // Don't move slower than average 4px/step in minimum one direction
         // This means fewer than normal steps
-        d->steps = qMax((d->dx-1)/ddx, (d->dy-1)/ddy)+1;
+        d->steps = qMax((abs(d->dx)+ddx-1)/ddx, (abs(d->dy)+ddy-1)/ddy);
         if (d->steps < 1) d->steps = 1;
     }
 
