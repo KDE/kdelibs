@@ -108,8 +108,10 @@ void KUiServerJobTracker::registerJob(KJob *job)
         QObject::connect(jobView, SIGNAL(resumeRequested()), job,
                          SLOT(resume()));
 
-        jobView->setDestUrl(QDBusVariant(job->property("destUrl")));
-
+        QVariant destUrl = job->property("destUrl");
+        if (destUrl.isValid()) {
+            jobView->setDestUrl(QDBusVariant(destUrl));
+        }
         d->progressJobView.insert(job, jobView);
     }
 
