@@ -216,6 +216,16 @@ class KDEUI_EXPORT KPageDialog : public KDialog
     KPageWidget *pageWidget();
 
     /**
+     * Set the page widget of the dialog.
+     * 
+     * @note the previous pageWidget will be deleted.
+     *
+     * @param widget The KPageWidget object will be reparented to this object, so you can create
+     * it without parent and you are not allowed to delete it.
+     */
+    void setPageWidget(KPageWidget *widget);
+
+    /**
      * Returns the page widget of the dialog or 0 if no page widget is set.
      */
     const KPageWidget *pageWidget() const;

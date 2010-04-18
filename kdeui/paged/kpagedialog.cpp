@@ -120,6 +120,13 @@ KPageWidget* KPageDialog::pageWidget()
     return d_func()->mPageWidget;
 }
 
+void KPageDialog::setPageWidget(KPageWidget *widget)
+{
+    delete d_func()->mPageWidget;
+    d_func()->mPageWidget = widget;
+    d_func()->init();
+}
+
 const KPageWidget* KPageDialog::pageWidget() const
 {
     return d_func()->mPageWidget;
