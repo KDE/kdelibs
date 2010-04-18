@@ -48,14 +48,14 @@ JSEventListener::JSEventListener(JSObject *_listener, JSObject *_compareListener
 {
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
   if (compareListenerImp) {
-    static_cast<Window*>(win.get())->jsEventListeners.insert(QPair<void*, bool>(compareListenerImp, html), this);
+    static_cast<Window*>(win.get())->jsEventListeners.insert(QPair<void*, bool>(compareListenerImp.get(), html), this);
   }
 }
 
 JSEventListener::~JSEventListener()
 {
   if (compareListenerImp) {
-    static_cast<Window*>(win.get())->jsEventListeners.remove(QPair<void*, bool>(compareListenerImp, html));
+    static_cast<Window*>(win.get())->jsEventListeners.remove(QPair<void*, bool>(compareListenerImp.get(), html));
   }
   //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
 }
@@ -223,7 +223,7 @@ void JSLazyEventListener::parseCode() const
     code.clear();
 
     if (listener) {
-      static_cast<Window*>(win.get())->jsEventListeners.insert(QPair<void*, bool>(compareListenerImp, true),
+      static_cast<Window*>(win.get())->jsEventListeners.insert(QPair<void*, bool>(compareListenerImp.get(), true),
                                               (KJS::JSEventListener *)(this));
     }
 
