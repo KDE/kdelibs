@@ -38,11 +38,12 @@ class KDEUI_EXPORT KPageDialogPrivate : public KDialogPrivate
         void init()
         {
             Q_Q(KPageDialog);
-            q->connect(mPageWidget, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)),
-                    q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)));
-            q->connect(mPageWidget, SIGNAL(pageRemoved(KPageWidgetItem *)), 
-                    q, SIGNAL(pageRemoved(KPageWidgetItem *)));
-
+            if (mPageWidget) {
+                q->connect(mPageWidget, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)),
+                        q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)));
+                q->connect(mPageWidget, SIGNAL(pageRemoved(KPageWidgetItem *)), 
+                        q, SIGNAL(pageRemoved(KPageWidgetItem *)));
+            }
             q->setMainWidget(mPageWidget);
         }
 };
