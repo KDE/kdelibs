@@ -185,9 +185,9 @@ Plugin* Plugin::loadPlugin( QObject * parent, const QByteArray &libname )
 }
 
 // static
-Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname )
+Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname, const QString &keyword )
 {
-    Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, parent );
+    Plugin* plugin = KLibLoader::createInstance<Plugin>( keyword, libname, parent );
     if ( !plugin )
         return 0;
     plugin->d->m_library = libname;
@@ -248,6 +248,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
     {
         QDomElement docElem = (*pIt).m_document.documentElement();
         QString library = docElem.attribute( "library" );
+        QString keyword;
 
         if ( library.isEmpty() )
             continue;
@@ -276,6 +277,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
                                                    enableNewPluginsByDefault );
                 if ( interfaceVersionRequired != 0 )
                 {
+                    keyword = desktop.readEntry("X-KDE-PluginKeyword", "");
                     const int version = desktop.readEntry( "X-KDE-InterfaceVersion", 1 );
                     if ( version != interfaceVersionRequired )
                     {
@@ -320,7 +322,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
             continue;
 
         kDebug( 1000 ) << "load plugin " << name;
-        Plugin *plugin = loadPlugin( parent, library );
+        Plugin *plugin = loadPlugin( parent, library, keyword );
 
         if ( plugin )
         {

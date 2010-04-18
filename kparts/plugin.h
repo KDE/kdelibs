@@ -182,7 +182,7 @@ protected:
      * @internal
      * @return The plugin created from the library @p libname
      */
-    static Plugin* loadPlugin( QObject * parent, const QString &libname );
+    static Plugin* loadPlugin( QObject * parent, const QString &libname, const QString &keyword = "" );
 
     virtual void setComponentData(const KComponentData &instance);
 
