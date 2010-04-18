@@ -133,10 +133,11 @@ private:
     // compression policy
     QString uncompression;
 
-    // only one of the four below can be set, that will be the target install path/file name
+    // only one of the five below can be set, that will be the target install path/file name
     // FIXME: check this when reading the config and make one path out of it if possible?
     QString standardResourceDirectory;
     QString targetDirectory;
+    QString xdgTargetDirectory;
     QString installPath;
     QString absoluteInstallPath;
 

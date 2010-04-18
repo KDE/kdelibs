@@ -72,6 +72,7 @@ bool Installation::readConfig(const KConfigGroup& group)
     uninstallCommand = group.readEntry("UninstallCommand", QString());
     standardResourceDirectory = group.readEntry("StandardResource", QString());
     targetDirectory = group.readEntry("TargetDir", QString());
+    xdgTargetDirectory = group.readEntry("XdgTargetDir", QString());
     installPath = group.readEntry("InstallPath", QString());
     absoluteInstallPath = group.readEntry("AbsoluteInstallPath", QString());
     customName = group.readEntry("CustomName", false);
@@ -79,6 +80,7 @@ bool Installation::readConfig(const KConfigGroup& group)
 
     if (standardResourceDirectory.isEmpty() &&
             targetDirectory.isEmpty() &&
+            xdgTargetDirectory.isEmpty() &&
             installPath.isEmpty() &&
             absoluteInstallPath.isEmpty()) {
         kError() << "No installation target set";
@@ -138,6 +140,7 @@ bool Installation::isRemote() const
 {
     if (!installPath.isEmpty()) return false;
     if (!targetDirectory.isEmpty()) return false;
+    if (!xdgTargetDirectory.isEmpty()) return false;
     if (!absoluteInstallPath.isEmpty()) return false;
     if (!standardResourceDirectory.isEmpty()) return false;
     return true;
@@ -336,6 +339,10 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
             } else { // system scope
                 installdir = KStandardDirs::installPath("data") + targetDirectory + '/';
             }
+            pathcounter++;
+        }
+        if (!xdgTargetDirectory.isEmpty()) {
+            installdir = KStandardDirs().localxdgdatadir() + '/' + xdgTargetDirectory + '/';
             pathcounter++;
         }
         if (!installPath.isEmpty()) {
