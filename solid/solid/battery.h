@@ -55,11 +55,14 @@ namespace Solid
          * - KeyboardBattery : A battery in a keyboard
          * - KeyboardMouseBattery : A battery in a combined keyboard and mouse
          * - CameraBattery : A battery in a camera
+         * - PhoneBattery : A battery in a phone
+         * - MonitorBattery : A battery in a monitor
          * - UnknownBattery : A battery in an unknown device
          */
         enum BatteryType { UnknownBattery, PdaBattery, UpsBattery,
                            PrimaryBattery, MouseBattery, KeyboardBattery,
-                           KeyboardMouseBattery, CameraBattery };
+                           KeyboardMouseBattery, CameraBattery,
+                           PhoneBattery, MonitorBattery };
 
         /**
          * This enum type defines charge state of a battery
