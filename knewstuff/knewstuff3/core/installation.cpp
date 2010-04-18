@@ -201,7 +201,7 @@ void Installation::slotPayloadResult(KJob *job)
             // check if the app likes html files - disabled by default as too many bad links have been submitted to opendesktop.org
             if (!acceptHtml) {
                 KMimeType::Ptr mimeType = KMimeType::findByPath(fcjob->destUrl().pathOrUrl());
-                if (mimeType->name() == "text/html") {
+                if (mimeType->is("text/html") || mimeType->is("application/x-php")) {
                     if (KMessageBox::questionYesNo(0, i18n("The downloaded file is a html file. This indicates a link to a website instead of the actual download. Would you like to open the site with a browser instead?"), i18n("Possibly bad download link"))
                         == KMessageBox::Yes) {
                         KToolInvocation::invokeBrowser(fcjob->srcUrl().url());
