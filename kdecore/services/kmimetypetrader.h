@@ -87,11 +87,11 @@ public:
     /**
      * Returns the preferred service for @p mimeType and @p genericServiceType
      *
-     * This is almost like offers().first(), except that it also checks
+     * This is almost like query().first(), except that it also checks
      * if the service is allowed as a preferred service (see KService::allowAsDefault).
      *
-     * @param mimeType the mime type (see offers())
-     * @param genericServiceType the service type (see offers())
+     * @param mimeType the mime type (see query())
+     * @param genericServiceType the service type (see query())
      * @return the preferred service, or 0 if no service is available
      */
     KService::Ptr preferredService( const QString & mimeType, const QString & genericServiceType = QString::fromLatin1("Application") );
