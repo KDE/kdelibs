@@ -725,7 +725,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 
     kde4_add_executable(testregression ${testregression_SRCS})
 
-    target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} khtml)
+    target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} ${X11_X11_LIB} khtml)
 
     ########### next target ###############
 
