@@ -98,13 +98,17 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
     virtual void mouseMoveEvent(QMouseEvent* event);
+    virtual void wheelEvent(QWheelEvent* event);
 
 private Q_SLOTS:
     void startPopupDelay();
     void stopPopupDelay();
     void startListJob();
+    void startCycleJob();
     void entriesList(KIO::Job* job, const KIO::UDSEntryList& entries);
+    void namesList(KIO::Job* job, const KIO::UDSEntryList& entries);
     void listJobFinished(KJob* job);
+    void cycleJobFinished(KJob* job);
     void urlsDropped(QAction* action, QDropEvent* event);
     void statFinished(KJob*);
 
@@ -117,12 +121,14 @@ private:
 private:
     bool m_hoverArrow;
     bool m_pendingTextChange;
+    int m_wheelSteps;
     KUrl m_url;
     QString m_subDir;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     /// pair of name and display name
     QList<QPair<QString,QString> > m_subDirs;
+    QStringList m_subDirNames;
 
     static QPointer<KUrlNavigatorMenu> m_dirsMenu;
 };

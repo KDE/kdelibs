@@ -41,10 +41,12 @@ KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent)
     KUrlButton(parent),
     m_hoverArrow(false),
     m_pendingTextChange(false),
+    m_wheelSteps(0),
     m_url(url),
     m_subDir(),
     m_popupDelay(0),
-    m_listJob(0)
+    m_listJob(0),
+    m_subDirNames()
 {
     setAcceptDrops(true);
     setUrl(url);
@@ -318,6 +320,17 @@ void KUrlNavigatorButton::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+void KUrlNavigatorButton::wheelEvent(QWheelEvent* event)
+{
+    if (event->orientation() == Qt::Vertical) {
+        m_wheelSteps = event->delta() / 120;
+        startCycleJob();
+        event->accept();
+    } else {
+        KUrlButton::wheelEvent(event);
+    }
+}
+
 void KUrlNavigatorButton::startPopupDelay()
 {
     if (!m_popupDelay->isActive() && (m_listJob == 0)) {
@@ -348,6 +361,19 @@ void KUrlNavigatorButton::startListJob()
     connect(m_listJob, SIGNAL(result(KJob*)), this, SLOT(listJobFinished(KJob*)));
 }
 
+void KUrlNavigatorButton::startCycleJob()
+{
+    if (m_listJob != 0) {
+        return;
+    }
+
+    m_listJob = KIO::listDir(m_url.upUrl(), KIO::HideProgressInfo, false /*no hidden files*/);
+    m_subDirNames.clear(); // just to be ++safe
+    connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
+            this, SLOT(namesList(KIO::Job*, const KIO::UDSEntryList&)));
+    connect(m_listJob, SIGNAL(result(KJob*)), this, SLOT(cycleJobFinished(KJob*)));
+}
+
 void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& entries)
 {
     if (job != m_listJob) {
@@ -363,6 +389,22 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
             }
             if ((name != ".") && (name != "..")) {
                 m_subDirs.append(qMakePair(name, displayName));
+            }
+        }
+    }
+}
+
+void KUrlNavigatorButton::namesList(KIO::Job* job, const KIO::UDSEntryList& entries)
+{
+    if (job != m_listJob) {
+        return;
+    }
+
+    foreach (const KIO::UDSEntry& entry, entries) {
+        if (entry.isDir()) {
+            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            if ((name != QLatin1String(".")) && (name != QLatin1String(".."))) {
+                m_subDirNames.append(name);
             }
         }
     }
@@ -471,6 +513,48 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
 
     setDisplayHintEnabled(PopupActiveHint, false);
 }
+
+/**
+ * Helper function for cycleJobFinished
+ */
+static bool naturalLessThanStr(const QString& s1, const QString& s2)
+{
+    return KStringHandler::naturalCompare(s1, s2, Qt::CaseInsensitive) < 0;
+}
+
+void KUrlNavigatorButton::cycleJobFinished(KJob* job)
+{
+    if (job != m_listJob) {
+        return;
+    }
+
+    m_listJob = 0;
+    if (job->error() || m_subDirNames.isEmpty()) {
+        // clear listing
+        return;
+    }
+
+    qSort(m_subDirNames.begin(), m_subDirNames.end(), naturalLessThanStr);
+
+    const int selectedIndex = m_subDirNames.indexOf(m_url.fileName());
+
+    if (selectedIndex > -1) {
+        const int targetIndex = selectedIndex - m_wheelSteps;
+        KUrl url = m_url.upUrl();
+        if (targetIndex <= 0) {
+            url.addPath(m_subDirNames.first());
+        }
+        else if (targetIndex >= m_subDirNames.count()) {
+            url.addPath(m_subDirNames.last());
+        }
+        else {
+            url.addPath(m_subDirNames[targetIndex]);
+        }
+        emit clicked(url, Qt::LeftButton);
+    }
+    m_subDirNames.clear();
+}
+
 
 int KUrlNavigatorButton::arrowWidth() const
 {
