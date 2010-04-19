@@ -86,7 +86,9 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         end++;  // skip comma
     }
     // ensure every key has a value
-    if (values.count() % 2) {
+    // WARNING: Do not remove the > 1 check or parsing NTLM authentication
+    // challenges will surely fail.
+    if (values.count() > 1 && values.count() % 2) {
         values.removeLast();
     }
     return values;
