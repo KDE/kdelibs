@@ -184,6 +184,11 @@ Plugin* Plugin::loadPlugin( QObject * parent, const QByteArray &libname )
     return loadPlugin( parent, libname.data() );
 }
 
+Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname )
+{
+    return loadPlugin( parent, libname, "" );
+}
+
 // static
 Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname, const QString &keyword )
 {
