@@ -19,9 +19,14 @@
 #include "kmetaprops.h"
 #include "kpropertiesdialog_p.h"
 
+#include <kdialog.h>
+#include <kfileitem.h>
 #include <kfilemetadatawidget.h>
+#include <kfilemetadataconfigurationwidget.h>
 #include <klocale.h>
 
+#include <QtCore/QPointer>
+#include <QtGui/QLabel>
 #include <QtGui/QScrollArea>
 #include <QtGui/QVBoxLayout>
 
@@ -30,23 +35,73 @@ using namespace KDEPrivate;
 class KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate
 {
 public:
-    KFileMetaPropsPluginPrivate()  {}
-    ~KFileMetaPropsPluginPrivate() {}
+    KFileMetaPropsPluginPrivate();
+    ~KFileMetaPropsPluginPrivate();
+    void configureShownMetaData();
+
+    KFileMetaDataWidget* m_fileMetaDataWidget;
 };
+
+KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::KFileMetaPropsPluginPrivate() :
+    m_fileMetaDataWidget(0)
+{
+}
+
+KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::~KFileMetaPropsPluginPrivate()
+{
+}
+
+void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
+{
+    QPointer<KDialog> dialog = new KDialog();
+    dialog->setCaption(i18nc("@title:window", "Configure Shown Data"));
+    dialog->setButtons(KDialog::Ok | KDialog::Cancel);
+    dialog->setDefaultButton(KDialog::Ok);
+
+    QLabel* descriptionLabel  = new QLabel(i18nc("@label::textbox",
+                                                 "Configure which data should "
+                                                 "be shown"));
+    descriptionLabel->setWordWrap(true);
+    KFileMetaDataConfigurationWidget* configWidget = new KFileMetaDataConfigurationWidget();
+
+    QWidget* mainWidget = new QWidget(dialog);
+    QVBoxLayout* topLayout = new QVBoxLayout(mainWidget);
+    topLayout->addWidget(descriptionLabel);
+    topLayout->addWidget(configWidget);
+    dialog->setMainWidget(mainWidget);
+
+    KConfigGroup dialogConfig(KGlobal::config(), "KFileMetaPropsPlugin");
+    dialog->restoreDialogSize(dialogConfig);
+
+    if ((dialog->exec() == QDialog::Accepted) && (dialog != 0)) {
+        configWidget->save();
+
+        // TODO: Check whether a kind of refresh() method might make sense
+        // for KFileMetaDataWidget or whether the widget can verify internally
+        // whether a change has been done
+        const KFileItemList items = m_fileMetaDataWidget->items();
+        m_fileMetaDataWidget->setItems(KFileItemList());
+        m_fileMetaDataWidget->setItems(items);
+    }
+
+    if (dialog != 0) {
+        dialog->saveDialogSize(dialogConfig);
+        delete dialog;
+        dialog = 0;
+    }
+}
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
   : KPropertiesDialogPlugin(props),d(new KFileMetaPropsPluginPrivate)
 {
-    KFileMetaDataWidget* fileMetaDataWidget = new KFileMetaDataWidget();
-    fileMetaDataWidget->setItems(properties->items());
+    d->m_fileMetaDataWidget = new KFileMetaDataWidget();
+    d->m_fileMetaDataWidget->setItems(properties->items());
 
     // Embed the FileMetaDataWidget inside a container that has a dummy widget
     // at the bottom. This prevents that the file meta data widget gets vertically stretched.
     QWidget* metaDataWidgetContainer = new QWidget();
     QVBoxLayout* containerLayout = new QVBoxLayout(metaDataWidgetContainer);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(0);
-    containerLayout->addWidget(fileMetaDataWidget);
+    containerLayout->addWidget(d->m_fileMetaDataWidget);
     QWidget* stretchWidget = new QWidget(metaDataWidgetContainer);
     stretchWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
     containerLayout->addWidget(stretchWidget);
@@ -58,7 +113,19 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
     metaDataArea->setWidgetResizable(true);
     metaDataArea->setFrameShape(QFrame::NoFrame);
 
-    properties->addPage(metaDataArea, i18nc("@title:tab", "Information"));
+    // Add label 'Configure...' to be able to adjust which meta data should be shown
+    QLabel* configureLabel = new QLabel("<a href=\"configure\">" +
+                                        i18nc("@action:button", "Configure...") +
+                                        "</a>");
+    connect(configureLabel, SIGNAL(linkActivated(const QString&)),
+            this, SLOT(configureShownMetaData()));
+
+    QWidget* mainWidget = new QWidget();
+    QVBoxLayout* mainLayout = new QVBoxLayout(mainWidget);
+    mainLayout->addWidget(metaDataArea);
+    mainLayout->addWidget(configureLabel, 0, Qt::AlignRight);
+
+    properties->addPage(mainWidget, i18nc("@title:tab", "Information"));
 }
 
 KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
@@ -68,6 +135,7 @@ KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
 
 bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 {
+    Q_UNUSED(_items);
     return true;
 }
 

@@ -45,6 +45,8 @@ public:
 private:
   class KFileMetaPropsPluginPrivate;
   KFileMetaPropsPluginPrivate* const d;
+
+  Q_PRIVATE_SLOT(d, void configureShownMetaData())
 };
 
 #endif
