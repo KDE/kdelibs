@@ -81,8 +81,6 @@ class KBreadcrumbSelectionModelPrivate;
   A KBreadcrumbsProxyModel with a selectionDepth of 0 and including the actual selection is
   the same as a KSelectionProxyModel in the KSelectionProxyModel::ExactSelection configuration.
 
-  The can then be used with a KSelectionProxyModel in a decorator pattern:
-
   @code
     view1->setModel(rootModel);
 
@@ -120,7 +118,7 @@ public:
     Reverse
   };
 
-  KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, QObject* parent = 0);
+  explicit KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, QObject* parent = 0);
   KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, Direction direction, QObject* parent = 0);
   virtual ~KBreadcrumbSelectionModel();
 
