@@ -3181,10 +3181,9 @@ try_again:
 
     // we may need to send (Proxy or WWW) authorization data
     bool authRequiresAnotherRoundtrip = false;
-    if (!m_request.doNotAuthenticate && (m_request.responseCode == 401 ||
-                                         m_request.responseCode == 407)) {
+    if (!m_request.doNotAuthenticate &&
+        (m_request.responseCode == 401 || m_request.responseCode == 407)) {
         authRequiresAnotherRoundtrip = true;
-
         KAbstractHttpAuthentication **auth = &m_wwwAuth;
         tIt = tokenizer.iterator("www-authenticate");
         KUrl resource = m_request.url;
@@ -3213,32 +3212,26 @@ try_again:
         } else {
             kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
 
+try_next_auth_scheme:
             QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authTokens);
             if (*auth) {
                 if (!bestOffer.toLower().startsWith((*auth)->scheme().toLower())) {
                     // huh, the strongest authentication scheme offered has changed.
-                    kDebug(7113) << "deleting old auth class, scheme mismatch.";
+                    kDebug(7113) << "deleting old auth class...";
                     delete *auth;
                     *auth = 0;
                 }
             }
-            kDebug(7113) << "strongest authentication scheme offered is" << bestOffer;
+
             if (!(*auth)) {
                 *auth = KAbstractHttpAuthentication::newAuth(bestOffer);
-            }
+            }            
             kDebug(7113) << "pointer to auth class is now" << *auth;
-            if (!(*auth)) {
-                if (m_request.preferErrorPage) {
-                    setLoadingErrorPage();
-                } else {
-                    error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
-                    return false;
-                }
-            }
 
             // *auth may still be null due to setLoadingErrorPage().
 
             if (*auth) {
+                kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
                 // remove trailing space from the method string, or digest auth will fail
                 QByteArray requestMethod = methodString(m_request.method).trimmed();
                 (*auth)->setChallenge(bestOffer, resource, requestMethod);
@@ -3290,7 +3283,10 @@ try_again:
                              << "headerFragment" << (*auth)->headerFragment();
 
                 if ((*auth)->isError()) {
-                    if (m_request.preferErrorPage) {
+                    authTokens.removeOne(bestOffer);
+                    if (!authTokens.isEmpty())
+                        goto try_next_auth_scheme;
+                    else if (m_request.preferErrorPage) {
                         setLoadingErrorPage();
                     } else {
                         error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
@@ -3304,6 +3300,13 @@ try_again:
                     //### think this through for proxied / not proxied
                     m_request.isKeepAlive = false;
                     httpCloseConnection();
+                }
+            } else {
+                if (m_request.preferErrorPage) {
+                    setLoadingErrorPage();
+                } else {
+                    error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
+                    return false;
                 }
             }
 
