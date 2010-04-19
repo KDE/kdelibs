@@ -41,9 +41,9 @@ class KEditTagsDialog : public KDialog
     Q_OBJECT
 
 public:
-    KEditTagsDialog(const QList<Nepomuk::Tag>& tags,
-                    QWidget* parent = 0,
-                    Qt::WFlags flags = 0);
+    explicit KEditTagsDialog(const QList<Nepomuk::Tag>& tags,
+                             QWidget* parent = 0,
+                             Qt::WFlags flags = 0);
 
     virtual ~KEditTagsDialog();
 
