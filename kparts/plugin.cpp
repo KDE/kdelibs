@@ -146,11 +146,11 @@ void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, 
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).m_document.documentElement().attribute( "library" );
-
+     
      if ( library.isEmpty() || hasPlugin( parent, library ) )
        continue;
 
-     Plugin *plugin = loadPlugin( parent, library );
+     Plugin *plugin = loadPlugin( parent, library, (*pIt).m_document.documentElement().attribute( "X-KDE-PluginKeyword" ) );
 
      if ( plugin )
      {
@@ -273,11 +273,11 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
                 //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile;
                 KDesktopFile _desktop( desktopfile );
                 const KConfigGroup desktop = _desktop.desktopGroup();
+                keyword = desktop.readEntry("X-KDE-PluginKeyword", "");
                 pluginEnabled = desktop.readEntry( "X-KDE-PluginInfo-EnabledByDefault",
                                                    enableNewPluginsByDefault );
                 if ( interfaceVersionRequired != 0 )
                 {
-                    keyword = desktop.readEntry("X-KDE-PluginKeyword", "");
                     const int version = desktop.readEntry( "X-KDE-InterfaceVersion", 1 );
                     if ( version != interfaceVersionRequired )
                     {
@@ -321,7 +321,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
         if( pluginFound || !pluginEnabled )
             continue;
 
-        kDebug( 1000 ) << "load plugin " << name;
+        kDebug( 1000 ) << "load plugin " << name << " " << library << " " << keyword;
         Plugin *plugin = loadPlugin( parent, library, keyword );
 
         if ( plugin )
