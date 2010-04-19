@@ -62,7 +62,10 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
                                                  "Configure which data should "
                                                  "be shown"));
     descriptionLabel->setWordWrap(true);
+
     KFileMetaDataConfigurationWidget* configWidget = new KFileMetaDataConfigurationWidget();
+    const KFileItemList items = m_fileMetaDataWidget->items();
+    configWidget->setItems(items);
 
     QWidget* mainWidget = new QWidget(dialog);
     QVBoxLayout* topLayout = new QVBoxLayout(mainWidget);
@@ -79,7 +82,6 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
         // TODO: Check whether a kind of refresh() method might make sense
         // for KFileMetaDataWidget or whether the widget can verify internally
         // whether a change has been done
-        const KFileItemList items = m_fileMetaDataWidget->items();
         m_fileMetaDataWidget->setItems(KFileItemList());
         m_fileMetaDataWidget->setItems(items);
     }
