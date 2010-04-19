@@ -34,10 +34,15 @@ class KProxyItemSelectionModelPrivate;
 /**
   @brief Makes it possible to share a selection in multiple views which do not have the same source model
 
-  Although multiple views can share the same QItemSelectionModel, the views then need to have the same source model.
+  Although <a href="http://doc.trolltech.com/4.6/model-view-view.html#sharing-selections-between-views">multiple views can share the same QItemSelectionModel</a>, the views then need to have the same source model.
 
   If there is a proxy model between the model and one of the views, or different proxy models in each, this class makes
   it possible to share the selection between the views.
+
+  @image html kproxyitemselectionmodel-simple.png "Sharing a QItemSelectionModel between views on the same model is trivial"
+  @image html kproxyitemselectionmodel-error.png "If a proxy model is used, it is no longer possible to share the QItemSelectionModel directly"
+  @image html kproxyitemselectionmodel-solution.png "A KProxyItemSelectionModel can be used to map the selection through the proxy model"
+  @image html kproxyitemselectionmodel-complex.png "Arbitrarily complex proxy configurations on the same root model can be used"
 
   @since 4.5
 
