@@ -97,7 +97,7 @@ class KBreadcrumbSelectionModelPrivate;
     view2->setModel(breadcrumbSelectionProxyModel);
   @endcode
 
-  @image kbreadcrumbselectionmodel.png "KBreadcrumbSelectionModel in several configurations"
+  @image html kbreadcrumbselectionmodel.png "KBreadcrumbSelectionModel in several configurations"
 
   This can work in two directions. One option is for a single selection in the KBreadcrumbSelectionModel to invoke
   the breadcrumb selection in its constructor argument.
