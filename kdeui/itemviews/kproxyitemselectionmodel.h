@@ -42,7 +42,53 @@ class KProxyItemSelectionModelPrivate;
   @image html kproxyitemselectionmodel-simple.png "Sharing a QItemSelectionModel between views on the same model is trivial"
   @image html kproxyitemselectionmodel-error.png "If a proxy model is used, it is no longer possible to share the QItemSelectionModel directly"
   @image html kproxyitemselectionmodel-solution.png "A KProxyItemSelectionModel can be used to map the selection through the proxy model"
+
+  @code
+    QAbstractItemModel *model = getModel();
+
+    QSortFilterProxyModel *proxy = new QSortFilterProxyModel();
+    proxy->setSourceModel(model);
+
+    QTreeView *view1 = new QTreeView(splitter);
+    view1->setModel(model);
+
+    KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel( proxy, view1->selectionModel());
+
+    QTreeView *view2 = new QTreeView(splitter);
+    // Note that the QAbstractItemModel passed to KProxyItemSelectionModel must be the same as what is used in the view
+    view2->setModel(proxy);
+    view2->setSelectionModel( view2SelectionModel );
+  @endcode
+
   @image html kproxyitemselectionmodel-complex.png "Arbitrarily complex proxy configurations on the same root model can be used"
+
+  @code
+    QAbstractItemModel *model = getModel();
+
+    QSortFilterProxyModel *proxy1 = new QSortFilterProxyModel();
+    proxy1->setSourceModel(model);
+    QSortFilterProxyModel *proxy2 = new QSortFilterProxyModel();
+    proxy2->setSourceModel(proxy1);
+    QSortFilterProxyModel *proxy3 = new QSortFilterProxyModel();
+    proxy3->setSourceModel(proxy2);
+
+    QTreeView *view1 = new QTreeView(splitter);
+    view1->setModel(proxy3);
+
+    QSortFilterProxyModel *proxy4 = new QSortFilterProxyModel();
+    proxy4->setSourceModel(model);
+    QSortFilterProxyModel *proxy5 = new QSortFilterProxyModel();
+    proxy5->setSourceModel(proxy4);
+
+    KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel( proxy5, view1->selectionModel());
+
+    QTreeView *view2 = new QTreeView(splitter);
+    // Note that the QAbstractItemModel passed to KProxyItemSelectionModel must be the same as what is used in the view
+    view2->setModel(proxy5);
+    view2->setSelectionModel( view2SelectionModel );
+  @endcode
+
+  See also <a href="http://websvn.kde.org/trunk/KDE/kdelibs/kdeui/tests/proxymodeltestapp/proxyitemselectionwidget.cpp?view=markup">kdelibs/kdeui/tests/proxymodeltestapp/proxyitemselectionwidget.cpp</a>.
 
   @since 4.5
 
