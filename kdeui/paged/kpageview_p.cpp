@@ -413,7 +413,8 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   QTextLayout iconTextLayout( text, option.font );
   QTextOption textOption( Qt::AlignHCenter );
   iconTextLayout.setTextOption( textOption );
-  layoutText( &iconTextLayout, qMax( 3 * wp, 8 * fm.height() ) );
+  int maxWidth = qMax( 3 * wp, 8 * fm.height() );
+  layoutText( &iconTextLayout, maxWidth );
 
   QPen pen = painter->pen();
   QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
@@ -433,7 +434,7 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
 
   painter->drawPixmap( option.rect.x() + (option.rect.width()/2)-(wp/2), option.rect.y() + 5, pixmap );
   if ( !text.isEmpty() )
-    iconTextLayout.draw( painter, QPoint( option.rect.x() + (option.rect.width()/2)-(iconTextLayout.boundingRect().width()/2), option.rect.y() + hp+7 ) );
+    iconTextLayout.draw( painter, QPoint( option.rect.x() + (option.rect.width()/2)-(maxWidth/2), option.rect.y() + hp+7 ) );
 
   painter->setPen( pen );
 
