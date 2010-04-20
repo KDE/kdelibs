@@ -636,7 +636,7 @@ void KStatusNotifierItemPrivate::registerToDaemon()
     if (!statusNotifierWatcher) {
         statusNotifierWatcher = new org::kde::StatusNotifierWatcher(s_statusNotifierWatcherServiceName, "/StatusNotifierWatcher",
                                                                     QDBusConnection::sessionBus());
-        QObject::connect(statusNotifierWatcher, SIGNAL(StatusNotifierItemUnregistered(QString&)),
+        QObject::connect(statusNotifierWatcher, SIGNAL(StatusNotifierItemUnregistered(const QString&)),
                          q, SLOT(checkForRegisteredHosts()));
     }
 
