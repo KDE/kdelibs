@@ -26,6 +26,7 @@
 #include <QtCore/QProcess>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
+#include <QtDBus/QDBusVariant>
 
 namespace Solid
 {
@@ -52,12 +53,19 @@ Q_SIGNALS:
     void setupDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
     void teardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
     void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
+    void setupRequested(const QString &udi);
+    void teardownRequested(const QString &udi);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void slotSetupRequested();
+    void slotTeardownRequested();
+    void slotSetupDone(int error, QDBusVariant errorData, const QString &udi);
+    void slotTeardownDone(int error, QDBusVariant errorData, const QString &udi);
+    void slotEjectDone(int error, QDBusVariant errorData, const QString &udi);
 
 public Q_SLOTS:
     Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString &passphrase);

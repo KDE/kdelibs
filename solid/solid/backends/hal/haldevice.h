@@ -22,6 +22,8 @@
 
 #include <solid/ifaces/device.h>
 
+class QDBusVariant;
+
 namespace Solid
 {
 namespace Backends
@@ -63,6 +65,11 @@ public:
     QMap<QString, QVariant> allProperties() const;
     bool propertyExists(const QString &key) const;
 
+    void broadcastActionDone(const QString& signalName, int error, QVariant errorData, const QString &udi) const;
+    void broadcastActionRequested(const QString& signalName) const;
+    void connectActionSignal(const QString& signalName, QObject* dest, const char * slot) const;
+    static QVariant variantFromDBusVariant(const QDBusVariant variant);
+
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
     void conditionRaised(const QString &condition, const QString &reason);
@@ -74,6 +81,7 @@ private Q_SLOTS:
 private:
     QString storageDescription() const;
     QString volumeDescription() const;
+    QString deviceDBusPath() const;
 
     HalDevicePrivate *d;
 };

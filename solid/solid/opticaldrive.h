@@ -157,7 +157,25 @@ namespace Solid
          */
         void ejectPressed(const QString &udi);
 
+        /**
+         * This signal is emitted when the attempted eject process on this
+         * drive is completed. The signal might be spontaneous, i.e.
+         * it can be triggered by another process. 
+         *
+         * @param error type of error that occurred, if any
+         * @param errorData more information about the error, if any
+         * @param udi the UDI of the volume
+         */
         void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
+
+        /**
+         * This signal is emitted when eject on this drive is 
+         * requested. The signal might be spontaneous, i.e. it 
+         * can be triggered by another process.
+         *
+         * @param udi the UDI of the volume
+         */
+        void ejectRequested(const QString &udi);
 
     };
 }

@@ -115,7 +115,8 @@ namespace Solid
 
         /**
          * This signal is emitted when the attempted setting up of this
-         * device is completed.
+         * device is completed. The signal might be spontaneous i.e. 
+         * it can be triggered by another process.
          *
          * @param error type of error that occurred, if any
          * @param errorData more information about the error, if any
@@ -125,13 +126,32 @@ namespace Solid
 
         /**
          * This signal is emitted when the attempted tearing down of this
-         * device is completed.
+         * device is completed. The signal might be spontaneous i.e. 
+         * it can be triggered by another process.
          *
          * @param error type of error that occurred, if any
          * @param errorData more information about the error, if any
          * @param udi the UDI of the volume
          */
         void teardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
+
+        /**
+         * This signal is emitted when a setup of this device is requested. 
+         * The signal might be spontaneous i.e. it can be triggered by 
+         * another process.
+         *
+         * @param udi the UDI of the volume
+         */
+        void setupRequested(const QString &udi);
+
+        /**
+         * This signal is emitted when a teardown of this device is requested.
+         * The signal might be spontaneous i.e. it can be triggered by
+         * another process
+         *
+         * @param udi the UDI of the volume
+         */
+        void teardownRequested(const QString &udi);
 
     protected:
         /**

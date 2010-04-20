@@ -26,6 +26,7 @@
 #include <QtCore/QProcess>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
+#include <QtDBus/QDBusVariant>
 
 namespace Solid
 {
@@ -51,12 +52,15 @@ public:
 Q_SIGNALS:
     void ejectPressed(const QString &udi);
     void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
+    void ejectRequested(const QString &udi);
 
 private Q_SLOTS:
     void slotCondition(const QString &name, const QString &reason);
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void slotEjectRequested();
+    void slotEjectDone(int error, QDBusVariant errorData, const QString &udi);
 
 private:
     bool callHalDriveEject();

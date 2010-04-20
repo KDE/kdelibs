@@ -30,6 +30,11 @@ Solid::StorageAccess::StorageAccess(QObject *backendObject)
             this, SIGNAL(setupDone(Solid::ErrorType, QVariant, const QString &)));
     connect(backendObject, SIGNAL(teardownDone(Solid::ErrorType, QVariant, const QString &)),
             this, SIGNAL(teardownDone(Solid::ErrorType, QVariant, const QString &)));
+    connect(backendObject, SIGNAL(setupRequested(const QString &)),
+            this, SIGNAL(setupRequested(const QString &)));
+    connect(backendObject, SIGNAL(teardownRequested(const QString &)),
+            this, SIGNAL(teardownRequested(const QString &)));
+
     connect(backendObject, SIGNAL(accessibilityChanged(bool, const QString &)),
             this, SIGNAL(accessibilityChanged(bool, const QString &)));
 }
@@ -41,6 +46,12 @@ Solid::StorageAccess::StorageAccess(StorageAccessPrivate &dd, QObject *backendOb
             this, SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant, const QString &)));
     connect(backendObject, SIGNAL(teardownDone(Solid::StorageAccess::TeardownResult, QVariant, const QString &)),
             this, SIGNAL(teardownDone(Solid::StorageAccess::TeardownResult, QVariant, const QString &)));
+    connect(backendObject, SIGNAL(setupRequested(const QString &)),
+            this, SIGNAL(setupRequested(const QString &)));
+    connect(backendObject, SIGNAL(teardownRequested(const QString &)),
+            this, SIGNAL(teardownRequested(const QString &)));
+
+
     connect(backendObject, SIGNAL(accessibilityChanged(bool, const QString &)),
             this, SIGNAL(accessibilityChanged(bool, const QString &)));
 }
