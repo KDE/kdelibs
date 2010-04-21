@@ -31,6 +31,8 @@ namespace Nepomuk {
     class TagWidgetPrivate;
 
     /**
+     * \class TagWidget tagwidget.h Nepomuk/TagWidget
+     *
      * \brief Allows to change a selection of tags.
      *
      * TagWidget provides a simple GUI interface to assign tags.

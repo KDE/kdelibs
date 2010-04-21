@@ -975,6 +975,7 @@ install(FILES
   Nepomuk/KRatingWidget
   Nepomuk/KRatingPainter
   Nepomuk/TagWidget
+  Nepomuk/MassUpdateJob
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk COMPONENT Devel)
 
 

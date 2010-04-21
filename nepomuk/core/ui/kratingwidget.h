@@ -26,6 +26,8 @@
 #include "nepomuk_export.h"
 
 /**
+ * \class KRatingWidget kratingwidget.h Nepomuk/KRatingWidget
+ *
  * \brief Displays a rating value as a row of pixmaps.
  *
  * The KRatingWidget displays a range of stars or other arbitrary

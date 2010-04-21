@@ -34,12 +34,28 @@
 
 
 namespace Nepomuk {
+    /**
+     * \class MassUpdateJob nepomukmassupdatejob.h Nepomuk/MassUpdateJob
+     *
+     * \brief A KJob to set Nepomuk properties on a set of resources at once.
+     *
+     * \author Sebastian Trueg <trueg@kde.org>
+     */
     class NEPOMUK_EXPORT MassUpdateJob : public KJob
     {
         Q_OBJECT
 
     public:
+        /**
+         * Default constructor. Normally there is no need to use this.
+         * Use tagResources(), rateResources(), or commentResources()
+         * instead.
+         */
         MassUpdateJob( QObject* parent = 0 );
+
+        /**
+         * Destructor
+         */
         ~MassUpdateJob();
 
         /**

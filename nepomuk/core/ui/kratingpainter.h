@@ -33,6 +33,8 @@ class QRect;
 
 
 /**
+ * \class KRatingPainter kratingpainter.h Nepomuk/KRatingPainter
+ *
  * \brief Utility class that draws a row of stars for a rating value.
  *
  * The KRatingPainter also allows to determine a rating value from
@@ -54,7 +56,7 @@ public:
      * should be sufficient.
      */
     KRatingPainter();
-        
+
     /**
      * Destructor
      */
@@ -86,7 +88,7 @@ public:
 
     /**
      * The layout direction. If RTL the stars
-     * representing the rating value will be drawn from the 
+     * representing the rating value will be drawn from the
      * right.
      *
      * \sa setLayoutDirection
@@ -134,7 +136,7 @@ public:
      * one rating step corresponds to half a star.
      */
     void setHalfStepsEnabled( bool enabled );
-        
+
     /**
      * The alignment of the stars in the drawing rect.
      * All alignment flags are supported.
