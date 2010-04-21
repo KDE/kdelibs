@@ -21,12 +21,16 @@
 /*
   KBlockLayout is based on the FlowLayout example from QT4.
   Copyright (C) 2004-2006 Trolltech ASA. All rights reserved.
+  Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+  All rights reserved.
+  Contact: Nokia Corporation (qt-info@nokia.com)
 */
 
 #include "kblocklayout.h"
 
 #include <QtCore/QList>
-
+#include <QtGui/QStyle>
+#include <QtGui/QWidget>
 
 class KBlockLayout::Private
 {
@@ -35,24 +39,45 @@ public:
         : alignment(Qt::AlignLeft|Qt::AlignTop) {
     }
 
+    int smartSpacing(QStyle::PixelMetric pm) const
+    {
+        QObject *parent = q->parent();
+        if (!parent) {
+            return -1;
+        } else if (parent->isWidgetType()) {
+            QWidget *pw = static_cast<QWidget *>(parent);
+            return pw->style()->pixelMetric(pm, 0, pw);
+        } else {
+            return static_cast<QLayout *>(parent)->spacing();
+        }
+    }
+
     QList<QLayoutItem*> itemList;
 
+    int m_hSpace;
+    int m_vSpace;
+
     Qt::Alignment alignment;
+
+    KBlockLayout* q;
 };
 
 
-KBlockLayout::KBlockLayout( QWidget* parent, int margin, int spacing )
+KBlockLayout::KBlockLayout( QWidget* parent, int margin, int hSpacing, int vSpacing )
     : QLayout(parent),
       d( new Private() )
 {
+    d->q = this;
     setMargin(margin);
-    setSpacing(spacing);
+    setSpacing(hSpacing, vSpacing);
 }
 
-KBlockLayout::KBlockLayout( int spacing )
+KBlockLayout::KBlockLayout( int margin, int hSpacing, int vSpacing )
     : d( new Private() )
 {
-    setSpacing(spacing);
+    d->q = this;
+    setMargin(margin);
+    setSpacing(hSpacing, vSpacing);
 }
 
 KBlockLayout::~KBlockLayout()
@@ -71,6 +96,31 @@ void KBlockLayout::setAlignment( Qt::Alignment a )
 Qt::Alignment KBlockLayout::alignment() const
 {
     return d->alignment;
+}
+
+int KBlockLayout::horizontalSpacing() const
+{
+    if (d->m_hSpace >= 0) {
+        return d->m_hSpace;
+    } else {
+        return d->smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
+    }
+}
+
+int KBlockLayout::verticalSpacing() const
+{
+    if (d->m_vSpace >= 0) {
+        return d->m_vSpace;
+    } else {
+        return d->smartSpacing(QStyle::PM_LayoutVerticalSpacing);
+    }
+}
+
+void KBlockLayout::setSpacing( int h, int v )
+{
+    d->m_hSpace = h;
+    d->m_vSpace = v;
+    QLayout::setSpacing( h );
 }
 
 void KBlockLayout::addItem( QLayoutItem* item )
@@ -153,15 +203,16 @@ int KBlockLayout::doLayout( const QRect& rect, bool testOnly ) const
     // 1. calculate lines
     QList<Row> rows;
     QList<QLayoutItem*> rowItems;
-    foreach( QLayoutItem* item, d->itemList ) {
-        int nextX = x + item->sizeHint().width() + spacing();
-        if (nextX - spacing() > rect.right() && lineHeight > 0) {
-            rows.append( Row( rowItems, lineHeight, x - spacing() ) );
+    for( int i = 0; i < d->itemList.count(); ++i ) {
+        QLayoutItem* item = d->itemList[i];
+        int nextX = x + item->sizeHint().width() + horizontalSpacing();
+        if (nextX - horizontalSpacing() > rect.right() && lineHeight > 0) {
+            rows.append( Row( rowItems, lineHeight, x - horizontalSpacing() ) );
             rowItems.clear();
 
             x = rect.x();
-            y = y + lineHeight + spacing();
-            nextX = x + item->sizeHint().width() + spacing();
+            y = y + lineHeight + verticalSpacing();
+            nextX = x + item->sizeHint().width() + horizontalSpacing();
             lineHeight = 0;
         }
 
@@ -171,7 +222,7 @@ int KBlockLayout::doLayout( const QRect& rect, bool testOnly ) const
         lineHeight = qMax(lineHeight, item->sizeHint().height());
     }
     // append the last row
-    rows.append( Row( rowItems, lineHeight, x ) );
+    rows.append( Row( rowItems, lineHeight, x-horizontalSpacing() ) );
 
     int finalHeight = y + lineHeight - rect.y();
     if( testOnly )
@@ -194,13 +245,13 @@ int KBlockLayout::doLayout( const QRect& rect, bool testOnly ) const
                 yy += (row.height - item->sizeHint().height())/2;
             item->setGeometry(QRect(QPoint(x, yy), item->sizeHint()));
 
-            x += item->sizeHint().width() + spacing();
+            x += item->sizeHint().width() + horizontalSpacing();
 
             if( alignment() & Qt::AlignJustify )
                 x += (rect.width() - row.width)/qMax(row.items.count()-1,1);
         }
 
-        y = y + row.height + spacing();
+        y = y + row.height + verticalSpacing();
     }
 
     return finalHeight;

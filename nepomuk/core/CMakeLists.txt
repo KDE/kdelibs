@@ -26,11 +26,12 @@ set(nepomuk_LIB_SRCS
   ui/ktagcloudwidget.cpp
   ui/kblocklayout.cpp
   ui/kmetadatatagcloud.cpp
-  ui/kmetadatatagwidget.cpp
-  ui/kautoscrollarea.cpp
   ui/ktagdisplaywidget.cpp
   ui/kratingpainter.cpp
   ui/nepomukmassupdatejob.cpp
+  ui/tagwidget.cpp
+  ui/kedittagsdialog.cpp
+  ui/tagcheckbox.cpp
   resource.cpp
   thing.cpp
   tag.cpp

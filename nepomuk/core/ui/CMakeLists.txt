@@ -16,6 +16,7 @@ install(FILES
   ktagdisplaywidget.h
   kratingpainter.h
   nepomukmassupdatejob.h
+  tagwidget.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 

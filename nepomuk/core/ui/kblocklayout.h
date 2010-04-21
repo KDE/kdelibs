@@ -36,8 +36,8 @@
 class KBlockLayout : public QLayout
 {
  public:
-    explicit KBlockLayout( QWidget *parent, int margin = 0, int spacing = -1 );
-    KBlockLayout( int spacing = -1 );
+    explicit KBlockLayout( QWidget *parent, int margin = 0, int hSpacing = -1, int vSpacing = -1 );
+    KBlockLayout( int margin = 0, int hSpacing = -1, int vSpacing = -1 );
     ~KBlockLayout();
 
     /**
@@ -49,6 +49,11 @@ class KBlockLayout : public QLayout
      */
     void setAlignment( Qt::Alignment );
     Qt::Alignment alignment() const;
+
+    int horizontalSpacing() const;
+    int verticalSpacing() const;
+
+    void setSpacing( int h,  int v );
 
     void addItem( QLayoutItem* item );
     Qt::Orientations expandingDirections() const;

@@ -15,3 +15,13 @@ target_link_libraries(ratingpaintertestapp
   ${KDE4_KIO_LIBS}
   nepomuk
   )
+
+kde4_add_executable(tagwidgetapp TEST tagwidgetapp.cpp tagwidgettest.cpp)
+target_link_libraries(tagwidgetapp
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${KDE4_KDECORE_LIBS}
+  ${KDE4_KDEUI_LIBS}
+  ${KDE4_KIO_LIBS}
+  nepomuk
+  )

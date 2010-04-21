@@ -974,6 +974,7 @@ install(FILES
   Nepomuk/Thing
   Nepomuk/KRatingWidget
   Nepomuk/KRatingPainter
+  Nepomuk/TagWidget
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk COMPONENT Devel)
 
 
