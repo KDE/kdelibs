@@ -3,7 +3,7 @@
 
 #include <QVBoxLayout>
 #include <QCheckBox>
-#include <KDebug>
+#include <kdebug.h>
 
 
 TagWidgetTest::TagWidgetTest()
