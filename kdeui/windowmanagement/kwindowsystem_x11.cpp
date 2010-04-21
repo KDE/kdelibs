@@ -168,8 +168,12 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
             else if( ev->xproperty.atom == XA_WM_ICON_NAME )
                 dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIconName; // support for old iconic name
         }
-        if( mapViewport() && ( dirty[ NETWinInfo::PROTOCOLS ] & NET::WMState ))
-            dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMDesktop; // possible NET::Sticky change
+        if( mapViewport() && ( dirty[ NETWinInfo::PROTOCOLS ] & (NET::WMState | NET::WMGeometry) )) {
+	    /* geometry change -> possible viewport change
+	     * state change -> possible NET::Sticky change
+	     */
+            dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMDesktop;
+	}
 	if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 ) {
             removeStrutWindow( ev->xany.window );
             if ( !possibleStrutWindows.contains( ev->xany.window ) )
