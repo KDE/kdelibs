@@ -3813,7 +3813,7 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent* e)
     if (start != removeEnd)
       doc()->removeText(KTextEditor::Range(start, removeEnd));
     if (!e->commitString().isEmpty())
-      tart, removeEnd));
+      doc()->insertText(start, e->commitString());
     if (!e->commitString().isEmpty()) {
       // if the input method event is text that should be inserted, call KateDocument::typeChars()
       // with the text. that method will handle the input and take care of overwrite mode, etc.
