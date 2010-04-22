@@ -2683,6 +2683,7 @@ try_again:
     }
 
     if (!waitForResponse(m_remoteRespTimeout)) {
+        kDebug(7113) << "Got socket error:" << socket()->errorString();
         // No response error
         error(ERR_SERVER_TIMEOUT , m_request.url.host());
         return false;
@@ -2884,7 +2885,7 @@ try_again:
         // -> save the successful credentials.
         if (wasAuthError && (m_request.responseCode < 400 ||
                              (isAuthError && m_request.responseCode != m_request.prevResponseCode))) {
-            KIO::AuthInfo authi;
+            KIO::AuthInfo authinfo;
             KAbstractHttpAuthentication *auth;
             if (m_request.prevResponseCode == 401) {
                 auth = m_wwwAuth;
@@ -2893,8 +2894,8 @@ try_again:
             }
             Q_ASSERT(auth);
             if (auth) {
-                auth->fillKioAuthInfo(&authi);
-                cacheAuthentication(authi);
+                auth->fillKioAuthInfo(&authinfo);
+                cacheAuthentication(authinfo);
             }
             // Update our server connection state which includes www and proxy username and password.
             m_server.updateCredentials(m_request);
@@ -3247,22 +3248,22 @@ try_next_auth_scheme:
                         m_request.url.setPass(QString());
                     } else {
                         // try to get credentials from kpasswdserver's cache, then try asking the user.
-                        KIO::AuthInfo authi;
-                        fillPromptInfo(&authi);
-                        bool obtained = checkCachedAuthentication(authi);
+                        KIO::AuthInfo authinfo;
+                        fillPromptInfo(&authinfo);
+                        bool obtained = checkCachedAuthentication(authinfo);
                         const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
                         if (!obtained || probablyWrong) {
                             QString msg = (m_request.responseCode == 401) ?
                                             i18n("Authentication Failed.") :
                                             i18n("Proxy Authentication Failed.");
-                            obtained = openPasswordDialog(authi, msg);
+                            obtained = openPasswordDialog(authinfo, msg);
                             if (!obtained) {
                                 kDebug(7103) << "looks like the user canceled"
                                             << (m_request.responseCode == 401 ? "WWW" : "proxy")
                                             << "authentication.";
                                 kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
-                                            << "authInfo username =" << authi.username
-                                            << "authInfo realm =" << authi.realmValue;
+                                            << "authInfo username =" << authinfo.username
+                                            << "authInfo realm =" << authinfo.realmValue;
                                 error(ERR_USER_CANCELED, resource.host());
                                 return false;
                             }
@@ -3270,8 +3271,8 @@ try_next_auth_scheme:
                         if (!obtained) {
                             kDebug(7103) << "could not obtain authentication credentials from cache or user!";
                         }
-                        username = authi.username;
-                        password = authi.password;
+                        username = authinfo.username;
+                        password = authinfo.password;
                     }
                 }
                 (*auth)->generateResponse(username, password);
@@ -3317,66 +3318,66 @@ try_next_auth_scheme:
         }
     }
 
-  QString locationStr;
-  // In fact we should do redirection only if we have a redirection response code (300 range)
-  tIt = tokenizer.iterator("location");
-  if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
-      locationStr = QString::fromUtf8(tIt.next().trimmed());
-  }
-  // We need to do a redirect
-  if (!locationStr.isEmpty())
-  {
-    KUrl u(m_request.url, locationStr);
-    if(!u.isValid())
-    {
-      error(ERR_MALFORMED_URL, u.url());
-      return false;
+    QString locationStr;
+    // In fact we should do redirection only if we have a redirection response code (300 range)
+    tIt = tokenizer.iterator("location");
+    if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
+        locationStr = QString::fromUtf8(tIt.next().trimmed());
     }
-    if ((u.protocol() != QLatin1String("http")) && (u.protocol() != QLatin1String("https")) &&
-        (u.protocol() != QLatin1String("webdav")) && (u.protocol() != QLatin1String("webdavs")))
+    // We need to do a redirect
+    if (!locationStr.isEmpty())
     {
+      KUrl u(m_request.url, locationStr);
+      if(!u.isValid())
+      {
+        error(ERR_MALFORMED_URL, u.url());
+        return false;
+      }
+      if ((u.protocol() != QLatin1String("http")) && (u.protocol() != QLatin1String("https")) &&
+          (u.protocol() != QLatin1String("webdav")) && (u.protocol() != QLatin1String("webdavs")))
+      {
+        redirection(u);
+        error(ERR_ACCESS_DENIED, u.url());
+        return false;
+      }
+
+      // preserve #ref: (bug 124654)
+      // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
+      // if we got redirected to http://host/resource2, then we have to re-add
+      // the fragment:
+      if (m_request.url.hasRef() && !u.hasRef() &&
+          (m_request.url.host() == u.host()) &&
+          (m_request.url.protocol() == u.protocol()))
+        u.setRef(m_request.url.ref());
+
+      m_isRedirection = true;
+
+      if (!m_request.id.isEmpty())
+      {
+         sendMetaData();
+      }
+
+      // If we're redirected to a http:// url, remember that we're doing webdav...
+      if (m_protocol == "webdav" || m_protocol == "webdavs"){
+          if(u.protocol() == QLatin1String("http")){
+              u.setProtocol(QString::fromLatin1("webdav"));
+          }else if(u.protocol() == QLatin1String("https")){
+              u.setProtocol(QString::fromLatin1("webdavs"));
+          }
+
+          m_request.redirectUrl = u;
+      }
+
+      kDebug(7113) << "Re-directing from" << m_request.url.url()
+                   << "to" << u.url();
+
       redirection(u);
-      error(ERR_ACCESS_DENIED, u.url());
-      return false;
+
+      // It would be hard to cache the redirection response correctly. The possible benefit
+      // is small (if at all, assuming fast disk and slow network), so don't do it.
+      cacheFileClose();
+      setCacheabilityMetadata(false);
     }
-
-    // preserve #ref: (bug 124654)
-    // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
-    // if we got redirected to http://host/resource2, then we have to re-add
-    // the fragment:
-    if (m_request.url.hasRef() && !u.hasRef() &&
-        (m_request.url.host() == u.host()) &&
-        (m_request.url.protocol() == u.protocol()))
-      u.setRef(m_request.url.ref());
-
-    m_isRedirection = true;
-
-    if (!m_request.id.isEmpty())
-    {
-       sendMetaData();
-    }
-
-    // If we're redirected to a http:// url, remember that we're doing webdav...
-    if (m_protocol == "webdav" || m_protocol == "webdavs"){
-        if(u.protocol() == QLatin1String("http")){
-            u.setProtocol(QString::fromLatin1("webdav"));
-        }else if(u.protocol() == QLatin1String("https")){
-            u.setProtocol(QString::fromLatin1("webdavs"));
-        }
-
-        m_request.redirectUrl = u;
-    }
-
-    kDebug(7113) << "Re-directing from" << m_request.url.url()
-                 << "to" << u.url();
-
-    redirection(u);
-
-    // It would be hard to cache the redirection response correctly. The possible benefit
-    // is small (if at all, assuming fast disk and slow network), so don't do it.
-    cacheFileClose();
-    setCacheabilityMetadata(false);
-  }
 
     // Inform the job that we can indeed resume...
     if (bCanResume && m_request.offset) {
