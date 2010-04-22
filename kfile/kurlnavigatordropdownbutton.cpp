@@ -17,42 +17,54 @@
  * Boston, MA 02110-1301, USA.                                               *
  *****************************************************************************/
 
-#ifndef KURLTOGGLEBUTTON_P_H
-#define KURLTOGGLEBUTTON_P_H
+#include "kurlnavigatordropdownbutton_p.h"
+#include "kurlnavigator.h"
 
-#include "kurlbutton_p.h"
-#include <QtGui/QPixmap>
+#include <kglobalsettings.h>
 
-class KUrlNavigator;
+#include <QtGui/QKeyEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOption>
 
-/**
- * @brief Represents the button of the URL navigator to switch to
- *        the editable mode.
- *
- * A cursor is shown when hovering the button.
- */
-class KUrlToggleButton : public KUrlButton
+KUrlNavigatorDropDownButton::KUrlNavigatorDropDownButton(QWidget* parent) :
+    KUrlNavigatorButtonBase(parent)
 {
-    Q_OBJECT
+}
 
-public:
-    explicit KUrlToggleButton(KUrlNavigator* parent);
-    virtual ~KUrlToggleButton();
+KUrlNavigatorDropDownButton::~KUrlNavigatorDropDownButton()
+{
+}
 
-    /** @see QWidget::sizeHint() */
-    virtual QSize sizeHint() const;
+QSize KUrlNavigatorDropDownButton::sizeHint() const
+{
+    QSize size = KUrlNavigatorButtonBase::sizeHint();
+    size.setWidth(size.height() / 2);
+    return size;
+}
 
-protected:
-    virtual void enterEvent(QEvent* event);
-    virtual void leaveEvent(QEvent* event);
-    virtual void paintEvent(QPaintEvent* event);
+void KUrlNavigatorDropDownButton::paintEvent(QPaintEvent* event)
+{
+    Q_UNUSED(event);
 
-private slots:
-    void updateToolTip();
-    void updateCursor();
+    QPainter painter(this);
+    drawHoverBackground(&painter);
 
-private:
-    QPixmap m_pixmap;
-};
+    const QColor fgColor = foregroundColor();
 
-#endif
+    QStyleOption option;
+    option.initFrom(this);
+    option.rect = QRect(0, 0, width(), height());
+    option.palette = palette();
+    option.palette.setColor(QPalette::Text, fgColor);
+    option.palette.setColor(QPalette::WindowText, fgColor);
+    option.palette.setColor(QPalette::ButtonText, fgColor);
+
+    if (layoutDirection() == Qt::LeftToRight) {
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this);
+    } else {
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowLeft, &option, &painter, this);
+    }
+
+}
+
+#include "kurlnavigatordropdownbutton_p.moc"

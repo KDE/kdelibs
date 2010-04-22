@@ -37,8 +37,8 @@
 
 QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_dirsMenu;
 
-KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent) :
-    KUrlButton(parent),
+KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
+    KUrlNavigatorButtonBase(parent),
     m_hoverArrow(false),
     m_pendingTextChange(false),
     m_wheelSteps(0),
@@ -91,7 +91,7 @@ void KUrlNavigatorButton::setText(const QString& text)
     // Assure that the button always consists of one line
     adjustedText.remove(QLatin1Char('\n'));
 
-    KUrlButton::setText(adjustedText);
+    KUrlNavigatorButtonBase::setText(adjustedText);
     updateMinimumWidth();
 
     // Assure that statFinished() does not overwrite a text that has been
@@ -120,7 +120,7 @@ QSize KUrlNavigatorButton::sizeHint() const
     // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
     // preferred size we add the BorderWidth 2 times again for having an uncluttered look
     const int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
-    return QSize(width, KUrlButton::sizeHint().height());
+    return QSize(width, KUrlNavigatorButtonBase::sizeHint().height());
 }
 
 void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
@@ -211,7 +211,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 
 void KUrlNavigatorButton::enterEvent(QEvent* event)
 {
-    KUrlButton::enterEvent(event);
+    KUrlNavigatorButtonBase::enterEvent(event);
 
     // if the text is clipped due to a small window width, the text should
     // be shown as tooltip
@@ -222,7 +222,7 @@ void KUrlNavigatorButton::enterEvent(QEvent* event)
 
 void KUrlNavigatorButton::leaveEvent(QEvent* event)
 {
-    KUrlButton::leaveEvent(event);
+    KUrlNavigatorButtonBase::leaveEvent(event);
     setToolTip(QString());
 
     if (m_hoverArrow) {
@@ -283,7 +283,7 @@ void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
 
 void KUrlNavigatorButton::dragLeaveEvent(QDragLeaveEvent* event)
 {
-    KUrlButton::dragLeaveEvent(event);
+    KUrlNavigatorButtonBase::dragLeaveEvent(event);
 
     m_hoverArrow = false;
     setDisplayHintEnabled(DraggedHint, false);
@@ -296,7 +296,7 @@ void KUrlNavigatorButton::mousePressEvent(QMouseEvent* event)
         // the mouse is pressed above the [>] button
         startListJob();
     }
-    KUrlButton::mousePressEvent(event);
+    KUrlNavigatorButtonBase::mousePressEvent(event);
 }
 
 void KUrlNavigatorButton::mouseReleaseEvent(QMouseEvent* event)
@@ -306,12 +306,12 @@ void KUrlNavigatorButton::mouseReleaseEvent(QMouseEvent* event)
         // above the [>] button
         emit clicked(m_url, event->button());
     }
-    KUrlButton::mouseReleaseEvent(event);
+    KUrlNavigatorButtonBase::mouseReleaseEvent(event);
 }
 
 void KUrlNavigatorButton::mouseMoveEvent(QMouseEvent* event)
 {
-    KUrlButton::mouseMoveEvent(event);
+    KUrlNavigatorButtonBase::mouseMoveEvent(event);
 
     const bool hoverArrow = isAboveArrow(event->x());
     if (hoverArrow != m_hoverArrow) {
@@ -327,7 +327,7 @@ void KUrlNavigatorButton::wheelEvent(QWheelEvent* event)
         startCycleJob();
         event->accept();
     } else {
-        KUrlButton::wheelEvent(event);
+        KUrlNavigatorButtonBase::wheelEvent(event);
     }
 }
 

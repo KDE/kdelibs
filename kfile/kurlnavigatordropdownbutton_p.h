@@ -17,54 +17,31 @@
  * Boston, MA 02110-1301, USA.                                               *
  *****************************************************************************/
 
-#include "kurldropdownbutton_p.h"
-#include "kurlnavigator.h"
+#ifndef KURLNAVIGATORDROPDOWNBUTTON_P_H
+#define KURLNAVIGATORDROPDOWNBUTTON_P_H
 
-#include <kglobalsettings.h>
+#include "kurlnavigatorbuttonbase_p.h"
 
-#include <QtGui/QKeyEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOption>
-
-KUrlDropDownButton::KUrlDropDownButton(KUrlNavigator* parent) :
-    KUrlButton(parent)
+/**
+ * @brief Button of the URL navigator which offers a drop down menu
+ *        of hidden paths.
+ *
+ * The button will only be shown if the width of the URL navigator is
+ * too small to show the whole path.
+ */
+class KUrlNavigatorDropDownButton : public KUrlNavigatorButtonBase
 {
-}
+    Q_OBJECT
 
-KUrlDropDownButton::~KUrlDropDownButton()
-{
-}
+public:
+    explicit KUrlNavigatorDropDownButton(QWidget* parent);
+    virtual ~KUrlNavigatorDropDownButton();
 
-QSize KUrlDropDownButton::sizeHint() const
-{
-    QSize size = KUrlButton::sizeHint();
-    size.setWidth(size.height() / 2);
-    return size;
-}
+    /** @see QWidget::sizeHint() */
+    virtual QSize sizeHint() const;
 
-void KUrlDropDownButton::paintEvent(QPaintEvent* event)
-{
-    Q_UNUSED(event);
+protected:
+    virtual void paintEvent(QPaintEvent* event);
+};
 
-    QPainter painter(this);
-    drawHoverBackground(&painter);
-
-    const QColor fgColor = foregroundColor();
-    
-    QStyleOption option;
-    option.initFrom(this);
-    option.rect = QRect(0, 0, width(), height());
-    option.palette = palette();
-    option.palette.setColor(QPalette::Text, fgColor);
-    option.palette.setColor(QPalette::WindowText, fgColor);
-    option.palette.setColor(QPalette::ButtonText, fgColor);
-    
-    if (layoutDirection() == Qt::LeftToRight) {
-        style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this);
-    } else {
-        style()->drawPrimitive(QStyle::PE_IndicatorArrowLeft, &option, &painter, this);
-    }
-
-}
-
-#include "kurldropdownbutton_p.moc"
+#endif

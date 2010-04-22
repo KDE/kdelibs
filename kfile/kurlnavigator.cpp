@@ -22,11 +22,11 @@
 
 #include "kurlnavigator.h"
 
-#include "kfileplacesselector_p.h"
-#include "kprotocolcombo_p.h"
-#include "kurldropdownbutton_p.h"
+#include "kurlnavigatorplacesselector_p.h"
+#include "kurlnavigatorprotocolcombo_p.h"
+#include "kurlnavigatordropdownbutton_p.h"
 #include "kurlnavigatorbutton_p.h"
-#include "kurltogglebutton_p.h"
+#include "kurlnavigatortogglebutton_p.h"
 
 #include <kfileitem.h>
 #include <kfileplacesmodel.h>
@@ -166,13 +166,13 @@ public:
     QHBoxLayout* m_layout;
 
     QList<LocationData> m_history;
-    KFilePlacesSelector* m_placesSelector;
+    KUrlNavigatorPlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
-    KProtocolCombo* m_protocols;
+    KUrlNavigatorProtocolCombo* m_protocols;
     KLineEdit* m_host;
-    KUrlDropDownButton* m_dropDownButton;
+    KUrlNavigatorDropDownButton* m_dropDownButton;
     QList<KUrlNavigatorButton*> m_navButtons;
-    KUrlButton* m_toggleEditableMode;
+    KUrlNavigatorButtonBase* m_toggleEditableMode;
     KUrl m_homeUrl;
     QStringList m_customProtocols;
     KUrlNavigator* q;
@@ -204,7 +204,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     q->setAutoFillBackground(false);
 
     if (placesModel != 0) {
-        m_placesSelector = new KFilePlacesSelector(q, placesModel);
+        m_placesSelector = new KUrlNavigatorPlacesSelector(q, placesModel);
         connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
                 q, SLOT(setUrl(const KUrl&)));
 
@@ -217,7 +217,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     }
 
     // create protocol combo
-    m_protocols = new KProtocolCombo(QString(), q);
+    m_protocols = new KUrlNavigatorProtocolCombo(QString(), q);
     connect(m_protocols, SIGNAL(activated(QString)),
             q, SLOT(slotProtocolChanged(QString)));
 
@@ -230,7 +230,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
             q, SIGNAL(returnPressed()));
 
     // create drop down button for accessing all paths of the URL
-    m_dropDownButton = new KUrlDropDownButton(q);
+    m_dropDownButton = new KUrlNavigatorDropDownButton(q);
     connect(m_dropDownButton, SIGNAL(clicked()),
             q, SLOT(openPathSelectorMenu()));
 
@@ -250,7 +250,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     // create toggle button which allows to switch between
     // the breadcrumb and traditional view
-    m_toggleEditableMode = new KUrlToggleButton(q);
+    m_toggleEditableMode = new KUrlNavigatorToggleButton(q);
     m_toggleEditableMode->setMinimumWidth(20);
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
@@ -355,7 +355,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     }
     m_navButtons.clear();
 
-    if (KProtocolInfo::protocolClass(protocol) == ":local") {
+    if (KProtocolInfo::protocolClass(protocol) == QLatin1String(":local")) {
         q->setLocationUrl(url);
     } else {
         m_host->setText(QString());
@@ -377,13 +377,13 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     popup->setLayoutDirection(Qt::LeftToRight);
 
     const QString placePath = retrievePlacePath();
-    int idx = placePath.count('/'); // idx points to the first directory
-                                    // after the place path
+    int idx = placePath.count(QLatin1Char('/')); // idx points to the first directory
+                                                 // after the place path
 
     const QString path = m_history[m_historyIndex].url.pathOrUrl();
-    QString dirName = path.section('/', idx, idx);
+    QString dirName = path.section(QLatin1Char('/'), idx, idx);
     if (dirName.isEmpty()) {
-        dirName = QChar('/');
+        dirName = QLatin1Char('/');
     }
     do {
         const QString text = spacer + dirName;
@@ -585,7 +585,7 @@ void KUrlNavigator::Private::updateContent()
 void KUrlNavigator::Private::updateButtons(int startIndex)
 {
     KUrl currentUrl = q->locationUrl();
-    if (currentUrl.protocol() == "nepomuksearch") {
+    if (currentUrl.protocol() == QLatin1String("nepomuksearch")) {
         // hide the Nepomuk search URL from the user
         currentUrl = KUrl("nepomuksearch:/");
         startIndex = -1;
@@ -1049,7 +1049,7 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
         urlStr.insert(0, QDir::homePath());
     }
 
-    if ((url.protocol() == "tar") || (url.protocol() == "zip")) {
+    if ((url.protocol() == QLatin1String("tar")) || (url.protocol() == QLatin1String("zip"))) {
         // The URL represents a tar- or zip-file. Check whether
         // the URL is really part of the tar- or zip-file, otherwise
         // replace it by the local path again.

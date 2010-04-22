@@ -1,6 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2006-2010 by Peter Penz <peter.penz@gmx.at>                 *
- * Copyright (C) 2006 by Aaron J. Seigo <aseigo@kde.org>                     *
+ * Copyright (C) 2006 by Peter Penz <peter.penz@gmx.at>                      *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
  * modify it under the terms of the GNU Library General Public               *
@@ -18,59 +17,40 @@
  * Boston, MA 02110-1301, USA.                                               *
  *****************************************************************************/
 
-#ifndef KURLBUTTON_P_H
-#define KURLBUTTON_P_H
+#ifndef KURLNAVIGATORTOGGLEBUTTON_P_H
+#define KURLNAVIGATORTOGGLEBUTTON_P_H
 
-#include <QtGui/QColor>
-#include <QtGui/QPushButton>
-
-class KUrl;
-class QEvent;
+#include "kurlnavigatorbuttonbase_p.h"
+#include <QtGui/QPixmap>
 
 /**
- * @brief Base class for buttons of the URL navigator.
+ * @brief Represents the button of the URL navigator to switch to
+ *        the editable mode.
  *
- * Each button of the URL navigator contains an URL, which
- * is set as soon as the button has been clicked.
+ * A cursor is shown when hovering the button.
  */
-class KUrlButton : public QPushButton
+class KUrlNavigatorToggleButton : public KUrlNavigatorButtonBase
 {
     Q_OBJECT
 
 public:
-    explicit KUrlButton(QWidget* parent);
-    virtual ~KUrlButton();
+    explicit KUrlNavigatorToggleButton(QWidget* parent);
+    virtual ~KUrlNavigatorToggleButton();
 
-    void setActive(bool active);
-    bool isActive() const;
+    /** @see QWidget::sizeHint() */
+    virtual QSize sizeHint() const;
 
 protected:
-    enum DisplayHint {
-        EnteredHint = 1,
-        DraggedHint = 2,
-        PopupActiveHint = 4
-    };
-
-    enum { BorderWidth = 2 };
-    
-    void setDisplayHintEnabled(DisplayHint hint, bool enable);
-    bool isDisplayHintEnabled(DisplayHint hint) const;
-
     virtual void enterEvent(QEvent* event);
     virtual void leaveEvent(QEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
 
-    void drawHoverBackground(QPainter* painter);
-
-    /** Returns the foreground color by respecting the current display hint. */
-    QColor foregroundColor() const;
-
-private Q_SLOTS:
-    /** Invokes setActive(true). */
-    void activate();
+private slots:
+    void updateToolTip();
+    void updateCursor();
 
 private:
-    bool m_active;
-    int m_displayHint;
+    QPixmap m_pixmap;
 };
 
 #endif

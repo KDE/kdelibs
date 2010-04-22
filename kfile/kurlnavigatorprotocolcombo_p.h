@@ -17,14 +17,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA          *
  ***************************************************************************/
-#ifndef KPROTOCOLCOMBO_P_H
-#define KPROTOCOLCOMBO_P_H
 
-#include "kurlbutton_p.h"
+#ifndef KURLNAVIGATORPROTOCOLCOMBO_P_H
+#define KURLNAVIGATORPROTOCOLCOMBO_P_H
+
+#include "kurlnavigatorbuttonbase_p.h"
 
 #include <QtCore/QHash>
 
-class KUrlNavigator;
 class QMenu;
 
 /**
@@ -35,12 +35,12 @@ class QMenu;
  *
  * @see KUrlNavigator
  */
-class KProtocolCombo : public KUrlButton
+class KUrlNavigatorProtocolCombo : public KUrlNavigatorButtonBase
 {
     Q_OBJECT
 
 public:
-    explicit KProtocolCombo(const QString& protocol, KUrlNavigator* parent = 0);
+    explicit KUrlNavigatorProtocolCombo(const QString& protocol, QWidget* parent = 0);
 
     QString currentProtocol() const;
 

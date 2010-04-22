@@ -17,8 +17,7 @@
  * Boston, MA 02110-1301, USA.                                               *
  *****************************************************************************/
 
-#include "kurltogglebutton_p.h"
-#include "kurlnavigator.h"
+#include "kurlnavigatortogglebutton_p.h"
 
 #include <kcolorscheme.h>
 #include <kicon.h>
@@ -28,8 +27,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QApplication>
 
-KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
-    KUrlButton(parent)
+KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
+    KUrlNavigatorButtonBase(parent)
 {
     setCheckable(true);
     connect(this, SIGNAL(toggled(bool)),
@@ -40,30 +39,30 @@ KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     updateToolTip();
 }
 
-KUrlToggleButton::~KUrlToggleButton()
+KUrlNavigatorToggleButton::~KUrlNavigatorToggleButton()
 {
 }
 
-QSize KUrlToggleButton::sizeHint() const
+QSize KUrlNavigatorToggleButton::sizeHint() const
 {
-    QSize size = KUrlButton::sizeHint();
+    QSize size = KUrlNavigatorButtonBase::sizeHint();
     size.setWidth(m_pixmap.width() + 4);
     return size;
 }
 
-void KUrlToggleButton::enterEvent(QEvent* event)
+void KUrlNavigatorToggleButton::enterEvent(QEvent* event)
 {
-    KUrlButton::enterEvent(event);
+    KUrlNavigatorButtonBase::enterEvent(event);
     updateCursor();
 }
 
-void KUrlToggleButton::leaveEvent(QEvent* event)
+void KUrlNavigatorToggleButton::leaveEvent(QEvent* event)
 {
-    KUrlButton::leaveEvent(event);
+    KUrlNavigatorButtonBase::leaveEvent(event);
     setCursor(Qt::ArrowCursor);
 }
 
-void KUrlToggleButton::paintEvent(QPaintEvent* event)
+void KUrlNavigatorToggleButton::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
     painter.setClipRect(event->rect());
@@ -85,7 +84,7 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
     }
 }
 
-void KUrlToggleButton::updateToolTip()
+void KUrlNavigatorToggleButton::updateToolTip()
 {
     if (isChecked()) {
         setToolTip(i18n("Click for Location Navigation"));
@@ -94,9 +93,9 @@ void KUrlToggleButton::updateToolTip()
     }
 }
 
-void KUrlToggleButton::updateCursor()
+void KUrlNavigatorToggleButton::updateCursor()
 {
     setCursor(isChecked() ? Qt::ArrowCursor : Qt::IBeamCursor);
 }
 
-#include "kurltogglebutton_p.moc"
+#include "kurlnavigatortogglebutton_p.moc"

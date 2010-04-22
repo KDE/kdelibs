@@ -18,16 +18,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA          *
  ***************************************************************************/
 
-#ifndef KFILEPLACESSELECTOR_P_H
-#define KFILEPLACESSELECTOR_P_H
+#ifndef KURLNAVIGATORPLACESSELECTOR_P_H
+#define KURLNAVIGATORPLACESSELECTOR_P_H
 
-#include "kurlbutton_p.h"
+#include "kurlnavigatorbuttonbase_p.h"
 #include <kurl.h>
 
 #include <QtCore/QPersistentModelIndex>
 
 class KFilePlacesModel;
-class KUrlNavigator;
 class KMenu;
 
 /**
@@ -36,9 +35,9 @@ class KMenu;
  * The icon from the current selected bookmark is shown
  * inside the bookmark selector.
  *
- * @see UrlNavigator
+ * @see KUrlNavigator
  */
-class KFilePlacesSelector : public KUrlButton
+class KUrlNavigatorPlacesSelector : public KUrlNavigatorButtonBase
 {
     Q_OBJECT
 
@@ -47,9 +46,9 @@ public:
      * @param parent Parent widget where the bookmark selector
      *               is embedded into.
      */
-    KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel* placesModel);
+    KUrlNavigatorPlacesSelector(QWidget* parent, KFilePlacesModel* placesModel);
 
-    virtual ~KFilePlacesSelector();
+    virtual ~KUrlNavigatorPlacesSelector();
 
     /**
      * Updates the selection dependent from the given URL \a url. The

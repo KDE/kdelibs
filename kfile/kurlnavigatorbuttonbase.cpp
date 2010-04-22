@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.                                               *
  *****************************************************************************/
 
-#include "kurlbutton_p.h"
+#include "kurlnavigatorbuttonbase_p.h"
 
 #include <kcolorscheme.h>
 #include <kicon.h>
@@ -32,7 +32,7 @@
 #include <QStyle>
 #include <QStyleOptionFocusRect>
 
-KUrlButton::KUrlButton(QWidget* parent) :
+KUrlNavigatorButtonBase::KUrlNavigatorButtonBase(QWidget* parent) :
     QPushButton(parent),
     m_active(true),
     m_displayHint(0)
@@ -44,11 +44,11 @@ KUrlButton::KUrlButton(QWidget* parent) :
     connect(this, SIGNAL(pressed()), parent, SLOT(requestActivation()));
 }
 
-KUrlButton::~KUrlButton()
+KUrlNavigatorButtonBase::~KUrlNavigatorButtonBase()
 {
 }
 
-void KUrlButton::setActive(bool active)
+void KUrlNavigatorButtonBase::setActive(bool active)
 {
     if (m_active != active) {
         m_active = active;
@@ -56,12 +56,12 @@ void KUrlButton::setActive(bool active)
     }
 }
 
-bool KUrlButton::isActive() const
+bool KUrlNavigatorButtonBase::isActive() const
 {
     return m_active;
 }
 
-void KUrlButton::setDisplayHintEnabled(DisplayHint hint,
+void KUrlNavigatorButtonBase::setDisplayHintEnabled(DisplayHint hint,
                                        bool enable)
 {
     if (enable) {
@@ -72,26 +72,26 @@ void KUrlButton::setDisplayHintEnabled(DisplayHint hint,
     update();
 }
 
-bool KUrlButton::isDisplayHintEnabled(DisplayHint hint) const
+bool KUrlNavigatorButtonBase::isDisplayHintEnabled(DisplayHint hint) const
 {
     return (m_displayHint & hint) > 0;
 }
 
-void KUrlButton::enterEvent(QEvent* event)
+void KUrlNavigatorButtonBase::enterEvent(QEvent* event)
 {
     QPushButton::enterEvent(event);
     setDisplayHintEnabled(EnteredHint, true);
     update();
 }
 
-void KUrlButton::leaveEvent(QEvent* event)
+void KUrlNavigatorButtonBase::leaveEvent(QEvent* event)
 {
     QPushButton::leaveEvent(event);
     setDisplayHintEnabled(EnteredHint, false);
     update();
 }
 
-void KUrlButton::drawHoverBackground(QPainter* painter)
+void KUrlNavigatorButtonBase::drawHoverBackground(QPainter* painter)
 {
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
                                isDisplayHintEnabled(DraggedHint) ||
@@ -112,7 +112,7 @@ void KUrlButton::drawHoverBackground(QPainter* painter)
     }
 }
 
-QColor KUrlButton::foregroundColor() const
+QColor KUrlNavigatorButtonBase::foregroundColor() const
 {
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
                                isDisplayHintEnabled(DraggedHint) ||
@@ -129,9 +129,9 @@ QColor KUrlButton::foregroundColor() const
     return foregroundColor;
 }
 
-void KUrlButton::activate()
+void KUrlNavigatorButtonBase::activate()
 {
     setActive(true);
 }
 
-#include "kurlbutton_p.moc"
+#include "kurlnavigatorbuttonbase_p.moc"

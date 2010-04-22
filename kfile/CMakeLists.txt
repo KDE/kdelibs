@@ -21,18 +21,18 @@ set(kfile_LIB_SRCS
   kfileplacesitem.cpp
   kfileplacesmodel.cpp
   kfileplacessharedbookmarks.cpp
-  kfileplacesselector.cpp
   kfileplacesview.cpp
   kfileplaceeditdialog.cpp
   kfilepreviewgenerator.cpp
   knameandurlinputdialog.cpp
   knewfilemenu.cpp
-  kprotocolcombo.cpp
-  kurlbutton.cpp
-  kurldropdownbutton.cpp
+  kurlnavigatordropdownbutton.cpp
+  kurlnavigatorbuttonbase.cpp
   kurlnavigatorbutton.cpp
+  kurlnavigatorplacesselector.cpp
+  kurlnavigatorprotocolcombo.cpp
+  kurlnavigatortogglebutton.cpp
   kurlnavigator.cpp
-  kurltogglebutton.cpp
   kurlnavigatormenu.cpp
 )
 

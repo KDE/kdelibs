@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA          *
  ***************************************************************************/
 
-#include "kprotocolcombo_p.h"
+#include "kurlnavigatorprotocolcombo_p.h"
 
 #include <QtGui/QAction>
 #include <QtGui/QMenu>
@@ -31,10 +31,12 @@
 #include <kprotocolmanager.h>
 #include <kurlnavigator.h>
 
-const int ARROW_SIZE = 10;
+namespace {
+    const int ArrowSize = 10;
+}
 
-KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent) :
-    KUrlButton(parent),
+KUrlNavigatorProtocolCombo::KUrlNavigatorProtocolCombo(const QString& protocol, QWidget* parent) :
+    KUrlNavigatorButtonBase(parent),
     m_menu(0),
     m_protocols(),
     m_categories()
@@ -45,7 +47,7 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent) :
     setMenu(m_menu);
 }
 
-void KProtocolCombo::setCustomProtocols(const QStringList& protocols)
+void KUrlNavigatorProtocolCombo::setCustomProtocols(const QStringList& protocols)
 {
     m_protocols = protocols;
     m_menu->clear();
@@ -56,30 +58,30 @@ void KProtocolCombo::setCustomProtocols(const QStringList& protocols)
     }
 }
 
-QSize KProtocolCombo::sizeHint() const
+QSize KUrlNavigatorProtocolCombo::sizeHint() const
 {
-    QSize size = KUrlButton::sizeHint();
+    const QSize size = KUrlNavigatorButtonBase::sizeHint();
 
     QFontMetrics fontMetrics(font());
     int width = fontMetrics.width(text());
-    width += (3 * BorderWidth) + ARROW_SIZE;
+    width += (3 * BorderWidth) + ArrowSize;
 
     return QSize(width, size.height());
 }
 
-void KProtocolCombo::setProtocol(const QString& protocol)
+void KUrlNavigatorProtocolCombo::setProtocol(const QString& protocol)
 {
     setText(protocol);
 }
 
-QString KProtocolCombo::currentProtocol() const
+QString KUrlNavigatorProtocolCombo::currentProtocol() const
 {
     return text();
 }
 
-void KProtocolCombo::showEvent(QShowEvent* event)
+void KUrlNavigatorProtocolCombo::showEvent(QShowEvent* event)
 {
-    KUrlButton::showEvent(event);
+    KUrlNavigatorButtonBase::showEvent(event);
     if (!event->spontaneous() && m_protocols.isEmpty()) {
         m_protocols = KProtocolInfo::protocols();
         qSort(m_protocols);
@@ -98,7 +100,7 @@ void KProtocolCombo::showEvent(QShowEvent* event)
     }
 }
 
-void KProtocolCombo::paintEvent(QPaintEvent* event)
+void KUrlNavigatorProtocolCombo::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
 
@@ -112,11 +114,11 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
     painter.setPen(fgColor);
 
     // draw arrow
-    const int arrowX = buttonWidth - ARROW_SIZE - BorderWidth;
-    const int arrowY = (buttonHeight - ARROW_SIZE) / 2;
+    const int arrowX = buttonWidth - ArrowSize - BorderWidth;
+    const int arrowY = (buttonHeight - ArrowSize) / 2;
 
     QStyleOption option;
-    option.rect = QRect(arrowX, arrowY, ARROW_SIZE, ARROW_SIZE);
+    option.rect = QRect(arrowX, arrowY, ArrowSize, ArrowSize);
     option.palette = palette();
     option.palette.setColor(QPalette::Text, fgColor);
     option.palette.setColor(QPalette::WindowText, fgColor);
@@ -128,14 +130,14 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
     painter.drawText(QRect(BorderWidth, 0, textWidth, buttonHeight), Qt::AlignCenter, text());
 }
 
-void KProtocolCombo::setProtocol(QAction* action)
+void KUrlNavigatorProtocolCombo::setProtocol(QAction* action)
 {
     const QString protocol = action->data().toString();
     setText(protocol);
     emit activated(protocol);
 }
 
-void KProtocolCombo::updateMenu()
+void KUrlNavigatorProtocolCombo::updateMenu()
 {
     initializeCategories();
     qSort(m_protocols);
@@ -188,7 +190,7 @@ void KProtocolCombo::updateMenu()
     }
 }
 
-void KProtocolCombo::initializeCategories()
+void KUrlNavigatorProtocolCombo::initializeCategories()
 {
     if (m_categories.isEmpty()) {
         m_categories.insert("file", CoreCategory);
@@ -217,4 +219,4 @@ void KProtocolCombo::initializeCategories()
     }
 }
 
-#include "kprotocolcombo_p.moc"
+#include "kurlnavigatorprotocolcombo_p.moc"

@@ -21,7 +21,7 @@
 #ifndef KURLNAVIGATORBUTTON_P_H
 #define KURLNAVIGATORBUTTON_P_H
 
-#include "kurltogglebutton_p.h"
+#include "kurlnavigatorbuttonbase_p.h"
 #include "kurlnavigatormenu_p.h"
 
 #include <kio/global.h>
@@ -31,7 +31,6 @@
 #include <QPointer>
 
 class KJob;
-class KUrlNavigator;
 class QDropEvent;
 class QPaintEvent;
 
@@ -48,13 +47,12 @@ namespace KIO
  * to copy, move or link the dropped items to the URL part indicated by
  * the button.
  */
-class KUrlNavigatorButton : public KUrlButton
+class KUrlNavigatorButton : public KUrlNavigatorButtonBase
 {
     Q_OBJECT
 
 public:
-    // TODO KDE 4.5: get rid of KUrlNavigator dependency
-    explicit KUrlNavigatorButton(const KUrl& url, KUrlNavigator* parent);
+    explicit KUrlNavigatorButton(const KUrl& url, QWidget* parent);
     virtual ~KUrlNavigatorButton();
 
     void setUrl(const KUrl& url);

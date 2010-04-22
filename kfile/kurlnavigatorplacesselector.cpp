@@ -18,9 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA          *
  ***************************************************************************/
 
-#include "kfileplacesselector_p.h"
-
-#include "kurlnavigator.h"
+#include "kurlnavigatorplacesselector_p.h"
 
 #include <kiconloader.h>
 #include <kglobalsettings.h>
@@ -36,8 +34,8 @@
 #include <QtGui/QPixmap>
 #include <kicon.h>
 
-KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel* placesModel) :
-    KUrlButton(parent),
+KUrlNavigatorPlacesSelector::KUrlNavigatorPlacesSelector(QWidget* parent, KFilePlacesModel* placesModel) :
+    KUrlNavigatorButtonBase(parent),
     m_selectedItem(-1),
     m_placesModel(placesModel)
 {
@@ -61,11 +59,11 @@ KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel
     setAcceptDrops(true);
 }
 
-KFilePlacesSelector::~KFilePlacesSelector()
+KUrlNavigatorPlacesSelector::~KUrlNavigatorPlacesSelector()
 {
 }
 
-void KFilePlacesSelector::updateMenu()
+void KUrlNavigatorPlacesSelector::updateMenu()
 {
     m_placesMenu->clear();
 
@@ -86,7 +84,7 @@ void KFilePlacesSelector::updateMenu()
     updateTeardownAction();
 }
 
-void KFilePlacesSelector::updateTeardownAction()
+void KUrlNavigatorPlacesSelector::updateTeardownAction()
 {
     const int rowCount = m_placesModel->rowCount();
     if (m_placesMenu->actions().size()==rowCount+2) {
@@ -112,7 +110,7 @@ void KFilePlacesSelector::updateTeardownAction()
     }
 }
 
-void KFilePlacesSelector::updateSelection(const KUrl& url)
+void KUrlNavigatorPlacesSelector::updateSelection(const KUrl& url)
 {
     const QModelIndex index = m_placesModel->closestItem(url);
     if (index.isValid()) {
@@ -129,25 +127,25 @@ void KFilePlacesSelector::updateSelection(const KUrl& url)
     updateTeardownAction();
 }
 
-KUrl KFilePlacesSelector::selectedPlaceUrl() const
+KUrl KUrlNavigatorPlacesSelector::selectedPlaceUrl() const
 {
     const QModelIndex index = m_placesModel->index(m_selectedItem, 0);
     return index.isValid() ? m_placesModel->url(index) : KUrl();
 }
 
-QString KFilePlacesSelector::selectedPlaceText() const
+QString KUrlNavigatorPlacesSelector::selectedPlaceText() const
 {
     const QModelIndex index = m_placesModel->index(m_selectedItem, 0);
     return index.isValid() ? m_placesModel->text(index) : QString();
 }
 
-QSize KFilePlacesSelector::sizeHint() const
+QSize KUrlNavigatorPlacesSelector::sizeHint() const
 {
-    const int height = KUrlButton::sizeHint().height();
+    const int height = KUrlNavigatorButtonBase::sizeHint().height();
     return QSize(height, height);
 }
 
-void KFilePlacesSelector::paintEvent(QPaintEvent* event)
+void KUrlNavigatorPlacesSelector::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
@@ -160,7 +158,7 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* event)
     painter.drawPixmap(x, y, pixmap);
 }
 
-void KFilePlacesSelector::dragEnterEvent(QDragEnterEvent* event)
+void KUrlNavigatorPlacesSelector::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasUrls()) {
         setDisplayHintEnabled(DraggedHint, true);
@@ -170,15 +168,15 @@ void KFilePlacesSelector::dragEnterEvent(QDragEnterEvent* event)
     }
 }
 
-void KFilePlacesSelector::dragLeaveEvent(QDragLeaveEvent* event)
+void KUrlNavigatorPlacesSelector::dragLeaveEvent(QDragLeaveEvent* event)
 {
-    KUrlButton::dragLeaveEvent(event);
+    KUrlNavigatorButtonBase::dragLeaveEvent(event);
 
     setDisplayHintEnabled(DraggedHint, false);
     update();
 }
 
-void KFilePlacesSelector::dropEvent(QDropEvent* event)
+void KUrlNavigatorPlacesSelector::dropEvent(QDropEvent* event)
 {
     setDisplayHintEnabled(DraggedHint, false);
     update();
@@ -195,7 +193,7 @@ void KFilePlacesSelector::dropEvent(QDropEvent* event)
     }
 }
 
-void KFilePlacesSelector::activatePlace(QAction* action)
+void KUrlNavigatorPlacesSelector::activatePlace(QAction* action)
 {
     Q_ASSERT(action != 0);
     if (action->data().toString()=="teardownAction") {
@@ -224,7 +222,7 @@ void KFilePlacesSelector::activatePlace(QAction* action)
     }
 }
 
-void KFilePlacesSelector::onStorageSetupDone(const QModelIndex &index, bool success)
+void KUrlNavigatorPlacesSelector::onStorageSetupDone(const QModelIndex &index, bool success)
 {
     if (m_lastClickedIndex==index)  {
         if (success) {
@@ -237,5 +235,5 @@ void KFilePlacesSelector::onStorageSetupDone(const QModelIndex &index, bool succ
     }
 }
 
-#include "kfileplacesselector_p.moc"
+#include "kurlnavigatorplacesselector_p.moc"
 
