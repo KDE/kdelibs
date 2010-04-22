@@ -22,6 +22,7 @@
 */
 
 #include "kntlm.h"
+#include "des.h"
 
 #include <string.h>
 
@@ -32,7 +33,7 @@
 #include <krandom.h>
 #include <kdebug.h>
 
-#include "des.h"
+static const char NTLM_SIGNATURE[] = "NTLMSSP";
 
 static QByteArray QString2UnicodeLE( const QString &target );
 static QString UnicodeLE2QString( const QChar* data, uint len );
@@ -106,7 +107,7 @@ bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QS
 {
   QByteArray rbuf( sizeof(Negotiate), 0 );
   
-  memcpy( rbuf.data(), "NTLMSSP", 8 );
+  memcpy( rbuf.data(), NTLM_SIGNATURE, sizeof(NTLM_SIGNATURE) );
   ((Negotiate*) rbuf.data())->msgType = qToLittleEndian( (quint32)1 );
   if ( !domain.isEmpty() ) {
     flags |= Negotiate_Domain_Supplied;
@@ -114,7 +115,7 @@ bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QS
   }
   if ( !workstation.isEmpty() ) {
     flags |= Negotiate_WS_Supplied;
-    addString( rbuf, ((Negotiate*) rbuf.data())->domain, workstation );
+    addString( rbuf, ((Negotiate*) rbuf.data())->workstation, workstation );
   }
   ((Negotiate*) rbuf.data())->flags = qToLittleEndian( flags );
   negotiate = rbuf;
@@ -141,7 +142,7 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge,
   else
     dom = domain;
     
-  memcpy( rbuf.data(), "NTLMSSP", 8 );
+  memcpy( rbuf.data(), NTLM_SIGNATURE, sizeof(NTLM_SIGNATURE) );
   ((Auth*) rbuf.data())->msgType = qToLittleEndian( (quint32)3 );
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
@@ -279,12 +280,9 @@ QByteArray KNTLM::getLMv2Response( const QString &target, const QString &user,
 
 QByteArray KNTLM::ntlmv2Hash( const QString &target, const QString &user, const QString &password )
 {
-  QByteArray hash1 = ntlmHash( password );
-  QByteArray key, ret;
-  QString id = user.toUpper() + target.toUpper();
-  key = QString2UnicodeLE( id );
-  ret = hmacMD5( key, hash1 );
-  return ret;  
+  const QByteArray hash = ntlmHash( password );
+  const QByteArray key = QString2UnicodeLE( user.toUpper() + target );
+  return hmacMD5( key, hash );
 }
 
 QByteArray KNTLM::lmv2Response( const QByteArray &hash, 
@@ -341,7 +339,7 @@ QByteArray hmacMD5( const QByteArray &data, const QByteArray &key )
   md5.reset();
   md5.addData(content);
 
-  return md5.result();;
+  return md5.result();
 }
 
 /*
