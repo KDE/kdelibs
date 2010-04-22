@@ -134,15 +134,7 @@ static HICON QPixmap2HIcon(const QPixmap &pix)
 
 static QPixmap HIcon2QPixmap( HICON hIcon )
 {
-    ICONINFO ii;
-    if( GetIconInfo( hIcon, &ii ) == 0 )
-        return QPixmap();
-
-    QPixmap pix  = QPixmap::fromWinHBITMAP( ii.hbmColor );
-    pix.setMask( QPixmap::fromWinHBITMAP( ii.hbmMask ) );
-
-    DeleteObject( ii.hbmMask );
-    DeleteObject( ii.hbmColor );
+    QPixmap pix  = QPixmap::fromWinHICON( hIcon );
 
     return pix;
 }
