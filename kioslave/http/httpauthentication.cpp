@@ -247,7 +247,7 @@ void KHttpBasicAuthentication::generateResponse(const QString &user, const QStri
     }
 
     m_headerFragment = "Basic ";
-    m_headerFragment += KCodecs::base64Encode(m_username.toLatin1() + ':' + m_password.toLatin1());
+    m_headerFragment += QByteArray(m_username.toLatin1() + ':' + m_password.toLatin1()).toBase64();
     m_headerFragment += "\r\n";
 }
 
@@ -566,25 +566,26 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
 
     if (m_challenge.isEmpty()) {
         // first, send type 1 message (with empty domain, workstation..., but it still works)
-        m_forceDisconnect = true;
-        KNTLM::getNegotiate(buf);
+        if (!KNTLM::getNegotiate(buf))
+            kWarning(7113) << "Error while constructing Type 1 NTLM authentication request";
     } else {
         // we've (hopefully) received a valid type 2 message: send type 3 message as last step
-        QString domain;
-        QString user = m_username;
-        if (user.contains(QLatin1Char('\\'))) {
-            domain = user.section(QLatin1Char('\\'), 0, 0);
-            user = user.section(QLatin1Char('\\'), 1);
+        QString user, domain;
+        if (m_username.contains(QLatin1Char('\\'))) {
+            domain = m_username.section(QLatin1Char('\\'), 0, 0);
+            user = m_username.section(QLatin1Char('\\'), 1);
+        } else {
+            user = m_username;
         }
 
         m_forceKeepAlive = true;
-        QByteArray challenge;
-        KCodecs::base64Decode(m_challenge[0], challenge);
-        KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName());
+        const QByteArray challenge = QByteArray::fromBase64(m_challenge[0]);
+        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName()))
+            kWarning(7113) << "Error while constructing Type 3 NTLM authentication request";
     }
 
     m_headerFragment = "NTLM ";
-    m_headerFragment += KCodecs::base64Encode(buf);
+    m_headerFragment += buf.toBase64();
     m_headerFragment += "\r\n";
 
     return;
