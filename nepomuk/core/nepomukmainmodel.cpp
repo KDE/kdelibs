@@ -63,7 +63,8 @@ public:
           dbusModel( 0 ),
           localSocketModel( 0 ),
           dummyModel( 0 ),
-          m_socketConnectFailed( false ) {
+          m_socketConnectFailed( false ),
+          m_initMutex( QMutex::Recursive ) {
     }
 
     ~GlobalModelContainer() {
@@ -109,9 +110,9 @@ public:
     }
 
     Soprano::Model* model() {
-        init( false );
-
         QMutexLocker lock( &m_initMutex );
+
+        init( false );
 
         // we always prefer the faster local socket client
         if ( localSocketModel ) {
