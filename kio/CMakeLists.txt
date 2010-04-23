@@ -207,9 +207,7 @@ if(HAVE_NEPOMUK)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
     kfile/kcommentwidget.cpp
-    kfile/kedittagsdialog.cpp
     kfile/kloadfilemetadatathread.cpp
-    kfile/ktaggingwidget.cpp
   )
 endif(HAVE_NEPOMUK)
 

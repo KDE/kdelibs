@@ -28,13 +28,13 @@
 #ifdef HAVE_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include <nepomukmassupdatejob.h>
+    #include <nepomuk/tagwidget.h>
     #include "kratingwidget.h"
     #include <resource.h>
     #include <resourcemanager.h>
 
     #include "kcommentwidget_p.h"
     #include "kloadfilemetadatathread_p.h"
-    #include "ktaggingwidget_p.h"
 #else
     namespace Nepomuk
     {
@@ -80,7 +80,7 @@ public:
     KLoadFileMetaDataThread* m_latestMetaDataThread;
 
     KRatingWidget* m_ratingWidget;
-    KTaggingWidget* m_taggingWidget;
+    Nepomuk::TagWidget* m_tagWidget;
     KCommentWidget* m_commentWidget;
 #endif
 
@@ -97,7 +97,7 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_metaDataThreads(),
     m_latestMetaDataThread(0),
     m_ratingWidget(0),
-    m_taggingWidget(0),
+    m_tagWidget(0),
     m_commentWidget(0),
 #endif
     q(parent)
@@ -115,12 +115,13 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
                 q, SLOT(slotRatingChanged(unsigned int)));
         m_ratingWidget->setVisible(false);
 
-        m_taggingWidget = new KTaggingWidget();
-        connect(m_taggingWidget, SIGNAL(tagsChanged(const QList<Nepomuk::Tag>&)),
+        m_tagWidget = new Nepomuk::TagWidget();
+        m_tagWidget->setModeFlags(Nepomuk::TagWidget::MiniMode);
+        connect(m_tagWidget, SIGNAL(tagsChanged(const QList<Nepomuk::Tag>&)),
                 q, SLOT(slotTagsChanged(const QList<Nepomuk::Tag>&)));
-        connect(m_taggingWidget, SIGNAL(tagActivated(const Nepomuk::Tag&)),
+        connect(m_tagWidget, SIGNAL(tagActivated(const Nepomuk::Tag&)),
                 q, SLOT(slotTagActivated(const Nepomuk::Tag&)));
-        m_taggingWidget->setVisible(false);
+        m_tagWidget->setVisible(false);
 
         m_commentWidget = new KCommentWidget();
         connect(m_commentWidget, SIGNAL(commentChanged(const QString&)),
@@ -134,7 +135,7 @@ KFileMetaDataProvider::Private::~Private()
 {
 #ifdef HAVE_NEPOMUK
     delete m_ratingWidget;
-    delete m_taggingWidget;
+    delete m_tagWidget;
     delete m_commentWidget;
 
     foreach (KLoadFileMetaDataThread* thread, m_metaDataThreads) {
@@ -188,10 +189,11 @@ void KFileMetaDataProvider::Private::slotRatingChanged(unsigned int rating)
 void KFileMetaDataProvider::Private::slotTagsChanged(const QList<Nepomuk::Tag>& tags)
 {
 #ifdef HAVE_NEPOMUK
-    m_taggingWidget->setTags(tags);
+    const QList<Nepomuk::Resource> resources = resourceList();
+    m_tagWidget->setTaggedResources(resources);
 
     Nepomuk::MassUpdateJob* job =
-        Nepomuk::MassUpdateJob::tagResources(resourceList(), tags);
+        Nepomuk::MassUpdateJob::tagResources(resources, tags);
     startChangeDataJob(job);
 #else
     Q_UNUSED(tags);
@@ -323,8 +325,16 @@ void KFileMetaDataProvider::setReadOnly(bool readOnly)
         d->m_readOnly = readOnly;
 
 #ifdef HAVE_NEPOMUK
-        if (d->m_taggingWidget != 0) {
-            d->m_taggingWidget->setReadOnly(readOnly);
+        if (d->m_tagWidget != 0) {
+            Nepomuk::TagWidget::ModeFlags flags = d->m_tagWidget->modeFlags();
+            if (readOnly) {
+                flags |= Nepomuk::TagWidget::ReadOnly;
+            } else {
+                flags &= ~Nepomuk::TagWidget::ReadOnly;
+            }
+            d->m_tagWidget->setModeFlags(readOnly
+                                         ? Nepomuk::TagWidget::MiniMode | Nepomuk::TagWidget::ReadOnly
+                                         : Nepomuk::TagWidget::MiniMode);
         }
         if (d->m_commentWidget != 0) {
             d->m_commentWidget->setReadOnly(readOnly);
@@ -355,7 +365,7 @@ QWidget* KFileMetaDataProvider::valueWidget(const KUrl& metaDataUri) const
         if (uri == QLatin1String("kfileitem#rating")) {
             widget = d->m_ratingWidget;
         } else if (uri == QLatin1String("kfileitem#tags")) {
-            widget = d->m_taggingWidget;
+            widget = d->m_tagWidget;
         } else if (uri == QLatin1String("kfileitem#comment")) {
             widget = d->m_commentWidget;
         }
@@ -373,14 +383,13 @@ bool KFileMetaDataProvider::setValue(const KUrl& metaDataUri, const Nepomuk::Var
             return true;
         }
 
-        if (widget == d->m_taggingWidget) {
+        if (widget == d->m_tagWidget) {
             QList<Nepomuk::Variant> variants = value.toVariantList();
-            QList<Nepomuk::Tag> tags;
+            QList<Nepomuk::Resource> resources;
             foreach (const Nepomuk::Variant& variant, variants) {
-                const Nepomuk::Resource resource = variant.toResource();
-                tags.append(static_cast<Nepomuk::Tag>(resource));
+                resources.append(variant.toResource());
             }
-            d->m_taggingWidget->setTags(tags);
+            d->m_tagWidget->setTaggedResources(resources);
             return true;
         }
 

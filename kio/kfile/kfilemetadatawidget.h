@@ -81,6 +81,7 @@ private:
 
     Q_PRIVATE_SLOT(d, void slotLoadingFinished())
     Q_PRIVATE_SLOT(d, void removeOutdatedRows())
+    Q_PRIVATE_SLOT(d, void slotLinkActivated(QString))
 };
 
 #endif

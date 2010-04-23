@@ -87,6 +87,8 @@ public:
      */
     void removeOutdatedRows();
 
+    void slotLinkActivated(const QString& link);
+
 #ifdef HAVE_NEPOMUK
     QList<KUrl> sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const;
 #endif
@@ -403,6 +405,14 @@ void KFileMetaDataWidget::Private::removeOutdatedRows()
         delete m_rows[i].label;
         delete m_rows[i].defaultValueWidget;
         m_rows.pop_back();
+    }
+}
+
+void KFileMetaDataWidget::Private::slotLinkActivated(const QString& link)
+{
+    const QUrl url(link);
+    if (url.isValid()) {
+        emit q->urlActivated(url);
     }
 }
 

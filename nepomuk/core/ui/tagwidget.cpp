@@ -56,6 +56,7 @@ void Nepomuk::TagWidgetPrivate::init( TagWidget* parent )
     m_showAllLinkLabel = 0;
 
     QGridLayout* mainLayout = new QGridLayout( q );
+    mainLayout->setMargin(0);
     m_flowLayout = new KBlockLayout( 0, KDialog::spacingHint()*3 );
     m_showAllButton = new QPushButton( i18nc("@label", "Show all tags..."), q );
     q->connect( m_showAllButton, SIGNAL(clicked()), SLOT(slotShowAll()) );
@@ -93,16 +94,18 @@ void Nepomuk::TagWidgetPrivate::buildTagHash( const QList<Tag>& tags )
     m_showAllLinkLabel = 0;
 
     if( m_flags & TagWidget::MiniMode ) {
-        m_showAllLinkLabel = new QLabel( q );
-        m_flowLayout->addWidget( m_showAllLinkLabel );
-        QFont f(KGlobalSettings::smallestReadableFont());
-        f.setUnderline(true);
-        m_showAllLinkLabel->setFont(f);
-        m_showAllLinkLabel->setText( QLatin1String("<a href=\"add_tags\">") +
-                                     ( m_checkBoxHash.isEmpty() ? i18nc("@label", "Add Tags...") : i18nc("@label", "Change...") ) +
-                                     QLatin1String("</a>") );
-        q->connect( m_showAllLinkLabel, SIGNAL(linkActivated(QString)), SLOT(slotShowAll()) );
-        m_showAllButton->hide();
+        if( !(m_flags&TagWidget::ReadOnly) ) {
+            m_showAllLinkLabel = new QLabel( q );
+            m_flowLayout->addWidget( m_showAllLinkLabel );
+            QFont f(q->font());
+            f.setUnderline(true);
+            m_showAllLinkLabel->setFont(f);
+            m_showAllLinkLabel->setText( QLatin1String("<a href=\"add_tags\">") +
+                                         ( m_checkBoxHash.isEmpty() ? i18nc("@label", "Add Tags...") : i18nc("@label", "Change...") ) +
+                                         QLatin1String("</a>") );
+            q->connect( m_showAllLinkLabel, SIGNAL(linkActivated(QString)), SLOT(slotShowAll()) );
+            m_showAllButton->hide();
+        }
     }
     else {
         m_showAllButton->setShown( !(m_flags&TagWidget::ReadOnly) );

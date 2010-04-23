@@ -21,7 +21,6 @@
 #include "kcommentwidget_p.h"
 
 #include <kdialog.h>
-#include <kglobalsettings.h>
 #include <klocale.h>
 
 #include <QEvent>
@@ -37,7 +36,7 @@ KCommentWidget::KCommentWidget(QWidget* parent) :
     m_comment()
 {
     m_label = new QLabel(this);
-    m_label->setFont(KGlobalSettings::smallestReadableFont());
+    m_label->setFont(font());
     m_label->setWordWrap(true);
     m_label->setAlignment(Qt::AlignTop);
     connect(m_label, SIGNAL(linkActivated(const QString&)), this, SLOT(slotLinkActivated(const QString&)));
