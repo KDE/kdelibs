@@ -974,59 +974,84 @@ int KFileDialog::exec()
 
 // not clear here to let KFileDialogPrivate::Native::startDir() return a useful value
 // d->native->selectedUrls.clear();
+    int res = QDialog::Rejected;
     switch (d->native->operationMode) {
     case KAbstractFileWidget::Opening:
     case KAbstractFileWidget::Other:
         if (d->native->mode & KFile::File) {
             KUrl url( KFileDialogPrivate::getOpenUrl(
                d->native->startDir(), d->native->filter, parentWidget(), windowTitle(), &d->native->selectedFilter ) );
-            if (url.isEmpty() || !url.isValid())
-                return QDialog::Rejected;
+            if (url.isEmpty() || !url.isValid()) {
+                res = QDialog::Rejected;
+                break;
+            }
             d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
-            return QDialog::Accepted;
+            res = QDialog::Accepted;
+            break;
         }
         else if (d->native->mode & KFile::Files) {
             KUrl::List urls( KFileDialogPrivate::getOpenUrls(
                 d->native->startDir(), d->native->filter, parentWidget(), windowTitle(), &d->native->selectedFilter ) );
-            if (urls.isEmpty())
-                return QDialog::Rejected;
+            if (urls.isEmpty()) {
+                res = QDialog::Rejected;
+                break;
+            }
             d->native->selectedUrls = urls;
-            return QDialog::Accepted;
+            res = QDialog::Accepted;
+            break;
         }
         else if (d->native->mode & KFile::Directory) {
             KUrl url( KFileDialog::getExistingDirectoryUrl(
                 d->native->startDir(), parentWidget(), windowTitle()) );
-            if (url.isEmpty() || !url.isValid())
-                return QDialog::Rejected;
+            if (url.isEmpty() || !url.isValid()) {
+                res = QDialog::Rejected;
+            }
             d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
-            return QDialog::Accepted;
+            res = QDialog::Accepted;
+            break;
         }
         break;
     case KAbstractFileWidget::Saving:
         if (d->native->mode & KFile::File) {
             KUrl url( KFileDialogPrivate::getSaveUrl(
                 d->native->startDir(), d->native->filter, parentWidget(), windowTitle(), Options(0), &d->native->selectedFilter ) );
-            if (url.isEmpty() || !url.isValid())
-                return QDialog::Rejected;
+            if (url.isEmpty() || !url.isValid())  {
+                res = QDialog::Rejected;
+                break;
+            }
             d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
-            return QDialog::Accepted;
+            res = QDialog::Accepted;
+            break;
         }
         else if (d->native->mode & KFile::Directory) {
             KUrl url( KFileDialog::getExistingDirectoryUrl(
                 d->native->startDir(), parentWidget(), windowTitle()) );
-            if (url.isEmpty() || !url.isValid())
-                return QDialog::Rejected;
+            if (url.isEmpty() || !url.isValid()) {
+                res = QDialog::Rejected;
+                break;
+            }
             d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
-            return QDialog::Accepted;
+            res = QDialog::Accepted;
+            break;
         }
         break;
     default:;
     }
-    return QDialog::Rejected;
+
+    setResult(res);
+    emit finished();
+
+    if (res == QDialog::Accepted) {
+        emit accepted();
+    } else {
+        emit rejected();
+    }
+
+    return res;
 }
 #endif // Q_WS_WIN
 
