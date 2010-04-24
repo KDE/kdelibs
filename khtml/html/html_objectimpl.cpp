@@ -239,13 +239,20 @@ void HTMLObjectBaseElementImpl::defaultEventHandler(EventImpl *e)
 void HTMLObjectBaseElementImpl::removedFromDocument()
 {
     document()->underDocNamedCache().remove(m_name, this);
-    HTMLElementImpl::removedFromDocument();
+
+    // When removed from document, we destroy the widget/plugin.
+    // We have to do it here and not just call setNeedComputeContent(),
+    // since khtml will not try to restyle changed() things not in document.
+    clearChildWidget();
+    
+    HTMLPartContainerElementImpl::removedFromDocument();
 }
 
 void HTMLObjectBaseElementImpl::insertedIntoDocument()
 {
     document()->underDocNamedCache().add(m_name, this);
-    HTMLElementImpl::insertedIntoDocument();
+    setNeedComputeContent();
+    HTMLPartContainerElementImpl::insertedIntoDocument();
 }
 
 void HTMLObjectBaseElementImpl::removeId(const DOMString& id)
@@ -361,6 +368,12 @@ void HTMLObjectBaseElementImpl::computeContent()
     // and the embedded <embed>
     if (!closed()) {
         setNeedComputeContent();
+        return;
+    }
+
+    // Not in document => no plugin.
+    if (!inDocument()) {
+        clearChildWidget();
         return;
     }
 
@@ -500,7 +513,7 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     // If there is no <embed> (here or as a child), and we don't have a type + url to go on,
     // we need to render alternative as well
-    if (!embed && effectiveURL.isEmpty() && (effectiveServiceType.isEmpty() || classId.isEmpty()))
+    if (!embed && effectiveURL.isEmpty() && effectiveServiceType.isEmpty())
         newRenderAlternative = true;
 
     if (newRenderAlternative != m_renderAlternative) {
