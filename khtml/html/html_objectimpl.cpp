@@ -415,6 +415,7 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     params.append( QLatin1String("__KHTML__PLUGINEMBED=\"YES\"") );
     params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(document()->baseURL().url()));
+    params.append( QString::fromLatin1("__KHTML__PLUGINPAGEURL=\"%1\"").arg(document()->URL().url()));
 
     // Non-embed elements parse a bunch of attributes and inherit things off <embed>, if any
     HTMLEmbedElementImpl* embed = relevantEmbed();
