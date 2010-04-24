@@ -23,11 +23,9 @@
 #include <klocalizedstring.h>
 #include <kglobal.h>
 
-#ifdef HAVE_XTEST
-#include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
-#endif // HAVE_XTEST
 #include <fixx11h.h>
+
+#include <X11/Xlib.h>
 
 class XSyncBasedPollerHelper
 {
@@ -324,11 +322,7 @@ void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter co
 
 void XSyncBasedPoller::simulateUserActivity()
 {
-#ifdef HAVE_XTEST
-    Display* display = QX11Info::display();
-    XTestFakeMotionEvent(display, 0, 1, 2, 0);
-    XSync(display, false);
-#endif // HAVE_XTEST
+    XResetScreenSaver(QX11Info::display());
 }
 
 #include "xsyncbasedpoller.moc"
