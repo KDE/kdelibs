@@ -28,7 +28,7 @@
 #ifdef HAVE_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include <nepomukmassupdatejob.h>
-    #include <nepomuk/tagwidget.h>
+    #include <nepomuk/core/ui/tagwidget.h>
     #include "kratingwidget.h"
     #include <resource.h>
     #include <resourcemanager.h>
