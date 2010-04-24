@@ -503,6 +503,7 @@ Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/tagcheckbox.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kblocklayout.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/core/*_p.h
+// DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/core/ontology/*_p.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/core/ui/*_p.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/query/*_p.h
 // DOXYGEN_SET_PROJECT_NAME = Nepomuk
