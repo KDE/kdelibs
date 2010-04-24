@@ -176,8 +176,10 @@ QList<int> XSyncBasedPoller::timeouts() const
 
 void XSyncBasedPoller::stopCatchingIdleEvents()
 {
-    XSyncDestroyAlarm(m_display, m_resetAlarm);
-    m_resetAlarm = X::None;
+    if (m_resetAlarm != X::None) {
+        XSyncDestroyAlarm(m_display, m_resetAlarm);
+        m_resetAlarm = X::None;
+    }
 }
 
 void XSyncBasedPoller::catchIdleEvent()

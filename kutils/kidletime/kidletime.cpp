@@ -229,7 +229,7 @@ void KIdleTimePrivate::_k_resumingFromIdle()
 
     if (catchResume) {
         emit q->resumingFromIdle();
-        catchResume = false;
+        q->stopCatchingResumeEvent();
     }
 }
 
