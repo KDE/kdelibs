@@ -35,8 +35,10 @@
 #endif
 #endif
 
+#include <QWeakPointer>
+#include <QSet>
+
 #include <kglobal.h>
-#include <QPointer>
 
 class KIdleTimeHelper
 {
@@ -61,18 +63,17 @@ KIdleTime *KIdleTime::instance()
 
 class KIdleTimePrivate
 {
-public:
-    KIdleTimePrivate() : catchResume(false), currentId(0) {}
-
     Q_DECLARE_PUBLIC(KIdleTime)
     KIdleTime *q_ptr;
+public:
+    KIdleTimePrivate() : catchResume(false), currentId(0) {}
 
     void loadSystem();
     void unloadCurrentSystem();
     void _k_resumingFromIdle();
     void _k_timeoutReached(int msec);
 
-    QPointer<AbstractSystemPoller> poller;
+    QWeakPointer<AbstractSystemPoller> poller;
     bool catchResume;
 
     int currentId;
@@ -87,16 +88,19 @@ KIdleTime::KIdleTime()
     s_globalKIdleTime->q = this;
 
     d_ptr->q_ptr = this;
-    d_ptr->loadSystem();
 
-    connect(d_ptr->poller, SIGNAL(resumingFromIdle()), this, SLOT(_k_resumingFromIdle()));
-    connect(d_ptr->poller, SIGNAL(timeoutReached(int)), this, SLOT(_k_timeoutReached(int)));
+    Q_D(KIdleTime);
+    d->loadSystem();
+
+    connect(d->poller.data(), SIGNAL(resumingFromIdle()), this, SLOT(_k_resumingFromIdle()));
+    connect(d->poller.data(), SIGNAL(timeoutReached(int)), this, SLOT(_k_timeoutReached(int)));
 }
 
 KIdleTime::~KIdleTime()
 {
     Q_D(KIdleTime);
     d->unloadCurrentSystem();
+    delete d_ptr;
 }
 
 void KIdleTime::catchNextResumeEvent()
@@ -105,7 +109,7 @@ void KIdleTime::catchNextResumeEvent()
 
     if (!d->catchResume) {
         d->catchResume = true;
-        d->poller->catchIdleEvent();
+        d->poller.data()->catchIdleEvent();
     }
 }
 
@@ -115,7 +119,7 @@ void KIdleTime::stopCatchingResumeEvent()
 
     if (d->catchResume) {
         d->catchResume = false;
-        d->poller->stopCatchingIdleEvents();
+        d->poller.data()->stopCatchingIdleEvents();
     }
 }
 
@@ -123,7 +127,7 @@ int KIdleTime::addIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
 
-    d->poller->addTimeout(msec);
+    d->poller.data()->addTimeout(msec);
 
     ++d->currentId;
     d->associations[d->currentId] = msec;
@@ -144,7 +148,7 @@ void KIdleTime::removeIdleTimeout(int identifier)
     d->associations.remove(identifier);
 
     if (!d->associations.values().contains(msec)) {
-        d->poller->removeTimeout(msec);
+        d->poller.data()->removeTimeout(msec);
     }
 }
 
@@ -152,14 +156,25 @@ void KIdleTime::removeAllIdleTimeouts()
 {
     Q_D(KIdleTime);
 
-    foreach(int i, d->poller->timeouts()) {
-        removeIdleTimeout(i);
+    QHash< int, int >::iterator i = d->associations.begin();
+    QSet< int > removed;
+    removed.reserve(d->associations.size());
+
+    while (i != d->associations.end()) {
+        int msec = d->associations[i.key()];
+
+        i = d->associations.erase(i);
+
+        if (!removed.contains(msec)) {
+            d->poller.data()->removeTimeout(msec);
+            removed.insert(msec);
+        }
     }
 }
 
 void KIdleTimePrivate::loadSystem()
 {
-    if (poller) {
+    if (!poller.isNull()) {
         unloadCurrentSystem();
     }
 
@@ -169,41 +184,39 @@ void KIdleTimePrivate::loadSystem()
 #ifdef HAVE_XSYNC
 #ifdef HAVE_XSCREENSAVER
     if (XSyncBasedPoller::instance()->isAvailable()) {
-        XSyncBasedPoller::instance()->setUpPoller();
         poller = XSyncBasedPoller::instance();
     } else {
         poller = new XScreensaverBasedPoller();
-        poller->setUpPoller();
     }
 #else
-    XSyncBasedPoller::instance()->setUpPoller();
     poller = XSyncBasedPoller::instance();
 #endif
 #else
 #ifdef HAVE_XSCREENSAVER
     poller = new XScreensaverBasedPoller();
-    poller->setUpPoller();
 #endif
 #endif
 #else
 #ifdef Q_WS_MAC
     poller = new MacPoller();
-    poller->setUpPoller();
 #else
     poller = new WindowsPoller();
-    poller->setUpPoller();
 #endif
 #endif
+
+    if (!poller.isNull()) {
+        poller.data()->setUpPoller();
+    }
 }
 
 void KIdleTimePrivate::unloadCurrentSystem()
 {
-    if (poller) {
-        poller->unloadPoller();
+    if (!poller.isNull()) {
+        poller.data()->unloadPoller();
 #ifdef Q_WS_X11
-        if (qobject_cast<XSyncBasedPoller*>(poller) == 0) {
+        if (qobject_cast<XSyncBasedPoller*>(poller.data()) == 0) {
 #endif
-            poller->deleteLater();
+            poller.data()->deleteLater();
 #ifdef Q_WS_X11
         }
 #endif
@@ -236,14 +249,14 @@ void KIdleTime::simulateUserActivity()
 {
     Q_D(KIdleTime);
 
-    d->poller->simulateUserActivity();
+    d->poller.data()->simulateUserActivity();
 }
 
 int KIdleTime::idleTime() const
 {
     Q_D(const KIdleTime);
 
-    return d->poller->forcePollRequest();
+    return d->poller.data()->forcePollRequest();
 }
 
 QHash<int, int> KIdleTime::idleTimeouts() const
