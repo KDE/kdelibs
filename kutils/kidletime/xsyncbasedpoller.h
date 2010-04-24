@@ -26,10 +26,8 @@
 
 #include <config-kidletime.h>
 
-#ifdef HAVE_XSYNC
 #include <X11/Xlib.h>
 #include <X11/extensions/sync.h>
-#endif
 
 class XSyncBasedPoller : public AbstractSystemPoller
 {
@@ -61,22 +59,16 @@ private slots:
     int poll();
     void reloadAlarms();
 
-#ifdef HAVE_XSYNC
 private:
     void setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter counter,
                   XSyncTestType test, XSyncValue value);
-#endif
 
 private:
-#ifdef HAVE_XSYNC
     Display * m_display;
     int                 m_sync_event, m_sync_error;
-    XSyncSystemCounter  *m_counters;
     XSyncCounter        m_idleCounter;
     QHash<int, XSyncAlarm>   m_timeoutAlarm;
     XSyncAlarm          m_resetAlarm;
-#endif
-    QWidget * m_filterWidget;
     bool m_available;
 };
 
