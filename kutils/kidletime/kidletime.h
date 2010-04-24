@@ -99,7 +99,7 @@ public Q_SLOTS:
      *
      */
     int addIdleTimeout(int msec);
-    
+
     /**
      * Stops catching the idle timeout identified by the token \c identifier,
      * if it was registered earlier with addIdleTimeout.
@@ -108,7 +108,7 @@ public Q_SLOTS:
      * @param identifier the token returned from addIdleTimeout of the timeout you want to stop listening to
      */
     void removeIdleTimeout(int identifier);
-    
+
     /**
      * Stops catching every set timeout (if any). This means that after calling this method, the signal
      * \link timeoutReached won't be called again until you will add another timeout
@@ -117,7 +117,7 @@ public Q_SLOTS:
      * @see addIdleTimeout
      */
     void removeAllIdleTimeouts();
-    
+
     /**
      * Catches the next resume from idle event. This means that whenever user activity will be registered, or
      * \link simulateUserActivity is called, the signal \link resumingFromIdle will be triggered. 
@@ -156,7 +156,7 @@ Q_SIGNALS:
      * @see catchNextResumeEvent
      */
     void resumingFromIdle();
-    
+
     /**
      * Triggered when the system has been idle for x milliseconds, identified by the previously set
      * timeout.
