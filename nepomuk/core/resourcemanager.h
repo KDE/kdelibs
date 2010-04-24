@@ -32,10 +32,6 @@ namespace Soprano {
 }
 
 namespace Nepomuk {
-    namespace Middleware {
-	class Registry;
-    }
-
     class Resource;
     class Variant;
     class ResourceManagerHelper;
