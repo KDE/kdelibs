@@ -50,17 +50,14 @@ XSyncBasedPoller *XSyncBasedPoller::instance()
 
 XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
-#ifdef HAVE_XSYNC
         , m_display(QX11Info::display())
         , m_idleCounter(X::None)
         , m_resetAlarm(X::None)
-#endif
         , m_available(true)
 {
     Q_ASSERT(!s_globalXSyncBasedPoller->q);
     s_globalXSyncBasedPoller->q = this;
 
-#ifdef HAVE_XSYNC
     int sync_major, sync_minor;
     int ncounters;
 
@@ -93,16 +90,11 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         m_available = false;
     }
 
-#else
-    m_available = false;
-#endif
-
     if (m_available) {
         kDebug() << "XSync seems available and ready";
     } else {
         kDebug() << "XSync seems not available";
     }
-
 }
 
 XSyncBasedPoller::~XSyncBasedPoller()
@@ -116,7 +108,7 @@ bool XSyncBasedPoller::isAvailable()
 
 bool XSyncBasedPoller::setUpPoller()
 {
-#ifdef HAVE_XSYNC
+
     int ncounters;
 
     if (!isAvailable()) {
@@ -145,9 +137,6 @@ bool XSyncBasedPoller::setUpPoller()
     kDebug() << "Supported, init completed";
 
     return true;
-#else
-    return false;
-#endif
 }
 
 void XSyncBasedPoller::unloadPoller()
@@ -160,7 +149,7 @@ void XSyncBasedPoller::addTimeout(int nextTimeout)
     /* We need to set the counter to the idle time + the value
      * requested for next timeout
      */
-#ifdef HAVE_XSYNC
+
     XSyncValue timeout;
     XSyncAlarm newalarm = X::None;
     /*XSyncValue idleTime;
@@ -177,7 +166,7 @@ void XSyncBasedPoller::addTimeout(int nextTimeout)
              XSyncPositiveComparison, timeout);
 
     m_timeoutAlarm[nextTimeout] = newalarm;
-#endif
+
 }
 
 int XSyncBasedPoller::forcePollRequest()
@@ -187,25 +176,25 @@ int XSyncBasedPoller::forcePollRequest()
 
 int XSyncBasedPoller::poll()
 {
-#ifdef HAVE_XSYNC
+
     XSyncValue idleTime;
 
     XSyncQueryCounter(m_display, m_idleCounter, &idleTime);
 
     return XSyncValueLow32(idleTime);
-#endif
+
     return -1;
 }
 
 void XSyncBasedPoller::removeTimeout(int timeout)
 {
-#ifdef HAVE_XSYNC
+
     if (m_timeoutAlarm.contains(timeout)) {
         XSyncAlarm a = m_timeoutAlarm[timeout];
         m_timeoutAlarm.remove(timeout);
         XSyncDestroyAlarm(m_display, a);
     }
-#endif
+
 }
 
 QList<int> XSyncBasedPoller::timeouts() const
@@ -215,15 +204,15 @@ QList<int> XSyncBasedPoller::timeouts() const
 
 void XSyncBasedPoller::stopCatchingIdleEvents()
 {
-#ifdef HAVE_XSYNC
+
     XSyncDestroyAlarm(m_display, m_resetAlarm);
     m_resetAlarm = X::None;
-#endif
+
 }
 
 void XSyncBasedPoller::catchIdleEvent()
 {
-#ifdef HAVE_XSYNC
+
     XSyncValue idleTime;
 
     XSyncQueryCounter(m_display, m_idleCounter, &idleTime);
@@ -240,7 +229,7 @@ void XSyncBasedPoller::catchIdleEvent()
     XSyncValueAdd(&plusone, idleTime, add, &overflow);
     setAlarm(m_display, &m_resetAlarm, m_idleCounter,
              XSyncNegativeComparison, plusone);
-#endif
+
 
 }
 
@@ -258,7 +247,7 @@ void XSyncBasedPoller::reloadAlarms()
 
 bool XSyncBasedPoller::x11Event(XEvent *event)
 {
-#ifdef HAVE_XSYNC
+
     XSyncAlarmNotifyEvent *alarmEvent;
 
     if (event->type != m_sync_event + XSyncAlarmNotify) {
@@ -289,12 +278,9 @@ bool XSyncBasedPoller::x11Event(XEvent *event)
     }
 
     return false;
-#else
-    return false;
-#endif
+
 }
 
-#ifdef HAVE_XSYNC
 void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter counter,
                                 XSyncTestType test, XSyncValue value)
 {
@@ -318,7 +304,6 @@ void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter co
     else
         *alarm = XSyncCreateAlarm(dpy, flags, &attr);
 }
-#endif
 
 void XSyncBasedPoller::simulateUserActivity()
 {
