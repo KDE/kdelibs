@@ -3225,7 +3225,7 @@ try_next_auth_scheme:
             }
 
             if (!(*auth)) {
-                *auth = KAbstractHttpAuthentication::newAuth(bestOffer);
+                *auth = KAbstractHttpAuthentication::newAuth(bestOffer, config());
             }            
             kDebug(7113) << "pointer to auth class is now" << *auth;
 

@@ -33,16 +33,19 @@ namespace KIO {
 class AuthInfo;
 }
 
+class KConfigGroup;
+
 class KAbstractHttpAuthentication
 {
 public:
-    KAbstractHttpAuthentication()
+    KAbstractHttpAuthentication(KConfigGroup *config = 0)
+    : m_config(config)
     {
         reset();
     }
 
     static QByteArray bestOffer(const QList<QByteArray> &offers);
-    static KAbstractHttpAuthentication *newAuth(const QByteArray &offer);
+    static KAbstractHttpAuthentication *newAuth(const QByteArray &offer, KConfigGroup *config = 0);
 
     virtual ~KAbstractHttpAuthentication() {}
 
@@ -81,6 +84,7 @@ protected:
     void authInfoBoilerplate(KIO::AuthInfo *a) const;
     void generateResponseCommon(const QString &user, const QString &password);
 
+    KConfigGroup *m_config;
     QByteArray m_scheme;    // this is parsed from the header and not necessarily == scheme().
     QList<QByteArray> m_challenge;
     KUrl m_resource;
@@ -105,8 +109,8 @@ public:
     virtual void generateResponse(const QString &user, const QString &password);
 private:
     friend class KAbstractHttpAuthentication;
-    KHttpBasicAuthentication()
-     : KAbstractHttpAuthentication() {}
+    KHttpBasicAuthentication(KConfigGroup *config = 0)
+     : KAbstractHttpAuthentication(config) {}
 };
 
 
@@ -119,8 +123,8 @@ public:
     virtual void generateResponse(const QString &user, const QString &password);
 private:
     friend class KAbstractHttpAuthentication;
-    KHttpDigestAuthentication()
-     : KAbstractHttpAuthentication() {}
+    KHttpDigestAuthentication(KConfigGroup *config = 0)
+     : KAbstractHttpAuthentication(config) {}
 };
 
 
@@ -133,8 +137,8 @@ public:
     virtual void generateResponse(const QString &user, const QString &password);
 private:
     friend class KAbstractHttpAuthentication;
-    KHttpNtlmAuthentication()
-     : KAbstractHttpAuthentication() {}
+    KHttpNtlmAuthentication(KConfigGroup *config = 0)
+     : KAbstractHttpAuthentication(config) {}
 };
 
 
@@ -148,8 +152,8 @@ public:
     virtual void generateResponse(const QString &user, const QString &password);
 private:
     friend class KAbstractHttpAuthentication;
-    KHttpNegotiateAuthentication()
-     : KAbstractHttpAuthentication() {}
+    KHttpNegotiateAuthentication(KConfigGroup *config = 0)
+     : KAbstractHttpAuthentication(config) {}
 };
 #endif // HAVE_LIBGSSAPI
 

@@ -140,20 +140,20 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
 }
 
 
-KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArray &offer)
+KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArray &offer, KConfigGroup* config)
 {
     QByteArray scheme = offer.mid(0, 10).toLower();
 #ifdef HAVE_LIBGSSAPI
     if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
-        return new KHttpNegotiateAuthentication();
+        return new KHttpNegotiateAuthentication(config);
     } else
 #endif
     if (scheme.startsWith("digest")) { // krazy:exclude=strings
-        return new KHttpDigestAuthentication();
+        return new KHttpDigestAuthentication(config);
     } else if (scheme.startsWith("ntlm")) { // krazy:exclude=strings
-        return new KHttpNtlmAuthentication();
+        return new KHttpNtlmAuthentication(config);
     } else if (scheme.startsWith("basic")) { // krazy:exclude=strings
-        return new KHttpBasicAuthentication();
+        return new KHttpBasicAuthentication(config);
     }
     return 0;
 }
@@ -698,7 +698,12 @@ void KHttpNegotiateAuthentication::generateResponse(const QString &user, const Q
         return;
     }
 
-    OM_uint32 req_flags = 0;
+    OM_uint32 req_flags;
+    if (m_config && m_config->readEntry("DelegateCredentialsOn", false))
+       req_flags = GSS_C_DELEG_FLAG;
+    else
+       req_flags = 0;
+
     // GSSAPI knows how to get the credentials its own way, so don't ask for any
     major_status = gss_init_sec_context(&minor_status, GSS_C_NO_CREDENTIAL,
                                         &ctx, server, mech_oid,
