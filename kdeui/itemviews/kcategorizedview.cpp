@@ -496,6 +496,8 @@ KCategorizedView::KCategorizedView(QWidget *parent)
     : QListView(parent)
     , d(new Private(this))
 {
+    // check bugs 213068 and 233163 before you enable horizontal scroll bar
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 KCategorizedView::~KCategorizedView()
@@ -1325,8 +1327,9 @@ void KCategorizedView::updateGeometries()
 {
     const int verticalOff = verticalOffset();
 
+    QListView::updateGeometries();
+
     if (!d->isCategorized()) {
-        QListView::updateGeometries();
         return;
     }
 
