@@ -123,6 +123,7 @@ public:
     QString toolTipTitle;
     QString toolTipSubTitle;
     QString iconThemePath;
+    QString menuObjectPath;
 
     KMenu *menu;
     KActionCollection* actionCollection;

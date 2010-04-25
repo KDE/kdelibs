@@ -45,9 +45,33 @@
 
 #include <netinet/in.h>
 
+#include "dbusmenuexporter.h"
 #include "statusnotifieritemadaptor.h"
 
 static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
+
+/**
+ * Specialization to provide access to KDE icon names
+ */
+class KDBusMenuExporter : public DBusMenuExporter
+{
+public:
+    KDBusMenuExporter(const QString &dbusObjectPath, QMenu *menu, const QDBusConnection &dbusConnection)
+    : DBusMenuExporter(dbusObjectPath, menu, dbusConnection)
+    {}
+
+protected:
+    virtual QString iconNameForAction(QAction *action)
+    {
+        KIcon icon(action->icon());
+        // FIXME: Need a way to test for the availability of QIcon::name()
+#ifdef HAVE_QICON_NAME
+        return icon.isNull() ? QString() : icon.name();
+#else
+        return QString();
+#endif
+    }
+};
 
 KStatusNotifierItem::KStatusNotifierItem(QObject *parent)
       : QObject(parent),
@@ -319,6 +343,16 @@ void KStatusNotifierItem::setContextMenu(KMenu *menu)
     d->menu = menu;
 
     if (d->menu) {
+        if (getenv("KSNI_NO_DBUSMENU")) {
+            // This is a hack to make it possible to disable DBusMenu in an
+            // application. The string "/NO_DBUSMENU" must be the same as in
+            // DBusSystemTrayWidget::findDBusMenuInterface() in the Plasma
+            // systemtray applet.
+            d->menuObjectPath = "/NO_DBUSMENU";
+        } else {
+            d->menuObjectPath = "/MenuBar";
+            new KDBusMenuExporter(d->menuObjectPath, d->menu, d->statusNotifierItemDBus->dbusConnection());
+        }
         d->menu->installEventFilter(this);
         connect(d->menu, SIGNAL(aboutToShow()), this, SLOT(contextMenuAboutToShow()));
     }

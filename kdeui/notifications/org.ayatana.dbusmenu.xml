@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+A library to allow applictions to provide simple indications of
+information to be displayed to users of the application through the
+interface shell.
+
+Copyright 2009 Canonical Ltd.
+
+Authors:
+    Ted Gould <ted@canonical.com>
+    Aurelien Gateau <ted@canonical.com>
+
+This program is free software: you can redistribute it and/or modify it 
+under the terms of either or both of the following licenses:
+
+1) the GNU Lesser General Public License version 3, as published by the 
+Free Software Foundation; and/or
+2) the GNU Lesser General Public License version 2.1, as published by 
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but 
+WITHOUT ANY WARRANTY; without even the implied warranties of 
+MERCHANTABILITY, SATISFACTORY QUALITY or FITNESS FOR A PARTICULAR 
+PURPOSE.  See the applicable version of the GNU Lesser General Public 
+License for more details.
+
+You should have received a copy of both the GNU Lesser General Public 
+License version 3 and version 2.1 along with this program.  If not, see 
+<http://www.gnu.org/licenses/>
+-->
+<node name="/MenuBar" xmlns:dox="http://www.ayatana.org/dbus/dox.dtd">
+    <interface name="org.ayatana.dbusmenu">
+<dox:d><![CDATA[
+The goal of this DBus interface is to be able to pass menu items through DBus.
+
+Items are represented with a unique numeric id and a dictionary of properties.
+
+Available properties are:
+
+- @c type (string): Type of the item (see below)
+- @c label (string): Text of the item
+- @c icon-data (binary): Raw data of the icon (TODO: define format)
+- @c icon (string): Icon name of the item, following icon spec
+- @c sensitive (boolean): Whether the item can be activated or not
+- @c checked (boolean): Whether a checkbox or radio item is checked
+- @c shortcut (string): The keyboard shortcut
+
+Vendor specific properties can be added by prefixing them with "x-<vendor>-"
+
+@c type property is an enum which can take the following values:
+
+- @c action: An item which can be clicked to trigger an action
+- @c checkbox: An item which can be checked or unchecked
+- @c radio: An item which can be checked or unchecked as part of a group
+- @c separator: A separator
+- @c menu: An item which contains more items
+
+Vendor specific types can be added by prefixing them with "x-<vendor>-"
+]]></dox:d>
+
+        <method name="GetChildren">
+<dox:d>
+Returns the list of items which are children of @a parentId.
+</dox:d>
+            <arg type="u" name="parentId" direction="in" >
+                <dox:d>the parent id for the list. If it is 0, returns the root item list</dox:d>
+            </arg>
+            <arg type="as" name="propertyNames" direction="in" >
+                <dox:d>the list of item properties we are interested in</dox:d>
+            </arg>
+            <arg type="a(ua{sv})" name="children" direction="out" >
+                <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="DBusMenuItemList"/>
+                <dox:d>the items we asked for, represented as an array of
+                struct(id, property dict)</dox:d>
+            </arg>
+        </method>
+
+        <method name="GetProperty">
+<dox:d>
+Returns the value of an item property.
+</dox:d>
+            <arg type="u" name="id" direction="in" >
+                <dox:d>the id of the item.</dox:d>
+            </arg>
+            <arg type="s" name="name" direction="in" >
+                <dox:d>the name of the property.</dox:d>
+            </arg>
+            <arg type="v" name="value" direction="out" >
+                <dox:d>the value of the property.</dox:d>
+            </arg>
+        </method>
+
+        <method name="GetProperties">
+<dox:d>
+Returns multiple properties in one call. This is more efficient than
+GetProperty.
+
+</dox:d>
+            <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
+            <arg type="u" name="id" direction="in" >
+                <dox:d>the item whose properties we want to retrieve.</dox:d>
+            </arg>
+            <arg type="as" name="names" direction="in" >
+                <dox:d>name of the properties we want.</dox:d>
+            </arg>
+            <arg type="a{sv}" name="values" direction="out" >
+                <dox:d>the values of the requested properties.</dox:d>
+            </arg>
+        </method>
+
+        <method name="Event">
+<dox:d><![CDATA[
+This is called by the applet to notify the application an event happened on a
+menu item.
+
+@a type can be one:
+
+- "clicked"
+- "hovered"
+
+Vendor specific events can be added by prefixing them with "x-<vendor>-"
+
+Applications can use the "hovered" event to fill menus on the fly, emitting the
+ChildrenUpdated() signal when the new menu is ready.
+]]></dox:d>
+            <arg type="u" name="id" direction="in" >
+                <dox:d>the id of the item which received the event</dox:d>
+            </arg>
+            <arg type="s" name="type" direction="in" >
+                <dox:d>the type of event</dox:d>
+            </arg>
+            <arg type="v" name="data" direction="in" >
+                <dox:d>event-specific data</dox:d>
+            </arg>
+        </method>
+
+<!-- Signals -->
+        <signal name="ItemPropertyUpdated">
+<dox:d>
+Triggered by the application to notify the applet that the property @a property
+from item @a id has changed to @a value.
+</dox:d>
+            <arg type="u" name="id" direction="out" >
+                <dox:d>the id of the item</dox:d>
+            </arg>
+            <arg type="s" name="name" direction="out" >
+                <dox:d>the name of the property which got updated</dox:d>
+            </arg>
+            <arg type="v" name="value" direction="out" >
+                <dox:d>the value of the property which got updated</dox:d>
+            </arg>
+        </signal>
+
+        <signal name="ItemUpdated">
+<dox:d>
+Triggered by the application to notify the applet all properties of item
+@a id should be considered outdated
+</dox:d>
+            <arg type="u" name="id" direction="out" >
+                <dox:d>the id of the item</dox:d>
+            </arg>
+        </signal>
+
+        <signal name="ChildrenUpdated">
+<dox:d>
+Triggered by the application to notify applet it should retrieve the children
+for item @a id.
+</dox:d>
+            <arg type="u" name="id" direction="out" >
+                <dox:d>the id of the item</dox:d>
+            </arg>
+        </signal>
+
+<!-- End of interesting stuff -->
+
+    </interface>
+</node>

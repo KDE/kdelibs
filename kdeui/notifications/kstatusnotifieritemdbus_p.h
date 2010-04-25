@@ -27,6 +27,7 @@
 #include <QString>
 #include <QDBusArgument>
 #include <QDBusConnection>
+#include <QDBusObjectPath>
 #include <QPixmap>
 
 //Custom message type for DBus
@@ -65,11 +66,17 @@ class KStatusNotifierItemDBus : public QObject
     Q_PROPERTY(QString AttentionMovieName READ AttentionMovieName)
     Q_PROPERTY(KDbusToolTipStruct ToolTip READ ToolTip)
     Q_PROPERTY(QString IconThemePath READ IconThemePath)
+    Q_PROPERTY(QDBusObjectPath Menu READ Menu)
 
     friend class KStatusNotifierItem;
 public:
     KStatusNotifierItemDBus(KStatusNotifierItem *parent);
     ~KStatusNotifierItemDBus();
+
+    /**
+     * @return the dbus connection used by this object
+     */
+    QDBusConnection dbusConnection() const;
 
     /**
      * @return the service this object is registered on the bus under
@@ -151,6 +158,11 @@ public:
      * @return path to extra icon theme, to load application specific icons
      */
     QString IconThemePath() const;
+
+    /**
+     * @return object path to the dbusmenu object
+     */
+    QDBusObjectPath Menu() const;
 
 public Q_SLOTS:
     //interaction

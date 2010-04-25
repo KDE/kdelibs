@@ -163,6 +163,11 @@ KStatusNotifierItemDBus::~KStatusNotifierItemDBus()
     m_dbus.unregisterService(m_service);
 }
 
+QDBusConnection KStatusNotifierItemDBus::dbusConnection() const
+{
+    return m_dbus;
+}
+
 QString KStatusNotifierItemDBus::service() const
 {
     return m_service;
@@ -256,6 +261,12 @@ KDbusToolTipStruct KStatusNotifierItemDBus::ToolTip() const
 QString KStatusNotifierItemDBus::IconThemePath() const
 {
     return m_statusNotifierItem->d->iconThemePath;
+}
+
+//Menu
+QDBusObjectPath KStatusNotifierItemDBus::Menu() const
+{
+    return QDBusObjectPath(m_statusNotifierItem->d->menuObjectPath);
 }
 
 //Interaction
