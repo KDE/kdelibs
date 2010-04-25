@@ -64,6 +64,8 @@ class KIconEngine : public QIconEngineV2
     virtual void paint ( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state );
     /// Reimplementation
     virtual QPixmap pixmap ( const QSize & size, QIcon::Mode mode, QIcon::State state );
+    /// Reimplementation
+    virtual void virtual_hook ( int id, void * data );
 
     virtual QString key() const;
     virtual QIconEngineV2 *clone() const;

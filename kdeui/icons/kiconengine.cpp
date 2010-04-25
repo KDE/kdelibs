@@ -128,3 +128,19 @@ bool KIconEngine::write(QDataStream &out) const
     return true;
 }
 
+// FIXME: QIconEngineV2::IconNameHook has been introduced in Qt 4.7.
+// Remove next line when we depend on Qt 4.7.
+#define IconNameHook 2
+void KIconEngine::virtual_hook(int id, void *data)
+{
+    switch (id) {
+    case IconNameHook: {
+        QString *name = reinterpret_cast<QString*>(data);
+        *name = mIconName;
+        break;
+    }
+    default:
+        QIconEngineV2::virtual_hook(id, data);
+        break;
+    }
+}
