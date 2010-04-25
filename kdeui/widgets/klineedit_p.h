@@ -26,6 +26,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QTimeLine>
+#include <QIcon>
 
 #include <kglobalsettings.h>
 
@@ -80,9 +81,10 @@ public:
     void setPixmap(const QPixmap& p)
     {
         m_pixmap = p;
+        m_icon = QIcon(p);
     }
 
-    QPixmap pixmap()
+    QPixmap pixmap() const
     {
         return m_pixmap;
     }
@@ -109,18 +111,43 @@ protected:
                 return;
             }
 
-            QPainter p(this);
-            p.setOpacity(m_timeline->currentValue());
-            p.drawPixmap((width() - m_pixmap.width()) / 2,
-                        (height() - m_pixmap.height()) / 2,
-                        m_pixmap);
+            int opacity(m_timeline->currentFrame());
+            if (opacity > 0 && opacity < 255) {
+                // fade pixmap
+                QPixmap pm(m_pixmap);
+                QColor color(Qt::black);
+                color.setAlpha(opacity);
+                QPainter p(&pm);
+                p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+                p.fillRect(pm.rect(), color);
+                p.end();
+
+                // draw pixmap on widget
+                QPainter pp(this);
+                pp.drawPixmap((width() - pm.width()) / 2,
+                             (height() - pm.height()) / 2,
+                             pm);
+            } else if (opacity > 0) {
+                QPainter p(this);
+                p.drawPixmap((width() - m_pixmap.width()) / 2,
+                             (height() - m_pixmap.height()) / 2,
+                             m_pixmap);
+            }
         } else {
             QPainter p(this);
-            p.setOpacity(1); // make sure
             p.drawPixmap((width() - m_pixmap.width()) / 2,
                         (height() - m_pixmap.height()) / 2,
                         m_pixmap);
         }
+    }
+
+protected:
+    virtual bool event( QEvent* event )
+    {
+        if (event->type() == QEvent::EnabledChange) {
+            m_pixmap = m_icon.pixmap(m_pixmap.size(), isEnabled() ? QIcon::Normal:QIcon::Disabled);
+        }
+        return QWidget::event( event );
     }
 
 protected slots:
@@ -136,6 +163,7 @@ protected slots:
 private:
     QTimeLine *m_timeline;
     QPixmap m_pixmap;
+    QIcon m_icon;
 };
 
 #endif
