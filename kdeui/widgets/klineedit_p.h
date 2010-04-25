@@ -145,7 +145,7 @@ protected:
     virtual bool event( QEvent* event )
     {
         if (event->type() == QEvent::EnabledChange) {
-            m_pixmap = m_icon.pixmap(m_pixmap.size(), isEnabled() ? QIcon::Normal:QIcon::Disabled);
+            m_pixmap = m_icon.pixmap(m_pixmap.size(), isEnabled() ? QIcon::Normal : QIcon::Disabled);
         }
         return QWidget::event( event );
     }
