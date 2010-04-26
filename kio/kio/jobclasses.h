@@ -371,7 +371,7 @@ namespace KIO {
         /**
          * Set @p handle to false to prevent the internal handling of redirections.
          *
-         * When this flag is set, redirection requests are simply forward to the
+         * When this flag is set, redirection requests are simply forwarded to the
          * caller instead of being handled internally.
          *
          * @since 4.4
