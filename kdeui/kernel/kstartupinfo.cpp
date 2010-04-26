@@ -1216,7 +1216,7 @@ QString KStartupInfoData::Private::to_text() const
     if( xinerama != -1 )
         ret += QString::fromLatin1( " XINERAMA=%1" ).arg( xinerama );
     if( launched_by != 0 )
-        ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (long)launched_by );
+        ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (qptrdiff)launched_by );
     if( !application_id.isEmpty())
         ret += QString::fromLatin1( " APPLICATION_ID=%1" ).arg( application_id );
     return ret;

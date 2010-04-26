@@ -1529,7 +1529,7 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   (*m_kdialogProcess) << "--caption";
   (*m_kdialogProcess) << i18n( "Change Icon" );
   (*m_kdialogProcess) << "--embed";
-  (*m_kdialogProcess) << QString::number( (ulong)m_widget->window()->winId() );
+  (*m_kdialogProcess) << QString::number( (quintptr)m_widget->window()->winId() );
   (*m_kdialogProcess) << "--geticon";
   (*m_kdialogProcess) << "Toolbar";
   (*m_kdialogProcess) << "Actions";

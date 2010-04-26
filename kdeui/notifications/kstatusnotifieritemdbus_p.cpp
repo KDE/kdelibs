@@ -198,7 +198,7 @@ QString KStatusNotifierItemDBus::Status() const
 int KStatusNotifierItemDBus::WindowId() const
 {
     if (m_statusNotifierItem->d->associatedWidget) {
-        return (int)m_statusNotifierItem->d->associatedWidget->winId();
+        return (qptrdiff)m_statusNotifierItem->d->associatedWidget->winId();
     } else {
         return 0;
     }
