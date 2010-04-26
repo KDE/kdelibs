@@ -484,9 +484,9 @@ static inline void* currentThreadStackBase()
 #if PLATFORM(DARWIN)
     pthread_t thread = pthread_self();
     void *stackBase = pthread_get_stackaddr_np(thread);
-#elif PLATFORM(WIN_OS)
+#elif (PLATFORM(WIN_OS) || COMPILER(CYGWIN))
     // tested with mingw32, mingw64, msvc2008, cygwin
-    NT_TIB *pTib = (NT_TIB*)NtCurrentTeb();
+    NT_TIB *pTib = (NT_TIB*)GetCurrentFiber();
     void *stackBase = (void *)pTib->StackBase;
 #elif PLATFORM(SOLARIS_OS)
     stack_t s;
