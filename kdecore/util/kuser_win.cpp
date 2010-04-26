@@ -432,7 +432,7 @@ QList<KUserGroup> KUserGroup::allGroups()
     KUserGroup tmp("");
 
     do {
-        nStatus = NetGroupEnum(NULL, 0, (LPBYTE*) &pGroup, 1, &dwEntriesRead, &dwTotalEntries, &dwResumeHandle);
+        nStatus = NetGroupEnum(NULL, 0, (LPBYTE*) &pGroup, 1, &dwEntriesRead, &dwTotalEntries, (PDWORD_PTR)&dwResumeHandle);
 
         if ((nStatus == NERR_Success || nStatus == ERROR_MORE_DATA) && dwEntriesRead > 0) {
             tmp.d = new Private(pGroup);

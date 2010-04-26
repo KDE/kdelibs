@@ -287,21 +287,21 @@ static void redirectToConsole()
     FILE *hf;
     int i;
     
-    hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE),_O_TEXT);
+    hCrt = _open_osfhandle((intptr_t) GetStdHandle(STD_INPUT_HANDLE),_O_TEXT);
     if(hCrt != -1) {
         hf = _fdopen( hCrt, "r" );
         *stdin = *hf;
         i = setvbuf( stdin, NULL, _IONBF, 0 );
     }
 
-    hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE),_O_TEXT);
+    hCrt = _open_osfhandle((intptr_t) GetStdHandle(STD_OUTPUT_HANDLE),_O_TEXT);
     if(hCrt != -1) {
         hf = _fdopen( hCrt, "w" );
         *stdout = *hf;
         i = setvbuf( stdout, NULL, _IONBF, 0 );
     }
 
-    hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE),_O_TEXT);
+    hCrt = _open_osfhandle((intptr_t) GetStdHandle(STD_ERROR_HANDLE),_O_TEXT);
     if(hCrt != -1) {
         hf = _fdopen( hCrt, "w" );
         *stderr = *hf;
