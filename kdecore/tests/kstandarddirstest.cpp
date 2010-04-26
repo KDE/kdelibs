@@ -31,6 +31,15 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kconfiggroup.h>
 #include <config.h>
 
+// we need case-insensitive comparison of file paths on windows
+#ifdef Q_OS_WIN
+#define QCOMPARE_PATHS(x,y) QCOMPARE(QString(x).toLower(), QString(y).toLower())
+#define PATH_SENSITIVITY Qt::CaseInsensitive
+#else
+#define QCOMPARE_PATHS(x,y) QCOMPARE(x, y)
+#define PATH_SENSITIVITY Qt::CaseSensitive
+#endif
+
 void KStandarddirsTest::initTestCase()
 {
     m_kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
@@ -40,13 +49,13 @@ void KStandarddirsTest::testLocateLocal()
 {
     const QString configLocal = KStandardDirs::locateLocal( "config", "ksomethingrc" );
     // KStandardDirs resolves symlinks, so we must compare with canonicalPath()
-    QCOMPARE( configLocal, m_kdehome + "/share/config/ksomethingrc" );
+    QCOMPARE_PATHS( configLocal, m_kdehome + "/share/config/ksomethingrc" );
 }
 
 void KStandarddirsTest::testSaveLocation()
 {
     const QString saveLoc = KGlobal::dirs()->saveLocation( "appdata" );
-    QCOMPARE( saveLoc, m_kdehome + "/share/apps/qttest/" );
+    QCOMPARE_PATHS( saveLoc, m_kdehome + "/share/apps/qttest/" );
 }
 
 void KStandarddirsTest::testAppData()
@@ -54,7 +63,7 @@ void KStandarddirsTest::testAppData()
     // In addition to testSaveLocation(), we want to also check other KComponentDatas
     KComponentData cData("foo");
     const QString fooAppData = cData.dirs()->saveLocation( "appdata" );
-    QCOMPARE( fooAppData, m_kdehome + "/share/apps/foo/" );
+    QCOMPARE_PATHS( fooAppData, m_kdehome + "/share/apps/foo/" );
 }
 
 static bool isKdelibsInstalled()
@@ -195,26 +204,22 @@ void KStandarddirsTest::testFindExe()
     // findExe with a result in bin
     const QString kdeinit = KGlobal::dirs()->findExe( "kdeinit4" );
     QVERIFY( !kdeinit.isEmpty() );
-    QVERIFY( kdeinit.endsWith( "bin/kdeinit4" EXT ) );
+    QVERIFY( kdeinit.endsWith( "bin/kdeinit4" EXT, PATH_SENSITIVITY ) );
 
 #ifdef Q_OS_UNIX
     // findExe with a result in libexec
     const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
     QVERIFY( !lnusertemp.isEmpty() );
-    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
+    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
 #endif
 
     // Check the "exe" resource too
     QString kdeinitPath1 = KGlobal::dirs()->realFilePath(kdeinit);
     QString kdeinitPath2 = KGlobal::dirs()->locate( "exe", "kdeinit4" );
-#ifdef Q_WS_WIN // one path can be c:/... and second C:/...
-    kdeinitPath1 = kdeinitPath1.toLower();
-    kdeinitPath2 = kdeinitPath2.toLower();
-#endif
-    QCOMPARE( kdeinitPath1, kdeinitPath2 );
+    QCOMPARE_PATHS( kdeinitPath1, kdeinitPath2 );
 
 #ifdef Q_OS_UNIX
-    QCOMPARE( KGlobal::dirs()->realFilePath(lnusertemp),
+    QCOMPARE_PATHS( KGlobal::dirs()->realFilePath(lnusertemp),
               KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
 
     // findExe with relative path
@@ -266,14 +271,14 @@ void KStandarddirsTest::testLocate()
         QSKIP("xdg-share-mime not installed", SkipAll);
 
     const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/x-patch.xml");
-    QCOMPARE(res, textPlain);
+    QCOMPARE_PATHS(res, textPlain);
 }
 
 void KStandarddirsTest::testRelativeLocation()
 {
     const QString file = "kdebugrc";
     QString located = KGlobal::dirs()->locate( "config", file );
-    QCOMPARE( KGlobal::dirs()->relativeLocation( "config", located ), file );
+    QCOMPARE_PATHS( KGlobal::dirs()->relativeLocation( "config", located ), file );
 }
 
 void KStandarddirsTest::testAddResourceType()
@@ -304,7 +309,7 @@ void KStandarddirsTest::testAddResourceDir()
 
     KGlobal::dirs()->addResourceDir("here", dir);
     ret = KStandardDirs::locate( "here", file );
-    QCOMPARE(ret, KStandardDirs::realPath(dir) + "Cairo");
+    QCOMPARE_PATHS(ret, KStandardDirs::realPath(dir) + "Cairo");
 }
 
 void KStandarddirsTest::testSetXdgDataDirs()
@@ -319,7 +324,7 @@ void KStandarddirsTest::testSetXdgDataDirs()
         kDebug() << "installdir=" << KStandardDirs::installPath("xdgdata-apps");
         kDebug() << "KStandardDirs::kfsstnd_xdg_data_prefixes=" << KGlobal::dirs()->kfsstnd_xdg_data_prefixes();
     }
-    QVERIFY(dirs.contains(kdeDataApps));
+    QVERIFY(dirs.contains(kdeDataApps, PATH_SENSITIVITY));
 
     // When setting XDG_DATA_DIR this should still be true
     const QString localApps = m_kdehome + "/share/applications/";
@@ -327,8 +332,8 @@ void KStandarddirsTest::testSetXdgDataDirs()
     ::setenv("XDG_DATA_DIRS", QFile::encodeName(m_kdehome + "/share"), 1 );
     KStandardDirs newStdDirs;
     const QStringList newDirs = newStdDirs.resourceDirs("xdgdata-apps");
-    QVERIFY(newDirs.contains(kdeDataApps));
-    QVERIFY(newDirs.contains(localApps));
+    QVERIFY(newDirs.contains(kdeDataApps, PATH_SENSITIVITY));
+    QVERIFY(newDirs.contains(localApps, PATH_SENSITIVITY));
 }
 
 void KStandarddirsTest::testRestrictedResources()
@@ -350,12 +355,12 @@ void KStandarddirsTest::testRestrictedResources()
     // Check unrestricted results first
     const QStringList appsDirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
     const QString kdeDataApps = KStandardDirs::realPath(KDEDIR "/share/applications/");
-    QCOMPARE(appsDirs.first(), localAppsDir);
-    QVERIFY(appsDirs.contains(kdeDataApps));
+    QCOMPARE_PATHS(appsDirs.first(), localAppsDir);
+    QVERIFY(appsDirs.contains(kdeDataApps, PATH_SENSITIVITY));
     const QStringList dataDirs = KGlobal::dirs()->findDirs("data", "qttest");
-    QCOMPARE(dataDirs.first(), localDataDir);
+    QCOMPARE_PATHS(dataDirs.first(), localDataDir);
     const QStringList otherDataDirs = KGlobal::dirs()->findDirs("data", "other");
-    QCOMPARE(otherDataDirs.first(), localOtherDataDir);
+    QCOMPARE_PATHS(otherDataDirs.first(), localOtherDataDir);
 
     // Initialize restrictions.
     // Need a new componentdata to trigger restricted-resource initialization
@@ -372,12 +377,12 @@ void KStandarddirsTest::testRestrictedResources()
     QVERIFY(cData.dirs()->isRestrictedResource("data", "qttest"));
 
     const QStringList newAppsDirs = cData.dirs()->resourceDirs("xdgdata-apps");
-    QVERIFY(newAppsDirs.contains(kdeDataApps));
-    QVERIFY(!newAppsDirs.contains(localAppsDir)); // restricted!
+    QVERIFY(newAppsDirs.contains(kdeDataApps, PATH_SENSITIVITY));
+    QVERIFY(!newAppsDirs.contains(localAppsDir, PATH_SENSITIVITY)); // restricted!
     const QStringList newDataDirs = cData.dirs()->findDirs("data", "qttest");
-    QVERIFY(!newDataDirs.contains(localDataDir)); // restricted!
+    QVERIFY(!newDataDirs.contains(localDataDir, PATH_SENSITIVITY)); // restricted!
     const QStringList newOtherDataDirs = cData.dirs()->findDirs("data", "other");
-    QVERIFY(newOtherDataDirs.contains(localOtherDataDir)); // not restricted!
+    QVERIFY(newOtherDataDirs.contains(localOtherDataDir, PATH_SENSITIVITY)); // not restricted!
 
     restrictionsGroup.deleteGroup();
     localFile.remove();

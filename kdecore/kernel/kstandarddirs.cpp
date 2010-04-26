@@ -1189,6 +1189,19 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
     return candidates;
 }
 
+#ifdef Q_OS_WIN
+static QStringList executableExtensions()
+{
+    QStringList ret = QString::fromLocal8Bit(qgetenv("PATHEXT")).split(';');
+    if (!ret.contains(".exe", Qt::CaseInsensitive)) {
+        // If %PATHEXT% does not contain .exe, it is either empty, malformed, or distorted in ways that we cannot support, anyway.
+        ret.clear();
+        ret << ".exe" << ".com" << ".bat" << ".cmd";
+    }
+    return ret;
+}
+#endif
+
 QStringList KStandardDirs::systemPaths( const QString& pstr )
 {
     QStringList tokens;
@@ -1288,18 +1301,26 @@ QString KStandardDirs::findExe( const QString& appname,
 {
     //kDebug(180) << "findExe(" << appname << ", pstr, " << ignoreExecBit << ") called";
 
-#ifdef Q_WS_WIN
-    QString real_appname = appname + QLatin1String(".exe");
-#else
-    QString real_appname = appname;
+#ifdef Q_OS_WIN
+    QStringList executable_extensions = executableExtensions();
+    if (!executable_extensions.contains(appname.section('.', -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
+        QString found_exe;
+        foreach (const QString& extension, executable_extensions) {
+            found_exe = findExe(appname + extension, pstr, options);
+            if (!found_exe.isEmpty()) {
+                return found_exe;
+            }
+        }
+        return QString();
+    }
 #endif
     QFileInfo info;
 
     // absolute or relative path?
-    if (real_appname.contains(QDir::separator()))
+    if (appname.contains(QDir::separator()))
     {
         //kDebug(180) << "findExe(): absolute path given";
-        QString path = checkExecutable(real_appname, options & IgnoreExecBit);
+        QString path = checkExecutable(appname, options & IgnoreExecBit);
         return path;
     }
 
@@ -1307,14 +1328,14 @@ QString KStandardDirs::findExe( const QString& appname,
 
     // Look in the default bin and libexec dirs. Maybe we should use the "exe" resource instead?
 
-    QString p = installPath("libexec") + real_appname;
+    QString p = installPath("libexec") + appname;
     QString result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result;
         return result;
     }
 
-    p = installPath("exe") + real_appname;
+    p = installPath("exe") + appname;
     result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result;
@@ -1326,7 +1347,7 @@ QString KStandardDirs::findExe( const QString& appname,
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
         p = (*it) + '/';
-        p += real_appname;
+        p += appname;
 
         // Check for executable in this tokenized path
         result = checkExecutable(p, options & IgnoreExecBit);
@@ -1346,10 +1367,15 @@ QString KStandardDirs::findExe( const QString& appname,
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
                                const QString& pstr, SearchOptions options )
 {
-#ifdef Q_WS_WIN
-    QString real_appname = appname + ".exe";
-#else
-    QString real_appname = appname;
+#ifdef Q_OS_WIN
+    QStringList executable_extensions = executableExtensions();
+    if (!executable_extensions.contains(appname.section('.', -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
+        int total = 0;
+        foreach (const QString& extension, executable_extensions) {
+            total += findAllExe (list, appname + extension, pstr, options);
+        }
+        return total;
+    }
 #endif
     QFileInfo info;
     QString p;
@@ -1359,7 +1385,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
         p = (*it) + '/';
-        p += real_appname;
+        p += appname;
 
 #ifdef Q_WS_MAC
         QString bundle = getBundle( p, (options & IgnoreExecBit) );
