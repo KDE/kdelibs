@@ -46,6 +46,7 @@
 #elif PLATFORM(WIN_OS) || COMPILER(CYGWIN)
 
 #include <windows.h>
+#include <winnt.h>
 
 #elif PLATFORM(UNIX)
 
@@ -483,19 +484,10 @@ static inline void* currentThreadStackBase()
 #if PLATFORM(DARWIN)
     pthread_t thread = pthread_self();
     void *stackBase = pthread_get_stackaddr_np(thread);
-#elif PLATFORM(WIN_OS) && PLATFORM(X86) && COMPILER(MSVC)
-    NT_TIB *pTib;
-    __asm {
-        MOV EAX, FS:[18h]
-        MOV pTib, EAX
-    }
+#elif PLATFORM(WIN_OS)
+    // tested with mingw32, mingw64, msvc2008, cygwin
+    NT_TIB *pTib = (NT_TIB*)NtCurrentTeb();
     void *stackBase = (void *)pTib->StackBase;
-#elif (PLATFORM(WIN_OS) || COMPILER(CYGWIN)) && PLATFORM(X86) && COMPILER(GCC)
-    NT_TIB *pTib;
-		__asm__("movl  %%fs:0x18,%0"
-						: "=r" (pTib)
-		);
-		void *stackBase = (void *)pTib->StackBase;
 #elif PLATFORM(SOLARIS_OS)
     stack_t s;
     thr_stksegment(&s);
