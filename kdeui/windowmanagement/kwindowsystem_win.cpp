@@ -34,6 +34,10 @@
 #include <windows.h>
 #include <windowsx.h>
 
+#ifdef __WIN64
+#define GCL_HICON GCLP_HICON
+#define GCL_HICONSM GCLP_HICONSM
+#endif
 
 //function to register us as taskmanager
 #define RSH_UNREGISTER  0
