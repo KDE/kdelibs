@@ -147,7 +147,7 @@
                     the merging with ui_standards.rc. This is mapped to MergeLocal tags
                     there.  Note that this feature is currently only available for the
                     mainwindow, not for parts/plugins.  
-                    - text, whatsThis, toolTip, iconText, shortcut, icon: all those are
+                    - text, whatsThis, toolTip, iconText, shortcut, icon, priority: all those are
                     mapped to KAction properties.
                     
                     
@@ -165,6 +165,15 @@
                 <!-- TODO: Restrict the possible values with enumeration, or regexp -->
             </xsd:attribute>
             <xsd:attribute name="icon" type="xsd:string" use="optional" />
+            <xsd:attribute name="priority" use="optional">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:nonNegativeInteger">
+                        <xsd:enumeration value="0" />
+                        <xsd:enumeration value="128" />
+                        <xsd:enumeration value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
         </xsd:complexType>
     </xsd:element>
     

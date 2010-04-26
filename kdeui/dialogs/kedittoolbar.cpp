@@ -30,6 +30,8 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QLabel>
 #include <QtGui/QApplication>
+#include <QtGui/QGridLayout>
+#include <QtGui/QCheckBox>
 #include <QMimeData>
 
 #include <kstandarddirs.h>
@@ -48,7 +50,7 @@
 #include <ktoolbar.h>
 #include <kdeversion.h>
 #include <kcombobox.h>
-#include <kinputdialog.h>
+#include <klineedit.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -175,7 +177,8 @@ public:
           m_internalTag(tag),
           m_internalName(name),
           m_statusText(statusText),
-          m_isSeparator(false)
+          m_isSeparator(false),
+          m_isTextAlongsideIconHidden(false)
     {
         // Drop between items, not onto items
         setFlags((flags() | Qt::ItemIsDragEnabled) & ~Qt::ItemIsDropEnabled);
@@ -185,10 +188,12 @@ public:
     void setInternalName(const QString &name) { m_internalName = name; }
     void setStatusText(const QString &text) { m_statusText = text; }
     void setSeparator(bool sep) { m_isSeparator = sep; }
+    void setTextAlongsideIconHidden(bool hidden) { m_isTextAlongsideIconHidden = hidden; }
     QString internalTag() const { return m_internalTag; }
     QString internalName() const { return m_internalName; }
     QString statusText() const { return m_statusText; }
     bool isSeparator() const { return m_isSeparator; }
+    bool isTextAlongsideIconHidden() const { return m_isTextAlongsideIconHidden; }
 
     int index() const { return listWidget()->row(const_cast<ToolBarItem*>(this)); }
 
@@ -197,6 +202,7 @@ private:
     QString m_internalName;
     QString m_statusText;
     bool m_isSeparator;
+    bool m_isTextAlongsideIconHidden;
 };
 
 static QDataStream & operator<< ( QDataStream & s, const ToolBarItem & item ) {
@@ -204,6 +210,7 @@ static QDataStream & operator<< ( QDataStream & s, const ToolBarItem & item ) {
     s << item.internalName();
     s << item.statusText();
     s << item.isSeparator();
+    s << item.isTextAlongsideIconHidden();
     return s;
 }
 static QDataStream & operator>> ( QDataStream & s, ToolBarItem & item ) {
@@ -219,6 +226,9 @@ static QDataStream & operator>> ( QDataStream & s, ToolBarItem & item ) {
     bool sep;
     s >> sep;
     item.setSeparator(sep);
+    bool hidden;
+    s >> hidden;
+    item.setTextAlongsideIconHidden(hidden);
     return s;
 }
 
@@ -269,6 +279,64 @@ ToolBarItem* ToolBarListWidget::currentItem() const
 {
     return static_cast<ToolBarItem*>(QListWidget::currentItem());
 }
+
+
+IconTextEditDialog::IconTextEditDialog(QWidget *parent)
+    : KDialog(parent)
+{
+    setCaption(i18n("Change Text"));
+    setButtons(Ok | Cancel);
+    setDefaultButton(Ok);
+    showButtonSeparator(true);
+    setModal(true);
+
+    QWidget *mainWidget = new QWidget(this);
+    QGridLayout *layout = new QGridLayout(mainWidget);
+    layout->setMargin(0);
+
+    m_lineEdit = new KLineEdit(mainWidget);
+    m_lineEdit->setClearButtonShown(true);
+    QLabel *label = new QLabel(i18n("Icon te&xt:"), this);
+    label->setBuddy(m_lineEdit);
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(m_lineEdit, 0, 1);
+
+    m_cbHidden = new QCheckBox(i18n("&Hide text when toolbar shows text alongside icons"), mainWidget);
+    layout->addWidget(m_cbHidden, 1, 1);
+
+    connect(m_lineEdit, SIGNAL(textChanged(const QString &)), SLOT(slotTextChanged(const QString &)));
+
+    m_lineEdit->setFocus();
+    setMainWidget(mainWidget);
+    setFixedHeight(sizeHint().height());
+}
+
+void IconTextEditDialog::setIconText(const QString &text)
+{
+    m_lineEdit->setText(text);
+}
+
+QString IconTextEditDialog::iconText() const
+{
+    return m_lineEdit->text().trimmed();
+}
+
+void IconTextEditDialog::setTextAlongsideIconHidden(bool hidden)
+{
+    m_cbHidden->setChecked(hidden);
+}
+
+bool IconTextEditDialog::textAlongsideIconHidden() const
+{
+    return m_cbHidden->isChecked();
+}
+
+void IconTextEditDialog::slotTextChanged(const QString &text)
+{
+    // Do not allow empty icon text
+    enableButton(Ok, !text.trimmed().isEmpty());
+}
+
 
 class KEditToolBarWidgetPrivate
 {
@@ -1089,6 +1157,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
         ToolBarItem *act = new ToolBarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
         act->setText(nameFilter.subs(KGlobal::locale()->removeAcceleratorMarker(action->iconText())).toString());
         act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
+        act->setTextAlongsideIconHidden(action->priority() < QAction::NormalPriority);
 
         active_list.insert(action->objectName());
         break;
@@ -1488,14 +1557,24 @@ void KEditToolBarWidgetPrivate::slotChangeIconText()
 
   if(item){
     QString iconText = item->text();
+    bool hidden = item->isTextAlongsideIconHidden();
 
-    bool ok = false;
-    iconText = KInputDialog::getText(i18n("Change Text"), i18n("Icon Te&xt:"), iconText, &ok, m_widget);
+    IconTextEditDialog dialog(m_widget);
+    dialog.setIconText(iconText);
+    dialog.setTextAlongsideIconHidden(hidden);
 
-    if (!ok || iconText == item->text())
+    bool ok = dialog.exec() == KDialog::Accepted;
+    iconText = dialog.iconText();
+    hidden = dialog.textAlongsideIconHidden();
+
+    bool hiddenChanged = hidden != item->isTextAlongsideIconHidden();
+    bool iconTextChanged = iconText != item->text();
+
+    if (!ok || (!hiddenChanged && !iconTextChanged))
       return;
 
     item->setText(iconText);
+    item->setTextAlongsideIconHidden(hidden);
 
     Q_ASSERT( m_currentXmlData->type() != XmlData::Merged );
 
@@ -1506,7 +1585,10 @@ void KEditToolBarWidgetPrivate::slotChangeIconText()
     // Find or create an element for this action
     QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
     Q_ASSERT( !act_elem.isNull() );
-    act_elem.setAttribute( "iconText", iconText );
+    if (iconTextChanged)
+        act_elem.setAttribute( "iconText", iconText );
+    if (hiddenChanged)
+        act_elem.setAttribute( "priority", hidden ? QAction::LowPriority : QAction::NormalPriority );
 
     // we're modified, so let this change
     emit m_widget->enableOk(true);

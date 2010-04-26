@@ -20,7 +20,11 @@
 #define KEDITTOOLBARP_H
 
 #include <kxmlguiclient.h>
+#include <kdialog.h>
 #include <QListWidget>
+
+class KLineEdit;
+class QCheckBox;
 
 namespace KDEPrivate {
 
@@ -69,6 +73,27 @@ protected:
 
 private:
     bool m_activeList;
+};
+
+class IconTextEditDialog : public KDialog
+{
+    Q_OBJECT
+public:
+    explicit IconTextEditDialog(QWidget *parent = 0);
+
+public:
+    void setIconText(const QString &text);
+    QString iconText() const;
+
+    void setTextAlongsideIconHidden(bool hidden);
+    bool textAlongsideIconHidden() const;
+
+private Q_SLOTS:
+    void slotTextChanged(const QString &text);
+
+private:
+    KLineEdit *m_lineEdit;
+    QCheckBox *m_cbHidden;
 };
 
 /**
