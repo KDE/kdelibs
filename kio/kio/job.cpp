@@ -552,7 +552,7 @@ void SimpleJobPrivate::slotConnected()
 void SimpleJobPrivate::slotTotalSize( KIO::filesize_t size )
 {
     Q_Q(SimpleJob);
-    if (size > q->totalAmount(KJob::Bytes))
+    if (size != q->totalAmount(KJob::Bytes))
     {
         q->setTotalAmount(KJob::Bytes, size);
     }
@@ -2037,7 +2037,7 @@ void FileCopyJobPrivate::slotProcessedSize( KJob *, qulonglong size )
 void FileCopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
 {
     Q_Q(FileCopyJob);
-    if (size > q->totalAmount(KJob::Bytes))
+    if (size != q->totalAmount(KJob::Bytes))
     {
         q->setTotalAmount(KJob::Bytes, size);
     }

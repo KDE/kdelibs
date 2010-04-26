@@ -1712,7 +1712,7 @@ void CopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
   // This is because some protocols don't implement stat properly
   // (e.g. HTTP), and don't give us a size in some cases (redirection)
   // so we'd rather rely on the size given for the transfer
-  if ( m_bSingleFileCopy && size > m_totalSize)
+  if ( m_bSingleFileCopy && size != m_totalSize)
   {
     //kDebug(7007) << "slotTotalSize: updating totalsize to" << size;
     m_totalSize = size;
