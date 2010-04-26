@@ -57,6 +57,15 @@ public:
         return id1.score < id2.score;
     }
 
+    QStringList listMimeTypes(const KFileItemList& items);
+    QStringList listPreferredServiceIds(const QStringList& mimeTypeList, const QString& traderConstraint);
+
+public Q_SLOTS:
+    void slotRunPreferredApplications();
+
+private:
+    void openWithByMime(const KFileItemList& fileItems);
+
 private Q_SLOTS:
     // For servicemenus
     void slotExecuteService(QAction* act);
@@ -67,6 +76,8 @@ private Q_SLOTS:
 public:
     KFileItemListProperties m_props;
     QStringList m_mimeTypeList;
+    QString m_traderConstraint;
+    KFileItemList m_fileOpenList;
     QActionGroup m_executeServiceActionGroup;
     QActionGroup m_runApplicationActionGroup;
     QList<KAction*> m_ownActions;

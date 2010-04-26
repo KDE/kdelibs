@@ -131,6 +131,15 @@ public:
      */
     int addServiceActionsTo(QMenu* menu);
 
+public Q_SLOTS:
+    /**
+     * Slot used to execute a list of files in their respective preferred application.
+     * @param fileOpenList the list of KFileItems to open.
+     * @param traderConstraint this optional constraint allows to exclude the current application
+     * @since 4.5
+     */
+    void runPreferredApplications(const KFileItemList& fileOpenList, const QString& traderConstraint);
+
 private:
     KFileItemActionsPrivate* const d;
 };

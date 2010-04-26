@@ -484,8 +484,16 @@ KService::List KFileItemActions::associatedApplications(const QStringList& mimeT
     return result;
 }
 
+// KMimeTypeTrader::preferredService doesn't take a constraint
+static KService::Ptr preferredService(const QString& mimeType, const QString& constraint)
+{
+    const KService::List services = KMimeTypeTrader::self()->query(mimeType, QString::fromLatin1("Application"), constraint);
+    return !services.isEmpty() ? services.first() : KService::Ptr();
+}
+
 void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& traderConstraint)
 {
+    d->m_traderConstraint = traderConstraint;
     const KService::List offers = associatedApplications(d->m_mimeTypeList, traderConstraint);
 
     //// Ok, we have everything, now insert
@@ -498,6 +506,31 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
     if (!d->m_props.isDirectory() || isLocal) {
         if (!topMenu->actions().isEmpty()) {
             topMenu->addSeparator();
+        }
+
+        KAction *runAct = new KAction(d->m_parentWidget);
+        QString runActionName;
+
+
+        const QStringList serviceIdList = d->listPreferredServiceIds(d->m_mimeTypeList, traderConstraint);
+
+        if (serviceIdList.count() != 0 && !(serviceIdList.count()==1 && serviceIdList.first().isEmpty())) {
+            d->m_ownActions.append(runAct);
+
+            if (serviceIdList.count() == 1) {
+                const KService::Ptr app = preferredService(d->m_mimeTypeList.first(), traderConstraint);
+                runActionName = i18n("&Open with %1", app->name());
+                runAct->setIcon(KIcon(app->icon()));
+            } else {
+                runActionName = i18n("&Open");
+            }
+
+            runAct->setText(runActionName);
+
+            d->m_traderConstraint = traderConstraint;
+            d->m_fileOpenList = d->m_props.items();
+            QObject::connect(runAct, SIGNAL(triggered()), d, SLOT(slotRunPreferredApplications()));
+            topMenu->addAction(runAct);
         }
 
         if (!offers.isEmpty()) {
@@ -543,6 +576,58 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
     }
 }
 
+void KFileItemActionsPrivate::slotRunPreferredApplications()
+{
+    const KFileItemList fileItems = m_fileOpenList;
+
+    const QStringList mimeTypeList = listMimeTypes(fileItems);
+    const QStringList serviceIdList = listPreferredServiceIds(mimeTypeList, m_traderConstraint);
+
+    foreach (const QString serviceId, serviceIdList) {
+        KFileItemList serviceItems;
+        foreach (const KFileItem& item, fileItems) {
+            const KService::Ptr serv = preferredService(item.mimetype(), m_traderConstraint);
+            const QString preferredServiceId = serv ? serv->storageId() : QString();
+            if (preferredServiceId == serviceId) {
+                serviceItems << item;
+            }
+        }
+
+        if (serviceId.isEmpty()) { // empty means: no associated app for this mimetype
+            openWithByMime(serviceItems);
+            continue;
+        }
+
+        const KService::Ptr servicePtr = KService::serviceByStorageId(serviceId);
+        if (servicePtr.isNull()) {
+            KRun::displayOpenWithDialog(serviceItems.urlList(), m_parentWidget);
+            continue;
+        }
+        KRun::run(*servicePtr, serviceItems.urlList(), m_parentWidget);
+    }
+}
+
+void KFileItemActions::runPreferredApplications(const KFileItemList& fileOpenList, const QString& traderConstraint)
+{
+    d->m_fileOpenList = fileOpenList;
+    d->m_traderConstraint = traderConstraint;
+    d->slotRunPreferredApplications();
+}
+
+void KFileItemActionsPrivate::openWithByMime(const KFileItemList& fileItems)
+{
+    const QStringList mimeTypeList = listMimeTypes(fileItems);
+    foreach (const QString mimeType, mimeTypeList) {
+        KFileItemList mimeItems;
+        foreach (const KFileItem& item, fileItems) {
+            if (item.mimetype() == mimeType) {
+                mimeItems << item;
+            }
+        }
+        KRun::displayOpenWithDialog(mimeItems.urlList(), m_parentWidget);
+    }
+}
+
 void KFileItemActionsPrivate::slotRunApplication(QAction* act)
 {
     // Is it an application, from one of the "Open With" actions
@@ -557,6 +642,28 @@ void KFileItemActionsPrivate::slotOpenWithDialog()
 {
     // The item 'Other...' or 'Open With...' has been selected
     KRun::displayOpenWithDialog(m_props.urlList(), m_parentWidget);
+}
+
+QStringList KFileItemActionsPrivate::listMimeTypes(const KFileItemList& items)
+{
+    QStringList mimeTypeList;
+    foreach (const KFileItem& item, items) {
+        if (!mimeTypeList.contains(item.mimetype()))
+            mimeTypeList << item.mimetype();
+    }
+    return mimeTypeList;
+}
+
+QStringList KFileItemActionsPrivate::listPreferredServiceIds(const QStringList& mimeTypeList, const QString& traderConstraint)
+{
+    QStringList serviceIdList;
+    Q_FOREACH(const QString& mimeType, mimeTypeList) {
+        const KService::Ptr serv = preferredService(mimeType, traderConstraint);
+        const QString newOffer = serv ? serv->storageId() : QString();
+        serviceIdList << newOffer;
+    }
+    serviceIdList.removeDuplicates();
+    return serviceIdList;
 }
 
 KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, bool singleOffer)
