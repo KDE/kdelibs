@@ -359,8 +359,8 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( enableAction( const char *, bool ) ) );
         connect( childExtension, SIGNAL( setLocationBarURL( const QString& ) ),
                  m_extension, SIGNAL( setLocationBarURL( const QString& ) ) );
-        connect( childExtension, SIGNAL( setIconURL( const KUrl& ) ),
-                 m_extension, SIGNAL( setIconURL( const KUrl& ) ) );
+        connect( childExtension, SIGNAL( setIconUrl( const KUrl& ) ),
+                 m_extension, SIGNAL( setIconUrl( const KUrl& ) ) );
         connect( childExtension, SIGNAL( loadingProgress( int ) ),
                  m_extension, SIGNAL( loadingProgress( int ) ) );
         if ( m_isHTMLPart ) // for non-HTML we have our own
