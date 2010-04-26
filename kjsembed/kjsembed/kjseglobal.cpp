@@ -49,22 +49,22 @@ static const WORD MAX_CONSOLE_LINES = 500;
 
 void RedirectIOToConsole() {
    int hConHandle;
-   long lStdHandle;
+   intptr_t lStdHandle;
    CONSOLE_SCREEN_BUFFER_INFO coninfo;
    AllocConsole();
    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
    coninfo.dwSize.Y = MAX_CONSOLE_LINES;
    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
 
-   lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+   lStdHandle = (intptr_t)GetStdHandle(STD_INPUT_HANDLE);
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
    win32_stdin.open(hConHandle,QIODevice::ReadOnly);
 
-   lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+   lStdHandle = (intptr_t)GetStdHandle(STD_OUTPUT_HANDLE);
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
    win32_stdout.open(hConHandle,QIODevice::WriteOnly);
 
-   lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+   lStdHandle = (intptr_t)GetStdHandle(STD_ERROR_HANDLE);
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
    win32_stderr.open(hConHandle, QIODevice::WriteOnly);
 
