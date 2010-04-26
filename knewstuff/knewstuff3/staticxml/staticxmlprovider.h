@@ -63,7 +63,7 @@ namespace KNS3
         virtual void loadPayloadLink(const KNS3::EntryInternal& entry, int);
 
     private Q_SLOTS:
-        void slotEmitProliderInitialized();
+        void slotEmitProviderInitialized();
         void slotFeedFileLoaded(const QDomDocument&);
         void slotFeedFailed();
 

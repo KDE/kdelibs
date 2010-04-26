@@ -105,12 +105,12 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
         mId = mDownloadUrls[mDownloadUrls.keys().first()].url();
     }
 
-    QTimer::singleShot(0, this, SLOT(slotEmitProliderInitialized()));
+    QTimer::singleShot(0, this, SLOT(slotEmitProviderInitialized()));
 
     return true;
 }
 
-void StaticXmlProvider::slotEmitProliderInitialized()
+void StaticXmlProvider::slotEmitProviderInitialized()
 {
     mInitialized = true;
     emit providerInitialized(this);
