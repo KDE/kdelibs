@@ -56,6 +56,10 @@
 #include <grp.h>
 #ifdef Q_WS_WIN
 #include <windows.h>
+#ifdef Q_WS_WIN64
+// FIXME: did not find a reliable way to fix with kdewin mingw header 
+#define interface struct
+#endif
 #include <shlobj.h>
 #include <QtCore/QVarLengthArray>
 #endif
@@ -738,7 +742,10 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
     if (prefix.isEmpty()) //for sanity
         return;
+#ifndef Q_WS_WIN
+	// what does this assert check ?
     assert(prefix.at(prefix.length() - 1) == '/');
+#endif
     if (path.contains('*') || path.contains('?')) {
 
         QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
