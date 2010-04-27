@@ -184,17 +184,13 @@ public:
     * generate or supply a unique id can effectively use it
     * to distinguish passwords.
     *
-    * (If you are instead interested in caching the authentication
-    * info for multiple users to the same server, refer to
-    * multipleUserCaching below)
-    *
     * This setting is @em optional and not set by default.
     */
    QString realmValue;
 
    /**
     * Field to store any extra authentication information for
-    * protocols that need it (ex: http).
+    * protocols that need it.
     *
     * This setting is @em optional and mostly applicable for HTTP
     * protocol.  However, any protocol can make use of it to
