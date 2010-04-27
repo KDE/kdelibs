@@ -1245,7 +1245,7 @@ CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector
         {
             // Sibling selectors always generate structural dependencies
             // because newly inserted element might fullfill them.
-            if (e->parentNode()->isElementNode())
+            if (e->parentNode() && e->parentNode()->isElementNode())
                 addDependency(StructuralDependency, static_cast<ElementImpl*>(e->parentNode()));
             while(true)
             {
@@ -1262,7 +1262,7 @@ CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector
         }
         case CSSSelector::DirectAdjacent:
         {
-            if (e->parentNode()->isElementNode())
+            if (e->parentNode() && e->parentNode()->isElementNode())
                 addDependency(StructuralDependency, static_cast<ElementImpl*>(e->parentNode()));
             DOM::NodeImpl* n = e->previousSibling();
             while( n && !n->isElementNode() )
