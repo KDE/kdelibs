@@ -56,7 +56,7 @@ static WTF::PassRefPtr<DOM::NodeListImpl>  querySelectorImp(bool justOne, DOM::N
     // Check for matches
     DOM::StaticNodeListImpl* matches = new DOM::StaticNodeListImpl;
     
-    for (DOM::NodeImpl* cur = root; cur; cur = cur->traverseNextNode(cur)) {
+    for (DOM::NodeImpl* cur = root; cur; cur = cur->traverseNextNode(root)) {
         DOM::ElementImpl* e = 0;
         if (cur->isElementNode())
             e = static_cast<DOM::ElementImpl*>(cur);
