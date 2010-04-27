@@ -29,6 +29,8 @@ private Q_SLOTS:
   void toggleTabShape(bool);
   void toggleCloseButtons(bool);
   void toggleLabels(bool);
+  void toggleScrollButtons(bool);
+  void toggleEliding(bool);
 
   void currentChanged(QWidget*);
   void contextMenu(QWidget*, const QPoint&);

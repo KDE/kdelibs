@@ -24,6 +24,7 @@ Test::Test( QWidget* parent )
   mWidget->addTab( new QWidget(), "Four" );
   mWidget->setTabTextColor( 0, Qt::red );
   mWidget->setTabTextColor( 1, Qt::blue );
+  mWidget->setUsesScrollButtons( false ); // corresponding checkbox is unchecked by default
 
   connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), SLOT( currentChanged( QWidget * ) ) );
   connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), SLOT(contextMenu( QWidget *, const QPoint & )));
@@ -86,6 +87,14 @@ Test::Test( QWidget* parent )
   QCheckBox * showlabels = new QCheckBox( "Show labels", grid );
   gridlayout->addWidget( showlabels, 4, 1 );
   connect( showlabels, SIGNAL( toggled(bool) ), this, SLOT( toggleLabels(bool) ) );
+
+  QCheckBox * elideText = new QCheckBox( "Elide text", grid );
+  gridlayout->addWidget( elideText, 5, 0 );
+  connect( elideText, SIGNAL( toggled(bool) ), this, SLOT( toggleEliding(bool) ) );
+
+  QCheckBox * scrollButtons = new QCheckBox( "Enable scroll buttons", grid );
+  gridlayout->addWidget( scrollButtons, 5, 1 );
+  connect( scrollButtons, SIGNAL( toggled(bool) ), this, SLOT( toggleScrollButtons(bool) ) );
 }
 
 void Test::currentChanged(QWidget* w)
@@ -95,7 +104,7 @@ void Test::currentChanged(QWidget* w)
 
 void Test::addTab()
 {
-  mWidget->addTab( new QWidget(), SmallIcon( "konsole" ), QString("Tab %1").arg( mWidget->count()+1 ) );
+  mWidget->addTab( new QWidget(), SmallIcon( "konsole" ), QString("This is tab %1").arg( mWidget->count()+1 ) );
 }
 
 void Test::testCanDecode(const QDragMoveEvent *e, bool &accept /* result */)
@@ -362,6 +371,18 @@ void Test::toggleLabels(bool state)
   mWidget->hide();   // trigger update
   mWidget->show();
 }
+
+void Test::toggleScrollButtons(bool state)
+{
+  mWidget->setUsesScrollButtons(state);
+}
+
+void Test::toggleEliding(bool state)
+{
+  mWidget->setAutomaticResizeTabs(state);
+  //mWidget->setElideMode(state ? Qt::ElideRight : Qt::ElideNone);
+}
+
 
 int main(int argc, char** argv )
 {
