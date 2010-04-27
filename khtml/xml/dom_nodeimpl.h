@@ -131,6 +131,10 @@ public:
     // DOM3. See the wrapper (DOM::Node for the constants used in the return value
     unsigned compareDocumentPosition(const DOM::NodeImpl* other);
 
+    // WA Selector API L1. It's specified only for some types, but we provide it here
+    WTF::PassRefPtr<DOM::ElementImpl>  querySelector(const DOM::DOMString& query, int& ec);
+    WTF::PassRefPtr<DOM::NodeListImpl> querySelectorAll(const DOM::DOMString& query, int& ec);
+
     // insertBefore, replaceChild and appendChild also close newChild
     // unlike the speed optimized addChild (which is used by the parser)
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );

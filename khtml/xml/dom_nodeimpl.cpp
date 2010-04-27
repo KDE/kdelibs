@@ -5,7 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *           (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
- *           (C) 2005 Maksim Orlovich (maksim@kde.org)
+ *           (C) 2005, 2009, 2010 Maksim Orlovich (maksim@kde.org)
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@
 #include "dom_nodelistimpl.h"
 #include "xml/dom_position.h"
 #include "xml/dom_selection.h"
+#include "xml/wa_selectors.h"
 #include "dom_restyler.h"
 #include "html/html_objectimpl.h"
 
@@ -1384,6 +1385,26 @@ unsigned NodeImpl::compareDocumentPosition(const DOM::NodeImpl* other)
     }
     
     return Node::DOCUMENT_POSITION_PRECEDING;
+}
+
+static NodeImpl* rootForSelectorQuery(DOM::NodeImpl* arg)
+{
+    if (arg->nodeType() == Node::DOCUMENT_TYPE_NODE)
+        return static_cast<DOM::DocumentImpl*>(arg)->documentElement();
+    else
+        return arg;
+}
+
+WTF::PassRefPtr<DOM::ElementImpl>  NodeImpl::querySelector(const DOM::DOMString& query, int& ec)
+{
+    return khtml::SelectorQuery::querySelector(rootForSelectorQuery(this),
+                                               query, ec);
+}
+
+WTF::PassRefPtr<DOM::NodeListImpl> NodeImpl::querySelectorAll(const DOM::DOMString& query, int& ec)
+{
+    return khtml::SelectorQuery::querySelectorAll(rootForSelectorQuery(this),
+                                                  query, ec);
 }
 
 void NodeImpl::setDocument(DocumentImpl* doc)

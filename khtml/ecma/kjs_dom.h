@@ -137,13 +137,23 @@ namespace KJS {
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async,
            GetElementsByClassName, Title, ExecCommand, QueryCommandEnabled,
            QueryCommandIndeterm, QueryCommandState, QueryCommandSupported,
-           QueryCommandValue };
+           QueryCommandValue, QuerySelector, QuerySelectorAll };
     DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
   
   KJS_DEFINE_PROTOTYPE(DOMDocumentProto)
 
   DEFINE_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor)
+
+  class DOMDocumentFragment : public DOMNode {
+  public:
+    DOMDocumentFragment(ExecState* exec, DOM::DocumentFragmentImpl* i);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+
+    enum { QuerySelector, QuerySelectorAll };
+  };
+  DEFINE_PSEUDO_CONSTRUCTOR(DocumentFragmentPseudoCtor)
 
   class DOMAttr : public DOMNode {
   public:
@@ -178,7 +188,7 @@ namespace KJS {
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
-           GetElementsByClassName, Blur, Focus };
+           GetElementsByClassName, Blur, Focus, QuerySelector, QuerySelectorAll };
   private:
 #if 0
     static JSValue *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);

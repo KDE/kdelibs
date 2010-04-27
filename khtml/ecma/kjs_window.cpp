@@ -326,6 +326,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 # Mozilla dom emulation ones.
   Element   Window::ElementCtor DontEnum|DontDelete
   Document  Window::DocumentCtor DontEnum|DontDelete
+  DocumentFragment Window::DocumentFragmentCtor DontEnum|DontDelete
   #this one is an alias since we don't have a separate XMLDocument
   XMLDocument Window::DocumentCtor DontEnum|DontDelete
   HTMLElement  Window::HTMLElementCtor DontEnum|DontDelete
@@ -754,6 +755,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return getCSSRuleConstructor(exec);
     case ElementCtor:
       return ElementPseudoCtor::self(exec);
+    case DocumentFragmentCtor:
+      return DocumentFragmentPseudoCtor::self(exec);      
     case HTMLElementCtor:
       return HTMLElementPseudoCtor::self(exec);
     case HTMLHtmlElementCtor:
@@ -2898,3 +2901,4 @@ JSValue *HistoryFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const L
 
 
 #include "kjs_window.moc"
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

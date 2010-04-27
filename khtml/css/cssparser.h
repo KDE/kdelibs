@@ -113,7 +113,7 @@ namespace DOM {
 			 bool _important );
 	bool parseDeclaration( DOM::CSSStyleDeclarationImpl *decls, const DOM::DOMString &string );
 	bool parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMString& string);
-	QList<DOM::CSSSelector*> parseSelectorList(const DOM::DOMString& string);
+	QList<DOM::CSSSelector*> parseSelectorList(DOM::DocumentImpl* doc, const DOM::DOMString& string);
 	    // Returns an empty list on parse error.
 
 	static CSSParser *current() { return currentParser; }
@@ -213,6 +213,8 @@ namespace DOM {
 	bool important;
 	unsigned int id;
 	DOM::StyleListImpl* styleElement;
+	mutable DOM::DocumentImpl*  styleDocument; // cached document for styleElement,
+	                                           // or manually set one for special parses
 
 	// Outputs for specialized parses. 
 	DOM::CSSRuleImpl *rule;

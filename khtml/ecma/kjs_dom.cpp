@@ -941,6 +941,8 @@ AttrImpl *toAttr(JSValue *val)
   queryCommandSupported DOMDocument::QueryCommandSupported     DontDelete|Function 1
   queryCommandValue DOMDocument::QueryCommandValue             DontDelete|Function 1
   getElementsByClassName DOMDocument::GetElementsByClassName   DontDelete|Function 1
+  querySelector          DOMDocument::QuerySelector            DontDelete|Function 1
+  querySelectorAll       DOMDocument::QuerySelectorAll         DontDelete|Function 1
 @end
 */
 
@@ -1188,6 +1190,14 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   }
   case DOMDocument::GetElementsByClassName:
     return getDOMNodeList(exec, doc.getElementsByClassName(s));
+  case DOMDocument::QuerySelector: {
+    RefPtr<DOM::ElementImpl> e = doc.querySelector(s, exception);
+    return getDOMNode(exec, e.get());
+  }
+  case DOMDocument::QuerySelectorAll: {
+    RefPtr<DOM::NodeListImpl> l = doc.querySelectorAll(s, exception);
+    return getDOMNodeList(exec, l.get());
+  }
   default:
     break;
   }
@@ -1218,6 +1228,8 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
 # Extensions
   blur          DOMElement::Blur    DontDelete|Function 0
   focus         DOMElement::Focus   DontDelete|Function 0
+  querySelector          DOMElement::QuerySelector            DontDelete|Function 1
+  querySelectorAll       DOMElement::QuerySelectorAll         DontDelete|Function 1
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
@@ -1337,6 +1349,15 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
       return jsBoolean(element.hasAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
     case DOMElement::GetElementsByClassName: // HTML 5
       return getDOMNodeList(exec, element.getElementsByClassName(args[0]->toString(exec).domString()));
+    case DOMElement::QuerySelector: { // WA Selectors 1
+      RefPtr<DOM::ElementImpl> e = element.querySelector(args[0]->toString(exec).domString(), exception);
+      return getDOMNode(exec, e.get());
+    }
+    case DOMElement::QuerySelectorAll: {  // WA Selectors 1
+      RefPtr<DOM::NodeListImpl> l = element.querySelectorAll(args[0]->toString(exec).domString(), exception);
+      return getDOMNodeList(exec, l.get());
+    }
+      
     default:
 
       // Make sure our layout is up to date before we call these
@@ -1792,7 +1813,7 @@ JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
       ret = new DOMDocumentType(exec, static_cast<DOM::DocumentTypeImpl*>(n));
       break;
     case DOM::Node::DOCUMENT_FRAGMENT_NODE:
-      ret = new DOMNode(exec, n);
+      ret = new DOMDocumentFragment(exec, static_cast<DOM::DocumentFragmentImpl*>(n));
       break;
     case DOM::Node::NOTATION_NODE:
       ret = new DOMNotation(exec, static_cast<DOM::NotationImpl*>(n));
@@ -2081,3 +2102,50 @@ JSValue* DOMCommentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
   KJS_CHECK_THIS( KJS::DOMComment, thisObj );
   return jsUndefined();
 }
+
+// -------------------------------------------------------------------------
+
+const ClassInfo DOMDocumentFragment::info = { "DocumentFragment",
+                                    &DOMNode::info, 0, 0 };
+/*
+@begin DOMDocumentFragmentProtoTable 2
+  querySelector          DOMDocumentFragment::QuerySelector            DontDelete|Function 1
+  querySelectorAll       DOMDocumentFragment::QuerySelectorAll         DontDelete|Function 1
+@end
+*/
+
+KJS_DEFINE_PROTOTYPE(DOMDocumentFragmentProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMDocumentFragmentProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DocumentFragment",DOMDocumentFragmentProto,
+                        DOMDocumentFragmentProtoFunc,DOMNodeProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(DocumentFragmentPseudoCtor, "DocumentFragment", DOMDocumentFragmentProto)
+
+DOMDocumentFragment::DOMDocumentFragment(ExecState* exec, DOM::DocumentFragmentImpl* i)
+ : DOMNode(exec, i)
+{
+    setPrototype(DOMDocumentFragmentProto::self(exec));
+}
+
+JSValue* DOMDocumentFragmentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+{
+  KJS_CHECK_THIS( KJS::DOMDocumentFragment, thisObj );
+  DOMExceptionTranslator exception(exec);  
+
+  DOM::NodeImpl* n = static_cast<DOMDocumentFragment*>(thisObj)->impl();
+  DOM::DOMString s = args[0]->toString(exec).domString();
+  
+  switch (id) {
+  case DOMDocumentFragment::QuerySelector: {
+    RefPtr<DOM::ElementImpl> e = n->querySelector(s, exception);
+    return getDOMNode(exec, e.get());
+  }
+  case DOMDocumentFragment::QuerySelectorAll: {
+    RefPtr<DOM::NodeListImpl> l = n->querySelectorAll(s, exception);
+    return getDOMNodeList(exec, l.get());
+  }
+  }
+  return jsUndefined();
+}
+
+
+// kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;

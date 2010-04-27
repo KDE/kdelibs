@@ -636,35 +636,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
         for (unsigned int j = it->second; j < selectors_size; j = nextSimilarSelector[j])
             selectorsForCheck.append(j);
 
-    // build caches for element so it could be used in heuristic for descendant selectors
-    // go up the tree and cache possible tags, classes and ids
-    tagCache.clear();
-    idCache.clear();
-    classCache.clear();
-    ElementImpl* current = element;
-    while (true) {
-        NodeImpl* parent = current->parentNode();
-        if (!parent || !parent->isElementNode())
-            break;
-        current = static_cast<ElementImpl*>(parent);
-
-        if (current->hasClass()) {
-            const ClassNames& classNames = current->classNames();
-            for (unsigned i = 0; i < classNames.size(); ++i)
-                classCache.add((unsigned long)classNames[i].impl());
-        }
-
-        DOMStringImpl* idValue = current->getAttributeImplById(ATTR_ID);
-        if (idValue && idValue->length()) {
-            bool caseSensitive = (current->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
-            AtomicString currentId = caseSensitive ? idValue : idValue->lower();
-            // though currentId is local and could be deleted from AtomicStringImpl cache right away
-            // don't care about that, cause selector values are stable and only they will be checked later
-            idCache.add((unsigned long)currentId.impl());
-        }
-
-        tagCache.add(localNamePart(current->id()));
-    }
+    // build per-element cache summaries.
+    prepareToMatchElement(element);
 
     propsToApply.clear();
     pseudoProps.clear();
@@ -805,6 +778,39 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
 
     // Now return the style.
     return style;
+}
+
+void CSSStyleSelector::prepareToMatchElement(DOM::ElementImpl* element)
+{
+    // build caches for element so it could be used in heuristic for descendant selectors
+    // go up the tree and cache possible tags, classes and ids
+    tagCache.clear();
+    idCache.clear();
+    classCache.clear();
+    ElementImpl* current = element;
+    while (true) {
+        NodeImpl* parent = current->parentNode();
+        if (!parent || !parent->isElementNode())
+            break;
+        current = static_cast<ElementImpl*>(parent);
+
+        if (current->hasClass()) {
+            const ClassNames& classNames = current->classNames();
+            for (unsigned i = 0; i < classNames.size(); ++i)
+                classCache.add((unsigned long)classNames[i].impl());
+        }
+
+        DOMStringImpl* idValue = current->getAttributeImplById(ATTR_ID);
+        if (idValue && idValue->length()) {
+            bool caseSensitive = (current->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
+            AtomicString currentId = caseSensitive ? idValue : idValue->lower();
+            // though currentId is local and could be deleted from AtomicStringImpl cache right away
+            // don't care about that, cause selector values are stable and only they will be checked later
+            idCache.add((unsigned long)currentId.impl());
+        }
+
+        tagCache.add(localNamePart(current->id()));
+    }
 }
 
 void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e)
@@ -1293,6 +1299,22 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
     //qDebug( "selector %d applies", selIndex );
     //selectors[ selIndex ]->print();
     return;
+}
+
+bool CSSStyleSelector::isMatchedByAnySelector(DOM::ElementImpl* e, QList<DOM::CSSSelector*> sels)
+{
+    prepareToMatchElement(e);
+
+    // ### this may introduce extraneous restyling dependencies
+    for (int i = 0; i < sels.size(); ++i) {
+        dynamicPseudo = RenderStyle::NOPSEUDO;
+        SelectorMatch match = checkSelector(sels[i], e, true);
+
+        if (match == SelectorMatches && dynamicPseudo == RenderStyle::NOPSEUDO)
+            return true;
+    }
+
+    return false;
 }
 
 void CSSStyleSelector::addDependency(int dependencyType, ElementImpl* dependency)

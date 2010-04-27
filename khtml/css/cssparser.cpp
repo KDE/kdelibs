@@ -193,7 +193,8 @@ void CSSParser::setupParser(const char *prefix, const DOMString &string, const c
 
 void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 {
-    styleElement = sheet;
+    styleElement  = sheet;
+    styleDocument = 0;
 
     setupParser("", string, "");
 
@@ -211,7 +212,8 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 
 CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOMString &string )
 {
-    styleElement = sheet;
+    styleElement  = sheet;
+    styleDocument = 0;
     
     setupParser("@-khtml-rule{", string, "} ");
     runParser();
@@ -242,7 +244,8 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
                    << " value='" << string.string() << "'" << endl;
 #endif
 
-    styleElement = declaration->stylesheet();
+    styleElement  = declaration->stylesheet();
+    styleDocument = 0;
 
     setupParser("@-khtml-value{", string, "} ");
 
@@ -271,7 +274,8 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
                     << " value='" << string.string() << "'" << endl;
 #endif
 
-    styleElement = declaration->stylesheet();
+    styleElement  = declaration->stylesheet();
+    styleDocument = 0;
 
     setupParser("@-khtml-decls{", string, "} ");
     runParser();
@@ -311,10 +315,12 @@ bool CSSParser::parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMStrin
     return ok;
 }
 
-QList<DOM::CSSSelector*> CSSParser::parseSelectorList(const DOM::DOMString& string)
+QList<DOM::CSSSelector*> CSSParser::parseSelectorList(DOM::DocumentImpl* doc, const DOM::DOMString& string)
 {
+    styleElement  = 0;
+    styleDocument = doc;
     selectors.clear();
-    setupParser("@-khtml-selectors {", string, "} ");
+    setupParser("@-khtml-selectors{", string, "} ");
     runParser();
     return selectors;
 }
@@ -374,13 +380,14 @@ void CSSParser::clearProperties()
 
 DOM::DocumentImpl *CSSParser::document() const
 {
-    const StyleBaseImpl* root = styleElement;
-    DocumentImpl *doc = 0;
-    while (root->parent())
-        root = root->parent();
-    if (root->isCSSStyleSheet())
-        doc = static_cast<const CSSStyleSheetImpl*>(root)->doc();
-    return doc;
+    if (!styleDocument) {
+        const StyleBaseImpl* root = styleElement;
+        while (root->parent())
+            root = root->parent();
+        if (root->isCSSStyleSheet())
+            styleDocument = static_cast<const CSSStyleSheetImpl*>(root)->doc();
+    }
+    return styleDocument;
 }
 
 bool CSSParser::validUnit( Value *value, int unitflags, bool strict )

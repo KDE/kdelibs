@@ -186,6 +186,8 @@ namespace khtml
 	// fallbackParentStyle will be inheritted from if the parent doesn't have style info
 	RenderStyle *styleForElement(DOM::ElementImpl *e, RenderStyle* fallbackParentStyle = 0);
 
+	bool isMatchedByAnySelector(DOM::ElementImpl* e, QList<DOM::CSSSelector*> sels);
+
         QVector<int> fontSizes() const { return m_fontSizes; }
 	QVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
 
@@ -213,6 +215,10 @@ namespace khtml
 
         enum SelectorMatch {SelectorMatches = 0, SelectorFailsLocal, SelectorFails};
         SelectorMatch checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
+
+        // computes various summaries of the documents' properties, which are used in
+        // the various checkSelector methods for optimizations
+        void prepareToMatchElement(DOM::ElementImpl* e);
 
         void addDependency(int dependencyType, DOM::ElementImpl* dependency);
         void setupDefaultRootStyle(DOM::DocumentImpl *d=0);

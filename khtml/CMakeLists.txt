@@ -387,6 +387,7 @@ set(khtmlxml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_position.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_positioniterator.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_selection.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/wa_selectors.cpp
 )
 
 # khtml/imload/Makefile.am: khtmlimload
