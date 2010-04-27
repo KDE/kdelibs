@@ -449,7 +449,7 @@ void SimpleJobPrivate::start(Slave *slave)
 
     if (ui() && ui()->window())
     {
-        m_outgoingMetaData.insert("window-id", QString::number((long)ui()->window()->winId()));
+        m_outgoingMetaData.insert("window-id", QString::number((qptrdiff)ui()->window()->winId()));
     }
 
     if (ui() && ui()->userTimestamp())

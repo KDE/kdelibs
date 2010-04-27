@@ -42,7 +42,7 @@ public:
         We link to variable object by storing the pointer to them; to ScopeChainNode's by
         storing the pointer with lower bit set.
     */
-    unsigned long ptr;
+    uintptr_t ptr;
 
     // in lieu of constructor, for POD'ness
     void init() {
@@ -50,11 +50,11 @@ public:
     }
 
     void set(ScopeChainNode* node) {
-        ptr = reinterpret_cast<unsigned long>(node) | 1;
+        ptr = reinterpret_cast<uintptr_t>(node) | 1;
     }
 
     void set(JSVariableObject* act) {
-        ptr = reinterpret_cast<unsigned long>(act);
+        ptr = reinterpret_cast<uintptr_t>(act);
     }
 
     // these are inline in JSVariableObject.h
