@@ -209,7 +209,7 @@ bool HostQueue::removeJob(SimpleJob *job)
 QList<Slave *> HostQueue::allSlaves() const
 {
     QList<Slave *> ret;
-    foreach (SimpleJob *job, m_runningJobs) {
+    Q_FOREACH (SimpleJob *job, m_runningJobs) {
         Slave *slave = jobSlave(job);
         Q_ASSERT(slave);
         ret.append(slave);
@@ -296,7 +296,7 @@ bool ConnectedSlaveQueue::removeSlave(Slave *slave)
         return false;
     }
     PerSlaveQueue &jobs = it.value();
-    foreach (SimpleJob *job, jobs.waitingList) {
+    Q_FOREACH (SimpleJob *job, jobs.waitingList) {
         // ### for compatibility with the old scheduler we don't touch the running job, if any.
         // make sure that the job doesn't call back into Scheduler::cancelJob(); this would
         // a) crash and b) be unnecessary because we clean up just fine.
@@ -364,7 +364,7 @@ static void ensureNoDuplicates(QMap<int, HostQueue *> *queuesBySerial)
 #ifdef SCHEDULER_DEBUG
     // a host queue may *never* be in queuesBySerial twice.
     QSet<HostQueue *> seen;
-    foreach (HostQueue *hq, *queuesBySerial) {
+    Q_FOREACH (HostQueue *hq, *queuesBySerial) {
         Q_ASSERT(!seen.contains(hq));
         seen.insert(hq);
     }
@@ -377,15 +377,15 @@ static void verifyRunningJobsCount(QHash<QString, HostQueue> *queues, int runnin
     Q_UNUSED(runningJobsCount);
 #ifdef SCHEDULER_DEBUG
     int realRunningJobsCount = 0;
-    foreach (const HostQueue &hq, *queues) {
+    Q_FOREACH (const HostQueue &hq, *queues) {
         realRunningJobsCount += hq.runningJobsCount();
     }
     Q_ASSERT(realRunningJobsCount == runningJobsCount);
 
     // ...and of course we may never run the same job twice!
     QSet<SimpleJob *> seenJobs;
-    foreach (const HostQueue &hq, *queues) {
-        foreach (SimpleJob *job, hq.runningJobs()) {
+    Q_FOREACH (const HostQueue &hq, *queues) {
+        Q_FOREACH (SimpleJob *job, hq.runningJobs()) {
             Q_ASSERT(!seenJobs.contains(job));
             seenJobs.insert(job);
         }
@@ -411,7 +411,7 @@ ProtoQueue::ProtoQueue(SchedulerPrivate *sp, int maxSlaves, int maxSlavesPerHost
 
 ProtoQueue::~ProtoQueue()
 {
-    foreach (Slave *slave, allSlaves()) {
+    Q_FOREACH (Slave *slave, allSlaves()) {
         // kill the slave process, then remove the interface in our process
         slave->kill();
         slave->deref();
@@ -563,7 +563,7 @@ bool ProtoQueue::removeSlave (KIO::Slave *slave)
 QList<Slave *> ProtoQueue::allSlaves() const
 {
     QList<Slave *> ret(m_slaveKeeper.allSlaves());
-    foreach (const HostQueue &hq, m_queuesByHostname) {
+    Q_FOREACH (const HostQueue &hq, m_queuesByHostname) {
         ret.append(hq.allSlaves());
     }
     ret.append(m_connectedSlaveQueue.allSlaves());
@@ -579,8 +579,8 @@ void ProtoQueue::startAJob()
 
 #ifdef SCHEDULER_DEBUG
     kDebug(7006) << "m_runningJobsCount:" << m_runningJobsCount;
-    foreach (const HostQueue &hq, m_queuesByHostname) {
-        foreach (SimpleJob *job, hq.runningJobs()) {
+    Q_FOREACH (const HostQueue &hq, m_queuesByHostname) {
+        Q_FOREACH (SimpleJob *job, hq.runningJobs()) {
             kDebug(7006) << SimpleJobPrivate::get(job)->m_url;
         }
     }
@@ -668,8 +668,8 @@ public:
     {
         delete q;
         q = 0;
-        foreach (ProtoQueue *p, m_protocols) {
-            foreach (Slave *slave, p->allSlaves()) {
+        Q_FOREACH (ProtoQueue *p, m_protocols) {
+            Q_FOREACH (Slave *slave, p->allSlaves()) {
                 slave->kill();
             }
             p->deleteLater();
@@ -884,7 +884,7 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
     QHash<QString, ProtoQueue *>::ConstIterator endIt = proto.isEmpty() ? m_protocols.constEnd() :
                                                                           it + 1;
     for (; it != endIt; ++it) {
-        foreach(Slave *slave, (*it)->allSlaves()) {
+        Q_FOREACH(Slave *slave, (*it)->allSlaves()) {
             slave->send(CMD_REPARSECONFIGURATION);
             slave->resetHost();
         }
