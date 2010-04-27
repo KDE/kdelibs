@@ -67,9 +67,9 @@ static DomNodeList compressTextNodes( const DomNodeList &nodes )
 {
 	DomNodeList outNodes = new StaticNodeListImpl;
 
-	for ( int n = 0; n < nodes->size(); ++n) {
-		NodeImpl* node = nodes->at( n );
-		NodeImpl* next = n+1 < nodes->size() ? nodes->at( n+1 ) : 0;
+	for ( unsigned long n = 0; n < nodes->length(); ++n) {
+		NodeImpl* node = nodes->item( n );
+		NodeImpl* next = n+1 < nodes->length() ? nodes->item( n+1 ) : 0;
 		
 		if ( !next || !areAdjacentTextNodes( node, next ) ) {
 			outNodes->append( node );
@@ -77,9 +77,9 @@ static DomNodeList compressTextNodes( const DomNodeList &nodes )
 			QString s = node->nodeValue().string();
 
 			// n2 is a potential successor, and is always in-range
-			int n2 = n+1;
-			while (n2 < nodes->size() && areAdjacentTextNodes( nodes->at( n2 ), nodes->at( n2-1) ) ) {
-				s += nodes->at( n2 )->nodeValue().string();
+			unsigned long n2 = n+1;
+			while (n2 < nodes->length() && areAdjacentTextNodes( nodes->item( n2 ), nodes->item( n2-1) ) ) {
+				s += nodes->item( n2 )->nodeValue().string();
 				++n2;
 			}
 			outNodes->append( node->document()->createTextNode( new DOMStringImpl( s.data(), s.length() ) ) );
@@ -139,20 +139,20 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 	}
 
 	DomNodeList inNodes = nodesInAxis( context ), outNodes;
-	qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->size() << " nodes.";
+	qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
 	inNodes = nodeTestMatches( inNodes );
-	qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->size();
+	qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
 
 	if ( m_predicates.isEmpty() )
 		return inNodes;
 
 	foreach( Predicate *predicate, m_predicates ) {
 		outNodes = new StaticNodeListImpl;
-		Expression::evaluationContext().size = inNodes->size();
+		Expression::evaluationContext().size = int(inNodes->length());
 		Expression::evaluationContext().position = 1;
 
-		for ( int n = 0; n < inNodes->size(); ++n ) {
-			NodeImpl* node = inNodes->at( n );
+		for ( unsigned long n = 0; n < inNodes->length(); ++n ) {
+			NodeImpl* node = inNodes->item( n );
 			Expression::evaluationContext().node = node;
 			EvaluationContext backupCtx = Expression::evaluationContext();
 			if ( predicate->evaluate() ) {
@@ -161,7 +161,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			Expression::evaluationContext() = backupCtx;
 			++Expression::evaluationContext().position;
 		}
-		qDebug() << "\tPredicate trims this number to " << outNodes->size();
+		qDebug() << "\tPredicate trims this number to " << outNodes->length();
 		inNodes = outNodes;
 	}
 
@@ -323,8 +323,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 	DOMString ns = namespaceFromNodetest( m_nodeTest );
 	DomNodeList matches = new StaticNodeListImpl;
 	if ( m_nodeTest == "*" ) {
-		for ( int n = 0; n < nodes->size(); ++n ) {
-			NodeImpl *node = nodes->at( n );
+		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+			NodeImpl *node = nodes->item( n );
 			if ( node->nodeType() == primaryNodeType( m_axis ) ) {
 				if ( ns.isEmpty() ||
 				     node->namespaceURI() == ns ) {
@@ -334,8 +334,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 		}
 		return nodes;
 	} else if ( m_nodeTest == "text()" ) {
-		for ( int n = 0; n < nodes->size(); ++n ) {
-			NodeImpl *node = nodes->at( n );
+		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+			NodeImpl *node = nodes->item( n );
 			if ( node->nodeType() == Node::TEXT_NODE ||
 			     node->nodeType() == Node::CDATA_SECTION_NODE ) {
 				matches->append( node );
@@ -344,8 +344,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 
 		return compressTextNodes( matches );
 	} else if ( m_nodeTest == "comment()" ) {
-		for ( int n = 0; n < nodes->size(); ++n ) {
-			NodeImpl *node = nodes->at( n );
+		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+			NodeImpl *node = nodes->item( n );
 			if ( node->nodeType() == Node::COMMENT_NODE ) {
 				matches->append( node );
 			}
@@ -358,8 +358,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 			param = m_nodeTest.substring( space + 1 );
 		}
 
-		for ( int n = 0; n < nodes->size(); ++n ) {
-			NodeImpl *node = nodes->at( n );
+		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+			NodeImpl *node = nodes->item( n );
 			if ( node->nodeType() == Node::PROCESSING_INSTRUCTION_NODE ) {
 				if ( param.isEmpty() ||
 				     node->nodeName() == param ) {
@@ -400,8 +400,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 				return matches;
 			}
 
-			for ( int n = 0; n < nodes->size(); ++n ) {
-				NodeImpl *node = nodes->at( n );
+			for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+				NodeImpl *node = nodes->item( n );
 				if ( node->nodeName() == localName ) {
 					matches->append( node );
 					break; // There can only be one.
@@ -414,8 +414,8 @@ DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
 #endif
 			qWarning() << "Node test " << m_nodeTest << " on axis " << axisAsString( m_axis ) << " is not implemented yet.";
 		} else {
-			for ( int n = 0; n < nodes->size(); ++n ) {
-				NodeImpl *node = nodes->at( n );
+			for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+				NodeImpl *node = nodes->item( n );
 				if ( node->nodeType() == Node::ELEMENT_NODE &&
 				     node->nodeName() == localName ) {
 					matches->append( node );

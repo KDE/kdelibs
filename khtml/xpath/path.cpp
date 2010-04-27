@@ -67,10 +67,10 @@ Value Filter::doEvaluate() const
 	DomNodeList inNodes = v.toNodeset(), outNodes;
 	foreach( Predicate *predicate, m_predicates ) {
 		outNodes = new StaticNodeListImpl();
-		Expression::evaluationContext().size = inNodes->size();
+		Expression::evaluationContext().size = int(inNodes->length());
 
-		for ( int n = 0; n < inNodes->size(); ++n ) {
-			NodeImpl *node = inNodes->at(n);
+		for ( unsigned long n = 0; n < inNodes->length(); ++n ) {
+			NodeImpl *node = inNodes->item(n);
 			Expression::evaluationContext().node = node;
 			++Expression::evaluationContext().position = n;
 
@@ -126,10 +126,10 @@ Value LocationPath::doEvaluate() const
 
 	foreach( Step *step, m_steps ) {
 		outDomNodes = new StaticNodeListImpl;
-		for ( int i = 0; i < inDomNodes->size(); ++i ) {
-			DomNodeList matches = step->evaluate( inDomNodes->at( i ) );
-			for ( int j = 0; j < matches->size(); ++j )
-				outDomNodes->append( matches->at( j ) );
+		for ( unsigned long i = 0; i < inDomNodes->length(); ++i ) {
+			DomNodeList matches = step->evaluate( inDomNodes->item( i ) );
+			for ( unsigned long j = 0; j < matches->length(); ++j )
+				outDomNodes->append( matches->item( j ) );
 		}
 		inDomNodes = outDomNodes;
 	}

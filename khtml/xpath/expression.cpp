@@ -27,17 +27,16 @@
 #include "xml/dom_nodelistimpl.h"
 //#include "xml/dom_stringimpl.h"
 
-#ifndef __USE_ISOC99
-#  undef __USE_ISOC99
-#endif
-#define __USE_ISOC99 1
-
 #include <cmath>
 
 using namespace DOM;
 using namespace khtml;
 using namespace khtml::XPath;
 using namespace std;
+
+// Use KJS's numeric FP stuff
+#include "kjs/JSImmediate.h"
+#include "kjs/operations.h"
 
 Value::Value()
 {
@@ -118,7 +117,7 @@ bool Value::toBoolean() const
 {
 	switch ( m_type ) {
 		case Nodeset:
-			return m_nodeset->size() != 0;
+			return m_nodeset->length() != 0;
 		case Boolean:
 			return m_bool;
 		case Number:
@@ -143,7 +142,7 @@ double Value::toNumber() const
 			if ( canConvert ) {
 				return value;
 			} else {
-				return NAN;
+				return KJS::NaN;
 			}
 		}
 		case Boolean:
@@ -156,18 +155,18 @@ DOMString Value::toString() const
 {
 	switch ( m_type ) {
 		case Nodeset:
-			if ( m_nodeset->size() == 0 ) {
+			if ( m_nodeset->length() == 0 ) {
 				return DOMString( "" );
 			}
-			return stringValue( m_nodeset->at(0) );
+			return stringValue( m_nodeset->item(0) );
 		case String:
 			return m_string;
 		case Number:
-			if ( isnan( m_number ) ) {
+			if ( KJS::isNaN( m_number ) ) {
 				return DOMString( "NaN" );
 			} else if ( m_number == 0 ) {
 				return DOMString( "0" );
-			} else if ( isinf( m_number ) ) {
+			} else if ( KJS::isInf( m_number ) ) {
 				if ( signbit( m_number ) == 0 ) {
 					return DOMString( "Infinity" );
 				} else {

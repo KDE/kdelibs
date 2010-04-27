@@ -27,6 +27,7 @@
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_nodelistimpl.h"
 #include "xml/dom_elementimpl.h"
+#include "kjs/operations.h"
 
 #include <QtDebug>
 
@@ -475,7 +476,7 @@ Value FunCount::doEvaluate() const
 		qWarning( "count() expects <nodeset>" );
 		return Value( 0.0 );
 	}
-	return Value( double( a.toNodeset()->size() ) );
+	return Value( double( a.toNodeset()->length() ) );
 }
 
 bool FunCount::isConstant() const
@@ -712,8 +713,8 @@ Value FunSum::doEvaluate() const
 
 	double sum = 0.0;
 	const DomNodeList nodes = a.toNodeset();
-	for (int n = 0; n < nodes->size(); ++n) {
-		NodeImpl* node = nodes->at(n);
+	for (unsigned long n = 0; n < nodes->length(); ++n) {
+		NodeImpl* node = nodes->item(n);
 		sum += Value( stringValue( node ) ).toNumber();
 	}
 	return Value( sum );
@@ -723,7 +724,7 @@ Value FunFloor::doEvaluate() const
 {
 	const double num = arg( 0 )->evaluate().toNumber();
 
-	if ( isnan( num ) || isinf( num ) ) {
+	if ( KJS::isNaN( num ) || KJS::isInf( num ) ) {
 		return Value( num );
 	}
 
@@ -734,7 +735,7 @@ Value FunCeiling::doEvaluate() const
 {
 	const double num = arg( 0 )->evaluate().toNumber();
 
-	if ( isnan( num ) || isinf( num ) ) {
+	if ( KJS::isNaN( num ) || KJS::isInf( num ) ) {
 		return Value( num );
 	}
 

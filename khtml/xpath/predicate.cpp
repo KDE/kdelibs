@@ -272,11 +272,11 @@ Value Union::doEvaluate() const
 	DomNodeList rhsNodes = rhs.toNodeset();
 	DomNodeList result = new StaticNodeListImpl;
 
-	for ( int n = 0; n < lhsNodes->size(); ++n )
-		result->append( lhsNodes->at( n ) );
+	for ( unsigned long n = 0; n < lhsNodes->length(); ++n )
+		result->append( lhsNodes->item( n ) );
 
-	for ( int n = 0; n < rhsNodes->size(); ++n )
-		result->append( rhsNodes->at( n ) );
+	for ( unsigned long n = 0; n < rhsNodes->length(); ++n )
+		result->append( rhsNodes->item( n ) );
 	
 	return Value( result );
 }
