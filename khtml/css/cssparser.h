@@ -47,6 +47,7 @@ namespace DOM {
     class CSSFontFaceRuleImpl;
     class CSSProperty;
     class MediaListImpl;
+    class CSSSelector;
     
 
     struct ParseString {
@@ -112,19 +113,21 @@ namespace DOM {
 			 bool _important );
 	bool parseDeclaration( DOM::CSSStyleDeclarationImpl *decls, const DOM::DOMString &string );
 	bool parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMString& string);
+	QList<DOM::CSSSelector*> parseSelectorList(const DOM::DOMString& string);
+	    // Returns an empty list on parse error.
 
 	static CSSParser *current() { return currentParser; }
 
-    unsigned int getLocalNameId(const DOMString& str) {
-        LocalName localname;
-        DOM::DocumentImpl *doc = document();
-        if (doc && doc->isHTMLDocument())
-            localname = LocalName::fromString(str, khtml::IDS_NormalizeLower);
-        else
-            localname = LocalName::fromString(str);
-        boundLocalNames.append(localname);
-        return localname.id();
-    }
+	unsigned int getLocalNameId(const DOMString& str) {
+	    LocalName localname;
+	    DOM::DocumentImpl *doc = document();
+	    if (doc && doc->isHTMLDocument())
+		localname = LocalName::fromString(str, khtml::IDS_NormalizeLower);
+	    else
+		localname = LocalName::fromString(str);
+	    boundLocalNames.append(localname);
+	    return localname.id();
+	}
 
 	DOM::DocumentImpl *document() const;
 
@@ -210,8 +213,12 @@ namespace DOM {
 	bool important;
 	unsigned int id;
 	DOM::StyleListImpl* styleElement;
+
+	// Outputs for specialized parses. 
 	DOM::CSSRuleImpl *rule;
 	khtml::MediaQuery* mediaQuery;
+	QList<DOM::CSSSelector*> selectors;
+	
 	ValueList *valueList;
 	CSSProperty **parsedProperties;
 	int numParsedProperties;
@@ -252,3 +259,5 @@ namespace DOM {
 
 } // namespace
 #endif
+// kate: tab-width 8;
+

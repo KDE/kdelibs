@@ -204,6 +204,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %token KHTML_DECLS_SYM
 %token KHTML_VALUE_SYM
 %token KHTML_MEDIAQUERY_SYM
+%token KHTML_SELECTORS_SYM
 
 %token IMPORTANT_SYM
 %token MEDIA_ONLY
@@ -312,6 +313,7 @@ stylesheet:
   | khtml_decls maybe_space
   | khtml_value maybe_space
   | khtml_mediaquery maybe_space
+  | khtml_selectors maybe_space
   ;
 
 ruleset_or_import:
@@ -355,6 +357,13 @@ khtml_value:
 	delete p->valueList;
 	p->valueList = 0;
     }
+;
+
+khtml_selectors:
+	KHTML_SELECTORS_SYM '{' maybe_space selector_list '}' {
+		CSSParser *p = static_cast<CSSParser *>(parser);
+		p->selectors = *$4;
+	}
 ;
 
 khtml_mediaquery:

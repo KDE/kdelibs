@@ -580,9 +580,9 @@ public:
     // Since applications often re-creat nodelists all over the place, we cache 
     // their caches in the documents. For now, we only do it for things that can be 
     // parametrices by type + base node.
-    NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
-                                                   NodeImpl* base, int type);
-    void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
+    DynamicNodeListImpl::Cache* acquireCachedNodeListInfo(DynamicNodeListImpl::CacheFactory* fact,
+                                                          NodeImpl* base, int type);
+    void releaseCachedNodeListInfo(DynamicNodeListImpl::Cache* cache);
 
     JSEditor *jsEditor();
 
@@ -695,7 +695,7 @@ protected:
     ElementMappingCache m_underDocNamedCache;
 
     //Cache for nodelists and collections.
-    QHash<long,NodeListImpl::Cache*> m_nodeListCache;
+    QHash<long,DynamicNodeListImpl::Cache*> m_nodeListCache;
 
     QLinkedList<HTMLImageElementImpl*> m_imageLoadEventDispatchSoonList;
     QLinkedList<HTMLImageElementImpl*> m_imageLoadEventDispatchingList;

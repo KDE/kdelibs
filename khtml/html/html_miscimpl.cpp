@@ -50,7 +50,7 @@ NodeImpl::Id HTMLBaseFontElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-struct CollectionCache: public NodeListImpl::Cache
+struct CollectionCache: public DynamicNodeListImpl::Cache
 {
     static Cache* make() { return new CollectionCache; }
 
@@ -72,7 +72,7 @@ struct CollectionCache: public NodeListImpl::Cache
 };
 
 HTMLCollectionImpl::HTMLCollectionImpl(NodeImpl *_base, int _type):
-    NodeListImpl(_base, _type, CollectionCache::make)
+    DynamicNodeListImpl(_base, _type, CollectionCache::make)
 {
     type = _type;
 }
@@ -220,7 +220,7 @@ NodeImpl *HTMLCollectionImpl::item ( unsigned long index ) const
 {
     //Most of the time, we just go in normal document order
     if (type != TABLE_ROWS)
-        return NodeListImpl::item(index);
+        return DynamicNodeListImpl::item(index);
 
     //For table.rows, we first need to check header, then bodies, then footer.
     //we pack any extra headers/footer with bodies. This matches IE, and
@@ -244,7 +244,7 @@ NodeImpl *HTMLCollectionImpl::item ( unsigned long index ) const
 unsigned long HTMLCollectionImpl::calcLength(NodeImpl *start) const
 {
     if (type != TABLE_ROWS)
-        return NodeListImpl::calcLength(start);
+        return DynamicNodeListImpl::calcLength(start);
 
     unsigned length = 0;
     const HTMLTableElementImpl* table = static_cast<const HTMLTableElementImpl*>(m_refNode);
@@ -410,7 +410,7 @@ NodeImpl *HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
 
 // -------------------------------------------------------------------------
 HTMLMappedNameCollectionImpl::HTMLMappedNameCollectionImpl(NodeImpl* _base, int _type, const DOMString& _name):
-    HTMLCollectionImpl(_base, NodeListImpl::UNCACHEABLE), name(_name)
+    HTMLCollectionImpl(_base, DynamicNodeListImpl::UNCACHEABLE), name(_name)
 {
     type = _type; //We pass uncacheable to collection, but need our own type internally.
 }

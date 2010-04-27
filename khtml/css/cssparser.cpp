@@ -311,6 +311,13 @@ bool CSSParser::parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMStrin
     return ok;
 }
 
+QList<DOM::CSSSelector*> CSSParser::parseSelectorList(const DOM::DOMString& string)
+{
+    selectors.clear();
+    setupParser("@-khtml-selectors {", string, "} ");
+    runParser();
+    return selectors;
+}
 
 void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
 {

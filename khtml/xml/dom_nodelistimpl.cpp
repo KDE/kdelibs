@@ -60,7 +60,7 @@
 using namespace DOM;
 using namespace khtml;
 
-NodeImpl *NodeListImpl::item( unsigned long index ) const
+NodeImpl* DynamicNodeListImpl::item( unsigned long index ) const
 {
     unsigned long requestIndex = index;
 
@@ -94,7 +94,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
     return n;
 }
 
-unsigned long NodeListImpl::length() const
+unsigned long DynamicNodeListImpl::length() const
 {
     m_cache->updateNodeListInfo(m_refNode->document());
     if (!m_cache->hasLength) {
@@ -104,7 +104,7 @@ unsigned long NodeListImpl::length() const
     return m_cache->length;
 }
 
-unsigned long NodeListImpl::calcLength(NodeImpl *start) const
+unsigned long DynamicNodeListImpl::calcLength(NodeImpl *start) const
 {
     unsigned long len = 0;
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
@@ -112,13 +112,13 @@ unsigned long NodeListImpl::calcLength(NodeImpl *start) const
         if (nodeMatches(n, recurse))
                 len++;
         if (recurse)
-            len+= NodeListImpl::calcLength(n);
+            len+= DynamicNodeListImpl::calcLength(n);
     }
 
     return len;
 }
 
-NodeListImpl::NodeListImpl( NodeImpl *n, int type, CacheFactory* factory )
+DynamicNodeListImpl::DynamicNodeListImpl( NodeImpl *n, int type, CacheFactory* factory )
 {
     m_refNode = n;
     m_refNode->ref();
@@ -127,7 +127,7 @@ NodeListImpl::NodeListImpl( NodeImpl *n, int type, CacheFactory* factory )
                   factory, n, type );
 }
 
-NodeListImpl::~NodeListImpl()
+DynamicNodeListImpl::~DynamicNodeListImpl()
 {
     m_refNode->document()->releaseCachedNodeListInfo(m_cache);
     m_refNode->deref();
@@ -149,7 +149,7 @@ static NodeImpl* helperNext(NodeImpl* node, NodeImpl* absStart)
         return 0;
 }
 
-NodeImpl *NodeListImpl::recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
+NodeImpl *DynamicNodeListImpl::recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
 {
     for(NodeImpl *n = start; n != 0; n = helperNext(n, absStart)) {
         bool recurse = true;
@@ -165,7 +165,7 @@ NodeImpl *NodeListImpl::recursiveItem ( NodeImpl* absStart, NodeImpl *start, uns
     return 0; // no matching node in this subtree
 }
 
-NodeImpl *NodeListImpl::recursiveItemBack ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
+NodeImpl *DynamicNodeListImpl::recursiveItemBack ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
 {
     //### it might be cleaner/faster to split nodeMatches and recursion
     //filtering.
@@ -203,28 +203,28 @@ NodeImpl *NodeListImpl::recursiveItemBack ( NodeImpl* absStart, NodeImpl *start,
 
 // ---------------------------------------------------------------------------
 
-NodeListImpl::Cache* NodeListImpl::Cache::makeStructuralOnly()
+DynamicNodeListImpl::Cache* DynamicNodeListImpl::Cache::makeStructuralOnly()
 {
    return new Cache(DocumentImpl::TV_Structural); // will check the same ver twice
 }
 
-NodeListImpl::Cache* NodeListImpl::Cache::makeNameOrID()
+DynamicNodeListImpl::Cache* DynamicNodeListImpl::Cache::makeNameOrID()
 {
    return new Cache(DocumentImpl::TV_IDNameHref);
 }
 
-NodeListImpl::Cache* NodeListImpl::Cache::makeClassName()
+DynamicNodeListImpl::Cache* DynamicNodeListImpl::Cache::makeClassName()
 {
    return new Cache(DocumentImpl::TV_Class);
 }
 
-NodeListImpl::Cache::Cache(unsigned short relSecondaryVer):relevantSecondaryVer(relSecondaryVer)
+DynamicNodeListImpl::Cache::Cache(unsigned short relSecondaryVer):relevantSecondaryVer(relSecondaryVer)
 {}
 
-NodeListImpl::Cache::~Cache()
+DynamicNodeListImpl::Cache::~Cache()
 {}
 
-void NodeListImpl::Cache::clear(DocumentImpl* doc)
+void DynamicNodeListImpl::Cache::clear(DocumentImpl* doc)
 {
    hasLength = false;
    current.node = 0;
@@ -232,7 +232,7 @@ void NodeListImpl::Cache::clear(DocumentImpl* doc)
    secondaryVersion = doc->domTreeVersion(relevantSecondaryVer);
 }
 
-void NodeListImpl::Cache::updateNodeListInfo(DocumentImpl* doc)
+void DynamicNodeListImpl::Cache::updateNodeListInfo(DocumentImpl* doc)
 {
     //If version doesn't match, clear
     if (doc->domTreeVersion(DocumentImpl::TV_Structural) != version ||
@@ -241,7 +241,7 @@ void NodeListImpl::Cache::updateNodeListInfo(DocumentImpl* doc)
 }
 
 // ---------------------------------------------------------------------------
-ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n ): NodeListImpl(n, CHILD_NODES, NodeListImpl::Cache::makeStructuralOnly)
+ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n ): DynamicNodeListImpl(n, CHILD_NODES, DynamicNodeListImpl::Cache::makeStructuralOnly)
 {}
 
 bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/, bool& doRecurse ) const
@@ -252,7 +252,7 @@ bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/, bool& doRecurse ) c
 
 // ---------------------------------------------------------------------------
 TagNodeListImpl::TagNodeListImpl(NodeImpl *n, NamespaceName namespaceName, LocalName localName, PrefixName prefix)
-  : NodeListImpl(n, UNCACHEABLE, NodeListImpl::Cache::makeStructuralOnly),
+  : DynamicNodeListImpl(n, UNCACHEABLE, DynamicNodeListImpl::Cache::makeStructuralOnly),
     m_namespaceAware(false)
 {
     m_namespace = namespaceName;
@@ -261,7 +261,7 @@ TagNodeListImpl::TagNodeListImpl(NodeImpl *n, NamespaceName namespaceName, Local
 }
 
 TagNodeListImpl::TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName )
-  : NodeListImpl(n, UNCACHEABLE, NodeListImpl::Cache::makeStructuralOnly),
+  : DynamicNodeListImpl(n, UNCACHEABLE, DynamicNodeListImpl::Cache::makeStructuralOnly),
     m_namespaceAware(true)
 {
     if (namespaceURI == "*")
@@ -292,7 +292,7 @@ bool TagNodeListImpl::nodeMatches(NodeImpl *testNode, bool& /*doRecurse*/) const
 
 // ---------------------------------------------------------------------------
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
-  : NodeListImpl(n, UNCACHEABLE, NodeListImpl::Cache::makeNameOrID),
+  : DynamicNodeListImpl(n, UNCACHEABLE, DynamicNodeListImpl::Cache::makeNameOrID),
     nodeName(t)
 {}
 
@@ -304,7 +304,7 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) co
 
 // ---------------------------------------------------------------------------
 ClassNodeListImpl::ClassNodeListImpl(NodeImpl* rootNode, const DOMString& classNames)
-    : NodeListImpl(rootNode, UNCACHEABLE, NodeListImpl::Cache::makeClassName)
+    : DynamicNodeListImpl(rootNode, UNCACHEABLE, DynamicNodeListImpl::Cache::makeClassName)
 {
     m_classNames.parseClassAttribute(classNames.string(), m_refNode->document()->inCompatMode());
 }
@@ -341,11 +341,11 @@ void StaticNodeListImpl::append(NodeImpl* n) {
     m_kids.append(n);
 }
 
-NodeImpl* StaticNodeListImpl::at(int p) {
-    return m_kids[p].get();
+NodeImpl* StaticNodeListImpl::item ( unsigned long index ) const {
+    return m_kids[index].get();
 }
 
-int StaticNodeListImpl::size() const {
+unsigned long StaticNodeListImpl::length() const {
     return m_kids.size();
 }
 

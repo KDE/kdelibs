@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.2.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -62,36 +61,37 @@
      KHTML_DECLS_SYM = 278,
      KHTML_VALUE_SYM = 279,
      KHTML_MEDIAQUERY_SYM = 280,
-     IMPORTANT_SYM = 281,
-     MEDIA_ONLY = 282,
-     MEDIA_NOT = 283,
-     MEDIA_AND = 284,
-     QEMS = 285,
-     EMS = 286,
-     EXS = 287,
-     PXS = 288,
-     CMS = 289,
-     MMS = 290,
-     INS = 291,
-     PTS = 292,
-     PCS = 293,
-     DEGS = 294,
-     RADS = 295,
-     GRADS = 296,
-     MSECS = 297,
-     SECS = 298,
-     HERZ = 299,
-     KHERZ = 300,
-     DPI = 301,
-     DPCM = 302,
-     DIMEN = 303,
-     PERCENTAGE = 304,
-     FLOAT = 305,
-     INTEGER = 306,
-     URI = 307,
-     FUNCTION = 308,
-     NOTFUNCTION = 309,
-     UNICODERANGE = 310
+     KHTML_SELECTORS_SYM = 281,
+     IMPORTANT_SYM = 282,
+     MEDIA_ONLY = 283,
+     MEDIA_NOT = 284,
+     MEDIA_AND = 285,
+     QEMS = 286,
+     EMS = 287,
+     EXS = 288,
+     PXS = 289,
+     CMS = 290,
+     MMS = 291,
+     INS = 292,
+     PTS = 293,
+     PCS = 294,
+     DEGS = 295,
+     RADS = 296,
+     GRADS = 297,
+     MSECS = 298,
+     SECS = 299,
+     HERZ = 300,
+     KHERZ = 301,
+     DPI = 302,
+     DPCM = 303,
+     DIMEN = 304,
+     PERCENTAGE = 305,
+     FLOAT = 306,
+     INTEGER = 307,
+     URI = 308,
+     FUNCTION = 309,
+     NOTFUNCTION = 310,
+     UNICODERANGE = 311
    };
 #endif
 

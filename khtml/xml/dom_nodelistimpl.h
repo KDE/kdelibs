@@ -65,6 +65,16 @@ class DocumentImpl;
 class NodeListImpl : public khtml::Shared<NodeListImpl>
 {
 public:
+    // DOM methods & attributes for NodeList
+    virtual unsigned long length() const = 0;
+    virtual NodeImpl *item ( unsigned long index ) const = 0;
+    
+    virtual ~NodeListImpl() {}
+};
+
+class DynamicNodeListImpl : public NodeListImpl
+{
+public:
     //Type of the item stored in the cache.
     enum Type {
         UNCACHEABLE, // Too complex to remember in document -- we still track the position
@@ -126,8 +136,8 @@ public:
 
     typedef Cache* CacheFactory();
 
-    NodeListImpl(NodeImpl* node, int type, CacheFactory* factory);
-    virtual ~NodeListImpl();
+    DynamicNodeListImpl(NodeImpl* node, int type, CacheFactory* factory);
+    virtual ~DynamicNodeListImpl();
 
     // DOM methods & attributes for NodeList
     virtual unsigned long length() const;
@@ -150,11 +160,11 @@ protected:
     mutable Cache* m_cache;
 };
 
-class ChildNodeListImpl : public NodeListImpl
+class ChildNodeListImpl : public DynamicNodeListImpl
 {
 public:
 
-    ChildNodeListImpl( NodeImpl *n);
+    ChildNodeListImpl( NodeImpl *n );
 
 protected:
     virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
@@ -164,7 +174,7 @@ protected:
 /**
  * NodeList which lists all Nodes in a document with a given tag name
  */
-class TagNodeListImpl : public NodeListImpl
+class TagNodeListImpl : public DynamicNodeListImpl
 {
 public:
     TagNodeListImpl(NodeImpl *n, NamespaceName namespaceName, LocalName localName, PrefixName);
@@ -185,7 +195,7 @@ protected:
 /**
  * NodeList which lists all Nodes in a Element with a given "name=" tag
  */
-class NameNodeListImpl : public NodeListImpl
+class NameNodeListImpl : public DynamicNodeListImpl
 {
 public:
     NameNodeListImpl( NodeImpl *doc, const DOMString &t );
@@ -199,7 +209,7 @@ protected:
 };
 
 /** For getElementsByClassName */
-class ClassNodeListImpl : public NodeListImpl {
+class ClassNodeListImpl : public DynamicNodeListImpl {
 public:
     ClassNodeListImpl(NodeImpl* rootNode, const DOMString& classNames);
 
@@ -210,18 +220,21 @@ private:
 };
 
 
-class StaticNodeListImpl : public khtml::Shared<StaticNodeListImpl>
+class StaticNodeListImpl : public NodeListImpl
 {
 public:
     StaticNodeListImpl();
     ~StaticNodeListImpl();
 
-    void append(NodeImpl* n);
-    NodeImpl* at(int);
-    int       size() const;
+    // Implementation of the NodeList API
+    virtual unsigned long length() const;
+    virtual NodeImpl *item ( unsigned long index ) const;
+    
 
-    NodeImpl* first() { return at(0); }
-    bool      isEmpty() const { return size() == 0; }
+    // Methods specific to StaticNodeList
+    void append(NodeImpl* n);
+    NodeImpl* first() { return item(0); }
+    bool      isEmpty() const { return length() == 0; }
 private:
     WTF::Vector<SharedPtr<NodeImpl> > m_kids;
 };

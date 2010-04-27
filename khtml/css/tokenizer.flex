@@ -59,6 +59,7 @@ nth             ([\+-]?[0-9]*n[ \t\r\n\f]*[\+-][ \t\r\n\f]*[0-9]+)|([\+-]?[0-9]*
 "@-khtml-rule"    {BEGIN(at_rule); yyTok = KHTML_RULE_SYM; return yyTok; }
 "@-khtml-decls"   {yyTok = KHTML_DECLS_SYM; return yyTok; }
 "@-khtml-value"   {yyTok = KHTML_VALUE_SYM; return yyTok; }
+"@-khtml-selectors"   {yyTok = KHTML_SELECTORS_SYM; return yyTok; }
 "@-khtml-mediaquery"   {BEGIN(mediaquery); yyTok = KHTML_MEDIAQUERY_SYM; return yyTok; }
 
 "!"{w}"important"         {yyTok = IMPORTANT_SYM; return yyTok;}

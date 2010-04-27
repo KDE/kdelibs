@@ -45,7 +45,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLCollectionImpl : public NodeListImpl
+class HTMLCollectionImpl : public DynamicNodeListImpl
 {
     friend class DOM::HTMLCollection;
 public:
@@ -103,7 +103,7 @@ protected:
     // The collection list the following elements
     int type:8;
 
-    // Reimplemented from NodeListImpl
+    // Reimplemented from DynamicNodeListImpl
     virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
 
     // Helper for name iteration: checks whether ID matches,

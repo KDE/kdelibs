@@ -510,7 +510,7 @@ DocumentImpl::~DocumentImpl()
     //you may also have to fix removedLastRef() above - M.O.
     assert( !m_render );
 
-    QHashIterator<long,NodeListImpl::Cache*> it(m_nodeListCache);
+    QHashIterator<long,DynamicNodeListImpl::Cache*> it(m_nodeListCache);
     while (it.hasNext())
         it.next().value()->deref();
 
@@ -2926,16 +2926,16 @@ KHTMLPart* DOM::DocumentImpl::part() const
     return view() ? view()->part() : 0;
 }
 
-NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
-       NodeListImpl::CacheFactory* factory, NodeImpl* base, int type)
+DynamicNodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
+       DynamicNodeListImpl::CacheFactory* factory, NodeImpl* base, int type)
 {
     //### might want to flush the dict when the version number
     //changes
-    NodeListImpl::CacheKey key(base, type);
+    DynamicNodeListImpl::CacheKey key(base, type);
 
     //Check to see if we have this sort of item cached.
-    NodeListImpl::Cache* cached =
-        (type == NodeListImpl::UNCACHEABLE) ? 0 : m_nodeListCache.value(key.hash());
+    DynamicNodeListImpl::Cache* cached =
+        (type == DynamicNodeListImpl::UNCACHEABLE) ? 0 : m_nodeListCache.value(key.hash());
 
     if (cached) {
         if (cached->key == key) {
@@ -2948,12 +2948,12 @@ NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
     }
 
     //Nothing to reuse, make a new item.
-    NodeListImpl::Cache* newInfo = factory();
+    DynamicNodeListImpl::Cache* newInfo = factory();
     newInfo->key = key;
     newInfo->clear(this);
     newInfo->ref(); //Add the nodelist's reference
 
-    if (type != NodeListImpl::UNCACHEABLE) {
+    if (type != DynamicNodeListImpl::UNCACHEABLE) {
         newInfo->ref(); //Add the cache's reference
         m_nodeListCache.insert(key.hash(), newInfo);
     }
@@ -2961,7 +2961,7 @@ NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
     return newInfo;
 }
 
-void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
+void DOM::DocumentImpl::releaseCachedNodeListInfo(DynamicNodeListImpl::Cache* entry)
 {
     entry->deref();
 }
