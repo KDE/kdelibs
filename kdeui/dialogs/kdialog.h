@@ -152,6 +152,7 @@ class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
       User3   = 0x00004000, ///< Show User defined button 3.
       NoDefault = 0x00008000 ///< Used when specifying a default button; indicates that no button should be marked by default.
     };
+    // TODO KDE5: remove NoDefault and use the value None instead
     Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
 
     enum ButtonPopupMode
@@ -225,7 +226,8 @@ class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
     void setDefaultButton( ButtonCode id );
 
     /**
-     * Returns the button code of the default button.
+     * Returns the button code of the default button,
+     * or NoDefault if there is no default button.
      */
     ButtonCode defaultButton() const;
 
