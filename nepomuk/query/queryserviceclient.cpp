@@ -19,6 +19,7 @@
 */
 
 #include "queryserviceclient.h"
+#include "queryserviceclient_p.h"
 #include "dbusoperators_p.h"
 #include "result.h"
 #include "query.h"
@@ -60,6 +61,27 @@ namespace {
         }
         return encodedRps;
     }
+
+    NepomukResultListEventLoop::NepomukResultListEventLoop(QObject* parent)
+        : QEventLoop(parent)
+    {
+    }
+
+    NepomukResultListEventLoop::~NepomukResultListEventLoop()
+    {
+    }
+
+    void NepomukResultListEventLoop::addEntries(const QList< Nepomuk::Query::Result >& entries)
+    {
+        m_result << entries;
+        quit();
+    }
+
+    QList< Nepomuk::Query::Result > NepomukResultListEventLoop::result() const
+    {
+        return m_result;
+    }
+
 }
 
 
@@ -211,6 +233,28 @@ bool Nepomuk::Query::QueryServiceClient::blockingQuery( const Query& q )
 }
 
 
+QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncQuery(const Query& q, bool* ok)
+{
+    if( query( q ) ) {
+        NepomukResultListEventLoop loop;
+        connect(this, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)), &loop, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
+        d->loop = &loop;
+        loop.exec();
+        d->loop = 0;
+        if (ok) {
+            *ok = true;
+        }
+        return loop.result();
+    }
+    else {
+        if (ok) {
+            *ok = false;
+        }
+        return QList< Nepomuk::Query::Result >();
+    }
+}
+
+
 bool Nepomuk::Query::QueryServiceClient::blockingSparqlQuery( const QString& q, const QHash<QString, Nepomuk::Types::Property>& requestPropertyMap )
 {
     if( sparqlQuery( q, requestPropertyMap ) ) {
@@ -226,6 +270,30 @@ bool Nepomuk::Query::QueryServiceClient::blockingSparqlQuery( const QString& q, 
 }
 
 
+QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncSparqlQuery(const QString& q,
+                                                    const QHash<QString, Nepomuk::Types::Property>& requestPropertyMap,
+                                                    bool *ok)
+{
+    if( sparqlQuery( q, requestPropertyMap ) ) {
+        NepomukResultListEventLoop loop;
+        connect(this, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)), &loop, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
+        d->loop = &loop;
+        loop.exec();
+        d->loop = 0;
+        if (ok) {
+            *ok = true;
+        }
+        return loop.result();
+    }
+    else {
+        if (ok) {
+            *ok = false;
+        }
+        return QList< Nepomuk::Query::Result >();
+    }
+}
+
+
 bool Nepomuk::Query::QueryServiceClient::blockingDesktopQuery( const QString& q )
 {
     if( desktopQuery( q ) ) {
@@ -237,6 +305,28 @@ bool Nepomuk::Query::QueryServiceClient::blockingDesktopQuery( const QString& q 
     }
     else {
         return false;
+    }
+}
+
+
+QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncDesktopQuery(const QString& q, bool* ok)
+{
+    if( desktopQuery( q ) ) {
+        NepomukResultListEventLoop loop;
+        connect(this, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)), &loop, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
+        d->loop = &loop;
+        loop.exec();
+        d->loop = 0;
+        if (ok) {
+            *ok = true;
+        }
+        return loop.result();
+    }
+    else {
+        if (ok) {
+            *ok = false;
+        }
+        return QList< Nepomuk::Query::Result >();
     }
 }
 
@@ -260,3 +350,4 @@ bool Nepomuk::Query::QueryServiceClient::serviceAvailable()
 }
 
 #include "queryserviceclient.moc"
+#include "queryserviceclient_p.moc"

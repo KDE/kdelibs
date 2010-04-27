@@ -187,6 +187,63 @@ namespace Nepomuk {
              * \sa desktopQuery(const QString&), close()
              */
             bool blockingDesktopQuery( const QString& query );
+            
+            /**
+             * Start a query using the Nepomuk query service.
+             *
+             * A local event loop will be started to block the method
+             * call until all results have been listed, and results will be
+             * returned. You can check if the query was successful through
+             * the \p ok pointer.
+             *
+             * The client will be closed after the initial listing. Thus,
+             * changes to results will not be reported as it is the case
+             * with the non-blocking methods.
+             *
+             * \param query the query to perform.
+             * \param ok a valid boolean pointer, which will be set to \p true
+             * if the query service was found and the query was started, \p false otherwise.
+             * If you don't want to track errors, you can pass a null pointer instead.
+             *
+             * \return a list of \p Result for the given query.
+             *
+             * \sa query(const Query&), close()
+             *
+             * \since 4.5
+             */
+            QList<Nepomuk::Query::Result> syncQuery( const Query& query, bool *ok = 0 );
+            
+            /**
+             * \overload
+             *
+             * \param query a SPARQL query which binds results to variable \p 'r'.
+             * \param ok a valid boolean pointer, which will be set to \p true
+             * if the query service was found and the query was started, \p false otherwise.
+             * If you don't want to track errors, you can pass a null pointer instead.
+             * \param requestPropertyMap An optional mapping of variable binding names in \p query
+             * to their corresponding properties. For details see sparqlQuery.
+             *
+             * \sa sparqlQuery(const Query&)
+             *
+             * \since 4.5
+             */
+            QList<Nepomuk::Query::Result> syncSparqlQuery( const QString& query,
+                            const Nepomuk::Query::RequestPropertyMap& requestPropertyMap = Nepomuk::Query::RequestPropertyMap(),
+                            bool *ok = 0 );
+            
+            /**
+             * \overload
+             *
+             * \param query a desktop query string which can be parsed by QueryParser.
+             * \param ok a valid boolean pointer, which will be set to \p true
+             * if the query service was found and the query was started, \p false otherwise.
+             * If you don't want to track errors, you can pass a null pointer instead.
+             *
+             * \sa desktopQuery(const QString&), close()
+             *
+             * \since 4.5
+             */
+            QList<Nepomuk::Query::Result> syncDesktopQuery( const QString& query, bool *ok = 0 );
 
             /**
              * Close the client, thus stop to monitor the query
