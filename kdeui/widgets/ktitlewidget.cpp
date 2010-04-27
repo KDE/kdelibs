@@ -34,8 +34,34 @@ class KTitleWidget::Private
 public:
     Private(KTitleWidget* parent)
         : q(parent),
-          autoHideTimeout(0)
+          autoHideTimeout(0),
+          messageType(InfoMessage)
     {
+    }
+
+    QString textStyleSheet() const
+    {
+        return QString("QLabel { font-weight: bold; color: %1}").arg(q->palette().color(QPalette::WindowText).name());
+    }
+
+    QString commentStyleSheet() const
+    {
+        QString styleSheet;
+        switch (messageType) {
+            //FIXME: we need the usability color styles to implement different
+            //       yet palette appropriate colours for the different use cases!
+            //       also .. should we include an icon here,
+            //       perhaps using the imageLabel?
+            case InfoMessage:
+            case WarningMessage:
+            case ErrorMessage:
+                styleSheet = QString("QLabel { color: palette(%1); background: palette(%2); }").arg(q->palette().color(QPalette::HighlightedText).name()).arg(q->palette().color(QPalette::Highlight).name());
+                break;
+            case PlainMessage:
+            default:
+                break;
+        }
+        return styleSheet;
     }
 
     KTitleWidget* q;
@@ -44,6 +70,7 @@ public:
     QLabel *textLabel;
     QLabel *commentLabel;
     int autoHideTimeout;
+    MessageType messageType;
 
     /**
      * @brief Get the icon name from the icon type
@@ -166,8 +193,8 @@ void KTitleWidget::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
     if (e->type() == QEvent::PaletteChange) {
-        d->textLabel->setStyleSheet(d->textLabel->styleSheet());
-        d->commentLabel->setStyleSheet(d->commentLabel->styleSheet());
+        d->textLabel->setStyleSheet(d->textStyleSheet());
+        d->commentLabel->setStyleSheet(d->commentStyleSheet());
     }
 }
 
@@ -176,7 +203,7 @@ void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
     d->textLabel->setVisible(!text.isNull());
 
     if (!Qt::mightBeRichText(text)) {
-        d->textLabel->setStyleSheet("QLabel { font-weight: bold; }");
+        d->textLabel->setStyleSheet(d->textStyleSheet());
     }
 
     d->textLabel->setText(text);
@@ -194,24 +221,9 @@ void KTitleWidget::setComment(const QString &comment, MessageType type)
 {
     d->commentLabel->setVisible(!comment.isNull());
 
-    QString styleSheet;
-    switch (type) {
-        //FIXME: we need the usability color styles to implement different
-        //       yet palette appropriate colours for the different use cases!
-        //       also .. should we include an icon here,
-        //       perhaps using the imageLabel?
-        case InfoMessage:
-        case WarningMessage:
-        case ErrorMessage:
-            styleSheet = QString("QLabel { color: palette(highlighted-text); background: palette(highlight); }");
-            break;
-        case PlainMessage:
-        default:
-            break;
-    }
-
     //TODO: should we override the current icon with the corresponding MessageType icon?
-    d->commentLabel->setStyleSheet(styleSheet);
+    d->messageType = type;
+    d->commentLabel->setStyleSheet(d->commentStyleSheet());
     d->commentLabel->setText(comment);
     show();
 }
