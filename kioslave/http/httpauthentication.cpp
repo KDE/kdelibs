@@ -146,13 +146,15 @@ KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArr
     if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
         return new KHttpNegotiateAuthentication(config);
     } else
+#else
+    Q_UNUSED(config);
 #endif
     if (scheme.startsWith("digest")) { // krazy:exclude=strings
-        return new KHttpDigestAuthentication(config);
+        return new KHttpDigestAuthentication();
     } else if (scheme.startsWith("ntlm")) { // krazy:exclude=strings
-        return new KHttpNtlmAuthentication(config);
+        return new KHttpNtlmAuthentication();
     } else if (scheme.startsWith("basic")) { // krazy:exclude=strings
-        return new KHttpBasicAuthentication(config);
+        return new KHttpBasicAuthentication();
     }
     return 0;
 }
