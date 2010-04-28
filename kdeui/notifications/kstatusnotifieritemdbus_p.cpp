@@ -45,6 +45,20 @@
 
 #include "statusnotifieritemadaptor.h"
 
+#ifdef Q_OS_WIN64    
+__inline int toInt(WId wid) 
+{
+	return (int)((__int64)wid);
+}
+
+#else
+__inline int toInt(WId wid) 
+{
+	return (int)wid;
+}
+#endif        
+
+
 // Marshall the ImageStruct data into a D-BUS argument
 const QDBusArgument &operator<<(QDBusArgument &argument, const KDbusImageStruct &icon)
 {
@@ -198,7 +212,7 @@ QString KStatusNotifierItemDBus::Status() const
 int KStatusNotifierItemDBus::WindowId() const
 {
     if (m_statusNotifierItem->d->associatedWidget) {
-        return (qptrdiff)m_statusNotifierItem->d->associatedWidget->winId();
+        return toInt(m_statusNotifierItem->d->associatedWidget->winId());
     } else {
         return 0;
     }
