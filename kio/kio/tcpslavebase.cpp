@@ -129,8 +129,8 @@ public:
 
         QString errorStr;
         // encode the two-dimensional numeric error list using '\n' and '\t' as outer and inner separators
-        foreach (const QSslCertificate &cert, socket.peerCertificateChain()) {
-            foreach (const KSslError &error, sslErrors) {
+        Q_FOREACH (const QSslCertificate &cert, socket.peerCertificateChain()) {
+            Q_FOREACH (const KSslError &error, sslErrors) {
                 if (error.certificate() == cert) {
                     errorStr += QString::number(static_cast<int>(error.error())) + '\t';
                 }
@@ -144,7 +144,7 @@ public:
         q->setMetaData("ssl_cert_errors", errorStr);
 
         QString peerCertChain;
-        foreach (const QSslCertificate &cert, socket.peerCertificateChain()) {
+        Q_Q_FOREACH (const QSslCertificate &cert, socket.peerCertificateChain()) {
             peerCertChain.append(cert.toPem());
             peerCertChain.append('\x01');
         }
@@ -506,7 +506,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
         if (it.next().error() != KSslError::HostNameMismatch) {
             continue;
         }
-        foreach (const QString &dp, domainPatterns) {
+        Q_FOREACH (const QString &dp, domainPatterns) {
             domainMatcher.setPattern(dp);
             if (domainMatcher.exactMatch(d->host)) {
                 it.remove();
@@ -759,7 +759,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     //### We don't ask to permanently reject the certificate
 
     QString message = i18n("The server failed the authenticity check (%1).\n\n", d->host);
-    foreach (const KSslError &err, d->sslErrors) {
+    Q_FOREACH (const KSslError &err, d->sslErrors) {
         message.append(err.errorString());
         message.append('\n');
     }
