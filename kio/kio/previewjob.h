@@ -109,8 +109,10 @@ namespace KIO {
          * Returns the default "maximum file size", in bytes, used by PreviewJob.
          * This is useful for applications providing a GUI for letting the user change the size.
          * @since 4.1
+         * @deprecated PreviewJob uses different maximum file sizes dependent on the URL since 4.5.
+         *             The returned file size is only valid for local URLs.
          */
-        static KIO::filesize_t maximumFileSize();
+        KDE_DEPRECATED static KIO::filesize_t maximumFileSize();
 
 
     Q_SIGNALS:
