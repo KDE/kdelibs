@@ -110,13 +110,13 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_nepomukActivated = (Nepomuk::ResourceManager::instance()->init() == 0);
     if (m_nepomukActivated) {
         m_ratingWidget = new KRatingWidget();
-        m_ratingWidget->installEventFilter(q);
         const Qt::Alignment align = (m_ratingWidget->layoutDirection() == Qt::LeftToRight) ?
                                     Qt::AlignLeft : Qt::AlignRight;
         m_ratingWidget->setAlignment(align);
         connect(m_ratingWidget, SIGNAL(ratingChanged(unsigned int)),
                 q, SLOT(slotRatingChanged(unsigned int)));
         m_ratingWidget->setVisible(false);
+        m_ratingWidget->installEventFilter(q);
 
         m_tagWidget = new Nepomuk::TagWidget();
         m_tagWidget->setModeFlags(Nepomuk::TagWidget::MiniMode);
