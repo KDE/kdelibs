@@ -262,7 +262,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     // load shortcut schemes, user-defined shortcuts and other action properties
     d->saveDefaultActionProperties(client);
-    d->refreshActionProperties(client, doc);
+    if (!doc.isNull())
+        d->refreshActionProperties(client, doc);
 
     BuildHelper( *d, d->m_rootNode ).build( docElement );
 
