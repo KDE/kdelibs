@@ -42,6 +42,8 @@
     }
 #endif
 
+#include <QEvent>
+
 class KFileMetaDataProvider::Private
 {
 
@@ -108,11 +110,10 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_nepomukActivated = (Nepomuk::ResourceManager::instance()->init() == 0);
     if (m_nepomukActivated) {
         m_ratingWidget = new KRatingWidget();
-        // TODO:
-        //m_ratingWidget->setFixedHeight(fontMetrics.height());
-        //const Qt::Alignment align = (parent->layoutDirection() == Qt::LeftToRight) ?
-        //                           Qt::AlignLeft : Qt::AlignRight;
-        //m_ratingWidget->setAlignment(align);
+        m_ratingWidget->installEventFilter(q);
+        const Qt::Alignment align = (m_ratingWidget->layoutDirection() == Qt::LeftToRight) ?
+                                    Qt::AlignLeft : Qt::AlignRight;
+        m_ratingWidget->setAlignment(align);
         connect(m_ratingWidget, SIGNAL(ratingChanged(unsigned int)),
                 q, SLOT(slotRatingChanged(unsigned int)));
         m_ratingWidget->setVisible(false);
@@ -285,7 +286,7 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
         thread->cancel();
     }
 
-    // create a new thread that will provide the meeta data for the items
+    // create a new thread that will provide the meta data for the items
     d->m_latestMetaDataThread = new KLoadFileMetaDataThread();
     connect(d->m_latestMetaDataThread, SIGNAL(finished(QThread*)),
             this, SLOT(slotLoadingFinished(QThread*)));
@@ -418,6 +419,17 @@ bool KFileMetaDataProvider::setValue(const KUrl& metaDataUri, const Nepomuk::Var
     return false;
 }
 #endif
+
+bool KFileMetaDataProvider::eventFilter(QObject* watched, QEvent* event)
+{
+    if ((watched == d->m_ratingWidget) && (event->type() == QEvent::FontChange)) {
+        // Assure that the height of the rating widget is equal with the font
+        // height, so that the alignment to the other labels is symmetric.
+        const QFontMetrics metrics(d->m_ratingWidget->font());
+        d->m_ratingWidget->setPixmapSize(metrics.height());
+    }
+    return QObject::eventFilter(watched, event);
+}
 
 void KFileMetaDataProvider::readOnlyChanged(bool readOnly)
 {

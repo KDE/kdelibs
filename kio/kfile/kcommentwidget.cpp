@@ -36,7 +36,6 @@ KCommentWidget::KCommentWidget(QWidget* parent) :
     m_comment()
 {
     m_label = new QLabel(this);
-    m_label->setFont(font());
     m_label->setWordWrap(true);
     m_label->setAlignment(Qt::AlignTop);
     connect(m_label, SIGNAL(linkActivated(const QString&)), this, SLOT(slotLinkActivated(const QString&)));

@@ -122,7 +122,13 @@ public:
     virtual bool setValue(const KUrl& metaDataUri, const Nepomuk::Variant& value);
 #endif
 
-    void readOnlyChanged(bool readOnly);
+    virtual bool eventFilter(QObject* watched, QEvent* event);
+
+    /**
+     * Is invoked when the readonly state has been changed by
+     * KFileMetaDataProvider::setReadOnly().
+     */
+    virtual void readOnlyChanged(bool readOnly);
 
 Q_SIGNALS:
     /**
