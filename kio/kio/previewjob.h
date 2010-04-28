@@ -39,21 +39,21 @@ namespace KIO {
     {
         Q_OBJECT
     public:
-	/**
-	 * Creates a new PreviewJob.
-	 * @param items a list of files to create previews for
-	 * @param width the desired width
-	 * @param height the desired height, 0 to use the @p width
-	 * @param iconSize the size of the mimetype icon to overlay over the
-	 * preview or zero to not overlay an icon. This has no effect if the
-	 * preview plugin that will be used doesn't use icon overlays.
-	 * @param iconAlpha transparency to use for the icon overlay
-	 * @param scale if the image is to be scaled to the requested size or
-	 * returned in its original size
-	 * @param save if the image should be cached for later use
-	 * @param enabledPlugins if non-zero, this points to a list containing
-	 * the names of the plugins that may be used.
-	 */
+        /**
+         * Creates a new PreviewJob.
+         * @param items a list of files to create previews for
+         * @param width the desired width
+         * @param height the desired height, 0 to use the @p width
+         * @param iconSize the size of the mimetype icon to overlay over the
+         * preview or zero to not overlay an icon. This has no effect if the
+         * preview plugin that will be used doesn't use icon overlays.
+         * @param iconAlpha transparency to use for the icon overlay
+         * @param scale if the image is to be scaled to the requested size or
+         * returned in its original size
+         * @param save if the image should be cached for later use
+         * @param enabledPlugins if non-zero, this points to a list containing
+         * the names of the plugins that may be used.
+         */
         PreviewJob( const KFileItemList& items, int width, int height,
             int iconSize, int iconAlpha, bool scale, bool save,
             const QStringList *enabledPlugins );
@@ -89,19 +89,19 @@ namespace KIO {
          * @since KDE 4.3
          **/
         int sequenceIndex() const;
-        
+
         /**
          * Returns a list of all available preview plugins. The list
          * contains the basenames of the plugins' .desktop files (no path,
          * no .desktop).
-	 * @return the list of plugins
+         * @return the list of plugins
          */
         static QStringList availablePlugins();
 
         /**
          * Returns a list of all supported MIME types. The list can
          * contain entries like text/ * (without the space).
-	 * @return the list of mime types
+         * @return the list of mime types
          */
         static QStringList supportedMimeTypes();
 
@@ -117,15 +117,15 @@ namespace KIO {
         /**
          * Emitted when a thumbnail picture for @p item has been successfully
          * retrieved.
-	 * @param item the file of the preview
-	 * @param preview the preview image
+         * @param item the file of the preview
+         * @param preview the preview image
          */
         void gotPreview( const KFileItem& item, const QPixmap &preview );
         /**
          * Emitted when a thumbnail for @p item could not be created,
          * either because a ThumbCreator for its MIME type does not
          * exist, or because something went wrong.
-	 * @param item the file that failed
+         * @param item the file that failed
          */
         void failed( const KFileItem& item );
 
