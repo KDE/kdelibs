@@ -136,7 +136,7 @@ struct CacheFileInfo : MiniCacheFileInfo {
         out << "\n encoded URL      " << url;
         out << "\n mimetype         " << mimeType;
         out << "\nResponse headers follow...\n";
-        foreach (const QString &h, responseHeaders) {
+        Q_FOREACH (const QString &h, responseHeaders) {
             out << h << '\n';
         }
     }
@@ -544,7 +544,7 @@ public:
         }
         kDebug(7113) << "we have too many fake/stale entries, cleaning up...";
         QSet<CacheIndex> realFiles;
-        foreach (CacheFileInfo *fi, fiList) {
+        Q_FOREACH (CacheFileInfo *fi, fiList) {
             realFiles.insert(CacheIndex(fi->baseName));
         }
         QHash<CacheIndex, MiniCacheFileInfo>::Iterator it = m_scoreboard.begin();
@@ -609,7 +609,7 @@ static void removeOldFiles()
     for (int i = 0; i < n; i++) {
         QString dirName = QString::fromLatin1(&oldDirs[i], 1);
         // delete files in directory...
-        foreach (const QString &baseName, QDir(filePath(dirName)).entryList()) {
+        Q_FOREACH (const QString &baseName, QDir(filePath(dirName)).entryList()) {
             QFile::remove(filePath(dirName + '/' + baseName));
         }
         // delete the (now hopefully empty!) directory itself

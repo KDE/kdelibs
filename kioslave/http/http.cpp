@@ -1897,7 +1897,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         //### for the moment we use a hack: instead of saving and restoring request-id
         //    we just count up like ParallelGetJobs does.
         int requestId = 0;
-        foreach (const HTTPRequest &r, m_requestQueue) {
+        Q_FOREACH (const HTTPRequest &r, m_requestQueue) {
             m_request = r;
             kDebug(7113) << "check two: isKeepAlive =" << m_request.isKeepAlive;
             setMetaData(QLatin1String("request-id"), QString::number(requestId++));
@@ -2440,7 +2440,7 @@ bool HTTPProtocol::sendQuery()
   }
 
   kDebug(7103) << "============ Sending Header:";
-  foreach (const QString &s, header.split(QLatin1String("\r\n"), QString::SkipEmptyParts)) {
+  Q_FOREACH (const QString &s, header.split(QLatin1String("\r\n"), QString::SkipEmptyParts)) {
     kDebug(7103) << s;
   }
 
@@ -2525,7 +2525,7 @@ void HTTPProtocol::parseHeaderFromCache()
     // ### we're not checking the return value, but we actually should
     cacheFileReadTextHeader2();
 
-    foreach (const QString &str, m_responseHeaders) {
+    Q_FOREACH (const QString &str, m_responseHeaders) {
         QString header = str.trimmed().toLower();
         if (header.startsWith(QLatin1String("content-type: "))) {
             int pos = header.indexOf(QLatin1String("charset="));
@@ -2959,7 +2959,7 @@ try_again:
 
         // If we still have text, then it means we have a mime-type with a
         // parameter (eg: charset=iso-8851) ; so let's get that...
-        foreach (const QByteArray &statement, l) {
+        Q_FOREACH (const QByteArray &statement, l) {
             QList<QByteArray> parts = statement.split('=');
             if (parts.count() != 2) {
                 continue;
@@ -3127,7 +3127,7 @@ try_again:
         QString offered = QString::fromLatin1(tIt.next());
         upgradeOffers = offered.split(QRegExp(QLatin1String("[ \n,\r\t]")), QString::SkipEmptyParts);
     }
-    foreach (const QString &opt, upgradeOffers) {
+    Q_FOREACH (const QString &opt, upgradeOffers) {
         if (opt == QLatin1String("TLS/1.0")) {
             if (!startSsl() && upgradeRequired) {
                 error(ERR_UPGRADE_REQUIRED, opt);
