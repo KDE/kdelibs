@@ -56,7 +56,7 @@ public:
     void slotCommentChanged(const QString& comment);
 
     void slotMetaDataUpdateDone();
-    void slotTagActivated(const Nepomuk::Tag& tag);
+    void slotTagClicked(const Nepomuk::Tag& tag);
 
     /**
      * Disables the metadata widget and starts the job that
@@ -71,6 +71,7 @@ public:
 
     bool m_readOnly;
     bool m_nepomukActivated;
+    bool m_internalValueChange;
     QList<KFileItem> m_fileItems;
 
 #ifdef HAVE_NEPOMUK
@@ -91,6 +92,7 @@ private:
 KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_readOnly(false),
     m_nepomukActivated(false),
+    m_internalValueChange(false),
     m_fileItems(),
 #ifdef HAVE_NEPOMUK
     m_data(),
@@ -117,10 +119,10 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
 
         m_tagWidget = new Nepomuk::TagWidget();
         m_tagWidget->setModeFlags(Nepomuk::TagWidget::MiniMode);
-        connect(m_tagWidget, SIGNAL(tagsChanged(const QList<Nepomuk::Tag>&)),
-                q, SLOT(slotTagsChanged(const QList<Nepomuk::Tag>&)));
-        connect(m_tagWidget, SIGNAL(tagActivated(const Nepomuk::Tag&)),
-                q, SLOT(slotTagActivated(const Nepomuk::Tag&)));
+        connect(m_tagWidget, SIGNAL(selectionChanged(QList<Nepomuk::Tag>)),
+                q, SLOT(slotTagsChanged(QList<Nepomuk::Tag>)));
+        connect(m_tagWidget, SIGNAL(tagClicked(Nepomuk::Tag)),
+                q, SLOT(slotTagClicked(Nepomuk::Tag)));
         m_tagWidget->setVisible(false);
 
         m_commentWidget = new KCommentWidget();
@@ -177,9 +179,12 @@ void KFileMetaDataProvider::Private::slotLoadingFinished(QThread* finishedThread
 
 void KFileMetaDataProvider::Private::slotRatingChanged(unsigned int rating)
 {
+    if (m_internalValueChange) {
+        return;
+    }
+
 #ifdef HAVE_NEPOMUK
-    Nepomuk::MassUpdateJob* job =
-        Nepomuk::MassUpdateJob::rateResources(resourceList(), rating);
+    Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::rateResources(resourceList(), rating);
     startChangeDataJob(job);
 #else
     Q_UNUSED(rating);
@@ -188,12 +193,14 @@ void KFileMetaDataProvider::Private::slotRatingChanged(unsigned int rating)
 
 void KFileMetaDataProvider::Private::slotTagsChanged(const QList<Nepomuk::Tag>& tags)
 {
-#ifdef HAVE_NEPOMUK
-    const QList<Nepomuk::Resource> resources = resourceList();
-    m_tagWidget->setTaggedResources(resources);
+    if (m_internalValueChange) {
+        return;
+    }
 
-    Nepomuk::MassUpdateJob* job =
-        Nepomuk::MassUpdateJob::tagResources(resources, tags);
+#ifdef HAVE_NEPOMUK
+    m_tagWidget->setSelectedTags(tags);
+
+    Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::tagResources(resourceList(), tags);
     startChangeDataJob(job);
 #else
     Q_UNUSED(tags);
@@ -202,16 +209,19 @@ void KFileMetaDataProvider::Private::slotTagsChanged(const QList<Nepomuk::Tag>& 
 
 void KFileMetaDataProvider::Private::slotCommentChanged(const QString& comment)
 {
+    if (m_internalValueChange) {
+        return;
+    }
+
 #ifdef HAVE_NEPOMUK
-    Nepomuk::MassUpdateJob* job =
-        Nepomuk::MassUpdateJob::commentResources(resourceList(), comment);
+    Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::commentResources(resourceList(), comment);
     startChangeDataJob(job);
 #else
     Q_UNUSED(comment);
 #endif
 }
 
-void KFileMetaDataProvider::Private::slotTagActivated(const Nepomuk::Tag& tag)
+void KFileMetaDataProvider::Private::slotTagClicked(const Nepomuk::Tag& tag)
 {
 #ifdef HAVE_NEPOMUK
     emit q->urlActivated(tag.resourceUri());
@@ -259,7 +269,8 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
     if (items.isEmpty()) {
         return;
     }
-
+    Q_PRIVATE_SLOT(d, void slotDataChangeStarted())
+    Q_PRIVATE_SLOT(d, void slotDataChangeFinished())
     QList<KUrl> urls;
     foreach (const KFileItem& item, items) {
         const KUrl url = item.nepomukUri();
@@ -377,24 +388,30 @@ QWidget* KFileMetaDataProvider::valueWidget(const KUrl& metaDataUri) const
 bool KFileMetaDataProvider::setValue(const KUrl& metaDataUri, const Nepomuk::Variant& value)
 {
     if (d->m_nepomukActivated) {
-        QWidget* widget = valueWidget(metaDataUri);
+        // Mark that the value change is an internal change and not done by the user.
+        // This is important to prevent an unnecessary changing of the data in
+        // the slots slotRatingChanged(), slotCommentChanged() and slotTagshanged().
+        d->m_internalValueChange = true;
+
+        const QWidget* widget = valueWidget(metaDataUri);
         if (widget == d->m_ratingWidget) {
             d->m_ratingWidget->setRating(value.toInt());
-            return true;
-        }
-
-        if (widget == d->m_tagWidget) {
+        } else if (widget == d->m_tagWidget) {
             QList<Nepomuk::Variant> variants = value.toVariantList();
-            QList<Nepomuk::Resource> resources;
+            QList<Nepomuk::Tag> tags;
             foreach (const Nepomuk::Variant& variant, variants) {
-                resources.append(variant.toResource());
+                const Nepomuk::Resource resource = variant.toResource();
+                tags.append(static_cast<Nepomuk::Tag>(resource));
             }
-            d->m_tagWidget->setTaggedResources(resources);
-            return true;
+            d->m_tagWidget->setSelectedTags(tags);
+        } else if (widget == d->m_commentWidget) {
+            d->m_commentWidget->setText(value.toString());
+        } else {
+            d->m_internalValueChange = false;
         }
 
-        if (widget == d->m_commentWidget) {
-            d->m_commentWidget->setText(value.toString());
+        if (d->m_internalValueChange) {
+            d->m_internalValueChange = false;
             return true;
         }
     }

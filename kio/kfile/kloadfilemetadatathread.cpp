@@ -133,8 +133,7 @@ void KLoadFileMetaDataThread::run()
         first = false;
     }
 
-    const bool isNepomukActivated = (Nepomuk::ResourceManager::instance()->init() == 0);
-    if (isNepomukActivated) {
+    if (Nepomuk::ResourceManager::instance()->initialized()) {
         data.insert(KUrl("kfileitem#rating"), rating);
         data.insert(KUrl("kfileitem#comment"), comment);
 

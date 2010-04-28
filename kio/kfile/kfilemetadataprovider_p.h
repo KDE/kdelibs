@@ -144,7 +144,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotRatingChanged(unsigned int rating))
     Q_PRIVATE_SLOT(d, void slotTagsChanged(const QList<Nepomuk::Tag>& tags))
     Q_PRIVATE_SLOT(d, void slotCommentChanged(const QString& comment))
-    Q_PRIVATE_SLOT(d, void slotTagActivated(const Nepomuk::Tag& tag))
+    Q_PRIVATE_SLOT(d, void slotTagClicked(const Nepomuk::Tag& tag))
 
     friend class KLoadMetaDataThread; // invokes KMetaDataObject::loadData()
 };
