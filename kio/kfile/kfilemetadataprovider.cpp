@@ -388,9 +388,9 @@ QWidget* KFileMetaDataProvider::valueWidget(const KUrl& metaDataUri) const
 bool KFileMetaDataProvider::setValue(const KUrl& metaDataUri, const Nepomuk::Variant& value)
 {
     if (d->m_nepomukActivated) {
-        // Mark that the value change is an internal change and not done by the user.
+        // Mark that the value change is internal and not done by the user.
         // This is important to prevent an unnecessary changing of the data in
-        // the slots slotRatingChanged(), slotCommentChanged() and slotTagshanged().
+        // the slots slotRatingChanged(), slotCommentChanged() and slotTagsChanged().
         d->m_internalValueChange = true;
 
         const QWidget* widget = valueWidget(metaDataUri);
