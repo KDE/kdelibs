@@ -54,9 +54,9 @@ KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
 
     m_popupDelay = new QTimer(this);
     m_popupDelay->setSingleShot(true);
+    m_popupDelay->setInterval(300);
     connect(m_popupDelay, SIGNAL(timeout()), this, SLOT(startListJob()));
     connect(this, SIGNAL(pressed()), this, SLOT(startPopupDelay()));
-    connect(this, SIGNAL(clicked()), this, SLOT(stopPopupDelay()));
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
@@ -334,7 +334,7 @@ void KUrlNavigatorButton::wheelEvent(QWheelEvent* event)
 void KUrlNavigatorButton::startPopupDelay()
 {
     if (!m_popupDelay->isActive() && (m_listJob == 0)) {
-        m_popupDelay->start(300);
+        m_popupDelay->start();
     }
 }
 
@@ -382,12 +382,12 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
 
     foreach (const KIO::UDSEntry& entry, entries) {
         if (entry.isDir()) {
-            QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
             QString displayName = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
             if (displayName.isEmpty()) {
                 displayName = name;
             }
-            if ((name != ".") && (name != "..")) {
+            if ((name != QLatin1String(".")) && (name != QLatin1String(".."))) {
                 m_subDirs.append(qMakePair(name, displayName));
             }
         }
@@ -463,37 +463,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     }
 
     m_dirsMenu = new KUrlNavigatorMenu(this);
-    connect(m_dirsMenu, SIGNAL(urlsDropped(QAction*, QDropEvent*)),
-            this, SLOT(urlsDropped(QAction*, QDropEvent*)));
-
-    m_dirsMenu->setLayoutDirection(Qt::LeftToRight);
-
-    const int subDirsCount = m_subDirs.count();
-    for (int i = 0; i < subDirsCount; ++i) {
-        const QString subDirName = m_subDirs[i].first;
-        const QString subDirDisplayName = m_subDirs[i].second;
-        QString text = KStringHandler::csqueeze(subDirDisplayName, 60);
-        text.replace('&', "&&");
-        QAction* action = new QAction(text, this);
-        if (m_subDir == subDirName) {
-            QFont font(action->font());
-            font.setBold(true);
-            action->setFont(font);
-        }
-        action->setData(i);
-        m_dirsMenu->addAction(action);
-
-        if (i > 100) {
-            // Opening a menu with several 100 items makes no sense from
-            // a usability view. Also there are implementation issues in
-            // QMenu if the number of menu items don't fit into the available
-            // screen -> skip remaining items
-            QAction* limitReached = new QAction("...", this);
-            limitReached->setEnabled(false);
-            m_dirsMenu->addAction(limitReached);
-            break;
-        }
-    }
+    initMenu(m_dirsMenu, 0);
 
     const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
     const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
@@ -530,7 +500,6 @@ void KUrlNavigatorButton::cycleJobFinished(KJob* job)
 
     m_listJob = 0;
     if (job->error() || m_subDirNames.isEmpty()) {
-        // clear listing
         return;
     }
 
@@ -603,5 +572,39 @@ void KUrlNavigatorButton::updateMinimumWidth()
         setMinimumWidth(minWidth);
     }
 }
+
+void KUrlNavigatorButton::initMenu(KUrlNavigatorMenu* menu, int startIndex)
+{
+    connect(menu, SIGNAL(urlsDropped(QAction*, QDropEvent*)),
+            this, SLOT(urlsDropped(QAction*, QDropEvent*)));
+
+    menu->setLayoutDirection(Qt::LeftToRight);
+
+    const int maxIndex = startIndex + 30;  // Don't show more than 30 items in a menu
+    const int lastIndex = qMin(m_subDirs.count() - 1, maxIndex);
+    for (int i = startIndex; i <= lastIndex; ++i) {
+        const QString subDirName = m_subDirs[i].first;
+        const QString subDirDisplayName = m_subDirs[i].second;
+        QString text = KStringHandler::csqueeze(subDirDisplayName, 60);
+        text.replace(QLatin1Char('&'), QLatin1String("&&"));
+        QAction* action = new QAction(text, this);
+        if (m_subDir == subDirName) {
+            QFont font(action->font());
+            font.setBold(true);
+            action->setFont(font);
+        }
+        action->setData(i);
+        menu->addAction(action);
+    }
+    if (m_subDirs.count() > maxIndex) {
+        // If too much items are shown, move them into a sub menu
+        menu->addSeparator();
+        KUrlNavigatorMenu* subDirsMenu = new KUrlNavigatorMenu(menu);
+        subDirsMenu->setTitle(i18nc("@action:inmenu", "More"));
+        initMenu(subDirsMenu, maxIndex);
+        menu->addMenu(subDirsMenu);
+    }
+}
+
 
 #include "kurlnavigatorbutton_p.moc"

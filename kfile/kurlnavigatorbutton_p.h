@@ -115,6 +115,7 @@ private:
     bool isAboveArrow(int x) const;
     bool isTextClipped() const;
     void updateMinimumWidth();
+    void initMenu(KUrlNavigatorMenu* menu, int startIndex);
 
 private:
     bool m_hoverArrow;
