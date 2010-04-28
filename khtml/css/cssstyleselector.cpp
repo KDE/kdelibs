@@ -1301,17 +1301,28 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
     return;
 }
 
-bool CSSStyleSelector::isMatchedByAnySelector(DOM::ElementImpl* e, QList<DOM::CSSSelector*> sels)
+bool CSSStyleSelector::isMatchedByAnySelector(DOM::ElementImpl* e, const QList<DOM::CSSSelector*>& sels)
 {
-    prepareToMatchElement(e);
+    bool inited = false;
+
+    quint16 elementTagId = localNamePart(e->id());
 
     // ### this may introduce extraneous restyling dependencies
     for (int i = 0; i < sels.size(); ++i) {
-        dynamicPseudo = RenderStyle::NOPSEUDO;
-        SelectorMatch match = checkSelector(sels[i], e, true);
+        DOM::CSSSelector* sel = sels[i];
+        quint16 tag = sel->tagLocalName.id();
+        if (elementTagId == tag || tag == anyLocalName) {
+            if (!inited) {
+                prepareToMatchElement(e);
+                inited = true;
+            }
+    
+            dynamicPseudo = RenderStyle::NOPSEUDO;
+            SelectorMatch match = checkSelector(sel, e, true);
 
-        if (match == SelectorMatches && dynamicPseudo == RenderStyle::NOPSEUDO)
-            return true;
+            if (match == SelectorMatches && dynamicPseudo == RenderStyle::NOPSEUDO)
+                return true;
+        }
     }
 
     return false;

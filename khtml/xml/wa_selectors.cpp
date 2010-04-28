@@ -53,10 +53,25 @@ static WTF::PassRefPtr<DOM::NodeListImpl>  querySelectorImp(bool justOne, DOM::N
         return 0;
     }
 
-    // Check for matches
+    // Check for matches. We specialize some paths for common selectors.
     DOM::StaticNodeListImpl* matches = new DOM::StaticNodeListImpl;
-    
+
+    bool requiresClass = true;
+    bool requiresId    = true;
+    for (int i = 0; i < selectors.size(); ++i) {
+        if (selectors[i]->match != CSSSelector::Class)
+            requiresClass = false;
+        if (selectors[i]->match != CSSSelector::Id)
+            requiresId    = false;
+    }
+
     for (DOM::NodeImpl* cur = root; cur; cur = cur->traverseNextNode(root)) {
+        if (requiresClass && !cur->hasClass())
+            continue;
+
+        if (requiresId && !cur->hasID())
+            continue;            
+
         DOM::ElementImpl* e = 0;
         if (cur->isElementNode())
             e = static_cast<DOM::ElementImpl*>(cur);

@@ -186,7 +186,7 @@ namespace khtml
 	// fallbackParentStyle will be inheritted from if the parent doesn't have style info
 	RenderStyle *styleForElement(DOM::ElementImpl *e, RenderStyle* fallbackParentStyle = 0);
 
-	bool isMatchedByAnySelector(DOM::ElementImpl* e, QList<DOM::CSSSelector*> sels);
+	bool isMatchedByAnySelector(DOM::ElementImpl* e, const QList<DOM::CSSSelector*>& sels);
 
         QVector<int> fontSizes() const { return m_fontSizes; }
 	QVector<int> fixedFontSizes() const { return m_fixedFontSizes; }

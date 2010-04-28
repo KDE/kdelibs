@@ -165,6 +165,10 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
          lower == "htmlevents" || lower == "textevents" ) &&
         (version.isEmpty() || version == "2.0" || version == "3.0"))
         return true;
+
+    if (lower == "selectors-api" && version == "1.0")
+        return true;
+        
     return false;
 }
 
