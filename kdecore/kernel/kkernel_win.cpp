@@ -320,7 +320,7 @@ static void redirectToConsole()
 class debug_streambuf: public std::streambuf
 {
     public:
-        debug_streambuf(char *prefix)
+        debug_streambuf(const char *prefix)
         {
             strcpy(buf,prefix);
             index = rindex = strlen(buf);
