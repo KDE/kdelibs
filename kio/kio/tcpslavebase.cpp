@@ -144,7 +144,7 @@ public:
         q->setMetaData("ssl_cert_errors", errorStr);
 
         QString peerCertChain;
-        Q_Q_FOREACH (const QSslCertificate &cert, socket.peerCertificateChain()) {
+        Q_FOREACH (const QSslCertificate &cert, socket.peerCertificateChain()) {
             peerCertChain.append(cert.toPem());
             peerCertChain.append('\x01');
         }
