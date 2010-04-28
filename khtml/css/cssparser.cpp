@@ -322,6 +322,24 @@ QList<DOM::CSSSelector*> CSSParser::parseSelectorList(DOM::DocumentImpl* doc, co
     selectors.clear();
     setupParser("@-khtml-selectors{", string, "} ");
     runParser();
+
+    // Make sure to detect problems with pseudos, too
+    bool ok = true;
+    for (int i = 0; i < selectors.size(); ++i) {
+        DOM::CSSSelector* sel = selectors[i];
+        if(sel->match == CSSSelector::PseudoClass || sel->match == CSSSelector::PseudoElement) {
+            if (sel->pseudoType() == CSSSelector::PseudoOther) {
+                ok = false;
+                break;
+            }
+        }
+    }
+
+    if (!ok) {
+        qDeleteAll(selectors);
+        selectors.clear();
+    }
+    
     return selectors;
 }
 
