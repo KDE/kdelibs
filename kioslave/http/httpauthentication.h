@@ -53,6 +53,8 @@ public:
     void reset();
     // the authentication scheme: "Negotiate", "Digest", "Basic", "NTLM"
     virtual QByteArray scheme() const = 0;
+    // the original challenge from the server, i.e. value from "{WWW|Proxy}-Authentication:" header.
+    virtual QByteArray challenge() const;
     // initiate authentication with challenge string (from HTTP header) c
     virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     // return value updated by setChallenge(); if this is false user and password passed
@@ -86,6 +88,7 @@ protected:
 
     KConfigGroup *m_config;
     QByteArray m_scheme;    // this is parsed from the header and not necessarily == scheme().
+    QByteArray m_rawChallengeText;
     QList<QByteArray> m_challenge;
     KUrl m_resource;
     QByteArray m_httpMethod;

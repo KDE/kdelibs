@@ -23,7 +23,7 @@
 
 // keys on even indexes, values on odd indexes. Reduces code expansion for the templated
 // alternatives.
-static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme)
+static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme = 0)
 {
     QList<QByteArray> values;
     const int len = ba.count();
@@ -86,8 +86,8 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         end++;  // skip comma
     }
     // ensure every key has a value
-    // WARNING: Do not remove the > 1 check or parsing NTLM authentication
-    // challenges will surely fail.
+    // WARNING: Do not remove the > 1 check or parsing a Type 1 NTLM
+    // authentication challenge will surely fail.
     if (values.count() > 1 && values.count() % 2) {
         values.removeLast();
     }
@@ -105,7 +105,6 @@ static QByteArray valueForKey(const QList<QByteArray> &ba, const QByteArray &key
     return QByteArray();
 }
 
-
 QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offers)
 {
     // choose the most secure auth scheme offered
@@ -113,7 +112,7 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
     QByteArray digestOffer;
     QByteArray ntlmOffer;
     QByteArray basicOffer;
-    foreach (const QByteArray &offer, offers) {
+    Q_FOREACH (const QByteArray &offer, offers) {
         QByteArray scheme = offer.mid(0, 10).toLower();
 #ifdef HAVE_LIBGSSAPI
         if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
@@ -163,6 +162,7 @@ void KAbstractHttpAuthentication::reset()
 {
     m_scheme.clear();
     m_challenge.clear();
+    m_rawChallengeText.clear();
     m_resource.clear();
     m_httpMethod.clear();
     m_isError = false;
@@ -172,13 +172,19 @@ void KAbstractHttpAuthentication::reset()
     m_headerFragment.clear();
     m_username.clear();
     m_password.clear();
+    m_config = 0;
 }
 
+QByteArray KAbstractHttpAuthentication::challenge() const
+{
+    return m_rawChallengeText;
+}
 
 void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
                                                const QByteArray &httpMethod)
 {
     reset();
+    m_rawChallengeText = c;
     m_challenge = parseChallenge(c, &m_scheme);
     Q_ASSERT(m_scheme.toLower() == scheme().toLower());
     m_resource = resource;
@@ -209,8 +215,7 @@ void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
 
 void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, const QString &password)
 {
-    if ((m_needCredentials && (user.isEmpty() || password.isEmpty())) ||
-        m_scheme.isEmpty() || m_httpMethod.isEmpty()) {
+    if (m_scheme.isEmpty() || m_httpMethod.isEmpty()) {
         m_isError = true;
         return;
     }
@@ -219,6 +224,7 @@ void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, co
         m_username = user;
         m_password = password;
     }
+
     m_isError = false;
     // we could leave m_needCredentials value alone; this is just defensive coding.
     m_needCredentials = true;
@@ -304,12 +310,6 @@ struct DigestAuthInfo
 //calculateResponse() from the original HTTPProtocol
 static QByteArray calculateResponse(const DigestAuthInfo &info, const KUrl &resource)
 {
-  kDebug(7113) << info.nc << info.qop << info.realm << info.nonce << info.method << info.cnonce
-               << info.username << info.password << info.algorithm << info.entityBody;
-  foreach (const KUrl &u, info.digestURIs) {
-      kDebug(7113) << u;
-  }
-  kDebug(7113);
   KMD5 md;
   QByteArray HA1;
   QByteArray HA2;
@@ -369,10 +369,9 @@ static QByteArray calculateResponse(const DigestAuthInfo &info, const KUrl &reso
   md.reset();
   md.update( authStr );
 
-  QByteArray Response = md.hexDigest();
-
-  kDebug(7113) << "Response => " << Response;
-  return Response;
+  const QByteArray response = md.hexDigest();
+  kDebug(7113) << "Response =>" << response;
+  return response;
 }
 
 
@@ -383,7 +382,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
         return;
     }
 
-// magic starts here (this part is slightly modified from the original in HTTPProtocol)
+    // magic starts here (this part is slightly modified from the original in HTTPProtocol)
 
     DigestAuthInfo info;
 
@@ -407,15 +406,15 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     // Parse the Digest response....
     info.realm = valueForKey(m_challenge, "realm");
 
-    info.algorithm = valueForKey(m_challenge, "algorith");
+    info.algorithm = valueForKey(m_challenge, "algorithm");
     if (info.algorithm.isEmpty()) {
-        info.algorithm = valueForKey(m_challenge, "algorithm");
+        info.algorithm = valueForKey(m_challenge, "algorith");
     }
     if (info.algorithm.isEmpty()) {
         info.algorithm = "MD5";
     }
 
-    foreach (const QByteArray &path, valueForKey(m_challenge, "domain").split(' ')) {
+    Q_FOREACH (const QByteArray &path, valueForKey(m_challenge, "domain").split(' ')) {
         KUrl u(m_resource, QString::fromLatin1(path));
         if (u.isValid()) {
             info.digestURIs.append(u);
@@ -432,96 +431,94 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
         return;
     }
 
-  // If the "domain" attribute was not specified and the current response code
-  // is authentication needed, add the current request url to the list over which
-  // this credential can be automatically applied.
-  if (info.digestURIs.isEmpty() /*###&& (m_request.responseCode == 401 || m_request.responseCode == 407)*/)
-    info.digestURIs.append (m_resource);
-  else
-  {
-    // Verify whether or not we should send a cached credential to the
-    // server based on the stored "domain" attribute...
-    bool send = true;
-
-    // Determine the path of the request url...
-    QString requestPath = m_resource.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
-    if (requestPath.isEmpty())
-      requestPath = QLatin1Char('/');
-
-    foreach (const KUrl &u, info.digestURIs)
+    // If the "domain" attribute was not specified and the current response code
+    // is authentication needed, add the current request url to the list over which
+    // this credential can be automatically applied.
+    if (info.digestURIs.isEmpty() /*###&& (m_request.responseCode == 401 || m_request.responseCode == 407)*/)
+        info.digestURIs.append (m_resource);
+    else
     {
-      send &= (m_resource.protocol().toLower() == u.protocol().toLower());
-      send &= (m_resource.host().toLower() == u.host().toLower());
+        // Verify whether or not we should send a cached credential to the
+        // server based on the stored "domain" attribute...
+        bool send = true;
 
-      if (m_resource.port() > 0 && u.port() > 0)
-        send &= (m_resource.port() == u.port());
+        // Determine the path of the request url...
+        QString requestPath = m_resource.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
+        if (requestPath.isEmpty())
+          requestPath = QLatin1Char('/');
 
-      QString digestPath = u.directory (KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
-      if (digestPath.isEmpty())
-        digestPath = QLatin1Char('/');
+        Q_FOREACH (const KUrl &u, info.digestURIs)
+        {
+          send &= (m_resource.protocol().toLower() == u.protocol().toLower());
+          send &= (m_resource.host().toLower() == u.host().toLower());
 
-      send &= (requestPath.startsWith(digestPath));
+          if (m_resource.port() > 0 && u.port() > 0)
+            send &= (m_resource.port() == u.port());
 
-      if (send)
-        break;
+          QString digestPath = u.directory (KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
+          if (digestPath.isEmpty())
+            digestPath = QLatin1Char('/');
+
+          send &= (requestPath.startsWith(digestPath));
+
+          if (send)
+            break;
+        }
+
+        if (!send) {
+            m_isError = true;
+            return;
+        }
     }
 
-    kDebug(7113) << "passed digest authentication credential test: " << send;
+    kDebug(7113) << "RESULT OF PARSING:";
+    kDebug(7113) << "  algorithm: " << info.algorithm;
+    kDebug(7113) << "  realm:     " << info.realm;
+    kDebug(7113) << "  nonce:     " << info.nonce;
+    kDebug(7113) << "  opaque:    " << opaque;
+    kDebug(7113) << "  qop:       " << info.qop;
 
-    if (!send) {
-        m_isError = true;
-        return;
+    // Calculate the response...
+    const QByteArray response = calculateResponse(info, m_resource);
+
+    QByteArray auth = "Digest username=\"";
+    auth += info.username;
+
+    auth += "\", realm=\"";
+    auth += info.realm;
+    auth += "\"";
+
+    auth += ", nonce=\"";
+    auth += info.nonce;
+
+    auth += "\", uri=\"";
+    auth += m_resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath).toLatin1();
+
+    if (!info.algorithm.isEmpty()) {
+      auth += "\", algorithm=";
+      auth += info.algorithm;
     }
-  }
 
-  kDebug(7113) << "RESULT OF PARSING:";
-  kDebug(7113) << "  algorithm: " << info.algorithm;
-  kDebug(7113) << "  realm:     " << info.realm;
-  kDebug(7113) << "  nonce:     " << info.nonce;
-  kDebug(7113) << "  opaque:    " << opaque;
-  kDebug(7113) << "  qop:       " << info.qop;
+    if ( !info.qop.isEmpty() )
+    {
+      auth += ", qop=";
+      auth += info.qop;
+      auth += ", cnonce=\"";
+      auth += info.cnonce;
+      auth += "\", nc=";
+      auth += info.nc;
+    }
 
-  // Calculate the response...
-  QByteArray Response = calculateResponse(info, m_resource);
+    auth += ", response=\"";
+    auth += response;
+    if ( !opaque.isEmpty() )
+    {
+      auth += "\", opaque=\"";
+      auth += opaque;
+    }
+    auth += "\"\r\n";
 
-  QByteArray auth = "Digest username=\"";
-  auth += info.username;
-
-  auth += "\", realm=\"";
-  auth += info.realm;
-  auth += "\"";
-
-  auth += ", nonce=\"";
-  auth += info.nonce;
-
-  auth += "\", uri=\"";
-  auth += m_resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath).toLatin1();
-
-  if (!info.algorithm.isEmpty()) {
-    auth += "\", algorithm=";
-    auth += info.algorithm;
-  }
-
-  if ( !info.qop.isEmpty() )
-  {
-    auth += ", qop=";
-    auth += info.qop;
-    auth += ", cnonce=";
-    auth += info.cnonce;
-    auth += ", nc=";
-    auth += info.nc;
-  }
-
-  auth += ", response=\"";
-  auth += Response;
-  if ( !opaque.isEmpty() )
-  {
-    auth += "\", opaque=\"";
-    auth += opaque;
-  }
-  auth += "\"\r\n";
-
-// magic ends here
+    // magic ends here
     // note that auth already contains \r\n
     m_headerFragment = auth;
 }
