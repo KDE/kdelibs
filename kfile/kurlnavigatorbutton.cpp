@@ -57,6 +57,7 @@ KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
     m_popupDelay->setInterval(300);
     connect(m_popupDelay, SIGNAL(timeout()), this, SLOT(startListJob()));
     connect(this, SIGNAL(pressed()), this, SLOT(startPopupDelay()));
+    connect(this, SIGNAL(clicked()), this, SLOT(stopPopupDelay()));
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
