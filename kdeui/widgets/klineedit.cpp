@@ -1381,10 +1381,8 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
                  SLOT(_k_slotCompletionBoxTextChanged( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(userCancelled( const QString& )) );
-
-        // TODO: we need our own slot, and to call setModified(true) if Qt4 has that.
-        connect( d->completionBox, SIGNAL( activated( const QString& )),
-                 SIGNAL(completionBoxActivated( const QString& )) );
+        connect( d->completionBox, SIGNAL(activated(QString)),
+                 SIGNAL(completionBoxActivated(QString)) );
     }
 }
 

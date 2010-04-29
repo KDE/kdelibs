@@ -157,6 +157,18 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy.count(), 0);
         QCOMPARE(textEditedSpy.count(), 0);
         QCOMPARE(userTextChangedSpy.count(), 0);
+
+        // Now when using the mouse in the popup completion
+        w.setText("KDE");
+        w.doCompletion(w.text()); // popup appears
+        QCOMPARE(w.text(), QString::fromLatin1("KDE"));
+        // Selecting an item in the popup completion changes the lineedit text and emits all 3 signals
+        const QRect rect = w.completionBox()->visualRect(w.completionBox()->model()->index(1, 0));
+        QSignalSpy activatedSpy(w.completionBox(), SIGNAL(activated(QString)));
+        QTest::mouseClick(w.completionBox()->viewport(), Qt::LeftButton, Qt::NoModifier, rect.center());
+        QCOMPARE(activatedSpy.count(), 1);
+        QCOMPARE(w.text(), items.at(1));
+        QVERIFY(w.isModified());
     }
 
     void testPaste()
