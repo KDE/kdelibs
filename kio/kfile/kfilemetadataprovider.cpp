@@ -422,12 +422,14 @@ bool KFileMetaDataProvider::setValue(const KUrl& metaDataUri, const Nepomuk::Var
 
 bool KFileMetaDataProvider::eventFilter(QObject* watched, QEvent* event)
 {
+#ifdef HAVE_NEPOMUK
     if ((watched == d->m_ratingWidget) && (event->type() == QEvent::FontChange)) {
         // Assure that the height of the rating widget is equal with the font
         // height, so that the alignment to the other labels is symmetric.
         const QFontMetrics metrics(d->m_ratingWidget->font());
         d->m_ratingWidget->setPixmapSize(metrics.height());
     }
+#endif
     return QObject::eventFilter(watched, event);
 }
 
