@@ -154,6 +154,9 @@
 <!ENTITY traducteurGoneriLeBouder     '<othercredit role="translator"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurGoneriLeBouder     '<othercredit role="reviewer"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurNicolasLouveton   '<othercredit role="translator"><firstname>Nicolas</firstname><surname>Louveton</surname><affiliation><address><email>nblouveton@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurNicolasLouveton    '<othercredit role="reviewer"><firstname>Nicolas</firstname><surname>Louveton</surname><affiliation><address><email>nblouveton@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurChristopheLefebvre  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurChristopheLefebvre  '<othercredit role="reviewer"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -297,6 +300,7 @@
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
 <!ENTITY EquipeKDE         'l&apos;équipe française &kde;<email>doc@kde-france.org</email>'>
 <!ENTITY GoneriLeBouder    'Gonéri Le Bouder <email>goneri@gnuart.org</email>'>
+<!ENTITY NicolasLouveton    'Nicolas Louveton <email>nlouveton@gmail.com</email>'>
 <!ENTITY ChristopheLefebvre 'Christophe Lefebvre <email>clefebvre@netcourrier.com</email>'>
 <!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>annemarie.mahfouf@free.fr</email>'>
 <!ENTITY PatrickMichelon  'Patrick Michelon <email>patrick.michelon@free.fr</email>'>
