@@ -397,10 +397,14 @@ Q_SIGNALS:
     void substringCompletion( const QString& );
 
     /**
-     * Emitted when the text is changed NOT by autocompletion
+     * Emitted when the text is changed NOT by autocompletion:
+     * either when the user is physically typing keys, or when the text is changed programmatically,
+     * for example, by calling setText().
+     * But not when automatic completion changes the text temporarily.
+     *
      * @since 4.2.2
      */
-    void userTextChanged( const QString & ); 
+    void userTextChanged( const QString & );
 
     /**
      * Emitted when the text rotation key-bindings are pressed.

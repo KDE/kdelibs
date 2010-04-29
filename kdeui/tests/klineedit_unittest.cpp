@@ -50,6 +50,69 @@ private Q_SLOTS:
         QCOMPARE(kReturnPressedSpy[0][0].toString(), QString("Hello world"));
     }
 
+    void testTextEditedSignals()
+    {
+        KLineEdit w;
+
+        // setText emits textChanged and userTextChanged, but not textEdited
+        QSignalSpy textChangedSpy(&w, SIGNAL(textChanged(QString)));
+        QSignalSpy textEditedSpy(&w, SIGNAL(textEdited(QString)));
+        QSignalSpy userTextChangedSpy(&w, SIGNAL(userTextChanged(QString)));
+        w.setText("Hello worl");
+        QCOMPARE(userTextChangedSpy.count(), 1);
+        QCOMPARE(userTextChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textChangedSpy.count(), 1);
+        QCOMPARE(textChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textEditedSpy.count(), 0);
+        userTextChangedSpy.clear();
+        textChangedSpy.clear();
+        textEditedSpy.clear();
+
+        // typing emits all three signals
+        QTest::keyClick(&w, Qt::Key_D);
+        QCOMPARE(w.text(), QString::fromLatin1("Hello world"));
+        QCOMPARE(userTextChangedSpy.count(), 1);
+        QCOMPARE(userTextChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textChangedSpy.count(), 1);
+        QCOMPARE(textChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textEditedSpy.count(), 1);
+        QCOMPARE(textEditedSpy[0][0].toString(), w.text());
+        w.setText("K");
+        userTextChangedSpy.clear();
+        textChangedSpy.clear();
+        textEditedSpy.clear();
+
+        // the suggestion from auto completion emits textChanged but not userTextChanged nor textEdited
+        w.setCompletionMode(KGlobalSettings::CompletionAuto);
+        KCompletion completion;
+	completion.setSoundsEnabled(false);
+        QStringList items;
+        items << "KDE is cool" << "KDE is really cool";
+        completion.setItems(items);
+        w.setCompletionObject(&completion);
+
+        w.doCompletion(w.text());
+        QCOMPARE(w.text(), items.at(0));
+
+        QCOMPARE(userTextChangedSpy.count(), 0);
+        QCOMPARE(textChangedSpy.count(), 1);
+        QCOMPARE(textChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textEditedSpy.count(), 0);
+        userTextChangedSpy.clear();
+        textChangedSpy.clear();
+        textEditedSpy.clear();
+
+        // accepting the completion suggestion emits userTextChanged
+        // TODO: should emit textChanged and textEdited too?
+        QTest::keyClick(&w, Qt::Key_Right);
+        QCOMPARE(w.text(), items.at(0));
+
+        QCOMPARE(userTextChangedSpy.count(), 1);
+        QCOMPARE(userTextChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textChangedSpy.count(), 0);
+        QCOMPARE(textEditedSpy.count(), 0);
+    }
+
     void testPaste()
     {
         const QString origText = QApplication::clipboard()->text();
