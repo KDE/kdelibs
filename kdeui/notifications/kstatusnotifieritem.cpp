@@ -45,7 +45,8 @@
 
 #include <netinet/in.h>
 
-#include "dbusmenuexporter.h"
+#include <dbusmenuexporter.h>
+
 #include "statusnotifieritemadaptor.h"
 
 static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
