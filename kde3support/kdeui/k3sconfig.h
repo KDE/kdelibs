@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
+   Copyright (C) 2007-2008 Kevin Kofler <Kevin@tigcc.ticalc.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -60,7 +61,8 @@ enum K3SpellClients {
   KS_CLIENT_ISPELL=0,
   KS_CLIENT_ASPELL=1,
   KS_CLIENT_HSPELL=2,
-  KS_CLIENT_ZEMBEREK=3
+  KS_CLIENT_ZEMBEREK=3,
+  KS_CLIENT_HUNSPELL=4
 };
 
 /**
@@ -287,6 +289,7 @@ private:
     K3SpellConfigPrivate *const d;
     void getAvailDictsIspell();
     void getAvailDictsAspell();
+    void getAvailDictsHunspell();
 };
 
 #endif // KDELIBS_KSCONFIG_H

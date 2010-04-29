@@ -2,6 +2,7 @@
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
    Copyright (C) 2000-2001 Wolfram Diestel <wolfram@steloj.de>
    Copyright (C) 2003 Zack Rusin <zack@kde.org>
+   Copyright (C) 2007-2008 Kevin Kofler <Kevin@tigcc.ticalc.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -218,9 +219,14 @@ K3Spell::startIspell()
     *proc << "zpspell";
     kDebug(750) << "Using zemberek(zpspell)";
     break;
+  case KS_CLIENT_HUNSPELL:
+    *proc << "hunspell";
+    kDebug(750) << "Using hunspell";
+    break;
   }
 
-  if ( ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL )
+  // Hunspell doesn't need all of these options, but it'll ignore those it doesn't understand.
+  if ( ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL || ksconfig->client() == KS_CLIENT_HUNSPELL )
   {
     *proc << "-a" << "-S";
 
@@ -238,8 +244,8 @@ K3Spell::startIspell()
       *proc << "-t";
       break;
     case Nroff:
-      //only ispell supports
-      if ( ksconfig->client() == KS_CLIENT_ISPELL )
+      //only ispell and hunspell support
+      if ( ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_HUNSPELL )
         *proc << "-n";
       break;
     case Text:
@@ -276,7 +282,60 @@ K3Spell::startIspell()
   // option, so k3spell tries again without it.  That's why as 'ps -ax'
   // shows "ispell -a -S ..." withou the "-Tlatin2" option.
 
-    if ( trystart<1 ) {
+    if ( ksconfig->client() == KS_CLIENT_HUNSPELL && trystart<1 ) {
+      // Note: This sets I/O encoding. Hunspell correctly handles dictionary encoding != I/O encoding.
+      // It will be faster if the I/O encoding matches the dictionary encoding, but using UTF-8 is always safe.
+      switch ( ksconfig->encoding() )
+      {
+      case KS_E_LATIN1:
+	*proc << "-i" << "ISO-8859-1";
+	break;
+      case KS_E_LATIN2:
+	*proc << "-i" << "ISO-8859-2";
+	break;
+      case KS_E_LATIN3:
+	*proc << "-i" << "ISO-8859-3";
+        break;
+      case KS_E_LATIN4:
+	*proc << "-i" << "ISO-8859-4";
+        break;
+      case KS_E_LATIN5:
+	*proc << "-i" << "ISO-8859-5";
+        break;
+      case KS_E_LATIN7:
+	*proc << "-i" << "ISO-8859-7";
+        break;
+      case KS_E_LATIN8:
+	*proc << "-i" << "ISO-8859-8";
+        break;
+      case KS_E_LATIN9:
+	*proc << "-i" << "ISO-8859-9";
+        break;
+      case KS_E_LATIN13:
+	*proc << "-i" << "ISO-8859-13";
+        break;
+      case KS_E_LATIN15:
+	*proc << "-i" << "ISO-8859-15";
+        break;
+      case KS_E_UTF8:
+	*proc << "-i" << "UTF-8";
+        break;
+      case KS_E_KOI8R:
+	*proc << "-i" << "KOI8-R";
+        break;
+      case KS_E_KOI8U:
+	*proc << "-i" << "KOI8-U";
+        break;
+      case KS_E_CP1251:
+	*proc << "-i" << "CP1251";
+        break;
+      case KS_E_CP1255:
+	*proc << "-i" << "CP1255";
+        break;
+      default:
+        break;
+      }
+    } else if ( trystart<1 ) {
       switch ( ksconfig->encoding() )
       {
       case KS_E_LATIN1:

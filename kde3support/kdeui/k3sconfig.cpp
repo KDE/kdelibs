@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
    Copyright (C) 2000-2001 Wolfram Diestel <wolfram@steloj.de>
+   Copyright (C) 2007-2008 Kevin Kofler <Kevin@tigcc.ticalc.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -167,6 +168,7 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
   clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Aspell</application>") );
   clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Hspell</application>") );
   clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Zemberek</application>") );
+  clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Hunspell</application>") );
   connect( clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)) );
   glay->addWidget( clientcombo, 5, 1, 1, 2 );
@@ -261,8 +263,10 @@ K3SpellConfig::sChangeClient( int i )
       dictcombo->addItem( i18nc("@item Spelling dictionary", "Turkish") );
       sChangeEncoding( KS_E_UTF8 );
     }
-    else
+    else if ( iclient == KS_CLIENT_ASPELL )
       getAvailDictsAspell();
+    else
+      getAvailDictsHunspell();
   }
   emit configChanged();
 }
@@ -420,8 +424,10 @@ K3SpellConfig::fillInDialog ()
     langfnames.append("");
     dictcombo->addItem( i18nc("@item Spelling dictionary", "Turkish") );
   }
-  else
+  else if ( iclient == KS_CLIENT_ASPELL )
     getAvailDictsAspell();
+  else
+    getAvailDictsHunspell();
 
   // select the used dictionary in the list
   int whichelement=-1;
@@ -606,6 +612,63 @@ void K3SpellConfig::getAvailDictsAspell () {
   }
 }
 
+void K3SpellConfig::getAvailDictsHunspell () {
+
+  langfnames.clear();
+  dictcombo->clear();
+  langfnames.append(""); // Default
+  dictcombo->addItem( i18nc("@item Spelling dictionary",
+                            "<application>Hunspell</application> Default") );
+
+  // dictionary path
+  QFileInfo dir ("/usr/share/myspell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/share/hunspell");
+  if (!dir.exists() || !dir.isDir()) return;
+
+  kDebug(750) << "K3SpellConfig::getAvailDictsHunspell "
+	       << dir.filePath() << " " << dir.path() << endl;
+
+  const QDir thedir (dir.filePath(),"*.dic");
+  const QStringList entryList = thedir.entryList();
+
+  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n";
+  kDebug(750) << "entryList().count()="
+	       << entryList.count() << endl;
+
+  QStringList::const_iterator entryListItr = entryList.constBegin();
+  const QStringList::const_iterator entryListEnd = entryList.constEnd();
+
+  for ( ; entryListItr != entryListEnd; ++entryListItr)
+  {
+    QString fname, lname, hname;
+    fname = *entryListItr;
+
+    // remove .dic
+    if (fname.endsWith(".dic")) fname.remove (fname.length()-4,4);
+
+    if (interpret (fname, lname, hname) && langfnames.first().isEmpty())
+    { // This one is the KDE default language
+      // so place it first in the lists (overwrite "Default")
+
+      langfnames.removeFirst();
+      langfnames.prepend ( fname );
+
+      hname=i18nc("@item Spelling dictionary: %1 dictionary name, %2 file name",
+                  "Default - %1 [%2]", hname, fname);
+
+      dictcombo->setItemText (0,hname);
+    }
+    else
+    {
+      langfnames.append (fname);
+      hname=hname+" ["+fname+']';
+
+      dictcombo->addItem (hname);
+    }
+  }
+}
+
 void
 K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
 {
@@ -685,8 +748,7 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       box->addItem( i18nc("@item Spelling dictionary", "Turkish") );
       langfnames.append("");
       sChangeEncoding( KS_E_UTF8 );
-    }
-    else {
+    } else if ( iclient == KS_CLIENT_ASPELL ) {
       box->clear();
       langfnames.append(""); // Default
       box->addItem (i18nc("@item Spelling dictionary",
@@ -764,6 +826,59 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
             langfnames.append (fname);
             box->addItem (hname);
           }
+        }
+      }
+    } else {
+      box->clear();
+      langfnames.append(""); // Default
+      box->addItem( i18nc("@item Spelling dictionary",
+                          "<application>Hunspell</application> Default") );
+
+      // dictionary path
+      QFileInfo dir ("/usr/share/myspell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/share/hunspell");
+      if (!dir.exists() || !dir.isDir()) return;
+
+      kDebug(750) << "K3SpellConfig::getAvailDictsHunspell "
+                   << dir.filePath() << " " << dir.path() << endl;
+
+      const QDir thedir (dir.filePath(),"*.dic");
+      const QStringList entryList = thedir.entryList();
+
+      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n";
+      kDebug(750) << "entryList().count()="
+                   << entryList.count() << endl;
+
+      QStringList::const_iterator entryListItr = entryList.constBegin();
+      const QStringList::const_iterator entryListEnd = entryList.constEnd();
+
+      for ( ; entryListItr != entryListEnd; ++entryListItr)
+      {
+        QString fname, lname, hname;
+        fname = *entryListItr;
+
+        // remove .dic
+        if (fname.endsWith(".dic")) fname.remove (fname.length()-4,4);
+
+        if (interpret (fname, lname, hname) && langfnames.first().isEmpty())
+        { // This one is the KDE default language
+          // so place it first in the lists (overwrite "Default")
+
+          langfnames.erase ( langfnames.begin() );
+          langfnames.prepend ( fname );
+
+          hname=i18nc("@item Spelling dictionary: %1 dictionary name, %2 file name",
+                      "Default - %1 [%2]", hname, fname);
+
+          box->setItemText (0,hname);
+        }
+        else
+        {
+          langfnames.append (fname);
+          hname=hname+" ["+fname+']';
+
+          box->addItem (hname);
         }
       }
     }
