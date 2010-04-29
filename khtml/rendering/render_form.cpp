@@ -1013,11 +1013,11 @@ void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
 // -----------------------------------------------------------------------------
 
 RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
-    : RenderFormElement(element), m_blockElementUpdates(false)
+    : RenderFormElement(element)
 {
     LineEditWidget *edit = new LineEditWidget(element, view(), view()->widget());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
-    connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    connect(edit,SIGNAL(textEdited(QString)),this,SLOT(slotTextEdited(QString)));
     connect(edit->completionBox(),SIGNAL(currentTextChanged(const QString &)),this,SLOT(slotCompletionBoxActivated(const QString &)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
@@ -1144,21 +1144,17 @@ void RenderLineEdit::updateFromElement()
     }
 
     if (element()->value().string() != widget()->text()) {
-        m_blockElementUpdates = true;
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
         widget()->setCursorPosition(pos);
-        m_blockElementUpdates = false;
     }
     widget()->setReadOnly(element()->readOnly());
 
     RenderFormElement::updateFromElement();
 }
 
-void RenderLineEdit::slotTextChanged(const QString &string)
+void RenderLineEdit::slotTextEdited(const QString &string)
 {
-    if (m_blockElementUpdates) return;
-
     // don't use setValue here!
     element()->m_value = string;
     element()->m_unsubmittedFormChange = true;
@@ -1734,7 +1730,7 @@ void RenderSelect::updateFromElement()
                     static_cast<KComboBox*>(m_widget)->insertItem(listIndex, QString(text.implementation()->s, text.implementation()->l));
                 }
 
-                bool disabled = !listItems[listIndex]->getAttribute(ATTR_DISABLED).isNull();                
+                bool disabled = !listItems[listIndex]->getAttribute(ATTR_DISABLED).isNull();
                 if (disabled)
                     clearItemFlags(listIndex, Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                 else
@@ -1742,7 +1738,7 @@ void RenderSelect::updateFromElement()
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
-                
+
                 DOMString domText = optElem->text();
                 // Prefer label if set
                 DOMString label = optElem->getAttribute(ATTR_LABEL);
@@ -1754,8 +1750,8 @@ void RenderSelect::updateFromElement()
 
                 ElementImpl* parentOptGroup = optElem->parentNode()->id() == ID_OPTGROUP ?
                                                  static_cast<ElementImpl*>(optElem->parentNode()) : 0;
-                
-                if (parentOptGroup) {        
+
+                if (parentOptGroup) {
                     text = QLatin1String("    ") + domText.string();
                 } else {
                     text = domText.string();

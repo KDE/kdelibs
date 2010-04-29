@@ -282,14 +282,13 @@ public:
     void setSelectionRange(long start, long end);
 public Q_SLOTS:
     void slotReturnPressed();
-    void slotTextChanged(const QString &string);
+    void slotTextEdited(const QString &string);
     void slotCompletionBoxActivated(const QString &string);
 protected:
 
 private:
     virtual bool isEditable() const { return true; }
     virtual bool canHaveBorder() const { return true; }
-    bool m_blockElementUpdates;
 };
 
 // -------------------------------------------------------------------------
