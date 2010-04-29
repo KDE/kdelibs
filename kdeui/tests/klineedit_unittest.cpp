@@ -55,6 +55,7 @@ private Q_SLOTS:
     void testTextEditedSignals()
     {
         KLineEdit w;
+        QVERIFY(!w.isModified());
 
         // setText emits textChanged and userTextChanged, but not textEdited
         QSignalSpy textChangedSpy(&w, SIGNAL(textChanged(QString)));
@@ -66,6 +67,7 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy.count(), 1);
         QCOMPARE(textChangedSpy[0][0].toString(), w.text());
         QCOMPARE(textEditedSpy.count(), 0);
+        QVERIFY(!w.isModified());
         userTextChangedSpy.clear();
         textChangedSpy.clear();
         textEditedSpy.clear();
@@ -79,11 +81,13 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy[0][0].toString(), w.text());
         QCOMPARE(textEditedSpy.count(), 1);
         QCOMPARE(textEditedSpy[0][0].toString(), w.text());
+        QVERIFY(w.isModified());
 
         w.setText("K"); // prepare for next test
         userTextChangedSpy.clear();
         textChangedSpy.clear();
         textEditedSpy.clear();
+        QVERIFY(!w.isModified());
 
         // the suggestion from auto completion emits textChanged but not userTextChanged nor textEdited
         w.setCompletionMode(KGlobalSettings::CompletionAuto);
@@ -101,6 +105,7 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy.count(), 1);
         QCOMPARE(textChangedSpy[0][0].toString(), w.text());
         QCOMPARE(textEditedSpy.count(), 0);
+        QVERIFY(!w.isModified());
         userTextChangedSpy.clear();
         textChangedSpy.clear();
         textEditedSpy.clear();
@@ -115,6 +120,7 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy[0][0].toString(), w.text());
         QCOMPARE(textEditedSpy.count(), 1);
         QCOMPARE(textEditedSpy[0][0].toString(), w.text());
+        QVERIFY(w.isModified());
         userTextChangedSpy.clear();
         textChangedSpy.clear();
         textEditedSpy.clear();
@@ -122,6 +128,7 @@ private Q_SLOTS:
         // Now with popup completion
         w.setCompletionMode(KGlobalSettings::CompletionPopup);
         w.setText("KDE");
+        QVERIFY(!w.isModified());
         userTextChangedSpy.clear();
         textChangedSpy.clear();
         textEditedSpy.clear();
@@ -130,6 +137,7 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy.count() + userTextChangedSpy.count() + textEditedSpy.count(), 0);
         w.completionBox()->down(); // select 1st item
         QCOMPARE(w.text(), items.at(0));
+        QVERIFY(w.isModified());
         w.completionBox()->down(); // select 2nd item
         QCOMPARE(w.text(), items.at(1));
 
@@ -144,6 +152,7 @@ private Q_SLOTS:
         QTest::keyClick(&w, Qt::Key_Enter); // activate
         QVERIFY(!w.completionBox()->isVisible());
         QCOMPARE(w.text(), items.at(1));
+        QVERIFY(w.isModified());
         // Nothing else happens, the text was already set in the lineedit
         QCOMPARE(textChangedSpy.count(), 0);
         QCOMPARE(textEditedSpy.count(), 0);

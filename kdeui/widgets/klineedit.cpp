@@ -121,6 +121,7 @@ public:
     {
         if (!completionRunning && (txt != userText)) {
             userText = txt;
+            q->setModified(true);
             emit q->userTextChanged(txt);
             emit q->textEdited(txt);
             emit q->textChanged(txt);
@@ -1642,7 +1643,8 @@ void KLineEdit::_k_slotCompletionBoxTextChanged( const QString& text )
     if (!text.isEmpty())
     {
         setText( text );
-        emit textEdited( text );
+        setModified(true);
+        emit textEdited(text);
         end( false ); // force cursor at end
     }
 }
