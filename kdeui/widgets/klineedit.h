@@ -397,14 +397,18 @@ Q_SIGNALS:
     void substringCompletion( const QString& );
 
     /**
-     * Emitted when the text is changed NOT by autocompletion:
+     * Emitted when the text is changed NOT by the suggested autocompletion:
      * either when the user is physically typing keys, or when the text is changed programmatically,
      * for example, by calling setText().
      * But not when automatic completion changes the text temporarily.
      *
      * @since 4.2.2
+     * @deprecated since 4.5. You probably want to connect to textEdited() instead,
+     * which is emitted whenever the text is actually changed by the user
+     * (by typing or accepting autocompletion), without side effects from
+     * suggested autocompletion either. userTextChanged isn't needed anymore.
      */
-    void userTextChanged( const QString & );
+    QT_MOC_COMPAT void userTextChanged( const QString & );
 
     /**
      * Emitted when the text rotation key-bindings are pressed.
@@ -624,7 +628,7 @@ private Q_SLOTS:
     void completionMenuActivated( QAction *act );
     void tripleClickTimeout();  // resets possibleTripleClick
     void slotRestoreSelectionColors();
-    void setTextWorkaround( const QString& text );
+    void _k_slotCompletionBoxTextChanged( const QString& text );
 
     /**
      * updates the icon of the clear button on text change
@@ -657,7 +661,7 @@ private:
     KLineEditPrivate *const d;
 
     Q_PRIVATE_SLOT( d, void _k_slotSettingsChanged( int category ) )
-    Q_PRIVATE_SLOT( d, void _k_updateUserText(const QString&) )
+    Q_PRIVATE_SLOT( d, void _k_textChanged(const QString&) )
 };
 
 #endif
