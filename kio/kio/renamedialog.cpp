@@ -61,6 +61,17 @@ class RenameDialog::RenameDialogPrivate
     bApplyAll = 0;
     m_pLineEdit = 0;
   }
+  void setRenameBoxText(const QString& fileName) {
+    // sets the text in file name line edit box, selecting the filename (but not the extension if there is one).
+    const QString extension = KMimeType::extractKnownExtension(fileName);
+    m_pLineEdit->setText(fileName);
+    if (!extension.isEmpty()) {
+        const int selectionLength = fileName.length() - extension.length() - 1;
+        m_pLineEdit->setSelection(0, selectionLength);
+    } else {
+        m_pLineEdit->selectAll();
+    }
+  }
   KPushButton *bCancel;
   QPushButton *bRename;
   QPushButton *bSkip;
@@ -283,7 +294,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     layout2->addWidget( d->m_pLineEdit );
     if ( d->bRename ) {
         const QString fileName = d->dest.fileName();
-        d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
+        d->setRenameBoxText( KIO::decodeFileName( fileName ) );
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
         d->m_pLineEdit->setFocus();
@@ -450,7 +461,7 @@ void RenameDialog::suggestNewNamePressed()
 
   KUrl destDirectory( d->dest );
   destDirectory.setPath( destDirectory.directory() );
-  d->m_pLineEdit->setText( suggestName( destDirectory, d->m_pLineEdit->text() ) );
+  d->setRenameBoxText( suggestName( destDirectory, d->m_pLineEdit->text() ) );
   return;
 }
 
