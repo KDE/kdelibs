@@ -105,13 +105,26 @@ public:
         }
     }
 
-    void _k_updateUserText( const QString &txt)
+    void _k_textChanged(const QString &txt)
     {
-        if ((!completionRunning) && (txt != userText))
-	{
-	    userText = txt;
-	    emit q->userTextChanged(txt);
-	}
+        // COMPAT (as documented): emit userTextChanged whenever textChanged is emitted
+        // KDE5: remove userTextChanged signal, textEdited does the same...
+        if (!completionRunning && (txt != userText)) {
+            userText = txt;
+            emit q->userTextChanged(txt);
+        }
+    }
+
+    // Call this when a completion operation changes the lineedit text
+    // "as if it had been edited by the user".
+    void _k_updateUserText(const QString &txt)
+    {
+        if (!completionRunning && (txt != userText)) {
+            userText = txt;
+            emit q->userTextChanged(txt);
+            emit q->textEdited(txt);
+            emit q->textChanged(txt);
+        }
     }
 
     /**
@@ -241,7 +254,7 @@ void KLineEdit::init()
     lineEditStyle->setParent(this);
     setStyle(lineEditStyle);
 
-    connect( this, SIGNAL(textChanged( const QString&)), this, SLOT(_k_updateUserText( const QString&)));
+    connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
 
 }
 
@@ -1364,7 +1377,7 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
     if ( handleSignals() )
     {
         connect( d->completionBox, SIGNAL(currentTextChanged( const QString& )),
-                 SLOT(setTextWorkaround( const QString& )) );
+                 SLOT(_k_slotCompletionBoxTextChanged( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(userCancelled( const QString& )) );
 
@@ -1624,11 +1637,12 @@ void KLineEdit::clear()
     setText( QString() );
 }
 
-void KLineEdit::setTextWorkaround( const QString& text )
+void KLineEdit::_k_slotCompletionBoxTextChanged( const QString& text )
 {
     if (!text.isEmpty())
     {
         setText( text );
+        emit textEdited( text );
         end( false ); // force cursor at end
     }
 }

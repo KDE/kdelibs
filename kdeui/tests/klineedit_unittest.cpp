@@ -18,10 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kdebug.h>
 #include <QClipboard>
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <klineedit.h>
+#include <kcompletionbox.h>
 
 class KLineEdit_UnitTest : public QObject
 {
@@ -77,7 +79,8 @@ private Q_SLOTS:
         QCOMPARE(textChangedSpy[0][0].toString(), w.text());
         QCOMPARE(textEditedSpy.count(), 1);
         QCOMPARE(textEditedSpy[0][0].toString(), w.text());
-        w.setText("K");
+
+        w.setText("K"); // prepare for next test
         userTextChangedSpy.clear();
         textChangedSpy.clear();
         textEditedSpy.clear();
@@ -102,15 +105,49 @@ private Q_SLOTS:
         textChangedSpy.clear();
         textEditedSpy.clear();
 
-        // accepting the completion suggestion emits userTextChanged
-        // TODO: should emit textChanged and textEdited too?
+        // accepting the completion suggestion now emits all three signals too
         QTest::keyClick(&w, Qt::Key_Right);
         QCOMPARE(w.text(), items.at(0));
 
         QCOMPARE(userTextChangedSpy.count(), 1);
         QCOMPARE(userTextChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textChangedSpy.count(), 1);
+        QCOMPARE(textChangedSpy[0][0].toString(), w.text());
+        QCOMPARE(textEditedSpy.count(), 1);
+        QCOMPARE(textEditedSpy[0][0].toString(), w.text());
+        userTextChangedSpy.clear();
+        textChangedSpy.clear();
+        textEditedSpy.clear();
+
+        // Now with popup completion
+        w.setCompletionMode(KGlobalSettings::CompletionPopup);
+        w.setText("KDE");
+        userTextChangedSpy.clear();
+        textChangedSpy.clear();
+        textEditedSpy.clear();
+        w.doCompletion(w.text()); // popup appears
+        QCOMPARE(w.text(), QString::fromLatin1("KDE"));
+        QCOMPARE(textChangedSpy.count() + userTextChangedSpy.count() + textEditedSpy.count(), 0);
+        w.completionBox()->down(); // select 1st item
+        QCOMPARE(w.text(), items.at(0));
+        w.completionBox()->down(); // select 2nd item
+        QCOMPARE(w.text(), items.at(1));
+
+        // Selecting an item in the popup completion changes the lineedit text and emits all 3 signals
+        QCOMPARE(userTextChangedSpy.count(), 2);
+        QCOMPARE(textChangedSpy.count(), 2);
+        QCOMPARE(textEditedSpy.count(), 2);
+        userTextChangedSpy.clear();
+        textChangedSpy.clear();
+        textEditedSpy.clear();
+
+        QTest::keyClick(&w, Qt::Key_Enter); // activate
+        QVERIFY(!w.completionBox()->isVisible());
+        QCOMPARE(w.text(), items.at(1));
+        // Nothing else happens, the text was already set in the lineedit
         QCOMPARE(textChangedSpy.count(), 0);
         QCOMPARE(textEditedSpy.count(), 0);
+        QCOMPARE(userTextChangedSpy.count(), 0);
     }
 
     void testPaste()

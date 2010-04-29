@@ -65,12 +65,6 @@ KCompletionBox::KCompletionBox( QWidget *parent )
 
     connect( this, SIGNAL( itemDoubleClicked( QListWidgetItem * )),
              SLOT( slotActivated( QListWidgetItem * )) );
-
-#ifdef __GNUC__
-#warning "Check if this workaround can be removed in KDE 4"
-#endif
-
-    // grmbl, just QListBox workarounds :[ Thanks Volker.
     connect( this, SIGNAL( currentItemChanged( QListWidgetItem * , QListWidgetItem * )),
              SLOT( slotCurrentChanged() ));
     connect( this, SIGNAL( itemClicked( QListWidgetItem * )),
@@ -420,11 +414,10 @@ void KCompletionBox::down()
         d->down_workaround = false;
         setCurrentRow( 0 );
         item(0)->setSelected(true);
-        emit currentTextChanged( currentItem()->text() );
     }
-
-    else if ( i < (int) count() - 1 )
+    else if ( i < (int) count() - 1 ) {
         setCurrentRow( i + 1 );
+    }
 }
 
 void KCompletionBox::up()
@@ -567,8 +560,6 @@ void KCompletionBox::setItems( const QStringList& items )
 
 void KCompletionBox::slotCurrentChanged()
 {
-    if (currentItem())
-      emit currentTextChanged(currentItem()->text());
     d->down_workaround = false;
 }
 
@@ -576,11 +567,7 @@ void KCompletionBox::slotItemClicked( QListWidgetItem *item )
 {
     if ( item )
     {
-        if ( d->down_workaround ) {
-            d->down_workaround = false;
-            emit currentTextChanged( item->text() );
-        }
-
+        d->down_workaround = false;
         hide();
         emit currentTextChanged( item->text() );
         emit activated( item->text() );
