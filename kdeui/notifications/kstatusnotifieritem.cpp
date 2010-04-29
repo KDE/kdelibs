@@ -336,31 +336,36 @@ QString KStatusNotifierItem::toolTipSubTitle() const
 
 void KStatusNotifierItem::setContextMenu(KMenu *menu)
 {
-    if (d->menu != menu) {
+    if (d->menu && d->menu != menu) {
         d->menu->removeEventFilter(this);
         delete d->menu;
     }
 
-    d->menu = menu;
+    if (!menu) {
+        d->menu = 0;
+        return;
+    }
 
-    if (d->menu) {
+    if (d->systemTrayIcon) {
+        d->systemTrayIcon->setContextMenu(menu);
+    } else if (d->menu != menu) {
         if (getenv("KSNI_NO_DBUSMENU")) {
             // This is a hack to make it possible to disable DBusMenu in an
             // application. The string "/NO_DBUSMENU" must be the same as in
             // DBusSystemTrayWidget::findDBusMenuInterface() in the Plasma
             // systemtray applet.
             d->menuObjectPath = "/NO_DBUSMENU";
+            menu->installEventFilter(this);
         } else {
             d->menuObjectPath = "/MenuBar";
-            new KDBusMenuExporter(d->menuObjectPath, d->menu, d->statusNotifierItemDBus->dbusConnection());
+            new KDBusMenuExporter(d->menuObjectPath, menu, d->statusNotifierItemDBus->dbusConnection());
         }
-        d->menu->installEventFilter(this);
-        connect(d->menu, SIGNAL(aboutToShow()), this, SLOT(contextMenuAboutToShow()));
+
+        connect(menu, SIGNAL(aboutToShow()), this, SLOT(contextMenuAboutToShow()));
     }
 
-    if (d->systemTrayIcon) {
-        d->systemTrayIcon->setContextMenu(menu);
-    }
+    d->menu = menu;
+    d->menu->setParent(0);
 }
 
 KMenu *KStatusNotifierItem::contextMenu() const
@@ -679,7 +684,7 @@ void KStatusNotifierItemPrivate::registerToDaemon()
         statusNotifierWatcher->property("ProtocolVersion").toInt() == s_protocolVersion) {
 
         statusNotifierWatcher->RegisterStatusNotifierItem(statusNotifierItemDBus->service());
-            setLegacySystemTrayEnabled(false);
+        setLegacySystemTrayEnabled(false);
     } else {
         kDebug(299)<<"KStatusNotifierWatcher not reachable";
         setLegacySystemTrayEnabled(true);
@@ -734,13 +739,17 @@ void KStatusNotifierItemPrivate::legacyActivated(QSystemTrayIcon::ActivationReas
 
 void KStatusNotifierItemPrivate::setLegacySystemTrayEnabled(bool enabled)
 {
+    if (enabled == (systemTrayIcon != 0)) {
+        // already in the correct state
+        return;
+    }
+
     if (enabled) {
         delete statusNotifierWatcher;
         statusNotifierWatcher = 0;
 
         if (!systemTrayIcon) {
             systemTrayIcon = new KStatusNotifierLegacyIcon(associatedWidget);
-            systemTrayIcon->setContextMenu(menu);
             syncLegacySystemTrayIcon();
             systemTrayIcon->setToolTip(toolTipTitle);
             systemTrayIcon->show();
@@ -758,6 +767,12 @@ void KStatusNotifierItemPrivate::setLegacySystemTrayEnabled(bool enabled)
         if (menu) {
             menu->setWindowFlags(Qt::Window);
         }
+    }
+
+    if (menu) {
+        KMenu *m = menu;
+        menu = 0;
+        q->setContextMenu(m);
     }
 }
 
