@@ -156,7 +156,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
         case EmptyTrash:
 	    result = KMessageBox::warningContinueCancel(
 	        widget,
-		i18nc("@info", "Do you really want to empty the trash? All items will be deleted."),
+		i18nc("@info", "Do you want to permanently delete all items from Trash? This action cannot be undone."),
 		QString(),
 		KGuiItem(i18nc("@action:button", "Empty Trash"),
 		KIcon("user-trash")),
