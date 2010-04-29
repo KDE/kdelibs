@@ -1018,7 +1018,6 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     LineEditWidget *edit = new LineEditWidget(element, view(), view()->widget());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textEdited(QString)),this,SLOT(slotTextEdited(QString)));
-    connect(edit->completionBox(),SIGNAL(currentTextChanged(const QString &)),this,SLOT(slotCompletionBoxActivated(const QString &)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
@@ -1158,12 +1157,6 @@ void RenderLineEdit::slotTextEdited(const QString &string)
     // don't use setValue here!
     element()->m_value = string;
     element()->m_unsubmittedFormChange = true;
-}
-
-void RenderLineEdit::slotCompletionBoxActivated(const QString &/*string*/)
-{
-    // TODO: See todo in KLineEdit::setCompletionBox()
-    widget()->setModified( true );
 }
 
 void RenderLineEdit::select()

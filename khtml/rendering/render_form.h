@@ -283,7 +283,6 @@ public:
 public Q_SLOTS:
     void slotReturnPressed();
     void slotTextEdited(const QString &string);
-    void slotCompletionBoxActivated(const QString &string);
 protected:
 
 private:
