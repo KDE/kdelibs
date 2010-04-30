@@ -292,6 +292,7 @@ set(kdecore_LIB_SRCS
    util/klibloader.cpp
    util/klibrary.cpp
    util/kmacroexpander.cpp
+   util/kshareddatacache.cpp
    util/kpluginfactory.cpp
    util/kpluginloader.cpp
    util/kshell.cpp
@@ -529,6 +530,7 @@ install( FILES
    util/kshell.h
    util/krandom.h
    util/krandomsequence.h
+   util/kshareddatacache.h
    util/ksharedptr.h
    util/ksortablelist.h
    util/ktypelist.h

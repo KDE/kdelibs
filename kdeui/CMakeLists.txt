@@ -181,6 +181,7 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
+ util/kimagecache.cpp
  util/kstandardguiitem.cpp
  util/ksvgrenderer.cpp
  util/kwallet.cpp
@@ -532,6 +533,7 @@ install( FILES
  util/kpassivepopupmessagehandler.h
  util/kpixmapcache.h
  util/kpixmapprovider.h
+ util/kimagecache.h
  util/kstandardguiitem.h
  util/ksvgrenderer.h
  util/kwallet.h
