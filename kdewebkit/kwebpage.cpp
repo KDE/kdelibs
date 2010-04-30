@@ -264,7 +264,7 @@ QString KWebPage::userAgentForUrl(const QUrl& _url) const
 
 bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
-    kDebug() << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
+    kDebug(800) << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
 
     if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted) {
         d->wallet->saveFormData(frame);

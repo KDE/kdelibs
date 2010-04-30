@@ -91,7 +91,10 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     if (mimeType.isEmpty()) {
        KMimeType::Ptr ptr = KMimeType::findByPath(url.path());
        mimeType = ptr->name();
-       kDebug() << "Updated mimetype to" << mimeType;
+       // Disregard inode/* mime-types...
+       if (mimeType.startsWith(QLatin1String("inode/"), Qt::CaseInsensitive))
+          mimeType.clear();
+       kDebug(800) << "Updated mimetype to" << mimeType;
     }
 
     KParts::ReadOnlyPart* part = 0;
@@ -99,10 +102,10 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     // Defer handling of flash content to QtWebKit's builtin viewer.
     // If you want to use/test KDE's nspluginviewer, comment out the
     // if statement below.
-    if (!excludedMimeType(mimeType))
+    if (!mimeType.isEmpty() && !excludedMimeType(mimeType))
         part = KMimeTypeTrader::createPartInstanceFromQuery<KParts::ReadOnlyPart>(mimeType, 0, parent(), QString(), arguments);
 
-    kDebug() << "Asked for" << mimeType << "plugin, got" << part;
+    kDebug(800) << "Asked for" << mimeType << "plugin, got" << part;
 
     if (part) {
         QMap<QString, QString> metaData = part->arguments().metaData();
