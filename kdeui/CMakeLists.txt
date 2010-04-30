@@ -107,6 +107,7 @@ set(kdeui_LIB_SRCS
  icons/kiconcache.cpp
  itemviews/kbreadcrumbselectionmodel.cpp
  itemviews/kproxyitemselectionmodel.cpp
+ itemviews/krecursivefilterproxymodel.cpp
 # itemviews/kdescendantsproxymodel.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
@@ -473,6 +474,7 @@ install( FILES
  icons/kiconcache.h
  itemviews/kbreadcrumbselectionmodel.h
  itemviews/kproxyitemselectionmodel.h
+ itemviews/krecursivefilterproxymodel.h
 # itemviews/kdescendantsproxymodel.h
  itemviews/klistwidget.h
  itemviews/kviewstatesaver.h

@@ -15,7 +15,7 @@ set(proxymodeltestapp_SRCS
     breadcrumbnavigationwidget.cpp
     selectionpmwidget.cpp
     statesaverwidget.cpp
-#     recursivefilterpmwidget.cpp
+    recursivefilterpmwidget.cpp
     descendantpmwidget.cpp
 #     reparentingpmwidget.cpp
 #     ../../itemviews/kreparentingproxymodel.cpp
