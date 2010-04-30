@@ -43,6 +43,7 @@ class QImage;
  */
 class KDEUI_EXPORT KPixmapRegionSelectorDialog : public KDialog
 {
+Q_OBJECT
 public:
    /**
     * The constructor of an empty KPixmapRegionSelectorDialog, you have to call
@@ -102,9 +103,17 @@ public:
    static QImage getSelectedImage( const QPixmap &pixmap, int aspectRatioWidth,
                                    int aspectRatioHeight, QWidget *parent = 0L );
 
+   /**
+    * @since 4.4.3
+    * Adjusts the size of the KPixmapRegionSelectorWidget to not overflow the screen size
+    */
+   void adjustRegionSelectorWidgetSizeToFitScreen();
+
 private:
     class Private;
     Private* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_adjustPixmapSize() )
 
     Q_DISABLE_COPY( KPixmapRegionSelectorDialog )
 };

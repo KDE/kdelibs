@@ -269,6 +269,8 @@ void KPixmapRegionSelectorWidget::rotate(RotateDirection direction)
          default: resetSelection();
       }
    }
+
+   emit pixmapRotated();
 }
 
 void KPixmapRegionSelectorWidget::rotateClockwise()
@@ -490,8 +492,8 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
    d->m_maxWidth=width;
    d->m_maxHeight=height;
 
-   d->m_originalPixmap=d->m_unzoomedPixmap;
    if (d->m_selectedRegion == d->m_originalPixmap.rect()) d->m_selectedRegion=QRect();
+   d->m_originalPixmap=d->m_unzoomedPixmap;
 
 //   kDebug() << QString(" original Pixmap :") << d->m_originalPixmap.rect();
 //   kDebug() << QString(" unzoomed Pixmap : %1 x %2 ").arg(d->m_unzoomedPixmap.width()).arg(d->m_unzoomedPixmap.height());

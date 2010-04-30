@@ -144,6 +144,9 @@ public Q_SLOTS:
     */
    void rotateCounterclockwise();
 
+Q_SIGNALS:
+    void pixmapRotated();
+
 protected:
    /**
     * Creates a KMenu with the menu that appears when clicking with the right button on the label

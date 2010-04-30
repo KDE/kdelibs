@@ -32,17 +32,34 @@
 class KPixmapRegionSelectorDialog::Private
 {
 public:
-    Private()
-        : pixmapSelectorWidget( 0 )
+    Private(KPixmapRegionSelectorDialog * parent)
+        : pixmapSelectorWidget( 0 ), q(parent)
     {
     }
 
     KPixmapRegionSelectorWidget *pixmapSelectorWidget;
+    KPixmapRegionSelectorDialog *q;
+
+    void init() {
+        //When the image is rotated we need to enforce the maximum width&height into the
+        //KPixmapRegionSelectorWidget; in order to avoid the dialog to get out of the screen
+        q->connect(pixmapSelectorWidget, SIGNAL(pixmapRotated()), q, SLOT(_k_adjustPixmapSize()));
+    }
+
+    void _k_adjustPixmapSize() {
+        if (pixmapSelectorWidget) {
+            //Set maximum size for picture
+            QDesktopWidget desktopWidget;
+            QRect screen = desktopWidget.availableGeometry();
+            pixmapSelectorWidget->setMaximumWidgetSize(
+                (int)(screen.width()*4.0/5), (int)(screen.height()*4.0/5));
+        }
+    }
 };
 
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
   : KDialog( parent ),
-    d( new Private )
+    d( new Private(this) )
 {
   setCaption( i18n("Select Region of Image") );
   setButtons( Help|Ok|Cancel );
@@ -55,6 +72,8 @@ KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
   vbox->setSpacing( -1 );
 
   setMainWidget(vbox);
+
+  d->init();
 }
 
 KPixmapRegionSelectorDialog::~KPixmapRegionSelectorDialog()
@@ -64,7 +83,12 @@ KPixmapRegionSelectorDialog::~KPixmapRegionSelectorDialog()
 
 KPixmapRegionSelectorWidget *KPixmapRegionSelectorDialog::pixmapRegionSelectorWidget() const
 {
-    return d->pixmapSelectorWidget;
+  return d->pixmapSelectorWidget;
+}
+
+void KPixmapRegionSelectorDialog::adjustRegionSelectorWidgetSizeToFitScreen()
+{
+  d->_k_adjustPixmapSize();
 }
 
 QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, QWidget *parent )
@@ -72,11 +96,7 @@ QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, QWid
   KPixmapRegionSelectorDialog dialog(parent);
 
   dialog.pixmapRegionSelectorWidget()->setPixmap(pixmap);
-
-  QDesktopWidget desktopWidget;
-  QRect screen=desktopWidget.availableGeometry();
-  dialog.pixmapRegionSelectorWidget()->setMaximumWidgetSize(
-        (int)(screen.width()*4.0/5), (int)(screen.height()*4.0/5));
+  dialog.adjustRegionSelectorWidgetSizeToFitScreen();
 
   int result = dialog.exec();
 
@@ -94,11 +114,7 @@ QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, int 
 
   dialog.pixmapRegionSelectorWidget()->setPixmap(pixmap);
   dialog.pixmapRegionSelectorWidget()->setSelectionAspectRatio(aspectRatioWidth,aspectRatioHeight);
-
-  QDesktopWidget desktopWidget;
-  QRect screen=desktopWidget.availableGeometry();
-  dialog.pixmapRegionSelectorWidget()->setMaximumWidgetSize(
-        (int)(screen.width()*4.0/5), (int)(screen.height()*4.0/5));
+  dialog.adjustRegionSelectorWidgetSizeToFitScreen();
 
   int result = dialog.exec();
 
@@ -115,11 +131,8 @@ QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, QWid
   KPixmapRegionSelectorDialog dialog(parent);
 
   dialog.pixmapRegionSelectorWidget()->setPixmap(pixmap);
+  dialog.adjustRegionSelectorWidgetSizeToFitScreen();
 
-  QDesktopWidget desktopWidget;
-  QRect screen=desktopWidget.availableGeometry();
-  dialog.pixmapRegionSelectorWidget()->setMaximumWidgetSize(
-        (int)(screen.width()*4.0/5), (int)(screen.height()*4.0/5));
   int result = dialog.exec();
 
   QImage image;
@@ -136,11 +149,7 @@ QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, int 
 
   dialog.pixmapRegionSelectorWidget()->setPixmap(pixmap);
   dialog.pixmapRegionSelectorWidget()->setSelectionAspectRatio(aspectRatioWidth,aspectRatioHeight);
-
-  QDesktopWidget desktopWidget;
-  QRect screen=desktopWidget.availableGeometry();
-  dialog.pixmapRegionSelectorWidget()->setMaximumWidgetSize(
-        (int)(screen.width()*4.0/5), (int)(screen.height()*4.0/5));
+  dialog.adjustRegionSelectorWidgetSizeToFitScreen();
 
   int result = dialog.exec();
 
@@ -152,3 +161,4 @@ QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, int 
   return image;
 }
 
+#include "kpixmapregionselectordialog.moc"
