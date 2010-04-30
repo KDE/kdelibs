@@ -29,6 +29,7 @@
 
 // kdelibs includes
 #include <kcursor.h>
+#include <kcolorscheme.h>
 
 // Qt includes
 #include <QtGui/QTextDocumentFragment>
@@ -398,72 +399,53 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
 
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
+
     if (!cursor.hasSelection()) {
         cursor.select(QTextCursor::WordUnderCursor);
     }
 
     QTextCharFormat format = cursor.charFormat();
+    // Save original format to create an extra space with the existing char
+    // format for the block
+    const QTextCharFormat originalFormat = format;
     if (!linkUrl.isEmpty()) {
+        // Add link details
         format.setAnchor(true);
         format.setAnchorHref(linkUrl);
+        // Workaround for QTBUG-1814:
+        // Link formatting does not get applied immediately when setAnchor(true)
+        // is called.  So the formatting needs to be applied manually.
+        format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+        format.setUnderlineColor(KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color());
+        format.setForeground(KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color());
     } else {
-        format = cursor.block().charFormat();
+        // Remove link details
         format.setAnchor(false);
         format.setAnchorHref(QString());
+        // Workaround for QTBUG-1814:
+        // Link formatting does not get removed immediately when setAnchor(false)
+        // is called. So the formatting needs to be applied manually.
+        format.setUnderlineStyle(QTextCharFormat::NoUnderline);
+        format.setUnderlineColor(KColorScheme(QPalette::Active, KColorScheme::View).foreground().color());
+        format.setForeground(KColorScheme(QPalette::Active, KColorScheme::View).foreground().color());
     }
 
+    // Insert link text specified in dialog, otherwise write out url.
     QString _linkText;
-
-    int lowPos = qMin(cursor.selectionStart(), cursor.selectionEnd());
     if (!linkText.isEmpty()) {
         _linkText = linkText;
     } else {
         _linkText = linkUrl;
     }
-    // Can't simply insertHtml("<a href=\"%1\">%2</a>").arg(linkUrl).arg(_linkText);
-    // That would remove all existing text formatting on the selection (bold etc).
-    // The href information is stored in the QTextCharFormat, but qt bugs must
-    // still be worked around below.
     cursor.insertText(_linkText, format);
 
 
-    // Workaround for qt bug 203510:
-    // Link formatting does not get applied immediately. Removing and reinserting
-    // the marked up html does format the text correctly.
-    // -- Stephen Kelly, 15th March 2008
-    if (!linkUrl.isEmpty()) {
-        cursor.setPosition(lowPos);
-        cursor.setPosition(lowPos + _linkText.length(), QTextCursor::KeepAnchor);
-
-        if (!cursor.currentList()) {
-            cursor.insertHtml(cursor.selection().toHtml());
-        } else {
-            // Workaround for qt bug 215576:
-            // If the cursor is currently on a list, inserting html will create a new block.
-            // This seems to be because toHtml() does not create a <!-- StartFragment --> tag in
-            // this case and text style information is stored in the list item rather than a span tag.
-            // -- Stephen Kelly, 8th June 2008
-
-            QString selectionHtml = cursor.selection().toHtml();
-            QString style = selectionHtml.split("<li style=\"").takeAt(1).split('\"').first();
-            QString linkTag = "<a" + selectionHtml.split("<a").takeAt(1).split('>').first() + '>'
-                + "<span style=\"" + style + "\">" + _linkText + "</span></a>";
-            cursor.insertHtml(linkTag);
-        }
-
-        // Insert a space after the link if at the end of the block so that
-        // typing some text after the link does not carry link formatting
-        if (cursor.position() == cursor.block().position() + cursor.block().length() - 1) {
-            cursor.setCharFormat(cursor.block().charFormat());
-            cursor.insertText(QString(' '));
-        }
-
-        d->activateRichText();
-    } else {
-        // Remove link formatting. This is a workaround for the same qt bug (203510).
-        // Just remove all formatting from the link text.
-        QTextCharFormat charFormat;
-        cursor.setCharFormat(charFormat);
+    // Insert a space after the link if at the end of the block so that
+    // typing some text after the link does not carry link formatting
+    if (!linkUrl.isEmpty() && cursor.atBlockEnd()) {
+        cursor.setPosition(cursor.selectionEnd());
+        cursor.setCharFormat(originalFormat);
+        cursor.insertText(QString(" "));
     }
 
     cursor.endEditBlock();

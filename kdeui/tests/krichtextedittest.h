@@ -28,6 +28,8 @@ class KRichTextEditTest : public QObject
 
     private Q_SLOTS:
         void testLinebreaks();
+        void testUpdateLinkAdd();
+        void testUpdateLinkRemove();
 };
 
 #endif
