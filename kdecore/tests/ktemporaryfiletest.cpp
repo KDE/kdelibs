@@ -45,12 +45,22 @@ void KTemporaryFileTest::testKTemporaryFile()
 {
 
     //Test basic placement
+    QString first;
     {
         KTemporaryFile file;
         QVERIFY(file.open());
         QVERIFY(file.fileName().startsWith(kdeTempDir + componentName));
         QVERIFY(file.fileName().endsWith(".tmp"));
         QVERIFY(QFile::exists(file.fileName()));
+        first = file.fileName();
+    }
+    QVERIFY(!QFile::exists(first));
+
+    // Test we don't get the same twice
+    {
+        KTemporaryFile file;
+        QVERIFY(file.open());
+        QVERIFY(first != file.fileName());
     }
 
     //Test relative subdirectory
