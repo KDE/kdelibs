@@ -46,9 +46,10 @@
 static bool excludedMimeType(const QString &type)
 {
     // Let QtWebKit handle flash and java applets...
-    return (type == QL1S("application/x-shockwave-flash") ||
-            type == QL1S("application/futuresplash") ||
-            type.startsWith(QL1S("application/x-java")));
+    return (type.startsWith(QL1S("inode/"), Qt::CaseInsensitive)||
+            type.startsWith(QL1S("application/x-java"), Qt::CaseInsensitive) ||
+            type == QL1S("application/x-shockwave-flash") ||
+            type == QL1S("application/futuresplash"));
 }
 
 
