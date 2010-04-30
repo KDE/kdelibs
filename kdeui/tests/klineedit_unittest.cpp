@@ -92,7 +92,7 @@ private Q_SLOTS:
         // the suggestion from auto completion emits textChanged but not userTextChanged nor textEdited
         w.setCompletionMode(KGlobalSettings::CompletionAuto);
         KCompletion completion;
-	completion.setSoundsEnabled(false);
+        completion.setSoundsEnabled(false);
         QStringList items;
         items << "KDE is cool" << "KDE is really cool";
         completion.setItems(items);
@@ -169,6 +169,35 @@ private Q_SLOTS:
         QCOMPARE(activatedSpy.count(), 1);
         QCOMPARE(w.text(), items.at(1));
         QVERIFY(w.isModified());
+    }
+
+    void testCompletionBox()
+    {
+        KLineEdit w;
+        w.setText("K");
+        w.setCompletionMode(KGlobalSettings::CompletionPopup);
+        KCompletion completion;
+        completion.setSoundsEnabled(false);
+        w.setCompletionObject(&completion);
+        QStringList items;
+        items << "KDE is cool" << "KDE is really cool";
+        completion.setItems(items);
+        QTest::keyClick(&w, 'D', Qt::ShiftModifier);
+        QCOMPARE(w.text(), QString::fromLatin1("KD"));
+        QCOMPARE(w.completionBox()->currentRow(), -1);
+        QTest::keyClick(&w, 'E', Qt::ShiftModifier);
+        QCOMPARE(w.text(), QString::fromLatin1("KDE"));
+        QCOMPARE(w.completionBox()->currentRow(), -1);
+        w.completionBox()->up(); // no-op
+        QCOMPARE(w.text(), QString::fromLatin1("KDE"));
+        w.completionBox()->down(); // select 1st item
+        QCOMPARE(w.text(), items.at(0));
+        w.completionBox()->down(); // select 2nd item
+        QCOMPARE(w.text(), items.at(1));
+        w.completionBox()->up();
+        QCOMPARE(w.text(), items.at(0));
+        w.completionBox()->up(); // no-op
+        QCOMPARE(w.text(), items.at(0));
     }
 
     void testPaste()

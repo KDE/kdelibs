@@ -1510,32 +1510,20 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
         {
             QListWidgetItem* currentItem = d->completionBox->currentItem();
 
-            bool wasSelected = false;
             QString currentSelection;
-
             if ( currentItem != 0 ) {
-                wasSelected = currentItem->isSelected();
                 currentSelection = currentItem->text();
             }
 
             d->completionBox->setItems( items );
 
-            const QList<QListWidgetItem*> matchedItems = d->completionBox->findItems( currentSelection , Qt::MatchExactly);
+            const QList<QListWidgetItem*> matchedItems = d->completionBox->findItems(currentSelection, Qt::MatchExactly);
             QListWidgetItem* matchedItem = matchedItems.isEmpty() ? 0 : matchedItems.first();
 
-            // If no item is selected, that means the listbox hasn't been manipulated by the user yet,
-            // because it's not possible otherwise to have no selected item. In such case make
-            // always the first item current and unselected, so that the current item doesn't jump.
-            if( !matchedItem || !wasSelected )
-            {
-                wasSelected = false;
-                matchedItem = d->completionBox->item( 0 );
-            }
             if ( matchedItem )
             {
                 const bool blocked = d->completionBox->blockSignals( true );
                 d->completionBox->setCurrentItem( matchedItem );
-                matchedItem->setSelected(wasSelected);
                 d->completionBox->blockSignals( blocked );
             }
         }
@@ -1551,7 +1539,7 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
         {
             const int index = items.first().indexOf( txt );
             const QString newText = items.first().mid( index );
-            setUserSelection(false);
+            setUserSelection(false); // can be removed? setCompletedText sets it anyway
             setCompletedText(newText,true);
         }
     }

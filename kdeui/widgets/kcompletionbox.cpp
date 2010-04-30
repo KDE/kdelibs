@@ -41,7 +41,6 @@ public:
     QWidget *m_parent; // necessary to set the focus back
     QString cancelText;
     bool tabHandling : 1;
-    bool down_workaround : 1; // next call to down() selects the first item
     bool upwardBox : 1;
     bool emitSelected : 1;
 };
@@ -51,7 +50,6 @@ KCompletionBox::KCompletionBox( QWidget *parent )
 {
     d->m_parent        = parent;
     d->tabHandling     = true;
-    d->down_workaround = false;
     d->upwardBox       = false;
     d->emitSelected    = true;
 
@@ -65,8 +63,6 @@ KCompletionBox::KCompletionBox( QWidget *parent )
 
     connect( this, SIGNAL( itemDoubleClicked( QListWidgetItem * )),
              SLOT( slotActivated( QListWidgetItem * )) );
-    connect( this, SIGNAL( currentItemChanged( QListWidgetItem * , QListWidgetItem * )),
-             SLOT( slotCurrentChanged() ));
     connect( this, SIGNAL( itemClicked( QListWidgetItem * )),
              SLOT( slotItemClicked( QListWidgetItem * )) );
 }
@@ -267,10 +263,9 @@ void KCompletionBox::popup()
     if ( count() == 0 )
         hide();
     else {
-        //TODO KDE 4 - Port: ensureCurrentVisible();
         bool block = signalsBlocked();
         blockSignals( true );
-        setCurrentItem( 0 );
+        setCurrentRow( -1 );
         blockSignals( block );
         clearSelection();
         if ( !isVisible() )
@@ -408,22 +403,18 @@ QSize KCompletionBox::sizeHint() const
 
 void KCompletionBox::down()
 {
-    int i = currentRow();
-
-    if ( i == 0 && d->down_workaround ) {
-        d->down_workaround = false;
-        setCurrentRow( 0 );
-        item(0)->setSelected(true);
-    }
-    else if ( i < (int) count() - 1 ) {
-        setCurrentRow( i + 1 );
+    const int i = currentRow();
+    if (i < count() - 1) {
+        setCurrentRow(i + 1);
     }
 }
 
 void KCompletionBox::up()
 {
-    if ( currentItem() && row(currentItem()) > 0 )
-        setCurrentItem( item(row(currentItem()) - 1) );
+    const int i = currentRow();
+    if (i > 0) {
+        setCurrentRow(i - 1);
+    }
 }
 
 void KCompletionBox::pageDown()
@@ -445,7 +436,7 @@ void KCompletionBox::pageUp()
 
 void KCompletionBox::home()
 {
-    setCurrentItem( 0 );
+    setCurrentRow( 0 );
 }
 
 void KCompletionBox::end()
@@ -501,7 +492,7 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
     blockSignals( true );
     KListWidget::insertItems( index, items );
     blockSignals( block );
-    d->down_workaround = true;
+    setCurrentRow(-1);
 }
 
 void KCompletionBox::setItems( const QStringList& items )
@@ -555,19 +546,12 @@ void KCompletionBox::setItems( const QStringList& items )
         sizeAndPosition();
 
     blockSignals(block);
-    d->down_workaround = true;
-}
-
-void KCompletionBox::slotCurrentChanged()
-{
-    d->down_workaround = false;
 }
 
 void KCompletionBox::slotItemClicked( QListWidgetItem *item )
 {
     if ( item )
     {
-        d->down_workaround = false;
         hide();
         emit currentTextChanged( item->text() );
         emit activated( item->text() );
