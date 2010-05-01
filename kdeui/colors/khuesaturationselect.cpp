@@ -162,7 +162,18 @@ void KHueSaturationSelector::drawContents( QPainter *painter )
 
 void KHueSaturationSelector::drawPalette( QPixmap *pixmap )
 {
-    int xSize = contentsRect().width(), ySize = contentsRect().height();
+    int xSize, ySize = 2;
+    switch (chooserMode()) {
+    case ChooserClassic:
+    case ChooserSaturation:
+    case ChooserValue:
+        xSize = 7;
+        break;
+    default:
+        xSize = 2;
+        break;
+    }
+
     QImage image( QSize( xSize, ySize ), QImage::Format_RGB32 );
     QColor col;
     int h, s;
@@ -209,14 +220,16 @@ void KHueSaturationSelector::drawPalette( QPixmap *pixmap )
         }
     }
 
-    /*
-    if ( pixmap->depth() <= 8 )
-    {
-        const QVector<QColor> standardPalette = kdeui_standardPalette();
-        KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
-    }
-    */
-    *pixmap = QPixmap::fromImage( image );
+    QPixmap pix(contentsRect().size());
+    QPainter painter(&pix);
+    // Bilinear filtering
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    QRectF srcRect(0.5, 0.5, xSize - 1, ySize - 1);
+    QRectF destRect(QPointF(0, 0), contentsRect().size());
+    painter.drawImage(destRect, image, srcRect);
+    painter.end();
+
+    *pixmap = pix;
 }
 
 #include "khuesaturationselect.moc"
