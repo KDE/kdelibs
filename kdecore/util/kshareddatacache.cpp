@@ -49,7 +49,9 @@
 #undef _POSIX_THREAD_PROCESS_SHARED
 #endif
 
+#ifdef __GNUC__
 #warning "No support for POSIX timeouts and POSIX threads -- shared memory will be ignored"
+#endif
 
 #endif
 
