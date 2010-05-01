@@ -27,9 +27,12 @@
 
 namespace KJS {
 
+    const int inlineListValuesSize = 5;
+
     struct ListImpBase {
         int size;
         int refCount;
+        JSValue** data; // points either to inline or out-of-line buffer
     };
     
     class ListIterator;
@@ -49,9 +52,7 @@ namespace KJS {
         List();
         ~List() { deref(); }
 
-        List(const List &b) : _impBase(b._impBase) {
-	    ++_impBase->refCount; 
-	}
+        List(const List &b) : _impBase(b._impBase) { ++_impBase->refCount; }
         List &operator=(const List &);
 
         /**
@@ -71,17 +72,10 @@ namespace KJS {
          */
         void reset() { deref(); ++(_impBase = empty()._impBase)->refCount; }
 
-
         /**
          * Make a copy of the list
          */
         List copy() const;
-
-
-        /**
-         * Copy all elements from the second list here
-         */
-        void copyFrom(const List& other);
 
         /**
          * Make a copy of the list, omitting the first element.
@@ -92,28 +86,31 @@ namespace KJS {
          * @return true if the list is empty. false otherwise.
          */
         bool isEmpty() const { return _impBase->size == 0; }
+
         /**
          * @return the current size of the list.
          */
         int size() const { return _impBase->size; }
+
         /**
          * @return A KJS::ListIterator pointing to the first element.
          */
         ListIterator begin() const;
+
         /**
          * @return A KJS::ListIterator pointing to the last element.
          */
         ListIterator end() const;
         
         /**
-         * Retrieve an element at an indexed position. If you want to iterate
-         * trough the whole list using KJS::ListIterator will be faster.
+         * Retrieve an element at an indexed position.
          *
          * @param i List index.
          * @return Return the element at position i. KJS::Undefined if the
          * index is out of range.
          */
         JSValue *at(int i) const;
+        
         /**
          * Equivalent to at.
          */
@@ -127,6 +124,13 @@ namespace KJS {
         
         static void markProtectedLists();
     private:
+        /**
+         * Copy all elements from the second list here
+         */
+        void copyFrom(const List& other);
+    
+        void appendSlowCase(JSValue* val);
+
         ListImpBase *_impBase;
         
         void deref() { if (--_impBase->refCount == 0) release(); }
@@ -134,6 +138,25 @@ namespace KJS {
         void release();
         void markValues();
     };
+
+    inline JSValue* List::at(int i) const {
+        if (i < _impBase->size)
+            return _impBase->data[i];
+        else
+            return jsUndefined();
+    }
+
+    inline void List::append(JSValue *val) {
+        int size = _impBase->size;
+        int newSize = size + 1;
+        if (newSize < inlineListValuesSize) {
+            // Can just write to the inline byffer
+            _impBase->data[size] = val;
+            _impBase->size = newSize;
+        } else {
+            appendSlowCase(val);
+        }
+    }
   
     /**
      * @short Iterator for KJS::List objects.
@@ -192,3 +215,5 @@ namespace KJS {
 } // namespace KJS
 
 #endif // KJS_LIST_H
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

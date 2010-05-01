@@ -32,18 +32,17 @@ namespace KJS {
 
 // tunable parameters
 const int poolSize = 512;
-const int inlineValuesSize = 5;
+
 
 enum ListImpState { unusedInPool = 0, usedInPool, usedOnHeap, immortal };
 
 struct ListImp : ListImpBase
 {
     ListImpState state;
-    int capacity;
-    JSValue** overflow;
+    int capacity; // or 0 if data is inline
 
     union {
-        JSValue *values[inlineValuesSize];
+        JSValue *values[inlineListValuesSize];
         ListImp *nextInFreeList;
     };
 
@@ -101,18 +100,9 @@ ListStatisticsExitLogger::~ListStatisticsExitLogger()
 
 inline void ListImp::markValues()
 {
-    int inlineSize = min(size, inlineValuesSize);
-    for (int i = 0; i != inlineSize; ++i) {
-	if (!values[i]->marked()) {
-	    values[i]->mark();
-	}
-    }
-
-    int overflowSize = size - inlineSize;
-    for (int i = 0; i != overflowSize; ++i) {
-	if (!overflow[i]->marked()) {
-	    overflow[i]->mark();
-	}
+    for (int i = 0; i != size; ++i) {
+        if (!data[i]->marked())
+            data[i]->mark();
     }
 }
 
@@ -138,11 +128,11 @@ static inline ListImp *allocateListImp()
 {
     // Find a free one in the pool.
     if (poolUsed < poolSize) {
-	ListImp *imp = poolFreeList ? poolFreeList : &pool[0];
-	poolFreeList = imp->nextInFreeList ? imp->nextInFreeList : imp + 1;
-	imp->state = usedInPool;
-	poolUsed++;
-	return imp;
+        ListImp *imp = poolFreeList ? poolFreeList : &pool[0];
+        poolFreeList = imp->nextInFreeList ? imp->nextInFreeList : imp + 1;
+        imp->state = usedInPool;
+        poolUsed++;
+        return imp;
     }
     
     HeapListImp *imp = new HeapListImp;
@@ -164,7 +154,7 @@ List::List() : _impBase(allocateListImp())
     imp->size = 0;
     imp->refCount = 1;
     imp->capacity = 0;
-    imp->overflow = 0;
+    imp->data     = imp->values;
 
 #if DUMP_STATISTICS
     if (++numLists > numListsHighWaterMark)
@@ -191,14 +181,15 @@ void List::release()
             ++numListsBiggerThan[i];
 #endif
 
-    delete [] imp->overflow;
-    imp->overflow = 0;
+    if (imp->capacity)
+        delete [] imp->data;
+    imp->data = 0;
 
     if (imp->state == usedInPool) {
         imp->state = unusedInPool;
-	imp->nextInFreeList = poolFreeList;
-	poolFreeList = imp;
-	poolUsed--;
+        imp->nextInFreeList = poolFreeList;
+        poolFreeList = imp;
+        poolUsed--;
     } else {
         assert(imp->state == usedOnHeap);
         HeapListImp *list = static_cast<HeapListImp *>(imp);
@@ -220,50 +211,41 @@ void List::release()
     }
 }
 
-JSValue *List::at(int i) const
-{
-    ListImp *imp = static_cast<ListImp *>(_impBase);
-    if ((unsigned)i >= (unsigned)imp->size)
-        return jsUndefined();
-    if (i < inlineValuesSize)
-        return imp->values[i];
-    return imp->overflow[i - inlineValuesSize];
-}
-
 void List::clear()
 {
     _impBase->size = 0;
 }
 
-void List::append(JSValue *v)
+void List::appendSlowCase(JSValue *v)
 {
     ListImp *imp = static_cast<ListImp *>(_impBase);
 
-    int i = imp->size++;
+    int i = imp->size++; // insert index/old size
 
 #if DUMP_STATISTICS
     if (imp->size > listSizeHighWaterMark)
         listSizeHighWaterMark = imp->size;
 #endif
 
-    if (i < inlineValuesSize) {
-        imp->values[i] = v;
-        return;
-    }
+    // If we got here, we need to use an out-of-line buffer.
     
     if (i >= imp->capacity) {
         int newCapacity = i * 2;
-        JSValue** newOverflow = new JSValue* [newCapacity - inlineValuesSize];
-        JSValue** oldOverflow = imp->overflow;
-        int oldOverflowSize = i - inlineValuesSize;
-        for (int j = 0; j != oldOverflowSize; j++)
-            newOverflow[j] = oldOverflow[j];
-        delete [] oldOverflow;
-        imp->overflow = newOverflow;
+
+        JSValue** newBuffer = new JSValue*[newCapacity];
+
+        // Copy everything over
+        for (int c = 0; c < i; ++c)
+            newBuffer[c] = imp->data[c];
+
+        if (imp->capacity) // had an old out-of-line buffer
+            delete[] imp->data;
+
+        imp->data     = newBuffer;
         imp->capacity = newCapacity;
     }
     
-    imp->overflow[i - inlineValuesSize] = v;
+    imp->data[i] = v;
 }
 
 List List::copy() const
@@ -275,18 +257,25 @@ List List::copy() const
 
 void List::copyFrom(const List& other)
 {
-    ListImp *imp = static_cast<ListImp *>(other._impBase);
+    // Assumption: we're empty (e.g. called from copy)
+    
+    ListImp* otherImp = static_cast<ListImp *>(other._impBase);
+    ListImp* ourImp   = static_cast<ListImp *>(_impBase);
+    
+    assert(ourImp->size == 0 && ourImp->capacity == 0);
 
-    int size = imp->size;
+    int size = otherImp->size;
+    int cap  = otherImp->capacity;
+    ourImp->size     = size;
+    ourImp->capacity = cap;
 
-    int inlineSize = min(size, inlineValuesSize);
-    for (int i = 0; i != inlineSize; ++i)
-        append(imp->values[i]);
+    if (cap) {
+        // other used out-of-line buffer -- we should to
+        ourImp->data = new JSValue*[cap];
+    }
 
-    JSValue** overflow = imp->overflow;
-    int overflowSize = size - inlineSize;
-    for (int i = 0; i != overflowSize; ++i)
-        append(overflow[i]);
+    for (int c = 0; c < size; ++c)
+        ourImp->data[c] = otherImp->data[c];
 }
 
 
@@ -294,19 +283,22 @@ List List::copyTail() const
 {
     List copy;
 
-    ListImp *imp = static_cast<ListImp *>(_impBase);
+    ListImp* ourImp   = static_cast<ListImp *>(_impBase);
+    ListImp* otherImp = static_cast<ListImp *>(copy._impBase);
 
-    int size = imp->size;
+    // We allocate as much space as the other one (even if we could have
+    // done it inline)
+    int size = otherImp->size;
+    int cap  = otherImp->capacity;
+    ourImp->size     = size - 1;
+    ourImp->capacity = cap;
 
-    int inlineSize = min(size, inlineValuesSize);
-    for (int i = 1; i < inlineSize; ++i)
-        copy.append(imp->values[i]);
+    if (cap)
+        ourImp->data = new JSValue*[cap];
 
-    JSValue** overflow = imp->overflow;
-    int overflowSize = size - inlineSize;
-    for (int i = 0; i < overflowSize; ++i)
-        copy.append(overflow[i]);
-
+    for (int c = 1; c < size; ++c)
+        ourImp->data[c-1] = otherImp->data[c];
+        
     return copy;
 }
 
