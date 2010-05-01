@@ -58,7 +58,6 @@ KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
     connect(m_openSubDirsTimer, SIGNAL(timeout()), this, SLOT(startSubDirsJob()));
 
     connect(this, SIGNAL(pressed()), this, SLOT(requestSubDirs()));
-    connect(this, SIGNAL(clicked()), this, SLOT(cancelSubDirsRequest()));
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
@@ -307,6 +306,7 @@ void KUrlNavigatorButton::mouseReleaseEvent(QMouseEvent* event)
         // the mouse has been released above the text area and not
         // above the [>] button
         emit clicked(m_url, event->button());
+        cancelSubDirsRequest();
     }
     KUrlNavigatorButtonBase::mouseReleaseEvent(event);
 }
@@ -338,15 +338,6 @@ void KUrlNavigatorButton::requestSubDirs()
 {
     if (!m_openSubDirsTimer->isActive() && (m_subDirsJob == 0)) {
         m_openSubDirsTimer->start();
-    }
-}
-
-void KUrlNavigatorButton::cancelSubDirsRequest()
-{
-    m_openSubDirsTimer->stop();
-    if (m_subDirsJob != 0) {
-        m_subDirsJob->kill();
-        m_subDirsJob = 0;
     }
 }
 
@@ -500,6 +491,14 @@ void KUrlNavigatorButton::replaceButton(KJob* job)
     m_subDirs.clear();
 }
 
+void KUrlNavigatorButton::cancelSubDirsRequest()
+{
+    m_openSubDirsTimer->stop();
+    if (m_subDirsJob != 0) {
+        m_subDirsJob->kill();
+        m_subDirsJob = 0;
+    }
+}
 
 int KUrlNavigatorButton::arrowWidth() const
 {

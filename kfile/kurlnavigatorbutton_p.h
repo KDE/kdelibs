@@ -106,11 +106,6 @@ private Q_SLOTS:
     void requestSubDirs();
 
     /**
-     * Cancels any request done by requestSubDirs().
-     */
-    void cancelSubDirsRequest();
-
-    /**
      * Starts to load the sub directories asynchronously. The directories
      * are stored in m_subDirs by addEntriesToSubDirs().
      */
@@ -140,6 +135,11 @@ private Q_SLOTS:
     void statFinished(KJob*);
 
 private:
+    /**
+     * Cancels any request done by requestSubDirs().
+     */
+    void cancelSubDirsRequest();
+
     int arrowWidth() const;
     bool isAboveArrow(int x) const;
     bool isTextClipped() const;
