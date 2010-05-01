@@ -40,6 +40,7 @@ public:
     virtual ~KCalendarSystemJalaliPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -62,6 +63,16 @@ KCalendarSystemJalaliPrivate::KCalendarSystemJalaliPrivate( KCalendarSystemJalal
 
 KCalendarSystemJalaliPrivate::~KCalendarSystemJalaliPrivate()
 {
+}
+
+void KCalendarSystemJalaliPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+    // Islamic Era (Hijri), Anno Persico.
+    name = i18nc( "Calendar Era: Jalali Islamic Era, years > 0, LongFormat", "Anno Persico" );
+    shortName = i18nc( "Calendar Era: Jalali Islamic Era, years > 0, ShortFormat", "AP" );
+    format = i18nc( "(kdedt-format) Jalali, AP, full era year format used for %EY, e.g. 2000 AP", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
 }
 
 int KCalendarSystemJalaliPrivate::monthsInYear( int year ) const
@@ -162,12 +173,14 @@ KCalendarSystemJalali::KCalendarSystemJalali( const KLocale * locale )
                       : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), locale ),
                         dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd, const KLocale * locale )
                       : KCalendarSystem( dd, locale ),
                         dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemJalali::~KCalendarSystemJalali()

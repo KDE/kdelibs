@@ -22,6 +22,8 @@
 
 #include "kdebug.h"
 #include "klocale.h"
+#include "kglobal.h"
+#include "kconfiggroup.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
@@ -34,6 +36,7 @@ public:
     virtual ~KCalendarSystemJulianPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -45,6 +48,8 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+
+    bool m_useCommonEra;
 };
 
 // Shared d pointer base class definitions
@@ -56,6 +61,34 @@ KCalendarSystemJulianPrivate::KCalendarSystemJulianPrivate( KCalendarSystemJulia
 
 KCalendarSystemJulianPrivate::~KCalendarSystemJulianPrivate()
 {
+}
+
+void KCalendarSystemJulianPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+
+    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
+    m_useCommonEra = cg.readEntry( "UseCommonEra", false );
+
+    if ( m_useCommonEra ) {
+        name = i18nc( "Calendar Era: Julian Common Era, years < 0, LongFormat", "Before Common Era" );
+        shortName = i18nc( "Calendar Era: Julian Common Era, years < 0, ShortFormat", "BCE" );
+    } else {
+        name = i18nc( "Calendar Era: Julian Christian Era, years < 0, LongFormat", "Before Christ" );
+        shortName = i18nc( "Calendar Era: Julian Christian Era, years < 0, ShortFormat", "BC" );
+    }
+    format = i18nc( "(kdedt-format) Julian, BC, full era year format used for %EY, e.g. 2000 BC", "%Ey %EC" );
+    addEra( '-', 1, q->epoch().addDays( -1 ), -1, q->earliestValidDate(), name, shortName, format );
+
+    if ( m_useCommonEra ) {
+        name = i18nc( "Calendar Era: Julian Common Era, years > 0, LongFormat", "Common Era" );
+        shortName = i18nc( "Calendar Era: Julian Common Era, years > 0, ShortFormat", "CE" );
+    } else {
+        name = i18nc( "Calendar Era: Julian Christian Era, years > 0, LongFormat", "Anno Domini" );
+        shortName = i18nc( "Calendar Era: Julian Christian Era, years > 0, ShortFormat", "AD" );
+    }
+    format = i18nc( "(kdedt-format) Julian, AD, full era year format used for %EY, e.g. 2000 AD", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
 }
 
 int KCalendarSystemJulianPrivate::monthsInYear( int year ) const
@@ -143,12 +176,14 @@ KCalendarSystemJulian::KCalendarSystemJulian( const KLocale * locale )
                       : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), locale ),
                         dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemJulian::KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd, const KLocale * locale )
                       : KCalendarSystem( dd, locale ),
                         dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemJulian::~KCalendarSystemJulian()

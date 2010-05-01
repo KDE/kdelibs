@@ -32,6 +32,7 @@ public:
     virtual ~KCalendarSystemHijriPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -54,6 +55,16 @@ KCalendarSystemHijriPrivate::KCalendarSystemHijriPrivate( KCalendarSystemHijri *
 
 KCalendarSystemHijriPrivate::~KCalendarSystemHijriPrivate()
 {
+}
+
+void KCalendarSystemHijriPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+    // Islamic Era, Anno Hegirae, "Year of the Hijra".
+    name = i18nc( "Calendar Era: Hijri Islamic Era, years > 0, LongFormat", "Anno Hegirae" );
+    shortName = i18nc( "Calendar Era: Hijri Islamic Era, years > 0, ShortFormat", "AH" );
+    format = i18nc( "(kdedt-format) Hijri, AH, full era year format used for %EY, e.g. 2000 AH", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
 }
 
 int KCalendarSystemHijriPrivate::monthsInYear( int year ) const
@@ -156,12 +167,14 @@ KCalendarSystemHijri::KCalendarSystemHijri( const KLocale * locale )
                      : KCalendarSystem( *new KCalendarSystemHijriPrivate( this ), locale ),
                        dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri( KCalendarSystemHijriPrivate &dd, const KLocale * locale )
                      : KCalendarSystem( dd, locale ),
                        dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemHijri::~KCalendarSystemHijri()

@@ -177,6 +177,20 @@ public:
 
     //KDE5 make virtual?
     /**
+     * @since 4.5
+     *
+     * Returns whether a given date is valid in this calendar system.
+     *
+     * @param era the Era Name portion of the date to check
+     * @param yearInEra the Year In Era portion of the date to check
+     * @param month the Month portion of the date to check
+     * @param day the Day portion of the date to check
+     * @return @c true if the date is valid, @c false otherwise
+     */
+    bool isValid( const QString &eraName, int yearInEra, int month, int day ) const;
+
+    //KDE5 make virtual?
+    /**
      * @since 4.4
      *
      * Returns whether a given date is valid in this calendar system.
@@ -222,6 +236,21 @@ public:
      * @return @c true if the date is valid, @c false otherwise
      */
     bool setDate( QDate &date, int year, int dayOfYear ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Set a date using the era, year in era number, month and day
+     *
+     * @param date date to change
+     * @param eraName Era string
+     * @param year Year In Era number
+     * @param month Month number
+     * @param day Day Of Month number
+     * @return @c true if the date is valid, @c false otherwise
+     */
+    bool setDate( QDate &date, QString eraName, int yearInEra, int month, int day ) const;
 
     //KDE5 make virtual?
     /**
@@ -295,6 +324,44 @@ public:
      * @return day of the month, 0 if input date is invalid
      */
     virtual int day( const QDate &date ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns the Era Name portion of a given date in the current calendar system,
+     * for example "AD" or "Anno Domini" for the Gregorian calendar and Christian Era.
+     *
+     * @param date date to return Era Name for
+     * @param format format to return, either short or long
+     * @return era name, empty string if input date is invalid
+     */
+    QString eraName( const QDate &date, StringFormat format = ShortFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns the Era Year portion of a given date in the current
+     * calendar system, for example "2000 AD" or "Heisei 22".
+     *
+     * @param date date to return Era Year for
+     * @param format format to return, either short or long
+     * @return era name, empty string if input date is invalid
+     */
+    QString eraYear( const QDate &date, StringFormat format = ShortFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Returns the Year In Era portion of a given date in the current calendar
+     * system, for example 1 for "1 BC".
+     *
+     * @param date date to return Year In Era for
+     * @return Year In Era, -1 if input date is invalid
+     */
+    int yearInEra( const QDate &date ) const;
 
     /**
      * Returns a QDate containing a date @p nyears years later.
@@ -590,6 +657,18 @@ public:
      * @see day()
      */
     virtual QString dayString( const QDate &pDate, StringFormat format = LongFormat ) const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.5
+     *
+     * Converts a date into a Year In Era literal
+     *
+     * @param date date to return Year In Era for
+     * @param format format to return, either short or long
+     * @return Year In Era literal of the date, empty string if any error
+     */
+    QString yearInEraString( const QDate &date, StringFormat format = ShortFormat ) const;
 
     //KDE5 make virtual?
     /**
@@ -1141,6 +1220,7 @@ private:
     friend class KCalendarSystemHijri;
     friend class KCalendarSystemIndianNational;
     friend class KCalendarSystemJalali;
+    friend class KCalendarSystemJapanese;
     friend class KCalendarSystemJulian;
 
     Q_DISABLE_COPY( KCalendarSystem )

@@ -38,6 +38,16 @@ KCalendarSystemCopticPrivate::~KCalendarSystemCopticPrivate()
 {
 }
 
+void KCalendarSystemCopticPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+    // AM for Anno Martyrum or "Year of the Martyrs"
+    name = i18nc( "Calendar Era: Coptic Era of Martyrs, years > 0, LongFormat", "Anno Martyrum" );
+    shortName = i18nc( "Calendar Era: Coptic Era of Martyrs, years > 0, ShortFormat", "AM" );
+    format = i18nc( "(kdedt-format) Coptic, AM, full era year format used for %EY, e.g. 2000 AM", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
+}
+
 int KCalendarSystemCopticPrivate::monthsInYear( int year ) const
 {
     Q_UNUSED( year )
@@ -120,12 +130,14 @@ KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale * locale )
                      : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), locale ),
                        dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KLocale * locale )
                      : KCalendarSystem( dd, locale ),
                        dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemCoptic::~KCalendarSystemCoptic()

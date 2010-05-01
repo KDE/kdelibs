@@ -145,6 +145,7 @@ set(kdecore_LIB_SRCS
    config/kdesktopfile.cpp
    config/ksharedconfig.cpp
    config/kcoreconfigskeleton.cpp
+   date/kcalendarera.cpp
    date/kcalendarsystem.cpp
    date/kcalendarsystemcoptic.cpp
    date/kcalendarsystemethiopian.cpp
@@ -154,6 +155,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemhebrew.cpp
    date/kcalendarsystemindiannational.cpp
    date/kcalendarsystemjalali.cpp
+   date/kcalendarsystemjapanese.cpp
    date/kcalendarsystemjulian.cpp
    date/kdatetime.cpp
    date/ktimezone.cpp

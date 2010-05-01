@@ -37,18 +37,33 @@ public:
     virtual ~KCalendarSystemEthiopianPrivate()
     {
     }
+
+    virtual void initDefaultEraList();
 };
+
+void KCalendarSystemEthiopianPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+    // Incarnation Era, Amätä Mehrät, "Year of Mercy".
+    name = i18nc( "Calendar Era: Ethiopian Incarnation Era, years > 0, LongFormat", "Amata Mehrat" );
+    shortName = i18nc( "Calendar Era: Ethiopian Incarnation Era, years > 0, ShortFormat", "AM" );
+    format = i18nc( "(kdedt-format) Ethiopian, AM, full era year format used for %EY, e.g. 2000 AM", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
+}
+
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KLocale * locale )
                          : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), locale ),
                            dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale * locale )
                      : KCalendarSystemCoptic( dd, locale ),
                        dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemEthiopian::~KCalendarSystemEthiopian()

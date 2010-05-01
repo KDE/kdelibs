@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 John Layt <john@layt.net>
+    Copyright 2009, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,17 +17,19 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCALENDARSYSTEMCOPTICPRIVATE_H
-#define KCALENDARSYSTEMCOPTICPRIVATE_H
+#ifndef KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
+#define KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
+
+// Derived gregorian kde calendar class
 
 #include "kcalendarsystemprivate_p.h"
 
-class KCalendarSystemCopticPrivate : public KCalendarSystemPrivate
+class KCalendarSystemGregorianProlepticPrivate : public KCalendarSystemPrivate
 {
 public:
-    explicit KCalendarSystemCopticPrivate( KCalendarSystemCoptic *q );
+    explicit KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q );
 
-    virtual ~KCalendarSystemCopticPrivate();
+    virtual ~KCalendarSystemGregorianProlepticPrivate();
 
     // Virtual methods each calendar system must re-implement
     virtual void initDefaultEraList();
@@ -42,6 +44,8 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+
+    bool m_useCommonEra;
 };
 
-#endif // KCALENDARSYSTEMCOPTICPRIVATE_H
+#endif // KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H

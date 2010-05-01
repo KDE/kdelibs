@@ -35,6 +35,7 @@ public:
     virtual ~KCalendarSystemIndianNationalPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -61,6 +62,16 @@ KCalendarSystemIndianNationalPrivate::KCalendarSystemIndianNationalPrivate( KCal
 KCalendarSystemIndianNationalPrivate::~KCalendarSystemIndianNationalPrivate()
 {
     delete gregorian;
+}
+
+void KCalendarSystemIndianNationalPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+    // Saka Era
+    name = i18nc( "Calendar Era: Indian National Saka Era, years > 0, LongFormat", "Saka Era" );
+    shortName = i18nc( "Calendar Era: Indian National Saka Era, years > 0, ShortFormat", "SE" );
+    format = i18nc( "(kdedt-format) Indian National, SE, full era year format used for %EY, e.g. 2000 SE", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
 }
 
 int KCalendarSystemIndianNationalPrivate::monthsInYear( int year ) const
@@ -142,12 +153,14 @@ KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KLocale * lo
                               : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), locale ),
                                 dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemIndianNationalPrivate &dd, const KLocale * locale )
                               : KCalendarSystem( dd, locale ),
                                 dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemIndianNational::~KCalendarSystemIndianNational()

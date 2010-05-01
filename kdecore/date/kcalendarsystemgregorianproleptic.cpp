@@ -20,34 +20,16 @@
 // Derived gregorian kde calendar class
 
 #include "kcalendarsystemgregorianproleptic_p.h"
-#include "kcalendarsystemprivate_p.h"
+#include "kcalendarsystemgregorianprolepticprivate_p.h"
+#include "kcalendarera_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
+#include "kglobal.h"
+#include "kconfiggroup.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
-
-class KCalendarSystemGregorianProlepticPrivate : public KCalendarSystemPrivate
-{
-public:
-    explicit KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q );
-
-    virtual ~KCalendarSystemGregorianProlepticPrivate();
-
-    // Virtual methods each calendar system must re-implement
-    virtual int monthsInYear( int year ) const;
-    virtual int daysInMonth( int year, int month ) const;
-    virtual int daysInYear( int year ) const;
-    virtual int daysInWeek() const;
-    virtual bool isLeapYear( int year ) const;
-    virtual bool hasLeapMonths() const;
-    virtual bool hasYearZero() const;
-    virtual int maxDaysInWeek() const;
-    virtual int maxMonthsInYear() const;
-    virtual int earliestValidYear() const;
-    virtual int latestValidYear() const;
-};
 
 // Shared d pointer base class definitions
 
@@ -58,6 +40,36 @@ KCalendarSystemGregorianProlepticPrivate::KCalendarSystemGregorianProlepticPriva
 
 KCalendarSystemGregorianProlepticPrivate::~KCalendarSystemGregorianProlepticPrivate()
 {
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+void KCalendarSystemGregorianProlepticPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+
+    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
+    m_useCommonEra = cg.readEntry( "UseCommonEra", false );
+
+    if ( m_useCommonEra ) {
+        name = i18nc( "Calendar Era: Gregorian Common Era, years < 0, LongFormat", "Before Common Era" );
+        shortName = i18nc( "Calendar Era: Gregorian Common Era, years < 0, ShortFormat", "BCE" );
+    } else {
+        name = i18nc( "Calendar Era: Gregorian Christian Era, years < 0, LongFormat", "Before Christ" );
+        shortName = i18nc( "Calendar Era: Gregorian Christian Era, years < 0, ShortFormat", "BC" );
+    }
+    format = i18nc( "(kdedt-format) Gregorian, BC, full era year format used for %EY, e.g. 2000 BC", "%Ey %EC" );
+    addEra( '-', 1, q->epoch().addDays( -1 ), -1, q->earliestValidDate(), name, shortName, format );
+
+    if ( m_useCommonEra ) {
+        name = i18nc( "Calendar Era: Gregorian Common Era, years > 0, LongFormat", "Common Era" );
+        shortName = i18nc( "Calendar Era: Gregorian Common Era, years > 0, ShortFormat", "CE" );
+    } else {
+        name = i18nc( "Calendar Era: Gregorian Christian Era, years > 0, LongFormat", "Anno Domini" );
+        shortName = i18nc( "Calendar Era: Gregorian Christian Era, years > 0, ShortFormat", "AD" );
+    }
+    format = i18nc( "(kdedt-format) Gregorian, AD, full era year format used for %EY, e.g. 2000 AD", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
 }
 
 int KCalendarSystemGregorianProlepticPrivate::monthsInYear( int year ) const
@@ -149,12 +161,14 @@ KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KLoc
                                   : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), locale ),
                                     dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd, const KLocale * locale )
                                   : KCalendarSystem( dd, locale ),
                                     dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemGregorianProleptic::~KCalendarSystemGregorianProleptic()

@@ -25,7 +25,24 @@ class QString;
 class QDate;
 
 class KCalendarSystem;
+class KCalendarEra;
 class KLocale;
+
+struct DateComponents
+{
+    int day;
+    int month;
+    int year;
+    bool parsedYear;
+    QString eraName;
+    int yearInEra;
+    int dayInYear;
+    int isoWeekNumber;
+    int dayOfIsoWeek;
+    int inputPosition;
+    int formatPosition;
+    bool error;
+};
 
 class KCalendarSystemPrivate
 {
@@ -35,6 +52,7 @@ public:
     virtual ~KCalendarSystemPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -49,13 +67,14 @@ public:
 
     // Virtual methods to re-implement if special maths needed
     // Currently only Hebrew may need special conversion, rest should be OK
-    int yearsDifference( const QDate &fromDate, const QDate &toDate ) const;
-    int monthsDifference( const QDate &fromDate, const QDate &toDate ) const;
-    void dateDifference( const QDate &fromDate, const QDate &toDate,
-                         int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const;
+    virtual int yearsDifference( const QDate &fromDate, const QDate &toDate ) const;
+    virtual int monthsDifference( const QDate &fromDate, const QDate &toDate ) const;
+    virtual void dateDifference( const QDate &fromDate, const QDate &toDate,
+                                 int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const;
 
     // Virtual methods to re-implement if special number/string conversion needed
     // Currently only Hebrew needs special conversion, rest use KLocale DigitSet
+    virtual DateComponents parseDatePosix( const QString &inputString, const QString &formatString ) const;
     virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
     virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = '0' ) const;
     virtual QString stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const;
@@ -69,10 +88,17 @@ public:
     QDate firstDayOfYear( int year ) const;
     QDate lastDayOfYear( int year ) const;
     const KLocale *locale() const;
+    KCalendarEra era( const QDate &eraDate ) const;
+    KCalendarEra era( const QString &eraName, int yearInEra ) const;
+    void initialiseEraList( const QString & calendarType );
+    void loadGlobalEraList( const QString & calendarType );
+    void addEra( const QChar &direction, int offset, const QDate &startDate, int startYear, const QDate &endDate,
+                 const QString &name, const QString &shortName, const QString &format );
 
     // Global variables each calendar system must initialise
     const KCalendarSystem *q;
     const KLocale *m_locale;
+    QList<KCalendarEra> *m_eraList;
 };
 
 #endif // KCALENDARSYSTEMPRIVATE_H

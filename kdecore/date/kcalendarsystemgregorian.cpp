@@ -23,9 +23,12 @@
 
 #include "kcalendarsystemgregorian_p.h"
 #include "kcalendarsystemprivate_p.h"
+#include "kcalendarera_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
+#include "kglobal.h"
+#include "kconfiggroup.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
@@ -38,6 +41,7 @@ public:
     virtual ~KCalendarSystemGregorianPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -49,18 +53,49 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+
+    bool m_useCommonEra;
 };
 
 // Shared d pointer implementations
 
 KCalendarSystemGregorianPrivate::KCalendarSystemGregorianPrivate( KCalendarSystemGregorian *q )
-                                :KCalendarSystemPrivate( q )
+                                :KCalendarSystemPrivate( q ),
+                                 m_useCommonEra( false )
 
 {
 }
 
 KCalendarSystemGregorianPrivate::~KCalendarSystemGregorianPrivate()
 {
+}
+
+void KCalendarSystemGregorianPrivate::initDefaultEraList()
+{
+    QString name, shortName, format;
+
+    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
+    m_useCommonEra = cg.readEntry( "UseCommonEra", false );
+
+    if ( m_useCommonEra ) {
+        name = i18nc( "Calendar Era: Gregorian Common Era, years < 0, LongFormat", "Before Common Era" );
+        shortName = i18nc( "Calendar Era: Gregorian Common Era, years < 0, ShortFormat", "BCE" );
+    } else {
+        name = i18nc( "Calendar Era: Gregorian Christian Era, years < 0, LongFormat", "Before Christ" );
+        shortName = i18nc( "Calendar Era: Gregorian Christian Era, years < 0, ShortFormat", "BC" );
+    }
+    format = i18nc( "(kdedt-format) Gregorian, BC, full era year format used for %EY, e.g. 2000 BC", "%Ey %EC" );
+    addEra( '-', 1, q->epoch().addDays( -1 ), -1, q->earliestValidDate(), name, shortName, format );
+
+    if ( m_useCommonEra ) {
+        name = i18nc( "Calendar Era: Gregorian Common Era, years > 0, LongFormat", "Common Era" );
+        shortName = i18nc( "Calendar Era: Gregorian Common Era, years > 0, ShortFormat", "CE" );
+    } else {
+        name = i18nc( "Calendar Era: Gregorian Christian Era, years > 0, LongFormat", "Anno Domini" );
+        shortName = i18nc( "Calendar Era: Gregorian Christian Era, years > 0, ShortFormat", "AD" );
+    }
+    format = i18nc( "(kdedt-format) Gregorian, AD, full era year format used for %EY, e.g. 2000 AD", "%Ey %EC" );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
 }
 
 int KCalendarSystemGregorianPrivate::monthsInYear( int year ) const
@@ -126,12 +161,14 @@ KCalendarSystemGregorian::KCalendarSystemGregorian( const KLocale * locale )
                          : KCalendarSystem( *new KCalendarSystemGregorianPrivate( this ), locale ),
                            dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemGregorian::KCalendarSystemGregorian( KCalendarSystemGregorianPrivate &dd, const KLocale * locale )
                          : KCalendarSystem( dd, locale ),
                            dont_use( 0 )
 {
+    d_ptr->initialiseEraList( calendarType() );
 }
 
 KCalendarSystemGregorian::~KCalendarSystemGregorian()
@@ -146,7 +183,8 @@ QString KCalendarSystemGregorian::calendarType() const
 
 QDate KCalendarSystemGregorian::epoch() const
 {
-    return QDate::fromJulianDay( 1721426 );
+    // 1 Jan 1 AD in Julian
+    return QDate::fromJulianDay( 1721424 );
 }
 
 QDate KCalendarSystemGregorian::earliestValidDate() const
