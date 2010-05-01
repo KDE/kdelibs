@@ -34,6 +34,16 @@
 
 #include <stdio.h>
 
+// maximum global call stack size. Protects against accidental or
+// malicious infinite recursions. Define to -1 if you want no limit.
+#if PLATFORM(DARWIN)
+// Given OS X stack sizes we run out of stack at about 350 levels.
+// If we improve our stack usage, we can bump this number.
+#define KJS_MAX_STACK 100
+#else
+#define KJS_MAX_STACK 700 // ### set system specific
+#endif
+
 namespace KJS {
 
 #ifdef __GNUC__
@@ -78,7 +88,7 @@ static void substitute(UString &string, const UString &substring)
     string = newString;
 }
 
-void throwUndefinedVariableError(ExecState* exec, const Identifier& ident)
+NEVER_INLINE void throwUndefinedVariableError(ExecState* exec, const Identifier& ident)
 {
     UString msg = "Can't find variable: %s";
     substitute(msg, ident.ustring());
@@ -156,6 +166,19 @@ ALWAYS_INLINE void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSV
     }
 }
 
+static int depth;
+
+NEVER_INLINE JSValue* handleStackOverflow(ExecState* exec) {
+    depth -= 11; //Give the debugger some room..
+    JSValue *ret = throwError(exec, RangeError, "Maximum call stack size exceeded.");
+    depth += 10; //Put it back..
+    return ret;
+}
+
+struct DepthCleanup
+{
+    ~DepthCleanup() { --depth; }
+};
 
 
 ALWAYS_INLINE_INTO JSValue*
@@ -165,6 +188,12 @@ Machine::runBlock(ExecState* exec, const CodeBlock& codeBlock, ExecState* parent
     // Jump table, if needed
     @generate
 #endif
+
+    ++depth;
+    if (depth > KJS_MAX_STACK)
+        return handleStackOverflow(exec);
+
+    DepthCleanup dc;
 
     const unsigned char* base = codeBlock.data();
     const unsigned char* pc   = base;

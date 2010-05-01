@@ -35,53 +35,9 @@
 
 #include <typeinfo>
 
-// maximum global call stack size. Protects against accidental or
-// malicious infinite recursions. Define to -1 if you want no limit.
-#if PLATFORM(DARWIN)
-// Given OS X stack sizes we run out of stack at about 350 levels.
-// If we improve our stack usage, we can bump this number.
-#define KJS_MAX_STACK 100
-#else
-#define KJS_MAX_STACK 700 // ### set system specific
-#endif
-
-
 #define JAVASCRIPT_MARK_TRACING 0
 
 namespace KJS {
-
-// ------------------------------ Object ---------------------------------------
-
-JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
-{
-  assert(implementsCall());
-
-#if KJS_MAX_STACK > 0
-  static int depth = 0; // sum of all concurrent interpreters
-
-  if (++depth > KJS_MAX_STACK) {
-    depth -= 11; //Give the debugger some room..
-    JSValue *ret = throwError(exec, RangeError, "Maximum call stack size exceeded.");
-    depth += 10; //Put it back..
-    return ret;
-  }
-#endif
-
-  JSValue *ret = callAsFunction(exec,thisObj,args);
-
-#ifndef NDEBUG
-  if (!ret) {
-    fprintf(stderr, "callAsFunction returned 0 on:%s\n", typeid(*this).name());
-    assert(ret);
-  }
-#endif
-
-#if KJS_MAX_STACK > 0
-  --depth;
-#endif
-
-  return ret;
-}
 
 // ------------------------------ JSObject ------------------------------------
 
@@ -129,8 +85,11 @@ JSValue *JSObject::get(ExecState *exec, const Identifier &propertyName) const
 {
   PropertySlot slot;
 
-  if (const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot))
-    return slot.getValue(exec, const_cast<JSObject *>(this), propertyName);
+  if (const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot)) {
+	JSValue* val = slot.getValue(exec, const_cast<JSObject *>(this), propertyName);
+	assert(val);
+	return val;
+  }
 
   return jsUndefined();
 }

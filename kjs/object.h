@@ -393,7 +393,7 @@ namespace KJS {
      * @param args List of arguments to be passed to the function
      * @return The return value from the function
      */
-    JSValue *call(ExecState *exec, JSObject *thisObj, const List &args);
+    JSValue *call(ExecState *exec, JSObject *thisObj, const List &args); // ### TODO: consolidate with below
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     /**
@@ -609,6 +609,11 @@ inline void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& prope
 inline JSValue* JSObject::toPrimitive(ExecState* exec, JSType preferredType) const
 {
     return defaultValue(exec, preferredType);
+}
+
+inline JSValue* JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
+{
+	return callAsFunction(exec, thisObj, args);
 }
 
 } // namespace
