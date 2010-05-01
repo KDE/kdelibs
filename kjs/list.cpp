@@ -39,12 +39,13 @@ enum ListImpState { unusedInPool = 0, usedInPool, usedOnHeap, immortal };
 struct ListImp : ListImpBase
 {
     ListImpState state;
-    int capacity; // or 0 if data is inline
 
     union {
-        JSValue *values[inlineListValuesSize];
+        int capacity; // or 0 if data is inline
         ListImp *nextInFreeList;
     };
+
+    LocalStorageEntry values[inlineListValuesSize];    
 
 #if DUMP_STATISTICS
     int sizeHighWaterMark;
@@ -101,8 +102,8 @@ ListStatisticsExitLogger::~ListStatisticsExitLogger()
 inline void ListImp::markValues()
 {
     for (int i = 0; i != size; ++i) {
-        if (!data[i]->marked())
-            data[i]->mark();
+        if (!data[i].val.valueVal->marked())
+            data[i].val.valueVal->mark();
     }
 }
 
@@ -163,17 +164,14 @@ List::List() : _impBase(allocateListImp())
 #endif
 }
 
-
-void List::markValues()
-{
-    static_cast<ListImp *>(_impBase)->markValues();
-}
-
 void List::release()
 {
     ListImp *imp = static_cast<ListImp *>(_impBase);
     
 #if DUMP_STATISTICS
+    if (imp->size > imp->sizeHighWaterMark)
+        imp->sizeHighWaterMark = imp->size;
+
     --numLists;
     ++numListsDestroyed;
     for (int i = 0; i < 17; i++)
@@ -227,7 +225,7 @@ void List::appendSlowCase(JSValue *v)
     if (i >= imp->capacity) {
         int newCapacity = i * 2;
 
-        JSValue** newBuffer = new JSValue*[newCapacity];
+        LocalStorageEntry* newBuffer = new LocalStorageEntry[newCapacity];
 
         // Copy everything over
         for (int c = 0; c < i; ++c)
@@ -240,7 +238,7 @@ void List::appendSlowCase(JSValue *v)
         imp->capacity = newCapacity;
     }
     
-    imp->data[i] = v;
+    imp->data[i].val.valueVal = v;
 }
 
 List List::copy() const
@@ -264,7 +262,7 @@ void List::copyFrom(const List& other)
     if (size > inlineListValuesSize) {
         // need an out-of-line buffer
         ourImp->capacity = size;
-        ourImp->data     = new JSValue*[size];
+        ourImp->data     = new LocalStorageEntry[size];
     } else {
         ourImp->capacity = 0;
     }
@@ -287,7 +285,7 @@ List List::copyTail() const
     if (size > inlineListValuesSize) {
         // need an out-of-line buffer
         ourImp->capacity = size;
-        ourImp->data     = new JSValue*[size];
+        ourImp->data     = new LocalStorageEntry[size];
     } else {
         ourImp->capacity = 0;
     }

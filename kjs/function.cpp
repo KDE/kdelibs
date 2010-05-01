@@ -508,16 +508,28 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function,
             "%sprocessing parameters for %s call\n", ind(), ind(), 
             function->functionName().isEmpty() ? "(internal)" : function->functionName().ascii());
 #endif
-    size_t numParams = body->numParams();
-    for (size_t pos = 0; pos < numParams; ++pos) {
+    size_t numParams   = body->numParams();
+    size_t numPassedIn = min(numParams, static_cast<size_t>(arguments->size()));
+
+    size_t pos = 0; 
+    for (; pos < numPassedIn; ++pos) {
         size_t symNum = pos + ActivationImp::NumReservedSlots;
-        JSValue* v = (*arguments)[pos];
+        JSValue* v = arguments->atUnchecked(pos);
 
         entries[symNum].val.valueVal = v;
 
 #ifdef KJS_VERBOSE
         fprintf(stderr, "%s setting parameter %s", ind(), body->paramName(pos).ascii());
         printInfo(exec, "to", v);
+#endif
+    }
+
+    for (; pos < numParams; ++pos) {
+        size_t symNum = pos + ActivationImp::NumReservedSlots;
+        entries[symNum].val.valueVal = jsUndefined();
+
+#ifdef KJS_VERBOSE
+        fprintf(stderr, "%s setting parameter %s to undefined (not passed in)", ind(), body->paramName(pos).ascii());
 #endif
     }
     

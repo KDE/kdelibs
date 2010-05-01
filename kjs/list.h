@@ -24,6 +24,7 @@
 #define KJS_LIST_H
 
 #include "value.h"
+#include "LocalStorage.h"
 
 namespace KJS {
 
@@ -32,7 +33,7 @@ namespace KJS {
     struct ListImpBase {
         int size;
         int refCount;
-        JSValue** data; // points either to inline or out-of-line buffer
+        LocalStorageEntry* data; // points either to inline or out-of-line buffer
     };
     
     class ListIterator;
@@ -110,6 +111,9 @@ namespace KJS {
          * index is out of range.
          */
         JSValue *at(int i) const;
+
+        // As above but omits the range change
+        JSValue* atUnchecked(int i) const { return _impBase->data[i].val.valueVal; }
         
         /**
          * Equivalent to at.
@@ -136,12 +140,11 @@ namespace KJS {
         void deref() { if (--_impBase->refCount == 0) release(); }
 
         void release();
-        void markValues();
     };
 
     inline JSValue* List::at(int i) const {
         if (i < _impBase->size)
-            return _impBase->data[i];
+            return _impBase->data[i].val.valueVal;
         else
             return jsUndefined();
     }
@@ -151,7 +154,7 @@ namespace KJS {
         int newSize = size + 1;
         if (newSize < inlineListValuesSize) {
             // Can just write to the inline buffer
-            _impBase->data[size] = val;
+            _impBase->data[size].val.valueVal = val;
             _impBase->size = newSize;
         } else {
             appendSlowCase(val);
