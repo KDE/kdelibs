@@ -634,6 +634,8 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
                         q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
                 connect(button, SIGNAL(clicked(KUrl, Qt::MouseButton)),
                         q, SLOT(slotNavigatorButtonClicked(KUrl, Qt::MouseButton)));
+                connect(button, SIGNAL(finishedTextResolving()),
+                        q, SLOT(updateButtonVisibility()));
                 appendWidget(button);
             } else {
                 button = m_navButtons[idx - startIndex];
@@ -703,6 +705,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
     foreach (const KUrlNavigatorButton* button, m_navButtons) {
         requiredButtonWidth += button->minimumWidth();
     }
+
     if (requiredButtonWidth > availableWidth) {
         // At least one button must be hidden. This implies that the
         // drop-down button must get visible, which again decreases the

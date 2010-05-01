@@ -85,6 +85,21 @@ Q_SIGNALS:
 
     void clicked(const KUrl& url, Qt::MouseButton button);
 
+    /**
+     * Is emitted, if KUrlNavigatorButton::setUrl() cannot resolve
+     * the text synchronously and KUrlNavigator::text() will return
+     * an empty string in this case. The signal finishedTextResolving() is
+     * emitted, as soon as the text has been resolved.
+     */
+    void startedTextResolving();
+
+    /**
+     * Is emitted, if the asynchronous resolving of the text has
+     * been finished (see startTextResolving()).
+     * KUrlNavigatorButton::text() contains the resolved text.
+     */
+    void finishedTextResolving();
+
 protected:
     virtual void paintEvent(QPaintEvent* event);
     virtual void enterEvent(QEvent* event);

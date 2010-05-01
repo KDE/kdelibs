@@ -75,6 +75,7 @@ void KUrlNavigatorButton::setUrl(const KUrl& url)
         KIO::StatJob* job = KIO::stat(m_url, KIO::HideProgressInfo);
         connect(job, SIGNAL(result(KJob*)),
                 this, SLOT(statFinished(KJob*)));
+        emit startedTextResolving();
     }
 }
 
@@ -398,6 +399,8 @@ void KUrlNavigatorButton::statFinished(KJob* job)
             name = m_url.fileName();
         }
         setText(name);
+
+        emit finishedTextResolving();
     }
 }
 
