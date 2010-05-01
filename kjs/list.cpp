@@ -124,16 +124,12 @@ void List::markProtectedLists()
     for (int i = 0; i < poolSize && seen < used; i++) {
         if (pool[i].state == usedInPool) {
             seen++;
-            if (pool[i].valueRefCount > 0) {
-                pool[i].markValues();
-            }
+            pool[i].markValues();
         }
     }
 
     for (HeapListImp *l = heapList; l; l = l->nextInHeapList) {
-        if (l->valueRefCount > 0) {
-            l->markValues();
-        }
+        l->markValues();
     }
 }
 
@@ -167,7 +163,6 @@ List::List() : _impBase(allocateListImp())
     ListImp *imp = static_cast<ListImp *>(_impBase);
     imp->size = 0;
     imp->refCount = 1;
-    imp->valueRefCount = 1;
     imp->capacity = 0;
     imp->overflow = 0;
 
@@ -325,10 +320,11 @@ List &List::operator=(const List &b)
 {
     ListImpBase *bImpBase = b._impBase;
     ++bImpBase->refCount;
-    ++bImpBase->valueRefCount;
     deref();
     _impBase = bImpBase;
     return *this;
 }
 
 } // namespace KJS
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
