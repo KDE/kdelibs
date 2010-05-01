@@ -155,7 +155,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
         if (!authorName.isEmpty()) {
             if (!authorPage.isEmpty()) {
-                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", " <a href=\"" + authorPage + "\">" + authorName + "</a></p>\n");
+                text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", " <a href=\"" + authorPage + "\">" + authorName + "</a>") + "</p>\n";
             } else if (!email.isEmpty()) {
                 text += "<p>" + i18nc("Show the author of this item in a list", "By <i>%1</i>", authorName) + " <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
             } else {
