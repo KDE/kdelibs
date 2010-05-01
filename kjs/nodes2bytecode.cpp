@@ -70,6 +70,18 @@ void StatementNode::generateDebugInfo(CompileState* comp)
     CodeGen::emitOp(comp, Op_AtStatement, 0, &me);
 }
 
+static inline bool exitContextNeeded(CompileState* comp) {
+    return comp->compileType() == Debug &&
+           comp->codeType()    == FunctionCode;
+}
+
+static void generateExitContextIfNeeded(CompileState* comp) {
+    if (exitContextNeeded(comp)) {
+        OpValue ourNode = OpValue::immNode(comp->functionBody());
+        CodeGen::emitOp(comp, Op_ExitDebugContext, 0, &ourNode);        
+    }
+}
+
 // ------------------------------ Basic literals -----------------------------------------
 
 OpValue NullNode::generateEvalCode(CompileState*)
@@ -1405,6 +1417,9 @@ void ReturnNode::generateExecCode(CompileState* comp)
     else
         arg = value->generateEvalCode(comp);
 
+    if (!comp->inTryFinally())
+        generateExitContextIfNeeded(comp);
+
     CodeGen::emitOp(comp, comp->inTryFinally() ? Op_ReturnInTryFinally : Op_Return, 0, &arg);
 }
 
@@ -1525,7 +1540,13 @@ void TryNode::generateExecCode(CompileState* comp)
         finallyBlock->generateExecCode(comp);
 
         OpValue otherTryFinally = OpValue::immBool(comp->inTryFinally());
-        CodeGen::emitOp(comp, Op_ReactivateCompletion, 0, &otherTryFinally);
+
+        if (exitContextNeeded(comp)) {
+            OpValue ourNode = OpValue::immNode(comp->functionBody());
+            CodeGen::emitOp(comp, Op_ReactivateCompletionDebug, 0, &otherTryFinally, &ourNode);
+        } else {
+            CodeGen::emitOp(comp, Op_ReactivateCompletion, 0, &otherTryFinally);
+        }
         comp->popNest();
     }
 }
@@ -1551,6 +1572,11 @@ void FunctionBodyNode::generateExecCode(CompileState* comp)
         comp->setEvalResultRegister(&evalResReg);
 
         // There is no need to initialize this as everything will be set to undefined anyway
+    } else {
+        if (comp->compileType() == Debug) {
+            OpValue ourNode = OpValue::immNode(this);
+            CodeGen::emitOp(comp, Op_EnterDebugContext, 0, &ourNode);
+        }
     }
 
     // Set unwind..
@@ -1560,13 +1586,16 @@ void FunctionBodyNode::generateExecCode(CompileState* comp)
     BlockNode::generateExecCode(comp);
 
     // Make sure we exit!
-    if (comp->codeType() != FunctionCode)
-        CodeGen::emitOp(comp, Op_ExitEval, 0, &evalResVal);
-    else
+    if (comp->codeType() != FunctionCode) {
+        CodeGen::emitOp(comp, Op_Return, 0, &evalResVal);
+    } else {
+        generateExitContextIfNeeded(comp);
         CodeGen::emitOp(comp, Op_Exit);
+    }
 
     // Unwind stuff..
     CodeGen::patchJumpToNext(comp, unwind, 0);
+    generateExitContextIfNeeded(comp);
     CodeGen::emitOp(comp, Op_PropagateException);
 }
 

@@ -140,6 +140,11 @@ namespace KJS {
     virtual bool isActivation() const { return true; }
     void setupLocals(FunctionBodyNode* fbody);
     void setupFunctionLocals(FunctionBodyNode* fbody, ExecState *exec);
+
+    const List& passedInArguments() const { return *arguments; }
+
+    // really FunctionImp, but type isn't declared yet
+    JSValue* function() { return functionSlot(); }
   private:
     JSValue*& functionSlot() {
           return localStorage[FunctionSlot].val.valueVal;

@@ -240,12 +240,6 @@ operation Exit[endsBB] {
     ]]
 }
 
-operation ExitEval[endsBB] {
-    impl void(value val) [[
-        return val;
-    ]]
-}
-
 operation Jump[endsBB] {
     impl void jmp(addr dest) [[
         pc = base + dest;
@@ -411,6 +405,17 @@ operation ReactivateCompletion {
     ]]
 }
 
+operation ReactivateCompletionDebug {
+    // version for inside functions + debug mode, which calls ExitContext
+    impl void(bool insideFinally, node n) [[
+        JSValue* retVal = exec->reactivateCompletion(insideFinally);
+        if (retVal) {
+            changeDebugContext(Exit, exec, n);
+            return retVal;
+        }
+    ]]
+}
+
 operation Throw {
     impl void throw(value exception) [[
         exec->setException(exception);
@@ -438,7 +443,7 @@ operation PropagateException {
     ]]
 }
 
-operation Return {
+operation Return[endsBB] {
     impl void return (value retVal) [[
         return retVal;
     ]]
@@ -456,6 +461,18 @@ operation Preamble {
          localStore[scopeReg ].val.valueVal = exec->variableObject();
          localStore[thisReg  ].val.valueVal = exec->thisValue();
          localStore[globalReg].val.valueVal = globalObject;
+    ]]
+}
+
+operation EnterDebugContext {
+    impl void(node n) [[
+        changeDebugContext(Enter, exec, n);
+    ]]
+}
+
+operation ExitDebugContext {
+    impl void(node n) [[
+        changeDebugContext(Exit, exec, n);
     ]]
 }
 

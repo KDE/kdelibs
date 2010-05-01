@@ -131,7 +131,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   ++callDepth;
 #endif
 
-  Debugger* dbg = exec->dynamicInterpreter()->debugger();  
+  Debugger* dbg = exec->dynamicInterpreter()->debugger();
 
   // enter a new execution context
   FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(), exec, this);
@@ -165,14 +165,6 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   activation->setup(&newExec, this, &args, stackSpace);
   activation->tearOffNeededSlot() = body->tearOffAtEnd();
 
-  if (dbg) {
-    bool cont = dbg->enterContext(&newExec, body->sourceId(), body->firstLine(), this, args);
-    if (!cont) {
-      dbg->imp()->abort();
-      return jsUndefined();
-    }
-  }
-
   newExec.initLocalStorage(stackSpace, regs);
 
   JSValue* result = Machine::runBlock(&newExec, body->code(), exec);
@@ -202,19 +194,6 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 
   --callDepth;
 #endif
-
-  // The debugger may have been deallocated by now if the WebFrame
-  // we were running in has been destroyed, so refetch it.
-  // See http://bugs.webkit.org/show_bug.cgi?id=9477
-  dbg = exec->dynamicInterpreter()->debugger();
-
-  if (dbg) {
-    int cont = dbg->exitContext(&newExec, body->sourceId(), body->lastLine(), this);
-    if (!cont) {
-      dbg->imp()->abort();
-      return jsUndefined();
-    }
-  }
 
   return result;
 }
