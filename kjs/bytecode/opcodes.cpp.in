@@ -148,7 +148,7 @@ void emitConversion(CompileState* comp, bool outImm,
         break;
 
     default:
-        printf("Unable to emit conversion:%s, in:%c, out:%c\n", ConvOpVals[convType],
+        fprintf(stderr, "Unable to emit conversion:%s, in:%c, out:%c\n", ConvOpVals[convType],
                original->immediate ? 'I' : 'R', outImm ? 'I' : 'R');
         CRASH();
     };
@@ -204,13 +204,13 @@ void CodeGen::emitRegStore(CompileState* comp, OpValue* regNum, OpValue* val)
         emitOp(comp, Op_RegPutNumber, 0, regNum, val);
         break;
     default:
-        printf("Don't know how to store type to register:%s\n", OpTypeVals[val->type]);
+        fprintf(stderr, "Don't know how to store type to register:%s\n", OpTypeVals[val->type]);
         CRASH();
     }
 }
 
 static void printType(const char* prefix, int pos, OpValue* v) {
-    printf("%s%d:%s/imm:%d\n", prefix, pos, OpTypeVals[v->type], v->immediate);
+    fprintf(stderr, "%s%d:%s/imm:%d\n", prefix, pos, OpTypeVals[v->type], v->immediate);
 }
 
 Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
@@ -247,7 +247,7 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
         ++numArgs;
 
 #ifdef TRACE_INSTR_SELECT
-    printf("\n\nTrying to select variant for:%s\n", OpNameVals[baseInstr]);
+    fprintf(stderr, "\n\nTrying to select variant for:%s\n", OpNameVals[baseInstr]);
     for (int i = 0; i < numArgs; ++i)
         printType("\targ", i, args[i]);
 #endif
@@ -275,9 +275,9 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
         }
 
 #ifdef TRACE_INSTR_SELECT
-        printf("Candidate:%s, totalCost:%d, variant cost:%d\n", OpByteCodeVals[cand->opCode], totalCost, cand->cost);
+        fprintf(stderr, "Candidate:%s, totalCost:%d, variant cost:%d\n", OpByteCodeVals[cand->opCode], totalCost, cand->cost);
         for (int i = 0; i < numArgs; ++i) {
-            printf("\tconv:%s, costs:%d\n", ConvOpVals[convOps[i]], costs[i]);
+            fprintf(stderr, "\tconv:%s, costs:%d\n", ConvOpVals[convOps[i]], costs[i]);
         }
 #endif
 
@@ -295,7 +295,7 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
     }
 
     if (!cheapest) {
-        printf("Unable to find an acceptable conversion for:%s\n", OpNameVals[baseInstr]);
+        fprintf(stderr, "Unable to find an acceptable conversion for:%s\n", OpNameVals[baseInstr]);
         for (int i = 0; i < numArgs; ++i)
             printType("\ta", i, args[i]);
         CRASH(); // Should never happen!
@@ -374,43 +374,43 @@ static void dumpParam(CodeBlock& block, size_t offset, OpType type, bool wasImm)
     switch (type) {
     case OpType_bool:
         if (reinterpret_cast<NarrowArg*>(block.data() + offset)->boolVal)
-            std::printf("true");
+            std::fprintf(stderr, "true");
         else
-            std::printf("false");
+            std::fprintf(stderr, "false");
         break;
     case OpType_int32:
-        std::printf("%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->int32Val);
+        std::fprintf(stderr, "%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->int32Val);
         break;
     case OpType_value:
         // Immediate value -- should go through JSImmediate stuff..
-        std::printf("<ival:%s>", reinterpret_cast<WideArg*>(block.data() + offset)->valueVal->toString(0).ascii());
+        std::fprintf(stderr, "<ival:%s>", reinterpret_cast<WideArg*>(block.data() + offset)->valueVal->toString(0).ascii());
         break;
     case OpType_ident:
-        std::printf("%s", reinterpret_cast<WideArg*>(block.data() + offset)->identVal->ustring().ascii());
+        std::fprintf(stderr, "%s", reinterpret_cast<WideArg*>(block.data() + offset)->identVal->ustring().ascii());
         break;
     case OpType_string:
-        std::printf("\"%s\"", reinterpret_cast<WideArg*>(block.data() + offset)->stringVal->ascii());
+        std::fprintf(stderr, "\"%s\"", reinterpret_cast<WideArg*>(block.data() + offset)->stringVal->ascii());
         break;
     case OpType_number:
-        std::printf("%f", reinterpret_cast<WideArg*>(block.data() + offset)->numberVal);
+        std::fprintf(stderr, "%f", reinterpret_cast<WideArg*>(block.data() + offset)->numberVal);
         break;
     case OpType_addr:
-        std::printf("A%08x", reinterpret_cast<NarrowArg*>(block.data() + offset)->addrVal);
+        std::fprintf(stderr, "A%08x", reinterpret_cast<NarrowArg*>(block.data() + offset)->addrVal);
         break;
     case OpType_reg:
-        std::printf("r%lu", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal / (wasImm ?
+        std::fprintf(stderr, "r%lu", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal / (wasImm ?
                     1lu : sizeof(LocalStorageEntry)));
         break;
     case OpType_node:
-        std::printf("N%p", (void*)(reinterpret_cast<WideArg*>(block.data() + offset)->nodeVal));
+        std::fprintf(stderr,"N%p", (void*)(reinterpret_cast<WideArg*>(block.data() + offset)->nodeVal));
         break;
     case OpType_cstr:
-        std::printf("c\"%s\"", reinterpret_cast<WideArg*>(block.data() + offset)->cstrVal);
+        std::fprintf(stderr, "c\"%s\"", reinterpret_cast<WideArg*>(block.data() + offset)->cstrVal);
         break;
     default:
-        std::printf("???:%s", OpTypeVals[type]);
+        std::fprintf(stderr, "???:%s", OpTypeVals[type]);
     };
-    std::printf(" ");
+    std::fprintf(stderr, " ");
 }
 
 void CodeGen::disassembleBlock(CodeBlock& block)
@@ -420,13 +420,13 @@ void CodeGen::disassembleBlock(CodeBlock& block)
         OpByteCode opCode = *reinterpret_cast<OpByteCode*>(block.data() + pc);
         const Op& opDescr = opsForOpCodes[opCode];
 
-        std::printf("%08lx %s ", pc, OpNameVals[opDescr.baseInstr]);
+        std::fprintf(stderr, "%08lx %s ", pc, OpNameVals[opDescr.baseInstr]);
         for (int p = 0; p < opDescr.numParams; ++p) {
             dumpParam(block, pc + opDescr.paramOffsets[p],
                       opDescr.immediateParams[p] ? opDescr.paramTypes[p] : OpType_reg, opDescr.immediateParams[p]);
         }
 
-        std::printf("\t\t// %s\n", OpByteCodeVals[opCode]);
+        std::fprintf(stderr, "\t\t// %s\n", OpByteCodeVals[opCode]);
         pc += opDescr.length;
     }
 }

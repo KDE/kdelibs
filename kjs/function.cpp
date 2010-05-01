@@ -44,8 +44,11 @@
 #include "wtf/DisallowCType.h"
 #include "wtf/ASCIICType.h"
 #include "bytecode/machine.h"
+#include <string>
 
 using namespace WTF;
+
+//#define KJS_VERBOSE
 
 namespace KJS {
 
@@ -93,9 +96,40 @@ void FunctionImp::initialCompile(ExecState* newExec)
     body->compile(FunctionCode, newExec->dynamicInterpreter()->debugger() ? Debug : Release);
 }
 
+
+#ifdef KJS_VERBOSE
+static int           callDepth;
+static std::string   callIndent;
+
+static const char* ind()
+{
+    callIndent = "";
+    for (int i = 0; i < callDepth; ++i)
+        callIndent += "     ";
+    return callIndent.c_str();
+}
+
+// Multiline print adding indentation
+static void printInd(const char* str)
+{
+    fprintf(stderr, "%s", ind());
+    for (const char* c = str; *c; ++c) {
+        if (*c != '\n')
+            fprintf(stderr, "%c", *c);
+        else
+            fprintf(stderr, "\n%s", ind());
+    }
+}
+
+#endif
+
 JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
   assert(thisObj);
+
+#ifdef KJS_VERBOSE
+  ++callDepth;
+#endif
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();  
 
@@ -160,10 +194,13 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   exec->dynamicInterpreter()->stackFree(stackSize);
 
 #ifdef KJS_VERBOSE
+  fprintf(stderr, "%s", ind());
   if (exec->exception())
     printInfo(exec,"throwing", exec->exception());
   else
     printInfo(exec,"returning", result);
+
+  --callDepth;
 #endif
 
   // The debugger may have been deallocated by now if the WebFrame
@@ -488,8 +525,8 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function,
 
     // Pass in the parameters (ECMA 10.1.3q)
 #ifdef KJS_VERBOSE
-    fprintf(stderr, "---------------------------------------------------\n"
-            "processing parameters for %s call\n",
+    fprintf(stderr, "%s---------------------------------------------------\n"
+            "%sprocessing parameters for %s call\n", ind(), ind(), 
             function->functionName().isEmpty() ? "(internal)" : function->functionName().ascii());
 #endif
     size_t numParams = body->numParams();
@@ -500,10 +537,18 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function,
         entries[symNum].val.valueVal = v;
 
 #ifdef KJS_VERBOSE
-        fprintf(stderr, "setting parameter %s", body->paramName(pos).ascii());
+        fprintf(stderr, "%s setting parameter %s", ind(), body->paramName(pos).ascii());
         printInfo(exec, "to", v);
 #endif
     }
+    
+#ifdef KJS_VERBOSE
+    fprintf(stderr, "\n%s---------------------------------\n", ind());
+    fprintf(stderr, "%sBody:\n", ind());
+    fprintf(stderr, "%s---------------------------------\n", ind());
+    printInd(body->toString().ascii());
+    fprintf(stderr, "\n%s---------------------------------\n\n", ind());
+#endif
 
     // Initialize the rest of the locals to 'undefined'
     for (size_t pos = numParams + ActivationImp::NumReservedSlots; pos < total; ++pos)
@@ -1013,3 +1058,5 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
 }
 
 } // namespace
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

@@ -948,12 +948,12 @@ void FunctionBodyNode::compile(CodeType ctype, CompileType compType)
   m_tearOffAtEnd = comp.needsClosures();
 
 #if 0
-  printf("\n\n");
-  printf("\n---------------------------------\n\n");
-  printf("%s", toString().ascii());
-  printf("\n---------------------------------\n\n");
+  fprintf(stderr, "\n\n");
+  fprintf(stderr, "\n---------------------------------\n\n");
+  fprintf(stderr, "%s", toString().ascii());
+  fprintf(stderr, "\n---------------------------------\n\n");
   CodeGen::disassembleBlock(m_compiledCode);
-  printf("\n---------------------------------\n\n");
+  fprintf(stderr, "\n---------------------------------\n\n");
 #endif
 }
 
