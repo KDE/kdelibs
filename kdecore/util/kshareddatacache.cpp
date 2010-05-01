@@ -40,6 +40,19 @@
 #include <unistd.h>
 #include <time.h>
 
+// Mac OS X, for all its POSIX compliance, does not support timeouts on its mutexes, which
+// is kind of a disaster for cross-process support. So, disable support for shared memory
+// and add a wrapper implementation.
+#if !defined(_POSIX_TIMEOUTS) || !defined(_POSIX_THREADS) || (_POSIX_TIMEOUTS < 200112L) || (_POSIX_THREADS < 200112L)
+
+#ifdef _POSIX_THREAD_PROCESS_SHARED
+#undef _POSIX_THREAD_PROCESS_SHARED
+#endif
+
+#warning "No support for POSIX timeouts and POSIX threads -- shared memory will be ignored"
+
+#endif
+
 /**
  * This is the hash function used for our pixmap data to hopefully make the
  * hashing used to place the pixmaps as efficient as possible.
@@ -744,6 +757,7 @@ struct SharedMemory
 
     bool lock() const
     {
+#ifdef _POSIX_THREAD_PROCESS_SHARED
         struct timespec timeout;
 
         // Long timeout, but if we fail to meet this timeout it's probably a cache
@@ -753,6 +767,12 @@ struct SharedMemory
         timeout.tv_nsec = 0;
 
         return pthread_mutex_timedlock(&lockMutex, &timeout) >= 0;
+#else
+        // Some POSIX platforms don't have full support for pthreads. On these typically
+        // there will be no timedlock, so just don't bother and accept hangs on weird
+        // platforms.
+        return pthread_mutex_lock(&lockMutex);
+#endif
     }
 
     void unlock() const
