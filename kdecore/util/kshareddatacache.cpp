@@ -53,6 +53,11 @@
 
 #endif
 
+// BSD/Mac OS X compat
+#if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
 /**
  * This is the hash function used for our pixmap data to hopefully make the
  * hashing used to place the pixmaps as efficient as possible.
