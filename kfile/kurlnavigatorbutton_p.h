@@ -99,14 +99,43 @@ protected:
     virtual void wheelEvent(QWheelEvent* event);
 
 private Q_SLOTS:
-    void startPopupDelay();
-    void stopPopupDelay();
-    void startListJob();
-    void startCycleJob();
-    void entriesList(KIO::Job* job, const KIO::UDSEntryList& entries);
-    void namesList(KIO::Job* job, const KIO::UDSEntryList& entries);
-    void listJobFinished(KJob* job);
-    void cycleJobFinished(KJob* job);
+    /**
+     * Requests to load the sub-directories after a short delay.
+     * startSubDirsJob() is invoked if the delay is exceeded.
+     */
+    void requestSubDirs();
+
+    /**
+     * Cancels any request done by requestSubDirs().
+     */
+    void cancelSubDirsRequest();
+
+    /**
+     * Starts to load the sub directories asynchronously. The directories
+     * are stored in m_subDirs by addEntriesToSubDirs().
+     */
+    void startSubDirsJob();
+
+    /**
+     * Adds the entries from the sub-directories job to m_subDirs. The entries
+     * will be shown if the job has been finished in openSubDirsMenu() or
+     * replaceButton().
+     */
+    void addEntriesToSubDirs(KIO::Job* job, const KIO::UDSEntryList& entries);
+
+    /**
+     * Is called after the sub-directories job has been finished and opens a menu
+     * showing all sub directories.
+     */
+    void openSubDirsMenu(KJob* job);
+
+    /**
+     * Is called after the sub-directories job has been finished and replaces
+     * the button content by the current sub directory (triggered by
+     * the scroll wheel).
+     */
+    void replaceButton(KJob* job);
+
     void urlsDropped(QAction* action, QDropEvent* event);
     void statFinished(KJob*);
 
@@ -120,16 +149,18 @@ private:
 private:
     bool m_hoverArrow;
     bool m_pendingTextChange;
+    bool m_replaceButton;
     int m_wheelSteps;
     KUrl m_url;
+
     QString m_subDir;
-    QTimer* m_popupDelay;
-    KIO::Job* m_listJob;
+    QTimer* m_openSubDirsTimer;
+    KIO::Job* m_subDirsJob;
+
     /// pair of name and display name
     QList<QPair<QString,QString> > m_subDirs;
-    QStringList m_subDirNames;
 
-    static QPointer<KUrlNavigatorMenu> m_dirsMenu;
+    static QPointer<KUrlNavigatorMenu> m_subDirsMenu;
 };
 
 #endif

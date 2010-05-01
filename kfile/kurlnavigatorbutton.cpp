@@ -35,29 +35,30 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QStyleOption>
 
-QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_dirsMenu;
+QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_subDirsMenu;
 
 KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
     KUrlNavigatorButtonBase(parent),
     m_hoverArrow(false),
     m_pendingTextChange(false),
+    m_replaceButton(false),
     m_wheelSteps(0),
     m_url(url),
     m_subDir(),
-    m_popupDelay(0),
-    m_listJob(0),
-    m_subDirNames()
+    m_openSubDirsTimer(0),
+    m_subDirsJob(0)
 {
     setAcceptDrops(true);
     setUrl(url);
     setMouseTracking(true);
 
-    m_popupDelay = new QTimer(this);
-    m_popupDelay->setSingleShot(true);
-    m_popupDelay->setInterval(300);
-    connect(m_popupDelay, SIGNAL(timeout()), this, SLOT(startListJob()));
-    connect(this, SIGNAL(pressed()), this, SLOT(startPopupDelay()));
-    connect(this, SIGNAL(clicked()), this, SLOT(stopPopupDelay()));
+    m_openSubDirsTimer = new QTimer(this);
+    m_openSubDirsTimer->setSingleShot(true);
+    m_openSubDirsTimer->setInterval(300);
+    connect(m_openSubDirsTimer, SIGNAL(timeout()), this, SLOT(startSubDirsJob()));
+
+    connect(this, SIGNAL(pressed()), this, SLOT(requestSubDirs()));
+    connect(this, SIGNAL(clicked()), this, SLOT(cancelSubDirsRequest()));
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
@@ -262,21 +263,21 @@ void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
         m_hoverArrow = true;
         update();
 
-        if (m_dirsMenu == 0) {
-            startPopupDelay();
-        } else if (m_dirsMenu->parent() != this) {
-            m_dirsMenu->close();
-            m_dirsMenu->deleteLater();
-            m_dirsMenu = 0;
+        if (m_subDirsMenu == 0) {
+            requestSubDirs();
+        } else if (m_subDirsMenu->parent() != this) {
+            m_subDirsMenu->close();
+            m_subDirsMenu->deleteLater();
+            m_subDirsMenu = 0;
 
-            startPopupDelay();
+            requestSubDirs();
         }
     } else {
-        if (m_popupDelay->isActive()) {
-            stopPopupDelay();
+        if (m_openSubDirsTimer->isActive()) {
+            cancelSubDirsRequest();
         }
-        delete m_dirsMenu;
-        m_dirsMenu = 0;
+        delete m_subDirsMenu;
+        m_subDirsMenu = 0;
         m_hoverArrow = false;
         update();
     }
@@ -295,7 +296,7 @@ void KUrlNavigatorButton::mousePressEvent(QMouseEvent* event)
 {
     if (isAboveArrow(event->x()) && (event->button() == Qt::LeftButton)) {
         // the mouse is pressed above the [>] button
-        startListJob();
+        startSubDirsJob();
     }
     KUrlNavigatorButtonBase::mousePressEvent(event);
 }
@@ -325,61 +326,53 @@ void KUrlNavigatorButton::wheelEvent(QWheelEvent* event)
 {
     if (event->orientation() == Qt::Vertical) {
         m_wheelSteps = event->delta() / 120;
-        startCycleJob();
+        m_replaceButton = true;
+        startSubDirsJob();
         event->accept();
     } else {
         KUrlNavigatorButtonBase::wheelEvent(event);
     }
 }
 
-void KUrlNavigatorButton::startPopupDelay()
+void KUrlNavigatorButton::requestSubDirs()
 {
-    if (!m_popupDelay->isActive() && (m_listJob == 0)) {
-        m_popupDelay->start();
+    if (!m_openSubDirsTimer->isActive() && (m_subDirsJob == 0)) {
+        m_openSubDirsTimer->start();
     }
 }
 
-void KUrlNavigatorButton::stopPopupDelay()
+void KUrlNavigatorButton::cancelSubDirsRequest()
 {
-    m_popupDelay->stop();
-    if (m_listJob != 0) {
-        m_listJob->kill();
-        m_listJob = 0;
+    m_openSubDirsTimer->stop();
+    if (m_subDirsJob != 0) {
+        m_subDirsJob->kill();
+        m_subDirsJob = 0;
     }
 }
 
-void KUrlNavigatorButton::startListJob()
+void KUrlNavigatorButton::startSubDirsJob()
 {
-    if (m_listJob != 0) {
+    if (m_subDirsJob != 0) {
         return;
     }
 
-    m_listJob = KIO::listDir(m_url, KIO::HideProgressInfo, false /*no hidden files*/);
+    const KUrl url = m_replaceButton ? m_url.upUrl() : m_url;
+    m_subDirsJob = KIO::listDir(url, KIO::HideProgressInfo, false /*no hidden files*/);
     m_subDirs.clear(); // just to be ++safe
 
-    connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
-            this, SLOT(entriesList(KIO::Job*, const KIO::UDSEntryList&)));
-    connect(m_listJob, SIGNAL(result(KJob*)), this, SLOT(listJobFinished(KJob*)));
+    connect(m_subDirsJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
+            this, SLOT(addEntriesToSubDirs(KIO::Job*, const KIO::UDSEntryList&)));
+
+    if (m_replaceButton) {
+        connect(m_subDirsJob, SIGNAL(result(KJob*)), this, SLOT(replaceButton(KJob*)));
+    } else {
+        connect(m_subDirsJob, SIGNAL(result(KJob*)), this, SLOT(openSubDirsMenu(KJob*)));
+    }
 }
 
-void KUrlNavigatorButton::startCycleJob()
+void KUrlNavigatorButton::addEntriesToSubDirs(KIO::Job* job, const KIO::UDSEntryList& entries)
 {
-    if (m_listJob != 0) {
-        return;
-    }
-
-    m_listJob = KIO::listDir(m_url.upUrl(), KIO::HideProgressInfo, false /*no hidden files*/);
-    m_subDirNames.clear(); // just to be ++safe
-    connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
-            this, SLOT(namesList(KIO::Job*, const KIO::UDSEntryList&)));
-    connect(m_listJob, SIGNAL(result(KJob*)), this, SLOT(cycleJobFinished(KJob*)));
-}
-
-void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& entries)
-{
-    if (job != m_listJob) {
-        return;
-    }
+    Q_ASSERT(job == m_subDirsJob);
 
     foreach (const KIO::UDSEntry& entry, entries) {
         if (entry.isDir()) {
@@ -390,22 +383,6 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
             }
             if ((name != QLatin1String(".")) && (name != QLatin1String(".."))) {
                 m_subDirs.append(qMakePair(name, displayName));
-            }
-        }
-    }
-}
-
-void KUrlNavigatorButton::namesList(KIO::Job* job, const KIO::UDSEntryList& entries)
-{
-    if (job != m_listJob) {
-        return;
-    }
-
-    foreach (const KIO::UDSEntry& entry, entries) {
-        if (entry.isDir()) {
-            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
-            if ((name != QLatin1String(".")) && (name != QLatin1String(".."))) {
-                m_subDirNames.append(name);
             }
         }
     }
@@ -434,20 +411,18 @@ void KUrlNavigatorButton::statFinished(KJob* job)
 }
 
 /**
- * Helper function for listJobFinished
+ * Helper function for openSubDirsMenu
  */
 static bool naturalLessThan(const QPair<QString, QString>& s1, const QPair<QString, QString>& s2)
 {
     return KStringHandler::naturalCompare(s1.first, s2.first, Qt::CaseInsensitive) < 0;
 }
 
-void KUrlNavigatorButton::listJobFinished(KJob* job)
+void KUrlNavigatorButton::openSubDirsMenu(KJob* job)
 {
-    if (job != m_listJob) {
-        return;
-    }
+    Q_ASSERT(job == m_subDirsJob);
+    m_subDirsJob = 0;
 
-    m_listJob = 0;
     if (job->error() || m_subDirs.isEmpty()) {
         // clear listing
         return;
@@ -457,20 +432,20 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     setDisplayHintEnabled(PopupActiveHint, true);
     update(); // ensure the button is drawn highlighted
 
-    if (m_dirsMenu != 0) {
-        m_dirsMenu->close();
-        m_dirsMenu->deleteLater();
-        m_dirsMenu = 0;
+    if (m_subDirsMenu != 0) {
+        m_subDirsMenu->close();
+        m_subDirsMenu->deleteLater();
+        m_subDirsMenu = 0;
     }
 
-    m_dirsMenu = new KUrlNavigatorMenu(this);
-    initMenu(m_dirsMenu, 0);
+    m_subDirsMenu = new KUrlNavigatorMenu(this);
+    initMenu(m_subDirsMenu, 0);
 
     const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
     const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
     const QPoint popupPos  = parentWidget()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
 
-    const QAction* action = m_dirsMenu->exec(popupPos);
+    const QAction* action = m_subDirsMenu->exec(popupPos);
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = m_url;
@@ -479,50 +454,50 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     }
 
     m_subDirs.clear();
-    delete m_dirsMenu;
-    m_dirsMenu = 0;
+    delete m_subDirsMenu;
+    m_subDirsMenu = 0;
 
     setDisplayHintEnabled(PopupActiveHint, false);
 }
 
-/**
- * Helper function for cycleJobFinished
- */
-static bool naturalLessThanStr(const QString& s1, const QString& s2)
+void KUrlNavigatorButton::replaceButton(KJob* job)
 {
-    return KStringHandler::naturalCompare(s1, s2, Qt::CaseInsensitive) < 0;
-}
+    Q_ASSERT(job == m_subDirsJob);
+    m_subDirsJob = 0;
+    m_replaceButton = false;
 
-void KUrlNavigatorButton::cycleJobFinished(KJob* job)
-{
-    if (job != m_listJob) {
+    if (job->error() || m_subDirs.isEmpty()) {
         return;
     }
 
-    m_listJob = 0;
-    if (job->error() || m_subDirNames.isEmpty()) {
-        return;
+    qSort(m_subDirs.begin(), m_subDirs.end(), naturalLessThan);
+
+    // Get index of the directory that is shown currently in the button
+    const QString currentDir = m_url.fileName();
+    int currentIndex = 0;
+    const int subDirsCount = m_subDirs.count();
+    while (currentIndex < subDirsCount) {
+        if (m_subDirs[currentIndex].first == currentDir) {
+            break;
+        }
+        ++currentIndex;
     }
 
-    qSort(m_subDirNames.begin(), m_subDirNames.end(), naturalLessThanStr);
-
-    const int selectedIndex = m_subDirNames.indexOf(m_url.fileName());
-
-    if (selectedIndex > -1) {
-        const int targetIndex = selectedIndex - m_wheelSteps;
-        KUrl url = m_url.upUrl();
-        if (targetIndex <= 0) {
-            url.addPath(m_subDirNames.first());
-        }
-        else if (targetIndex >= m_subDirNames.count()) {
-            url.addPath(m_subDirNames.last());
-        }
-        else {
-            url.addPath(m_subDirNames[targetIndex]);
-        }
-        emit clicked(url, Qt::LeftButton);
+    // Adjust the index by respecting the wheel steps and
+    // trigger a replacing of the button content
+    int targetIndex = currentIndex - m_wheelSteps;
+    if (targetIndex < 0) {
+        targetIndex = 0;
+    } else if (targetIndex >= subDirsCount) {
+        targetIndex = subDirsCount - 1;
     }
-    m_subDirNames.clear();
+
+    KUrl url = m_url.upUrl();
+    url.addPath(m_subDirs[targetIndex].first);
+
+    emit clicked(url, Qt::LeftButton);
+
+    m_subDirs.clear();
 }
 
 
