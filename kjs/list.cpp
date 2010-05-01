@@ -211,11 +211,6 @@ void List::release()
     }
 }
 
-void List::clear()
-{
-    _impBase->size = 0;
-}
-
 void List::appendSlowCase(JSValue *v)
 {
     ListImp *imp = static_cast<ListImp *>(_impBase);
@@ -257,21 +252,21 @@ List List::copy() const
 
 void List::copyFrom(const List& other)
 {
-    // Assumption: we're empty (e.g. called from copy)
-    
-    ListImp* otherImp = static_cast<ListImp *>(other._impBase);
-    ListImp* ourImp   = static_cast<ListImp *>(_impBase);
+    // Assumption: we're empty (e.g. called from copy)   
+    ListImpBase* otherImp = other._impBase;
+    ListImp* ourImp       = static_cast<ListImp *>(_impBase);
     
     assert(ourImp->size == 0 && ourImp->capacity == 0);
 
     int size = otherImp->size;
-    int cap  = otherImp->capacity;
     ourImp->size     = size;
-    ourImp->capacity = cap;
 
-    if (cap) {
-        // other used out-of-line buffer -- we should to
-        ourImp->data = new JSValue*[cap];
+    if (size > inlineListValuesSize) {
+        // need an out-of-line buffer
+        ourImp->capacity = size;
+        ourImp->data     = new JSValue*[size];
+    } else {
+        ourImp->capacity = 0;
     }
 
     for (int c = 0; c < size; ++c)
@@ -283,18 +278,19 @@ List List::copyTail() const
 {
     List copy;
 
-    ListImp* ourImp   = static_cast<ListImp *>(_impBase);
-    ListImp* otherImp = static_cast<ListImp *>(copy._impBase);
+    ListImp*     ourImp   = static_cast<ListImp *>(_impBase);
+    ListImpBase* otherImp = copy._impBase;
 
-    // We allocate as much space as the other one (even if we could have
-    // done it inline)
     int size = otherImp->size;
-    int cap  = otherImp->capacity;
     ourImp->size     = size - 1;
-    ourImp->capacity = cap;
 
-    if (cap)
-        ourImp->data = new JSValue*[cap];
+    if (size > inlineListValuesSize) {
+        // need an out-of-line buffer
+        ourImp->capacity = size;
+        ourImp->data     = new JSValue*[size];
+    } else {
+        ourImp->capacity = 0;
+    }
 
     for (int c = 1; c < size; ++c)
         ourImp->data[c-1] = otherImp->data[c];

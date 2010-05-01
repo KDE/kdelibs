@@ -65,7 +65,7 @@ namespace KJS {
         /**
          * Remove all elements from the list.
          */
-        void clear();
+        void clear() { _impBase->size = 0; }
 
         /*
          * Resets this List to point to the default empty list
@@ -150,7 +150,7 @@ namespace KJS {
         int size = _impBase->size;
         int newSize = size + 1;
         if (newSize < inlineListValuesSize) {
-            // Can just write to the inline byffer
+            // Can just write to the inline buffer
             _impBase->data[size] = val;
             _impBase->size = newSize;
         } else {
