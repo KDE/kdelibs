@@ -181,7 +181,6 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
- util/kimagecache.cpp
  util/kstandardguiitem.cpp
  util/ksvgrenderer.cpp
  util/kwallet.cpp
@@ -257,6 +256,10 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguiversionhandler.cpp
 )
+
+if(NOT WIN32)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kimagecache.cpp)
+endif(NOT WIN32)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
