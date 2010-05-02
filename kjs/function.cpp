@@ -41,7 +41,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#ifndef _WIN32
 #include "wtf/DisallowCType.h"
+#endif
 #include "wtf/ASCIICType.h"
 #include "bytecode/machine.h"
 #include <string>
