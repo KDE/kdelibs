@@ -294,7 +294,6 @@ set(kdecore_LIB_SRCS
    util/klibloader.cpp
    util/klibrary.cpp
    util/kmacroexpander.cpp
-   util/kshareddatacache.cpp
    util/kpluginfactory.cpp
    util/kpluginloader.cpp
    util/kshell.cpp
@@ -303,6 +302,10 @@ set(kdecore_LIB_SRCS
    util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
+
+if(NOT WIN32)
+set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
+endif(NOT WIN32)
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
