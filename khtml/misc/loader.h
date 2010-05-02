@@ -408,6 +408,7 @@ namespace khtml
         CachedScript *requestScript( const DOM::DOMString &url, const QString& charset);
         CachedSound *requestSound( const DOM::DOMString &url );
         CachedFont *requestFont( const DOM::DOMString &url );
+	bool willLoadMediaElement( const DOM::DOMString &url);
 
 	bool autoloadImages() const { return m_bautoloadImages; }
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }

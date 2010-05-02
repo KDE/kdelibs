@@ -28,6 +28,7 @@
 #include <wtf/Platform.h>
 
 #include "HTMLMediaElement.h"
+#include "html_element.h"
 #include "HTMLSourceElement.h"
 #include "HTMLDocument.h"
 #include <misc/htmlhashes.h>
@@ -40,12 +41,12 @@
 #include <phonon/mediaobject.h>
 #include <phonon/backendcapabilities.h>
 #include <rendering/render_media.h>
+#include <rendering/render_style.h>
 
 const double doubleMax = 999999999.8; // ### numeric_limits<double>::max()
 const double doubleInf = 999999999.0; // ### numeric_limits<double>::infinity()
 
 using namespace DOM;
-
 namespace khtml {
 
 HTMLMediaElement::HTMLMediaElement(Document* doc)
@@ -89,8 +90,9 @@ void HTMLMediaElement::attach()
 
     NodeBaseImpl::attach();
     if (m_render)
-        m_render->updateFromElement();
+	m_render->updateFromElement();
     setRenderer(m_render);
+    updateLoadState();
 }
 
 HTMLMediaElement::~HTMLMediaElement()
@@ -107,8 +109,7 @@ void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
         // change to src attribute triggers load()
         if (inDocument() && m_networkState == NETWORK_EMPTY)
             scheduleLoad();
-        if (renderer())
-            renderer()->updateFromElement();
+	updateLoadState();
     } if (attrId == ATTR_CONTROLS) {
         /*if (!isVideo() && attached() && (controls() != (renderer() != 0))) {
             detach();
@@ -169,7 +170,28 @@ void HTMLMediaElement::setAutobuffer(bool b)
 
 void HTMLMediaElement::load(ExceptionCode&)
 {
-    // ###
+    loadResource(m_currentSrc);
+}
+
+void HTMLMediaElement::loadResource(String &url)
+{
+    if (!m_player)
+	return;
+    if (autoplay())
+	m_player->play(url.string());
+    else
+	m_player->load(url.string());
+}
+
+void HTMLMediaElement::updateLoadState()
+{
+    String url = pickMedia();
+    if (currentSrc() != url) {
+	m_currentSrc = url;
+	if (m_autobuffer) {
+	    loadResource(url);
+	}
+    }
 }
 
 String HTMLMediaElement::canPlayType(String type)
@@ -397,6 +419,8 @@ void HTMLMediaElement::setMuted(bool muted)
 
 String HTMLMediaElement::pickMedia()
 {
+    if (!document())
+	return String();
     // 3.14.9.2. Location of the media resource
     String mediaSrc = getAttribute(ATTR_SRC);
     String maybeSrc;
@@ -423,8 +447,12 @@ String HTMLMediaElement::pickMedia()
     }
     if (mediaSrc.isEmpty())
         mediaSrc = maybeSrc;
-    if (!mediaSrc.isEmpty())
-        mediaSrc = document()->completeURL(mediaSrc.string());
+    if (mediaSrc.isEmpty())
+	return mediaSrc;
+    DocLoader* loader = document()->docLoader();
+    if (!loader || !loader->willLoadMediaElement(mediaSrc))
+	return String();
+    mediaSrc = document()->completeURL(mediaSrc.string());
     return mediaSrc;
 }
 

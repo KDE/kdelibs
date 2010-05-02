@@ -27,6 +27,7 @@
 #ifndef HTMLMediaElement_h
 #define HTMLMediaElement_h
 
+#include "html_elementimpl.h"
 #include "HTMLElement.h"
 #include "ExceptionCode.h"
 #include <wtf/PassRefPtr.h>
@@ -113,6 +114,9 @@ protected:
     void setReadyState(ReadyState);
 
 private:
+    void loadResource(String& url);
+    void updateLoadState();
+    
     void updateVolume();
     void updatePlayState();
     bool endedPlayback() const;

@@ -94,13 +94,6 @@ bool RenderMedia::eventFilter(QObject* o, QEvent* e)
 void RenderMedia::updateFromElement()
 {
     RenderWidget::updateFromElement();
-
-    QUrl url = mediaElement()->pickMedia().string();
-    if (player()->mediaObject()->currentSource().url() != url) {
-        player()->stop();
-	player()->mediaObject()->setCurrentSource(url);
-        if (mediaElement()->autoplay()) player()->play(url);
-    }
 }
 
 void RenderMedia::slotMetaDataChanged()

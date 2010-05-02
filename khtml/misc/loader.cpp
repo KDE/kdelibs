@@ -1052,6 +1052,13 @@ void DocLoader::printPreloadStats()
          ( doRedirectCheck && (m_doc && !KAuthorized::authorizeUrlAction("redirect", m_doc->URL(), fullURL)))) \
          return 0L;
 
+bool DocLoader::willLoadMediaElement( const DOM::DOMString &url)
+{
+    DOCLOADER_SECCHECK(true);
+
+    return true;
+}
+
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
     DOCLOADER_SECCHECK(true);
