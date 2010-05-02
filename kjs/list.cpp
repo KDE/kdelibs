@@ -276,22 +276,22 @@ List List::copyTail() const
 {
     List copy;
 
-    ListImp*     ourImp   = static_cast<ListImp *>(_impBase);
-    ListImpBase* otherImp = copy._impBase;
+    ListImpBase* inImp  = _impBase;
+    ListImp*     outImp = static_cast<ListImp *>(copy._impBase);
 
-    int size = otherImp->size;
-    ourImp->size     = size - 1;
+    int size      = inImp->size - 1;
+    outImp->size  = size;
 
     if (size > inlineListValuesSize) {
         // need an out-of-line buffer
-        ourImp->capacity = size;
-        ourImp->data     = new LocalStorageEntry[size];
+        outImp->capacity = size;
+        outImp->data     = new LocalStorageEntry[size];
     } else {
-        ourImp->capacity = 0;
+        outImp->capacity = 0;
     }
 
-    for (int c = 1; c < size; ++c)
-        ourImp->data[c-1] = otherImp->data[c];
+    for (int c = 0; c < size; ++c)
+        outImp->data[c] = inImp->data[c+1];
         
     return copy;
 }
