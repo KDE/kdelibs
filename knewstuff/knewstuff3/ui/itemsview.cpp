@@ -36,4 +36,3 @@ void ItemsView::wheelEvent(QWheelEvent* event)
 
 } // end KNS namespace
 
-#include "itemsview.moc"
