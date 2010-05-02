@@ -95,7 +95,7 @@ public:
 
         int hash() const
         {
-            return int(reinterpret_cast<unsigned long>(baseNode) >> 2) ^
+            return int(reinterpret_cast<quintptr>(baseNode) >> 2) ^
                        (unsigned(type) << 26);
         }
 

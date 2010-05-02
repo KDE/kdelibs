@@ -280,7 +280,7 @@ namespace DOM {
         {
             unsigned result = 0;
             while (selector) {
-                result ^= (unsigned long)selector->value.impl();
+                result ^= (quintptr)selector->value.impl();
                 result ^= (selector->attrLocalName.id() << 3);
                 result ^= (selector->attrNamespace.id() << 7);
                 result ^= (selector->tagLocalName.id() << 10);

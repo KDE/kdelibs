@@ -614,7 +614,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     if (e->hasClass()) {
         const ClassNames& classNames = element->classNames();
         for (unsigned int i = 0; i < classNames.size(); ++i) {
-            WTF::HashMap<unsigned long, int>::iterator it = classSelector.find((unsigned long)classNames[i].impl());
+            WTF::HashMap<quintptr, int>::iterator it = classSelector.find((quintptr)classNames[i].impl());
             if (it != classSelector.end())
                 for (unsigned int j = it->second; j < selectors_size; j = nextSimilarSelector[j])
                     selectorsForCheck.append(j);
@@ -625,7 +625,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     if (idValue && idValue->length()) {
         bool caseSensitive = (e->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
         AtomicString elementId = caseSensitive ? idValue : idValue->lower();
-        WTF::HashMap<unsigned long, int>::iterator it = idSelector.find((unsigned long)elementId.impl());
+        WTF::HashMap<quintptr, int>::iterator it = idSelector.find((quintptr)elementId.impl());
         if (it != idSelector.end())
             for (unsigned int j = it->second; j < selectors_size; j = nextSimilarSelector[j])
                 selectorsForCheck.append(j);
@@ -797,7 +797,7 @@ void CSSStyleSelector::prepareToMatchElement(DOM::ElementImpl* element)
         if (current->hasClass()) {
             const ClassNames& classNames = current->classNames();
             for (unsigned i = 0; i < classNames.size(); ++i)
-                classCache.add((unsigned long)classNames[i].impl());
+                classCache.add((quintptr)classNames[i].impl());
         }
 
         DOMStringImpl* idValue = current->getAttributeImplById(ATTR_ID);
@@ -806,7 +806,7 @@ void CSSStyleSelector::prepareToMatchElement(DOM::ElementImpl* element)
             AtomicString currentId = caseSensitive ? idValue : idValue->lower();
             // though currentId is local and could be deleted from AtomicStringImpl cache right away
             // don't care about that, cause selector values are stable and only they will be checked later
-            idCache.add((unsigned long)currentId.impl());
+            idCache.add((quintptr)currentId.impl());
         }
 
         tagCache.add(localNamePart(current->id()));
@@ -1215,9 +1215,9 @@ CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector
                 int id = sel->tagLocalName.id();
                 if (id != anyLocalName && !tagCache.contains(id))
                     return SelectorFails;
-                if (sel->match == CSSSelector::Class && !classCache.contains((unsigned long)sel->value.impl()))
+                if (sel->match == CSSSelector::Class && !classCache.contains((quintptr)sel->value.impl()))
                     return SelectorFails;
-                if (sel->match == CSSSelector::Id && !idCache.contains((unsigned long)sel->value.impl()))
+                if (sel->match == CSSSelector::Id && !idCache.contains((quintptr)sel->value.impl()))
                     return SelectorFails;
             }
 
@@ -1978,13 +1978,13 @@ void CSSStyleSelector::buildLists()
         nextSimilarSelector[i] = selectors_size;
     for (int i = selectors_size - 1; i >= 0; --i) {
         if (selectors[i]->match == CSSSelector::Class) {
-            pair<WTF::HashMap<unsigned long, int>::iterator, bool> it = classSelector.add((unsigned long)selectors[i]->value.impl(), i);
+            pair<WTF::HashMap<quintptr, int>::iterator, bool> it = classSelector.add((quintptr)selectors[i]->value.impl(), i);
             if (!it.second) {
                 nextSimilarSelector[i] = it.first->second;
                 it.first->second = i;
             }
         } else if (selectors[i]->match == CSSSelector::Id) {
-            pair<WTF::HashMap<unsigned long, int>::iterator, bool> it = idSelector.add((unsigned long)selectors[i]->value.impl(), i);
+            pair<WTF::HashMap<quintptr, int>::iterator, bool> it = idSelector.add((quintptr)selectors[i]->value.impl(), i);
             if (!it.second) {
                 nextSimilarSelector[i] = it.first->second;
                 it.first->second = i;

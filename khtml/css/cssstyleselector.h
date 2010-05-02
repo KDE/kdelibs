@@ -308,12 +308,12 @@ public:
         WTF::Vector<CSSOrderedProperty*> pseudoProps;
 
         // hashes for faster styleForElement
-        WTF::HashMap<unsigned long, int> classSelector, idSelector;
+        WTF::HashMap<quintptr, int> classSelector, idSelector;
         WTF::HashMap<unsigned, int> tagSelector;
         int otherSelector;
 
         WTF::HashSet<unsigned> tagCache;
-        WTF::HashSet<unsigned long> classCache, idCache;
+        WTF::HashSet<quintptr> classCache, idCache;
 
 	RenderStyle::PseudoId dynamicPseudo;
 

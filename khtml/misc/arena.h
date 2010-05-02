@@ -40,6 +40,7 @@
 #define ARENA_H
 
 #include <config-khtml.h>
+#include <QtGlobal>
 
 // VG annotations for arenas disabled since still buggy
 #if 0 && defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
@@ -59,7 +60,7 @@
 
 #define ARENA_ALIGN_MASK 3
 
-typedef unsigned long uword;
+typedef quintptr uword;
 
 namespace khtml {
 
