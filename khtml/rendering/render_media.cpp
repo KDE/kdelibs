@@ -97,9 +97,12 @@ void RenderMedia::updateFromElement()
 
     QUrl url = mediaElement()->src().string();
     if (player()->mediaObject()->currentSource().url() != url) {
-        player()->stop();
-	player()->mediaObject()->setCurrentSource(url);
-        if (mediaElement()->autoplay()) player()->play(url);
+        if (!document()->docLoader()->willLoadMediaElement(mediaElement()->src()))
+            return;
+        if (mediaElement()->autoplay()) 
+            player()->play(url);
+        else
+            player()->load(url);            
     }
 }
 
