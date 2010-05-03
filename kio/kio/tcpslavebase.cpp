@@ -249,7 +249,7 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
         if (d->isBlocking) {
             d->socket.waitForReadyRead(-1);
         } else {
-            d->socket.waitForReadyRead(0);
+            d->socket.waitForReadyRead(readTimeout());
         }
     } else if (d->socket.encryptionMode() != KTcpSocket::SslClientMode ||
                QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy) {
@@ -270,19 +270,11 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
         return -1;
     }
 
-    //FIXME! Old client code expects waitForResponse(long time); readLine();
-    //to return error *only* on real errors even in nonblocking mode and
-    //never an incomplete line. That doesn't make sense to me.
-#ifdef PIGS_CAN_FLY
-    if (!d->isBlocking) {
-        d->socket.waitForReadyRead(0);
-        return d->socket.readLine(data, len);
-    }
-#endif
+    const int timeout = (d->isBlocking ? -1: readTimeout());
     ssize_t readTotal = 0;
     do {
         if (!d->socket.bytesAvailable())
-            d->socket.waitForReadyRead(-1);
+            d->socket.waitForReadyRead(timeout);
         ssize_t readStep = d->socket.readLine(&data[readTotal], len-readTotal);
         if (readStep == -1 || (readStep == 0 && d->socket.state() != KTcpSocket::ConnectedState)) {
             return -1;
