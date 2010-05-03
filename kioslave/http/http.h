@@ -429,16 +429,6 @@ protected:
   void resetConnectionSettings();
 
   /**
-   * Creates the entity-header for Negotiate authentication.
-   */
-  QString createNegotiateAuth();
-
-  /**
-   * create GSS error string
-   */
-  QByteArray gssError( int major_status, int minor_status );
-
-  /**
    * Creates authorization prompt info.
    */
   void fillPromptInfo(KIO::AuthInfo *info);
