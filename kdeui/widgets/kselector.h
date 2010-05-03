@@ -26,6 +26,7 @@
 #include <kdeui_export.h>
 
 #include <QtGui/QAbstractSlider>
+#include <QtGui/QGradient>
 #include <QtGui/QWidget>
 
 /**
@@ -150,6 +151,20 @@ public:
    * Destructs the widget.
    */
   ~KGradientSelector();
+
+  /**
+   * Sets the colors that make up the gradient. Any previously set colors
+   * are removed.
+   * @since 4.5
+   */
+  void setStops(const QGradientStops &stops);
+
+  /**
+   * Get the colors that make up the gradient.
+   * @since 4.5
+   */
+  QGradientStops stops() const;
+
   /**
    * Sets the two colors which span the gradient.
    */

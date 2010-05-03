@@ -54,11 +54,8 @@ class KGradientSelector::KGradientSelectorPrivate
 public:
   KGradientSelectorPrivate(KGradientSelector *q): q(q) {}
 
-  void init();
-
   KGradientSelector *q;
-  QColor color1;
-  QColor color2;
+  QLinearGradient gradient;
   QString text1;
   QString text2;
 };
@@ -311,14 +308,12 @@ void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 KGradientSelector::KGradientSelector( QWidget *parent )
     : KSelector( parent ), d(new KGradientSelectorPrivate(this))
 {
-    d->init();
 }
 
 
 KGradientSelector::KGradientSelector( Qt::Orientation o, QWidget *parent )
     : KSelector( o, parent ), d(new KGradientSelectorPrivate(this))
 {
-    d->init();
 }
 
 
@@ -328,86 +323,42 @@ KGradientSelector::~KGradientSelector()
 }
 
 
-void KGradientSelector::KGradientSelectorPrivate::init()
-{
-    color1.setRgb( 0, 0, 0 );
-    color2.setRgb( 255, 255, 255 );
-
-    text1 = text2 = "";
-}
-
-
 void KGradientSelector::drawContents( QPainter *painter )
 {
-  QImage image( contentsRect().width(), contentsRect().height(), QImage::Format_RGB32 );
-
-  QColor col;
-  float scale;
-
-  int redDiff   = d->color2.red() - d->color1.red();
-  int greenDiff = d->color2.green() - d->color1.green();
-  int blueDiff  = d->color2.blue() - d->color1.blue();
-
-  if ( orientation() == Qt::Vertical )
-  {
-    for ( int y = 0; y < image.height(); y++ )
-    {
-      scale = 1.0 * y / image.height();
-      col.setRgb( d->color1.red() + int(redDiff*scale),
-            d->color1.green() + int(greenDiff*scale),
-            d->color1.blue() + int(blueDiff*scale) );
-
-      unsigned int *p = (uint *) image.scanLine( y );
-      for ( int x = 0; x < image.width(); x++ )
-        *p++ = col.rgb();
-    }
+  d->gradient.setStart(contentsRect().topLeft());
+  if (orientation() == Qt::Vertical) {
+      d->gradient.setFinalStop(contentsRect().bottomLeft());
+  } else {
+      d->gradient.setFinalStop(contentsRect().topRight());
   }
-  else
-  {
-    unsigned int *p = (uint *) image.scanLine( 0 );
+  QBrush gradientBrush(d->gradient);
 
-    for ( int x = 0; x < image.width(); x++ )
-    {
-      scale = 1.0 * x / image.width();
-      col.setRgb( d->color1.red() + int(redDiff*scale),
-            d->color1.green() + int(greenDiff*scale),
-            d->color1.blue() + int(blueDiff*scale) );
-      *p++ = col.rgb();
-    }
-
-    for ( int y = 1; y < image.height(); y++ )
-      memcpy( image.scanLine( y ), image.scanLine( y - 1),
-         sizeof( unsigned int ) * image.width() );
+  if (!gradientBrush.isOpaque()) {
+      QPixmap chessboardPattern(16, 16);
+      QPainter patternPainter(&chessboardPattern);
+      patternPainter.fillRect(0, 0, 8, 8, Qt::black);
+      patternPainter.fillRect(8, 8, 8, 8, Qt::black);
+      patternPainter.fillRect(0, 8, 8, 8, Qt::white);
+      patternPainter.fillRect(8, 0, 8, 8, Qt::white);
+      patternPainter.end();
+      painter->fillRect(contentsRect(), QBrush(chessboardPattern));
   }
 
-  /*
-  QColor ditherPalette[8];
-
-  for ( int s = 0; s < 8; s++ )
-    ditherPalette[s].setRgb( d->color1.red() + redDiff * s / 8,
-                d->color1.green() + greenDiff * s / 8,
-                d->color1.blue() + blueDiff * s / 8 );
-
-  KImageEffect::dither( image, ditherPalette, 8 );
-  */
-
-  QPixmap p = QPixmap::fromImage(image);
-
-  painter->drawPixmap( contentsRect().x(), contentsRect().y(), p );
+  painter->fillRect(contentsRect(), gradientBrush);
 
   if ( orientation() == Qt::Vertical )
   {
     int yPos = contentsRect().top() + painter->fontMetrics().ascent() + 2;
     int xPos = contentsRect().left() + (contentsRect().width() -
        painter->fontMetrics().width( d->text2 )) / 2;
-    QPen pen( d->color2 );
+    QPen pen( qGray(firstColor().rgb()) > 180 ? Qt::black : Qt::white );
     painter->setPen( pen );
     painter->drawText( xPos, yPos, d->text2 );
 
     yPos = contentsRect().bottom() - painter->fontMetrics().descent() - 2;
     xPos = contentsRect().left() + (contentsRect().width() -
       painter->fontMetrics().width( d->text1 )) / 2;
-    pen.setColor( d->color1 );
+    pen.setColor( qGray(secondColor().rgb()) > 180 ? Qt::black : Qt::white );
     painter->setPen( pen );
     painter->drawText( xPos, yPos, d->text1 );
   }
@@ -415,11 +366,11 @@ void KGradientSelector::drawContents( QPainter *painter )
   {
     int yPos = contentsRect().bottom()-painter->fontMetrics().descent()-2;
 
-    QPen pen( d->color2 );
+    QPen pen( qGray(firstColor().rgb()) > 180 ? Qt::black : Qt::white );
     painter->setPen( pen );
     painter->drawText( contentsRect().left() + 2, yPos, d->text1 );
 
-    pen.setColor( d->color1 );
+    pen.setColor( qGray(secondColor().rgb()) > 180 ? Qt::black : Qt::white );
     painter->setPen( pen );
     painter->drawText( contentsRect().right() -
        painter->fontMetrics().width( d->text2 ) - 2, yPos, d->text2 );
@@ -431,10 +382,21 @@ QSize KGradientSelector::minimumSize() const
     return sizeHint();
 }
 
+void KGradientSelector::setStops( const QGradientStops &stops )
+{
+    d->gradient.setStops(stops);
+    update();
+}
+
+QGradientStops KGradientSelector::stops() const
+{
+    return d->gradient.stops();
+}
+
 void KGradientSelector::setColors( const QColor &col1, const QColor &col2 )
 {
-  d->color1 = col1;
-  d->color2 = col2;
+  d->gradient.setColorAt(0.0, col1);
+  d->gradient.setColorAt(1.0, col2);
   update();
 }
 
@@ -447,13 +409,13 @@ void KGradientSelector::setText( const QString &t1, const QString &t2 )
 
 void KGradientSelector::setFirstColor( const QColor &col )
 {
-  d->color1 = col;
+  d->gradient.setColorAt(0.0, col);
   update();
 }
 
 void KGradientSelector::setSecondColor( const QColor &col )
 {
-  d->color2 = col;
+  d->gradient.setColorAt(1.0, col);
   update();
 }
 
@@ -471,12 +433,12 @@ void KGradientSelector::setSecondText( const QString &t )
 
 QColor KGradientSelector::firstColor() const
 {
-  return d->color1;
+  return d->gradient.stops().first().second;
 }
 
 QColor KGradientSelector::secondColor() const
 {
-  return d->color2;
+  return d->gradient.stops().last().second;
 }
 
 QString KGradientSelector::firstText() const
