@@ -36,7 +36,8 @@ namespace Nepomuk {
         {
         public:
             ComparisonTermPrivate()
-                : m_aggregateFunction(ComparisonTerm::NoAggregateFunction),
+                : m_optional(false),
+                  m_aggregateFunction(ComparisonTerm::NoAggregateFunction),
                   m_sortWeight(0),
                   m_sortOrder(Qt::AscendingOrder),
                   m_inverted(false) {
@@ -62,10 +63,17 @@ namespace Nepomuk {
              */
             QString propertyToString( QueryBuilderData* qbd ) const;
 
+            /**
+             * Encapsulates \p pattern in an OPTIONAL group if m_optional
+             * is true.
+             */
+            QString addOptionalGroup( const QString& pattern ) const;
+
             Types::Property m_property;
             ComparisonTerm::Comparator m_comparator;
 
             QString m_variableName;
+            bool m_optional;
             ComparisonTerm::AggregateFunction m_aggregateFunction;
             int m_sortWeight;
             Qt::SortOrder m_sortOrder;

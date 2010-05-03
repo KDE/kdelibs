@@ -138,6 +138,13 @@ void QueryTest::testToSparql_data()
         << QString::fromLatin1("select distinct ?r where { <nepomuk:/res/foobar> %1 ?r . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
 
+    ComparisonTerm optionalTerm1( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) );
+    optionalTerm1.setOptional(true);
+    QTest::newRow( "optional term" )
+        << Query(optionalTerm1)
+        << QString::fromLatin1("select distinct ?r where { OPTIONAL { ?r %1 <nepomuk:/res/foobar> . } }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
+
     QTest::newRow( "and term" )
         << Query( AndTerm( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::Greater ),
                            ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm(QUrl("nepomuk:/test")) ) ) )

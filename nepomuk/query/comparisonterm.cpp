@@ -114,7 +114,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     if ( !m_subTerm.isValid() ) {
         QString prop = propertyToString( qbd );
         QString ov = getMainVariableName( qbd );
-        return QString( "%1 %2 %3 . " )
+        return addOptionalGroup( "%1 %2 %3 . " )
             .arg( resourceVarName, prop, ov );
     }
 
@@ -122,14 +122,14 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         if( !m_subTerm.isLiteralTerm() )
             kDebug() << "Incompatible subterm type:" << m_subTerm.type();
         if ( m_comparator == ComparisonTerm::Equal ) {
-            return QString( "%1 %2 %3 . " )
+            return addOptionalGroup( "%1 %2 %3 . " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             QString v = getMainVariableName(qbd);
-            return QString( "%1 %2 %3 . %3 bif:contains \"%4\" . " )
+            return addOptionalGroup( "%1 %2 %3 . %3 bif:contains \"%4\" . " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       v,
@@ -137,7 +137,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
             QString v = getMainVariableName(qbd);
-            return QString( "%1 %2 %3 . FILTER(REGEX(STR(%3), '%4', 'i')) . " )
+            return addOptionalGroup( "%1 %2 %3 . FILTER(REGEX(STR(%3), '%4', 'i')) . " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       v,
@@ -145,7 +145,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else {
             QString v = getMainVariableName(qbd);
-            return QString( "%1 %2 %3 . FILTER(%3%4%5) . " )
+            return addOptionalGroup( "%1 %2 %3 . FILTER(%3%4%5) . " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       v,
@@ -210,14 +210,14 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
-                return QString::fromLatin1( "%1%2 bif:contains \"%3\" . " )
+                return addOptionalGroup( "%1%2 bif:contains \"%3\" . " )
                     .arg( pattern.arg(v3),
                           v3,
                           static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );
             }
             else if ( m_comparator == ComparisonTerm::Regexp ) {
                 QString v3 = qbd->uniqueVarName();
-                return QString::fromLatin1( "%1FILTER(REGEX(STR(%2)), '%3', 'i') . " )
+                return addOptionalGroup( "%1FILTER(REGEX(STR(%2)), '%3', 'i') . " )
                     .arg( pattern.arg(v3),
                           v3,
                           m_subTerm.toLiteralTerm().value().toString() );
@@ -229,12 +229,12 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_subTerm.isResourceTerm() ) {
             // ?r <prop> <res>
-            return corePattern.arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
+            return addOptionalGroup( corePattern.arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) ) );
         }
         else {
             // ?r <prop> ?v1 . ?v1 ...
             QString v = getMainVariableName(qbd);
-            return corePattern.arg(v) + m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd );
+            return addOptionalGroup( corePattern.arg(v) + m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd ) );
         }
     }
 }
@@ -316,6 +316,15 @@ QString Nepomuk::Query::ComparisonTermPrivate::propertyToString( QueryBuilderDat
 }
 
 
+QString Nepomuk::Query::ComparisonTermPrivate::addOptionalGroup( const QString& pattern ) const
+{
+    if( m_optional )
+        return QLatin1String("OPTIONAL { ") + pattern + QLatin1String(" } ");
+    else
+        return pattern;
+}
+
+
 Nepomuk::Query::ComparisonTerm::ComparisonTerm()
     : SimpleTerm( new ComparisonTermPrivate() )
 {
@@ -375,6 +384,20 @@ void Nepomuk::Query::ComparisonTerm::setProperty( const Types::Property& propert
 {
     N_D( ComparisonTerm );
     d->m_property = property;
+}
+
+
+void Nepomuk::Query::ComparisonTerm::setOptional( bool optional )
+{
+    N_D( ComparisonTerm );
+    d->m_optional = optional;
+}
+
+
+bool Nepomuk::Query::ComparisonTerm::optional() const
+{
+    N_D_CONST( ComparisonTerm );
+    return d->m_optional;
 }
 
 

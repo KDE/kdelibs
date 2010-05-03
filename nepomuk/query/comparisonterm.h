@@ -242,6 +242,31 @@ namespace Nepomuk {
             void setProperty( const Types::Property& );
 
             /**
+             * A %ComparisonTerm can be optional which means that
+             * it can match but must not. This mainly makes sense
+             * in combination with setVariableName() to retrieve
+             * the optional match or in combination with setSortWeight()
+             * to optionally sort by a certain value.
+             * Otherwise the result is the same as with simply emitting
+             * the term.
+             *
+             * \param optional If \p true this %ComparisonTerm is
+             * optional.
+             *
+             * \since 4.5
+             */
+            void setOptional( bool optional );
+
+            /**
+             * \return \p true if this %ComparisonTerm is optional.
+             *
+             * \sa setOptional()
+             *
+             * \since 4.5
+             */
+            bool optional() const;
+
+            /**
              * Set the variable name that is to be used for the
              * variable to match to. The variable will then be added
              * to the set of variables returned in the results and can
