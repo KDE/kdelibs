@@ -267,6 +267,19 @@ class KDEUI_EXPORT KColorDialog : public KDialog
      */
     QColor defaultColor() const;
 
+    /**
+     * When set to true, the user is allowed to change the alpha component of the color.
+     * The default value is false.
+     * @since 4.5
+     */
+    void setAlphaChannelEnabled(bool alpha);
+
+    /**
+     * Returns true when the user can change the alpha channel.
+     * @since 4.5
+     */
+    bool isAlphaChannelEnabled() const;
+
   public Q_SLOTS:
     /**
      * Preselects a color.
@@ -283,10 +296,12 @@ class KDEUI_EXPORT KColorDialog : public KDialog
 
   private:
     Q_PRIVATE_SLOT(d, void slotRGBChanged( void ))
+    Q_PRIVATE_SLOT(d, void slotAlphaChanged( void ))
     Q_PRIVATE_SLOT(d, void slotHSVChanged( void ))
     Q_PRIVATE_SLOT(d, void slotHtmlChanged( void ))
     Q_PRIVATE_SLOT(d, void slotHSChanged( int, int ))
     Q_PRIVATE_SLOT(d, void slotVChanged( int ))
+    Q_PRIVATE_SLOT(d, void slotAChanged( int ))
     Q_PRIVATE_SLOT(d, void slotColorSelected( const QColor &col ))
     Q_PRIVATE_SLOT(d, void slotColorSelected( const QColor &col, const QString &name ))
     Q_PRIVATE_SLOT(d, void slotColorDoubleClicked( const QColor &col, const QString &name ))
