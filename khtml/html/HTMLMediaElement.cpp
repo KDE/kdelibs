@@ -175,12 +175,14 @@ void HTMLMediaElement::load(ExceptionCode&)
 
 void HTMLMediaElement::loadResource(String &url)
 {
+    QUrl qurl;
+    qurl.setEncodedUrl(url.string().toLatin1(), QUrl::TolerantMode);
     if (!m_player)
-	return;
+        return;
     if (autoplay())
-	m_player->play(url.string());
+        m_player->play(qurl);
     else
-	m_player->load(url.string());
+        m_player->load(qurl);
 }
 
 void HTMLMediaElement::updateLoadState()
@@ -521,3 +523,4 @@ void HTMLMediaElement::updatePlayState()
 }
 
 }
+// kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;
