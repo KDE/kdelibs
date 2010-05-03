@@ -175,14 +175,13 @@ void HTMLMediaElement::load(ExceptionCode&)
 
 void HTMLMediaElement::loadResource(String &url)
 {
-    QUrl qurl;
-    qurl.setEncodedUrl(url.string().toLatin1(), QUrl::TolerantMode);
+    KUrl kurl(url.string());
     if (!m_player)
         return;
     if (autoplay())
-        m_player->play(qurl);
+        m_player->play(kurl);
     else
-        m_player->load(qurl);
+        m_player->load(kurl);
 }
 
 void HTMLMediaElement::updateLoadState()
