@@ -1319,7 +1319,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
   KUrl newDest = dest;
   if (newDest.protocol() == QLatin1String("webdavs"))
     newDest.setProtocol(QLatin1String("https"));
-  else
+  else if (newDest.protocol() == QLatin1String("webdav"))
     newDest.setProtocol(QLatin1String("http"));
 
   m_request.method = DAV_COPY;
@@ -1349,7 +1349,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   KUrl newDest = dest;
   if (newDest.protocol() == QLatin1String("webdavs"))
     newDest.setProtocol(QLatin1String("https"));
-  else
+  else if (newDest.protocol() == QLatin1String("webdav"))
     newDest.setProtocol(QLatin1String("http"));
 
   m_request.method = DAV_MOVE;
@@ -2719,7 +2719,7 @@ try_again:
     }
 
     kDebug(7103) << "============ Received Status Response:";
-    kDebug(7103) << QByteArray(buffer, bufPos);
+    kDebug(7103) << QByteArray(buffer, bufPos).trimmed();
 
     HTTP_REV httpRev = HTTP_None;
     int headerSize = 0;
@@ -2827,23 +2827,13 @@ try_again:
         }
         // 302 Found (temporary location)
         // 303 See Other
-        if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET) {
-#if 0
-            // Reset the POST buffer to avoid a double submit
-            // on redirection
-            if (m_request.method == HTTP_POST) {
-                m_POSTbuf.resize(0);
-            }
-#endif
-
-            // NOTE: This is wrong according to RFC 2616.  However,
-            // because most other existing user agent implementations
-            // treat a 301/302 response as a 303 response and preform
-            // a GET action regardless of what the previous method was,
-            // many servers have simply adapted to this way of doing
-            // things!!  Thus, we are forced to do the same thing or we
-            // won't be able to retrieve these pages correctly!! See RFC
-            // 2616 sections 10.3.[2/3/4/8]
+        if (m_request.method == HTTP_POST) {
+            // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
+            // However, because almost all client implementations treat a 301/302
+            // response as a 303 response in violation of the spec, many servers
+            // have simply adapted to this way of doing things! Thus, we are
+            // forced to do the same thing. Otherwise, we won't be able to retrieve
+            // these pages correctly.
             m_request.method = HTTP_GET; // Force a GET
         }
     } else if ( m_request.responseCode == 207 ) {
@@ -2909,7 +2899,7 @@ try_again:
     // TODO review use of STRTOLL vs. QByteArray::toInt()
 
     foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 2);
-    kDebug(7113) << " -- full response:" << QByteArray(buffer, bufPos);
+    kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).trimmed();
     Q_ASSERT(foundDelimiter);
 
     //NOTE because tokenizer will overwrite newlines in case of line continuations in the header
