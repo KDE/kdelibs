@@ -98,6 +98,8 @@ public:
     QList<QList<QWidget*> > allocatedWidgets;
     QHash<QModelIndex, QList<QWidget*> > usedWidgets;
     QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
+
+    bool clearing;
 };
 
 #endif

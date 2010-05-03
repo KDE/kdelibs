@@ -36,6 +36,8 @@
 #include <QtGui/QInputEvent>
 #include <QtGui/QAbstractProxyModel>
 
+#include <kdebug.h>
+
 #include "kwidgetitemdelegate.h"
 #include "kwidgetitemdelegate_p.h"
 
@@ -65,6 +67,7 @@ private:
 KWidgetItemDelegatePoolPrivate::KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d)
     : delegate(d)
     , eventListener(new EventListener(this))
+    , clearing(false)
 {
 }
 
@@ -149,7 +152,9 @@ QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
 
 void KWidgetItemDelegatePool::fullClear()
 {
+    d->clearing = true;
     qDeleteAll(d->widgetInIndex.keys());
+    d->clearing = false;
     d->allocatedWidgets.clear();
     d->usedWidgets.clear();
     d->widgetInIndex.clear();
@@ -158,6 +163,15 @@ void KWidgetItemDelegatePool::fullClear()
 bool EventListener::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *widget = static_cast<QWidget*>(watched);
+
+    if (event->type() == QEvent::Destroy && !poolPrivate->clearing) {
+        kWarning() << "User of KWidgetItemDelegate should not delete widgets created by createWidgets!";
+        // assume the application has kept a list of widgets and tries to delete them manually
+        // they have been reparented to the view in any case, so no leaking occurs
+        poolPrivate->widgetInIndex.remove(widget);
+        QWidget *viewport = poolPrivate->delegate->d->itemView->viewport();
+        QApplication::sendEvent(viewport, event);
+    }
     if (dynamic_cast<QInputEvent*>(event) && !poolPrivate->delegate->blockedEventTypes(widget).contains(event->type())) {
         QWidget *viewport = poolPrivate->delegate->d->itemView->viewport();
         switch(event->type()) {
