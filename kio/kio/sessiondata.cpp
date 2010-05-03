@@ -65,144 +65,6 @@ public:
   bool persist;
 };
 
-#if 0
-/************************* SessionData::AuthDataList ****************************/
-class SessionData::AuthDataList : public QList<SessionData::AuthData*>
-{
-public:
-  AuthDataList();
-  ~AuthDataList();
-
-  void addData( SessionData::AuthData* );
-  void removeData( const QByteArray& );
-
-  bool pingCacheDaemon();
-  void registerAuthData( SessionData::AuthData* );
-  void unregisterAuthData( SessionData::AuthData* );
-  void purgeCachedData();
-
-private:
-#ifdef Q_OS_UNIX
-  KDEsuClient * m_kdesuClient;
-#endif
-};
-
-SessionData::AuthDataList::AuthDataList()
-{
-#ifdef Q_OS_UNIX
-  m_kdesuClient = new KDEsuClient;
-#endif
-  qDeleteAll(*this);
-}
-
-SessionData::AuthDataList::~AuthDataList()
-{
-  purgeCachedData();
-#ifdef Q_OS_UNIX
-  delete m_kdesuClient;
-  m_kdesuClient = 0;
-#endif
-}
-
-void SessionData::AuthDataList::addData( SessionData::AuthData* d )
-{
-  QList<SessionData::AuthData*>::iterator it;
-  for ( it = begin() ; it != end(); ++it )
-  {
-    if ( (*it)->isKeyMatch( d->key ) )
-        return;
-  }
-  registerAuthData( d );
-  append( d );
-}
-
-void SessionData::AuthDataList::removeData( const QByteArray& gkey )
-{
-  QList<SessionData::AuthData*>::iterator it;
-  for ( it = begin() ; it != end(); ++it )
-  {
-    if ( (*it)->isGroupMatch(gkey) &&  pingCacheDaemon() )
-    {
-        unregisterAuthData( (*it) );
-        erase( it );
-    }
-  }
-}
-
-bool SessionData::AuthDataList::pingCacheDaemon()
-{
-#ifdef Q_OS_UNIX
-  Q_ASSERT(m_kdesuClient);
-
-  int success = m_kdesuClient->ping();
-  if( success == -1 )
-  {
-    success = m_kdesuClient->startServer();
-    if( success == -1 )
-        return false;
-  }
-  return true;
-#else
-  return false;
-#endif
-}
-
-void SessionData::AuthDataList::registerAuthData( SessionData::AuthData* d )
-{
-  if( !pingCacheDaemon() )
-    return;
-
-#ifdef Q_OS_UNIX
-  bool ok;
-  QByteArray ref_key = d->key + "-refcount";
-  int count = m_kdesuClient->getVar(ref_key).toInt( &ok );
-  if( ok )
-  {
-    QByteArray val;
-    val.setNum( count+1 );
-    m_kdesuClient->setVar( ref_key, val, 0, d->group );
-  }
-  else
-    m_kdesuClient->setVar( ref_key, "1", 0, d->group );
-#endif
-}
-
-void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
-{
-  if ( !d  || d->persist )
-    return;
-
-#ifdef Q_OS_UNIX
-  bool ok;
-  QByteArray ref_key = d->key + "-refcount";
-  int count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
-  if ( ok )
-  {
-    if ( count > 1 )
-    {
-        QByteArray val;
-        val.setNum(count-1);
-        m_kdesuClient->setVar( ref_key, val, 0, d->group );
-    }
-    else
-    {
-        m_kdesuClient->delVars(d->key);
-    }
-  }
-#endif
-}
-
-void SessionData::AuthDataList::purgeCachedData()
-{
-  if ( !isEmpty() && pingCacheDaemon() )
-  {
-    QList<SessionData::AuthData*>::iterator it;
-    for ( it = begin() ; it != end(); ++it )
-        unregisterAuthData( (*it) );
-  }
-}
-#endif
-
 /********************************* SessionData ****************************/
 
 class SessionData::SessionDataPrivate
@@ -233,8 +95,8 @@ SessionData::~SessionData()
 void SessionData::configDataFor( MetaData &configData, const QString &proto,
                              const QString & )
 {
-  if ( (proto.startsWith(QLatin1String("http"), Qt::CaseInsensitive) ) ||
-       (proto.startsWith(QLatin1String("webdav"), Qt::CaseInsensitive) ) )
+  if ( (proto.startsWith(QLatin1String("http"), Qt::CaseInsensitive)) ||
+       (proto.startsWith(QLatin1String("webdav"), Qt::CaseInsensitive)) )
   {
     if (!d->initDone)
         reset();
@@ -251,9 +113,7 @@ void SessionData::configDataFor( MetaData &configData, const QString &proto,
     if ( configData["CacheDir"].isEmpty() )
         configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");
     if ( configData["UserAgent"].isEmpty() )
-    {
-      configData["UserAgent"] = KProtocolManager::defaultUserAgent();
-    }
+        configData["UserAgent"] = KProtocolManager::defaultUserAgent();
   }
 }
 
@@ -262,11 +122,10 @@ void SessionData::reset()
     d->initDone = true;
     // Get Cookie settings...
     d->useCookie = KSharedConfig::openConfig("kcookiejarrc", KConfig::NoGlobals)->
-                   group("Cookie Policy" ).
+                   group("Cookie Policy").
                    readEntry("Cookies", true);
 
     d->language = KProtocolManager::acceptLanguagesHeader();
-
     d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->name()).toLower();
     KProtocolManager::reparseConfiguration();
 }
