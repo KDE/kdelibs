@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 #include "property.h"
 
 #include <Soprano/Node> // for qHash( QUrl() )
+#include <Soprano/BindingSet>
 
 
 class Nepomuk::Query::Result::Private : public QSharedData
@@ -33,6 +34,7 @@ public:
     Resource resource;
     double score;
     QHash<Types::Property, Soprano::Node> requestProperties;
+    Soprano::BindingSet additionalBindings;
 };
 
 
@@ -116,6 +118,24 @@ QHash<Nepomuk::Types::Property, Soprano::Node> Nepomuk::Query::Result::requestPr
 }
 
 
+void Nepomuk::Query::Result::setAdditionalBindings( const Soprano::BindingSet& bindings )
+{
+    d->additionalBindings = bindings;
+}
+
+
+Soprano::BindingSet Nepomuk::Query::Result::additionalBindings() const
+{
+    return d->additionalBindings;
+}
+
+
+Soprano::Node Nepomuk::Query::Result::additionalBinding( const QString& name ) const
+{
+    return d->additionalBindings.value(name);
+}
+
+
 bool Nepomuk::Query::Result::operator==( const Result& other ) const
 {
     if ( d->resource != other.d->resource ||
@@ -138,5 +158,5 @@ bool Nepomuk::Query::Result::operator==( const Result& other ) const
             return false;
         }
     }
-    return true;
+    return d->additionalBindings == other.d->additionalBindings;
 }

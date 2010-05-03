@@ -38,20 +38,30 @@ namespace Nepomuk {
          * \brief A term matching the value of a property.
          *
          * The %ComparisonTerm is the most important term in the query API. It can be
-         * used to match the values of properties. As such it consists of a property(),
-         * a comparator() and a subTerm().
-         *
-         * The latter can be any other term including AndTerm and OrTerm. The matching
-         * is done in one of two ways:
+         * used to match the values of properties. As such its core components are
+         * a property(), a comparator() (see Comparator for details) and a subTerm().
+         * The latter can be any other term including AndTerm, OrTerm, or even an invalid
+         * term. The matching is done as follows:
          *
          * \li A LiteralTerm as subTerm() is directly matched to the value of a literal
          * property (see also Nepomuk::Types::Property::literalRangeType()) or to the
          * labels of related resources in case of a property that has a resource range.
+         * \li An invalid sub term simply matches any resource or value, effectively
+         * acting as a wildcard.
          * \li Any other term type will be used as a sort of subquery to match the
          * related resources. This means that the property() needs to have a resource
          * range.
          *
-         * For more details see the Comparator enumeration.
+         * In addition to these basic features %ComparisonTerm has a few tricks up its
+         * sleeve:
+         *
+         * \li By forcing the variable name via setVariableName() it is possible to
+         * include a value matched by the term in the resulting SPARQL query (Query::toSparqlQuery())
+         * or accessing it via Result::additionalBinding().
+         * \li It is possible to set an aggregate function via setAggregateFunction()
+         * to count or sum up the results instead of returning the actual values.
+         * \li Using setSortWeight() the sorting of the results in the final query
+         * can be influenced in a powerful way - especially when combined with setAggregateFunction().
          *
          * \author Sebastian Trueg <trueg@kde.org>
          *
@@ -105,7 +115,76 @@ namespace Nepomuk {
             };
 
             /**
-             * Default constructor: creates an invalid comparison term.
+             * Aggregate functions which can be applied to a comparison term to influence
+             * the value they return.
+             *
+             * \sa setAggregateFunction()
+             *
+             * \since 4.5
+             */
+            enum AggregateFunction {
+                /**
+                 * Do not use any aggregate function.
+                 */
+                NoAggregateFunction = 0,
+
+                /**
+                 * Count the number of matching results instead
+                 * of returning the results themselves.
+                 * For counting the results of a complete query use
+                 * Query::CreateCountQuery.
+                 */
+                Count,
+
+                /**
+                 * The same as Count except that no two similar results
+                 * are counted twice.
+                 */
+                DistinctCount,
+
+                /**
+                 * Return the maximum value of all results instead
+                 * of the results themselves.
+                 * Does only make sense for numerical values.
+                 */
+                Max,
+
+                /**
+                 * Return the minimum value of all results instead
+                 * of the results themselves.
+                 * Does only make sense for numerical values.
+                 */
+                Min,
+
+                /**
+                 * Return the sum of all result values instead
+                 * of the results themselves.
+                 * Does only make sense for numerical values.
+                 */
+                Sum,
+
+                /**
+                 * The same as Sum except that no two similar results
+                 * are added twice.
+                 */
+                DistinctSum,
+
+                /**
+                 * Return the average value of all results instead
+                 * of the results themselves.
+                 * Does only make sense for numerical values.
+                 */
+                Average,
+
+                /**
+                 * The same as Average except that no two similar results
+                 * are counted twice.
+                 */
+                DistinctAverage
+            };
+
+            /**
+             * Default constructor: creates a comparison term that matches all properties.
              */
             ComparisonTerm();
 
@@ -115,9 +194,9 @@ namespace Nepomuk {
             ComparisonTerm( const ComparisonTerm& term );
 
             /**
-             * Default constructor.
+             * Convinience constructor which covers most simple use cases.
              *
-             * \param property The property that should be matched.
+             * \param property The property that should be matched. An invalid property will act as a wildcard.
              * \param term The sub term to match to.
              * \param comparator The Comparator to use for comparison. Not all Comparators make sense
              * with all sub term types.
@@ -143,6 +222,7 @@ namespace Nepomuk {
 
             /**
              * A property used for ComparisonTerm Terms.
+             * An invalid property will act as a wildcard.
              *
              * \sa setProperty
              */
@@ -155,11 +235,125 @@ namespace Nepomuk {
 
             /**
              * Set the property for ComparisonTerm
-             * Terms.
+             * Terms. An invalid property will act as a wildcard.
              *
              * \sa property
              */
             void setProperty( const Types::Property& );
+
+            /**
+             * Set the variable name that is to be used for the
+             * variable to match to. The variable will then be added
+             * to the set of variables returned in the results and can
+             * be read via Result::additionalBinding(). Setting
+             * the variable name can be seen as a less restricted variant
+             * of Query::addRequestProperty().
+             *
+             * When manually setting the variable name on more
+             * than one ComparisonTerm there is no guarantee for the
+             * uniqueness of variable names anymore which can result
+             * in unwanted query results. However, this can also be
+             * used deliberately in case one needs to compare the
+             * same variable twice:
+             *
+             * \code
+             * ComparisonTerm ct1( prop1, Term() );
+             * ComparisonTerm ct1( prop2, Term() );
+             * ct1.setVariableName( "myvar" );
+             * ct2.setVariableName( "myvar" );
+             * \endcode
+             *
+             * The above example would result in a SPARQL query
+             * pattern along the lines of
+             *
+             * \code
+             * ?r <prop1> ?myVar .
+             * ?r <prop2> ?myVar .
+             * \endcode
+             *
+             * Be aware that the variable name does not apply
+             * to sub terms of types ResourceTerm or LiteralTerm.
+             * In those cases the value will be ignored. The only exception
+             * are LiteralTerm sub terms that are compared other than
+             * with equals.
+             *
+             * \param name The name of the variable to be used when requesting
+             * the binding via Result::additionalBinding()
+             *
+             * \sa Result::additionalBinding(), Query::HandleInverseProperties, \ref examples_query
+             *
+             * \since 4.5
+             */
+            void setVariableName( const QString& name );
+
+            /**
+             * The variable name set in setVariableName() or an empty
+             * string if none has been set.
+             *
+             * \sa setVariableName()
+             *
+             * \since 4.5
+             */
+            QString variableName() const;
+
+            /**
+             * Set an aggregate function which changes the
+             * result. The typical usage is to count the results instead of actually
+             * returning them. For counting the results of a complete query use
+             * Query::CreateCountQuery.
+             *
+             * \sa aggregateFunction()
+             *
+             * \since 4.5
+             */
+            void setAggregateFunction( AggregateFunction function );
+
+            /**
+             * The aggregate function to be used with the additional binding set in
+             * setVariableName().
+             *
+             * \sa setAggregateFunction()
+             *
+             * \since 4.5
+             */
+            AggregateFunction aggregateFunction() const;
+
+            /**
+             * Set the sort weight of this property. By default all ComparisonTerms have
+             * a weight of 0 which means that they are ignored for sorting. By setting \p
+             * weight to a value different from 0 (typically higher than 0) the comparison
+             * subterm will be used for sorting.
+             *
+             * Be aware that as with the variableName() sorting does not apply to sub
+             * terms of types ResourceTerm or LiteralTerm.
+             * In those cases the value will be ignored. The only exception
+             * are LiteralTerm sub terms that are compared other than
+             * with equals.
+             *
+             * \param weight The new sort weight. If different from 0 this term will be
+             * used for sorting in the Query.
+             * \param sortOrder The sort order to use for this term.
+             *
+             * \sa sortWeight()
+             *
+             * \since 4.5
+             */
+            void setSortWeight( int weight, Qt::SortOrder sortOrder = Qt::AscendingOrder );
+
+            /**
+             * \return The sort weight as set in setSortWeight() or 0 if
+             * sorting is disabled for this term.
+             *
+             * \since 4.5
+             */
+            int sortWeight() const;
+
+            /**
+             * \return The sort order as set in setSortWeight().
+             *
+             * \since 4.5
+             */
+            Qt::SortOrder sortOrder() const;
 
             /**
              * \return \p true if the comparison is inverted.
@@ -176,6 +370,14 @@ namespace Nepomuk {
              * A typical example would be:
              *
              * \code
+             * ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
+             *                      ResourceTerm( somefile ) );
+             * term.setInverted(true);
+             * \endcode
+             *
+             * which would yield a query like the following:
+             *
+             * \code
              * select ?r where { <somefile> nao:hasTag ?r . }
              * \endcode
              *
@@ -184,6 +386,8 @@ namespace Nepomuk {
              * Be aware that this does only make sense with
              * sub terms that match to resources. When using
              * LiteralTerm as a sub term \p invert is ignored.
+             *
+             * \sa inverted()
              *
              * \since 4.5
              */
@@ -202,6 +406,8 @@ namespace Nepomuk {
              * // always true:
              * (term.inverted().inverted() == term);
              * \endcode
+             *
+             * \sa setInverted()
              *
              * \since 4.5
              */

@@ -14,6 +14,8 @@ target_link_libraries(queryparsertest nepomuk nepomukquery
 set(querytest_SRC querytest.cpp ../query_p.cpp)
 soprano_add_ontology(querytest_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(querytest_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(querytest_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nco.trig" "NCO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(querytest_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig")
 kde4_add_unit_test(querytest NOGUI ${querytest_SRC})
 target_link_libraries(querytest nepomuk nepomukquery
   ${QT_QTTEST_LIBRARY}

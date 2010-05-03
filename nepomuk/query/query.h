@@ -218,7 +218,10 @@ namespace Nepomuk {
              *
              * \param property The requested property.
              *
-             * \sa setRequestProperties, requestProperties
+             * ComparisonTerm::setVariableName() provides a more flexible (but also
+             * slightly more complicated) way to select additional results.
+             *
+             * \sa setRequestProperties, requestProperties, ComparisonTerm::setVariableName()
              */
             void addRequestProperty( const RequestProperty& property );
 
@@ -227,7 +230,10 @@ namespace Nepomuk {
              *
              * \param properties The requested properties.
              *
-             * \sa addRequestProperty, requestProperties
+             * ComparisonTerm::setVariableName() provides a more flexible (but also
+             * slightly more complicated) way to select additional results.
+             *
+             * \sa addRequestProperty, requestProperties, ComparisonTerm::setVariableName()
              */
             void setRequestProperties( const QList<RequestProperty>& properties );
 

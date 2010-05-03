@@ -24,6 +24,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QLatin1String>
+#include <QtCore/QSet>
 
 #include "query.h"
 
@@ -41,13 +42,69 @@ namespace Nepomuk {
                 return m_flags;
             }
 
+            /// used by different implementations of TermPrivate::toSparqlGraphPattern and Query::toSparqlQuery
             inline QString uniqueVarName() {
                 return QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
             }
 
+            /// used by ComparisonTerm to add variable names set via ComparisonTerm::setVariableName
+            inline void addCustomVariable( const QString& name ) {
+                m_customVariables << name;
+            }
+
+            /// used by Query::toSparqlQuery
+            inline QStringList customVariables() const {
+                return m_customVariables.toList();
+            }
+
+            struct OrderVariable {
+                OrderVariable(int w, const QString& n, Qt::SortOrder o)
+                    : weight(w),
+                      name(n),
+                      sortOrder(o) {
+                }
+                int weight;
+                QString name;
+                Qt::SortOrder sortOrder;
+            };
+
+            /// used by ComparisonTerm to add sorting variables (names include the '?')
+            inline void addOrderVariable( const QString& name, int weight, Qt::SortOrder order ) {
+                int i = 0;
+                while( i < m_orderVariables.count() &&
+                       m_orderVariables[i].weight > weight )
+                    ++i;
+                m_orderVariables.insert( i, OrderVariable( weight, name, order ) );
+            }
+
+            /// used by Query::toSparqlQuery
+            inline QString buildOrderString() const {
+                if( m_orderVariables.isEmpty() )
+                    return QString();
+                QString s = QLatin1String(" ORDER BY ");
+                for( int i = 0; i < m_orderVariables.count(); ++i ) {
+                    if( m_orderVariables[i].sortOrder == Qt::DescendingOrder )
+                        s += QLatin1String("DESC ");
+                    else
+                        s += QLatin1String("ASC ");
+                    s += m_orderVariables[i].name;
+                    s += ' ';
+                }
+                return s;
+            }
+
         private:
+            /// a running counter for unique variable names
             int m_varNameCnt;
-            Query::SparqlFlags m_flags;
+
+            /// copy of the flags as set in Query::toSparqlQuery
+            const Query::SparqlFlags m_flags;
+
+            /// custom variables that have been added via ComparisonTerm::setVariableName
+            QSet<QString> m_customVariables;
+
+            /// variables that are used for sorting set via ComparisonTerm::setSortWeight
+            QList<OrderVariable> m_orderVariables;
         };
     }
 }

@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -283,8 +283,7 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
 
 QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 {
-    // optimize whatever we can
-    Term term = QueryPrivate::optimizeTerm( d->m_term );
+    Term term = d->m_term;
 
     // restrict to files if we are a file query
     if( d->m_isFileQuery ) {
@@ -294,6 +293,9 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
         term = AndTerm( term, OrTerm( ComparisonTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::FileDataObject()), ComparisonTerm::Equal ),
                                       ComparisonTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::Folder()), ComparisonTerm::Equal ) ) );
     }
+
+    // optimize whatever we can
+    term = QueryPrivate::optimizeTerm( term );
 
     // actually build the SPARQL query string
     QueryBuilderData qbd( flags );
@@ -307,15 +309,19 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     }
     else {
         // create the "all resources query"
-        termGraphPattern = QLatin1String("graph ?g { ?r a ?t . } . ?g a ?gt . ?gt rdfs:subClassOf nrl:InstanceBase . ");
+        termGraphPattern = QString::fromLatin1("graph ?g { ?r a ?t . } . ?g a ?gt . ?gt rdfs:subClassOf nrl:InstanceBase . ");
     }
 
-    QString query = QString::fromLatin1( "select %1 %2 where { %3 %4 %5 }" )
+    QString query = QString::fromLatin1( "select %1 %2 %3 where { %4 %5 %6 }" )
                     .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
                           d->buildRequestPropertyVariableList(),
+                          qbd.customVariables().join( QLatin1String(" ") ),
                           termGraphPattern,
                           d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                           d->buildRequestPropertyPatterns() );
+
+    query += qbd.buildOrderString();
+
     if ( d->m_offset > 0 )
         query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
     if ( d->m_limit > 0 )

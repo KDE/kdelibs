@@ -314,6 +314,32 @@ Nepomuk::Query::ComparisonTerm term( Soprano::Vocabulary::NAO::hasTag(),
 Nepomuk::Query::FileQuery fileQuery( term );
 \endcode
 
+
+Any other term can be used as sub term in a ComparisonTerm (%Vocabulary namespace generated via \ref nepomuk-rcgen).
+The following query does return all resources related to person contacts that are tagged with \p tag.
+
+\code
+Nepomuk::Query::AndTerm andTerm;
+andTerm.addSubTerm( Nepomuk::Query::ResourceTypeTerm( Nepomuk::Vocabulary::NCO::PersonContact() ) );
+andTerm.addSubTerm( Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                                    Nepomuk::Query::ResourceTerm( tag ) ) );
+Nepomuk::Query::ComparisonTerm cterm( Nepomuk::Vocabulary::NAO::isRelated(),
+                                      andTerm );
+\endcode
+
+
+To make matters even more complex the above ComparisonTerm can be inverted:
+
+\code
+cterm.setInverted(true);
+\endcode
+
+This will not match resources related to some tagged person contact but match
+resources that some tagged person contact is related to (sounds confusing but
+remember that the properties are not symmetric by default, i.e. the graph of
+data is directed.)
+
+
 \subsection query_examples_file Listing Files
 
 Restrict the search to a specific folder:

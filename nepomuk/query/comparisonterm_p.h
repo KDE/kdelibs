@@ -29,12 +29,18 @@
 
 namespace Nepomuk {
     namespace Query {
+
+        class QueryBuilderData;
+
         class ComparisonTermPrivate : public SimpleTermPrivate
         {
         public:
-            ComparisonTermPrivate() {
+            ComparisonTermPrivate()
+                : m_aggregateFunction(ComparisonTerm::NoAggregateFunction),
+                  m_sortWeight(0),
+                  m_sortOrder(Qt::AscendingOrder),
+                  m_inverted(false) {
                 m_type = Term::Comparison;
-                m_inverted = false;
             }
 
             TermPrivate* clone() const { return new ComparisonTermPrivate( *this ); }
@@ -44,9 +50,25 @@ namespace Nepomuk {
             QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
             QString toString() const;
 
+            /**
+             * return m_variableName and register it with qbd
+             * or ask the latter to create a new variable.
+             */
+            QString getMainVariableName( QueryBuilderData* qbd ) const;
+
+            /**
+             * return the N3 form of m_property or a new variable
+             * in case m_property is invalid.
+             */
+            QString propertyToString( QueryBuilderData* qbd ) const;
+
             Types::Property m_property;
             ComparisonTerm::Comparator m_comparator;
 
+            QString m_variableName;
+            ComparisonTerm::AggregateFunction m_aggregateFunction;
+            int m_sortWeight;
+            Qt::SortOrder m_sortOrder;
             bool m_inverted;
         };
     }

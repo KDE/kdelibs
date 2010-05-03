@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <QtCore/QHash>
 
 #include <Soprano/Statement>
+#include <Soprano/BindingSet>
 
 #include "nepomukquery_export.h"
 
@@ -124,9 +125,46 @@ namespace Nepomuk {
             /**
              * Retrieve value of request property \p property.
              *
-             * \sa requestProperties, addRequestProperty
+             * \sa additionalBinding, requestProperties, addRequestProperty
              */
             Soprano::Node requestProperty( const Types::Property& property ) const;
+
+            /**
+             * Set the additional bindings a query returned besides the result
+             * itself and the request properties.
+             *
+             * \since 4.5
+             */
+            void setAdditionalBindings( const Soprano::BindingSet& bindings );
+
+            /**
+             * Retrieve the set of additional bindings as set via setAdditionalBindings().
+             * Normally one would use additionalBinding() instead.
+             *
+             * \since 4.5
+             */
+            Soprano::BindingSet additionalBindings() const;
+
+            /**
+             * Retrieve an additional binding as returned by the query. Typically
+             * these bindings are created via ComparisonTerm::setVariableName().
+             * But they could also stem from custom SPARQL queries. A simple
+             * example would be:
+             *
+             * \code
+             * select ?r ?rating where { ?r nao:numericRating ?rating . }
+             * \endcode
+             *
+             * Here \p ?r would be used as the result's resource while
+             * \p ?rating could be accessed via
+             *
+             * \code
+             * additionalBinding( QLatin1String("rating") );
+             * \endcode
+             *
+             * \since 4.5
+             */
+            Soprano::Node additionalBinding( const QString& name ) const;
 
             /**
              * Comparison operator

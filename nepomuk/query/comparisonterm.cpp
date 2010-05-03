@@ -53,6 +53,30 @@ namespace {
             return QString();
         }
     }
+
+    QString varInAggregateFunction( Nepomuk::Query::ComparisonTerm::AggregateFunction f, const QString& varName )
+    {
+        switch( f ) {
+        case Nepomuk::Query::ComparisonTerm::Count:
+            return QString::fromLatin1("count(%1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::DistinctCount:
+            return QString::fromLatin1("count(distinct %1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::Max:
+            return QString::fromLatin1("max(%1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::Min:
+            return QString::fromLatin1("min(%1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::Sum:
+            return QString::fromLatin1("sum(%1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::DistinctSum:
+            return QString::fromLatin1("sum(distinct %1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::Average:
+            return QString::fromLatin1("avg(%1)").arg(varName);
+        case Nepomuk::Query::ComparisonTerm::DistinctAverage:
+            return QString::fromLatin1("avg(distinct %1)").arg(varName);
+        default:
+            return QString();
+        }
+    }
 }
 
 
@@ -87,36 +111,43 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     //      fail!
     //
 
-    if ( m_property.literalRangeType().isValid() ) {
+    if ( !m_subTerm.isValid() ) {
+        QString prop = propertyToString( qbd );
+        QString ov = getMainVariableName( qbd );
+        return QString( "%1 %2 %3 . " )
+            .arg( resourceVarName, prop, ov );
+    }
+
+    else if ( m_property.literalRangeType().isValid() ) {
         if( !m_subTerm.isLiteralTerm() )
             kDebug() << "Incompatible subterm type:" << m_subTerm.type();
         if ( m_comparator == ComparisonTerm::Equal ) {
             return QString( "%1 %2 %3 . " )
                 .arg( resourceVarName,
-                      Soprano::Node::resourceToN3( m_property.uri() ),
+                      propertyToString( qbd ),
                       Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
-            QString v = qbd->uniqueVarName();
+            QString v = getMainVariableName(qbd);
             return QString( "%1 %2 %3 . %3 bif:contains \"%4\" . " )
                 .arg( resourceVarName,
-                      Soprano::Node::resourceToN3( m_property.uri() ),
+                      propertyToString( qbd ),
                       v,
                       static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
-            QString v = qbd->uniqueVarName();
+            QString v = getMainVariableName(qbd);
             return QString( "%1 %2 %3 . FILTER(REGEX(STR(%3), '%4', 'i')) . " )
                 .arg( resourceVarName,
-                      Soprano::Node::resourceToN3( m_property.uri() ),
+                      propertyToString( qbd ),
                       v,
                       m_subTerm.toLiteralTerm().value().toString() );
         }
         else {
-            QString v = qbd->uniqueVarName();
+            QString v = getMainVariableName(qbd);
             return QString( "%1 %2 %3 . FILTER(%3%4%5) . " )
                 .arg( resourceVarName,
-                      Soprano::Node::resourceToN3( m_property.uri() ),
+                      propertyToString( qbd ),
                       v,
                       comparatorToString( m_comparator ),
                       Soprano::Node::literalToN3(m_subTerm.toLiteralTerm().value()) );
@@ -148,14 +179,14 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             m_property.inverseProperty().isValid() ) {
             corePattern = QString::fromLatin1("{ %1 %2 %3 . } UNION { %3 %4 %1 . } . ")
                               .arg( subject,
-                                    Soprano::Node::resourceToN3( m_property.uri() ),
+                                    propertyToString( qbd ),
                                     object,
                                     Soprano::Node::resourceToN3( m_property.inverseProperty().uri() ) );
         }
         else {
             corePattern = QString::fromLatin1("%1 %2 %3 . ")
                               .arg( subject,
-                                    Soprano::Node::resourceToN3( m_property.uri() ),
+                                    propertyToString( qbd ),
                                     object );
         }
 
@@ -164,7 +195,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             // the base of the pattern is always the same: match to resources related to X
             // which has a label that we compare somehow. This label's value will be filled below
             //
-            QString v1 = qbd->uniqueVarName();
+            QString v1 = getMainVariableName(qbd);
             QString v2 = qbd->uniqueVarName();
             QString pattern = QString::fromLatin1( "%1%2 %3 %4 . %3 %5 %6 . " )
                               .arg( corePattern.arg(v1),
@@ -202,7 +233,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else {
             // ?r <prop> ?v1 . ?v1 ...
-            QString v = qbd->uniqueVarName();
+            QString v = getMainVariableName(qbd);
             return corePattern.arg(v) + m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd );
         }
     }
@@ -226,16 +257,62 @@ bool Nepomuk::Query::ComparisonTermPrivate::equals( const TermPrivate* other ) c
 
 bool Nepomuk::Query::ComparisonTermPrivate::isValid() const
 {
-    return( SimpleTermPrivate::isValid() && m_property.isValid() );
+    // an invalid property will simply match all properties
+    // and an invalid subterm is a wildcard, too
+    // Thus, a ComparisonTerm is always valid
+    return true;
 }
 
 
 QString Nepomuk::Query::ComparisonTermPrivate::toString() const
 {
     return QString( "[%1 %2 %3]" )
-        .arg( Soprano::Node::resourceToN3( m_property.uri() ),
+        .arg( m_property.isValid() ? Soprano::Node::resourceToN3( m_property.uri() ) : QString::fromLatin1("?p"),
               comparatorToString( m_comparator ),
               m_subTerm.d_ptr->toString() );
+}
+
+
+QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilderData* qbd ) const
+{
+    QString v;
+    QString sortVar;
+    if( !m_variableName.isEmpty() ) {
+        sortVar = QLatin1String( "?") + m_variableName;
+        if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction ) {
+            v = sortVar;
+            qbd->addCustomVariable( v );
+        }
+        else {
+            // this is a bit hacky as far as the method naming in QueryBuilderData is concerned.
+            // we add a select statement as a variable name.
+            v = qbd->uniqueVarName();
+            QString selectVar = QString::fromLatin1( "%1 as ?%2")
+                                .arg(varInAggregateFunction(m_aggregateFunction, v),
+                                     m_variableName );
+            qbd->addCustomVariable( selectVar );
+        }
+    }
+    else {
+        v = qbd->uniqueVarName();
+        if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction )
+            sortVar = v;
+        else
+            sortVar = QString::fromLatin1("( %1 )").arg(varInAggregateFunction(m_aggregateFunction, v));
+    }
+    if( m_sortWeight != 0 ) {
+        qbd->addOrderVariable( sortVar, m_sortWeight, m_sortOrder );
+    }
+    return v;
+}
+
+
+QString Nepomuk::Query::ComparisonTermPrivate::propertyToString( QueryBuilderData* qbd ) const
+{
+    if( m_property.isValid() )
+        return Soprano::Node::resourceToN3( m_property.uri() );
+    else
+        return qbd->uniqueVarName();
 }
 
 
@@ -298,6 +375,56 @@ void Nepomuk::Query::ComparisonTerm::setProperty( const Types::Property& propert
 {
     N_D( ComparisonTerm );
     d->m_property = property;
+}
+
+
+void Nepomuk::Query::ComparisonTerm::setVariableName( const QString& name )
+{
+    N_D( ComparisonTerm );
+    d->m_variableName = name;
+}
+
+
+QString Nepomuk::Query::ComparisonTerm::variableName() const
+{
+    N_D_CONST( ComparisonTerm );
+    return d->m_variableName;
+}
+
+
+void Nepomuk::Query::ComparisonTerm::setAggregateFunction( AggregateFunction function )
+{
+    N_D( ComparisonTerm );
+    d->m_aggregateFunction = function;
+}
+
+
+Nepomuk::Query::ComparisonTerm::AggregateFunction Nepomuk::Query::ComparisonTerm::aggregateFunction() const
+{
+    N_D_CONST( ComparisonTerm );
+    return d->m_aggregateFunction;
+}
+
+
+void Nepomuk::Query::ComparisonTerm::setSortWeight( int weight, Qt::SortOrder sortOrder )
+{
+    N_D( ComparisonTerm );
+    d->m_sortWeight = weight;
+    d->m_sortOrder = sortOrder;
+}
+
+
+int Nepomuk::Query::ComparisonTerm::sortWeight() const
+{
+    N_D_CONST( ComparisonTerm );
+    return d->m_sortWeight;
+}
+
+
+Qt::SortOrder Nepomuk::Query::ComparisonTerm::sortOrder() const
+{
+    N_D_CONST( ComparisonTerm );
+    return d->m_sortOrder;
 }
 
 
