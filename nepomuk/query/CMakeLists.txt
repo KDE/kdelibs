@@ -25,6 +25,7 @@ set(nepomukquery_SRC
   resourceterm.cpp
   literalterm.cpp
   resourcetypeterm.cpp
+  optionalterm.cpp
   query.cpp
   query_p.cpp
   filequery.cpp
@@ -75,6 +76,7 @@ install(FILES
   resourceterm.h
   literalterm.h
   resourcetypeterm.h
+  optionalterm.h
   query.h
   filequery.h
   result.h

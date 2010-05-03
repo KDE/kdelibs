@@ -38,6 +38,7 @@ namespace Nepomuk {
         class OrTerm;
         class ComparisonTerm;
         class ResourceTypeTerm;
+        class OptionalTerm;
 
         class TermPrivate;
 
@@ -116,7 +117,16 @@ namespace Nepomuk {
                  *
                  * \sa NegationTerm
                  */
-                Negation
+                Negation,
+
+                /**
+                 * An optional term which marks its sub term as optional.
+                 *
+                 * \sa OptionalTerm
+                 *
+                 * \since 4.5
+                 */
+                Optional
             };
 
             /**
@@ -166,6 +176,13 @@ namespace Nepomuk {
             bool isNegationTerm() const;
 
             /**
+             * \return \p true if this term is a OptionalTerm.
+             *
+             * \since 4.5
+             */
+            bool isOptionalTerm() const;
+
+            /**
              * \return \p true if this term is an AndTerm.
              */
             bool isAndTerm() const;
@@ -208,6 +225,16 @@ namespace Nepomuk {
              * is Negation, a new NegationTerm otherwise.
              */
             NegationTerm toNegationTerm() const;
+
+            /**
+             * Interpret this term as a OptionalTerm.
+             *
+             * \return A copy of this term if its type
+             * is Optional, a new OptionalTerm otherwise.
+             *
+             * \since 4.5
+             */
+            OptionalTerm toOptionalTerm() const;
 
             /**
              * Interpret this term as a AndTerm.
@@ -269,6 +296,17 @@ namespace Nepomuk {
             NegationTerm& toNegationTerm();
 
             /**
+             * Convert this term into a OptionalTerm.
+             * If type is not Optional it will be changed
+             * and the result is a new OptionalTerm.
+             *
+             * \return A reference to this term as a OptionalTerm.
+             *
+             * \since 4.5
+             */
+            OptionalTerm& toOptionalTerm();
+
+            /**
              * Convert this term into a AndTerm.
              * If type is not And it will be changed
              * and the result is a new AndTerm.
@@ -326,6 +364,7 @@ namespace Nepomuk {
             friend class OrTermPrivate;
             friend class ComparisonTermPrivate;
             friend class NegationTermPrivate;
+            friend class OptionalTermPrivate;
             friend class Query;
             /** \endcond */
         };

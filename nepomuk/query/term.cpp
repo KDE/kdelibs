@@ -24,6 +24,7 @@
 #include "andterm.h"
 #include "orterm.h"
 #include "negationterm.h"
+#include "optionalterm.h"
 #include "comparisonterm.h"
 #include "resourcetypeterm.h"
 #include "literalterm_p.h"
@@ -31,6 +32,7 @@
 #include "andterm_p.h"
 #include "orterm_p.h"
 #include "negationterm_p.h"
+#include "optionalterm_p.h"
 #include "comparisonterm_p.h"
 #include "resourcetypeterm_p.h"
 
@@ -101,6 +103,12 @@ bool Nepomuk::Query::Term::isNegationTerm() const
 }
 
 
+bool Nepomuk::Query::Term::isOptionalTerm() const
+{
+    return type() == Optional;
+}
+
+
 bool Nepomuk::Query::Term::isAndTerm() const
 {
     return type() == And;
@@ -150,6 +158,15 @@ Nepomuk::Query::NegationTerm Nepomuk::Query::Term::toNegationTerm() const
         return *static_cast<const NegationTerm*>( this );
     else
         return NegationTerm();
+}
+
+
+Nepomuk::Query::OptionalTerm Nepomuk::Query::Term::toOptionalTerm() const
+{
+    if ( isOptionalTerm() )
+        return *static_cast<const OptionalTerm*>( this );
+    else
+        return OptionalTerm();
 }
 
 
@@ -209,6 +226,12 @@ Nepomuk::Query::ResourceTerm& Nepomuk::Query::Term::toResourceTerm()
 Nepomuk::Query::NegationTerm& Nepomuk::Query::Term::toNegationTerm()
 {
     CONVERT_AND_RETURN( NegationTerm );
+}
+
+
+Nepomuk::Query::OptionalTerm& Nepomuk::Query::Term::toOptionalTerm()
+{
+    CONVERT_AND_RETURN( OptionalTerm );
 }
 
 

@@ -30,6 +30,7 @@
 #include "negationterm.h"
 #include "comparisonterm.h"
 #include "resourcetypeterm.h"
+#include "optionalterm.h"
 #include "nie.h"
 #include "nfo.h"
 #include "nco.h"
@@ -138,10 +139,8 @@ void QueryTest::testToSparql_data()
         << QString::fromLatin1("select distinct ?r where { <nepomuk:/res/foobar> %1 ?r . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
 
-    ComparisonTerm optionalTerm1( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) );
-    optionalTerm1.setOptional(true);
     QTest::newRow( "optional term" )
-        << Query(optionalTerm1)
+        << Query(OptionalTerm::optionalizeTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
         << QString::fromLatin1("select distinct ?r where { OPTIONAL { ?r %1 <nepomuk:/res/foobar> . } }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
 

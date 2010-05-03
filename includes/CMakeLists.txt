@@ -1003,6 +1003,7 @@ install(FILES
   Nepomuk/Query/Result
   Nepomuk/Query/SimpleTerm
   Nepomuk/Query/Term
+  Nepomuk/Query/OptionalTerm
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
 
 
