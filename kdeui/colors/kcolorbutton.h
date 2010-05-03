@@ -39,6 +39,7 @@ class KDEUI_EXPORT KColorButton : public QPushButton
     Q_OBJECT
     Q_PROPERTY( QColor color READ color WRITE setColor USER true )
     Q_PROPERTY( QColor defaultColor READ defaultColor WRITE setDefaultColor )
+    Q_PROPERTY( bool alphaChannelEnabled READ isAlphaChannelEnabled WRITE setAlphaChannelEnabled )
 
 public:
     /**
@@ -67,6 +68,19 @@ public:
      * Sets the current color to @p c.
      */
      void setColor( const QColor &c );
+
+     /**
+      * When set to true, allow the user to change the alpha component
+      * of the color. The default value is false.
+      * @since 4.5
+      */
+     void setAlphaChannelEnabled( bool alpha );
+
+     /**
+      * Returns true if the user is allowed to change the alpha component.
+      * @since 4.5
+      */
+     bool isAlphaChannelEnabled() const;
 
     /**
      * Returns the default color or an invalid color

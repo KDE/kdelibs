@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include <QtCore/QPointer>
 #include <QtGui/QPainter>
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QApplication>
@@ -45,6 +46,7 @@ public:
     KColorButton *q;
     QColor m_defaultColor;
     bool m_bdefaultColor : 1;
+    bool m_alphaChannel : 1;
 
     bool dragFlag : 1;
     QColor col;
@@ -58,6 +60,7 @@ KColorButton::KColorButton( QWidget *parent )
   , d( new KColorButtonPrivate(this) )
 {
   d->m_bdefaultColor = false;
+  d->m_alphaChannel = false;
   d->m_defaultColor = QColor();
   setAcceptDrops( true);
 
@@ -71,6 +74,7 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent )
 {
   d->col = c;
   d->m_bdefaultColor = false;
+  d->m_alphaChannel = false;
   d->m_defaultColor = QColor();
   setAcceptDrops( true);
 
@@ -84,6 +88,7 @@ KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget
 {
   d->col = c;
   d->m_bdefaultColor = true;
+  d->m_alphaChannel = false;
   d->m_defaultColor = defaultColor;
   setAcceptDrops( true);
 
@@ -105,9 +110,19 @@ void KColorButton::setColor( const QColor &c )
 {
   if ( d->col != c ) {
     d->col = c;
-    repaint();
+    update();
     emit changed( d->col );
   }
+}
+
+void KColorButton::setAlphaChannelEnabled( bool alpha )
+{
+    d->m_alphaChannel = alpha;
+}
+
+bool KColorButton::isAlphaChannelEnabled() const
+{
+    return d->m_alphaChannel;
 }
 
 QColor KColorButton::defaultColor() const
@@ -157,8 +172,19 @@ void KColorButton::paintEvent( QPaintEvent* )
 
   QColor fillCol = isEnabled() ? d->col : palette().color(backgroundRole());
   qDrawShadePanel( &painter, x, y, w, h, palette(), true, 1, NULL);
-  if ( fillCol.isValid() )
+  if ( fillCol.isValid() ) {
+    if ( fillCol.alpha() != 255 ) {
+      QPixmap chessboardPattern(16, 16);
+      QPainter patternPainter(&chessboardPattern);
+      patternPainter.fillRect( 0, 0, 8, 8, Qt::black);
+      patternPainter.fillRect( 8, 8, 8, 8, Qt::black);
+      patternPainter.fillRect( 0, 8, 8, 8, Qt::white);
+      patternPainter.fillRect( 8, 0, 8, 8, Qt::white);
+      patternPainter.end();
+      painter.fillRect( x+1, y+1, w-2, h-2, QBrush(chessboardPattern) );
+    }
     painter.fillRect( x+1, y+1, w-2, h-2, fillCol );
+  }
 
   if ( hasFocus() ) {
     QRect focusRect = style()->subElementRect( QStyle::SE_PushButtonFocusRect, &butOpt, this );
@@ -234,22 +260,20 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
 
 void KColorButton::KColorButtonPrivate::_k_chooseColor()
 {
-  QColor c = q->color();
-  if ( m_bdefaultColor )
-  {
-      if( KColorDialog::getColor( c, m_defaultColor, q ) != QDialog::Rejected ) {
-          if ( c.isValid() )
-              q->setColor( c );
-          else
-              q->setColor( m_defaultColor );
-      }
-  }
-  else
-  {
-      if( KColorDialog::getColor( c, q ) != QDialog::Rejected ) {
-          q->setColor( c );
-      }
-  }
+    QPointer<KColorDialog> dialog = new KColorDialog(q, true);
+    dialog->setColor(q->color());
+    if (m_bdefaultColor) {
+        dialog->setDefaultColor(m_defaultColor);
+    }
+    dialog->setAlphaChannelEnabled(m_alphaChannel);
+    if (dialog->exec() != QDialog::Rejected) {
+        if (dialog->color().isValid()) {
+            q->setColor(dialog->color());
+        } else if (m_bdefaultColor) {
+            q->setColor(m_defaultColor);
+        }
+    }
+    delete dialog;
 }
 
 
