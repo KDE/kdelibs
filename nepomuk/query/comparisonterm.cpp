@@ -298,7 +298,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilder
         if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction )
             sortVar = v;
         else
-            sortVar = QString::fromLatin1("( %1 )").arg(varInAggregateFunction(m_aggregateFunction, v));
+            sortVar = varInAggregateFunction(m_aggregateFunction, v);
     }
     if( m_sortWeight != 0 ) {
         qbd->addOrderVariable( sortVar, m_sortWeight, m_sortOrder );

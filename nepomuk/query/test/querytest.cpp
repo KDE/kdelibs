@@ -185,14 +185,14 @@ void QueryTest::testToSparql_data()
     orderByTerm1.setSortWeight( 1 );
     QTest::newRow( "order by 1" )
         << Query( orderByTerm1 )
-        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY ASC ?v1")
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY ASC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
 
     orderByTerm1.setSortWeight( 1, Qt::DescendingOrder );
     QTest::newRow( "order by 2" )
         << Query( orderByTerm1 )
-        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY DESC ?v1")
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY DESC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
 
@@ -201,7 +201,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "order by 3" )
         << Query( AndTerm( orderByTerm1, orderByTerm2 ) )
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"hello\" . } . } ORDER BY ASC ?v2 DESC ?v1")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"hello\" . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::prefLabel()) );
@@ -209,7 +209,7 @@ void QueryTest::testToSparql_data()
     orderByTerm1.setVariableName("myvar");
     QTest::newRow( "order by 4" )
         << Query( orderByTerm1 )
-        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . FILTER(?myvar<\"4\"^^%2) . } ORDER BY DESC ?myvar")
+        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . FILTER(?myvar<\"4\"^^%2) . } ORDER BY DESC ( ?myvar )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
 
@@ -237,7 +237,7 @@ void QueryTest::testToSparql_data()
     orderByTerm5.setVariableName( "myvar" );
     QTest::newRow( "order by 5 (with aggregate function and invalid subterm and varname)" )
         << Query( orderByTerm5 )
-        << QString::fromLatin1("select distinct ?r max(?v1) as ?myvar where { ?r %1 ?v1 . } ORDER BY ASC ?myvar")
+        << QString::fromLatin1("select distinct ?r max(?v1) as ?myvar where { ?r %1 ?v1 . } ORDER BY ASC ( ?myvar )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()) );
 
     orderByTerm5.setVariableName( QString() );
@@ -274,7 +274,7 @@ void QueryTest::testToSparql_data()
     QString sparql = QString::fromLatin1("select distinct ?r count(?v6) as ?cnt where { { "
                                          "{ ?r a ?v1 . ?v1 %1 %2 . } UNION { ?r a ?v2 . ?v2 %1 %3 . } . "
                                          "OPTIONAL { <nepomuk:/res/foobar> ?v4 ?v3 . FILTER(?v3=?r) . } . FILTER(!BOUND(?v3)) . "
-                                         "?r ?v5 ?v6 . } . } ORDER BY DESC ?cnt")
+                                         "?r ?v5 ?v6 . } . } ORDER BY DESC ( ?cnt )")
                      .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Audio()));

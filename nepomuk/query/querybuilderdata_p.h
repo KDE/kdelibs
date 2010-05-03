@@ -87,7 +87,7 @@ namespace Nepomuk {
                         s += QLatin1String("DESC ");
                     else
                         s += QLatin1String("ASC ");
-                    s += m_orderVariables[i].name;
+                    s += QString::fromLatin1("( %1 )").arg(m_orderVariables[i].name);
                     s += ' ';
                 }
                 return s;
