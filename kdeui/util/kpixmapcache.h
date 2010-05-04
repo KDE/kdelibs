@@ -78,6 +78,8 @@ class QPixmap;
  * a QDataStream API for subclasses). Users should port to KImageCache for a very close
  * work-alike, or KSharedDataCache if they need more control.
  *
+ * @see KImageCache, KSharedDataCache
+ *
  * @author Rivo Laks
  */
 class KDEUI_EXPORT KPixmapCache
