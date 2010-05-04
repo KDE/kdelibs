@@ -157,6 +157,43 @@ void TestKConfUpdate::test_data()
         <<
         ""
         ;
+    QTest::newRow("allKeysSubGroup")
+        <<
+        "File=testrc\n"
+        "Group=[group][sub1],[group][sub2]\n"
+        "AllKeys\n"
+        <<
+        "testrc"
+        <<
+        "[group][sub1]\n"
+        "key1=value1\n"
+        "key2=value2\n"
+        "\n"
+        "[group][sub1][subsub]\n"
+        "key3=value3\n"
+        "key4=value4\n"
+        "\n"
+        "[stay]\n"
+        "foo=bar\n"
+        <<
+        "testrc"
+        <<
+        "[$Version]\n"
+        "update_info=%1\n"
+        "\n"
+        "[group][sub2]\n"
+        "key1=value1\n"
+        "key2=value2\n"
+        "\n"
+        "[group][sub2][subsub]\n"
+        "key3=value3\n"
+        "key4=value4\n"
+        "\n"
+        "[stay]\n"
+        "foo=bar\n"
+        <<
+        ""
+        ;
     QTest::newRow("removeGroup")
         <<
         "File=testrc\n"
@@ -245,18 +282,48 @@ void TestKConfUpdate::testScript_data()
         "valid=bar\n"
         ;
 
+    QTest::newRow("delete-key2")
+        <<
+        "File=testrc\n"
+        "Script=test.sh,sh\n"
+        <<
+        "echo '# DELETE [group]deprecated'\n"
+        "echo '# DELETE [group][sub]deprecated2'\n"
+        <<
+        "[group]\n"
+        "deprecated=foo\n"
+        "valid=bar\n"
+        "\n"
+        "[group][sub]\n"
+        "deprecated2=foo\n"
+        "valid2=bar\n"
+        <<
+        "[$Version]\n"
+        "update_info=%1\n"
+        "\n"
+        "[group]\n"
+        "valid=bar\n"
+        "\n"
+        "[group][sub]\n"
+        "valid2=bar\n"
+        ;
+
     QTest::newRow("delete-group")
         <<
         "File=testrc\n"
         "Script=test.sh,sh\n"
         <<
         "echo '# DELETEGROUP [group1]'\n"
+        "echo '# DELETEGROUP [group2][sub]'\n"
         <<
         "[group1]\n"
         "key=value\n"
         "\n"
         "[group2]\n"
         "valid=bar\n"
+        "\n"
+        "[group2][sub]\n"
+        "key=value\n"
         <<
         "[$Version]\n"
         "update_info=%1\n"
@@ -342,6 +409,44 @@ void TestKConfUpdate::testScript_data()
         "existing=new\n"
         ;
 
+    QTest::newRow("new-key-in-subgroup")
+        <<
+        "File=testrc\n"
+        "Script=test.sh,sh\n"
+        <<
+        "echo '[group][sub]'\n"
+        "echo 'new=value2'\n"
+        <<
+        "[group][sub]\n"
+        "existing=foo\n"
+        <<
+        "[$Version]\n"
+        "update_info=%1\n"
+        "\n"
+        "[group][sub]\n"
+        "existing=foo\n"
+        "new=value2\n"
+        ;
+
+    QTest::newRow("new-key-in-subgroup2")
+        <<
+        "File=testrc\n"
+        "Script=test.sh,sh\n"
+        <<
+        "echo '[group][sub]'\n"
+        "echo 'new=value3'\n"
+        <<
+        "[group][sub]\n"
+        "existing=foo\n"
+        <<
+        "[$Version]\n"
+        "update_info=%1\n"
+        "\n"
+        "[group][sub]\n"
+        "existing=foo\n"
+        "new=value3\n"
+        ;
+
     QTest::newRow("filter")
         <<
         "File=testrc\n"
@@ -358,6 +463,32 @@ void TestKConfUpdate::testScript_data()
         "update_info=%1\n"
         "\n"
         "[group]\n"
+        "changed=VALUE\n"
+        "unchanged=value\n"
+        ;
+
+    QTest::newRow("filter-subgroup")
+        <<
+        "File=testrc\n"
+        "Script=test.sh,sh\n"
+        <<
+        "echo '# DELETE [group][sub]changed'\n"
+        "sed s/value/VALUE/\n"
+        <<
+        "[group]\n"
+        "unchanged=value\n"
+        "\n"
+        "[group][sub]\n"
+        "changed=value\n"
+        "unchanged=value\n"
+        <<
+        "[$Version]\n"
+        "update_info=%1\n"
+        "\n"
+        "[group]\n"
+        "unchanged=value\n"
+        "\n"
+        "[group][sub]\n"
         "changed=VALUE\n"
         "unchanged=value\n"
         ;

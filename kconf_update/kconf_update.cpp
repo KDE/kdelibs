@@ -31,6 +31,7 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
@@ -39,6 +40,8 @@
 #include <kcomponentdata.h>
 #include <ktemporaryfile.h>
 #include <kurl.h>
+
+#include "kconfigutils.h"
 
 class KonfUpdate
 {
@@ -68,8 +71,13 @@ public:
     void gotScriptArguments(const QString &_arguments);
     void resetOptions();
 
-    void copyGroup(KConfig *cfg1, const QString &group1,
-                   KConfig *cfg2, const QString &group2);
+    void copyGroup(const KConfigBase *cfg1, const QString &group1,
+                   KConfigBase *cfg2, const QString &group2);
+    void copyGroup(const KConfigGroup &cg1, KConfigGroup &cg2);
+    void copyOrMoveKey(const QStringList &srcGroupPath, const QString &srcKey, const QStringList &dstGroupPath, const QString &dstKey);
+    void copyOrMoveGroup(const QStringList &srcGroupPath, const QStringList &dstGroupPath);
+
+    QStringList parseGroupString(const QString &_str);
 
 protected:
     KConfig *m_config;
@@ -86,8 +94,8 @@ protected:
     KConfig *m_oldConfig2; // Config to delete keys from.
     KConfig *m_newConfig;
 
-    QString m_oldGroup;
-    QString m_newGroup;
+    QStringList m_oldGroup;
+    QStringList m_newGroup;
 
     bool m_bCopy;
     bool m_bOverwrite;
@@ -164,6 +172,12 @@ KonfUpdate::~KonfUpdate()
     delete m_config;
     delete m_file;
     delete m_textStream;
+}
+
+QTextStream & operator<<(QTextStream & stream, const QStringList & lst)
+{
+    stream << lst.join(", ");
+    return stream;
 }
 
 QTextStream &
@@ -508,32 +522,49 @@ void KonfUpdate::gotFile(const QString &_file)
     }
 }
 
+QStringList KonfUpdate::parseGroupString(const QString &str)
+{
+    bool ok;
+    QString error;
+    QStringList lst = KConfigUtils::parseGroupString(str, &ok, &error);
+    if (!ok) {
+        logFileError() << error;
+    }
+    return lst;
+}
+
 void KonfUpdate::gotGroup(const QString &_group)
 {
-    int i = _group.indexOf(',');
-    if (i == -1) {
-        m_oldGroup = _group.trimmed();
+    QString group = _group.trimmed();
+    if (group.isEmpty()) {
+        m_oldGroup = m_newGroup = QStringList();
+        return;
+    }
+
+    QStringList tokens = group.split(',');
+    m_oldGroup = parseGroupString(tokens.at(0));
+    if (tokens.count() == 1) {
         m_newGroup = m_oldGroup;
     } else {
-        m_oldGroup = _group.left(i).trimmed();
-        m_newGroup = _group.mid(i + 1).trimmed();
+        m_newGroup = parseGroupString(tokens.at(1));
     }
 }
 
 void KonfUpdate::gotRemoveGroup(const QString &_group)
 {
-    m_oldGroup = _group.trimmed();
+    m_oldGroup = parseGroupString(_group);
 
     if (!m_oldConfig1) {
         logFileError() << "RemoveGroup without previous File specification" << endl;
         return;
     }
 
-    if (!m_oldConfig1->hasGroup(m_oldGroup)) {
+    KConfigGroup cg = KConfigUtils::openGroup(m_oldConfig2, m_oldGroup);
+    if (!cg.exists()) {
         return;
     }
     // Delete group.
-    m_oldConfig2->deleteGroup(m_oldGroup);
+    cg.deleteGroup();
     log() << m_currentFilename << ": RemoveGroup removes group " << m_oldFile << ":" << m_oldGroup << endl;
 }
 
@@ -558,35 +589,51 @@ void KonfUpdate::gotKey(const QString &_key)
         logFileError() << "Key without previous File specification" << endl;
         return;
     }
-    KConfigGroup cg1(m_oldConfig1, m_oldGroup);
-    if (!cg1.hasKey(oldKey)) {
+    copyOrMoveKey(m_oldGroup, oldKey, m_newGroup, newKey);
+}
+
+void KonfUpdate::copyOrMoveKey(const QStringList &srcGroupPath, const QString &srcKey, const QStringList &dstGroupPath, const QString &dstKey)
+{
+    KConfigGroup dstCg = KConfigUtils::openGroup(m_newConfig, dstGroupPath);
+    if (!m_bOverwrite && dstCg.hasKey(dstKey)) {
+        log() << m_currentFilename << ": Skipping " << m_newFileName << ":" << dstCg.name() << ":" << dstKey << ", already exists." << endl;
         return;
     }
-    QString value = cg1.readEntry(oldKey, QString());
-    KConfigGroup newFGroup(m_newConfig, m_newGroup);
-    if (!m_bOverwrite && newFGroup.hasKey(newKey)) {
-        log() << m_currentFilename << ": Skipping " << m_newFileName << ":" << m_newGroup << ":" << newKey << ", already exists." << endl;
-        return;
-    }
-    log() << m_currentFilename << ": Updating " << m_newFileName << ":" << m_newGroup << ":" << newKey << " to '" << value << "'" << endl;
-    newFGroup.writeEntry(newKey, value);
+
+    KConfigGroup srcCg = KConfigUtils::openGroup(m_oldConfig1, srcGroupPath);
+    QString value = srcCg.readEntry(srcKey, QString());
+    log() << m_currentFilename << ": Updating " << m_newFileName << ":" << dstCg.name() << ":" << dstKey << " to '" << value << "'" << endl;
+    dstCg.writeEntry(dstKey, value);
 
     if (m_bCopy) {
         return; // Done.
     }
 
     // Delete old entry
-    if ((m_oldConfig2 == m_newConfig) &&
-            (m_oldGroup == m_newGroup) &&
-            (oldKey == newKey)) {
+    if (m_oldConfig2 == m_newConfig
+        && srcGroupPath == dstGroupPath
+        && srcKey == dstKey) {
         return; // Don't delete!
     }
-    KConfigGroup oldGroup2(m_oldConfig2, m_oldGroup);
-    oldGroup2.deleteEntry(oldKey);
-    log() << m_currentFilename << ": Removing " << m_oldFile << ":" << m_oldGroup << ":" << oldKey << ", moved." << endl;
-    /*if (m_oldConfig2->deleteGroup(m_oldGroup, KConfig::Normal)) { // Delete group if empty.
-       log() << m_currentFilename << ": Removing empty group " << m_oldFile << ":" << m_oldGroup << endl;
-    }  (this should be automatic)  */
+    KConfigGroup srcCg2 = KConfigUtils::openGroup(m_oldConfig2, srcGroupPath);
+    srcCg2.deleteEntry(srcKey);
+    log() << m_currentFilename << ": Removing " << m_oldFile << ":" << srcCg2.name() << ":" << srcKey << ", moved." << endl;
+}
+
+void KonfUpdate::copyOrMoveGroup(const QStringList &srcGroupPath, const QStringList &dstGroupPath)
+{
+    KConfigGroup cg = KConfigUtils::openGroup(m_oldConfig1, srcGroupPath);
+
+    // Keys
+    Q_FOREACH(const QString &key, cg.keyList()) {
+        copyOrMoveKey(srcGroupPath, key, dstGroupPath, key);
+    }
+
+    // Subgroups
+    Q_FOREACH(const QString &group, cg.groupList()) {
+        QStringList groupPath = QStringList() << group;
+        copyOrMoveGroup(srcGroupPath + groupPath, dstGroupPath + groupPath);
+    }
 }
 
 void KonfUpdate::gotRemoveKey(const QString &_key)
@@ -603,14 +650,14 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
         return;
     }
 
-    KConfigGroup cg1(m_oldConfig1, m_oldGroup);
+    KConfigGroup cg1 = KConfigUtils::openGroup(m_oldConfig1, m_oldGroup);
     if (!cg1.hasKey(key)) {
         return;
     }
     log() << m_currentFilename << ": RemoveKey removes " << m_oldFile << ":" << m_oldGroup << ":" << key << endl;
 
     // Delete old entry
-    KConfigGroup cg2(m_oldConfig2, m_oldGroup);
+    KConfigGroup cg2 = KConfigUtils::openGroup(m_oldConfig2, m_oldGroup);
     cg2.deleteEntry(key);
     /*if (m_oldConfig2->deleteGroup(m_oldGroup, KConfig::Normal)) { // Delete group if empty.
        log() << m_currentFilename << ": Removing empty group " << m_oldFile << ":" << m_oldGroup << endl;
@@ -624,11 +671,7 @@ void KonfUpdate::gotAllKeys()
         return;
     }
 
-    QMap<QString, QString> list = m_oldConfig1->entryMap(m_oldGroup);
-    for (QMap<QString, QString>::Iterator it = list.begin();
-            it != list.end(); ++it) {
-        gotKey(it.key());
-    }
+    copyOrMoveGroup(m_oldGroup, m_newGroup);
 }
 
 void KonfUpdate::gotAllGroups()
@@ -641,7 +684,7 @@ void KonfUpdate::gotAllGroups()
     const QStringList allGroups = m_oldConfig1->groupList();
     for (QStringList::ConstIterator it = allGroups.begin();
             it != allGroups.end(); ++it) {
-        m_oldGroup = *it;
+        m_oldGroup = QStringList() << *it;
         m_newGroup = m_oldGroup;
         gotAllKeys();
     }
@@ -663,15 +706,28 @@ void KonfUpdate::gotOptions(const QString &_options)
     }
 }
 
-void KonfUpdate::copyGroup(KConfig *cfg1, const QString &group1,
-                           KConfig *cfg2, const QString &group2)
+void KonfUpdate::copyGroup(const KConfigBase *cfg1, const QString &group1,
+                           KConfigBase *cfg2, const QString &group2)
 {
     KConfigGroup cg1(cfg1, group1);
     KConfigGroup cg2(cfg2, group2);
+    copyGroup(cg1, cg2);
+}
+
+void KonfUpdate::copyGroup(const KConfigGroup &cg1, KConfigGroup &cg2)
+{
+    // Copy keys
     QMap<QString, QString> list = cg1.entryMap();
-    for (QMap<QString, QString>::Iterator it = list.begin();
-            it != list.end(); ++it) {
-        cg2.writeEntry(it.key(), cg1.readEntry(it.key(), QString()));
+    for (QMap<QString, QString>::ConstIterator it = list.constBegin();
+            it != list.constEnd(); ++it) {
+        if (m_bOverwrite || !cg2.hasKey(it.key())) {
+            cg2.writeEntry(it.key(), it.value());
+        }
+    }
+
+    // Copy subgroups
+    Q_FOREACH(const QString &group, cg1.groupList()) {
+        copyGroup(&cg1, group, &cg2, group);
     }
 }
 
@@ -755,7 +811,9 @@ void KonfUpdate::gotScript(const QString &_script)
                 copyGroup(m_oldConfig1, *it, &cfg, *it);
             }
         } else {
-            copyGroup(m_oldConfig1, m_oldGroup, &cfg, QString());
+            KConfigGroup cg1 = KConfigUtils::openGroup(m_oldConfig1, m_oldGroup);
+            KConfigGroup cg2(&cfg, QString());
+            copyGroup(cg1, cg2);
         }
         cfg.sync();
         result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.fileName(), tmp2.fileName(), tmp3.fileName())));
@@ -793,7 +851,7 @@ void KonfUpdate::gotScript(const QString &_script)
 
     // Deleting old entries
     {
-        QString group = m_oldGroup;
+        QStringList group = m_oldGroup;
         QFile output(tmp2.fileName());
         if (output.open(QIODevice::ReadOnly)) {
             QTextStream ts(&output);
@@ -801,34 +859,29 @@ void KonfUpdate::gotScript(const QString &_script)
             while (!ts.atEnd()) {
                 QString line = ts.readLine();
                 if (line.startsWith('[')) {
-                    int j = line.indexOf(']') + 1;
-                    if (j > 0) {
-                        group = line.mid(1, j - 2);
-                    }
+                    group = parseGroupString(line);
                 } else if (line.startsWith(QLatin1String("# DELETE "))) {
                     QString key = line.mid(9);
                     if (key[0] == '[') {
-                        int j = key.indexOf(']') + 1;
+                        int j = key.lastIndexOf(']') + 1;
                         if (j > 0) {
-                            group = key.mid(1, j - 2);
+                            group = parseGroupString(key.left(j));
                             key = key.mid(j);
                         }
                     }
-                    KConfigGroup cg(m_oldConfig2, group);
+                    KConfigGroup cg = KConfigUtils::openGroup(m_oldConfig2, group);
                     cg.deleteEntry(key);
                     log() << m_currentFilename << ": Script removes " << m_oldFile << ":" << group << ":" << key << endl;
                     /*if (m_oldConfig2->deleteGroup(group, KConfig::Normal)) { // Delete group if empty.
                        log() << m_currentFilename << ": Removing empty group " << m_oldFile << ":" << group << endl;
                     } (this should be automatic)*/
                 } else if (line.startsWith(QLatin1String("# DELETEGROUP"))) {
-                    QString key = line.mid(13).trimmed();
-                    if (key[0] == '[') {
-                        int j = key.indexOf(']') + 1;
-                        if (j > 0) {
-                            group = key.mid(1, j - 2);
-                        }
+                    QString str = line.mid(13).trimmed();
+                    if (!str.isEmpty()) {
+                        group = parseGroupString(str);
                     }
-                    m_oldConfig2->deleteGroup(group);
+                    KConfigGroup cg = KConfigUtils::openGroup(m_oldConfig2, group);
+                    cg.deleteGroup();
                     log() << m_currentFilename << ": Script removes group " << m_oldFile << ":" << group << endl;
                 }
             }
@@ -836,28 +889,18 @@ void KonfUpdate::gotScript(const QString &_script)
     }
 
     // Merging in new entries.
-    m_bCopy = true;
-    {
-        KConfig *saveOldConfig1 = m_oldConfig1;
-        QString saveOldGroup = m_oldGroup;
-        QString saveNewGroup = m_newGroup;
-        m_oldConfig1 = new KConfig(tmp2.fileName(), KConfig::NoGlobals);
-
-        // For all groups...
-        const QStringList grpList = m_oldConfig1->groupList();
-        for (QStringList::ConstIterator it = grpList.begin();
-                it != grpList.end();
-                ++it) {
-            m_oldGroup = *it;
-            if (m_oldGroup != "<default>") {
-                m_newGroup = m_oldGroup;
-            }
-            gotAllKeys(); // Copy all keys
-        }
-        delete m_oldConfig1;
-        m_oldConfig1 = saveOldConfig1;
-        m_oldGroup = saveOldGroup;
-        m_newGroup = saveNewGroup;
+    KConfig tmp2Config(tmp2.fileName(), KConfig::NoGlobals);
+    if (m_newGroup.isEmpty()) {
+        // Copy "default" keys as members of "default" keys
+        copyGroup(&tmp2Config, QString(), m_newConfig, QString());
+    } else {
+        // Copy default keys as members of m_newGroup
+        KConfigGroup srcCg = KConfigUtils::openGroup(&tmp2Config, QStringList());
+        KConfigGroup dstCg = KConfigUtils::openGroup(m_newConfig, m_newGroup);
+        copyGroup(srcCg, dstCg);
+    }
+    Q_FOREACH(const QString &group, tmp2Config.groupList()) {
+        copyGroup(&tmp2Config, group, m_newConfig, group);
     }
 }
 

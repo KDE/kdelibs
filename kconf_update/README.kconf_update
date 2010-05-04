@@ -111,6 +111,8 @@ Specifies that configuration information is read from the group <oldgroup>
 and written to <newgroup>. If you only specify <oldgroup>, the information
 is read from as well as written to <oldgroup>. You can use <default> to
 specify keys that are not under any group.
+A group may be written either as "group" or as "[group]". The latter syntax
+makes it possible to specify subgroups: "[group][subgroup]".
 
 RemoveGroup=<oldgroup>
 

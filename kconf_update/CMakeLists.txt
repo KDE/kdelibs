@@ -6,7 +6,10 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 ########### next target ###############
 
-set(kconf_update_KDEINIT_SRCS kconf_update.cpp )
+set(kconf_update_KDEINIT_SRCS
+    kconf_update.cpp
+    kconfigutils.cpp
+    )
 
 
 kde4_add_kdeinit_executable( kconf_update NOGUI ${kconf_update_KDEINIT_SRCS})
