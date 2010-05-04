@@ -178,8 +178,17 @@ public:
 QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
   if (element == SE_LineEditContents) {
+      KLineEditStyle *unconstThis = const_cast<KLineEditStyle *>(this);
+
+    if (m_sentinal) {
+        // we are recursing: we're wrapping a style that wraps us!
+        unconstThis->m_subStyle.clear();
+    }
+
+    unconstThis->m_sentinal = true;
     QStyle *s = m_subStyle ? m_subStyle.data() : style();
     QRect rect = s->subElementRect(SE_LineEditContents, option, widget);
+    unconstThis->m_sentinal = false;
 
     if (option->direction == Qt::LeftToRight) {
         return rect.adjusted(0, 0, -m_overlap, 0);

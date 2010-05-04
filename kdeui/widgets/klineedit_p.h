@@ -174,7 +174,8 @@ class KLineEditStyle : public KdeUiProxyStyle
 public:
   KLineEditStyle(KLineEdit *parent)
     : KdeUiProxyStyle(parent),
-      m_overlap(0)
+      m_overlap(0),
+      m_sentinal(false)
   {
   }
 
@@ -182,6 +183,7 @@ public:
 
   int m_overlap;
   QWeakPointer<QStyle> m_subStyle;
+  bool m_sentinal;
 };
 
 #endif
