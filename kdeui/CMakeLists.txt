@@ -118,6 +118,7 @@ set(kdeui_LIB_SRCS
  itemviews/kcategorizedsortfilterproxymodel.cpp
  itemviews/kcategorizedview.cpp
  itemviews/kcategorydrawer.cpp
+ itemviews/kmodelindexproxymapper.cpp
  itemviews/kwidgetitemdelegate.cpp
  itemviews/kwidgetitemdelegatepool.cpp
  # This requires patches which are not yet in Qt. Disabled for now.
@@ -489,6 +490,7 @@ install( FILES
  itemviews/kcategorizedsortfilterproxymodel.h
  itemviews/kcategorizedview.h
  itemviews/kcategorydrawer.h
+ itemviews/kmodelindexproxymapper.h
  itemviews/kwidgetitemdelegate.h
 #  itemviews/kreparentingproxymodel.h
  itemviews/kselectionproxymodel.h

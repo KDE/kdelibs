@@ -23,6 +23,8 @@
 #include <QtCore/QStringList>
 #include <QtGui/QItemSelectionRange>
 
+#include "kmodelindexproxymapper.h"
+
 #include "kdebug.h"
 
 class KSelectionProxyModelPrivate
@@ -48,7 +50,7 @@ public:
   QItemSelectionModel *m_selectionModel;
   QList<QPersistentModelIndex> m_rootIndexList;
 
-  QList<const QAbstractProxyModel *> m_proxyChain;
+  KModelIndexProxyMapper *m_indexMapper;
 
   void sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
   void sourceRowsInserted(const QModelIndex &parent, int start, int end);
@@ -84,11 +86,6 @@ public:
     covered by @sourceParent, @p start and @p end.
   */
   QPair<int, int> getRootRange(const QModelIndex &sourceParent, int start, int end) const;
-
-  /**
-  Traverses the proxy models between the selectionModel and the sourceModel. Creating a chain as it goes.
-  */
-  void createProxyChain();
 
   /**
   When items are inserted or removed in the m_startWithChildTrees configuration,
@@ -343,7 +340,6 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 void KSelectionProxyModelPrivate::resetInternalData()
 {
   m_rootIndexList.clear();
-  m_proxyChain.clear();
   m_layoutChangePersistentIndexes.clear();
   m_pendingMoves.clear();
 }
@@ -380,7 +376,6 @@ void KSelectionProxyModelPrivate::sourceModelReset()
   resetInternalData();
   m_selectionModel->clearSelection();
   m_resetting = false;
-  createProxyChain();
   q->endResetModel();
 }
 
@@ -1256,40 +1251,6 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
   }
 }
 
-void KSelectionProxyModelPrivate::createProxyChain()
-{
-  Q_Q(KSelectionProxyModel);
-
-  const QAbstractItemModel *model = m_selectionModel->model();
-  const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(model);
-
-  const QAbstractProxyModel *nextProxyModel;
-
-  if (!proxyModel)
-  {
-    Q_ASSERT(model == q->sourceModel());
-    return;
-  }
-
-  while (proxyModel)
-  {
-    if (proxyModel == q->sourceModel())
-      break;
-
-    m_proxyChain << proxyModel;
-
-    nextProxyModel = qobject_cast<const QAbstractProxyModel*>(proxyModel->sourceModel());
-
-    if (!nextProxyModel)
-    {
-      // It's the final model in the chain, so it is necessarily the sourceModel.
-      Q_ASSERT(qobject_cast<QAbstractItemModel*>(proxyModel->sourceModel()) == q->sourceModel());
-      break;
-    }
-    proxyModel = nextProxyModel;
-  }
-}
-
 QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &selection) const
 {
   QModelIndexList parents;
@@ -1314,18 +1275,7 @@ QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &
 
 QModelIndex KSelectionProxyModelPrivate::selectionIndexToSourceIndex(const QModelIndex &index) const
 {
-  QModelIndex seekIndex = index;
-  QListIterator<const QAbstractProxyModel*> i(m_proxyChain);
-
-  while (i.hasNext())
-  {
-    const QAbstractProxyModel *proxy = i.next();
-    Q_ASSERT(seekIndex.model() == proxy);
-    seekIndex = proxy->mapToSource(seekIndex);
-  }
-
-  Q_ASSERT(seekIndex.model() == q_func()->sourceModel());
-  return seekIndex;
+  return m_indexMapper->mapRightToLeft(index);
 }
 
 bool KSelectionProxyModelPrivate::isInModel(const QModelIndex &sourceIndex) const
@@ -1467,7 +1417,7 @@ void KSelectionProxyModel::setSourceModel( QAbstractItemModel *_sourceModel )
   QAbstractProxyModel::setSourceModel(_sourceModel);
   if (_sourceModel)
   {
-    d->createProxyChain();
+    d->m_indexMapper = new KModelIndexProxyMapper(_sourceModel, d->m_selectionModel->model(), this);
     if (d->m_selectionModel->hasSelection())
       d->selectionChanged(d->m_selectionModel->selection(), QItemSelection());
 

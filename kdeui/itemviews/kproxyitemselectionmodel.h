@@ -105,15 +105,6 @@ public:
     /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
     /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command);
 
-private:
-    /**
-      Maps the @p sourceIndex though the proxy models to a selection in the proxySelector
-    */
-    QItemSelection mapSelectionFromSource(const QModelIndex &sourceIndex) const;
-    QItemSelection mapSelectionFromSource(const QItemSelection &sourceSelection) const;
-    QItemSelection mapSelectionToSource(const QModelIndex &sourceIndex) const;
-    QItemSelection mapSelectionToSource(const QItemSelection &sourceSelection) const;
-
 private slots:
     void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
