@@ -614,6 +614,8 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         if(childID == ID_OPTION) return true;
         return false;
     case ID_OPTION:
+        if(childID == ID_SCRIPT) return true;
+        // fallthrough intentional
     case ID_TEXTAREA:
     case ID_TITLE:
     case ID_STYLE:
