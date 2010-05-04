@@ -30,7 +30,6 @@
 #include <QtCore/QtGlobal>
 #include <QtGui/QPainter>
 #include <QtCore/QQueue>
-#include <QtCore/QThread>
 #include <QtCore/QTimer>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
@@ -349,45 +348,6 @@ public:
     {
         return a.lastused > b.lastused;
     }
-
-    // Helper class to run the possibly expensive removeEntries() operation in
-    //  the background thread
-    class RemovalThread : public QThread
-    {
-    public:
-        RemovalThread(KPixmapCache::Private* _d) : QThread()
-        {
-            d = _d;
-            mRemovalScheduled = false;
-        }
-        ~RemovalThread()
-        {
-        }
-
-        void scheduleRemoval(int newsize)
-        {
-            mNewSize = newsize;
-            if (!mRemovalScheduled) {
-                QTimer::singleShot(5000, this, SLOT(start()));
-                mRemovalScheduled = true;
-            }
-        }
-
-    protected:
-        virtual void run()
-        {
-            mRemovalScheduled = false;
-            kDebug(264) << "starting";
-            d->removeEntries(mNewSize);
-            kDebug(264) << "done";
-        }
-
-    private:
-        bool mRemovalScheduled;
-        int mNewSize;
-        KPixmapCache::Private* d;
-    };
-    RemovalThread* mRemovalThread;
 };
 
 // List of KPixmapCache::Private instances.
@@ -399,7 +359,6 @@ KPixmapCache::Private::Private(KPixmapCache* _q)
 {
     q = _q;
     mCaches.append(this);
-    mRemovalThread = 0;
     mThisString = QString("%1").arg(kpcNumber++);
 }
 
@@ -866,15 +825,6 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
     }
 }
 
-bool KPixmapCache::Private::scheduleRemoveEntries(int newsize)
-{
-    if (!mRemovalThread) {
-        mRemovalThread = new RemovalThread(this);
-    }
-    mRemovalThread->scheduleRemoval(newsize);
-    return true;
-}
-
 bool KPixmapCache::Private::removeEntries(int newsize)
 {
     KPCLockFile lock(mLockFileName);
@@ -1044,10 +994,6 @@ KPixmapCache::KPixmapCache(const QString& name)
 KPixmapCache::~KPixmapCache()
 {
     d->unmmapFiles();
-    if (d->mRemovalThread) {
-        d->mRemovalThread->wait();
-        delete d->mRemovalThread;
-    }
     delete d;
 }
 
@@ -1188,11 +1134,9 @@ void KPixmapCache::setCacheLimit(int kbytes)
     // if we are initialized, let's make sure that we are actually within
     // our limits.
     if (d->mInited && d->mCacheLimit && size() > d->mCacheLimit) {
-        if (size() > (int)(d->mCacheLimit * 1.2)) {
+        if (size() > (int)(d->mCacheLimit)) {
             // Can't wait any longer, do it immediately
-            d->removeEntries(d->mCacheLimit * 0.75);
-        } else {
-            d->scheduleRemoveEntries(int(d->mCacheLimit * 0.75));
+            d->removeEntries(d->mCacheLimit * 0.65);
         }
     }
 }
@@ -1448,11 +1392,9 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     // Make sure the cache size stays within limits
     if (d->mCacheLimit && size() > d->mCacheLimit) {
         lock.unlock();
-        if (size() > (int)(d->mCacheLimit * 1.2)) {
+        if (size() > (int)(d->mCacheLimit)) {
             // Can't wait any longer, do it immediately
-            d->removeEntries(d->mCacheLimit * 0.75);
-        } else {
-            d->scheduleRemoveEntries(int(d->mCacheLimit * 0.75));
+            d->removeEntries(d->mCacheLimit * 0.65);
         }
     }
 }
