@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <QtGui/QButtonGroup>
 #include <QtGui/QCheckBox>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QRadioButton>
@@ -50,9 +51,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPushButton>
 #include <QtGui/QScrollBar>
-#include <QtGui/QDoubleSpinBox>
 #include <QtCore/QTimer>
-#include <QtGui/QDoubleValidator>
 
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -65,6 +64,7 @@
 #include <klistwidget.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <knuminput.h>
 #include <kseparator.h>
 #include <kstandarddirs.h>
 #include <kcolorcollection.h>
@@ -92,11 +92,11 @@
 using KDEPrivate::KColorTable;
 
 struct ColorCollectionNameType {
-    const char* m_fileName;
-    const char* m_displayName;
+    const char* const m_fileName;
+    const char* const m_displayName;
 };
 
-const ColorCollectionNameType colorCollectionName[] = {
+static const ColorCollectionNameType colorCollectionName[] = {
     { "Recent_Colors", I18N_NOOP2("palette name", "* Recent Colors *") },
     { "Custom_Colors", I18N_NOOP2("palette name", "* Custom Colors *") },
     { "40.colors",     I18N_NOOP2("palette name", "Forty Colors") },
@@ -107,29 +107,11 @@ const ColorCollectionNameType colorCollectionName[] = {
     { 0, 0 } // end of data
 };
 
-static const int recentColorIndex = 0;
-static const int customColorIndex = 1;
-static const int fortyColorIndex = 2;
-
-class KColorSpinBox : public QSpinBox
+enum ColorCollectionIndices
 {
-public:
-    KColorSpinBox(int minValue, int maxValue, int step, QWidget* parent)
-            : QSpinBox(parent) {
-        setRange(minValue, maxValue); setSingleStep(step);
-    }
-
-
-    // Override Qt's braindead auto-selection.
-    //XXX KDE4 : check this is no more necessary , was disabled to port to Qt4 //mikmak
-    /*
-    virtual void valueChange()
-    {
-        updateDisplay();
-        emit valueChanged( value() );
-        emit valueChanged( currentValueText() );
-    }*/
-
+    recentColorIndex,
+    customColorIndex,
+    fortyColorIndex
 };
 
 //-----------------------------------------------------------------------------
@@ -952,15 +934,7 @@ public:
     void slotHSChanged(int, int);
     void slotVChanged(int);
     void slotAChanged(int);
-
-    void setHMode();
-    void setSMode();
-    void setVMode();
-    void setRMode();
-    void setGMode();
-    void setBMode();
-
-    void updateModeButtons();
+    void slotModeChanged(int);
 
     void slotColorSelected(const QColor &col);
     void slotColorSelected(const QColor &col, const QString &name);
@@ -994,25 +968,20 @@ public:
     bool bAlphaEnabled;
     QLabel *colorName;
     KLineEdit *htmlName;
-    KColorSpinBox *hedit;
-    KColorSpinBox *sedit;
-    KColorSpinBox *vedit;
-    KColorSpinBox *redit;
-    KColorSpinBox *gedit;
-    KColorSpinBox *bedit;
+    KIntSpinBox *hedit;
+    KIntSpinBox *sedit;
+    KIntSpinBox *vedit;
+    KIntSpinBox *redit;
+    KIntSpinBox *gedit;
+    KIntSpinBox *bedit;
     QWidget *alphaLabel;
-    KColorSpinBox *aedit;
-    QRadioButton *hmode;
-    QRadioButton *smode;
-    QRadioButton *vmode;
-    QRadioButton *rmode;
-    QRadioButton *gmode;
-    QRadioButton *bmode;
+    KIntSpinBox *aedit;
 
     KColorPatch *patch;
     KColorPatch *comparePatch;
 
     KColorChooserMode _mode;
+    QButtonGroup *modeGroup;
 
     KHueSaturationSelector *hsSelector;
     KColorCollection *palette;
@@ -1124,85 +1093,92 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     QGridLayout *l_lbot = new QGridLayout();
     l_left->addLayout(l_lbot);
 
+    // button group that manages the radio buttons
+    QRadioButton *modeButton;
+    d->modeGroup = new QButtonGroup(page);
+    connect(d->modeGroup, SIGNAL(buttonClicked(int)), SLOT(slotModeChanged(int)));
+
     //
     // add the HSV fields
     //
     l_lbot->setColumnStretch(2, 10);
 
-    d->hmode = new QRadioButton(i18n("Hue:"), page);
-    l_lbot->addWidget(d->hmode, 0, 0);
+    modeButton = new QRadioButton(i18n("Hue:"), page);
+    l_lbot->addWidget(modeButton, 0, 0);
+    d->modeGroup->addButton(modeButton, ChooserHue);
 
-    d->hedit = new KColorSpinBox(0, 359, 1, page);
+    d->hedit = new KIntSpinBox(page);
+    d->hedit->setMaximum(359);
     l_lbot->addWidget(d->hedit, 0, 1);
     connect(d->hedit, SIGNAL(valueChanged(int)),
             SLOT(slotHSVChanged()));
-    connect(d->hmode, SIGNAL(clicked()),
-            SLOT(setHMode()));
 
-    d->smode = new QRadioButton(i18n("Saturation:"), page);
-    l_lbot->addWidget(d->smode, 1, 0);
+    modeButton = new QRadioButton(i18n("Saturation:"), page);
+    l_lbot->addWidget(modeButton, 1, 0);
+    d->modeGroup->addButton(modeButton, ChooserSaturation);
 
-    d->sedit = new KColorSpinBox(0, 255, 1, page);
+    d->sedit = new KIntSpinBox(page);
+    d->sedit->setMaximum(255);
     l_lbot->addWidget(d->sedit, 1, 1);
     connect(d->sedit, SIGNAL(valueChanged(int)),
             SLOT(slotHSVChanged()));
-    connect(d->smode, SIGNAL(clicked()),
-            SLOT(setSMode()));
 
-    d->vmode = new QRadioButton(i18nc("This is the V of HSV", "Value:"), page);
-    l_lbot->addWidget(d->vmode, 2, 0);
+    modeButton = new QRadioButton(i18nc("This is the V of HSV", "Value:"), page);
+    l_lbot->addWidget(modeButton, 2, 0);
+    d->modeGroup->addButton(modeButton, ChooserValue);
 
-    d->vedit = new KColorSpinBox(0, 255, 1, page);
+    d->vedit = new KIntSpinBox(page);
+    d->vedit->setMaximum(255);
     l_lbot->addWidget(d->vedit, 2, 1);
     connect(d->vedit, SIGNAL(valueChanged(int)),
             SLOT(slotHSVChanged()));
-    connect(d->vmode, SIGNAL(clicked()),
-            SLOT(setVMode()));
 
 
     //
     // add the RGB fields
     //
-    d->rmode = new QRadioButton(i18n("Red:"), page);
-    l_lbot->addWidget(d->rmode, 0, 3);
-    d->redit = new KColorSpinBox(0, 255, 1, page);
+    modeButton = new QRadioButton(i18n("Red:"), page);
+    l_lbot->addWidget(modeButton, 0, 3);
+    d->modeGroup->addButton(modeButton, ChooserRed);
+
+    d->redit = new KIntSpinBox(page);
+    d->redit->setMaximum(255);
     l_lbot->addWidget(d->redit, 0, 4);
     connect(d->redit, SIGNAL(valueChanged(int)),
             SLOT(slotRGBChanged()));
-    connect(d->rmode, SIGNAL(clicked()),
-            SLOT(setRMode()));
 
-    d->gmode = new QRadioButton(i18n("Green:"), page);
-    l_lbot->addWidget(d->gmode, 1, 3);
+    modeButton = new QRadioButton(i18n("Green:"), page);
+    l_lbot->addWidget(modeButton, 1, 3);
+    d->modeGroup->addButton(modeButton, ChooserGreen);
 
-    d->gedit = new KColorSpinBox(0, 255, 1, page);
+    d->gedit = new KIntSpinBox(page);
+    d->gedit->setMaximum(255);
     l_lbot->addWidget(d->gedit, 1, 4);
     connect(d->gedit, SIGNAL(valueChanged(int)),
             SLOT(slotRGBChanged()));
-    connect(d->gmode, SIGNAL(clicked()),
-            SLOT(setGMode()));
 
-    d->bmode = new QRadioButton(i18n("Blue:"), page);
-    l_lbot->addWidget(d->bmode, 2, 3);
+    modeButton = new QRadioButton(i18n("Blue:"), page);
+    l_lbot->addWidget(modeButton, 2, 3);
+    d->modeGroup->addButton(modeButton, ChooserBlue);
 
-    d->bedit = new KColorSpinBox(0, 255, 1, page);
+    d->bedit = new KIntSpinBox(page);
+    d->bedit->setMaximum(255);
     l_lbot->addWidget(d->bedit, 2, 4);
     connect(d->bedit, SIGNAL(valueChanged(int)),
             SLOT(slotRGBChanged()));
-    connect(d->bmode, SIGNAL(clicked()),
-            SLOT(setBMode()));
 
     d->alphaLabel = new KHBox(page);
     QWidget *spacer = new QWidget(d->alphaLabel);
     label = new QLabel(i18n("Alpha:"), d->alphaLabel);
     QStyleOptionButton option;
-    option.initFrom(d->bmode);
-    QRect labelRect = d->bmode->style()->subElementRect(QStyle::SE_RadioButtonContents, &option, d->bmode);
-    int indent = layoutDirection() == Qt::LeftToRight ? labelRect.left() : d->bmode->width() - labelRect.right();
+    option.initFrom(modeButton);
+    QRect labelRect = modeButton->style()->subElementRect(QStyle::SE_RadioButtonContents, &option, modeButton);
+    int indent = layoutDirection() == Qt::LeftToRight ? labelRect.left() : modeButton->geometry().right() - labelRect.right();
     spacer->setFixedWidth(indent);
     l_lbot->addWidget(d->alphaLabel, 3, 3);
 
-    d->aedit = new KColorSpinBox(0, 255, 1, page);
+    d->aedit = new KIntSpinBox(page);
+    d->aedit->setMaximum(255);
     label->setBuddy(d->aedit);
     l_lbot->addWidget(d->aedit, 3, 4);
     connect(d->aedit, SIGNAL(valueChanged(int)),
@@ -1331,7 +1307,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
 //   d->hsSelector->installEventFilter(this);
     d->hsSelector->setAcceptDrops(true);
 
-    d->setVMode();
+    d->setChooserMode(ChooserValue);
 }
 
 KColorDialog::~KColorDialog()
@@ -1422,7 +1398,7 @@ void KColorDialog::KColorDialogPrivate::setChooserMode(KColorChooserMode c)
     hsSelector->setChooserMode(c);
     valuePal->setChooserMode(c);
 
-    updateModeButtons();
+    modeGroup->button(valuePal->chooserMode())->setChecked(true);
     valuePal->updateContents();
     hsSelector->updateContents();
     valuePal->update();
@@ -1430,40 +1406,6 @@ void KColorDialog::KColorDialogPrivate::setChooserMode(KColorChooserMode c)
     slotHSVChanged();
 }
 
-
-
-void
-KColorDialog::KColorDialogPrivate::updateModeButtons()
-{
-    hmode->setChecked(false);
-    smode->setChecked(false);
-    vmode->setChecked(false);
-    rmode->setChecked(false);
-    gmode->setChecked(false);
-    bmode->setChecked(false);
-
-    switch (valuePal->chooserMode()) {
-    case ChooserHue:
-        hmode->setChecked(true);
-        break;
-    case ChooserSaturation:
-        smode->setChecked(true);
-        break;
-    case ChooserRed:
-        rmode->setChecked(true);
-        break;
-    case ChooserGreen:
-        gmode->setChecked(true);
-        break;
-    case ChooserBlue:
-        bmode->setChecked(true);
-        break;
-    case ChooserValue:
-    default:
-        vmode->setChecked(true);
-        break;
-    }
-}
 
 KColorChooserMode KColorDialog::KColorDialogPrivate::chooserMode()
 {
@@ -1482,40 +1424,9 @@ void KColorDialog::KColorDialogPrivate::slotDefaultColorClicked()
 }
 
 void
-KColorDialog::KColorDialogPrivate::setHMode()
+KColorDialog::KColorDialogPrivate::slotModeChanged(int id)
 {
-    setChooserMode(ChooserHue);
-}
-
-void
-KColorDialog::KColorDialogPrivate::setSMode()
-{
-    setChooserMode(ChooserSaturation);
-}
-
-void
-KColorDialog::KColorDialogPrivate::setVMode()
-{
-    setChooserMode(ChooserValue);
-}
-
-void
-KColorDialog::KColorDialogPrivate::setRMode()
-{
-    setChooserMode(ChooserRed);
-}
-
-void
-KColorDialog::KColorDialogPrivate::setGMode()
-{
-    setChooserMode(ChooserGreen);
-
-}
-
-void
-KColorDialog::KColorDialogPrivate::setBMode()
-{
-    setChooserMode(ChooserBlue);
+    setChooserMode(KColorChooserMode(id));
 }
 
 void

@@ -48,7 +48,7 @@ public:
   /**
    * Returns the current hue value.
    * 
-   * @return               The hue value (0-255)
+   * @return               The hue value (0-359)
    */
   int hue() const;
   
@@ -56,7 +56,7 @@ public:
    * Sets the hue value. Doesn't automatically update the widget;
    * you have to call updateContents manually.
    * 
-   * @param		hue			Sets the hue value (0-255)
+   * @param		hue			Sets the hue value (0-359)
    */
   void setHue( int hue );
 
