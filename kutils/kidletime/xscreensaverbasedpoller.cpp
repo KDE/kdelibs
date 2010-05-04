@@ -60,7 +60,9 @@ int XScreensaverBasedPoller::getIdleTime()
     XScreenSaverInfo * mitInfo = 0;
     mitInfo = XScreenSaverAllocInfo();
     XScreenSaverQueryInfo(QX11Info::display(), DefaultRootWindow(QX11Info::display()), mitInfo);
-    return mitInfo->idle;
+    int ret = mitInfo->idle;
+    XFree( mitInfo );
+    return ret;
 }
 
 void XScreensaverBasedPoller::simulateUserActivity()
