@@ -100,6 +100,15 @@ namespace Nepomuk {
             Query& operator=( const Query& );
 
             /**
+             * Assignment operator. Assigns \p term to
+             * this query without changing any other
+             * properties.
+             *
+             * \since 4.5
+             */
+            Query& operator=( const Term& term );
+
+            /**
              * \return \p true if the query is valid, i.e.
              * it has a valid term().
              */

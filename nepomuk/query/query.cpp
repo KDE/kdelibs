@@ -192,6 +192,13 @@ Nepomuk::Query::Query& Nepomuk::Query::Query::operator=( const Query& other )
 }
 
 
+Nepomuk::Query::Query& Nepomuk::Query::Query::operator=( const Term& term )
+{
+    d->m_term = term;
+    return *this;
+}
+
+
 bool Nepomuk::Query::Query::isValid() const
 {
     return d->m_term.isValid();
