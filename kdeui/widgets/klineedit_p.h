@@ -30,6 +30,8 @@
 
 #include <kglobalsettings.h>
 
+#include "kdeuiwidgetsproxystyle_p.h"
+
 class KLineEditButton : public QWidget
 {
     Q_OBJECT
@@ -164,6 +166,22 @@ private:
     QTimeLine *m_timeline;
     QPixmap m_pixmap;
     QIcon m_icon;
+};
+
+class KLineEditStyle : public KdeUiProxyStyle
+{
+    Q_OBJECT
+public:
+  KLineEditStyle(KLineEdit *parent)
+    : KdeUiProxyStyle(parent),
+      m_overlap(0)
+  {
+  }
+
+  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
+
+  int m_overlap;
+  QWeakPointer<QStyle> m_subStyle;
 };
 
 #endif

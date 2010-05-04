@@ -27,7 +27,6 @@
 
 #include "klineedit.h"
 #include "klineedit_p.h"
-#include "kdeuiwidgetsproxystyle_p.h"
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -49,6 +48,8 @@
 #include <QtGui/QStyleOption>
 #include <QtGui/QToolTip>
 
+class KLineEditStyle;
+
 class KLineEditPrivate
 {
 public:
@@ -68,18 +69,15 @@ public:
         enableClickMsg = false;
         threeStars = false;
         completionRunning = false;
-        if ( !initialized )
-        {
+        if (!s_initialized) {
             KConfigGroup config( KGlobal::config(), "General" );
-            backspacePerformsCompletion = config.readEntry("Backspace performs completion", false);
-
-            initialized = true;
+            s_backspacePerformsCompletion = config.readEntry("Backspace performs completion", false);
+            s_initialized = true;
         }
 
         clearButton = 0;
         clickInClear = false;
         wideEnoughForClear = true;
-        overlap = 0;
 
         // i18n: Placeholder text in line edit widgets is the text appearing
         // before any user input, briefly explaining to the user what to type
@@ -135,8 +133,8 @@ public:
      */
     bool overrideShortcut(const QKeyEvent* e);
 
-    static bool initialized;
-    static bool backspacePerformsCompletion; // Configuration option
+    static bool s_initialized;
+    static bool s_backspacePerformsCompletion; // Configuration option
 
     QColor previousHighlightColor;
     QColor previousHighlightedTextColor;
@@ -165,10 +163,9 @@ public:
     bool clickInClear:1;
     bool wideEnoughForClear:1;
     KLineEditButton *clearButton;
+    KLineEditStyle *style;
 
     KCompletionBox *completionBox;
-
-    int overlap;
 
     bool italicizePlaceholder:1;
 
@@ -178,36 +175,24 @@ public:
     KLineEdit* q;
 };
 
-// FIXME: Go back to using StyleSheets instead of a proxy style
-// once Qt has been fixed not to mess with widget font when
-// using StyleSheets
-class KLineEditStyle : public KdeUiProxyStyle
-{
-public:
-  KLineEditStyle(KLineEdit *parent, KLineEditPrivate *lineEditPrivate)
-    : KdeUiProxyStyle(parent), lineEditPrivate(lineEditPrivate) {}
-
-  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
-
-  KLineEditPrivate* lineEditPrivate;
-};
-
 QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
-  if (element == SE_LineEditContents)
-  {
-    QRect rect = style()->subElementRect(SE_LineEditContents, option, widget);
+  if (element == SE_LineEditContents) {
+    QStyle *s = m_subStyle ? m_subStyle.data() : style();
+    QRect rect = s->subElementRect(SE_LineEditContents, option, widget);
 
-    const int overlap = lineEditPrivate->overlap;
-    if (option->direction == Qt::LeftToRight) return rect.adjusted(0, 0, -overlap, 0);
-    else return rect.adjusted(overlap, 0, 0, 0);
+    if (option->direction == Qt::LeftToRight) {
+        return rect.adjusted(0, 0, -m_overlap, 0);
+    } else {
+        return rect.adjusted(m_overlap, 0, 0, 0);
+    }
   }
 
   return KdeUiProxyStyle::subElementRect(element, option, widget);
 }
 
-bool KLineEditPrivate::backspacePerformsCompletion = false;
-bool KLineEditPrivate::initialized = false;
+bool KLineEditPrivate::s_backspacePerformsCompletion = false;
+bool KLineEditPrivate::s_initialized = false;
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent )
@@ -251,9 +236,9 @@ void KLineEdit::init()
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
 
-    QStyle *lineEditStyle = new KLineEditStyle(this, d);
-    lineEditStyle->setParent(this);
-    setStyle(lineEditStyle);
+    d->style = new KLineEditStyle(this);
+    d->style->setParent(this);
+    setStyle(d->style);
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
 
@@ -283,7 +268,7 @@ void KLineEdit::setClearButtonShown(bool show)
         delete d->clearButton;
         d->clearButton = 0;
         d->clickInClear = false;
-        d->overlap = 0;
+        d->style->m_overlap = 0;
     }
 }
 
@@ -349,8 +334,9 @@ void KLineEdit::updateClearButton()
 
     if (newButtonSize != d->clearButton->size()) {
         d->clearButton->resize(newButtonSize);
-        d->overlap = wideEnough ? buttonWidth + frameWidth : 0;
     }
+
+    d->style->m_overlap = wideEnough ? buttonWidth + frameWidth : 0;
 
     if (layoutDirection() == Qt::LeftToRight ) {
         d->clearButton->move(geom.width() - frameWidth - buttonWidth - 1, 0);
@@ -507,7 +493,7 @@ void KLineEdit::setReadOnly(bool readOnly)
 
         if (d->clearButton) {
             d->clearButton->animateVisible(false);
-            d->overlap = 0;
+            d->style->m_overlap = 0;
         }
     } else {
         if (!d->squeezedText.isEmpty()) {
@@ -857,8 +843,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                             len = txt.length();
                         }
 
-                        if ( !d->backspacePerformsCompletion || !len )
+                        if (!d->s_backspacePerformsCompletion || !len) {
                             d->autoSuggest = false;
+                        }
                     }
 
                     if (e->key() == Qt::Key_Delete )
@@ -927,8 +914,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                         len = txt.length();
                     }
 
-                    if ( !d->backspacePerformsCompletion )
+                    if (!d->s_backspacePerformsCompletion) {
                         d->autoSuggest = false;
+                    }
                 }
 
                 if (e->key() == Qt::Key_Delete )
@@ -1297,15 +1285,12 @@ bool KLineEdit::event( QEvent* ev )
         if (d->overrideShortcut(e)) {
             ev->accept();
         }
-    }
-    else if( ev->type() == QEvent::KeyPress )
-    {
+    } else if( ev->type() == QEvent::KeyPress ) {
         // Hmm -- all this could be done in keyPressEvent too...
 
         QKeyEvent *e = static_cast<QKeyEvent *>( ev );
 
-        if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-        {
+        if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
             const bool trap = d->completionBox && d->completionBox->isVisible();
 
             const bool stopEvent = trap || (d->grabReturnKeyEvents &&
@@ -1313,24 +1298,23 @@ bool KLineEdit::event( QEvent* ev )
                                        e->modifiers() == Qt::KeypadModifier));
 
             // Qt will emit returnPressed() itself if we return false
-            if ( stopEvent )
-            {
+            if (stopEvent) {
                 emit QLineEdit::returnPressed();
                 e->accept();
             }
 
             emit returnPressed( displayText() );
 
-            if ( trap )
-            {
+            if (trap) {
                 d->completionBox->hide();
                 deselect();
                 setCursorPosition(text().length());
             }
 
             // Eat the event if the user asked for it, or if a completionbox was visible
-            if (stopEvent)
+            if (stopEvent) {
                 return true;
+            }
         }
     } else if (ev->type() == QEvent::ApplicationPaletteChange
                || ev->type() == QEvent::PaletteChange) {
@@ -1339,7 +1323,20 @@ bool KLineEdit::event( QEvent* ev )
         d->previousHighlightedTextColor=p.color(QPalette::Normal,QPalette::HighlightedText);
         d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
         setUserSelection(d->userSelection);
+    } else if (ev->type() == QEvent::StyleChange) {
+        // since we have our own style and it relies on this style to Get Things Right,
+        // if a style is set specifically on the widget (which would replace our own style!)
+        // hang on to this special style and re-instate our own style.
+        if (!qobject_cast<KLineEditStyle *>(style())) {
+            if (style() != d->style->style()) {
+                d->style->m_subStyle = style();
+            } else {
+                d->style->m_subStyle.clear();
+            }
+            setStyle(d->style);
+        }
     }
+
     return QLineEdit::event( ev );
 }
 
