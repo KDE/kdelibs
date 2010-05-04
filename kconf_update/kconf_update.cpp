@@ -787,20 +787,20 @@ void KonfUpdate::gotScript(const QString &_script)
         cmd += m_arguments;
     }
 
-    KTemporaryFile tmp1;
-    tmp1.open();
-    KTemporaryFile tmp2;
-    tmp2.open();
-    KTemporaryFile tmp3;
-    tmp3.open();
+    KTemporaryFile scriptIn;
+    scriptIn.open();
+    KTemporaryFile scriptOut;
+    scriptOut.open();
+    KTemporaryFile scriptErr;
+    scriptErr.open();
 
     int result;
     if (m_oldConfig1) {
         if (m_debug) {
-            tmp1.setAutoRemove(false);
-            log() << "Script input stored in " << tmp1.fileName() << endl;
+            scriptIn.setAutoRemove(false);
+            log() << "Script input stored in " << scriptIn.fileName() << endl;
         }
-        KConfig cfg(tmp1.fileName(), KConfig::SimpleConfig);
+        KConfig cfg(scriptIn.fileName(), KConfig::SimpleConfig);
 
         if (m_oldGroup.isEmpty()) {
             // Write all entries to tmpFile;
@@ -816,15 +816,15 @@ void KonfUpdate::gotScript(const QString &_script)
             copyGroup(cg1, cg2);
         }
         cfg.sync();
-        result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.fileName(), tmp2.fileName(), tmp3.fileName())));
+        result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, scriptIn.fileName(), scriptOut.fileName(), scriptErr.fileName())));
     } else {
         // No config file
-        result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, tmp3.fileName())));
+        result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, scriptErr.fileName())));
     }
 
     // Copy script stderr to log file
     {
-        QFile output(tmp3.fileName());
+        QFile output(scriptErr.fileName());
         if (output.open(QIODevice::ReadOnly)) {
             QTextStream ts(&output);
             ts.setCodec(QTextCodec::codecForName("UTF-8"));
@@ -845,14 +845,14 @@ void KonfUpdate::gotScript(const QString &_script)
     }
 
     if (m_debug) {
-        tmp2.setAutoRemove(false);
-        log() << "Script output stored in " << tmp2.fileName() << endl;
+        scriptOut.setAutoRemove(false);
+        log() << "Script output stored in " << scriptOut.fileName() << endl;
     }
 
     // Deleting old entries
     {
         QStringList group = m_oldGroup;
-        QFile output(tmp2.fileName());
+        QFile output(scriptOut.fileName());
         if (output.open(QIODevice::ReadOnly)) {
             QTextStream ts(&output);
             ts.setCodec(QTextCodec::codecForName("UTF-8"));
@@ -889,18 +889,18 @@ void KonfUpdate::gotScript(const QString &_script)
     }
 
     // Merging in new entries.
-    KConfig tmp2Config(tmp2.fileName(), KConfig::NoGlobals);
+    KConfig scriptOutConfig(scriptOut.fileName(), KConfig::NoGlobals);
     if (m_newGroup.isEmpty()) {
         // Copy "default" keys as members of "default" keys
-        copyGroup(&tmp2Config, QString(), m_newConfig, QString());
+        copyGroup(&scriptOutConfig, QString(), m_newConfig, QString());
     } else {
         // Copy default keys as members of m_newGroup
-        KConfigGroup srcCg = KConfigUtils::openGroup(&tmp2Config, QStringList());
+        KConfigGroup srcCg = KConfigUtils::openGroup(&scriptOutConfig, QStringList());
         KConfigGroup dstCg = KConfigUtils::openGroup(m_newConfig, m_newGroup);
         copyGroup(srcCg, dstCg);
     }
-    Q_FOREACH(const QString &group, tmp2Config.groupList()) {
-        copyGroup(&tmp2Config, group, m_newConfig, group);
+    Q_FOREACH(const QString &group, scriptOutConfig.groupList()) {
+        copyGroup(&scriptOutConfig, group, m_newConfig, group);
     }
 }
 
