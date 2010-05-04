@@ -42,10 +42,18 @@ Q_SIGNALS:
      */
     void urlsDropped(QAction* action, QDropEvent* event);
 
+    /**
+     * Is emitted, if the action \p action has been clicked
+     * by the middle mouse button (QMenu ignores a click
+     * with the middle mouse button).
+     */
+    void middleMouseButtonClicked(QAction* action);
+
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
     virtual void dropEvent(QDropEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
 };
 
 #endif

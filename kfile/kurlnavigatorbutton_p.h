@@ -147,6 +147,13 @@ private Q_SLOTS:
     void replaceButton(KJob* job);
 
     void urlsDropped(QAction* action, QDropEvent* event);
+
+    /**
+     * Is called, if an action of a sub-menu has been triggered by
+     * a click with the middle mouse-button.
+     */
+    void slotMenuActionClicked(QAction* action);
+
     void statFinished(KJob*);
 
 private:

@@ -388,6 +388,14 @@ void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
     urlsDropped(url, event);
 }
 
+void KUrlNavigatorButton::slotMenuActionClicked(QAction* action)
+{
+    const int result = action->data().toInt();
+    KUrl url = m_url;
+    url.addPath(m_subDirs.at(result).first);
+    emit clicked(url, Qt::MidButton);
+}
+
 void KUrlNavigatorButton::statFinished(KJob* job)
 {
     if (m_pendingTextChange) {
@@ -553,6 +561,8 @@ void KUrlNavigatorButton::updateMinimumWidth()
 
 void KUrlNavigatorButton::initMenu(KUrlNavigatorMenu* menu, int startIndex)
 {
+    connect(menu, SIGNAL(middleMouseButtonClicked(QAction*)),
+            this, SLOT(slotMenuActionClicked(QAction*)));
     connect(menu, SIGNAL(urlsDropped(QAction*, QDropEvent*)),
             this, SLOT(urlsDropped(QAction*, QDropEvent*)));
 
