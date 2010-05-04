@@ -73,6 +73,11 @@ class QPixmap;
  *  the cache was created. If necessary, you can also change the timestamp
  *  using @ref setTimestamp() method.
  *
+ * @deprecated KPixmapCache is susceptible to various non-trivial locking bugs and
+ * inefficiencies, and is supported for backward compatibility only (since it exposes
+ * a QDataStream API for subclasses). Users should port to KImageCache for a very close
+ * work-alike, or KSharedDataCache if they need more control.
+ *
  * @author Rivo Laks
  */
 class KDEUI_EXPORT KPixmapCache
