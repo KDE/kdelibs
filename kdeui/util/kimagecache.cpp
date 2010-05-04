@@ -99,38 +99,49 @@ bool KImageCache::insertPixmap(const QString &key, const QPixmap &pixmap)
     return insertImage(key, pixmap.toImage());
 }
 
-QImage KImageCache::findImage(const QString &key) const
+bool KImageCache::findImage(const QString &key, QImage *destination) const
 {
-    QByteArray cachedData = this->find(key);
-    if (cachedData.isNull()) {
-        return QImage();
+    QByteArray cachedData;
+    if (!this->find(key, &cachedData) || cachedData.isNull()) {
+        return false;
     }
 
-    QImage imageResult;
-    imageResult.loadFromData(cachedData, "PNG");
-    return imageResult;
+    if (destination) {
+        destination->loadFromData(cachedData, "PNG");
+    }
+
+    return true;
 }
 
-QPixmap KImageCache::findPixmap(const QString &key) const
+bool KImageCache::findPixmap(const QString &key, QPixmap *destination) const
 {
     if (d->enablePixmapCaching) {
         QPixmap *cachedPixmap = d->pixmapCache.object(key);
         if (cachedPixmap) {
-            return QPixmap(*cachedPixmap);
+            if (destination) {
+                *destination = *cachedPixmap;
+            }
+
+            return true;
         }
     }
 
-    QByteArray cachedData = this->find(key);
-    if (cachedData.isNull()) {
-        return QPixmap();
+    QByteArray cachedData;
+    if (!this->find(key, &cachedData) || cachedData.isNull()) {
+        return false;
     }
 
-    QPixmap pixmapResult;
-    pixmapResult.loadFromData(cachedData, "PNG");
+    if (destination) {
+        destination->loadFromData(cachedData, "PNG");
 
-    d->pixmapCache.insert(key, new QPixmap(pixmapResult),
-                          pixmapResult.height() * pixmapResult.width());
-    return pixmapResult;
+        // Manually re-insert to pixmap cache if we'll be using this one.
+        if (d->enablePixmapCaching) {
+            d->pixmapCache.insert(key, new QPixmap(*destination),
+                                  destination->height() * destination->width());
+        }
+    }
+
+    return true;
 }
 
 void KImageCache::clear()

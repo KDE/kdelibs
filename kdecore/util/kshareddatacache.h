@@ -95,13 +95,21 @@ public:
 
     /**
      * Returns the data in the cache named by @p key (even if it's some other
-     * process's data named with the same key!), or a null QByteArray if no data
-     * was found.
+     * process's data named with the same key!), stored in @p destination. If there is
+     * no entry named by @p key then @p destination is left unchanged. The return value
+     * is used to tell what happened.
      *
      * If you simply want to verify whether an entry is present in the cache then
      * see contains().
+     *
+     * @param key The key to find in the cache.
+     * @param destination Is set to the value of @p key in the cache if @p key is
+     *                    present, left unchanged otherwise.
+     * @return true if @p key was present in the cache (@p destination will also be
+     *         updated), false if @p key was not present (@p destination will be
+     *         unchanged).
      */
-    QByteArray find(const QString &key) const;
+    bool find(const QString &key, QByteArray *destination) const;
 
     /**
      * Removes all entries from the cache.

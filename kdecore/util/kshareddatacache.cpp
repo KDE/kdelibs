@@ -1326,10 +1326,10 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
     return true;
 }
 
-QByteArray KSharedDataCache::find(const QString &key) const
+bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
 {
     if (!d->m_attached) {
-        return QByteArray();
+        return false;
     }
 
     Private::CacheLocker lock(d);
@@ -1351,10 +1351,14 @@ QByteArray KSharedDataCache::find(const QString &key) const
         cacheData += encodedKey.size();
         cacheData++; // Skip trailing null -- now we're pointing to start of data
 
-        return QByteArray(cacheData, header->totalItemSize - encodedKey.size() - 1);
+        if (destination) {
+            *destination = QByteArray(cacheData, header->totalItemSize - encodedKey.size() - 1);
+        }
+
+        return true;
     }
 
-    return QByteArray();
+    return false;
 }
 
 void KSharedDataCache::clear()

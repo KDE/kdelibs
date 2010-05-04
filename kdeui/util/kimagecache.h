@@ -80,11 +80,13 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      * @p key. The pixmap must be converted to a QImage in order to be stored
      * into shared memory. In order to prevent unnecessary conversions from
      * taking place @p pixmap will also be cached (but not in stored
-     * memory) and would be accessible using findPixmap().
+     * memory) and would be accessible using findPixmap() if pixmap caching is
+     * enabled.
      *
      * @param key Name to access @p pixmap with.
      * @param pixmap The pixmap to add to the cache.
      * @return true if the pixmap was successfully cached, false otherwise.
+     * @see setPixmapCaching()
      */
     bool insertPixmap(const QString &key, const QPixmap &pixmap);
 
@@ -102,16 +104,21 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
     bool insertImage(const QString &key, const QImage &image);
 
     /**
-     * @return The cached pixmap identified by @p key, or null pixmap if
-     * the entry has expired or never been added.
+     * Copies the cached pixmap identified by @p key to @p destination. If no such
+     * pixmap exists @p destination is unchanged.
+     *
+     * @return true if the pixmap identified by @p key existed, false otherwise.
+     * @see setPixmapCaching()
      */
-    QPixmap findPixmap(const QString &key) const;
+    bool findPixmap(const QString &key, QPixmap *destination) const;
 
     /**
-     * @return The cached image identified by @p key, or null image if
-     * the entry has expired or never been added.
+     * Copies the cached image identified by @p key to @p destination. If no such
+     * image exists @p destination is unchanged.
+     *
+     * @return true if the image identified by @p key existed, false otherwise.
      */
-    QImage findImage(const QString &key) const;
+    bool findImage(const QString &key, QImage *destination) const;
 
     /**
      * Removes all entries from the cache. In addition any cached pixmaps (as per
