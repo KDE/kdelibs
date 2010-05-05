@@ -123,7 +123,11 @@ KColorChooserMode KColorValueSelector::chooserMode () const
 void KColorValueSelector::drawPalette( QPixmap *pixmap )
 {
     QColor color;
-    color.setHsv(hue(), saturation(), colorValue());
+    if (chooserMode() == ChooserHue) {
+        color.setHsv(hue(), 255, 255);
+    } else {
+        color.setHsv(hue(), saturation(), colorValue());
+    }
 
     QLinearGradient gradient;
     if (orientation() == Qt::Vertical) {
