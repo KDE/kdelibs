@@ -61,6 +61,7 @@ using namespace DOM;
 
 #include "khtmlview.h"
 #include <kparts/partmanager.h>
+#include <kparts/browseropenorsavequestion.h>
 #include <kacceleratormanager.h>
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_window.h"
@@ -4301,17 +4302,19 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
         disposition = (child->m_run->serverSuggestsSave()) ? KParts::BrowserRun::AttachmentDisposition : KParts::BrowserRun::InlineDisposition;
       }
 
-      KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
-        url, mimetype, suggestedFileName, disposition );
+      KParts::BrowserOpenOrSaveQuestion dlg( widget(), url, mimetype );
+      dlg.setSuggestedFileName( suggestedFileName );
+      const KParts::BrowserOpenOrSaveQuestion::Result res = dlg.askEmbedOrSave( disposition );
+
       switch( res ) {
-      case KParts::BrowserRun::Save:
+      case KParts::BrowserOpenOrSaveQuestion::Save:
         KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString(), 0, suggestedFileName );
         // fall-through
-      case KParts::BrowserRun::Cancel:
+      case KParts::BrowserOpenOrSaveQuestion::Cancel:
         child->m_bCompleted = true;
         checkCompleted();
         return true; // done
-      default: // Open
+      default: // Embed
         break;
       }
     }
