@@ -1126,8 +1126,9 @@ Q_DECLARE_METATYPE(KUrl::List)
  * Two malformed URLs with the same string representation
  * are nevertheless considered to be unequal.
  * That means no malformed URL equals anything else.
+ * @deprecated use KUrl(_url1).equals(KUrl(_url2)) instead.
  */
-KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
+KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
 
 /**
  * \relates KUrl
@@ -1139,8 +1140,9 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  * @param _url1 A reference URL
  * @param _url2 A URL that will be compared with the reference URL
  * @param options a set of KUrl::EqualsOption flags
+ * @deprecated use KUrl(_url1).equals(KUrl(_url2), options) instead.
  */
-KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options );
+KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
 
 KDECORE_EXPORT uint qHash(const KUrl& kurl);
 
