@@ -18,20 +18,24 @@
 */
 
 #include "kcolorvalueselector.h"
-#include <QPainter>
-#include <iostream>
+
+#include <QtGui/QPainter>
+
+#include "kcolorchoosermode_p.h"
+
+using namespace KDEPrivate;
 
 class KColorValueSelector::Private
 {
 public:
-  Private(KColorValueSelector *q): q(q), _hue(0), _sat(0), _colorValue(0), _mode(ChooserClassic) {}
+    Private(KColorValueSelector *q): q(q), _hue(0), _sat(0), _colorValue(0), _mode(ChooserClassic) {}
 
     KColorValueSelector *q;
     int _hue;
     int _sat;
     int _colorValue;
     KColorChooserMode _mode;
-  QPixmap pixmap;
+    QPixmap pixmap;
 };
 
 KColorValueSelector::KColorValueSelector( QWidget *parent )
@@ -118,102 +122,27 @@ KColorChooserMode KColorValueSelector::chooserMode () const
 
 void KColorValueSelector::drawPalette( QPixmap *pixmap )
 {
-    int xSize = contentsRect().width(), ySize = contentsRect().height();
-    QImage image( QSize( xSize, ySize ), QImage::Format_RGB32 );
-    QColor col;
-    uint *p;
-    QRgb rgb;
-    int _r, _g, _b;
+    QColor color;
+    color.setHsv(hue(), saturation(), colorValue());
 
-    col.setHsv( hue(), saturation(), colorValue() );
-    col.getRgb( &_r, &_g, &_b );
-
-	if ( orientation() == Qt::Horizontal )
-	{
-		for ( int v = 0; v < ySize; v++ )
-		{
-            p = ( uint * ) image.scanLine( ySize - v - 1 );
-
-			for( int x = 0; x < xSize; x++ )
-			{
-
-                switch ( chooserMode() ) {
-                case ChooserClassic:
-                default:
-                    col.setHsv( hue(), saturation(), 255 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ) );
-                    break;
-                case ChooserRed:
-                    col.setRgb( 255 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ), _g, _b );
-                    break;
-                case ChooserGreen:
-                    col.setRgb( _r, 255 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ), _b );
-                    break;
-                case ChooserBlue:
-                    col.setRgb( _r, _g, 255 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ) );
-                    break;
-                case ChooserHue:
-                    col.setHsv( 360 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ), 255, 255 );
-                    break;
-                case ChooserSaturation:
-                    col.setHsv( hue(), 255 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ), colorValue() );
-                    break;
-                case ChooserValue:
-                    col.setHsv( hue(), saturation(), 255 * x / ( ( xSize == 1 ) ? 1 : xSize - 1 ) );
-                    break;
-                }
-
-                rgb = col.rgb();
-                *p++ = rgb;
-            }
-        }
+    QLinearGradient gradient;
+    if (orientation() == Qt::Vertical) {
+        gradient.setStart(0, contentsRect().height());
+        gradient.setFinalStop(0, 0);
+    } else {
+        gradient.setStart(0, 0);
+        gradient.setFinalStop(contentsRect().width(), 0);
     }
 
-	if( orientation() == Qt::Vertical )
-	{
-		for ( int v = 0; v < ySize; v++ )
-		{
-            p = ( uint * ) image.scanLine( ySize - v - 1 );
-
-            switch ( chooserMode() ) {
-            case ChooserClassic:
-            default:
-                col.setHsv( hue(), saturation(), 255 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
-                break;
-            case ChooserRed:
-                col.setRgb( 255 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ), _g, _b );
-                break;
-            case ChooserGreen:
-                col.setRgb( _r, 255 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ), _b );
-                break;
-            case ChooserBlue:
-                col.setRgb( _r, _g, 255 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
-                break;
-            case ChooserHue:
-                col.setHsv( 360 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ), 255, 255 );
-                break;
-            case ChooserSaturation:
-                col.setHsv( hue(), 255 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ), colorValue() );
-                break;
-            case ChooserValue:
-                col.setHsv( hue(), saturation(), 255 * v / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
-                break;
-            }
-
-            rgb = col.rgb();
-            for ( int i = 0; i < xSize; i++ )
-                *p++ = rgb;
-        }
+    const int steps = componentValueSteps(chooserMode());
+    for (int v = 0; v <= steps; ++v) {
+        setComponentValue(color, chooserMode(), v * (1.0 / steps));
+        gradient.setColorAt(v * (1.0 / steps), color);
     }
 
-    /*
-    if ( pixmap->depth() <= 8 )
-    {
-        extern QVector<QColor> kdeui_standardPalette();
-        const QVector<QColor> standardPalette = kdeui_standardPalette();
-        KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
-    }
-    */
-    *pixmap = QPixmap::fromImage( image );
+    *pixmap = QPixmap(contentsRect().size());
+    QPainter painter(pixmap);
+    painter.fillRect(pixmap->rect(), gradient);
 }
 
 

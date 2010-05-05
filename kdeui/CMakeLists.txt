@@ -58,6 +58,7 @@ set(kdeui_LIB_SRCS
  colors/kcolorcollection.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
+ colors/kcolorchoosermode.cpp
  colors/kcolordialog.cpp
  colors/kcolormimedata.cpp
  colors/kcolorvalueselector.cpp
