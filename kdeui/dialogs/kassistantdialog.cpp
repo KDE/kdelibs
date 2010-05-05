@@ -38,7 +38,7 @@ class KAssistantDialog::Private
         KPageWidgetModel *pageModel;
 
         void init();
-        void _k_slotCurrentPageChanged();
+        void _k_slotUpdateButtons();
 
         QModelIndex getNext(QModelIndex nextIndex)
         {
@@ -103,7 +103,7 @@ void KAssistantDialog::Private::init()
     q->connect(q, SIGNAL(user2Clicked()), q, SLOT(next()));
     q->connect(q, SIGNAL(user1Clicked()), q, SLOT(accept()));
 
-    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)), q, SLOT(_k_slotCurrentPageChanged()));
+    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)), q, SLOT(_k_slotUpdateButtons()));
 }
 
 
@@ -125,7 +125,7 @@ void KAssistantDialog::setValid(KPageWidgetItem * page, bool enable)
 {
     d->valid[page]=enable;
     if (page == currentPage())
-        d->_k_slotCurrentPageChanged();
+        d->_k_slotUpdateButtons();
 }
 
 bool KAssistantDialog::isValid(KPageWidgetItem * page) const
@@ -133,7 +133,7 @@ bool KAssistantDialog::isValid(KPageWidgetItem * page) const
     return d->valid.value(page, true);
 }
 
-void KAssistantDialog::Private::_k_slotCurrentPageChanged()
+void KAssistantDialog::Private::_k_slotUpdateButtons()
 {
     QModelIndex currentIndex=pageModel->index(q->currentPage());
     //change the caption of the next/finish button
@@ -148,13 +148,14 @@ void KAssistantDialog::Private::_k_slotCurrentPageChanged()
 
 void KAssistantDialog::showEvent(QShowEvent * event)
 {
-    d->_k_slotCurrentPageChanged(); //called because last time that function was called is when the first page was added, so the next button show "finish"
+    d->_k_slotUpdateButtons(); //called because last time that function was called is when the first page was added, so the next button show "finish"
     KPageDialog::showEvent(event);
 }
 
 void KAssistantDialog::setAppropriate(KPageWidgetItem * page, bool appropriate)
 {
     d->appropriate[page]=appropriate;
+    d->_k_slotUpdateButtons();
 }
 
 bool KAssistantDialog::isAppropriate(KPageWidgetItem * page) const

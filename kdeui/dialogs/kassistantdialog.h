@@ -141,7 +141,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
         class Private;
         Private * const d;
 
-        Q_PRIVATE_SLOT( d, void _k_slotCurrentPageChanged() )
+        Q_PRIVATE_SLOT( d, void _k_slotUpdateButtons() )
 
         Q_DISABLE_COPY( KAssistantDialog )
 };
