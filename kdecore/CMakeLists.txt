@@ -304,7 +304,9 @@ set(kdecore_LIB_SRCS
 )
 
 if(NOT WIN32)
-set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
+    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
+else(NOT WIN32)
+    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
 endif(NOT WIN32)
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)

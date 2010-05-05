@@ -174,6 +174,7 @@ set(kdeui_LIB_SRCS
  util/kcrash.cpp
  util/kcursor.cpp
  util/kguiitem.cpp
+ util/kimagecache.cpp
  util/kkeyserver.cpp
  util/kmanagerselection.cpp
  util/kmodifierkeyinfo.cpp
@@ -258,10 +259,6 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguiversionhandler.cpp
 )
-
-if(NOT WIN32)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kimagecache.cpp)
-endif(NOT WIN32)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
