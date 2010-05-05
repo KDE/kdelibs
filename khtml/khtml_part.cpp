@@ -660,8 +660,8 @@ bool KHTMLPart::restoreURL( const KUrl &url )
 
 bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
 {
-    return url.hasRef() && urlcmp( url.url(), q->url().url(),
-                    KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment );
+    return url.hasRef() && url.equals( q->url(),
+              KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath );
 }
 
 void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
@@ -2570,7 +2570,8 @@ void KHTMLPart::slotRedirect()
     return;
   }
 
-  if ( urlcmp( u, this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment) )
+  if ( url.equals(this->url(),
+                KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath) )
   {
     args.metaData().insert("referrer", d->m_pageReferrer);
   }
@@ -4200,7 +4201,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   if ( child->m_run )
     child->m_run->abort();
 
-  if ( child->m_part && !args.reload() && urlcmp( child->m_part->url().url(), url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ) )
+  if ( child->m_part && !args.reload() && child->m_part->url().equals( url,
+              KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath ) )
     args.setMimeType(child->m_serviceType);
 
   child->m_browserArgs = browserArgs;
