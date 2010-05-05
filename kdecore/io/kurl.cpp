@@ -616,6 +616,14 @@ bool KUrl::equals( const KUrl &_u, const EqualsOptions& options ) const
   {
     QString path1 = path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
     QString path2 = _u.path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
+
+    if (options & AllowEmptyPath) {
+        if (path1 == QLatin1String("/"))
+            path1.clear();
+        if (path2 == QLatin1String("/"))
+            path2.clear();
+    }
+
 #ifdef Q_WS_WIN
     const bool bLocal1 = isLocalFile();
     const bool bLocal2 = _u.isLocalFile();
@@ -1573,26 +1581,18 @@ bool urlcmp( const QString& _url1, const QString& _url2 )
 
 bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& _options )
 {
-    QUrl u1( _url1 );
-    QUrl u2( _url2 );
-    QUrl::FormattingOptions options = QUrl::None;
-    if ( _options & KUrl::CompareWithoutTrailingSlash )
-        options |= QUrl::StripTrailingSlash;
-    if ( _options & KUrl::CompareWithoutFragment )
-        options |= QUrl::RemoveFragment;
-#ifdef Q_WS_WIN
-    if ( ::isLocalFile( u1 ) && ::isLocalFile( u2 ) )
-      return 0 == QString::compare( u1.toString( options ), u2.toString( options ), Qt::CaseInsensitive );
-#endif
-    return u1.toString( options ) == u2.toString( options );
+    // Both empty ?
+    if (_url1.isEmpty() && _url2.isEmpty())
+        return true;
+    // Only one empty ?
+    if (_url1.isEmpty() || _url2.isEmpty())
+        return false;
 
-#if 0
-  // Both empty ?
-  if ( _url1.isEmpty() && _url2.isEmpty() )
-    return true;
-  // Only one empty ?
-  if ( _url1.isEmpty() || _url2.isEmpty() )
-    return false;
+    KUrl u1(_url1);
+    KUrl u2(_url2);
+    return u1.equals(u2, _options);
+
+#if 0 // kde3 code that supported nested urls
 
   KUrl::List list1 = KUrl::split( _url1 );
   KUrl::List list2 = KUrl::split( _url2 );

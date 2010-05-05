@@ -394,7 +394,7 @@ public:
   enum AdjustPathOption
   {
     /**
-     * strips any trailing '/'
+     * strips a trailing '/', except when the path is already just "/".
      */
     RemoveTrailingSlash,
 
@@ -870,18 +870,35 @@ public:
 
 
   /**
-   * flags to be used in url compartators function like equal, or urlcmp
-   **/
+   * Flags to be used in URL comparison functions like equals, or urlcmp
+   */
   enum EqualsOption
   {
     /**
-     * ignore trailing '/' characters
+     * ignore trailing '/' characters. The paths "dir" and "dir/" are treated the same.
+     * Note however, that by default, the paths "" and "/" are not the same
+     * (For instance ftp://user@host redirects to ftp://user@host/home/user (on a linux server),
+     * while ftp://user@host/ is the root dir).
+     * This is also why path(RemoveTrailingSlash) for "/" returns "/" and not "".
+     *
+     * When dealing with web pages however, you should also set AllowEmptyPath so that
+     * no path and "/" are considered equal.
      */
     CompareWithoutTrailingSlash = 0x01,
     /**
      * disables comparison of HTML-style references.
      */
-    CompareWithoutFragment = 0x02
+    CompareWithoutFragment = 0x02,
+    /**
+     * Treat a URL with no path as equal to a URL with a path of "/",
+     * when CompareWithoutTrailingSlash is set.
+     * Example:
+     * KUrl::urlcmp("http://www.kde.org", "http://www.kde.org/", KUrl::CompareWithoutTrailingSlash | KUrl::AllowEmptyPath)
+     * returns true.
+     * This option is ignored if CompareWithoutTrailingSlash isn't set.
+     * @since 4.5
+     */
+    AllowEmptyPath = 0x04
   };
   Q_DECLARE_FLAGS(EqualsOptions,EqualsOption)
 
@@ -892,7 +909,7 @@ public:
    * @return True if both urls are the same. If at least one of the urls is invalid,
    * false is returned.
    * @see operator==. This function should be used if you want to
-   * ignore trailing '/' characters.
+   * set additional options, like ignoring trailing '/' characters.
    */
   bool equals( const KUrl &u, const EqualsOptions& options=0 ) const;
 

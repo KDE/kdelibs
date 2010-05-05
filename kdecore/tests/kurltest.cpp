@@ -1241,7 +1241,7 @@ void KUrlTest::testSubURL()
   QCOMPARE( url1.htmlRef(), QString("") );
   const KUrl::List url1Splitted = KUrl::split( url1 );
   QCOMPARE( url1Splitted.count(), 3 );
-  kDebug() << url1Splitted.toStringList();
+  //kDebug() << url1Splitted.toStringList();
   QCOMPARE(url1Splitted[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz"));
   QCOMPARE(url1Splitted[1].url(), QString("gzip:/"));
   QCOMPARE(url1Splitted[2].url(), QString("tar:/README"));
@@ -1284,12 +1284,7 @@ void KUrlTest::testSetUser()
 
 void KUrlTest::testComparisons()
 {
-  /// Comparisons
-  QString ucmp1 = "ftp://ftp.de.kde.org/dir";
-  QString ucmp2 = "ftp://ftp.de.kde.org/dir/";
-  QVERIFY( !urlcmp(ucmp1,ucmp2) );
-
-  /* QUrl version of it */
+  /* QUrl version of urlcmp */
   QUrl u1( "ftp://ftp.de.kde.org/dir" );
   QUrl u2( "ftp://ftp.de.kde.org/dir/" );
   QUrl::FormattingOptions options = QUrl::None;
@@ -1301,7 +1296,32 @@ void KUrlTest::testComparisons()
   bool same = str1 == str2;
   QVERIFY( same );
 
-  QVERIFY( urlcmp(ucmp1,ucmp2,KUrl::CompareWithoutTrailingSlash) ); //only slash difference, ignore_trailing
+  QString ucmp1 = "ftp://ftp.de.kde.org/dir";
+  QString ucmp2 = "ftp://ftp.de.kde.org/dir/";
+  QVERIFY(!urlcmp(ucmp1, ucmp2));
+  QVERIFY(urlcmp(ucmp1, ucmp2, KUrl::CompareWithoutTrailingSlash)); //only slash difference, ignore_trailing
+
+  {
+      KUrl u1(ucmp1);
+      KUrl u2(ucmp2);
+      QVERIFY(!u1.equals(u2));
+      QVERIFY(u1.equals(u2, KUrl::CompareWithoutTrailingSlash));
+      QVERIFY(u1.equals(u2, KUrl::CompareWithoutTrailingSlash|KUrl::AllowEmptyPath));
+  }
+
+  // Special case: no path vs '/'.
+  {
+      QString str1 = QString::fromLatin1( "ftp://ftp.de.kde.org" );
+      QString str2 = QString::fromLatin1( "ftp://ftp.de.kde.org/" );
+      QVERIFY(!urlcmp(str1, str2));
+      QVERIFY(!urlcmp(str1, str2, KUrl::CompareWithoutTrailingSlash)); // empty path != '/'
+      QVERIFY(urlcmp(str1, str2, KUrl::CompareWithoutTrailingSlash|KUrl::AllowEmptyPath));
+      KUrl u1(str1);
+      KUrl u2(str2);
+      QVERIFY(!u1.equals(u2));
+      QVERIFY(!u1.equals(u2, KUrl::CompareWithoutTrailingSlash));
+      QVERIFY(u1.equals(u2, KUrl::CompareWithoutTrailingSlash|KUrl::AllowEmptyPath));
+  }
 
   QString ucmp3 = "ftp://ftp.de.kde.org/dir/#";
   QVERIFY( !urlcmp(ucmp2,ucmp3) ); // (only hash difference)
@@ -1314,7 +1334,7 @@ void KUrlTest::testComparisons()
   QVERIFY( !urlcmp("file",ucmp1) ); // (malformed, not empty)
   QVERIFY( !urlcmp("file",ucmp1,KUrl::CompareWithoutFragment) ); // (malformed, not empty)
 
-  KUrl ftpUrl ( "ftp://ftp.de.kde.org" );
+  KUrl ftpUrl( "ftp://ftp.de.kde.org" );
   QCOMPARE( ftpUrl.path(), QString());
   ftpUrl = "ftp://ftp.de.kde.org/";
   QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp.de.kde.org/host/subdir/") ) );
