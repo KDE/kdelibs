@@ -94,7 +94,7 @@ static quint32 fnvHash32(const QByteArray &buffer)
 // so make sure we account for this ourselves. To do so we need a way to find
 // out the expected alignment. Enter ALIGNOF...
 #ifndef ALIGNOF
-#ifdef Q_CC_GNU
+#if defined(Q_CC_GNU) || defined(Q_CC_SUN)
 #define ALIGNOF(x) (__alignof__ (x)) // GCC provides what we want directly
 #else
 
