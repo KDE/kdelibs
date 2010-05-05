@@ -74,6 +74,7 @@
 #include <config.h>
 #include <kdebug.h>
 
+#include "kcolorchoosermode_p.h"
 #include "kselector.h"
 #include "kcolorvalueselector.h"
 #include "khuesaturationselect.h"
@@ -88,6 +89,8 @@
 #include <QX11Info>
 #include <fixx11h.h>
 #endif
+
+using namespace KDEPrivate;
 
 using KDEPrivate::KColorTable;
 
@@ -1109,6 +1112,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
 
     d->hedit = new KIntSpinBox(page);
     d->hedit->setMaximum(359);
+    d->hedit->setSuffix(i18nc("The angular degree unit (for hue)", "\302\260")); //  U+00B0 DEGREE SIGN
     l_lbot->addWidget(d->hedit, 0, 1);
     connect(d->hedit, SIGNAL(valueChanged(int)),
             SLOT(slotHSVChanged()));
@@ -1593,79 +1597,18 @@ void KColorDialog::KColorDialogPrivate::slotHSVChanged(void)
 
 void KColorDialog::KColorDialogPrivate::slotHSChanged(int x, int y)
 {
-    int _h, _s, _v, _r, _g, _b, _a;
-
-    _h = selColor.hue();
-    _s = selColor.saturation();
-    _v = selColor.value();
-    _r = selColor.red();
-    _g = selColor.green();
-    _b = selColor.blue();
-    _a = selColor.alpha();
-
-    QColor col;
-
-    switch (chooserMode()) {
-    case ChooserRed:
-        col.setRgb(_r, x, y, _a);
-        break;
-    case ChooserGreen:
-        col.setRgb(x, _g, y, _a);
-        break;
-    case ChooserBlue:
-        col.setRgb(y, x, _b, _a);
-        break;
-    case ChooserHue:
-        col.setHsv(_h, x, y, _a);
-        break;
-    case ChooserSaturation:
-        col.setHsv(x, _s, y, _a);
-        break;
-    case ChooserValue:
-    default:
-        col.setHsv(x, y, _v, _a);
-        break;
-    }
+    QColor col = selColor;
+    KColorChooserMode xMode = chooserXMode(chooserMode());
+    KColorChooserMode yMode = chooserYMode(chooserMode());
+    setComponentValue(col, xMode, x / (xMode == ChooserHue ? 360.0 : 255.0));
+    setComponentValue(col, yMode, y / (yMode == ChooserHue ? 360.0 : 255.0));
     _setColor(col);
 }
 
 void KColorDialog::KColorDialogPrivate::slotVChanged(int v)
 {
-    int _h, _s, _v, _r, _g, _b, _a;
-
-    _h = selColor.hue();
-    _s = selColor.saturation();
-    _v = selColor.value();
-    _r = selColor.red();
-    _g = selColor.green();
-    _b = selColor.blue();
-    _a = selColor.alpha();
-
-
-    QColor col;
-
-    switch (chooserMode()) {
-    case ChooserHue:
-        col.setHsv(v, _s, _v, _a);
-        break;
-    case ChooserSaturation:
-        col.setHsv(_h, v, _v, _a);
-        break;
-    case ChooserRed:
-        col.setRgb(v, _g, _b, _a);
-        break;
-    case ChooserGreen:
-        col.setRgb(_r, v, _b, _a);
-        break;
-    case ChooserBlue:
-        col.setRgb(_r, _g, v, _a);
-        break;
-    case ChooserValue:
-    default:
-        col.setHsv(_h, _s, v, _a);
-        break;
-    }
-
+    QColor col = selColor;
+    setComponentValue(col, chooserMode(), v / (chooserMode() == ChooserHue ? 360.0 : 255.0));
     _setColor(col);
 }
 
@@ -1743,34 +1686,13 @@ void KColorDialog::KColorDialogPrivate::showColor(const QColor &color, const QSt
     alphaSelector->setSecondColor(rgbColor);
     alphaSelector->setValue(color.alpha());
 
-    switch (chooserMode()) {
-    case ChooserSaturation:
-        hsSelector->setValues(color.hue(), color.value());
-        valuePal->setValue(color.saturation());
-        break;
-    case ChooserValue:
-        hsSelector->setValues(color.hue(), color.saturation());
-        valuePal->setValue(color.value());
-        break;
-    case ChooserRed:
-        hsSelector->setValues(color.green(), color.blue());
-        valuePal->setValue(color.red());
-        break;
-    case ChooserGreen:
-        hsSelector->setValues(color.red(), color.blue());
-        valuePal->setValue(color.green());
-        break;
-    case ChooserBlue:
-        hsSelector->setValues(color.green(), color.red());
-        valuePal->setValue(color.blue());
-        break;
-    case ChooserHue:
-    default:
-        hsSelector->setValues(color.saturation(), color.value());
-        valuePal->setValue(color.hue());
-        break;
-
-    }
+    KColorChooserMode xMode = chooserXMode(chooserMode());
+    KColorChooserMode yMode = chooserYMode(chooserMode());
+    int xValue = getComponentValue(color, xMode) * (xMode == ChooserHue ? 360.0 : 255.0);
+    int yValue = getComponentValue(color, yMode) * (yMode == ChooserHue ? 360.0 : 255.0);
+    int value = getComponentValue(color, chooserMode()) * (chooserMode() == ChooserHue ? 360.0 : 255.0);
+    hsSelector->setValues(xValue, yValue);
+    valuePal->setValue(value);
 
     bool blocked = valuePal->blockSignals(true);
 
