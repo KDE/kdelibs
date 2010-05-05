@@ -116,25 +116,4 @@ SGMLDECL "xml.dcl"
   <nextCatalog catalog="zh-CN/catalog.xml"/>
   <nextCatalog catalog="zh-TW/catalog.xml"/>
 
-  <!-- DocBook 4.1.2 KDE Variant V1.1 -->
-
-  <public publicId="-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
-          uri="obsolete/kdex.dtd"/>
-  <public publicId="-//KDE//ENTITIES DocBook XML General Entity Declarations V1.1//EN"
-          uri="obsolete/general.entities"/>
-  <public publicId="-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"
-          uri="obsolete/rdbpool.elements"/>
-  <public publicId="-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
-          uri="obsolete/modifications.elements"/>
-
-  <!-- DocBook 4.1.2 KDE Variant V1.0 -->
-
-  <public publicId="-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
-          uri="obsolete/kdex-412-10.dtd"/>
-
-  <!-- DocBook 4.1 KDE Variant V1.0 -->
-
-  <public publicId="-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
-          uri="obsolete/kdex-412-10.dtd"/>
-
 </catalog>
