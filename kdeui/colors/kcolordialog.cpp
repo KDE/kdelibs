@@ -1688,9 +1688,9 @@ void KColorDialog::KColorDialogPrivate::showColor(const QColor &color, const QSt
 
     KColorChooserMode xMode = chooserXMode(chooserMode());
     KColorChooserMode yMode = chooserYMode(chooserMode());
-    int xValue = getComponentValue(color, xMode) * (xMode == ChooserHue ? 360.0 : 255.0);
-    int yValue = getComponentValue(color, yMode) * (yMode == ChooserHue ? 360.0 : 255.0);
-    int value = getComponentValue(color, chooserMode()) * (chooserMode() == ChooserHue ? 360.0 : 255.0);
+    int xValue = qRound(getComponentValue(color, xMode) * (xMode == ChooserHue ? 360.0 : 255.0));
+    int yValue = qRound(getComponentValue(color, yMode) * (yMode == ChooserHue ? 360.0 : 255.0));
+    int value = qRound(getComponentValue(color, chooserMode()) * (chooserMode() == ChooserHue ? 360.0 : 255.0));
     hsSelector->setValues(xValue, yValue);
     valuePal->setValue(value);
 
