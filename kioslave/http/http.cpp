@@ -3477,6 +3477,9 @@ void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)
 
 void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
 {
+    if (!m_request.cacheTag.useCache)
+        return;
+
     // might have to add more response codes
     if (m_request.responseCode != 200 && m_request.responseCode != 304) {
         return;
@@ -4718,11 +4721,13 @@ static QByteArray makeCacheCleanerCommand(const HTTPProtocol::CacheTag &cacheTag
 void HTTPProtocol::cacheFileClose()
 {
     kDebug(7113);
-    m_request.cacheTag.ioMode = NoCache;
+
     QFile *&file = m_request.cacheTag.file;
     if (!file) {
         return;
     }
+
+    m_request.cacheTag.ioMode = NoCache;
 
     QByteArray ccCommand;
     QTemporaryFile *tempFile = qobject_cast<QTemporaryFile *>(file);
