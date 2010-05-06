@@ -8,7 +8,7 @@ include_directories(
   ${NEPOMUK_INCLUDE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_SOURCE_DIR}/../core
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/ontology
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/types
 )
 
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})

@@ -6,7 +6,7 @@ include_directories(
   ${nepomuk_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/nepomuk/
   ${nepomukcore_SOURCE_DIR}
-  ${nepomukcore_SOURCE_DIR}/ontology
+  ${nepomukcore_SOURCE_DIR}/types
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
   ${KDE4_INCLUDES}
@@ -36,18 +36,18 @@ set(nepomuk_LIB_SRCS
   resource.cpp
   thing.cpp
   tag.cpp
-  ontology/entity.cpp
-  ontology/ontology.cpp
-  ontology/class.cpp
-  ontology/property.cpp
-  ontology/literal.cpp
-  ontology/ontologyloader.cpp
-  ontology/ontologymanager.cpp
-  ontology/nepomukontologyloader.cpp
-  ontology/fileontologyloader.cpp
-  ontology/desktopontologyloader.cpp
-  ontology/global.cpp
-  ontology/entitymanager.cpp
+  types/entity.cpp
+  types/ontology.cpp
+  types/class.cpp
+  types/property.cpp
+  types/literal.cpp
+  types/ontologyloader.cpp
+  types/ontologymanager.cpp
+  types/nepomukontologyloader.cpp
+  types/fileontologyloader.cpp
+  types/desktopontologyloader.cpp
+  types/global.cpp
+  types/entitymanager.cpp
   nepomukservice.cpp
   graphwrapper.cpp
 )

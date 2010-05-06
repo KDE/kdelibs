@@ -29,6 +29,7 @@
 #include "pimo.h"
 #include "nepomukmainmodel.h"
 #include "dbusconnectionpool.h"
+#include "class.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -38,8 +39,6 @@
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/Xesam>
 #include <Soprano/Vocabulary/NAO>
-
-#include "ontology/class.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QDateTime>

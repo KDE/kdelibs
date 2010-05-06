@@ -25,9 +25,8 @@
 #include "nepomukmainmodel.h"
 #include "resource.h"
 #include "resourcefiltermodel.h"
+#include "class.h"
 #include "nie.h"
-
-#include "ontology/class.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
