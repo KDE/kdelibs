@@ -588,7 +588,15 @@ void SimpleJobPrivate::restartAfterRedirection(KUrl *redirectionUrl)
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
 {
     Q_D(SimpleJob);
-    d->m_incomingMetaData += _metaData;
+
+    QMapIterator<QString,QString> it (_metaData);
+    while (it.hasNext()) {
+        it.next();
+        if (it.key().startsWith(QLatin1String("{internal~"), Qt::CaseInsensitive))
+            d->m_internalMetaData.insert(it.key(), it.value());
+        else
+            d->m_incomingMetaData.insert(it.key(), it.value());
+    }
 }
 
 void SimpleJob::storeSSLSessionFromJob(const KUrl &redirectionURL)

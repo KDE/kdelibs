@@ -55,6 +55,7 @@ namespace KIO {
         Job* m_parentJob;
         int m_extraFlags;
         MetaData m_incomingMetaData;
+        MetaData m_internalMetaData;
         MetaData m_outgoingMetaData;
 
         inline KIO::JobUiDelegate *ui() const

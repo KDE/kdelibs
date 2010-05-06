@@ -133,7 +133,6 @@ QList<Slave *> SlaveKeeper::allSlaves() const
     return m_idleSlaves.values();
 }
 
-
 void SlaveKeeper::scheduleGrimReaper()
 {
     if (!m_grimTimer.isActive()) {
@@ -570,6 +569,17 @@ QList<Slave *> ProtoQueue::allSlaves() const
     return ret;
 }
 
+void ProtoQueue::updateSlaveConfigFor(const QString& host)
+{
+    Q_FOREACH(Slave *slave, allSlaves()) {
+        if (slave->host() == host) {
+            slave->setConfig(SlaveConfig::self()->configData(slave->protocol(), host));
+            kDebug(7006) << "Updating configuration of" << slave->protocol()
+                         << "ioslave, pid=" << slave->slave_pid();
+        }
+    }
+}
+
 
 //private slot
 void ProtoQueue::startAJob()
@@ -948,17 +958,42 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
     }
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+
+    // Preserve all internal meta-data so they can be sent back to the
+    // ioslaves as needed...
+    const KUrl jobUrl = job->url();
+    QMapIterator<QString, QString> it (jobPriv->m_internalMetaData);
+    while (it.hasNext()) {
+        it.next();        
+        if (it.key().startsWith(QLatin1String("{internal~currenthost}"), Qt::CaseInsensitive)) {
+            SlaveConfig::self()->setConfigData(jobUrl.protocol(), jobUrl.host(), it.key().mid(22), it.value());
+        } else if (it.key().startsWith(QLatin1String("{internal~allhosts}"), Qt::CaseInsensitive)) {
+            SlaveConfig::self()->setConfigData(jobUrl.protocol(), QString(), it.key().mid(19), it.value());
+        }
+    }
+
     // make sure that we knew about the job!
     Q_ASSERT(jobPriv->m_schedSerial);
 
     ProtoQueue *pq = m_protocols.value(jobPriv->m_protocol);
     pq->removeJob(job);
     if (slave) {
+        // If we have internal meta-data, tell existing ioslaves to reload
+        // their configuration.
+        if (jobPriv->m_internalMetaData.count()) {
+            kDebug(7006) << "Updating ioslaves with new internal metadata information";
+            ProtoQueue * queue = m_protocols.value(slave->protocol());
+            if (queue)
+                queue->updateSlaveConfigFor(slave->host());
+        }
         slave->setJob(0);
         slave->disconnect(job);
     }
     jobPriv->m_schedSerial = 0; // this marks the job as unscheduled again
     jobPriv->m_slave = 0;
+    // Clear the values in the internal metadata container since they have
+    // already been taken care of above...
+    jobPriv->m_internalMetaData.clear();
 }
 
 // static
@@ -1117,7 +1152,6 @@ void SchedulerPrivate::removeSlaveOnHold()
 
 Slave *SchedulerPrivate::getConnectedSlave(const KUrl &url, const KIO::MetaData &config)
 {
-    kDebug(7006);
     QString proxy;
     QString protocol = KProtocolManager::slaveProtocol(url, proxy);
     ProtoQueue *pq = protoQ(protocol);

@@ -5,6 +5,21 @@ Applications can provide "metadata" to the slaves. Metadata can influence
 the behavior of a slave and is usally protocol dependent. MetaData consists
 of two strings: a "key" and a "value".
 
+Any meta data whose "key" starts with the keywords {internal~currenthost} and
+"{internal~allhosts}" will be treated as internal metadata and will not be made
+available to client applications. Instead all such meta-data will be stored and
+will appropriately be sent back to all ioslaves along with the other regular
+metadata values.
+
+Use "{internal~currenthost}" to make the internal metadata available to all
+ioslaves of the same protocol and host as the ioslave that generated it. If
+you do not want to restrict the availability of the internal metadata to only
+the current host, then use {internal~allhosts}. In either case the internal
+metadata follows the rules of the regular metadata and therefore cannot be sent
+from one protocol such as "http" to a completely different one like "ftp".
+
+Please note that when internal meta-data values are sent back to ioslaves, the
+keyword used to mark them internal will be stripped from the key name.
 
 The following keys are currently in use:
 
