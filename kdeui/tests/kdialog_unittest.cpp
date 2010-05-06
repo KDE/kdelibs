@@ -159,12 +159,13 @@ private Q_SLOTS:
 
     void testCloseDialog()
     {
-        KDialog dialog;
-        dialog.setButtons(KDialog::Ok | KDialog::Cancel);
-        QSignalSpy qCancelClickedSpy(&dialog, SIGNAL(cancelClicked()));
-        QSignalSpy qRejectedSpy(&dialog, SIGNAL(rejected()));
-        dialog.show(); // KDialog::closeEvent tests for isHidden
-        dialog.close();
+        KDialog* dialog = new KDialog;
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->setButtons(KDialog::Ok | KDialog::Cancel);
+        QSignalSpy qCancelClickedSpy(dialog, SIGNAL(cancelClicked()));
+        QSignalSpy qRejectedSpy(dialog, SIGNAL(rejected()));
+        dialog->show(); // KDialog::closeEvent tests for isHidden
+        dialog->close();
         QTest::qWait(200);
         QCOMPARE(qCancelClickedSpy.count(), 1); // KDialog emulated cancel being clicked
         QCOMPARE(qRejectedSpy.count(), 1); // and then rejected is emitted as well
