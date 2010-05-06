@@ -29,11 +29,15 @@
 
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
+#include <QtCore/QCache>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
 #include <QtGui/QImage>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
+#include <QtCore/QBuffer>
+#include <QtCore/QDataStream>
+#include <QtCore/QByteArray>
 #include <QtGui/QIcon>
 #include <QtGui/QBitmap>
 #include <QHash>
@@ -49,6 +53,7 @@
 #include <kcomponentdata.h>
 #include <ksvgrenderer.h>
 #include <kde_file.h>
+#include <kshareddatacache.h>
 
 #include <sys/types.h>
 #include <stdlib.h>     //for abs
@@ -66,6 +71,15 @@
 
 //#define NO_LAZYLOAD_ICONTHEME
 
+
+/**
+ * Holds a QPixmap for this process, along with its associated path on disk.
+ */
+struct PixmapWithPath
+{
+    QPixmap pixmap;
+    QString path;
+};
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -141,6 +155,7 @@ public:
     KIconLoaderPrivate(KIconLoader *q)
         : q(q)
         , mpGroups(0)
+        , mIconThemeCache(0)
         , mIconCache(0)
     {
     }
@@ -153,6 +168,7 @@ public:
         qDeleteAll(links);
         qDeleteAll(svgRenderers);
         delete[] mpGroups;
+        delete mIconThemeCache;
         delete mIconCache;
     }
 
@@ -221,6 +237,19 @@ public:
      */
     QString removeIconExtension(const QString &name) const;
 
+    /**
+     * @internal
+     * Adds an QPixmap with its associated path to the shared icon cache.
+     */
+    void insertCachedPixmapWithPath(const QString &key, const QPixmap &data, const QString &path);
+
+    /**
+     * @internal
+     * Retrieves the path and pixmap of the given key from the shared
+     * icon cache.
+     */
+    bool findCachedPixmapWithPath(const QString &key, QPixmap &data, QString &path);
+
     KIconLoader *q;
 
     QStringList mThemesInTree;
@@ -235,7 +264,14 @@ public:
     int lastIconThreshold; // see KIconLoader::threshold
     QList<KIconThemeNode *> links;
     QHash<QString, KSvgRenderer*> svgRenderers;
-    KIconCache* mIconCache;
+    KIconCache* mIconThemeCache;
+
+    // This shares the icons across all processes
+    KSharedDataCache* mIconCache;
+
+    // This caches rendered QPixmaps in just this process.
+    QCache<QString, PixmapWithPath> mPixmapCache;
+
     bool extraDesktopIconsLoaded :1;
     // lazy loading: initIconThemes() is only needed when the "links" list is needed
     // mIconThemeInited is used inside initIconThemes() to init only once
@@ -291,6 +327,7 @@ void KIconLoaderGlobalData::parseGenericIconsFiles(const QString& fileName)
         }
     }
 }
+
 K_GLOBAL_STATIC(KIconLoaderGlobalData, s_globalData)
 
 void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays)
@@ -410,14 +447,20 @@ void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
         appname = KGlobal::mainComponent().componentName();
 
     // Initialize icon cache
-    mIconCache = new KIconCache;
-    if (!mIconCache->isValid()) {
+    mIconCache = new KSharedDataCache("icon-cache", 10 * 1024 * 1024);
+    // Cost here is number of pixels, not size. So this is actually a bit
+    // smaller.
+    mPixmapCache.setMaxCost(10 * 1024 * 1024);
+
+    // Initialize icon theme cache
+    mIconThemeCache = new KIconCache;
+    if (!mIconThemeCache->isValid()) {
         initIconThemes();
         QList<KIconTheme*> allThemes;
         foreach (KIconThemeNode* node, links) {
             allThemes.append(node->theme);
         }
-        mIconCache->setThemeInfo(allThemes);
+        mIconThemeCache->setThemeInfo(allThemes);
     }
 
     // These have to match the order in kicontheme.h
@@ -439,7 +482,7 @@ void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
             mpGroups[i].alphaBlending = false;
 
         if (!mpGroups[i].size)
-            mpGroups[i].size = mIconCache->defaultIconSize(i);
+            mpGroups[i].size = mIconThemeCache->defaultIconSize(i);
     }
 
 #ifdef NO_LAZYLOAD_ICONTHEME
@@ -657,6 +700,84 @@ QString KIconLoaderPrivate::removeIconExtension(const QString &name) const
     return name;
 }
 
+void KIconLoaderPrivate::insertCachedPixmapWithPath(
+    const QString &key,
+    const QPixmap &data,
+    const QString &path = QString())
+{
+    // Even if the pixmap is null, we add it to the caches so that we record
+    // the fact that whatever icon led to us getting a null pixmap doesn't
+    // exist.
+
+    QBuffer output;
+    output.open(QIODevice::WriteOnly);
+
+    QDataStream outputStream(&output);
+    outputStream.setVersion(QDataStream::Qt_4_6);
+
+    outputStream << path;
+
+    // Convert the QPixmap to PNG. This is actually done by Qt's own operator.
+    outputStream << data;
+
+    output.close();
+
+    // The byte array contained in the QBuffer is what we want in the cache.
+    mIconCache->insert(key, output.buffer());
+
+    // Also insert the object into our process-local cache for even more
+    // speed.
+    PixmapWithPath *pixmapPath = new PixmapWithPath;
+    pixmapPath->pixmap = data;
+    pixmapPath->path = path;
+
+    mPixmapCache.insert(key, pixmapPath, data.width() * data.height() + 1);
+}
+
+bool KIconLoaderPrivate::findCachedPixmapWithPath(const QString &key, QPixmap &data, QString &path)
+{
+    // If the pixmap is present in our local process cache, use that since we
+    // don't need to decompress and upload it to the X server/graphics card.
+    const PixmapWithPath *pixmapPath = mPixmapCache.object(key);
+    if (pixmapPath) {
+        path = pixmapPath->path;
+        data = pixmapPath->pixmap;
+
+        return true;
+    }
+
+    // Otherwise try to find it in our shared memory cache since that will
+    // be quicker than the disk, especially for SVGs.
+    QByteArray result;
+
+    if (!mIconCache->find(key, &result) || result.isEmpty()) {
+        return false;
+    }
+
+    QBuffer buffer;
+    buffer.setBuffer(&result);
+    buffer.open(QIODevice::ReadOnly);
+
+    QDataStream inputStream(&buffer);
+    inputStream.setVersion(QDataStream::Qt_4_6);
+
+    QString tempPath;
+    inputStream >> tempPath;
+
+    if (inputStream.status() == QDataStream::Ok) {
+        QPixmap tempPixmap;
+        inputStream >> tempPixmap;
+
+        if (inputStream.status() == QDataStream::Ok) {
+            data = tempPixmap;
+            path = tempPath;
+
+            return true;
+        }
+    }
+
+    return false;
+}
 
 K3Icon KIconLoaderPrivate::findMatchingIconWithGenericFallbacks(const QString& name, int size) const
 {
@@ -948,14 +1069,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                               QString *path_store, bool canReturnNull) const
 {
     QString name = _name;
-    QString path;
-    QPixmap pix;
     bool unknownIcon = false;
     bool absolutePath = false;
     bool favIconOverlay = false;
 
     if (size < 0)
-        return pix;
+        return QPixmap();
 
     // Special case for absolute path icons.
     if (name.startsWith(QLatin1String("favicons/")))
@@ -975,19 +1094,26 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     }
 
     static const QString &str_unknown = KGlobal::staticQString("unknown");
+    QPixmap pix;
 
     // Special case for "User" icons.
     if (group == KIconLoader::User)
     {
         QString key;
+        QString path;
+        QImage imageResult;
+
         key.reserve(200);
         key.append(QLatin1String("$kicou_"));
         key.append(name).append('_').append(QString::number(size));
         key.append(overlays.join("_")); // krazy:exclude=doublequote_chars
 
-        if (d->mIconCache->find(key, pix, path_store)) {
+        if (d->findCachedPixmapWithPath(key, pix, path)) {
             //kDebug(264) << "KIL: " << "found the icon from KIC";
             if (!pix.isNull() || canReturnNull) {
+                if (path_store) {
+                    *path_store = path;
+                }
                 return pix;
             } else if (_name != str_unknown) {
                 return loadIcon(str_unknown, group, size, state,
@@ -995,28 +1121,31 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
             }
         }
         if (!d->initIconThemes()) {
-            return pix;  // null pixmap
+            return QPixmap();
         }
 
         path = (absolutePath) ? name :
                         iconPath(name, KIconLoader::User, canReturnNull);
         if (path.isEmpty())
         {
-            d->mIconCache->insert(key, pix); //insert the null icon so we know it's null
+            // insert the null icon so we know it's null
+            d->insertCachedPixmapWithPath(key, QPixmap());
+
             if (!canReturnNull) {
 #ifndef NDEBUG
                 kWarning(264) << "No such icon" << _name;
 #endif
                 unknownIcon = true;
             } else {
-                return pix; // null pixmap
+                return QPixmap();
             }
+
             // We don't know the desired size: use small
             path = iconPath(str_unknown, KIconLoader::Small, true);
             if (path.isEmpty())
             {
                 kWarning(264) << "Warning: Cannot find \"unknown\" icon.";
-                return pix;
+                return QPixmap();
             }
         }
 
@@ -1031,7 +1160,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         pix = QPixmap::fromImage(img);
         d->drawOverlays(this, KIconLoader::Desktop, state, pix, overlays);
         if (!unknownIcon)
-            d->mIconCache->insert(key, pix, path);
+            d->insertCachedPixmapWithPath(key, pix, path);
         return pix;
     }
 
@@ -1089,9 +1218,15 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     key.append(overlayKey);
 
     // Is the icon in the cache?
-    if (d->mIconCache->find(key, pix, path_store)) {
+    QString pathResult;
+
+    if (d->findCachedPixmapWithPath(key, pix, pathResult)) {
         //kDebug() << "KIL: " << "found icon from KIC";
         if (!pix.isNull() || canReturnNull) {
+            if (path_store) {
+                *path_store = pathResult;
+            }
+
             return pix;
         } else if (_name != str_unknown) {
             return loadIcon(str_unknown, group, size, state,
@@ -1099,7 +1234,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         }
     }
     if (!d->initIconThemes()) {
-        return pix; // null pixmap
+        return QPixmap();
     }
 
     QImage *img = 0;
@@ -1129,8 +1264,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                 if (!name.isEmpty()) {
                     pix = loadIcon(name, KIconLoader::User, size, state, overlays, path_store, true);
                 }
-                d->mIconCache->insert(key, pix, path);
                 if (!pix.isNull() || canReturnNull) {
+                    d->insertCachedPixmapWithPath(key, pix);
                     return pix;
                 }
 #ifndef NDEBUG
@@ -1138,13 +1273,16 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 #endif
                 unknownIcon = true;
                 icon = d->findMatchingIcon(str_unknown, size);
+
                 if (!icon.isValid())
                 {
-                    kDebug(264)
+                    kWarning(264)
                         << "Warning: could not find \"Unknown\" icon for size = "
                         << size << endl;
-                    return pix;
+                    return QPixmap();
                 }
+
+                pix = QPixmap(icon.path); // pix is the Unknown icon
             }
         }
 
@@ -1153,14 +1291,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
         // Use the extension as the format. Works for XPM and PNG, but not for SVG
         QString ext = icon.path.right(3).toUpper();
-        if(ext != "SVG" && ext != "VGZ")
+        if (ext != "SVG" && ext != "VGZ")
         {
             img = new QImage(icon.path, ext.toLatin1());
             if (img->isNull()) {
                 if (!unknownIcon)
-                    d->mIconCache->insert(key, pix, path);
+                    d->insertCachedPixmapWithPath(key, QPixmap());
                 delete img;
-                return pix;
+                return QPixmap();
             }
         }
         else
@@ -1189,14 +1327,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
             } else {
                 delete renderer;
                 if (!unknownIcon)
-                    d->mIconCache->insert(key, pix, path);
+                    d->insertCachedPixmapWithPath(key, pix);
                 return pix;
             }
         }
 
         iconType = icon.type;
         iconThreshold = icon.threshold;
-        path = icon.path;
+        pathResult = icon.path;
 
         d->lastImage = img->copy();
         d->lastImageKey = noEffectKey;
@@ -1266,12 +1404,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     d->drawOverlays(this, group, state, pix, overlays);
 
-    delete img;
-
     if (!unknownIcon)
     {
-        d->mIconCache->insert(key, pix, path);
+        d->insertCachedPixmapWithPath(key, pix, pathResult);
     }
+
+    delete img;
     return pix;
 }
 
