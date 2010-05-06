@@ -44,6 +44,9 @@
 <!ENTITY traducteurGillesCaulier      '<othercredit role="translator"> <firstname>Gilles</firstname> <surname>Caulier</surname> <affiliation><address><email>caulier.gilles@free.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurGillesCaulier       '<othercredit role="reviewer"> <firstname>Gilles</firstname> <surname>Caulier</surname> <affiliation><address><email>caulier.gilles@free.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurAlviseCavallari      '<othercredit role="translator"> <firstname>Alvise</firstname> <surname>Cavallari</surname> <affiliation><address><email>alvise.cavallari@kdemail.net</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurAlviseCavallari       '<othercredit role="reviewer"> <firstname>Alvise</firstname> <surname>Cavallari</surname> <affiliation><address><email>alvise.cavallari@kdemail.net</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurPatrickChavas      '<othercredit role="translator"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPatrickChavas       '<othercredit role="reviewer"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -262,6 +265,7 @@
 <!ENTITY PierreBuard       'Pierre Buard <email>pierre.buard@gmail.com</email>'>
 <!ENTITY DanielCartron     'Daniel Cartron <email>d.cartron@senat.fr</email>'>
 <!ENTITY GillesCaulier     'Gilles Caulier <email>caulier.gilles@free.fr</email>'>
+<!ENTITY AlviseCavallari   'Alvise Cavallari <email>alvise.cavallari@kdemail.net</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
 <!ENTITY ClementContet     'Clément Contet <email>keelize@yahoo.fr</email>'>
 <!ENTITY JoelleCornavin    'Joëlle Cornavin <email>j.cornavin@sfr.fr</email>'>
