@@ -32,7 +32,27 @@ class QByteArray;
  * This class is meant to be used with KImageCache and similar classes but can
  * be used directly if used with care.
  *
+ * Example usage:
+ *
+ * @code
+ * QString loadTranslatedDocument(KSharedDataCache *cache) {
+ *
+ *   // Find the data
+ *   QByteArray document;
+ *
+ *   if (!cache->find("translated-doc-template", &document)) {
+ *     // Entry is not cached, manually generate and then add to cache.
+ *     document = translateDocument(globalTemplate());
+ *     cache->insert(document);
+ *   }
+ *
+ *   // Don't forget to encode/decode properly
+ *   return QString::fromUtf8(document);
+ * }
+ * @endcode
+ *
  * @author Michael Pyne <mpyne@kde.org>
+ * @see KImageCache
  * @since 4.5
  */
 class KDECORE_EXPORT KSharedDataCache
