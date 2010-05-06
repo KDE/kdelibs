@@ -6,6 +6,7 @@ include_directories(
   ${nepomuk_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/nepomuk/
   ${nepomukcore_SOURCE_DIR}
+  ${nepomukcore_SOURCE_DIR}/ontology
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
   ${KDE4_INCLUDES}

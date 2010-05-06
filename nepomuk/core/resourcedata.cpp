@@ -235,6 +235,28 @@ bool Nepomuk::ResourceData::hasProperty( const QUrl& uri )
 }
 
 
+bool Nepomuk::ResourceData::hasProperty( const QUrl& p, const Variant& v )
+{
+    if( m_proxyData )
+        return m_proxyData->hasProperty( p, v );
+
+    if( !load() )
+        return false;
+
+    QHash<QUrl, Variant>::const_iterator it = m_cache.constFind( p );
+    if( it == m_cache.constEnd() )
+        return false;
+
+    QList<Variant> thisVals = it.value().toVariantList();
+    QList<Variant> vals = v.toVariantList();
+    Q_FOREACH( const Variant& val, vals ) {
+        if( !thisVals.contains(val) )
+            return false;
+    }
+    return true;
+}
+
+
 bool Nepomuk::ResourceData::hasType( const QUrl& uri )
 {
     if( m_proxyData )

@@ -82,6 +82,8 @@ namespace Nepomuk {
 
         bool hasProperty( const QUrl& uri );
 
+        bool hasProperty( const QUrl& p, const Variant& v );
+
         /**
          * Does also check for subClass relations.
          */
