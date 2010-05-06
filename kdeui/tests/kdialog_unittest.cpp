@@ -156,6 +156,19 @@ private Q_SLOTS:
         QCOMPARE(dialog.buttonWhatsThis(id), whatsthis);
         QCOMPARE(dialog.button(id)->whatsThis(), whatsthis);
     }
+
+    void testCloseDialog()
+    {
+        KDialog dialog;
+        dialog.setButtons(KDialog::Ok | KDialog::Cancel);
+        QSignalSpy qCancelClickedSpy(&dialog, SIGNAL(cancelClicked()));
+        QSignalSpy qRejectedSpy(&dialog, SIGNAL(rejected()));
+        dialog.show(); // KDialog::closeEvent tests for isHidden
+        dialog.close();
+        QTest::qWait(200);
+        QCOMPARE(qCancelClickedSpy.count(), 1); // KDialog emulated cancel being clicked
+        QCOMPARE(qRejectedSpy.count(), 1); // and then rejected is emitted as well
+    }
 };
 
 QTEST_KDEMAIN(KDialog_UnitTest, GUI)
