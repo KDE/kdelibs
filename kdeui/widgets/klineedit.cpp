@@ -176,6 +176,15 @@ public:
     KLineEdit* q;
 };
 
+QStyle *KLineEditStyle::style() const
+{
+    if (m_subStyle) {
+        return m_subStyle.data();
+    }
+
+    return KdeUiProxyStyle::style();
+}
+
 QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
   if (element == SE_LineEditContents) {

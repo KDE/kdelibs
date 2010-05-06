@@ -179,6 +179,7 @@ public:
   {
   }
 
+  QStyle *style() const;
   QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
 
   int m_overlap;

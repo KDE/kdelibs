@@ -31,7 +31,7 @@ class KDEUI_EXPORT KdeUiProxyStyle : public QStyle
 public:
     KdeUiProxyStyle(QWidget *parent);
     ~KdeUiProxyStyle();
-    QStyle *style() const;
+    virtual QStyle *style() const;
     void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter,
                             const QWidget *widget) const;
     void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
