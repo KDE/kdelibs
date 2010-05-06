@@ -163,7 +163,8 @@ public:
     bool clickInClear:1;
     bool wideEnoughForClear:1;
     KLineEditButton *clearButton;
-    KLineEditStyle *style;
+    QWeakPointer<KLineEditStyle> style;
+    QString lastStyleClass;
 
     KCompletionBox *completionBox;
 
@@ -246,8 +247,7 @@ void KLineEdit::init()
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
 
     d->style = new KLineEditStyle(this);
-    d->style->setParent(this);
-    setStyle(d->style);
+    setStyle(d->style.data());
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
 
@@ -277,7 +277,9 @@ void KLineEdit::setClearButtonShown(bool show)
         delete d->clearButton;
         d->clearButton = 0;
         d->clickInClear = false;
-        d->style->m_overlap = 0;
+        if (d->style) {
+            d->style.data()->m_overlap = 0;
+        }
     }
 }
 
@@ -345,7 +347,9 @@ void KLineEdit::updateClearButton()
         d->clearButton->resize(newButtonSize);
     }
 
-    d->style->m_overlap = wideEnough ? buttonWidth + frameWidth : 0;
+    if (d->style) {
+        d->style.data()->m_overlap = wideEnough ? buttonWidth + frameWidth : 0;
+    }
 
     if (layoutDirection() == Qt::LeftToRight ) {
         d->clearButton->move(geom.width() - frameWidth - buttonWidth - 1, 0);
@@ -502,7 +506,9 @@ void KLineEdit::setReadOnly(bool readOnly)
 
         if (d->clearButton) {
             d->clearButton->animateVisible(false);
-            d->style->m_overlap = 0;
+            if (d->style) {
+                d->style.data()->m_overlap = 0;
+            }
         }
     } else {
         if (!d->squeezedText.isEmpty()) {
@@ -1336,13 +1342,23 @@ bool KLineEdit::event( QEvent* ev )
         // since we have our own style and it relies on this style to Get Things Right,
         // if a style is set specifically on the widget (which would replace our own style!)
         // hang on to this special style and re-instate our own style.
-        if (!qobject_cast<KLineEditStyle *>(style())) {
-            if (style() != d->style->style()) {
-                d->style->m_subStyle = style();
-            } else {
-                d->style->m_subStyle.clear();
+        //FIXME: Qt currently has a grave bug where already deleted QStyleSheetStyle objects
+        // will get passed back in if we set a new style on it here. remove the qstrmcp test
+        // when this is fixed in Qt (or a better approach is found)
+        if (!qobject_cast<KLineEditStyle *>(style()) &&
+            qstrcmp(style()->metaObject()->className(), "QStyleSheetStyle") != 0 &&
+            QLatin1String(style()->metaObject()->className()) != d->lastStyleClass) {
+            KLineEditStyle *kleStyle = d->style.data();
+            if (!kleStyle) {
+                d->style = kleStyle = new KLineEditStyle(this);
             }
-            setStyle(d->style);
+
+            kleStyle->m_subStyle = style();
+            // this guards against "wrap around" where another style, e.g. QStyleSheetStyle,
+            // is setting the style on QEvent::StyleChange 
+            d->lastStyleClass = QLatin1String(style()->metaObject()->className());
+            setStyle(kleStyle);
+            d->lastStyleClass.clear();
         }
     }
 
