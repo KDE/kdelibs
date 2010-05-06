@@ -56,6 +56,11 @@ KProxyItemSelectionModel::KProxyItemSelectionModel(QAbstractItemModel *model, QI
     connect(proxySelector, SIGNAL(selectionChanged(QItemSelection, QItemSelection)), SLOT(sourceSelectionChanged(QItemSelection, QItemSelection)));
 }
 
+KProxyItemSelectionModel::~KProxyItemSelectionModel()
+{
+    delete d_ptr;
+}
+
 void KProxyItemSelectionModel::select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command)
 {
     Q_D(KProxyItemSelectionModel);

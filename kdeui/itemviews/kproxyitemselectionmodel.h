@@ -101,7 +101,7 @@ public:
       Constructor.
     */
     KProxyItemSelectionModel(QAbstractItemModel *targetModel, QItemSelectionModel *proxySelector, QObject *parent = 0);
-
+    ~KProxyItemSelectionModel();
     /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
     /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command);
 
