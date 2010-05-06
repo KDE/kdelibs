@@ -31,7 +31,6 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_lineedit = new KLineEdit( this );
     m_lineedit->setObjectName( "klineedittest" );
     m_lineedit->completionObject()->setItems( list );
-    m_lineedit->setFixedSize(500,30);
     m_lineedit->setSqueezedTextEnabled( true );
     m_lineedit->setClearButtonShown( true );
     connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
@@ -53,32 +52,29 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
 
     KHBox *hbox = new KHBox (this);
     m_btnExit = new QPushButton( "E&xit", hbox );
-    m_btnExit->setFixedSize(100,30);
     connect( m_btnExit, SIGNAL( clicked() ), SLOT( quitApp() ) );
 
     m_btnReadOnly = new QPushButton( "&Read Only", hbox );
     m_btnReadOnly->setCheckable (true);
-    m_btnReadOnly->setFixedSize(100,30);
     connect( m_btnReadOnly, SIGNAL( toggled(bool) ), SLOT( slotReadOnly(bool) ) );
 
     m_btnPassword = new QPushButton( "&Password", hbox );
     m_btnPassword->setCheckable (true);
-    m_btnPassword->setFixedSize(100,30);
     connect( m_btnPassword, SIGNAL( toggled(bool) ), SLOT( slotPassword(bool) ) );
 
     m_btnEnable = new QPushButton( "Dis&able", hbox );
     m_btnEnable->setCheckable (true);
-    m_btnEnable->setFixedSize(100,30);
     connect( m_btnEnable, SIGNAL( toggled(bool) ), SLOT( slotEnable(bool) ) );
 
     m_btnHide = new QPushButton( "Hi&de", hbox );
-     m_btnHide->setFixedSize(100,30);
     connect( m_btnHide, SIGNAL( clicked() ), SLOT( slotHide() ) );
 
-	m_btnClickMessage = new QPushButton( "Clicked Message", hbox);
-	m_btnClickMessage->setCheckable (true);
-	m_btnClickMessage->setFixedSize(100,30);
-	connect( m_btnClickMessage, SIGNAL( toggled(bool) ), SLOT( slotClickMessage(bool) ) );
+    m_btnClickMessage = new QPushButton( "Clicked Message", hbox);
+    m_btnClickMessage->setCheckable (true);
+    connect( m_btnClickMessage, SIGNAL( toggled(bool) ), SLOT( slotClickMessage(bool) ) );
+
+    QPushButton *button = new QPushButton( "Stylesheet", hbox);
+    connect( button, SIGNAL(clicked()), SLOT(slotSetStyleSheet()));
 
     layout->addWidget( m_lineedit );
     layout->addLayout( restrictedHBox );
@@ -93,6 +89,11 @@ KLineEditTest::~KLineEditTest()
 void KLineEditTest::quitApp()
 {
     kapp->closeAllWindows();
+}
+
+void KLineEditTest::slotSetStyleSheet()
+{
+    m_lineedit->setStyleSheet("QLineEdit{ background-color:#baf9ce }");
 }
 
 void KLineEditTest::show()
@@ -176,7 +177,8 @@ int main ( int argc, char **argv)
     //t->lineEdit()->completionBox()->setTabHandling( false );
     t->lineEdit()->setSqueezedTextEnabled( true );
     t->lineEdit()->setText ("This is a really really really really really really "
-                            "really really long line because I am a talkative fool!");
+                            "really really long line because I am a talkative fool!"
+                            "I mean ... REALLY talkative. If you don't believe me, ask my cousin.");
     t->show();
     return a.exec();
 }

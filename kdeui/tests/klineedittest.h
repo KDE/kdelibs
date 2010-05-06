@@ -34,6 +34,8 @@ private Q_SLOTS:
    void slotReturnPressed( const QString& );
    void slotClickMessage(bool click);
    void slotInvalidChar(int);
+   void slotSetStyleSheet();
+
 protected:
    KLineEdit* m_lineedit;
    KRestrictedLine* m_restrictedLine;
