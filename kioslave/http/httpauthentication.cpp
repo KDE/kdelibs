@@ -207,7 +207,7 @@ void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
 
 void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, const QString &password)
 {
-    if ((m_needCredentials && (user.isEmpty() || password.isEmpty())) ||
+    if ((m_needCredentials && (user.isEmpty() && password.isEmpty())) ||
         m_scheme.isEmpty() || m_httpMethod.isEmpty()) {
         m_isError = true;
         return;
