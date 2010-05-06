@@ -39,8 +39,12 @@ class QDataStream;
  *
  * Note that this is the KDE-wide cache for storing icons and should only be
  *  used by KIconLoader. If you want to cache your own pixmaps you should look
- *  at KPixmapCache instead.
+ *  at KImageCache or KSharedDataCache instead.
+ *
+ * @internal
  */
+// KDE5: Un-export the symbols for this. Better yet, remove it entirely
+// since KPixmapCache is deprecated.
 class KDEUI_EXPORT KIconCache : public KPixmapCache
 {
 public:
