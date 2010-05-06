@@ -52,7 +52,7 @@ void Nepomuk::TagWidgetPrivate::init( TagWidget* parent )
     q = parent;
     m_maxTags = 10;
     m_flags = TagWidget::StandardMode;
-    m_tagDlgShown = false;
+    m_blockSelectionChangedSignal = false;
     m_showAllLinkLabel = 0;
 
     QGridLayout* mainLayout = new QGridLayout( q );
@@ -179,6 +179,8 @@ bool operator<(const Tag& t1, const Tag& t2) {
 
 void Nepomuk::TagWidgetPrivate::selectTags( const QList<Tag>& tags )
 {
+    m_blockSelectionChangedSignal = true;
+
     if( m_flags & TagWidget::MiniMode ) {
         buildTagHash( tags );
     }
@@ -218,6 +220,20 @@ void Nepomuk::TagWidgetPrivate::selectTags( const QList<Tag>& tags )
                 }
             }
         }
+    }
+
+    m_blockSelectionChangedSignal = false;
+}
+
+
+void Nepomuk::TagWidgetPrivate::updateResources()
+{
+    if ( !m_resources.isEmpty() ) {
+        Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::tagResources( m_resources, q->selectedTags() );
+        q->connect( job, SIGNAL( result( KJob* ) ),
+                    SLOT( slotTagUpdateDone() ) );
+        q->setEnabled( false ); // no updates during execution
+        job->start();
     }
 }
 
@@ -320,14 +336,7 @@ void Nepomuk::TagWidget::setAssignedTags( const QList<Tag>& tags )
 void Nepomuk::TagWidget::setSelectedTags( const QList<Nepomuk::Tag>& tags )
 {
     d->selectTags( tags );
-
-    if ( !d->m_resources.isEmpty() ) {
-        Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::tagResources( d->m_resources, tags );
-        connect( job, SIGNAL( result( KJob* ) ),
-                 this, SLOT( slotTagUpdateDone() ) );
-        setEnabled( false ); // no updates during execution
-        job->start();
-    }
+    d->updateResources();
 }
 
 
@@ -359,20 +368,20 @@ void Nepomuk::TagWidget::slotTagUpdateDone()
 
 void Nepomuk::TagWidget::slotShowAll()
 {
-    d->m_tagDlgShown = true;
     KEditTagsDialog dlg( selectedTags(), this );
     if( dlg.exec() ) {
         setSelectedTags( dlg.tags() );
         emit selectionChanged( selectedTags() );
     }
-    d->m_tagDlgShown = false;
 }
 
 
 void Nepomuk::TagWidget::slotTagStateChanged( const Nepomuk::Tag&, int )
 {
-    if( !d->m_tagDlgShown )
+    if( !d->m_blockSelectionChangedSignal ) {
+        d->updateResources();
         emit selectionChanged( selectedTags() );
+    }
 }
 
 #include "tagwidget.moc"

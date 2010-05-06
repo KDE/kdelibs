@@ -51,10 +51,13 @@ public:
     /// add missing checkboxes
     void selectTags( const QList<Tag>& tags );
 
+    /// start a massupdate job to set the selected tags on the resources
+    void updateResources();
+
     QList<Resource> m_resources;
     int m_maxTags;
     TagWidget::ModeFlags m_flags;
-    bool m_tagDlgShown;
+    bool m_blockSelectionChangedSignal;
 
     QMap<Tag, TagCheckBox*> m_checkBoxHash;
     QPushButton* m_showAllButton;
