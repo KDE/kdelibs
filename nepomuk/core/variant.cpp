@@ -1331,6 +1331,13 @@ Nepomuk::Variant Nepomuk::Variant::fromString( const QString& value, int type )
 
 bool Nepomuk::Variant::operator==( const Variant& other ) const
 {
+    // we handle the special case of Urls and Resources before
+    // comparing the simple type
+    if( isUrl() || isUrlList() )
+        return other.toUrlList() == toUrlList();
+    else if( isResource() || isResourceList() )
+        return other.toResourceList() == toResourceList();
+
     if( other.simpleType() != this->simpleType() )
         return false;
 
@@ -1354,10 +1361,6 @@ bool Nepomuk::Variant::operator==( const Variant& other ) const
         return other.toTimeList() == toTimeList();
     else if( isDateTime() || isDateTimeList() )
         return other.toDateTimeList() == toDateTimeList();
-    else if( isUrl() || isUrlList() )
-        return other.toUrlList() == toUrlList();
-    else if( isResource() || isResourceList() )
-        return other.toResourceList() == toResourceList();
     else
         return ( d->value == other.d->value );
 }
