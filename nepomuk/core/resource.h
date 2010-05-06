@@ -34,6 +34,9 @@ namespace Nepomuk {
     class Variant;
     class Tag;
     class Thing;
+    namespace Types {
+        class Property;
+    }
 
     enum ErrorCode {
         NoError = 0,
@@ -332,6 +335,13 @@ namespace Nepomuk {
          * \return true if property \a uri has a value set.
          */
         bool hasProperty( const QUrl& uri ) const;
+
+        /**
+         * Check if the resource has a property \p p with value \p v.
+         *
+         * \since 4.5
+         */
+        bool hasProperty( const Types::Property& p, const Variant& v ) const;
 
         /**
          * \deprecated use hasProperty( const QUrl& ) const

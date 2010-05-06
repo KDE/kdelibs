@@ -26,6 +26,7 @@
 #include "tag.h"
 #include "pimo.h"
 #include "thing.h"
+#include "property.h"
 #include "nfo.h"
 #include "nie.h"
 #include "nco.h"
@@ -261,6 +262,12 @@ QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
 bool Nepomuk::Resource::hasProperty( const QUrl& uri ) const
 {
     return m_data ? m_data->hasProperty( uri ) : false;
+}
+
+
+bool Nepomuk::Resource::hasProperty( const Types::Property& p, const Variant& v ) const
+{
+    return m_data ? m_data->hasProperty( p.uri(), v ) : false;
 }
 
 
