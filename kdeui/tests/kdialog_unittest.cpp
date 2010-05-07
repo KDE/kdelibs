@@ -23,6 +23,7 @@
 #include <qtest_kde.h>
 #include <kdialog.h>
 #include <kpushbutton.h>
+#include <QWeakPointer>
 
 class KDialog_UnitTest : public QObject
 {
@@ -160,15 +161,19 @@ private Q_SLOTS:
     void testCloseDialog()
     {
         KDialog* dialog = new KDialog;
+        QWeakPointer<KDialog> dialogPointer(dialog);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         dialog->setButtons(KDialog::Ok | KDialog::Cancel);
         QSignalSpy qCancelClickedSpy(dialog, SIGNAL(cancelClicked()));
         QSignalSpy qRejectedSpy(dialog, SIGNAL(rejected()));
         dialog->show(); // KDialog::closeEvent tests for isHidden
         dialog->close();
-        QTest::qWait(200);
+        if (qRejectedSpy.isEmpty())
+            QVERIFY(QTest::kWaitForSignal(dialog, SIGNAL(rejected()), 5000));
         QCOMPARE(qCancelClickedSpy.count(), 1); // KDialog emulated cancel being clicked
         QCOMPARE(qRejectedSpy.count(), 1); // and then rejected is emitted as well
+        qApp->sendPostedEvents(); // DeferredDelete
+        QVERIFY(dialogPointer.isNull()); // deletion happened
     }
 };
 

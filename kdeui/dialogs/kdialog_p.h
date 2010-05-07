@@ -37,7 +37,8 @@ class KDialogPrivate
     Q_DECLARE_PUBLIC(KDialog)
     protected:
         KDialogPrivate()
-            : mDetailsVisible(false), mSettingDetails(false), mDetailsWidget(0),
+            : mDetailsVisible(false), mSettingDetails(false), mDeferredDelete(false),
+            mDetailsWidget(0),
             mTopLayout(0), mMainWidget(0), mUrlHelp(0), mActionSeparator(0),
             mButtonOrientation(Qt::Horizontal),
             mButtonBox(0)
@@ -53,8 +54,9 @@ class KDialogPrivate
         KPushButton *button( KDialog::ButtonCode code ) const;
 
 
-        bool mDetailsVisible : 1;
-        bool mSettingDetails : 1;
+        bool mDetailsVisible;
+        bool mSettingDetails;
+        bool mDeferredDelete;
         QWidget *mDetailsWidget;
         QSize mIncSize;
         QSize mMinSize;
