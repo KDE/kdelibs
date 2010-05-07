@@ -550,6 +550,7 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
     QMutexLocker lock(&m_modificationMutex);
 
     if ( determineUri() ) {
+        m_cache.remove( uri );
         MAINMODEL->removeProperty( m_uri, uri );
     }
 }
