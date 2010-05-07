@@ -225,12 +225,14 @@ bool Nepomuk::ResourceData::hasProperty( const QUrl& uri )
     if( m_proxyData )
         return m_proxyData->hasProperty( uri );
 
-    if ( determineUri() ) {
-        return MAINMODEL->containsAnyStatement( Soprano::Statement( m_uri, uri, Soprano::Node() ) );
-    }
-    else {
+    if( !load() )
         return false;
-    }
+    
+    QHash<QUrl, Variant>::const_iterator it = m_cache.constFind( uri );
+    if( it == m_cache.constEnd() )
+        return false;
+    
+    return true;
 }
 
 
