@@ -65,8 +65,10 @@ protected:
     virtual QString iconNameForAction(QAction *action)
     {
         KIcon icon(action->icon());
-        // FIXME: Need a way to test for the availability of QIcon::name()
-#ifdef HAVE_QICON_NAME
+#if QT_VERSION >= 0x040700
+        // QIcon::name() is in the 4.7 git branch, but it is not in 4.7 TP.
+        // If you get a build error here, you need to update your pre-release
+        // of Qt 4.7.
         return icon.isNull() ? QString() : icon.name();
 #else
         return QString();
