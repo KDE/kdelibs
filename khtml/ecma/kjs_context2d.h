@@ -37,45 +37,6 @@ namespace DOM {
 }
 
 namespace KJS {
-  ////////////////////// Conversion helpers //////////////////////
-  template<typename Wrapper>
-  JSValue* getWrapper(ExecState *exec, typename Wrapper::wrappedType* g)
-  {
-      DOMObject *ret = 0;
-      if (!g)
-          return jsNull();
-
-      ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
-      if ((ret = interp->getDOMObject(g)))
-          return ret;
-
-      ret = new Wrapper(exec, g);
-      interp->putDOMObject(g, ret);
-      return ret;
-  }
-
-  template<typename Wrapped>
-  class DOMWrapperObject : public DOMObject
-  {
-  public:
-    typedef Wrapped wrappedType;
-    typedef DOMWrapperObject<Wrapped> WrapperBase;
-
-    DOMWrapperObject(JSObject* proto, Wrapped* wrapee):
-      DOMObject(proto), m_impl(wrapee)
-    {}
-
-    virtual ~DOMWrapperObject() {
-      ScriptInterpreter::forgetDOMObject(m_impl.get());
-    }
-
-    virtual bool toBoolean(ExecState *) const { return true; }
-
-    Wrapped* impl() { return m_impl.get(); }
-    const Wrapped* impl() const { return m_impl.get(); }
-  private:
-    SharedPtr<Wrapped> m_impl;
-  };
 
   ////////////////////// Context2D Object ////////////////////////
   DEFINE_PSEUDO_CONSTRUCTOR(Context2DPseudoCtor)

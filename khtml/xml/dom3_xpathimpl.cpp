@@ -23,6 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <dom/dom_exception.h>
 #include <dom/dom3_xpath.h>
 #include <xml/dom3_xpathimpl.h>
 #include <xml/dom_nodeimpl.h>
@@ -55,7 +56,7 @@ XPathResultImpl::XPathResultImpl( const Value &value )
 			break;
 		case Value::Nodeset:
 			m_resultType = UNORDERED_NODE_ITERATOR_TYPE;
-			m_nodeIterator = m_value.toNodeset().begin();
+			m_nodeIterator = 0;
 	}
 }
 
@@ -83,12 +84,14 @@ void XPathResultImpl::convertTo( unsigned short type, int &exceptioncode )
 		case ANY_UNORDERED_NODE_TYPE:
 		case FIRST_ORDERED_NODE_TYPE:
 			if ( !m_value.isNodeset() ) {
-				exceptioncode = XPathExceptionImpl::toCode(TYPE_ERR);
+				exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 				return;
 			}
 			m_resultType = type;
+			break;
 		default:
-			qWarning( "Cannot convert XPathResultImpl to unknown type '%u'!", type );
+			kDebug(6010) << "Cannot convert XPathResultImpl to unknown type" << type;
+			exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 	}
 }
 
@@ -132,7 +135,11 @@ NodeImpl *XPathResultImpl::singleNodeValue(int &exceptioncode) const
 		return 0;
 	}
 	DomNodeList nodes = m_value.toNodeset();
-	return nodes.first();
+
+	if (nodes->length())
+		return nodes->item(0);
+	else
+		return 0;
 }
 
 bool XPathResultImpl::invalidIteratorState() const
@@ -153,7 +160,7 @@ unsigned long XPathResultImpl::snapshotLength(int &exceptioncode) const
 		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0;
 	}
-	return m_value.toNodeset().size();
+	return m_value.toNodeset()->length();
 }
 
 NodeImpl *XPathResultImpl::iterateNext(int &exceptioncode)
@@ -166,10 +173,13 @@ NodeImpl *XPathResultImpl::iterateNext(int &exceptioncode)
 	// XXX How to tell whether the document was changed since this
 	// result was returned? We need to throw an INVALID_STATE_ERR if that
 	// is the case.
-	if ( m_nodeIterator == m_value.toNodeset().end() ) {
+	if ( m_nodeIterator >= m_value.toNodeset()->length() ) {
 		return 0;
+	} else {
+		NodeImpl* n = m_value.toNodeset()->item(m_nodeIterator);
+		++m_nodeIterator;
+		return n;
 	}
-	return *m_nodeIterator++;
 }
 
 NodeImpl *XPathResultImpl::snapshotItem( unsigned long index, int &exceptioncode )
@@ -180,15 +190,15 @@ NodeImpl *XPathResultImpl::snapshotItem( unsigned long index, int &exceptioncode
 		return 0;
 	}
 	DomNodeList nodes = m_value.toNodeset();
-	if ( long( index ) >= nodes.count() ) {
+	if ( index >= nodes->length() ) {
 		return 0;
 	}
-	return nodes.at( index );
+	return nodes->item( index );
 }
 
 // ---------------------------------------------------------------------------
 
-DefaultXPathNSResolverImpl::XPathNSResolverImpl( NodeImpl *node )
+DefaultXPathNSResolverImpl::DefaultXPathNSResolverImpl( NodeImpl *node )
 	: m_node( node )
 {
 }
@@ -251,30 +261,31 @@ XPathResultImpl *XPathEvaluatorImpl::evaluate( DOMStringImpl *expression,
 #endif
 
 // ---------------------------------------------------------------------------
-XPathExpressionImpl::XPathExpressionImpl( DOMStringImpl *expression, XPathNSResolverImpl *resolver )
+XPathExpressionImpl::XPathExpressionImpl( const DOMString& expression, XPathNSResolverImpl *resolver )
 {
 	Expression::evaluationContext().resolver = resolver;
-	m_statement.parse( expression->string() );
+	m_statement.parse( expression.string() );
 }
 
 XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
                                                 unsigned short type,
-                                                XPathResultImpl *result_,
+                                                XPathResultImpl* /*result_*/,
                                                 int &exceptioncode )
 {
 	if ( !isValidContextNode( contextNode ) ) {
-		exceptioncode = NOT_SUPPORTED_ERR;
+		exceptioncode = DOMException::NOT_SUPPORTED_ERR;
 		return 0;
 	}
 
-	XPathResultImpl *result = result_ ? result_ : new XPathResultImpl;
-
-	// ### FIX THIS!
-	//*result = XPathResultImpl( m_statement.evaluate( contextNode ) );
+	// We are permitted, but not required, to re-use result_. We don't.
+	XPathResultImpl* result = new XPathResultImpl( m_statement.evaluate( contextNode ) );
+	
 	if ( type != ANY_TYPE ) {
 		result->convertTo( type, exceptioncode );
-		if( exceptioncode )
+		if( exceptioncode ) {
+			delete result;
 			return 0;
+		}
 	}
 
 	return result;

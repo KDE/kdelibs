@@ -59,7 +59,7 @@ class XPathResultImpl : public Shared<XPathResultImpl>
 
 	private:
 		XPath::Value m_value;
-		int m_nodeIterator;
+		unsigned long  m_nodeIterator;
 		unsigned short m_resultType;
 };
 
@@ -106,25 +106,6 @@ class DefaultXPathNSResolverImpl : public XPathNSResolverImpl
 	private:
 		SharedPtr<DOM::NodeImpl> m_node;
 };
-
-
-#if 0 // ### I'll kill this class off
-class XPathEvaluatorImpl
-{
-	public:
-		static XPathExpressionImpl *createExpression( DOMStringImpl *expression,
-		                                              XPathNSResolverImpl *resolver,
-		                                              int &exceptioncode );
-		static XPathNSResolverImpl *createNSResolver( NodeImpl *nodeResolver );
-		static XPathResultImpl *evaluate( DOMStringImpl *expression,
-		                                   NodeImpl *contextNode,
-		                                   XPathNSResolverImpl *resolver,
-		                                   unsigned short type,
-		                                   XPathResultImpl *result,
-		                                   int &exceptioncode );
-};
-#endif
-
 
 
 } // namespace khtml

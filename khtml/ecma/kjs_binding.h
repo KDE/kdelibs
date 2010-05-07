@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2007, 2008 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -36,6 +37,7 @@
 #include <kjs/function.h>
 #include <kjs/JSVariableObject.h>
 #include <kjs/object_object.h>
+#include <misc/shared.h>
 
 #include <stdlib.h> // for abort
 
@@ -155,6 +157,54 @@ namespace KJS {
     bool m_timerCallback;
     static bool s_disableCPUGuard;
   };
+
+  /** Some templates to help make wrappers. example:
+      class Foo: public DOMWrapperObject<DOM::FooImpl> {
+      }
+
+      ...
+
+      getWrapper<Foo>(exec, someImpl);
+  */
+  template<typename Wrapper>
+  JSValue* getWrapper(ExecState *exec, typename Wrapper::wrappedType* g)
+  {
+      DOMObject *ret = 0;
+      if (!g)
+          return jsNull();
+
+      ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
+      if ((ret = interp->getDOMObject(g)))
+          return ret;
+
+      ret = new Wrapper(exec, g);
+      interp->putDOMObject(g, ret);
+      return ret;
+  }
+
+  template<typename Wrapped>
+  class DOMWrapperObject : public DOMObject
+  {
+  public:
+    typedef Wrapped wrappedType;
+    typedef DOMWrapperObject<Wrapped> WrapperBase;
+
+    DOMWrapperObject(JSObject* proto, Wrapped* wrapee):
+      DOMObject(proto), m_impl(wrapee)
+    {}
+
+    virtual ~DOMWrapperObject() {
+      ScriptInterpreter::forgetDOMObject(m_impl.get());
+    }
+
+    virtual bool toBoolean(ExecState *) const { return true; }
+
+    Wrapped* impl() { return m_impl.get(); }
+    const Wrapped* impl() const { return m_impl.get(); }
+  private:
+    SharedPtr<Wrapped> m_impl;
+  };
+
 
   /**
    A little helper for setting stuff up given an entry
