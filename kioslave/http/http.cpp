@@ -2682,12 +2682,18 @@ try_again:
         return false; // Reestablish connection and try again
     }
 
+#if 0
+    // NOTE: This is unnecessary since TCPSlaveBase::read does the same exact
+    // thing. Plus, if we are unable to read from the socket we need to resend
+    // the request as done below, not error out! Do not assume remote server
+    // will honor persistent connections!!
     if (!waitForResponse(m_remoteRespTimeout)) {
         kDebug(7113) << "Got socket error:" << socket()->errorString();
         // No response error
         error(ERR_SERVER_TIMEOUT , m_request.url.host());
         return false;
     }
+#endif
 
     int bufPos = 0;
     bool foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 1);
