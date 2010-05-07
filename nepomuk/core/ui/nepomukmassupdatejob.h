@@ -29,8 +29,8 @@
 #include <QtCore/QPair>
 #include <QtCore/QTimer>
 
-#include <nepomuk/core/resource.h>
-#include <nepomuk/core/variant.h>
+#include "resource.h"
+#include "variant.h"
 
 
 namespace Nepomuk {
@@ -73,7 +73,7 @@ namespace Nepomuk {
         /**
          * Set the properties to change in the mass update.
          */
-        void setProperties( const QList<QPair<QUrl,Nepomuk::Variant> >& props );
+        void setProperties( const QList<QPair<QUrl, Nepomuk::Variant> >& props );
 
         /**
          * Actually start the job.
