@@ -4188,8 +4188,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // Main incoming loop...  Gather everything while we can...
   m_cpMimeBuffer = false;
   m_mimeTypeBuffer.resize(0);
-  struct timeval last_tv;
-  gettimeofday( &last_tv, 0L );
 
   HTTPFilterChain chain;
 
