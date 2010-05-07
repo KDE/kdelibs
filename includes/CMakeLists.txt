@@ -459,6 +459,7 @@ install( FILES
   KFilterProxySearchLine
   KWidgetItemDelegate
   KPixmapSequence
+  KPixmapSequenceWidget
   KPixmapSequenceOverlayPainter
   KGraphicsWebView
   KWebPage
