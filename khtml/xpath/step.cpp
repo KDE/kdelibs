@@ -108,7 +108,7 @@ QString Step::axisAsString( AxisType axis )
 	return QString();
 }
 
-Step::Step()
+Step::Step(): m_compileState( NotCompiled )
 {
 }
 
@@ -116,6 +116,7 @@ Step::Step( AxisType axis, const DOMString &nodeTest,
             const QList<Predicate *> &predicates )
 	: m_axis( axis ),
 	m_nodeTest( nodeTest ),
+	m_compileState( NotCompiled ),	
 	m_predicates( predicates )
 {
 }
@@ -140,7 +141,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 
 	DomNodeList inNodes = nodesInAxis( context ), outNodes;
 	qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
-	inNodes = nodeTestMatches( inNodes );
+	inNodes = nodeTestMatches( context, inNodes );
 	qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
 
 	if ( m_predicates.isEmpty() )
@@ -318,114 +319,129 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 	return nodes; // empty
 }
 
-DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const
+void Step::compileNodeTest(bool htmlCompat) const
 {
-	DOMString ns = namespaceFromNodetest( m_nodeTest );
-	DomNodeList matches = new StaticNodeListImpl;
-	if ( m_nodeTest == "*" ) {
-		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
-			NodeImpl *node = nodes->item( n );
-			if ( node->nodeType() == primaryNodeType( m_axis ) ) {
-				if ( ns.isEmpty() ||
-				     node->namespaceURI() == ns ) {
-					matches->append( node );
-				}
-			}
-		}
-		return nodes;
-	} else if ( m_nodeTest == "text()" ) {
-		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
-			NodeImpl *node = nodes->item( n );
-			if ( node->nodeType() == Node::TEXT_NODE ||
-			     node->nodeType() == Node::CDATA_SECTION_NODE ) {
-				matches->append( node );
-			}
-		}
+	m_compileState = htmlCompat ? CompiledForHTML : CompiledForXML;
 
-		return compressTextNodes( matches );
+	if ( m_nodeTest == "*" ) {
+		m_nodeTestType = NT_Star;
+	} else if ( m_nodeTest == "text()" ) {
+		m_nodeTestType = NT_Text;
 	} else if ( m_nodeTest == "comment()" ) {
-		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
-			NodeImpl *node = nodes->item( n );
-			if ( node->nodeType() == Node::COMMENT_NODE ) {
-				matches->append( node );
-			}
-		}
-		return matches;
+		m_nodeTestType = NT_Comment;
 	} else if ( m_nodeTest.startsWith( "processing-instruction" ) ) {
 		DOMString param;
+
+		// ### is this right? (parens?)
 		const int space = m_nodeTest.find( ' ' );
 		if ( space > -1 ) {
 			param = m_nodeTest.substring( space + 1 );
 		}
 
-		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
-			NodeImpl *node = nodes->item( n );
-			if ( node->nodeType() == Node::PROCESSING_INSTRUCTION_NODE ) {
-				if ( param.isEmpty() ||
-				     node->nodeName() == param ) {
-					matches->append( node );
-				}
-			}
+		if ( param.isEmpty() ) {
+			m_nodeTestType = NT_PI;
+		} else {
+			m_nodeTestType = NT_PI_Lit;
+			m_piInfo = param;
 		}
-		return matches;
 	} else if ( m_nodeTest == "node()" ) {
-		return nodes;
+		m_nodeTestType = NT_AnyNode;
 	} else {
-		DOMString prefix;
-        DOMString localName;
-		const int colon = m_nodeTest.find( ':' );
-		if (  colon > -1 ) {
-			prefix = m_nodeTest.substring( 0, colon );
-			localName = m_nodeTest.substring( colon + 1 );
+		// Some sort of name combo.
+		PrefixName prefix;
+		LocalName localName;
+
+		splitPrefixLocalName( m_nodeTest,  prefix, localName, htmlCompat );
+
+		// ### FIXME: need to report errors when can't resolve prefix.
+
+		if ( prefix.id() == DOM::emptyPrefix ) {
+			// localname only
+			m_nodeTestType = NT_LocalName;
+			m_localName    = localName;
+		} else if ( localName.toString() == "*" ) {
+			// namespace only
+			m_nodeTestType = NT_Namespace;
+			m_namespace    = NamespaceName::fromString(namespaceFromNodetest( m_nodeTest ) );
 		} else {
-			localName = m_nodeTest;
-		}
-
-		if ( !prefix.isEmpty() ) {
-			DOMString s( prefix );
-            //FIXME: isNull or isEmpty?
-			if ( Expression::evaluationContext().resolver->lookupNamespaceURI( s ).isNull() ) {
-#ifdef __GNUC__
-	#warning "Critical FIXME --- EH --- don't forget!"
-#endif
-				return nodes;
-				//throw new XPathExceptionImpl( DOMException::NAMESPACE_ERR );
-			}
-		}
-
-		if ( m_axis == AttributeAxis ) {
-			// In XPath land, namespace nodes are not accessible
-			// on the attribute axis.
-			if ( localName == "xmlns" ) {
-				return matches;
-			}
-
-			for ( unsigned long n = 0; n < nodes->length(); ++n ) {
-				NodeImpl *node = nodes->item( n );
-				if ( node->nodeName() == localName ) {
-					matches->append( node );
-					break; // There can only be one.
-				}
-			}
-			return matches;
-		} else if ( m_axis == NamespaceAxis ) {
-#ifdef __GNUC__
-	#warning "Fix this"
-#endif
-			qWarning() << "Node test " << m_nodeTest << " on axis " << axisAsString( m_axis ) << " is not implemented yet.";
-		} else {
-			for ( unsigned long n = 0; n < nodes->length(); ++n ) {
-				NodeImpl *node = nodes->item( n );
-				if ( node->nodeType() == Node::ELEMENT_NODE &&
-				     node->nodeName() == localName ) {
-					matches->append( node );
-				}
-			}
-			return matches;
+			// Both parts.
+			m_nodeTestType = NT_QName;
+			m_localName    = localName;
+			m_namespace    = NamespaceName::fromString(namespaceFromNodetest( m_nodeTest ) );
 		}
 	}
+}
 
-	qWarning() << "Node test " << m_nodeTest << " on axis " << axisAsString( m_axis ) << " is not implemented yet.";
+DomNodeList Step::nodeTestMatches( NodeImpl* ctx, const DomNodeList &nodes ) const
+{
+	CompileState desired = ctx->htmlCompat() ? CompiledForHTML : CompiledForXML;
+	if ( m_compileState != desired )
+		compileNodeTest( ctx->htmlCompat() );
+
+	if ( m_nodeTestType == NT_AnyNode) // no need for a new set
+		return nodes;
+
+	DomNodeList matches = new StaticNodeListImpl;
+
+	// A lot of things can be handled by just checking the type,
+	// and maybe a hair more special handling
+	int matchType;
+	switch ( m_nodeTestType ) {
+	case NT_Star:
+		matchType = primaryNodeType( m_axis );
+		break;
+	case NT_Comment:
+		matchType = Node::COMMENT_NODE;
+		break;
+	case NT_Text:
+		matchType = Node::TEXT_NODE;
+		break;
+	case NT_PI:
+	case NT_PI_Lit:	
+		matchType = Node::PROCESSING_INSTRUCTION_NODE;
+		break;
+	default:
+		matchType = -1;
+	}
+
+	if ( matchType != -1 ) {
+		for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+			NodeImpl *node = nodes->item( n );
+			int nodeType   = node->nodeType();
+			if ( nodeType == matchType ) {
+				if ( m_nodeTestType == NT_PI_Lit && node->nodeName() != m_piInfo )
+					continue;
+					
+				matches->append( node );
+			}
+
+			if ( matchType == NT_Text && nodeType == Node::CDATA_SECTION_NODE )
+				matches->append( node );
+		}
+		return matches;
+	}
+
+	// Now we are checking by name. We always want to filter out
+	// the primary axis here
+	// ### CHECK: this used to have special handling for some axes.
+	matchType = primaryNodeType( m_axis );
+	for ( unsigned long n = 0; n < nodes->length(); ++n ) {
+		NodeImpl *node = nodes->item( n );
+		if ( node->nodeType() != matchType )
+			continue;
+
+		if ( m_nodeTestType == NT_LocalName ) {
+			if ( localNamePart( node->id() ) == m_localName.id() )
+				matches->append( node );
+		} else if ( m_nodeTestType == NT_Namespace ) {
+			if ( namespacePart( node->id() ) == m_namespace.id() )
+				matches->append( node );
+		} else {
+			// NT_QName
+			if ( node->id() == makeId( m_namespace.id(), m_localName.id() ) )
+				matches->append( node );
+		}
+	}
 	return matches;
 }
 
@@ -455,8 +471,7 @@ DOMString Step::namespaceFromNodetest( const DOMString &nodeTest ) const
 
 	DOMString prefix( nodeTest.substring( 0, i ) );
 	NodeImpl *ctxNode = Expression::evaluationContext().node;
-	DOMString uri = ctxNode->lookupNamespaceURI( prefix );
-	return uri.string();
+	return ctxNode->lookupNamespaceURI( prefix );
 }
 
 unsigned int Step::primaryNodeType( AxisType axis ) const

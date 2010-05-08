@@ -65,12 +65,41 @@ class Step
 
 	private:
 		DomNodeList nodesInAxis( DOM::NodeImpl *context ) const;
-		DomNodeList nodeTestMatches( const DomNodeList &nodes ) const;
+		DomNodeList nodeTestMatches( DOM::NodeImpl* ctx, const DomNodeList &nodes ) const;
 		DOM::DOMString namespaceFromNodetest( const DOM::DOMString &nodeTest ) const;
 		unsigned int primaryNodeType( AxisType axis ) const;
 
+		// Original axis + nodetest specification
 		AxisType m_axis;
 		DOM::DOMString m_nodeTest;
+
+		enum CompileState {
+			NotCompiled,
+			CompiledForHTML,
+			CompiledForXML
+		};
+
+		mutable CompileState m_compileState;
+
+		void compileNodeTest(bool htmlCompat) const;
+
+		// Compiled nodetest information. We do this jit'ish due to the
+		// case sensitivity mess.
+		mutable enum {
+			NT_Star,        // *
+			NT_LocalName,   // NCName
+			NT_Namespace,   // NCName:*
+			NT_QName,       // Prefix:LocalName
+			NT_Comment,     // 'comment'
+			NT_Text,        // 'text'
+			NT_PI,          // 'processing-instruction'
+			NT_AnyNode,     // 'node'
+			NT_PI_Lit       // 'processing-instruction' '(' Literal ')'
+		} m_nodeTestType;
+		mutable DOM::LocalName     m_localName;
+		mutable DOM::NamespaceName m_namespace;
+		mutable DOM::DOMString m_piInfo;
+
 		QList<Predicate *> m_predicates;
 };
 
@@ -81,3 +110,4 @@ class Step
 
 #endif // STEP_H
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
