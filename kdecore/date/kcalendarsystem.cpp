@@ -40,6 +40,7 @@
 #include "kcalendarsystemjalali_p.h"
 #include "kcalendarsystemjapanese_p.h"
 #include "kcalendarsystemjulian_p.h"
+#include "kcalendarsystemthai_p.h"
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {
@@ -83,6 +84,10 @@ KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLo
         return new KCalendarSystemJulian( locale );
     }
 
+    if ( calendarType == "thai" ) {
+        return new KCalendarSystemThai( locale );
+    }
+
     // ### HPB: Should it really be a default here?
     return new KCalendarSystemGregorian( locale );
 }
@@ -104,6 +109,7 @@ QStringList KCalendarSystem::calendarSystems()
     lst.append( "jalali" );
     lst.append( "japanese" );
     lst.append( "julian" );
+    lst.append( "thai" );
 
     return lst;
 }
@@ -148,6 +154,10 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
 
     if ( calendarType == "julian" ) {
         return ki18nc( "@item Calendar system", "Julian" ).toString( KGlobal::locale() );
+    }
+
+    if ( calendarType == "thai" ) {
+        return ki18nc( "@item Calendar system", "Thai" ).toString( KGlobal::locale() );
     }
 
     return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( KGlobal::locale() );
@@ -1074,6 +1084,7 @@ bool KCalendarSystem::setDate( QDate &date, int year, int month, int day ) const
         int jd;
         dateToJulianDay( year, month, day, jd );
         QDate calcDate = QDate::fromJulianDay( jd );
+
         if ( isValid( calcDate ) ) {
             date = calcDate;
             return true;

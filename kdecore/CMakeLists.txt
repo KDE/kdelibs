@@ -157,6 +157,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemjalali.cpp
    date/kcalendarsystemjapanese.cpp
    date/kcalendarsystemjulian.cpp
+   date/kcalendarsystemthai.cpp
    date/kdatetime.cpp
    date/ktimezone.cpp
    date/ksystemtimezone.cpp

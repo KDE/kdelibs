@@ -15,7 +15,7 @@ class KCalendarTest : public QObject
     Q_OBJECT
 
 protected:
-    void testValid( const KCalendarSystem *calendar, int highInvalidYear,
+    void testValid( const KCalendarSystem *calendar, int lowInvalidYear, int highInvalidYear,
                     int highInvalidMonth, int highInvalidDay, const QDate &invalidDate );
     void testEpoch( const KCalendarSystem *calendar, int y, int m, int d, int jd );
     void testEarliestValidDate( const KCalendarSystem *calendar, int y, int m, int d, int jd );
@@ -71,6 +71,7 @@ private Q_SLOTS:
     void testGregorianBasic();
     void testGregorianYmd();
     void testGregorianSpecialCases();
+    void testGregorianProlepticBasic();
     void testHebrewBasic();
     void testHebrewYmd();
     void testHebrewCompare();
@@ -82,6 +83,7 @@ private Q_SLOTS:
     void testJapaneseBasic();
     void testJapaneseYmd();
     void testJapaneseSpecialCases();
+    void testThaiBasic();
     void testQDateYearMonthDay();
     void testQDateAddYears();
     void testQDateAddMonths();

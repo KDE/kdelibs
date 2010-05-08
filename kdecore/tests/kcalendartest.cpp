@@ -1185,7 +1185,7 @@ void KCalendarTest::testGregorianBasic()
     QCOMPARE( calendar->earliestValidDate(), QDate( -4712, 1, 1 ) );
     QCOMPARE( calendar->latestValidDate(), QDate( 9999, 12, 31 ) );
 
-    testValid( calendar, 10000, 13, 32, QDate( -5000, 1, 1 ) );
+    testValid( calendar, 0, 10000, 13, 32, QDate( -5000, 1, 1 ) );
 
     QCOMPARE( calendar->isLeapYear( 2007 ), false );
     QCOMPARE( calendar->isLeapYear( 2008 ), true );
@@ -1256,6 +1256,57 @@ void KCalendarTest::testGregorianSpecialCases()
 
     cg.deleteGroup( KConfigGroup::Normal );
     cg.deleteGroup( KConfigGroup::Global );
+    delete calendar;
+}
+
+
+void KCalendarTest::testGregorianProlepticBasic()
+{
+    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian-proleptic" );
+
+    QCOMPARE( calendar->calendarType(), QString( "gregorian-proleptic" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( QString( "gregorian-proleptic" ) ), QString( "Gregorian (Proleptic)" ) );
+
+    QCOMPARE( calendar->epoch(), QDate::fromJulianDay( 1721426 ) );
+    QCOMPARE( calendar->earliestValidDate(), QDate::fromJulianDay( 38 ) );
+    QCOMPARE( calendar->latestValidDate(), QDate( 9999, 12, 31 ) );
+
+    testValid( calendar, 0, 10000, 13, 32, QDate() );
+
+    QCOMPARE( calendar->isLeapYear( 2007 ), false );
+    QCOMPARE( calendar->isLeapYear( 2008 ), true );
+    QCOMPARE( calendar->isLeapYear( 1900 ), false );
+    QCOMPARE( calendar->isLeapYear( 2000 ), true );
+    QCOMPARE( calendar->isLeapYear( QDate( 2007, 1, 1 ) ), false );
+    QCOMPARE( calendar->isLeapYear( QDate( 2008, 1, 1 ) ), true );
+
+    QCOMPARE( calendar->daysInWeek( QDate( 2007, 1, 1 ) ), 7 );
+
+    QCOMPARE( calendar->monthsInYear( 2007 ),                12 );
+    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+
+    testYear(  calendar, QDate( 2007, 7, 9 ), 2007, QString("07"), QString("2007") );
+    testMonth( calendar, QDate( 2007, 7, 9 ),    7, QString("7"),  QString("07") );
+    testDay(   calendar, QDate( 2007, 7, 9 ),    9, QString("9"),  QString("09") );
+
+    testEraDate( calendar, QDate( 2005, 1, 1 ), 2005, "2005", "2005", "AD", "Anno Domini" );
+    testEraDate( calendar, QDate(   -5, 1, 3 ),    5, "5",    "0005", "BC", "Before Christ" );
+
+    testWeekDayName( calendar, 6, QDate( 2007, 7, 28 ), "Sat", "Saturday" );
+    testMonthName( calendar, 12, 2007, QDate( 2007, 12, 20 ), "Dec", "December", "of Dec", "of December" );
+
+    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+
+    QCOMPARE( calendar->weekStartDay(), 1 );
+    QCOMPARE( calendar->weekDayOfPray(), 7 );
+
+    QCOMPARE( calendar->isProleptic(), true );
+    QCOMPARE( calendar->isLunar(), false );
+    QCOMPARE( calendar->isLunisolar(), false );
+    QCOMPARE( calendar->isSolar(), true );
+
+    testRoundTrip( calendar );
+
     delete calendar;
 }
 
@@ -1355,7 +1406,7 @@ void KCalendarTest::testHijriBasic()
     QCOMPARE( calendar->earliestValidDate(), QDate( 622, 7, 16 ) );
     QCOMPARE( calendar->latestValidDate(), QDate( 10323, 10, 21) );
 
-    testValid( calendar, 10000, 13, 31, QDate( 1, 1, 1 ) );
+    testValid( calendar, 0, 10000, 13, 31, QDate( 1, 1, 1 ) );
 
     QCOMPARE( calendar->isLeapYear( 1427 ), false );
     QCOMPARE( calendar->isLeapYear( 1428 ), true );
@@ -1509,7 +1560,7 @@ void KCalendarTest::testJapaneseBasic()
     QCOMPARE( calendar->earliestValidDate(), QDate::fromJulianDay( 1721426 ) );
     QCOMPARE( calendar->latestValidDate(), QDate( 9999, 12, 31 ) );
 
-    testValid( calendar, 10000, 13, 32, QDate( -5000, 1, 1 ) );
+    testValid( calendar, 0, 10000, 13, 32, QDate( -5000, 1, 1 ) );
 
     QCOMPARE( calendar->isLeapYear( 2007 ), false );
     QCOMPARE( calendar->isLeapYear( 2008 ), true );
@@ -1596,15 +1647,64 @@ void KCalendarTest::testJapaneseSpecialCases()
     delete calendar;
 }
 
+void KCalendarTest::testThaiBasic()
+{
+    const KCalendarSystem *calendar = KCalendarSystem::create( "thai" );
+
+    QCOMPARE( calendar->calendarType(), QString( "thai" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( QString( "thai" ) ), QString( "Thai" ) );
+
+    QCOMPARE( calendar->epoch(), QDate( -544, 1, 7 ) );
+    QCOMPARE( calendar->earliestValidDate(), QDate( -544, 1, 7 ) );
+    QCOMPARE( calendar->latestValidDate(), QDate( 9456, 12, 31 ) );
+
+    testValid( calendar, -1, 10000, 13, 32, QDate() );
+
+    QCOMPARE( calendar->isLeapYear( 2007 + 543 ), false );
+    QCOMPARE( calendar->isLeapYear( 2008 + 543 ), true );
+    QCOMPARE( calendar->isLeapYear( 1900 + 543 ), false );
+    QCOMPARE( calendar->isLeapYear( 2000 + 543 ), true );
+    QCOMPARE( calendar->isLeapYear( QDate( 2007, 1, 1 ) ), false );
+    QCOMPARE( calendar->isLeapYear( QDate( 2008, 1, 1 ) ), true );
+
+    QCOMPARE( calendar->daysInWeek( QDate( 2007, 1, 1 ) ), 7 );
+
+    QCOMPARE( calendar->monthsInYear( 2007 + 543 ),          12 );
+    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+
+    testYear(  calendar, QDate( 2007, 7, 9 ), 2007 + 543, QString("50"), QString("2550") );
+    testMonth( calendar, QDate( 2007, 7, 9 ),    7, QString("7"),  QString("07") );
+    testDay(   calendar, QDate( 2007, 7, 9 ),    9, QString("9"),  QString("09") );
+
+    testEraDate( calendar, QDate( 2007, 1, 1 ), 2007 + 543, "2550", "2550", "BE", "Buddhist Era" );
+
+    testWeekDayName( calendar, 6, QDate( 2007, 7, 28 ), "Sat", "Saturday" );
+    testMonthName( calendar, 12, 2007 + 543, QDate( 2007, 12, 20 ), "Dec", "December", "of Dec", "of December" );
+
+    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+
+    QCOMPARE( calendar->weekStartDay(), 1 );
+    QCOMPARE( calendar->weekDayOfPray(), 7 );
+
+    QCOMPARE( calendar->isProleptic(), false );
+    QCOMPARE( calendar->isLunar(), false );
+    QCOMPARE( calendar->isLunisolar(), false );
+    QCOMPARE( calendar->isSolar(), true );
+
+    testRoundTrip( calendar );
+
+    delete calendar;
+}
+
 
 // generic test functions, call from calendar system specific ones
 
 // Simply tests valid ranges of ymd values, testYmd covers all other dates
-void KCalendarTest::testValid( const KCalendarSystem *calendar, int highInvalidYear,
+void KCalendarTest::testValid( const KCalendarSystem *calendar, int lowInvalidYear, int highInvalidYear,
                                int highInvalidMonth, int highInvalidDay, const QDate &invalidDate )
 {
     // min/max year
-    QCOMPARE( calendar->isValid( 0, 1, 1 ), false );
+    QCOMPARE( calendar->isValid( lowInvalidYear, 1, 1 ), false );
     QCOMPARE( calendar->isValid( highInvalidYear, 1, 1 ), false );
 
     // min/max month

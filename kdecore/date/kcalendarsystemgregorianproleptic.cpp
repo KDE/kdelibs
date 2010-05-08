@@ -111,7 +111,7 @@ int KCalendarSystemGregorianProlepticPrivate::daysInWeek() const
 
 bool KCalendarSystemGregorianProlepticPrivate::isLeapYear( int year ) const
 {
-    if ( year < 1 ) {
+    if ( !hasYearZero() && year < 1 ) {
         year = year + 1;
     }
 
@@ -188,7 +188,7 @@ QDate KCalendarSystemGregorianProleptic::epoch() const
 
 QDate KCalendarSystemGregorianProleptic::earliestValidDate() const
 {
-    // 1 Jan 4713 BC, no year zero
+    // Gregorian 1 Jan 4713 BC, no year zero
     return QDate::fromJulianDay( 38 );
 }
 
@@ -554,6 +554,8 @@ bool KCalendarSystemGregorianProleptic::isProleptic() const
 
 bool KCalendarSystemGregorianProleptic::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
+    Q_D( const KCalendarSystemGregorianProleptic );
+
     // Formula from The Calendar FAQ by Claus Tondering
     // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
     // NOTE: Coded from scratch from mathematical formulas, not copied from
@@ -562,24 +564,26 @@ bool KCalendarSystemGregorianProleptic::julianDayToDate( int jd, int &year, int 
     int a = jd + 32044;
     int b = ( ( 4 * a ) + 3 ) / 146097;
     int c = a - ( ( 146097 * b ) / 4 );
-    int d = ( ( 4 * c ) + 3 ) / 1461;
-    int e = c - ( ( 1461 * d ) / 4 );
+    int dd = ( ( 4 * c ) + 3 ) / 1461;
+    int e = c - ( ( 1461 * dd ) / 4 );
     int m = ( ( 5 * e ) + 2 ) / 153;
     day = e - ( ( (153 * m ) + 2 ) / 5 ) + 1;
     month = m + 3 - ( 12 * ( m / 10 ) );
-    year = ( 100 * b ) + d - 4800 + ( m / 10 );
+    year = ( 100 * b ) + dd - 4800 + ( m / 10 );
 
     // If year is -ve then is BC.  In Gregorian there is no year 0, but the maths
     // is easier if we pretend there is, so internally year of 0 = 1BC = -1 outside
-    if ( year < 1 ) {
+    // Check for Year 0 support as some Gregorian based calendars do have it, e.g. Thai and ISO
+    if ( !d->hasYearZero() && year < 1 ) {
         year = year - 1;
     }
-
     return true;
 }
 
 bool KCalendarSystemGregorianProleptic::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
+    Q_D( const KCalendarSystemGregorianProleptic );
+
     // Formula from The Calendar FAQ by Claus Tondering
     // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
     // NOTE: Coded from scratch from mathematical formulas, not copied from
@@ -587,8 +591,9 @@ bool KCalendarSystemGregorianProleptic::dateToJulianDay( int year, int month, in
 
     // If year is -ve then is BC.  In Gregorian there is no year 0, but the maths
     // is easier if we pretend there is, so internally year of -1 = 1BC = 0 internally
+    // Check for Year 0 support as some Gregorian based calendars do have it, e.g. Thai and ISO
     int y;
-    if ( year < 1 ) {
+    if ( !d->hasYearZero() && year < 1 ) {
         y = year + 1;
     } else {
         y = year;
