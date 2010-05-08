@@ -1887,7 +1887,7 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 388 "parser.y"
     {
-		(yyval.expr) = new EqTestOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
+		(yyval.expr) = new RelationOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
     break;
 
@@ -1896,7 +1896,7 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 397 "parser.y"
     {
-		(yyval.expr) = new NumericOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
+		(yyval.expr) = new RelationOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
     break;
 

@@ -38,8 +38,11 @@ using namespace std;
 #include "kjs/JSImmediate.h"
 #include "kjs/operations.h"
 
-Value::Value()
+Value::Value():
+	m_type  ( Number ),
+	m_number( KJS::NaN )
 {
+	// ### remove eventually
 }
 
 Value::Value( NodeImpl *value )

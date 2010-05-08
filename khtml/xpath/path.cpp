@@ -125,7 +125,11 @@ Value LocationPath::doEvaluate() const
 
 	inDomNodes->append( context );
 
+	int s = 0;
 	foreach( Step *step, m_steps ) {
+
+		qDebug("-------------------------------------");
+		qDebug("Step=%d, insize = %lu", s, inDomNodes->length());
 		outDomNodes = new StaticNodeListImpl;
 		for ( unsigned long i = 0; i < inDomNodes->length(); ++i ) {
 			DomNodeList matches = step->evaluate( inDomNodes->item( i ) );
@@ -133,7 +137,12 @@ Value LocationPath::doEvaluate() const
 				outDomNodes->append( matches->item( j ) );
 		}
 		inDomNodes = outDomNodes;
+
+		++s;
 	}
+	qDebug("-------------------------------------");
+	qDebug("output:%lu", outDomNodes->length());
+	qDebug("=====================================");
 
 	return Value( outDomNodes );
 }
@@ -185,3 +194,4 @@ Value Path::doEvaluate() const
 	return Value();
 }
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

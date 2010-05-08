@@ -1,5 +1,6 @@
 /*
- * predicate.cc - Copyright 2005 Frerich Raabe <raabe@kde.org>
+ * predicate.cc - Copyright 2005 Frerich Raabe   <raabe@kde.org>
+ *                Copyright 2010 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -135,14 +136,6 @@ Value NumericOp::doEvaluate() const
 				return Value(); //Divide by 0;
 			else
 				return Value( remainder( leftVal, rightVal ) );
-		case OP_GT:
-			return Value ( leftVal > rightVal );
-		case OP_GE:
-			return Value ( leftVal >= rightVal );
-		case OP_LT:
-			return Value ( leftVal < rightVal );
-		case OP_LE:
-			return Value ( leftVal <= rightVal );
 		default:
 			assert(0);
 		return Value();
@@ -162,6 +155,174 @@ QString NumericOp::opName() const
 			return QLatin1String( "division" );
 		case OP_Mod:
 			return QLatin1String( "modulo" );
+		default:
+			assert(0);
+			return QString();
+	}
+}
+
+RelationOp::RelationOp( int _opCode, Expression* lhs, Expression* rhs ) :
+	opCode( _opCode )
+{
+	addSubExpression( lhs );
+	addSubExpression( rhs );
+}
+
+static void stringify(const Value& val, WTF::Vector<DOMString>* out)
+{
+	if (val.isString()) {
+		out->append(val.toString());
+	} else {
+		assert(val.isNodeset());
+
+		const DomNodeList& set = val.toNodeset();
+		for (unsigned long i = 0; i < set->length(); ++i) {
+			DOM::DOMString stringVal = stringValue(set->item(i));
+			out->append(stringVal);
+		}
+	}
+}
+
+static void numify(const Value& val, WTF::Vector<double>* out)
+{
+	if (val.isNumber()) {
+		out->append(val.toNumber());
+	} else {
+		assert(val.isNodeset());
+
+		const DomNodeList& set = val.toNodeset();
+		for (unsigned long i = 0; i < set->length(); ++i) {
+			DOM::DOMString stringVal = stringValue(set->item(i));
+			out->append(Value(stringVal).toNumber());
+		}
+	}
+}
+
+Value RelationOp::doEvaluate() const
+{
+	Value lhs( subExpr( 0 )->evaluate() );
+	Value rhs( subExpr( 1 )->evaluate() );
+
+	if (lhs.isNodeset() || rhs.isNodeset())
+	{
+		// If both are nodesets, or one is a string our
+		// comparisons are based on strings.
+		if ((lhs.isNodeset() && rhs.isNodeset()) ||
+		    (lhs.isString()  || rhs.isString())) {
+
+			WTF::Vector<DOM::DOMString> leftStrings;
+			WTF::Vector<DOM::DOMString> rightStrings;
+
+			stringify(lhs, &leftStrings);
+			stringify(rhs, &rightStrings);
+
+			for (unsigned pl = 0; pl < leftStrings.size(); ++pl) {
+				for (unsigned pr = 0; pr < rightStrings.size(); ++pr) {
+					if (compareStrings(leftStrings[pl], rightStrings[pr]))
+						return Value(true);
+				} // pr
+			} // pl
+			return Value(false);
+		}
+
+		// If one is a number, we do a number-based comparison
+		if (lhs.isNumber() || rhs.isNumber()) {
+			WTF::Vector<double> leftNums;
+			WTF::Vector<double> rightNums;
+
+			numify(lhs, &leftNums);
+			numify(rhs, &rightNums);
+
+			for (unsigned pl = 0; pl < leftNums.size(); ++pl) {
+				for (unsigned pr = 0; pr < rightNums.size(); ++pr) {
+					if (compareNumbers(leftNums[pl], rightNums[pr]))
+						return Value(true);
+				} // pr
+			} // pl
+			return Value(false);
+		}
+
+		// Has to be a boolean-based comparison.
+		// These ones are simpler, since we just convert the nodeset to a bool		
+		assert(lhs.isBoolean() || rhs.isBoolean());
+
+		if (lhs.isNodeset())
+			lhs = Value(lhs.toBoolean());
+		else
+			rhs = Value(rhs.toBoolean());
+	} // nodeset comparisons
+	
+
+	if (opCode == OP_EQ || opCode == OP_NE) {
+		bool equal;
+		if ( lhs.isBoolean() || rhs.isBoolean() ) {
+			equal = ( lhs.toBoolean() == rhs.toBoolean() );
+		} else if ( lhs.isNumber() || rhs.isNumber() ) {
+			equal = ( lhs.toNumber() == rhs.toNumber() );
+		} else {
+			equal = ( lhs.toString() == rhs.toString() );
+		}
+
+		if ( opCode == OP_EQ )
+			return Value( equal );
+		else
+			return Value( !equal );
+
+	}
+
+	// For other ops, we always convert to numbers
+	double leftVal = lhs.toNumber(), rightVal = rhs.toNumber();
+	return Value(compareNumbers(leftVal, rightVal));
+}
+
+
+bool RelationOp::compareNumbers(double leftVal, double rightVal) const
+{
+	switch (opCode) {
+		case OP_GT:
+			return leftVal > rightVal;
+		case OP_GE:
+			return leftVal >= rightVal;
+		case OP_LT:
+			return leftVal < rightVal;
+		case OP_LE:
+			return leftVal <= rightVal;
+		case OP_EQ:
+			return leftVal == rightVal;
+		case OP_NE:
+			return leftVal != rightVal;
+		default:
+			assert(0);
+			return false;
+	}
+}
+
+bool RelationOp::compareStrings(const DOM::DOMString& l, const DOM::DOMString& r) const
+{
+	QString leftVal  = l.string();
+	QString rightVal = r.string();
+	switch (opCode) {
+		case OP_GT:
+			return leftVal > rightVal;
+		case OP_GE:
+			return leftVal >= rightVal;
+		case OP_LT:
+			return leftVal < rightVal;
+		case OP_LE:
+			return leftVal <= rightVal;
+		case OP_EQ:
+			return leftVal == rightVal;
+		case OP_NE:
+			return leftVal != rightVal;
+		default:
+			assert(0);
+			return false;
+	}
+}
+
+QString RelationOp::opName() const
+{
+	switch (opCode) {
 		case OP_GT:
 			return QLatin1String( "relationGT" );
 		case OP_GE:
@@ -170,45 +331,14 @@ QString NumericOp::opName() const
 			return QLatin1String( "relationLT" );
 		case OP_LE:
 			return QLatin1String( "relationLE" );
+		case OP_EQ:
+			return QLatin1String( "relationEQ" );
+		case OP_NE:
+			return QLatin1String( "relationNE" );
 		default:
 			assert(0);
 			return QString();
 	}
-}
-
-EqTestOp::EqTestOp( int _opCode, Expression* lhs, Expression* rhs ) :
-	opCode(_opCode)
-{
-	addSubExpression( lhs );
-	addSubExpression( rhs );
-}
-
-Value EqTestOp::doEvaluate() const
-{
-	Value lhs( subExpr( 0 )->evaluate() );
-	Value rhs( subExpr( 1 )->evaluate() );
-
-	bool equal;
-	if ( lhs.isBoolean() || rhs.isBoolean() ) {
-		equal = ( lhs.toBoolean() == rhs.toBoolean() );
-	} else if ( lhs.isNumber() || rhs.isNumber() ) {
-		equal = ( lhs.toNumber() == rhs.toNumber() );
-	} else {
-		equal = ( lhs.toString() == rhs.toString() );
-	}
-
-	if ( opCode == OP_EQ )
-		return Value( equal );
-	else
-		return Value( !equal );
-}
-
-QString EqTestOp::opName() const
-{
-	if ( opCode == OP_EQ )
-		return QLatin1String( "relationEQ" );
-	else
-		return QLatin1String( "relationNE" );
 }
 
 LogicalOp::LogicalOp( int _opCode, Expression* lhs, Expression* rhs ) :
@@ -299,7 +429,7 @@ bool Predicate::evaluate() const
 
 	// foo[3] really means foo[position()=3]
 	if ( result.isNumber() ) {
-		Expression *realExpr = new EqTestOp(EqTestOp::OP_EQ,
+		Expression *realExpr = new RelationOp(RelationOp::OP_EQ,
 		                FunctionLibrary::self().getFunction( "position" ),
 		                new Number( result.toNumber() ) );
 		result = realExpr->evaluate();

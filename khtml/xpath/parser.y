@@ -386,7 +386,7 @@ EqualityExpr:
 	|
 	EqualityExpr EQOP RelationalExpr
 	{
-		$$ = new EqTestOp( $2, $1, $3 );
+		$$ = new RelationOp( $2, $1, $3 );
 	}
 	;
 
@@ -395,7 +395,7 @@ RelationalExpr:
 	|
 	RelationalExpr RELOP AdditiveExpr
 	{
-		$$ = new NumericOp( $2, $1, $3 );
+		$$ = new RelationOp( $2, $1, $3 );
 	}
 	;
 

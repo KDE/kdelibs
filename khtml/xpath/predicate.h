@@ -84,11 +84,7 @@ class NumericOp : public BinaryExprBase
 			OP_Sub,
 			OP_Mul,
 			OP_Div,
-			OP_Mod,
-			OP_GT,
-			OP_LT,
-			OP_GE,
-			OP_LE
+			OP_Mod
 		};
 
 		NumericOp( int opCode, Expression* lhs, Expression* rhs );
@@ -99,20 +95,28 @@ class NumericOp : public BinaryExprBase
 		int opCode;
 };
 
-class EqTestOp : public BinaryExprBase
+class RelationOp : public BinaryExprBase
 {
 	public:
 		enum {
-			OP_EQ = 1,
-			OP_NE
+			OP_GT = 1,
+			OP_LT,
+			OP_GE,
+			OP_LE,
+			OP_EQ,
+			OP_NE			
 		};
 
-		EqTestOp( int opCode, Expression* lhs, Expression* rhs );
+		RelationOp( int opCode, Expression* lhs, Expression* rhs );
 
 	private:
 		virtual QString opName() const;
 		virtual Value doEvaluate() const;
 		int opCode;
+
+		// compares strings based on the op-code
+		bool compareStrings(const DOM::DOMString& l, const DOM::DOMString& r) const;
+		bool compareNumbers(double l, double r) const;
 };
 
 class LogicalOp : public BinaryExprBase
@@ -166,3 +170,4 @@ class Predicate
 
 #endif // PREDICATE_H
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

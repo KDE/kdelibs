@@ -309,23 +309,23 @@ Token Tokenizer::nextTokenInternal()
 		case '-':
 			return makeTokenAndAdvance(MINUS);
 		case '=':
-			return makeIntTokenAndAdvance(EQOP, EqTestOp::OP_EQ);
+			return makeIntTokenAndAdvance(EQOP, RelationOp::OP_EQ);
 		case '!':
 			if (peekAheadHelper() == '=')
-				return makeIntTokenAndAdvance(EQOP, EqTestOp::OP_NE, 2);
+				return makeIntTokenAndAdvance(EQOP, RelationOp::OP_NE, 2);
 			else {
 				return Token(ERROR);
 			}
 		case '<':
 			if (peekAheadHelper() == '=')
-				return makeIntTokenAndAdvance(RELOP, NumericOp::OP_LE, 2);
+				return makeIntTokenAndAdvance(RELOP, RelationOp::OP_LE, 2);
 			else
-				return makeIntTokenAndAdvance(RELOP, NumericOp::OP_LT);
+				return makeIntTokenAndAdvance(RELOP, RelationOp::OP_LT);
 		case '>':
 			if (peekAheadHelper() == '=')
-				return makeIntTokenAndAdvance(RELOP, NumericOp::OP_GE, 2);
+				return makeIntTokenAndAdvance(RELOP, RelationOp::OP_GE, 2);
 			else
-				return makeIntTokenAndAdvance(RELOP, NumericOp::OP_GT);
+				return makeIntTokenAndAdvance(RELOP, RelationOp::OP_GT);
 		case '*':
 			if (isOperatorContext())
 				return makeIntTokenAndAdvance(MULOP, NumericOp::OP_Mul);
