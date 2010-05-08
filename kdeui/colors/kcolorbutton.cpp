@@ -42,7 +42,7 @@ using KDEPrivate::fillOpaqueRect;
 class KColorButton::KColorButtonPrivate
 {
 public:
-    KColorButtonPrivate(KColorButton *q): q(q) {}
+    KColorButtonPrivate(KColorButton *q);
 
     void _k_chooseColor();
 
@@ -51,24 +51,26 @@ public:
     bool m_bdefaultColor : 1;
     bool m_alphaChannel : 1;
 
-    bool dragFlag : 1;
     QColor col;
     QPoint mPos;
 
     void initStyleOption(QStyleOptionButton* opt) const;    
 };
 
+KColorButton::KColorButtonPrivate::KColorButtonPrivate(KColorButton *q)
+    : q(q)
+{
+  m_bdefaultColor = false;
+  m_alphaChannel = false;
+  q->setAcceptDrops(true);
+
+  connect(q, SIGNAL(clicked()), q, SLOT(_k_chooseColor()));
+}
+
 KColorButton::KColorButton( QWidget *parent )
   : QPushButton( parent )
   , d( new KColorButtonPrivate(this) )
 {
-  d->m_bdefaultColor = false;
-  d->m_alphaChannel = false;
-  d->m_defaultColor = QColor();
-  setAcceptDrops( true);
-
-  // 2000-10-15 (putzer): fixes broken keyboard usage
-  connect (this, SIGNAL(clicked()), this, SLOT(_k_chooseColor()));
 }
 
 KColorButton::KColorButton( const QColor &c, QWidget *parent )
@@ -76,13 +78,6 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent )
   , d( new KColorButtonPrivate(this) )
 {
   d->col = c;
-  d->m_bdefaultColor = false;
-  d->m_alphaChannel = false;
-  d->m_defaultColor = QColor();
-  setAcceptDrops( true);
-
-  // 2000-10-15 (putzer): fixes broken keyboard usage
-  connect (this, SIGNAL(clicked()), this, SLOT(_k_chooseColor()));
 }
 
 KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent )
@@ -90,13 +85,7 @@ KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget
   , d( new KColorButtonPrivate(this) )
 {
   d->col = c;
-  d->m_bdefaultColor = true;
-  d->m_alphaChannel = false;
-  d->m_defaultColor = defaultColor;
-  setAcceptDrops( true);
-
-  // 2000-10-15 (putzer): fixes broken keyboard usage
-  connect (this, SIGNAL(clicked()), this, SLOT(_k_chooseColor()));
+  setDefaultColor(defaultColor);
 }
 
 KColorButton::~KColorButton()
@@ -153,24 +142,25 @@ void KColorButton::KColorButtonPrivate::initStyleOption(QStyleOptionButton* opt)
 void KColorButton::paintEvent( QPaintEvent* )
 {
   QPainter painter(this);
+  QStyle *style = QWidget::style();
 
   //First, we need to draw the bevel.
   QStyleOptionButton butOpt;
   d->initStyleOption(&butOpt);
-  style()->drawControl( QStyle::CE_PushButtonBevel, &butOpt, &painter, this );
+  style->drawControl( QStyle::CE_PushButtonBevel, &butOpt, &painter, this );
 
   //OK, now we can muck around with drawing out pretty little color box
   //First, sort out where it goes
-  QRect labelRect = style()->subElementRect( QStyle::SE_PushButtonContents,
+  QRect labelRect = style->subElementRect( QStyle::SE_PushButtonContents,
       &butOpt, this );
-  int shift = style()->pixelMetric( QStyle::PM_ButtonMargin ) / 2;
+  int shift = style->pixelMetric( QStyle::PM_ButtonMargin, &butOpt, this ) / 2;
   labelRect.adjust(shift, shift, -shift, -shift);
   int x, y, w, h;
   labelRect.getRect(&x, &y, &w, &h);
 
   if (isChecked() || isDown()) {
-    x += style()->pixelMetric( QStyle::PM_ButtonShiftHorizontal );
-    y += style()->pixelMetric( QStyle::PM_ButtonShiftVertical   );
+    x += style->pixelMetric( QStyle::PM_ButtonShiftHorizontal, &butOpt, this );
+    y += style->pixelMetric( QStyle::PM_ButtonShiftVertical, &butOpt, this );
   }
 
   QColor fillCol = isEnabled() ? d->col : palette().color(backgroundRole());
@@ -180,12 +170,12 @@ void KColorButton::paintEvent( QPaintEvent* )
   }
 
   if ( hasFocus() ) {
-    QRect focusRect = style()->subElementRect( QStyle::SE_PushButtonFocusRect, &butOpt, this );
+    QRect focusRect = style->subElementRect( QStyle::SE_PushButtonFocusRect, &butOpt, this );
     QStyleOptionFocusRect focusOpt;
     focusOpt.init(this);
     focusOpt.rect            = focusRect;
     focusOpt.backgroundColor = palette().background().color();
-    style()->drawPrimitive( QStyle::PE_FrameFocusRect, &focusOpt, &painter, this );
+    style->drawPrimitive( QStyle::PE_FrameFocusRect, &focusOpt, &painter, this );
   }
 }
 
