@@ -137,7 +137,9 @@ namespace KJS {
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async,
            GetElementsByClassName, Title, ExecCommand, QueryCommandEnabled,
            QueryCommandIndeterm, QueryCommandState, QueryCommandSupported,
-           QueryCommandValue, QuerySelector, QuerySelectorAll };
+           QueryCommandValue, QuerySelector, QuerySelectorAll,
+           CreateExpression, CreateNSResolver, Evaluate
+           };
     DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
   

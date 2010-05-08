@@ -36,12 +36,12 @@ namespace XPath {
 Expression *khtmlParseXPathStatement( const DOMString &statement, int& ec );
 
 ParsedStatement::ParsedStatement()
-	: m_expr( 0 )
+	: m_expr( 0 ), m_ec( 0 )
 {
 }
 
 ParsedStatement::ParsedStatement( const DOMString &statement )
-	: m_expr( 0 )
+	: m_expr( 0 ), m_ec( 0 )
 {
 	parse( statement );
 }
@@ -53,12 +53,9 @@ ParsedStatement::~ParsedStatement()
 
 void ParsedStatement::parse( const DOMString &statement )
 {
-	int ec = 0; 
+	m_ec = 0;
 	delete m_expr;
-	m_expr = khtmlParseXPathStatement( statement, ec );
-#ifdef __GNUC__
-	#warning "Propagate exception from here"
-#endif
+	m_expr = khtmlParseXPathStatement( statement, m_ec );
 }
 
 void ParsedStatement::optimize()

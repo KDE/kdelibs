@@ -2162,6 +2162,7 @@ Expression *khtmlParseXPathStatement( const DOM::DOMString &statement, int& ec )
 {
 //	qDebug() << "Parsing " << statement;
 	xpathParseException = 0;
+	_topExpr = 0;
 	initTokenizer( statement );
 	yyparse();
 

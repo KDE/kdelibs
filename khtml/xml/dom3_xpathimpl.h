@@ -1,6 +1,6 @@
 /*
  * dom3_xpathimpl.h - Copyright 2005 Frerich Raabe <raabe@kde.org>
- *                      Copyright 2010 Maksim Orlovich <maksim@kde.org>
+ *                    Copyright 2010 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -68,6 +68,9 @@ class XPathExpressionImpl : public Shared<XPathExpressionImpl>
 	public:
 		XPathExpressionImpl( const DOM::DOMString &expression,
 		                     XPathNSResolverImpl *resolver );
+
+		// expression we got while parsing, or 0
+		int parseExceptionCode();
 
 		XPathResultImpl *evaluate( DOM::NodeImpl *contextNode,
 		                           unsigned short type,

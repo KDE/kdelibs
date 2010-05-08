@@ -198,7 +198,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		case FollowingSiblingAxis: {
 			if ( context->nodeType() == Node::ATTRIBUTE_NODE ||
 			     context->nodeType() == Node::XPATH_NAMESPACE_NODE ) {
-				return DomNodeList();
+				return nodes; // empty
 			}
 
 			NodeImpl *n = context->nextSibling();
@@ -211,7 +211,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		case PrecedingSiblingAxis: {
 			if ( context->nodeType() == Node::ATTRIBUTE_NODE ||
 			     context->nodeType() == Node::XPATH_NAMESPACE_NODE ) {
-				return DomNodeList();
+				return nodes; // empty
 			}
 
 			NodeImpl *n = context->previousSibling();
@@ -249,7 +249,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		}
 		case AttributeAxis: {
 			if ( context->nodeType() != Node::ELEMENT_NODE ) {
-				return DomNodeList();
+				return nodes; // empty
 			}
 
 			NamedAttrMapImpl *attrs = static_cast<ElementImpl*>(context)->attributes( true /*read-only*/ );
@@ -265,7 +265,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		}
 		case NamespaceAxis: {
 			if ( context->nodeType() != Node::ELEMENT_NODE ) {
-				return DomNodeList();
+				return nodes;
 			}
 
 			bool foundXmlNsNode = false;
@@ -315,7 +315,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			qDebug() << "Unknown axis " << axisAsString( m_axis ) << " passed to Step::nodesInAxis";
 	}
 
-	return DomNodeList();
+	return nodes; // empty
 }
 
 DomNodeList Step::nodeTestMatches( const DomNodeList &nodes ) const

@@ -63,6 +63,10 @@ namespace khtml {
     class CachedObject;
     class CachedCSSStyleSheet;
     class DynamicDomRestyler;
+
+    class XPathResultImpl;
+    class XPathExpressionImpl;
+    class XPathNSResolverImpl;
 }
 
 namespace WebCore
@@ -228,6 +232,17 @@ public:
                                            int* pExceptioncode = 0 );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
+    // DOM3 XPath, from XPathEvaluator interface
+    khtml::XPathExpressionImpl *createExpression( DOM::DOMString& expression,
+                                                  khtml::XPathNSResolverImpl *resolver,
+                                                  int &exceptioncode );
+    khtml::XPathNSResolverImpl *createNSResolver( NodeImpl *nodeResolver );
+    khtml::XPathResultImpl *evaluate( DOM::DOMString& expression,
+                                      NodeImpl *contextNode,
+                                      khtml::XPathNSResolverImpl *resolver,
+                                      unsigned short type,
+                                      khtml::XPathResultImpl *result,
+                                      int &exceptioncode );
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
     DOMString title() const { return m_title; }

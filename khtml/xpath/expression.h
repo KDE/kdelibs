@@ -78,7 +78,7 @@ class Value
 		bool isNumber() const;
 		bool isString() const;
 
-		DomNodeList &toNodeset();
+		DomNodeList &toNodeset(); // may return 0
 		const DomNodeList &toNodeset() const;
 		bool toBoolean() const;
 		double toNumber() const;

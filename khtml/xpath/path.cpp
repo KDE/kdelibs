@@ -65,6 +65,7 @@ Value Filter::doEvaluate() const
 	}
 
 	DomNodeList inNodes = v.toNodeset(), outNodes;
+
 	foreach( Predicate *predicate, m_predicates ) {
 		outNodes = new StaticNodeListImpl();
 		Expression::evaluationContext().size = int(inNodes->length());

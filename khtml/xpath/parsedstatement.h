@@ -53,8 +53,12 @@ class ParsedStatement
 
 		Value evaluate( DOM::NodeImpl *context ) const;
 
+		// Any exception issued during parsing, or 0
+		int exceptionCode() { return m_ec; }
+
 	private:
 		Expression *m_expr;
+		int m_ec;
 };
 
 } // namespace XPath
@@ -63,4 +67,5 @@ class ParsedStatement
 
 
 #endif // PARSEDSTATEMENT_H
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
 

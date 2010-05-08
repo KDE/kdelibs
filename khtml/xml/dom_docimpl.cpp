@@ -6,6 +6,8 @@
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2006 Apple Computer, Inc.
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2005 Frerich Raabe <raabe@kde.org>
+ *           (C) 2010 Maksim Orlovich <maksim@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -69,6 +71,7 @@
 #include <khtml_settings.h>
 #include <khtmlpart_p.h>
 
+#include <xml/dom3_xpathimpl.h>
 #include <html/html_baseimpl.h>
 #include <html/html_blockimpl.h>
 #include <html/html_canvasimpl.h>
@@ -3028,6 +3031,49 @@ bool DocumentImpl::queryCommandSupported(const DOMString &command)
 DOMString DocumentImpl::queryCommandValue(const DOMString &command)
 {
     return jsEditor()->queryCommandValue(jsEditor()->commandImp(command));
+}
+
+// ----------------------------------------------------------------------------
+// DOM3 XPath, from XPathEvaluator interface
+
+khtml::XPathExpressionImpl* DocumentImpl::createExpression(DOMString &expression,
+                                                  khtml::XPathNSResolverImpl *resolver,
+                                                  int &exceptioncode )
+{
+    XPathExpressionImpl* cand = new XPathExpressionImpl( expression, resolver );
+    if ((exceptioncode = cand->parseExceptionCode())) {
+        delete cand;
+        return 0;
+    }
+
+    return cand;
+}
+
+khtml::XPathNSResolverImpl* DocumentImpl::createNSResolver( NodeImpl *nodeResolver )
+{
+    return nodeResolver ? new DefaultXPathNSResolverImpl(nodeResolver) : 0;
+}
+
+khtml::XPathResultImpl * DocumentImpl::evaluate( DOMString &expression,
+                                      NodeImpl *contextNode,
+                                      khtml::XPathNSResolverImpl *resolver,
+                                      unsigned short type,
+                                      khtml::XPathResultImpl * /*result*/,
+                                      int &exceptioncode )
+{
+    XPathExpressionImpl *expr = createExpression( expression, resolver, exceptioncode );
+    if ( exceptioncode )
+        return 0;
+
+    XPathResultImpl *res = expr->evaluate( contextNode, type, 0, exceptioncode );
+    delete expr;  // don't need it anymore.
+    
+    if ( exceptioncode ) {
+        delete res;
+        return 0;
+    }
+
+    return res;
 }
 
 // ----------------------------------------------------------------------------

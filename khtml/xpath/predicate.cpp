@@ -265,7 +265,7 @@ Value Union::doEvaluate() const
 	Value rhs = subExpr( 1 )->evaluate();
 	if ( !lhs.isNodeset() || !rhs.isNodeset() ) {
 		qWarning( "Union operator '|' works only with nodesets." );
-		return Value( DomNodeList() );
+		return Value( new StaticNodeListImpl );
 	}
 
 	DomNodeList lhsNodes = lhs.toNodeset();

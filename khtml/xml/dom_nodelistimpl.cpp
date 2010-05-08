@@ -342,7 +342,7 @@ void StaticNodeListImpl::append(NodeImpl* n) {
 }
 
 NodeImpl* StaticNodeListImpl::item ( unsigned long index ) const {
-    return m_kids[index].get();
+    return index < m_kids.size() ? m_kids[index].get() : 0;
 }
 
 unsigned long StaticNodeListImpl::length() const {

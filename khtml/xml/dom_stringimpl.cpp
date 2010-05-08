@@ -196,7 +196,7 @@ DOMStringImpl *DOMStringImpl::split(unsigned int pos)
 DOMStringImpl *DOMStringImpl::substring(unsigned int pos, unsigned int len)
 {
   if( pos >=l ) return new DOMStringImpl();
-  if(pos+len > l)
+  if( len == UINT_MAX || pos+len > l)
     len = l - pos;
 
   return new DOMStringImpl(s + pos, len);

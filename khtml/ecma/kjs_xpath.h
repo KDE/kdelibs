@@ -100,6 +100,8 @@ public:
     JSXPathNSResolver(Interpreter* ctx, JSObject* impl);
     virtual Type type();
     DOM::DOMString lookupNamespaceURI( const DOM::DOMString& prefix );
+
+    JSObject* resolverObject() { return impl; }
 private:
     JSObject* impl;
     Interpreter* ctx;

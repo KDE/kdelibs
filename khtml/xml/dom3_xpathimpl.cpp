@@ -136,7 +136,7 @@ NodeImpl *XPathResultImpl::singleNodeValue(int &exceptioncode) const
 	}
 	DomNodeList nodes = m_value.toNodeset();
 
-	if (nodes->length())
+	if (nodes && nodes->length())
 		return nodes->item(0);
 	else
 		return 0;
@@ -160,7 +160,9 @@ unsigned long XPathResultImpl::snapshotLength(int &exceptioncode) const
 		exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 		return 0;
 	}
-	return m_value.toNodeset()->length();
+
+	SharedPtr<DOM::StaticNodeListImpl> nodes = m_value.toNodeset();
+	return nodes ? nodes->length() : 0;
 }
 
 NodeImpl *XPathResultImpl::iterateNext(int &exceptioncode)
@@ -173,10 +175,11 @@ NodeImpl *XPathResultImpl::iterateNext(int &exceptioncode)
 	// XXX How to tell whether the document was changed since this
 	// result was returned? We need to throw an INVALID_STATE_ERR if that
 	// is the case.
-	if ( m_nodeIterator >= m_value.toNodeset()->length() ) {
+	SharedPtr<DOM::StaticNodeListImpl> nodes = m_value.toNodeset();
+	if ( !nodes || m_nodeIterator >= nodes->length() ) {
 		return 0;
 	} else {
-		NodeImpl* n = m_value.toNodeset()->item(m_nodeIterator);
+		NodeImpl* n = nodes->item(m_nodeIterator);
 		++m_nodeIterator;
 		return n;
 	}
@@ -190,7 +193,7 @@ NodeImpl *XPathResultImpl::snapshotItem( unsigned long index, int &exceptioncode
 		return 0;
 	}
 	DomNodeList nodes = m_value.toNodeset();
-	if ( index >= nodes->length() ) {
+	if ( !nodes || index >= nodes->length() ) {
 		return 0;
 	}
 	return nodes->item( index );
@@ -212,53 +215,6 @@ DOMString DefaultXPathNSResolverImpl::lookupNamespaceURI( const DOMString& prefi
 	}
 	return m_node->lookupNamespaceURI( prefix );
 }
-
-// ---------------------------------------------------------------------------
-
-// ### This needs to be assocated with the document. Will just
-// remove this class, and have it directly inside DocumentImpl.
-#if 0
-
-XPathExpressionImpl *XPathEvaluatorImpl::createExpression( DOMStringImpl *expression,
-                                                           XPathNSResolverImpl *resolver,
-                                                           int & )
-{
-	return new XPathExpressionImpl( expression, resolver );
-}
-
-XPathNSResolverImpl *XPathEvaluatorImpl::createNSResolver( NodeImpl *nodeResolver )
-{
-	return new XPathNSResolverImpl( nodeResolver );
-}
-
-XPathResultImpl *XPathEvaluatorImpl::evaluate( DOMStringImpl *expression,
-                                               NodeImpl *contextNode,
-                                               XPathNSResolverImpl *resolver,
-                                               unsigned short type,
-                                               XPathResultImpl *result,
-                                               int &exceptioncode )
-{
-	if ( !isValidContextNode( contextNode ) ) {
-		exceptioncode = NOT_SUPPORTED_ERR;
-		return 0;
-	}
-
-	XPathExpressionImpl *expr = createExpression( expression, resolver, exceptioncode );
-	if ( exceptioncode )
-		return 0;
-
-	XPathResultImpl *res = expr->evaluate( contextNode, type, result, exceptioncode );
-	if ( exceptioncode )
-		return 0;
-
-	delete expr;
-	if ( result ) {
-		result = res;
-		result->ref(); //### looks dubious
-	}
-	return res;
-}
-#endif
 
 // ---------------------------------------------------------------------------
 XPathExpressionImpl::XPathExpressionImpl( const DOMString& expression, XPathNSResolverImpl *resolver )
@@ -291,6 +247,9 @@ XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
 	return result;
 }
 
+int XPathExpressionImpl::parseExceptionCode()
+{
+	return m_statement.exceptionCode();
+}
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
-

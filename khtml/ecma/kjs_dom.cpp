@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2010 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -28,6 +29,7 @@
 #include <rendering/render_layer.h>
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
+#include <xml/dom3_xpathimpl.h>
 #include <misc/htmltags.h> // ID_*
 #include <misc/htmlattrs.h> // ATTR_*
 #include <html/html_baseimpl.h>
@@ -48,6 +50,7 @@
 #include "kjs_events.h"
 #include "kjs_views.h"
 #include "kjs_window.h"
+#include "kjs_xpath.h"
 #include "xmlhttprequest.h"
 #include <kjs/PropertyNameArray.h>
 #include <dom/dom_exception.h>
@@ -943,6 +946,9 @@ AttrImpl *toAttr(JSValue *val)
   getElementsByClassName DOMDocument::GetElementsByClassName   DontDelete|Function 1
   querySelector          DOMDocument::QuerySelector            DontDelete|Function 1
   querySelectorAll       DOMDocument::QuerySelectorAll         DontDelete|Function 1
+  createExpression       DOMDocument::CreateExpression         DontDelete|Function 2
+  createNSResolver       DOMDocument::CreateNSResolver         DontDelete|Function 1
+  evaluate               DOMDocument::Evaluate                 DontDelete|Function 4
 @end
 */
 
@@ -1197,6 +1203,27 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::QuerySelectorAll: {
     RefPtr<DOM::NodeListImpl> l = doc.querySelectorAll(s, exception);
     return getDOMNodeList(exec, l.get());
+  }
+  case DOMDocument::CreateExpression: {
+    RefPtr<khtml::XPathNSResolverImpl> res = toResolver(exec, args[1]);
+    RefPtr<khtml::XPathExpressionImpl> e = doc.createExpression(s, res.get(), exception);
+    JSValue* wrapper = getWrapper<KJS::XPathExpression>(exec, e.get());
+
+    // protect the resolver if needed
+    if (!wrapper->isNull() && res && res->type() == khtml::XPathNSResolverImpl::JS) {
+      static_cast<XPathExpression*>(wrapper)->setAssociatedResolver(static_cast<JSXPathNSResolver*>(res.get())->resolverObject());
+    }
+
+    return wrapper;
+  }
+  case DOMDocument::Evaluate: {
+    return getWrapper<KJS::XPathResult>(exec,
+          doc.evaluate(s, // expression
+                      toNode(args[1]), // contextNode,
+                      toResolver(exec, args[2]), // resolver
+                      args[3]->toInt32(exec), // type
+                      0, // result reuse, ignored
+                      exception));
   }
   default:
     break;

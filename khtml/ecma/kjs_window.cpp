@@ -69,6 +69,7 @@
 #include "kjs_views.h"
 #include "kjs_audio.h"
 #include "kjs_context2d.h"
+#include "kjs_xpath.h"
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
 #include "domparser.h"
@@ -390,6 +391,9 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontEnum|DontDelete
   StyleSheet   Window::StyleSheetCtor DontEnum|DontDelete
   CanvasRenderingContext2D Window::Context2DCtor DontEnum|DontDelete
+  XPathResult Window::XPathResultCtor DontEnum|DontDelete
+  XPathExpression Window::XPathExpressionCtor DontEnum|DontDelete
+  XPathNSResolver Window::XPathNSResolverCtor DontEnum|DontDelete
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
@@ -873,6 +877,12 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return HTMLCanvasElementPseudoCtor::self(exec);
     case Context2DCtor:
       return Context2DPseudoCtor::self(exec);
+    case XPathResultCtor:
+      return XPathResultPseudoCtor::self(exec);
+    case XPathExpressionCtor:
+      return XPathExpressionPseudoCtor::self(exec);
+    case XPathNSResolverCtor:
+       return XPathNSResolverPseudoCtor::self(exec);
     case DocumentCtor:
       return DocumentPseudoCtor::self(exec);
     case HTMLDocumentCtor:

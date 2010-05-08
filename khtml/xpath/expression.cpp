@@ -45,6 +45,7 @@ Value::Value()
 Value::Value( NodeImpl *value )
 	: m_type( Nodeset )
 {
+	m_nodeset = new StaticNodeListImpl;
 	m_nodeset->append( value );
 }
 
@@ -117,7 +118,7 @@ bool Value::toBoolean() const
 {
 	switch ( m_type ) {
 		case Nodeset:
-			return m_nodeset->length() != 0;
+			return m_nodeset && m_nodeset->length() != 0;
 		case Boolean:
 			return m_bool;
 		case Number:
@@ -155,7 +156,7 @@ DOMString Value::toString() const
 {
 	switch ( m_type ) {
 		case Nodeset:
-			if ( m_nodeset->length() == 0 ) {
+			if ( m_nodeset && m_nodeset->length() == 0 ) {
 				return DOMString( "" );
 			}
 			return stringValue( m_nodeset->item(0) );
@@ -278,3 +279,4 @@ bool Expression::isConstant() const
 	return true;
 }
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

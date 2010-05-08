@@ -51,8 +51,8 @@ static QString stringValueImpl( NodeImpl *node )
 			     || node->nodeType() == Node::ELEMENT_NODE ) {
 				QString str;
 
-				for ( NodeImpl *cur = node; cur; cur = cur->traverseNextNode(node) ) {
-					str.append( stringValueImpl( node ) );
+				for ( NodeImpl *cur = node->firstChild(); cur; cur = cur->traverseNextNode(node) ) {
+					str.append( stringValueImpl( cur ) );
 				}
 				return str;
 			}
