@@ -18,39 +18,27 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-//-----------------------------------------------------------------------------
-// KDE color selection dialog.
-//
-// 1999-09-27 Espen Sand <espensa@online.no>
-// KColorDialog is now subclassed from KDialog. I have also extended
-// KColorDialog::getColor() so that in contains a parent argument. This
-// improves centering capability.
-//
-// layout management added Oct 1997 by Mario Weilguni
-// <mweilguni@sime.com>
-//
 
 #include "kcolorcombo.h"
 
-#include <QtCore/QVector>
 #include <QtGui/QAbstractItemDelegate>
 #include <QtGui/QApplication>
 #include <QtGui/QStylePainter>
 
-#include <kglobal.h>
 #include <klocale.h>
 
 #include "kcolordialog.h"
 
-// This is repeated from the KColorDlg, but I didn't
-// want to make it public BL.
-// We define it out when compiling with --enable-final in which case
-// we use the version defined in KColorDlg
-
 class KColorComboDelegate : public QAbstractItemDelegate
 {
     public:
-        static const int ColorRole = Qt::UserRole + 1;
+        enum ItemRoles {
+            ColorRole = Qt::UserRole + 1
+        };
+
+        enum LayoutMetrics {
+            FrameMargin = 3
+        };
 
         KColorComboDelegate(QObject *parent = 0);
         virtual ~KColorComboDelegate();
@@ -58,8 +46,6 @@ class KColorComboDelegate : public QAbstractItemDelegate
         virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
         virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
-
-static const int colorframe_delta = 3;
 
 static QBrush k_colorcombodelegate_brush(const QModelIndex &index, int role)
 {
@@ -98,7 +84,7 @@ void KColorComboDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     opt.showDecorationSelected = true;
     QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
-    QRect innerrect = option.rect.adjusted(colorframe_delta, colorframe_delta, -colorframe_delta - 1, -colorframe_delta - 1);
+    QRect innerrect = option.rect.adjusted(FrameMargin, FrameMargin, -FrameMargin, -FrameMargin);
     // inner color
     QVariant cv = index.data(ColorRole);
     if (cv.type() == QVariant::Color) {
@@ -145,47 +131,46 @@ QSize KColorComboDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     Q_UNUSED(index)
 
     // the width does not matter, as the view will always use the maximum width available
-    return QSize(100, option.fontMetrics.height() + 2 * colorframe_delta);
+    return QSize(100, option.fontMetrics.height() + 2 * FrameMargin);
 }
 
 
-#define STANDARD_PAL_SIZE 26
+static const uchar standardPalette[][4] = {
+    { 255, 255, 255 }, // white
+    { 192, 192, 192 }, // light gray
+    { 160, 160, 160 }, // gray
+    { 128, 128, 128 }, // dark gray
+    { 0, 0, 0 }, // black
 
-K_GLOBAL_STATIC_WITH_ARGS(QVector<QColor>, standardPalette, (STANDARD_PAL_SIZE))
-static void createStandardPalette()
+    { 255, 128, 128 }, //light red
+    { 255, 192, 128 }, //light orange
+    { 255, 255, 128 }, //light yellow
+    { 128, 255, 128 }, //light green
+    { 128, 255, 255 }, //cyan blue
+    { 128, 128, 255 }, //light blue
+    { 255, 128, 255 }, //light violet
+    { 255, 0, 0 }, //red
+    { 255, 128, 0 }, //orange
+    { 255, 255, 0 }, //yellow
+    { 0, 255, 0 }, //green
+    { 0, 255, 255 }, //light blue
+    { 0, 0, 255 }, //blue
+    { 255, 0, 255 }, //violet
+    { 128, 0, 0 }, //dark red
+    { 128, 64, 0 }, //dark orange
+    { 128, 128, 0 }, //dark yellow
+    { 0, 128, 0 }, //dark green
+    { 0, 128, 128 }, //dark light blue
+    { 0, 0, 128 }, //dark blue
+    { 128, 0, 128 } //dark violet
+};
+
+#define STANDARD_PALETTE_SIZE (int(sizeof(standardPalette) / sizeof(*standardPalette)))
+
+static inline QColor standardColor(int i)
 {
-    if ( standardPalette->isEmpty() )
-        return;
-
-    int i = 0;
-
-    (*standardPalette)[i++] = Qt::white;
-    (*standardPalette)[i++] = Qt::lightGray;
-    (*standardPalette)[i++] = Qt::gray;
-    (*standardPalette)[i++] = Qt::darkGray;
-    (*standardPalette)[i++] = Qt::black;
-
-    (*standardPalette)[i++] = QColor(255, 128, 128); //light red
-    (*standardPalette)[i++] = QColor(255, 192, 128); //light orange
-    (*standardPalette)[i++] = QColor(255, 255, 128); //light yellow
-    (*standardPalette)[i++] = QColor(128, 255, 128); //light green
-    (*standardPalette)[i++] = QColor(128, 255, 255); //cyan blue
-    (*standardPalette)[i++] = QColor(128, 128, 255); //light blue
-    (*standardPalette)[i++] = QColor(255, 128, 255); //light violet 
-    (*standardPalette)[i++] = QColor(255, 0, 0); //red
-    (*standardPalette)[i++] = QColor(255, 128, 0); //orange
-    (*standardPalette)[i++] = QColor(255, 255, 0); //yellow
-    (*standardPalette)[i++] = QColor(0, 255, 0); //green
-    (*standardPalette)[i++] = QColor(0, 255, 255); //light blue
-    (*standardPalette)[i++] = QColor(0, 0, 255); //blue
-    (*standardPalette)[i++] = QColor(255, 0, 255); //violet
-    (*standardPalette)[i++] = QColor(128, 0, 0); //dark red
-    (*standardPalette)[i++] = QColor(128, 64, 0); //dark orange
-    (*standardPalette)[i++] = QColor(128, 128, 0); //dark yellow
-    (*standardPalette)[i++] = QColor(0, 128, 0); //dark green
-    (*standardPalette)[i++] = QColor(0, 128, 128); //dark light blue
-    (*standardPalette)[i++] = QColor(0, 0, 128); //dark blue
-    (*standardPalette)[i++] = QColor(128, 0, 128); //dark violet
+    const uchar *entry = standardPalette[i];
+    return QColor(entry[0], entry[1], entry[2]);
 }
 
 class KColorComboPrivate
@@ -215,8 +200,8 @@ void KColorComboPrivate::setCustomColor(const QColor &color, bool lookupInPreset
 {
     if (lookupInPresets) {
         if (colorList.isEmpty()) {
-            for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
-                if (standardPalette->at(i) == color) {
+            for (int i = 0; i < STANDARD_PALETTE_SIZE; ++i) {
+                if (standardColor(i) == color) {
                     q->setCurrentIndex(i + 1);
                     internalcolor = color;
                     return;
@@ -241,8 +226,6 @@ void KColorComboPrivate::setCustomColor(const QColor &color, bool lookupInPreset
 KColorCombo::KColorCombo( QWidget *parent )
     : QComboBox(parent), d(new KColorComboPrivate(this))
 {
-	createStandardPalette();
-
     setItemDelegate(new KColorComboDelegate(this));
     d->addColors();
 
@@ -273,8 +256,8 @@ QList<QColor> KColorCombo::colors() const
 {
     if (d->colorList.isEmpty()) {
         QList<QColor> list;
-        for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
-            list += standardPalette->at(i);
+        for (int i = 0; i < STANDARD_PALETTE_SIZE; ++i) {
+            list += standardColor(i);
 	}
         return list;
     } else {
@@ -343,7 +326,7 @@ void KColorComboPrivate::_k_slotActivated(int index)
             setCustomColor(customColor, false);
         }
     } else if (colorList.isEmpty()) {
-        internalcolor = standardPalette->at(index - 1);
+        internalcolor = standardColor(index - 1);
     } else {
         internalcolor = colorList[index - 1];
     }
@@ -356,7 +339,7 @@ void KColorComboPrivate::_k_slotHighlighted(int index)
     if (index == 0) {
         internalcolor = customColor;
     } else if (colorList.isEmpty()) {
-        internalcolor = standardPalette->at(index - 1);
+        internalcolor = standardColor(index - 1);
     } else {
         internalcolor = colorList[index - 1];
     }
@@ -369,9 +352,9 @@ void KColorComboPrivate::addColors()
     q->addItem(i18nc("Custom color", "Custom..."));
 
     if (colorList.isEmpty()) {
-        for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
+        for (int i = 0; i < STANDARD_PALETTE_SIZE; ++i) {
             q->addItem(QString());
-            q->setItemData(i + 1, standardPalette->at(i), KColorComboDelegate::ColorRole);
+            q->setItemData(i + 1, standardColor(i), KColorComboDelegate::ColorRole);
         }
     } else {
         for (int i = 0, count = colorList.count(); i < count; ++i) {
