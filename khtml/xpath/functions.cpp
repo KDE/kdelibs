@@ -24,6 +24,7 @@
  */
 #include "functions.h"
 
+#include "xml/dom_docimpl.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_nodelistimpl.h"
 #include "xml/dom_elementimpl.h"
@@ -109,6 +110,12 @@ class FunName : public Function
 	public:
 		virtual bool isConstant() const;
 
+	private:
+		virtual Value doEvaluate() const;
+};
+
+class FunId : public Function
+{
 	private:
 		virtual Value doEvaluate() const;
 };
@@ -248,6 +255,7 @@ DEFINE_FUNCTION_CREATOR( FunCount )
 DEFINE_FUNCTION_CREATOR( FunLocalName )
 DEFINE_FUNCTION_CREATOR( FunNamespaceURI )
 DEFINE_FUNCTION_CREATOR( FunName )
+DEFINE_FUNCTION_CREATOR( FunId )
 
 DEFINE_FUNCTION_CREATOR( FunString )
 DEFINE_FUNCTION_CREATOR( FunConcat )
@@ -441,6 +449,38 @@ Value FunNamespaceURI::doEvaluate() const
 	}
 
 	return Value( node->namespaceURI().string() );
+}
+
+Value FunId::doEvaluate() const
+{
+	Value a = arg( 0 )->evaluate();
+
+	WTF::Vector<DOM::DOMString> ids;
+
+	QString queryString; // whitespace-separated IDs
+	if ( a.isNodeset() ) {
+		DomNodeList set = a.toNodeset();
+		for ( unsigned long i = 0; i < set->length(); ++i)
+			queryString += stringValue( set->item(i) ).string() + QLatin1Char(' ');
+	} else {
+		queryString = a.toString().string();
+	}
+	
+	QStringList qids = queryString.simplified().split(' ');
+	for ( int i = 0; i < qids.size(); ++i)
+			ids.append( DOM::DOMString( qids[i] ) );
+
+	DomNodeList out = new StaticNodeListImpl();
+	DOM::DocumentImpl* doc = Expression::evaluationContext().node->document();
+
+	for ( unsigned i = 0; i < ids.size(); ++i ) {
+		DOM::ElementImpl* e = doc->getElementById( ids[i] );
+
+		if ( e )
+			out->append( e );
+	}
+
+	return Value( out );
 }
 
 bool FunName::isConstant() const
@@ -769,7 +809,9 @@ static FunctionMapping functions[] = {
 	{ "sum", { &createFunSum, 1 } },
 	{ "local-name", { &createFunLocalName, Interval( 0, 1 ) } },
 	{ "namespace-uri", { &createFunNamespaceURI, Interval( 0, 1 ) } },
+	{ "id",   { &createFunId, 1 } },
 	{ "name", { &createFunName, Interval( 0, 1 ) } },
+	
 
 	{ "string", { &createFunString, Interval( 0, 1 ) } },
 	{ "concat", { &createFunConcat, Interval( 2, Interval::Inf ) } },
@@ -834,3 +876,5 @@ Function *FunctionLibrary::getFunction( const DOM::DOMString& name,
 
 } //namespace XPath
 } //namespace khtml
+
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
