@@ -56,6 +56,7 @@ set(kdeui_LIB_SRCS
  colors/kcolorutils.cpp
  colors/kcolorscheme.cpp
  colors/kcolorcollection.cpp
+ colors/kcolorhelpers.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
  colors/kcolorchoosermode.cpp

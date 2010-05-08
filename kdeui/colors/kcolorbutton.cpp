@@ -33,8 +33,11 @@
 #include <QMouseEvent>
 #include <QStyleOptionButton>
 #include "kcolordialog.h"
+#include "kcolorhelpers_p.h"
 #include "kcolormimedata.h"
 #include "kdebug.h"
+
+using KDEPrivate::fillOpaqueRect;
 
 class KColorButton::KColorButtonPrivate
 {
@@ -173,17 +176,7 @@ void KColorButton::paintEvent( QPaintEvent* )
   QColor fillCol = isEnabled() ? d->col : palette().color(backgroundRole());
   qDrawShadePanel( &painter, x, y, w, h, palette(), true, 1, NULL);
   if ( fillCol.isValid() ) {
-    if ( fillCol.alpha() != 255 ) {
-      QPixmap chessboardPattern(16, 16);
-      QPainter patternPainter(&chessboardPattern);
-      patternPainter.fillRect( 0, 0, 8, 8, Qt::black);
-      patternPainter.fillRect( 8, 8, 8, 8, Qt::black);
-      patternPainter.fillRect( 0, 8, 8, 8, Qt::white);
-      patternPainter.fillRect( 8, 0, 8, 8, Qt::white);
-      patternPainter.end();
-      painter.fillRect( x+1, y+1, w-2, h-2, QBrush(chessboardPattern) );
-    }
-    painter.fillRect( x+1, y+1, w-2, h-2, fillCol );
+    fillOpaqueRect(&painter, QRect( x+1, y+1, w-2, h-2), fillCol );
   }
 
   if ( hasFocus() ) {

@@ -75,13 +75,12 @@
 #include <kdebug.h>
 
 #include "kcolorchoosermode_p.h"
+#include "kcolorhelpers_p.h"
 #include "kselector.h"
 #include "kcolorvalueselector.h"
 #include "khuesaturationselect.h"
 #include "kxyselector.h"
 #include <kconfiggroup.h>
-
-#include <iostream>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -495,17 +494,7 @@ void KColorPatch::paintEvent(QPaintEvent* pe)
     QFrame::paintEvent(pe);
     QPainter painter(this);
 
-    if (d->color.alpha() != 255) {
-        QPixmap chessboardPattern(16, 16);
-        QPainter patternPainter(&chessboardPattern);
-        patternPainter.fillRect(0, 0, 8, 8, Qt::black);
-        patternPainter.fillRect(8, 8, 8, 8, Qt::black);
-        patternPainter.fillRect(0, 8, 8, 8, Qt::white);
-        patternPainter.fillRect(8, 0, 8, 8, Qt::white);
-        patternPainter.end();
-        painter.fillRect(contentsRect(), QBrush(chessboardPattern));
-    }
-    painter.fillRect(contentsRect(), d->color);
+    fillOpaqueRect(&painter, contentsRect(), d->color);
 }
 
 void KColorPatch::mouseMoveEvent(QMouseEvent *e)
