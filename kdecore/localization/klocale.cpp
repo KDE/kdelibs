@@ -83,8 +83,18 @@ KLocaleStaticData::KLocaleStaticData()
     // Languages using non-Western Arabic digit sets.
     // FIXME: Temporary until full language-sensitivity implemented.
     languagesUsingDigitSet.insert(KLocale::ArabicIndicDigits, QStringList() << "ar" << "ps");
-    languagesUsingDigitSet.insert(KLocale::EasternArabicIndicDigits, QStringList() << "fa" << "ur");
+    languagesUsingDigitSet.insert(KLocale::BengaliDigits, QStringList() << "bn" << "as" );
     languagesUsingDigitSet.insert(KLocale::DevenagariDigits, QStringList() << "hi" << "ne");
+    languagesUsingDigitSet.insert(KLocale::EasternArabicIndicDigits, QStringList() << "fa" << "ur");
+    languagesUsingDigitSet.insert(KLocale::GujaratiDigits, QStringList() << "gu" );
+    languagesUsingDigitSet.insert(KLocale::GurmukhiDigits, QStringList() << "pa" );
+    languagesUsingDigitSet.insert(KLocale::KannadaDigits, QStringList() << "kn" );
+    languagesUsingDigitSet.insert(KLocale::KhmerDigits, QStringList() << "km" );
+    languagesUsingDigitSet.insert(KLocale::MalayalamDigits, QStringList() << "ml" );
+    languagesUsingDigitSet.insert(KLocale::OriyaDigits, QStringList() << "or" );
+    languagesUsingDigitSet.insert(KLocale::TamilDigits, QStringList() << "ta" );
+    languagesUsingDigitSet.insert(KLocale::TeluguDigits, QStringList() << "te" );
+    languagesUsingDigitSet.insert(KLocale::ThaiDigits, QStringList() << "th");
 }
 
 K_GLOBAL_STATIC(KLocaleStaticData, staticData)
@@ -1001,8 +1011,18 @@ QList<KLocale::DigitSet> KLocale::allDigitSetsList() const
     QList<DigitSet> digitSets;
     digitSets.append(ArabicDigits);
     digitSets.append(ArabicIndicDigits);
-    digitSets.append(EasternArabicIndicDigits);
+    digitSets.append(BengaliDigits);
     digitSets.append(DevenagariDigits);
+    digitSets.append(EasternArabicIndicDigits);
+    digitSets.append(GujaratiDigits);
+    digitSets.append(GurmukhiDigits);
+    digitSets.append(KannadaDigits);
+    digitSets.append(KhmerDigits);
+    digitSets.append(MalayalamDigits);
+    digitSets.append(OriyaDigits);
+    digitSets.append(TamilDigits);
+    digitSets.append(TeluguDigits);
+    digitSets.append(ThaiDigits);
     return digitSets;
 }
 
@@ -1011,10 +1031,30 @@ static QString digitSetString(KLocale::DigitSet digitSet)
     switch (digitSet) {
     case KLocale::ArabicIndicDigits:
         return QString::fromUtf8("٠١٢٣٤٥٦٧٨٩");
-    case KLocale::EasternArabicIndicDigits:
-        return QString::fromUtf8("۰۱۲۳۴۵۶۷۸۹");
+    case KLocale::BengaliDigits:
+        return QString::fromUtf8("০১২৩৪৫৬৭৮৯");
     case KLocale::DevenagariDigits:
         return QString::fromUtf8("०१२३४५६७८९");
+    case KLocale::EasternArabicIndicDigits:
+        return QString::fromUtf8("۰۱۲۳۴۵۶۷۸۹");
+    case KLocale::GujaratiDigits:
+        return QString::fromUtf8("૦૧૨૩૪૫૬૭૮૯");
+    case KLocale::GurmukhiDigits:
+        return QString::fromUtf8("੦੧੨੩੪੫੬੭੮੯");
+    case KLocale::KannadaDigits:
+        return QString::fromUtf8("೦೧೨೩೪೫೬೭೮೯");
+    case KLocale::KhmerDigits:
+        return QString::fromUtf8("០១២៣៤៥៦៧៨៩");
+    case KLocale::MalayalamDigits:
+        return QString::fromUtf8("൦൧൨൩൪൫൬൭൮൯");
+    case KLocale::OriyaDigits:
+        return QString::fromUtf8("୦୧୨୩୪୫୬୭୮୯");
+    case KLocale::TamilDigits:
+        return QString::fromUtf8("௦௧௨௩௪௫௬௭௮");
+    case KLocale::TeluguDigits:
+        return QString::fromUtf8("౦౧౨౩౪౫౬౭౯");
+    case KLocale::ThaiDigits:
+        return QString::fromUtf8("๐๑๒๓๔๕๖๗๘๙");
     default:
         return QString::fromUtf8("0123456789");
     }
@@ -1027,11 +1067,41 @@ QString KLocale::digitSetToName(DigitSet digitSet, bool withDigits) const
     case KLocale::ArabicIndicDigits:
         name = i18nc("digit set", "Arabic-Indic");
         break;
-    case KLocale::EasternArabicIndicDigits:
-        name = i18nc("digit set", "Eastern Arabic-Indic");
+    case KLocale::BengaliDigits:
+        name = i18nc("digit set", "Bengali");
         break;
     case KLocale::DevenagariDigits:
         name = i18nc("digit set", "Devenagari");
+        break;
+    case KLocale::EasternArabicIndicDigits:
+        name = i18nc("digit set", "Eastern Arabic-Indic");
+        break;
+    case KLocale::GujaratiDigits:
+        name = i18nc("digit set", "Gujarati");
+        break;
+    case KLocale::GurmukhiDigits:
+        name = i18nc("digit set", "Gurmukhi");
+        break;
+    case KLocale::KannadaDigits:
+        name = i18nc("digit set", "Kannada");
+        break;
+    case KLocale::KhmerDigits:
+        name = i18nc("digit set", "Khmer");
+        break;
+    case KLocale::MalayalamDigits:
+        name = i18nc("digit set", "Malayalam");
+        break;
+    case KLocale::OriyaDigits:
+        name = i18nc("digit set", "Oriya");
+        break;
+    case KLocale::TamilDigits:
+        name = i18nc("digit set", "Tamil");
+        break;
+    case KLocale::TeluguDigits:
+        name = i18nc("digit set", "Telugu");
+        break;
+    case KLocale::ThaiDigits:
+        name = i18nc("digit set", "Thai");
         break;
     default:
         name = i18nc("digit set", "Arabic");

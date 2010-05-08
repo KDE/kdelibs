@@ -253,7 +253,41 @@ public:
                                        languages and western Arabic dialects) */
         ArabicIndicDigits,        /**< ٠١٢٣٤٥٦٧٨٩ (eastern Arabic dialects) */
         EasternArabicIndicDigits, /**< ۰۱۲۳۴۵۶۷۸۹ (Persian and Urdu) */
-        DevenagariDigits          /**< ०१२३४५६७८९ (Hindi) */
+        DevenagariDigits,         /**< ०१२३४५६७८९ (Hindi) */
+        BengaliDigits,            /**< ০১২৩৪৫৬৭৮৯ (Bengali and  Assamese) */
+        GujaratiDigits,           /**< ૦૧૨૩૪૫૬૭૮૯ (Gujarati) */
+        GurmukhiDigits,           /**< ੦੧੨੩੪੫੬੭੮੯ (Punjabi) */
+        KannadaDigits,            /**< ೦೧೨೩೪೫೬೭೮೯ (Kannada) */
+        KhmerDigits,              /**< ០១២៣៤៥៦៧៨៩ (Khmer) */
+        MalayalamDigits,          /**< ൦൧൨൩൪൫൬൭൮൯ (Malayalam) */
+        OriyaDigits,              /**< ୦୧୨୩୪୫୬୭୮୯ (Oriya) */
+        TamilDigits,              /**< ௦௧௨௩௪௫௬௭௮ (Tamil) */
+        TeluguDigits,             /**< ౦౧౨౩౪౫౬౭౯ (Telugu) */
+        ThaiDigits                /**< ๐๑๒๓๔๕๖๗๘๙ (Thai) */
+    // The following Decimal Digit Sets are defined in Unicode but the associated
+    // languages are not yet translated in KDE, so are not yet enabled.
+    // The script names are taken from the Unicode standard, the associated
+    // languages from Wikipedia.
+    //  BalineseDigits,           /**< ᭐᭑᭒᭓᭔᭕᭖᭗᭘᭙ (Balinese) */
+    //  ChamDigits,               /**< ꩐꩑꩒꩓꩔꩕꩖꩗꩘꩙ (Cham) */
+    //  JavaneseDigits,           /**< ꧐꧑꧒꧓꧔꧕꧖꧗꧘꧙ (Javanese) */
+    //  KayahLiDigits,            /**< ꤀꤁꤂꤃꤄꤅꤆꤇꤈꤉ (Kayah) */
+    //  LaoDigits,                /**< ໐໑໒໓໔໕໖໗໘໙ (Lao) */
+    //  LepchaDigits,             /**< ᱀᱁᱂᱃᱄᱅᱆᱇᱈᱉ (Lepcha) */
+    //  LimbuDigits,              /**< ᥆᥇᥈᥉᥊᥋᥌᥍᥎᥏ (Limbu) */
+    //  MeeteiMayekDigits,        /**< ꯰꯱꯲꯳꯴꯵꯶꯷꯸꯹ (Meitei) */
+    //  MongolianDigits,          /**< ᠐᠑᠒᠓᠔᠕᠖᠗᠘᠙ (Mongolian) */
+    //  MyanmarDigits,            /**< ၀၁၂၃၄၅၆၇၈၉ (Myanmar/Burmese ) */
+    //  MyanmarShanDigits,        /**< ႐႑႒႓႔႕႖႗႘႙ (Shan) */
+    //  NewTaiLueDigits,          /**< ᧐᧑᧒᧓᧔᧕᧖᧗᧘᧙ (Tai Lü) */
+    //  NKoDigits,                /**< ߀߁߂߃߄߅߆߇߈߉ (Mande and N'Ko) */
+    //  OlChikiDigits,            /**< ᱐᱑᱒᱓᱔᱕᱖᱗᱘᱙ (Santali) */
+    //  OsmanyaDigits,            /**< ҠҡҢңҤҥҦҧҨҩ (Somali) */
+    //  SaurashtraDigits,         /**< ꣐꣑꣒꣓꣔꣕꣖꣗꣘꣙ (Saurashtra) */
+    //  SundaneseDigits,          /**< ᮰᮱᮲᮳᮴᮵᮶᮷᮸᮹ (Sundanese) */
+    //  TaiThamDigits,            /**< ᪐᪑᪒᪓᪔᪕᪖᪗᪘᪙ (Tai Lü) */
+    //  TibetanDigits,            /**< ༠༡༢༣༤༥༦༧༨༩ (Tibetan) */
+    //  VaiDigits,                /**< ꘠꘡꘢꘣꘤꘥꘦꘧꘨꘩ (Vai) */
     };
 
     /**
