@@ -669,7 +669,7 @@ Value FunLang::doEvaluate() const
 		if ( langNodeValue ) {
 			break;
 		}
-		node = node->parentNode();
+		node = xpathParentNode( node );
 	}
 
 	if ( !langNodeValue ) {

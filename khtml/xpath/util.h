@@ -60,6 +60,11 @@ void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
  */
 bool isValidContextNode( DOM::NodeImpl *node );
 
+/* @returns the parent node of the given node under the XPath model
+  (which has some additional links that DOM doesn't
+*/
+DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node );
+
 } // namespace XPath
 
 } // namespace khtml

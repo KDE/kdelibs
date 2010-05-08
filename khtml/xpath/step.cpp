@@ -128,6 +128,7 @@ Step::~Step()
 
 DomNodeList Step::evaluate( NodeImpl *context ) const
 {
+	assert( context );
 	qDebug() << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
 	         << ", nodetest='" << m_nodeTest << "'"
 	         << ", " << m_predicates.count() << " predicates";
@@ -171,6 +172,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 
 DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 {
+	//assert(context);
 	DomNodeList nodes = new StaticNodeListImpl;
 	switch ( m_axis ) {
 		case ChildAxis: {
@@ -185,14 +187,18 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			collectChildrenRecursively( nodes, context );
 			return nodes;
 		}
-		case ParentAxis:
-			nodes->append( context->parentNode() );
+		case ParentAxis: {
+			NodeImpl* p = xpathParentNode( context );
+
+			if ( p )
+				nodes->append( p );
 			return nodes;
+		}
 		case AncestorAxis: {
-			NodeImpl *n = context->parentNode();
+			NodeImpl *n = xpathParentNode( context );
 			while ( n ) {
 				nodes->append( n );
-				n = n->parentNode();
+				n = xpathParentNode( n );
 			}
 			return nodes;
 		}
@@ -231,7 +237,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 					collectChildrenRecursively( nodes, n );
 					n = n->nextSibling();
 				}
-				p = p->parentNode();
+				p = xpathParentNode( p );
 			}
 			return nodes;
 		}
@@ -244,7 +250,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 					collectChildrenRecursively( nodes, n );
 					n = n->previousSibling();
 				}
-				p = p->parentNode();
+				p = xpathParentNode( p );
 			}
 			return nodes;
 		}
@@ -275,7 +281,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 				NamedAttrMapImpl *attrs = static_cast<ElementImpl*>(node)->attributes();
 				if ( !attrs ) {
 					qDebug() << "Node::attributes() returned NULL!";
-					node = node->parentNode();
+					node = xpathParentNode( node );
 					continue;
 				}
 
@@ -292,7 +298,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 						}
 					}
 				}
-				node = node->parentNode();
+				node = xpathParentNode( node );
 			}
 			return nodes;
 		}
@@ -305,10 +311,10 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			return nodes;
 		case AncestorOrSelfAxis: {
 			nodes->append( context );
-			NodeImpl *n = context->parentNode();
+			NodeImpl *n = xpathParentNode( context );
 			while ( n ) {
 				nodes->append( n );
-				n = n->parentNode();
+				n = xpathParentNode( n );
 			}
 			return nodes;
 		}

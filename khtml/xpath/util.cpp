@@ -24,6 +24,7 @@
  */
 #include "util.h"
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_elementimpl.h"
 #include "xml/dom_nodelistimpl.h" 
 
 using namespace DOM;
@@ -33,7 +34,7 @@ namespace XPath {
 
 bool isRootDomNode( NodeImpl *node )
 {
-	return node && !node->parentNode();
+	return node && !xpathParentNode(node);
 }
 
 static QString stringValueImpl( NodeImpl *node )
@@ -89,6 +90,14 @@ bool isValidContextNode( NodeImpl *node )
 	       node->nodeType() == Node::COMMENT_NODE ||
 	       node->nodeType() == Node::DOCUMENT_NODE ||
 	       node->nodeType() == Node::XPATH_NAMESPACE_NODE );
+}
+
+DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node )
+{
+    if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
+        return static_cast<DOM::AttrImpl*>(node)->ownerElement();
+    else
+        return node->parentNode();
 }
 
 } // namespace khtml
