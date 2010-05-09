@@ -64,7 +64,7 @@
  * This is the hash function used for our pixmap data to hopefully make the
  * hashing used to place the pixmaps as efficient as possible.
  *
- * The algorithm is in the public domain, by Glenn Fowler, Phong Yo, and Landon
+ * The algorithm is in the public domain, by Glenn Fowler, Phong Vo, and Landon
  * Curt Noll, implemented by myself (mpyne).
  */
 static quint32 fnvHash32(const QByteArray &buffer)
