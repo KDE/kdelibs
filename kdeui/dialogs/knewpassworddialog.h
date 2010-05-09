@@ -40,7 +40,7 @@ class QWidget;
  *
  * \code
  *  KNewPasswordDialog *dlg = new KNewPasswordDialog( parent );
- *  dlg->setPrompt( i18n( "Enter a password" );
+ *  dlg->setPrompt( i18n( "Enter a password" ) );
  *  connect( dlg, SIGNAL( newPassword( const QString& ) )  , this, SLOT( setPassword( const QString &) ) );
  *  connect( dlg, SIGNAL( rejected() )  , this, SLOT( slotCancel() ) );
  *  dlg->show();
@@ -50,7 +50,7 @@ class QWidget;
  *
  * \code
  *  KNewPasswordDialog dlg( parent );
- *  dlg.setPrompt( i18n( "Enter a password" );
+ *  dlg.setPrompt( i18n( "Enter a password" ) );
  *  if( dlg.exec() )
  *      setPassword( dlg.password() );
  * \endcode
