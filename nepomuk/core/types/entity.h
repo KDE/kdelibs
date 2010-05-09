@@ -211,9 +211,23 @@ namespace Nepomuk {
             bool operator==( const Entity& other ) const;
 
             /**
+             * Compares the Entity with a URI.
+             *
+             * \since 4.5
+             */
+            bool operator==( const QUrl& other ) const;
+
+            /**
              * Compares two Entity instances by simply comparing their URI.
              */
             bool operator!=( const Entity& other ) const;
+
+            /**
+             * Compares the Entity with a URI.
+             *
+             * \since 4.5
+             */
+            bool operator!=( const QUrl& other ) const;
 
         protected:
             /**
