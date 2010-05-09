@@ -279,7 +279,7 @@ void ItemsGridViewDelegate::createOperationBar()
     m_detailsButton = new QToolButton();
     m_detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
     m_detailsButton->setPopupMode(QToolButton::InstantPopup);
-    m_detailsButton->setToolTip(i18n("Details..."));
+    m_detailsButton->setToolTip(i18n("Details"));
     m_detailsButton->setIcon(KIcon("documentinfo"));
     setBlockedEventTypes(m_detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);

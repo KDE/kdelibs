@@ -326,7 +326,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
     d->m_contextMenu->addAction( newFolder );
 
-    d->moveToTrash = new KAction( i18nc( "@action:inmenu","Move to trash" ), this );
+    d->moveToTrash = new KAction( i18nc( "@action:inmenu","Move to Trash" ), this );
     d->m_actions->addAction( d->moveToTrash->objectName(), d->moveToTrash );
     d->moveToTrash->setIcon( KIcon( "user-trash" ) );
     d->moveToTrash->setShortcut(KShortcut(Qt::Key_Delete));
