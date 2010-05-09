@@ -62,7 +62,7 @@ namespace {
         return encodedRps;
     }
 
-    NepomukResultListEventLoop::NepomukResultListEventLoop(QObject* parent)
+    NepomukResultListEventLoop::NepomukResultListEventLoop(Nepomuk::Query::QueryServiceClient* parent)
         : QEventLoop(parent)
     {
         connect(parent, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
@@ -236,11 +236,12 @@ bool Nepomuk::Query::QueryServiceClient::blockingQuery( const Query& q )
 
 QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncQuery(const Query& q, bool* ok)
 {
-    if( query( q ) ) {
-        NepomukResultListEventLoop loop(this);
-        d->loop = &loop;
+    QueryServiceClient qsc;
+    if( qsc.query( q ) ) {
+        NepomukResultListEventLoop loop(&qsc);
+        qsc.d->loop = &loop;
         loop.exec();
-        d->loop = 0;
+        qsc.d->loop = 0;
         if (ok) {
             *ok = true;
         }
@@ -274,11 +275,12 @@ QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncSparqlQu
                                                     const QHash<QString, Nepomuk::Types::Property>& requestPropertyMap,
                                                     bool *ok)
 {
-    if( sparqlQuery( q, requestPropertyMap ) ) {
-        NepomukResultListEventLoop loop(this);
-        d->loop = &loop;
+    QueryServiceClient qsc;
+    if( qsc.sparqlQuery( q, requestPropertyMap ) ) {
+        NepomukResultListEventLoop loop(&qsc);
+        qsc.d->loop = &loop;
         loop.exec();
-        d->loop = 0;
+        qsc.d->loop = 0;
         if (ok) {
             *ok = true;
         }
@@ -310,11 +312,12 @@ bool Nepomuk::Query::QueryServiceClient::blockingDesktopQuery( const QString& q 
 
 QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncDesktopQuery(const QString& q, bool* ok)
 {
-    if( desktopQuery( q ) ) {
-        NepomukResultListEventLoop loop(this);
-        d->loop = &loop;
+    QueryServiceClient qsc;
+    if( qsc.desktopQuery( q ) ) {
+        NepomukResultListEventLoop loop(&qsc);
+        qsc.d->loop = &loop;
         loop.exec();
-        d->loop = 0;
+        qsc.d->loop = 0;
         if (ok) {
             *ok = true;
         }

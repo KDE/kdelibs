@@ -32,7 +32,7 @@ namespace {
     {
         Q_OBJECT
         public:
-            NepomukResultListEventLoop(QObject* parent = 0);
+            NepomukResultListEventLoop(Nepomuk::Query::QueryServiceClient *parent);
             virtual ~NepomukResultListEventLoop();
 
             QList<Nepomuk::Query::Result> result() const;

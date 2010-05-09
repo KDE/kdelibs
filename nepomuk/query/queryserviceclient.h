@@ -211,8 +211,8 @@ namespace Nepomuk {
              *
              * \since 4.5
              */
-            QList<Nepomuk::Query::Result> syncQuery( const Query& query, bool *ok = 0 );
-            
+            static QList<Nepomuk::Query::Result> syncQuery( const Query& query, bool *ok = 0 );
+
             /**
              * \overload
              *
@@ -227,10 +227,10 @@ namespace Nepomuk {
              *
              * \since 4.5
              */
-            QList<Nepomuk::Query::Result> syncSparqlQuery( const QString& query,
+            static QList<Nepomuk::Query::Result> syncSparqlQuery( const QString& query,
                             const Nepomuk::Query::RequestPropertyMap& requestPropertyMap = Nepomuk::Query::RequestPropertyMap(),
                             bool *ok = 0 );
-            
+
             /**
              * \overload
              *
@@ -243,7 +243,7 @@ namespace Nepomuk {
              *
              * \since 4.5
              */
-            QList<Nepomuk::Query::Result> syncDesktopQuery( const QString& query, bool *ok = 0 );
+            static QList<Nepomuk::Query::Result> syncDesktopQuery( const QString& query, bool *ok = 0 );
 
             /**
              * Close the client, thus stop to monitor the query
