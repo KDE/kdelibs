@@ -697,28 +697,24 @@ Value FunLang::doEvaluate() const
 
 	NodeImpl* node = evaluationContext().node;
 
-    LocalName pln = LocalName::fromString("lang");
-    PrefixName xmsnsURI = PrefixName::fromString("xms");
-    DOMStringImpl* langNodeValue = 0;
+	DOMString langNodeValue;
 
-    //NOTE: check this, is it nly ElementImpl or must use NodeImpl::findNextElementAncestor
 	while ( node ) {
-		NamedAttrMapImpl *attrs = static_cast<ElementImpl*>(node)->attributes( true /* r/o */ );
-
-        langNodeValue = attrs->getValue(pln.id(),xmsnsURI);
-		if ( langNodeValue ) {
-			break;
+		if (node->isElementNode()) {
+			langNodeValue = static_cast<ElementImpl*>(node)->getAttribute("xml:lang");
+			if ( !langNodeValue.isNull() )
+				break;
 		}
-		node = xpathParentNode( node );
+		node = xpathParentNode( node );		
 	}
 
-	if ( !langNodeValue ) {
+	if ( langNodeValue.isNull() ) {
 		return Value( false );
 	}
 
 	// extract 'en' out of 'en-us'
-	QString langNodeValueString = langNodeValue->string();
-    langNodeValueString = langNodeValueString.left( langNodeValueString.indexOf( '-' ) );
+	QString langNodeValueString = langNodeValue.string();
+	langNodeValueString = langNodeValueString.left( langNodeValueString.indexOf( '-' ) );
 
 	return Value( langNodeValueString.toLower() == lang.toLower() );
 }
@@ -854,7 +850,7 @@ Function *FunctionLibrary::getFunction( const DOM::DOMString& name,
                                         const QList<Expression *> &args ) const
 {
 	if ( !m_functionDict.contains( name ) ) {
-		qWarning() << "Function '" << name << "' not supported by this implementation.";
+		kWarning() << "Function '" << name << "' not supported by this implementation.";
 
 		// Return a dummy function instead of 0.
 		Function *funcTrue = m_functionDict[ "true" ].factoryFn();
@@ -864,7 +860,7 @@ Function *FunctionLibrary::getFunction( const DOM::DOMString& name,
 
 	FunctionRec functionRec = m_functionDict[ name ];
 	if ( !functionRec.args.contains( args.count() ) ) {
-		qWarning() << "Function '" << name << "' requires " << functionRec.args.asString() << " arguments, but " << args.count() << " given.";
+		kWarning() << "Function '" << name << "' requires " << functionRec.args.asString() << " arguments, but " << args.count() << " given.";
 		return 0;
 	}
 

@@ -285,15 +285,26 @@ PrimaryExpr:
 FunctionCall:
 	FUNCTIONNAME '(' ')'
 	{
-		$$ = FunctionLibrary::self().getFunction( *$1 );
+		Function* f = FunctionLibrary::self().getFunction( *$1 );
 		delete $1;
+		if (!f) {
+			xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
+			YYABORT;
+		}
+		
+		$$ = f;
 	}
 	|
 	FUNCTIONNAME '(' ArgumentList ')'
 	{
-		$$ = FunctionLibrary::self().getFunction( *$1, *$3 );
+		Function* f = FunctionLibrary::self().getFunction( *$1, *$3 );
 		delete $1;
 		delete $3;
+		if (!f) {
+			xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
+			YYABORT;
+		}
+		$$ = f;
 	}
 	;
 
@@ -460,3 +471,4 @@ void khtmlxpathyyerror(const char *str)
 } // namespace XPath
 } // namespace khtml
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

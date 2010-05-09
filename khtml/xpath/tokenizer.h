@@ -45,11 +45,12 @@ struct Token
 	int     type;
 	QString value;
 	int     intValue; //0 if not set
+	bool    hasString;
 
-	Token(int _type): type(_type), intValue(0) {}
-	Token(QString _value): type(ERROR+1), value(_value),intValue(0) {}
-	Token(int _type, QString _value): type(_type), value(_value) {}
-	Token(int _type, int     _value): type(_type), intValue(_value) {}
+	Token(int _type): type(_type), intValue(0), hasString(false) {}
+	Token(QString _value): type(ERROR+1), value(_value), intValue(0), hasString(true) {}
+	Token(int _type, QString _value): type(_type), value(_value), intValue(0), hasString(true) {}
+	Token(int _type, int     _value): type(_type), intValue(_value), hasString(false) {}
 };
 
 class Tokenizer

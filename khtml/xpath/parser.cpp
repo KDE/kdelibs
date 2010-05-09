@@ -510,10 +510,10 @@ static const yytype_uint16 yyrline[] =
        0,    93,    93,   100,   105,   112,   117,   122,   130,   136,
      141,   149,   155,   162,   168,   175,   179,   181,   188,   202,
      207,   209,   220,   226,   233,   240,   247,   252,   259,   265,
-     270,   276,   282,   286,   292,   301,   307,   314,   319,   321,
-     330,   335,   340,   346,   355,   360,   367,   369,   376,   378,
-     385,   387,   394,   396,   403,   405,   410,   417,   419,   426,
-     428
+     270,   276,   282,   286,   298,   312,   318,   325,   330,   332,
+     341,   346,   351,   357,   366,   371,   378,   380,   387,   389,
+     396,   398,   405,   407,   414,   416,   421,   428,   430,   437,
+     439
 };
 #endif
 
@@ -1761,26 +1761,37 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 287 "parser.y"
     {
-		(yyval.expr) = FunctionLibrary::self().getFunction( *(yyvsp[(1) - (3)].str) );
+		Function* f = FunctionLibrary::self().getFunction( *(yyvsp[(1) - (3)].str) );
 		delete (yyvsp[(1) - (3)].str);
+		if (!f) {
+			xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
+			YYABORT;
+		}
+		
+		(yyval.expr) = f;
 	;}
     break;
 
   case 34:
 
 /* Line 1464 of yacc.c  */
-#line 293 "parser.y"
+#line 299 "parser.y"
     {
-		(yyval.expr) = FunctionLibrary::self().getFunction( *(yyvsp[(1) - (4)].str), *(yyvsp[(3) - (4)].argList) );
+		Function* f = FunctionLibrary::self().getFunction( *(yyvsp[(1) - (4)].str), *(yyvsp[(3) - (4)].argList) );
 		delete (yyvsp[(1) - (4)].str);
 		delete (yyvsp[(3) - (4)].argList);
+		if (!f) {
+			xpathParseException = XPathException::toCode(INVALID_EXPRESSION_ERR);
+			YYABORT;
+		}
+		(yyval.expr) = f;
 	;}
     break;
 
   case 35:
 
 /* Line 1464 of yacc.c  */
-#line 302 "parser.y"
+#line 313 "parser.y"
     {
 		(yyval.argList) = new QList<Expression *>;
 		(yyval.argList)->append( (yyvsp[(1) - (1)].expr) );
@@ -1790,7 +1801,7 @@ yyreduce:
   case 36:
 
 /* Line 1464 of yacc.c  */
-#line 308 "parser.y"
+#line 319 "parser.y"
     {
 		(yyval.argList)->append( (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1799,7 +1810,7 @@ yyreduce:
   case 39:
 
 /* Line 1464 of yacc.c  */
-#line 322 "parser.y"
+#line 333 "parser.y"
     {
 		(yyval.expr) = new Union;
 		(yyval.expr)->addSubExpression( (yyvsp[(1) - (3)].expr) );
@@ -1810,7 +1821,7 @@ yyreduce:
   case 40:
 
 /* Line 1464 of yacc.c  */
-#line 331 "parser.y"
+#line 342 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(1) - (1)].locationPath);
 	;}
@@ -1819,7 +1830,7 @@ yyreduce:
   case 41:
 
 /* Line 1464 of yacc.c  */
-#line 336 "parser.y"
+#line 347 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(1) - (1)].expr);
 	;}
@@ -1828,7 +1839,7 @@ yyreduce:
   case 42:
 
 /* Line 1464 of yacc.c  */
-#line 341 "parser.y"
+#line 352 "parser.y"
     {
 		(yyvsp[(3) - (3)].locationPath)->m_absolute = true;
 		(yyval.expr) = new Path( static_cast<Filter *>( (yyvsp[(1) - (3)].expr) ), (yyvsp[(3) - (3)].locationPath) );
@@ -1838,7 +1849,7 @@ yyreduce:
   case 43:
 
 /* Line 1464 of yacc.c  */
-#line 347 "parser.y"
+#line 358 "parser.y"
     {
 		(yyvsp[(3) - (3)].locationPath)->m_steps.prepend( (yyvsp[(2) - (3)].step) );
 		(yyvsp[(3) - (3)].locationPath)->m_absolute = true;
@@ -1849,7 +1860,7 @@ yyreduce:
   case 44:
 
 /* Line 1464 of yacc.c  */
-#line 356 "parser.y"
+#line 367 "parser.y"
     {
 		(yyval.expr) = (yyvsp[(1) - (1)].expr);
 	;}
@@ -1858,7 +1869,7 @@ yyreduce:
   case 45:
 
 /* Line 1464 of yacc.c  */
-#line 361 "parser.y"
+#line 372 "parser.y"
     {
 		(yyval.expr) = new Filter( (yyvsp[(1) - (2)].expr), *(yyvsp[(2) - (2)].predList) );
 	;}
@@ -1867,7 +1878,7 @@ yyreduce:
   case 47:
 
 /* Line 1464 of yacc.c  */
-#line 370 "parser.y"
+#line 381 "parser.y"
     {
 		(yyval.expr) = new LogicalOp( LogicalOp::OP_Or, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1876,7 +1887,7 @@ yyreduce:
   case 49:
 
 /* Line 1464 of yacc.c  */
-#line 379 "parser.y"
+#line 390 "parser.y"
     {
 		(yyval.expr) = new LogicalOp( LogicalOp::OP_And, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1885,7 +1896,7 @@ yyreduce:
   case 51:
 
 /* Line 1464 of yacc.c  */
-#line 388 "parser.y"
+#line 399 "parser.y"
     {
 		(yyval.expr) = new RelationOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1894,7 +1905,7 @@ yyreduce:
   case 53:
 
 /* Line 1464 of yacc.c  */
-#line 397 "parser.y"
+#line 408 "parser.y"
     {
 		(yyval.expr) = new RelationOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1903,7 +1914,7 @@ yyreduce:
   case 55:
 
 /* Line 1464 of yacc.c  */
-#line 406 "parser.y"
+#line 417 "parser.y"
     {
 		(yyval.expr) = new NumericOp( NumericOp::OP_Add, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1912,7 +1923,7 @@ yyreduce:
   case 56:
 
 /* Line 1464 of yacc.c  */
-#line 411 "parser.y"
+#line 422 "parser.y"
     {
 		(yyval.expr) = new NumericOp( NumericOp::OP_Sub, (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1921,7 +1932,7 @@ yyreduce:
   case 58:
 
 /* Line 1464 of yacc.c  */
-#line 420 "parser.y"
+#line 431 "parser.y"
     {
 		(yyval.expr) = new NumericOp( (yyvsp[(2) - (3)].num), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) );
 	;}
@@ -1930,7 +1941,7 @@ yyreduce:
   case 60:
 
 /* Line 1464 of yacc.c  */
-#line 429 "parser.y"
+#line 440 "parser.y"
     {
 		(yyval.expr) = new Negative;
 		(yyval.expr)->addSubExpression( (yyvsp[(2) - (2)].expr) );
@@ -1940,7 +1951,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 1944 "parser.tab.c"
+#line 1955 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2152,7 +2163,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 435 "parser.y"
+#line 446 "parser.y"
 
 
 namespace khtml {
@@ -2181,4 +2192,5 @@ void khtmlxpathyyerror(const char *str)
 } // namespace XPath
 } // namespace khtml
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
 

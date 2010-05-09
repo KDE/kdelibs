@@ -125,6 +125,9 @@ Value LocationPath::doEvaluate() const
 
 	inDomNodes->append( context );
 
+	if ( m_steps.isEmpty() )
+		return Value( inDomNodes );
+
 	int s = 0;
 	foreach( Step *step, m_steps ) {
 

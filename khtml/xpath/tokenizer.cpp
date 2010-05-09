@@ -436,7 +436,7 @@ void Tokenizer::reset(QString data)
 int khtmlxpathyylex()
 {
 	Token tok = Tokenizer::self().nextToken();
-	if (!tok.value.isEmpty()) {
+	if (tok.hasString) {
 		khtmlxpathyylval.str = new DOMString(tok.value);
 	} else if (tok.intValue) {
 		khtmlxpathyylval.num = tok.intValue;
