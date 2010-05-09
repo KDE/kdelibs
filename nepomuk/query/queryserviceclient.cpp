@@ -65,6 +65,8 @@ namespace {
     NepomukResultListEventLoop::NepomukResultListEventLoop(QObject* parent)
         : QEventLoop(parent)
     {
+        connect(parent, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
+                this, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
     }
 
     NepomukResultListEventLoop::~NepomukResultListEventLoop()
@@ -74,7 +76,6 @@ namespace {
     void NepomukResultListEventLoop::addEntries(const QList< Nepomuk::Query::Result >& entries)
     {
         m_result << entries;
-        quit();
     }
 
     QList< Nepomuk::Query::Result > NepomukResultListEventLoop::result() const
@@ -236,8 +237,7 @@ bool Nepomuk::Query::QueryServiceClient::blockingQuery( const Query& q )
 QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncQuery(const Query& q, bool* ok)
 {
     if( query( q ) ) {
-        NepomukResultListEventLoop loop;
-        connect(this, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)), &loop, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
+        NepomukResultListEventLoop loop(this);
         d->loop = &loop;
         loop.exec();
         d->loop = 0;
@@ -275,8 +275,7 @@ QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncSparqlQu
                                                     bool *ok)
 {
     if( sparqlQuery( q, requestPropertyMap ) ) {
-        NepomukResultListEventLoop loop;
-        connect(this, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)), &loop, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
+        NepomukResultListEventLoop loop(this);
         d->loop = &loop;
         loop.exec();
         d->loop = 0;
@@ -312,8 +311,7 @@ bool Nepomuk::Query::QueryServiceClient::blockingDesktopQuery( const QString& q 
 QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncDesktopQuery(const QString& q, bool* ok)
 {
     if( desktopQuery( q ) ) {
-        NepomukResultListEventLoop loop;
-        connect(this, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)), &loop, SLOT(addEntries(QList<Nepomuk::Query::Result>)));
+        NepomukResultListEventLoop loop(this);
         d->loop = &loop;
         loop.exec();
         d->loop = 0;
