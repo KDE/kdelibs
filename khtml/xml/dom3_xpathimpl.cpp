@@ -90,7 +90,7 @@ void XPathResultImpl::convertTo( unsigned short type, int &exceptioncode )
 			m_resultType = type;
 			break;
 		default:
-			kDebug(6010) << "Cannot convert XPathResultImpl to unknown type" << type;
+			kDebug(6011) << "Cannot convert XPathResultImpl to unknown type" << type;
 			exceptioncode = XPathException::toCode(XPathException::TYPE_ERR);
 	}
 }
@@ -217,10 +217,8 @@ DOMString DefaultXPathNSResolverImpl::lookupNamespaceURI( const DOMString& prefi
 }
 
 // ---------------------------------------------------------------------------
-XPathExpressionImpl::XPathExpressionImpl( const DOMString& expression, XPathNSResolverImpl *resolver ): m_resolver(resolver)
+XPathExpressionImpl::XPathExpressionImpl( const DOMString& expression, XPathNSResolverImpl *resolver ): m_statement(expression, resolver)
 {
-	kDebug() << expression.string();
-	m_statement.parse( expression.string() );
 }
 
 XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
@@ -234,12 +232,13 @@ XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
 	}
 
 	// We are permitted, but not required, to re-use result_. We don't.
-	Value xpathRes = m_statement.evaluate( contextNode, m_resolver, exceptioncode );
+	Value xpathRes = m_statement.evaluate( contextNode, exceptioncode );
 	XPathResultImpl* result = new XPathResultImpl( exceptioncode ? Value() : xpathRes );
 	
 	if ( type != ANY_TYPE ) {
 		result->convertTo( type, exceptioncode );
 		if( exceptioncode ) {
+			kDebug(6011) << "couldn't convert XPathResult to" <<  type << "from" << xpathRes.type();
 			delete result;
 			return 0;
 		}

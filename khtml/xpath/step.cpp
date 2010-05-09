@@ -359,8 +359,6 @@ void Step::compileNodeTest(bool htmlCompat) const
 
 		splitPrefixLocalName( m_nodeTest,  prefix, localName, htmlCompat );
 
-		// ### FIXME: need to report errors when can't resolve prefix.
-
 		if ( prefix.id() == DOM::emptyPrefix ) {
 			// localname only
 			m_nodeTestType = NT_LocalName;
@@ -476,8 +474,16 @@ DOMString Step::namespaceFromNodetest( const DOMString &nodeTest ) const
 	}
 
 	DOMString prefix( nodeTest.substring( 0, i ) );
-	NodeImpl *ctxNode = Expression::evaluationContext().node;
-	return ctxNode->lookupNamespaceURI( prefix );
+	XPathNSResolverImpl *resolver = Expression::evaluationContext().resolver;
+
+	DOM::DOMString ns;
+	if (resolver)
+		ns = resolver->lookupNamespaceURI( prefix );
+
+	if ( ns.isNull() )
+		Expression::reportNamespaceErr();
+	
+	return ns;
 }
 
 unsigned int Step::primaryNodeType( AxisType axis ) const

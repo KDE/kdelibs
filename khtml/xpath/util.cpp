@@ -46,14 +46,18 @@ static QString stringValueImpl( NodeImpl *node )
 		case Node::PROCESSING_INSTRUCTION_NODE:
 		case Node::COMMENT_NODE:
 		case Node::TEXT_NODE:
+		case Node::CDATA_SECTION_NODE:
 			return node->nodeValue().string();
 		default:
 			if ( isRootDomNode( node )
-			     || node->nodeType() == Node::ELEMENT_NODE ) {
+					|| node->nodeType() == Node::ELEMENT_NODE ) {
 				QString str;
 
 				for ( NodeImpl *cur = node->firstChild(); cur; cur = cur->traverseNextNode(node) ) {
-					str.append( stringValueImpl( cur ) );
+					// We only include the value of text kids here.
+					int type = cur->nodeType();
+					if (type == Node::TEXT_NODE || type == Node::CDATA_SECTION_NODE)
+						str.append( stringValueImpl( cur ) );
 				}
 				return str;
 			}
@@ -94,12 +98,13 @@ bool isValidContextNode( NodeImpl *node )
 
 DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node )
 {
-    if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
-        return static_cast<DOM::AttrImpl*>(node)->ownerElement();
-    else
-        return node->parentNode();
+	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
+		return static_cast<DOM::AttrImpl*>(node)->ownerElement();
+	else
+		return node->parentNode();
 }
 
 } // namespace khtml
 } // namespace XPath
 
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

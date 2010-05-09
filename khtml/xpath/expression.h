@@ -127,6 +127,7 @@ class Expression
 		virtual QString dump() const = 0;
 
 		static void reportInvalidExpressionErr();
+		static void reportNamespaceErr();
 	protected:
 		unsigned int subExprCount() const;
 		Expression *subExpr( unsigned int i );

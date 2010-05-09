@@ -25,6 +25,7 @@
 #include "expression.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_nodelistimpl.h"
+#include "dom/dom_exception.h"
 #include "dom/dom3_xpath.h"
 //#include "xml/dom_stringimpl.h"
 
@@ -286,6 +287,11 @@ bool Expression::isConstant() const
 void Expression::reportInvalidExpressionErr()
 {
 	Expression::evaluationContext().reportException(XPathException::toCode(INVALID_EXPRESSION_ERR));
+}
+
+void Expression::reportNamespaceErr()
+{
+	Expression::evaluationContext().reportException(DOMException::NAMESPACE_ERR);
 }
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

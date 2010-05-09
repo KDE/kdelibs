@@ -231,7 +231,10 @@ DOM::DOMString JSXPathNSResolver::lookupNamespaceURI( const DOM::DOMString& pref
 
         JSValue* result = function->call(exec, impl, args);
         if (!exec->hadException()) {
-            return result->toString(exec).domString();
+            if (result->isUndefinedOrNull())
+                return DOMString();
+            else
+                return result->toString(exec).domString();
         } else {
             exec->clearException();
         }

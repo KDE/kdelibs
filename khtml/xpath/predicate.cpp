@@ -115,12 +115,6 @@ Value NumericOp::doEvaluate() const
 {
 	Value lhs( subExpr( 0 )->evaluate() );
 	Value rhs( subExpr( 1 )->evaluate() );
-	if ( !lhs.isNumber() || !rhs.isNumber() ) {
-		qWarning( "Cannot perform operation on non-numeric types." );
-		Expression::reportInvalidExpressionErr();
-		return Value();
-	}
-
 	double leftVal = lhs.toNumber(), rightVal = rhs.toNumber();
 
 	switch (opCode) {

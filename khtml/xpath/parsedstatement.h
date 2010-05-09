@@ -44,24 +44,22 @@ class Value;
 class ParsedStatement
 {
 	public:
-		ParsedStatement();
-		ParsedStatement( const DOM::DOMString &statement );
+		ParsedStatement( const DOM::DOMString &statement, khtml::XPathNSResolverImpl* res );
 		~ParsedStatement();
-
-		void parse( const DOM::DOMString &statement );
-
 		void optimize();
 
 		QString dump() const;
 
 		Value evaluate( DOM::NodeImpl *context,
-		                khtml::XPathNSResolverImpl* res,
 		                int& ec) const;
 
 		// Any exception issued during parsing, or 0
 		int exceptionCode() { return m_ec; }
 
 	private:
+		void parse( const DOM::DOMString &statement );
+
+		SharedPtr<khtml::XPathNSResolverImpl> m_res;
 		Expression *m_expr;
 		int m_ec;
 };

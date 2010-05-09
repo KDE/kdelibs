@@ -27,6 +27,7 @@
 
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_nodelistimpl.h"
+#include "xml/dom3_xpathimpl.h"
 
 using namespace DOM;
 
@@ -35,13 +36,8 @@ namespace XPath {
 
 Expression *khtmlParseXPathStatement( const DOMString &statement, int& ec );
 
-ParsedStatement::ParsedStatement()
-	: m_expr( 0 ), m_ec( 0 )
-{
-}
-
-ParsedStatement::ParsedStatement( const DOMString &statement )
-	: m_expr( 0 ), m_ec( 0 )
+ParsedStatement::ParsedStatement( const DOMString &statement, khtml::XPathNSResolverImpl* res )
+	: m_res( res ), m_expr( 0 ), m_ec( 0 ) 
 {
 	parse( statement );
 }
@@ -53,9 +49,14 @@ ParsedStatement::~ParsedStatement()
 
 void ParsedStatement::parse( const DOMString &statement )
 {
+	kDebug(6011) << "parsing:" << statement.string();
 	m_ec = 0;
 	delete m_expr;
+	Expression::evaluationContext().reset( 0, m_res.get() );
+	
 	m_expr = khtmlParseXPathStatement( statement, m_ec );
+	
+	kDebug(6011) << "AST:" << (m_expr ? m_expr->dump() : QString::fromLatin1("*** parse error ***"));
 }
 
 void ParsedStatement::optimize()
@@ -66,9 +67,9 @@ void ParsedStatement::optimize()
 	m_expr->optimize();
 }
 
-Value ParsedStatement::evaluate(NodeImpl* context, khtml::XPathNSResolverImpl* nsRes, int& ec) const
+Value ParsedStatement::evaluate(NodeImpl* context, int& ec) const
 {
-	Expression::evaluationContext().reset(context, nsRes);
+	Expression::evaluationContext().reset(context, m_res.get());
 	Value res = m_expr->evaluate();
 	ec = Expression::evaluationContext().exceptionCode;
 

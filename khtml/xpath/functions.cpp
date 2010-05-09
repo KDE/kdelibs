@@ -525,6 +525,8 @@ Value FunCount::doEvaluate() const
 		kWarning() << "count() expects <nodeset>";
 		return Value( );
 	}
+	a.toNodeset()->normalize();
+
 	return Value( double( a.toNodeset()->length() ) );
 }
 
@@ -598,7 +600,7 @@ Value FunSubstringAfter::doEvaluate() const
 	QString s2 = arg( 1 )->evaluate().toString().string();
 
 	if ( s2.isEmpty() ) {
-		return Value( s2 );
+		return Value( s1 );
 	}
 
 	int i = s1.indexOf( s2 );

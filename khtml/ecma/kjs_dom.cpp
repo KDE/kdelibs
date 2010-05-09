@@ -1213,8 +1213,11 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
     if (!wrapper->isNull() && res && res->type() == khtml::XPathNSResolverImpl::JS) {
       static_cast<XPathExpression*>(wrapper)->setAssociatedResolver(static_cast<JSXPathNSResolver*>(res.get())->resolverObject());
     }
-
     return wrapper;
+  }
+  case DOMDocument::CreateNSResolver: {
+    DOM::NodeImpl* node = toNode(args[0]);
+    return getWrapper<KJS::XPathNSResolver>(exec, doc.createNSResolver(node));
   }
   case DOMDocument::Evaluate: {
     return getWrapper<KJS::XPathResult>(exec,
