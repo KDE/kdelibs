@@ -82,11 +82,6 @@ Value String::doEvaluate() const
 Value Negative::doEvaluate() const
 {
 	Value p( subExpr( 0 )->evaluate() );
-	if ( !p.isNumber() ) {
-		qWarning( "Unary minus is undefined for non-numeric types." );
-		Expression::reportInvalidExpressionErr();
-		return Value();
-	}
 	return Value( -p.toNumber() );
 }
 
@@ -306,25 +301,14 @@ bool RelationOp::compareNumbers(double leftVal, double rightVal) const
 
 bool RelationOp::compareStrings(const DOM::DOMString& l, const DOM::DOMString& r) const
 {
-	QString leftVal  = l.string();
-	QString rightVal = r.string();
-	switch (opCode) {
-		case OP_GT:
-			return leftVal > rightVal;
-		case OP_GE:
-			return leftVal >= rightVal;
-		case OP_LT:
-			return leftVal < rightVal;
-		case OP_LE:
-			return leftVal <= rightVal;
-		case OP_EQ:
-			return leftVal == rightVal;
-		case OP_NE:
-			return leftVal != rightVal;
-		default:
-			assert(0);
-			return false;
-	}
+	// String comparisons, as invoked within the nodeset case, are string-based
+	// only for == and !=. Everything else still goes to numbers.
+	if (opCode == OP_EQ)
+		return (l == r);
+	if (opCode == OP_NE)
+		return (l != r);
+
+	return compareNumbers(Value(l).toNumber(), Value(r).toNumber());
 }
 
 QString RelationOp::opName() const

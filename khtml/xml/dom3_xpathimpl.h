@@ -82,7 +82,6 @@ class XPathExpressionImpl : public Shared<XPathExpressionImpl>
 
 	private:
 		XPath::ParsedStatement m_statement;
-		XPathNSResolverImpl* m_resolver;
 };
 
 // This is the base class for resolver interfaces
