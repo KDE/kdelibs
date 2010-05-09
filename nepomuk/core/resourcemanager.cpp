@@ -359,7 +359,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUrl& type )
 {
-    QList<Resource> l;
+    QSet<Resource> set;
 
     if( !type.isEmpty() ) {
         // check local data
@@ -367,8 +367,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
         for( QList<ResourceData*>::iterator rdIt = localData.begin();
              rdIt != localData.end(); ++rdIt ) {
             Resource res( *rdIt );
-            if( !l.contains( res ) )
-                l.append( res );
+            set.insert(res);
         }
 
 //        kDebug() << " added local resources: " << l.count();
@@ -379,14 +378,13 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
         while( it.next() ) {
             Statement s = *it;
             Resource res( s.subject().uri() );
-            if( !l.contains( res ) )
-                l.append( res );
+            set.insert(res);
         }
 
 //        kDebug() << " added remote resources: " << l.count();
     }
 
-    return l;
+    return set.toList();
 }
 
 
@@ -416,7 +414,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QUrl& uri, const Variant& v )
 {
-    QList<Resource> l;
+    QSet<Resource> set;
 
     if( v.isList() ) {
         kDebug() << "(ResourceManager::allResourcesWithProperty) list values not supported.";
@@ -426,7 +424,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
         QList<ResourceData*> localData = d->allResourceDataWithProperty( uri, v );
         for( QList<ResourceData*>::iterator rdIt = localData.begin();
              rdIt != localData.end(); ++rdIt ) {
-            l.append( Resource( *rdIt ) );
+            set.insert( Resource( *rdIt ) );
         }
 
         // check remote data
@@ -444,12 +442,11 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
         while( it.next() ) {
             Statement s = *it;
             Resource res( s.subject().uri() );
-            if( !l.contains( res ) )
-                l.append( res );
+            set.insert( res );
         }
     }
 
-    return l;
+    return set.toList();
 }
 
 
