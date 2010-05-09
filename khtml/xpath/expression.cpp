@@ -25,6 +25,7 @@
 #include "expression.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_nodelistimpl.h"
+#include "dom/dom3_xpath.h"
 //#include "xml/dom_stringimpl.h"
 
 #include <cmath>
@@ -280,6 +281,11 @@ bool Expression::isConstant() const
 		}
 	}
 	return true;
+}
+
+void Expression::reportInvalidExpressionErr()
+{
+	Expression::evaluationContext().reportException(XPathException::toCode(INVALID_EXPRESSION_ERR));
 }
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

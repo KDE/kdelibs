@@ -66,10 +66,11 @@ void ParsedStatement::optimize()
 	m_expr->optimize();
 }
 
-Value ParsedStatement::evaluate( NodeImpl *context ) const
+Value ParsedStatement::evaluate(NodeImpl* context, khtml::XPathNSResolverImpl* nsRes, int& ec) const
 {
-	Expression::evaluationContext().node = context;
+	Expression::evaluationContext().reset(context, nsRes);
 	Value res = m_expr->evaluate();
+	ec = Expression::evaluationContext().exceptionCode;
 
 	// If the result is a nodeset, we need to put it in document order
 	// and remove duplicates.
@@ -85,3 +86,5 @@ QString ParsedStatement::dump() const
 
 } // namespace XPath
 } // namespace khtml
+
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

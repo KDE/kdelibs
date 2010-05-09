@@ -216,8 +216,8 @@ Value Path::doEvaluate() const
 		return Value(out);
 	} else {
 		// ### what should happen in this case?
-		Expression::evaluationContext().node = saveCtx;
-		return initial;
+		Expression::reportInvalidExpressionErr();
+		return Value();
 	}
 }
 

@@ -217,9 +217,9 @@ DOMString DefaultXPathNSResolverImpl::lookupNamespaceURI( const DOMString& prefi
 }
 
 // ---------------------------------------------------------------------------
-XPathExpressionImpl::XPathExpressionImpl( const DOMString& expression, XPathNSResolverImpl *resolver )
+XPathExpressionImpl::XPathExpressionImpl( const DOMString& expression, XPathNSResolverImpl *resolver ): m_resolver(resolver)
 {
-	Expression::evaluationContext().resolver = resolver;
+	kDebug() << expression.string();
 	m_statement.parse( expression.string() );
 }
 
@@ -234,7 +234,8 @@ XPathResultImpl *XPathExpressionImpl::evaluate( NodeImpl *contextNode,
 	}
 
 	// We are permitted, but not required, to re-use result_. We don't.
-	XPathResultImpl* result = new XPathResultImpl( m_statement.evaluate( contextNode ) );
+	Value xpathRes = m_statement.evaluate( contextNode, m_resolver, exceptioncode );
+	XPathResultImpl* result = new XPathResultImpl( exceptioncode ? Value() : xpathRes );
 	
 	if ( type != ANY_TYPE ) {
 		result->convertTo( type, exceptioncode );

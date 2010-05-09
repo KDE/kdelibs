@@ -46,12 +46,26 @@ namespace XPath {
 
 struct EvaluationContext
 {
-	EvaluationContext() : node( 0 ), size( 0 ), position( 0 ), resolver( 0 ) { }
+	EvaluationContext() { reset(0, 0); }
+
+	void reset(DOM::NodeImpl* ctx, XPathNSResolverImpl* res) {
+		node     = ctx;
+		resolver = res;
+		size     = 0;
+		position = 0;
+		exceptionCode = 0;
+	}
 
 	DOM::NodeImpl *node;
 	unsigned long size;
 	unsigned long position;
 	QHash<DOM::DOMString, DOM::DOMString> variableBindings;
+
+	// reports only first one.
+	void reportException(int ec) { if (!exceptionCode) exceptionCode = ec; } 
+
+	int exceptionCode;
+	
 	/* The function library is globally accessible through
 	 * FunctionLibrary::self()
 	 */
@@ -109,6 +123,7 @@ class Expression
 
 		virtual QString dump() const = 0;
 
+		static void reportInvalidExpressionErr();
 	protected:
 		unsigned int subExprCount() const;
 		Expression *subExpr( unsigned int i );

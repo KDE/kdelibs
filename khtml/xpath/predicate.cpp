@@ -30,6 +30,8 @@
 
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_nodelistimpl.h"
+#include "kjs/operations.h"
+#include "kjs/value.h"
 
 #include <math.h>
 
@@ -82,6 +84,7 @@ Value Negative::doEvaluate() const
 	Value p( subExpr( 0 )->evaluate() );
 	if ( !p.isNumber() ) {
 		qWarning( "Unary minus is undefined for non-numeric types." );
+		Expression::reportInvalidExpressionErr();
 		return Value();
 	}
 	return Value( -p.toNumber() );
@@ -114,6 +117,7 @@ Value NumericOp::doEvaluate() const
 	Value rhs( subExpr( 1 )->evaluate() );
 	if ( !lhs.isNumber() || !rhs.isNumber() ) {
 		qWarning( "Cannot perform operation on non-numeric types." );
+		Expression::reportInvalidExpressionErr();
 		return Value();
 	}
 
@@ -127,10 +131,19 @@ Value NumericOp::doEvaluate() const
 		case OP_Mul:
 			return Value( leftVal * rightVal );
 		case OP_Div:
-			if ( rightVal == 0.0 || rightVal == -0.0 )
-				return Value(); //Divide by 0;
-			else
+			if ( rightVal == 0.0 || rightVal == -0.0 ) {
+				if ( leftVal == 0.0 || leftVal == -0.0) {
+					return Value(); // 0/0 = NaN
+				} else {
+					// +/- Infinity.
+					if (signbit(leftVal) == signbit(rightVal))
+						return Value( KJS::Inf );
+					else
+						return Value( -KJS::Inf );
+				}
+			} else {
 				return Value( leftVal / rightVal );
+            }
 		case OP_Mod:
 			if ( rightVal == 0.0 || rightVal == -0.0 )
 				return Value(); //Divide by 0;
@@ -395,6 +408,7 @@ Value Union::doEvaluate() const
 	Value rhs = subExpr( 1 )->evaluate();
 	if ( !lhs.isNodeset() || !rhs.isNodeset() ) {
 		qWarning( "Union operator '|' works only with nodesets." );
+		Expression::reportInvalidExpressionErr();
 		return Value( new StaticNodeListImpl );
 	}
 
@@ -448,3 +462,5 @@ QString Predicate::dump() const
 {
 	return QString() + "<predicate>" + m_expr->dump() + "</predicate>";
 }
+
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

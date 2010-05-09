@@ -33,6 +33,9 @@ namespace DOM {
 }
 
 namespace khtml {
+
+class XPathNSResolverImpl;
+
 namespace XPath {
 
 class Expression;
@@ -51,7 +54,9 @@ class ParsedStatement
 
 		QString dump() const;
 
-		Value evaluate( DOM::NodeImpl *context ) const;
+		Value evaluate( DOM::NodeImpl *context,
+		                khtml::XPathNSResolverImpl* res,
+		                int& ec) const;
 
 		// Any exception issued during parsing, or 0
 		int exceptionCode() { return m_ec; }

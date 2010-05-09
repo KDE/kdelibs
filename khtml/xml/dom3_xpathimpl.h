@@ -37,6 +37,8 @@ namespace DOM {
 
 namespace khtml {
 
+class XPathNSResolverImpl;
+
 class XPathResultImpl : public Shared<XPathResultImpl>
 {
 	public:
@@ -80,6 +82,7 @@ class XPathExpressionImpl : public Shared<XPathExpressionImpl>
 
 	private:
 		XPath::ParsedStatement m_statement;
+		XPathNSResolverImpl* m_resolver;
 };
 
 // This is the base class for resolver interfaces

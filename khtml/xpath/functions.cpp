@@ -417,16 +417,18 @@ Value FunLocalName::doEvaluate() const
 	NodeImpl *node = 0;
 	if ( argCount() > 0 ) {
 		Value a = arg( 0 )->evaluate();
-		if ( a.isNodeset() ) {
+		if ( a.isNodeset() && a.toNodeset()->length() ) {
 			node = a.toNodeset()->first();
 		}
+	} else {
+		// no argument -> default to context node
+		node = evaluationContext().node;		
 	}
 
-	if ( !node ) {
-		node = evaluationContext().node;
-	}
+	if ( !node )
+		return Value( DOMString() );
 
-	return Value( node->localName().string() );
+	return Value( node->localName() );
 }
 
 bool FunNamespaceURI::isConstant() const
@@ -513,8 +515,9 @@ Value FunCount::doEvaluate() const
 {
 	Value a = arg( 0 )->evaluate();
 	if ( !a.isNodeset() ) {
-		qWarning( "count() expects <nodeset>" );
-		return Value( 0.0 );
+		Expression::reportInvalidExpressionErr();
+		kWarning() << "count() expects <nodeset>";
+		return Value( );
 	}
 	return Value( double( a.toNodeset()->length() ) );
 }
@@ -597,7 +600,7 @@ Value FunSubstringAfter::doEvaluate() const
 		return Value( "" );
 	}
 
-	return Value( DOMString( s1.mid( i + 1 ) ) );
+	return Value( DOMString( s1.mid( i + s2.length() ) ) );
 }
 
 Value FunSubstring::doEvaluate() const
@@ -743,7 +746,8 @@ Value FunSum::doEvaluate() const
 {
 	Value a = arg( 0 )->evaluate();
 	if ( !a.isNodeset() ) {
-		qWarning( "sum() expects <nodeset>" );
+		Expression::reportInvalidExpressionErr();
+		kWarning() << "sum() expects <nodeset>";
 		return Value( 0.0 );
 	}
 
@@ -852,10 +856,7 @@ Function *FunctionLibrary::getFunction( const DOM::DOMString& name,
 	if ( !m_functionDict.contains( name ) ) {
 		kWarning() << "Function '" << name << "' not supported by this implementation.";
 
-		// Return a dummy function instead of 0.
-		Function *funcTrue = m_functionDict[ "true" ].factoryFn();
-		funcTrue->setName( "true" );
-		return funcTrue;
+		return 0;
 	}
 
 	FunctionRec functionRec = m_functionDict[ name ];
