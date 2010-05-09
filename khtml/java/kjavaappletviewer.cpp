@@ -36,6 +36,7 @@
 #include <QtGui/QTableWidget>
 #include <QtDBus/QtDBus>
 
+#include <kapplication.h>
 #include <kauthorized.h>
 #include <klibloader.h>
 #include <kaboutdata.h>
@@ -342,12 +343,11 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
         { QDataStream stream(&params, QIODevice::WriteOnly); stream << info; }
 
         // make the call
-        QDBusReply<QByteArray> reply =
-            QDBusInterface("org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer").
-            call ("checkAuthInfo", params, qlonglong(m_view->topLevelWidget()->winId()));
+        QDBusInterface kpasswdserver("org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer");
+        QDBusReply<QByteArray> reply = kpasswdserver.call ("checkAuthInfo", params, qlonglong(m_view->topLevelWidget()->winId()), qlonglong(kapp->userTimestamp()));
 
         if (!reply.isValid()) {
-            kWarning() << "Can't communicate with kded_kpasswdserver!";
+            kWarning() << "checkAuthInfo DBUS call failed: " << reply.error().message();
         } else {
             KIO::AuthInfo authResult;
             QDataStream stream2(reply.value());
