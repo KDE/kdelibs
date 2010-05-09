@@ -48,6 +48,7 @@ class JSValue;
 class UString;
 
 KJS_EXPORT extern const double NaN;
+KJS_EXPORT extern const double Inf;
 
 /*
  * A JSValue*  is either a pointer to a cell (a heap-allocated object) or an immediate (a type-tagged 

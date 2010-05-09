@@ -34,18 +34,18 @@ namespace KJS {
 
 #if (defined(AVOID_STATIC_CONSTRUCTORS) && !AVOID_STATIC_CONSTRUCTORS)
     KJS_EXPORT extern const double NaN = NAN;
-    extern const double Inf = INFINITY;
+    KJS_EXPORT extern const double Inf = INFINITY;
 #elif PLATFORM(DARWIN)
 
 #if PLATFORM(BIG_ENDIAN)
     KJS_EXPORT extern const unsigned char NaN[sizeof(double)] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
-    extern const unsigned char Inf[sizeof(double)] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
+    KJS_EXPORT extern const unsigned char Inf[sizeof(double)] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
 #elif PLATFORM(MIDDLE_ENDIAN)
     KJS_EXPORT extern const unsigned char NaN[] = { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 };
-    extern const unsigned char Inf[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
+    KJS_EXPORT extern const unsigned char Inf[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
 #else
     KJS_EXPORT extern const unsigned char NaN[sizeof(double)] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
-    extern const unsigned char Inf[sizeof(double)] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
+    KJS_EXPORT extern const unsigned char Inf[sizeof(double)] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
 #endif // PLATFORM(MIDDLE_ENDIAN)
 
 #else // !PLATFORM(DARWIN)
@@ -79,7 +79,7 @@ static const union {
 } } ;
 
     KJS_EXPORT extern const double NaN = NaNInf.doubles.NaN_Double;
-    extern const double Inf = NaNInf.doubles.Inf_Double;
+    KJS_EXPORT extern const double Inf = NaNInf.doubles.Inf_Double;
 
 #endif // !PLATFORM(DARWIN)
 
