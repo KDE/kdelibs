@@ -1365,6 +1365,29 @@ unsigned NodeImpl::compareDocumentPosition(const DOM::NodeImpl* other)
         if (thisAnc->nodeType() != otherAnc->nodeType())
             return (thisAnc->nodeType() < otherAnc->nodeType()) ? 
                 Node::DOCUMENT_POSITION_FOLLOWING : Node::DOCUMENT_POSITION_PRECEDING;
+
+        // If both are argument nodes, they have to be in the same element,
+        // as otherwise the first difference would be in two different elements
+        // or above, which would not have logical parents unless they were
+        // disconnected, which would have been handled above.
+        // In this case, order them by their position in the
+        // attribute list. This is helpful for XPath.
+
+        if (thisAnc->nodeType() == Node::ATTRIBUTE_NODE) {
+            const AttrImpl* thisAncAttr  = static_cast<const AttrImpl*>(thisAnc);
+            const AttrImpl* otherAncAttr = static_cast<const AttrImpl*>(otherAnc);
+
+            NamedAttrMapImpl* attrs = thisAncAttr->ownerElement()->attributes();
+
+            unsigned l = attrs->length();
+            for (unsigned i = 0; i < l; ++i) {
+                if (attrs->attrAt(i) == thisAncAttr)
+                    return Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node::DOCUMENT_POSITION_FOLLOWING;
+                if (attrs->attrAt(i) == otherAncAttr)
+                    return Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node::DOCUMENT_POSITION_PRECEDING;
+            }
+            assert(false);
+        }
                 
         // If not, another implementation-specific order.
         return Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
