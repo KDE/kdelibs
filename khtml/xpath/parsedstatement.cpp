@@ -69,7 +69,13 @@ void ParsedStatement::optimize()
 Value ParsedStatement::evaluate( NodeImpl *context ) const
 {
 	Expression::evaluationContext().node = context;
-	return m_expr->evaluate();
+	Value res = m_expr->evaluate();
+
+	// If the result is a nodeset, we need to put it in document order
+	// and remove duplicates.
+	if ( res.isNodeset() )
+        res.toNodeset()->normalize();
+    return res;
 }
 
 QString ParsedStatement::dump() const

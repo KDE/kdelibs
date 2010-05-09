@@ -235,6 +235,9 @@ public:
     void append(NodeImpl* n);
     NodeImpl* first() { return item(0); }
     bool      isEmpty() const { return length() == 0; }
+
+    // puts in document order and removes duplicates.
+    void normalize();
 private:
     WTF::Vector<SharedPtr<NodeImpl> > m_kids;
 };

@@ -194,7 +194,31 @@ QString Path::dump() const
 
 Value Path::doEvaluate() const
 {
-	return Value();
+	NodeImpl* saveCtx = Expression::evaluationContext().node;
+
+	Value initial =  m_filter->evaluate();
+	if ( initial.isNodeset() ) {
+		// Pass in every output from the filter to the path, and union the results
+		DomNodeList out = new StaticNodeListImpl();
+		DomNodeList in  = initial.toNodeset();
+
+		kDebug() << "nodes from filter:" << in->length();
+
+		for (unsigned long i = 0; i < in->length(); ++i) {
+			Expression::evaluationContext().node = in->item(i);
+
+			DomNodeList singleSet = m_path->evaluate().toNodeset();
+			for (unsigned long j = 0; j < singleSet->length(); ++ j)
+				out->append(singleSet->item(j));
+		}
+
+		Expression::evaluationContext().node = saveCtx;
+		return Value(out);
+	} else {
+		// ### what should happen in this case?
+		Expression::evaluationContext().node = saveCtx;
+		return initial;
+	}
 }
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

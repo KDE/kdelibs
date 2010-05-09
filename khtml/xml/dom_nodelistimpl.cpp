@@ -337,16 +337,45 @@ StaticNodeListImpl::StaticNodeListImpl() {}
 
 StaticNodeListImpl::~StaticNodeListImpl() {}
 
-void StaticNodeListImpl::append(NodeImpl* n) {
+void StaticNodeListImpl::append(NodeImpl* n)
+{
+    assert(n);
     m_kids.append(n);
 }
 
-NodeImpl* StaticNodeListImpl::item ( unsigned long index ) const {
+NodeImpl* StaticNodeListImpl::item ( unsigned long index ) const
+{
     return index < m_kids.size() ? m_kids[index].get() : 0;
 }
 
-unsigned long StaticNodeListImpl::length() const {
+unsigned long StaticNodeListImpl::length() const
+{
     return m_kids.size();
+}
+
+static bool nodeLess(const SharedPtr<NodeImpl>& n1, const SharedPtr<DOM::NodeImpl>& n2)
+{
+    return n1->compareDocumentPosition(n2.get()) & Node::DOCUMENT_POSITION_FOLLOWING;
+}
+
+void StaticNodeListImpl::normalize()
+{
+    // First sort.
+    qSort(m_kids.begin(), m_kids.end(), nodeLess);
+
+    // Now get rid of dupes.
+    DOM::NodeImpl* last = 0;
+    unsigned out = 0;
+    for (unsigned in = 0; in < m_kids.size(); ++in) {
+        DOM::NodeImpl* cur = m_kids[in].get();
+        if (cur != last) {
+            m_kids[out] = cur;
+            ++out;
+        }
+
+        last = cur;
+    }
+    m_kids.resize(out);
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

@@ -350,14 +350,12 @@ PathExpr:
 	|
 	FilterExpr '/' RelativeLocationPath
 	{
-		$3->m_absolute = true;
 		$$ = new Path( static_cast<Filter *>( $1 ), $3 );
 	}
 	|
 	FilterExpr DescendantOrSelf RelativeLocationPath
 	{
 		$3->m_steps.prepend( $2 );
-		$3->m_absolute = true;
 		$$ = new Path( static_cast<Filter *>( $1 ), $3 );
 	}
 	;
