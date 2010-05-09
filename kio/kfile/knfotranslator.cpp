@@ -23,6 +23,11 @@
 
 #include <kurl.h>
 
+#include <config-nepomuk.h>
+#ifdef HAVE_NEPOMUK
+#include "property.h"
+#endif
+
 struct TranslationTuple {
     const char* const key;
     const char* const value;
@@ -93,12 +98,30 @@ QString KNfoTranslator::translation(const KUrl& uri) const
     }
 
     // fallback if the URI is not translated
-    QString translation;
+#ifdef HAVE_NEPOMUK
+    const QString label = Nepomuk::Types::Property(uri).label();
+#else
+    QString label;
     const int index = key.indexOf(QChar('#'));
     if (index >= 0) {
-        translation = key.right(key.size() - index - 1);
+        label = key.right(key.size() - index - 1);
     }
-    return translation;
+#endif
+    QString tunedLabel;
+    const int labelLength = label.length();
+    if (labelLength > 0) {
+        tunedLabel.reserve(labelLength);
+        tunedLabel = label[0].toUpper();
+        for (int i = 1; i < labelLength; ++i) {
+            if (label[i].isUpper() && !label[i - 1].isSpace() && !label[i - 1].isUpper()) {
+                tunedLabel += ' ';
+                tunedLabel += label[i].toLower();
+            } else {
+                tunedLabel += label[i];
+            }
+        }
+    }
+    return tunedLabel;
 }
 
 KNfoTranslator::KNfoTranslator() :
