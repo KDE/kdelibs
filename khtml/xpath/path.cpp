@@ -59,7 +59,7 @@ Value Filter::doEvaluate() const
 	Value v = m_expr->evaluate();
 	if ( !v.isNodeset() ) {
 		if ( !m_predicates.empty() ) {
-			qDebug( "Ignoring predicates for filter since expression does not evaluate to a nodeset!" );
+			kDebug(6011) << "Ignoring predicates for filter since expression does not evaluate to a nodeset!";
 		}
 		return v;
 	}
@@ -105,9 +105,9 @@ void LocationPath::optimize()
 Value LocationPath::doEvaluate() const
 {
 	if ( m_absolute ) {
-		qDebug( "Evaluating absolute path expression with %i location steps.", m_steps.count() );
+		kDebug(6011) << "Evaluating absolute path expression, steps:" << m_steps.count();
 	} else {
-		qDebug( "Evaluating relative path expression with %i location steps.", m_steps.count() );
+		kDebug(6011) << "Evaluating relative path expression, steps:" << m_steps.count();
 	}
 
 	DomNodeList inDomNodes  = new StaticNodeListImpl,
@@ -130,9 +130,11 @@ Value LocationPath::doEvaluate() const
 
 	int s = 0;
 	foreach( Step *step, m_steps ) {
+#ifdef XPATH_VERBOSE
+		kDebug(6011) << "-------------------------------------";
+		kDebug(6011) << "Step " << s << "insize " << inDomNodes->length();
+#endif		
 
-		qDebug("-------------------------------------");
-		qDebug("Step=%d, insize = %lu", s, inDomNodes->length());
 		outDomNodes = new StaticNodeListImpl;
 		for ( unsigned long i = 0; i < inDomNodes->length(); ++i ) {
 			DomNodeList matches = step->evaluate( inDomNodes->item( i ) );
@@ -143,9 +145,12 @@ Value LocationPath::doEvaluate() const
 
 		++s;
 	}
-	qDebug("-------------------------------------");
-	qDebug("output:%lu", outDomNodes->length());
-	qDebug("=====================================");
+
+#ifdef XPATH_VERBOSE
+	kDebug(6011) << "-------------------------------------";
+	kDebug(6011) << "output:" <<outDomNodes->length();
+	kDebug(6011) << "=====================================";
+#endif
 
 	return Value( outDomNodes );
 }
@@ -201,8 +206,6 @@ Value Path::doEvaluate() const
 		// Pass in every output from the filter to the path, and union the results
 		DomNodeList out = new StaticNodeListImpl();
 		DomNodeList in  = initial.toNodeset();
-
-		kDebug() << "nodes from filter:" << in->length();
 
 		for (unsigned long i = 0; i < in->length(); ++i) {
 			Expression::evaluationContext().node = in->item(i);

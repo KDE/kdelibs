@@ -65,6 +65,10 @@ bool isValidContextNode( DOM::NodeImpl *node );
 */
 DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node );
 
+// Enable for some low debug output.
+#define XPATH_VERBOSE
+
+
 } // namespace XPath
 
 } // namespace khtml

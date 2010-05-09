@@ -129,21 +129,24 @@ Step::~Step()
 DomNodeList Step::evaluate( NodeImpl *context ) const
 {
 	assert( context );
-	qDebug() << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
-	         << ", nodetest='" << m_nodeTest << "'"
-	         << ", " << m_predicates.count() << " predicates";
-	if ( context->nodeType() == Node::ELEMENT_NODE ) {
-		qDebug() << "Context node is an element called " << context->nodeName().string();
-	} else if ( context->nodeType() == Node::ATTRIBUTE_NODE ) {
-		qDebug() << "Context node is an attribute called " << context->nodeName().string() << " with value " << context->nodeValue();
-	} else {
-		qDebug() << "Context node is of unknown type " << context->nodeType();
-	}
+#ifdef XPATH_VERBOSE
+	kDebug(6011) << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
+	             << ", nodetest='" << m_nodeTest << "'"
+	             << ", " << m_predicates.count() << " predicates";
+	kDebug(6011) << DOM::getPrintableName( context->id() );
+#endif
 
 	DomNodeList inNodes = nodesInAxis( context ), outNodes;
-	qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
+
+#ifdef XPATH_VERBOSE
+	kDebug(6011) << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
+#endif
+	
 	inNodes = nodeTestMatches( context, inNodes );
-	qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
+
+#ifdef XPATH_VERBOSE
+	kDebug(6011) << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
+#endif
 
 	if ( m_predicates.isEmpty() )
 		return inNodes;
@@ -163,7 +166,9 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			Expression::evaluationContext() = backupCtx;
 			++Expression::evaluationContext().position;
 		}
-		qDebug() << "\tPredicate trims this number to " << outNodes->length();
+#ifdef XPATH_VERBOSE
+		kDebug(6011) << "\tPredicate trims this number to " << outNodes->length();
+#endif
 		inNodes = outNodes;
 	}
 
@@ -261,7 +266,6 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 
 			NamedAttrMapImpl *attrs = static_cast<ElementImpl*>(context)->attributes( true /*read-only*/ );
 			if ( !attrs ) {
-				qDebug() << "Node::attributes() returned NULL!";
 				return nodes;
 			}
 
@@ -271,6 +275,9 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			return nodes;
 		}
 		case NamespaceAxis: {
+			// ### TODO: Need to implement this, but not a priority, since
+			// other impls don't.
+#if 0
 			if ( context->nodeType() != Node::ELEMENT_NODE ) {
 				return nodes;
 			}
@@ -278,9 +285,9 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			bool foundXmlNsNode = false;
 			NodeImpl *node = context;
 			while ( node ) {
-				NamedAttrMapImpl *attrs = static_cast<ElementImpl*>(node)->attributes();
+				NamedAttrMapImpl *attrs =
+						node->isElementNode() ? static_cast<ElementImpl*>(node)->attributes() : 0;
 				if ( !attrs ) {
-					qDebug() << "Node::attributes() returned NULL!";
 					node = xpathParentNode( node );
 					continue;
 				}
@@ -300,6 +307,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 				}
 				node = xpathParentNode( node );
 			}
+#endif
 			return nodes;
 		}
 		case SelfAxis:
@@ -319,7 +327,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			return nodes;
 		}
 		default:
-			qDebug() << "Unknown axis " << axisAsString( m_axis ) << " passed to Step::nodesInAxis";
+			kWarning(6011) << "Unknown axis " << axisAsString( m_axis ) << " passed to Step::nodesInAxis";
 	}
 
 	return nodes; // empty
