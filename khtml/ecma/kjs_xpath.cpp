@@ -60,6 +60,7 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(XPathResultPseudoCtor, "XPathResult", X
 
 /*
 @begin XPathResultTable 11
+    resultType   XPathResult::ResultType  DontDelete|ReadOnly
     numberValue  XPathResult::NumberValue DontDelete|ReadOnly
     stringValue  XPathResult::StringValue DontDelete|ReadOnly
     booleanValue XPathResult::BooleanValue DontDelete|ReadOnly
@@ -101,6 +102,8 @@ JSValue* XPathResult::getValueProperty(ExecState* exec, int token) const
 {
     DOMExceptionTranslator exception(exec);
     switch (token) {
+    case ResultType:
+        return jsNumber(impl()->resultType());
     case NumberValue:
         return jsNumber(impl()->numberValue(exception));
     case StringValue:

@@ -87,31 +87,41 @@ class FunCount : public Function
 		virtual Value doEvaluate() const;
 };
 
-class FunLocalName : public Function
+// Base for various node-property functions, that have
+// the same node picking logic. It passes the proper node,
+// if any, or otherwise returns an empty string by itself
+class NodeFunction : public Function
 {
-	public:
-		virtual bool isConstant() const;
-
 	private:
 		virtual Value doEvaluate() const;
+		virtual Value evaluateOnNode( DOM::NodeImpl* node ) const = 0;
 };
 
-class FunNamespaceURI : public Function
+class FunLocalName : public NodeFunction
 {
 	public:
 		virtual bool isConstant() const;
 
 	private:
-		virtual Value doEvaluate() const;
+		virtual Value evaluateOnNode( DOM::NodeImpl* node ) const;
 };
 
-class FunName : public Function
+class FunNamespaceURI : public NodeFunction
 {
 	public:
 		virtual bool isConstant() const;
 
 	private:
-		virtual Value doEvaluate() const;
+		virtual Value evaluateOnNode( DOM::NodeImpl* node ) const;
+};
+
+class FunName : public NodeFunction
+{
+	public:
+		virtual bool isConstant() const;
+
+	private:
+		virtual Value evaluateOnNode( DOM::NodeImpl* node ) const;
 };
 
 class FunId : public Function
@@ -407,12 +417,7 @@ bool FunPosition::isConstant() const
 	return false;
 }
 
-bool FunLocalName::isConstant() const
-{
-	return false;
-}
-
-Value FunLocalName::doEvaluate() const
+Value NodeFunction::doEvaluate() const
 {
 	NodeImpl *node = 0;
 	if ( argCount() > 0 ) {
@@ -422,12 +427,22 @@ Value FunLocalName::doEvaluate() const
 		}
 	} else {
 		// no argument -> default to context node
-		node = evaluationContext().node;		
+		node = evaluationContext().node;
 	}
 
 	if ( !node )
 		return Value( DOMString() );
 
+	return evaluateOnNode( node );
+}
+
+bool FunLocalName::isConstant() const
+{
+	return false;
+}
+
+Value FunLocalName::evaluateOnNode( DOM::NodeImpl* node ) const
+{
 	return Value( node->localName() );
 }
 
@@ -436,21 +451,9 @@ bool FunNamespaceURI::isConstant() const
 	return false;
 }
 
-Value FunNamespaceURI::doEvaluate() const
+Value FunNamespaceURI::evaluateOnNode( DOM::NodeImpl* node ) const
 {
-	NodeImpl *node = 0;
-	if ( argCount() > 0 ) {
-		Value a = arg( 0 )->evaluate();
-		if ( a.isNodeset() ) {
-			node = a.toNodeset()->first();
-		}
-	}
-
-	if ( !node ) {
-		node = evaluationContext().node;
-	}
-
-	return Value( node->namespaceURI().string() );
+	return Value( node->namespaceURI() );
 }
 
 Value FunId::doEvaluate() const
@@ -490,25 +493,9 @@ bool FunName::isConstant() const
 	return false;
 }
 
-Value FunName::doEvaluate() const
+Value FunName::evaluateOnNode( DOM::NodeImpl* node ) const
 {
-	NodeImpl *node = 0;
-	if ( argCount() > 0 ) {
-		Value a = arg( 0 )->evaluate();
-		if ( a.isNodeset() ) {
-			node = a.toNodeset()->first();
-		}
-	}
-
-	if ( !node ) {
-		node = evaluationContext().node;
-	}
-
-	QString s = node->namespaceURI().string();
-	s += ":";
-	s += node->localName().string();
-
-	return Value( s );
+	return Value( node->nodeName() );
 }
 
 Value FunCount::doEvaluate() const
@@ -575,12 +562,12 @@ Value FunSubstringBefore::doEvaluate() const
 	QString s2 = arg( 1 )->evaluate().toString().string();
 
 	if ( s2.isEmpty() ) {
-		return Value( "" );
+		return Value( DOMString() );
 	}
 
 	int i = s1.indexOf( s2 );
 	if ( i == -1 ) {
-		return Value( "" );
+		return Value( DOMString() );
 	}
 
 	return Value( DOMString( s1.left( i ) ) );
@@ -597,7 +584,7 @@ Value FunSubstringAfter::doEvaluate() const
 
 	int i = s1.indexOf( s2 );
 	if ( i == -1 ) {
-		return Value( "" );
+		return Value( DOMString() );
 	}
 
 	return Value( DOMString( s1.mid( i + s2.length() ) ) );
@@ -614,14 +601,14 @@ Value FunSubstring::doEvaluate() const
 	}
 
 	if ( pos > long( s.length() ) ) {
-		return Value( "" );
+		return Value( DOMString() );
 	}
 
 	if ( haveLength && pos < 1 ) {
 		len -= 1 - pos;
 		pos = 1;
 		if ( len < 1 ) {
-			return Value( "" );
+			return Value( DOMString() );
 		}
 	}
 

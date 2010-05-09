@@ -47,7 +47,7 @@ Value VariableReference::doEvaluate() const
 	QHash<DOM::DOMString, DOM::DOMString>& bindings = evaluationContext().variableBindings;
 	if ( !bindings.contains( m_name ) ) {
 		// XXX What to do if an unknown variable is referenced?
-		return Value( "" );
+		return Value( DOMString() );
 	}
 	return Value( bindings[ m_name ] );
 }

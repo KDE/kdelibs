@@ -101,6 +101,9 @@ class Value
 		QString dump() const;
 
 	private:
+		// Catch undesired conversions -- this manages to go to bool otherwise!
+		explicit Value( const char* );
+	
 		Type m_type;
 		DomNodeList m_nodeset;
 		bool m_bool;

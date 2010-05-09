@@ -37,7 +37,7 @@ public:
     // The various constants are in separate constant table node
     enum {
         // properties:
-        NumberValue, StringValue, BooleanValue,
+        ResultType, NumberValue, StringValue, BooleanValue,
         SingleNodeValue, InvalidIteratorState, SnapshotLength,
         // functions:
         IterateNext, SnapshotItem
