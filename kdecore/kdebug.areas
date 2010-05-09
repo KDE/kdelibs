@@ -233,6 +233,7 @@
 6000        khtml
 6005        khtml (encoding)
 6010        khtml (dom)
+6011        khtml (xpath)
 6020        khtml (xml)
 6030        khtml (html)
 6031        khtml (frames & objects)
