@@ -443,7 +443,15 @@ bool FunLocalName::isConstant() const
 
 Value FunLocalName::evaluateOnNode( DOM::NodeImpl* node ) const
 {
-	return Value( node->localName() );
+	DOM::DOMString n;
+	switch ( node->nodeType() ) {
+	case Node::PROCESSING_INSTRUCTION_NODE:
+		n = node->nodeName(); // target name
+		break;
+	default:
+		n = node->localName();
+	}
+	return Value( n );
 }
 
 bool FunNamespaceURI::isConstant() const
@@ -495,7 +503,18 @@ bool FunName::isConstant() const
 
 Value FunName::evaluateOnNode( DOM::NodeImpl* node ) const
 {
-	return Value( node->nodeName() );
+	DOM::DOMString n;
+	switch ( node->nodeType() ) {
+	case Node::TEXT_NODE:
+	case Node::CDATA_SECTION_NODE:
+	case Node::COMMENT_NODE:
+	case Node::DOCUMENT_NODE:
+		// All of these have an empty XPath name
+		break;
+	default:
+		n = node->nodeName();
+	}
+	return Value( n );
 }
 
 Value FunCount::doEvaluate() const
@@ -704,9 +723,10 @@ Value FunLang::doEvaluate() const
 
 	// extract 'en' out of 'en-us'
 	QString langNodeValueString = langNodeValue.string();
-	langNodeValueString = langNodeValueString.left( langNodeValueString.indexOf( '-' ) );
+	QString langNodeBaseString = langNodeValueString.left( langNodeValueString.indexOf( '-' ) );
 
-	return Value( langNodeValueString.toLower() == lang.toLower() );
+	return Value( langNodeValueString.toLower() == lang.toLower() ||
+	              langNodeBaseString.toLower()  == lang.toLower() );
 }
 
 bool FunLang::isConstant() const
@@ -726,7 +746,17 @@ bool FunFalse::isConstant() const
 
 Value FunNumber::doEvaluate() const
 {
-	return Value( arg( 0 )->evaluate().toNumber() );
+	Value vi;
+	if ( argCount() == 0 ) {
+		// Spec'd: convert context node to singleton nodeset, call
+		// string on that --> that's just stringValue on that node.
+		// then we call number on that string
+		vi = Value(stringValue(evaluationContext().node));
+	} else {
+		vi = arg( 0 )->evaluate();
+	}
+	
+	return Value( vi.toNumber() );
 }
 
 Value FunSum::doEvaluate() const
@@ -807,8 +837,8 @@ static FunctionMapping functions[] = {
 	{ "substring-before", { &createFunSubstringBefore, 2 } },
 	{ "substring-after", { &createFunSubstringAfter, 2 } },
 	{ "substring", { &createFunSubstring, Interval( 2, 3 ) } },
-	{ "string-length", { &createFunStringLength, 1 } },
-	{ "normalize-space", { &createFunNormalizeSpace, 1 } },
+	{ "string-length", { &createFunStringLength, Interval( 0, 1 ) } },
+	{ "normalize-space", { &createFunNormalizeSpace, Interval( 0, 1 ) } },
 	{ "translate", { &createFunTranslate, 3 } },
 
 	{ "boolean", { &createFunBoolean, 1 } },
@@ -817,7 +847,7 @@ static FunctionMapping functions[] = {
 	{ "false", { &createFunFalse, 0 } },
 	{ "lang", { &createFunLang, 1 } },
 
-	{ "number", { &createFunNumber, 1 } },
+	{ "number", { &createFunNumber, Interval( 0, 1 ) } },
 	{ "floor", { &createFunFloor, 1 } },
 	{ "ceiling", { &createFunCeiling, 1 } },
 	{ "round", { &createFunRound, 1 } }
