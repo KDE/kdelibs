@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (c) 2009 David Faure <faure@kde.org>
+    Copyright (c) 2010 Sebastian Trueg <trueg@kde.org>
 
     This library is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +24,19 @@
 #include <kio/copyjob.h>
 #include <kdebug.h>
 
+#include "config-kparts.h"
+
+#include <QtCore/QDateTime>
+
+#ifdef HAVE_NEPOMUK_WITH_SDO_0_5
+#include "ndo.h"
+#include "nuao.h"
+#include "nfo.h"
+#include "nie.h"
+#include "resource.h"
+#include "variant.h"
+#endif
+
 namespace KParts {
 
 /**
@@ -34,7 +48,7 @@ class DownloadJobWatcher : public QObject
     Q_OBJECT
 public:
     DownloadJobWatcher(KIO::FileCopyJob* job, const QMap<QString, QString> &metaData)
-        : QObject(job), m_metaData(metaData)
+        : QObject(job), m_metaData(metaData), m_downloadJobStartTime(QDateTime::currentDateTime())
     {
         kDebug() << "download started: srcUrl=" << job->srcUrl()
                  << "destUrl=" << job->destUrl()
@@ -55,11 +69,65 @@ private Q_SLOTS:
             kDebug() << "download finished: srcUrl=" << fileCopyJob->srcUrl()
                      << "destUrl=" << fileCopyJob->destUrl()
                      << "referrer=" << m_metaData.value("referrer");
+#ifdef HAVE_NEPOMUK_WITH_SDO_0_5
+            //
+            // Remember where a file was downloaded from the semantic way:
+            // We have two file resources:
+            //   one for the source file (which in most cases is a remote file)
+            //   and one for the destination file (which will be or is already indexed)
+            // the latter is marked as being copied from the former
+            // and then there is the download event which links to the referrer.
+            //
+
+            const KUrl srcUrl = fileCopyJob->srcUrl();
+            const KUrl destUrl = fileCopyJob->destUrl();
+            QUrl srcType;
+            QUrl destType;
+            QUrl srcUri;
+            QUrl destUri;
+            if(srcUrl.isLocalFile()) {
+                srcUri = srcUrl; // to make sure we reuse an already existing local file resource
+                srcType = Nepomuk::Vocabulary::NFO::FileDataObject();
+            }
+            else {
+                srcType = Nepomuk::Vocabulary::NFO::RemoteDataObject();
+            }
+            if(destUrl.isLocalFile()) {
+                destUri = destUrl; // to make sure we reuse an already existing local file resource
+                destType = Nepomuk::Vocabulary::NFO::FileDataObject();
+            }
+            else {
+                destType = Nepomuk::Vocabulary::NFO::RemoteDataObject();
+            }
+
+            // source and dest resources
+            Nepomuk::Resource srcFileRes(srcUri, srcType);
+            Nepomuk::Resource destFileRes(destUri, destType);
+            srcFileRes.setProperty(Nepomuk::Vocabulary::NIE::url(), srcUrl);
+            destFileRes.setProperty(Nepomuk::Vocabulary::NIE::url(), destUrl);
+
+            // relate src and dest
+            destFileRes.setProperty(Nepomuk::Vocabulary::NDO::copiedFrom(), srcFileRes);
+
+            // details in the download event
+            Nepomuk::Resource downloadEventRes(QUrl(), Nepomuk::Vocabulary::NDO::DownloadEvent());
+            downloadEventRes.addProperty(Nepomuk::Vocabulary::NUAO::involves(), destFileRes);
+            downloadEventRes.addProperty(Nepomuk::Vocabulary::NUAO::start(), m_downloadJobStartTime);
+
+            // set the referrer
+            KUrl referrerUrl(m_metaData.value("referrer"));
+            if(referrerUrl.isValid()) {
+                // TODO: we could at this point index the referrer site via strigi
+                Nepomuk::Resource referrerRes(referrerUrl, Nepomuk::Vocabulary::NFO::Website());
+                downloadEventRes.addProperty(Nepomuk::Vocabulary::NDO::referrer(), referrerRes);
+            }
+#endif
         }
     }
 
 private:
     QMap<QString, QString> m_metaData;
+    QDateTime m_downloadJobStartTime;
 };
 }
 
