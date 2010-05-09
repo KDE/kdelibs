@@ -83,6 +83,7 @@ private Q_SLOTS:
     void testJapaneseBasic();
     void testJapaneseYmd();
     void testJapaneseSpecialCases();
+    void testMinguoBasic();
     void testThaiBasic();
     void testQDateYearMonthDay();
     void testQDateAddYears();

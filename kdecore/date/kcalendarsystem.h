@@ -1222,6 +1222,7 @@ private:
     friend class KCalendarSystemJalali;
     friend class KCalendarSystemJapanese;
     friend class KCalendarSystemJulian;
+    friend class KCalendarSystemMinguo;
     friend class KCalendarSystemThai;
 
     Q_DISABLE_COPY( KCalendarSystem )

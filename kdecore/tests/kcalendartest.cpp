@@ -44,6 +44,12 @@ void KCalendarTest::testTypes()
     calendar = KCalendarSystem::create( "julian" );
     QCOMPARE( calendar->calendarType(), QString("julian") );
     delete calendar;
+    calendar = KCalendarSystem::create( "minguo" );
+    QCOMPARE( calendar->calendarType(), QString("minguo") );
+    delete calendar;
+    calendar = KCalendarSystem::create( "thai" );
+    QCOMPARE( calendar->calendarType(), QString("thai") );
+    delete calendar;
     calendar = KCalendarSystem::create( "invalid" );
     QCOMPARE( calendar->calendarType(), QString("gregorian") );
     delete calendar;
@@ -59,6 +65,8 @@ void KCalendarTest::testTypes()
     QVERIFY( lst.contains( "jalali" ) );
     QVERIFY( lst.contains( "japanese" ) );
     QVERIFY( lst.contains( "julian" ) );
+    QVERIFY( lst.contains( "minguo" ) );
+    QVERIFY( lst.contains( "thai" ) );
 
     QCOMPARE( KCalendarSystem::calendarLabel( "gregorian" ),           QString( "Gregorian" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "gregorian-proleptic" ), QString( "Gregorian (Proleptic)" ) );
@@ -68,6 +76,8 @@ void KCalendarTest::testTypes()
     QCOMPARE( KCalendarSystem::calendarLabel( "jalali" ),              QString( "Jalali" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "japanese" ),            QString( "Japanese" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "julian" ),              QString( "Julian" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( "minguo" ),              QString( "Taiwanese" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( "thai" ),                QString( "Thai" ) );
 }
 
 void KCalendarTest::testLocale()
@@ -96,6 +106,12 @@ void KCalendarTest::testLocale()
     KGlobal::locale()->setCalendar( "julian" );
     calendar = KGlobal::locale()->calendar();
     QCOMPARE( calendar->calendarType(), QString( "julian" ) );
+    KGlobal::locale()->setCalendar( "minguo" );
+    calendar = KGlobal::locale()->calendar();
+    QCOMPARE( calendar->calendarType(), QString( "minguo" ) );
+    KGlobal::locale()->setCalendar( "thai" );
+    calendar = KGlobal::locale()->calendar();
+    QCOMPARE( calendar->calendarType(), QString( "thai" ) );
 }
 
 void KCalendarTest::testFormatDate()
@@ -1646,6 +1662,56 @@ void KCalendarTest::testJapaneseSpecialCases()
 
     delete calendar;
 }
+
+void KCalendarTest::testMinguoBasic()
+{
+    const KCalendarSystem *calendar = KCalendarSystem::create( "minguo" );
+
+    QCOMPARE( calendar->calendarType(), QString( "minguo" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( QString( "minguo" ) ), QString( "Taiwanese" ) );
+
+    QCOMPARE( calendar->epoch(), QDate( 1912, 1, 1 ) );
+    QCOMPARE( calendar->earliestValidDate(), QDate( 1912, 1, 1 ) );
+    QCOMPARE( calendar->latestValidDate(), QDate( 11910, 12, 31 ) );
+
+    testValid( calendar, -1, 10000, 13, 32, QDate() );
+
+    QCOMPARE( calendar->isLeapYear( 2007 - 1911 ), false );
+    QCOMPARE( calendar->isLeapYear( 2008 - 1911 ), true );
+    QCOMPARE( calendar->isLeapYear( 1900 - 1911 ), false );
+    QCOMPARE( calendar->isLeapYear( 2000 - 1911 ), true );
+    QCOMPARE( calendar->isLeapYear( QDate( 2007, 1, 1 ) ), false );
+    QCOMPARE( calendar->isLeapYear( QDate( 2008, 1, 1 ) ), true );
+
+    QCOMPARE( calendar->daysInWeek( QDate( 2007, 1, 1 ) ), 7 );
+
+    QCOMPARE( calendar->monthsInYear( 2007 - 1911 ),         12 );
+    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+
+    testYear(  calendar, QDate( 2007, 7, 9 ), 2007 - 1911, QString("96"), QString("0096") );
+    testMonth( calendar, QDate( 2007, 7, 9 ),    7, QString("7"),  QString("07") );
+    testDay(   calendar, QDate( 2007, 7, 9 ),    9, QString("9"),  QString("09") );
+
+    testEraDate( calendar, QDate( 2007, 1, 1 ), 2007 - 1911, "96", "0096", "ROC", "Republic of China Era" );
+
+    testWeekDayName( calendar, 6, QDate( 2007, 7, 28 ), "Sat", "Saturday" );
+    testMonthName( calendar, 12, 2007 - 1911, QDate( 2007, 12, 20 ), "Dec", "December", "of Dec", "of December" );
+
+    QCOMPARE( calendar->monthsInYear( QDate( 2007, 1, 1 ) ), 12 );
+
+    QCOMPARE( calendar->weekStartDay(), 1 );
+    QCOMPARE( calendar->weekDayOfPray(), 7 );
+
+    QCOMPARE( calendar->isProleptic(), false );
+    QCOMPARE( calendar->isLunar(), false );
+    QCOMPARE( calendar->isLunisolar(), false );
+    QCOMPARE( calendar->isSolar(), true );
+
+    testRoundTrip( calendar );
+
+    delete calendar;
+}
+
 
 void KCalendarTest::testThaiBasic()
 {

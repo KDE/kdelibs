@@ -40,6 +40,7 @@
 #include "kcalendarsystemjalali_p.h"
 #include "kcalendarsystemjapanese_p.h"
 #include "kcalendarsystemjulian_p.h"
+#include "kcalendarsystemminguo_p.h"
 #include "kcalendarsystemthai_p.h"
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
@@ -84,6 +85,10 @@ KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLo
         return new KCalendarSystemJulian( locale );
     }
 
+    if ( calendarType == "minguo" ) {
+        return new KCalendarSystemMinguo( locale );
+    }
+
     if ( calendarType == "thai" ) {
         return new KCalendarSystemThai( locale );
     }
@@ -109,6 +114,7 @@ QStringList KCalendarSystem::calendarSystems()
     lst.append( "jalali" );
     lst.append( "japanese" );
     lst.append( "julian" );
+    lst.append( "minguo" );
     lst.append( "thai" );
 
     return lst;
@@ -154,6 +160,10 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
 
     if ( calendarType == "julian" ) {
         return ki18nc( "@item Calendar system", "Julian" ).toString( KGlobal::locale() );
+    }
+
+    if ( calendarType == "minguo" ) {
+        return ki18nc( "@item Calendar system", "Taiwanese" ).toString( KGlobal::locale() );
     }
 
     if ( calendarType == "thai" ) {
