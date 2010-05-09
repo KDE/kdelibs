@@ -31,16 +31,6 @@
 namespace KColorSpaces
 {
 
-class KHSL
-{
-public:
-    explicit KHSL(const QColor&);
-    explicit KHSL(qreal h_, qreal s_, qreal l_, qreal a_ = 1.0);
-    QColor qColor() const;
-    qreal h, s, l, a;
-private:
-};
-
 class KHCY
 {
 public:

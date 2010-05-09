@@ -33,21 +33,6 @@ static inline qreal wrap(qreal a, qreal d = 1.0)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// HSL color space
-
-KHSL::KHSL(const QColor& color)
-{
-    // TODO
-    a = color.alphaF();
-}
-
-QColor KHSL::qColor() const
-{
-    // TODO
-    return QColor();
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // HCY color space
 
 #define HCY_REC 709 // use 709 for now
