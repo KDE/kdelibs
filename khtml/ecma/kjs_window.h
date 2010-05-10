@@ -175,7 +175,7 @@ namespace KJS {
            HTMLTableSectionElementCtor, HTMLTableRowElementCtor, HTMLTableCellElementCtor,
            HTMLFrameSetElementCtor, HTMLLayerElementCtor, HTMLFrameElementCtor, HTMLIFrameElementCtor,
            HTMLCollectionCtor, StyleSheetCtor, 
-           CSSStyleDeclarationCtor, HTMLCanvasElementCtor, Context2DCtor,
+           CSSStyleDeclarationCtor, HTMLCanvasElementCtor, Context2DCtor, SVGAngleCtor,
            XPathResultCtor, XPathExpressionCtor, XPathNSResolverCtor};
     WindowQObject *winq;
 

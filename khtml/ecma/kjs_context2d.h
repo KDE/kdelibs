@@ -130,6 +130,9 @@ namespace KJS {
     unsigned size;
     CanvasImageData* parent;
   };
+
+  DEFINE_PSEUDO_CONSTRUCTOR(SVGAnglePseudoCtor)
+
 } // namespace
 
 #endif

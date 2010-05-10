@@ -391,6 +391,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontEnum|DontDelete
   StyleSheet   Window::StyleSheetCtor DontEnum|DontDelete
   CanvasRenderingContext2D Window::Context2DCtor DontEnum|DontDelete
+  SVGAngle Window::SVGAngleCtor DontEnum|DontDelete
   XPathResult Window::XPathResultCtor DontEnum|DontDelete
   XPathExpression Window::XPathExpressionCtor DontEnum|DontDelete
   XPathNSResolver Window::XPathNSResolverCtor DontEnum|DontDelete
@@ -877,6 +878,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return HTMLCanvasElementPseudoCtor::self(exec);
     case Context2DCtor:
       return Context2DPseudoCtor::self(exec);
+    case SVGAngleCtor:
+      return SVGAnglePseudoCtor::self(exec);
     case XPathResultCtor:
       return XPathResultPseudoCtor::self(exec);
     case XPathExpressionCtor:
