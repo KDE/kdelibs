@@ -87,6 +87,9 @@ public:
     struct Object {
         ScriptableExtension* owner;
         quint64              objId;
+
+        Object(): owner(0), objId(0) {}
+        Object(ScriptableExtension* o, quint64 id): owner(o), objId(id) {}
     };
 
     //@}
@@ -108,10 +111,10 @@ public:
     /**
     * This returns a bridge object that permits KParts implementing the older
     * LiveConnectExtension to be used via the ScriptableExtension API.
-    * Note that this method does not do any memory management on the adapter;
-    * the caller is expected to manage its lifetime.
+    * The bridge's parent will be the @p parentObj.
     */
-    static ScriptableExtension* adapterFromLiveConnect(LiveConnectExtension* oldApi);
+    static ScriptableExtension* adapterFromLiveConnect(QObject* parentObj,
+                                                       LiveConnectExtension* oldApi);
 
     /**
      * Registers dbus encodings of Null, Undefined, and Exception.
@@ -168,7 +171,9 @@ public:
     ///   calling an operation on a KHTMLPart object,
     ///   then the 'this' parameter would be the object owner, a ScriptableExtension
     ///   provided by the KHTMLPart, while the callerPrincipal would be the
-    ///   ScriptableExtension of the \em plugin.
+    ///   ScriptableExtension of the \em plugin. The extension is expected
+    ///   to do appropriate cross-site scripting checks on this argument
+    ///   if it is acting as a host.
     //@{
     
     typedef QList<QVariant> ArgList;
