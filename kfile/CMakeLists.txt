@@ -40,8 +40,6 @@ kde4_add_library(kfile SHARED ${kfile_LIB_SRCS})
 target_link_libraries(kfile
    ${KDE4_KIO_LIBS}
    ${ZLIB_LIBRARY}
-   ${STRIGI_STREAMS_LIBRARY}
-   ${STRIGI_STREAMANALYZER_LIBRARY}
    ${KDE4_SOLID_LIBS}
    ${X11_LIBRARIES}
 )
