@@ -28,9 +28,6 @@
 
 #include "kstandarddirs.h"
 
-#include <solid/device.h>
-#include <solid/block.h>
-
 #ifdef Q_WS_WIN
 #include <windows.h>
 #include <QDir>
@@ -174,10 +171,9 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
 
     if (mountedFrom.startsWith(QLatin1String("UUID="))) {
         const QString uuid = mountedFrom.mid(5);
-        const QString query = "StorageVolume.uuid == '" + uuid + '\'';
-        const QList<Solid::Device> lst = Solid::Device::listFromQuery(query);
-        if (!lst.isEmpty()) {
-            mountedFrom = lst.first().as<Solid::Block>()->device();
+        const QString potentialDevice = QFile::symLinkTarget("/dev/disk/by-uuid/" + uuid);
+        if (QFile::exists(potentialDevice)) {
+            mountedFrom = potentialDevice;
         }
     }
 
