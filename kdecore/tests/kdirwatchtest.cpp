@@ -26,7 +26,7 @@ int main (int argc, char **argv)
   KCmdLineArgs::addCmdLineOptions( options );
   KCmdLineArgs::addStdCmdLineOptions();
 
-  KApplication a;
+  QCoreApplication a(argc, argv);
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   myTest testObject;

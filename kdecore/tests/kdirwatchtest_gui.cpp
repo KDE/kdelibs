@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         QByteArray("kde@dstoecker.de"));
     about.addAuthor( ki18n("Dirk Stoecker"), KLocalizedString(), QByteArray("kde@dstoecker.de") );
     KCmdLineArgs::init(argc, argv, &about);
-    KApplication app;
+    QApplication app(argc, argv);
 
     KDirWatchTest_GUI *mainWin = new KDirWatchTest_GUI();
     mainWin->show();

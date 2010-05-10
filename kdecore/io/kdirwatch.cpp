@@ -44,7 +44,7 @@
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
 
-#include <config-kdirwatch.h>
+#include "io/config-kdirwatch.h"
 #include <config.h>
 
 #include <sys/stat.h>

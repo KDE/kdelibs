@@ -27,7 +27,7 @@
 #ifndef KDIRWATCH_P_H
 #define KDIRWATCH_P_H
 
-#include <config-kdirwatch.h>
+#include "io/config-kdirwatch.h"
 #include "kdirwatch.h"
 
 #include <QtCore/QList>

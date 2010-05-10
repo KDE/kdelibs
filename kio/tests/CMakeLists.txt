@@ -28,9 +28,7 @@ KIO_UNIT_TESTS(
   kacltest
   kdirmodeltest
   kdirlistertest
-  kmountpointtest
   fileundomanagertest
-  kdirwatch_unittest
 )
 
 KIO_EXECUTABLE_TESTS(
@@ -38,7 +36,6 @@ KIO_EXECUTABLE_TESTS(
   getalltest
   kruntest
   kioslavetest
-  kdirwatchtest
   speed
   kiopassdlgtest
   kscantest
@@ -50,7 +47,6 @@ KIO_EXECUTABLE_TESTS(
   dataprotocoltest
   ksycocaupdatetest
   netaccesstest
-  kdirwatchtest_gui
   kdirmodeltest_gui
   kmimetypechoosertest_gui
   ksslkeygentest

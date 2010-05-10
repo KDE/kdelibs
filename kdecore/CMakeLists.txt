@@ -1,4 +1,5 @@
 project(kdecore)
+
 # Generate config-kstandarddirs.h
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
 
@@ -7,6 +8,9 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
 # Generate kdeversion.h
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
+
+# Generate io/config-kdirwatch.h
+configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kdirwatch.h )
 
 # Configure checks for network/ but also for netsupp.*
 include(network/ConfigureChecks.cmake)
@@ -168,8 +172,10 @@ set(kdecore_LIB_SRCS
    io/kautosavefile.cpp
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
+   io/kdirwatch.cpp
    io/klimitediodevice.cpp
    io/kmessage.cpp
+   io/kmountpoint.cpp
    io/kprocess.cpp
    io/ksavefile.cpp
    io/ktar.cpp
@@ -314,6 +320,7 @@ if(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
+    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} io/kdirwatch_win.cpp)
 endif(NOT WIN32)
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
@@ -466,9 +473,11 @@ install( FILES
    io/karchive.h
    io/kautosavefile.h
    io/kdebug.h
+   io/kdirwatch.h
    io/kmessage.h
    io/kprocess.h
    io/klockfile.h
+   io/kmountpoint.h
    io/ksavefile.h
    io/ktar.h
    io/ktempdir.h

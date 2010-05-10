@@ -19,9 +19,11 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 
 KDECORE_UNIT_TESTS(
  karchivetest
+ kdirwatch_unittest
  klocaletest
  klocaletimeformattest
  klocalizedstringtest
+ kmountpointtest
  kstandarddirstest
  kaboutdatatest
  kurltest
@@ -70,6 +72,7 @@ if(UNIX)
 endif(UNIX)
 
 KDECORE_EXECUTABLE_TESTS(
+ kdirwatchtest
  krandomsequencetest
  ktartest
  kziptest
@@ -80,6 +83,11 @@ KDECORE_EXECUTABLE_TESTS(
  kmdcodectest
  startserviceby
 )
+
+########### kdirwatchtest_gui ###############
+
+kde4_add_unit_test(kdirwatchtest_gui kdirwatchtest_gui.cpp)
+target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY})
 
 ########### klimitediodevicetest ###############
 

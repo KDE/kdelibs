@@ -38,7 +38,6 @@ if(WIN32)
  macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
 endif(WIN32)
 
-configure_file(kio/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kdirwatch.h )
 configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
@@ -80,7 +79,6 @@ set(kiocore_STAT_SRCS
   kio/kdirlister.cpp
   kio/kdirmodel.cpp
   kio/kdirnotify.cpp
-  kio/kdirwatch.cpp
   kio/kdynamicjobtracker.cpp
   kio/kemailsettings.cpp
   kio/kfileitem.cpp
@@ -94,7 +92,6 @@ set(kiocore_STAT_SRCS
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
   kio/kmimetyperesolver.cpp
-  kio/kmountpoint.cpp
   kio/kprotocolmanager.cpp
   kio/kremoteencoding.cpp
   kio/krun.cpp
@@ -149,7 +146,6 @@ endif(UNIX)
 
 if(WIN32)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
-       kio/kdirwatch_win.cpp
        kio/krun_win.cpp
    )
 endif(WIN32)
@@ -376,7 +372,6 @@ install( FILES
   kio/kdirlister.h
   kio/kdirmodel.h
   kio/kdirnotify.h
-  kio/kdirwatch.h
   kio/kemailsettings.h
   kio/kfileitem.h
   kio/kfileitemlistproperties.h
@@ -389,7 +384,6 @@ install( FILES
   kio/kimageio.h
   kio/kmimetypechooser.h
   kio/kmimetyperesolver.h
-  kio/kmountpoint.h
   kio/knfsshare.h
   kio/kprotocolmanager.h
   kio/kremoteencoding.h

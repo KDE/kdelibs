@@ -86,7 +86,7 @@ private:
     QString m_path;
 };
 
-QTEST_KDEMAIN(KDirWatch_UnitTest, GUI)
+QTEST_KDEMAIN_CORE(KDirWatch_UnitTest)
 
 // Just to make the inotify packets bigger
 static const char s_filePrefix[] = "This_is_a_test_file_";
