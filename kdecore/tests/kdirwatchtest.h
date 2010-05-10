@@ -17,7 +17,6 @@
 #include <QtCore/QObject>
 
 #include "kdirwatch.h"
-#include "kapplication.h"
 
 class myTest : public QObject 
 {
