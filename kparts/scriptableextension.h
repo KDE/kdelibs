@@ -1,0 +1,248 @@
+/* This file is part of the KDE project
+   Copyright (C) 2010 Maksim Orlovich <maksim@kde.org>
+   Copyright (C) 2002 Koos Vriezen <koos.vriezen@gmail.com>   
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
+#ifndef kparts_scriptableextension_h
+#define kparts_scriptableextension_h
+
+#include <QtGlobal>
+
+namespace KParts {
+
+class ScriptableExtension;
+class LiveConnectExtension;
+
+/**
+ * An extension class that permits KParts to be scripted (such as when embedded
+ * inside a KHTMLPart) and to access the host's scriptable objects as well.
+ *
+ * See @ref ScriptValueTypes for how values are passed to/from various methods here.
+ *
+ * @since 4.5
+ * \nosubgrouping
+ */
+class KPARTS_EXPORT ScriptableExtension: public QObject
+{
+    Q_OBJECT
+public:
+    /** @defgroup ScriptValueTypes Script Value Types
+     * @{
+     * Values are passed to and from scriptable methods or properties as QVariants.
+     * Valid values may be bools, strings, and numbers (doubles), as well as the
+     * following custom types:
+     * \li @ref Null
+     * \li @ref Undefined
+     * \li @ref Exception
+     * \li @ref Object
+     *
+     * All of these other than Object also provide DBus marshallers.
+     * These are registered when ScriptableExtension::registerDBusTypes()
+     * is called, which is in particular done by ScriptableExtension constructor.
+     */
+
+    /// Corresponds to 'null' in JavaScript
+    struct Null {};
+
+    /// Corresponds to 'undefined' in JavaScript
+    struct Undefined {};
+
+    /// Returned from operations to denote a failure. May not be passed in as
+    /// a parameter, only returned
+    struct Exception {
+        /// Error message returned from the callee. This should be assumed to be
+        /// low-level (in particular, it might not be translated) and should
+        /// only be displayed in low-level debugging tools and the like.
+        QString message;
+    };
+
+    /// Objects are abstracted away as a pair of the ScriptableExtension
+    /// the performs operations on it, and an implementation-specific Id,
+    /// which gets passed to the extension's methods. If you store reference
+    /// an object, you should use its owner's @ref acquire and @ref release
+    /// methods to update its count of external references (which starts at 0)
+    struct Object {
+        ScriptableExtension* owner;
+        quint64              objId;
+    };
+
+    //@}
+
+
+    ///@name lifetime
+    //@{
+protected:
+    ScriptableExtension(QObject* parent);
+    virtual ~ScriptableExtension();
+
+public:
+    /**
+    * Queries @p obj for a child object which inherits from this
+    * ScriptableExtension class. Convenience method.
+    */
+    static ScriptableExtension* childObject(QObject* obj);
+
+    /**
+    * This returns a bridge object that permits KParts implementing the older
+    * LiveConnectExtension to be used via the ScriptableExtension API.
+    * Note that this method does not do any memory management on the adapter;
+    * the caller is expected to manage its lifetime.
+    */
+    static ScriptableExtension* adapterFromLiveConnect(LiveConnectExtension* oldApi);
+
+    /**
+     * Registers dbus encodings of Null, Undefined, and Exception.
+     * This is called by the ScriptableExtension constructor, so you
+     * likely will not need to do so yourself
+     */
+    static void registerDBusTypes();
+
+    //@}
+    
+
+    ///@name Object Hierarchy
+    //@{
+
+    /**
+     * Reports the hosting ScriptableExtension to a child. It's the responsibility
+     * of a parent part to call this method on all of its kids' ScriptableExtensions
+     * as soon as possible.
+     */
+    void setHost(ScriptableExtension* host);
+
+    /**
+     * Returns any registered parent scripting context. May be 0 if setHost
+     * was not called (or not call yet).
+     */
+    ScriptableExtension* host() const;
+
+    /**
+     * Return the root scriptable object of this KPart.
+     * For example for an HTML part, it would represent a Window object.
+     */
+    virtual ScriptValue rootObject();
+
+    /**
+     * Returns an object that represents this KPart's view of
+     * the @p childPart. For an example, in an HTML part,
+     * it would return the DOM node of an &lt;object&gt; handled
+     * by @p childPart
+     */
+    virtual ScriptValue enclosingObject(KPart::ReadOnlyPart* childPart);
+    //@}    
+
+    ///@name Object Operations
+    /// All these methods share the following conventions:
+    /// \li Values are passed and returned encoded as defined in
+    ///   @ref ScriptValueTypes
+    /// \li All methods may return an exception if unsupported
+    /// \li All callers \b must provide an accurate callerPrincipal
+    ///   argument describing which ScriptableExtension (and hence which KPart)
+    ///   they're acting as. This is used to implement <b>security checks</b>. This
+    ///   is \b not the same as the owner of an object. For example, if a plugin is
+    ///   calling an operation on a KHTMLPart object,
+    ///   then the 'this' parameter would be the object owner, a ScriptableExtension
+    ///   provided by the KHTMLPart, while the callerPrincipal would be the
+    ///   ScriptableExtension of the \em plugin.
+    //@{
+    
+    typedef QList<QVariant> ArgList;
+
+    /**
+      Try to use the object @p objId associated with 'this' as a function.
+    */
+    virtual QVariant callAsFunction(ScriptableExtension* callerPrincipal, quint64 objId, const ArgList& args);
+
+    /**
+      Try to use the object @p objId associated with 'this' as a constructor
+      (corresponding to ECMAScript's new foo(bar, baz, glarch) expression).
+    */
+    virtual QVariant callAsConstructor(ScriptableExtension* callerPrincipal, quint64 objId, const ArgList& args);
+
+    /**
+     Returns true if the object @p objId associated with 'this' has the property
+     @p propName
+    */
+    virtual bool hasProperty(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
+
+    /**
+     Tries to get field @p propName from object @p objId associated with 'this'.
+    */
+    virtual OpValue get(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
+
+    /**
+     Tries to set the field @p propName from object @p objId associated with 'this'
+     to @p value. Returns true on success
+    */
+    virtual bool put(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName, const QVariant& value);
+
+    /**
+     Tries to remove the field d @p propName from object @p objId associated with 'this'.
+     Returns true on success
+    */
+    virtual bool removeProperty(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
+
+    /**
+     Tries to enumerate all fields of object @p objId associated with this to
+     @p result. Returns true on success
+    */
+    virtual bool enumerateProperties(ScriptableExtension* callerPrincipal, quint64 objId, QStringList* result);
+
+    /**
+     Tries to raise an exception with given message in this extension's scripting
+     context. Returns true on success
+    */
+    virtual bool setException(ScriptableExtension* callerPrincipal, const QString& message);
+
+
+    /**
+     Tries to evaluate a script @p code with the given object as its context.
+     The parameter @p language specifies the mimetype of the language to execute.
+     Use 'application/ecmascript' for ECMAScript or JavaScript
+    */
+    virtual QVariant evaluateScript(ScriptableExtension* principal,
+                                    quint64 contextObjectId,
+                                    const QString& code,
+                                    const QString& language =
+                                        QString::fromLatin1("application/ecmascript"));
+                              
+    
+    /**
+      increases reference count of object @p objId
+    */
+    virtual void acquire(quint64 objid);
+
+    /**
+      decreases reference count of object @p objId
+    */
+    virtual void release(quint64 objid);
+
+    //@}
+private:
+    class ScriptableExtensionPrivate;
+    ScriptableExtensionPrivate* const d;
+};
+
+} // namespace KParts
+
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Null);
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Undefined);
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception);
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object);
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
