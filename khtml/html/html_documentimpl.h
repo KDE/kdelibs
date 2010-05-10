@@ -44,7 +44,7 @@ class HTMLDocumentImpl : public DOM::DocumentImpl
 {
     Q_OBJECT
 public:
-    HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v = 0);
+    HTMLDocumentImpl(KHTMLView *v = 0);
     ~HTMLDocumentImpl();
 
     virtual bool isHTMLDocument() const { return true; }

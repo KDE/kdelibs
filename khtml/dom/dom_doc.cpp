@@ -117,7 +117,8 @@ DOMImplementation DOMImplementation::getInterface(const DOMString &feature) cons
     if (!impl)
         throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    return impl->getInterface(feature);
+    // This method is a no-op for us.
+    return impl;
 }
 
 CSSStyleSheet DOMImplementation::createCSSStyleSheet(const DOMString &title, const DOMString &media)
@@ -149,7 +150,7 @@ Document::Document()
     : Node()
 {
     // we always want an implementation
-    impl = DOMImplementationImpl::instance()->createDocument();
+    impl = DOMImplementationImpl::createDocument();
     impl->ref();
 }
 
@@ -158,7 +159,7 @@ Document::Document(bool create)
 {
     if(create)
     {
-	impl = DOMImplementationImpl::instance()->createDocument();
+	impl = DOMImplementationImpl::createDocument();
 	impl->ref();
     }
     else

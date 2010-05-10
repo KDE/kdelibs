@@ -57,8 +57,8 @@ using namespace DOM;
 using namespace khtml;
 
 
-HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-  : DocumentImpl(_implementation, v)
+HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
+  : DocumentImpl(v)
 {
 //    kDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this;
     htmlElement = 0;

@@ -36,7 +36,7 @@ namespace WebCore {
 
     class SVGDocument : public Document {
     public:
-        SVGDocument(DOMImplementation*, Frame*);
+        SVGDocument(Frame*);
         virtual ~SVGDocument();
         
         virtual bool isSVGDocument() const { return true; }

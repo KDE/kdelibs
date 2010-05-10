@@ -37,8 +37,8 @@
 
 namespace WebCore {
 
-SVGDocument::SVGDocument(DOMImplementation* i, Frame* frame)
-    : Document(i, frame)
+SVGDocument::SVGDocument( Frame* frame)
+    : Document(frame)
 {
 }
 

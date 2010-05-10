@@ -34,7 +34,7 @@ using namespace DOM;
 
 HTMLDocument::HTMLDocument() : Document(false) // create the impl here
 {
-    impl = DOMImplementationImpl::instance()->createHTMLDocument();
+    impl = DOMImplementationImpl::createHTMLDocument();
     impl->ref();
 
 }
@@ -42,7 +42,7 @@ HTMLDocument::HTMLDocument() : Document(false) // create the impl here
 HTMLDocument::HTMLDocument(KHTMLView *parent)
     : Document(false) // create the impl here
 {
-    impl = DOMImplementationImpl::instance()->createHTMLDocument(parent);
+    impl = DOMImplementationImpl::createHTMLDocument(parent);
     impl->ref();
 }
 

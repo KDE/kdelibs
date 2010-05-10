@@ -64,10 +64,7 @@ SVGElement::~SVGElement()
 
 bool SVGElement::isSupported(StringImpl* feature, StringImpl* version) const
 {
-    if (DOMImplementation::instance()->hasFeature(feature, version))
-        return true;
-
-    return DOMImplementation::instance()->hasFeature(feature, version);
+    return DOMImplementation::hasFeature(feature, version);
 }
 
 

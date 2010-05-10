@@ -1995,12 +1995,12 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   bool servedAsXML = mime && mime->is( "text/xml" );
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if ( servedAsSVG ) {
-    d->m_doc = DOMImplementationImpl::instance()->createSVGDocument( d->m_view );
+    d->m_doc = DOMImplementationImpl::createSVGDocument( d->m_view );
   } else {
     if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
-      d->m_doc = DOMImplementationImpl::instance()->createXMLDocument( d->m_view );
+      d->m_doc = DOMImplementationImpl::createXMLDocument( d->m_view );
     } else {
-      d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
+      d->m_doc = DOMImplementationImpl::createHTMLDocument( d->m_view );
       // HTML or XHTML? (#86446)
       static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
     }

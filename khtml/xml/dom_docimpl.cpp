@@ -132,8 +132,6 @@ using namespace khtml;
 
 // ------------------------------------------------------------------------
 
-DOMImplementationImpl *DOMImplementationImpl::m_instance = 0;
-
 DOMImplementationImpl::DOMImplementationImpl()
 {
 }
@@ -197,13 +195,7 @@ DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qu
         return 0;
     }
 
-    return new DocumentTypeImpl(this,0,qualifiedName,publicId,systemId);
-}
-
-DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& /*feature*/) const
-{
-    // ###
-    return 0;
+    return new DocumentTypeImpl(this, 0, qualifiedName, publicId, systemId);
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
@@ -219,7 +211,10 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
-    if (dtype && (dtype->document() || dtype->implementation() != this)) {
+    // We elide the "different implementation" case here, since we're not doing interop
+    // of different implementations, and different impl objects exist only for
+    // isolation  reasons
+    if (dtype && dtype->document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -227,9 +222,9 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     // ### view can be 0 which can cause problems
     DocumentImpl* doc;
     if (namespaceURI == XHTML_NAMESPACE)
-        doc = new HTMLDocumentImpl(this, v);
+        doc = new HTMLDocumentImpl(v);
     else
-        doc = new DocumentImpl(this, v);
+        doc = new DocumentImpl(v);
 
     if (dtype) {
         dtype->setDocument(doc);
@@ -264,21 +259,21 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* tit
 
 DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 {
-    DocumentImpl* doc = new DocumentImpl(this, v);
+    DocumentImpl* doc = new DocumentImpl(v);
 
     return doc;
 }
 
 XMLDocumentImpl *DOMImplementationImpl::createXMLDocument( KHTMLView *v )
 {
-    XMLDocumentImpl* doc = new XMLDocumentImpl(this, v);
+    XMLDocumentImpl* doc = new XMLDocumentImpl(v);
 
     return doc;
 }
 
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
-    HTMLDocumentImpl* doc = new HTMLDocumentImpl(this, v);
+    HTMLDocumentImpl* doc = new HTMLDocumentImpl(v);
 
     return doc;
 }
@@ -286,7 +281,7 @@ HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 // create SVG document
 WebCore::SVGDocument *DOMImplementationImpl::createSVGDocument( KHTMLView *v )
 {
-    WebCore::SVGDocument* doc = new WebCore::SVGDocument(this, v);
+    WebCore::SVGDocument* doc = new WebCore::SVGDocument(v);
 
     return doc;
 }
@@ -301,16 +296,6 @@ HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& ti
              QLatin1String("</TITLE></HEAD>"));
 
     return r;
-}
-
-DOMImplementationImpl *DOMImplementationImpl::instance()
-{
-    if (!m_instance) {
-        m_instance = new DOMImplementationImpl();
-        m_instance->ref();
-    }
-
-    return m_instance;
 }
 
 // ------------------------------------------------------------------------
@@ -387,7 +372,7 @@ typedef QList<DocumentImpl*> ChangedDocuments ;
 K_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
 
 // KHTMLView might be 0
-DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
+DocumentImpl::DocumentImpl(KHTMLView *v)
     : NodeBaseImpl( 0 ), m_svgExtensions(0), m_counterDict(),
       m_imageLoadEventTimer(0)
 {
@@ -417,8 +402,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_tokenizer = 0;
     m_decoder = 0;
     m_doctype = 0;
-    m_implementation = _implementation;
-    m_implementation->ref();
+    m_implementation = 0;
     pMode = Strict;
     hMode = XHtml;
     m_htmlCompat = false;
@@ -532,7 +516,8 @@ DocumentImpl::~DocumentImpl()
     if (m_elemSheet )  m_elemSheet->deref();
     if (m_doctype)
         m_doctype->deref();
-    m_implementation->deref();
+    if (m_implementation)
+        m_implementation->deref();
     delete m_dynamicDomRestyler;
     delete m_jsEditor;
     m_defaultView->deref();
@@ -559,6 +544,10 @@ DocumentImpl::~DocumentImpl()
 
 DOMImplementationImpl *DocumentImpl::implementation() const
 {
+    if (!m_implementation) {
+        m_implementation = new DOMImplementationImpl();
+        m_implementation->ref();
+    }
     return m_implementation;
 }
 
@@ -2120,7 +2109,7 @@ WTF::PassRefPtr<NodeImpl> DocumentImpl::cloneNode ( bool deep )
 #endif
 
     int exceptioncode;
-    WTF::RefPtr<NodeImpl> clone = m_implementation->createDocument("",
+    WTF::RefPtr<NodeImpl> clone = DOMImplementationImpl::createDocument("",
 							   "",
                                                            0, 0,
                                                            exceptioncode);

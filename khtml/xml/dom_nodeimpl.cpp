@@ -1272,7 +1272,7 @@ bool NodeImpl::hasAttributes() const
 
 bool NodeImpl::isSupported(const DOMString &feature, const DOMString &version)
 {
-    return DOMImplementationImpl::instance()->hasFeature(feature, version);
+    return DOMImplementationImpl::hasFeature(feature, version);
 }
 
 DocumentImpl* NodeImpl::ownerDocument() const
@@ -1454,6 +1454,7 @@ void NodeImpl::setDocument(DocumentImpl* doc)
 DOM::DOMString DOM::NodeImpl::lookupNamespaceURI(const DOM::DOMString& prefix)
 {
     //for details see http://www.w3.org/TR/DOM-Level-3-Core/namespaces-algorithms.html#lookupNamespaceURIAlgo
+
     switch( this->nodeType() ) {
         case Node::ELEMENT_NODE:
             if( !this->namespaceURI().isNull() && this->prefix() == prefix ) {

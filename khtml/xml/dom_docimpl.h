@@ -114,34 +114,25 @@ public:
     DOMImplementationImpl();
     ~DOMImplementationImpl();
 
-    // DOM methods & attributes for DOMImplementation
-    bool hasFeature ( const DOMString &feature, const DOMString &version );
+    // DOM methods & attributes for DOMImplementation.
+    static bool hasFeature ( const DOMString &feature, const DOMString &version );
     DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
                                           const DOMString &systemId, int &exceptioncode );
-    DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
+    static DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                   DocumentTypeImpl* dtype,
                                   KHTMLView* v, int &exceptioncode );
 
-    DOMImplementationImpl* getInterface(const DOMString& feature) const;
-
     // From the DOMImplementationCSS interface
-    CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media, int &exceptioncode);
+    static CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media, int &exceptioncode);
 
     // From the HTMLDOMImplementation interface
-    HTMLDocumentImpl* createHTMLDocument( const DOMString& title);
+    static HTMLDocumentImpl* createHTMLDocument( const DOMString& title);
 
     // Other methods (not part of DOM)
-    DocumentImpl *createDocument( KHTMLView *v = 0 );
-    XMLDocumentImpl *createXMLDocument( KHTMLView *v = 0 );
-    HTMLDocumentImpl *createHTMLDocument( KHTMLView *v = 0 );
-    WebCore::SVGDocument *createSVGDocument( KHTMLView *v = 0 );
-
-    // Returns the static instance of this class - only one instance of this class should
-    // ever be present, and is used as a factory method for creating DocumentImpl objects
-    static DOMImplementationImpl *instance();
-
-protected:
-    static DOMImplementationImpl *m_instance;
+    static DocumentImpl *createDocument( KHTMLView *v = 0 );
+    static XMLDocumentImpl *createXMLDocument( KHTMLView *v = 0 );
+    static HTMLDocumentImpl *createHTMLDocument( KHTMLView *v = 0 );
+    static WebCore::SVGDocument *createSVGDocument( KHTMLView *v = 0 );
 };
 
 /**
@@ -203,7 +194,7 @@ class DocumentImpl : public QObject, private khtml::CachedObjectClient, public N
 {
     Q_OBJECT
 public:
-    DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v);
+    DocumentImpl(KHTMLView *v);
     ~DocumentImpl();
 
     // DOM methods & attributes for Document
@@ -640,7 +631,8 @@ protected:
     QString m_baseTarget;
 
     mutable DocumentTypeImpl *m_doctype;
-    DOMImplementationImpl *m_implementation;
+
+    mutable DOMImplementationImpl *m_implementation; // lazily created
 
     QString m_usersheet;
     QString m_printSheet;
@@ -806,7 +798,7 @@ protected:
 class XMLDocumentImpl : public DocumentImpl
 {
 public:
-    XMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v) : DocumentImpl(_implementation, v) { }
+    XMLDocumentImpl(KHTMLView *v) : DocumentImpl(v) { }
 
     virtual void close (  );
 };

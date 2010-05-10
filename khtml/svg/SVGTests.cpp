@@ -78,7 +78,7 @@ bool SVGTests::isValid() const
     if (m_features) {
         for (unsigned long i = 0; i < m_features->numberOfItems(); i++) {
             String value = m_features->getItem(i, ec);
-            if (value.isEmpty() || !DOMImplementation::instance()->hasFeature(value, String()))
+            if (value.isEmpty() || !DOMImplementation::hasFeature(value, String()))
                 return false;
         }
     }
