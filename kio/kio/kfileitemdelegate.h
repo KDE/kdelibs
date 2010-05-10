@@ -170,7 +170,9 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
             ModificationTime,  ///< The date and time the file/folder was last modified.
             AccessTime,        ///< The date and time the file/folder was last accessed.
             MimeType,          ///< The mime type for the item, e.g. text/html.
-            FriendlyMimeType   ///< The descriptive name for the mime type, e.g. HTML Document.
+            FriendlyMimeType,  ///< The descriptive name for the mime type, e.g. HTML Document.
+            LinkDest,          ///< The destination of a symbolic link. @since 4.5
+            LocalPathOrUrl     ///< The local path to the file or the URL in case it is not a local file. @since 4.5
         };
 
         typedef QList<Information> InformationList;

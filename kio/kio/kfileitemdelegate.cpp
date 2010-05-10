@@ -296,6 +296,17 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItemV4 &op
                 string += item.isMimeTypeKnown() ? item.mimeComment() : i18nc("@info mimetype","Unknown");
                 break;
 
+            case KFileItemDelegate::LinkDest:
+                string += item.linkDest();
+                break;
+
+            case KFileItemDelegate::LocalPathOrUrl:
+                if(!item.localPath().isEmpty())
+                    string += item.localPath();
+                else
+                    string += item.url().pathOrUrl();
+                break;
+
             default:
                 break;
         } // switch (info)
