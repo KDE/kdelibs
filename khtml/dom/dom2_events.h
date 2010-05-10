@@ -289,6 +289,16 @@ public:
     };
 
     unsigned short code;
+
+    /// Returns the name of this error
+    DOMString codeAsString() const;
+
+    /// Returns the name of given error code
+    static DOMString codeAsString(int cssCode);
+
+    /** @internal - checks to see whether internal code is an event one */
+    static bool isEventExceptionCode(int exceptioncode);
+    
 };
 
 

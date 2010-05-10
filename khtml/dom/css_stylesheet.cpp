@@ -127,6 +127,27 @@ KUrl StyleSheet::baseUrl() {
     return ((StyleSheetImpl *)impl)->baseURL();
 }
 
+DOMString CSSException::codeAsString() const
+{
+    return codeAsString(code);
+}
+
+bool CSSException::isCSSExceptionCode(int exceptioncode)
+{
+    return exceptioncode >= _EXCEPTION_OFFSET && exceptioncode < _EXCEPTION_MAX;
+}
+
+DOMString CSSException::codeAsString(int code)
+{
+    switch ( code ) {
+    case SYNTAX_ERR:
+        return DOMString( "SYNTAX_ERR" );
+    case INVALID_MODIFICATION_ERR:
+        return DOMString( "INVALID_MODIFICATION_ERR" );
+    default:
+        return DOMString( "(unknown exception code)" );
+    }
+}
 
 CSSStyleSheet::CSSStyleSheet() : StyleSheet()
 {

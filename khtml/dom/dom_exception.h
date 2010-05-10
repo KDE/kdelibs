@@ -30,6 +30,7 @@
 #define _DOM_DOMException_h_
 
 #include <dom/dom_misc.h>
+#include <dom/dom_string.h>
 
 namespace DOM {
 
@@ -89,6 +90,16 @@ public:
         SECURITY_ERR = 18
     };
     unsigned short code;
+
+    /// Returns the name of this error
+    DOMString codeAsString() const;
+
+    /// Returns the name of given error code
+    static DOMString codeAsString(int code);
+
+    /** @internal - checks to see whether internal code is a DOMException one */
+    static bool isDOMExceptionCode(int exceptioncode);
+    
 };
 
 } //namespace

@@ -37,6 +37,7 @@
 #include <dom/css_stylesheet.h>
 #include <dom/dom_exception.h>
 #include <dom/dom2_range.h>
+#include <dom/dom3_xpath.h>
 #include <xml/dom2_eventsimpl.h>
 #include <khtmlpart_p.h>
 
@@ -278,101 +279,66 @@ QVariant ValueToVariant(ExecState* exec, JSValue *val) {
   return res;
 }
 
-static const char* const exceptionNames[] = {
-    0,
-    "INDEX_SIZE_ERR",
-    "DOMSTRING_SIZE_ERR",
-    "HIERARCHY_REQUEST_ERR",
-    "WRONG_DOCUMENT_ERR",
-    "INVALID_CHARACTER_ERR",
-    "NO_DATA_ALLOWED_ERR",
-    "NO_MODIFICATION_ALLOWED_ERR",
-    "NOT_FOUND_ERR",
-    "NOT_SUPPORTED_ERR",
-    "INUSE_ATTRIBUTE_ERR",
-    "INVALID_STATE_ERR",
-    "SYNTAX_ERR",
-    "INVALID_MODIFICATION_ERR",
-    "NAMESPACE_ERR",
-    "INVALID_ACCESS_ERR",
-    "VALIDATION_ERR",
-    "TYPE_MISMATCH_ERR",
-    "SECURITY_ERR"
-};
-
-static const char* const rangeExceptionNames[] = {
-    0, "BAD_BOUNDARYPOINTS_ERR", "INVALID_NODE_TYPE_ERR"
-};
-
-static const char* const cssExceptionNames[] = {
-    "SYNTAX_ERR", "INVALID_MODIFICATION_ERR"
-};
-
-static const char* const eventExceptionNames[] = {
-    "UNSPECIFIED_EVENT_TYPE_ERR"
-};
-
-void setDOMException(ExecState *exec, int DOMExceptionCode)
+void setDOMException(ExecState *exec, int internalCode)
 {
-  if (DOMExceptionCode == 0 || exec->hadException())
+  if (internalCode == 0 || exec->hadException())
     return;
 
-  const char *type = "DOM";
-  int code = DOMExceptionCode;
+  const char* type = 0;
 
-  JSObject *errorObject = 0;
-  const char* const* nameTable;
-  int nameTableSize;
+  DOMString name;
+  DOMString exceptionString;
+  JSObject* errorObject = 0;
+  int code = -1; // this will get the public exception code,
+                 // as opposed to the internal one
 
-  // ### clean up after harmonizing exception objects. maybe use a
-  // ### single class? Some human readable message would be nice, too.
-
-  if (code >= DOM::RangeException::_EXCEPTION_OFFSET && code <= DOM::RangeException::_EXCEPTION_MAX) {
+  // ### we should probably introduce classes for things other than range + core
+  if (DOM::RangeException::isRangeExceptionCode(internalCode)) {
     type = "DOM Range";
-    code -= DOM::RangeException::_EXCEPTION_OFFSET;
-    nameTable = rangeExceptionNames;
-    nameTableSize = sizeof(rangeExceptionNames) / sizeof(rangeExceptionNames[0]);
+    code = internalCode - DOM::RangeException::_EXCEPTION_OFFSET;
+    name = DOM::RangeException::codeAsString(code);
     errorObject = new RangeException(exec);
-    exec->setException(errorObject);
-    errorObject->put(exec, exec->propertyNames().name, jsString(UString(type) + " Exception"));
-    errorObject->put(exec, exec->propertyNames().message, jsString(nameTable[code]));
-  } else if (code >= DOM::CSSException::_EXCEPTION_OFFSET && code <= DOM::CSSException::_EXCEPTION_MAX) {
+  } else if (DOM::CSSException::isCSSExceptionCode(internalCode)) {
     type = "CSS";
-    code -= DOM::CSSException::_EXCEPTION_OFFSET;
-    nameTable = cssExceptionNames;
-    nameTableSize = sizeof(cssExceptionNames) / sizeof(cssExceptionNames[0]);
-  } else if (code >= DOM::EventException::_EXCEPTION_OFFSET && code <= DOM::EventException::_EXCEPTION_MAX) {
+    code = internalCode - DOM::CSSException::_EXCEPTION_OFFSET;
+    name = DOM::CSSException::codeAsString(code);
+  } else if (DOM::EventException::isEventExceptionCode(internalCode)) {
     type = "DOM Events";
-    code -= DOM::EventException::_EXCEPTION_OFFSET;
-    nameTable = eventExceptionNames;
-    nameTableSize = sizeof(eventExceptionNames) / sizeof(eventExceptionNames[0]);
+    code = internalCode - DOM::EventException::_EXCEPTION_OFFSET;
+    name = DOM::EventException::codeAsString(code);
+  } else if (DOM::XPathException::isXPathExceptionCode(internalCode)) {
+    type = "XPath";
+    code = internalCode - DOM::XPathException::_EXCEPTION_OFFSET;
+    name = DOM::XPathException::codeAsString(code);
   } else {
-    nameTable = exceptionNames;
-    nameTableSize = sizeof(exceptionNames) / sizeof(exceptionNames[0]);
+    // Generic DOM.
+    type = "DOM";
+    code = internalCode;
+    name = DOM::DOMException::codeAsString(code);
     errorObject = new JSDOMException(exec);
-    exec->setException(errorObject);
-    errorObject->put(exec, exec->propertyNames().name, jsString(UString(type) + " Exception"));
-    errorObject->put(exec, exec->propertyNames().message, jsString(nameTable[code]));
   }
 
-  const char* name = (code >= 0 && code < nameTableSize) ? nameTable[code] : 0;
+  if (!errorObject) {
+    // 100 characters is a big enough buffer, because there are:
+    //   13 characters in the message
+    //   10 characters in the longest type, "DOM Events"
+    //   27 characters in the longest name, "NO_MODIFICATION_ALLOWED_ERR"
+    //   20 or so digits in the longest integer's ASCII form (even if int is 64-bit)
+    //   1 byte for a null character
+    // That adds up to about 70 bytes.
+    char buffer[100];
 
-  // 100 characters is a big enough buffer, because there are:
-  //   13 characters in the message
-  //   10 characters in the longest type, "DOM Events"
-  //   27 characters in the longest name, "NO_MODIFICATION_ALLOWED_ERR"
-  //   20 or so digits in the longest integer's ASCII form (even if int is 64-bit)
-  //   1 byte for a null character
-  // That adds up to about 70 bytes.
-  char buffer[100];
-
-  if (name)
-    snprintf(buffer, 99, "%s: %s Exception %d", name, type, code);
-  else
-    snprintf(buffer, 99, "%s Exception %d", type, code);
-
-  if (!errorObject)
+    if (!name.isEmpty())
+      snprintf(buffer, 99, "%s: %s Exception %d", name.string().toLatin1().data(), type, code);
+    else
+      snprintf(buffer, 99, "%s Exception %d", type, code);
     errorObject = throwError(exec, GeneralError, buffer);
+  } else {
+    exec->setException(errorObject);
+  }
+
+  errorObject->put(exec, exec->propertyNames().name, jsString(UString(type) + " Exception"));
+  errorObject->put(exec, exec->propertyNames().message, jsString(name));
   errorObject->put(exec, "code", jsNumber(code));
 }
 

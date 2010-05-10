@@ -29,6 +29,28 @@
 
 using namespace DOM;
 
+DOMString RangeException::codeAsString() const
+{
+    return codeAsString(code);
+}
+
+bool RangeException::isRangeExceptionCode(int exceptioncode)
+{
+    return exceptioncode >= _EXCEPTION_OFFSET && exceptioncode < _EXCEPTION_MAX;
+}
+
+DOMString RangeException::codeAsString(int code)
+{
+    switch ( code ) {
+    case BAD_BOUNDARYPOINTS_ERR:
+        return DOMString( "BAD_BOUNDARYPOINTS_ERR" );
+    case INVALID_NODE_TYPE_ERR:
+        return DOMString( "INVALID_NODE_TYPE_ERR" );
+    default:
+        return DOMString( "(unknown exception code)" );
+    }
+}
+
 Range::Range()
 {
     // a range can't exist by itself - it must be associated with a document

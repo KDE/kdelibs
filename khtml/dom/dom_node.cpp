@@ -479,3 +479,60 @@ unsigned long NodeList::length() const
     if (!impl) return 0;
     return impl->length();
 }
+
+//-----------------------------------------------------------------------------
+
+DOMString DOMException::codeAsString() const
+{
+    return codeAsString(code);
+}
+
+DOMString DOMException::codeAsString(int code)
+{
+    switch ( code ) {
+    case INDEX_SIZE_ERR:
+        return DOMString( "INDEX_SIZE_ERR" );
+    case DOMSTRING_SIZE_ERR:
+        return DOMString( "DOMSTRING_SIZE_ERR" );
+    case HIERARCHY_REQUEST_ERR:
+        return DOMString( "HIERARCHY_REQUEST_ERR" );
+    case WRONG_DOCUMENT_ERR:
+        return DOMString( "WRONG_DOCUMENT_ERR" );
+    case INVALID_CHARACTER_ERR:
+        return DOMString( "INVALID_CHARACTER_ERR" );
+    case NO_DATA_ALLOWED_ERR:
+        return DOMString( "NO_DATA_ALLOWED_ERR" );
+    case NO_MODIFICATION_ALLOWED_ERR:
+        return DOMString( "NO_MODIFICATION_ALLOWED_ERR" );
+    case NOT_FOUND_ERR:
+        return DOMString( "NOT_FOUND_ERR" );
+    case NOT_SUPPORTED_ERR:
+        return DOMString( "NOT_SUPPORTED_ERR" );
+    case INUSE_ATTRIBUTE_ERR:
+        return DOMString( "INUSE_ATTRIBUTE_ERR" );
+    case INVALID_STATE_ERR:
+        return DOMString( "INVALID_STATE_ERR" );
+    case SYNTAX_ERR:
+        return DOMString( "SYNTAX_ERR" );
+    case INVALID_MODIFICATION_ERR:
+        return DOMString( "INVALID_MODIFICATION_ERR" );
+    case NAMESPACE_ERR:
+        return DOMString( "NAMESPACE_ERR" );
+    case INVALID_ACCESS_ERR:
+        return DOMString( "INVALID_ACCESS_ERR" );
+    case VALIDATION_ERR:
+        return DOMString( "VALIDATION_ERR" );
+    case TYPE_MISMATCH_ERR:
+        return DOMString( "TYPE_MISMATCH_ERR" );
+    case SECURITY_ERR:
+        return DOMString( "SECURITY_ERR" );
+    default:
+        return DOMString( "(unknown exception code)" );
+    }
+}
+
+bool DOMException::isDOMExceptionCode(int exceptioncode)
+{
+    return exceptioncode < 100;
+}
+

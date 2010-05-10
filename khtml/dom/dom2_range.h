@@ -64,6 +64,15 @@ public:
         _EXCEPTION_MAX                 = 2999
     };
     unsigned short code;
+
+    /// Returns the name of this error
+    DOMString codeAsString() const;
+
+    /// Returns the name of given DOM error code
+    static DOMString codeAsString(int rangeCode);
+
+    /** @internal - checks to see whether internal code is a Range one */
+    static bool isRangeExceptionCode(int exceptioncode);
 };
 
 

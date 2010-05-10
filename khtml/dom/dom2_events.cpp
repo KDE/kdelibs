@@ -194,6 +194,27 @@ EventException & EventException::operator = (const EventException &other)
 
 #endif
 
+DOMString EventException::codeAsString() const
+{
+    return codeAsString(code);
+}
+
+bool EventException::isEventExceptionCode(int exceptioncode)
+{
+    return exceptioncode >= _EXCEPTION_OFFSET && exceptioncode < _EXCEPTION_MAX;
+}
+
+DOMString EventException::codeAsString(int code)
+{
+    switch ( code ) {
+    case UNSPECIFIED_EVENT_TYPE_ERR:
+        return DOMString( "UNSPECIFIED_EVENT_TYPE_ERR" );
+    default:
+        return DOMString( "(unknown exception code)" );
+    }
+}
+
+
 // -----------------------------------------------------------------------------
 
 UIEvent::UIEvent() : Event()

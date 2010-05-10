@@ -194,6 +194,15 @@ public:
         _EXCEPTION_OFFSET              = 1000,
         _EXCEPTION_MAX                 = 1999
     };
+
+    /// Returns the name of this error
+    DOMString codeAsString() const;
+
+    /// Returns the name of given error code
+    static DOMString codeAsString(int cssCode);
+
+    /** @internal - checks to see whether internal code is a CSS one */
+    static bool isCSSExceptionCode(int exceptioncode);
 };
 
 class CSSStyleSheetImpl;

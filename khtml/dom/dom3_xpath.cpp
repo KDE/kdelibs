@@ -33,7 +33,7 @@ DOMString XPathException::codeAsString(int code) {
 		case TYPE_ERR:
 			return DOMString( "TYPE_ERR" );
 	}
-	return QString::fromLatin1( "(unknown exception code)" );
+	return DOMString( "(unknown exception code)" );
 }
 
 DOMString XPathException::codeAsString() const
