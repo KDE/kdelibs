@@ -15,6 +15,11 @@ configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
+find_package(DocBookXML)
+macro_log_feature(DOCBOOKXML_FOUND "DocBook XML 4.x" "XML DTDs for DocBook 4.x" "http://docbook.org/schemas/4x.html" TRUE "" "Needed for building the KDE help system.")
+
+find_package(DocBookXSL)
+macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Stylesheets for processing DocBook XML" TRUE "" "Needed for building the KDE help system.")
 
 ########### next target ###############
 
