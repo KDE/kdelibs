@@ -19,7 +19,7 @@
 
 #include "kzip.h"
 #include "kfilterdev.h"
-#include "klimitediodevice.h"
+#include "klimitediodevice_p.h"
 #include <kdebug.h>
 
 #include <QtCore/QHash>

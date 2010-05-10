@@ -18,7 +18,6 @@ ENDMACRO(KIO_EXECUTABLE_TESTS)
 # jobtest seems to trigger a ctest problem; jobtest finishes and ctest waits for ever
 
 KIO_UNIT_TESTS(
-  karchivetest
   krununittest
   kprotocolinfotest
   jobtest
@@ -38,8 +37,6 @@ KIO_EXECUTABLE_TESTS(
   ksycocatest
   getalltest
   kruntest
-  ktartest
-  kziptest
   kioslavetest
   kdirwatchtest
   speed
@@ -60,5 +57,3 @@ KIO_EXECUTABLE_TESTS(
   kdbusservicestartertest
 )
 
-kde4_add_unit_test(klimitediodevicetest klimitediodevicetest.cpp ../kio/klimitediodevice.cpp)
-target_link_libraries(klimitediodevicetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})

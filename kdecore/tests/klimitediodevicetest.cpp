@@ -19,7 +19,7 @@
 
 #include "klimitediodevicetest.h"
 
-#include "klimitediodevice.h"
+#include "klimitediodevice_p.h"
 
 #include <qtest_kde.h>
 

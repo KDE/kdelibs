@@ -20,7 +20,7 @@
 */
 
 #include "karchive.h"
-#include "klimitediodevice.h"
+#include "klimitediodevice_p.h"
 
 #include <config.h>
 

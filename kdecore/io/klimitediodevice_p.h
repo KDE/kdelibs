@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef klimitediodevice_h
-#define klimitediodevice_h
+#ifndef klimitediodevice_p_h
+#define klimitediodevice_p_h
 
 #include <kdebug.h>
 #include <QtCore/QIODevice>

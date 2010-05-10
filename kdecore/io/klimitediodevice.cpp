@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "klimitediodevice.h"
+#include "klimitediodevice_p.h"
 
 KLimitedIODevice::KLimitedIODevice( QIODevice *dev, int start, int length )
     : m_dev( dev ), m_start( start ), m_length( length )

@@ -34,7 +34,7 @@
 #include <errno.h>
 #endif
 
-QTEST_KDEMAIN( KArchiveTest, NoGUI )
+QTEST_KDEMAIN_CORE( KArchiveTest )
 
 static const int SIZE1 = 100;
 

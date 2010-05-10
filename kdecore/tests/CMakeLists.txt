@@ -18,6 +18,7 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 ########### next target ###############
 
 KDECORE_UNIT_TESTS(
+ karchivetest
  klocaletest
  klocaletimeformattest
  klocalizedstringtest
@@ -70,6 +71,8 @@ endif(UNIX)
 
 KDECORE_EXECUTABLE_TESTS(
  krandomsequencetest
+ ktartest
+ kziptest
  kdebugtest
  kcmdlineargstest
  kmemtest
@@ -77,6 +80,11 @@ KDECORE_EXECUTABLE_TESTS(
  kmdcodectest
  startserviceby
 )
+
+########### klimitediodevicetest ###############
+
+kde4_add_unit_test(klimitediodevicetest klimitediodevicetest.cpp ../io/klimitediodevice.cpp)
+target_link_libraries(klimitediodevicetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### kmimetypetest ###############
 

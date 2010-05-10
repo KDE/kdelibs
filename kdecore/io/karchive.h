@@ -29,7 +29,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
 
-#include <kio/kio_export.h>
+#include <kdecore_export.h>
 
 class KArchiveDirectory;
 class KArchiveFile;
@@ -40,7 +40,7 @@ class KArchivePrivate;
  * @short generic class for reading/writing archives
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KArchive
+class KDECORE_EXPORT KArchive
 {
 protected:
     /**
@@ -366,7 +366,7 @@ class KArchiveEntryPrivate;
  * @see KArchiveFile
  * @see KArchiveDirectory
  */
-class KIO_EXPORT KArchiveEntry
+class KDECORE_EXPORT KArchiveEntry
 {
 public:
     /**
@@ -454,7 +454,7 @@ class KArchiveFilePrivate;
  * @see KArchive
  * @see KArchiveDirectory
  */
-class KIO_EXPORT KArchiveFile : public KArchiveEntry
+class KDECORE_EXPORT KArchiveFile : public KArchiveEntry
 {
 public:
     /**
@@ -539,7 +539,7 @@ class KArchiveDirectoryPrivate;
  * @see KArchive
  * @see KArchiveFile
  */
-class KIO_EXPORT KArchiveDirectory : public KArchiveEntry
+class KDECORE_EXPORT KArchiveDirectory : public KArchiveEntry
 {
 public:
     /**

@@ -73,8 +73,6 @@ set(kiocore_STAT_SRCS
   kio/jobuidelegate.cpp
   kio/joburlcache.cpp
   kio/kacl.cpp
-  kio/kar.cpp
-  kio/karchive.cpp
   kio/kbuildsycocaprogressdialog.cpp
   kio/kdatatool.cpp
   kio/kdbusservicestarter.cpp
@@ -94,7 +92,6 @@ set(kiocore_STAT_SRCS
   kio/kfileshare.cpp
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
-  kio/klimitediodevice.cpp
   kio/kmimetypechooser.cpp
   kio/kmimetyperesolver.cpp
   kio/kmountpoint.cpp
@@ -104,11 +101,9 @@ set(kiocore_STAT_SRCS
   kio/kscan.cpp
   kio/kshellcompletion.cpp
   kio/kstatusbarofflineindicator.cpp
-  kio/ktar.cpp
   kio/kurifilter.cpp
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
-  kio/kzip.cpp
   kio/metainfojob.cpp
   kio/netaccess.cpp
   kio/passworddialog.cpp
@@ -373,8 +368,6 @@ endif( NOT WIN32 )
 
 install( FILES
   kio/kacl.h
-  kio/kar.h
-  kio/karchive.h
   kio/kautomount.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdatatool.h
@@ -405,11 +398,9 @@ install( FILES
   kio/kscan.h
   kio/kshellcompletion.h
   kio/kstatusbarofflineindicator.h
-  kio/ktar.h
   kio/kurifilter.h
   kio/kurlcompletion.h
   kio/kurlpixmapprovider.h
-  kio/kzip.h
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h

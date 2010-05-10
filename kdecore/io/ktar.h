@@ -29,7 +29,7 @@
  *
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
-class KIO_EXPORT KTar : public KArchive
+class KDECORE_EXPORT KTar : public KArchive
 {
 public:
     /**
