@@ -26,6 +26,7 @@
 
 KateCmd::KateCmd ()
 {
+  m_cmdCompletion.addItem("help");
 }
 
 KateCmd::~KateCmd ()
