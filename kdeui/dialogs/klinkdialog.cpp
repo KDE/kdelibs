@@ -42,6 +42,7 @@ public:
 };
 //@endcond
 
+
 KLinkDialog::KLinkDialog(QWidget *parent)
         : KDialog(parent), d(new KLinkDialogPrivate)
 {
@@ -73,6 +74,8 @@ KLinkDialog::KLinkDialog(QWidget *parent)
     restoreDialogSize(group);
 
     d->textLineEdit->setFocus();
+    enableButtonOk( false );
+    connect(d->textLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(slotTextChanged(const QString&)));
 }
 
 KLinkDialog::~KLinkDialog()
@@ -80,6 +83,11 @@ KLinkDialog::~KLinkDialog()
     KConfigGroup group(KGlobal::config(), "KLinkDialog");
     saveDialogSize(group);
     delete d;
+}
+
+void KLinkDialog::slotTextChanged(const QString &text)
+{
+    enableButtonOk( !text.isEmpty());
 }
 
 void KLinkDialog::setLinkText(const QString &linkText)

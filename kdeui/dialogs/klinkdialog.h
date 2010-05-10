@@ -47,7 +47,7 @@ class KLinkDialog : public KDialog
 public:
     /**
      * Create a link dialog.
-     * @param parent  Parent widget.
+     * @param parent  Parent widget.
      */
     KLinkDialog(QWidget *parent = 0);
 
@@ -80,6 +80,9 @@ public:
      * @return The link url
      */
     QString linkUrl() const;
+
+private slots:
+    void slotTextChanged(const QString &);
 
 private:
     //@cond PRIVATE
