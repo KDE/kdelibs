@@ -160,7 +160,6 @@ namespace Sonnet
         virtual void disconnectNotify(const char* signal);
         class Private;
         Private *const d;
-        Q_PRIVATE_SLOT(d, void _k_cursorPositionChanged())
         Q_DISABLE_COPY( Highlighter )
     };
 

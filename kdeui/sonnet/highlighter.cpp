@@ -21,6 +21,7 @@
  */
 
 #include "highlighter.h"
+#include "highlighter.moc"
 
 #include "speller.h"
 #include "loader_p.h"
@@ -47,9 +48,7 @@ namespace Sonnet {
 class Highlighter::Private
 {
 public:
-    Private(Highlighter *parent);
     ~Private();
-    Highlighter *q;
     Filter     *filter;
     Loader     *loader;
     Speller    *dict;
@@ -66,65 +65,18 @@ public:
     QTimer *rehighlightRequest;
     QColor spellColor;
     int suggestionListeners; // #of connections for the newSuggestions signal
-    int lastBlockNumber;     // the last block that was highlighted
-
-    // Returns true if the cursor is in the block that is currently being highlighted, and at
-    // the word specified by @p wordPosition
-    bool cursorAtWord(int wordPosition);
-
-    // Slots
-    void _k_cursorPositionChanged();
 };
-
-Highlighter::Private::Private(Highlighter *parent)
-  : q(parent), lastBlockNumber(-1)
-{
-}
 
 Highlighter::Private::~Private()
 {
   qDeleteAll(dictCache);
 }
 
-// Trigger a rehighlight of the blocks the cursor is under, since we explicitly disbale highlighting
-// of spelling errors for words under the cursor, for readability
-void Highlighter::Private::_k_cursorPositionChanged()
-{
-    // When the row was changed, rehighlight the last block, since the word under the cursor was
-    // previously in the last block
-    const int currentBlockNumber = edit->textCursor().blockNumber();
-    if (lastBlockNumber != -1 && lastBlockNumber != currentBlockNumber) {
-        const QTextBlock lastBlock = edit->document()->findBlockByNumber(lastBlockNumber);
-        if (lastBlock.isValid()) {
-            q->rehighlightBlock(lastBlock);
-        }
-    }
-
-    // Always rehighlight the current block, since the word under the cursor potentially changed
-    q->rehighlightBlock(edit->textCursor().block());
-
-    lastBlockNumber = currentBlockNumber;
-}
-
-bool Highlighter::Private::cursorAtWord(int wordPosition)
-{
-    if (q->currentBlock().blockNumber() == edit->textCursor().blockNumber()) {
-        QTextCursor wordCursor(q->currentBlock());
-        wordCursor.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,wordPosition);
-        wordCursor.select(QTextCursor::WordUnderCursor);
-        if (edit->textCursor().position() >= wordCursor.selectionStart() &&
-            edit->textCursor().position() <= wordCursor.selectionEnd()) {
-            return true;
-          }
-    }
-    return false;
-}
-
 Highlighter::Highlighter(QTextEdit *textEdit,
                          const QString& configFile,
                          const QColor& _col)
     : QSyntaxHighlighter(textEdit),
-      d(new Private(this))
+      d(new Private)
 {
     d->filter = Filter::defaultFilter();
     d->edit = textEdit;
@@ -178,9 +130,6 @@ Highlighter::Highlighter(QTextEdit *textEdit,
         d->rehighlightRequest->setSingleShot(true);
         d->rehighlightRequest->start();
     }
-
-    connect(textEdit, SIGNAL(cursorPositionChanged()),
-            this, SLOT(_k_cursorPositionChanged()));
 }
 
 Highlighter::~Highlighter()
@@ -331,7 +280,7 @@ void Highlighter::highlightBlock(const QString &text)
     Word w = d->filter->nextWord();
     while ( !w.end ) {
         ++d->wordCount;
-        if (d->dict->isMisspelled(w.word) && !d->cursorAtWord(w.start)) {
+        if (d->dict->isMisspelled(w.word)) {
             ++d->errorCount;
             setMisspelled(w.start, w.word.length());
             if (d->suggestionListeners)
@@ -491,5 +440,3 @@ void Highlighter::setMisspelledColor(const QColor &color)
 }
 
 }
-
-#include "highlighter.moc"
