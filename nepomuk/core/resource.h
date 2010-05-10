@@ -719,6 +719,23 @@ namespace Nepomuk {
          */
         static QList<Resource> allResources();
 
+        /**
+         * \return The usage count stored for this resource.
+         *
+         * \sa increaseUsageCount()
+         *
+         * \since 4.5
+         */
+        int usageCount() const;
+
+        /**
+         * Increase the usage count of this resource and also
+         * update the last used date to the current date and time.
+         *
+         * \since 4.5
+         */
+        void increaseUsageCount();
+
     private:
         ResourceData* m_data;
 

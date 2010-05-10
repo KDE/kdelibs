@@ -30,6 +30,7 @@
 #include "nfo.h"
 #include "nie.h"
 #include "nco.h"
+#include "nuao.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -865,6 +866,23 @@ QList<Nepomuk::Resource> Nepomuk::Resource::isRelatedOf() const
 QList<Nepomuk::Resource> Nepomuk::Resource::allResources()
 {
     return Nepomuk::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( Soprano::Vocabulary::RDFS::Resource() ) );
+}
+
+
+int Nepomuk::Resource::usageCount() const
+{
+    return property( Vocabulary::NUAO::usageCount() ).toInt();
+}
+
+
+void Nepomuk::Resource::increaseUsageCount()
+{
+    int cnt = 0;
+    if( hasProperty( Vocabulary::NUAO::usageCount() ) )
+        cnt = property( Vocabulary::NUAO::usageCount() ).toInt();
+    ++cnt;
+    setProperty( Vocabulary::NUAO::usageCount(), cnt );
+    setProperty( Vocabulary::NUAO::lastUsage(), QDateTime::currentDateTime() );
 }
 
 
