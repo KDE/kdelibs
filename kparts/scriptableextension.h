@@ -22,11 +22,16 @@
 #define kparts_scriptableextension_h
 
 #include <QtGlobal>
+#include <QObject>
+#include <QVariant>
+#include <kparts/part.h>
+#include <QDBusArgument>
 
 namespace KParts {
 
-class ScriptableExtension;
-class LiveConnectExtension;
+class  ScriptableExtension;
+struct ScriptableExtensionPrivate;
+class  LiveConnectExtension;
 
 /**
  * An extension class that permits KParts to be scripted (such as when embedded
@@ -69,6 +74,9 @@ public:
         /// low-level (in particular, it might not be translated) and should
         /// only be displayed in low-level debugging tools and the like.
         QString message;
+
+        Exception() {}
+        Exception(const QString& msg): message(msg) {}
     };
 
     /// Objects are abstracted away as a pair of the ScriptableExtension
@@ -134,17 +142,19 @@ public:
     /**
      * Return the root scriptable object of this KPart.
      * For example for an HTML part, it would represent a Window object.
+     * May be undefined or null
      */
-    virtual ScriptValue rootObject();
+    virtual QVariant rootObject();
 
     /**
      * Returns an object that represents this KPart's view of
      * the @p childPart. For an example, in an HTML part,
      * it would return the DOM node of an &lt;object&gt; handled
      * by @p childPart
+     * May be undefined or null     
      */
-    virtual ScriptValue enclosingObject(KPart::ReadOnlyPart* childPart);
-    //@}    
+    virtual QVariant enclosingObject(KParts::ReadOnlyPart* childPart);
+    //@}
 
     ///@name Object Operations
     /// All these methods share the following conventions:
@@ -176,14 +186,14 @@ public:
 
     /**
      Returns true if the object @p objId associated with 'this' has the property
-     @p propName
+     @p propName. 
     */
     virtual bool hasProperty(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
 
     /**
      Tries to get field @p propName from object @p objId associated with 'this'.
     */
-    virtual OpValue get(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
+    virtual QVariant get(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
 
     /**
      Tries to set the field @p propName from object @p objId associated with 'this'
@@ -215,11 +225,11 @@ public:
      The parameter @p language specifies the mimetype of the language to execute.
      Use 'application/ecmascript' for ECMAScript or JavaScript
     */
-    virtual QVariant evaluateScript(ScriptableExtension* principal,
+    virtual QVariant evaluateScript(ScriptableExtension* callerPrincipal,
                                     quint64 contextObjectId,
                                     const QString& code,
                                     const QString& language =
-                                        QString::fromLatin1("application/ecmascript"));
+                                    QString::fromLatin1("application/ecmascript"));
                               
     
     /**
@@ -234,7 +244,6 @@ public:
 
     //@}
 private:
-    class ScriptableExtensionPrivate;
     ScriptableExtensionPrivate* const d;
 };
 
@@ -244,5 +253,20 @@ Q_DECLARE_METATYPE(KParts::ScriptableExtension::Null);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Undefined);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object);
+
+const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
+                                              const KParts::ScriptableExtension::Null& n);
+const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& argument,
+                                              KParts::ScriptableExtension::Null& n);
+const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
+                                              const KParts::ScriptableExtension::Undefined& u);
+const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& argument,
+                                              KParts::ScriptableExtension::Undefined& u);
+const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
+                                              const KParts::ScriptableExtension::Exception& e);
+const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& argument,
+                                              KParts::ScriptableExtension::Exception& e);
+
+#endif
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
