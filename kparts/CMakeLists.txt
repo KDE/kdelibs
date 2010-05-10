@@ -22,20 +22,12 @@ set(kparts_LIB_SRCS
    statusbarextension.cpp
    )
 
-if(HAVE_NEPOMUK)
-  if(${SHAREDDESKTOPONTOLOGIES_VERSION} VERSION_GREATER 0.4.50)
-    set(HAVE_NEPOMUK_WITH_SDO_0_5 1)
-  endif(${SHAREDDESKTOPONTOLOGIES_VERSION} VERSION_GREATER 0.4.50)
-endif(HAVE_NEPOMUK)
-
 if(HAVE_NEPOMUK_WITH_SDO_0_5)
   soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
   soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
   soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/ndo.trig" "NDO" "Nepomuk::Vocabulary" "trig")
   soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
 endif(HAVE_NEPOMUK_WITH_SDO_0_5)
-
-configure_file(config-kparts.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kparts.h )
 
 kde4_add_library(kparts SHARED ${kparts_LIB_SRCS})
 

@@ -24,7 +24,7 @@
 #include <kio/copyjob.h>
 #include <kdebug.h>
 
-#include "config-kparts.h"
+#include "config-nepomuk.h"
 
 #include <QtCore/QDateTime>
 
@@ -83,17 +83,13 @@ private Q_SLOTS:
             const KUrl destUrl = fileCopyJob->destUrl();
             QUrl srcType;
             QUrl destType;
-            QUrl srcUri;
-            QUrl destUri;
             if(srcUrl.isLocalFile()) {
-                srcUri = srcUrl; // to make sure we reuse an already existing local file resource
                 srcType = Nepomuk::Vocabulary::NFO::FileDataObject();
             }
             else {
                 srcType = Nepomuk::Vocabulary::NFO::RemoteDataObject();
             }
             if(destUrl.isLocalFile()) {
-                destUri = destUrl; // to make sure we reuse an already existing local file resource
                 destType = Nepomuk::Vocabulary::NFO::FileDataObject();
             }
             else {
@@ -101,8 +97,8 @@ private Q_SLOTS:
             }
 
             // source and dest resources
-            Nepomuk::Resource srcFileRes(srcUri, srcType);
-            Nepomuk::Resource destFileRes(destUri, destType);
+            Nepomuk::Resource srcFileRes(srcUrl, srcType);
+            Nepomuk::Resource destFileRes(destUrl, destType);
             srcFileRes.setProperty(Nepomuk::Vocabulary::NIE::url(), srcUrl);
             destFileRes.setProperty(Nepomuk::Vocabulary::NIE::url(), destUrl);
 

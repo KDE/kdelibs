@@ -101,8 +101,9 @@ macro_log_feature(SOPRANO_FOUND "Soprano" "Semantic Desktop Storing" "http://sop
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is required to build the Nepomuk semantic desktop system.")
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
 
-macro_optional_find_package(SharedDesktopOntologies)
-macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "" "Ontologies necessary for the Nepomuk semantic desktop.")
+set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.4)
+macro_optional_find_package(SharedDesktopOntologies ${SHAREDDESKTOPONTOLOGIES_MIN_VERSION})
+macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "Ontologies necessary for the Nepomuk semantic desktop.")
 
 macro_optional_find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma remote widgets functionality.")
@@ -228,6 +229,9 @@ if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
   set(HAVE_NEPOMUK true)
   include(SopranoAddOntology)
   add_subdirectory(nepomuk)
+  if(${SHAREDDESKTOPONTOLOGIES_VERSION} VERSION_GREATER 0.4.50)
+    set(HAVE_NEPOMUK_WITH_SDO_0_5 1)
+  endif(${SHAREDDESKTOPONTOLOGIES_VERSION} VERSION_GREATER 0.4.50)
 endif(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
 
 # now create config headers
