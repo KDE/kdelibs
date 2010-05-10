@@ -875,6 +875,10 @@ DOM::CanvasImageDataImpl* toCanvasImageData(ExecState* exec, JSValue* val)
     return id;
 }
 
+// This is completely fake!
+IMPLEMENT_PSEUDO_CONSTRUCTOR(SVGAnglePseudoCtor, "SVGAngle", Context2DProto)
+
+
 } // namespace
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

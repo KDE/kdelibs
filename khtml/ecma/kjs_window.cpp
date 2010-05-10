@@ -387,6 +387,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontEnum|DontDelete
   StyleSheet   Window::StyleSheetCtor DontEnum|DontDelete
   CanvasRenderingContext2D Window::Context2DCtor DontEnum|DontDelete
+  SVGAngle Window::SVGAngleCtor DontEnum|DontDelete
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
@@ -866,6 +867,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return HTMLCanvasElementPseudoCtor::self(exec);
     case Context2DCtor:
       return Context2DPseudoCtor::self(exec);
+    case SVGAngleCtor:
+      return SVGAnglePseudoCtor::self(exec);
     case DocumentCtor:
       return DocumentPseudoCtor::self(exec);
     case HTMLDocumentCtor:
