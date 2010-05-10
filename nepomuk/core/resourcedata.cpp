@@ -190,7 +190,7 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
 
     // reset all variables
     m_uri = QUrl();
-    m_fileUrl = KUrl();
+    m_nieUrl = KUrl();
     m_kickoffId.truncate(0);
     m_kickoffUri = QUrl();
     m_cache.clear();
@@ -354,9 +354,10 @@ bool Nepomuk::ResourceData::store()
         }
 
         // the only situation in which determineUri keeps the kickoff URI is for file URLs.
-        if ( m_fileUrl.isValid() ) {
-            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_fileUrl ) );
-            if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+        if ( m_nieUrl.isValid() ) {
+            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_nieUrl ) );
+            if ( m_nieUrl.isLocalFile() &&
+                 m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
                 m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
             }
         }
@@ -449,7 +450,7 @@ bool Nepomuk::ResourceData::load()
                 }
                 else {
                     if ( p == Nepomuk::Vocabulary::NIE::url() ) {
-                        m_fileUrl = o.uri();
+                        m_nieUrl = o.uri();
                     }
                     m_cache[p].append( nodeToVariant( o ) );
                 }
@@ -644,7 +645,7 @@ bool Nepomuk::ResourceData::determineUri()
         // 2.2.1.2. it points to a file on a removable device for which we have a filex:/ URL
         //          -> use the r in r nie:url filex:/...
         // 2.2.1.3. it is a file which is not an object in some nie:url relation
-        //          -> create new random m_uri and use kickoffUriOrId() as m_fileUrl
+        //          -> create new random m_uri and use kickoffUriOrId() as m_nieUrl
         //
         QMutexLocker lock(&m_determineUriMutex);
 
@@ -700,7 +701,7 @@ bool Nepomuk::ResourceData::determineUri()
                     }
                     else {
                         m_uri = uri;
-                        m_fileUrl = uri;
+                        m_nieUrl = uri;
                     }
                     it.close();
                 }
@@ -728,11 +729,15 @@ bool Nepomuk::ResourceData::determineUri()
                         m_uri = resourceUri;
                     }
 
-                    m_fileUrl = m_kickoffUri;
+                    m_nieUrl = m_kickoffUri;
+                }
+                else if( m_kickoffUri.scheme() == QLatin1String("nepomuk") ) {
+                    // for nepomuk URIs we simply use the kickoff URI as resource URI
+                    m_uri = m_kickoffUri;
                 }
                 else {
-                    // for everything else we simply use the kickoff URI as resource URI
-                    m_uri = m_kickoffUri;
+                    // for everything else we use m_kickoffUri as nie:url with a new random m_uri
+                    m_nieUrl = m_kickoffUri;
                 }
             }
 

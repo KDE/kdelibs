@@ -177,7 +177,7 @@ namespace Nepomuk {
         KUrl m_uri;
 
         /// the URL of file resources
-        KUrl m_fileUrl;
+        KUrl m_nieUrl;
 
         QUrl m_mainType;
         QList<QUrl> m_types;
