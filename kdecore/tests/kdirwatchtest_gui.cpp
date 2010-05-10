@@ -19,12 +19,12 @@
 #include "kdirwatchtest_gui.h"
 
 #include <kaboutdata.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdirwatch.h>
 #include <QtCore/QDate>
 #include <QtGui/QDialog>
 #include <QtCore/QDir>
+#include <QtGui/QApplication>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QLineEdit>

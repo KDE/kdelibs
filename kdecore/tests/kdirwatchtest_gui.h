@@ -19,7 +19,6 @@
 #ifndef KDIRWATCHTEST_GUI_H
 #define KDIRWATCHTEST_GUI_H
 
-#include <kmainwindow.h>
 #include <QtGui/QDialog>
 
 class QTextBrowser;
