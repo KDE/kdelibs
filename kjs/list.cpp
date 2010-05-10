@@ -280,6 +280,10 @@ List List::copyTail() const
     ListImp*     outImp = static_cast<ListImp *>(copy._impBase);
 
     int size      = inImp->size - 1;
+
+    if (size < 0)
+        size = 0; // copyTail on empty list.
+    
     outImp->size  = size;
 
     if (size > inlineListValuesSize) {
