@@ -35,13 +35,14 @@ class WrapScriptableObject;
 
 class KHTMLScriptable: public ScriptableExtension
 {
+    Q_OBJECT
 public:
     KHTMLScriptable(KHTMLPart* part);
 
 
     // ScriptableExtension API
     virtual QVariant rootObject();
-    virtual QVariant enclosingObject(KParts::ReadOnlyPart* childPart);
+    virtual QVariant encloserForKid(KParts::ScriptableExtension* kid);
     virtual QVariant callAsFunction(ScriptableExtension* callerPrincipal, quint64 objId, const ArgList& args);
     virtual QVariant callFunctionReference(ScriptableExtension* callerPrincipal, quint64 objId,
                                            const QString& f, const ArgList& args);
@@ -66,33 +67,45 @@ public:
     static QHash<Object,      WrapScriptableObject*>* importedObjects();
     static QHash<FunctionRef, WrapScriptableObject*>* importedFunctions();
 
+    // For exported objects, we keep refcounts, and mark them
+    static QHash<JSObject*, int>* exportedObjects();
+
     static JSValue* importValue(ExecState* exec, const QVariant& v);
     static JSValue* importFunctionRef(ExecState* exec, const QVariant& v);
     static JSObject* importObject(ExecState* exec, const QVariant& v);
+    static List importArgs(ExecState* exec, const ArgList& args);
 
     static QVariant exportValue (JSValue* v);
-    static QVariant exportObject(JSValue* v);
+    static QVariant exportObject(JSObject* o);
+    static QVariant exportFuncRef(JSObject* base, const QString& field);
 private:
-    // May return 0. Used for security checks!
+    // input should not be a WrapScriptableObject.
+    static ScriptableExtension::Object exportNativeObject(JSObject* o);
+
+    // Checks exception state before handling conversion
+    QVariant handleReturn(ExecState* exec, JSValue* v);
+
+    // Both methods ay return 0. Used for security checks!
     KHTMLPart* partForPrincipal(ScriptableExtension* callerPrincipal);
+    ExecState* execStateForPrincipal(ScriptableExtension* callerPrincipal);
 
     // May return null.
     JSObject* objectForId(quint64 objId);
-
-    List decodeArgs(const ArgList& args);
 
 
     QVariant exception(const char* msg);
     QVariant scriptableNull();
 
+    KJS::Interpreter* interpreter();
+    KHTMLPart* m_part;
+
     // If the given object is owned by a KHTMLScriptable, return the
     // JS object for it. If not, return 0.
     static JSObject* tryGetNativeObject(const Object& sObj);
 
+    static QHash<JSValue*, int> s_exportedObjects;
     static QHash<Object,      WrapScriptableObject*>* s_importedObjects;
     static QHash<FunctionRef, WrapScriptableObject*>* s_importedFunctions;
-    KHTMLPart* m_part;
-
 };
 
 // This represents an object we imported from a foreign ScriptableExtension

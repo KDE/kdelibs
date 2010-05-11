@@ -45,7 +45,7 @@ static bool isException(const QVariant& v)
 
 static bool isFuncRef(const QVariant& v)
 {
-    return v.canConvert<ScriptableExtension::Exception>();
+    return v.canConvert<ScriptableExtension::FunctionRef>();
 }
 
 static bool isForeignObject(const QVariant& v)
@@ -177,19 +177,64 @@ ScriptableExtension::ArgList WrapScriptableObject::exportArgs(const List& l)
 
 JSValue* WrapScriptableObject::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
-    if (type == Object) {
-        // if ()
-        // callAsFunction
+    QVariant res;
+
+    if (ScriptableExtension* base = objExtension.data()) {
+        ScriptableExtension::ArgList sargs = exportArgs(args);
+        if (type == Object)
+            res = base->callAsFunction(principal(exec), objId, sargs);
+        else
+            res = base->callFunctionReference(principal(exec), objId, field, sargs);
+    }
+
+    // Problem. Throw an exception.
+    if (!res.isValid() || isException(res))
+        return throwError(exec, GeneralError, "Call to plugin function failed");
+    else
+        return KHTMLScriptable::importValue(exec, res);
+}
+
+JSObject* WrapScriptableObject::construct(ExecState* exec, const List& args)
+{
+    QVariant res;
+
+    bool ok;
+    ScriptableExtension::Object actualObj = resolveAnyReferences(exec, &ok);
+    if (ok) {
+        res = actualObj.owner->callAsConstructor(principal(exec), actualObj.objId,
+                                                 exportArgs(args));
+    }
+
+    if (!res.isValid() || isException(res)) {
+        return throwError(exec, GeneralError, "Call to plugin ctor failed");
     } else {
-        // callFunctionRefence.
+        JSValue* v = KHTMLScriptable::importValue(exec, res);
+        return v->toObject(exec);
     }
 }
+
+void WrapScriptableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& a)
+{
+    JSObject::getOwnPropertyNames(exec, a);
+
+    bool ok;
+    ScriptableExtension::Object actualObj = resolveAnyReferences(exec, &ok);
+    if (ok) {
+        QStringList out;
+        if (actualObj.owner->enumerateProperties(principal(exec), actualObj.objId, &out)) {
+            foreach (const QString& s, out)
+                a.add(Identifier(s));
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+// conversion stuff
 
 /**
    SECURITY: For the conversion helpers, it is assumed that 'exec' corresponds
    to the appropriate principal.
 */
-
 
 JSObject* KHTMLScriptable::importObject(ExecState* exec, const QVariant& v)
 {
@@ -220,7 +265,7 @@ JSValue* KHTMLScriptable::importFunctionRef(ExecState* exec, const QVariant& v)
     ScriptableExtension::FunctionRef fr = v.value<ScriptableExtension::FunctionRef>();
 
     if (JSObject* base = tryGetNativeObject(fr.base)) {
-        return base->get(exec, fr.field);
+        return base->get(exec, Identifier(fr.field));
     } else {
         if (WrapScriptableObject* old = importedFunctions()->value(fr)) {
             return old;
@@ -250,22 +295,50 @@ JSValue* KHTMLScriptable::importValue(ExecState* exec, const QVariant& v)
         return jsString(v.toString());
     if (v.canConvert<double>())
         return jsNumber(v.toDouble());
-    kWarning() << "conversion from " << v << "failed";
+    kWarning(6031) << "conversion from " << v << "failed";
     return jsNull();
 }
 
-QVariant exportObject(JSObject* o)
+List KHTMLScriptable::importArgs(ExecState* exec, const ArgList& args)
+{
+    List out;
+    for (int i = 0; i < args.size(); ++i)
+        out.append(importValue(exec, args[i]));
+    return out;
+}
+
+ScriptableExtension::Object KHTMLScriptable::exportNativeObject(JSObject* o)
+{
+    assert (!o->inherits(&WrapScriptableObject::info));
+    // We're exporting our own. Add to export table if needed.
+    // Use the pointer as an ID.
+    if (!exportedObjects()->contains(o))
+        exportedObjects()->insert(o, 0);
+    return ScriptableExtension::Object(this, reinterpret_cast<quint64>(o);
+}
+
+QVariant KHTMLScriptable::exportObject(JSObject* o)
 {
     // XSS checks are done at get time, so if we have a value here, we can
     // export it.
-
     if (o->inherits(&WrapScriptableObject::info)) {
-        // Re-exporting external one
+        // Re-exporting external one. That's easy.
+        WrapScriptableObject* wo = static_cast<WrapScriptableObject*>(o);
+        if (ScriptableExtension* owner = wo->objExtension.data()) {
+            return ScriptableExtension::Object(owner, wo->objId);
+        } else {
+            kWarning(6031) << "export of an object of a destroyed extension. Returning null";
+            return scriptableNull();
+        }   
     } else {
-        // Add to export table if needed. Use the pointer
-        // as an ID.
-        //TODO
+        return exportNativeObject(o);
     }
+}
+
+QVariant KHTMLScriptable::exportFuncRef(JSObject* base, const QString& field)
+{
+    ScriptableExtension::Object base = exportNativeObject(base);
+    return ScriptableExtension::FunctionRef(base, field);
 }
 
 QVariant KHTMLScriptable::exportValue(JSValue* v)
@@ -287,25 +360,42 @@ QVariant KHTMLScriptable::exportValue(JSValue* v)
     }
 }
 
-#if 0
-exportValue ones.
+//-----------------------------------------------------------------------------
+// letting outsiders use us.
 
-
-
-
-
-
-get, etc --- check for part for extension, do XSS check on that?
-#endif
 
 KHTMLScriptable::KHTMLScriptable(KHTMLPart* part):
     ScriptableExtension(part), m_part(part)
 {
 }
 
-
-QVariant KHTMLScriptable::enclosingObject(KParts::ReadOnlyPart* childPart)
+KJS::Interpreter* KHTMLScriptable::interpreter()
 {
+{
+    KJSProxy* proxy = m_part->jScript();
+    if (!proxy)
+        return 0;
+
+    return proxy->interpreter();
+}
+
+QVariant KHTMLScriptable::rootObject()
+{
+    if (KJS::Interpreter* i = interpreter()) {
+        return exportObject(i->globalObject());    
+    }
+    
+    return scriptableNull();
+}
+
+QVariant KHTMLScriptable::encloserForKid(KParts::ScriptableExtension* kid)
+{
+    ReadOnlyPart* childPart = qobject_cast<ReadOnlyPart*>(kid->parentObject());
+
+    KJS::Interpreter* i = interpreter();
+    if (!childPart || !i)
+        return scriptableNull();
+
     khtml::ChildFrame* f = m_part->frame(childPart);
 
     if (!f) {
@@ -313,16 +403,45 @@ QVariant KHTMLScriptable::enclosingObject(KParts::ReadOnlyPart* childPart)
         return scriptableNull();
     }
 
-    // ### Note: this should never actually get an iframe once iframes are fixed
-    // TODO
+    // ### should this deal with fake window objects for iframes? 
+    // ### this should never actually get an iframe once iframes are fixed
+    if (!f->m_partContainerElement.isNull()) {
+        return exportObject(getDOMNode(i->globalExec(), f->m_partContainerElement));
+    }
+
+    kWarning(6031) << "could not find the part container";
+    return scriptableNull();
+}
+
+QVariant KHTMLScriptable::handleReturn(ExecState* exec, JSValue* v)
+{
+    if (exec->hadException()) {
+        JSValue* e = exec->exception();
+        exec->classException();
+        
+        QString msg = QLatin1String("KJS exception");
+        
+        if (JSObject* eo = e->getObject()) {
+            JSValue* msgVal = eo->get(exec, exec->propertyNames().message);
+            if (!msgVal->isUndefined())
+                msg = msgVal->toString(exec);
+            
+            // in case the get failed too.
+            exec->classException();
+        }
+
+        return ScriptableExtension::Exception(msg);
+    }
+
+    return exportValue(v);
 }
 
 QVariant KHTMLScriptable::callAsFunction(ScriptableExtension* caller,
-                                                  quint64 objId, const ArgList& args)
+                                         quint64 objId, const ArgList& args)
 {
-    KHTMLPart* ctx = partForPrincipal(caller);
-    KJSProxy*  kjs = ctx ? ctx->jScript() : 0;
-    if (!kjs) {
+    ExecState* exec = execStateForPrincipal(caller);
+
+    if (!exec) {
         kWarning(6031) << "Trying to script the unscriptable";
         return exception("No scripting context or frame");
     }
@@ -333,8 +452,12 @@ QVariant KHTMLScriptable::callAsFunction(ScriptableExtension* caller,
         return exception("Not a function");
     }
 
-    //fn->callAsFunction(
+    JSValue* res = fn->callAsFunction(exec, exec->dynamicInterpreter()->globalObject(),
+                                      importArgs(exec, args);
+
+    return handleReturn(exec, res);
 }
+
 
 KHTMLPart* KHTMLScriptable::partForPrincipal(ScriptableExtension* caller)
 {
@@ -347,15 +470,6 @@ KHTMLPart* KHTMLScriptable::partForPrincipal(ScriptableExtension* caller)
     } else {
         //TODO
     }
-}
-
-
-List KHTMLScriptable::decodeArgs(const ArgList& args)
-{
-    List out;
-    for (int i = 0; i < args.size(); ++i)
-        out.append(importValue(args[i]));
-    return out;
 }
 
 // ::get() {
