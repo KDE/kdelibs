@@ -22,6 +22,7 @@
 #include "resource.h"
 
 #include <soprano/literalvalue.h>
+#include <soprano/node.h>
 
 #include <kdebug.h>
 
@@ -1312,6 +1313,7 @@ int Nepomuk::Variant::simpleType() const
 }
 
 
+// static
 Nepomuk::Variant Nepomuk::Variant::fromString( const QString& value, int type )
 {
     // first check the types that are not supported by Soprano since they are not literal types
@@ -1325,6 +1327,26 @@ Nepomuk::Variant Nepomuk::Variant::fromString( const QString& value, int type )
     // let Soprano do the rest
     else {
         return Variant( Soprano::LiteralValue::fromString( value, ( QVariant::Type )type ).variant() );
+    }
+}
+
+
+// static
+Nepomuk::Variant Nepomuk::Variant::fromNode( const Soprano::Node& node )
+{
+    //
+    // We cannot put in Resource objects here since then nie:url file:/ URLs would
+    // get converted back to the actual resource URIs which would be useless.
+    // That is why Variant treats QUrl and Resource pretty much as similar.
+    //
+    if ( node.isResource() ) {
+        return Nepomuk::Variant( node.uri() );
+    }
+    else if ( node.isLiteral() ) {
+        return Nepomuk::Variant( node.literal().variant() );
+    }
+    else {
+        return Nepomuk::Variant();
     }
 }
 

@@ -33,6 +33,7 @@
 namespace Nepomuk {
 
     class Resource;
+    class Variant;
     namespace Types {
         class Property;
     }
@@ -45,6 +46,9 @@ namespace Nepomuk {
          *
          * A search via QueryServiceClient returns a set of Result object. A result consists
          * of a Nepomuk::Resource and an optional score.
+         *
+         * Additional bindings (variable values) as requested via ComparisonTerm::setVariableName()
+         * can be retrieved using additionalBinding().
          *
          * \author Sebastian Trueg <trueg@kde.org>
          *
@@ -133,6 +137,9 @@ namespace Nepomuk {
              * Set the additional bindings a query returned besides the result
              * itself and the request properties.
              *
+             * Normally there is no need to call this method as the query service
+             * does set the bindings.
+             *
              * \since 4.5
              */
             void setAdditionalBindings( const Soprano::BindingSet& bindings );
@@ -162,9 +169,12 @@ namespace Nepomuk {
              * additionalBinding( QLatin1String("rating") );
              * \endcode
              *
+             * If for some reason one needs the plain binding values one
+             * could use additionalBinding().
+             *
              * \since 4.5
              */
-            Soprano::Node additionalBinding( const QString& name ) const;
+            Variant additionalBinding( const QString& name ) const;
 
             /**
              * Comparison operator

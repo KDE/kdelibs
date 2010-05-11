@@ -55,25 +55,6 @@ using namespace Soprano;
 #define MAINMODEL m_rm->resourceFilterModel
 
 
-static Nepomuk::Variant nodeToVariant( const Soprano::Node& node )
-{
-    //
-    // We cannot put in Resource objects here since then nie:url file:/ URLs would
-    // get converted back to the actual resource URIs which would be useless.
-    // That is why Variant treats QUrl and Resource pretty much as similar.
-    //
-    if ( node.isResource() ) {
-        return Nepomuk::Variant( node.uri() );
-    }
-    else if ( node.isLiteral() ) {
-        return Nepomuk::Variant( node.literal().variant() );
-    }
-    else {
-        return Nepomuk::Variant();
-    }
-}
-
-
 Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, const QUrl& type, ResourceManagerPrivate* rm )
     : m_kickoffId( uriOrId ),
       m_kickoffUri( uri ),
@@ -227,11 +208,11 @@ bool Nepomuk::ResourceData::hasProperty( const QUrl& uri )
 
     if( !load() )
         return false;
-    
+
     QHash<QUrl, Variant>::const_iterator it = m_cache.constFind( uri );
     if( it == m_cache.constEnd() )
         return false;
-    
+
     return true;
 }
 
@@ -316,7 +297,7 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
 
 //         while ( it.next() ) {
 //             Statement statement = *it;
-//             v.append( nodeToVariant( statement.object() ) );
+//             v.append( Variant::fromNode( statement.object() ) );
 //         }
 //         it.close();
 //     }
@@ -452,7 +433,7 @@ bool Nepomuk::ResourceData::load()
                     if ( p == Nepomuk::Vocabulary::NIE::url() ) {
                         m_nieUrl = o.uri();
                     }
-                    m_cache[p].append( nodeToVariant( o ) );
+                    m_cache[p].append( Variant::fromNode( o ) );
                 }
             }
 

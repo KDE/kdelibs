@@ -28,6 +28,10 @@
 #include <QtCore/QUrl>
 #include <QtCore/QVariant>
 
+namespace Soprano {
+    class Node;
+}
+
 namespace Nepomuk {
 
     class Resource;
@@ -35,7 +39,7 @@ namespace Nepomuk {
     /**
      * \class Variant variant.h Nepomuk/Variant
      *
-     * The %Nepomuk Variant extends over QVariant by introducing
+     * \brief The %Nepomuk Variant extends over QVariant by introducing
      * direct support for Resource embedding, automatic list conversion
      * and a restricted set of supported types.
      *
@@ -347,6 +351,13 @@ namespace Nepomuk {
          * containing the plain string \a value.
          */
         static Variant fromString( const QString& value, int type );
+
+        /**
+         * Create a Variant object from a Soprano::Node.
+         *
+         * \since 4.5
+         */
+        static Variant fromNode( const Soprano::Node& node );
 
     private:
         class Private;

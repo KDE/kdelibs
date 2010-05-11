@@ -18,6 +18,7 @@
  */
 
 #include "result.h"
+#include "variant.h"
 
 #include <QtCore/QSharedData>
 
@@ -130,9 +131,9 @@ Soprano::BindingSet Nepomuk::Query::Result::additionalBindings() const
 }
 
 
-Soprano::Node Nepomuk::Query::Result::additionalBinding( const QString& name ) const
+Nepomuk::Variant Nepomuk::Query::Result::additionalBinding( const QString& name ) const
 {
-    return d->additionalBindings.value(name);
+    return Variant::fromNode( d->additionalBindings.value(name) );
 }
 
 
