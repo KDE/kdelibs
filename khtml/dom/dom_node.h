@@ -961,6 +961,7 @@ class KHTML_EXPORT NodeList
     friend class Element;
     friend class Node;
     friend class Document;
+    friend class DocumentFragment;
     friend class HTMLDocument;
     friend class KJS::HTMLDocument;
     friend class KJS::Window;

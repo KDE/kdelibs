@@ -919,6 +919,28 @@ public:
     void loadXML( const DOMString &source );
 
     /**
+     * Introduced in Selectors Level 1.
+     *
+     * Returns the first (in document order) element matching the given
+     * CSS selector @p query.
+     *
+     * @since 4.5
+     */
+    Element querySelector(const DOMString& query) const;
+
+    /**
+     * Introduced in Selectors Level 1.
+     *
+     * Returns all (in document order) elements matching the given
+     * CSS selector @p query. Note that the returned NodeList is
+     * static and not live, and will not be updated when the document
+     * changes
+     *
+     * @since 4.5
+     */
+    NodeList querySelectorAll(const DOMString& query) const;
+
+    /**
      * not part of the official DOM
      *
      * Documents are read-only by default, but they can be made editable by
@@ -944,6 +966,7 @@ public:
     DOMString completeURL(const DOMString& url);
 
     DOMString toString() const;
+    
 
     /**
      * not part of the DOM
@@ -1032,6 +1055,27 @@ public:
 
     ~DocumentFragment();
 
+    /**
+     * Introduced in Selectors Level 1.
+     *
+     * Returns the first (in document order) element in this fragment
+     * matching the given CSS selector @p query.
+     *
+     * @since 4.5
+     */
+    Element querySelector(const DOMString& query) const;
+
+    /**
+     * Introduced in Selectors Level 1.
+     *
+     * Returns all (in document order) elements in this fragment matching the
+     * given CSS selector @p query. Note that the returned NodeList is
+     * static and not live, and will not be updated when the document
+     * changes
+     *
+     * @since 4.5
+     */
+    NodeList querySelectorAll(const DOMString& query) const;
 protected:
     DocumentFragment(DocumentFragmentImpl *i);
 };

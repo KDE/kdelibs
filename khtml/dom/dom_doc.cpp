@@ -540,6 +540,26 @@ void Document::loadXML( const DOMString &source )
     static_cast<DocumentImpl*>( impl )->loadXML( source );
 }
 
+Element Document::querySelector(const DOMString& query) const
+{
+    int ec = 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    Element res = impl->querySelector(query, ec).get();
+    if (ec)
+        throw DOMException(ec);
+    return res;
+}
+
+NodeList Document::querySelectorAll(const DOMString& query) const
+{
+    int ec = 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    NodeList res = impl->querySelectorAll(query, ec).get();
+    if (ec)
+        throw DOMException(ec);
+    return res;
+}
+
 bool Document::designMode() const {
     if (!impl)
         throw DOMException(DOMException::INVALID_STATE_ERR);
@@ -628,6 +648,26 @@ DocumentFragment &DocumentFragment::operator = (const DocumentFragment &other)
 
 DocumentFragment::~DocumentFragment()
 {
+}
+
+Element DocumentFragment::querySelector(const DOMString& query) const
+{
+    int ec = 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    Element res = impl->querySelector(query, ec).get();
+    if (ec)
+        throw DOMException(ec);
+    return res;
+}
+
+NodeList DocumentFragment::querySelectorAll(const DOMString& query) const
+{
+    int ec = 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    NodeList res = impl->querySelectorAll(query, ec).get();
+    if (ec)
+        throw DOMException(ec);
+    return res;
 }
 
 DocumentFragment::DocumentFragment(DocumentFragmentImpl *i) : Node(i)

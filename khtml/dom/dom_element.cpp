@@ -354,6 +354,26 @@ unsigned long Element::childElementCount() const
     return static_cast<ElementImpl*>(impl)->childElementCount();
 }
 
+Element Element::querySelector(const DOMString& query) const
+{
+    int ec = 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    Element res = impl->querySelector(query, ec).get();
+    if (ec)
+        throw DOMException(ec);
+    return res;
+}
+
+NodeList Element::querySelectorAll(const DOMString& query) const
+{
+    int ec = 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    NodeList res = impl->querySelectorAll(query, ec).get();
+    if (ec)
+        throw DOMException(ec);
+    return res;
+}
+
 bool Element::khtmlValidAttrName(const DOMString &name)
 {
     // Check if name is valid

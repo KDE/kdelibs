@@ -209,6 +209,7 @@ class DOMString;
 class KHTML_EXPORT Element : public Node
 {
     friend class Document;
+    friend class DocumentFragment;
     friend class HTMLDocument;
 //    friend class AttrImpl;
     friend class Attr;
@@ -604,6 +605,28 @@ public:
      *
      */
     unsigned long childElementCount ( ) const;
+
+    /**
+     * Introduced in Selectors Level 1.
+     *
+     * Returns the first (in document order) element in this element's subtree
+     * matching the given CSS selector @p query.
+     *
+     * @since 4.5
+     */
+    Element querySelector(const DOMString& query) const;
+
+    /**
+     * Introduced in Selectors Level 1.
+     *
+     * Returns all (in document order) elements in this element's subtree
+     * matching the given CSS selector @p query. Note that the returned NodeList
+     * is static and not live, and will not be updated when the document
+     * changes
+     *
+     * @since 4.5
+     */
+    NodeList querySelectorAll(const DOMString& query) const;
     
     /**
      * not part of the official DOM
