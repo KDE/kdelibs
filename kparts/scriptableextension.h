@@ -114,6 +114,7 @@ public:
     //@{
 protected:
     ScriptableExtension(QObject* parent);
+    
     virtual ~ScriptableExtension();
 
 public:
@@ -165,13 +166,15 @@ public:
     virtual QVariant rootObject();
 
     /**
-     * Returns an object that represents this KPart's view of
-     * the @p childPart. For an example, in an HTML part,
-     * it would return the DOM node of an &lt;object&gt; handled
-     * by @p childPart
+     * Returns an object that represents the host()'s view of us.
+     * For example, if the host is an HTML part, it would return
+     * a DOM node of an &lt;object&gt; handled by this part.
      * May be undefined or null
+     *
+     * Implemented in terms of objectForKid
+     *
      */
-    virtual QVariant enclosingObject(KParts::ReadOnlyPart* childPart);
+    QVariant enclosingObject();
     //@}
 
     ///@name Object Operations
@@ -246,17 +249,24 @@ public:
     virtual bool setException(ScriptableExtension* callerPrincipal, const QString& message);
 
 
+    enum ScriptLanguage {
+        ECMAScript, /// < also known as JavaScript
+        EnumLimit = 0xFFFF
+    };
+    
     /**
      Tries to evaluate a script @p code with the given object as its context.
-     The parameter @p language specifies the mimetype of the language to execute.
-     Use 'application/ecmascript' for ECMAScript or JavaScript
+     The parameter @p language specifies the language to execute it as.
+     Use isScriptLanguageSupported to check for support.
     */
     virtual QVariant evaluateScript(ScriptableExtension* callerPrincipal,
                                     quint64 contextObjectId,
                                     const QString& code,
-                                    const QString& language =
-                                    QString::fromLatin1("application/ecmascript"));
+                                    ScriptLanguage language = ECMAScript);
 
+    /** returns true if this extension can execute scripts in the given
+        language */
+    virtual bool isScriptLanguageSupported(ScriptLanguage lang) const;
 
     /**
       increases reference count of object @p objId
@@ -270,6 +280,13 @@ public:
 
     //@}
 private:
+    /**
+     *  If this extension is a host that provides an object corresponding
+     *  to each kid, override this method to provide it.
+     *  @see enclosingObject
+     */
+    virtual QVariant encloserForKid(KParts::ScriptableExtension* kid);
+
     ScriptableExtensionPrivate* const d;
 };
 

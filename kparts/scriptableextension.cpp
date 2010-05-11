@@ -68,9 +68,17 @@ QVariant ScriptableExtension::rootObject()
     return QVariant::fromValue(Null());
 }
 
-QVariant ScriptableExtension::enclosingObject(KParts::ReadOnlyPart* childPart)
+QVariant ScriptableExtension::enclosingObject()
 {
-    Q_UNUSED(childPart);
+    if (d->hostContext)
+        return d->hostContext->encloserForKid(this);
+    else
+        return QVariant::fromValue(Null());
+}
+
+QVariant ScriptableExtension::encloserForKid(KParts::ScriptableExtension* kid)
+{
+    Q_UNUSED(kid);
     return QVariant::fromValue(Null());
 }
 
@@ -166,13 +174,19 @@ bool ScriptableExtension::setException(ScriptableExtension* callerPrincipal,
 QVariant ScriptableExtension::evaluateScript(ScriptableExtension* callerPrincipal,
                                             quint64 contextObjectId,
                                             const QString& code,
-                                            const QString& language)
+                                            ScriptLanguage language)
 {
     Q_UNUSED(callerPrincipal);
     Q_UNUSED(contextObjectId);
     Q_UNUSED(code);
     Q_UNUSED(language);
     return unimplemented();
+}
+
+bool ScriptableExtension::isScriptLanguageSupported(ScriptLanguage lang) const
+{
+    Q_UNUSED(lang);
+    return false;
 }
 
 void ScriptableExtension::acquire(quint64 objId)
