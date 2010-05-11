@@ -67,7 +67,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
       m_rm(rm)
 {
     if( uri.isValid() )
-        m_rm->m_uriKickoffData.insert( url, this );
+        m_rm->m_uriKickoffData.insert( uri, this );
     else if( !uriOrId.isEmpty() )
         m_rm->m_idKickoffData.insert( uriOrId, this );
 
