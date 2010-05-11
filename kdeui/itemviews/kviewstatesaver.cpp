@@ -229,7 +229,7 @@ void KViewStateSaverPrivate::restoreState()
     {
       Q_Q(KViewStateSaver);
       q->connect( model, SIGNAL( rowsInserted( const QModelIndex&, int, int ) ),
-          SLOT( rowsInserted( const QModelIndex&, int, int ) ), Qt::QueuedConnection );
+          SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
     }
   }
 }
