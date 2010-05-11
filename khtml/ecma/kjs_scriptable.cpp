@@ -23,19 +23,20 @@
 
 // Table of exported objects, including their refcount.
 // mark from script interpreter.
-// 
+//
 // Imported objects:
 // weak reference table for wrappers.
-// 
+//
 // importObject,
 // exportObject helpers,
-// 
+//
 // // ### object invalidation if the extension is removed?
-// 
+//
 // ... tracking refcounts per context may help deal with emergency
 // cleanups, but is heavy/icky.
 
-namespace KJS {
+namespace KJS
+{
 
 static bool isException(const QVariant& v)
 {
@@ -145,7 +146,7 @@ void WrapScriptableObject::put(ExecState* exec, const Identifier& i, JSValue* va
 {
     // ### Do we swallow failure, or what?
     bool ok;
-    ScriptableExtension::Object actualObj = resolveAnyReferences(exec, &ok);    
+    ScriptableExtension::Object actualObj = resolveAnyReferences(exec, &ok);
 
     if (!ok)
         return;
@@ -187,7 +188,7 @@ JSValue* WrapScriptableObject::callAsFunction(ExecState *exec, JSObject *thisObj
 /**
    SECURITY: For the conversion helpers, it is assumed that 'exec' corresponds
    to the appropriate principal.
-*/   
+*/
 
 
 JSObject* KHTMLScriptable::importObject(ExecState* exec, const QVariant& v)
@@ -205,7 +206,7 @@ JSObject* KHTMLScriptable::importObject(ExecState* exec, const QVariant& v)
                 new WrapScriptableObject(exec, WrapScriptableObject::Object,
                                          obj.owner, obj.objId);
             importedObjects()->insert(obj, wrap);
-            return wrap;            
+            return wrap;
         }
     }
 }
@@ -313,7 +314,7 @@ QVariant KHTMLScriptable::enclosingObject(KParts::ReadOnlyPart* childPart)
     }
 
     // ### Note: this should never actually get an iframe once iframes are fixed
-    // TODO    
+    // TODO
 }
 
 QVariant KHTMLScriptable::callAsFunction(ScriptableExtension* caller,
@@ -358,7 +359,7 @@ List KHTMLScriptable::decodeArgs(const ArgList& args)
 }
 
 // ::get() {
-// 
+//
 //     if result is a function... return function reference instead..
 // }
 

@@ -20,6 +20,7 @@ set(kparts_LIB_SRCS
    browserrun.cpp
    browseropenorsavequestion.cpp
    statusbarextension.cpp
+   scriptableextension.cpp
    )
 
 if(HAVE_NEPOMUK_WITH_SDO_0_5)

@@ -273,6 +273,10 @@ private:
     ScriptableExtensionPrivate* const d;
 };
 
+unsigned int qHash(const KParts::ScriptableExtension::Object& o);
+
+unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f);
+
 } // namespace KParts
 
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Null);

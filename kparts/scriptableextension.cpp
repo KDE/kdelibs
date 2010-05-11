@@ -333,6 +333,16 @@ void ScriptableLiveConnectExtension::release(quint64 objId)
     }
 }
 
+unsigned int qHash(const KParts::ScriptableExtension::Object& o)
+{
+    return qHash(qMakePair(o.owner, o.objId));
+}
+
+unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f)
+{
+    return qHash(qMakePair(f.base, f.field));
+}
+
 } // namespace KParts
 
 
@@ -345,7 +355,7 @@ void KParts::ScriptableExtension::registerDBusTypes()
     qDBusRegisterMetaType<Exception>();
 }
 
-const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& arg,
+KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& arg,
                                               const KParts::ScriptableExtension::Null&)
 {
     arg.beginStructure();
@@ -353,7 +363,7 @@ const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& arg,
     return arg;
 }
 
-const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& arg,
+KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& arg,
                                               KParts::ScriptableExtension::Null&)
 {
     arg.beginStructure();
@@ -361,7 +371,7 @@ const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& arg,
     return arg;
 }
 
-const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& arg,
+KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& arg,
                                               const KParts::ScriptableExtension::Undefined&)
 {
     arg.beginStructure();
@@ -369,7 +379,7 @@ const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& arg,
     return arg;
 }
 
-const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& arg,
+KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& arg,
                                               KParts::ScriptableExtension::Undefined&)
 {
     arg.beginStructure();
@@ -377,7 +387,7 @@ const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& arg,
     return arg;
 }
 
-const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& arg,
+KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& arg,
                                               const KParts::ScriptableExtension::Exception& e)
 {
     arg.beginStructure();
@@ -386,7 +396,7 @@ const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& arg,
     return arg;
 }
 
-const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& arg,
+KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& arg,
                                               KParts::ScriptableExtension::Exception& e)
 {
     arg.beginStructure();
@@ -395,6 +405,7 @@ const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& arg,
     return arg;
 }
 
-// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
 #include "scriptableextension.moc"
 #include "scriptableextension_p.moc"
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
+

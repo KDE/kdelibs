@@ -27,16 +27,6 @@
 #include <kjs/list.h>
 #include <QHash>
 
-static inline unsigned qHash(const KParts::ScriptableExtension::Object& o)
-{
-    return qHash(qMakePair(o.owner, o.objId));
-}
-
-static inline unsigned qHash(const KParts::ScriptableExtension::FunctionRef& f)
-{
-    return qHash(qMakePair(f.base, f.field));
-}
-
 using namespace KParts;
 
 namespace KJS {
@@ -91,17 +81,17 @@ private:
 
     List decodeArgs(const ArgList& args);
 
-   
+
     QVariant exception(const char* msg);
     QVariant scriptableNull();
 
     // If the given object is owned by a KHTMLScriptable, return the
     // JS object for it. If not, return 0.
-    static JSObject* tryGetNativeObject(const Object& sObj);    
+    static JSObject* tryGetNativeObject(const Object& sObj);
 
     static QHash<Object,      WrapScriptableObject*>* s_importedObjects;
     static QHash<FunctionRef, WrapScriptableObject*>* s_importedFunctions;
-    KHTMLPart* m_part;    
+    KHTMLPart* m_part;
 
 };
 
