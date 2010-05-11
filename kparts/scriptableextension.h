@@ -114,10 +114,9 @@ public:
     //@{
 protected:
     ScriptableExtension(QObject* parent);
-    
+public:
     virtual ~ScriptableExtension();
 
-public:
     /**
     * Queries @p obj for a child object which inherits from this
     * ScriptableExtension class. Convenience method.
