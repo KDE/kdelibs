@@ -1,5 +1,7 @@
 /*
     Copyright (C) 2004, Arend van Beelen jr. <arend@auton.nl>
+    Copyright (C) 2010, David Faure <faure@kde.org>
+
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -25,12 +27,12 @@
 
 class KFind;
 
-class KFindTest : public QObject
+class KFindRecorder : public QObject
 {
 	Q_OBJECT
 
 	public:
-		KFindTest(const QStringList &text) :
+		KFindRecorder(const QStringList &text) :
 		  QObject(0),
 		  m_find(0),
 		  m_text(text),
@@ -54,6 +56,24 @@ class KFindTest : public QObject
 		QStringList            m_text;
 		int                   m_line;
 		QStringList            m_hits;
+};
+
+class TestKFind : public QObject
+{
+    Q_OBJECT
+
+public:
+    TestKFind();
+
+private Q_SLOTS:
+
+    void testSimpleSearch();
+    void testRegexp();
+    void testFindIncremental();
+    void testFindIncrementalDynamic();
+
+private:
+    QString m_text;
 };
 
 #endif
