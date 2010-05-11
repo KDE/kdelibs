@@ -7,8 +7,7 @@ Known Issues [OUTSTANDING]:
   support in Qt means no HTML 5 multimedia feature (<video> tag) support in the QtWebKit
   module. See https://bugs.webkit.org/show_bug.cgi?id=34631
 
-* [QtWebKit] No Java applet support.
-  See https://bugs.webkit.org/show_bug.cgi?id=36902.
+* [QtWebKit] No Java applet support. See https://bugs.webkit.org/show_bug.cgi?id=36902.
 
 * [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
   tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
@@ -20,13 +19,10 @@ Known Issues [OUTSTANDING]:
        QLineEdit and QComboBox. See https://bugs.webkit.org/show_bug.cgi?id=36668
     ** Spell checking specially for <textarea> widgets.
 
-* [QtWebKit] Only <meta> tags that contain a "name" attribute are properly parsed
-  and returned through QWebFrame::metaData.
-
 * [kdewebkit] Unsupported content handling always requires more than one
   connection to the same server to download a single request. The fix for this
   issue requires a new API addition to KIO that accepts QNetworkReply instead
-  of KUrl as its data source.
+  of KUrl as its data source. See https://bugs.webkit.org/show_bug.cgi?id=37880
 
 Known Issues [ADDRESSED]:
 =========================
