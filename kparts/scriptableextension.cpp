@@ -216,7 +216,7 @@ QVariant ScriptableLiveConnectExtension::callFunctionReference(ScriptableExtensi
 
     LiveConnectExtension::Type retType;
     unsigned long              retObjId;
-    QString                    retVal;    
+    QString                    retVal;
     if (wrapee->call((unsigned long)o, f, qargs, retType, retObjId, retVal)) {
         return fromLC(QString(), retType, retObjId, retVal);
     } else {
@@ -273,7 +273,7 @@ QVariant ScriptableLiveConnectExtension::fromLC(const QString& name,
         else
             return QVariant::fromValue(FunctionRef(o, name));
     }
-    
+
     case KParts::LiveConnectExtension::TypeNumber:
         return QVariant(value.toDouble());
 
@@ -310,7 +310,7 @@ QString ScriptableLiveConnectExtension::toLC(const QVariant& in, bool* ok)
     if (in.type() == QVariant::Bool)
         return in.toBool() ? QString::fromLatin1("true") : QString::fromLatin1("false");
 
-    // Just stringify everything else, makes sense forn umms as well.
+    // Just stringify everything else, makes sense for nums as well.
     if (in.canConvert<QString>())
         return in.toString();
 
