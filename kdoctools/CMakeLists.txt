@@ -128,7 +128,7 @@ macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
     endforeach(_curentfile ${_file_CUST})
 endmacro(INSTALL_CUSTOMIZE_DIR _expr _directory)
 
-set(docbookdir xml-dtd-4.1.2  xml-dtd-4.2  xsl )
+set(docbookdir xml-dtd-4.2  xsl )
 
 
 set(expr "docbook/README.kde")

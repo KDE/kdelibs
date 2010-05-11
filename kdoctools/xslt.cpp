@@ -140,7 +140,6 @@ QString transform( const QString &pat, const QString& tss,
     xmlSetExternalEntityLoader(xsltprocExternalEntityLoader);         
 	
 	QString dataPath = QDir::cleanPath( QCoreApplication::applicationDirPath() + QLatin1String("/../share/apps") );
-	replaceURLList[QLatin1String("http://www.oasis-open.org/docbook/xml/4.1.2")] = QString("file:///%1/ksgmltools2/docbook/xml-dtd-4.1.2").arg(dataPath);
 	replaceURLList[QLatin1String("http://www.oasis-open.org/docbook/xml/4.2")] = QString("file:///%1/ksgmltools2/docbook/xml-dtd-4.2").arg(dataPath);
 #endif
 
