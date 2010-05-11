@@ -112,6 +112,7 @@ private:
 // root objects and script execution.
 class KHTMLPartScriptable: public ScriptableExtension {
     Q_OBJECT
+    friend class ScriptableOperations;
 public:
     KHTMLPartScriptable(KHTMLPart* part);
 
@@ -119,10 +120,12 @@ public:
     virtual QVariant encloserForKid(KParts::ScriptableExtension* kid);
 
     virtual bool setException(ScriptableExtension* callerPrincipal, const QString& message);
+
     virtual QVariant evaluateScript(ScriptableExtension* callerPrincipal,
                                     quint64 contextObjectId,
                                     const QString& code,
-                                    const QString& language);
+                                    ScriptLanguage language = ECMAScript);
+    virtual bool isScriptLanguageSupported(ScriptLanguage lang) const;
 
     // For paranoia: forward to ScriptOperations
     virtual void acquire(quint64 objid);

@@ -224,6 +224,22 @@ void WrapScriptableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArra
     }
 }
 
+UString WrapScriptableObject::toString(ExecState*) const
+{
+    QString iface;
+    if (ScriptableExtension* se = objExtension.data()) {
+        iface = QString::fromLatin1(se->metaObject()->className());
+    } else {
+        iface = QString::fromLatin1("detached");
+    }
+
+    if (type == FunctionRef) {
+        return "[function ImportedScriptable:" + iface + "/" + field + "]";
+    } else {
+        return "[object ImportedScriptable:" + iface + "]";
+    }
+}
+
 //-----------------------------------------------------------------------------
 // conversion stuff
 
@@ -586,7 +602,7 @@ bool ScriptableOperations::enumerateProperties(ScriptableExtension* caller,
     return true;
 }
 
-#if 0
+
 KHTMLPart* ScriptableOperations::partForPrincipal(ScriptableExtension* caller)
 {
     // We implement our security checks by delegating to the KHTMLPart corresponding
@@ -596,11 +612,64 @@ KHTMLPart* ScriptableOperations::partForPrincipal(ScriptableExtension* caller)
     if (KHTMLPartScriptable* o = qobject_cast<KHTMLPartScriptable*>(caller)) {
         return o->m_part;
     } else {
-        //TODO
-        
+        // We always set the host on child extensions.
+        return partForPrincipal(caller->host());
     }
 }
-#endif
+
+ExecState* ScriptableOperations::execStateForPrincipal(ScriptableExtension* caller)
+{
+    KHTMLPart* part = partForPrincipal(caller);
+
+    if (!part)
+        return 0;
+
+    KJSProxy* proxy = KJSProxy::proxy(part);
+    if (!proxy)
+        return 0;
+
+    KJS::Interpreter* i = proxy->interpreter();
+    if (!i)
+        return 0;
+
+    return i->globalExec();
+}
+
+void ScriptableOperations::acquire(quint64 objId)
+{
+    JSObject* ptr = objectForId(objId);
+
+    if (ptr)
+        ++(*exportedObjects())[ptr];
+    else
+        assert(false);
+}
+
+void ScriptableOperations::release(quint64 objId)
+{
+    JSObject* ptr = objectForId(objId);
+
+    if (ptr) {
+        int newRC = --(*exportedObjects())[ptr];
+        if (newRC == 0)
+            exportedObjects()->remove(ptr);
+    } else {
+        assert(false);
+    }
+}
+
+JSObject* ScriptableOperations::objectForId(quint64 objId)
+{
+    JSObject* ptr = reinterpret_cast<JSObject*>(objId);
+
+    // Verify the pointer against the exports table for paranoia.
+    if (exportedObjects()->contains(ptr)) {
+        return ptr;
+    } else {
+        assert(false);
+        return 0; 
+    }
+}
 
 //-----------------------------------------------------------------------------
 // per-part stuff.
@@ -664,6 +733,34 @@ void KHTMLPartScriptable::release(quint64 objid)
     ScriptableOperations::self()->release(objid);
 }
 
+QVariant KHTMLPartScriptable::evaluateScript(ScriptableExtension* caller,
+                                             quint64 contextObjectId,
+                                             const QString& code,
+                                             ScriptLanguage lang)
+{
+    if (lang != ECMAScript)
+        return QVariant::fromValue(ScriptableExtension::Exception("unsupported language"));
+
+    kDebug(6031) << code;
+
+    // ### FIXME FIXME FIXME FIXME
+    // this should first do the XSS check itself -- perhaps via crossFrameExecuteScript
+    // and the like, and do things.
+
+    return scriptableNull();
+}
+
+bool KHTMLPartScriptable::isScriptLanguageSupported(ScriptLanguage lang) const
+{
+    return lang == ECMAScript;
+}
+
+bool KHTMLPartScriptable::setException(ScriptableExtension* caller,
+                                       const QString& message)
+{
+    kWarning(6031) << "ignoring:" << message;
+    return false;
+}
 
 } // namespace KJS
 
