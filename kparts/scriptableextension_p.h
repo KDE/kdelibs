@@ -36,8 +36,9 @@ public:
     QVariant rootObject();
     // enclosingObject: not applicable, plugins wouldn't have children
 
-    QVariant callAsFunction(ScriptableExtension* callerPrincipal, quint64 objId,
-                            const ScriptableExtension::ArgList& args);
+    // callAsFunction: we only have function rereferences.
+    QVariant callFunctionReference(ScriptableExtension* callerPrincipal, quint64 objId,
+                                   const QString& f, const ArgList& args);
 
     // callAsConstructor: unsupported by LC
 
@@ -60,7 +61,6 @@ private:
     // LC uses 0-1 refcounting, we use arbitrary, so we need to call
     // unregister when done.
     QHash<quint64, int>     refCounts;
-    QHash<quint64, QString> objNames;
     LiveConnectExtension* wrapee;
 
     // also registers when needed

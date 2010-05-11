@@ -89,6 +89,17 @@ QVariant ScriptableExtension::callAsFunction(ScriptableExtension* callerPrincipa
     return unimplemented();
 }
 
+QVariant ScriptableExtension::callFunctionReference(ScriptableExtension* callerPrincipal,
+                                                    quint64 objId, const QString& f,
+                                                    const ArgList& args)
+{
+    Q_UNUSED(callerPrincipal);
+    Q_UNUSED(objId);
+    Q_UNUSED(args);
+    Q_UNUSED(f);
+    return unimplemented();
+}
+
 QVariant ScriptableExtension::callAsConstructor(ScriptableExtension* callerPrincipal,
                                                 quint64 objId, const ArgList& args)
 {
@@ -191,14 +202,14 @@ bool ScriptableLiveConnectExtension::hasProperty(ScriptableExtension*, quint64 o
 
 // Note that since we wrap around a plugin, and do not implement the browser,
 // we do not perform XSS checks ourselves.
-QVariant ScriptableLiveConnectExtension::callAsFunction(ScriptableExtension*,
-                        quint64 objId, const ScriptableExtension::ArgList& args)
+QVariant ScriptableLiveConnectExtension::callFunctionReference(ScriptableExtension*,
+                        quint64 o, const QString& f, const ScriptableExtension::ArgList& a)
 {
     QStringList qargs;
     // Convert args to strings for LC use.
-    for (int i = 0; i < args.size(); ++i) {
+    for (int i = 0; i < a.size(); ++i) {
         bool ok;
-        qargs.append(toLC(args[i], &ok));
+        qargs.append(toLC(a[i], &ok));
         if (!ok)
             return unimplemented();
     }
@@ -206,8 +217,7 @@ QVariant ScriptableLiveConnectExtension::callAsFunction(ScriptableExtension*,
     LiveConnectExtension::Type retType;
     unsigned long              retObjId;
     QString                    retVal;    
-    if (wrapee->call((unsigned long)objId, objNames[objId], qargs,
-                     retType, retObjId, retVal)) {
+    if (wrapee->call((unsigned long)o, f, qargs, retType, retObjId, retVal)) {
         return fromLC(QString(), retType, retObjId, retVal);
     } else {
         return unimplemented();
@@ -253,14 +263,16 @@ QVariant ScriptableLiveConnectExtension::fromLC(const QString& name,
         return QVariant(value.toLower() == QLatin1String("true"));
     }
     case KParts::LiveConnectExtension::TypeObject:
-    case KParts::LiveConnectExtension::TypeFunction:
-        // if we got an object, we also have to remeber its name, as we'll need it
-        // for call
-        if (!refCounts.contains(objId)) {
+    case KParts::LiveConnectExtension::TypeFunction: {
+        if (!refCounts.contains(objId))
             refCounts[objId] = 0;
-            objNames [objId] = name;
-        }
-        return QVariant::fromValue(ScriptableExtension::Object(this, objId));
+
+        Object o = ScriptableExtension::Object(this, objId);
+        if (type == KParts::LiveConnectExtension::TypeObject)
+            return QVariant::fromValue(o);
+        else
+            return QVariant::fromValue(FunctionRef(o, name));
+    }
     
     case KParts::LiveConnectExtension::TypeNumber:
         return QVariant(value.toDouble());
@@ -280,7 +292,8 @@ QString ScriptableLiveConnectExtension::toLC(const QVariant& in, bool* ok)
 
     // Objects (or exceptions) can't be converted
     if (in.canConvert<ScriptableExtension::Object>() ||
-        in.canConvert<ScriptableExtension::Exception>()) {
+        in.canConvert<ScriptableExtension::Exception>() ||
+        in.canConvert<ScriptableExtension::FunctionRef>()) {
 
         *ok = false;
         return QString();
@@ -317,7 +330,6 @@ void ScriptableLiveConnectExtension::release(quint64 objId)
     if (!newRC) {
         wrapee->unregister((unsigned long)objId);
         refCounts.remove(objId);
-        objNames.remove(objId);
     }
 }
 

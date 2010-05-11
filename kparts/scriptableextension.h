@@ -55,8 +55,9 @@ public:
      * \li @ref Undefined
      * \li @ref Exception
      * \li @ref Object
+     * \li @ref FunctionRef
      *
-     * All of these other than Object also provide DBus marshallers.
+     * All of these other than Object and FunctionRef also provide DBus marshallers.
      * These are registered when ScriptableExtension::registerDBusTypes()
      * is called, which is in particular done by ScriptableExtension constructor.
      */
@@ -81,7 +82,7 @@ public:
 
     /// Objects are abstracted away as a pair of the ScriptableExtension
     /// the performs operations on it, and an implementation-specific Id,
-    /// which gets passed to the extension's methods. If you store reference
+    /// which gets passed to the extension's methods. If you store a reference to
     /// an object, you should use its owner's @ref acquire and @ref release
     /// methods to update its count of external references (which starts at 0)
     struct Object {
@@ -90,6 +91,18 @@ public:
 
         Object(): owner(0), objId(0) {}
         Object(ScriptableExtension* o, quint64 id): owner(o), objId(id) {}
+    };
+
+    /// Function references are a pair of an object and a field in it.
+    /// Essentially, if you have a base.field(something) call, the
+    /// 'base' needs to be passed as the 'this' to the function, and
+    /// these references can be used to resolve that.
+    struct FunctionRef {
+        Object   base;
+        QString  field;
+
+        FunctionRef() {}
+        FunctionRef(const Object& b, const QString&f): base(b), field(f) {}
     };
 
     //@}
@@ -184,6 +197,12 @@ public:
     virtual QVariant callAsFunction(ScriptableExtension* callerPrincipal, quint64 objId, const ArgList& args);
 
     /**
+     Try to use a function reference to field @p f of object @objId as a function
+     */
+    virtual QVariant callFunctionReference(ScriptableExtension* callerPrincipal, quint64 objId,
+                                           const QString& f, const ArgList& args); 
+
+    /**
       Try to use the object @p objId associated with 'this' as a constructor
       (corresponding to ECMAScript's new foo(bar, baz, glarch) expression).
     */
@@ -258,6 +277,7 @@ Q_DECLARE_METATYPE(KParts::ScriptableExtension::Null);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Undefined);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object);
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::FunctionRef);
 
 const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
                                               const KParts::ScriptableExtension::Null& n);
