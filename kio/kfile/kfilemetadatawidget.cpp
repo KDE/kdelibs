@@ -509,7 +509,7 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
         Q_ASSERT(itemCount > 1);
         // calculate the size of all items and show this
         // information to the user
-        d->m_sizeLabel->setText(i18nc("@label", "Total Size:"));
+        d->m_sizeLabel->setText(i18nc("@label", "Total Size"));
         d->setRowVisible(d->m_sizeInfo, d->m_sizeVisible);
 
         quint64 totalSize = 0;
