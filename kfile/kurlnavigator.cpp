@@ -99,6 +99,8 @@ public:
 
     void openContextMenu();
 
+    void slotPathBoxChanged(const QString& text);
+
     void updateContent();
 
     /**
@@ -247,6 +249,8 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
             q, SLOT(slotReturnPressed()));
     connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
             q, SLOT(setUrl(KUrl)));
+    connect(m_pathBox, SIGNAL(editTextChanged(QString)),
+            q, SLOT(slotPathBoxChanged(QString)));
 
     // create toggle button which allows to switch between
     // the breadcrumb and traditional view
@@ -349,15 +353,19 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     KUrl url;
     url.setScheme(protocol);
     url.setPath("/");
-    foreach (KUrlNavigatorButton* button, m_navButtons) {
-        button->hide();
-        button->deleteLater();
-    }
-    m_navButtons.clear();
 
-    if (KProtocolInfo::protocolClass(protocol) == QLatin1String(":local")) {
+    if (m_editable) {
+        m_pathBox->setEditUrl(url);
+    } else if (KProtocolInfo::protocolClass(protocol) == QLatin1String(":local")) {
+        // No host is required, the URL can be applied immediately
         q->setLocationUrl(url);
     } else {
+        foreach (KUrlNavigatorButton* button, m_navButtons) {
+            button->hide();
+            button->deleteLater();
+        }
+        m_navButtons.clear();
+
         m_host->setText(QString());
         m_host->show();
         m_host->setFocus();
@@ -503,6 +511,11 @@ void KUrlNavigator::Private::openContextMenu()
     }
 }
 
+void KUrlNavigator::Private::slotPathBoxChanged(const QString& text)
+{
+    m_protocols->setVisible(text.isEmpty());
+}
+
 void KUrlNavigator::Private::updateContent()
 {
     const KUrl currentUrl = q->locationUrl();
@@ -561,17 +574,16 @@ void KUrlNavigator::Private::updateContent()
 
         // check whether the protocol-combo and the host-editor should be shown
         const bool hasPlaceItem = currentUrl.isLocalFile() || placeUrl.isValid();
-        const bool isVisible = !hasPlaceItem &&
-                               (placePath == path) &&
-                               (KProtocolInfo::protocolClass(protocol) != ":local");
-
-        m_host->setVisible(isVisible);
-        m_protocols->setVisible(isVisible);
+        const bool showProtocols = !hasPlaceItem &&
+                                   (KProtocolInfo::protocolClass(protocol) != QLatin1String(":local"));
+        const bool showHost = showProtocols && (placePath == path);
+        m_protocols->setVisible(showProtocols);
+        m_host->setVisible(showHost);
 
         // calculate the start index for the directories that should be shown as buttons
         // and create the buttons
         int startIndex = placePath.count('/');
-        if (isVisible) {
+        if (showHost) {
             // the host is shown by the line editor m_host and no button should be created
             ++startIndex;
         } else if (!hasPlaceItem && hostText.isEmpty()) {
@@ -750,7 +762,9 @@ void KUrlNavigator::Private::updateButtonVisibility()
     } else {
         // Check whether going upwards is possible. If this is the case, show the drop-down button.
         const KUrl url = m_navButtons.front()->url();
-        const bool visible = (url != url.upUrl()) && (url.protocol() != "nepomuksearch");
+        const bool visible = (url != url.upUrl()) &&
+                             (url.protocol() != "nepomuksearch") &&
+                             !m_protocols->isVisible();
         m_dropDownButton->setVisible(visible);
     }
 }

@@ -451,6 +451,7 @@ private:
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())
+    Q_PRIVATE_SLOT(d, void slotPathBoxChanged(const QString& text))
     Q_PRIVATE_SLOT(d, void updateContent())
 
 private:
