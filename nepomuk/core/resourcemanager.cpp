@@ -85,7 +85,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
 
     if( it == end ) {
         ResourceData* d = new ResourceData( url, QString(), type, this );
-        m_uriKickoffData.insert( url, d );
 //         kDebug() << "--------------------------- Created new ResourceData:" << *d;
         return d;
     }
@@ -113,7 +112,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
     KickoffDataHash::iterator it = m_idKickoffData.find( uriOrId );
     if( it == m_idKickoffData.end() ) {
         ResourceData* d = new ResourceData( QUrl(), uriOrId, type, this );
-        m_idKickoffData.insert( uriOrId, d );
         return d;
     }
     else {
