@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2010 Maksim Orlovich <maksim@kde.org>
-   Copyright (C) 2002 Koos Vriezen <koos.vriezen@gmail.com>   
+   Copyright (C) 2002 Koos Vriezen <koos.vriezen@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -137,7 +137,7 @@ public:
     static void registerDBusTypes();
 
     //@}
-    
+
 
     ///@name Object Hierarchy
     //@{
@@ -167,7 +167,7 @@ public:
      * the @p childPart. For an example, in an HTML part,
      * it would return the DOM node of an &lt;object&gt; handled
      * by @p childPart
-     * May be undefined or null     
+     * May be undefined or null
      */
     virtual QVariant enclosingObject(KParts::ReadOnlyPart* childPart);
     //@}
@@ -188,7 +188,7 @@ public:
     ///   to do appropriate cross-site scripting checks on this argument
     ///   if it is acting as a host.
     //@{
-    
+
     typedef QList<QVariant> ArgList;
 
     /**
@@ -200,7 +200,7 @@ public:
      Try to use a function reference to field @p f of object @objId as a function
      */
     virtual QVariant callFunctionReference(ScriptableExtension* callerPrincipal, quint64 objId,
-                                           const QString& f, const ArgList& args); 
+                                           const QString& f, const ArgList& args);
 
     /**
       Try to use the object @p objId associated with 'this' as a constructor
@@ -210,7 +210,7 @@ public:
 
     /**
      Returns true if the object @p objId associated with 'this' has the property
-     @p propName. 
+     @p propName.
     */
     virtual bool hasProperty(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
 
@@ -254,8 +254,8 @@ public:
                                     const QString& code,
                                     const QString& language =
                                     QString::fromLatin1("application/ecmascript"));
-                              
-    
+
+
     /**
       increases reference count of object @p objId
     */
@@ -279,17 +279,17 @@ Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object);
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::FunctionRef);
 
-const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
+KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
                                               const KParts::ScriptableExtension::Null& n);
-const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& argument,
+KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& argument,
                                               KParts::ScriptableExtension::Null& n);
-const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
+KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
                                               const KParts::ScriptableExtension::Undefined& u);
-const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& argument,
+KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& argument,
                                               KParts::ScriptableExtension::Undefined& u);
-const QDBusArgument& KPARTS_EXPORT operator<<(QDBusArgument& argument,
+KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
                                               const KParts::ScriptableExtension::Exception& e);
-const QDBusArgument& KPARTS_EXPORT operator>>(const QDBusArgument& argument,
+KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& argument,
                                               KParts::ScriptableExtension::Exception& e);
 
 #endif
