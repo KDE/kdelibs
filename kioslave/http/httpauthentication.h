@@ -44,17 +44,15 @@ public:
         reset();
     }
 
+    virtual ~KAbstractHttpAuthentication() {}
+
     static QByteArray bestOffer(const QList<QByteArray> &offers);
     static KAbstractHttpAuthentication *newAuth(const QByteArray &offer, KConfigGroup *config = 0);
-
-    virtual ~KAbstractHttpAuthentication() {}
 
     // reset to state after default construction.
     void reset();
     // the authentication scheme: "Negotiate", "Digest", "Basic", "NTLM"
     virtual QByteArray scheme() const = 0;
-    // the original challenge from the server, i.e. value from "{WWW|Proxy}-Authentication:" header.
-    virtual QByteArray challenge() const;
     // initiate authentication with challenge string (from HTTP header) c
     virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     // return value updated by setChallenge(); if this is false user and password passed
@@ -66,6 +64,14 @@ public:
     // what to do in response to challenge
     virtual void generateResponse(const QString &user,
                                   const QString &password) = 0;
+
+    // returns true when the final stage of authentication is reached. Unless
+    // the authentication scheme requires multiple stages like NTLM this
+    // function will always return true.
+    bool wasFinalStage() const { return m_finalAuthStage; }
+    // Returns true if the authentication scheme supports path matching to identify
+    // resources that belong to the same protection space (relam). See RFC 2617.
+    virtual bool supportsPathMatching() const { return false; }
 
     // the following accessors return useful data after generateResponse() has been called.
     // clients process the following fields top to bottom: highest priority is on top
@@ -84,11 +90,12 @@ public:
 
 protected:
     void authInfoBoilerplate(KIO::AuthInfo *a) const;
+    virtual QByteArray authDataToCache() const { return QByteArray(); }
     void generateResponseCommon(const QString &user, const QString &password);
 
     KConfigGroup *m_config;
     QByteArray m_scheme;    // this is parsed from the header and not necessarily == scheme().
-    QByteArray m_rawChallengeText;
+    QByteArray m_challengeText;
     QList<QByteArray> m_challenge;
     KUrl m_resource;
     QByteArray m_httpMethod;
@@ -97,6 +104,7 @@ protected:
     bool m_needCredentials;
     bool m_forceKeepAlive;
     bool m_forceDisconnect;
+    bool m_finalAuthStage;
     QByteArray m_headerFragment;
 
     QString m_username;
@@ -110,6 +118,9 @@ public:
     virtual QByteArray scheme() const;
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
+    virtual bool supportsPathMatching() const { return true; }
+protected:
+    virtual QByteArray authDataToCache() const { return m_challengeText; }
 private:
     friend class KAbstractHttpAuthentication;
     KHttpBasicAuthentication(KConfigGroup *config = 0)
@@ -124,6 +135,9 @@ public:
     virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
+    virtual bool supportsPathMatching() const { return true; }
+protected:
+    virtual QByteArray authDataToCache() const { return m_challengeText; }
 private:
     friend class KAbstractHttpAuthentication;
     KHttpDigestAuthentication(KConfigGroup *config = 0)

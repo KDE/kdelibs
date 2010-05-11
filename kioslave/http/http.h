@@ -281,7 +281,7 @@ public:
   bool maybeSetRequestUrl(const KUrl &);
 
   void httpError(); // Generate error message based on response code
-  void setLoadingErrorPage(); // Call SlaveBase::errorPage() and remember that we've called it
+  bool sendErrorPageNotification(); // Call SlaveBase::errorPage() and remember that we've called it
 
   bool isOffline(const KUrl &url); // Check network status
 
@@ -427,11 +427,6 @@ protected:
    * server, as compared to only when a new request arrives.
    */
   void resetConnectionSettings();
-
-  /**
-   * Creates authorization prompt info.
-   */
-  void fillPromptInfo(KIO::AuthInfo *info);
 
 protected:
   HTTPServerState m_server;

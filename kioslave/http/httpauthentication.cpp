@@ -164,29 +164,25 @@ void KAbstractHttpAuthentication::reset()
 {
     m_scheme.clear();
     m_challenge.clear();
-    m_rawChallengeText.clear();
+    m_challengeText.clear();
     m_resource.clear();
     m_httpMethod.clear();
     m_isError = false;
     m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
+    m_finalAuthStage = true;
     m_headerFragment.clear();
     m_username.clear();
     m_password.clear();
     m_config = 0;
 }
 
-QByteArray KAbstractHttpAuthentication::challenge() const
-{
-    return m_rawChallengeText;
-}
-
 void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
                                                const QByteArray &httpMethod)
 {
     reset();
-    m_rawChallengeText = c;
+    m_challengeText = c;
     m_challenge = parseChallenge(c, &m_scheme);
     Q_ASSERT(m_scheme.toLower() == scheme().toLower());
     m_resource = resource;
@@ -204,14 +200,14 @@ QString KAbstractHttpAuthentication::realm() const
     return QString::fromLatin1(realm);
 }
 
-
 void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
 {
-    a->verifyPath = true;  //### research this
     a->url = m_resource;
-    a->realmValue = realm();
     a->username = m_username;
     a->password = m_password;
+    a->verifyPath = supportsPathMatching();
+    a->realmValue = realm();
+    a->digestInfo = QLatin1String(authDataToCache());
 }
 
 
@@ -564,10 +560,12 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
     QByteArray buf;
 
     if (m_challenge.isEmpty()) {
+        m_finalAuthStage = false;
         // first, send type 1 message (with empty domain, workstation..., but it still works)
         if (!KNTLM::getNegotiate(buf))
             kWarning(7113) << "Error while constructing Type 1 NTLM authentication request";
     } else {
+        m_finalAuthStage = true;
         // we've (hopefully) received a valid type 2 message: send type 3 message as last step
         QString user, domain;
         if (m_username.contains(QLatin1Char('\\'))) {
