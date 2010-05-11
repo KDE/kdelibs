@@ -494,7 +494,7 @@ int KCalendarSystemPrivate::monthsDifference( const QDate &fromDate, const QDate
 }
 
 // Reimplement if special string handling required
-// Format an input date to match a date format string
+// Format an input date to match a POSIX date format string
 QString KCalendarSystemPrivate::formatDatePosix( const QDate &fromDate,
                                                  const QString &toFormat, KLocale::DigitSet digitSet,
                                                  KLocale::DateTimeFormatStandard standard ) const
@@ -791,8 +791,121 @@ QString KCalendarSystemPrivate::formatDatePosix( const QDate &fromDate,
     return buffer;
 }
 
+// Original QDate::getFmtString() code taken from Qt 4.7 under LGPL, now heavily modifed
+// Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+// Replaces tokens by their value. See QDateTime::toString() for a list of valid tokens
+QString KCalendarSystemPrivate::getUnicodeString( const QDate &fromDate, const QString &toFormat ) const
+{
+    if ( toFormat.isEmpty() ) {
+        return QString();
+    }
+
+    QString buffer = toFormat;
+    int removed = 0;
+
+    if ( toFormat.startsWith( QLatin1String( "dddd" ) ) ) {
+        buffer = q->weekDayName( fromDate, KCalendarSystem::LongDayName );
+        removed = 4;
+    } else if ( toFormat.startsWith(QLatin1String( "ddd" ) ) ) {
+        buffer = q->weekDayName( fromDate, KCalendarSystem::ShortDayName );
+        removed = 3;
+    } else if ( toFormat.startsWith( QLatin1String( "dd" ) ) ) {
+        buffer = QString::number( q->day( fromDate ) ).rightJustified( 2, QLatin1Char('0'), true );
+        removed = 2;
+    } else if ( toFormat.at(0) == QLatin1Char('d') ) {
+        buffer = QString::number( q->day( fromDate ) );
+        removed = 1;
+    } else if (toFormat.startsWith(QLatin1String("MMMM"))) {
+        buffer = q->monthName( q->month( fromDate ), q->year( fromDate ), KCalendarSystem::LongName );
+        removed = 4;
+    } else if (toFormat.startsWith(QLatin1String("MMM"))) {
+        buffer = q->monthName( q->month( fromDate ), q->year( fromDate ), KCalendarSystem::ShortName );
+        removed = 3;
+    } else if (toFormat.startsWith(QLatin1String("MM"))) {
+        buffer = QString::number( q->month( fromDate ) ).rightJustified( 2, QLatin1Char('0'), true );
+        removed = 2;
+    } else if (toFormat.at(0) == QLatin1Char('M')) {
+        buffer = QString::number( q->month( fromDate ) );
+        removed = 1;
+    } else if (toFormat.startsWith(QLatin1String("yyyy"))) {
+        const int year = q->year( fromDate );
+        buffer = QString::number( qAbs( year ) ).rightJustified( 4, QLatin1Char('0') );
+        if( year > 0 )
+            removed = 4;
+        else
+        {
+            buffer.prepend( QLatin1Char('-') );
+            removed = 5;
+        }
+
+    } else if ( toFormat.startsWith( QLatin1String("yy") ) ) {
+        buffer = QString::number( q->year(fromDate) ).right( 2 ).rightJustified( 2, QLatin1Char('0') );
+        removed = 2;
+    }
+
+    if ( removed == 0 || removed >= toFormat.size() ) {
+        return buffer;
+    }
+
+    return buffer + getUnicodeString( fromDate, toFormat.mid( removed ) );
+}
+
 // Reimplement if special string handling required
-// Parse an input string to match a date format string and return any components found
+// Format an input date to match a UNICODE date format string
+// Original QDate::fmtDateTime() code taken from Qt 4.7 under LGPL, now heavily modifed
+// Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+QString KCalendarSystemPrivate::formatDateUnicode( const QDate &fromDate, const QString &toFormat,
+                                                   KLocale::DigitSet digitSet ) const
+{
+    const QLatin1Char quote('\'');
+
+    QString buffer;
+    QString format;
+    QChar status(QLatin1Char('0'));
+
+    for (int i = 0; i < (int)toFormat.length(); ++i) {
+        if (toFormat.at(i) == quote) {
+            if (status == quote) {
+                if (i > 0 && toFormat.at(i - 1) == quote)
+                    buffer += QLatin1Char('\'');
+                status = QLatin1Char('0');
+            } else {
+                if (!format.isEmpty()) {
+                    buffer += getUnicodeString( fromDate, format );
+                    format.clear();
+                }
+                status = quote;
+            }
+        } else if (status == quote) {
+            buffer += toFormat.at(i);
+        } else if (toFormat.at(i) == status) {
+            if ( toFormat.at(i) == QLatin1Char('P') ||
+                 toFormat.at(i) == QLatin1Char('p') ) {
+                status = QLatin1Char('0');
+            }
+            format += toFormat.at( i );
+        } else {
+            buffer += getUnicodeString( fromDate, format );
+            format.clear();
+            if ( ( toFormat.at(i) == QLatin1Char('d') ) ||
+                 ( toFormat.at(i) == QLatin1Char('M') ) ||
+                 ( toFormat.at(i) == QLatin1Char('y') ) ) {
+                status = toFormat.at( i );
+                format += toFormat.at( i );
+            } else {
+                buffer += toFormat.at( i );
+                status = QLatin1Char('0');
+            }
+        }
+    }
+
+    buffer += getUnicodeString( fromDate, format );
+
+    return buffer;
+}
+
+// Reimplement if special string handling required
+// Parse an input string to match a POSIX date format string and return any components found
 DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputString, const QString &formatString,
                                                        KLocale::DateTimeFormatStandard standard  ) const
 {
@@ -1028,6 +1141,53 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
     return result;
 }
 
+// Reimplement if special string handling required
+// Parse an input string to match a UNICODE date format string and return any components found
+DateComponents KCalendarSystemPrivate::parseDateUnicode( const QString &inputString, const QString &formatString ) const
+{
+    QString str = inputString.simplified().toLower();
+    QString fmt = formatString.simplified();
+    int dd = -1;
+    int mm = -1;
+    int yy = 0;
+    bool parsedYear = false;
+    int ey = -1;
+    QString ee;
+    int dayInYear = -1;
+    int isoWeekNumber = -1;
+    int dayOfIsoWeek = -1;
+    int strpos = 0;
+    int fmtpos = 0;
+    int readLength; // Temporary variable used when reading input
+    bool error = false;
+
+    DateComponents result;
+    result.error = error;
+    result.inputPosition = strpos;
+    result.formatPosition = fmtpos;
+    if ( error ) {
+        result.day = -1;
+        result.month = -1;
+        result.year = 0;
+        result.parsedYear = false;
+        result.eraName = QString();
+        result.yearInEra = -1;
+        result.dayInYear = -1;
+        result.isoWeekNumber = -1;
+        result.dayOfIsoWeek = -1;
+    } else {
+        result.day = dd;
+        result.month = mm;
+        result.year = yy;
+        result.parsedYear = parsedYear;
+        result.eraName = ee;
+        result.yearInEra = ey;
+        result.dayInYear = dayInYear;
+        result.isoWeekNumber = isoWeekNumber;
+        result.dayOfIsoWeek = dayOfIsoWeek;
+    }
+    return result;
+}
 
 // Reimplement if special string to integer handling required, e.g. Hebrew.
 // Peel a number off the front of a string which may have other trailing chars after the number
@@ -2169,14 +2329,18 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
-                                     KLocale::DateTimeFormatStandard standard ) const
+                                     KLocale::DateTimeFormatStandard formatStandard ) const
 {
     Q_D( const KCalendarSystem );
 
     if ( !isValid( fromDate ) ) {
         return QString();
+    }
+
+    if ( formatStandard == KLocale::UnicodeFormat ) {
+        return d->formatDateUnicode( fromDate, toFormat, digitSet );
     } else {
-        return d->formatDatePosix( fromDate, toFormat, digitSet, standard );
+        return d->formatDatePosix( fromDate, toFormat, digitSet, formatStandard );
     }
 }
 
@@ -2230,7 +2394,13 @@ QDate KCalendarSystem::readDate( const QString &inputString, const QString &form
 {
     Q_D( const KCalendarSystem );
 
-    DateComponents result = d->parseDatePosix( inputString, formatString, formatStandard );
+    DateComponents result;
+    if ( formatStandard == KLocale::UnicodeFormat ) {
+        result = d->parseDateUnicode( inputString, formatString );
+    } else {
+        result = d->parseDatePosix( inputString, formatString, formatStandard );
+    }
+
     QDate resultDate = d->invalidDate();
     bool resultStatus = false;
 

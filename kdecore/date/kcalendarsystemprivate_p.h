@@ -77,8 +77,11 @@ public:
     virtual QString formatDatePosix( const QDate &fromDate,
                                      const QString &toFormat, KLocale::DigitSet digitSet,
                                      KLocale::DateTimeFormatStandard standard ) const;
+    virtual QString formatDateUnicode( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet ) const;
+    virtual QString getUnicodeString( const QDate &fromDate, const QString &toFormat ) const;
     virtual DateComponents parseDatePosix( const QString &inputString, const QString &formatString,
                                            KLocale::DateTimeFormatStandard standard ) const;
+    virtual DateComponents parseDateUnicode( const QString &inputString, const QString &formatString ) const;
     virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
     virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = '0' ) const;
     virtual QString stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const;

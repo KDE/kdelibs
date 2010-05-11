@@ -711,8 +711,8 @@ public:
      */
     enum DateTimeFormatStandard {
          KdeFormat,        /**< KDE Standard */
-         PosixFormat       /**< POSIX Standard */
-         //UnicodeFormat   /**< UNICODE Standard (Qt/Java/OSX/Windows) */  KDE 4.5
+         PosixFormat,      /**< POSIX Standard */
+         UnicodeFormat     /**< UNICODE Standard (Qt/Java/OSX/Windows) */
     };
 
     /**
