@@ -399,6 +399,13 @@ void KCalendarTest::testFormatDate()
     QCOMPARE( calendar->formatDate( testDate, "%Ey" ), QString( "1709" ) );
     QCOMPARE( calendar->formatDate( testDate, "%EY" ), QString( "1709 BC" ) );
 
+    // Test POSIX format
+    testDate.setDate( 2010, 1, 2 );
+    QCOMPARE( calendar->formatDate( testDate, "%Y-%n-%d", KLocale::KdeFormat ),   QString( "2010-1-02" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%Y-%n-%d", KLocale::PosixFormat ), QString( "2010-\n-02" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%e", KLocale::KdeFormat ),   QString( "2" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%e", KLocale::PosixFormat ), QString( " 2" ) );
+
     delete calendar;
     delete locale;
 }
@@ -546,6 +553,15 @@ void KCalendarTest::testReadDate()
     locale->setDateFormatShort( "%Y%m%d" );
     QCOMPARE( calendar->readDate( "20040201" ),  QDate(  2004, 2, 1 ) );
     QCOMPARE( calendar->readDate( "-20040201" ), QDate( -2004, 2, 1 ) );
+
+    // Test POSIX format
+    testDate.setDate( 2010, 1, 2 );
+    QCOMPARE( calendar->readDate( "2010-1-2", "%Y-%n-%d", 0, KLocale::KdeFormat ),       QDate( 2010, 1, 2 ) );
+    QCOMPARE( calendar->readDate( "2010-\n-2",  "%Y-%n-%d", 0, KLocale::PosixFormat ),   QDate() );
+    QCOMPARE( calendar->readDate( "2010-1\n-2", "%Y-%n\n-%d", 0, KLocale::KdeFormat ),   QDate( 2010, 1, 2 ) );
+    QCOMPARE( calendar->readDate( "2010-1\n-2", "%Y-%m%n-%d", 0, KLocale::PosixFormat ), QDate( 2010, 1, 2 ) );
+    QCOMPARE( calendar->readDate( "2010-1-2", "%Y-%m-%e", 0, KLocale::KdeFormat ),       QDate( 2010, 1, 2 ) );
+    QCOMPARE( calendar->readDate( "2010-1-2", "%Y-%m-%e", 0, KLocale::PosixFormat ),     QDate( 2010, 1, 2 ) );
 
     delete calendar;
     delete locale;

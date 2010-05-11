@@ -710,10 +710,9 @@ public:
      * Standard used for Date Time Format String
      */
     enum DateTimeFormatStandard {
-         KdeFormat                   /**< KDE Standard */
-         //PosixFormat,              /**< POSIX Standard */  KDE 4.5
-         //GnuFormat                 /**< GNU Standard */    KDE 4.5
-         //UnicodeFormat             /**< UNICODE Standard (Java/OSX/Windows?) */  KDE 4.5
+         KdeFormat,        /**< KDE Standard */
+         PosixFormat       /**< POSIX Standard */
+         //UnicodeFormat   /**< UNICODE Standard (Qt/Java/OSX/Windows) */  KDE 4.5
     };
 
     /**

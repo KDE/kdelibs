@@ -494,8 +494,307 @@ int KCalendarSystemPrivate::monthsDifference( const QDate &fromDate, const QDate
 }
 
 // Reimplement if special string handling required
+// Format an input date to match a date format string
+QString KCalendarSystemPrivate::formatDatePosix( const QDate &fromDate,
+                                                 const QString &toFormat, KLocale::DigitSet digitSet,
+                                                 KLocale::DateTimeFormatStandard standard ) const
+{
+    QChar thisChar;
+    QString buffer;
+
+    bool escape = false;
+
+    bool escapeWidth = false;
+    int padWidth = 0;
+
+    bool escapePad = false;
+    QChar padChar = '0';
+
+    bool escapeMod = false;
+    QChar modifierChar = QChar();
+
+    QChar caseChar = QChar();
+
+    QChar signChar = QChar();
+
+    int yy, mm, dd;
+    q->getDate( fromDate, &yy, &mm, &dd );
+
+    for ( int format_index = 0; format_index < toFormat.length(); ++format_index ) {
+
+        thisChar = toFormat.at( format_index ).unicode();
+
+        if ( !escape ) {
+
+            if ( thisChar == '%' ) {
+                escape = true;
+            } else {
+                buffer.append( toFormat.at( format_index ) );
+            }
+
+        } else if ( !escapeMod && !escapeWidth && thisChar == '-' ) { // no padding
+
+            padChar = '\0';
+            escapePad = true;
+
+        } else if ( !escapeMod && !escapeWidth && thisChar == '_' ) { // space padding
+
+            padChar = ' ';
+            escapePad = true;
+
+        } else if ( !escapeMod && !escapeWidth && thisChar == '0' ) { // 0 padding
+
+            padChar = '0';
+            escapePad = true;
+
+        } else if ( !escapeMod && !escapeWidth && ( thisChar == '^' || thisChar == '#' ) ) { // Change case
+
+            caseChar = thisChar;
+
+        } else if ( !escapeMod &&
+                    ( ( !escapeWidth && thisChar >= '1' && thisChar <= '9' ) ||
+                      ( escapeWidth && thisChar >= '0' && thisChar <= '9' ) ) ) { // Change width
+
+            if ( escapeWidth ) {
+                padWidth = padWidth * 10;
+            }
+            padWidth = padWidth + QString( thisChar ).toInt();
+            escapeWidth = true;
+
+        } else if ( !escapeMod && ( thisChar == 'E' || thisChar == 'O' ) ) { // Set modifier
+
+            escapeMod = true;
+            modifierChar = thisChar;
+
+        } else {
+
+            QString componentString;
+            int componentInteger = 0;
+            int minWidth = 0;
+            int isoWeekYear = yy;
+            QDate yearDate;
+
+            //Default settings unless overridden by pad and case flags and width: are 0 pad to 0 width no sign
+            //Names will override 0 pad with no pad unless flagged
+            //Numbers will override with correct width unless flagged
+            switch ( toFormat.at( format_index ).unicode() ) {
+                case '%':  //Literal %
+                    componentString = QLatin1Char('%');
+                    if ( !escapePad ) {
+                        padChar = QChar();
+                    }
+                    break;
+                case 't':  //Tab
+                    componentString = "\t";
+                    if ( !escapePad ) {
+                        padChar = QChar();
+                    }
+                    break;
+                case 'Y':
+                    if ( modifierChar == 'E' ) {  //Era Year, default no pad to 0 places no sign
+                        if ( !escapePad ) {
+                            padChar = ' ';
+                        }
+                        componentString = q->eraYear( fromDate );
+                    } else {  //Long year numeric, default 0 pad to 4 places with sign
+                        componentInteger = qAbs( yy );
+                        minWidth = 4;
+                        if ( yy < 0 ) {
+                            signChar = '-';
+                        }
+                    }
+                    break;
+                case 'C':
+                    if ( modifierChar == 'E' ) {  //Era name, default no pad to 0 places no sign
+                        if ( !escapePad ) {
+                            padChar = ' ';
+                        }
+                        componentString = q->eraName( fromDate );
+                    } else {  //Century numeric, default 0 pad to 2 places with sign
+                        componentInteger =  qAbs( yy ) / 100 ;
+                        minWidth = 2;
+                        if ( yy < 0 ) {
+                            signChar = '-';
+                        }
+                    }
+                    break;
+                case 'y':
+                    if ( modifierChar == 'E' ) {  //Year in Era number, default 0 pad to 1 places no sign
+                        componentInteger =  q->yearInEra( fromDate );
+                        minWidth = 1;
+                    } else {  //Short year numeric, default 0 pad to 2 places with sign
+                        componentInteger =  qAbs( yy ) % 100;
+                        minWidth = 2;
+                        if ( yy < 0 ) {
+                            signChar = '-';
+                        }
+                    }
+                    break;
+                case 'm':  //Long month numeric, default 0 pad to 2 places no sign
+                    componentInteger =  mm;
+                    minWidth = 2;
+                    break;
+                case 'n':
+                    //PosixFormat %n is newline
+                    //KdeFormat %n is short month
+                    if ( standard == KLocale::KdeFormat ) {
+                        //Copy what %e does, no padding by default
+                        //Short month numeric, default no pad to 1 places no sign
+                        componentInteger =  mm;
+                        minWidth = 1;
+                        if ( !escapePad ) {
+                            padChar = QChar();
+                        }
+                    } else {  // standard == KLocale::PosixFormat
+                        componentString = '\n';
+                    }
+                    break;
+                case 'd':  //Long day numeric, default 0 pad to 2 places no sign
+                    componentInteger =  dd;
+                    minWidth = 2;
+                    break;
+                case 'e':  //Short day numeric, default no sign
+                    //PosixFormat %e is space pad to 2 places
+                    //KdeFormat %n is no pad to 1 place
+                    componentInteger =  dd;
+                    if ( standard == KLocale::KdeFormat ) {
+                        minWidth = 1;
+                        if ( !escapePad ) {
+                            padChar = QChar();
+                        }
+                    } else {  // standard == KLocale::PosixFormat
+                        minWidth = 2;
+                        if ( !escapePad ) {
+                            padChar = ' ';
+                        }
+                    }
+                    break;
+                case 'B':  //Long month name, default space pad to 0 places no sign
+                    if ( q->locale()->dateMonthNamePossessive() ) {
+                        componentString = q->monthName( mm, yy, KCalendarSystem::LongNamePossessive );
+                    } else {
+                        componentString = q->monthName( mm, yy, KCalendarSystem::LongName );
+                    }
+                    if ( !escapePad ) {
+                        padChar = ' ';
+                    }
+                    break;
+                case 'h':  //Short month name, default space pad to 0 places no sign
+                case 'b':  //Short month name, default space pad to 0 places no sign
+                    if ( q->locale()->dateMonthNamePossessive() ) {
+                        componentString = q->monthName( mm, yy, KCalendarSystem::ShortNamePossessive );
+                    } else {
+                        componentString = q->monthName( mm, yy, KCalendarSystem::ShortName );
+                    }
+                    if ( !escapePad ) {
+                        padChar = ' ';
+                    }
+                    break;
+                case 'A':  //Long weekday name, default space pad to 0 places no sign
+                    if ( !escapePad ) {
+                        padChar = ' ';
+                    }
+                    componentString = q->weekDayName( fromDate, KCalendarSystem::LongDayName );
+                    break;
+                case 'a':  //Short weekday name, default space pad to 0 places no sign
+                    componentString = q->weekDayName( fromDate, KCalendarSystem::ShortDayName );
+                    if ( !escapePad ) {
+                        padChar = ' ';
+                    }
+                    break;
+                case 'j':  //Long day of year numeric, default 0 pad to 3 places no sign
+                    componentInteger = q->dayOfYear( fromDate );
+                    minWidth = 3;
+                    break;
+                case 'V':  //Long ISO week of year numeric, default 0 pad to 2 places no sign
+                    componentInteger = q->weekNumber( fromDate );
+                    minWidth = 2;
+                    break;
+                case 'G':  //Long year of ISO week of year numeric, default 0 pad to 4 places with sign
+                    q->weekNumber( fromDate, &isoWeekYear );
+                    q->setDate( yearDate, isoWeekYear, 1, 1 );
+                    componentInteger = qAbs( isoWeekYear );
+                    minWidth = 4;
+                    if ( isoWeekYear < 0 ) {
+                        signChar = '-';
+                    }
+                    break;
+                case 'g':  //Short year of ISO week of year numeric, default 0 pad to 2 places with sign
+                    q->weekNumber( fromDate, &isoWeekYear );
+                    q->setDate( yearDate, isoWeekYear, 1, 1 );
+                    componentInteger = qAbs( isoWeekYear ) % 100;
+                    minWidth = 2;
+                    if ( isoWeekYear < 0 ) {
+                        signChar = '-';
+                    }
+                    break;
+                case 'u':  //Short day of week numeric
+                    componentInteger = q->dayOfWeek( fromDate );
+                    minWidth = 1;
+                    break;
+                case 'D':  //US short date format, ignore any overrides
+                    componentString = formatDatePosix( fromDate, "%m/%d/%y", digitSet, standard );
+                    padWidth = 0;
+                    padChar = QChar();
+                    caseChar = QChar();
+                    break;
+                case 'F':  //Full or ISO short date format, ignore any overrides
+                    componentString = formatDatePosix( fromDate, "%Y-%m-%d", digitSet, standard );
+                    padWidth = 0;
+                    padChar = QChar();
+                    caseChar = QChar();
+                    break;
+                case 'x':  //Locale short date format, ignore any overrides
+                    componentString = formatDatePosix( fromDate, q->locale()->dateFormatShort(), digitSet, standard );
+                    padWidth = 0;
+                    padChar = QChar();
+                    caseChar = QChar();
+                    break;
+                default:  //No valid format code, treat as literal but apply any overrides
+                    //GNU date returns all chars since and including % and applies the overrides which seems wrong.
+                    componentString = toFormat.at( format_index );
+                    break;
+            }
+
+            if ( componentString.isEmpty() ) {
+                padWidth = qMax( minWidth, padWidth );
+                componentString = stringFromInteger( componentInteger, padWidth, padChar, digitSet );
+                if ( !signChar.isNull() ) {
+                    componentString.prepend( signChar );
+                }
+            } else {
+                if ( padChar != '\0' && padWidth != 0 ) {
+                    componentString = componentString.rightJustified( padWidth, padChar );
+                }
+
+                if ( caseChar == '^' ) {
+                    componentString = componentString.toUpper();
+                } else if ( caseChar == '#' ) {
+                    componentString = componentString.toUpper(); // JPL ???
+                }
+            }
+
+            buffer.append( componentString );
+
+            escape = false;
+            escapePad = false;
+            padChar = '0';
+            escapeMod = false;
+            modifierChar = QChar();
+            caseChar = QChar();
+            escapeWidth = false;
+            padWidth = 0;
+            signChar = QChar();
+        }
+    }
+
+    return buffer;
+}
+
+// Reimplement if special string handling required
 // Parse an input string to match a date format string and return any components found
-DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputString, const QString &formatString ) const
+DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputString, const QString &formatString,
+                                                       KLocale::DateTimeFormatStandard standard  ) const
 {
     QString str = inputString.simplified().toLower();
     QString fmt = formatString.simplified();
@@ -602,7 +901,17 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
                     strpos += readLength;
                     error = readLength <= 0;
                     break;
-                case 'n': // Month Number Short
+                case 'n':
+                    // PosixFormat %n is Newline
+                    // KdeFormat %n is Month Number Short
+                    if ( standard == KLocale::KdeFormat ) {
+                        mm = q->monthStringToInteger( str.mid( strpos ), readLength );
+                        strpos += readLength;
+                        error = readLength <= 0;
+                    }
+                    // standard == KLocale::PosixFormat
+                    // all whitespace already 'eaten', no action required
+                    break;
                 case 'm': // Month Number Long
                     mm = q->monthStringToInteger( str.mid( strpos ), readLength );
                     strpos += readLength;
@@ -621,7 +930,7 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
                             while ( error && j >= 0  ) {
                                 QString subFormat = m_eraList->at( j ).format();
                                 QString subInput = str.mid( strpos );
-                                DateComponents subResult = parseDatePosix( subInput, subFormat );
+                                DateComponents subResult = parseDatePosix( subInput, subFormat, standard );
                                 if ( !subResult.error ) {
                                     if ( subResult.parsedYear ) {
                                         yy = subResult.year;
@@ -1862,290 +2171,13 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
                                      KLocale::DateTimeFormatStandard standard ) const
 {
-    // Currently defaults to KLocale::KdeFormat, KDE 4.5 to support other standards (POSIX, Unicode)
-    Q_UNUSED( standard )
     Q_D( const KCalendarSystem );
 
     if ( !isValid( fromDate ) ) {
         return QString();
+    } else {
+        return d->formatDatePosix( fromDate, toFormat, digitSet, standard );
     }
-
-    QChar thisChar;
-    QString buffer;
-
-    bool escape = false;
-
-    bool escapeWidth = false;
-    int padWidth = 0;
-
-    bool escapePad = false;
-    QChar padChar = '0';
-
-    bool escapeMod = false;
-    QChar modifierChar = QChar();
-
-    QChar caseChar = QChar();
-
-    QChar signChar = QChar();
-
-    int yy, mm, dd;
-    getDate( fromDate, &yy, &mm, &dd );
-
-    for ( int format_index = 0; format_index < toFormat.length(); ++format_index ) {
-
-        thisChar = toFormat.at( format_index ).unicode();
-
-        if ( !escape ) {
-
-            if ( thisChar == '%' ) {
-                escape = true;
-            } else {
-                buffer.append( toFormat.at( format_index ) );
-            }
-
-        } else if ( !escapeMod && !escapeWidth && thisChar == '-' ) { // no padding
-
-            padChar = '\0';
-            escapePad = true;
-
-        } else if ( !escapeMod && !escapeWidth && thisChar == '_' ) { // space padding
-
-            padChar = ' ';
-            escapePad = true;
-
-        } else if ( !escapeMod && !escapeWidth && thisChar == '0' ) { // 0 padding
-
-            padChar = '0';
-            escapePad = true;
-
-        } else if ( !escapeMod && !escapeWidth && ( thisChar == '^' || thisChar == '#' ) ) { // Change case
-
-            caseChar = thisChar;
-
-        } else if ( !escapeMod &&
-                    ( ( !escapeWidth && thisChar >= '1' && thisChar <= '9' ) ||
-                      ( escapeWidth && thisChar >= '0' && thisChar <= '9' ) ) ) { // Change width
-
-            if ( escapeWidth ) {
-                padWidth = padWidth * 10;
-            }
-            padWidth = padWidth + QString( thisChar ).toInt();
-            escapeWidth = true;
-
-        } else if ( !escapeMod && ( thisChar == 'E' || thisChar == 'O' ) ) { // Set modifier
-
-            escapeMod = true;
-            modifierChar = thisChar;
-
-        } else {
-
-            QString componentString;
-            int componentInteger = 0;
-            int minWidth = 0;
-            int isoWeekYear = yy;
-            QDate yearDate;
-
-            //Default settings unless overridden by pad and case flags and width: are 0 pad to 0 width no sign
-            //Names will override 0 pad with no pad unless flagged
-            //Numbers will override with correct width unless flagged
-            switch ( toFormat.at( format_index ).unicode() ) {
-                case '%':  //Literal %
-                    componentString = QLatin1Char('%');
-                    if ( !escapePad ) {
-                        padChar = QChar();
-                    }
-                    break;
-                case 't':  //Tab
-                    componentString = "\t";
-                    if ( !escapePad ) {
-                        padChar = QChar();
-                    }
-                    break;
-                case 'Y':
-                    if ( modifierChar == 'E' ) {  //Era Year, default no pad to 0 places no sign
-                        if ( !escapePad ) {
-                            padChar = ' ';
-                        }
-                        componentString = eraYear( fromDate );
-                    } else {  //Long year numeric, default 0 pad to 4 places with sign
-                        componentInteger = qAbs( yy );
-                        minWidth = 4;
-                        if ( yy < 0 ) {
-                            signChar = '-';
-                        }
-                    }
-                    break;
-                case 'C':
-                    if ( modifierChar == 'E' ) {  //Era name, default no pad to 0 places no sign
-                        if ( !escapePad ) {
-                            padChar = ' ';
-                        }
-                        componentString = eraName( fromDate );
-                    } else {  //Century numeric, default 0 pad to 2 places with sign
-                        componentInteger =  qAbs( yy ) / 100 ;
-                        minWidth = 2;
-                        if ( yy < 0 ) {
-                            signChar = '-';
-                        }
-                    }
-                    break;
-                case 'y':
-                    if ( modifierChar == 'E' ) {  //Year in Era number, default 0 pad to 1 places no sign
-                        componentInteger =  yearInEra( fromDate );
-                        minWidth = 1;
-                    } else {  //Short year numeric, default 0 pad to 2 places with sign
-                        componentInteger =  qAbs( yy ) % 100;
-                        minWidth = 2;
-                        if ( yy < 0 ) {
-                            signChar = '-';
-                        }
-                    }
-                    break;
-                case 'm':  //Long month numeric, default 0 pad to 2 places no sign
-                    componentInteger =  mm;
-                    minWidth = 2;
-                    break;
-                case 'n':  //Short month numeric, default no pad to 1 places no sign
-                    //Note C/POSIX/GNU %n is actually newline not short month
-                    //Copy what %e does, no padding by default
-                    componentInteger =  mm;
-                    minWidth = 1;
-                    if ( !escapePad ) {
-                        padChar = QChar();
-                    }
-                    break;
-                case 'd':  //Long day numeric, default 0 pad to 2 places no sign
-                    componentInteger =  dd;
-                    minWidth = 2;
-                    break;
-                case 'e':  //Short day numeric, default no pad to 1 places no sign
-                    //KDE does non-standard no-padding, C/POSIX/GNU pads with spaces by default
-                    componentInteger =  dd;
-                    minWidth = 1;
-                    if ( !escapePad ) {
-                        padChar = QChar();
-                    }
-                    break;
-                case 'B':  //Long month name, default space pad to 0 places no sign
-                    if ( locale()->dateMonthNamePossessive() ) {
-                        componentString = monthName( mm, yy, KCalendarSystem::LongNamePossessive );
-                    } else {
-                        componentString = monthName( mm, yy, KCalendarSystem::LongName );
-                    }
-                    if ( !escapePad ) {
-                        padChar = ' ';
-                    }
-                    break;
-                case 'h':  //Short month name, default space pad to 0 places no sign
-                case 'b':  //Short month name, default space pad to 0 places no sign
-                    if ( locale()->dateMonthNamePossessive() ) {
-                        componentString = monthName( mm, yy, KCalendarSystem::ShortNamePossessive );
-                    } else {
-                        componentString = monthName( mm, yy, KCalendarSystem::ShortName );
-                    }
-                    if ( !escapePad ) {
-                        padChar = ' ';
-                    }
-                    break;
-                case 'A':  //Long weekday name, default space pad to 0 places no sign
-                    if ( !escapePad ) {
-                        padChar = ' ';
-                    }
-                    componentString = weekDayName( fromDate, KCalendarSystem::LongDayName );
-                    break;
-                case 'a':  //Short weekday name, default space pad to 0 places no sign
-                    componentString = weekDayName( fromDate, KCalendarSystem::ShortDayName );
-                    if ( !escapePad ) {
-                        padChar = ' ';
-                    }
-                    break;
-                case 'j':  //Long day of year numeric, default 0 pad to 3 places no sign
-                    componentInteger = dayOfYear( fromDate );
-                    minWidth = 3;
-                    break;
-                case 'V':  //Long ISO week of year numeric, default 0 pad to 2 places no sign
-                    componentInteger = weekNumber( fromDate );
-                    minWidth = 2;
-                    break;
-                case 'G':  //Long year of ISO week of year numeric, default 0 pad to 4 places with sign
-                    weekNumber( fromDate, &isoWeekYear );
-                    setDate( yearDate, isoWeekYear, 1, 1 );
-                    componentInteger = qAbs( isoWeekYear );
-                    minWidth = 4;
-                    if ( isoWeekYear < 0 ) {
-                        signChar = '-';
-                    }
-                    break;
-                case 'g':  //Short year of ISO week of year numeric, default 0 pad to 2 places with sign
-                    weekNumber( fromDate, &isoWeekYear );
-                    setDate( yearDate, isoWeekYear, 1, 1 );
-                    componentInteger = qAbs( isoWeekYear ) % 100;
-                    minWidth = 2;
-                    if ( isoWeekYear < 0 ) {
-                        signChar = '-';
-                    }
-                    break;
-                case 'u':  //Short day of week numeric
-                    componentInteger = dayOfWeek( fromDate );
-                    minWidth = 1;
-                    break;
-                case 'D':  //US short date format, ignore any overrides
-                    componentString = formatDate( fromDate, "%m/%d/%y" );
-                    padWidth = 0;
-                    padChar = QChar();
-                    caseChar = QChar();
-                    break;
-                case 'F':  //Full or ISO short date format, ignore any overrides
-                    componentString = formatDate( fromDate, "%Y-%m-%d" );
-                    padWidth = 0;
-                    padChar = QChar();
-                    caseChar = QChar();
-                    break;
-                case 'x':  //Locale short date format, ignore any overrides
-                    componentString = formatDate( fromDate, locale()->dateFormatShort() );
-                    padWidth = 0;
-                    padChar = QChar();
-                    caseChar = QChar();
-                    break;
-                default:  //No valid format code, treat as literal but apply any overrides
-                    //GNU date returns all chars since and including % and applies the overrides which seems wrong.
-                    componentString = toFormat.at( format_index );
-                    break;
-            }
-
-            if ( componentString.isEmpty() ) {
-                padWidth = qMax( minWidth, padWidth );
-                componentString = d->stringFromInteger( componentInteger, padWidth, padChar, digitSet );
-                if ( !signChar.isNull() ) {
-                    componentString.prepend( signChar );
-                }
-            } else {
-                if ( padChar != '\0' && padWidth != 0 ) {
-                    componentString = componentString.rightJustified( padWidth, padChar );
-                }
-
-                if ( caseChar == '^' ) {
-                    componentString = componentString.toUpper();
-                } else if ( caseChar == '#' ) {
-                    componentString = componentString.toUpper(); // JPL ???
-                }
-            }
-
-            buffer.append( componentString );
-
-            escape = false;
-            escapePad = false;
-            padChar = '0';
-            escapeMod = false;
-            modifierChar = QChar();
-            caseChar = QChar();
-            escapeWidth = false;
-            padWidth = 0;
-            signChar = QChar();
-        }
-    }
-
-    return buffer;
 }
 
 QDate KCalendarSystem::readDate( const QString &str, bool *ok ) const
@@ -2189,9 +2221,16 @@ QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flag
 
 QDate KCalendarSystem::readDate( const QString &inputString, const QString &formatString, bool *ok ) const
 {
+    return readDate( inputString, formatString, ok, KLocale::KdeFormat );
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::readDate( const QString &inputString, const QString &formatString, bool *ok,
+                                 KLocale::DateTimeFormatStandard formatStandard ) const
+{
     Q_D( const KCalendarSystem );
 
-    DateComponents result = d->parseDatePosix( inputString, formatString );
+    DateComponents result = d->parseDatePosix( inputString, formatString, formatStandard );
     QDate resultDate = d->invalidDate();
     bool resultStatus = false;
 

@@ -854,7 +854,7 @@ public:
      * @since 4.4
      *
      * Returns a string formatted to the given format and localised to the
-     * correct language and digit set.
+     * correct language and digit set using the requested format standard.
      *
      *        *** WITH GREAT POWER COMES GREAT RESPONSIBILITY ***
      * Please use with care and only in situations where the DateFormat enum
@@ -878,8 +878,11 @@ public:
      * dateString = KGlobal::locale()->calendar()->formatDate(reportDate, dateFormat);
      * \endcode
      *
-     * The date format string closely follows the C / POSIX / UC / GNU standards
-     * but with some exceptions.
+     * The date format string can be defined using either the KDE or POSIX standards.
+     * The KDE standard closely follows the POSIX standard but with some exceptions.
+     * Always use the KDE standard within KDE, but where interaction is required with
+     * external POSIX compliant systems (e.g. Gnome, glibc, etc) the POSIX standard
+     * should be used.
      *
      * Date format strings are made up of date componants and string literals.
      * Date componants are prefixed by a % escape character and are made up of
@@ -943,14 +946,15 @@ public:
      * "%Y-%m-%d" = "2009-01-01"
      * "%Y-%-m-%_4d" = "2009-1-   1"
      *
-     * The Date Componants are mostly equivalent to the C, GNU and POSIX standard
-     * but with some notable differences:
+     * The following format codes behave differently in the KDE and POSIX standards
      * @li %e in GNU/POSIX is space padded to 2 digits, in KDE is not padded
      * @li %n in GNU/POSIX is newline, in KDE is short month number
-     * @li %U in GNU/POSIX is US week number, in KDE is not supported
-     * @li %w in GNU/POSIX is US day of week, in KDE is not supported
-     * @li %W in GNU/POSIX is US week number, in KDE is not supported
-     * @li %O in GNU/POSIX is locale's alternative numeric symbols, in KDE is not supported
+     *
+     * The following POSIX format codes are currently not supported:
+     * @li %U US week number
+     * @li %w US day of week
+     * @li %W US week number
+     * @li %O locale's alternative numeric symbols, in KDE is not supported
      *
      * %0 is not supported as the returned result is always in the locale's chosen numeric symbol digit set.
      *
@@ -1025,6 +1029,22 @@ public:
 
     /**
      * Converts a localized date string to a QDate, using the specified @p format.
+     * You will usually not want to use this method.  Uses teh KDE format standard.
+     *
+     * @param dateString the string to convert
+     * @param dateFormat the date format to use, in KDE format standard
+     * @param ok if non-null, will be set to @c true if the date is valid, @c false if invalid
+     *
+     * @return the string converted to a QDate
+     *
+     * @see formatDate
+     * @see KLocale::readDate
+     */
+    virtual QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok = 0 ) const;
+
+    //KDE5 Make virtual
+    /**
+     * Converts a localized date string to a QDate, using the specified @p format.
      * You will usually not want to use this method.
      *
      * You must supply a format and string containing at least one of the following combinations to
@@ -1075,13 +1095,15 @@ public:
      * @param dateString the string to convert
      * @param dateFormat the date format to use
      * @param ok if non-null, will be set to @c true if the date is valid, @c false if invalid
+     * @param formatStandard the standard the date format uses
      *
      * @return the string converted to a QDate
      *
      * @see formatDate
      * @see KLocale::readDate
      */
-    virtual QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok = 0 ) const;
+    QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok,
+                    KLocale::DateTimeFormatStandard formatStandard ) const;
 
     /**
      * Use this to determine which day is the first day of the week.
