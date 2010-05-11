@@ -42,6 +42,7 @@ class KCalendarSystemJulian: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemJulian( const KLocale *locale = 0 );
+    explicit KCalendarSystemJulian( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
     virtual ~KCalendarSystemJulian();
 
     virtual QString calendarType() const;
@@ -110,7 +111,9 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
-    KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd, const KLocale *locale = 0 );
+    KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd,
+                           const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                           const KLocale *locale = 0 );
 
 private:
     Q_DECLARE_PRIVATE( KCalendarSystemJulian )

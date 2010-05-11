@@ -69,14 +69,21 @@ int KCalendarSystemMinguoPrivate::earliestValidYear() const
 }
 
 
-KCalendarSystemMinguo::KCalendarSystemMinguo( const KLocale * locale )
-                   : KCalendarSystemGregorianProleptic( *new KCalendarSystemMinguoPrivate( this ), locale )
+KCalendarSystemMinguo::KCalendarSystemMinguo( const KLocale *locale )
+                     : KCalendarSystemGregorianProleptic( *new KCalendarSystemMinguoPrivate( this ), KSharedConfig::Ptr(), locale )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemMinguo::KCalendarSystemMinguo( KCalendarSystemMinguoPrivate &dd, const KLocale * locale )
-                   : KCalendarSystemGregorianProleptic( dd, locale )
+KCalendarSystemMinguo::KCalendarSystemMinguo( const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystemGregorianProleptic( *new KCalendarSystemMinguoPrivate( this ), config, locale )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemMinguo::KCalendarSystemMinguo( KCalendarSystemMinguoPrivate &dd,
+                                              const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystemGregorianProleptic( dd, config, locale )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

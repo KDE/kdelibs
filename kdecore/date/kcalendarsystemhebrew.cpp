@@ -622,16 +622,24 @@ int KCalendarSystemHebrewPrivate::monthNumberToMonthIndex( int year, int month )
 }
 
 
-KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale * locale )
-                      : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), locale ),
-                        dont_use( 0 )
+KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), KSharedConfig::Ptr(), locale ),
+                       dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemHebrew::KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd, const KLocale * locale )
-                      : KCalendarSystem( dd, locale ),
-                        dont_use( 0 )
+KCalendarSystemHebrew::KCalendarSystemHebrew( const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), config, locale ),
+                       dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemHebrew::KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd,
+                                              const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( dd, config, locale ),
+                       dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

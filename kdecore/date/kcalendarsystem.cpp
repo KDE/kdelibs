@@ -45,56 +45,62 @@
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {
+    return create( calendarType, KSharedConfig::Ptr(), locale );
+}
+
+KCalendarSystem *KCalendarSystem::create( const QString &calendarType, KSharedConfig::Ptr config,
+                                          const KLocale *locale )
+{
     if ( calendarType == "coptic" ) {
-        return new KCalendarSystemCoptic( locale );
+        return new KCalendarSystemCoptic( config, locale );
     }
 
     if ( calendarType == "ethiopian" ) {
-        return new KCalendarSystemEthiopian( locale );
+        return new KCalendarSystemEthiopian( config, locale );
     }
 
     if ( calendarType == "gregorian" ) {
-        return new KCalendarSystemGregorian( locale );
+        return new KCalendarSystemGregorian( config, locale );
     }
 
     if ( calendarType == "gregorian-proleptic" ) {
-        return new KCalendarSystemGregorianProleptic( locale );
+        return new KCalendarSystemGregorianProleptic( config, locale );
     }
 
     if ( calendarType == "hebrew" ) {
-        return new KCalendarSystemHebrew( locale );
+        return new KCalendarSystemHebrew( config, locale );
     }
 
     if ( calendarType == "hijri" ) {
-        return new KCalendarSystemHijri( locale );
+        return new KCalendarSystemHijri( config, locale );
     }
 
     if ( calendarType == "indian-national" ) {
-        return new KCalendarSystemIndianNational( locale );
+        return new KCalendarSystemIndianNational( config, locale );
     }
 
     if ( calendarType == "jalali" ) {
-        return new KCalendarSystemJalali( locale );
+        return new KCalendarSystemJalali( config, locale );
     }
 
     if ( calendarType == "japanese" ) {
-        return new KCalendarSystemJapanese( locale );
+        return new KCalendarSystemJapanese( config, locale );
     }
 
     if ( calendarType == "julian" ) {
-        return new KCalendarSystemJulian( locale );
+        return new KCalendarSystemJulian( config, locale );
     }
 
     if ( calendarType == "minguo" ) {
-        return new KCalendarSystemMinguo( locale );
+        return new KCalendarSystemMinguo( config, locale );
     }
 
     if ( calendarType == "thai" ) {
-        return new KCalendarSystemThai( locale );
+        return new KCalendarSystemThai( config, locale );
     }
 
     // ### HPB: Should it really be a default here?
-    return new KCalendarSystemGregorian( locale );
+    return new KCalendarSystemGregorian( config, locale );
 }
 
 QStringList KCalendarSystem::calendarSystems()
@@ -888,7 +894,7 @@ void KCalendarSystemPrivate::initialiseEraList( const QString & calendarType )
 void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
 {
     m_eraList->clear();
-    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( calendarType ) );
+    KConfigGroup cg( config(), QString( "KCalendarSystem %1" ).arg( calendarType ) );
     if ( cg.exists() ) {
         int eraCount = cg.readEntry( "EraCount", 0 );
         for ( int i = 1; i <= eraCount; ++i ) {
@@ -957,16 +963,34 @@ void KCalendarSystemPrivate::addEra( const QChar &direction, int offset,
     m_eraList->append( newEra );
 }
 
+KSharedConfig::Ptr KCalendarSystemPrivate::config()
+{
+    if ( m_config == KSharedConfig::Ptr() ) {
+        return KGlobal::config();
+    } else {
+        return m_config;
+    }
+}
+
 
 KCalendarSystem::KCalendarSystem( const KLocale *locale )
-                : d_ptr( new KCalendarSystemPrivate( this ) )
+               : d_ptr( new KCalendarSystemPrivate( this ) )
 {
+    d_ptr->m_config = KSharedConfig::Ptr();
     d_ptr->m_locale = locale;
 }
 
-KCalendarSystem::KCalendarSystem( KCalendarSystemPrivate &dd, const KLocale *locale )
-                : d_ptr( &dd )
+KCalendarSystem::KCalendarSystem( const KSharedConfig::Ptr config, const KLocale *locale )
+               : d_ptr( new KCalendarSystemPrivate( this ) )
 {
+    d_ptr->m_config = config;
+    d_ptr->m_locale = locale;
+}
+
+KCalendarSystem::KCalendarSystem( KCalendarSystemPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale )
+               : d_ptr( &dd )
+{
+    d_ptr->m_config = config;
     d_ptr->m_locale = locale;
 }
 

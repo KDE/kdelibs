@@ -78,6 +78,19 @@ public:
                                      const KLocale * locale = 0 );
 
     /**
+     * Creates specific calendar type
+     *
+     * @param calType string identification of the specific calendar type to be constructed
+     * @param config a configuration file with a 'KCalendarSystem %calendarType' group detailing
+     *               locale-related preferences (such as era options).  The global config is used
+                     if null.
+     * @param locale locale to use for translations. The global locale is used if null.
+     * @return a KCalendarSystem object
+     */
+    static KCalendarSystem *create( const QString & calType, KSharedConfig::Ptr config,
+                                    const KLocale * locale = 0 );
+
+    /**
      * Gets a list of names of supported calendar systems.
      *
      * @return list of names
@@ -101,6 +114,16 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      */
     explicit KCalendarSystem( const KLocale *locale = 0 );
+
+    /**
+     * Constructor of abstract calendar class. This will be called by derived classes.
+     *
+     * @param config a configuration file with a 'KCalendarSystem %calendarName' group detailing
+     *               locale-related preferences (such as era options).  The global config is used
+                     if null.
+     * @param locale locale to use for translations. The global locale is used if null.
+     */
+    explicit KCalendarSystem( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
 
     /**
      * Destructor.
@@ -891,6 +914,9 @@ public:
      * @li %Y the year to 4 digits (e.g. "1984" for 1984, "0584" for 584, "0084" for 84)
      * @li %C the 'century' portion of the year to 2 digits (e.g. "19" for 1984, "05" for 584, "00" for 84)
      * @li %y the lower 2 digits of the year to 2 digits (e.g. "84" for 1984, "05" for 2005)
+     * @li %EY the full local era year (e.g. "2000 AD")
+     * @li %EC the era name short form (e.g. "AD")
+     * @li %Ey the year in era to 1 digit (e.g. 1 or 2000)
      * @li %m the month number to 2 digits (January="01", December="12")
      * @li %n the month number to 1 digit (January="1", December="12"), see notes!
      * @li %d the day number of the month to 2 digits (e.g. "01" on the first of March)
@@ -924,7 +950,6 @@ public:
      * @li %U in GNU/POSIX is US week number, in KDE is not supported
      * @li %w in GNU/POSIX is US day of week, in KDE is not supported
      * @li %W in GNU/POSIX is US week number, in KDE is not supported
-     * @li %E in GNU/POSIX is locale's alternative representation, in KDE is not supported
      * @li %O in GNU/POSIX is locale's alternative numeric symbols, in KDE is not supported
      *
      * %0 is not supported as the returned result is always in the locale's chosen numeric symbol digit set.
@@ -1021,6 +1046,9 @@ public:
      * The following date componants will be read:
      * @li %Y the whole year (e.g. "1984" for 1984)
      * @li %y the lower 2 digits of the year (e.g. "84" for 1984)
+     * @li %EY the full local era year (e.g. "2000 AD")
+     * @li %EC the era name short form (e.g. "AD")
+     * @li %Ey the year in era to 1 digit (e.g. 1 or 2000)
      * @li %m the month number to two digits (January="01", December="12")
      * @li %n the month number (January="1", December="12")
      * @li %d the day number of the month to two digits (e.g. "01" on the first of March)
@@ -1203,12 +1231,17 @@ protected:
     void setHasYear0( bool hasYear0 );
 
     /**
-    * Constructor of abstract calendar class. This will be called by derived classes.
-    *
-    * @param dd derived private d-pointer.
-    * @param locale locale to use for translations. The global locale is used if null.
-    */
-    KCalendarSystem( KCalendarSystemPrivate &dd, const KLocale *locale = 0 );
+     * Constructor of abstract calendar class. This will be called by derived classes.
+     *
+     * @param dd derived private d-pointer.
+     * @param config a configuration file with a 'KCalendarSystem %calendarName' group detailing
+     *               locale-related preferences (such as era options).  The global config is used
+                     if null.
+     * @param locale locale to use for translations. The global locale is used if null.
+     */
+    KCalendarSystem( KCalendarSystemPrivate &dd,
+                     const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                     const KLocale *locale = 0 );
 
 private:
     //Required for shared d-pointer as already private, remove in KDE5

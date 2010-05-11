@@ -94,10 +94,13 @@ public:
     void loadGlobalEraList( const QString & calendarType );
     void addEra( const QChar &direction, int offset, const QDate &startDate, int startYear, const QDate &endDate,
                  const QString &name, const QString &shortName, const QString &format );
+    KSharedConfig::Ptr config();
+
 
     // Global variables each calendar system must initialise
     const KCalendarSystem *q;
     const KLocale *m_locale;
+    KSharedConfig::Ptr m_config;
     QList<KCalendarEra> *m_eraList;
 };
 

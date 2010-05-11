@@ -126,15 +126,23 @@ int KCalendarSystemCopticPrivate::latestValidYear() const
     return 9999;
 }
 
-KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale * locale )
-                     : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), locale ),
+KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), KSharedConfig::Ptr(), locale ),
                        dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KLocale * locale )
-                     : KCalendarSystem( dd, locale ),
+KCalendarSystemCoptic::KCalendarSystemCoptic( const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), config, locale ),
+                       dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd,
+                                              const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( dd, config, locale ),
                        dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );

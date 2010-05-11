@@ -169,16 +169,24 @@ int KCalendarSystemJalaliPrivate::latestValidYear() const
 }
 
 
-KCalendarSystemJalali::KCalendarSystemJalali( const KLocale * locale )
-                      : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), locale ),
-                        dont_use( 0 )
+KCalendarSystemJalali::KCalendarSystemJalali( const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), KSharedConfig::Ptr(), locale ),
+                       dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd, const KLocale * locale )
-                      : KCalendarSystem( dd, locale ),
-                        dont_use( 0 )
+KCalendarSystemJalali::KCalendarSystemJalali( const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), config, locale ),
+                       dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd,
+                                              const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( dd, config, locale ),
+                       dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

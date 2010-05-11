@@ -52,15 +52,23 @@ void KCalendarSystemEthiopianPrivate::initDefaultEraList()
 }
 
 
-KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KLocale * locale )
-                         : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), locale ),
-                           dont_use( 0 )
+KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KLocale *locale )
+                        : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), KSharedConfig::Ptr(), locale ),
+                          dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale * locale )
-                     : KCalendarSystemCoptic( dd, locale ),
+KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KSharedConfig::Ptr config, const KLocale *locale )
+                        : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), config, locale ),
+                          dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd,
+                                                    const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystemCoptic( dd, config, locale ),
                        dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );

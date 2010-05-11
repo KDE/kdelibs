@@ -38,6 +38,7 @@ class KCalendarSystemCoptic: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemCoptic( const KLocale *locale = 0 );
+    explicit KCalendarSystemCoptic( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
     virtual ~KCalendarSystemCoptic();
 
     virtual QString calendarType() const;
@@ -106,7 +107,8 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
-    KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KLocale *locale = 0 );
+    KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd, const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                           const KLocale *locale = 0 );
 
 private:
     Q_DECLARE_PRIVATE( KCalendarSystemCoptic )

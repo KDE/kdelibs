@@ -48,7 +48,7 @@ void KCalendarSystemGregorianProlepticPrivate::initDefaultEraList()
 {
     QString name, shortName, format;
 
-    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
+    KConfigGroup cg( config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
     m_useCommonEra = cg.readEntry( "UseCommonEra", false );
 
     if ( m_useCommonEra ) {
@@ -157,16 +157,26 @@ int KCalendarSystemGregorianProlepticPrivate::latestValidYear() const
 }
 
 
-KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KLocale * locale )
-                                  : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), locale ),
-                                    dont_use( 0 )
+KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KLocale *locale )
+                                 : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), KSharedConfig::Ptr(), locale ),
+                                 dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd, const KLocale * locale )
-                                  : KCalendarSystem( dd, locale ),
-                                    dont_use( 0 )
+KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KSharedConfig::Ptr config,
+                                                                      const KLocale *locale )
+                                 : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), config, locale ),
+                                   dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd,
+                                                                      const KSharedConfig::Ptr config,
+                                                                      const KLocale *locale )
+                                 : KCalendarSystem( dd, config, locale ),
+                                   dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

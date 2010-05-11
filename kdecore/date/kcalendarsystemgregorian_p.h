@@ -46,6 +46,7 @@ class KCalendarSystemGregorian: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemGregorian ( const KLocale *locale = 0 );
+    explicit KCalendarSystemGregorian( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
     virtual ~KCalendarSystemGregorian ();
 
     virtual QString calendarType() const;
@@ -114,7 +115,9 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
-    KCalendarSystemGregorian( KCalendarSystemGregorianPrivate &dd, const KLocale *locale = 0 );
+    KCalendarSystemGregorian( KCalendarSystemGregorianPrivate &dd,
+                              const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                              const KLocale *locale = 0 );
 
 private:
     Q_DECLARE_PRIVATE( KCalendarSystemGregorian )

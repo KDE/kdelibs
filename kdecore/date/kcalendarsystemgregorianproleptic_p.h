@@ -43,6 +43,7 @@ class KCalendarSystemGregorianProleptic: public KCalendarSystem
 {
 public:
     explicit KCalendarSystemGregorianProleptic( const KLocale *locale = 0 );
+    explicit KCalendarSystemGregorianProleptic( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
     virtual ~KCalendarSystemGregorianProleptic();
 
     virtual QString calendarType() const;
@@ -111,7 +112,9 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
-    KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd, const KLocale *locale = 0 );
+    KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd,
+                                       const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                                       const KLocale *locale = 0 );
 
 private:
     friend class KCalendarSystemIndianNational;  // To allow access to julianDayToDate() and dateToJulianDay()

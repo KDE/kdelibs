@@ -67,7 +67,7 @@ void KCalendarSystemJulianPrivate::initDefaultEraList()
 {
     QString name, shortName, format;
 
-    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
+    KConfigGroup cg( config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
     m_useCommonEra = cg.readEntry( "UseCommonEra", false );
 
     if ( m_useCommonEra ) {
@@ -172,16 +172,24 @@ int KCalendarSystemJulianPrivate::latestValidYear() const
 }
 
 
-KCalendarSystemJulian::KCalendarSystemJulian( const KLocale * locale )
-                      : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), locale ),
-                        dont_use( 0 )
+KCalendarSystemJulian::KCalendarSystemJulian( const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), KSharedConfig::Ptr(), locale ),
+                       dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemJulian::KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd, const KLocale * locale )
-                      : KCalendarSystem( dd, locale ),
-                        dont_use( 0 )
+KCalendarSystemJulian::KCalendarSystemJulian( const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), config, locale ),
+                       dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemJulian::KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd,
+                                              const KSharedConfig::Ptr config, const KLocale *locale )
+                     : KCalendarSystem( dd, config, locale ),
+                       dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

@@ -149,16 +149,25 @@ int KCalendarSystemIndianNationalPrivate::latestValidYear() const
 }
 
 
-KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KLocale * locale )
-                              : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), locale ),
-                                dont_use( 0 )
+KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KLocale *locale )
+                             : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), KSharedConfig::Ptr(), locale ),
+                               dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemIndianNationalPrivate &dd, const KLocale * locale )
-                              : KCalendarSystem( dd, locale ),
-                                dont_use( 0 )
+KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KSharedConfig::Ptr config, const KLocale *locale )
+                             : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), config, locale ),
+                               dont_use( 0 )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemIndianNationalPrivate &dd,
+                                                              const KSharedConfig::Ptr config,
+                                                              const KLocale *locale )
+                             : KCalendarSystem( dd, config, locale ),
+                               dont_use( 0 )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

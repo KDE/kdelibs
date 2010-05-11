@@ -75,14 +75,21 @@ int KCalendarSystemThaiPrivate::earliestValidYear() const
 }
 
 
-KCalendarSystemThai::KCalendarSystemThai( const KLocale * locale )
-                   : KCalendarSystemGregorianProleptic( *new KCalendarSystemThaiPrivate( this ), locale )
+KCalendarSystemThai::KCalendarSystemThai( const KLocale *locale )
+                   : KCalendarSystemGregorianProleptic( *new KCalendarSystemThaiPrivate( this ), KSharedConfig::Ptr(), locale )
 {
     d_ptr->initialiseEraList( calendarType() );
 }
 
-KCalendarSystemThai::KCalendarSystemThai( KCalendarSystemThaiPrivate &dd, const KLocale * locale )
-                   : KCalendarSystemGregorianProleptic( dd, locale )
+KCalendarSystemThai::KCalendarSystemThai( const KSharedConfig::Ptr config, const KLocale *locale )
+                   : KCalendarSystemGregorianProleptic( *new KCalendarSystemThaiPrivate( this ), config, locale )
+{
+    d_ptr->initialiseEraList( calendarType() );
+}
+
+KCalendarSystemThai::KCalendarSystemThai( KCalendarSystemThaiPrivate &dd,
+                                          const KSharedConfig::Ptr config, const KLocale *locale )
+                   : KCalendarSystemGregorianProleptic( dd, config, locale )
 {
     d_ptr->initialiseEraList( calendarType() );
 }

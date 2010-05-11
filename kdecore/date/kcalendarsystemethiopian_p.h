@@ -39,6 +39,7 @@ class KCalendarSystemEthiopian: public KCalendarSystemCoptic
 {
 public:
     explicit KCalendarSystemEthiopian( const KLocale *locale = 0 );
+    explicit KCalendarSystemEthiopian( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
     virtual ~KCalendarSystemEthiopian();
 
     virtual QString calendarType() const;
@@ -107,7 +108,9 @@ public:
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
     virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const;
-    KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd, const KLocale *locale = 0 );
+    KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd,
+                              const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                              const KLocale *locale = 0 );
 
 private:
     Q_DECLARE_PRIVATE(KCalendarSystemEthiopian)
