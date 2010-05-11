@@ -20,7 +20,6 @@
 */
 
 #include "kio/renamedialog.h"
-#include "kio/renamedialogplugin.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -29,24 +28,29 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
+#include <QtGui/QPixmap>
+#include <QtGui/QScrollArea>
 #include <QtCore/QDir>
 
 #include <klineedit.h>
 #include <kmessagebox.h>
 #include <kpushbutton.h>
 #include <kio/global.h>
-#include <kmimetypetrader.h>
+#include <kio/udsentry.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kurl.h>
+#include <kfileitem.h>
 #include <kmimetype.h>
 #include <kseparator.h>
 #include <kstringhandler.h>
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
 #include <ksqueezedtextlabel.h>
+#include <kfilemetadatawidget.h>
+#include <previewjob.h>
 
 using namespace KIO;
 
@@ -60,6 +64,10 @@ class RenameDialog::RenameDialogPrivate
     bResume = bSuggestNewName = 0;
     bApplyAll = 0;
     m_pLineEdit = 0;
+    m_srcPendingPreview = false;
+    m_destPendingPreview = false;
+    m_srcPreview = 0;
+    m_destPreview = 0;
   }
   void setRenameBoxText(const QString& fileName) {
     // sets the text in file name line edit box, selecting the filename (but not the extension if there is one).
@@ -82,9 +90,10 @@ class RenameDialog::RenameDialogPrivate
   KLineEdit* m_pLineEdit;
   KUrl src;
   KUrl dest;
-  QString mimeSrc;
-  QString mimeDest;
-  bool plugin;
+  bool m_srcPendingPreview;
+  bool m_destPendingPreview;
+  QLabel* m_srcPreview;
+  QLabel* m_destPreview;
 };
 
 RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
@@ -102,7 +111,6 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
     d->src = _src;
     d->dest = _dest;
-    d->plugin = false;
 
     setWindowTitle( _caption );
 
@@ -155,122 +163,94 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         pLayout->addWidget( lb );
     }
     else if ( _mode & M_OVERWRITE ) {
+        KFileItem srcItem;
+        KFileItem destItem;
 
-        // Figure out the mimetype and load one plugin
-        // (This is the only mode that is handled by plugins)
-        pluginHandling();
-        KService::List plugin_offers;
-        if( d->mimeSrc != KMimeType::defaultMimeType()   ){
-            plugin_offers = KMimeTypeTrader::self()->query(d->mimeSrc, "RenameDialog/Plugin");
+        if (d->src.isLocalFile()) {
+            srcItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->src);
+        } else {
+            UDSEntry srcUds;
+            srcUds.insert(UDSEntry::UDS_NAME, d->src.fileName());
+            srcUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeSrc);
+            srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc);
+            srcUds.insert(UDSEntry::UDS_SIZE, sizeSrc);
 
-        }else if(d->mimeDest != KMimeType::defaultMimeType() ) {
-            plugin_offers = KMimeTypeTrader::self()->query(d->mimeDest, "RenameDialog/Plugin");
-        }
-        if(!plugin_offers.isEmpty() ){
-            RenameDialogPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
-            RenameDialogPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
-            foreach (const KService::Ptr &ptr, plugin_offers) {
-                RenameDialogPlugin *plugin = ptr->createInstance<RenameDialogPlugin>(this);
-                if( !plugin )
-                    continue;
-
-                plugin->setObjectName( ptr->name() );
-                if( plugin->wantToHandle( _mode, src, dst ) ) {
-                    d->plugin = true;
-                    plugin->handle( _mode, src, dst );
-                    pLayout->addWidget(plugin );
-                    break;
-                } else {
-                    delete plugin;
-                }
-            }
-
+            srcItem = KFileItem(srcUds, d->src);
         }
 
-        if( !d->plugin ){
-            // No plugin found, build default dialog
-            QGridLayout * gridLayout = new QGridLayout();
-            pLayout->addLayout(gridLayout);
-            gridLayout->setColumnStretch(0,0);
-            gridLayout->setColumnStretch(1,10);
+        if (d->dest.isLocalFile()) {
+            destItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->dest);
+        } else {
+            UDSEntry destUds;
+            destUds.insert(UDSEntry::UDS_NAME, d->dest.fileName());
+            destUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeDest);
+            destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest);
+            destUds.insert(UDSEntry::UDS_SIZE, sizeDest);
 
-            QString sentence1;
-            if (mtimeDest < mtimeSrc)
-                sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrUrl());
-            else if (mtimeDest == mtimeSrc)
-                sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrUrl());
-            else
-                sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrUrl());
-
-            QLabel * lb1 = new KSqueezedTextLabel( sentence1, this );
-            gridLayout->addWidget( lb1, 0, 0, 1, 2 ); // takes the complete first line
-
-            lb1 = new QLabel( this );
-            lb1->setPixmap( KIO::pixmapForUrl( d->dest ) );
-            gridLayout->addWidget( lb1, 1, 0, 3, 1 ); // takes the first column on rows 1-3
-
-            int row = 1;
-            if ( sizeDest != (KIO::filesize_t)-1 )
-            {
-                QLabel * lb = new QLabel(this);
-                lb->setText(i18n("size %1 (%2)", KIO::convertSize(sizeDest),
-                            KGlobal::locale()->formatNumber(sizeDest, 0)));
-                gridLayout->addWidget( lb, row, 1 );
-                row++;
-
-            }
-            if ( ctimeDest != (time_t)-1 )
-            {
-                QDateTime dctime; dctime.setTime_t( ctimeDest );
-                QLabel * lb = new QLabel( i18n("created on %1",  KGlobal::locale()->formatDateTime(dctime) ), this );
-                gridLayout->addWidget( lb, row, 1 );
-                row++;
-            }
-            if ( mtimeDest != (time_t)-1 )
-            {
-                QDateTime dmtime; dmtime.setTime_t( mtimeDest );
-                QLabel * lb = new QLabel( i18n("modified on %1",  KGlobal::locale()->formatDateTime(dmtime) ), this );
-                gridLayout->addWidget( lb, row, 1 );
-                row++;
-            }
-
-            if ( !d->src.isEmpty() )
-            {
-                // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
-                gridLayout->addItem( new QSpacerItem(2, fontMetrics().height() ), 4, 0, 1, 2 );
-                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'", d->src.pathOrUrl()), this );
-                gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
-
-                lb2 = new QLabel( this );
-                lb2->setPixmap( KIO::pixmapForUrl( d->src ) );
-                gridLayout->addWidget( lb2, 6, 0, 3, 1 ); // takes the first column on rows 6-8
-
-                row = 6;
-
-                if ( sizeSrc != (KIO::filesize_t)-1 )
-                {
-                    QLabel * lb = new QLabel(this);
-                    lb->setText(i18n("size %1 (%2)", KIO::convertSize(sizeSrc),
-                                KGlobal::locale()->formatNumber(sizeSrc, 0)));
-                    gridLayout->addWidget( lb, row, 1 );
-                    row++;
-                }
-                if ( ctimeSrc != (time_t)-1 )
-                {
-                    QDateTime dctime; dctime.setTime_t( ctimeSrc );
-                    QLabel * lb = new QLabel( i18n("created on %1",  KGlobal::locale()->formatDateTime(dctime) ), this );
-                    gridLayout->addWidget( lb, row, 1 );
-                    row++;
-                }
-                if ( mtimeSrc != (time_t)-1 )
-                {
-                    QDateTime dmtime; dmtime.setTime_t( mtimeSrc );
-                    QLabel * lb = new QLabel( i18n("modified on %1",  KGlobal::locale()->formatDateTime(dmtime) ), this );
-                    gridLayout->addWidget( lb, row, 1 );
-                    row++;
-                }
-            }
+            destItem = KFileItem(destUds, d->dest);
         }
+
+        d->m_srcPreview = createLabel(parent, QString());
+        d->m_destPreview = createLabel(parent, QString());
+
+        d->m_srcPreview->setMinimumHeight(KIconLoader::SizeEnormous);
+        d->m_destPreview->setMinimumHeight(KIconLoader::SizeEnormous);
+
+        d->m_srcPendingPreview = true;
+        d->m_destPendingPreview = true;
+        KIO::PreviewJob* srcJob = KIO::filePreview(KFileItemList() << srcItem,
+                                                   d->m_srcPreview->width(),
+                                                   d->m_srcPreview->height(),
+                                                   0,
+                                                   0,
+                                                   false /*don't scale*/);
+        KIO::PreviewJob* destJob = KIO::filePreview(KFileItemList() << destItem,
+                                                    d->m_destPreview->width(),
+                                                    d->m_destPreview->height(),
+                                                    0,
+                                                    0,
+                                                    false /*don't scale*/);
+
+        connect(srcJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
+                this, SLOT(showSrcPreview(const KFileItem&, const QPixmap&)));
+        connect(destJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
+                this, SLOT(showDestPreview(const KFileItem&, const QPixmap&)));
+        connect(srcJob, SIGNAL(failed(const KFileItem&)),
+                this, SLOT(showSrcIcon(const KFileItem&)));
+        connect(destJob, SIGNAL(failed(const KFileItem&)),
+                this, SLOT(showDestIcon(const KFileItem&)));
+
+
+        // widget
+        QScrollArea* srcWidget = createContainerLayout(parent, srcItem, d->m_srcPreview);
+        QScrollArea* destWidget = createContainerLayout(parent, destItem, d->m_destPreview);
+
+        // create layout
+        QGridLayout* gridLayout = new QGridLayout();
+        pLayout->addLayout(gridLayout);
+
+        QString sentence1;
+        if (mtimeDest < mtimeSrc)
+            sentence1 = i18n("This action will overwrite '%1' with a newer file '%2'.", d->dest.pathOrUrl(), d->src.pathOrUrl());
+        else if (mtimeDest == mtimeSrc)
+            sentence1 = i18n("This action will overwrite '%1' with a file of the same age '%2'.", d->dest.pathOrUrl(), d->src.pathOrUrl());
+        else
+            sentence1 = i18n("This action will overwrite '%1' with an older file '%2'.", d->dest.pathOrUrl(), d->src.pathOrUrl());
+
+        QLabel* titleLabel = new KSqueezedTextLabel( sentence1, this );
+
+        QLabel* srcTitle = createLabel(parent, i18n("Source"));
+        QLabel* destTitle = createLabel(parent, i18n("Destination"));
+
+        gridLayout->addWidget( titleLabel, 0, 0, 1, 2 ); // takes the complete first line
+
+        gridLayout->addWidget( srcTitle, 1, 0 );
+        gridLayout->addWidget( srcWidget, 2, 0 );
+
+        gridLayout->addWidget( destTitle, 1, 1 );
+        gridLayout->addWidget( destWidget, 2, 1 );
+
+        gridLayout->setRowStretch(1, 2);
     }
     else
     {
@@ -525,28 +505,85 @@ void RenameDialog::applyAllPressed()
     }
 }
 
-static QString mime( const KUrl& src )
+void RenameDialog::showSrcIcon(const KFileItem& fileitem)
 {
-  KMimeType::Ptr type = KMimeType::findByUrl( src );
-  //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype
-    //    QString ty = KIO::NetAccess::mimetype(d->src );
-    // return ty;
-    return type->name();
+    // The preview job failed, show a standard file icon.
+    d->m_destPendingPreview = false;
+    d->m_destPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
 }
 
-/** This will figure out the mimetypes and query for a plugin
- *  Loads it then and asks the plugin if it wants to do the job
- *  We'll take the first available mimetype
- *  The scanning for a mimetype will be done in 2 ways
- *
- */
-void RenameDialog::pluginHandling()
+void RenameDialog::showDestIcon(const KFileItem& fileitem)
 {
-  d->mimeSrc = mime( d->src );
-  d->mimeDest = mime(d->dest );
+    // The preview job failed, show a standard file icon.
+    d->m_srcPendingPreview = false;
+    d->m_srcPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
+}
 
-  kDebug(7024) << "Source Mimetype: "<< d->mimeSrc;
-  kDebug(7024) << "Dest Mimetype: "<< d->mimeDest;
+void RenameDialog::showSrcPreview(const KFileItem& fileitem, const QPixmap& pixmap)
+{
+    Q_UNUSED(fileitem);
+    if (d->m_srcPendingPreview) {
+        d->m_srcPreview->setPixmap(pixmap);
+        d->m_srcPendingPreview = false;
+    }
+}
+
+void RenameDialog::showDestPreview(const KFileItem& fileitem, const QPixmap& pixmap)
+{
+    Q_UNUSED(fileitem);
+    if (d->m_destPendingPreview) {
+        d->m_destPreview->setPixmap(pixmap);
+        d->m_destPendingPreview = false;
+    }
+}
+
+QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileItem& item, QLabel* preview)
+{
+    KFileItemList itemList;
+    itemList << item;
+
+    // widget
+    KFileMetaDataWidget* metaWidget =  new KFileMetaDataWidget(this);
+
+    metaWidget->setReadOnly(true);
+
+    metaWidget->setItems(itemList);
+
+    // Encapsulate the MetaDataWidgets inside a container with stretch at the bottom.
+    // This prevents that the meta data widgets get vertically stretched
+    // in the case where the height of m_metaDataArea > m_metaDataWidget.
+
+    QWidget* widgetContainer = new QWidget(parent);
+    QVBoxLayout* containerLayout = new QVBoxLayout(widgetContainer);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(0);
+    containerLayout->addWidget(preview);
+    containerLayout->addWidget(metaWidget);
+    containerLayout->addStretch(1);
+
+    QScrollArea* metaDataArea = new QScrollArea(parent);
+    metaDataArea->setWidget(widgetContainer);
+    metaDataArea->setWidgetResizable(true);
+    metaDataArea->setFrameShape(QFrame::NoFrame);
+
+    return metaDataArea;
+}
+
+QLabel* RenameDialog::createLabel(QWidget* parent, const QString& text)
+{
+    QLabel* label = new QLabel(parent);
+
+    QFont font = label->font();
+    font.setBold(true);
+    label->setFont(font);
+
+    label->setAlignment(Qt::AlignHCenter);
+
+    label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+
+    label->setText(text);
+
+    return label;
 }
 
 #include "renamedialog.moc"

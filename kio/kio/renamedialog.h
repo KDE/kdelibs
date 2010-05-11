@@ -29,6 +29,11 @@
 
 #include <kio/global.h>
 
+class QScrollArea;
+class QLabel;
+class QPixmap;
+class KFileItem;
+
 namespace KIO {
 
 // KDE5: get rid of M_OVERWRITE_ITSELF, trigger it internally if src==dest
@@ -128,12 +133,18 @@ protected Q_SLOTS:
   void enableRenameButton(const QString &);
 private Q_SLOTS:
     void applyAllPressed();
+    void showSrcIcon(const KFileItem &);
+    void showDestIcon(const KFileItem &);
+    void showSrcPreview(const KFileItem &, const QPixmap &);
+    void showDestPreview(const KFileItem &, const QPixmap &);
+
 private:
- class RenameDialogPrivate;
- RenameDialogPrivate* const d;
- void pluginHandling( );
+    QScrollArea* createContainerLayout(QWidget* parent, const KFileItem& item, QLabel* preview);
+    QLabel* createLabel(QWidget* parent, const QString& text);
+    class RenameDialogPrivate;
+    RenameDialogPrivate* const d;
 };
 
-
 }
+
 #endif
