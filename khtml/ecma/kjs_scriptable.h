@@ -33,16 +33,15 @@ namespace KJS {
 
 class WrapScriptableObject;
 
-class KHTMLScriptable: public ScriptableExtension
+// We have two ScriptableExtension subclasses.
+// ScriptableOperations is a singleton used to perform operations on objects.
+// This is because objects in child  parts (and other windows) can survive their
+// parent, and we still need to perform operations on them.
+class ScriptableOperations: public ScriptableExtension
 {
     Q_OBJECT
 public:
-    KHTMLScriptable(KHTMLPart* part);
-
-
     // ScriptableExtension API
-    virtual QVariant rootObject();
-    virtual QVariant encloserForKid(KParts::ScriptableExtension* kid);
     virtual QVariant callAsFunction(ScriptableExtension* callerPrincipal, quint64 objId, const ArgList& args);
     virtual QVariant callFunctionReference(ScriptableExtension* callerPrincipal, quint64 objId,
                                            const QString& f, const ArgList& args);
@@ -53,14 +52,12 @@ public:
     virtual bool removeProperty(ScriptableExtension* callerPrincipal, quint64 objId, const QString& propName);
     virtual bool enumerateProperties(ScriptableExtension* callerPrincipal, quint64 objId, QStringList* result);
 
-    virtual bool setException(ScriptableExtension* callerPrincipal, const QString& message);
-    virtual QVariant evaluateScript(ScriptableExtension* callerPrincipal,
-                                    quint64 contextObjectId,
-                                    const QString& code,
-                                    const QString& language);
     virtual void acquire(quint64 objid);
     virtual void release(quint64 objid);
 
+    static ScriptableOperations* self();
+
+    void mark();
 public:
     // We keep a weak table of our wrappers for external objects, so that
     // the same object gets the same wrapper all the time.
@@ -85,32 +82,63 @@ private:
     // Checks exception state before handling conversion
     QVariant handleReturn(ExecState* exec, JSValue* v);
 
-    // Both methods ay return 0. Used for security checks!
+    // Both methods may return 0. Used for security checks!
     KHTMLPart* partForPrincipal(ScriptableExtension* callerPrincipal);
     ExecState* execStateForPrincipal(ScriptableExtension* callerPrincipal);
 
     // May return null.
     JSObject* objectForId(quint64 objId);
 
-
+    // Also adds debug output
     QVariant exception(const char* msg);
-    QVariant scriptableNull();
-
-    KJS::Interpreter* interpreter();
-    KHTMLPart* m_part;
 
     // If the given object is owned by a KHTMLScriptable, return the
     // JS object for it. If not, return 0.
     static JSObject* tryGetNativeObject(const Object& sObj);
 
-    static QHash<JSValue*, int> s_exportedObjects;
+    static QHash<JSObject*, int>* s_exportedObjects;
     static QHash<Object,      WrapScriptableObject*>* s_importedObjects;
     static QHash<FunctionRef, WrapScriptableObject*>* s_importedFunctions;
+
+    ScriptableOperations();
+    ~ScriptableOperations();
+
+    // copy ctor, etc., disabled already, being a QObject
+    static ScriptableOperations* s_instance;
 };
+
+// KHTMLPartScriptable, on other hands, is tied to a part, and
+// is used for part-specific operations such as looking up
+// root objects and script execution.
+class KHTMLPartScriptable: public ScriptableExtension {
+    Q_OBJECT
+public:
+    KHTMLPartScriptable(KHTMLPart* part);
+
+    virtual QVariant rootObject();
+    virtual QVariant encloserForKid(KParts::ScriptableExtension* kid);
+
+    virtual bool setException(ScriptableExtension* callerPrincipal, const QString& message);
+    virtual QVariant evaluateScript(ScriptableExtension* callerPrincipal,
+                                    quint64 contextObjectId,
+                                    const QString& code,
+                                    const QString& language);
+
+    // For paranoia: forward to ScriptOperations
+    virtual void acquire(quint64 objid);
+    virtual void release(quint64 objid);
+private:
+    KJS::Interpreter* interpreter();
+    KHTMLPart* m_part;
+};
+                                    
+
 
 // This represents an object we imported from a foreign ScriptableExtension
 class WrapScriptableObject: public JSObject {
 public:
+    friend class ScriptableOperations;
+
     enum Type {
         Object,
         FunctionRef
