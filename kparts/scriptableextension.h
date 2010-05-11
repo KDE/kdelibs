@@ -91,6 +91,7 @@ public:
 
         Object(): owner(0), objId(0) {}
         Object(ScriptableExtension* o, quint64 id): owner(o), objId(id) {}
+        bool operator==(const Object& other) const { return owner == other.owner && objId == other.objId; }
     };
 
     /// Function references are a pair of an object and a field in it.
@@ -103,6 +104,7 @@ public:
 
         FunctionRef() {}
         FunctionRef(const Object& b, const QString&f): base(b), field(f) {}
+        bool operator==(const FunctionRef& other) const { return base == other.base && field == other.field; }
     };
 
     //@}
