@@ -442,7 +442,6 @@ protected:
 
 private:
     Q_PRIVATE_SLOT(d, void slotReturnPressed())
-    Q_PRIVATE_SLOT(d, void slotRemoteHostActivated())
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())
     Q_PRIVATE_SLOT(d, void dropUrls(const KUrl& destination, QDropEvent*))
