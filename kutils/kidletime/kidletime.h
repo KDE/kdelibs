@@ -21,7 +21,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-#include <kutils_export.h>
+#include <kidletime_export.h>
 class KIdleTimePrivate;
 
 /**
@@ -36,7 +36,7 @@ class KIdleTimePrivate;
  *
  * @since 4.4
  */
-class KUTILS_EXPORT KIdleTime : public QObject
+class KIDLETIME_EXPORT KIdleTime : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KIdleTime)

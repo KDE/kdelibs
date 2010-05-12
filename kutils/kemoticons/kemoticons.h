@@ -19,7 +19,7 @@
 #ifndef KEMOTICONS_H
 #define KEMOTICONS_H
 
-#include "kutils_export.h"
+#include "kemoticons_export.h"
 #include "kemoticonstheme.h"
 
 #include <QtCore/QObject>
@@ -41,7 +41,7 @@ class KEmoticonsPrivate;
  * @author Carlo Segato (brandon.ml@gmail.com)
  */
 
-class KUTILS_EXPORT KEmoticons : public QObject
+class KEMOTICONS_EXPORT KEmoticons : public QObject
 {
     Q_OBJECT
 public:

@@ -20,7 +20,7 @@
 #ifndef KSETTINGS_DIALOG_H
 #define KSETTINGS_DIALOG_H
 
-#include "../kutils_export.h"
+#include "../kcmutils_export.h"
 #include "../kcmultidialog.h"
 
 #include <kservice.h>
@@ -70,7 +70,7 @@ namespace KSettings
  *
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KUTILS_EXPORT Dialog : public KCMultiDialog
+class KCMUTILS_EXPORT Dialog : public KCMultiDialog
 {
     friend class PageNode;
     Q_DECLARE_PRIVATE(Dialog)

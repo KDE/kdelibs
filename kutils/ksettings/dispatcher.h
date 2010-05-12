@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QMap>
-#include <kutils_export.h>
+#include <kcmutils_export.h>
 #include <kcomponentdata.h>
 
 namespace KSettings
@@ -53,18 +53,18 @@ namespace Dispatcher
      * @param recv         The object that should receive the signal
      * @param slot         The slot to be called: "slotName"
      */
-    KUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
+    KCMUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
 
     /**
      * @return the KConfig object that belongs to the componentName
      */
-    KUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QString &componentName);
+    KCMUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QString &componentName);
 
     /**
      * @return a list of all the componentData names that are currently
      * registered
      */
-    KUTILS_EXPORT QList<QString> componentNames();
+    KCMUTILS_EXPORT QList<QString> componentNames();
 
     /**
      * Call this function when the configuration belonging to the associated
@@ -72,7 +72,7 @@ namespace Dispatcher
      *
      * @param componentName The value of X-KDE-ParentComponents.
      */
-    KUTILS_EXPORT void reparseConfiguration(const QString &componentName);
+    KCMUTILS_EXPORT void reparseConfiguration(const QString &componentName);
 
     /**
      * When this function is called the KConfig objects of all the registered
@@ -80,7 +80,7 @@ namespace Dispatcher
      * objects will read/write from/to the same config file, so that you
      * can first write out the current state of the KConfig objects.
      */
-    KUTILS_EXPORT void syncConfiguration();
+    KCMUTILS_EXPORT void syncConfiguration();
 } // namespace Dispatcher
 
 }

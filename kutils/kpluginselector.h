@@ -25,7 +25,7 @@
 
 #include <QtCore/QList>
 
-#include <kutils_export.h>
+#include <kcmutils_export.h>
 #include <ksharedconfig.h>
 
 class KComponentData;
@@ -55,7 +55,7 @@ class KPluginInfo;
   * @author Matthias Kretz <kretz@kde.org>
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
-class KUTILS_EXPORT KPluginSelector
+class KCMUTILS_EXPORT KPluginSelector
     : public QWidget
 {
     Q_OBJECT

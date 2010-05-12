@@ -31,7 +31,7 @@ class QString;
 /**
  * This class contains the emoticons theme
  */
-class KUTILS_EXPORT KEmoticonsTheme
+class KEMOTICONS_EXPORT KEmoticonsTheme
 {
 public:
 

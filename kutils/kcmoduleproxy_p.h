@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KUTILS_KCMODULEPROXY_P_H
-#define KUTILS_KCMODULEPROXY_P_H
+#ifndef KCMUTILS_KCMODULEPROXY_P_H
+#define KCMUTILS_KCMODULEPROXY_P_H
 
 #include "kcmoduleinfo.h"
 #include "kcmoduleproxy.h"
@@ -73,5 +73,5 @@ class KCModuleProxyPrivate
         KCModuleProxy *q_ptr;
 };
 
-#endif // KUTILS_KCMODULEPROXY_P_H
+#endif // KCMUTILS_KCMODULEPROXY_P_H
 // vim: sw=4 sts=4 et tw=100

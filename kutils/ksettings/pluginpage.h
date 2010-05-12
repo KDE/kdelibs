@@ -21,7 +21,7 @@
 #define KSETTINGS_PLUGINPAGE_H
 
 #include <kcmodule.h>
-#include <kutils_export.h>
+#include <kcmutils_export.h>
 
 class KPluginSelector;
 
@@ -67,7 +67,7 @@ namespace KSettings
  *
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KUTILS_EXPORT PluginPage : public KCModule
+class KCMUTILS_EXPORT PluginPage : public KCModule
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(PluginPage)

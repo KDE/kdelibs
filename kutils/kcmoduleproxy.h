@@ -18,15 +18,15 @@
 
 */
 
-#ifndef KUTILS_KCMODULEPROXY_H
-#define KUTILS_KCMODULEPROXY_H
+#ifndef KCMUTILS_KCMODULEPROXY_H
+#define KCMUTILS_KCMODULEPROXY_H
 
 #include <QtGui/QImage>
 #include <QtCore/QStringList>
 
 #include <kcmodule.h>
 #include <kservice.h>
-#include <kutils_export.h>
+#include <kcmutils_export.h>
 
 class KAboutData;
 class KCModuleInfo;
@@ -64,7 +64,7 @@ class KCModuleProxyPrivate;
  * @author Matthias Kretz <kretz@kde.org>
  *
  */
-class KUTILS_EXPORT KCModuleProxy : public QWidget
+class KCMUTILS_EXPORT KCModuleProxy : public QWidget
 {
 Q_DECLARE_PRIVATE(KCModuleProxy)
 Q_OBJECT
