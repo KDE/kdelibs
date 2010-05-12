@@ -25,7 +25,7 @@
 #include <QLabel>
 #include <QPainter>
 #include <QPaintEvent>
-#include <QTimeLine>
+#include <QPropertyAnimation>
 #include <QIcon>
 
 #include <kglobalsettings.h>
@@ -35,17 +35,17 @@
 class KLineEditButton : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY( int opacity READ opacity WRITE setOpacity )
 
 public:
     KLineEditButton(QWidget *parent)
-        : QWidget(parent)
+        : QWidget(parent),
+          m_opacity(0)
     {
-        m_timeline = new QTimeLine(200, this);
-        m_timeline->setFrameRange(0, 255);
-        m_timeline->setCurveShape(QTimeLine::EaseInOutCurve);
-        m_timeline->setDirection(QTimeLine::Backward);
-        connect(m_timeline, SIGNAL(finished()), this, SLOT(animationFinished()));
-        connect(m_timeline, SIGNAL(frameChanged(int)), this, SLOT(update()));
+        m_animation = new QPropertyAnimation(this, "opacity", this);
+        m_animation->setStartValue(0);
+        m_animation->setEndValue(255);
+        m_animation->setEasingCurve(QEasingCurve::InOutQuad);
     }
 
     QSize sizeHint () const
@@ -56,27 +56,27 @@ public:
     void animateVisible(bool visible)
     {
         if (visible) {
-            if (m_timeline->direction() == QTimeLine::Forward) {
+            if (m_animation->direction() == QPropertyAnimation::Forward) {
                 return;
             }
 
-            m_timeline->setDirection(QTimeLine::Forward);
-            m_timeline->setDuration(150);
+            m_animation->setDirection(QPropertyAnimation::Forward);
+            m_animation->setDuration(150);
             show();
         } else {
-            if (m_timeline->direction() == QTimeLine::Backward) {
+            if (m_animation->direction() == QPropertyAnimation::Backward) {
                 return;
             }
 
-            m_timeline->setDirection(QTimeLine::Backward);
-            m_timeline->setDuration(250);
+            m_animation->setDirection(QPropertyAnimation::Backward);
+            m_animation->setDuration(250);
         }
 
         if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
-            if (m_timeline->state() != QTimeLine::Running)
-                m_timeline->start();
+            if (m_animation->state() != QPropertyAnimation::Running)
+                m_animation->start();
         } else {
-            setVisible(m_timeline->direction() == QTimeLine::Forward);
+            setVisible(m_animation->direction() == QPropertyAnimation::Forward);
         }
     }
 
@@ -95,12 +95,23 @@ public:
     {
         // We need to set the current time in the case that we had the clear
         // button shown, for it being painted on the paintEvent(). Otherwise
-        // it wont be painted, resulting (m->timeLine->currentTime() == 0) true,
+        // it wont be painted, resulting (m_opacity == 0) true,
         // and therefore a bad painting. This is needed for the case that we
         // come from a non animated widget and want it animated. (ereslibre)
-        if (animationsEnabled && m_timeline->direction() == QTimeLine::Forward) {
-            m_timeline->setCurrentTime(150);
+        if (animationsEnabled && m_animation->direction() == QPropertyAnimation::Forward) {
+            m_animation->setCurrentTime(150);
         }
+    }
+
+    int opacity() const
+    {
+        return m_opacity;
+    }
+
+    void setOpacity( int value )
+    {
+        m_opacity = value;
+        update();
     }
 
 protected:
@@ -108,17 +119,24 @@ protected:
     {
         Q_UNUSED(event)
 
+        // check pixmap
+        if (m_pixmap.isNull()) {
+            return;
+        }
+
         if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
-            if (m_pixmap.isNull() || m_timeline->currentTime() == 0) {
+
+            if (m_opacity == 0) {
+                if (m_animation->direction() == QPropertyAnimation::Backward)
+                    hide();
                 return;
             }
 
-            int opacity(m_timeline->currentFrame());
-            if (opacity > 0 && opacity < 255) {
+            if (m_opacity < 255) {
                 // fade pixmap
                 QPixmap pm(m_pixmap);
                 QColor color(Qt::black);
-                color.setAlpha(opacity);
+                color.setAlpha(m_opacity);
                 QPainter p(&pm);
                 p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
                 p.fillRect(pm.rect(), color);
@@ -129,7 +147,7 @@ protected:
                 pp.drawPixmap((width() - pm.width()) / 2,
                              (height() - pm.height()) / 2,
                              pm);
-            } else if (opacity > 0) {
+            } else {
                 QPainter p(this);
                 p.drawPixmap((width() - m_pixmap.width()) / 2,
                              (height() - m_pixmap.height()) / 2,
@@ -152,18 +170,9 @@ protected:
         return QWidget::event( event );
     }
 
-protected slots:
-    void animationFinished()
-    {
-        if (m_timeline->direction() == QTimeLine::Forward) {
-            update();
-        } else {
-            hide();
-        }
-    }
-
 private:
-    QTimeLine *m_timeline;
+    QPropertyAnimation* m_animation;
+    int m_opacity;
     QPixmap m_pixmap;
     QIcon m_icon;
 };
