@@ -52,5 +52,6 @@ install( FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop   DES
 install( FILES kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.h
          browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h
          componentfactory.h browserrun.h statusbarextension.h browseropenorsavequestion.h
+         scriptableextension.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel )
 
