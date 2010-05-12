@@ -100,6 +100,7 @@ using namespace DOM;
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
+#include <kparts/scriptableextension.h>
 #include <kde_file.h>
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
@@ -176,45 +177,6 @@ namespace khtml {
     };
 }
 
-void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
-{
-    if (!m_part || !m_partContainerElement || !m_liveconnect)
-        // hmmm
-        return;
-
-    QString script;
-    script.sprintf("%s(", event.toLatin1().constData());
-
-    KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
-    const KParts::LiveConnectExtension::ArgList::const_iterator argsBegin = i;
-    const KParts::LiveConnectExtension::ArgList::const_iterator argsEnd = args.end();
-
-    for ( ; i != argsEnd; ++i) {
-        if (i != argsBegin)
-            script += ",";
-        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
-            script += "\"";
-            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
-            script += "\"";
-        } else
-            script += (*i).second;
-    }
-    script += ")";
-    kDebug(6050) << script;
-
-    KHTMLPart * part = qobject_cast<KHTMLPart*>(m_part->parent());
-    if (!part)
-        return;
-    if (!m_jscript)
-        part->framejScript(m_part);
-    if (m_jscript) {
-        // we have a jscript => a part in an iframe
-        KJS::Completion cmp;
-        m_jscript->evaluate(QString(), 1, script, 0L, &cmp);
-    } else
-        part->executeScript(DOM::Node(m_partContainerElement), script);
-}
-
 KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 {
     Iterator it = begin();
@@ -284,6 +246,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_extension->setObjectName( "KHTMLBrowserExtension" );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
+  d->m_scriptableExtension = new KJS::KHTMLPartScriptable( this );
   d->m_statusBarPopupLabel = 0L;
   d->m_openableSuppressedPopups = 0;
 
@@ -4097,11 +4060,11 @@ void KHTMLPart::updateActions()
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
 }
 
-KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const DOM::NodeImpl *frame) {
+KParts::ScriptableExtension *KHTMLPart::scriptableExtension( const DOM::NodeImpl *frame) {
     const ConstFrameIt end = d->m_objects.constEnd();
     for(ConstFrameIt it = d->m_objects.constBegin(); it != end; ++it )
         if ((*it)->m_partContainerElement == frame)
-            return (*it)->m_liveconnect;
+            return (*it)->m_scriptable.data();
     return 0L;
 }
 
@@ -4348,10 +4311,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
           child->m_jscript->clear();
       partManager()->removePart( (KParts::ReadOnlyPart *)child->m_part );
       delete (KParts::ReadOnlyPart *)child->m_part;
-      if (child->m_liveconnect) {
-        disconnect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
-        child->m_liveconnect = 0L;
-      }
+      child->m_scriptable.clear();
     }
 
     child->m_serviceType = mimetype;
@@ -4368,9 +4328,18 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     if (qobject_cast<KHTMLPart*>(part)) {
       static_cast<KHTMLPart*>(part)->d->m_frame = child;
     } else if (child->m_partContainerElement) {
-      child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
-      if (child->m_liveconnect)
-        connect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+      // See if this can be scripted..
+      KParts::ScriptableExtension* scriptExt = KParts::ScriptableExtension::childObject(part);
+      if (!scriptExt) {
+        // Try to fall back to LiveConnectExtension compat
+        KParts::LiveConnectExtension* lc = KParts::LiveConnectExtension::childObject(part);
+        if (lc)
+            scriptExt = KParts::ScriptableExtension::adapterFromLiveConnect(part, lc);
+      }
+
+      if (scriptExt)
+        scriptExt->setHost(d->m_scriptableExtension);
+      child->m_scriptable = scriptExt;
     }
     KParts::StatusBarExtension *sb = KParts::StatusBarExtension::childObject(part);
     if (sb)

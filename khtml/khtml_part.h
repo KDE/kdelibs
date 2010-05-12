@@ -119,12 +119,13 @@ namespace KJS {
     class ScheduledAction;
     class DOMSelection;
     class DOMSelectionProtoFunc;
+    class KHTMLPartScriptable;    
 }
 
 namespace KParts
 {
   class PartManager;
-  class LiveConnectExtension;
+  class ScriptableExtension;
 }
 
 namespace KWallet
@@ -229,6 +230,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::SourceFile;
   friend class KJS::DOMSelection;
   friend class KJS::DOMSelectionProtoFunc;
+  friend class KJS::KHTMLPartScriptable;
   friend class KJSProxy;
   friend class KHTMLPartBrowserExtension;
   friend class DOM::DocumentImpl;
@@ -1669,7 +1671,7 @@ private:
   void resetHoverText(); // Undo overURL and reset HoverText
 
   bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );
-  KParts::LiveConnectExtension *liveConnectExtension( const DOM::NodeImpl *);
+  KParts::ScriptableExtension *scriptableExtension( const DOM::NodeImpl *);
 
   KWallet::Wallet* wallet();
 

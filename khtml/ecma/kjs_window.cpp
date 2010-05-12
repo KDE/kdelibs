@@ -70,6 +70,7 @@
 #include "kjs_audio.h"
 #include "kjs_context2d.h"
 #include "kjs_xpath.h"
+#include "kjs_scriptable.h"
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
 #include "domparser.h"
@@ -574,14 +575,8 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     }
   } else if (!part) {
     // not a  KHTMLPart
-    QString rvalue;
-    KParts::LiveConnectExtension::Type rtype;
-    unsigned long robjid;
-    if (m_frame->m_liveconnect &&
-        isSafeScript(exec) &&
-        m_frame->m_liveconnect->get(0, propertyName.qstring(), rtype, robjid, rvalue))
-      return getImmediateValueSlot(this,
-                       getLiveConnectValue(m_frame->m_liveconnect, propertyName.qstring(), rtype, rvalue, robjid), slot);
+    if (isSafeScript(exec) && pluginRootGet(exec, m_frame->m_scriptable.data(), propertyName, slot))
+        return true;
 
     slot.setUndefined(this);
     return true;
@@ -1236,9 +1231,8 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
     }
     }
   }
-  if (m_frame->m_liveconnect &&
-      isSafeScript(exec) &&
-      m_frame->m_liveconnect->put(0, propertyName.qstring(), value->toString(exec).qstring()))
+  if (isSafeScript(exec) &&
+      pluginRootPut(exec, m_frame->m_scriptable.data(), propertyName, value))
     return;
   if (safe) {
     //kDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring();

@@ -30,6 +30,7 @@
 
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
+#include "ecma/kjs_scriptable.h"
 #include "xml/dom_nodeimpl.h"  // for NodeImpl::Id
 
 namespace KJS {
@@ -174,7 +175,7 @@ namespace KJS {
 
     QString getURLArg(unsigned id) const;
 
-    static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl &element);
+    static KParts::ScriptableExtension *getScriptableExtension(const DOM::HTMLElementImpl &element);
 
     /* Many of properties in the DOM bindings can be implemented by merely returning
       an attribute as the right type, and setting it in similar manner; or perhaps

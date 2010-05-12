@@ -1217,11 +1217,11 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 */
 KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
 
-KParts::LiveConnectExtension *HTMLElement::getLiveConnectExtension(const DOM::HTMLElementImpl &element)
+KParts::ScriptableExtension *HTMLElement::getScriptableExtension(const DOM::HTMLElementImpl &element)
 {
   DOM::DocumentImpl* doc = element.document();
   if (doc->part())
-    return doc->part()->liveConnectExtension(&element);
+    return doc->part()->scriptableExtension(&element);
   return 0L;
 }
 
@@ -1264,14 +1264,9 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
-      KParts::LiveConnectExtension *lc = getLiveConnectExtension(*impl());
-      QString rvalue;
-      KParts::LiveConnectExtension::Type rtype;
-      unsigned long robjid;
-      if (lc && lc->get(0, propertyName.qstring(), rtype, robjid, rvalue))
-        return getImmediateValueSlot(this,
-                  getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid), slot);
-
+      KParts::ScriptableExtension* se = getScriptableExtension(*impl());
+      if (pluginRootGet(exec, se, propertyName, slot))
+        return true;
       break;
     }
   }
@@ -1999,6 +1994,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (impl()->id() == ID_A)
     return UString(getURLArg(ATTR_HREF));
+#if 0 // ### debug stuff?
   else if (impl()->id() == ID_APPLET) {
     KParts::LiveConnectExtension *lc = getLiveConnectExtension(*impl());
     QStringList qargs;
@@ -2010,6 +2006,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
       return UString(str + retvalue + QString("]"));
     }
   }
+#endif
   else if (impl()->id() == ID_IMG) {
     DOMString alt = impl()->getAttribute(ATTR_ALT);
     if (!alt.isEmpty())
@@ -2345,9 +2342,10 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, JSVa
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
-      KParts::LiveConnectExtension *lc = getLiveConnectExtension(element);
-      if (lc && lc->put(0, propertyName.qstring(), value->toString(exec).qstring()))
+      KParts::ScriptableExtension* se = getScriptableExtension(element);
+      if (pluginRootPut(exec, se, propertyName, value))
         return;
+
       break;
     }
     default:

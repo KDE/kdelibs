@@ -31,6 +31,11 @@ using namespace KParts;
 
 namespace KJS {
 
+// First, a couple of helpers: these let clients perform basic getOwnPropertySlot or
+// put (with a bool effect return) on the root of given extension.
+bool pluginRootGet(ExecState* exec, ScriptableExtension* ext, const KJS::Identifier& i, PropertySlot& slot);
+bool pluginRootPut(ExecState* exec, ScriptableExtension* ext, const KJS::Identifier& i, JSValue* v);
+
 class WrapScriptableObject;
 
 // We have two ScriptableExtension subclasses.
@@ -55,6 +60,9 @@ public:
     virtual void acquire(quint64 objid);
     virtual void release(quint64 objid);
 
+    // May return null.
+    static JSObject* objectForId(quint64 objId);    
+
     static ScriptableOperations* self();
 
     void mark();
@@ -75,22 +83,16 @@ public:
     static QVariant exportValue (JSValue* v);
     static QVariant exportObject(JSObject* o);
     static QVariant exportFuncRef(JSObject* base, const QString& field);
+
+    // Both methods may return 0. Used for security checks!
+    static KHTMLPart* partForPrincipal(ScriptableExtension* callerPrincipal);
+    static ExecState* execStateForPrincipal(ScriptableExtension* callerPrincipal);    
 private:
     // input should not be a WrapScriptableObject.
     static ScriptableExtension::Object exportNativeObject(JSObject* o);
 
     // Checks exception state before handling conversion
     QVariant handleReturn(ExecState* exec, JSValue* v);
-
-    // Both methods may return 0. Used for security checks!
-    KHTMLPart* partForPrincipal(ScriptableExtension* callerPrincipal);
-    ExecState* execStateForPrincipal(ScriptableExtension* callerPrincipal);
-
-    // May return null.
-    JSObject* objectForId(quint64 objId);
-
-    // Also adds debug output
-    QVariant exception(const char* msg);
 
     // If the given object is owned by a KHTMLScriptable, return the
     // JS object for it. If not, return 0.

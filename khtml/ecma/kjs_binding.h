@@ -388,8 +388,6 @@ namespace KJS {
     int m_code;
   };
 
-  JSValue* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
-
   // convenience function
   inline JSCell* jsString(const QString& s) { return jsString(UString(s)); }
 

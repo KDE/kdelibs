@@ -24,9 +24,6 @@
 #include "kjs_dom.h"
 #include "khtmlpart_p.h"
 
-// ####### don't forget to call mark() from proper spot!
-// exports need marking.
-
 namespace KJS {
 
 static QVariant scriptableNull()
@@ -48,6 +45,66 @@ static bool isForeignObject(const QVariant& v)
 {
     return v.canConvert<ScriptableExtension::Object>();
 }
+
+QVariant exception(const char* msg)
+{
+    kWarning(6031) << msg;
+    return QVariant::fromValue(ScriptableExtension::Exception(QString::fromLatin1(msg)));
+}
+
+//------------------------------------------------------------------------------
+
+// will return with owner = 0 on failure. Acquires the reference
+static ScriptableExtension::Object grabRoot(ScriptableExtension* ext)
+{
+    ScriptableExtension::Object o;
+
+    if (!ext)
+        return o;
+
+    // Grab root, make sure it's an actual object.
+    QVariant root = ext->rootObject();
+    if (!isForeignObject(root))
+        return o;
+
+    o = root.value<ScriptableExtension::Object>();
+    o.owner->acquire(o.objId);
+    return o;
+}
+
+// a couple helpers for client code.
+bool pluginRootGet(ExecState* exec, ScriptableExtension* ext, const KJS::Identifier& i, PropertySlot& slot)
+{
+    ScriptableExtension::Object rootObj = grabRoot(ext);
+    if (!rootObj.owner)
+        return false;
+
+    QVariant v = rootObj.owner->get(0 /* ### we don't expect leaves to check credentials*/,
+                                       rootObj.objId, i.qstring());
+
+    bool ok = false;
+    if (!isException(v)) {
+        getImmediateValueSlot(0, ScriptableOperations::importValue(exec, v), slot);
+        ok = true;
+    }
+
+    rootObj.owner->release(rootObj.objId);
+    return ok;
+}
+
+bool pluginRootPut(ExecState* exec, ScriptableExtension* ext, const KJS::Identifier& i, JSValue* v)
+{
+    ScriptableExtension::Object rootObj = grabRoot(ext);
+    if (!rootObj.owner)
+        return false;
+
+    bool ok = rootObj.owner->put(0, rootObj.objId, i.qstring(), ScriptableOperations::exportValue(v));
+    rootObj.owner->release(rootObj.objId);
+    return ok;
+}
+
+//------------------------------------------------------------------------------
+// KJS peer wrapping external objects
 
 const ClassInfo WrapScriptableObject::info = { " WrapScriptableObject", 0, 0, 0 };
 
@@ -238,6 +295,16 @@ UString WrapScriptableObject::toString(ExecState*) const
     } else {
         return "[object ImportedScriptable:" + iface + "]";
     }
+}
+
+ScriptableExtension* WrapScriptableObject::principal(ExecState* exec)
+{
+    KJS::ScriptInterpreter* si = static_cast<KJS::ScriptInterpreter*>(exec->dynamicInterpreter());
+    KParts::ReadOnlyPart*   part = si->part();
+    if (!part)
+        return 0;
+
+    return ScriptableExtension::childObject(part);
 }
 
 //-----------------------------------------------------------------------------
@@ -446,12 +513,6 @@ QVariant ScriptableOperations::handleReturn(ExecState* exec, JSValue* v)
     }
 
     return exportValue(v);
-}
-
-QVariant ScriptableOperations::exception(const char* msg)
-{
-    kWarning(6031) << msg;
-    return QVariant::fromValue(ScriptableExtension::Exception(QString::fromLatin1(msg)));
 }
 
 QVariant ScriptableOperations::callAsFunction(ScriptableExtension* caller,
@@ -671,6 +732,17 @@ JSObject* ScriptableOperations::objectForId(quint64 objId)
     }
 }
 
+void ScriptableOperations::mark()
+{
+    QHash<JSObject*, int>* exp = exportedObjects();
+
+    for (QHash<JSObject*, int>::iterator i = exp->begin(); i != exp->end(); ++i) {
+        JSObject* o = i.key();
+        if (!o->marked())
+            o->mark();
+    }
+}
+
 //-----------------------------------------------------------------------------
 // per-part stuff.
 
@@ -738,15 +810,42 @@ QVariant KHTMLPartScriptable::evaluateScript(ScriptableExtension* caller,
                                              const QString& code,
                                              ScriptLanguage lang)
 {
-    if (lang != ECMAScript)
-        return QVariant::fromValue(ScriptableExtension::Exception("unsupported language"));
-
     kDebug(6031) << code;
+    
+    if (lang != ECMAScript)
+        return exception("unsupported language");
 
-    // ### FIXME FIXME FIXME FIXME
-    // this should first do the XSS check itself -- perhaps via crossFrameExecuteScript
-    // and the like, and do things.
+    
+    KHTMLPart* callingHtmlPart = ScriptableOperations::partForPrincipal(caller);
+    if (!callingHtmlPart)
+        return exception("failed to resolve principal");
 
+    // Figure out the object we want to access, and its corresponding part.
+    JSObject* o = ScriptableOperations::objectForId(contextObjectId);
+    if (!o)
+        return exception("invalid object");
+
+    DOM::NodeImpl* node = toNode(o);
+
+    // Presently, we only permit node contexts here.
+    // ### TODO: window contexts?
+    if (!node)
+        return exception("non-Node context");
+
+    KHTMLPart* targetPart = node->document()->part();
+
+    if (!targetPart)
+        return exception("failed to resolve destination principal");
+
+    if (!targetPart->checkFrameAccess(callingHtmlPart))
+        return exception("XSS check failed");
+
+    // wheee..
+    targetPart->executeScript(DOM::Node(node), code);
+
+    // ### TODO: Return value. Which is a completely different kind of QVariant.
+    // might just want to go to kJSProxy directly    
+    
     return scriptableNull();
 }
 

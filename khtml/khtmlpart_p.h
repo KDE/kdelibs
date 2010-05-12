@@ -33,6 +33,7 @@
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
 #include <kparts/browserextension.h>
+#include <kparts/scriptableextension.h>
 
 #include <QtCore/QDate>
 #include <QtCore/QPointer>
@@ -54,6 +55,7 @@
 #include "editing/editing_p.h"
 #include "ui/findbar/khtmlfind_p.h"
 #include "ui/passwordbar/storepassbar.h"
+#include "ecma/kjs_scriptable.h"
 
 class KFind;
 class KFindDialog;
@@ -106,7 +108,7 @@ namespace khtml
     QPointer<DOM::HTMLPartContainerElementImpl> m_partContainerElement;
     QPointer<KParts::ReadOnlyPart> m_part;
     QPointer<KParts::BrowserExtension> m_extension;
-    QPointer<KParts::LiveConnectExtension> m_liveconnect;
+    QWeakPointer<KParts::ScriptableExtension> m_scriptable;
     QString m_serviceName;
     QString m_serviceType;
     KJSProxy *m_jscript;
@@ -124,10 +126,7 @@ namespace khtml
     bool m_bPreloaded;
     bool m_bNotify;
     bool m_bPendingRedirection;
-  protected Q_SLOTS:
-    void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
   };
-
 }
 
 struct KHTMLFrameList : public QList<khtml::ChildFrame*>
@@ -255,6 +254,7 @@ public:
   ~KHTMLPartPrivate()
   {
     delete m_statusBarExtension;
+    delete m_scriptableExtension;
     delete m_extension;
     delete m_settings;
 #ifndef KHTML_NO_WALLET
@@ -277,6 +277,7 @@ public:
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
+  KJS::KHTMLPartScriptable *m_scriptableExtension;
   KUrlLabel* m_statusBarIconLabel;
   KUrlLabel* m_statusBarWalletLabel;
   KUrlLabel* m_statusBarUALabel;
