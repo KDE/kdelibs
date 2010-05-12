@@ -43,12 +43,13 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
 {
     m_needEventLoop = false;
     // This creates a replace-next-prompt dialog if needed.
+    delete m_replace;
     m_replace = new KReplace(pattern, replacement, options);
 
     // Connect highlight signal to code which handles highlighting
     // of found text.
-    connect(m_replace, SIGNAL( highlight( const QString &, int, int ) ),
-            this, SLOT( slotHighlight( const QString &, int, int ) ) );
+    connect(m_replace, SIGNAL(highlight(QString, int, int)),
+            this, SLOT(slotHighlight(QString, int, int)));
     // Connect findNext signal - called when pressing the button in the dialog
     connect(m_replace, SIGNAL( findNext() ),
             this, SLOT( slotReplaceNext() ) );
@@ -81,11 +82,17 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
               << " Substr:" << str.mid(matchingIndex, matchedLength)
               << endl;
     // Emulate the user saying yes
-    // animateClick triggers a timer, hence the enterloop/exitloop
-    // Calling slotReplace directly would lead to infinite loop anyway (Match never returned,
+    // We need Qt::QueuedConnection (and the enterloop/exitloop)
+    // otherwise we get an infinite loop (Match never returned,
     // so slotReplaceNext never returns)
     if ( m_replace->options() & KReplaceDialog::PromptOnReplace ) {
-        m_replace->replaceNextDialog(false)->button( (KDialog::ButtonCode)m_button )->animateClick();
+        KDialog* dlg = m_replace->replaceNextDialog(false);
+        disconnect(dlg, SIGNAL(finished()), m_replace, 0); // hack to avoid _k_slotDialogClosed being called
+        dlg->hide();
+
+        QAbstractButton* button = dlg->button( (KDialog::ButtonCode)m_button );
+        QMetaObject::invokeMethod(button, "click", Qt::QueuedConnection);
+
         m_needEventLoop = true;
     }
 }
@@ -93,13 +100,13 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
 
 void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
 {
-    kDebug() << "slotReplace index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 );
+    kDebug() << "index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 );
     *m_currentPos = text; // KReplace hacked the replacement into 'text' in already.
 }
 
 void KReplaceTest::slotReplaceNext()
 {
-    //kDebug() ;
+    //kDebug();
     KFind::Result res = KFind::NoMatch;
     int backwards = m_replace->options() & KFind::FindBackwards;
     while ( res == KFind::NoMatch ) {

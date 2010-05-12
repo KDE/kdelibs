@@ -180,7 +180,7 @@ KFind::Result KReplace::replace()
                     QString rep (matchedText);
                     d->KReplacePrivate::replace(rep, d->m_replacement, 0, KFind::d->options, KFind::d->matchedLength);
                     d->dialog()->setLabel( matchedText, rep );
-                    d->dialog()->show();
+                    d->dialog()->show(); // TODO kde5: virtual void showReplaceNextDialog(QString,QString), so that kreplacetest can skip the show()
 
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
