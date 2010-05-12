@@ -119,6 +119,9 @@ public:
 private:
     class Private;
     Private* const d; /// @internal
+    class LayoutBlocker;
+    class TileSet;
+
     Q_DISABLE_COPY(KFilePreviewGenerator)
 
     Q_PRIVATE_SLOT(d, void updateIcons(const KFileItemList&))

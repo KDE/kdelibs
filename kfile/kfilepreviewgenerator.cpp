@@ -69,7 +69,7 @@
  * would not get the correct size hints after dispatching the layoutChanged()
  * signal.
  */
-class LayoutBlocker
+class KFilePreviewGenerator::LayoutBlocker
 {
 public:
     LayoutBlocker(QAbstractItemView* view) :
@@ -95,7 +95,7 @@ private:
 };
 
 /** Helper class for drawing frames for image previews. */
-class TileSet
+class KFilePreviewGenerator::TileSet
 {
 public:
     enum { LeftMargin = 3, TopMargin = 2, RightMargin = 3, BottomMargin = 4 };
