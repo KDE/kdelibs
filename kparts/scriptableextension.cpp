@@ -20,6 +20,7 @@
 #include "scriptableextension.h"
 #include "scriptableextension_p.h"
 #include <kglobal.h>
+#include <kdebug.h>
 #include <QDBusMetaType>
 
 namespace KParts {
@@ -202,6 +203,15 @@ void ScriptableExtension::release(quint64 objId)
 // LiveConnectExtension -> ScriptableExtension adapter. We use
 // lc object IDs as our own object IDs.
 // ----------------------------------------------------------------------------
+ScriptableLiveConnectExtension::ScriptableLiveConnectExtension(QObject* p, LiveConnectExtension* old):
+        ScriptableExtension(p), wrapee(old)
+{
+    connect(wrapee,
+            SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)),
+            this,
+            SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+}
+
 QVariant ScriptableLiveConnectExtension::rootObject()
 {
     // Plugin root is always LC object #0.
@@ -342,10 +352,57 @@ void ScriptableLiveConnectExtension::release(quint64 objId)
 {
     int newRC = --refCounts[objId];
     if (!newRC) {
-        wrapee->unregister((unsigned long)objId);
+        if (objId != 0)
+            wrapee->unregister((unsigned long)objId);
         refCounts.remove(objId);
     }
 }
+
+void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const QString& event,
+                                                      const LiveConnectExtension::ArgList& args)
+{
+    // We want to evaluate in the enclosure's context.
+    QVariant enclosure = enclosingObject();
+    if (!enclosure.canConvert<Object>()) {
+        kDebug(1000) << "No enclosure, can't evaluate";
+        return;
+    }
+
+    Object enclosureObj = enclosure.value<Object>();    
+
+    if (!host()->isScriptLanguageSupported(ECMAScript)) {
+        kDebug(1000) << "Host can't evaluate ECMAScript";
+    }
+
+    // Compute a string to evaluate. We ned to escape a lot of stuff
+    // since we're composing a bunch of strings into one.
+    QString script;
+    script.sprintf("%s(", event.toLatin1().constData());
+
+    LiveConnectExtension::ArgList::const_iterator i = args.begin();
+    const LiveConnectExtension::ArgList::const_iterator argsBegin = i;
+    const LiveConnectExtension::ArgList::const_iterator argsEnd = args.end();
+
+    for ( ; i != argsEnd; ++i) {
+        if (i != argsBegin)
+            script += ",";
+        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
+            script += "\"";
+            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
+            script += "\"";
+        } else
+            script += (*i).second;
+    }
+    script += ")";
+
+    kDebug(1000) << script;
+
+    // Ask host to evaluate.
+    host()->evaluateScript(this, enclosureObj.objId, script);
+}
+
+// hash functions
+// ----------------------------------------------------------------------------
 
 unsigned int qHash(const KParts::ScriptableExtension::Object& o)
 {
