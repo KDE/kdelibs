@@ -23,12 +23,8 @@
 #include "qtest_kde.h"
 
 #include "kfind.h"
-//#include "kfinddialog.h"
-
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
-#include <stdlib.h>
 #include <assert.h>
 
 void KFindRecorder::changeText(int line, const QString &text)
@@ -66,7 +62,7 @@ void KFindRecorder::find(const QString &pattern, long options)
 	} while(result == KFind::NoMatch && m_line < m_text.count());
 }
 
-void KFindRecorder::findNext(const QString &pattern)
+bool KFindRecorder::findNext(const QString &pattern)
 {
 	Q_ASSERT(m_find != 0);
 
@@ -94,6 +90,8 @@ void KFindRecorder::findNext(const QString &pattern)
 		}
 	} while(result == KFind::NoMatch && m_line < m_text.count());
 	//kDebug() << "find next completed" << m_line;
+
+        return result != KFind::NoMatch;
 }
 
 void KFindRecorder::slotHighlight(const QString &text, int index, int matchedLength)
@@ -134,11 +132,7 @@ void TestKFind::testSimpleSearch()
     // first we do a simple text searching the text and doing a few find nexts
     KFindRecorder test(m_text.split('\n'));
     test.find("This", 0);
-    test.findNext();
-    test.findNext();
-    test.findNext();
-    test.findNext();
-    test.findNext();
+    while (test.findNext()) {}
 
     const QString output1 =
         "line: \"This file is part of the KDE project.\", index: 0, length: 4\n"
@@ -149,9 +143,24 @@ void TestKFind::testSimpleSearch()
     QCOMPARE(test.hits().join(""), output1);
 }
 
-void TestKFind::testRegexp()
+void TestKFind::testSimpleRegexp()
 {
-    // TODO
+    KFindRecorder test(m_text.split('\n'));
+    test.find("W.R+ANT[YZ]", KFind::RegularExpression | KFind::CaseSensitive);
+    while (test.findNext()) {}
+    const QString output =
+        "line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n";
+    QCOMPARE(test.hits().join(""), output);
+}
+
+void TestKFind::testLineBeginRegexp()
+{
+    KFindRecorder test(m_text.split('\n'));
+    test.find("^License", KFind::RegularExpression);
+    while (test.findNext()) {}
+    const QString output =
+        "line: \"License version 2, as published by the Free Software Foundation.\", index: 0, length: 7\n";
+    QCOMPARE(test.hits().join(""), output);
 }
 
 void TestKFind::testFindIncremental()

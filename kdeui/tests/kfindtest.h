@@ -40,7 +40,7 @@ class KFindRecorder : public QObject
 		{}
 
 		void find(const QString &pattern, long options = 0);
-		void findNext(const QString &pattern = QString());
+		bool findNext(const QString &pattern = QString());
 
 		void changeText(int line, const QString &text);
 
@@ -68,7 +68,8 @@ public:
 private Q_SLOTS:
 
     void testSimpleSearch();
-    void testRegexp();
+    void testSimpleRegexp();
+    void testLineBeginRegexp();
     void testFindIncremental();
     void testFindIncrementalDynamic();
 
