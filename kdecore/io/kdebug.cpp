@@ -407,7 +407,7 @@ struct KDebugPrivate
             return cache.find(0);
         }
 
-        if (num == 0) { // area 0 is special, it becomes the named area "appname"
+        if (num == 0 && type == QtDebugMsg) { // area 0 is special, it becomes the named area "appname"
             static bool s_firstDebugFromApplication = true;
             if (s_firstDebugFromApplication) {
                 s_firstDebugFromApplication = false;
