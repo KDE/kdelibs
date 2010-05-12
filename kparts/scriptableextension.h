@@ -289,9 +289,9 @@ private:
     ScriptableExtensionPrivate* const d;
 };
 
-unsigned int qHash(const KParts::ScriptableExtension::Object& o);
+KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::Object& o);
 
-unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f);
+KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f);
 
 } // namespace KParts
 
