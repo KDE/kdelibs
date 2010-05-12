@@ -29,9 +29,7 @@ class ScriptableLiveConnectExtension: public ScriptableExtension
 {
     Q_OBJECT
 public:
-    ScriptableLiveConnectExtension(QObject* parent, LiveConnectExtension* old):
-            ScriptableExtension(parent), wrapee(old)
-    {}
+    ScriptableLiveConnectExtension(QObject* parent, LiveConnectExtension* old);
 
     QVariant rootObject();
     // enclosingObject: not applicable, plugins wouldn't have children
@@ -68,6 +66,8 @@ private:
                     unsigned long objId, const QString& value);
 
     QString toLC(const QVariant& in, bool* ok);
+public Q_SLOTS:
+    void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
 };
 
 
