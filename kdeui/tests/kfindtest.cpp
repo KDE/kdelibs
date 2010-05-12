@@ -41,6 +41,8 @@ void KFindRecorder::find(const QString &pattern, long options)
 {
 	delete m_find;
 	m_find = new KFind(pattern, options, 0);
+        // Prevent dialogs from popping up
+        m_find->closeFindNextDialog();
 
 	connect(m_find, SIGNAL(highlight(const QString &, int, int)),
 	                SLOT(slotHighlight(const QString &, int, int)));
@@ -127,6 +129,49 @@ TestKFind::TestKFind()
              "    Boston, MA 02110-1301, USA.\n";
 }
 
+void TestKFind::testStaticFindRegexp_data()
+{
+    // Tests for the core method "static KFind::find"
+    QTest::addColumn<QString>("text");
+    QTest::addColumn<QString>("pattern");
+    QTest::addColumn<int>("startIndex");
+    QTest::addColumn<int>("options");
+    QTest::addColumn<int>("expectedResult");
+    QTest::addColumn<int>("expectedMatchedLength");
+
+    QTest::newRow("simple (0)") << "abc" << "a" << 0 << 0 << 0 << 1;
+    QTest::newRow("simple (1)") << "abc" << "b" << 0 << 0 << 1 << 1;
+    QTest::newRow("not found") << "abca" << "ba" << 0 << 0 << -1 << 0;
+    QTest::newRow("from index") << "abc bc" << "b" << 3 << 0 << 4 << 1;
+    QTest::newRow("from exact index") << "abc bc" << "b" << 4 << 0 << 4 << 1;
+    QTest::newRow("past index (not found)") << "abc bc" << "b" << 5 << 0 << -1 << 0;
+    QTest::newRow("dot") << "abc" << "b." << 0 << 0 << 1 << 2;
+    QTest::newRow("^simple") << "text" << "^tex" << 0 << 0 << 0 << 3;
+    // TODO QTest::newRow("^multiline") << "foo\nbar" << "^bar" << 0 << 0 << 4 << 3;
+    QTest::newRow("multiline with \\n") << "foo\nbar" << "o\nb" << 0 << 0 << 2 << 3;
+    QTest::newRow("whole words ok") << "abc bcbc bc bmore be" << "b." << 0 << int(KFind::WholeWordsOnly) << 9 << 2;
+    QTest::newRow("whole words not found") << "abab abx" << "ab" << 0 << int(KFind::WholeWordsOnly) << -1 << 0;
+    QTest::newRow("whole words not found (_)") << "abab ab_" << "ab" << 0 << int(KFind::WholeWordsOnly) << -1 << 0;
+    QTest::newRow("whole words ok (.)") << "ab." << "ab" << 0 << int(KFind::WholeWordsOnly) << 0 << 2;
+    QTest::newRow("backwards") << "abc bcbc bc" << "b." << 10 << int(KFind::FindBackwards) << 9 << 2;
+}
+
+void TestKFind::testStaticFindRegexp()
+{
+    // Tests for the core method "static KFind::find(text, regexp)"
+    QFETCH(QString, text);
+    QFETCH(QString, pattern);
+    QFETCH(int, startIndex);
+    QFETCH(int, options);
+    QFETCH(int, expectedResult);
+    QFETCH(int, expectedMatchedLength);
+
+    int matchedLength;
+    const int result = KFind::find(text, QRegExp(pattern), startIndex, options, &matchedLength);
+    QCOMPARE(result, expectedResult);
+    QCOMPARE(matchedLength, expectedMatchedLength);
+}
+
 void TestKFind::testSimpleSearch()
 {
     // first we do a simple text searching the text and doing a few find nexts
@@ -155,6 +200,14 @@ void TestKFind::testSimpleRegexp()
 
 void TestKFind::testLineBeginRegexp()
 {
+    // Let's see what QRegExp can do on a big text (like in KTextEdit)
+    {
+        const QString foobar = "foo\nbar";
+        const int idx = foobar.indexOf(QRegExp("^bar"));
+        QCOMPARE(idx, -1); // it doesn't find it. No /m support, as they say. Too bad.
+    }
+
+    // If we split, it works, but then looking for "foo\nbar" won't work...
     KFindRecorder test(m_text.split('\n'));
     test.find("^License", KFind::RegularExpression);
     while (test.findNext()) {}

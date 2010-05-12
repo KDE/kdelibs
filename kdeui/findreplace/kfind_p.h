@@ -89,9 +89,6 @@ struct KFind::Private
     void init( const QString& pattern );
     void startNewIncrementalSearch();
 
-    static bool isInWord( QChar ch );
-    static bool isWholeWords( const QString &text, int starts, int matchedLength );
-
     void _k_slotFindNext();
     void _k_slotDialogClosed();
 

@@ -23,7 +23,6 @@
 #include "kfind_p.h"
 #include "kfinddialog.h"
 
-#include <kapplication.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
@@ -33,9 +32,9 @@
 #include <QtCore/QHash>
 #include <QTextDocument>
 
-//#define DEBUG_FIND
+// #define DEBUG_FIND
 
-#define INDEX_NOMATCH -1
+static const int INDEX_NOMATCH = -1;
 
 class KFindNextDialog : public KDialog
 {
@@ -288,21 +287,19 @@ KFind::Result KFind::find()
             else
                 d->index = KFind::find(d->text, d->pattern, d->index, d->options, &d->matchedLength);
 
-
             if ( d->options & KFind::FindIncremental )
                 d->data[d->currentId].dirty = false;
 
-            if ( d->index == -1 && d->currentId < (int) d->data.count() - 1 )
-            {
+            if (d->index == -1 && d->currentId < d->data.count() - 1) {
                 d->text = d->data.at(++d->currentId).text;
 
                 if ( d->options & KFind::FindBackwards )
                     d->index = d->text.length();
                 else
                     d->index = 0;
-            }
-            else
+            } else {
                 break;
+            }
         } while ( !(d->options & KFind::RegularExpression) );
 
         if ( d->index != -1 )
@@ -399,6 +396,23 @@ void KFind::Private::startNewIncrementalSearch()
     pattern.clear();
 }
 
+static bool isInWord(QChar ch)
+{
+    return ch.isLetter() || ch.isDigit() || ch == '_';
+}
+
+static bool isWholeWords(const QString &text, int starts, int matchedLength)
+{
+    if (starts == 0 || !isInWord(text.at(starts-1)))
+    {
+        const int ends = starts + matchedLength;
+        if (ends == text.length() || !isInWord(text.at(ends))) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // static
 int KFind::find(const QString &text, const QString &pattern, int index, long options, int *matchedLength)
 {
@@ -431,8 +445,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
                     break;
 
                 // Is the match delimited correctly?
-                *matchedLength = pattern.length();
-                if (Private::isWholeWords(text, index, *matchedLength))
+                if (isWholeWords(text, index, pattern.length()))
                     break;
                 index--;
             }
@@ -440,7 +453,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
         else
         {
             // Forward search, until the end of the line...
-            while (index < (int)text.length())
+            while (index < text.length())
             {
                 // ...find the next match.
                 index = text.indexOf(pattern, index, caseSensitive);
@@ -448,12 +461,11 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
                     break;
 
                 // Is the match delimited correctly?
-                *matchedLength = pattern.length();
-                if (Private::isWholeWords(text, index, *matchedLength))
+                if (isWholeWords(text, index, pattern.length()))
                     break;
                 index++;
             }
-            if (index >= (int)text.length()) // end of line
+            if (index >= text.length()) // end of line
                 index = -1; // not found
         }
     }
@@ -468,11 +480,11 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
         {
             index = text.indexOf(pattern, index, caseSensitive);
         }
-        if (index != -1)
-        {
-            *matchedLength = pattern.length();
-        }
     }
+    if (index == -1)
+        *matchedLength = 0;
+    else
+        *matchedLength = pattern.length();
     return index;
 }
 
@@ -495,7 +507,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
                 //pattern.match(text, index, matchedLength, false);
                 /*int pos =*/ pattern.indexIn( text.mid(index) );
                 *matchedLength = pattern.matchedLength();
-                if (Private::isWholeWords(text, index, *matchedLength))
+                if (isWholeWords(text, index, *matchedLength))
                     break;
                 index--;
             }
@@ -503,7 +515,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
         else
         {
             // Forward search, until the end of the line...
-            while (index < (int)text.length())
+            while (index < text.length())
             {
                 // ...find the next match.
                 index = text.indexOf(pattern, index);
@@ -514,50 +526,30 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
                 //pattern.match(text, index, matchedLength, false);
                 /*int pos =*/ pattern.indexIn( text.mid(index) );
                 *matchedLength = pattern.matchedLength();
-                if (Private::isWholeWords(text, index, *matchedLength))
+                if (isWholeWords(text, index, *matchedLength))
                     break;
                 index++;
             }
-            if (index >= (int)text.length()) // end of line
+            if (index >= text.length()) // end of line
                 index = -1; // not found
         }
     }
     else
     {
         // Non-whole-word search.
-        if (options & KFind::FindBackwards)
-        {
+        if (options & KFind::FindBackwards) {
             index = text.lastIndexOf(pattern, index);
-        }
-        else
-        {
+        } else {
             index = text.indexOf(pattern, index);
         }
-        if (index != -1)
-        {
-            //pattern.match(text, index, matchedLength, false);
+        if (index != -1) {
             /*int pos =*/ pattern.indexIn( text.mid(index) );
             *matchedLength = pattern.matchedLength();
         }
     }
+    if (index == -1)
+        *matchedLength = 0;
     return index;
-}
-
-bool KFind::Private::isInWord(QChar ch)
-{
-    return ch.isLetter() || ch.isDigit() || ch == '_';
-}
-
-bool KFind::Private::isWholeWords(const QString &text, int starts, int matchedLength)
-{
-    if ((starts == 0) || (!isInWord(text.at(starts-1))))
-    {
-        int ends = starts + matchedLength;
-
-        if ((ends == (int)text.length()) || (!isInWord(text.at(ends))))
-            return true;
-    }
-    return false;
 }
 
 void KFind::Private::_k_slotFindNext()
