@@ -84,221 +84,220 @@ class KSelectionProxyModelPrivate;
 */
 class KDEUI_EXPORT KSelectionProxyModel : public QAbstractProxyModel
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  /**
-  ctor.
+    /**
+    ctor.
 
-  @p selectionModel The selection model used to filter what is presented by the proxy.
-  */
+    @p selectionModel The selection model used to filter what is presented by the proxy.
+    */
 
-  explicit KSelectionProxyModel(QItemSelectionModel *selectionModel, QObject *parent = 0 );
+    explicit KSelectionProxyModel(QItemSelectionModel *selectionModel, QObject *parent = 0);
 
-  /**
-  dtor
-  */
-  virtual ~KSelectionProxyModel();
+    /**
+    dtor
+    */
+    virtual ~KSelectionProxyModel();
 
-  /**
-  reimp.
-  */
-  virtual void setSourceModel ( QAbstractItemModel * sourceModel );
+    /**
+    reimp.
+    */
+    virtual void setSourceModel(QAbstractItemModel * sourceModel);
 
-  QItemSelectionModel *selectionModel() const;
+    QItemSelectionModel *selectionModel() const;
 
-  enum FilterBehavior
-  {
-    SubTrees,
-    SubTreeRoots,
-    SubTreesWithoutRoots,
-    ExactSelection,
-    ChildrenOfExactSelection
-  };
-  Q_ENUMS(FilterBehavior)
+    enum FilterBehavior {
+        SubTrees,
+        SubTreeRoots,
+        SubTreesWithoutRoots,
+        ExactSelection,
+        ChildrenOfExactSelection
+    };
+    Q_ENUMS(FilterBehavior)
 
-  /**
-    Set the filter behaviors of this model.
-    The filter behaviors of the model govern the content of the model based on the selection of the contained QItemSelectionModel.
+    /**
+      Set the filter behaviors of this model.
+      The filter behaviors of the model govern the content of the model based on the selection of the contained QItemSelectionModel.
 
-    See kdeui/proxymodeltestapp to try out the different proxy model behaviors.
+      See kdeui/proxymodeltestapp to try out the different proxy model behaviors.
 
-    The most useful behaviors are SubTrees, ExactSelection and ChildrenOfExactSelection.
+      The most useful behaviors are SubTrees, ExactSelection and ChildrenOfExactSelection.
 
-    The default behavior is SubTrees. This means that this proxy model will contain the roots of the items in the source model.
-    Any descendants which are also selected have no additional effect.
-    For example if the source model is like:
+      The default behavior is SubTrees. This means that this proxy model will contain the roots of the items in the source model.
+      Any descendants which are also selected have no additional effect.
+      For example if the source model is like:
 
-    @verbatim
-    (root)
-      - A
-      - B
+      @verbatim
+      (root)
+        - A
+        - B
+          - C
+          - D
+            - E
+              - F
+            - G
+        - H
+        - I
+          - J
+          - K
+          - L
+      @endverbatim
+
+      And A, B, C and D are selected, the proxy will contain:
+
+      @verbatim
+      (root)
+        - A
+        - B
+          - C
+          - D
+            - E
+              - F
+            - G
+      @endverbatim
+
+      That is, selecting 'D' or 'C' if 'B' is also selected has no effect. If 'B' is de-selected, then 'C' amd 'D' become top-level items:
+
+      @verbatim
+      (root)
+        - A
         - C
         - D
           - E
             - F
           - G
-      - H
-      - I
+      @endverbatim
+
+      This is the behavior used by KJots when rendering books.
+
+      If the behavior is set to SubTreeRoots, then the children of selected indexes are not part of the model. If 'A', 'B' and 'D' are selected,
+
+      @verbatim
+      (root)
+        - A
+        - B
+      @endverbatim
+
+      Note that although 'D' is selected, it is not part of the proxy model, because its parent 'B' is already selected.
+
+      SubTreesWithoutRoots has the effect of not making the selected items part of the model, but making their children part of the model instead. If 'A', 'B' and 'I' are selected:
+
+      @verbatim
+      (root)
+        - C
+        - D
+          - E
+            - F
+          - G
         - J
         - K
         - L
-    @endverbatim
+      @endverbatim
 
-    And A, B, C and D are selected, the proxy will contain:
+      Note that 'A' has no children, so selecting it has no outward effect on the model.
 
-    @verbatim
-    (root)
-      - A
-      - B
+      ChildrenOfExactSelection causes the proxy model to contain the children of the selected indexes,but further descendants are omitted.
+      Additionally, if descendants of an already selected index are selected, their children are part of the proxy model.
+      For example, if 'A', 'B', 'D' and 'I' are selected:
+
+      @verbatim
+      (root)
         - C
         - D
-          - E
-            - F
-          - G
-    @endverbatim
-
-    That is, selecting 'D' or 'C' if 'B' is also selected has no effect. If 'B' is de-selected, then 'C' amd 'D' become top-level items:
-
-    @verbatim
-    (root)
-      - A
-      - C
-      - D
         - E
-          - F
         - G
-    @endverbatim
+        - J
+        - K
+        - L
+      @endverbatim
 
-    This is the behavior used by KJots when rendering books.
+      This would be useful for example if showing containers (for example maildirs) in one view and their items in another. Sub-maildirs would still appear in the proxy, but
+      could be filtered out using a QSortfilterProxyModel.
 
-    If the behavior is set to SubTreeRoots, then the children of selected indexes are not part of the model. If 'A', 'B' and 'D' are selected,
+      The ExactSelection behavior causes the selected items to be part of the proxy model, even if their ancestors are already selected, but children of selected items are not included.
 
-    @verbatim
-    (root)
-      - A
-      - B
-    @endverbatim
+      Again, if 'A', 'B', 'D' and 'I' are selected:
 
-    Note that although 'D' is selected, it is not part of the proxy model, because its parent 'B' is already selected.
+      @verbatim
+      (root)
+        - A
+        - B
+        - D
+        - I
+      @endverbatim
 
-    SubTreesWithoutRoots has the effect of not making the selected items part of the model, but making their children part of the model instead. If 'A', 'B' and 'I' are selected:
+      This is the behavior used by the Favourite Folder View in KMail.
 
-    @verbatim
-    (root)
-      - C
-      - D
-        - E
-          - F
-        - G
-      - J
-      - K
-      - L
-    @endverbatim
+    */
+    void setFilterBehavior(FilterBehavior behavior);
+    FilterBehavior filterBehavior() const;
 
-    Note that 'A' has no children, so selecting it has no outward effect on the model.
+    QModelIndex mapFromSource(const QModelIndex & sourceIndex) const;
+    QModelIndex mapToSource(const QModelIndex & proxyIndex) const;
 
-    ChildrenOfExactSelection causes the proxy model to contain the children of the selected indexes,but further descendants are omitted.
-    Additionally, if descendants of an already selected index are selected, their children are part of the proxy model.
-    For example, if 'A', 'B', 'D' and 'I' are selected:
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-    @verbatim
-    (root)
-      - C
-      - D
-      - E
-      - G
-      - J
-      - K
-      - L
-    @endverbatim
+    virtual QMimeData* mimeData(const QModelIndexList & indexes) const;
+    virtual QStringList mimeTypes() const;
+    virtual Qt::DropActions supportedDropActions() const;
+    virtual bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
-    This would be useful for example if showing containers (for example maildirs) in one view and their items in another. Sub-maildirs would still appear in the proxy, but
-    could be filtered out using a QSortfilterProxyModel.
+    virtual bool hasChildren(const QModelIndex & parent = QModelIndex()) const;
+    virtual QModelIndex index(int, int, const QModelIndex& = QModelIndex()) const;
+    virtual QModelIndex parent(const QModelIndex&) const;
+    virtual int columnCount(const QModelIndex& = QModelIndex()) const;
 
-    The ExactSelection behavior causes the selected items to be part of the proxy model, even if their ancestors are already selected, but children of selected items are not included.
-
-    Again, if 'A', 'B', 'D' and 'I' are selected:
-
-    @verbatim
-    (root)
-      - A
-      - B
-      - D
-      - I
-    @endverbatim
-
-    This is the behavior used by the Favourite Folder View in KMail.
-
-  */
-  void setFilterBehavior(FilterBehavior behavior);
-  FilterBehavior filterBehavior() const;
-
-  QModelIndex mapFromSource ( const QModelIndex & sourceIndex ) const;
-  QModelIndex mapToSource ( const QModelIndex & proxyIndex ) const;
-
-  virtual Qt::ItemFlags flags( const QModelIndex &index ) const;
-  QVariant data( const QModelIndex & index, int role = Qt::DisplayRole ) const;
-  virtual int rowCount( const QModelIndex & parent = QModelIndex() ) const;
-  virtual QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-
-  virtual QMimeData* mimeData( const QModelIndexList & indexes ) const;
-  virtual QStringList mimeTypes() const;
-  virtual Qt::DropActions supportedDropActions() const;
-  virtual bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
-
-  virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
-  virtual QModelIndex index(int, int, const QModelIndex& = QModelIndex() ) const;
-  virtual QModelIndex parent(const QModelIndex&) const;
-  virtual int columnCount(const QModelIndex& = QModelIndex() ) const;
-
-  virtual QModelIndexList match(const QModelIndex& start, int role, const QVariant& value, int hits = 1,
-                                Qt::MatchFlags flags = Qt::MatchFlags(Qt::MatchStartsWith | Qt::MatchWrap)) const;
+    virtual QModelIndexList match(const QModelIndex& start, int role, const QVariant& value, int hits = 1,
+                                  Qt::MatchFlags flags = Qt::MatchFlags(Qt::MatchStartsWith | Qt::MatchWrap)) const;
 
 Q_SIGNALS:
 #if !defined(Q_MOC_RUN)
 private: // Don't allow subclasses to emit these signals.
 #endif
 
-  /**
-    @internal
-    Emitted before @p removeRootIndex, an index in the sourceModel is removed from
-    the root selected indexes. This may be unrelated to rows removed from the model,
-    depending on configuration.
-  */
-  void rootIndexAboutToBeRemoved( const QModelIndex &removeRootIndex );
+    /**
+      @internal
+      Emitted before @p removeRootIndex, an index in the sourceModel is removed from
+      the root selected indexes. This may be unrelated to rows removed from the model,
+      depending on configuration.
+    */
+    void rootIndexAboutToBeRemoved(const QModelIndex &removeRootIndex);
 
-  /**
-    @internal
-    Emitted when @p newIndex, an index in the sourceModel is added to the root selected
-    indexes. This may be unrelated to rows inserted to the model,
-    depending on configuration.
-  */
-  void rootIndexAdded( const QModelIndex &newIndex );
+    /**
+      @internal
+      Emitted when @p newIndex, an index in the sourceModel is added to the root selected
+      indexes. This may be unrelated to rows inserted to the model,
+      depending on configuration.
+    */
+    void rootIndexAdded(const QModelIndex &newIndex);
 
 protected:
-  QList<QPersistentModelIndex> sourceRootIndexes() const;
+    QList<QPersistentModelIndex> sourceRootIndexes() const;
 
 private:
-  Q_DECLARE_PRIVATE(KSelectionProxyModel)
-  //@cond PRIVATE
-  KSelectionProxyModelPrivate *d_ptr;
+    Q_DECLARE_PRIVATE(KSelectionProxyModel)
+    //@cond PRIVATE
+    KSelectionProxyModelPrivate *d_ptr;
 
-  Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeInserted(const QModelIndex &, int, int))
-  Q_PRIVATE_SLOT(d_func(), void sourceRowsInserted(const QModelIndex &, int, int))
-  Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeRemoved(const QModelIndex &, int, int))
-  Q_PRIVATE_SLOT(d_func(), void sourceRowsRemoved(const QModelIndex &, int, int))
-  Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int))
-  Q_PRIVATE_SLOT(d_func(), void sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int))
-  Q_PRIVATE_SLOT(d_func(), void sourceModelAboutToBeReset())
-  Q_PRIVATE_SLOT(d_func(), void sourceModelReset())
-  Q_PRIVATE_SLOT(d_func(), void sourceLayoutAboutToBeChanged())
-  Q_PRIVATE_SLOT(d_func(), void sourceLayoutChanged())
-  Q_PRIVATE_SLOT(d_func(), void sourceDataChanged(const QModelIndex &, const QModelIndex &))
-  Q_PRIVATE_SLOT(d_func(), void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected))
-  Q_PRIVATE_SLOT(d_func(), void sourceModelDestroyed())
+    Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeInserted(const QModelIndex &, int, int))
+    Q_PRIVATE_SLOT(d_func(), void sourceRowsInserted(const QModelIndex &, int, int))
+    Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeRemoved(const QModelIndex &, int, int))
+    Q_PRIVATE_SLOT(d_func(), void sourceRowsRemoved(const QModelIndex &, int, int))
+    Q_PRIVATE_SLOT(d_func(), void sourceRowsAboutToBeMoved(const QModelIndex &, int, int, const QModelIndex &, int))
+    Q_PRIVATE_SLOT(d_func(), void sourceRowsMoved(const QModelIndex &, int, int, const QModelIndex &, int))
+    Q_PRIVATE_SLOT(d_func(), void sourceModelAboutToBeReset())
+    Q_PRIVATE_SLOT(d_func(), void sourceModelReset())
+    Q_PRIVATE_SLOT(d_func(), void sourceLayoutAboutToBeChanged())
+    Q_PRIVATE_SLOT(d_func(), void sourceLayoutChanged())
+    Q_PRIVATE_SLOT(d_func(), void sourceDataChanged(const QModelIndex &, const QModelIndex &))
+    Q_PRIVATE_SLOT(d_func(), void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected))
+    Q_PRIVATE_SLOT(d_func(), void sourceModelDestroyed())
 
 
-  //@endcond
+    //@endcond
 
 };
 
