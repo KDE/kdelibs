@@ -142,51 +142,52 @@ void KReplace::displayFinalDialog() const
 
 KFind::Result KReplace::replace()
 {
+    KFind::Private* df = KFind::d;
 #ifdef DEBUG_REPLACE
-    kDebug() << "d->index=" << KFind::d->index;
+    kDebug() << "d->index=" << df->index;
 #endif
-    if ( KFind::d->index == INDEX_NOMATCH && KFind::d->lastResult == Match )
+    if ( df->index == INDEX_NOMATCH && df->lastResult == Match )
     {
-        KFind::d->lastResult = NoMatch;
+        df->lastResult = NoMatch;
         return NoMatch;
     }
 
     do // this loop is only because validateMatch can fail
     {
 #ifdef DEBUG_REPLACE
-        kDebug() << "beginning of loop: KFind::d->index=" << KFind::d->index;
+        kDebug() << "beginning of loop: df->index=" << df->index;
 #endif
         // Find the next match.
-        if ( KFind::d->options & KFind::RegularExpression )
-            KFind::d->index = KFind::find(KFind::d->text, *KFind::d->regExp, KFind::d->index, KFind::d->options, &KFind::d->matchedLength);
+        if ( df->options & KFind::RegularExpression )
+            df->index = KFind::find(df->text, *df->regExp, df->index, df->options, &df->matchedLength);
         else
-            KFind::d->index = KFind::find(KFind::d->text, KFind::d->pattern, KFind::d->index, KFind::d->options, &KFind::d->matchedLength);
+            df->index = KFind::find(df->text, df->pattern, df->index, df->options, &df->matchedLength);
 
 #ifdef DEBUG_REPLACE
-        kDebug() << "KFind::find returned KFind::d->index=" << KFind::d->index;
+        kDebug() << "KFind::find returned df->index=" << df->index;
 #endif
-        if ( KFind::d->index != -1 )
+        if ( df->index != -1 )
         {
             // Flexibility: the app can add more rules to validate a possible match
-            if ( validateMatch( KFind::d->text, KFind::d->index, KFind::d->matchedLength ) )
+            if ( validateMatch( df->text, df->index, df->matchedLength ) )
             {
-                if ( KFind::d->options & KReplaceDialog::PromptOnReplace )
+                if ( df->options & KReplaceDialog::PromptOnReplace )
                 {
 #ifdef DEBUG_REPLACE
                     kDebug() << "PromptOnReplace";
 #endif
                     // Display accurate initial string and replacement string, they can vary
-                    QString matchedText (KFind::d->text.mid( KFind::d->index, KFind::d->matchedLength ));
+                    QString matchedText (df->text.mid( df->index, df->matchedLength ));
                     QString rep (matchedText);
-                    d->KReplacePrivate::replace(rep, d->m_replacement, 0, KFind::d->options, KFind::d->matchedLength);
+                    d->KReplacePrivate::replace(rep, d->m_replacement, 0, df->options, df->matchedLength);
                     d->dialog()->setLabel( matchedText, rep );
                     d->dialog()->show(); // TODO kde5: virtual void showReplaceNextDialog(QString,QString), so that kreplacetest can skip the show()
 
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
-                    emit highlight(KFind::d->text, KFind::d->index, KFind::d->matchedLength);
+                    emit highlight(df->text, df->index, df->matchedLength);
 
-                    KFind::d->lastResult = Match;
+                    df->lastResult = Match;
                     return Match;
                 }
                 else
@@ -197,17 +198,17 @@ KFind::Result KReplace::replace()
             else
             {
                 // not validated -> move on
-                if (KFind::d->options & KFind::FindBackwards)
-                    KFind::d->index--;
+                if (df->options & KFind::FindBackwards)
+                    df->index--;
                 else
-                    KFind::d->index++;
+                    df->index++;
             }
         } else
-            KFind::d->index = INDEX_NOMATCH; // will exit the loop
+            df->index = INDEX_NOMATCH; // will exit the loop
     }
-    while (KFind::d->index != INDEX_NOMATCH);
+    while (df->index != INDEX_NOMATCH);
 
-    KFind::d->lastResult = NoMatch;
+    df->lastResult = NoMatch;
     return NoMatch;
 }
 
@@ -285,25 +286,28 @@ void KReplacePrivate::_k_slotReplace()
 
 void KReplacePrivate::doReplace()
 {
-    int replacedLength = replace(q->KFind::d->text, m_replacement, q->KFind::d->index, q->KFind::d->options, q->KFind::d->matchedLength);
+    KFind::Private* df = q->KFind::d;
+    Q_ASSERT(df->index >= 0);
+    const int replacedLength = replace(df->text, m_replacement, df->index, df->options, df->matchedLength);
 
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.
-    emit q->replace(q->KFind::d->text, q->KFind::d->index, replacedLength, q->KFind::d->matchedLength);
+    emit q->replace(df->text, df->index, replacedLength, df->matchedLength);
 #ifdef DEBUG_REPLACE
-    kDebug() << "after replace() signal: KFind::d->index=" << q->KFind::d->index << " replacedLength=" << replacedLength;
+    kDebug() << "after replace() signal: KFind::d->index=" << df->index << " replacedLength=" << replacedLength;
 #endif
     m_replacements++;
-    if (q->KFind::d->options & KFind::FindBackwards)
-        q->KFind::d->index--;
-    else {
-        q->KFind::d->index += replacedLength;
+    if (df->options & KFind::FindBackwards) {
+        Q_ASSERT(df->index >= 0);
+        df->index--;
+    } else {
+        df->index += replacedLength;
         // when replacing the empty pattern, move on. See also kjs/regexp.cpp for how this should be done for regexps.
-        if ( q->KFind::d->pattern.isEmpty() )
-            ++(q->KFind::d->index);
+        if ( df->pattern.isEmpty() )
+            ++(df->index);
     }
 #ifdef DEBUG_REPLACE
-    kDebug() << "after adjustement: KFind::d->index=" << q->KFind::d->index;
+    kDebug() << "after adjustement: KFind::d->index=" << df->index;
 #endif
 }
 

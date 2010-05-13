@@ -67,6 +67,8 @@ public:
 
 private Q_SLOTS:
 
+    void testStaticFindString_data();
+    void testStaticFindString();
     void testStaticFindRegexp_data();
     void testStaticFindRegexp();
 

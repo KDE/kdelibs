@@ -129,6 +129,58 @@ TestKFind::TestKFind()
              "    Boston, MA 02110-1301, USA.\n";
 }
 
+void TestKFind::testStaticFindString_data()
+{
+    // Tests for the core method "static KFind::find"
+    QTest::addColumn<QString>("text");
+    QTest::addColumn<QString>("pattern");
+    QTest::addColumn<int>("startIndex");
+    QTest::addColumn<int>("options");
+    QTest::addColumn<int>("expectedResult");
+    QTest::addColumn<int>("expectedMatchedLength");
+
+    QTest::newRow("simple (0)") << "abc" << "a" << 0 << 0 << 0 << 1;
+    QTest::newRow("simple (1)") << "abc" << "b" << 0 << 0 << 1 << 1;
+    QTest::newRow("not found") << "abca" << "ba" << 0 << 0 << -1 << 0;
+    QTest::newRow("from index") << "abc bc" << "b" << 3 << 0 << 4 << 1;
+    QTest::newRow("from exact index") << "abc bc" << "b" << 4 << 0 << 4 << 1;
+    QTest::newRow("past index (not found)") << "abc bc" << "b" << 5 << 0 << -1 << 0;
+    QTest::newRow("dot") << "ab." << "b." << 0 << 0 << 1 << 2;
+    QTest::newRow("^should fail") << "text" << "^tex" << 0 << 0 << -1 << 0;
+    QTest::newRow("multiline with \\n") << "foo\nbar" << "o\nb" << 0 << 0 << 2 << 3;
+    QTest::newRow("whole words ok") << "abc bcbc bc bmore be" << "bc" << 0 << int(KFind::WholeWordsOnly) << 9 << 2;
+    QTest::newRow("whole words not found") << "abab abx" << "ab" << 0 << int(KFind::WholeWordsOnly) << -1 << 0;
+    QTest::newRow("whole words not found (_)") << "abab ab_" << "ab" << 0 << int(KFind::WholeWordsOnly) << -1 << 0;
+    QTest::newRow("whole words ok (.)") << "ab." << "ab" << 0 << int(KFind::WholeWordsOnly) << 0 << 2;
+    QTest::newRow("backwards") << "abc bcbc8bc" << "bc" << 10 << int(KFind::FindBackwards) << 9 << 2;
+    QTest::newRow("backwards again") << "abc bcbc8bc" << "bc" << 8 << int(KFind::FindBackwards) << 6 << 2;
+    QTest::newRow("backwards 2") << "abc bcbc8bc" << "bc" << 5 << int(KFind::FindBackwards) << 4 << 2;
+    QTest::newRow("backwards 3") << "abc bcbc8bc" << "bc" << 3 << int(KFind::FindBackwards) << 1 << 2;
+    QTest::newRow("empty (0)") << "a" << "" << 0 << int(0) << 0 << 0;
+    QTest::newRow("empty (1)") << "a" << "" << 1 << int(0) << 1 << 0; // kreplacetest testReplaceBlankSearch relies on this
+    QTest::newRow("at end, not found") << "a" << "b" << 1 << int(0) << -1 << 0; // just for catching the while(index<text.length()) bug
+    QTest::newRow("back, not found") << "a" << "b" << 0 << int(KFind::FindBackwards) << -1 << 0;
+    QTest::newRow("back, at begin, found") << "a" << "a" << 0 << int(KFind::FindBackwards) << 0 << 1;
+    QTest::newRow("back, at end, found") << "a" << "a" << 1 << int(KFind::FindBackwards) << 0 << 1;
+    QTest::newRow("back, text shorter than pattern") << "a" << "abcd" << 0 << int(KFind::FindBackwards) << -1 << 0;
+}
+
+void TestKFind::testStaticFindString()
+{
+    // Tests for the core method "static KFind::find(text, regexp)"
+    QFETCH(QString, text);
+    QFETCH(QString, pattern);
+    QFETCH(int, startIndex);
+    QFETCH(int, options);
+    QFETCH(int, expectedResult);
+    QFETCH(int, expectedMatchedLength);
+
+    int matchedLength;
+    const int result = KFind::find(text, pattern, startIndex, options, &matchedLength);
+    QCOMPARE(result, expectedResult);
+    QCOMPARE(matchedLength, expectedMatchedLength);
+}
+
 void TestKFind::testStaticFindRegexp_data()
 {
     // Tests for the core method "static KFind::find"
@@ -154,6 +206,13 @@ void TestKFind::testStaticFindRegexp_data()
     QTest::newRow("whole words not found (_)") << "abab ab_" << "ab" << 0 << int(KFind::WholeWordsOnly) << -1 << 0;
     QTest::newRow("whole words ok (.)") << "ab." << "ab" << 0 << int(KFind::WholeWordsOnly) << 0 << 2;
     QTest::newRow("backwards") << "abc bcbc bc" << "b." << 10 << int(KFind::FindBackwards) << 9 << 2;
+    QTest::newRow("empty (0)") << "a" << "" << 0 << int(0) << 0 << 0;
+    QTest::newRow("empty (1)") << "a" << "" << 1 << int(0) << 1 << 0; // kreplacetest testReplaceBlankSearch relies on this
+    QTest::newRow("at end, not found") << "a" << "b" << 1 << int(0) << -1 << 0; // just for catching the while(index<text.length()) bug
+    QTest::newRow("back, not found") << "a" << "b" << 0 << int(KFind::FindBackwards) << -1 << 0;
+    QTest::newRow("back, at begin, found") << "a" << "a" << 0 << int(KFind::FindBackwards) << 0 << 1;
+    QTest::newRow("back, at end, found") << "a" << "a" << 1 << int(KFind::FindBackwards) << 0 << 1;
+    QTest::newRow("back, text shorter than pattern") << "a" << "abcd" << 0 << int(KFind::FindBackwards) << -1 << 0;
 }
 
 void TestKFind::testStaticFindRegexp()

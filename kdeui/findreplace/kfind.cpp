@@ -413,6 +413,19 @@ static bool isWholeWords(const QString &text, int starts, int matchedLength)
     return false;
 }
 
+static bool matchOk(const QString& text, int index, int matchedLength, long options)
+{
+    if (options & KFind::WholeWordsOnly) {
+        // Is the match delimited correctly?
+        if (isWholeWords(text, index, matchedLength))
+            return true;
+    } else {
+        // Non-whole-word search: this match is good
+        return true;
+    }
+    return false;
+}
+
 // static
 int KFind::find(const QString &text, const QString &pattern, int index, long options, int *matchedLength)
 {
@@ -427,61 +440,44 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
 
     // In Qt4 QString("aaaaaa").lastIndexOf("a",6) returns -1; we need
     // to start at text.length() - pattern.length() to give a valid index to QString.
-    if (options & KFind::FindBackwards)
-        index = qMin( text.length() - pattern.length(), index );
+    if (options & KFind::FindBackwards) {
+        index = qMin( qMax(0, text.length() - pattern.length()), index );
+    }
 
     Qt::CaseSensitivity caseSensitive = (options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
-    if (options & KFind::WholeWordsOnly)
-    {
-        if (options & KFind::FindBackwards)
-        {
-            // Backward search, until the beginning of the line...
-            while (index >= 0)
-            {
-                // ...find the next match.
-                index = text.lastIndexOf(pattern, index, caseSensitive);
-                if (index == -1)
-                    break;
-
-                // Is the match delimited correctly?
-                if (isWholeWords(text, index, pattern.length()))
-                    break;
-                index--;
-            }
-        }
-        else
-        {
-            // Forward search, until the end of the line...
-            while (index < text.length())
-            {
-                // ...find the next match.
-                index = text.indexOf(pattern, index, caseSensitive);
-                if (index == -1)
-                    break;
-
-                // Is the match delimited correctly?
-                if (isWholeWords(text, index, pattern.length()))
-                    break;
-                index++;
-            }
-            if (index >= text.length()) // end of line
-                index = -1; // not found
-        }
-    }
-    else
-    {
-        // Non-whole-word search.
-        if (options & KFind::FindBackwards)
-        {
+    if (options & KFind::FindBackwards) {
+        // Backward search, until the beginning of the line...
+        while (index >= 0) {
+            // ...find the next match.
             index = text.lastIndexOf(pattern, index, caseSensitive);
+            if (index == -1)
+                break;
+
+            if (matchOk(text, index, pattern.length(), options))
+                break;
+            index--;
+            kDebug() << "decrementing:" << index;
         }
-        else
+    } else {
+        // Forward search, until the end of the line...
+        while (index <= text.length())
         {
+            // ...find the next match.
             index = text.indexOf(pattern, index, caseSensitive);
+            if (index == -1)
+                break;
+
+            if (matchOk(text, index, pattern.length(), options))
+                break;
+            index++;
+        }
+        if (index > text.length()) { // end of line
+            kDebug() << "at" << index << "-> not found";
+            index = -1; // not found
         }
     }
-    if (index == -1)
+    if (index <= -1)
         *matchedLength = 0;
     else
         *matchedLength = pattern.length();
@@ -491,60 +487,38 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
 // static
 int KFind::find(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
 {
-    if (options & KFind::WholeWordsOnly)
-    {
-        if (options & KFind::FindBackwards)
-        {
-            // Backward search, until the beginning of the line...
-            while (index >= 0)
-            {
-                // ...find the next match.
-                index = text.lastIndexOf(pattern, index);
-                if (index == -1)
-                    break;
-
-                // Is the match delimited correctly?
-                //pattern.match(text, index, matchedLength, false);
-                /*int pos =*/ pattern.indexIn( text.mid(index) );
-                *matchedLength = pattern.matchedLength();
-                if (isWholeWords(text, index, *matchedLength))
-                    break;
-                index--;
-            }
-        }
-        else
-        {
-            // Forward search, until the end of the line...
-            while (index < text.length())
-            {
-                // ...find the next match.
-                index = text.indexOf(pattern, index);
-                if (index == -1)
-                    break;
-
-                // Is the match delimited correctly?
-                //pattern.match(text, index, matchedLength, false);
-                /*int pos =*/ pattern.indexIn( text.mid(index) );
-                *matchedLength = pattern.matchedLength();
-                if (isWholeWords(text, index, *matchedLength))
-                    break;
-                index++;
-            }
-            if (index >= text.length()) // end of line
-                index = -1; // not found
-        }
-    }
-    else
-    {
-        // Non-whole-word search.
-        if (options & KFind::FindBackwards) {
+    if (options & KFind::FindBackwards) {
+        // Backward search, until the beginning of the line...
+        while (index >= 0) {
+            // ...find the next match.
             index = text.lastIndexOf(pattern, index);
-        } else {
-            index = text.indexOf(pattern, index);
-        }
-        if (index != -1) {
+            if (index == -1)
+                break;
+
+            //pattern.match(text, index, matchedLength, false);
             /*int pos =*/ pattern.indexIn( text.mid(index) );
             *matchedLength = pattern.matchedLength();
+            if (matchOk(text, index, *matchedLength, options))
+                break;
+            index--;
+        }
+    } else {
+        // Forward search, until the end of the line...
+        while (index <= text.length()) {
+            // ...find the next match.
+            index = text.indexOf(pattern, index);
+            if (index == -1)
+                break;
+
+            //pattern.match(text, index, matchedLength, false);
+            /*int pos =*/ pattern.indexIn( text.mid(index) );
+            *matchedLength = pattern.matchedLength();
+            if (matchOk(text, index, *matchedLength, options))
+                break;
+            index++;
+        }
+        if (index > text.length()) { // end of line
+            index = -1; // not found
         }
     }
     if (index == -1)

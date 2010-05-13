@@ -281,6 +281,7 @@ int main( int argc, char **argv )
     //KApplication::disableAutoDcopRegistration();
     KApplication app;
 
+    #if 0
     testReplacementHistory(); // #130831
 
     testReplaceBlank( 0 );
@@ -328,6 +329,7 @@ int main( int argc, char **argv )
     testReplaceBackRef( 0 );
     testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
     testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+#endif
     testReplaceBackRef( KFind::FindBackwards, 0 );
     testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
     testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
