@@ -168,6 +168,8 @@ void KViewStateSaverPrivate::processPendingChanges()
     const QAbstractItemModel *model = getModel();
     if ( model )
     {
+      q->disconnect( model, SIGNAL( rowsInserted( const QModelIndex&, int, int ) ),
+          q, SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
       q->connect( model, SIGNAL( rowsInserted( const QModelIndex&, int, int ) ),
           SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
     }
@@ -190,8 +192,6 @@ void KViewStateSaver::restoreState(const KConfigGroup& configGroup)
   restoreCurrentItem(configGroup.readEntry( currentKey, QString() ));
   restoreExpanded(configGroup.readEntry( expansionKey, QStringList() ));
   restoreScrollState(configGroup.readEntry( scrollStateVerticalKey, -1 ), configGroup.readEntry( scrollStateHorizontalKey, -1 ));
-
-  d->processPendingChanges();
 }
 
 QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) const
@@ -250,6 +250,7 @@ void KViewStateSaver::restoreCurrentItem(const QString& indexString)
       d->m_selectionModel->setCurrentIndex(currentIndex, QItemSelectionModel::NoUpdate);
     d->m_pendingCurrent.clear();
   }
+  d->processPendingChanges();
 }
 
 void KViewStateSaver::restoreExpanded(const QStringList& indexStrings)
@@ -258,7 +259,7 @@ void KViewStateSaver::restoreExpanded(const QStringList& indexStrings)
   if (!d->m_treeView || !d->m_treeView->model())
       return;
 
-  d->m_pendingExpansions = indexStrings;
+  d->m_pendingExpansions << indexStrings;
   QStringList::iterator it = d->m_pendingExpansions.begin();
   for ( ; it != d->m_pendingExpansions.end(); )
   {
@@ -271,6 +272,7 @@ void KViewStateSaver::restoreExpanded(const QStringList& indexStrings)
       ++it;
     }
   }
+  d->processPendingChanges();
 }
 
 void KViewStateSaver::restoreScrollState(int verticalScoll, int horizontalScroll)
@@ -292,7 +294,7 @@ void KViewStateSaver::restoreSelection(const QStringList& indexStrings)
   if (!d->m_selectionModel || !d->m_selectionModel->model())
       return;
 
-  d->m_pendingSelections = indexStrings;
+  d->m_pendingSelections << indexStrings;
   QStringList::iterator it = d->m_pendingSelections.begin();
   for ( ; it != d->m_pendingSelections.end(); )
   {
@@ -305,6 +307,7 @@ void KViewStateSaver::restoreSelection(const QStringList& indexStrings)
       ++it;
     }
   }
+  d->processPendingChanges();
 }
 
 QString KViewStateSaver::getCurrentIndex() const
