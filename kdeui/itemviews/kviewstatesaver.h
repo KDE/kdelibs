@@ -33,6 +33,7 @@ class QItemSelectionModel;
 class QAbstractItemModel;
 class QAbstractScrollArea;
 class QModelIndex;
+class QStringList;
 
 class KConfigGroup;
 
@@ -107,7 +108,38 @@ class KViewStateSaverPrivate;
     }
   @endcode
 
-  After creating a saver, the state can be saved using a KConfigGroup...
+  After creating a saver, the state can be saved using a KConfigGroup.
+
+  It is also possbile to save and restore state directly by using the restoreSelection,
+  restoreExpanded etc methods. Note that the implementation of these methods should return
+  strings that the indexFromConfigString implementation can handle.
+
+  @code
+    class DynamicTreeStateSaver : public KViewStateSaver
+    {
+      Q_OBJECT
+    public:
+      // ...
+
+      void selectItems(const QList<qint64> &items)
+      {
+        QStringList itemStrings;
+        foreach(qint64 item, items)
+          itemStrings << QString::number(item);
+        restoreSelection(itemStrings);
+      }
+
+      void expandItems(const QList<qint64> &items)
+      {
+        QStringList itemStrings;
+        foreach(qint64 item, items)
+          itemStrings << QString::number(item);
+        restoreSelection(itemStrings);
+      }
+
+    };
+  @endcode
+
 
   Note that a single instance of this class should be used with only one widget. That is don't do this:
 
@@ -199,6 +231,26 @@ public:
   */
   void restoreState(const KConfigGroup &configGroup);
 
+  /**
+   * Returns a QStringList describing the selection in the selectionModel.
+   */
+  QStringList getSelection() const;
+
+  /**
+   * Returns a QStringList representing the expanded indexes in the QTreeView.
+   */
+  QStringList getExpansion() const;
+
+  /**
+   * Returns a QString describing the current index in the selection model.
+   */
+  QString getCurrentIndex() const;
+
+  /**
+   * Returns the vertical and horizontal scroll of the QAbstractScrollArea.
+   */
+  QPair<int, int> getScrollState() const;
+
 protected:
   /**
     Reimplement to return an index in the @p model described by the unique key @p key
@@ -209,6 +261,27 @@ protected:
     Reimplement to return a unique string for the @p index.
   */
   virtual QString indexToConfigString(const QModelIndex &index) const = 0;
+
+  /**
+   * Select the indexes described by @p indexStrings
+   */
+  void restoreSelection( const QStringList &indexStrings );
+
+  /**
+   * Make the index described by @p indexString the currentIndex in the selectionModel.
+   */
+  void restoreCurrentItem( const QString &indexString );
+
+  /**
+   * Expand the indexes described by @p indexStrings in the QTreeView.
+   */
+  void restoreExpanded( const QStringList &indexStrings );
+
+  /**
+   * Restores the scroll state of the QAbstractScrollArea to the @p verticalScoll
+   * and @p horizontalScroll
+   */
+  void restoreScrollState( int verticalScoll, int horizontalScroll );
 
 private:
   //@cond PRIVATE
