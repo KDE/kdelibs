@@ -25,6 +25,7 @@
 #include "css_valueimpl.h"
 #include "css_ruleimpl.h"
 #include "css_stylesheetimpl.h"
+#include "css/csshelper.h"
 #include "cssparser.h"
 #include "cssproperties.h"
 #include "cssvalues.h"
@@ -1370,7 +1371,7 @@ void PairImpl::setSecond(CSSPrimitiveValueImpl* second)
 
 // -----------------------------------------------------------------
 
-CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const StyleBaseImpl* style)
+CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, StyleBaseImpl* style)
     : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
 {
     khtml::DocLoader *docLoader = 0;
@@ -1380,7 +1381,8 @@ CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const StyleBaseImpl* 
     if (root->isCSSStyleSheet())
 	docLoader = static_cast<const CSSStyleSheetImpl*>(root)->docLoader();
 
-    m_image = docLoader->requestImage(url);
+    KUrl fullURL( style->baseURL(), khtml::parseURL(url).string() );
+    m_image = docLoader->requestImage( fullURL.url() );
     if(m_image) m_image->ref(this);
 }
 

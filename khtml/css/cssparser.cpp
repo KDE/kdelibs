@@ -844,11 +844,9 @@ bool CSSParser::parseValue( int propId, bool important )
         }
         else if (value->unit == CSSPrimitiveValue::CSS_URI ) {
             // ### allow string in non strict mode?
-            DOMString uri = khtml::parseURL( domString( value->string ) );
+            DOMString uri = domString( value->string );
             if (!uri.isNull()) {
-                parsedValue = new CSSImageValueImpl(
-                    DOMString(KUrl( styleElement->baseURL(), uri.string()).url()),
-                    styleElement );
+                parsedValue = new CSSImageValueImpl( uri, styleElement );
                 valueList->next();
             }
         }
@@ -1537,9 +1535,8 @@ bool CSSParser::parseContent( int propId, bool important )
         parsedValue = 0;
         if ( val->unit == CSSPrimitiveValue::CSS_URI ) {
             // url
-            DOMString value = khtml::parseURL(domString(val->string));
-            parsedValue = new CSSImageValueImpl(
-                DOMString(KUrl( styleElement->baseURL(), value.string()).url() ), styleElement );
+            DOMString value = domString(val->string);
+            parsedValue = new CSSImageValueImpl( value, styleElement );
 #ifdef CSS_DEBUG
             kDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( );
 #endif
@@ -1649,19 +1646,20 @@ CSSValueImpl* CSSParser::parseBackgroundColor()
 
 CSSValueImpl* CSSParser::parseBackgroundImage(bool& didParse)
 {
-    didParse = false;
     if (valueList->current()->id == CSS_VAL_NONE) {
         didParse = true;
         return new CSSImageValueImpl();
-    }
-    if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
+    } else if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
         didParse = true;
-        DOMString uri = khtml::parseURL(domString(valueList->current()->string));
+        DOMString uri = domString(valueList->current()->string);
         if (!uri.isNull())
-            return new CSSImageValueImpl(DOMString(KUrl(styleElement->baseURL(), uri.string()).url()),
-                                         styleElement);
-    }
+            return new CSSImageValueImpl(uri, styleElement);
+        else
     return 0;
+    } else {
+        didParse = false;
+        return 0;
+    }
 }
 
 CSSValueImpl* CSSParser::parseBackgroundPositionXY(BackgroundPosKind& kindOut)
