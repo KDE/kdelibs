@@ -234,22 +234,22 @@ public:
   /**
    * Returns a QStringList describing the selection in the selectionModel.
    */
-  QStringList getSelection() const;
+  QStringList selectionKeys() const;
 
   /**
    * Returns a QStringList representing the expanded indexes in the QTreeView.
    */
-  QStringList getExpansion() const;
+  QStringList expansionKeys() const;
 
   /**
    * Returns a QString describing the current index in the selection model.
    */
-  QString getCurrentIndex() const;
+  QString currentIndexKey() const;
 
   /**
    * Returns the vertical and horizontal scroll of the QAbstractScrollArea.
    */
-  QPair<int, int> getScrollState() const;
+  QPair<int, int> scrollState() const;
 
 protected:
   /**

@@ -215,20 +215,20 @@ void KViewStateSaver::saveState(KConfigGroup& configGroup)
 
   if ( d->m_selectionModel )
   {
-    configGroup.writeEntry( selectionKey, getSelection() );
-    configGroup.writeEntry( currentKey, getCurrentIndex() );
+    configGroup.writeEntry( selectionKey, selectionKeys() );
+    configGroup.writeEntry( currentKey, currentIndexKey() );
   }
 
   if ( d->m_treeView )
   {
-    QStringList expansion = getExpansion();
+    QStringList expansion = expansionKeys();
 
     configGroup.writeEntry( expansionKey, expansion );
   }
 
   if ( d->m_scrollArea )
   {
-    QPair<int, int> scrollState = getScrollState();
+    QPair<int, int> scrollState = scrollState();
     configGroup.writeEntry( scrollStateVerticalKey, scrollState.first );
     configGroup.writeEntry( scrollStateHorizontalKey, scrollState.second );
   }
@@ -310,7 +310,7 @@ void KViewStateSaver::restoreSelection(const QStringList& indexStrings)
   d->processPendingChanges();
 }
 
-QString KViewStateSaver::getCurrentIndex() const
+QString KViewStateSaver::currentIndexKey() const
 {
   Q_D(const KViewStateSaver);
   if ( d->m_selectionModel )
@@ -318,7 +318,7 @@ QString KViewStateSaver::getCurrentIndex() const
   return indexToConfigString(d->m_selectionModel->currentIndex());
 }
 
-QStringList KViewStateSaver::getExpansion() const
+QStringList KViewStateSaver::expansionKeys() const
 {
   Q_D(const KViewStateSaver);
   if (!d->m_treeView || !d->m_treeView->model())
@@ -327,7 +327,7 @@ QStringList KViewStateSaver::getExpansion() const
   return d->getExpandedItems(QModelIndex());
 }
 
-QStringList KViewStateSaver::getSelection() const
+QStringList KViewStateSaver::selectionKeys() const
 {
   Q_D(const KViewStateSaver);
   if (d->m_selectionModel)
@@ -341,7 +341,7 @@ QStringList KViewStateSaver::getSelection() const
   return selection;
 }
 
-QPair<int, int> KViewStateSaver::getScrollState() const
+QPair<int, int> KViewStateSaver::scrollState() const
 {
   Q_D(const KViewStateSaver);
   return qMakePair(d->m_scrollArea->verticalScrollBar()->value(), d->m_scrollArea->horizontalScrollBar()->value());
