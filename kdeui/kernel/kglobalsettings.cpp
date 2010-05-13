@@ -305,7 +305,7 @@ QColor KGlobalSettings::inactiveTitleColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTION));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "inactiveBackground", QColor(224, 223, 222) );
+    return g.readEntry( "inactiveBackground", QColor(224,223,222) );
 #endif
 }
 
@@ -316,7 +316,7 @@ QColor KGlobalSettings::inactiveTextColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "inactiveForeground", QColor(20, 19, 18) );
+    return g.readEntry( "inactiveForeground", QColor(75,71,67) );
 #endif
 }
 
@@ -327,7 +327,7 @@ QColor KGlobalSettings::activeTitleColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_ACTIVECAPTION));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "activeBackground", QColor(96, 148, 207));
+    return g.readEntry( "activeBackground", QColor(48,174,232));
 #endif
 }
 
@@ -338,7 +338,7 @@ QColor KGlobalSettings::activeTextColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "activeForeground", QColor(255, 255, 255) );
+    return g.readEntry( "activeForeground", QColor(255,255,255) );
 #endif
 }
 
@@ -352,7 +352,7 @@ qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
 {
     if (config) {
         KConfigGroup g( config, "KDE" );
-        return 0.1 * g.readEntry( "contrast", 5 );
+        return 0.1 * g.readEntry( "contrast", 8 );
     }
     return 0.1 * (qreal)contrast();
 }

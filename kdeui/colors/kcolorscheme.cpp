@@ -85,14 +85,15 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
         KConfigGroup cfg(config, group);
         _effects[Intensity] = cfg.readEntry( "IntensityEffect",
                 (int)(state == QPalette::Disabled ?  IntensityDarken : IntensityNoEffect));
-        _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
+        _effects[Color]     = cfg.readEntry(     "ColorEffect",
+		(int)(state == QPalette::Disabled ?  ColorNoEffect : ColorFade));
         _effects[Contrast]  = cfg.readEntry(  "ContrastEffect",
-                (int)(state == QPalette::Disabled ?  ContrastFade : ContrastNoEffect));
+                (int)(state == QPalette::Disabled ?  ContrastFade : ContrastTint));
         _amount[Intensity]  = cfg.readEntry( "IntensityAmount", state == QPalette::Disabled ? 0.10 : 0.0 );
-        _amount[Color]      = cfg.readEntry(     "ColorAmount", 0.0 );
-        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 : 0.0 );
+        _amount[Color]      = cfg.readEntry(     "ColorAmount", state == QPalette::Disabled ?  0.0 : 0.025 );
+        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 : 0.10 );
         if (_effects[Color] > ColorNoEffect)
-            _color = cfg.readEntry( "Color", QColor(112, 111, 110) );
+            _color = cfg.readEntry( "Color", state == QPalette::Disabled ?  QColor(56, 56, 56) : QColor(112, 111, 110));
     }
 }
 
@@ -164,44 +165,47 @@ struct DecoDefaultColors {
 SetDefaultColors defaultViewColors = {
     { 255, 255, 255 }, // Background
     { 248, 247, 246 }, // Alternate
-    {  20,  19,  18 }, // Normal
-    { 136, 135, 134 }, // Inactive
+    {  24,  22,  21 }, // Normal
+    { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
-    {  69,  40, 134 }, // Visited
+    { 100,  74, 155 }, // Visited
     { 191,   3,   3 }, // Negative
     { 176, 128,   0 }, // Neutral
     {   0, 110,  40 }  // Positive
 };
+
 
 SetDefaultColors defaultWindowColors = {
-    { 224, 223, 222 }, // Background
+    { 213, 209, 207 }, // Background
     { 218, 217, 216 }, // Alternate
-    {  20,  19,  18 }, // Normal
-    { 136, 135, 134 }, // Inactive
+    {  27,  25,  24 }, // Normal
+    { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
-    {  69,  40, 134 }, // Visited
+    { 100,  74, 155 }, // Visited
     { 191,   3,   3 }, // Negative
     { 176, 128,   0 }, // Neutral
-    {   0, 110,  40 }  // Positive
+    { 0,   110,  40 }  // Positive
 };
+
 
 SetDefaultColors defaultButtonColors = {
-    { 232, 231, 230 }, // Background
+    { 207, 204, 201 }, // Background
     { 224, 223, 222 }, // Alternate
-    {  20,  19,  18 }, // Normal
-    { 136, 135, 134 }, // Inactive
+    {  27,  25,  24 }, // Normal
+    { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
-    {  69,  40, 134 }, // Visited
+    { 100,  74, 155 }, // Visited
     { 191,   3,   3 }, // Negative
     { 176, 128,   0 }, // Neutral
     {   0, 110,  40 }  // Positive
 };
 
+
 SetDefaultColors defaultSelectionColors = {
-    {  65, 139, 212 }, // Background
+    {  67, 172, 232 }, // Background
     {  62, 138, 204 }, // Alternate
     { 255, 255, 255 }, // Normal
     { 165, 193, 228 }, // Inactive
@@ -213,23 +217,23 @@ SetDefaultColors defaultSelectionColors = {
     { 128, 255, 128 }  // Positive
 };
 
+
 SetDefaultColors defaultTooltipColors = {
-    { 192, 218, 255 }, // Background
+    { 190, 223, 255 }, // Background
     { 196, 224, 255 }, // Alternate
-    {  20,  19,  18 }, // Normal
-    {  96, 112, 128 }, // Inactive
+    {  37,  35,  33 }, // Normal
+    { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
-    {  69,  40, 134 }, // Visited
+    { 100,  74, 155 }, // Visited
     { 191,   3,   3 }, // Negative
     { 176, 128,   0 }, // Neutral
     {   0, 110,  40 }  // Positive
 };
 
-
 DecoDefaultColors defaultDecorationColors = {
-    { 119, 183, 255 }, // Hover
-    {  43, 116, 199 }, // Focus
+    { 110, 214, 255 }, // Hover
+    {  58, 167, 221 }, // Focus
 };
 //END default colors
 
@@ -426,7 +430,7 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
         case Selection: {
             KConfigGroup group(config, "ColorEffects:Inactive");
             // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
-            bool inactiveSelectionEffect = group.readEntry("ChangeSelectionColor", group.readEntry("Enable", false));
+            bool inactiveSelectionEffect = group.readEntry("ChangeSelectionColor", group.readEntry("Enable", true));
             // if enabled, inactiver/disabled uses Window colors instead, ala gtk
             // ...except tinted with the Selection:NormalBackground color so it looks more like selection
             if (state == QPalette::Active || (state == QPalette::Inactive && !inactiveSelectionEffect))
