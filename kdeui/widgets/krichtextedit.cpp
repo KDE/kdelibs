@@ -426,9 +426,12 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
         // Workaround for QTBUG-1814:
         // Link formatting does not get removed immediately when setAnchor(false)
         // is called. So the formatting needs to be applied manually.
-        format.setUnderlineStyle(QTextCharFormat::NoUnderline);
-        format.setUnderlineColor(KColorScheme(QPalette::Active, KColorScheme::View).foreground().color());
-        format.setForeground(KColorScheme(QPalette::Active, KColorScheme::View).foreground().color());
+        QTextDocument defaultTextDocument;
+        QTextCharFormat defaultCharFormat = defaultTextDocument.begin().charFormat();
+
+        format.setUnderlineStyle( defaultCharFormat.underlineStyle() );
+        format.setUnderlineColor( defaultCharFormat.underlineColor() );
+        format.setForeground( defaultCharFormat.foreground() );
     }
 
     // Insert link text specified in dialog, otherwise write out url.
