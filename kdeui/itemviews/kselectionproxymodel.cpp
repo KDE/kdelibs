@@ -1239,7 +1239,7 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
     }
     case SubTreesWithoutRoots: {
         d->m_omitChildren = false;
-        d->m_omitDescendants = true;
+        d->m_omitDescendants = false;
         d->m_startWithChildTrees = true;
         d->m_includeAllSelected = false;
         break;
