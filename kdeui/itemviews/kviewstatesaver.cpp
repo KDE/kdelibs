@@ -228,9 +228,9 @@ void KViewStateSaver::saveState(KConfigGroup& configGroup)
 
   if ( d->m_scrollArea )
   {
-    QPair<int, int> scrollState = scrollState();
-    configGroup.writeEntry( scrollStateVerticalKey, scrollState.first );
-    configGroup.writeEntry( scrollStateHorizontalKey, scrollState.second );
+    QPair<int, int> _scrollState = scrollState();
+    configGroup.writeEntry( scrollStateVerticalKey, _scrollState.first );
+    configGroup.writeEntry( scrollStateHorizontalKey, _scrollState.second );
   }
 }
 
