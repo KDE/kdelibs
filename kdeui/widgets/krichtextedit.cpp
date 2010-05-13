@@ -418,6 +418,7 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
         format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
         format.setUnderlineColor(KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color());
         format.setForeground(KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color());
+        d->activateRichText();
     } else {
         // Remove link details
         format.setAnchor(false);
