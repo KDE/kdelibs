@@ -74,7 +74,7 @@ public:
       Return true if @p idx is a descendant of one of the indexes in @p list.
       Note that this returns false if @p list contains @p idx.
     */
-    bool isDescendantOf(QModelIndexList &list, const QModelIndex &idx) const;
+    bool isDescendantOf(const QModelIndexList &list, const QModelIndex &idx) const;
 
     bool isDescendantOf(const QModelIndex &ancestor, const QModelIndex &descendant) const;
 
@@ -204,8 +204,8 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
         int endChangeRow = -1;
         int count = 0;
         int row;
-        int topLeftRow = topLeft.row();
-        int bottomRightRow = bottomRight.row();
+        const int topLeftRow = topLeft.row();
+        const int bottomRightRow = bottomRight.row();
         QModelIndex parent = topLeft.parent();
         for (; it != end; ++it, ++count) {
             row = it->row();
@@ -222,8 +222,8 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
         }
 
         if (startChangeRow != -1) {
-            QModelIndex proxyTopLeft = q->index(startChangeRow, 0);
-            QModelIndex proxyBottomRight = q->index(endChangeRow, q->columnCount() - 1);
+            const QModelIndex proxyTopLeft = q->index(startChangeRow, 0);
+            const QModelIndex proxyBottomRight = q->index(endChangeRow, q->columnCount() - 1);
             emit q->dataChanged(proxyTopLeft, proxyBottomRight);
         }
         return;
@@ -231,8 +231,8 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
 
     if (!m_rootIndexList.contains(topLeft) && isInModel(topLeft)) {
         // The easy case. A contiguous block not at the root of our model.
-        QModelIndex proxyTopLeft = q->mapFromSource(topLeft);
-        QModelIndex proxyBottomRight = q->mapFromSource(bottomRight);
+        const QModelIndex proxyTopLeft = q->mapFromSource(topLeft);
+        const QModelIndex proxyBottomRight = q->mapFromSource(bottomRight);
         // If we're showing only chilren in our model and a grandchild is
         // changed, this will be invalid.
         if (!proxyTopLeft.isValid())
@@ -263,10 +263,10 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
                 idx = q->sourceModel()->index(row, leftColumn, parent);
             }
             --row;
-            QModelIndex sourceTopLeft = q->sourceModel()->index(startRow, leftColumn, parent);
-            QModelIndex sourceBottomRight = q->sourceModel()->index(row, rightColumn, parent);
-            QModelIndex proxyTopLeft = q->mapFromSource(sourceTopLeft);
-            QModelIndex proxyBottomRight = q->mapFromSource(sourceBottomRight);
+            const QModelIndex sourceTopLeft = q->sourceModel()->index(startRow, leftColumn, parent);
+            const QModelIndex sourceBottomRight = q->sourceModel()->index(row, rightColumn, parent);
+            const QModelIndex proxyTopLeft = q->mapFromSource(sourceTopLeft);
+            const QModelIndex proxyBottomRight = q->mapFromSource(sourceBottomRight);
 
             emit q->dataChanged(proxyTopLeft, proxyBottomRight);
         }
@@ -484,10 +484,10 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
     if (!m_selectionModel->hasSelection() || (m_omitChildren && !m_startWithChildTrees))
         return;
 
-    QModelIndex firstAffectedIndex = q->sourceModel()->index(start, 0, parent);
+    const QModelIndex firstAffectedIndex = q->sourceModel()->index(start, 0, parent);
 
-    QModelIndex proxyParent = q->mapFromSource(parent);
-    QModelIndex proxyFirstAffectedIndex = q->mapFromSource(firstAffectedIndex);
+    const QModelIndex proxyParent = q->mapFromSource(parent);
+    const QModelIndex proxyFirstAffectedIndex = q->mapFromSource(firstAffectedIndex);
     if (proxyParent.isValid()) {
         // Get the easy case out of the way first.
         if (proxyFirstAffectedIndex.isValid()) {
@@ -510,7 +510,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
     // If we are going to remove a root index and all of its descendants, we need to start
     // at the top-most affected one.
     for (int row = 0; row < m_rootIndexList.size(); ++row) {
-        QModelIndex rootIndex = m_rootIndexList.at(row);
+        const QModelIndex rootIndex = m_rootIndexList.at(row);
         if (isDescendantOf(removedSourceIndexes, rootIndex) || removedSourceIndexes.contains(rootIndex)) {
             proxyStart = row;
             break;
@@ -519,7 +519,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
     // proxyEnd points to the last affected index in m_rootIndexList affected by the removal.
     for (int row = m_rootIndexList.size() - 1; row >= 0; --row) {
-        QModelIndex rootIndex = m_rootIndexList.at(row);
+        const QModelIndex rootIndex = m_rootIndexList.at(row);
 
         if (isDescendantOf(removedSourceIndexes, rootIndex) || removedSourceIndexes.contains(rootIndex)) {
             proxyEnd = row;
@@ -549,7 +549,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
         // Descendants of children that are being removed must also be removed if they are also selected.
         for (int position = parentPosition + 1; position < m_rootIndexList.size(); ++position) {
-            QModelIndex nextParent = m_rootIndexList.at(position);
+            const QModelIndex nextParent = m_rootIndexList.at(position);
             if (isDescendantOf(parent, nextParent)) {
                 if (end > childOfParent(parent, nextParent).row()) {
                     // All descendants of rows to be removed are accounted for.
@@ -565,10 +565,10 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
         if (m_startWithChildTrees) {
             proxyStart = getTargetRow(proxyStart);
 
-            QModelIndex lastAffectedSourceParent = m_rootIndexList.at(proxyEnd);
-            QModelIndex lastAffectedSourceChild = q->sourceModel()->index(q->sourceModel()->rowCount(lastAffectedSourceParent) - 1, 0, lastAffectedSourceParent);
+            const QModelIndex lastAffectedSourceParent = m_rootIndexList.at(proxyEnd);
+            const QModelIndex lastAffectedSourceChild = q->sourceModel()->index(q->sourceModel()->rowCount(lastAffectedSourceParent) - 1, 0, lastAffectedSourceParent);
 
-            QModelIndex lastAffectedProxyChild = q->mapFromSource(lastAffectedSourceChild);
+            const QModelIndex lastAffectedProxyChild = q->mapFromSource(lastAffectedSourceChild);
 
             proxyEnd = lastAffectedProxyChild.row();
         }
@@ -593,7 +593,7 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 
     QMutableListIterator<QPersistentModelIndex> it(m_rootIndexList);
     while (it.hasNext()) {
-        QPersistentModelIndex idx = it.next();
+        const QPersistentModelIndex idx = it.next();
         if (!idx.isValid()) {
             emit q->rootIndexAboutToBeRemoved(idx);
             it.remove();
@@ -664,13 +664,13 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
         return;
     }
 
-    bool srcInModel = (!m_startWithChildTrees && isInModel(srcParent)) || (m_startWithChildTrees && m_rootIndexList.contains(srcParent));
-    bool destInModel = (!m_startWithChildTrees && isInModel(destParent)) || (m_startWithChildTrees && m_rootIndexList.contains(destParent));
+    const bool srcInModel = (!m_startWithChildTrees && isInModel(srcParent)) || (m_startWithChildTrees && m_rootIndexList.contains(srcParent));
+    const bool destInModel = (!m_startWithChildTrees && isInModel(destParent)) || (m_startWithChildTrees && m_rootIndexList.contains(destParent));
 
     if (srcInModel) {
         if (destInModel) {
             // The easy case.
-            bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
+            const bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
             Q_UNUSED(allowMove);   // prevent warning in release builds.
             Q_ASSERT(allowMove);
 
@@ -709,7 +709,7 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
     if (!m_selectionModel->hasSelection())
         return;
 
-    PendingMove pendingMove = m_pendingMoves.pop();
+    const PendingMove pendingMove = m_pendingMoves.pop();
 
     if (pendingMove.doMove)
         q->endMoveRows();
@@ -721,7 +721,7 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
         q->endInsertRows();
 }
 
-bool KSelectionProxyModelPrivate::isDescendantOf(QModelIndexList &list, const QModelIndex &idx) const
+bool KSelectionProxyModelPrivate::isDescendantOf(const QModelIndexList &list, const QModelIndex &idx) const
 {
     QModelIndex parent = idx.parent();
     while (parent.isValid()) {
@@ -778,11 +778,11 @@ QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection 
         for (int row = newIndex.row(); row <= range.bottom(); ++row) {
             newIndex = newIndex.sibling(row, column);
 
-            QModelIndex sourceNewIndex = selectionIndexToSourceIndex(newIndex);
+            const QModelIndex sourceNewIndex = selectionIndexToSourceIndex(newIndex);
 
             Q_ASSERT(sourceNewIndex.isValid());
 
-            int startRow = m_rootIndexList.indexOf(sourceNewIndex);
+            const int startRow = m_rootIndexList.indexOf(sourceNewIndex);
             if (startRow > 0) {
                 continue;
             }
@@ -815,7 +815,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
 
     QModelIndexList removeIndexes;
 
-    const int column = 0;
+    static const int column = 0;
     foreach(const QItemSelectionRange &range, deselected) {
         QModelIndex removeIndex = range.topLeft();
 
@@ -827,9 +827,9 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
 
             removeIndexes << removeIndex;
 
-            QModelIndex sourceRemoveIndex = selectionIndexToSourceIndex(removeIndex);
+            const QModelIndex sourceRemoveIndex = selectionIndexToSourceIndex(removeIndex);
 
-            int startRow = m_rootIndexList.indexOf(sourceRemoveIndex);
+            const int startRow = m_rootIndexList.indexOf(sourceRemoveIndex);
 
             if (startRow < 0)
                 continue;
@@ -839,7 +839,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
                 for (int i = 0 ; i < startRow; ++i) {
                     _start += q->sourceModel()->rowCount(m_rootIndexList.at(i));
                 }
-                int rowCount = q->sourceModel()->rowCount(m_rootIndexList.at(startRow));
+                const int rowCount = q->sourceModel()->rowCount(m_rootIndexList.at(startRow));
                 if (rowCount <= 0) {
                     // It doesn't have any children in the model, but we need to remove it from storage anyway.
                     emit q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRow));
@@ -865,9 +865,9 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         newRanges = getRootRanges(selected);
         QMutableListIterator<QItemSelectionRange> i(newRanges);
         while (i.hasNext()) {
-            QItemSelectionRange range = i.next();
-            QModelIndex topLeft = range.topLeft();
-            QModelIndexList list = toNonPersistent(m_rootIndexList);
+            const QItemSelectionRange range = i.next();
+            const QModelIndex topLeft = range.topLeft();
+            const QModelIndexList list = toNonPersistent(m_rootIndexList);
             if (isDescendantOf(list, topLeft)) {
                 i.remove();
             }
@@ -883,14 +883,14 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
     QItemSelection additionalRanges;
     if (!m_includeAllSelected) {
         foreach(const QItemSelectionRange &range, m_selectionModel->selection()) {
-            QModelIndex topLeft = range.topLeft();
+            const QModelIndex topLeft = range.topLeft();
             if (isDescendantOf(removeIndexes, topLeft)) {
-                QModelIndexList list = toNonPersistent(m_rootIndexList);
+                const QModelIndexList list = toNonPersistent(m_rootIndexList);
                 if (!isDescendantOf(list, topLeft) && !isDescendantOf(newIndexes, topLeft))
                     additionalRanges << range;
             }
 
-            int row = m_rootIndexList.indexOf(topLeft);
+            const int row = m_rootIndexList.indexOf(topLeft);
             if (row >= 0) {
                 if (isDescendantOf(newIndexes, topLeft)) {
                     q->beginRemoveRows(QModelIndex(), row, row);
@@ -978,9 +978,9 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
         commonParent = commonParent.parent();
 
         for (int i = 0; i < rootAncestors.size(); ++i) {
-            QModelIndexList ancestorList = rootAncestors.at(i);
+            const QModelIndexList ancestorList = rootAncestors.at(i);
 
-            int parentRow = ancestorList.indexOf(commonParent);
+            const int parentRow = ancestorList.indexOf(commonParent);
 
             if (parentRow < 0)
                 continue;
@@ -998,9 +998,9 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
     // If @p list is non-empty, the invalid QModelIndex() will at least be found in ancestorList.
     Q_ASSERT(firstCommonParent >= 0);
 
-    QModelIndexList firstAnsList = rootAncestors.at(firstCommonParent);
+    const QModelIndexList firstAnsList = rootAncestors.at(firstCommonParent);
 
-    QModelIndex eldestSibling = firstAnsList.value(bestParentRow + 1);
+    const QModelIndex eldestSibling = firstAnsList.value(bestParentRow + 1);
 
     if (eldestSibling.isValid()) {
         // firstCommonParent is a sibling of one of the ancestors of @p index.
@@ -1041,7 +1041,7 @@ int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, con
             // We insert the ancestors items first in that case.
             break;
 
-        QModelIndex nextSibling = ansList.value(bestParentRow + 1);
+        const QModelIndex nextSibling = ansList.value(bestParentRow + 1);
 
         if (!nextSibling.isValid()) {
             continue;
@@ -1090,16 +1090,16 @@ int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
     if (!m_startWithChildTrees)
         return rootListRow;
 
-    const int column = 0;
+    static const int column = 0;
 
     --rootListRow;
     while (rootListRow >= 0) {
-        QModelIndex idx = m_rootIndexList.at(rootListRow);
+        const QModelIndex idx = m_rootIndexList.at(rootListRow);
         Q_ASSERT(idx.isValid());
-        int rowCount = q->sourceModel()->rowCount(idx);
+        const int rowCount = q->sourceModel()->rowCount(idx);
         if (rowCount > 0) {
 
-            QModelIndex proxyLastChild = q->mapFromSource(q->sourceModel()->index(rowCount - 1, column, idx));
+            const QModelIndex proxyLastChild = q->mapFromSource(q->sourceModel()->index(rowCount - 1, column, idx));
 
             return proxyLastChild.row() + 1;
         }
@@ -1122,11 +1122,11 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
 
     foreach(const QModelIndex &newIndex, list) {
         if (m_startWithChildTrees) {
-            QModelIndexList list = toNonPersistent(m_rootIndexList);
-            int rootListRow = getRootListRow(list, newIndex);
+            const QModelIndexList list = toNonPersistent(m_rootIndexList);
+            const int rootListRow = getRootListRow(list, newIndex);
             Q_ASSERT(q->sourceModel() == newIndex.model());
-            int rowCount = q->sourceModel()->rowCount(newIndex);
-            int startRow = getTargetRow(rootListRow);
+            const int rowCount = q->sourceModel()->rowCount(newIndex);
+            const int startRow = getTargetRow(rootListRow);
             if (rowCount > 0) {
                 if (!m_resetting)
                     q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
@@ -1143,8 +1143,8 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
                 emit q->rootIndexAdded(newIndex);
             }
         } else {
-            QModelIndexList list = toNonPersistent(m_rootIndexList);
-            int row = getRootListRow(list, newIndex);
+            const QModelIndexList list = toNonPersistent(m_rootIndexList);
+            const int row = getRootListRow(list, newIndex);
 
             if (!m_resetting)
                 q->beginInsertRows(QModelIndex(), row, row);
@@ -1365,13 +1365,13 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
     if (!sourceModel())
         return QModelIndex();
 
-    int row = d->m_rootIndexList.indexOf(sourceIndex);
+    const int row = d->m_rootIndexList.indexOf(sourceIndex);
     if (row != -1) {
         if (!d->m_startWithChildTrees) {
             d->m_map.insert(sourceIndex.internalPointer(), QPersistentModelIndex(sourceIndex));
             return createIndex(row, sourceIndex.column(), sourceIndex.internalPointer());
         }
-        QModelIndex sourceParent = sourceIndex.parent();
+        const QModelIndex sourceParent = sourceIndex.parent();
         int parentRow = d->m_rootIndexList.indexOf(sourceParent);
         if (parentRow == -1)
             return QModelIndex();
@@ -1430,7 +1430,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
             return d->m_rootIndexList.size();
         } else {
 
-            QModelIndexList list = d->toNonPersistent(d->m_rootIndexList);
+            const QModelIndexList list = d->toNonPersistent(d->m_rootIndexList);
             return d->childrenCount(list);
         }
     }
@@ -1438,7 +1438,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
     if (d->m_omitChildren || (d->m_startWithChildTrees && d->m_omitDescendants))
         return 0;
 
-    QModelIndex srcIndex = mapToSource(index);
+    const QModelIndex srcIndex = mapToSource(index);
 
     if (!d->isInModel(srcIndex))
         return 0;
@@ -1463,15 +1463,15 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
 
     if (!parent.isValid()) {
         if (!d->m_startWithChildTrees) {
-            QModelIndex idx = d->m_rootIndexList.at(row);
+            const QModelIndex idx = d->m_rootIndexList.at(row);
             d->m_map.insert(idx.internalPointer(), idx);
             return createIndex(row, column, idx.internalPointer());
         }
         int _row = row;
         foreach(const QModelIndex &idx, d->m_rootIndexList) {
-            int idxRowCount = sourceModel()->rowCount(idx);
+            const int idxRowCount = sourceModel()->rowCount(idx);
             if (_row < idxRowCount) {
-                QModelIndex childIndex = sourceModel()->index(_row, column, idx);
+                const QModelIndex childIndex = sourceModel()->index(_row, column, idx);
                 d->m_map.insert(childIndex.internalPointer(), QPersistentModelIndex(childIndex));
                 return createIndex(row, childIndex.column(), childIndex.internalPointer());
             }
@@ -1480,8 +1480,8 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
 
         return QModelIndex();
     } else {
-        QModelIndex sourceParent = mapToSource(parent);
-        QModelIndex sourceIndex = sourceModel()->index(row, column, sourceParent);
+        const QModelIndex sourceParent = mapToSource(parent);
+        const QModelIndex sourceIndex = sourceModel()->index(row, column, sourceParent);
         return mapFromSource(sourceIndex);
     }
 }
@@ -1493,7 +1493,7 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
     if (!sourceModel() || !index.isValid())
         return QModelIndex();
 
-    QModelIndex sourceIndex = mapToSource(index);
+    const QModelIndex sourceIndex = mapToSource(index);
     if (d->m_rootIndexList.contains(sourceIndex.parent()) && (d->m_startWithChildTrees || d->m_omitChildren)) {
         return QModelIndex();
     }
@@ -1501,8 +1501,7 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
     if (d->m_rootIndexList.contains(sourceIndex))
         return QModelIndex();
 
-    QModelIndex proxyParent = mapFromSource(sourceIndex.parent());
-    return proxyParent;
+    return mapFromSource(sourceIndex.parent());
 }
 
 Qt::ItemFlags KSelectionProxyModel::flags(const QModelIndex &index) const
@@ -1510,7 +1509,7 @@ Qt::ItemFlags KSelectionProxyModel::flags(const QModelIndex &index) const
     if (!index.isValid() || !sourceModel())
         return QAbstractProxyModel::flags(index);
 
-    QModelIndex srcIndex = mapToSource(index);
+    const QModelIndex srcIndex = mapToSource(index);
     Q_ASSERT(srcIndex.isValid());
     return sourceModel()->flags(srcIndex);
 }
@@ -1521,7 +1520,7 @@ QVariant KSelectionProxyModel::data(const QModelIndex & index, int role) const
         return QVariant();
 
     if (index.isValid()) {
-        QModelIndex idx = mapToSource(index);
+        const QModelIndex idx = mapToSource(index);
         return idx.data(role);
     }
     return sourceModel()->data(index, role);
@@ -1540,7 +1539,7 @@ QMimeData* KSelectionProxyModel::mimeData(const QModelIndexList & indexes) const
         return QAbstractProxyModel::mimeData(indexes);
     QModelIndexList sourceIndexes;
     foreach(const QModelIndex& index, indexes)
-    sourceIndexes << mapToSource(index);
+        sourceIndexes << mapToSource(index);
     return sourceModel()->mimeData(sourceIndexes);
 }
 
@@ -1593,8 +1592,8 @@ bool KSelectionProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction ac
         source_parent = mapToSource(parent);
         source_destination_row = sourceModel()->rowCount(source_parent);
     } else {
-        QModelIndex proxy_index = index(row, column, parent);
-        QModelIndex source_index = mapToSource(proxy_index);
+        const QModelIndex proxy_index = index(row, column, parent);
+        const QModelIndex source_index = mapToSource(proxy_index);
         source_destination_row = source_index.row();
         source_destination_column = source_index.column();
         source_parent = source_index.parent();
