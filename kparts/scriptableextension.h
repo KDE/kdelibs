@@ -295,11 +295,11 @@ KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::FunctionRef&
 
 } // namespace KParts
 
-Q_DECLARE_METATYPE(KParts::ScriptableExtension::Null);
-Q_DECLARE_METATYPE(KParts::ScriptableExtension::Undefined);
-Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception);
-Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object);
-Q_DECLARE_METATYPE(KParts::ScriptableExtension::FunctionRef);
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Null)
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Undefined)
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception)
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object)
+Q_DECLARE_METATYPE(KParts::ScriptableExtension::FunctionRef)
 
 KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
                                               const KParts::ScriptableExtension::Null& n);

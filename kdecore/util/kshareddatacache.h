@@ -87,7 +87,7 @@ public:
         NoEvictionPreference = 0,
         EvictLeastRecentlyUsed,
         EvictLeastOftenUsed,
-        EvictOldest,
+        EvictOldest
     };
 
     /**
