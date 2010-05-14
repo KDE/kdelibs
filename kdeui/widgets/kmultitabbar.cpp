@@ -147,9 +147,6 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic, const QString& text,
 {
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
 
-	// a button with a QMenu can have another size. Make sure the button has always the same size.
-	setFixedWidth(height());
-
 	// we can't see the focus, so don't take focus. #45557
 	// If keyboard navigation is wanted, then only the bar should take focus,
 	// and arrows could change the focused button; but generally, tabbars don't take focus anyway.
@@ -189,9 +186,10 @@ void KMultiTabBarButton::showEvent( QShowEvent* he) {
 }
 
 void KMultiTabBarButton::paintEvent(QPaintEvent *) {
-	QStyleOptionButton opt;
+        QStyleOptionButton opt;
 	opt.initFrom(this);
 	opt.icon = icon();
+	opt.iconSize = iconSize();
 	// removes the QStyleOptionButton::HasMenu ButtonFeature
 	opt.features = QStyleOptionButton::Flat;
 	QPainter painter(this);
@@ -501,6 +499,8 @@ KMultiTabBar::~KMultiTabBar()
 int KMultiTabBar::appendButton(const QPixmap &pic, int id, QMenu *popup, const QString&)
 {
 	KMultiTabBarButton *btn = new KMultiTabBarButton(pic, QString(), id, this);
+	// a button with a QMenu can have another size. Make sure the button has always the same size.
+	btn->setFixedWidth(btn->height());
 	btn->setMenu(popup);
 	d->m_buttons.append(btn);
 	d->m_l->insertWidget(0,btn);
