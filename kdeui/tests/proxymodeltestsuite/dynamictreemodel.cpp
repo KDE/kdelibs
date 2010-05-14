@@ -271,7 +271,6 @@ bool DynamicTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action
   if (!destRowIndex.isValid())
     destRowIndex = index(destRow, column, parent);
 
-  Q_ASSERT(destRowIndex.isValid());
   int offset = firstCommand->endRow() - firstCommand->startRow() + 1;
   foreach(ModelMoveCommand *moveCommand, moveCommands)
   {
