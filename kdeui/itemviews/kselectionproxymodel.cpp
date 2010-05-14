@@ -27,6 +27,48 @@
 
 #include "kdebug.h"
 
+/**
+  Return true if @p idx is a descendant of one of the indexes in @p list.
+  Note that this returns false if @p list contains @p idx.
+*/
+static bool isDescendantOf(const QModelIndexList &list, const QModelIndex &idx)
+{
+    QModelIndex parent = idx.parent();
+    while (parent.isValid()) {
+        if (list.contains(parent))
+            return true;
+        parent = parent.parent();
+    }
+    return false;
+}
+
+static bool isDescendantOf(const QModelIndex &ancestor, const QModelIndex &descendant)
+{
+    if (!descendant.isValid())
+        return false;
+
+    if (ancestor == descendant)
+        return false;
+
+    QModelIndex parent = descendant.parent();
+    while (parent.isValid()) {
+        if (parent == ancestor)
+            return true;
+
+        parent = parent.parent();
+    }
+    return false;
+}
+
+static QModelIndex childOfParent(const QModelIndex& ancestor, const QModelIndex& descendant)
+{
+    QModelIndex child = descendant;
+    while (child.isValid() && child.parent() != ancestor) {
+        child = child.parent();
+    }
+    return child;
+}
+
 class KSelectionProxyModelPrivate
 {
 public:
@@ -69,16 +111,6 @@ public:
     QModelIndexList toNonPersistent(const QList<QPersistentModelIndex> &list) const;
 
     void resetInternalData();
-
-    /**
-      Return true if @p idx is a descendant of one of the indexes in @p list.
-      Note that this returns false if @p list contains @p idx.
-    */
-    bool isDescendantOf(const QModelIndexList &list, const QModelIndex &idx) const;
-
-    bool isDescendantOf(const QModelIndex &ancestor, const QModelIndex &descendant) const;
-
-    QModelIndex childOfParent(const QModelIndex &ancestor, const QModelIndex &descendant) const;
 
     /**
       Returns the range in the proxy model corresponding to the range in the source model
@@ -720,49 +752,6 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
     if (pendingMove.doInsert)
         q->endInsertRows();
 }
-
-bool KSelectionProxyModelPrivate::isDescendantOf(const QModelIndexList &list, const QModelIndex &idx) const
-{
-    QModelIndex parent = idx.parent();
-    while (parent.isValid()) {
-        if (list.contains(parent))
-            return true;
-        parent = parent.parent();
-    }
-    return false;
-}
-
-bool KSelectionProxyModelPrivate::isDescendantOf(const QModelIndex &ancestor, const QModelIndex &descendant) const
-{
-
-    if (!descendant.isValid())
-        return false;
-
-    if (ancestor.isValid())
-        return true;
-
-    if (ancestor == descendant)
-        return false;
-
-    QModelIndex parent = descendant.parent();
-    while (parent.isValid()) {
-        if (parent == ancestor)
-            return true;
-
-        parent = parent.parent();
-    }
-    return false;
-}
-
-QModelIndex KSelectionProxyModelPrivate::childOfParent(const QModelIndex& ancestor, const QModelIndex& descendant) const
-{
-    QModelIndex child = descendant;
-    while (child.isValid() && child.parent() != ancestor) {
-        child = child.parent();
-    }
-    return child;
-}
-
 
 QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection &selection) const
 {
