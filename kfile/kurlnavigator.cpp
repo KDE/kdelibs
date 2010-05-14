@@ -119,6 +119,11 @@ public:
     void updateButtonVisibility();
 
     /**
+     * @return Text for the first button of the URL navigator.
+     */
+    QString firstButtonText() const;
+
+    /**
      * Returns the URL that should be applied for the button with the index \a index.
      */
     KUrl buttonUrl(int index) const;
@@ -543,23 +548,6 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
         const QString dirName = path.section(QLatin1Char('/'), idx, idx);
         hasNext = isFirstButton || !dirName.isEmpty();
         if (hasNext) {
-            QString text;
-            if (isFirstButton) {
-                // the first URL navigator button should get the name of the
-                // place instead of the directory name
-                if ((m_placesSelector != 0) && !m_showFullPath) {
-                    const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
-                    text = m_placesSelector->selectedPlaceText();
-                }
-                if (text.isEmpty()) {
-                    if (currentUrl.isLocalFile()) {
-                        text = m_showFullPath ? QLatin1String("/") : i18n("Custom Path");
-                    } else {
-                        text = currentUrl.protocol() + QLatin1String(": ") + currentUrl.host();
-                    }
-                }
-            }
-
             KUrlNavigatorButton* button = 0;
             if (createButton) {
                 button = new KUrlNavigatorButton(buttonUrl(idx), q);
@@ -577,7 +565,7 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
             }
 
             if (isFirstButton) {
-                button->setText(text);
+                button->setText(firstButtonText());
             }
             button->setActive(q->isActive());
 
@@ -684,6 +672,32 @@ void KUrlNavigator::Private::updateButtonVisibility()
         const bool visible = !url.equals(url.upUrl()) && (url.protocol() != "nepomuksearch");
         m_dropDownButton->setVisible(visible);
     }
+}
+
+QString KUrlNavigator::Private::firstButtonText() const
+{
+    QString text;
+
+    // The first URL navigator button should get the name of the
+    // place instead of the directory name
+    if ((m_placesSelector != 0) && !m_showFullPath) {
+        const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
+        text = m_placesSelector->selectedPlaceText();
+    }
+
+    if (text.isEmpty()) {
+        const KUrl currentUrl = q->locationUrl();
+        if (currentUrl.isLocalFile()) {
+            text = m_showFullPath ? QLatin1String("/") : i18n("Custom Path");
+        } else {
+            text = currentUrl.protocol() + QLatin1Char(':');
+            if (!currentUrl.host().isEmpty()) {
+                text += QLatin1Char(' ') + currentUrl.host();
+            }
+        }
+    }
+
+    return text;
 }
 
 KUrl KUrlNavigator::Private::buttonUrl(int index) const
