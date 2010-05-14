@@ -104,6 +104,8 @@ public:
     void sourceModelReset();
     void sourceLayoutAboutToBeChanged();
     void sourceLayoutChanged();
+    void emitContinuousRanges(const QModelIndex &sourceFirst, const QModelIndex &sourceLast,
+                              const QModelIndex &proxyFirst, const QModelIndex &proxyLast);
     void sourceDataChanged(const QModelIndex &topLeft , const QModelIndex &bottomRight);
 
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
@@ -271,84 +273,114 @@ public:
 
 };
 
+void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &sourceFirst, const QModelIndex &sourceLast,
+                                                       const QModelIndex &proxyFirst, const QModelIndex &proxyLast)
+{
+    Q_Q(KSelectionProxyModel);
+
+    const int proxyRangeSize = proxyLast.row() - proxyFirst.row();
+    const int sourceRangeSize = sourceLast.row() - sourceFirst.row();
+
+    if (proxyRangeSize == sourceRangeSize)
+    {
+        emit q->dataChanged(proxyFirst, proxyLast);
+        return;
+    }
+
+
+    // TODO: Loop to skip descendant ranges.
+//     int lastRow;
+//
+//     const QModelIndex sourceHalfWay = sourceFirst.sibling(sourceFirst.row() + (sourceRangeSize / 2));
+//     const QModelIndex proxyHalfWay = proxyFirst.sibling(proxyFirst.row() + (proxyRangeSize / 2));
+//     const QModelIndex mappedSourceHalfway = q->mapToSource(proxyHalfWay);
+//
+//     const int halfProxyRange = mappedSourceHalfway.row() - proxyFirst.row();
+//     const int halfSourceRange = sourceHalfWay.row() - sourceFirst.row();
+//
+//     if (proxyRangeSize == sourceRangeSize)
+//     {
+//         emit q->dataChanged(proxyFirst, proxyLast.sibling(proxyFirst.row() + proxyRangeSize, proxyLast.column()));
+//         return;
+//     }
+
+    emit q->dataChanged(proxyFirst, proxyLast);
+}
+
 void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     Q_Q(KSelectionProxyModel);
 
-    if (!m_startWithChildTrees && m_includeAllSelected) {
-        QList<QPersistentModelIndex>::const_iterator it = m_rootIndexList.constBegin();
-        const QList<QPersistentModelIndex>::const_iterator end = m_rootIndexList.constEnd();
+    const QModelIndex proxyTopLeft = q->mapFromSource(topLeft);
+    const QModelIndex proxyBottomRight = q->mapFromSource(bottomRight);
 
-        int startChangeRow = -1;
-        int endChangeRow = -1;
-        int count = 0;
-        int row;
-        const int topLeftRow = topLeft.row();
-        const int bottomRightRow = bottomRight.row();
-        QModelIndex parent = topLeft.parent();
-        for (; it != end; ++it, ++count) {
-            row = it->row();
-            if ((row >= topLeftRow && row <= bottomRightRow) && q->sourceModel()->parent(*it) == parent) {
-                if (startChangeRow == -1) {
-                    startChangeRow = count;
-                    endChangeRow = count;
-                } else
-                    ++endChangeRow;
-            } else {
-                if (startChangeRow != -1)
-                    break;
-            }
-        }
+    const QModelIndex proxyRangeParent = proxyTopLeft.parent();
 
-        if (startChangeRow != -1) {
-            const QModelIndex proxyTopLeft = q->index(startChangeRow, 0);
-            const QModelIndex proxyBottomRight = q->index(endChangeRow, q->columnCount() - 1);
-            emit q->dataChanged(proxyTopLeft, proxyBottomRight);
-        }
+    if (!m_omitChildren && m_omitDescendants && m_startWithChildTrees && m_includeAllSelected)
+    {
+        // ChildrenOfExactSelection
+        if (proxyTopLeft.isValid())
+            emitContinuousRanges(topLeft, bottomRight, proxyTopLeft, proxyBottomRight);
         return;
     }
 
-    if (!m_rootIndexList.contains(topLeft) && isInModel(topLeft)) {
-        // The easy case. A contiguous block not at the root of our model.
-        const QModelIndex proxyTopLeft = q->mapFromSource(topLeft);
-        const QModelIndex proxyBottomRight = q->mapFromSource(bottomRight);
-        // If we're showing only chilren in our model and a grandchild is
-        // changed, this will be invalid.
+    if ((m_omitChildren && !m_startWithChildTrees && m_includeAllSelected)
+          || (!proxyRangeParent.isValid() && !m_startWithChildTrees))
+    {
+        // Exact selection and SubTreeRoots and SubTrees in top level
+        // Emit continuous ranges.
+        QList<int> changedRows;
+        for (int row = topLeft.row(); row < bottomRight.row(); ++row )
+        {
+          const QModelIndex index = q->sourceModel()->index(row, topLeft.column(), topLeft.parent());
+          const int idx = m_rootIndexList.indexOf(index);
+          if (idx != -1)
+          {
+            changedRows.append(idx);
+          }
+        }
+        if (changedRows.isEmpty())
+          return;
+        int first = changedRows.first();
+        int previous = first;
+        QList<int>::const_iterator it = changedRows.constBegin();
+        const QList<int>::const_iterator end = changedRows.constEnd();
+        for( ; it != end; ++it )
+        {
+            if (*it == previous + 1) {
+                ++previous;
+            } else {
+                const QModelIndex _top = q->index(first, topLeft.column() );
+                const QModelIndex _bottom = q->index(previous, bottomRight.column() );
+                emit q->dataChanged(_top, _bottom);
+                previous = first = *it;
+            }
+        }
+        if (first != previous)
+        {
+            const QModelIndex _top = q->index(first, topLeft.column() );
+            const QModelIndex _bottom = q->index(previous, bottomRight.column() );
+            emit q->dataChanged(_top, _bottom);
+        }
+        return;
+    }
+    if (proxyRangeParent.isValid()) {
+        if (m_omitChildren && !m_startWithChildTrees && !m_includeAllSelected)
+            // SubTreeRoots
+            return;
         if (!proxyTopLeft.isValid())
             return;
+        // SubTrees and SubTreesWithoutRoots
         emit q->dataChanged(proxyTopLeft, proxyBottomRight);
         return;
     }
 
-    // We're not showing the m_rootIndexList, so we don't care if they change.
-    if (m_startWithChildTrees)
-        return;
-
-    // The harder case. Parts of the reported changed range are part of
-    // the model if they are in m_rootIndexList. Emit signals in blocks.
-
-    const int leftColumn = topLeft.column();
-    const int rightColumn = bottomRight.column();
-    const QModelIndex parent = topLeft.parent();
-    int startRow = topLeft.row();
-    for (int row = startRow; row <= bottomRight.row(); ++row) {
-        QModelIndex idx = q->sourceModel()->index(row, leftColumn, parent);
-        if (m_rootIndexList.contains(idx)) {
-            startRow = row;
-            ++row;
-            idx = q->sourceModel()->index(row, leftColumn, parent);
-            while (m_rootIndexList.contains(idx)) {
-                ++row;
-                idx = q->sourceModel()->index(row, leftColumn, parent);
-            }
-            --row;
-            const QModelIndex sourceTopLeft = q->sourceModel()->index(startRow, leftColumn, parent);
-            const QModelIndex sourceBottomRight = q->sourceModel()->index(row, rightColumn, parent);
-            const QModelIndex proxyTopLeft = q->mapFromSource(sourceTopLeft);
-            const QModelIndex proxyBottomRight = q->mapFromSource(sourceBottomRight);
-
+    if (m_startWithChildTrees && !m_omitChildren && !m_includeAllSelected && !m_omitDescendants)
+    {
+        // SubTreesWithoutRoots
+        if (proxyTopLeft.isValid())
             emit q->dataChanged(proxyTopLeft, proxyBottomRight);
-        }
+        return;
     }
 }
 
