@@ -31,7 +31,8 @@
   Return true if @p idx is a descendant of one of the indexes in @p list.
   Note that this returns false if @p list contains @p idx.
 */
-static bool isDescendantOf(const QModelIndexList &list, const QModelIndex &idx)
+template<typename ModelIndex>
+bool isDescendantOf(const QList<ModelIndex> &list, const QModelIndex &idx)
 {
     QModelIndex parent = idx.parent();
     while (parent.isValid()) {
@@ -108,8 +109,6 @@ public:
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void sourceModelDestroyed();
 
-    QModelIndexList toNonPersistent(const QList<QPersistentModelIndex> &list) const;
-
     void resetInternalData();
 
     /**
@@ -145,7 +144,55 @@ public:
     /**
       Determines the correct location to insert @p index into @p list.
     */
-    int getRootListRow(const QModelIndexList &list, const QModelIndex &index) const;
+
+    template<typename ModelIndex>
+    int getRootListRow(const QList<ModelIndex> &list, const QModelIndex &index) const
+    {
+        if (!index.isValid())
+            return -1;
+
+        if (list.isEmpty())
+            return 0;
+
+        // What's going on?
+        // Consider a tree like
+        //
+        // A
+        // - B
+        // - - C
+        // - - - D
+        // - E
+        // - F
+        // - - G
+        // - - - H
+        // - I
+        // - - J
+        // - K
+        //
+        // If D, E and J are already selected, and H is newly selected, we need to put H between E and J in the proxy model.
+        // To figure that out, we create a list for each already selected index of its ancestors. Then,
+        // we climb the ancestors of H until we reach an index with siblings which have a descendant
+        // selected (F above has siblings B, E and I which have descendants which are already selected).
+        // Those child indexes are traversed to find the right sibling to put F beside.
+        //
+        // i.e., new items are inserted in the expected location.
+
+        QList<QModelIndexList> rootAncestors;
+        foreach(const QModelIndex &root, list) {
+            QModelIndexList ancestors;
+            ancestors << root;
+            QModelIndex parent = root.parent();
+            while (parent.isValid()) {
+                ancestors.prepend(parent);
+                parent = parent.parent();
+            }
+            ancestors.prepend(QModelIndex());
+            rootAncestors << ancestors;
+        }
+        return _getRootListRow(rootAncestors, index);
+    }
+
+    int _getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index) const;
 
     /**
     If m_startWithChildTrees is true, this method returns the row in the proxy model to insert newIndex
@@ -181,7 +228,19 @@ public:
     /**
       Returns the total number of children (but not descendants) of all of the indexes in @p list.
     */
-    int childrenCount(const QModelIndexList &list) const;
+    template<typename ModelIndex>
+    int childrenCount(const QList<ModelIndex> &list) const
+    {
+        Q_Q(const KSelectionProxyModel);
+        int count = 0;
+
+        foreach(const ModelIndex &idx, list) {
+            count += q->sourceModel()->rowCount(idx);
+        }
+
+        return count;
+    }
+
 
     // Used to map children of indexes in the source model to indexes in the proxy model.
     // TODO: Find out if this breaks when indexes are modified because of higher siblings move/insert/remove
@@ -212,21 +271,9 @@ public:
 
 };
 
-QModelIndexList KSelectionProxyModelPrivate::toNonPersistent(const QList<QPersistentModelIndex> &list) const
-{
-    QModelIndexList returnList;
-    QList<QPersistentModelIndex>::const_iterator it;
-    for (it = list.constBegin(); it != list.constEnd(); ++it)
-        returnList << *it;
-
-    return returnList;
-}
-
 void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     Q_Q(KSelectionProxyModel);
-
-    QModelIndexList list = toNonPersistent(m_rootIndexList);
 
     if (!m_startWithChildTrees && m_includeAllSelected) {
         QList<QPersistentModelIndex>::const_iterator it = m_rootIndexList.constBegin();
@@ -669,7 +716,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
 
                     if (destMoveRow == -1) {
                         if (destParent.isValid())
-                            destMoveRow = getRootListRow(toNonPersistent(m_rootIndexList), destParent);
+                            destMoveRow = getRootListRow(m_rootIndexList, destParent);
                         else
                             destMoveRow = it->row();
                     }
@@ -679,7 +726,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
                 if (row < destRow && q->sourceModel()->parent(*it) == destParent) {
                     if (destMoveRow == -1)
                         if (destParent.isValid())
-                            destMoveRow = getRootListRow(toNonPersistent(m_rootIndexList), destParent);
+                            destMoveRow = getRootListRow(m_rootIndexList, destParent);
                         else
                             destMoveRow = it->row();
                     else
@@ -856,8 +903,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         while (i.hasNext()) {
             const QItemSelectionRange range = i.next();
             const QModelIndex topLeft = range.topLeft();
-            const QModelIndexList list = toNonPersistent(m_rootIndexList);
-            if (isDescendantOf(list, topLeft)) {
+            if (isDescendantOf(m_rootIndexList, topLeft)) {
                 i.remove();
             }
         }
@@ -874,8 +920,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         foreach(const QItemSelectionRange &range, m_selectionModel->selection()) {
             const QModelIndex topLeft = range.topLeft();
             if (isDescendantOf(removeIndexes, topLeft)) {
-                const QModelIndexList list = toNonPersistent(m_rootIndexList);
-                if (!isDescendantOf(list, topLeft) && !isDescendantOf(newIndexes, topLeft))
+                if (!isDescendantOf(m_rootIndexList, topLeft) && !isDescendantOf(newIndexes, topLeft))
                     additionalRanges << range;
             }
 
@@ -912,51 +957,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
         insertionSort(newIndexes);
 }
 
-int KSelectionProxyModelPrivate::getRootListRow(const QModelIndexList &list, const QModelIndex &index) const
+int KSelectionProxyModelPrivate::_getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return -1;
-
-    if (list.isEmpty())
-        return 0;
-
-    // What's going on?
-    // Consider a tree like
-    //
-    // A
-    // - B
-    // - - C
-    // - - - D
-    // - E
-    // - F
-    // - - G
-    // - - - H
-    // - I
-    // - - J
-    // - K
-    //
-    // If D, E and J are already selected, and H is newly selected, we need to put H between E and J in the proxy model.
-    // To figure that out, we create a list for each already selected index of its ancestors. Then,
-    // we climb the ancestors of H until we reach an index with siblings which have a descendant
-    // selected (F above has siblings B, E and I which have descendants which are already selected).
-    // Those child indexes are traversed to find the right sibling to put F beside.
-    //
-    // i.e., new items are inserted in the expected location.
-
-
-    QList<QModelIndexList> rootAncestors;
-    foreach(const QModelIndex &root, list) {
-        QModelIndexList ancestors;
-        ancestors << root;
-        QModelIndex parent = root.parent();
-        while (parent.isValid()) {
-            ancestors.prepend(parent);
-            parent = parent.parent();
-        }
-        ancestors.prepend(QModelIndex());
-        rootAncestors << ancestors;
-    }
-
     QModelIndex commonParent = index;
     QModelIndex youngestAncestor;
 
@@ -1111,8 +1113,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
 
     foreach(const QModelIndex &newIndex, list) {
         if (m_startWithChildTrees) {
-            const QModelIndexList list = toNonPersistent(m_rootIndexList);
-            const int rootListRow = getRootListRow(list, newIndex);
+            const int rootListRow = getRootListRow(m_rootIndexList, newIndex);
             Q_ASSERT(q->sourceModel() == newIndex.model());
             const int rowCount = q->sourceModel()->rowCount(newIndex);
             const int startRow = getTargetRow(rootListRow);
@@ -1132,8 +1133,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
                 emit q->rootIndexAdded(newIndex);
             }
         } else {
-            const QModelIndexList list = toNonPersistent(m_rootIndexList);
-            const int row = getRootListRow(list, newIndex);
+            const int row = getRootListRow(m_rootIndexList, newIndex);
 
             if (!m_resetting)
                 q->beginInsertRows(QModelIndex(), row, row);
@@ -1395,18 +1395,6 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
     return QModelIndex();
 }
 
-int KSelectionProxyModelPrivate::childrenCount(const QModelIndexList &list) const
-{
-    Q_Q(const KSelectionProxyModel);
-    int count = 0;
-
-    foreach(const QModelIndex &idx, list) {
-        count += q->sourceModel()->rowCount(idx);
-    }
-
-    return count;
-}
-
 int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
@@ -1418,9 +1406,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
         if (!d->m_startWithChildTrees) {
             return d->m_rootIndexList.size();
         } else {
-
-            const QModelIndexList list = d->toNonPersistent(d->m_rootIndexList);
-            return d->childrenCount(list);
+            return d->childrenCount(d->m_rootIndexList);
         }
     }
 
