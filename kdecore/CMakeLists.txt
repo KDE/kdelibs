@@ -29,6 +29,10 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 
+if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+   set(KDECORE_NO_KDE3SUPPORT TRUE)
+endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
 # if it's used, *always* append to it
@@ -102,9 +106,6 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
       kernel/kstandarddirs_unix.cpp
-      network/k3httpproxysocketdevice.cpp
-      network/k3socks.cpp
-      network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
       network/netsupp.cpp
       io/klockfile_unix.cpp
@@ -113,6 +114,13 @@ if (UNIX)
       util/kmacroexpander_unix.cpp
       fakes.c
    )
+   if (NOT KDECORE_NO_KDE3SUPPORT)
+      set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+         network/k3httpproxysocketdevice.cpp
+         network/k3socks.cpp
+         network/k3sockssocketdevice.cpp
+      )
+   endif (NOT KDECORE_NO_KDE3SUPPORT)
 endif (UNIX)
 
 add_subdirectory( kconfig_compiler )
@@ -232,20 +240,28 @@ set(kdecore_LIB_SRCS
    sonnet/backgroundchecker.cpp
    sonnet/backgroundengine.cpp
    sonnet/globals.cpp
-   network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
-   network/k3bufferedsocket.cpp
-   network/k3clientsocketbase.cpp
-   network/k3datagramsocket.cpp
-   network/k3resolver.cpp
-   network/k3resolvermanager.cpp
-   network/k3resolverworkerbase.cpp
-   network/k3resolverstandardworkers.cpp
-   network/k3reverseresolver.cpp
-   network/k3serversocket.cpp
-   network/k3socketaddress.cpp
-   network/k3socketbase.cpp
-   network/k3streamsocket.cpp
-   network/k3socketbuffer.cpp
+)
+
+if (NOT KDECORE_NO_KDE3SUPPORT)
+   set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
+      network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
+      network/k3bufferedsocket.cpp
+      network/k3clientsocketbase.cpp
+      network/k3datagramsocket.cpp
+      network/k3resolver.cpp
+      network/k3resolvermanager.cpp
+      network/k3resolverworkerbase.cpp
+      network/k3resolverstandardworkers.cpp
+      network/k3reverseresolver.cpp
+      network/k3serversocket.cpp
+      network/k3socketaddress.cpp
+      network/k3socketbase.cpp
+      network/k3streamsocket.cpp
+      network/k3socketbuffer.cpp
+   )
+endif (NOT KDECORE_NO_KDE3SUPPORT)
+
+set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
    network/ksslcertificatemanager.cpp
@@ -495,19 +511,29 @@ install( FILES
    kernel/kcomponentdata.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
-   network/k3bufferedsocket.h
-   network/k3clientsocketbase.h
-   network/k3datagramsocket.h
-   network/k3httpproxysocketdevice.h
-   network/k3resolver.h
-   network/k3reverseresolver.h
-   network/k3serversocket.h
-   network/k3socketaddress.h
-   network/k3socketbase.h
-   network/k3socketdevice.h
-   network/k3socks.h
-   network/k3sockssocketdevice.h
-   network/k3streamsocket.h
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+
+if (NOT KDECORE_NO_KDE3SUPPORT)
+   install(FILES
+      network/k3bufferedsocket.h
+      network/k3clientsocketbase.h
+      network/k3datagramsocket.h
+      network/k3httpproxysocketdevice.h
+      network/k3resolver.h
+      network/k3reverseresolver.h
+      network/k3serversocket.h
+      network/k3socketaddress.h
+      network/k3socketbase.h
+      network/k3socketdevice.h
+      network/k3socks.h
+      network/k3sockssocketdevice.h
+      network/k3streamsocket.h
+      DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+   )
+endif (NOT KDECORE_NO_KDE3SUPPORT)
+
+install(FILES
    network/klocalsocket.h
    network/ksocketfactory.h
    network/ktcpsocket.h
