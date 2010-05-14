@@ -62,7 +62,7 @@ namespace Nepomuk {
         TagWidget( QWidget* parent = 0 );
 
         /**
-         * Desctructor
+         * Destructor
          */
         ~TagWidget();
 
