@@ -390,9 +390,9 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                 if (!currA->isDigit() && !currB->isDigit()) {
                     break;
                 } else if (!currA->isDigit()) {
-                    return -1;
+                    return +1;
                 } else if (!currB->isDigit()) {
-                    return + 1;
+                    return -1;
                 } else if (*currA < *currB) {
                     return -1;
                 } else if (*currA > *currB) {
@@ -419,13 +419,13 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                     break;
                 } else if (!currA->isDigit()) {
                     if (isFirstRun) {
-                        return *currA < *currB ? + 1 : -1;
+                        return *currA < *currB ? -1 : +1;
                     } else {
                         return -1;
                     }
                 } else if (!currB->isDigit()) {
                     if (isFirstRun) {
-                        return *currA < *currB ? - 1 : +1;
+                        return *currA < *currB ? -1 : +1;
                     } else {
                         return +1;
                     }
