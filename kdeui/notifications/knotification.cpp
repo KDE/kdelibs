@@ -378,7 +378,7 @@ void KNotification::sendEvent()
 	}
     else if(d->id == -1)
     {
-        //schedgule an update.
+        //schedule an update.
         d->needUpdate = true;
     }
 }
