@@ -38,40 +38,92 @@ SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
 
   m_rootModel = new DynamicTreeModel(this);
 
-  DynamicTreeWidget *dynTreeWidget1 = new DynamicTreeWidget(m_rootModel, splitter);
   DynamicTreeWidget *dynTreeWidget = new DynamicTreeWidget(m_rootModel, splitter);
 
-  QTreeView *rootView = dynTreeWidget->treeView();
+  QTreeView *selectionTree = createLabelledView("Selection", splitter);
+  selectionTree->setSelectionMode( QAbstractItemView::ExtendedSelection );
+  selectionTree->setModel(m_rootModel);
 
-  KSelectionProxyModel *selectedBranchesModel = new KSelectionProxyModel(rootView->selectionModel(), this);
+  dynTreeWidget->setInitialTree(
+ "- 1"
+ "- 2"
+ "- - 3"
+ "- - 3"
+ "- - - 4"
+ "- - - 4"
+ "- - - - 4"
+ "- - 4"
+ "- - 5"
+ "- - - 4"
+ "- - - - 4"
+ "- - 5"
+ "- 6"
+ "- 7"
+ "- - 8"
+ "- - - 9"
+ "- - - 10"
+ "- - - - 9"
+ "- - - - - 10"
+ "- - - - - - 9"
+ "- - - - - - 10"
+ "- - - - - - - 9"
+ "- - - - - - - - 10"
+ "- - - - - - - - 9"
+ "- - - - - - - 10"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 10"
+ "- - - - - - 9"
+ "- - - - - - 10"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 10"
+ "- - - - - - 9"
+ "- - - - - - 10"
+ "- - - - 10"
+ "- - 11"
+ "- - 12"
+ "- 13"
+ "- 14"
+ "- 15"
+ "- - 16"
+ "- - - 17"
+ "- - - 18"
+ "- 19"
+ "- 20"
+ "- 21");
+
+  KSelectionProxyModel *selectedBranchesModel = new KSelectionProxyModel(selectionTree->selectionModel(), this);
   selectedBranchesModel->setSourceModel(m_rootModel);
   selectedBranchesModel->setFilterBehavior(KSelectionProxyModel::SubTrees);
 
   QTreeView *selectedBranchesView = createLabelledView("SubTrees", splitter);
   selectedBranchesView->setModel(selectedBranchesModel);
 
-  KSelectionProxyModel *selectedBranchesRootsModel = new KSelectionProxyModel(rootView->selectionModel(), this);
+  KSelectionProxyModel *selectedBranchesRootsModel = new KSelectionProxyModel(selectionTree->selectionModel(), this);
   selectedBranchesRootsModel->setSourceModel(m_rootModel);
   selectedBranchesRootsModel->setFilterBehavior(KSelectionProxyModel::SubTreeRoots);
 
   QTreeView *selectedBranchesRootsView = createLabelledView("SubTreeRoots", splitter);
   selectedBranchesRootsView->setModel(selectedBranchesRootsModel);
 
-  KSelectionProxyModel *selectedBranchesChildrenModel = new KSelectionProxyModel(rootView->selectionModel(), this);
+  KSelectionProxyModel *selectedBranchesChildrenModel = new KSelectionProxyModel(selectionTree->selectionModel(), this);
   selectedBranchesChildrenModel->setSourceModel(m_rootModel);
   selectedBranchesChildrenModel->setFilterBehavior(KSelectionProxyModel::SubTreesWithoutRoots);
 
   QTreeView *selectedBranchesChildrenView = createLabelledView("SubTreesWithoutRoots", splitter);
   selectedBranchesChildrenView->setModel(selectedBranchesChildrenModel);
 
-  KSelectionProxyModel *onlySelectedModel = new KSelectionProxyModel(rootView->selectionModel(), this);
+  KSelectionProxyModel *onlySelectedModel = new KSelectionProxyModel(selectionTree->selectionModel(), this);
   onlySelectedModel->setSourceModel(m_rootModel);
   onlySelectedModel->setFilterBehavior(KSelectionProxyModel::ExactSelection);
 
   QTreeView *onlySelectedView = createLabelledView("ExactSelection", splitter);
   onlySelectedView->setModel(onlySelectedModel);
 
-  KSelectionProxyModel *onlySelectedChildrenModel = new KSelectionProxyModel(rootView->selectionModel(), this);
+  KSelectionProxyModel *onlySelectedChildrenModel = new KSelectionProxyModel(selectionTree->selectionModel(), this);
   onlySelectedChildrenModel->setSourceModel(m_rootModel);
   onlySelectedChildrenModel->setFilterBehavior(KSelectionProxyModel::ChildrenOfExactSelection);
 
