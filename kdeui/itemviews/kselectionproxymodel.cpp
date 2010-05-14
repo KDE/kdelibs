@@ -739,7 +739,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
         int endMoveRow = -1;
         int count = 0;
         int row;
-        for (; it != end; ++it, ++count) {
+        for ( ; it != end; ++it, ++count) {
             row = it->row();
             if ((row >= srcStart && row <= srcEnd) && q->sourceModel()->parent(*it) == srcParent) {
                 if (startMoveRow == -1) {
@@ -835,7 +835,6 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
 QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection &selection) const
 {
     QModelIndexList indexes;
-    const int column = 0;
 
     foreach(const QItemSelectionRange &range, selection) {
         QModelIndex newIndex = range.topLeft();
@@ -844,6 +843,7 @@ QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection 
             continue;
 
         for (int row = newIndex.row(); row <= range.bottom(); ++row) {
+            static const int column = 0;
             newIndex = newIndex.sibling(row, column);
 
             const QModelIndex sourceNewIndex = selectionIndexToSourceIndex(newIndex);
@@ -1113,29 +1113,24 @@ int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
     if (!m_startWithChildTrees)
         return rootListRow;
 
-    static const int column = 0;
-
     --rootListRow;
     while (rootListRow >= 0) {
         const QModelIndex idx = m_rootIndexList.at(rootListRow);
         Q_ASSERT(idx.isValid());
         const int rowCount = q->sourceModel()->rowCount(idx);
         if (rowCount > 0) {
-
-            const QModelIndex proxyLastChild = q->mapFromSource(q->sourceModel()->index(rowCount - 1, column, idx));
-
+            static const int column = 0;
+            const QModelIndex srcIdx = q->sourceModel()->index(rowCount - 1, column, idx);
+            const QModelIndex proxyLastChild = q->mapFromSource(srcIdx);
             return proxyLastChild.row() + 1;
         }
         --rootListRow;
     }
-
     return 0;
-
 }
 
 void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
 {
-
     Q_Q(KSelectionProxyModel);
 
     // TODO: regroup indexes in list into contiguous ranges with the same parent.
@@ -1593,11 +1588,10 @@ int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
     if (!sourceModel())
         return 0;
-
     return sourceModel()->columnCount(mapToSource(index));
 }
 
-QItemSelectionModel *KSelectionProxyModel::selectionModel() const
+QItemSelectionModel* KSelectionProxyModel::selectionModel() const
 {
     Q_D(const KSelectionProxyModel);
     return d->m_selectionModel;
@@ -1649,7 +1643,6 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
 
     }
     return list;
-
 }
 
 #include "moc_kselectionproxymodel.cpp"
