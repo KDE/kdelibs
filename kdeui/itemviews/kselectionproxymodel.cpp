@@ -1548,7 +1548,27 @@ Qt::DropActions KSelectionProxyModel::supportedDropActions() const
 
 bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 {
-    return rowCount(parent) > 0;
+    Q_D(const KSelectionProxyModel);
+
+    if (d->m_rootIndexList.isEmpty())
+      return false;
+
+    if (parent.isValid())
+    {
+        if (d->m_omitChildren || (d->m_startWithChildTrees && d->m_omitDescendants))
+            return false;
+        return sourceModel()->hasChildren(mapToSource(parent));
+    }
+
+    if (!d->m_startWithChildTrees)
+      return true;
+
+    foreach(const QPersistentModelIndex &idx, d->m_rootIndexList) {
+      if (sourceModel()->hasChildren(idx))
+        return true;
+    }
+
+    return false;
 }
 
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
