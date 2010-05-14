@@ -182,7 +182,7 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExa
   newModifyTest("modify01", parentFinder, 0, 0);
   newModifyTest("modify02", parentFinder, 0, 4);
   newModifyTest("modify03", parentFinder, 9, 9);
-  newModifyTest("modify04", parentFinder, 5, 9);
+  newModifyTest("modify04", parentFinder, 6, 9);
   newModifyTest("modify05", parentFinder, 4, 4);
   newModifyTest("modify06", parentFinder, 3, 7);
   newModifyTest("modify07", parentFinder, 0, 9);
@@ -284,7 +284,7 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelectio
   noopTest("modify01");
   noopTest("modify02");
   noopTest("modify03");
-  newModifyTest("modify04", IndexFinder(), 0, 0 );
+  noopTest("modify04");
   noopTest("modify05");
   newModifyTest("modify06", IndexFinder(), 0, 0 );
   newModifyTest("modify07", IndexFinder(), 0, 0 );
@@ -380,7 +380,7 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::SubTrees>::te
   noopTest("modify01");
   noopTest("modify02");
   noopTest("modify03");
-  newModifyTest("modify04", IndexFinder(), 0, 0 );
+  noopTest("modify04");
   noopTest("modify05");
   newModifyTest("modify06", IndexFinder(), 0, 0 );
   newModifyTest("modify07", IndexFinder(), 0, 0 );

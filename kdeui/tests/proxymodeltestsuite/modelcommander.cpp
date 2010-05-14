@@ -387,7 +387,7 @@ QStringList ModelCommander::executeTestModify(QList<int> rowAncestors, const QSt
   {
     // Modify four items at the bottom.
     modify->setAncestorRowNumbers(rowAncestors);
-    modify->setStartRow(m_model->rowCount() - 5);
+    modify->setStartRow(m_model->rowCount() - 4);
     modify->setEndRow(m_model->rowCount() - 1);
   } else if (dataTag == testData.at(4))
   {
