@@ -105,6 +105,16 @@ static QByteArray valueForKey(const QList<QByteArray> &ba, const QByteArray &key
     return QByteArray();
 }
 
+KAbstractHttpAuthentication::KAbstractHttpAuthentication(KConfigGroup *config)
+                            :m_config(config), m_finalAuthStage(true)
+{
+    reset();
+}
+
+KAbstractHttpAuthentication::~KAbstractHttpAuthentication()
+{
+}
+
 QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offers)
 {
     // choose the most secure auth scheme offered
@@ -171,7 +181,6 @@ void KAbstractHttpAuthentication::reset()
     m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
-    m_finalAuthStage = true;
     m_headerFragment.clear();
     m_username.clear();
     m_password.clear();
@@ -562,8 +571,11 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
     if (m_challenge.isEmpty()) {
         m_finalAuthStage = false;
         // first, send type 1 message (with empty domain, workstation..., but it still works)
-        if (!KNTLM::getNegotiate(buf))
+        if (!KNTLM::getNegotiate(buf)) {
             kWarning(7113) << "Error while constructing Type 1 NTLM authentication request";
+            m_isError = true;
+            return;
+        }
     } else {
         m_finalAuthStage = true;
         // we've (hopefully) received a valid type 2 message: send type 3 message as last step
@@ -577,8 +589,11 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
 
         m_forceKeepAlive = true;
         const QByteArray challenge = QByteArray::fromBase64(m_challenge[0]);
-        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName()))
+        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName())) {
             kWarning(7113) << "Error while constructing Type 3 NTLM authentication request";
+            m_isError = true;
+            return;
+        }
     }
 
     m_headerFragment = "NTLM ";

@@ -38,13 +38,8 @@ class KConfigGroup;
 class KAbstractHttpAuthentication
 {
 public:
-    KAbstractHttpAuthentication(KConfigGroup *config = 0)
-    : m_config(config)
-    {
-        reset();
-    }
-
-    virtual ~KAbstractHttpAuthentication() {}
+    KAbstractHttpAuthentication(KConfigGroup *config = 0);
+    virtual ~KAbstractHttpAuthentication();
 
     static QByteArray bestOffer(const QList<QByteArray> &offers);
     static KAbstractHttpAuthentication *newAuth(const QByteArray &offer, KConfigGroup *config = 0);
