@@ -3303,14 +3303,19 @@ try_next_auth_scheme:
                         // modified it.
                         const KUrl reqUrl = authinfo.url;
                         if (!checkCachedAuthentication(authinfo) ||
-                            m_request.responseCode == m_request.prevResponseCode) {
+                            ((*auth)->wasFinalStage() && m_request.responseCode == m_request.prevResponseCode)) {
                             QString errorMsg;
-                            // Set error message only if previous authentication attempt failed.
                             if ((*auth)->wasFinalStage()) {
-                                if (m_request.prevResponseCode == 401)
+                                switch (m_request.prevResponseCode) {
+                                case 401:
                                     errorMsg = i18n("Authentication Failed.");
-                                else if (m_request.prevResponseCode == 407)
+                                    break;
+                                case 407:
                                     errorMsg = i18n("Proxy Authentication Failed.");
+                                    break;
+                                default:
+                                    break;
+                                }
                             }
 
                             // Reset url to the saved url...
