@@ -61,6 +61,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   tabWidget->addTab(selProxyWidget, "selection PM");
   tabWidget->addTab(breadcrumbsWidget, "Breadcrumbs");
   tabWidget->addTab(breadcrumbNavigationWidget, "Breadcrumb Navigation");
+  tabWidget->addTab(breadcrumbDirectionWidget, "Breadcrumb Direction");
   tabWidget->addTab(proxyItemSelectionWidget, "Proxy Item selection");
 //   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");
   tabWidget->addTab(recursive, "Recursive Filter");
