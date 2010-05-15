@@ -274,21 +274,21 @@ public:
     QPair<int, int> getRootRange(const QModelIndex &sourceParent, int start, int end) const;
 
     /**
-    When items are inserted or removed in the m_startWithChildTrees configuration,
-    this method helps find the startRow for use emitting the signals from the proxy.
+      When items are inserted or removed in the m_startWithChildTrees configuration,
+      this method helps find the startRow for use emitting the signals from the proxy.
     */
     int getProxyInitialRow(const QModelIndex &parent) const;
 
     /**
-    Returns a selection in which no descendants of selected indexes are also themselves selected.
-    For example,
-    @code
-      A
-      - B
-      C
-      D
-    @endcode
-    If A, B and D are selected in @p selection, the returned selection contains only A and D.
+      Returns a selection in which no descendants of selected indexes are also themselves selected.
+      For example,
+      @code
+        A
+        - B
+        C
+        D
+      @endcode
+      If A, B and D are selected in @p selection, the returned selection contains only A and D.
     */
     QItemSelection getRootRanges(const QItemSelection &selection) const;
 
@@ -298,13 +298,13 @@ public:
     QModelIndexList getNewIndexes(const QItemSelection &selection) const;
 
     /**
-    If m_startWithChildTrees is true, this method returns the row in the proxy model to insert newIndex
-    items.
+      If m_startWithChildTrees is true, this method returns the row in the proxy model to insert newIndex
+      items.
 
-    This is a special case because the items above rootListRow in the list are not in the model, but
-    their children are. Those children must be counted.
+      This is a special case because the items above rootListRow in the list are not in the model, but
+      their children are. Those children must be counted.
 
-    If m_startWithChildTrees is false, this method returns @p rootListRow.
+      If m_startWithChildTrees is false, this method returns @p rootListRow.
     */
     int getTargetRow(int rootListRow);
 
@@ -324,7 +324,7 @@ public:
     bool isInModel(const QModelIndex &sourceIndex) const;
 
     /**
-    Converts an index in the selection model to an index in the source model.
+      Converts an index in the selection model to an index in the source model.
     */
     QModelIndex selectionIndexToSourceIndex(const QModelIndex &index) const;
 
