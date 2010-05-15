@@ -3293,13 +3293,10 @@ try_next_auth_scheme:
                         m_request.url.setPass(QString());
                     } else {
                         // try to get credentials from kpasswdserver's cache, then try asking the user.
-                        authinfo.keepPassword = true;
                         authinfo.verifyPath = false; // we have realm, no path based checking please!
                         authinfo.realmValue = (*auth)->realm();
                         if (authinfo.realmValue.isEmpty() && !(*auth)->supportsPathMatching())
                             authinfo.realmValue = QLatin1String((*auth)->scheme());
-                        authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
-                                                authinfo.realmValue, authinfo.url.host());
 
                         // Save the current authinfo url because it can be modified by the call to
                         // checkCachedAuthentication. That way we can restore it if the call
@@ -3316,10 +3313,11 @@ try_next_auth_scheme:
                                     errorMsg = i18n("Proxy Authentication Failed.");
                             }
 
-                            // Reset parameters that might be modified by the
-                            // call to checkCachedAuthentication above...
+                            // Reset url to the saved url...
                             authinfo.url = reqUrl;
                             authinfo.keepPassword = true;
+                            authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
+                                                    authinfo.realmValue, authinfo.url.host());
 
                             if (!openPasswordDialog(authinfo, errorMsg)) {
                                 if (sendErrorPageNotification()) {
