@@ -28,6 +28,7 @@
 
 #include "breadcrumbswidget.h"
 #include "breadcrumbnavigationwidget.h"
+#include "breadcrumbdirectionwidget.h"
 #include "descendantpmwidget.h"
 #include "selectionpmwidget.h"
 #include "statesaverwidget.h"
@@ -45,6 +46,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   DescendantProxyModelWidget *descPMWidget = new DescendantProxyModelWidget();
   SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
   BreadcrumbsWidget *breadcrumbsWidget = new BreadcrumbsWidget();
+  BreadcrumbDirectionWidget *breadcrumbDirectionWidget = new BreadcrumbDirectionWidget();
   BreadcrumbNavigationWidget *breadcrumbNavigationWidget = new BreadcrumbNavigationWidget();
   ProxyItemSelectionWidget *proxyItemSelectionWidget = new ProxyItemSelectionWidget();
   StateSaverWidget *stateSaverWidget = new StateSaverWidget();
