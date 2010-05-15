@@ -1,5 +1,10 @@
 Known Issues [OUTSTANDING]:
 ===========================
+* [kdewebkit] Unsupported content handling always requires more than one
+  connection to the same server to download a single request. The fix for this
+  issue requires a new API addition to KIO that accepts QNetworkReply instead
+  of KUrl as its data source. See https://bugs.webkit.org/show_bug.cgi?id=37880
+
 * [QtWebKit] HTML 5 <video> tag will not work properly until Qt 4.7 for most depending
   on how their distro created the Qt library package. Due to differences in the Phonon 
   library used by Qt and KDE, most distros disable support for Phonon when compiling 
@@ -19,14 +24,9 @@ Known Issues [OUTSTANDING]:
        QLineEdit and QComboBox. See https://bugs.webkit.org/show_bug.cgi?id=36668
     ** Spell checking specially for <textarea> widgets.
 
-* [kdewebkit] Unsupported content handling always requires more than one
-  connection to the same server to download a single request. The fix for this
-  issue requires a new API addition to KIO that accepts QNetworkReply instead
-  of KUrl as its data source. See https://bugs.webkit.org/show_bug.cgi?id=37880
-
 Known Issues [ADDRESSED]:
 =========================
-* [QtWebKit] Crash browsing facebook.
+* [QtWebKit] Crash while browsing facebook.
   See https://bugs.webkit.org/show_bug.cgi?id=35204.
 
 * [QtWebKit] Does not have support "Content-Disposition". Specifically
