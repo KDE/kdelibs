@@ -70,6 +70,160 @@ static QModelIndex childOfParent(const QModelIndex& ancestor, const QModelIndex&
     return child;
 }
 
+static int _getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index)
+{
+    QModelIndex commonParent = index;
+    QModelIndex youngestAncestor;
+
+    int firstCommonParent = -1;
+    int bestParentRow = -1;
+    while (commonParent.isValid()) {
+        youngestAncestor = commonParent;
+        commonParent = commonParent.parent();
+
+        for (int i = 0; i < rootAncestors.size(); ++i) {
+            const QModelIndexList ancestorList = rootAncestors.at(i);
+
+            const int parentRow = ancestorList.indexOf(commonParent);
+
+            if (parentRow < 0)
+                continue;
+
+            if (parentRow > bestParentRow) {
+                firstCommonParent = i;
+                bestParentRow = parentRow;
+            }
+        }
+
+        if (firstCommonParent >= 0)
+            break;
+    }
+
+    // If @p list is non-empty, the invalid QModelIndex() will at least be found in ancestorList.
+    Q_ASSERT(firstCommonParent >= 0);
+
+    const QModelIndexList firstAnsList = rootAncestors.at(firstCommonParent);
+
+    const QModelIndex eldestSibling = firstAnsList.value(bestParentRow + 1);
+
+    if (eldestSibling.isValid()) {
+        // firstCommonParent is a sibling of one of the ancestors of @p index.
+        // It is the first index to share a common parent with one of the ancestors of @p index.
+        if (eldestSibling.row() >= youngestAncestor.row())
+            return firstCommonParent;
+    }
+
+    int siblingOffset = 1;
+
+    // The same commonParent might be common to several root indexes.
+    // If this is the last in the list, it's the only match. We instruct the model
+    // to insert the new index after it ( + siblingOffset).
+    if (rootAncestors.size() <= firstCommonParent + siblingOffset) {
+        return firstCommonParent + siblingOffset;
+    }
+
+    // A
+    // - B
+    //   - C
+    //   - D
+    //   - E
+    // F
+    //
+    // F is selected, then C then D. When inserting D into the model, the commonParent is B (the parent of C).
+    // The next existing sibling of B is F (in the proxy model). bestParentRow will then refer to an index on
+    // the level of a child of F (which doesn't exist - Boom!). If it doesn't exist, then we've already found
+    // the place to insert D
+    QModelIndexList ansList = rootAncestors.at(firstCommonParent + siblingOffset);
+    if (ansList.size() <= bestParentRow) {
+        return firstCommonParent + siblingOffset;
+    }
+
+    QModelIndex nextParent = ansList.at(bestParentRow);
+    while (nextParent == commonParent) {
+        if (ansList.size() < bestParentRow + 1)
+            // If the list is longer, it means that at the end of it is a descendant of the new index.
+            // We insert the ancestors items first in that case.
+            break;
+
+        const QModelIndex nextSibling = ansList.value(bestParentRow + 1);
+
+        if (!nextSibling.isValid()) {
+            continue;
+        }
+
+        if (youngestAncestor.row() <= nextSibling.row()) {
+            break;
+        }
+
+        siblingOffset++;
+
+        if (rootAncestors.size() <= firstCommonParent + siblingOffset)
+            break;
+
+        ansList = rootAncestors.at(firstCommonParent + siblingOffset);
+
+        // In the scenario above, E is selected after D, causing this loop to be entered,
+        // and requiring a similar result if the next sibling in the proxy model does not have children.
+        if (ansList.size() <= bestParentRow) {
+            break;
+        }
+
+        nextParent = ansList.at(bestParentRow);
+    }
+
+    return firstCommonParent + siblingOffset;
+}
+
+/**
+  Determines the correct location to insert @p index into @p list.
+*/
+template<typename ModelIndex>
+static int getRootListRow(const QList<ModelIndex> &list, const QModelIndex &index)
+{
+    if (!index.isValid())
+        return -1;
+
+    if (list.isEmpty())
+        return 0;
+
+    // What's going on?
+    // Consider a tree like
+    //
+    // A
+    // - B
+    // - - C
+    // - - - D
+    // - E
+    // - F
+    // - - G
+    // - - - H
+    // - I
+    // - - J
+    // - K
+    //
+    // If D, E and J are already selected, and H is newly selected, we need to put H between E and J in the proxy model.
+    // To figure that out, we create a list for each already selected index of its ancestors. Then,
+    // we climb the ancestors of H until we reach an index with siblings which have a descendant
+    // selected (F above has siblings B, E and I which have descendants which are already selected).
+    // Those child indexes are traversed to find the right sibling to put F beside.
+    //
+    // i.e., new items are inserted in the expected location.
+
+    QList<QModelIndexList> rootAncestors;
+    foreach(const QModelIndex &root, list) {
+        QModelIndexList ancestors;
+        ancestors << root;
+        QModelIndex parent = root.parent();
+        while (parent.isValid()) {
+            ancestors.prepend(parent);
+            parent = parent.parent();
+        }
+        ancestors.prepend(QModelIndex());
+        rootAncestors << ancestors;
+    }
+    return _getRootListRow(rootAncestors, index);
+}
+
 class KSelectionProxyModelPrivate
 {
 public:
@@ -142,59 +296,6 @@ public:
       Returns the indexes in @p selection which are not already part of the proxy model.
     */
     QModelIndexList getNewIndexes(const QItemSelection &selection) const;
-
-    /**
-      Determines the correct location to insert @p index into @p list.
-    */
-
-    template<typename ModelIndex>
-    int getRootListRow(const QList<ModelIndex> &list, const QModelIndex &index) const
-    {
-        if (!index.isValid())
-            return -1;
-
-        if (list.isEmpty())
-            return 0;
-
-        // What's going on?
-        // Consider a tree like
-        //
-        // A
-        // - B
-        // - - C
-        // - - - D
-        // - E
-        // - F
-        // - - G
-        // - - - H
-        // - I
-        // - - J
-        // - K
-        //
-        // If D, E and J are already selected, and H is newly selected, we need to put H between E and J in the proxy model.
-        // To figure that out, we create a list for each already selected index of its ancestors. Then,
-        // we climb the ancestors of H until we reach an index with siblings which have a descendant
-        // selected (F above has siblings B, E and I which have descendants which are already selected).
-        // Those child indexes are traversed to find the right sibling to put F beside.
-        //
-        // i.e., new items are inserted in the expected location.
-
-        QList<QModelIndexList> rootAncestors;
-        foreach(const QModelIndex &root, list) {
-            QModelIndexList ancestors;
-            ancestors << root;
-            QModelIndex parent = root.parent();
-            while (parent.isValid()) {
-                ancestors.prepend(parent);
-                parent = parent.parent();
-            }
-            ancestors.prepend(QModelIndex());
-            rootAncestors << ancestors;
-        }
-        return _getRootListRow(rootAncestors, index);
-    }
-
-    int _getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index) const;
 
     /**
     If m_startWithChildTrees is true, this method returns the row in the proxy model to insert newIndex
@@ -987,110 +1088,6 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
     }
     if (newIndexes.size() > 0)
         insertionSort(newIndexes);
-}
-
-int KSelectionProxyModelPrivate::_getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index) const
-{
-    QModelIndex commonParent = index;
-    QModelIndex youngestAncestor;
-
-    int firstCommonParent = -1;
-    int bestParentRow = -1;
-    while (commonParent.isValid()) {
-        youngestAncestor = commonParent;
-        commonParent = commonParent.parent();
-
-        for (int i = 0; i < rootAncestors.size(); ++i) {
-            const QModelIndexList ancestorList = rootAncestors.at(i);
-
-            const int parentRow = ancestorList.indexOf(commonParent);
-
-            if (parentRow < 0)
-                continue;
-
-            if (parentRow > bestParentRow) {
-                firstCommonParent = i;
-                bestParentRow = parentRow;
-            }
-        }
-
-        if (firstCommonParent >= 0)
-            break;
-    }
-
-    // If @p list is non-empty, the invalid QModelIndex() will at least be found in ancestorList.
-    Q_ASSERT(firstCommonParent >= 0);
-
-    const QModelIndexList firstAnsList = rootAncestors.at(firstCommonParent);
-
-    const QModelIndex eldestSibling = firstAnsList.value(bestParentRow + 1);
-
-    if (eldestSibling.isValid()) {
-        // firstCommonParent is a sibling of one of the ancestors of @p index.
-        // It is the first index to share a common parent with one of the ancestors of @p index.
-        if (eldestSibling.row() >= youngestAncestor.row())
-            return firstCommonParent;
-    }
-
-    int siblingOffset = 1;
-
-    // The same commonParent might be common to several root indexes.
-    // If this is the last in the list, it's the only match. We instruct the model
-    // to insert the new index after it ( + siblingOffset).
-    if (rootAncestors.size() <= firstCommonParent + siblingOffset) {
-        return firstCommonParent + siblingOffset;
-    }
-
-    // A
-    // - B
-    //   - C
-    //   - D
-    //   - E
-    // F
-    //
-    // F is selected, then C then D. When inserting D into the model, the commonParent is B (the parent of C).
-    // The next existing sibling of B is F (in the proxy model). bestParentRow will then refer to an index on
-    // the level of a child of F (which doesn't exist - Boom!). If it doesn't exist, then we've already found
-    // the place to insert D
-    QModelIndexList ansList = rootAncestors.at(firstCommonParent + siblingOffset);
-    if (ansList.size() <= bestParentRow) {
-        return firstCommonParent + siblingOffset;
-    }
-
-    QModelIndex nextParent = ansList.at(bestParentRow);
-    while (nextParent == commonParent) {
-        if (ansList.size() < bestParentRow + 1)
-            // If the list is longer, it means that at the end of it is a descendant of the new index.
-            // We insert the ancestors items first in that case.
-            break;
-
-        const QModelIndex nextSibling = ansList.value(bestParentRow + 1);
-
-        if (!nextSibling.isValid()) {
-            continue;
-        }
-
-        if (youngestAncestor.row() <= nextSibling.row()) {
-            break;
-        }
-
-        siblingOffset++;
-
-        if (rootAncestors.size() <= firstCommonParent + siblingOffset)
-            break;
-
-        ansList = rootAncestors.at(firstCommonParent + siblingOffset);
-
-        // In the scenario above, E is selected after D, causing this loop to be entered,
-        // and requiring a similar result if the next sibling in the proxy model does not have children.
-        if (ansList.size() <= bestParentRow) {
-            break;
-        }
-
-        nextParent = ansList.at(bestParentRow);
-    }
-
-    return firstCommonParent + siblingOffset;
 }
 
 QList<QPair<QModelIndex, QModelIndexList> > KSelectionProxyModelPrivate::regroup(const QModelIndexList &list) const
