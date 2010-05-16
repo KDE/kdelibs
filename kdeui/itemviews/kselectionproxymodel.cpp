@@ -2092,7 +2092,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!sourceModel())
+    if (!sourceModel() || index.column() > 0)
         return 0;
 
     if (!index.isValid()) {
@@ -2165,11 +2165,11 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
         foreach(const QModelIndex &idx, d->m_rootIndexList) {
             const int idxRowCount = sourceModel()->rowCount(idx);
             if (_row < idxRowCount) {
-                const QModelIndex proxyFirstChild = d->mapRootFirstChildFromSource(sourceModel()->index(0, column, idx));
+                const QModelIndex proxyFirstChild = d->mapRootFirstChildFromSource(sourceModel()->index(0, 0, idx));
                 Q_ASSERT(proxyFirstChild.isValid());
                 const int proxyFirstChildRow = proxyFirstChild.row();
                 if (row == proxyFirstChildRow) {
-                    return proxyFirstChild;
+                    return proxyFirstChild.sibling(row, column);
                 }
                 Q_ASSERT(proxyFirstChild.internalPointer() == 0);
                 return createIndex(row, column, proxyFirstChild.internalPointer());
@@ -2277,7 +2277,7 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
-    if (!sourceModel())
+    if (!sourceModel() || index.column() > 0)
         return 0;
     return sourceModel()->columnCount(mapToSource(index));
 }
