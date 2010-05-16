@@ -40,10 +40,6 @@ SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
 
   DynamicTreeWidget *dynTreeWidget = new DynamicTreeWidget(m_rootModel, splitter);
 
-  QTreeView *selectionTree = createLabelledView("Selection", splitter);
-  selectionTree->setSelectionMode( QAbstractItemView::ExtendedSelection );
-  selectionTree->setModel(m_rootModel);
-
   dynTreeWidget->setInitialTree(
  "- 1"
  "- 2"
@@ -94,6 +90,11 @@ SelectionProxyWidget::SelectionProxyWidget(QWidget* parent): QWidget(parent)
  "- 19"
  "- 20"
  "- 21");
+
+  QTreeView *selectionTree = createLabelledView("Selection", splitter);
+  selectionTree->setSelectionMode( QAbstractItemView::ExtendedSelection );
+  selectionTree->setModel(m_rootModel);
+  selectionTree->expandAll();
 
 #define SUBTREES
 #define SUBTREEROOTS
