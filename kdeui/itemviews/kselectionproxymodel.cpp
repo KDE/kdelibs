@@ -1616,32 +1616,25 @@ void KSelectionProxyModelPrivate::updateRootIndexes(int start, int offset, const
 
 QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &_selection) const
 {
-    QModelIndexList parents;
     QItemSelection rootSelection;
     QItemSelection selection = _selection;
     QList<QItemSelectionRange>::iterator it = selection.begin();
     while (it != selection.end()) {
-        const QModelIndex parent = it->topLeft().parent();
-        if (parent.isValid())
-        {
-            parents << parent;
-            ++it;
-        }
-        else
+        if (!it->topLeft().parent().isValid())
         {
             rootSelection.append(*it);
             it = selection.erase(it);
-        }
+        } else
+            ++it;
     }
 
     it = selection.begin();
     const QList<QItemSelectionRange>::iterator end = selection.end();
-    for ( ; it != end; ++it) {
+    while ( it != end ) {
         const QItemSelectionRange range = *it;
-        QModelIndexList _parents = parents;
-        const QModelIndex parent = range.topLeft().parent();
+        it = selection.erase(it);
 
-        if (rootSelection.contains(parent) || isDescendantOf(rootSelection, parent) || isDescendantOf(parents, parent))
+        if (isDescendantOf(rootSelection, range.topLeft()) || isDescendantOf(selection, range.topLeft()))
             continue;
 
         rootSelection << range;
