@@ -512,13 +512,9 @@ void ModelInsertCommand::doCommand()
 
 void ModelInsertCommand::doInsertTree(const QModelIndex &fragmentParent)
 {
-  static const int column = 0;
-
   QList<int> depths = getDepths(m_treeString);
 
   qint64 fragmentParentIdentifier = fragmentParent.internalId();
-  if (m_model->m_childItems[fragmentParentIdentifier].size() <= column)
-    m_model->m_childItems[fragmentParentIdentifier].append(QList<qint64>());
 
   QList<int>::const_iterator it = depths.constBegin();
   const QList<int>::const_iterator end = depths.constEnd();
@@ -538,7 +534,6 @@ void ModelInsertCommand::doInsertTree(const QModelIndex &fragmentParent)
 
   for( ; it != end; ++it)
   {
-    id = m_model->newId();
     if (*it > depth)
     {
       Q_ASSERT(*it == depth + 1);
@@ -556,16 +551,21 @@ void ModelInsertCommand::doInsertTree(const QModelIndex &fragmentParent)
       depth = (*it);
     }
 
-    if (m_model->m_childItems[fragmentParentIdentifier].size() <= column)
-    {
-      m_model->m_childItems[fragmentParentIdentifier].append(QList<qint64>());
-    }
     if (rows.size() == depth)
       rows.append(0);
 
-    m_model->m_items.insert(id, QString::number(id));
-    m_model->m_childItems[fragmentParentIdentifier][column].insert(rows[depth]++, id);
+    id = m_model->newId();
     lastId = id;
+    for (int column = 0; column < m_numCols; ++column) {
+        if (m_model->m_childItems[fragmentParentIdentifier].size() <= column)
+        {
+            m_model->m_childItems[fragmentParentIdentifier].append(QList<qint64>());
+        }
+        m_model->m_items.insert(id, QString::number(id));
+        m_model->m_childItems[fragmentParentIdentifier][column].insert(rows[depth], id);
+        id = m_model->newId();
+    }
+    rows[depth]++;
   }
 }
 
