@@ -2163,10 +2163,6 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
             if (_row < idxRowCount) {
                 const QModelIndex proxyFirstChild = d->mapRootFirstChildFromSource(sourceModel()->index(0, 0, idx));
                 Q_ASSERT(proxyFirstChild.isValid());
-                const int proxyFirstChildRow = proxyFirstChild.row();
-                if (row == proxyFirstChildRow) {
-                    return proxyFirstChild.sibling(row, column);
-                }
                 Q_ASSERT(proxyFirstChild.internalPointer() == 0);
                 return createIndex(row, column, proxyFirstChild.internalPointer());
             }
