@@ -2026,8 +2026,38 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!sourceModel())
+    if (!sourceModel() || !sourceIndex.isValid())
         return QModelIndex();
+
+    QModelIndex ancestor = sourceIndex.parent();
+    QModelIndexList ancestorList;
+    while (ancestor.isValid())
+    {
+        if (!d->parentAlreadyMapped(ancestor))
+            ancestorList.prepend(ancestor);
+        else {
+            break;
+        }
+        ancestor = ancestor.parent();
+    }
+    if (!ancestor.isValid())
+        ancestorList.clear();
+
+    // sourceIndex can be mapped to the proxy. We just need to create mappings for its ancestors first.
+    for(int i = 0; i < ancestorList.size(); ++i)
+    {
+        const QModelIndex existingAncestor = d->mapParentFromSource(ancestor);
+        Q_ASSERT(existingAncestor.isValid());
+        qint64 ansId = d->m_parentIds.rightToLeft(existingAncestor);
+        const QModelIndex newSourceParent = ancestorList.at(i);
+        const QModelIndex newProxyParent = createIndex(newSourceParent.row(), newSourceParent.column(), reinterpret_cast<void *>(ansId));
+
+        const qint64 newId = d->m_nextId++;
+        d->m_parentIds.insert(newId, newProxyParent);
+        d->m_mappedParents.insert(QPersistentModelIndex(newSourceParent), newProxyParent);
+        ancestor = newSourceParent;
+    }
+
 
     const QModelIndex maybeMapped = d->mapParentFromSource(sourceIndex);
     if (maybeMapped.isValid()) {
@@ -2035,12 +2065,6 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
         return maybeMapped;
     }
 
-    QModelIndex ancestor = sourceIndex;
-    while (ancestor.isValid())
-    {
-      d->createParentMappings(ancestor.parent(), ancestor.row(), ancestor.row());
-      ancestor = ancestor.parent();
-    }
 
     const int row = d->m_rootIndexList.indexOf(sourceIndex);
     const QModelIndex sourceParent = sourceIndex.parent();
